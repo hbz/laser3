@@ -14,10 +14,20 @@ import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
+import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat
 
+/**
+ * This controller manages calls related to organisations. An organisation - see the domain class - may be either
+ * an academic institution or a commercial organisation like an editor, a provider or an agency. Former are referred
+ * as institutions in the code, latter as organisations while organisation is also an umbrella term for both academic
+ * institutions and commercial organisations. Check the definitions in the Org domain class for criteria to see which
+ * organisation is of what kind
+ * @see Org
+ * @see OrgRole
+ */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class OrganisationController  {
 
@@ -39,11 +49,26 @@ class OrganisationController  {
     UserControllerService userControllerService
     ExportClickMeService exportClickMeService
 
+    /**
+     * Redirects to {@link #list()}
+     * @return the list view of organisations
+     */
     @Secured(['ROLE_ORG_EDITOR','ROLE_ADMIN'])
     def index() {
         redirect action: 'list', params: params
     }
 
+    /**
+     * Manages calls to the general organisation / institution settings page. The view is parametrised, thus different
+     * returns are possible:
+     * @return one of:
+     * <ul>
+     *     <li>general: general settings such as GASCO display, customer type or properties</li>
+     *     <li>api: API usage related settings such API level, key and password</li>
+     *     <li>natstat: permissions to the Nationaler Statistikserver harvest access</li>
+     *     <li>oamonitor: permissions to the Open Access harvest access</li>
+     * </ul>
+     */
     @DebugAnnotation(perm="FAKE,ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_ADM", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("FAKE,ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN,ROLE_ORG_EDITOR")
@@ -139,6 +164,10 @@ class OrganisationController  {
         result
     }
 
+    /**
+     * Call to list all institutions and commercial organisations. The list may be rendered as HTML list or exported as Excel worksheet or CSV file
+     * @return the list of organisations, either as HTML page or as export
+     */
     @Secured(['ROLE_ORG_EDITOR','ROLE_ADMIN'])
     def list() {
 
@@ -199,6 +228,10 @@ class OrganisationController  {
         }
     }
 
+    /**
+     * Call to list the academic institutions without consortia
+     * @return a list of institutions; basic consortia members or single users
+     */
     @DebugAnnotation(perm="ORG_CONSORTIUM", type="Consortium", affil="INST_USER", specRole="ROLE_ADMIN, ROLE_ORG_EDITOR", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermTypeAffiliationX("ORG_CONSORTIUM", "Consortium", "INST_USER", "ROLE_ADMIN, ROLE_ORG_EDITOR")
@@ -244,6 +277,10 @@ class OrganisationController  {
         result
     }
 
+    /**
+     * Inverse of listInstitution: lists for single users and basic members the consortia
+     * @return a list of consortia institutions
+     */
     @Secured(['ROLE_USER'])
     Map listConsortia() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
@@ -261,6 +298,14 @@ class OrganisationController  {
         result
     }
 
+    /**
+     * Call to list non-academic institutions such as providers. The list may be rendered
+     * as HTML or a configurable Excel worksheet or CSV file. The export contains more fields
+     * than the HTML table due to reasons of space in the HTML page
+     * @return a list of provider organisations, either as HTML table or as Excel/CSV export
+     * @see OrganisationService#exportOrg(java.util.List, java.lang.Object, boolean, java.lang.String)
+     * @see ExportClickMeService#getExportOrgFields(java.lang.String)
+     */
     @Secured(['ROLE_USER'])
     def listProvider() {
         Map<String, Object> result = [:]
@@ -313,6 +358,25 @@ class OrganisationController  {
                 return
             }
         }
+        else if(params.exportClickMeExcel) {
+            if (params.filename) {
+                filename =params.filename
+            }
+
+            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+            Map<String, Object> selectedFields = [:]
+            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(orgListTotal, selectedFields, 'provider')
+
+            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+            return //IntelliJ cannot know that the return prevents an obsolete redirect
+        }
         withFormat {
             html {
                 result
@@ -328,6 +392,12 @@ class OrganisationController  {
             }
         }
     }
+
+    /**
+     * Call to open the identifier creation modal; checks which namespaces are available for the given organisation
+     * @return the identifier construction modal
+     * @see IdentifierNamespace
+     */
     def createIdentifier(){
         log.debug("OrganisationController::createIdentifier ${params}")
         Org org   = params.id? Org.get(params.id) : null
@@ -338,6 +408,7 @@ class OrganisationController  {
             return
         }
         //                List<IdentifierNamespace> nsList = IdentifierNamespace.where{(nsType == de.laser.Org.class.name || nsType == null)}
+        /*
         List<IdentifierNamespace> nsList = IdentifierNamespace.where{(nsType == Org.class.name)}
                 .list(sort: 'ns')
                 .sort { a, b ->
@@ -346,6 +417,9 @@ class OrganisationController  {
             aVal.compareToIgnoreCase bVal
         }
         .collect{ it }
+         */
+        Set<String> primaryExcludes = [IdentifierNamespace.EZB_ANCHOR]
+        List<IdentifierNamespace> nsList = IdentifierNamespace.executeQuery('select idns from IdentifierNamespace idns where (idns.nsType = :org or idns.nsType = null) and idns.isFromLaser = true and idns.ns not in (:primaryExcludes) order by idns.name_'+I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())+', idns.ns', [org: Org.class.name, primaryExcludes: primaryExcludes])
         if((RDStore.OT_PROVIDER.id in org.getAllOrgTypeIds()) || (RDStore.OT_AGENCY.id in org.getAllOrgTypeIds())) {
             nsList = nsList - IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS)
         }
@@ -358,6 +432,10 @@ class OrganisationController  {
         render template: '/templates/identifier/modal_create', model: [orgInstance: org, nsList: nsList]
     }
 
+    /**
+     * Call to edit a given identifier; opens the creation modal with prefilled values
+     * @return the identifier construction modal with prefilled values
+     */
     def editIdentifier(){
         log.debug("OrganisationController::editIdentifier ${params}")
         Identifier identifier = Identifier.get(params.identifier)
@@ -372,6 +450,10 @@ class OrganisationController  {
         render template: '/templates/identifier/modal_create', model: [orgInstance: org, identifier: identifier]
     }
 
+    /**
+     * Processes the given identifier parameters and creates a new identifier record for the given organisation
+     * @return the identifier list view
+     */
     @Transactional
     def processCreateIdentifier(){
         log.debug("OrganisationController::processCreateIdentifier ${params}")
@@ -401,6 +483,10 @@ class OrganisationController  {
         redirect(url: request.getHeader('referer'))
     }
 
+    /**
+     * Processes the given customer identifier parameters and creates a new customer identifier record for the given organisation
+     * @return the identifier list view, opened on tab customer identifiers
+     */
     @Transactional
     def processCreateCustomerIdentifier(){
         log.debug("OrganisationController::processCreateCustomerIdentifier ${params}")
@@ -443,6 +529,12 @@ class OrganisationController  {
         redirect action: 'ids', id: params.orgid, params: [tab: 'customerIdentifiers']
     }
 
+    /**
+     * Takes the given parameters and updates the given identifier record.
+     * Leitweg-IDs (the identifier necessary for the North-Rhine Westphalia billing system) are autogenerated; they
+     * can get actual values only by editing. That is why pattern validation is taking place here
+     * @return the identifier list view
+     */
     @Transactional
     def processEditIdentifier(){
         log.debug("OrganisationController::processEditIdentifier ${params}")
@@ -498,6 +590,10 @@ class OrganisationController  {
         redirect(url: request.getHeader('referer'))
     }
 
+    /**
+     * Takes the given parameters and updates the given customer identifier record.
+     * @return the identifier list view, opened on tab customer identifiers
+     */
     @Transactional
     def processEditCustomerIdentifier(){
         log.debug("OrganisationController::processEditIdentifier ${params}")
@@ -522,6 +618,12 @@ class OrganisationController  {
         redirect(url: request.getHeader('referer'))
     }
 
+    /**
+     * Call to open the customer identifier creation modal; checks which platforms are available for the given organisation
+     * @return the customer identifier construction modal
+     * @see CustomerIdentifier
+     * @see Platform
+     */
     def createCustomerIdentifier(){
         log.debug("OrganisationController::createCustomerIdentifier ${params}")
         Org org   = Org.get(params.id)
@@ -536,6 +638,10 @@ class OrganisationController  {
         render template: '/templates/customerIdentifier/modal_create', model: [orgInstance: org, allPlatforms: allPlatforms]
     }
 
+    /**
+     * Call to open the customer identifier creation modal with prefilled values
+     * @return the customer identifier construction modal with prefilled values
+     */
     def editCustomerIdentifier(){
         log.debug("OrganisationController::editCustomerIdentifier ${params}")
         CustomerIdentifier customeridentifier = CustomerIdentifier.get(params.customeridentifier)
@@ -550,6 +656,12 @@ class OrganisationController  {
         render template: '/templates/customerIdentifier/modal_create', model: [orgInstance: org, customeridentifier: customeridentifier]
     }
 
+    /**
+     * Call to create a new organisation: either as GET; then, the form to enter the new data is being rendered;
+     * or as POST; then, the submitted form values will be processed and a new organisation record set up. The
+     * new record is being shown on the organisation details page to which is being redirected after creating
+     * the new record
+     */
     @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR'])
     @Transactional
     def create() {
@@ -573,19 +685,10 @@ class OrganisationController  {
         }
     }
 
-    @Deprecated
-    @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR'])
-    def setupBasicTestData() {
-        Org targetOrg = Org.get(params.id)
-        if(organisationService.setupBasicTestData(targetOrg)) {
-            flash.message = message(code:'org.setup.success')
-        }
-        else {
-            flash.error = message(code:'org.setup.error',args: [organisationService.dumpErrors()])
-        }
-        redirect action: 'show', id: params.id
-    }
-
+    /**
+     * Creates a new provider organisation with the given parameters
+     * @return the details view of the provider or the creation view in case of an error
+     */
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR", wtc = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN,ROLE_ORG_EDITOR")
@@ -612,6 +715,10 @@ class OrganisationController  {
         }
     }
 
+    /**
+     * Call to create a new provider; offers first a query for the new name to insert in order to exclude duplicates
+     * @return the empty form (with a submit to proceed with the new organisation) or a list of eventual name matches
+     */
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN,ROLE_ORG_EDITOR")
@@ -627,6 +734,10 @@ class OrganisationController  {
         result
     }
 
+    /**
+     * Call to create a new member with the given parameter map
+     * @return the details view of the new member in case of success, the creation page otherwise
+     */
     @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_EDTIOR",specRole="ROLE_ADMIN, ROLE_ORG_EDITOR", ctrlService = 2)
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM","INST_EDITOR","ROLE_ADMIN, ROLE_ORG_EDITOR") })
     def createMember() {
@@ -641,6 +752,10 @@ class OrganisationController  {
         }
     }
 
+    /**
+     * Call to create a new consortium member; opens a form to check the new name against existing ones in order to exclude duplicates
+     * @return the form with eventual name matches
+     */
     @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_EDITOR",specRole="ROLE_ADMIN, ROLE_ORG_EDITOR")
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM","INST_EDITOR","ROLE_ADMIN, ROLE_ORG_EDITOR") })
     Map findOrganisationMatches() {
@@ -671,6 +786,10 @@ class OrganisationController  {
         result
     }
 
+    /**
+     * Shows the details of the organisation to display
+     * @return the details view of the given orgainsation
+     */
     @Secured(['ROLE_USER'])
     def show() {
 
@@ -757,6 +876,13 @@ class OrganisationController  {
         result
     }
 
+    /**
+     * Displays either the identifiers or the customer identifiers attached to the organisation.
+     * Only institutions may have customer identifiers; commercial organisations cannot have such
+     * @return the table view of the records, either the identifiers or the customer number key pairs
+     * @see Identifier
+     * @see CustomerIdentifier
+     */
     @Secured(['ROLE_USER'])
     def ids() {
 
@@ -814,9 +940,9 @@ class OrganisationController  {
         Boolean isComboRelated = Combo.findByFromOrgAndToOrg(result.orgInstance, result.institution)
         result.isComboRelated = isComboRelated
 
-        result.hasAccessToCustomeridentifier = (inContextOrg && accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_USER')) ||
+        result.hasAccessToCustomeridentifier = ((inContextOrg && accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_USER')) ||
                 (isComboRelated && accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_USER')) ||
-                SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
+                SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')) && OrgSetting.get(result.orgInstance, OrgSetting.KEYS.CUSTOMER_TYPE) != OrgSetting.SETTING_NOT_FOUND
 
         if (result.hasAccessToCustomeridentifier) {
 
@@ -864,6 +990,15 @@ class OrganisationController  {
         result
     }
 
+    /**
+     * Shows the tasks attached to the given organisation. Displayed here are tasks which
+     * are related to the given organisation (i.e. which have the given organisation as target)
+     * and not such assigned to the given one! If the target organisation is an institution, users
+     * affiliated to it do not know about those tasks since they are internal to that institution which
+     * created them
+     * @return the task table view
+     * @see Task
+     */
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER") })
     def tasks() {
@@ -878,6 +1013,15 @@ class OrganisationController  {
         result
     }
 
+    /**
+     * Shows the documents attached to the given organisation. Important:
+     * Displayed here are those documents which have been *attached* to the given object.
+     * If the target is an institution, the institution does not know about the documents unless they have been
+     * shared with the institution!
+     * @return the document table view
+     * @see Doc
+     * @see DocContext
+     */
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
@@ -891,6 +1035,11 @@ class OrganisationController  {
         result
     }
 
+    /**
+     * Call to edit the given document. Beware: edited are the relations between the document and the object
+     * it has been attached to; content editing of an uploaded document is not possible in this app!
+     * @return the modal to edit the document parameters
+     */
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def editDocument() {
@@ -909,6 +1058,11 @@ class OrganisationController  {
         render template: "/templates/documents/modal", model: result
     }
 
+    /**
+     * Call to delete a given document
+     * @return the document table view ({@link #documents()})
+     * @see com.k_int.kbplus.DocstoreService#unifiedDeleteDocuments()
+     */
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def deleteDocuments() {
@@ -919,6 +1073,14 @@ class OrganisationController  {
         redirect controller: 'organisation', action:params.redirectAction, id:params.instanceId /*, fragment: 'docstab' */
     }
 
+    /**
+     * Opens the notes view for the given organisation. Beware that those notes are being shown
+     * which are attached to the given organisation; the target (if it is an institution) does not
+     * see the notes!
+     * @return a {@link List} of notes ({@link Doc})
+     * @see Doc
+     * @see DocContext
+     */
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = {
         ctx.contextService.getUser()?.hasAffiliation("INST_USER")
@@ -932,6 +1094,10 @@ class OrganisationController  {
         result
     }
 
+    /**
+     * Call to delete the given customer identifier
+     * @return the customer identifier table view
+     */
     @DebugAnnotation(perm="FAKE,ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("FAKE,ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN,ROLE_ORG_EDITOR")
@@ -943,6 +1109,10 @@ class OrganisationController  {
         redirect action: 'ids', id: params.id, params: [tab: 'customerIdentifiers']
     }
 
+    /**
+     * Call to delete the given identifier
+     * @return the identifier table view
+     */
     @DebugAnnotation(ctrlService = 2)
     @Secured(['ROLE_USER'])
     def deleteIdentifier() {
@@ -950,6 +1120,12 @@ class OrganisationController  {
         redirect(url: request.getHeader('referer'))
     }
 
+    /**
+     * Shows all user accounts affiliated to (at least) the given institution
+     * @return renders the user list template with the users affiliated to this institution
+     * @see UserOrg
+     * @see User
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_ADM") })
     def users() {
@@ -1005,6 +1181,11 @@ class OrganisationController  {
         render view: '/user/global/list', model: result
     }
 
+    /**
+     * Call to detach the given user from the given institution.
+     * Data the given user may have authored will be reassigned to another user
+     * @return the user deletion view where eventual conflicts are being listed
+     */
     @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN") })
     def deleteUser() {
@@ -1048,6 +1229,10 @@ class OrganisationController  {
         render view: '/user/global/delete', model: result
     }
 
+    /**
+     * Call to edit the given user profile
+     * @return the profile editing template
+     */
     @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN") })
     def editUser() {
@@ -1062,6 +1247,10 @@ class OrganisationController  {
         render view: '/user/global/edit', model: result
     }
 
+    /**
+     * Call to create a new user profile
+     * @return the profile creation template
+     */
     @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN") })
     def createUser() {
@@ -1072,6 +1261,10 @@ class OrganisationController  {
         render view: '/user/global/create', model: result
     }
 
+    /**
+     * Takes the submitted parameters and creates a new user record with the given parameters
+     * @return the user editing template in case of success, redirects back to the creation page otherwise
+     */
     @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN") })
     def processCreateUser() {
@@ -1089,6 +1282,10 @@ class OrganisationController  {
         }
     }
 
+    /**
+     * Attaches the given user to the given institution
+     * @return the user editing profile with the updated data
+     */
     @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_ADM", specRole = "ROLE_ADMIN")
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM","INST_ADM","ROLE_ADMIN") })
     def addAffiliation() {
@@ -1104,12 +1301,17 @@ class OrganisationController  {
         redirect action: 'editUser', params: [id: params.id, uoid: params.uoid]
     }
 
+    @Deprecated
     @Secured(['ROLE_ADMIN','ROLE_ORG_EDITOR'])
     def edit() {
         redirect controller: 'organisation', action: 'show', params: params
         return
     }
 
+    /**
+     * Call to delete the given organisation, offering substitution candidates
+     * @return the deletion view
+     */
     @Secured(['ROLE_ADMIN'])
     def delete() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
@@ -1138,6 +1340,11 @@ class OrganisationController  {
         render view: 'delete', model: result
     }
 
+    /**
+     * Was used to link two organisations by combo
+     * @deprecated Use {@link #linkOrgs()} instead
+     */
+    @Deprecated
     @Secured(['ROLE_USER'])
     @Transactional
     def addOrgCombo(Org fromOrg, Org toOrg) {
@@ -1157,6 +1364,10 @@ class OrganisationController  {
       }
     }
 
+    /**
+     * Call to list the public contacts of the given organisation
+     * @return a table view of public contacts
+     */
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
@@ -1197,6 +1408,12 @@ class OrganisationController  {
 
         result
     }
+
+    /**
+     * Lists the current reader numbers of the given institution
+     * @return a table view of the reader numbers, grouped by semesters on the one hand, due dates on the other
+     * @see ReaderNumber
+     */
     @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_USER") })
     def readerNumber() {
@@ -1238,12 +1455,12 @@ class OrganisationController  {
                 if(!semesterSumRow)
                     semesterSumRow = [:]
                 if(rn.value) {
-                    BigDecimal groupSum = semesterSumRow.get(rn.referenceGroup)
+                    BigDecimal groupSum = semesterSumRow.get(rn.referenceGroup.getI10n("value"))
                     if(groupSum == null) {
                         groupSum = rn.value
                     }
                     else groupSum += rn.value
-                    semesterSumRow.put(rn.referenceGroup,groupSum)
+                    semesterSumRow.put(rn.referenceGroup.getI10n("value"),groupSum)
                 }
                 semesterSums.put(semesters.key,semesterSumRow)
             }
@@ -1273,6 +1490,11 @@ class OrganisationController  {
         result
     }
 
+    /**
+     * Lists the access point configurations of the given institution
+     * @return a list view of access points
+     * @see de.laser.oap.OrgAccessPoint
+     */
     @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_USER") })
     def accessPoints() {
@@ -1310,16 +1532,25 @@ class OrganisationController  {
         }
     }
 
+    /**
+     * Links two organisations with the given params
+     */
     def linkOrgs() {
         organisationControllerService.linkOrgs(params)
         redirect action: 'show', id: params.context
     }
 
+    /**
+     * Removes the given link between two organisations
+     */
     def unlinkOrg() {
         organisationControllerService.unlinkOrg(params)
         redirect action: 'show', id: params.id
     }
 
+    /**
+     * Assigns the given organisation type to the given organisation
+     */
     @Transactional
     def addOrgType() {
         Map<String, Object> result = [:]
@@ -1342,6 +1573,9 @@ class OrganisationController  {
         redirect action: 'show', id: orgInstance.id
     }
 
+    /**
+     * Removes the given organisation type from the given organisation
+     */
     @Transactional
     def deleteOrgType() {
         Map<String, Object> result = [:]
@@ -1365,6 +1599,9 @@ class OrganisationController  {
         redirect action: 'show', id: orgInstance.id
     }
 
+    /**
+     * Assigns the given subject group to the given organisation
+     */
     @Transactional
     def addSubjectGroup() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
@@ -1396,6 +1633,9 @@ class OrganisationController  {
         redirect action: 'show', id: params.id
     }
 
+    /**
+     * Removes the given subject group from the given organisation
+     */
     @Transactional
     def deleteSubjectGroup() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
@@ -1416,6 +1656,11 @@ class OrganisationController  {
         redirect(url: request.getHeader('referer'))
     }
 
+    /**
+     * Call to toggle the consortium membership state between the given institution and the consortium
+     * (adds or removes a combo link between the institution and the consortium)
+     * @see Combo
+     */
     @DebugAnnotation(perm="ORG_CONSORTIUM", type="Consortium", affil="INST_EDITOR", specRole="ROLE_ADMIN, ROLE_ORG_EDITOR", ctrlService = 2)
     @Secured(closure = { ctx.accessService.checkPermTypeAffiliationX("ORG_CONSORTIUM", "Consortium", "INST_EDITOR", "ROLE_ADMIN,ROLE_ORG_EDITOR") })
     def toggleCombo() {
@@ -1435,6 +1680,10 @@ class OrganisationController  {
         redirect action: 'listInstitution'
     }
 
+    /**
+     * Call to list the contacts the context institution has attached to the given organisation
+     * @return a table view of the contacts
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def myPublicContacts() {
@@ -1477,7 +1726,13 @@ class OrganisationController  {
 
         result
     }
-    
+
+    /**
+     * Helper method to determine the edit rights the given user has for the given organisation in the given view
+     * @param user the user whose rights should be checked
+     * @param org the target organisation
+     * @return true if edit rights are granted to the given user/org/view context, false otherwise
+     */
     boolean checkIsEditable(User user, Org org) {
         boolean isEditable
         Org contextOrg = contextService.getOrg()

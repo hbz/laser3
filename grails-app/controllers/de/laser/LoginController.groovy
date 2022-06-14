@@ -21,6 +21,9 @@ import javax.servlet.http.HttpServletResponse
 
 //import org.springframework.security.web.authentication.AbstractProcessingFilter
 
+/**
+ * The controller manages authentication handling
+ */
 @Secured('permitAll')
 class LoginController {
 

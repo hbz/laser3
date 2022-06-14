@@ -24,7 +24,7 @@
 
                 <h3 class="ui header" id="jumpMark_2_${obj.key}">${obj.key}</h3>
 
-                <table class="ui sortable celled la-table compact la-ignore-fixed table">
+                <table class="ui sortable celled la-js-responsive-table la-table compact la-ignore-fixed table">
                     <thead>
                     <tr>
                         <th>Attribut</th>

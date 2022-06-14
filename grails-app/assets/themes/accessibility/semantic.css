@@ -562,13 +562,13 @@ html {
 body {
   margin: 0px;
   padding: 0px;
-  overflow-x: hidden;
+  overflow-x: auto;
   min-width: 320px;
   background: #f4f8f9;
   font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
   font-size: 14px;
   line-height: 1.4285em;
-  color: rgba(0, 0, 0, 0.87);
+  color: #1B1C1D;
   font-smoothing: antialiased;
 }
 
@@ -668,17 +668,17 @@ a:hover {
 
 ::-webkit-selection {
   background-color: #CCE2FF;
-  color: rgba(0, 0, 0, 0.87);
+  color: #1B1C1D;
 }
 
 ::-moz-selection {
   background-color: #CCE2FF;
-  color: rgba(0, 0, 0, 0.87);
+  color: #1B1C1D;
 }
 
 ::selection {
   background-color: #CCE2FF;
-  color: rgba(0, 0, 0, 0.87);
+  color: #1B1C1D;
 }
 
 /* Form */
@@ -686,25 +686,25 @@ a:hover {
 textarea::-webkit-selection,
 input::-webkit-selection {
   background-color: rgba(100, 100, 100, 0.4);
-  color: rgba(0, 0, 0, 0.87);
+  color: #1B1C1D;
 }
 
 textarea::-moz-selection,
 input::-moz-selection {
   background-color: rgba(100, 100, 100, 0.4);
-  color: rgba(0, 0, 0, 0.87);
+  color: #1B1C1D;
 }
 
 textarea::-moz-selection,
 input::-moz-selection {
   background-color: rgba(100, 100, 100, 0.4);
-  color: rgba(0, 0, 0, 0.87);
+  color: #1B1C1D;
 }
 
 textarea::selection,
 input::selection {
   background-color: rgba(100, 100, 100, 0.4);
-  color: rgba(0, 0, 0, 0.87);
+  color: #1B1C1D;
 }
 
 /* Force Simple Scrollbars */
@@ -1074,6 +1074,10 @@ aside.ui.accordion .title:not(.ui) {
   margin-top: 1.6rem !important;
 }
 
+.ui.form .field.la-field-noLabel {
+  margin-top: 1.8rem !important;
+}
+
 /*******************************
         DIVERSE
 *******************************/
@@ -1232,6 +1236,16 @@ i.icon.la-list-icon:before {
   text-overflow: ellipsis;
 }
 
+.la-dont-break-out {
+  -ms-word-break: break-all;
+  word-break: break-all;
+  /* Non standard for WebKit */
+  word-break: break-word;
+  -webkit-hyphens: auto;
+  -ms-hyphens: auto;
+  hyphens: auto;
+}
+
 .la-hide-context-orgMenu {
   padding-top: 60px;
 }
@@ -1347,7 +1361,7 @@ i.icon.la-list-icon:before {
 
 .la-filter .ui.checkbox .box:after,
 .la-filter .ui.checkbox label:after {
-  color: rgba(0, 0, 0, 0.87);
+  color: #1B1C1D;
   -webkit-transition: border 0.1s ease, opacity 0.1s ease, -webkit-transform 0.1s ease, -webkit-box-shadow 0.1s ease;
   transition: border 0.1s ease, opacity 0.1s ease, -webkit-transform 0.1s ease, -webkit-box-shadow 0.1s ease;
   transition: border 0.1s ease, opacity 0.1s ease, transform 0.1s ease, box-shadow 0.1s ease;
@@ -1464,6 +1478,33 @@ i.icon.la-list-icon:before {
   body {
     margin-left: 0.4em;
   }
+}
+
+.calendar table.day th > .link:first-child:after {
+  content: "\f150";
+  padding-left: 5px;
+  background: 0 0!important;
+  font-family: Icons;
+  font-style: normal;
+  font-weight: 400;
+}
+
+.calendar table.month th > .link:first-child:after {
+  content: "\f151";
+  padding-left: 5px;
+  background: 0 0!important;
+  font-family: Icons;
+  font-style: normal;
+  font-weight: 400;
+}
+
+.calendar table.year th > .link:first-child:after {
+  content: "\f150";
+  padding-left: 5px;
+  background: 0 0!important;
+  font-family: Icons;
+  font-style: normal;
+  font-weight: 400;
 }
 /*!
  * # Semantic UI 2.4.2 - Button
@@ -5978,18 +6019,34 @@ i.icon.la-list-icon:before {
 }
 
 /*---------------
-    Blue
+    Orange
 ----------------*/
 
-.ui.blue.buttons .button.la-modern-button,
-.ui.blue.button.la-modern-button {
-  color: #004678;
+.ui.orange.buttons .button.la-modern-button,
+.ui.orange.button.la-modern-button {
+  color: #fa820a;
   background-color: transparent;
 }
 
-.ui.blue.buttons .button.la-modern-button:hover,
-.ui.blue.button.la-modern-button:hover {
-  background-color: #004678;
+.ui.orange.buttons .button.la-modern-button:hover,
+.ui.orange.button.la-modern-button:hover {
+  background-color: #fa820a;
+  color: #FFFFFF;
+}
+
+/*---------------
+    Yellow
+----------------*/
+
+.ui.yellow.buttons .button.la-modern-button,
+.ui.yellow.button.la-modern-button {
+  color: #FBBD08;
+  background-color: transparent;
+}
+
+.ui.yellow.buttons .button.la-modern-button:hover,
+.ui.yellow.button.la-modern-button:hover {
+  background-color: #FBBD08;
   color: #FFFFFF;
 }
 /*!
@@ -6485,7 +6542,7 @@ i.flag:not(.icon):before {
   font-weight: bold;
   line-height: 1.28571429em;
   text-transform: none;
-  color: rgba(0, 0, 0, 0.87);
+  color: #1B1C1D;
 }
 
 .ui.header:first-child {
@@ -7381,8 +7438,8 @@ body[class*="subscription"] .ui.icon.header .circular.icon.la-object:before {
 body[class*="Title"] .ui.icon.header .circular.icon.la-object,
 body[class*="title"] .ui.icon.header .circular.icon.la-object {
   display: inline-block;
-  background-color: #004678;
-  border-color: #004678;
+  background-color: #2185d0;
+  border-color: #2185d0;
 }
 
 body[class*="Title"] .ui.icon.header .circular.icon.la-object:before,
@@ -7409,8 +7466,8 @@ body[class*="platform"] .ui.icon.header .circular.icon.la-object:before {
 
 .ui.icon.header .circular.icon.la-object-journal {
   display: inline-block;
-  background-color: #004678;
-  border-color: #004678;
+  background-color: #2185d0;
+  border-color: #2185d0;
 }
 
 .ui.icon.header .circular.icon.la-object-journal:before {
@@ -7419,8 +7476,8 @@ body[class*="platform"] .ui.icon.header .circular.icon.la-object:before {
 
 .ui.icon.header .circular.icon.la-object-database {
   display: inline-block;
-  background-color: #004678;
-  border-color: #004678;
+  background-color: #2185d0;
+  border-color: #2185d0;
 }
 
 .ui.icon.header .circular.icon.la-object-database:before {
@@ -7429,8 +7486,8 @@ body[class*="platform"] .ui.icon.header .circular.icon.la-object:before {
 
 .ui.icon.header .circular.icon.la-object-ebook {
   display: inline-block;
-  background-color: #004678;
-  border-color: #004678;
+  background-color: #2185d0;
+  border-color: #2185d0;
 }
 
 .ui.icon.header .circular.icon.la-object-ebook:before {
@@ -7456,8 +7513,9 @@ body[class*="platform"] .ui.icon.header .circular.icon.la-object:before {
 }
 
 .ui.header.la-noMargin-top {
-  margin-top: 0rem;
+  margin-top: 1rem;
   text-align: left;
+  position: relative;
 }
 /*!
  * # Semantic UI 2.4.2 - Icon
@@ -13686,6 +13744,18 @@ i.icon.la-consortia {
   font-family: 'icomoon';
 }
 
+i.icon.la-star.slash {
+  font-family: 'icomoon';
+}
+
+i.icon.la-redo.slash {
+  font-family: 'icomoon';
+}
+
+i.icon.la-exchange.slash {
+  font-family: 'icomoon';
+}
+
 i.icon.hand.pointer.outline.slash:before {
   content: "\e901";
 }
@@ -13790,6 +13860,20 @@ i.icon.la-consortia:before {
   content: "\e917";
 }
 
+/**/
+
+i.icon.la-star.slash:before {
+  content: "\e918";
+}
+
+i.icon.la-redo.slash:before {
+  content: "\e919";
+}
+
+i.icon.la-exchange.slash:before {
+  content: "\e91a";
+}
+
 /*******************************
            Laser Icons
 *******************************/
@@ -13886,7 +13970,7 @@ i.inverted.circular.la-light-grey.icon {
 }
 
 .icon.la-journal {
-  background-color: #004678;
+  background-color: #2185d0;
 }
 
 .icon.la-journal:before {
@@ -13895,7 +13979,7 @@ i.inverted.circular.la-light-grey.icon {
 }
 
 .icon.la-database {
-  background-color: #004678;
+  background-color: #2185d0;
 }
 
 .icon.la-database:before {
@@ -13904,7 +13988,7 @@ i.inverted.circular.la-light-grey.icon {
 }
 
 .icon.la-ebook {
-  background-color: #004678;
+  background-color: #2185d0;
 }
 
 .icon.la-ebook:before {
@@ -13913,7 +13997,7 @@ i.inverted.circular.la-light-grey.icon {
 }
 
 .icon.la-book {
-  background-color: #004678;
+  background-color: #2185d0;
 }
 
 .icon.la-book:before {
@@ -13928,6 +14012,38 @@ i.inverted.circular.icon.la-filter-icon {
 .la-rotate {
   -webkit-transform: translateY(3px) rotate(90deg);
   transform: translateY(3px) rotate(90deg);
+}
+
+.la-subscriptionIsChild {
+  position: absolute;
+  left: 24px;
+  top: -15px;
+  background-color: white;
+  font-size: 0.6em !important;
+  -webkit-box-shadow: 0 0 0 0.1em #fa820a inset !important;
+  box-shadow: 0 0 0 0.1em #fa820a inset !important;
+  padding: 0em;
+  -webkit-transition: all 0.5s ease;
+  transition: all 0.5s ease;
+}
+
+/* change style when page scrolled down*/
+
+i.orange.icon.la-subscriptionIsChild.fixed {
+  position: fixed;
+  margin-left: 150px!important;
+  background-color: transparent!important;
+  color: gray!important;
+  -webkit-box-shadow: none!important;
+  box-shadow: none!important;
+  -webkit-transition: all 1s ease;
+  transition: all 1s ease;
+}
+
+@media only screen and (max-width: 992px) {
+  i.orange.icon.la-subscriptionIsChild.fixed {
+    display: none;
+  }
 }
 /*!
  * # Semantic UI 2.4.2 - Image
@@ -14268,7 +14384,7 @@ img.ui.bordered.image {
   display: -webkit-inline-box;
   display: -ms-inline-flexbox;
   display: inline-flex;
-  color: rgba(0, 0, 0, 0.87);
+  color: #1B1C1D;
 }
 
 .ui.input > input {
@@ -14285,7 +14401,7 @@ img.ui.bordered.image {
   padding: 0.67857143em 1em;
   background: #FFFFFF;
   border: 1px solid #004678;
-  color: rgba(0, 0, 0, 0.87);
+  color: #1B1C1D;
   border-radius: 0;
   -webkit-transition: border-color 0.1s ease, -webkit-box-shadow 0.1s ease;
   transition: border-color 0.1s ease, -webkit-box-shadow 0.1s ease;
@@ -14302,15 +14418,15 @@ img.ui.bordered.image {
 /* browsers require these rules separate */
 
 .ui.input > input::-webkit-input-placeholder {
-  color: rgba(64, 64, 64, 0.87);
+  color: #585c5f;
 }
 
 .ui.input > input::-moz-placeholder {
-  color: rgba(64, 64, 64, 0.87);
+  color: #585c5f;
 }
 
 .ui.input > input:-ms-input-placeholder {
-  color: rgba(64, 64, 64, 0.87);
+  color: #585c5f;
 }
 
 /*******************************
@@ -14339,7 +14455,7 @@ img.ui.bordered.image {
 .ui.input.down input {
   border-color: rgba(0, 0, 0, 0.3);
   background: #FAFAFA;
-  color: rgba(0, 0, 0, 0.87);
+  color: #1B1C1D;
   -webkit-box-shadow: none;
   box-shadow: none;
 }
@@ -15964,7 +16080,7 @@ a.ui.basic.black.label:hover {
 .ui.basic.label {
   background: none #FFFFFF;
   border: 1px solid #d3dae3;
-  color: rgba(0, 0, 0, 0.87);
+  color: #1B1C1D;
   -webkit-box-shadow: none;
   box-shadow: none;
 }
@@ -16235,7 +16351,8 @@ a.ui.basic.label:hover {
   font-size: 1.71428571rem;
 }
 
-.finance_index .ui.ribbon.label {
+.finance_index .ui.ribbon.label,
+.finance_subFinancialData .ui.ribbon.label {
   left: calc(-1rem - 1.8em);
   top: -22px;
 }
@@ -16244,7 +16361,8 @@ a.ui.basic.label:hover {
   padding: 0 1.5rem 0 1.5rem;
 }
 
-.finance_index .ui.right.ribbon.label {
+.finance_index .ui.right.ribbon.label,
+.finance_subFinancialData .ui.right.ribbon.label {
   left: calc(104.2%);
   top: -22px;
 }
@@ -16257,9 +16375,15 @@ a.ui.basic.label:hover {
   position: relative;
   padding-left: 0.2em;
   padding-right: 0.2em;
+  margin-bottom: 1.2em;
   background-color: #fffaf5;
   border: 1px solid #d3dae3;
   vertical-align: super;
+  margin: 0 1.142857em;
+}
+
+.ui.label.la-annual-rings .ui.tiny.label {
+  font-size: 0.45rem;
 }
 
 .ui.label.la-annual-rings .icon {
@@ -16303,6 +16427,61 @@ a.ui.basic.label:hover {
 .ui.label.la-annual-rings .la-annual-rings-text {
   vertical-align: sub;
   padding-right: 0.5em;
+}
+
+.ui.la-annual-rings-modern {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  padding-left: 0.2em;
+  padding-right: 0.2em;
+  margin-bottom: 1.2em;
+  background-color: transparent;
+  border: none;
+  vertical-align: super;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.ui.la-annual-rings-modern > a {
+  opacity: 1;
+  text-decoration: none;
+  display: inline-block;
+  width: 2.1em;
+}
+
+.ui.la-annual-rings-modern > a:hover {
+  -webkit-filter: brightness(0.85);
+  filter: brightness(0.85);
+}
+
+.ui.la-annual-rings-modern i.disabled.icon {
+  opacity: 0!important;
+}
+
+.ui.la-annual-rings-modern .la-status-active {
+  color: #98B500;
+  opacity: 1;
+}
+
+.ui.la-annual-rings-modern .la-status-inactive {
+  color: #BB1600;
+  opacity: 1;
+}
+
+.ui.la-annual-rings-modern .la-status-else {
+  color: #FBBD08;
+  opacity: 1;
+}
+
+.ui.la-annual-rings-modern .la-annual-rings-text {
+  padding: 3px;
+  margin-top: 0.3rem;
+  margin-right: -0.3em;
+  color: rgba(0, 0, 0, 0.6);
+  letter-spacing: 0.05em;
+  font-weight: 700;
 }
 
 .ui.left-tag.labels .label,
@@ -16456,6 +16635,41 @@ a.ui.basic.label:hover {
   z-index: 999;
   padding: 0.2em;
   font-size: 2.5rem;
+}
+
+/* Label for survey types */
+
+.ui.label.survey-renewal,
+.ui.label.survey-interest,
+.ui.label.survey-selection,
+.ui.label.survey-subscription {
+  vertical-align: super;
+  min-width: 150px!important;
+  text-align: center;
+  border-radius: 5px;
+}
+
+.ui.label.survey-renewal {
+  background-color: #ebff82;
+}
+
+.ui.label.survey-interest {
+  background-color: #ff9688;
+}
+
+.ui.label.survey-selection {
+  background-color: #45b2ff;
+}
+
+.ui.label.survey-subscription {
+  background-color: #fee8d2;
+}
+
+a .ui.circular.label:hover,
+a .ui.circular.label:focus {
+  border-radius: 0;
+  -webkit-transition: border-radius;
+  transition: border-radius;
 }
 /*!
  * # Semantic UI 2.4.2 - List
@@ -16638,7 +16852,7 @@ ol.ui.list ol li,
   margin: 0em;
   font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
   font-weight: bold;
-  color: rgba(0, 0, 0, 0.87);
+  color: #1B1C1D;
 }
 
 /* Description */
@@ -16826,7 +17040,7 @@ ol.ui.list ol li,
 
 .ui.list .list > a.item:hover .icon,
 .ui.list > a.item:hover .icon {
-  color: rgba(0, 0, 0, 0.87);
+  color: #1B1C1D;
 }
 
 /*******************************
@@ -17087,7 +17301,7 @@ ul.ui.list li:before,
 ul.ui.list li:before,
 .ui.bulleted.list .list > a.item:before,
 .ui.bulleted.list > a.item:before {
-  color: rgba(0, 0, 0, 0.87);
+  color: #1B1C1D;
 }
 
 ul.ui.list ul,
@@ -17114,7 +17328,7 @@ ul.ui.horizontal.bulleted.list li:first-child,
 
 ul.ui.horizontal.bulleted.list li::before,
 .ui.horizontal.bulleted.list > .item::before {
-  color: rgba(0, 0, 0, 0.87);
+  color: #1B1C1D;
 }
 
 ul.ui.horizontal.bulleted.list li:first-child::before,
@@ -17157,7 +17371,7 @@ ol.ui.list li:before,
   counter-increment: ordered;
   content: counters(ordered, ".") " ";
   text-align: right;
-  color: rgba(0, 0, 0, 0.87);
+  color: #1B1C1D;
   vertical-align: middle;
   opacity: 0.8;
 }
@@ -19600,7 +19814,7 @@ dd {
 /* Nested */
 
 .ui.inverted.segment .segment {
-  color: rgba(0, 0, 0, 0.87);
+  color: #1B1C1D;
 }
 
 .ui.inverted.segment .inverted.segment {
@@ -19754,6 +19968,10 @@ dd {
   margin-bottom: 1em;
 }
 
+.ui.segment.la-form {
+  border: none;
+}
+
 .ui.segment.la-filter-temp {
   background: #004678;
   border: none;
@@ -19825,6 +20043,24 @@ dd {
   color: white;
   background: #004678 !important;
   border: 1px solid #FFFFFF;
+}
+
+/* Bottom */
+
+.ui.segment[class*="bottom attached"] {
+  padding-top: 2em;
+}
+
+aside.la-metabox {
+  position: absolute !important;
+  width: inherit;
+  margin: 0 !important;
+}
+
+aside.la-metabox + .la-metabox-spacer {
+  height: 70px;
+  margin: 1rem 0;
+  padding: 1em 0;
 }
 /*!
  * # Semantic UI 2.4.2 - Step
@@ -19900,7 +20136,7 @@ dd {
   margin: 0em 0em;
   padding: 1.14285714em 2em;
   background: #FFFFFF;
-  color: rgba(0, 0, 0, 0.87);
+  color: #1B1C1D;
   -webkit-box-shadow: none;
   box-shadow: none;
   border-radius: 0em;
@@ -19981,7 +20217,7 @@ dd {
 .ui.steps .step .description {
   font-weight: normal;
   font-size: 0.92857143em;
-  color: rgba(0, 0, 0, 0.87);
+  color: #1B1C1D;
 }
 
 .ui.steps .step > .description {
@@ -20255,7 +20491,7 @@ dd {
 .ui.steps a.active.step:hover {
   cursor: pointer;
   background: #DCDDDE;
-  color: rgba(0, 0, 0, 0.87);
+  color: #1B1C1D;
 }
 
 /* Completed */
@@ -20724,7 +20960,7 @@ dd {
 .ui.form .field > label {
   display: block;
   margin: 0em 0em 0.28571429rem 0em;
-  color: rgba(0, 0, 0, 0.87);
+  color: #1B1C1D;
   font-size: 0.92857143em;
   font-weight: bold;
   text-transform: none;
@@ -20780,7 +21016,7 @@ dd {
   font-size: 1em;
   background: #FFFFFF;
   border: 1px solid #d3dae3;
-  color: rgba(0, 0, 0, 0.87);
+  color: #1B1C1D;
   border-radius: 0;
   -webkit-box-shadow: 0em 0em 0em 0em transparent inset;
   box-shadow: 0em 0em 0em 0em transparent inset;
@@ -20798,7 +21034,7 @@ dd {
   background: #FFFFFF;
   border: 1px solid #d3dae3;
   outline: none;
-  color: rgba(0, 0, 0, 0.87);
+  color: #1B1C1D;
   border-radius: 0;
   -webkit-box-shadow: 0em 0em 0em 0em transparent inset;
   box-shadow: 0em 0em 0em 0em transparent inset;
@@ -20842,7 +21078,7 @@ dd {
   -webkit-box-shadow: 0em 0em 0em 0em transparent inset;
   box-shadow: 0em 0em 0em 0em transparent inset;
   padding: 0.62em 1em;
-  color: rgba(0, 0, 0, 0.87);
+  color: #1B1C1D;
   -webkit-transition: color 0.1s ease, border-color 0.1s ease;
   transition: color 0.1s ease, border-color 0.1s ease;
 }
@@ -20997,27 +21233,27 @@ dd {
 /* browsers require these rules separate */
 
 .ui.form ::-webkit-input-placeholder {
-  color: rgba(64, 64, 64, 0.87);
+  color: #585c5f;
 }
 
 .ui.form :-ms-input-placeholder {
-  color: rgba(64, 64, 64, 0.87) !important;
+  color: #585c5f !important;
 }
 
 .ui.form ::-moz-placeholder {
-  color: rgba(64, 64, 64, 0.87);
+  color: #585c5f;
 }
 
 .ui.form :focus::-webkit-input-placeholder {
-  color: rgba(64, 64, 64, 0.87);
+  color: #585c5f;
 }
 
 .ui.form :focus:-ms-input-placeholder {
-  color: rgba(64, 64, 64, 0.87) !important;
+  color: #585c5f !important;
 }
 
 .ui.form :focus::-moz-placeholder {
-  color: rgba(64, 64, 64, 0.87);
+  color: #585c5f;
 }
 
 /* Error Placeholder */
@@ -21457,7 +21693,7 @@ dd {
 .ui.inverted.form input[type="url"] {
   background: #FFFFFF;
   border-color: rgba(255, 255, 255, 0.1);
-  color: rgba(0, 0, 0, 0.87);
+  color: #1B1C1D;
   -webkit-box-shadow: none;
   box-shadow: none;
 }
@@ -21479,7 +21715,7 @@ dd {
 
 .ui.form .grouped.fields > label {
   margin: 0em 0em 0.28571429rem 0em;
-  color: rgba(0, 0, 0, 0.87);
+  color: #1B1C1D;
   font-size: 0.92857143em;
   font-weight: bold;
   text-transform: none;
@@ -21751,7 +21987,7 @@ dd {
   vertical-align: baseline;
   font-size: 0.92857143em;
   font-weight: bold;
-  color: rgba(0, 0, 0, 0.87);
+  color: #1B1C1D;
   text-transform: none;
 }
 
@@ -21866,7 +22102,6 @@ form {
 }
 
 .ui.form .fields .field.la-modal-fieldset-no-margin {
-  background: #fffaf5;
   padding: 15px;
   margin-top: 0!important;
   margin-bottom: 0!important;
@@ -21881,7 +22116,6 @@ form {
   margin-right: 15px;
   margin-top: 0!important;
   margin-bottom: 0!important;
-  background: #fffaf5;
   padding: 15px;
 }
 
@@ -21889,8 +22123,13 @@ form {
   margin-right: 15px;
   margin-top: 0!important;
   margin-bottom: 0!important;
-  background: #fffaf5;
   padding: 15px;
+}
+
+.ui.form .fields.la-forms-grid,
+.ui.form .fields .field.la-forms-grid {
+  padding: 25px;
+  background: #e6dee2;
 }
 
 .ui.form .fields:last-child .field.la-modal-fieldset-margin .field,
@@ -21944,7 +22183,7 @@ i.search.icon#btn-search {
   white-space: nowrap;
 }
 
-.ui.form .la-account-currency .field input {
+.ui.form .la-account-currency .field input.la-82Percent {
   width: 82%;
 }
 
@@ -21983,6 +22222,10 @@ legend {
   color: rgba(0, 0, 0, 0.87);
   font-size: 0.92857143em;
   font-weight: 700;
+}
+
+.ui.form .fields .field.la-more-margin {
+  margin: 0 0 2em;
 }
 /*!
  * # Semantic UI 2.4.2 - Grid
@@ -24693,7 +24936,7 @@ legend {
   font-size: 1em !important;
   padding: 0.78571429em 1.14285714em !important;
   background: transparent !important;
-  color: rgba(0, 0, 0, 0.87) !important;
+  color: #1B1C1D !important;
   text-transform: none !important;
   font-weight: normal !important;
   -webkit-box-shadow: none !important;
@@ -25499,7 +25742,7 @@ Floated Menu / Item
 .ui.secondary.pointing.menu .link.item:hover,
 .ui.secondary.pointing.menu a.item:hover {
   background-color: transparent;
-  color: rgba(0, 0, 0, 0.87);
+  color: #1B1C1D;
 }
 
 /* Pressed */
@@ -26825,6 +27068,41 @@ Floated Menu / Item
   flex-wrap: wrap;
 }
 
+/* Custom Input */
+
+.ui.menu .item.la-pagination-custom-input {
+  position: relative;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.ui.menu .item.la-pagination-custom-input .ui.form input[type=text] {
+  -ms-flex-item-align: center;
+  align-self: center;
+  width: 3.4rem;
+  vertical-align: middle;
+  padding-top: 0.3em;
+  padding-bottom: 0.3em;
+}
+
+.ui.menu .item.la-pagination-custom-input .field {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.ui.menu .item.la-pagination-custom-input .field .icon {
+  -ms-flex-item-align: center;
+  align-self: center;
+  margin-left: 4px;
+}
+
+.ui.menu .item.la-pagination-custom-input .ui.basic.red.pointing.prompt.label {
+  position: absolute;
+  top: 70%;
+  left: -50%;
+}
+
 /* Title */
 
 .ui.secondary.menu .title {
@@ -26858,6 +27136,11 @@ Floated Menu / Item
 .la-ctrls .ui.dropdown .menu {
   z-index: 101;
 }
+
+.la-overflowX-auto {
+  overflow-x: auto;
+  overflow-y: hidden;
+}
 /*!
  * # Semantic UI 2.4.2 - Message
  * http://github.com/semantic-org/semantic-ui/
@@ -26879,7 +27162,7 @@ Floated Menu / Item
   background: #F8F8F9;
   padding: 1em 1.5em;
   line-height: 1.4285em;
-  color: rgba(0, 0, 0, 0.87);
+  color: #1B1C1D;
   -webkit-transition: opacity 0.1s ease, color 0.1s ease, background 0.1s ease, -webkit-box-shadow 0.1s ease;
   transition: opacity 0.1s ease, color 0.1s ease, background 0.1s ease, -webkit-box-shadow 0.1s ease;
   transition: opacity 0.1s ease, color 0.1s ease, background 0.1s ease, box-shadow 0.1s ease;
@@ -27445,7 +27728,7 @@ Floated Menu / Item
   box-shadow: none;
   border-radius: 0;
   text-align: left;
-  color: rgba(0, 0, 0, 0.87);
+  color: #1B1C1D;
   border-collapse: collapse;
   border-spacing: 0 0.5rem;
 }
@@ -27519,7 +27802,7 @@ Floated Menu / Item
   border-top: 1px solid #d3dae3;
   background: #f4f8f9;
   text-align: inherit;
-  color: rgba(0, 0, 0, 0.87);
+  color: #1B1C1D;
   padding: 1.4em 1.4em;
   vertical-align: middle;
   font-style: normal;
@@ -27830,14 +28113,14 @@ Floated Menu / Item
 
 .ui.table tr.active,
 .ui.table td.active {
-  -webkit-box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.87) inset;
-  box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.87) inset;
+  -webkit-box-shadow: 0px 0px 0px #1B1C1D inset;
+  box-shadow: 0px 0px 0px #1B1C1D inset;
 }
 
 .ui.table tr.active,
 .ui.table td.active {
   background: #E0E0E0 !important;
-  color: rgba(0, 0, 0, 0.87) !important;
+  color: #1B1C1D !important;
 }
 
 /*--------------
@@ -28016,7 +28299,7 @@ Floated Menu / Item
 .ui.table tr td.selectable.active:hover,
 .ui.selectable.table tr:hover td.active {
   background: #E0E0E0 !important;
-  color: rgba(0, 0, 0, 0.87) !important;
+  color: #1B1C1D !important;
 }
 
 .ui.selectable.table tr.positive:hover,
@@ -28431,7 +28714,7 @@ Floated Menu / Item
   cursor: pointer;
   white-space: nowrap;
   border-left: 1px solid #d3dae3;
-  color: rgba(0, 0, 0, 0.87);
+  color: #1B1C1D;
 }
 
 .ui.sortable.table thead th:first-child {
@@ -28784,7 +29067,7 @@ Floated Menu / Item
   background-color: white;
 }
 
-.metaboxContent .ui.la-table.table {
+.la-metabox .ui.la-table.table {
   border-collapse: separate;
   background-color: transparent;
 }
@@ -29033,6 +29316,134 @@ Floated Menu / Item
 
 .ui.table tr:first-child th {
   border-top: none;
+}
+
+.la-prop-col-1 {
+  width: 129px;
+}
+
+.la-prop-col-2 {
+  width: 96px;
+}
+
+.la-prop-col-3 {
+  width: 359px;
+}
+
+.la-prop-col-4 {
+  width: 148px;
+}
+
+.la-prop-col-5 {
+  width: 76px;
+}
+
+/*-----------------------------------------------
+  Responsive Table for views with wide tables
+-------------------------------------------------*/
+
+@media only screen and (max-width: 1199px) {
+  .ui[class*="monitor stackable"].la-js-responsive-table .la-prop-col-1,
+  .ui[class*="monitor stackable"].la-js-responsive-table .la-prop-col-2,
+  .ui[class*="monitor stackable"].la-js-responsive-table .la-prop-col-3,
+  .ui[class*="monitor stackable"].la-js-responsive-table .la-prop-col-4,
+  .ui[class*="monitor stackable"].la-js-responsive-table .la-prop-col-5 {
+    width: 100%;
+  }
+
+  .ui[class*="monitor stackable"].la-js-responsive-table > thead {
+    position: absolute;
+    top: -1111px;
+    left: -1111px;
+  }
+
+  .ui[class*="monitor stackable"].la-js-responsive-table > tbody > tr .ui.form,
+  .ui[class*="monitor stackable"].la-js-responsive-table > tbody > tr .field {
+    display: inline-block;
+  }
+
+  .ui[class*="monitor stackable"].la-js-responsive-table > tbody > tr > [class*="center aligned"] {
+    text-align: left!important;
+  }
+
+  .ui[class*="monitor stackable"].la-js-responsive-table > tbody > tr > td:before,
+  .ui[class*="monitor stackable"].la-js-responsive-table > tbody > tr span.la-secondHeaderRow:before {
+    padding: 0 10px 0 0;
+    content: attr(data-label);
+    font-weight: bold;
+  }
+
+  .ui[class*="monitor stackable"].la-js-responsive-table > tbody > tr > td .la-flexbox {
+    display: -webkit-inline-box;
+    display: -ms-inline-flexbox;
+    display: inline-flex;
+  }
+
+  .ui[class*="monitor stackable"].la-js-responsive-table > tbody > tr > td:nth-child(1) {
+    font-weight: bold;
+  }
+
+  .ui[class*="monitor stackable"].la-js-responsive-table > tbody > tr > .x {
+    text-align: left;
+  }
+
+  .ui[class*="monitor stackable"].la-js-responsive-table > tbody > tr > .x .ui.icon.right.floated {
+    float: none!important;
+  }
+}
+
+/*---------------------------------------------------------------------------
+  Responsive Table for views with normal tables overrides special tables
+----------------------------------------------------------------------------*/
+
+@media only screen and (max-width: 767px) {
+  .ui.la-js-responsive-table .la-prop-col-1,
+  .ui.la-js-responsive-table .la-prop-col-2,
+  .ui.la-js-responsive-table .la-prop-col-3,
+  .ui.la-js-responsive-table .la-prop-col-4,
+  .ui.la-js-responsive-table .la-prop-col-5 {
+    width: 100%;
+  }
+
+  .ui.la-js-responsive-table > thead {
+    position: absolute;
+    top: -1111px;
+    left: -1111px;
+  }
+
+  .ui.la-js-responsive-table > tbody > tr .ui.form,
+  .ui.la-js-responsive-table > tbody > tr .field {
+    display: inline-block;
+  }
+
+  .ui.la-js-responsive-table > tbody > tr > [class*="center aligned"] {
+    text-align: left!important;
+  }
+
+  .ui.la-js-responsive-table > tbody > tr > td:before,
+  .ui.la-js-responsive-table > tbody > tr span.la-secondHeaderRow:before {
+    padding: 0 10px 0 0;
+    content: attr(data-label);
+    font-weight: bold;
+  }
+
+  .ui.la-js-responsive-table > tbody > tr > td .la-flexbox {
+    display: -webkit-inline-box;
+    display: -ms-inline-flexbox;
+    display: inline-flex;
+  }
+
+  .ui.la-js-responsive-table > tbody > tr > td:nth-child(1) {
+    font-weight: bold;
+  }
+
+  .ui.la-js-responsive-table > tbody > tr > .x {
+    text-align: left;
+  }
+
+  .ui.la-js-responsive-table > tbody > tr > .x .ui.icon.right.floated {
+    float: none!important;
+  }
 }
 /*!
  * # Semantic UI 2.4.2 - Ad
@@ -29664,7 +30075,7 @@ Floated Menu / Item
 
 .ui.cards > .card .meta > a:not(.ui):hover,
 .ui.card .meta > a:not(.ui):hover {
-  color: rgba(0, 0, 0, 0.87);
+  color: #1B1C1D;
 }
 
 /*--------------
@@ -30482,7 +30893,15 @@ a.ui.card:hover,
   color: #4f4f4f;
   font-size: 0.8rem;
   text-transform: uppercase;
-  padding-left: 0.9rem;
+  padding-left: 0.7em;
+}
+
+.ui.table tfoot th.control-label {
+  color: #4f4f4f;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  padding-left: 0.7em;
+  font-weight: 700;
 }
 
 .la-inline-lists dl {
@@ -30626,6 +31045,11 @@ a.ui.card:hover,
 
 .la-padding-top-1em {
   padding-top: 1em;
+}
+
+.la-padding-left-07em {
+  padding-top: 1em;
+  padding-left: 0.7em;
 }
 /*!
  * # Semantic UI 2.4.2 - Comment
@@ -31048,7 +31472,7 @@ a.ui.card:hover,
   margin: 0em;
   font-size: 1em;
   font-weight: bold;
-  color: rgba(0, 0, 0, 0.87);
+  color: #1B1C1D;
 }
 
 /* Summary Image */
@@ -31105,7 +31529,7 @@ a.ui.card:hover,
   margin: 0.5em 0em 0em;
   background: none;
   padding: 0em;
-  color: rgba(0, 0, 0, 0.87);
+  color: #1B1C1D;
 }
 
 /* Images */
@@ -32873,7 +33297,7 @@ a.ui.card:hover,
   height: 17px;
   text-align: center;
   opacity: 0;
-  color: rgba(0, 0, 0, 0.6);
+  color: #1B1C1D;
   -webkit-transition: border 0.1s ease, opacity 0.1s ease, -webkit-transform 0.1s ease, -webkit-box-shadow 0.1s ease;
   transition: border 0.1s ease, opacity 0.1s ease, -webkit-transform 0.1s ease, -webkit-box-shadow 0.1s ease;
   transition: border 0.1s ease, opacity 0.1s ease, transform 0.1s ease, box-shadow 0.1s ease;
@@ -32888,7 +33312,7 @@ a.ui.card:hover,
 
 .ui.checkbox label,
 .ui.checkbox + label {
-  color: rgba(0, 0, 0, 0.6);
+  color: #1B1C1D;
   -webkit-transition: color 0.1s ease;
   transition: color 0.1s ease;
 }
@@ -33103,7 +33527,7 @@ a.ui.card:hover,
   border-radius: 500rem;
   -webkit-transform: scale(0.46666667);
   transform: scale(0.46666667);
-  background-color: rgba(0, 0, 0, 0.6);
+  background-color: #1B1C1D;
 }
 
 /* Focus */
@@ -33289,7 +33713,7 @@ a.ui.card:hover,
 .ui.toggle.checkbox label {
   min-height: 1.5rem;
   padding-left: 4.5rem;
-  color: rgba(0, 0, 0, 0.6);
+  color: #1B1C1D;
 }
 
 .ui.toggle.checkbox label {
@@ -33462,7 +33886,7 @@ a.ui.card:hover,
   font-size: 1.7em;
   width: 40px;
   height: 40px;
-  color: rgba(0, 0, 0, 0.6);
+  color: #1B1C1D;
 }
 
 .ui.checkbox.la-toggle-radio label:before {
@@ -34010,7 +34434,7 @@ body.dimmable > .dimmer {
   text-align: left;
   border-top: none;
   line-height: 1em;
-  color: rgba(0, 0, 0, 0.87);
+  color: #1B1C1D;
   padding: 0.78571429rem 1.14285714rem !important;
   font-size: 1rem;
   text-transform: none;
@@ -34265,7 +34689,7 @@ body.dimmable > .dimmer {
   background: #FFFFFF;
   display: inline-block;
   padding: 0.78571429em 2.1em 0.78571429em 1em;
-  color: rgba(0, 0, 0, 0.87);
+  color: #1B1C1D;
   -webkit-box-shadow: none;
   box-shadow: none;
   border: 1px solid #004678;
@@ -34815,7 +35239,7 @@ select.ui.dropdown {
 
 .ui.dropdown:not(.button) > .default.text,
 .ui.default.dropdown:not(.button) > .text {
-  color: rgba(64, 64, 64, 0.87);
+  color: #585c5f;
 }
 
 .ui.dropdown:not(.button) > input:focus ~ .default.text,
@@ -36570,7 +36994,7 @@ a.ui.nag {
   padding: 0.833em 1em;
   font-weight: normal;
   font-style: normal;
-  color: rgba(0, 0, 0, 0.87);
+  color: #1B1C1D;
   border-radius: 0;
   -webkit-box-shadow: 0px 2px 4px 0px rgba(34, 36, 38, 0.12), 0px 2px 10px 0px rgba(34, 36, 38, 0.15);
   box-shadow: 0px 2px 4px 0px rgba(34, 36, 38, 0.12), 0px 2px 10px 0px rgba(34, 36, 38, 0.15);
@@ -36649,7 +37073,7 @@ a.ui.nag {
   padding: 0.833em 1em;
   font-weight: normal;
   font-style: normal;
-  color: rgba(0, 0, 0, 0.87);
+  color: #1B1C1D;
   border-radius: 0;
   -webkit-box-shadow: 0px 2px 4px 0px rgba(34, 36, 38, 0.12), 0px 2px 10px 0px rgba(34, 36, 38, 0.15);
   box-shadow: 0px 2px 4px 0px rgba(34, 36, 38, 0.12), 0px 2px 10px 0px rgba(34, 36, 38, 0.15);

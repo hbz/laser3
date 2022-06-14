@@ -24,13 +24,13 @@
     println jb.toPrettyString()
 --%>
 <%
-    int colspan1 = 4
+    int colspan1 = 3
     int colspan2 = 7
     int wideColspan2 = 15
     Map sorting
     int offset
     if(showView == "cons") {
-        colspan1 = 6
+        colspan1 = 5
         colspan2 = 9
         wideColspan2 = 15
         sorting = [consSort: true]
@@ -42,18 +42,18 @@
     }
 
     if(fixedSubscription) {
-        colspan1 = 3
+        colspan1 = 2
         colspan2 = 6
         wideColspan2 = 13
         if(showView == "cons") {
-            colspan1 = 5
+            colspan1 = 4
             colspan2 = 8
             wideColspan2 = 13
             sorting = [consSort: true]
             offset = offsets.consOffset
         }
         else if(showView == "consAtSubscr") {
-            colspan1 = 4
+            colspan1 = 3
             colspan2 = 7
             wideColspan2 = 13
             sorting = [consSort: true]
@@ -65,7 +65,7 @@
         }
     }
 %>
-<table id="costTable_${customerType}" class="ui celled sortable table table-tworow la-table la-ignore-fixed">
+<table id="costTable_${customerType}" class="ui celled monitor stackable sortable  table table-tworow la-js-responsive-table la-table la-ignore-fixed">
     <thead>
         <tr>
             <g:if test="${tmplShowCheckbox && editable}">
@@ -209,7 +209,7 @@
                         <td>
                             <g:each in="${ci.sub.orgRelations}" var="or">
                                 <g:if test="${memberRoles.contains(or.roleType.id)}">
-                                    <g:link controller="org" action="show" id="${or.org.id}"><span data-tooltip="${or.org.name}">${or.org.sortname}</span></g:link>
+                                    <g:link controller="org" action="show" id="${or.org.id}"><span class="la-popup-tooltip la-delay" data-content="${or.org.name}">${or.org.sortname}</span></g:link>
                                 </g:if>
                             </g:each>
                         </td>
@@ -220,7 +220,7 @@
                                 <g:if test="${memberRoles.contains(or.roleType.id)}">
                                     <g:link mapping="subfinance" params="[sub:ci.sub.id]">${or.org.designation}</g:link>
                                     <g:if test="${ci.isVisibleForSubscriber}">
-                                        <span data-position="top right la-popup-tooltip la-delay" data-content="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
+                                        <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
                                             <i class="ui icon eye orange"></i>
                                         </span>
                                     </g:if>
@@ -272,12 +272,16 @@
                     <td>
                         <g:formatNumber number="${ci.costInLocalCurrency ?: 0.0}" type="currency" currencySymbol="EUR" />
                         <br />
-                        <g:formatNumber number="${ci.costInLocalCurrencyAfterTax ?: 0.0}" type="currency" currencySymbol="EUR" />
+                        <span class="la-secondHeaderRow" data-label="${message(code:'costItem.costInLocalCurrencyAfterTax.label')}:">
+                            <g:formatNumber number="${ci.costInLocalCurrencyAfterTax ?: 0.0}" type="currency" currencySymbol="EUR" />
+                        </span>
                     </td>
                     <td>
                         <semui:xEditable owner="${ci}" type="date" field="startDate" overwriteEditable="${editable}" validation="datesCheck"/>
                         <br />
-                        <semui:xEditable owner="${ci}" type="date" field="endDate" overwriteEditable="${editable}" validation="datesCheck"/>
+                        <span class="la-secondHeaderRow" data-label="${message(code:'financials.dateTo')}:">
+                            <semui:xEditable owner="${ci}" type="date" field="endDate" overwriteEditable="${editable}" validation="datesCheck"/>
+                        </span>
                     </td>
                     <td>
                         ${ci.costItemElement?.getI10n("value")}
@@ -322,17 +326,15 @@
                             <td class="x">
                                 <g:if test="${fixedSubscription}">
                                     <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'financials.costItem.transfer.tooltip')}">
-                                        <g:link mapping="subfinanceCopyCI" params='[sub:"${fixedSubscription.id}", id:"${ci.id}", showView:"own"]' class="ui icon button la-modern-button trigger-modal" data-id_suffix="copy_${ci.id}">
+                                        <g:link mapping="subfinanceCopyCI" params='[sub:"${fixedSubscription.id}", id:"${ci.id}", showView:"own"]' class="ui icon blue button la-modern-button trigger-modal" data-id_suffix="copy_${ci.id}">
                                             <i class="la-copySend icon"></i>
-                                            <i class="icon copy-send"></i>
                                         </g:link>
                                     </span>
                                 </g:if>
                                 <g:else>
                                     <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'financials.costItem.transfer.tooltip')}">
-                                        <g:link controller="finance" action="copyCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", showView:"own"]' class="ui icon button la-modern-button trigger-modal" data-id_suffix="copy_${ci.id}">
+                                        <g:link controller="finance" action="copyCostItem" params='[sub:"${ci.sub?.id}", id:"${ci.id}", showView:"own"]' class="ui icon blue button la-modern-button trigger-modal" data-id_suffix="copy_${ci.id}">
                                             <i class="la-copySend icon"></i>
-                                            <i class="icon copy-send"></i>
                                         </g:link>
                                     </span>
                                 </g:else>
@@ -346,7 +348,7 @@
     <tfoot>
         <g:if test="${data.count > 0 && data.sums.billingSums}">
             <tr>
-                <th colspan="${wideColspan2}">
+                <th class="control-label" colspan="${wideColspan2}">
                     ${message(code:'financials.totalCost')}
                 </th>
             </tr>
@@ -355,7 +357,7 @@
                     <td colspan="${colspan1}">
 
                     </td>
-                    <td>
+                    <td colspan="2">
                         ${message(code:'financials.sum.billing')} ${entry.currency}<br />
                     </td>
                     <td class="la-exposed-bg">
@@ -391,7 +393,7 @@
         </g:if>
         <g:elseif test="${data.count > 0 && !data.sums.billingSums}">
             <tr>
-                <td colspan="${wideColspan2}">
+                <th class="control-label" colspan="${wideColspan2}">
                     ${message(code:'financials.noCostsConsidered')}
                 </td>
             </tr>

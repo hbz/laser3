@@ -24,15 +24,6 @@
             </g:else>
 
         </div>
-
-        <div class="ui segment">
-            <h4 class="ui header">${message(code: 'subscriptionsManagement.deleteLicensesInfo', args: [num_sub_rows ?: filteredSubscriptions.size()])}</h4>
-
-            <g:link class="ui button negative js-open-confirm-modal"
-                    data-confirm-tokenMsg="${message(code: 'subscriptionsManagement.deleteLicenses.button.confirm')}"
-                    data-confirm-term-how="ok" action="${actionName}" controller="${controllerName}" id="${params.id}"
-                    params="[processOption: 'unlinkAll', tab: 'linkLicense']">${message(code: 'subscriptionsManagement.deleteAllLicenses.button')}</g:link>
-        </div>
     </g:if>
 
     <div class="divider"></div>
@@ -48,11 +39,11 @@
 
                 <label>${message(code: 'subscription.linktoLicense')} ${message(code: 'messageRequiredField')}</label>
                 <g:if test="${validLicenses}">
-                    <g:select class="ui search dropdown"
+                    <g:select class="ui search multiple dropdown"
                               optionKey="id" optionValue="${{ it.dropdownNamingConvention() }}"
                               from="${validLicenses}" name="selectedLicense"
                               required=""
-                              noSelection='["": "${message(code: 'subscriptionsManagement.noSelection.license')}"]'/>
+                              noSelection="['': message(code: 'subscriptionsManagement.noSelection.license')]"/>
                 </g:if><g:else>
                     <g:if test="${controllerName == 'subscription'}">
                         <g:message code="subscriptionsManagement.noValidLicenses" args="${args.superOrgType}"/>
@@ -67,7 +58,7 @@
             <div class="two fields">
                 <div class="eight wide field" style="text-align: left;">
                     <div class="ui buttons">
-                        <button class="ui button" ${!editable ? 'disabled="disabled"' : ''} type="submit"
+                        <button class="ui positive button" ${!editable ? 'disabled="disabled"' : ''} type="submit"
                                 name="processOption"
                                 value="linkLicense">${message(code: 'subscriptionsManagement.linkLicenses.button')}</button>
                     </div>
@@ -96,7 +87,7 @@
                             total="${filteredSubscriptions.size()}/${num_sub_rows}"/>
                 </g:else>
             </h3>
-            <table class="ui celled la-table table">
+            <table class="ui celled la-js-responsive-table la-table table">
                 <thead>
                 <tr>
                     <g:if test="${editable}">
@@ -153,7 +144,7 @@
                                     <span data-position="top right"
                                           class="la-popup-tooltip la-delay"
                                           data-content="${message(code: 'license.details.isSlaved.tooltip')}">
-                                        <i class="thumbtack blue icon"></i>
+                                        <i class="grey la-thumbtack-regular icon"></i>
                                     </span>
                                 </g:if>
 

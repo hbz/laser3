@@ -17,6 +17,7 @@
 </semui:controlButtons>
 
 <h1 class="ui icon header la-noMargin-top"><semui:headerIcon/>
+<g:render template="iconSubscriptionIsChild"/>
 <semui:xEditable owner="${subscription}" field="name"/>
 <semui:totalNumber total="${surveys.size()}"/>
 </h1>
@@ -31,7 +32,7 @@
 <semui:messages data="${flash}"/>
 
 <g:if test="${surveys}">
-    <table class="ui celled sortable table la-table">
+    <table class="ui celled sortable table la-js-responsive-table la-table">
         <thead>
         <tr>
 

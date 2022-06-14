@@ -1,5 +1,8 @@
 package de.laser
 
+/**
+ * This is an assigment of an {@link IssueEntitlement} to an {@link IssueEntitlementGroup}
+ */
 class IssueEntitlementGroupItem {
 
     Date dateCreated

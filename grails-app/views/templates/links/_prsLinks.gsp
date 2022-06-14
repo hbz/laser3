@@ -1,5 +1,5 @@
 
-<table class="ui celled la-table table">
+<table class="ui celled la-js-responsive-table la-table table">
     <thead>
         <tr>
             <th>Person</th>

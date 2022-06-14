@@ -28,7 +28,7 @@
             </div>
         </g:if>
 
-        <table class="ui celled table table-tworow la-table">
+        <table class="ui celled table table-tworow la-js-responsive-table la-table">
             <thead>
             <tr>
                 <th class="six wide">
@@ -47,7 +47,7 @@
                         </g:else>
                     </th>
                 </g:if>
-            <th class="one wide center aligned"><input type="checkbox"
+            <th class="one wide center aligned" data-label="${message(code:'responsive.table.selectElement')}"><input type="checkbox"
                                                        data-action="copy" onClick="JSPC.app.toggleAllCheckboxes(this)"
                                                        checked/>
                 <g:if test="${!copyObject}">
@@ -56,7 +56,7 @@
                                 controller="${targetObject.getClass().getSimpleName().toLowerCase()}" action="show"
                                 id="${targetObject.id}">${targetObject.dropdownNamingConvention()}</g:link></g:if>
                     </th>
-                    <th class="one wide center aligned">
+                    <th class="one wide center aligned" data-label="${message(code:'responsive.table.selectElement')}">
                         <g:if test="${targetObject}">
                             <input class="setDeletionConfirm" type="checkbox" data-action="delete" onClick="JSPC.app.toggleAllCheckboxes(this)"/>
                         </g:if>

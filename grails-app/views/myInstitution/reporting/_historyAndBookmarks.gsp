@@ -2,11 +2,11 @@
 <laser:serviceInjection/>
 
 <g:if test="${filterHistory}">
-    <div id="history-content"<g:if test="${tab != 'history'}"> class="hidden"</g:if>>
-        <div class="ui small header aligned center">
-            <i class="icon la-light-grey history large"></i>${message(code:'reporting.filter.history')}
-        </div>
-        <div class="ui segment">
+    <div id="history-content" class="ui segment <g:if test="${! params.get('cmd').equals('addBookmark')}">hidden</g:if>">
+        <span class="ui top attached label" style="border-radius: 0; text-align: center">
+            <i class="icon history large"></i>${message(code:'reporting.ui.global.history')}
+        </span>
+        <div style="margin-top: 3em !important;">
             <table class="ui single line table compact">
                 <g:each in="${filterHistory}" var="fh">
                     <g:set var="fhRCache" value="${new ReportingCache(ReportingCache.CTX_GLOBAL, fh.split('/').last() as String)}" />
@@ -14,16 +14,22 @@
                     <g:set var="filterCache" value="${fhRCache.readFilterCache()}" />
                     <tr>
                         <td>
-                            <g:link controller="myInstitution" action="reporting" class="ui icon button blue la-modern-button"
+                            <g:link controller="myInstitution" action="reporting" class="ui large button blue la-modern-button"
                                     params="${[filter: meta.filter /*, token: fhRCache.token*/ ] + filterCache.map}">
-                                <g:if test="${meta.filter == BaseConfig.KEY_ORGANISATION}">
-                                    <i class="ui icon university" aria-hidden="true"></i>
+                                <g:if test="${meta.filter == BaseConfig.KEY_ISSUEENTITLEMENT}">
+                                    <i class="ui icon book" aria-hidden="true"></i>
                                 </g:if>
+                                <g:elseif test="${meta.filter == BaseConfig.KEY_LICENSE}">
+                                    <i class="ui icon clipboard" aria-hidden="true"></i>
+                                </g:elseif>
+                                <g:elseif test="${meta.filter == BaseConfig.KEY_ORGANISATION}">
+                                    <i class="ui icon university" aria-hidden="true"></i>
+                                </g:elseif>
                                 <g:elseif test="${meta.filter == BaseConfig.KEY_PACKAGE}">
                                     <i class="ui icon gift" aria-hidden="true"></i>
                                 </g:elseif>
-                                <g:elseif test="${meta.filter == BaseConfig.KEY_LICENSE}">
-                                    <i class="ui icon clipboard" aria-hidden="true"></i>
+                                <g:elseif test="${meta.filter == BaseConfig.KEY_PLATFORM}">
+                                    <i class="ui icon cloud" aria-hidden="true"></i>
                                 </g:elseif>
                                 <g:elseif test="${meta.filter == BaseConfig.KEY_SUBSCRIPTION}">
                                     <i class="ui icon balance scale" aria-hidden="true"></i>
@@ -36,7 +42,7 @@
                         <td>
                             <div class="content">
                                 <div class="header">
-                                    <strong>${BaseConfig.getMessage('base.filter.' + meta.filter)}</strong> - ${DateUtils.getSDF_OnlyTime().format(meta.timestamp)}
+                                    <strong>${BaseConfig.getFilterLabel(meta.filter.toString())}</strong> - ${DateUtils.getSDF_OnlyTime().format(meta.timestamp)}
                                 </div>
                                 <div class="description">
                                     <g:render template="/myInstitution/reporting/query/generic_filterLabels" model="${[filterLabels: GlobalExportHelper.getCachedFilterLabels(fhRCache.token), simple: true]}" />
@@ -62,32 +68,38 @@
                 </g:each>
             </table>
         </div>
-        <div>
+        <div style="margin-top: 1em">
             <g:link controller="ajaxHtml" action="reporting" params="${[context: BaseConfig.KEY_MYINST, cmd: 'deleteHistory']}"
-                    elementId="history-delete" class="ui button">${message(code:'reporting.filter.history.delete')}</g:link>
+                    elementId="history-delete" class="ui button">${message(code:'reporting.ui.global.history.delete')}</g:link>
         </div>
     </div>
 </g:if>
 <g:if test="${bookmarks}">
-    <div id="bookmark-content"<g:if test="${tab != 'bookmark'}"> class="hidden"</g:if>>
-        <div class="ui small header aligned center">
-            <i class="icon teal bookmark large"></i>${message(code:'reporting.filter.bookmarks')}
-        </div>
-        <div class="ui segment">
+    <div id="bookmark-content" class="ui segment <g:if test="${! params.get('cmd').equals('deleteBookmark')}">hidden</g:if>">
+        <span class="ui top attached label" style="border-radius: 0; text-align: center">
+            <i class="icon teal bookmark large"></i>${message(code:'reporting.ui.global.bookmarks')}
+        </span>
+        <div style="margin-top: 3em !important;">
             <table class="ui single line table compact">
                 <g:each in="${bookmarks}" var="fav">
                     <tr>
                         <td>
-                            <g:link controller="myInstitution" action="reporting" class="ui icon button blue la-modern-button"
+                            <g:link controller="myInstitution" action="reporting" class="ui large button blue la-modern-button"
                                 params="${[filter: fav.filter /*, token: fhRCache.token*/ ] + fav.getParsedFilterMap()}">
-                                <g:if test="${fav.filter == BaseConfig.KEY_ORGANISATION}">
-                                    <i class="ui icon university" aria-hidden="true"></i>
+                                <g:if test="${fav.filter == BaseConfig.KEY_ISSUEENTITLEMENT}">
+                                    <i class="ui icon book" aria-hidden="true"></i>
                                 </g:if>
+                                <g:elseif test="${fav.filter == BaseConfig.KEY_LICENSE}">
+                                    <i class="ui icon clipboard" aria-hidden="true"></i>
+                                </g:elseif>
+                                <g:elseif test="${fav.filter == BaseConfig.KEY_ORGANISATION}">
+                                    <i class="ui icon university" aria-hidden="true"></i>
+                                </g:elseif>
                                 <g:elseif test="${fav.filter == BaseConfig.KEY_PACKAGE}">
                                     <i class="ui icon gift" aria-hidden="true"></i>
                                 </g:elseif>
-                                <g:elseif test="${fav.filter == BaseConfig.KEY_LICENSE}">
-                                    <i class="ui icon clipboard" aria-hidden="true"></i>
+                                <g:elseif test="${fav.filter == BaseConfig.KEY_PLATFORM}">
+                                    <i class="ui icon cloud" aria-hidden="true"></i>
                                 </g:elseif>
                                 <g:elseif test="${fav.filter == BaseConfig.KEY_SUBSCRIPTION}">
                                     <i class="ui icon balance scale" aria-hidden="true"></i>

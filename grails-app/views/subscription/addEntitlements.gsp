@@ -1,4 +1,5 @@
 <%@ page import="de.laser.Subscription; de.laser.ApiSource; grails.converters.JSON; de.laser.helper.RDStore; de.laser.Platform;de.laser.titles.BookInstance" %>
+<laser:serviceInjection/>
 <!doctype html>
 <html>
 <head>
@@ -21,6 +22,9 @@
 </semui:controlButtons>
 
 <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>
+<g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
+    <g:render template="iconSubscriptionIsChild"/>
+</g:if>
 <semui:xEditable owner="${subscription}" field="name"/>
 </h1>
 <h2 class="ui left aligned icon header la-clear-before">${message(code: 'subscription.details.addEntitlements.label')}</h2>
@@ -101,7 +105,7 @@
                        class="fluid ui button"/>
             </g:if>
             <g:else>
-                <div data-tooltip="${message(code: 'subscription.details.addEntitlements.thread.running')}">
+                <div class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.details.addEntitlements.thread.running')}">
                     <input type="submit" disabled="disabled"
                            value="${message(code: 'subscription.details.addEntitlements.add_selected')}"
                            class="fluid ui button"/>
@@ -110,7 +114,7 @@
         </div>
         <div class="field"></div>
     </div>
-    <table class="ui sortable celled la-table table la-ignore-fixed la-bulk-header">
+    <table class="ui sortable celled la-js-responsive-table la-table table la-ignore-fixed la-bulk-header">
         <thead>
         <tr>
             <th rowspan="3" style="vertical-align:middle;">
@@ -164,7 +168,6 @@
 
             <td>
                 <g:if test="${(tipp.titleType == 'Book')}">
-                    <%-- TODO contact Ingrid! ---> done as of subtask of ERMS-1490 --%>
                     <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.dateFirstInPrint')}"></i>
                    %{-- <semui:datepicker class="ieOverwrite" placeholder="${message(code: 'tipp.dateFirstInPrint')}" name="ieAccessStart" value="${preselectCoverageDates ? issueEntitlementOverwrite[tipp.gokbId]?.dateFirstInPrint : tipp.title?.dateFirstInPrint}"/>
                     <%--${tipp.title.dateFirstInPrint}--%>--}%
@@ -239,7 +242,7 @@
                     </g:link>
                 </g:if>
                 <g:else>
-                    <div data-tooltip="${message(code: 'subscription.details.addEntitlements.thread.running')}">
+                    <div class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.details.addEntitlements.thread.running')}">
                         <g:link class="ui icon disabled button la-popup-tooltip la-delay" action="processAddEntitlements"
                                 params="${[id: subscription.id, singleTitle: tipp.gokbId, uploadPriceInfo: uploadPriceInfo, preselectCoverageDates: preselectCoverageDates]}">
                             <i class="plus icon"></i>
@@ -259,7 +262,7 @@
                    class="ui button"/>
         </g:if>
         <g:else>
-            <div data-tooltip="${message(code: 'subscription.details.addEntitlements.thread.running')}">
+            <div class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.details.addEntitlements.thread.running')}">
                 <input type="submit" disabled="disabled"
                        value="${message(code: 'subscription.details.addEntitlements.add_selected')}"
                        class="ui button"/>
@@ -283,6 +286,9 @@
 
 </g:form>
 
+
+<g:render template="/templates/export/individuallyExportTippsModal" model="[modalID: 'individuallyExportTippsModal']" />
+
 <laser:script file="${this.getGroovyPageFileName()}">
 
     JSPC.app.selectAll = function () {
@@ -291,22 +297,36 @@
     }
 
     JSPC.app.updateSelectionCache = function (index,checked) {
+        let filterParams = {
+                    filter: "${params.filter}",
+                    pkgFilter: "${params.pkgfilter}",
+                    asAt: "${params.asAt}",
+                    series_names: ${params.list("series_names")},
+                    subject_references: ${params.list("subject_references")},
+                    ddcs: ${params.list("ddcs")},
+                    languages: ${params.list("languages")},
+                    yearsFirstOnline: ${params.list("yearsFirstOnline")},
+                    identifier: "${params.identifier}",
+                    title_types: ${params.list("title_types")},
+                    publishers: ${params.list("pulishers")},
+                    coverageDepth: ${params.list("coverageDepth")},
+                    hasPerpetualAccess: "${params.hasPerpetualAccess}"
+        };
         $.ajax({
             url: "<g:createLink controller="ajax" action="updateChecked" />",
-                data: {
-                    sub: ${subscription.id},
-                    index: index,
-                    <g:if test="${params.pkgfilter}">
-                        packages: ${params.pkgfilter},
-                    </g:if>
-                    referer: "${actionName}",
-                    checked: checked
-                }
-            }).done(function(result){
+            method: "post",
+            data: {
+                sub: ${subscription.id},
+                index: index,
+                filterParams: JSON.stringify(filterParams),
+                referer: "${actionName}",
+                checked: checked
+            }
+        }).done(function(result){
 
-            }).fail(function(xhr,status,message){
-                console.log("error occurred, consult logs!");
-            });
+        }).fail(function(xhr,status,message){
+            console.log("error occurred, consult logs!");
+        });
     }
 
     $("#select-all").change(function() {

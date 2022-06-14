@@ -1,23 +1,28 @@
 package de.laser
 
-import de.laser.exceptions.CreationException
 import de.laser.finance.CostItem
 import de.laser.finance.PriceItem
+import de.laser.helper.DateUtils
 import de.laser.oap.OrgAccessPointLink
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.annotations.RefdataAnnotation
-import de.laser.interfaces.ShareSupport
-import de.laser.traits.ShareableTrait
 import grails.converters.JSON
 import grails.web.servlet.mvc.GrailsParameterMap
-import org.codehaus.groovy.runtime.InvokerHelper
 
 import javax.persistence.Transient
 import java.text.Normalizer
 import java.text.SimpleDateFormat
 
+/**
+ * This class reflects a title package which may be subscribed as a whole or partially (e.g. pick-and-choose).
+ * This is a reflection of the we:kb-implementation of the package class (see <a href="https://github.com/hbz/wekb/blob/wekb-dev/server/gokbg3/grails-app/domain/org/gokb/cred/Package.groovy">here</a>).
+ * If a package is being subscribed, the link between subscription and package is being represented by a {@link SubscriptionPackage} connection
+ * @see TitleInstancePackagePlatform
+ * @see Platform
+ * @see SubscriptionPackage
+ */
 class Package extends AbstractBaseWithCalculatedLastUpdated {
 
     def accessService
@@ -150,6 +155,10 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         super.afterUpdateHandler()
     }
 
+    /**
+     * Gets the content provider of this package
+     * @return the {@link Org} linked to this package by {@link OrgRole} of type Content Provider or Provider
+     */
   @Transient
   Org getContentProvider() {
     Org result
@@ -160,114 +169,27 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     result
   }
 
-    @Transient
-    boolean unlinkFromSubscription(Subscription subscription, Org contextOrg, deleteEntitlements) {
-        SubscriptionPackage subPkg = SubscriptionPackage.findByPkgAndSubscription(this, subscription)
-
-        //Not Exist CostItem with Package
-        if(!CostItem.executeQuery('select ci from CostItem ci where ci.subPkg.subscription = :sub and ci.subPkg.pkg = :pkg and ci.owner = :context and ci.costItemStatus != :deleted',[pkg:this, deleted: RDStore.COST_ITEM_DELETED, sub:subscription, context: contextOrg])) {
-
-            if (deleteEntitlements) {
-                List<Long> subList = [subscription.id]
-                Map<String,Object> queryParams = [sub: subList, pkg_id: this.id]
-                //delete matches
-                //IssueEntitlement.withSession { Session session ->
-                    List deleteIdList = IssueEntitlement.executeQuery("select ie.id from IssueEntitlement ie, Package pkg where ie.subscription.id in (:sub) and pkg.id = :pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) ", queryParams)
-                    removePackagePendingChanges(subList,true)
-                    if (deleteIdList) {
-                        deleteIdList.collate(32766).each { List chunk ->
-                            IssueEntitlement.executeUpdate("update IssueEntitlement ie set ie.status = :delStatus where ie.id in (:delList)", [delList: chunk,delStatus:RDStore.TIPP_STATUS_DELETED])
-                        }
-                    }
-
-                    SubscriptionPackage.executeQuery('select sp from SubscriptionPackage sp where sp.pkg = :pkg and sp.subscription.id in (:subList)',[subList:subList,pkg:this]).each { SubscriptionPackage delPkg ->
-                        OrgAccessPointLink.executeUpdate("delete from OrgAccessPointLink oapl where oapl.subPkg = :subPkg", [subPkg:delPkg])
-                        CostItem.executeUpdate('update CostItem ci set ci.costItemStatus = :deleted, ci.subPkg = null, ci.sub = :sub where ci.subPkg = :delPkg',[delPkg: delPkg, sub:delPkg.subscription, deleted: RDStore.COST_ITEM_DELETED])
-                        PendingChangeConfiguration.executeUpdate("delete from PendingChangeConfiguration pcc where pcc.subscriptionPackage=:sp",[sp:delPkg])
-                    }
-
-                    SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg=:pkg and sp.subscription.id in (:subList)", [pkg:this, subList:subList])
-                    //log.debug("before flush")
-                    //session.flush()
-                    return true
-                //}
-            } else {
-
-                if (subPkg) {
-                    OrgAccessPointLink.executeUpdate("delete from OrgAccessPointLink oapl where oapl.subPkg = :sp", [sp: subPkg])
-                    CostItem.findAllBySubPkg(subPkg).each { costItem ->
-                        costItem.subPkg = null
-                        costItem.costItemStatus = RDStore.COST_ITEM_DELETED
-                        if (!costItem.sub) {
-                            costItem.sub = subPkg.subscription
-                        }
-                        costItem.save()
-                    }
-                    PendingChangeConfiguration.executeUpdate("delete from PendingChangeConfiguration pcc where pcc.subscriptionPackage=:sp",[sp:subPkg])
-                }
-
-                SubscriptionPackage.executeUpdate("delete from SubscriptionPackage sp where sp.pkg = :pkg and sp.subscription = :sub ", [pkg: this, sub:subscription])
-                return true
-            }
-        }else{
-            log.error("!!! unlinkFromSubscription fail: CostItems are still linked -> [pkg:${this},sub:${subscription}]!!!!")
-            return false
-        }
+    /**
+     * Outputs this package's name and core data for labelling
+     * @return the concatenated label of this package
+     */
+    String getLabel() {
+        name + (nominalPlatform ? ' (' + nominalPlatform.name + ')' : '')
     }
 
-    def removePackagePendingChanges(List subIds, confirmed) {
-        //log.debug("begin remove pending changes")
-        String tipp_class = TitleInstancePackagePlatform.class.getName()
-        List<Long> tipp_ids = TitleInstancePackagePlatform.executeQuery(
-                "select tipp.id from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkgId", [pkgId: this.id]
-        )
-        List pendingChanges = subIds ? PendingChange.executeQuery(
-                "select pc.id, pc.payload from PendingChange pc where pc.subscription.id in (:subIds)" , [subIds: subIds]
-        ) : []
-
-        List pc_to_delete = []
-        pendingChanges.each { pc ->
-            //log.debug("begin pending changes")
-            if(pc[1]){
-                def payload = JSON.parse(pc[1])
-                if (payload.tippID) {
-                    pc_to_delete << pc[0]
-                }else if (payload.tippId) {
-                    pc_to_delete << pc[0]
-                } else if (payload.changeDoc) {
-                    def (oid_class, ident) = payload.changeDoc.OID.split(":")
-                    if (oid_class == tipp_class && tipp_ids.contains(ident.toLong())) {
-                        pc_to_delete << pc[0]
-                    }
-                } else {
-                    log.error("Could not decide if we should delete the pending change id:${pc[0]} - ${payload}")
-                }
-            }
-            else {
-                pc_to_delete << pc[0]
-            }
-        }
-        if (confirmed && pc_to_delete) {
-            String del_pc_query = "delete from PendingChange where id in (:del_list) "
-            if(pc_to_delete.size() > 32766) { //cf. https://stackoverflow.com/questions/49274390/postgresql-and-hibernate-java-io-ioexception-tried-to-send-an-out-of-range-inte
-                pc_to_delete.collate(32766).each { subList ->
-                    log.debug("Deleting Pending Change Slice: ${subList}")
-                    executeUpdate(del_pc_query,[del_list:subList])
-                }
-            }
-            else {
-                log.debug("Deleting Pending Changes: ${pc_to_delete}")
-                executeUpdate(del_pc_query, [del_list: pc_to_delete])
-            }
-        } else {
-            return pc_to_delete.size()
-        }
-    }
-
+    /**
+     * Returns a string representation of this package
+     * @return the name and id of this package
+     */
   String toString() {
     name ? "${name}" : "Package ${id}"
   }
 
+    /**
+     * Returns a dropdown-formatted list of packages, filtered by the given config map.
+     * @param params the parameter map to filter the entries against
+     * @return a {@link List} of {@link Map}s, in format [id: {id}, text: {text}]
+     */
   @Transient
   static def refdataFind(GrailsParameterMap params) {
     List<Map<String, Object>> result = []
@@ -410,6 +332,12 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         super.beforeDeleteHandler()
     }
 
+    /**
+     * Generates a sortable title string from the package's name, i.e. removes stopwords, performs normalising etc.
+     * @param input_title the name to normalise
+     * @return the normalised name string
+     * @see Normalizer.Form#NFKD
+     */
   static String generateSortName(String input_title) {
     if (!input_title) return null
     String s1 = Normalizer.normalize(input_title, Normalizer.Form.NFKD).trim().toLowerCase()
@@ -422,6 +350,13 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
   }
 
+    /**
+     * Retrieves the identifier of this package responding to the given namespace
+     * If multiple identifiers respond to the same namespace, the LAST instance is being retrieved.
+     * This method is thus subject of refactoring
+     * @param idtype the namespace string to find
+     * @return the or the last {@link Identifier} in the set of identifiers, responding to the identifier namespace
+     */
     Identifier getIdentifierByType(String idtype) {
         Identifier result
         ids.each { ident ->
@@ -432,6 +367,10 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         result
     }
 
+    /**
+     * Retrieves all titles in this packages which are marked as current
+     * @return a {@link Set} of {@link TitleInstancePackagePlatform}s which are marked as current
+     */
     Set<TitleInstancePackagePlatform> getCurrentTipps() {
         Set<TitleInstancePackagePlatform> result = []
         if (this.tipps) {
@@ -440,6 +379,11 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         result
     }
 
+    /**
+     * Called from linkPackages.gsp
+     * Outputs the name of this package and how many titles are marked as current
+     * @return a concatenated string of this package's name and the number of {@link TitleInstancePackagePlatform}s marked as current
+     */
     String getPackageNameWithCurrentTippsCount() {
         return this.name + ' ('+ TitleInstancePackagePlatform.countByPkgAndStatus(this, RDStore.TIPP_STATUS_CURRENT) +')'
     }

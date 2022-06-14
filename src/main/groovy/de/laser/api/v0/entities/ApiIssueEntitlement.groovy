@@ -1,10 +1,15 @@
 package de.laser.api.v0.entities
 
 import de.laser.IssueEntitlement
+import de.laser.IssueEntitlementGroup
+import de.laser.IssueEntitlementGroupItem
 import de.laser.Org
 import de.laser.api.v0.*
 import groovy.util.logging.Slf4j
 
+/**
+ * An API representation of a {@link IssueEntitlement}, currently unused
+ */
 @Slf4j
 class ApiIssueEntitlement {
 
@@ -61,6 +66,10 @@ class ApiIssueEntitlement {
 //    }
 
     /**
+     * Assembles the given issue entitlement attributes into a {@link Map}. The schema of the map can be seen in
+     * schemas.gsp
+     * @param ie the issue entitlement (presented as domain object or as map) which should be output
+     * @param ignoreRelation should a relation the issue entitlement has being ignored and thus not output?
      * @return Map<String, Object>
      */
     static Map<String, Object> getIssueEntitlementMap(IssueEntitlement ie, def ignoreRelation, Org context) {
@@ -70,21 +79,19 @@ class ApiIssueEntitlement {
         }
 
         result.globalUID        = ie.globalUID
+        result.name             = ie.name
         result.accessStartDate  = ApiToolkit.formatInternalDate(ie.accessStartDate)
         result.accessEndDate    = ApiToolkit.formatInternalDate(ie.accessEndDate)
-        result.ieReason         = ie.ieReason
-        result.coreStatusStart  = ApiToolkit.formatInternalDate(ie.coreStatusStart)
-        result.coreStatusEnd    = ApiToolkit.formatInternalDate(ie.coreStatusEnd)
         result.lastUpdated      = ApiToolkit.formatInternalDate(ie.lastUpdated)
 
         // RefdataValues
-        result.coreStatus       = ie.coreStatus?.value
         result.medium           = ie.medium ? ie.medium.value : ie.tipp.medium?.value
-        //result.status           = ie.status?.value // legacy; not needed ?
+        result.status           = ie.status?.value
 
-        result.perpetualAccessBySub 	= ie.perpetualAccessBySub
+        result.perpetualAccessBySub 	= ApiStubReader.requestSubscriptionStub(ie.perpetualAccessBySub, context)
 
-        result.coverages        = ApiCollectionReader.getIssueEntitlementCoverageCollection(ie.coverages) // de.laser.TitleInstancePackagePlatform
+        result.coverages        = ApiCollectionReader.getCoverageCollection(ie.coverages) // de.laser.IssueEntitlementCoverage
+        result.priceItems       = ApiCollectionReader.getPriceItemCollection(ie.priceItems) //de.laser.PriceItem with pi.ie != null
 
         // References
         if (ignoreRelation != ApiReader.IGNORE_ALL) {
@@ -93,7 +100,7 @@ class ApiIssueEntitlement {
             }
             else {
                 if (ignoreRelation != ApiReader.IGNORE_TIPP) {
-                    result.tipp = ApiMapReader.getTippMap(ie.tipp, ApiReader.IGNORE_NONE, context)
+                    result.tipp = ApiMapReader.getTippMap(ie.tipp, ApiReader.IGNORE_SUBSCRIPTION, context)
                     // de.laser.TitleInstancePackagePlatform
                 }
                 if (ignoreRelation != ApiReader.IGNORE_SUBSCRIPTION) {
@@ -103,6 +110,13 @@ class ApiIssueEntitlement {
             }
         }
 
+        ApiToolkit.cleanUp(result, true, true)
+    }
+
+    static Map<String, Object> getTitleGroupMap(IssueEntitlementGroup titleGroup, Org context) {
+        Map<String, Object> result = [:]
+        result.name = titleGroup.name
+        result.issueEntitlements = titleGroup.items.collect { IssueEntitlementGroupItem item -> getIssueEntitlementMap(item.ie, ApiReader.IGNORE_SUBSCRIPTION_AND_PACKAGE, context) }
         ApiToolkit.cleanUp(result, true, true)
     }
 }

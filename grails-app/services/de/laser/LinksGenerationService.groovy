@@ -12,6 +12,13 @@ import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
+/**
+ * This service handles the display of hyperlinks between two linked objects and the
+ * underlying linking of objects. Currently subscriptions and licenses may be target objects
+ * @see Subscription
+ * @see License
+ * @see Links
+ */
 @Transactional
 class LinksGenerationService {
 
@@ -22,6 +29,12 @@ class LinksGenerationService {
     MessageSource messageSource
     ContextService contextService
 
+    /**
+     * Generates a map for the navigation between two linked objects
+     * @param context the context object whose perspective is going to be taken; may be a subscription or a license
+     * @param fullObject should the full object be retrieved or only an identifier?
+     * @return a map containing the next and previous objects
+     */
     LinkedHashMap<String,List> generateNavigation(context, boolean fullObject = true) {
         List prevLink = [], nextLink = []
         String id = !fullObject ? ".id" : ""
@@ -36,10 +49,23 @@ class LinksGenerationService {
         return [prevLink:prevLink,nextLink:nextLink]
     }
 
+    /**
+     * Substitution call for list all kinds of link sources and destinations
+     * @param obj the object whose perspective should be taken
+     * @param user the user to check its access rights
+     * @return the result of {@link #getSourcesAndDestinations(java.lang.Object, de.laser.auth.User, java.util.List)} with all link types as argument
+     */
     Map<String,Object> getSourcesAndDestinations(obj,User user) {
         getSourcesAndDestinations(obj,user,RefdataCategory.getAllRefdataValues(RDConstants.LINK_TYPE))
     }
 
+    /**
+     * Retrieves all outgoing links from the given context object
+     * @param obj the object whose perspective should be taken
+     * @param user the user to check its access rights
+     * @param linkTypes the list of link type reference values of which types the links may be
+     * @return
+     */
     Map<String,Object> getSourcesAndDestinations(obj,User user,List<RefdataValue> linkTypes) {
         Map<String,Set<Links>> links = [:]
         // links
@@ -85,6 +111,7 @@ class LinksGenerationService {
         links
     }
 
+    @Deprecated
     boolean checkPrevious(checkFor) {
         Map<String,Object> queryParams = [follows: RDStore.LINKTYPE_FOLLOWS, check: checkFor]
         if(checkFor instanceof License)
@@ -94,6 +121,12 @@ class LinksGenerationService {
         false
     }
 
+    /**
+     * Gets all linked subscriptions for the given subscription list
+     * @param ownerSubscriptions the subscriptions whose links should be retrieved
+     * @param user the user to check the access rights to the target objects
+     * @return a list of subscriptions linked to the given list
+     */
     List<Subscription> getAllLinkedSubscriptions(List<Subscription> ownerSubscriptions, User user) {
         Set<Links> sources
         Set<Links> destinations
@@ -124,6 +157,12 @@ class LinksGenerationService {
         result
     }
 
+    /**
+     * Gets all linked subscriptions for the given subscription list
+     * @param ownerSubscriptions the subscriptions whose links should be retrieved
+     * @param user the user to check the access rights to the target objects
+     * @return a list of subscriptions linked to the given list
+     */
     List<Subscription> getAllLinkedSubscriptionsForDropdown(Set<Long> ownerSubscriptions) {
         Set sources
         Set destinations
@@ -161,6 +200,7 @@ class LinksGenerationService {
         else chain
     }
 
+
     private Set<Subscription> getRecursiveNext(Set points, String position) {
         String pair
         if(position == 'sourceSubscription')
@@ -171,9 +211,9 @@ class LinksGenerationService {
     }
 
     /**
-     * connects the context object with the given pair.
-     *
-     * @return false if manipulation was successful, a string describing the error otherwise
+     * Connects the context object with the given pair
+     * @params the request parameter map
+     * @return result map OK if manipulation was successful, ERROR with a string describing the error otherwise
      */
     Map<String,Object> createOrUpdateLink(GrailsParameterMap params) {
         Locale locale = LocaleContextHolder.getLocale()
@@ -329,6 +369,11 @@ class LinksGenerationService {
         [result:result,status:STATUS_OK]
     }
 
+    /**
+     * Deletes the given link between two objects, unlinking them
+     * @param oid the OID of the link to delete
+     * @return true if the deletion was successful, false otherwise
+     */
     boolean deleteLink(String oid) {
         Links obj = (Links) genericOIDService.resolveOID(oid)
         if (obj) {

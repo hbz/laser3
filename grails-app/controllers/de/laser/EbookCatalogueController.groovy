@@ -9,11 +9,18 @@ import org.springframework.web.context.request.RequestContextHolder
 
 import javax.servlet.http.HttpSession
 
+/**
+ * This controller is for managing calls to the ebooks catalogue
+ */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class EbookCatalogueController {
 
     def genericOIDService
 
+    /**
+     * The landing page of the catalogue
+     * @return either the selection filter or the list of filter results
+     */
     @Secured(['ROLE_ADMIN'])
     def index() {
 
@@ -31,7 +38,7 @@ class EbookCatalogueController {
 
             String query = "from Subscription as s where ("
             query += "      lower(s.status.value) = 'current'"
-            query += "      and lower(s.type.value) != 'local licence'"
+            query += "      and lower(s.type.value) != 'local subscription'"
             query += "      and exists "
             query += "          ( select scp from s.propertySet as scp where "
             query += "               scp.type = :gasco and lower(scp.refValue.value) = 'yes'"
@@ -96,6 +103,10 @@ class EbookCatalogueController {
         result
     }
 
+    /**
+     * Retrieves the details to an ebook
+     * @return publicly visible title details
+     */
     @Secured(['ROLE_ADMIN'])
     def details() {
         Map<String, Object> result = [:]
@@ -160,6 +171,11 @@ class EbookCatalogueController {
         result
     }
 
+    /**
+     * method under development
+     * @param reset
+     * @return
+     */
     private Map<String, Object> _stats_TODO(boolean reset) {
 
         Map<String, Object> result = [:]
@@ -190,7 +206,7 @@ class EbookCatalogueController {
             session.setAttribute('ebc_allSubscriptions',
                     Subscription.executeQuery(
                     """select distinct s from Subscription as s where (
-                            lower(s.status.value) = 'current' and lower(s.type.value) != 'local licence'
+                            lower(s.status.value) = 'current' and lower(s.type.value) != 'local subscription'
                             and exists 
                                 ( select scp from s.propertySet as scp where
                                     scp.type = :gasco and lower(scp.refValue.value) = 'yes' )
@@ -242,6 +258,13 @@ class EbookCatalogueController {
         result
     }
 
+    /**
+     * method under development
+     * @param params
+     * @param subCount
+     * @param reset
+     * @return
+     */
     private List _history_TODO(GrailsParameterMap params, int subCount, boolean reset) {
 
         HttpSession session = RequestContextHolder.currentRequestAttributes().getSession()

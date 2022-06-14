@@ -43,7 +43,7 @@
                         total="${filteredSubscriptions.size()}/${num_sub_rows}"/>
             </g:else>
         </h3>
-        <table class="ui celled la-table table">
+        <table class="ui celled la-js-responsive-table la-table table">
             <thead>
             <tr>
                 <g:if test="${editable}">
@@ -59,8 +59,8 @@
                 <g:if test="${controllerName == "myInstitution"}">
                     <th>${message(code: 'default.subscription.label')}</th>
                 </g:if>
-                <th>${message(code: 'default.documents.label')}</th>
-                <th></th>
+                <th>${message(code:'default.notes.label')}</th>
+                <th>${message(code:'default.actions.label')}</th>
             </tr>
             </thead>
             <tbody>
@@ -91,7 +91,7 @@
                                 <span data-position="top right"
                                       class="la-popup-tooltip la-delay"
                                       data-content="${message(code: 'license.details.isSlaved.tooltip')}">
-                                    <i class="thumbtack blue icon"></i>
+                                    <i class="grey la-thumbtack-regular icon"></i>
                                 </span>
                             </g:if>
 
@@ -104,7 +104,7 @@
                         </td>
                     </g:if>
                     <g:if test="${controllerName == "myInstitution"}">
-                        <td>${sub.name}</td>
+                        <td>${sub.name} <b style="color: ${sub.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL ? 'blue' : ''}"> (${sub.type.getI10n('value')}) </b></td>
                     </g:if>
                     <td>
                         <g:render template="/templates/notes/table"

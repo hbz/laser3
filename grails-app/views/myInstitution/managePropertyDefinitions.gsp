@@ -35,7 +35,7 @@
                     <g:message code="propertyDefinition.${entry.key}.label" default="${entry.key}" />
                 </div>
                 <div class="content">
-                    <table class="ui celled la-table compact table">
+                    <table class="ui celled la-js-responsive-table la-table compact table">
                         <thead>
                         <tr>
                             <th></th>

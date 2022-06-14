@@ -7,7 +7,7 @@
 <html>
 <head>
     <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} :  ${message(code: 'surveyInfo.transferMembers')}</title>
+    <title>${message(code: 'laser')} :  ${message(code: 'survey.label')} (${message(code: 'surveyInfo.transferMembers')})</title>
 
 </head>
 
@@ -44,8 +44,9 @@
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
 ${surveyInfo.name}
-<semui:surveyStatus object="${surveyInfo}"/>
 </h1>
+<semui:surveyStatus object="${surveyInfo}"/>
+
 
 <g:if test="${surveyConfig.subSurveyUseForTransfer}">
     <g:render template="nav"/>
@@ -108,13 +109,13 @@ ${surveyInfo.name}
                 </div>
             &nbsp;&nbsp;
                 <g:if test="${transferWorkflow && transferWorkflow.transferMembers == 'true'}">
-                    <g:link controller="survey" action="surveyTransferConfig"
+                    <g:link controller="survey" action="setSurveyTransferConfig"
                             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferMembers: false]">
                         <i class="check bordered large green icon"></i>
                     </g:link>
                 </g:if>
                 <g:else>
-                    <g:link controller="survey" action="surveyTransferConfig"
+                    <g:link controller="survey" action="setSurveyTransferConfig"
                             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferMembers: true]">
                         <i class="close bordered large red icon"></i>
                     </g:link>
@@ -138,13 +139,13 @@ ${surveyInfo.name}
                 </div>
             &nbsp;&nbsp;
                 <g:if test="${transferWorkflow && transferWorkflow.transferSurveyProperties == 'true'}">
-                    <g:link controller="survey" action="surveyTransferConfig"
+                    <g:link controller="survey" action="setSurveyTransferConfig"
                             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferSurveyProperties: false]">
                         <i class="check bordered large green icon"></i>
                     </g:link>
                 </g:if>
                 <g:else>
-                    <g:link controller="survey" action="surveyTransferConfig"
+                    <g:link controller="survey" action="setSurveyTransferConfig"
                             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferSurveyProperties: true]">
                         <i class="close bordered large red icon"></i>
                     </g:link>
@@ -167,13 +168,13 @@ ${surveyInfo.name}
                 </div>
             &nbsp;&nbsp;
                 <g:if test="${transferWorkflow && transferWorkflow.transferCustomProperties == 'true'}">
-                    <g:link controller="survey" action="surveyTransferConfig"
+                    <g:link controller="survey" action="setSurveyTransferConfig"
                             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferCustomProperties: false]">
                         <i class="check bordered large green icon"></i>
                     </g:link>
                 </g:if>
                 <g:else>
-                    <g:link controller="survey" action="surveyTransferConfig"
+                    <g:link controller="survey" action="setSurveyTransferConfig"
                             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferCustomProperties: true]">
                         <i class="close bordered large red icon"></i>
                     </g:link>
@@ -197,13 +198,13 @@ ${surveyInfo.name}
                 </div>
             &nbsp;&nbsp;
                 <g:if test="${transferWorkflow && transferWorkflow.transferPrivateProperties == 'true'}">
-                    <g:link controller="survey" action="surveyTransferConfig"
+                    <g:link controller="survey" action="setSurveyTransferConfig"
                             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferPrivateProperties: false]">
                         <i class="check bordered large green icon"></i>
                     </g:link>
                 </g:if>
                 <g:else>
-                    <g:link controller="survey" action="surveyTransferConfig"
+                    <g:link controller="survey" action="setSurveyTransferConfig"
                             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferPrivateProperties: true]">
                         <i class="close bordered large red icon"></i>
                     </g:link>
@@ -227,13 +228,13 @@ ${surveyInfo.name}
                 </div>
             &nbsp;&nbsp;
                 <g:if test="${transferWorkflow && transferWorkflow.transferSurveyCostItems == 'true'}">
-                    <g:link controller="survey" action="surveyTransferConfig"
+                    <g:link controller="survey" action="setSurveyTransferConfig"
                             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferSurveyCostItems: false]">
                         <i class="check bordered large green icon"></i>
                     </g:link>
                 </g:if>
                 <g:else>
-                    <g:link controller="survey" action="surveyTransferConfig"
+                    <g:link controller="survey" action="setSurveyTransferConfig"
                             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, transferSurveyCostItems: true]">
                         <i class="close bordered large red icon"></i>
                     </g:link>
@@ -315,7 +316,7 @@ ${surveyInfo.name}
 
                     <div class="eight wide column">
 
-                        <table class="ui celled sortable table la-table" id="parentSubscription">
+                        <table class="ui celled sortable table la-js-responsive-table la-table" id="parentSubscription">
                             <thead>
                             <tr>
                                 <th>${message(code: 'sidewide.number')}</th>
@@ -386,7 +387,7 @@ ${surveyInfo.name}
 
                     <div class="eight wide column">
 
-                        <table class="ui celled sortable table la-table" id="parentSuccessorSubscription">
+                        <table class="ui celled sortable table la-js-responsive-table la-table" id="parentSuccessorSubscription">
                             <thead>
                             <tr>
                                 <th>${message(code: 'sidewide.number')}</th>
@@ -481,7 +482,7 @@ ${surveyInfo.name}
 
         </g:if>
 
-        <g:form action="surveyCompleted" method="post" class="ui form"
+        <g:form action="setSurveyCompleted" method="post" class="ui form"
                 params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID]">
 
             <div class="ui right floated compact segment">

@@ -53,6 +53,12 @@ import javax.servlet.ServletOutputStream
 import java.text.DateFormat
 import java.text.SimpleDateFormat
 
+/**
+ * This is one of the central controllers as it manages every call related to the context institution.
+ * The context institution is that one which the user logged in has picked for his/her current session; every call
+ * done here supposes that the institution to be used for permission checks is the context institution.
+ * For the definition of institution, see {@link Org}
+ */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class MyInstitutionController  {
 
@@ -89,12 +95,20 @@ class MyInstitutionController  {
     ManagementService managementService
     CustomWkhtmltoxService wkhtmltoxService
 
+    /**
+     * The landing page after login; this is also the call when the home button is clicked
+     * @return the {@link #dashboard()} view
+     */
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def index() {
         redirect(action:'dashboard')
     }
 
+    /**
+     * Call for the reporting module
+     * @return the reporting entry view
+     */
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
@@ -105,7 +119,13 @@ class MyInstitutionController  {
         result.cfgFilterList = BaseConfig.FILTER
         result.cfgChartsList = BaseConfig.CHARTS
 
-        if (params.filter) {
+        if (params.init) {
+            result.filter = params.filter
+            result.xhr = true
+            render template: '/myInstitution/reporting/filter/form', model: result
+            return
+        }
+        else if (params.filter) {
             reportingGlobalService.doFilter(result, params) // manipulates result, clones params
 
             Map<String, Object> cacheMap = [
@@ -141,6 +161,13 @@ class MyInstitutionController  {
         render view: 'reporting/index', model: result
     }
 
+    /**
+     * Lists the platforms which are linked by any current subscription or subscription with perpetual access to the context institution.
+     * The list results may be filtered by filter parameters
+     * @return the platform list view
+     * @see Platform
+     * @see Subscription
+     */
     @Secured(['ROLE_USER'])
     def currentPlatforms() {
 
@@ -275,6 +302,12 @@ class MyInstitutionController  {
         result
     }
 
+    /**
+     * Returns a view of the current licenses (and subscriptions linked to them) the institution holds. The results may be filtered
+     * both for subscriptions and licenses. That means that a subscription filter is attached to the
+     * query; licenses without a subscription may get lost if there is no subscription linked to it!
+     * @return the license list view
+     */
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def currentLicenses() {
@@ -596,6 +629,10 @@ class MyInstitutionController  {
         }
     }
 
+    /**
+     * Call to create a new license
+     * @return the form view to enter the new license parameters
+     */
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
@@ -638,6 +675,108 @@ class MyInstitutionController  {
         result
     }
 
+    /**
+     * Creates a new license based on the parameters submitted
+     * @return the license details view ({@link LicenseController#show()}) of the new license record
+     */
+    @DebugAnnotation(test='hasAffiliation("INST_USER")', wtc = 2)
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    def processEmptyLicense() {
+        License.withTransaction { TransactionStatus ts ->
+            User user = contextService.getUser()
+            Org org = contextService.getOrg()
+
+            Set<RefdataValue> defaultOrgRoleType = []
+            if(accessService.checkPerm("ORG_CONSORTIUM"))
+                defaultOrgRoleType << RDStore.OT_CONSORTIUM.id.toString()
+            else defaultOrgRoleType << RDStore.OT_INSTITUTION.id.toString()
+
+            params.asOrgType = params.asOrgType ? [params.asOrgType] : defaultOrgRoleType
+
+
+            if (! accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR')) {
+                flash.error = message(code:'myinst.error.noAdmin', args:[org.name])
+                response.sendError(401)
+                // render(status: '401', text:"You do not have permission to access ${org.name}. Please request access on the profile page");
+                return
+            }
+            def baseLicense = params.baselicense ? License.get(params.baselicense) : null
+            //Nur wenn von Vorlage ist
+            if (baseLicense) {
+                if (!baseLicense?.hasPerm("view", user)) {
+                    log.debug("return 401....")
+                    flash.error = message(code: 'myinst.newLicense.error')
+                    response.sendError(401)
+                    return
+                }
+                else {
+                    def copyLicense = institutionsService.copyLicense(baseLicense, params, InstitutionsService.CUSTOM_PROPERTIES_COPY_HARD)
+
+                    if (copyLicense.hasErrors()) {
+                        log.error("Problem saving license ${copyLicense.errors}")
+                        render view: 'editLicense', model: [licenseInstance: copyLicense]
+                    } else {
+                        copyLicense.reference = params.licenseName
+                        copyLicense.startDate = DateUtils.parseDateGeneric(params.licenseStartDate)
+                        copyLicense.endDate = DateUtils.parseDateGeneric(params.licenseEndDate)
+
+                        if (copyLicense.save()) {
+                            flash.message = message(code: 'license.createdfromTemplate.message')
+                        }
+
+                        if( params.sub) {
+                            Subscription subInstance = Subscription.get(params.sub)
+                            subscriptionService.setOrgLicRole(subInstance,copyLicense,false)
+                            //subInstance.owner = copyLicense
+                            //subInstance.save(flush: true)
+                        }
+
+                        redirect controller: 'license', action: 'show', params: params, id: copyLicense.id
+                        return
+                    }
+                }
+            }
+
+            License licenseInstance = new License(
+                    reference: params.licenseName,
+                    startDate:params.licenseStartDate ? DateUtils.parseDateGeneric(params.licenseStartDate) : null,
+                    endDate: params.licenseEndDate ? DateUtils.parseDateGeneric(params.licenseEndDate) : null,
+                    status: RefdataValue.get(params.status),
+                    openEnded: RDStore.YNU_UNKNOWN
+            )
+
+            if (!licenseInstance.save()) {
+                log.error(licenseInstance.errors.toString())
+                flash.error = message(code:'license.create.error')
+                redirect action: 'emptyLicense'
+                return
+            }
+            else {
+                log.debug("Save ok")
+
+                log.debug("adding org link to new license")
+                OrgRole orgRole
+                if (params.asOrgType && (RDStore.OT_CONSORTIUM.id.toString() in params.asOrgType)) {
+                    orgRole = new OrgRole(lic: licenseInstance, org: org, roleType: RDStore.OR_LICENSING_CONSORTIUM)
+                } else {
+                    orgRole = new OrgRole(lic: licenseInstance, org: org, roleType: RDStore.OR_LICENSEE)
+                }
+
+                if (!orgRole.save()) {
+                    log.error("Problem saving org links to license ${orgRole.errors}");
+                }
+
+                redirect controller: 'license', action: 'show', params: params, id: licenseInstance.id
+                return
+            }
+        }
+    }
+
+    /**
+     * Opens a list of all provider / agency {@link Org}s which are linked by {@link OrgRole} to any subscription.
+     * The list results may be filtered with filter parameters
+     * @return a list of matching {@link Org} records, as html or as export pipe (Excel / CSV)
+     */
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def currentProviders() {
@@ -676,6 +815,7 @@ join sub.orgRelations or_sub where
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         params.sort = params.sort ?: " LOWER(o.shortname), LOWER(o.name)"
+        params.subPerpetual = 'on'
 
         GrailsParameterMap tmpParams = (GrailsParameterMap) params.clone()
         tmpParams.constraint_orgIds = orgIds
@@ -719,7 +859,24 @@ join sub.orgRelations or_sub where
                 return
             }
         }
+        else if(params.exportClickMeExcel) {
+            if (params.filename) {
+                filename = params.filename
+            }
 
+            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+            Map<String, Object> selectedFields = [:]
+            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(orgListTotal, selectedFields, 'provider')
+
+            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+        }
         withFormat {
             html {
                 result
@@ -736,7 +893,11 @@ join sub.orgRelations or_sub where
         }
     }
 
-
+    /**
+     * Retrieves the list of subscriptions the context institution currently holds. The query may be restricted by filter parameters.
+     * Default filter setting is status: current or with perpetual access
+     * @return a (filtered) list of subscriptions, either as direct html output or as export stream (CSV, Excel)
+     */
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def currentSubscriptions() {
@@ -804,7 +965,15 @@ join sub.orgRelations or_sub where
         }
     }
 
-
+    /**
+     * Prepares the given list of subscriptions for the given export stream
+     * @param subscriptions the filtered list of subscriptions
+     * @param format the format in which the export should be made
+     * @param contextOrg the institution whose perspective should be taken during export
+     * @return the list of subscriptions wrapped in the given export format (Excel worksheet or character-separated table)
+     * @see Subscription
+     * @see Org
+     */
     private def exportcurrentSubscription(List<Subscription> subscriptions, String format,Org contextOrg) {
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         List titles = ['Name',
@@ -974,6 +1143,22 @@ join sub.orgRelations or_sub where
         }
     }
 
+    /**
+     * Call for the consortium member management views. This method dispatches the call to the appropriate
+     * tab view and returns the data for the called tab
+     * @return one of the following views:
+     * <ol>
+     *     <li>generalProperties</li>
+     *     <li>linkLicense</li>
+     *     <li>linkPackages</li>
+     *     <li>properties</li>
+     *     <li>providerAgency</li>
+     *     <li>documents</li>
+     *     <li>notes</li>
+     *     <li>multiYear</li>
+     *     <li>customerIdentifiers</li>
+     * </ol>
+     */
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
@@ -983,11 +1168,18 @@ join sub.orgRelations or_sub where
 
         params.tab = params.tab ?: 'generalProperties'
 
-        //Important
-        if(accessService.checkPerm('ORG_CONSORTIUM')) {
-            params.subTypes = [RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id.toString()]
-        }else{
-            params.subTypes = [RDStore.SUBSCRIPTION_TYPE_LOCAL.id.toString()]
+        if(!(params.tab in ['notes', 'documents', 'properties'])){
+            //Important
+            if(!accessService.checkPerm('ORG_CONSORTIUM')) {
+                if(params.subTypes == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id.toString()){
+                    flash.error = message(code: 'subscriptionsManagement.noPermission.forSubsWithTypeConsortial')
+                }
+                else if(RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id.toString() in params.list('subTypes')){
+                    flash.error = message(code: 'subscriptionsManagement.noPermission.forSubsWithTypeConsortial')
+                }
+
+                params.subTypes = [RDStore.SUBSCRIPTION_TYPE_LOCAL.id.toString()]
+            }
         }
 
         if(params.tab == 'documents' && params.processOption == 'newDoc') {
@@ -1008,103 +1200,9 @@ join sub.orgRelations or_sub where
 
     }
 
-    @DebugAnnotation(test='hasAffiliation("INST_USER")', wtc = 2)
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
-    def processEmptyLicense() {
-        License.withTransaction { TransactionStatus ts ->
-            User user = contextService.getUser()
-            Org org = contextService.getOrg()
-
-            Set<RefdataValue> defaultOrgRoleType = []
-            if(accessService.checkPerm("ORG_CONSORTIUM"))
-                defaultOrgRoleType << RDStore.OT_CONSORTIUM.id.toString()
-            else defaultOrgRoleType << RDStore.OT_INSTITUTION.id.toString()
-
-            params.asOrgType = params.asOrgType ? [params.asOrgType] : defaultOrgRoleType
-
-
-            if (! accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR')) {
-                flash.error = message(code:'myinst.error.noAdmin', args:[org.name])
-                response.sendError(401)
-                // render(status: '401', text:"You do not have permission to access ${org.name}. Please request access on the profile page");
-                return
-            }
-            def baseLicense = params.baselicense ? License.get(params.baselicense) : null
-            //Nur wenn von Vorlage ist
-            if (baseLicense) {
-                if (!baseLicense?.hasPerm("view", user)) {
-                    log.debug("return 401....")
-                    flash.error = message(code: 'myinst.newLicense.error')
-                    response.sendError(401)
-                    return
-                }
-                else {
-                    def copyLicense = institutionsService.copyLicense(baseLicense, params, InstitutionsService.CUSTOM_PROPERTIES_COPY_HARD)
-
-                    if (copyLicense.hasErrors()) {
-                        log.error("Problem saving license ${copyLicense.errors}")
-                        render view: 'editLicense', model: [licenseInstance: copyLicense]
-                    } else {
-                        copyLicense.reference = params.licenseName
-                        copyLicense.startDate = DateUtils.parseDateGeneric(params.licenseStartDate)
-                        copyLicense.endDate = DateUtils.parseDateGeneric(params.licenseEndDate)
-
-                        if (copyLicense.save()) {
-                            flash.message = message(code: 'license.createdfromTemplate.message')
-                        }
-
-                        if( params.sub) {
-                            Subscription subInstance = Subscription.get(params.sub)
-                            subscriptionService.setOrgLicRole(subInstance,copyLicense,false)
-                            //subInstance.owner = copyLicense
-                            //subInstance.save(flush: true)
-                        }
-
-                        redirect controller: 'license', action: 'show', params: params, id: copyLicense.id
-                        return
-                    }
-                }
-            }
-
-            License licenseInstance = new License(
-                    reference: params.licenseName,
-                    startDate:params.licenseStartDate ? DateUtils.parseDateGeneric(params.licenseStartDate) : null,
-                    endDate: params.licenseEndDate ? DateUtils.parseDateGeneric(params.licenseEndDate) : null,
-                    status: RefdataValue.get(params.status),
-                    openEnded: RDStore.YNU_UNKNOWN
-            )
-
-            if (!licenseInstance.save()) {
-                log.error(licenseInstance.errors.toString())
-                flash.error = message(code:'license.create.error')
-                redirect action: 'emptyLicense'
-                return
-            }
-            else {
-                log.debug("Save ok")
-
-                log.debug("adding org link to new license")
-                OrgRole orgRole
-                if (params.asOrgType && (RDStore.OT_CONSORTIUM.id.toString() in params.asOrgType)) {
-                    orgRole = new OrgRole(lic: licenseInstance, org: org, roleType: RDStore.OR_LICENSING_CONSORTIUM)
-                } else {
-                    orgRole = new OrgRole(lic: licenseInstance, org: org, roleType: RDStore.OR_LICENSEE)
-                }
-
-                if (!orgRole.save()) {
-                    log.error("Problem saving org links to license ${orgRole.errors}");
-                }
-
-                redirect controller: 'license', action: 'show', params: params, id: licenseInstance.id
-                return
-            }
-        }
-    }
-
     /**
-     * connects the context subscription with the given pair.
-     *
-     * @return void, redirects to main page
+     * Connects the context subscription with the given pair
+     * @return void, redirects to referer
      */
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
@@ -1115,6 +1213,10 @@ join sub.orgRelations or_sub where
         redirect(url: request.getHeader('referer'))
     }
 
+    /**
+     * Removes the given link
+     * @return void, redirects to referer
+     */
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def unlinkObjects() {
@@ -1122,6 +1224,12 @@ join sub.orgRelations or_sub where
         redirect(url: request.getHeader('referer'))
     }
 
+    /**
+     * Opens the documents view for the given institution; here, the private document section is being opened
+     * @return the table view of documents linked to the institution itself (i.e. the interior document sharing section)
+     * @see Doc
+     * @see DocContext
+     */
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
@@ -1131,6 +1239,11 @@ join sub.orgRelations or_sub where
         result
     }
 
+    /**
+     * Call to delete a given document
+     * @return the document table view ({@link #documents()})
+     * @see com.k_int.kbplus.DocstoreService#unifiedDeleteDocuments()
+     */
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def deleteDocuments() {
@@ -1143,6 +1256,14 @@ join sub.orgRelations or_sub where
         redirect controller: 'myInstitution', action: 'documents' /*, fragment: 'docstab' */
     }
 
+    /**
+     * Opens a list of current issue entitlements hold by the context institution. The result may be filtered;
+     * filters hold for the title, the platforms, provider and subscription parameters
+     * @return a (filtered) list of issue entitlements
+     * @see Subscription
+     * @see Platform
+     * @see IssueEntitlement
+     */
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def currentTitles() {
@@ -1256,25 +1377,29 @@ join sub.orgRelations or_sub where
         if(queryFilter)
             qryString += ' and '+queryFilter.join(' and ')
 
-        Set<Long> currentIssueEntitlements = IssueEntitlement.executeQuery(qryString+' group by tipp, ie.id order by ie.sortname asc',qryParams)
-        //second filter needed because double-join on same table does deliver me empty results
-        if (filterPvd) {
-            currentIssueEntitlements = IssueEntitlement.executeQuery("select ie.id from IssueEntitlement ie join ie.tipp tipp join tipp.orgs oo where oo.roleType in (:cpRole) and oo.org.id in ("+filterPvd.join(", ")+") order by ie.sortname asc",[cpRole:[RDStore.OR_CONTENT_PROVIDER,RDStore.OR_PROVIDER,RDStore.OR_AGENCY,RDStore.OR_PUBLISHER]])
-        }
-        Set<TitleInstancePackagePlatform> allTitles = currentIssueEntitlements ? TitleInstancePackagePlatform.executeQuery('select tipp from IssueEntitlement ie join ie.tipp tipp where ie.id in (:ids) '+orderByClause,[ids:currentIssueEntitlements.drop(result.offset).take(result.max)]) : []
-        result.subscriptions = Subscription.executeQuery('select sub from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo where oo.roleType in (:orgRoles) and oo.org = :institution and sub.status = :current '+instanceFilter+" order by sub.name asc",[
-                institution: result.institution,
-                current: RDStore.SUBSCRIPTION_CURRENT,
-                orgRoles: orgRoles]).toSet()
-        if(result.subscriptions.size() > 0) {
-            Set<Long> allIssueEntitlements = IssueEntitlement.executeQuery('select ie.id from IssueEntitlement ie where ie.subscription in (:currentSubs)',[currentSubs:result.subscriptions])
-            result.providers = Org.executeQuery('select org.id,org.name from IssueEntitlement ie join ie.tipp tipp join tipp.orgs oo join oo.org org where ie.id in ('+qryString+' group by tipp, ie.id order by ie.sortname asc) group by org.id order by org.name asc',qryParams)
-            result.hostplatforms = Platform.executeQuery('select plat.id,plat.name from IssueEntitlement ie join ie.tipp tipp join tipp.platform plat where ie.id in ('+qryString+' group by tipp, ie.id order by ie.sortname asc) group by plat.id order by plat.name asc',qryParams)
-        }
-        result.num_ti_rows = currentIssueEntitlements.size()
-        result.titles = allTitles
+        Set<Long> currentIssueEntitlements = []
+        if(!params.containsKey('exportXLSX') && params.format != 'csv') {
+            currentIssueEntitlements.addAll(IssueEntitlement.executeQuery(qryString+' group by tipp, ie.id order by ie.sortname asc',qryParams))
+            //second filter needed because double-join on same table does deliver me empty results
+            if (filterPvd) {
+                currentIssueEntitlements.addAll(IssueEntitlement.executeQuery("select ie.id from IssueEntitlement ie join ie.tipp tipp join tipp.orgs oo where oo.roleType in (:cpRole) and oo.org.id in ("+filterPvd.join(", ")+") order by ie.sortname asc",[cpRole:[RDStore.OR_CONTENT_PROVIDER,RDStore.OR_PROVIDER,RDStore.OR_AGENCY,RDStore.OR_PUBLISHER]]))
+            }
+            Set<TitleInstancePackagePlatform> allTitles = currentIssueEntitlements ? TitleInstancePackagePlatform.executeQuery('select tipp from IssueEntitlement ie join ie.tipp tipp where ie.id in (:ids) and ie.status != :deleted '+orderByClause,[deleted: RDStore.TIPP_STATUS_DELETED, ids: currentIssueEntitlements.drop(result.offset).take(result.max)]) : []
+            result.subscriptions = Subscription.executeQuery('select sub from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo where oo.roleType in (:orgRoles) and oo.org = :institution and sub.status = :current '+instanceFilter+" order by sub.name asc",[
+                    institution: result.institution,
+                    current: RDStore.SUBSCRIPTION_CURRENT,
+                    orgRoles: orgRoles]).toSet()
+            if(result.subscriptions.size() > 0) {
+                Set<Long> allIssueEntitlements = IssueEntitlement.executeQuery('select ie.id from IssueEntitlement ie where ie.subscription in (:currentSubs)',[currentSubs:result.subscriptions])
+                result.providers = Org.executeQuery('select org.id,org.name from IssueEntitlement ie join ie.tipp tipp join tipp.orgs oo join oo.org org where ie.id in ('+qryString+' group by tipp, ie.id order by ie.sortname asc) group by org.id order by org.name asc',qryParams)
+                result.hostplatforms = Platform.executeQuery('select plat.id,plat.name from IssueEntitlement ie join ie.tipp tipp join tipp.platform plat where ie.id in ('+qryString+' group by tipp, ie.id order by ie.sortname asc) group by plat.id order by plat.name asc',qryParams)
+            }
+            result.num_ti_rows = currentIssueEntitlements.size()
+            result.titles = allTitles
 
-        result.filterSet = params.filterSet || defaultSet
+            result.filterSet = params.filterSet || defaultSet
+        }
+
         String filename = "${message(code:'export.my.currentTitles')}_${DateUtils.SDF_NoTimeNoPoint.format(new Date())}"
 
 		List bm = pu.stopBenchmark()
@@ -1283,8 +1408,13 @@ join sub.orgRelations or_sub where
         if(params.exportKBart) {
             response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
             response.contentType = "text/tsv"
+            Map<String, Object> configMap = [:]
+            configMap.putAll(params)
+            configMap.validOn = checkedDate.getTime()
+            String consFilter = result.institution.getCustomerType() == 'ORG_CONSORTIUM' ? ' and s.instanceOf is null' : ''
+            configMap.pkgIds = SubscriptionPackage.executeQuery('select sp.pkg.id from SubscriptionPackage sp join sp.subscription s join s.orgRelations oo where oo.org = :context and oo.roleType in (:subscrTypes)'+consFilter, [context: result.institution, subscrTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS]])
             ServletOutputStream out = response.outputStream
-            Map<String,List> tableData = exportService.generateTitleExportKBART(currentIssueEntitlements, IssueEntitlement.class.name)
+            Map<String,List> tableData = exportService.generateTitleExportKBART(configMap, IssueEntitlement.class.name)
             out.withWriter { writer ->
                 writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,'\t'))
             }
@@ -1294,7 +1424,12 @@ join sub.orgRelations or_sub where
         else if(params.exportXLSX) {
             response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            Map<String,List> export = exportService.generateTitleExportXLS(currentIssueEntitlements, IssueEntitlement.class.name)
+            Map<String, Object> configMap = [:]
+            configMap.putAll(params)
+            configMap.validOn = checkedDate.getTime()
+            String consFilter = result.institution.getCustomerType() == 'ORG_CONSORTIUM' ? ' and s.instanceOf is null' : ''
+            configMap.pkgIds = SubscriptionPackage.executeQuery('select sp.pkg.id from SubscriptionPackage sp join sp.subscription s join s.orgRelations oo where oo.org = :context and oo.roleType in (:subscrTypes)'+consFilter, [context: result.institution, subscrTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS]])
+            Map<String,List> export = exportService.generateTitleExportCustom(configMap, IssueEntitlement.class.name) //all subscriptions, all packages
             Map sheetData = [:]
             sheetData[message(code:'menu.my.titles')] = [titleRow:export.titles,columnData:export.rows]
             SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
@@ -1343,6 +1478,13 @@ join sub.orgRelations or_sub where
         }
     }
 
+    /**
+     * Opens a list of current packages subscribed by the context institution. The result may be filtered
+     * by filter parameters
+     * @return a list view of packages the institution has subscribed
+     * @see SubscriptionPackage
+     * @see Package
+     */
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def currentPackages() {
@@ -1446,6 +1588,11 @@ join sub.orgRelations or_sub where
         result
     }
 
+    /**
+     * Opens the dashboard for the user; showing important information regarding the context institution.
+     * The information is grouped in tabs where information is being preloaded (except changes, notifications and surveys)
+     * @return the dashboard view with the prefilled tabs
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def dashboard() {
@@ -1461,6 +1608,10 @@ join sub.orgRelations or_sub where
         return ctrlResult.result
     }
 
+    /**
+     * Opens the modal to create a new task
+     * @return the task creation modal
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def modal_create() {
@@ -1478,6 +1629,11 @@ join sub.orgRelations or_sub where
         render template: '/templates/tasks/modal_create', model: result
     }
 
+    /**
+     * Call for the list of entitlement changes of the last 600 days
+     * @return a list of changes to be accepted or rejected
+     * @see PendingChange
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def changes() {
@@ -1495,6 +1651,7 @@ join sub.orgRelations or_sub where
 
     //@DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     //@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @Deprecated
     @Secured(['ROLE_ADMIN'])
     def announcements() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -1509,6 +1666,7 @@ join sub.orgRelations or_sub where
         result
     }
 
+    @Deprecated
     @Secured(['ROLE_YODA'])
     def changeLog() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -1578,19 +1736,27 @@ join sub.orgRelations or_sub where
         }
     }
 
+    /**
+     * Call for the finance import starting page; the mappings are being explained here and an example sheet for submitting data to import
+     * @return the finance import entry view
+     */
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
     })
     def financeImport() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
-        result.mappingCols = ["title","element","elementSign","referenceCodes","budgetCode","status","invoiceTotal",
-                              "currency","exchangeRate","taxType","taxRate","value","subscription","package",
-                              "issueEntitlement","datePaid","financialYear","dateFrom","dateTo","invoiceDate",
-                              "description","invoiceNumber","orderNumber"/*,"institution"*/]
+        result.mappingCols = ["subscription","package","issueEntitlement","budgetCode","referenceCodes","orderNumber","invoiceNumber","status",
+                              "element","elementSign","currency","invoiceTotal","exchangeRate","value","taxType","taxRate","invoiceDate","financialYear","title","description","datePaid","dateFrom","dateTo"/*,"institution"*/]
         result
     }
 
+    /**
+     * Generates a customised work sheet for import cost items for the given subscriptions
+     * @return a CSV template with subscription OIDs and empty data
+     * @see Subscription
+     * @see CostItem
+     */
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
@@ -1624,6 +1790,11 @@ join sub.orgRelations or_sub where
         out.close()
     }
 
+    /**
+     * Reads off data from the uploaded import sheet and prepares data for import. The user may check after the
+     * processing whether the imported data is read correctly or not
+     * @return the control view with the import preparation result
+     */
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN", wtc = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
@@ -1657,6 +1828,10 @@ join sub.orgRelations or_sub where
         }
     }
 
+    /**
+     * Call for the subscription import starting page; the mappings are being explained here and an example sheet for submitting data to import
+     * @return the subscription import entry view
+     */
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
@@ -1669,6 +1844,11 @@ join sub.orgRelations or_sub where
         result
     }
 
+    /**
+     * Reads off data from the uploaded import sheet and prepares data for import. The user may check after the
+     * processing whether the imported data is read correctly or not
+     * @return the control view with the import preparation result
+     */
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN", wtc = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
@@ -1702,6 +1882,11 @@ join sub.orgRelations or_sub where
             }
     }
 
+    /**
+     * Opens a list of current surveys concerning the context institution. The list may be filtered by filter parameters.
+     * Default filter setting is current year
+     * @return a (filtered) list of surveys, either displayed as html or returned as Excel worksheet
+     */
     @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_USER", specRole="ROLE_ADMIN")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_USER", "ROLE_ADMIN")
@@ -1791,6 +1976,11 @@ join sub.orgRelations or_sub where
         }
     }
 
+    /**
+     * Call to retrieve detailed information for a given survey; this view is callable for consortium members and single users.
+     * The view may be rendered as html or as Excel worksheet to download
+     * @return the details view of the given survey
+     */
     @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_USER", specRole="ROLE_ADMIN")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_USER", "ROLE_ADMIN")
@@ -1802,7 +1992,11 @@ join sub.orgRelations or_sub where
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
         result.surveyConfig = params.surveyConfigID ? SurveyConfig.get(Long.parseLong(params.surveyConfigID.toString())) : result.surveyInfo.surveyConfigs[0]
 
-        result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, result.surveyConfig).sort { it.surveyConfig.configOrder }
+        result.surveyResults = []
+
+        result.surveyConfig.getSortedSurveyProperties().each{ PropertyDefinition propertyDefinition ->
+            result.surveyResults << SurveyResult.findByParticipantAndSurveyConfigAndType(result.institution, result.surveyConfig, propertyDefinition)
+        }
 
         result.ownerId = result.surveyInfo.owner?.id
 
@@ -1836,14 +2030,14 @@ join sub.orgRelations or_sub where
             }
 
             if(result.surveyConfig.subSurveyUseForTransfer) {
-                result.successorSubscription = result.surveyConfig.subscription._getCalculatedSuccessor()
+                result.successorSubscription = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
 
                 result.customProperties = result.successorSubscription ? comparisonService.comparePropertiesWithAudit(result.surveyConfig.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))} + result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}, true, true) : null
             }
 
             if (result.subscription && result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
 
-                result.previousSubscription = result.subscription._getCalculatedPrevious()
+                result.previousSubscription = result.subscription._getCalculatedPreviousForSurvey()
 
                 /*result.previousIesListPriceSum = 0
                 if(result.previousSubscription){
@@ -1863,7 +2057,13 @@ join sub.orgRelations or_sub where
                         [sub: result.subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])[0] ?: 0 */
 
                 result.countSelectedIEs = subscriptionService.countIssueEntitlementsNotFixed(result.subscription)
-                result.countCurrentIEs = (result.previousSubscription ? subscriptionService.countIssueEntitlementsFixed(result.previousSubscription) : 0) + subscriptionService.countIssueEntitlementsFixed(result.subscription)
+
+                if (result.surveyConfig.pickAndChoosePerpetualAccess) {
+                    result.countCurrentIEs = surveyService.countPerpetualAccessTitlesBySub(result.subscription)
+                } else {
+                    result.countCurrentIEs = (result.previousSubscription ? subscriptionService.countIssueEntitlementsFixed(result.previousSubscription) : 0) + subscriptionService.countIssueEntitlementsFixed(result.subscription)
+                }
+
 
                 result.subscriber = result.subscription.getSubscriber()
             }
@@ -1894,66 +2094,15 @@ join sub.orgRelations or_sub where
 
     }
 
-    @Deprecated
-    @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_USER", specRole="ROLE_ADMIN")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_USER", "ROLE_ADMIN")
-    })
-    def surveyInfosIssueEntitlements() {
-        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
-
-        result.surveyConfig = SurveyConfig.get(params.id)
-        result.surveyInfo = result.surveyConfig.surveyInfo
-
-        /*result.surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(result.institution, result.surveyConfig).sort { it.surveyConfig.configOrder }
-
-        result.subscription = result.surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution)
-
-        result.ies = subscriptionService.getIssueEntitlementsNotFixed(result.subscription)
-        result.iesListPriceSum = 0.0
-        result.ies.each{ IssueEntitlement ie ->
-            Double priceSum = 0.0
-
-            ie.priceItems.each { PriceItem priceItem ->
-                priceSum = priceItem.listPrice ?: 0.0
-            }
-            result.iesListPriceSum = result.iesListPriceSum + priceSum
-        }
-
-
-        result.iesFix = subscriptionService.getIssueEntitlementsFixed(result.subscription)
-        result.iesFixListPriceSum = 0.0
-        result.iesFix.each{ IssueEntitlement ie ->
-            Double priceSum = 0.0
-
-            ie.priceItems.each { PriceItem priceItem ->
-                priceSum = priceItem.listPrice ?: 0.0
-            }
-            result.iesFixListPriceSum = result.iesListPriceSum + priceSum
-        }
-
-
-        result.ownerId = result.surveyConfig.surveyInfo.owner?.id ?: null
-
-        if(result.subscription) {
-            result.authorizedOrgs = result.user?.authorizedOrgs
-            result.contextOrg = contextService.getOrg()
-            // restrict visible for templates/links/orgLinksAsList
-            result.visibleOrgRelations = []
-            result.subscription.orgRelations.each { OrgRole or ->
-                if (!(or.org?.id == contextService.getOrg().id) && !(or.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS])) {
-                    result.visibleOrgRelations << or
-                }
-            }
-            result.visibleOrgRelations.sort { it.org.sortname }
-	        result.links = linksGenerationService.getSourcesAndDestinations(result.subscription,result.user)
-        }
-        result*/
-
-        redirect(action: 'surveyInfos', id: result.surveyInfo.id, params:[surveyConfigID: result.surveyConfig.id])
-    }
-
-
+    /**
+     * This call processes the submission of the survey participant that the survey has been completed; checks are being
+     * performed whether further subscription has been checked (if mandatory) or if all values have been completed.
+     * If those checks were successful, the survey is marked as finished so that no further editing is possible unless
+     * the consortium reopens the survey for the member upon his request. In case of pick and choose title surveys, the
+     * selected issue entitlements marked as under negotiation will be marked as definitive so that the issue entitlements
+     * pass definitively into the holding of the next year's subscription
+     * @return void, returns to the survey details page ({@link #surveyInfos()})
+     */
     @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_EDITOR", "ROLE_ADMIN")
@@ -2051,7 +2200,12 @@ join sub.orgRelations or_sub where
         redirect(url: request.getHeader('referer'))
     }
 
-
+    /**
+     * Lists the users of the context institution
+     * @return a list of users affiliated to the context institution
+     * @see User
+     * @see de.laser.auth.UserOrg
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_ADM") })
     def users() {
@@ -2086,6 +2240,10 @@ join sub.orgRelations or_sub where
         render view: '/user/global/list', model: result
     }
 
+    /**
+     * Call to delete a given user
+     * @return the user deletion page where the details of the given user are being enumerated
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_ADM") })
     def deleteUser() {
@@ -2129,6 +2287,10 @@ join sub.orgRelations or_sub where
         render view: '/user/global/delete', model: result
     }
 
+    /**
+     * Call to edit the given user
+     * @return the user details view for editing the profile
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_ADM") })
     def editUser() {
@@ -2147,6 +2309,10 @@ join sub.orgRelations or_sub where
         render view: '/user/global/edit', model: result
     }
 
+    /**
+     * Call to create a new user for the context institution
+     * @return the form to enter the new user's parameters
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_ADM") })
     def createUser() {
@@ -2159,6 +2325,10 @@ join sub.orgRelations or_sub where
         render view: '/user/global/create', model: result
     }
 
+    /**
+     * Processes the submitted parameters and creates a new user for the context institution
+     * @return a redirect to the profile edit page on success, back to the user creation page otherwise
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_ADM") })
     def processCreateUser() {
@@ -2176,6 +2346,11 @@ join sub.orgRelations or_sub where
         }
     }
 
+    /**
+     * Attaches a given user to the given institution
+     * @return the user editing view
+     * @see de.laser.auth.UserOrg
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_ADM") })
     def addAffiliation() {
@@ -2189,6 +2364,10 @@ join sub.orgRelations or_sub where
         redirect action: 'editUser', params: [uoid: params.uoid]
     }
 
+    /**
+     * Opens the internal address book for the context institution
+     * @return a list view of the institution-internal contacts
+     */
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
@@ -2218,7 +2397,12 @@ join sub.orgRelations or_sub where
         result
       }
 
-
+    /**
+     * Call for the current budget code overview of the institution
+     * @return a list of budget codes the context institution currently holds
+     * @see BudgetCode
+     * @see CostItemGroup
+     */
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN", wtc = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
@@ -2255,16 +2439,10 @@ join sub.orgRelations or_sub where
 
             }
             Set<BudgetCode> allBudgetCodes = BudgetCode.findAllByOwner(result.institution, [sort: 'value'])
-            Map<BudgetCode, List<CostItemGroup>> costItemGroups = [:]
+            Map<BudgetCode, Integer> costItemGroups = [:]
             if (allBudgetCodes) {
-                List<CostItemGroup> ciGroupsForBC = CostItemGroup.findAllByBudgetCodeInList(allBudgetCodes)
-                ciGroupsForBC.each { CostItemGroup cig ->
-                    List<CostItemGroup> ciGroupForBC = costItemGroups.get(cig.budgetCode)
-                    if (!ciGroupForBC) {
-                        ciGroupForBC = []
-                    }
-                    ciGroupForBC << cig
-                    costItemGroups.put(cig.budgetCode, ciGroupForBC)
+                BudgetCode.executeQuery('select new map(cig.budgetCode as budgetCode, count(cig.costItem) as usageCount) from CostItemGroup cig where cig.budgetCode in (:allBudgetCodes) group by cig.budgetCode', [allBudgetCodes: allBudgetCodes]).each { Map entry ->
+                    costItemGroups.put(entry.budgetCode, entry.usageCount)
                 }
             }
             result.budgetCodes = allBudgetCodes
@@ -2278,6 +2456,11 @@ join sub.orgRelations or_sub where
         }
     }
 
+    /**
+     * Call for the overview of tasks for the given user in the context institution
+     * @return a table view of tasks
+     * @see Task
+     */
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", wtc = 1)
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER") })
     def tasks() {
@@ -2306,6 +2489,12 @@ join sub.orgRelations or_sub where
         result
     }
 
+    /**
+     * After consideration, this workflow actually makes no sense as a consortium is no administrative unit but a flexible
+     * one, determined by subscriptions. Is thus a legacy construct, based on a misunderstanding of concept.
+     * Call for listing institutions eligible to be attached to or detached from the context consortium
+     * @return a list of institutions
+     */
     @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_EDITOR",specRole="ROLE_ADMIN, ROLE_ORG_EDITOR", wtc = 2)
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM","INST_EDITOR","ROLE_ADMIN, ROLE_ORG_EDITOR") })
     def addMembers() {
@@ -2348,6 +2537,10 @@ join sub.orgRelations or_sub where
         }
     }
 
+    /**
+     * Call for the overview of current workflows for the context institution
+     * @return the entry view for the workflows, loading current cache settings
+     */
     @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_USER", ctrlService = 1)
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER") })
     def currentWorkflows() {
@@ -2472,6 +2665,10 @@ join sub.orgRelations or_sub where
         result
     }
 
+    /**
+     * Call for the table view of those consortia which are linked to the context institution
+     * @return a list of those institutions on whose consortial subscriptions the context institution is participating
+     */
     @Secured(['ROLE_USER'])
     def currentConsortia() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2579,6 +2776,11 @@ join sub.orgRelations or_sub where
         */
     }
 
+    /**
+     * Call to list all member institutions which are linked by combo to the given context consortium.
+     * The result may be filtered by organisational and subscription parameters
+     * @return the list of consortial member institutions
+     */
     @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR", wtc = 1)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM","INST_USER","ROLE_ADMIN,ROLE_ORG_EDITOR")
@@ -2616,13 +2818,13 @@ join sub.orgRelations or_sub where
             }
         }
         else result.filterSet    = params.filterSet ? true : false
-        if(!params.subPerpetual) {
+        /*if(!params.subPerpetual) {
             if(!params.filterSet) {
                 params.subPerpetual = "on"
                 result.filterSet = true
             }
         }
-        else result.filterSet    = params.filterSet ? true : false
+        else result.filterSet    = params.filterSet ? true : false*/
 
         params.comboType = result.comboType.value
         def fsq = filterService.getOrgComboQuery(params, result.institution)
@@ -2660,6 +2862,7 @@ join sub.orgRelations or_sub where
             response.outputStream.flush()
             response.outputStream.close()
             wb.dispose()
+            return //IntelliJ cannot know that the return prevents an obsolete redirect
         }
         else if(params.exportClickMeExcel) {
             if (params.filename) {
@@ -2670,7 +2873,7 @@ join sub.orgRelations or_sub where
             Map<String, Object> selectedFields = [:]
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
 
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(totalMembers, selectedFields)
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(totalMembers, selectedFields, 'institution')
 
             response.setHeader "Content-disposition", "attachment; filename=\"${file}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -2678,6 +2881,7 @@ join sub.orgRelations or_sub where
             response.outputStream.flush()
             response.outputStream.close()
             wb.dispose()
+            return //IntelliJ cannot know that the return prevents an obsolete redirect
         }
         else {
             withFormat {
@@ -2697,6 +2901,14 @@ join sub.orgRelations or_sub where
         }
     }
 
+    /**
+     * Call to list consortial member institutions along with their subscriptions and costs.
+     * The list may be displayed as HTML or rendered as file, either as Excel worksheet or comma separated file
+     * @return a list enumerating cost item entries with the subscription and member institution attached to the cost items
+     * @see CostItem
+     * @see Subscription
+     * @see Org
+     */
     @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN")
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN") })
     def manageConsortiaSubscriptions() {
@@ -2712,8 +2924,12 @@ join sub.orgRelations or_sub where
         if(params.format || params.exportXLS) {
             List<Subscription> subscriptions = result.entries.collect { entry -> (Subscription) entry[1] } as List<Subscription>
             Links.executeQuery("select l from Links l where (l.sourceSubscription in (:targetSubscription) or l.destinationSubscription in (:targetSubscription)) and l.linkType = :linkType",[targetSubscription:subscriptions,linkType:RDStore.LINKTYPE_FOLLOWS]).each { Links link ->
-                if(link.sourceSubscription && link.destinationSubscription)
-                subLinks.put(link.sourceSubscription,link.destinationSubscription)
+                if(link.sourceSubscription && link.destinationSubscription) {
+                    Set<Subscription> destinations = subLinks.get(link.sourceSubscription)
+                    if(destinations)
+                        destinations << link.destinationSubscription
+                    subLinks.put(link.sourceSubscription, destinations)
+                }
             }
             /*OrgRole.findAllByRoleTypeInList([RDStore.OR_PROVIDER,RDStore.OR_AGENCY]).each { it ->
                 List<Org> orgs = providers.get(it.sub)
@@ -3067,6 +3283,12 @@ join sub.orgRelations or_sub where
             }
         }
     }
+
+    /**
+     * Call for the consortium to list the surveys a given institution is participating at.
+     * The result may be displayed as HTML or exported as Excel worksheet
+     * @return a list of surveys the context consortium set up and the given institution is participating at
+     */
     @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN")
     @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN") })
     def manageParticipantSurveys() {
@@ -3125,6 +3347,11 @@ join sub.orgRelations or_sub where
         }
     }
 
+    /**
+     * Manages calls about the property groups the context institution defined. With a given parameter,
+     * editing may be done on the given property group
+     * @return in every case, the list of property groups; the list may be exported as Excel with the usage data as well, then, an Excel worksheet is being returned
+     */
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", wtc = 1)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
@@ -3235,6 +3462,10 @@ join sub.orgRelations or_sub where
             result
     }
 
+    /**
+     * Call to display the current usage for the given property in the system
+     * @return a form view of the given property definition with their usage in the context institution's objects
+     */
     @DebugAnnotation(perm = "ORG_INST,ORG_CONSORTIUM", affil = "INST_EDITOR")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
@@ -3334,6 +3565,10 @@ join sub.orgRelations or_sub where
         result
     }
 
+    /**
+     * Call to process a bulk assign of a property definition to a given set of objects
+     * @return the updated view with the assigned property definitions
+     */
     @DebugAnnotation(perm = "ORG_INST,ORG_CONSORTIUM", affil = "INST_EDITOR", wtc = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
@@ -3391,6 +3626,12 @@ join sub.orgRelations or_sub where
         }
     }
 
+    /**
+     * Call to remove the given property definition from the given objects
+     * @param propDef the property definition to remove
+     * @param selectedObjects the objects from which the property should be unassigned
+     * @param contextOrg the institution whose properties should be removed
+     */
     def processDeleteProperties(PropertyDefinition propDef, selectedObjects, Org contextOrg) {
         PropertyDefinition.withTransaction {
             int deletedProperties = 0
@@ -3410,6 +3651,13 @@ join sub.orgRelations or_sub where
         }
     }
 
+    /**
+     * Resolves for the given identifier the object matching to the object type of the given property definition
+     * @param pd the property definition whose property's owner should be retrieved
+     * @param id the identifier of the object to retrieve
+     * @return the object matching the property definition's object type and the given identifier
+     * @see PropertyDefinition#descr
+     */
     def resolveOwner(PropertyDefinition pd, String id) {
         def owner
         switch(pd.descr) {
@@ -3428,7 +3676,11 @@ join sub.orgRelations or_sub where
     }
 
     /**
-     * Display and manage PrivateProperties for this institution
+     * Displays and manages private property definitions for this institution.
+     * If the add command is specified (i.e. params.cmd is set), this method inserts a new private property definition;
+     * usage is restricted to the context institution.
+     * To add a custom property definition (which is usable for every institution), the route is {@link de.laser.ajax.AjaxController#addCustomPropertyType()}
+     * (but consider the annotation there!)
      */
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", wtc = 1)
     @Secured(closure = {
@@ -3455,6 +3707,24 @@ join sub.orgRelations or_sub where
                     PropertyDefinition pd = (PropertyDefinition) genericOIDService.resolveOID(params.pd)
                     pd.multipleOccurrence = !pd.multipleOccurrence
                     pd.save()
+                }
+                break
+            case 'replacePropertyDefinition':
+                if(params.xcgPdTo) {
+                    PropertyDefinition pdFrom = (PropertyDefinition) genericOIDService.resolveOID(params.xcgPdFrom)
+                    PropertyDefinition pdTo = (PropertyDefinition) genericOIDService.resolveOID(params.xcgPdTo)
+                    String oldName = pdFrom.tenant ? "${pdFrom.getI10n("name")} (priv.)" : pdFrom.getI10n("name")
+                    String newName = pdTo.tenant ? "${pdTo.getI10n("name")} (priv.)" : pdTo.getI10n("name")
+                    if (pdFrom && pdTo) {
+                        try {
+                            int count = propertyService.replacePropertyDefinitions(pdFrom, pdTo, Boolean.valueOf(params.overwrite), false)
+                            flash.message = message(code: 'menu.institutions.replace_prop.changed', args: [count, oldName, newName])
+                        }
+                        catch (Exception e) {
+                            e.printStackTrace()
+                            flash.error = message(code: 'menu.institutions.replace_prop.error', args: [oldName, newName])
+                        }
+                    }
                 }
                 break
             case 'delete': flash.message = deletePrivatePropertyDefinition(params)
@@ -3494,6 +3764,11 @@ join sub.orgRelations or_sub where
             result
     }
 
+    /**
+     * Call to display the current general public property definitions of the system
+     * @return a read-only list of public / general property definitions with the usages of objects owned by the context institution
+     * @see AdminController#managePropertyDefinitions()
+     */
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", wtc = 1)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
@@ -3501,17 +3776,35 @@ join sub.orgRelations or_sub where
     Object managePropertyDefinitions() {
         Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
-        if(params.pd) {
-            PropertyDefinition pd = (PropertyDefinition) genericOIDService.resolveOID(params.pd)
-            if (pd) {
-                PropertyDefinition.withTransaction { TransactionStatus ts ->
+        if(params.xcgPdTo) {
+            PropertyDefinition pdFrom = (PropertyDefinition) genericOIDService.resolveOID(params.xcgPdFrom)
+            PropertyDefinition pdTo = (PropertyDefinition) genericOIDService.resolveOID(params.xcgPdTo)
+            String oldName = pdFrom.tenant ? "${pdFrom.getI10n("name")} (priv.)" : pdFrom.getI10n("name")
+            String newName = pdTo.tenant ? "${pdTo.getI10n("name")} (priv.)" : pdTo.getI10n("name")
+            if (pdFrom && pdTo) {
+                try {
+                    int count = propertyService.replacePropertyDefinitions(pdFrom, pdTo, params.overwrite == 'on', false)
+                    flash.message = message(code: 'menu.institutions.replace_prop.changed', args: [count, oldName, newName])
+                }
+                catch (Exception e) {
+                    e.printStackTrace()
+                    flash.error = message(code: 'menu.institutions.replace_prop.error', args: [oldName, newName])
+                }
+            }
+        }
+                //PropertyDefinition.withTransaction { TransactionStatus ts ->
                     switch(params.cmd) {
+                        /*
                         case 'toggleMandatory': pd.mandatory = !pd.mandatory
                             pd.save()
                             break
                         case 'toggleMultipleOccurrence': pd.multipleOccurrence = !pd.multipleOccurrence
                             pd.save()
                             break
+                         */
+                        case 'replacePropertyDefinition':
+                            break
+                            /*
                         case 'deletePropertyDefinition':
                             if (! pd.isHardData) {
                                 try {
@@ -3523,10 +3816,9 @@ join sub.orgRelations or_sub where
                                 }
                             }
                             break
+                        */
                     }
-                }
-            }
-        }
+                //}
 
         result.languageSuffix = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
 
@@ -3556,6 +3848,11 @@ join sub.orgRelations or_sub where
             render view: 'managePrivatePropertyDefinitions', model: result
     }
 
+    /**
+     * If a user is affiliated to several institutions, this call changes the context institution to the given one and redirects
+     * the user to the dashboard page
+     * @return the dashboard view of the picked context institution
+     */
     @Secured(['ROLE_USER'])
     def switchContext() {
         User user = contextService.getUser()
@@ -3569,12 +3866,10 @@ join sub.orgRelations or_sub where
     }
 
     /**
-     * Delete existing PrivateProperty for this institution
-     *
-     * @param params
-     * @return
+     * Deletes the given private property definition for this institution
+     * @param params the parameter map containing the property definition parameters
+     * @return success or error messages
      */
-
     private deletePrivatePropertyDefinition(params) {
         PropertyDefinition.withTransaction {
             log.debug("delete private property definition for institution: " + params)
@@ -3611,6 +3906,10 @@ join sub.orgRelations or_sub where
         }
     }
 
+    /**
+     * Call to open the license copy view
+     * @return the entry point view of the license copy process
+     */
     @DebugAnnotation(test='hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def copyLicense() {

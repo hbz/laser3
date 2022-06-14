@@ -24,8 +24,8 @@ class CostItemFilter extends BaseFilter {
         List<String> whereParts         = [ 'where ci.id in (:costItemIdList)']
         Map<String, Object> queryParams = [ costItemIdList: [] ]
 
-        String filterSource = params.get(BaseConfig.FILTER_PREFIX + 'costItem' + BaseConfig.FILTER_SOURCE_POSTFIX)
-        filterResult.labels.put('base', [source: BaseConfig.getMessage(BaseConfig.KEY_COSTITEM + '.source.' + filterSource)])
+        String filterSource = getCurrentFilterSource(params, BaseConfig.KEY_COSTITEM)
+        filterResult.labels.put('base', [source: BaseConfig.getSourceLabel(BaseConfig.KEY_COSTITEM, filterSource)])
 
         switch (filterSource) {
             case 'consortia-cost':
@@ -45,7 +45,7 @@ class CostItemFilter extends BaseFilter {
                 break
         }
 
-        String cmbKey = BaseConfig.FILTER_PREFIX + 'costItem_'
+        String cmbKey = BaseConfig.FILTER_PREFIX + BaseConfig.KEY_COSTITEM + '_'
         int pCount = 0
 
         getCurrentFilterKeys(params, cmbKey).each { key ->
@@ -93,11 +93,11 @@ class CostItemFilter extends BaseFilter {
                 }
                 // --> refdata join tables
                 else if (pType == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
-                    println ' ------------ not implemented ------------ '
+                    println ' --- ' + pType +' not implemented --- '
                 }
                 // --> custom filter implementation
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
-                    println ' ------------ not implemented ------------ '
+                    println ' --- ' + pType +' not implemented --- '
                 }
 
                 if (filterLabelValue) {

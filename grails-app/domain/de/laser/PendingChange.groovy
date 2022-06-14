@@ -13,8 +13,15 @@ import grails.converters.JSON
 import groovy.util.logging.Slf4j
 import net.sf.json.JSONObject
 import org.grails.web.json.JSONElement
-
 import java.text.SimpleDateFormat
+
+/**
+ * A reflected change which may be accepted or rejected and thus controls local objects against consortial or global records
+ * It tracks also history, i.e. title changes being performed on a subscription. Currently, also the property inheritance is directed by pending chnage entries as well;
+ * that is why there are two parallel structures running in this domain what makes the domain very complex
+ * @see AuditConfig
+ * @see PendingChangeConfiguration
+ */
 @Slf4j
 class PendingChange {
 
@@ -92,9 +99,9 @@ class PendingChange {
         oldValue column: 'pc_old_value', type: 'text'
         newValue column: 'pc_new_value', type: 'text'
         payload column: 'pc_payload', type: 'text'
-        msgToken column: 'pc_msg_token'
+        msgToken column: 'pc_msg_token', index: 'pending_change_msg_token_idx'
         msgParams column: 'pc_msg_doc', type: 'text'
-        ts column: 'pc_ts'
+        ts column: 'pc_ts', index: 'pending_change_ts_idx'
         owner column: 'pc_owner', index: 'pending_change_owner_idx'
         desc column: 'pc_desc', type: 'text'
         status column: 'pc_status_rdv_fk'
@@ -135,9 +142,9 @@ class PendingChange {
     }
 
     /**
-     * Factory method which should replace the legacy method ChangeNotificationService.registerPendingChange().
-     * @param configMap
-     * @return
+     * Factory method which should replace the legacy method ChangeNotificationService.registerPendingChange()
+     * @param configMap the configuration map containing the change which should be reflected
+     * @return a new change record entry, with status pending or history
      * @throws CreationException
      */
     static PendingChange construct(Map<String, Object> configMap) throws CreationException {
@@ -234,13 +241,19 @@ class PendingChange {
                 pc.status = configMap.status
                 pc.ts = new Date()
                 pc.owner = configMap.owner
-                if (pc.save())
-                    pc
-                else throw new CreationException("Error on hooking up pending change: ${pc.errors}")
+                if (pc.hasErrors())
+                    throw new CreationException("Error on hooking up pending change: ${pc.errors.getAllErrors().toListString()}")
+                else pc.save()
             }
         } else throw new CreationException("Pending changes need a target! Check if configMap.target is correctly set!")
     }
 
+    /**
+     * Checks if a change record exists already with the given parameters
+     * @param configMap the parameter map containing the chage data to be reflected
+     * @param targetClass the domain class the change is attached to
+     * @return the change record, if it exists or an empty one, if not
+     */
     static PendingChange checkPendingChangeExistsForSync(Map<String, Object> configMap, String targetClass) {
         Map<String, Object> changeParams = [target  : configMap.target,
                                             msgToken: configMap.msgToken,
@@ -313,6 +326,9 @@ class PendingChange {
         return pc
     }
 
+    /**
+     * This is a workaround to fetch data from a pending change; initially stored in JSON and thus unable to perform queries on
+     */
     def workaroundForDatamigrate() {
         // workaround until refactoring is done
         if (payload) {
@@ -329,24 +345,48 @@ class PendingChange {
         }
     }
 
+    /**
+     * Resolves the stored OID of this change entry
+     * @return the resolved object
+     */
     def resolveOID() {
         genericOIDService.resolveOID(oid)
     }
 
+    /**
+     * Returns the change data stored as JSON. Works only for those changes which are in JSON only
+     * @return a JSON entry reflecting the change data, an empty object if no data exists
+     */
     JSONElement getPayloadAsJSON() {
         payload ? JSON.parse(payload) : JSON.parse('{}')
     }
 
+    /**
+     * Backwards compatible getter method for the change stored as JSON
+     * @return a JSON entry reflecting the change data, an empty object if no data exists
+     * @see #getPayloadAsJSON()
+     */
     JSONElement getChangeDocAsJSON() {
         def payload = getPayloadAsJSON()
 
         payload.changeDoc ?: JSON.parse('{}')
     }
 
+    @Deprecated
     def getMessage() {
 
     }
 
+    /**
+     * Gets the parameters of this change and returns them as an array
+     * @return an array containing the change data:
+     * <ol>
+     *     <li>the object's name</li>
+     *     <li>the old value</li>
+     *     <li>the new value</li>
+     * </ol>
+     * Subtract one from each list number to get the according array index
+     */
     def getParsedParams() {
 
         Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()

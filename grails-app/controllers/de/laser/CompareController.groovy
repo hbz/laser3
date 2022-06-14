@@ -6,6 +6,9 @@ import de.laser.helper.RDStore
 import de.laser.helper.SwissKnife
 import grails.plugin.springsecurity.annotation.Secured
 
+/**
+ * This controller manages calls when entities should be compared against each other
+ */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class CompareController  {
 
@@ -13,6 +16,9 @@ class CompareController  {
     CompareService compareService
     GenericOIDService genericOIDService
 
+    /**
+     * Compares licenses against each other
+     */
     @DebugAnnotation(perm = "ORG_INST,ORG_CONSORTIUM", affil = "INST_USER")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
@@ -39,6 +45,9 @@ class CompareController  {
         result
     }
 
+    /**
+     * Compares subscriptions against each other
+     */
     @DebugAnnotation(perm = "ORG_INST,ORG_CONSORTIUM", affil = "INST_USER")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
@@ -73,6 +82,10 @@ class CompareController  {
         result
     }
 
+    /**
+     * As the list of titles per subscription may get very long, this is an AJAX-called method to load the next batch of entitlements
+     * @return the issue entitlement table, starting with the entities from the given offset
+     */
     @DebugAnnotation(perm = "ORG_INST,ORG_CONSORTIUM", affil = "INST_USER")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")

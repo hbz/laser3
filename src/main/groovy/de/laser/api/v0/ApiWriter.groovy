@@ -12,6 +12,7 @@ import groovy.util.logging.Slf4j
 import org.grails.web.json.JSONObject
 import org.springframework.transaction.TransactionStatus
 
+@Deprecated
 @Slf4j
 class ApiWriter {
 

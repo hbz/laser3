@@ -23,6 +23,29 @@ import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 import grails.web.servlet.mvc.GrailsParameterMap
 
+/**
+ * An organisation record.
+ * Organisations may represent in LAS:eR:
+ * <ol>
+ *     <li>academic institutions</li>
+ *     <li>commercial organisations: editors or publishing houses</li>
+ * </ol>
+ * Institutions may be: university or public libraries, research organisations, or other academic institutions.
+ * Above that, organisations may be editors, providers, publishers, agencies. They are called by the super term "organisations".
+ * The main difference between organisations and institutions is that institutions may have user accounts linked to them whereas publishers, agencies etc. are not supposed to have such.
+ * There are above that several ways to distinguish technically an organisation from an institution:
+ * <ul>
+ *     <li>institutions have a customer type</li>
+ *     <li>the organisational types are different, see {@link RDConstants#ORG_TYPE}</li>
+ *     <li>a well maintained institution record has the sector set to 'Academic' while (other) organisations are usually set to 'Commercial'</li>
+ *     <li>institutions are linked with different org role types to other objects than other organisations are (see the controlled list under {@link RDConstants#ORGANISATIONAL_ROLE} for the role types)</li>
+ *     <li>institution metadata is maintained in LAS:eR directly whereas providers should curate themselves in we:kb; organisations thus have a we:kb-ID (stored as {@link #gokbId}, naming is legacy) which serves as synchronisation
+ *     key between the data in the two webapps</li>
+ * </ul>
+ * @see UserOrg
+ * @see OrgRole
+ * @see OrgSetting
+ */
 @Slf4j
 class Org extends AbstractBaseWithCalculatedLastUpdated
         implements DeleteFlag {
@@ -239,11 +262,23 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         lastUpdatedCascading (nullable: true)
     }
 
+    /**
+     * Checks if the organisation is marked as deleted
+     * @return true if the status is deleted, false otherwise
+     */
     @Override
     boolean isDeleted() {
         return RDStore.ORG_STATUS_DELETED.id == status?.id
     }
 
+    /**
+     * Generates a shortcode for the new organisation record and sets the institution whose member created the entry.
+     * This serves as reference for institutions which do not have a client access (yet); if there are issues with the
+     * contact details, one can turn towards the creating institution for further information
+     * This is retrieved by the context org; but if the organisation is inserted by the cronjob-triggered synchronisation script, i.e. the
+     * new organisation comes from we:kb, there is of course no context organisation because no request context is given. If the
+     * context service is called in any way while no request context is given, the method crashes
+     */
     @Override
     def beforeInsert() {
         if ( !shortcode ) {
@@ -275,6 +310,10 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         super.afterUpdateHandler()
     }
 
+    /**
+     * Sets for an institution the default customer type, that is ORG_BASIC_MEMBER for consortium members with a basic set of permissions
+     * @return true if the setup was successful, false otherwise
+     */
     boolean setDefaultCustomerType() {
         def oss = OrgSetting.get(this, OrgSetting.KEYS.CUSTOMER_TYPE)
 
@@ -287,6 +326,10 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         false
     }
 
+    /**
+     * Gets the customer type of this institution
+     * @return the customer type string
+     */
     String getCustomerType() {
         String result
 
@@ -297,6 +340,11 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         }
         result
     }
+
+    /**
+     * Gets the internationalised value of the customer type of this institution
+     * @return the localised value string of the customer type for display
+     */
     String getCustomerTypeI10n() {
         String result
 
@@ -308,27 +356,32 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         result
     }
 
-    /*
-	    gets OrgSetting
-	    creating new one (with value) if not existing
+    /**
+     * Gets the given OrgSetting enum key, creating new one (with the given default value) if not existing
+     * @param key the enum key to look for
+     * @param defaultValue the value to insert if the key does not exist
+     * @return the org setting
      */
     OrgSetting getSetting(OrgSetting.KEYS key, def defaultValue) {
         def os = OrgSetting.get(this, key)
         (os == OrgSetting.SETTING_NOT_FOUND) ? OrgSetting.add(this, key, defaultValue) : (OrgSetting) os
     }
 
-    /*
-        gets VALUE of OrgSetting
-        creating new OrgSetting (with value) if not existing
+    /**
+     * Gets the VALUE of the given OrgSetting enum key, creating new OrgSetting (with the given default value) if not existing
+     * @param key the enum key to look for
+     * @param defaultValue
+     * @return the org setting value
      */
     def getSettingsValue(OrgSetting.KEYS key, def defaultValue) {
         OrgSetting setting = getSetting(key, defaultValue)
         setting.getValue()
     }
 
-    /*
-        gets VALUE of OrgSetting
-        creating new OrgSetting if not existing
+    /**
+     * Gets the VALUE of given OrgSetting enum key, creating new OrgSetting (without value) if not existing
+     * @param key the enum key to look for
+     * @return the org setting value
      */
     def getSettingsValue(OrgSetting.KEYS key) {
         getSettingsValue(key, null)
@@ -347,10 +400,20 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         super.beforeDeleteHandler()
     }
 
+    /**
+     * One of the functions to generate a shortcode from the organisation name; replaces blanks with underscores and strips everything beyond 128 characters
+     * @param name the organisation's name
+     * @return the prepared string
+     */
     static String generateShortcodeFunction(name) {
         return StringUtils.left(name.trim().replaceAll(" ","_"), 128) // FIX
     }
 
+    /**
+     * Generates a shortcode for the given organisation's name
+     * @param name the name to prepare
+     * @return the shortened and, if necessary, postfixed shortcode
+     */
     String generateShortcode(name) {
         String candidate = Org.generateShortcodeFunction(name)
         return incUntilUnique(candidate);
@@ -369,10 +432,23 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         result
     }
 
+    /**
+     * Gets the property definition groups defined by the given institution for the organisation to be viewed
+     * @param contextOrg the institution whose property definition groups should be loaded
+     * @return a {@link Map} of property definition groups, ordered by sorted, global, local and orphaned property definitions
+     * @see de.laser.properties.PropertyDefinition
+     * @see de.laser.properties.PropertyDefinitionGroup
+     */
     Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
         propertyService.getCalculatedPropDefGroups(this, contextOrg)
     }
 
+    /**
+     * Gets the identifier for the given namespace string; if there are multiple occurrences, the FIRST one in the list
+     * is being retrieved (which may vary)
+     * @param idtype the namespace string to which the requested identifier belongs to
+     * @return the {@link Identifier} if found, null otherwise
+     */
     Identifier getIdentifierByType(String idtype) {
         Identifier result
 
@@ -383,6 +459,10 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         result
     }
 
+    /**
+     * Gets all institution administrators of this institution
+     * @return a {@link List} of {@link User}s who are registered as administrators
+     */
     List<User> getAllValidInstAdmins() {
         List<User> admins = User.executeQuery(
                 "select u from User u join u.affiliations uo where " +
@@ -394,6 +474,11 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         admins
     }
 
+    /**
+     * Gets all identifiers of this institution belonging to the given namespace
+     * @param idtype the namespace string to which the requested identifiers belong
+     * @return a {@link List} of {@link Identifier}s belonging to the given namespace
+     */
     List<Identifier> getIdentifiersByType(String idtype) {
 
         Identifier.executeQuery(
@@ -402,44 +487,78 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         )
     }
 
+    /**
+     * Gets all organisations matching at least partially to the given query string
+     * @param params the parameter map containing the query string
+     * @return a {@link Map} of query results in the structure [id: oid, text: org.name]
+     */
     static def refdataFind(GrailsParameterMap params) {
         GenericOIDService genericOIDService = (GenericOIDService) Holders.grailsApplication.mainContext.getBean('genericOIDService')
 
         genericOIDService.getOIDMapList( Org.findAllByNameIlike("%${params.q}%", params), 'name' )
     }
 
+    /**
+     * Creates a new organisation record with the given name
+     * @param value the name of the new organisation
+     * @return the new organisation instance
+     */
     // called from AjaxController.resolveOID2()
   static Org refdataCreate(value) {
     return new Org(name:value)
   }
 
+    /**
+     * Gets the display string for this organisation; the following cascade is being checked. If one field is not set, the following is being returned:
+     * <ol>
+     *     <li>shortname</li>
+     *     <li>sortname</li>
+     *     <li>name</li>
+     *     <li>globalUID</li>
+     *     <li>database id</id>
+     * </ol>
+     * @return one of the fields listed above
+     */
     String getDesignation() {
         shortname ?: (sortname ?: (name ?: (globalUID ?: id)))
     }
 
+    /**
+     * Checks if there are objects attached to the given organisation
+     * @return true if no {@link CostItem}s, {@link Subscription}s or {@link User}s are linked to this organisation, false otherwise
+     */
     boolean isEmpty() {
-        Map deptParams = [department:this,current:RDStore.SUBSCRIPTION_CURRENT]
-        //verification a: check if department has cost items
-        List costItems = CostItem.executeQuery('select ci from CostItem ci join ci.sub sub join sub.orgRelations orgRoles where orgRoles.org = :department and sub.status = :current',deptParams)
+        Map deptParams = [org:this,current:RDStore.SUBSCRIPTION_CURRENT]
+        //verification a: check if org has cost items
+        List costItems = CostItem.executeQuery('select ci from CostItem ci join ci.sub sub join sub.orgRelations orgRoles where orgRoles.org = :org and sub.status = :current',deptParams)
         if(costItems)
             return false
-        //verification b: check if department has current subscriptions
-        List currentSubscriptions = Subscription.executeQuery('select s from Subscription s join s.orgRelations orgRoles where orgRoles.org = :department and s.status = :current',deptParams)
+        //verification b: check if org has current subscriptions
+        List currentSubscriptions = Subscription.executeQuery('select s from Subscription s join s.orgRelations orgRoles where orgRoles.org = :org and s.status = :current',deptParams)
         if(currentSubscriptions)
             return false
-        //verification c: check if department has active users
+        //verification c: check if org has active users
         UserOrg activeUsers = UserOrg.findByOrg(this)
         if(activeUsers)
             return false
         return true
     }
 
+    /**
+     * Is the toString() implementation; returns the name of this organisation
+     * @return the name of this organisation
+     */
     @Override
     String toString() {
         //sector ? name + ', ' + sector?.getI10n('value') : "${name}"
         name
     }
 
+    /**
+     * Retrieves the general contact persons of this organisation
+     * @param onlyPublic should only the public contacts being retieved?
+     * @return a {@link List} of {@link Person}s marked as general contacts of this organisation
+     */
     List<Person> getGeneralContactPersons(boolean onlyPublic) {
 
         if (onlyPublic) {
@@ -458,6 +577,10 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         }
     }
 
+    /**
+     * Gets all public contact persons of this organisation
+     * @return a {@link List} of public {@link Person}s
+     */
     List<Person> getPublicPersons() {
         Person.executeQuery(
                 "select distinct p from Person as p inner join p.roleLinks pr where p.isPublic = true and pr.org = :org",
@@ -465,6 +588,12 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         )
     }
 
+    /**
+     * Gets the contact persons of the given function type; the request may be limited to public contacts of the given function type only
+     * @param onlyPublic retrieve only public contacts?
+     * @param functionType the function type of the contacts to be requested
+     * @return a {@link List} of {@link Person}s matching to the function type
+     */
     List<Person> getContactPersonsByFunctionType(boolean onlyPublic, RefdataValue functionType) {
 
         if (onlyPublic) {
@@ -483,24 +612,46 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         }
     }
 
+    /**
+     * Gets all type reference values attributed to this organisation
+     * @return a {@link List} of {@link RefdataValue}s assigned to this organisation
+     */
     List<RefdataValue> getAllOrgTypes() {
         RefdataValue.executeQuery("select ot from Org org join org.orgType ot where org = :org", [org: this])
     }
 
+    /**
+     * Gets all type reference value ids attributed to this organisation
+     * @return a {@link List} of reference data IDs assigned to this organisation
+     */
     List getAllOrgTypeIds() {
         RefdataValue.executeQuery("select ot.id from Org org join org.orgType ot where org = :org", [org: this])
     }
 
+    /**
+     * Checks if this institution is linked to any other institution by the given combo link type
+     * @param comboType the type of link to check
+     * @return true if there are any links from this institution to any other institution, false otherwise
+     */
     boolean isInComboOfType(RefdataValue comboType) {
         if(Combo.findByFromOrgAndType(this, comboType))
             return true
         return false
     }
 
+    /**
+     * Checks if this institution is member of any consortium
+     * @return true if this institution is linked to any consortium, false otherwise
+     */
     boolean isConsortiaMember() {
         isInComboOfType(RDStore.COMBO_TYPE_CONSORTIUM)
     }
 
+    /**
+     * Called from {@link OrganisationController#ids()} and {@link OrganisationController#show()}.
+     * Sets up for this institution the set of core identifiers that every institution should curate.
+     * The namespaces of those core identifiers are defined at {@link IdentifierNamespace#CORE_ORG_NS}
+     */
     void createCoreIdentifiersIfNotExist(){
         if(!(RDStore.OT_PROVIDER.id in this.getAllOrgTypeIds())){
 
@@ -514,7 +665,12 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
             if (isChanged) refresh()
         }
     }
-    // Only for ISIL, EZB, WIBID
+
+    /**
+     * Adds the ISIL, EZB and WIBID {@link Identifier} stubs (see {@link IdentifierNamespace#CORE_ORG_NS} for those namespaces) to this institution
+     * @param ns the namespace string to be added
+     * @param value the value to look up or to set if the identifier instance does not exist
+     */
     void addOnlySpecialIdentifiers(String ns, String value) {
         boolean found = false
         this.ids.each {
@@ -535,7 +691,10 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         }
     }
 
-    //Only INST_ADM
+    /**
+     * Checks if there is an institutional administrator registered to this institution
+     * @return true if there is at least one user registered as institutional administrator, false otherwise
+     */
     boolean hasAccessOrg(){
         if (UserOrg.findAllByOrgAndFormalRole(this, Role.findByAuthority('INST_ADM'))) {
             return true
@@ -545,6 +704,10 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         }
     }
 
+    /**
+     * Lists all users affiliated to this institution
+     * @return a {@link List} of {@link User}s associated to this institution; grouped by administrators, editors and users (with reading permissions only)
+     */
     Map<String, Object> hasAccessOrgListUser(){
 
         Map<String, Object> result = [:]
@@ -556,7 +719,13 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         return result
     }
 
-    // copied from AccessService
+    /**
+     * Copied from {@link AccessService#checkOrgPerm(java.lang.String[])}
+     * Checks if the institution has the given permissions granted; those permissions are depending from the institution's customer type.
+     * Other organisations should not have a customer type thus no rights granted at all
+     * @param perms the permissions to verify
+     * @return true if the given permissions are granted, false otherwise
+     */
     // private boolean checkOrgPerm(String[] orgPerms) {}
     boolean hasPerm(String perms) {
         boolean check = false
@@ -575,10 +744,19 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         check
     }
 
+    /**
+     * Substitution caller for {@link #dropdownNamingConvention(de.laser.Org)}; substitutes with the context institution
+     * @return this organisation's name according to the dropdown naming convention (<a href="https://github.com/hbz/laser2/wiki/UI:-Naming-Conventions">see here</a>)
+     */
     String dropdownNamingConvention() {
         return dropdownNamingConvention(contextService.getOrg())
     }
 
+    /**
+     * Displays this organisation's name according to the dropdown naming convention as specified <a href="https://github.com/hbz/laser2/wiki/UI:-Naming-Conventions">here</a>
+     * @param contextOrg the institution whose perspective should be taken
+     * @return this organisation's name according to the dropdown naming convention
+     */
     String dropdownNamingConvention(Org contextOrg){
         String result = ''
         if (contextOrg.getCustomerType() in ['ORG_BASIC_MEMBER','ORG_INST']){
@@ -599,6 +777,11 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         result
     }
 
+    /**
+     * Gets the Leitweg-ID for this institution; the Leitweg-ID is necessary for the North-Rhine Westphalia billing system.
+     * See <a href="https://www.land.nrw/de/e-rechnung-nrw">the pages of the NRW billing system (page in German)</a>
+     * @return the {@link Identifier} of the {@link IdentifierNamespace#LEIT_ID}
+     */
     Identifier getLeitID() {
         return Identifier.findByOrgAndNs(this, IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_ID))
     }

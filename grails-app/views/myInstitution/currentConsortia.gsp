@@ -76,7 +76,7 @@
     </semui:filter>
 <div class="la-clear-before">
     <g:if test="${consortia}">
-        <g:render template="export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal']" />
+        <g:render template="export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal', orgType: 'institution']" />
 
             <g:render template="/templates/filter/orgFilterTable"
                       model="[orgList: consortia,

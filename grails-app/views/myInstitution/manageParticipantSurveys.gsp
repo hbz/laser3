@@ -126,7 +126,7 @@
     <g:set var="choosenOrg" value="${Org.findById(participant.id)}"/>
     <g:set var="choosenOrgCPAs" value="${choosenOrg?.getGeneralContactPersons(false)}"/>
 
-    <table class="ui table la-table compact">
+    <table class="ui table la-js-responsive-table la-table compact">
         <tbody>
         <tr>
             <td>
@@ -175,7 +175,7 @@
                             counts="${countSurveys?.notFinish}"/>
         </semui:tabs>
 
-        <table class="ui celled sortable table la-table">
+        <table class="ui celled sortable table la-js-responsive-table la-table">
             <thead>
             <tr>
                 <th rowspan="2" class="center aligned">

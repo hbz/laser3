@@ -13,6 +13,11 @@ import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.transaction.TransactionStatus
 
+/**
+ * This is the actual controller to handle uploaded documents. Handling notes is done in {@link DocController}
+ * @see DocContext
+ * @see Doc
+ */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class DocstoreController  {
 
@@ -21,6 +26,11 @@ class DocstoreController  {
     MessageSource messageSource
     def contextService
 
+    /**
+     * Called by /documents/_table and /documents/_card
+     * Retrieves a document by its uuid
+     * @return the document, null otherwise
+     */
     @Secured(['ROLE_USER'])
     def index() {
         Doc doc = Doc.findByUuid(params.id)
@@ -41,21 +51,27 @@ class DocstoreController  {
         }
     }
 
+    /**
+     * Uploads a new document, specified by the upload form parameters, and sets the entered metadata to the new {@link DocContext} object
+     */
     @DebugAnnotation(wtc = 2)
     @Secured(['ROLE_USER'])
     def uploadDocument() {
         Doc.withTransaction { TransactionStatus ts ->
             log.debug("upload document....");
 
+            //process file
             def input_file = request.getFile("upload_file")
             if (input_file.size == 0) {
                 flash.error = message(code: 'template.emptyDocument.file')
                 redirect(url: request.getHeader('referer'))
                 return
             }
+            //get input stream of file object
             def input_stream = input_file?.inputStream
             String original_filename = request.getFile("upload_file")?.originalFilename
 
+            //retrieve uploading user and owner class
             User user = contextService.getUser()
             GrailsClass domain_class = AppUtils.getDomainClass( params.ownerclass )
 
@@ -68,6 +84,8 @@ class DocstoreController  {
                         // def docstore_uuid = docstoreService.uploadStream(input_stream, original_filename, params.upload_title)
                         // log.debug("Docstore uuid is ${docstore_uuid}");
 
+                        //create new document
+                        //TODO [ticket=2393] this must be replaced by the new entry in the document management system
                         Doc doc_content = new Doc(
                                 contentType: Doc.CONTENT_TYPE_FILE,
                                 filename: original_filename,
@@ -79,6 +97,7 @@ class DocstoreController  {
 
                         doc_content.save()
 
+                        //move the uploaded file to its actual destination (= store the file)
                         File new_File
                         try {
                             String fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
@@ -96,22 +115,26 @@ class DocstoreController  {
                             e.printStackTrace()
                         }
 
+                        //link the document to the target object
                         DocContext doc_context = new DocContext(
                                 "${params.ownertp}": instance,
                                 owner: doc_content,
                                 doctype: RefdataValue.getByValueAndCategory(params.doctype, RDConstants.DOCUMENT_TYPE)
                         )
+                        //set sharing settings (counts iff document is linked to an Org, are null otherwise)
                         doc_context.shareConf = RefdataValue.get(params.shareConf) ?: null
                         doc_context.targetOrg = params.targetOrg ? Org.get(params.targetOrg) : null
 
                         doc_context.save()
 
+                        //attach document to all survey participants (= SurveyConfigs)
                         //docForAllSurveyConfigs
                         if (instance instanceof SurveyConfig && params.docForAllSurveyConfigs) {
                             instance.surveyInfo.surveyConfigs.each { config ->
 
                                 if (instance != config) {
 
+                                    //create document objects for each file
                                     Doc doc_content2 = new Doc(
                                             contentType: Doc.CONTENT_TYPE_FILE,
                                             filename: doc_content.filename,
@@ -124,6 +147,7 @@ class DocstoreController  {
 
                                     log.debug( doc_content2.toString() )
 
+                                    //store copies of the uploaded document files
                                     try {
                                         String fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
                                         String fName = doc_content2.uuid
@@ -139,6 +163,7 @@ class DocstoreController  {
                                         e.printStackTrace()
                                     }
 
+                                    //create attachment of each document to the survey config
                                     DocContext doc_context2 = new DocContext(
                                             "${params.ownertp}": config,
                                             owner: doc_content2,
@@ -163,6 +188,9 @@ class DocstoreController  {
         redirect(url: request.getHeader('referer'))
     }
 
+    /**
+     * Call for editing an existing document, see {@link DocstoreControllerService#editDocument()} for the editing implementation. Redirects back to the referer where result may be shown in case of an error
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")',ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def editDocument() {

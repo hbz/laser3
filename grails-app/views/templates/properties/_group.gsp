@@ -7,16 +7,16 @@
 
 
 
-<table class="ui compact la-table-inCard table">
+<table class="ui compact la-js-responsive-table la-table-inCard table">
     <g:if test="${propDefGroup}">
         <colgroup>
-            <col style="width: 129px;">
-            <col style="width: 96px;">
+            <col class="la-prop-col-1">
+            <col class="la-prop-col-2">
             <g:if test="${propDefGroup.ownerType == License.class.name}">
-                <col style="width: 359px;">
+                <col class="la-prop-col-3">
             </g:if>
-            <col style="width: 148px;">
-            <col style="width: 76px;">
+            <col class="la-prop-col-4">
+            <col class="la-prop-col-5">
         </colgroup>
         <thead>
             <tr>
@@ -70,19 +70,19 @@
                     </td>
                     <td>
                         <g:if test="${prop.type.isIntegerType()}">
-                            <semui:xEditable owner="${prop}" type="number" field="intValue" overwriteEditable="${overwriteEditable}"/>
+                            <semui:xEditable owner="${prop}" type="number" field="intValue" overwriteEditable="${overwriteEditable}" class="la-dont-break-out"/>
                         </g:if>
                         <g:elseif test="${prop.type.isStringType()}">
-                            <semui:xEditable owner="${prop}" type="text" field="stringValue" overwriteEditable="${overwriteEditable}"/>
+                            <semui:xEditable owner="${prop}" type="text" field="stringValue" overwriteEditable="${overwriteEditable}" class="la-dont-break-out"/>
                         </g:elseif>
                         <g:elseif test="${prop.type.isBigDecimalType()}">
-                            <semui:xEditable owner="${prop}" type="text" field="decValue" overwriteEditable="${overwriteEditable}"/>
+                            <semui:xEditable owner="${prop}" type="text" field="decValue" overwriteEditable="${overwriteEditable}" class="la-dont-break-out"/>
                         </g:elseif>
                         <g:elseif test="${prop.type.isDateType()}">
-                            <semui:xEditable owner="${prop}" type="date" field="dateValue" overwriteEditable="${overwriteEditable}"/>
+                            <semui:xEditable owner="${prop}" type="date" field="dateValue" overwriteEditable="${overwriteEditable}" class="la-dont-break-out"/>
                         </g:elseif>
                         <g:elseif test="${prop.type.isRefdataValueType()}">
-                            <semui:xEditableRefData owner="${prop}" type="text" field="refValue" config="${prop.type.refdataCategory}" overwriteEditable="${overwriteEditable}"/>
+                            <semui:xEditableRefData owner="${prop}" type="text" field="refValue" config="${prop.type.refdataCategory}" overwriteEditable="${overwriteEditable}" class="la-dont-break-out"/>
                         </g:elseif>
                         <g:elseif test="${prop.type.isURLType()}">
                             <semui:xEditable owner="${prop}" type="url" field="urlValue" overwriteEditable="${overwriteEditable}" class="la-overflow la-ellipsis" />
@@ -93,11 +93,11 @@
                     </td>
                     <g:if test="${propDefGroup.ownerType == License.class.name}">
                         <td>
-                            <semui:xEditable owner="${prop}" type="textarea" field="paragraph" overwriteEditable="${overwriteEditable}"/>
+                            <semui:xEditable owner="${prop}" type="textarea" field="paragraph" overwriteEditable="${overwriteEditable}" class="la-dont-break-out"/>
                         </td>
                     </g:if>
                     <td>
-                        <semui:xEditable owner="${prop}" type="textarea" field="note" overwriteEditable="${overwriteEditable}"/>
+                        <semui:xEditable owner="${prop}" type="textarea" field="note" overwriteEditable="${overwriteEditable}" class="la-dont-break-out"/>
                     </td>
                     <td class="x la-js-editmode-container">  <%--before="if(!confirm('Merkmal ${prop.type.name} löschen?')) return false" --%>
                         <g:if test="${overwriteEditable && (prop.hasProperty("instanceOf") && !prop.instanceOf)}">

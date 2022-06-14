@@ -2,8 +2,10 @@ package de.laser.api.v0.entities
 
 import de.laser.Identifier
 import de.laser.License
+import de.laser.Links
 import de.laser.Org
 import de.laser.OrgRole
+import de.laser.Subscription
 import de.laser.api.v0.*
 import de.laser.helper.Constants
 import de.laser.helper.RDStore
@@ -11,10 +13,16 @@ import grails.converters.JSON
 import groovy.util.logging.Slf4j
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
+/**
+ * An API representation of a {@link License}
+ */
 @Slf4j
 class ApiLicense {
 
     /**
+     * Locates the given {@link License} and returns the object (or null if not found) and the request status for further processing
+     * @param the field to look for the identifier, one of {id, globalUID, namespace:id}
+     * @param the identifier value with namespace, if needed
      * @return ApiBox(obj: License | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND )
      */
     static ApiBox findLicenseBy(String query, String value) {
@@ -45,7 +53,10 @@ class ApiLicense {
 
 
     /**
-     * @return boolean
+     * Checks if the requesting institution can access to the given license
+     * @param lic the {@link License} to which access is being requested
+     * @param context the institution ({@link Org}) requesting access
+     * @return true if the access is granted, false otherwise
      */
     static boolean calculateAccess(License lic, Org context) {
 
@@ -68,6 +79,10 @@ class ApiLicense {
     }
 
     /**
+     * Checks if the given institution can access the given license. The license
+     * is returned in case of success
+     * @param lic the {@link License} whose details should be retrieved
+     * @param context the institution ({@link Org}) requesting the license
      * @return JSON | FORBIDDEN
      */
     static requestLicense(License lic, Org context){
@@ -82,7 +97,12 @@ class ApiLicense {
     }
 
     /**
+     * Checks if the requesting institution can access the license list of the requested institution.
+     * The list of license is returned in case of success
+     * @param owner the institution whose licenses should be retrieved
+     * @param context the institution who requests the list
      * @return JSON
+     * @see Org
      */
     static JSON getLicenseList(Org owner, Org context){
         Collection<Object> result = []
@@ -107,6 +127,11 @@ class ApiLicense {
     }
 
     /**
+     * Assembles the given license attributes into a {@link Map}. The schema of the map can be seen in
+     * schemas.gsp
+     * @param lic the {@link License} which should be output
+     * @param ignoreRelation should outgoing links be included in the output or not?
+     * @param context the institution doing the request
      * @return Map<String, Object>
      */
     static Map<String, Object> getLicenseMap(License lic, def ignoreRelation, Org context){
@@ -115,14 +140,13 @@ class ApiLicense {
         lic = GrailsHibernateUtil.unwrapIfProxy(lic)
 
         result.globalUID        = lic.globalUID
-        // removed - result.contact          = lic.contact
+        result.isPublicForApi   = lic.isPublicForApi ? "Yes" : "No" //implemented for eventual later internal purposes
         result.dateCreated      = ApiToolkit.formatInternalDate(lic.dateCreated)
         result.endDate          = ApiToolkit.formatInternalDate(lic.endDate)
+        result.openEnded        = lic.openEnded?.value
         result.lastUpdated      = ApiToolkit.formatInternalDate(lic._getCalculatedLastUpdated())
-        //result.licenseType      = lic.licenseType
         result.reference        = lic.reference
         result.startDate        = ApiToolkit.formatInternalDate(lic.startDate)
-        result.normReference    = lic.sortableReference
 
         // erms-888
         result.calculatedType   = lic._getCalculatedType()
@@ -139,6 +163,21 @@ class ApiLicense {
         result.properties       = ApiCollectionReader.getPropertyCollection(lic, context, ApiReader.IGNORE_NONE)  // com.k_int.kbplus.(LicenseCustomProperty, LicensePrivateProperty)
         result.documents        = ApiCollectionReader.getDocumentCollection(lic.documents) // de.laser.DocContext
         //result.onixplLicense    = ApiReader.requestOnixplLicense(lic.onixplLicense, lic, context) // com.k_int.kbplus.OnixplLicense
+
+        result.linkedLicenses = []
+        result.predecessors = []
+        result.successors   = []
+
+        List<Links> otherLinks = Links.executeQuery("select li from Links li where (li.sourceLicense = :license or li.destinationLicense = :license) and li.linkType not in (:excludes)", [license: lic, excludes: [RDStore.LINKTYPE_LICENSE]])
+        otherLinks.each { Links li ->
+            if(li.linkType == RDStore.LINKTYPE_FOLLOWS) {
+                if(lic == li.sourceLicense)
+                    result.predecessors.add(ApiStubReader.requestLicenseStub(li.destinationLicense, context)) // com.k_int.kbplus.License
+                else if(lic == li.destinationLicense)
+                    result.successors.add(ApiStubReader.requestLicenseStub(li.sourceLicense, context)) // com.k_int.kbplus.License
+            }
+            else result.linkedLicenses.add([linktype: li.linkType.value, license: ApiStubReader.requestLicenseStub((License) li.getOther(lic), context)])
+        }
 
         if (ignoreRelation != ApiReader.IGNORE_ALL) {
             if (ignoreRelation != ApiReader.IGNORE_SUBSCRIPTION) {

@@ -22,17 +22,35 @@ import org.springframework.http.HttpStatus
 
 import javax.servlet.http.HttpServletRequest
 
+/**
+ * Manager class to handle calls; reads the data queried and builds the response object from the query result. It contains
+ * only two generic methods - read() to perform the actual query and buildResponse() to deliver the output
+ */
 @Slf4j
 class ApiManager {
 
-    static final VERSION = '0.132'
+    /**
+     * The current version of the API. To be updated on every change which affects the output
+     */
+    static final VERSION = '1.0'
 
     /**
-     * @return Object
-     * @return BAD_REQUEST: if invalid/missing (unsupported) identifier
-     * @return PRECONDITION_FAILED: if multiple matches(objects) are found
-     * @return NOT_ACCEPTABLE: if requested format(response) is not supported
-     * @return NOT_IMPLEMENTED: if requested method(object type) is not supported
+     * Checks if the request is valid and if, whether the permissions are granted for the context institution making
+     * the request. If the requests are granted, the object and eventual stubs are being returned. See the return list
+     * which cases may hold
+     * @param obj the object type or list being requested
+     * @param query the field used to identify the object
+     * @param value the identifier value being requested
+     * @param contextOrg the institution doing the request
+     * @param format the format in which the response should be returned
+     * @return one of:
+     * <ul>
+     *     <li>Object</li>
+     *     <li>BAD_REQUEST: if invalid/missing (unsupported) identifier</li>
+     *     <li>PRECONDITION_FAILED: if multiple matches(objects) are found</li>
+     *     <li>NOT_ACCEPTABLE: if requested format(response) is not supported</li>
+     *     <li>NOT_IMPLEMENTED: if requested method(object type) is not supported</li>
+     * </ul>
      */
     static read(String obj, String query, String value, Org contextOrg, String format, Date changedFrom = null) {
         def result
@@ -68,7 +86,7 @@ class ApiManager {
 
             ApiObject.requestY()        returning object if access is granted (implicit checked)
 
-            ApiObject.getZ()            returing object without access check
+            ApiObject.getZ()            returning object without access check
 
             ---
          */
@@ -123,6 +141,19 @@ class ApiManager {
                 }
             }
         } */
+        else if (checkValidRequest('ezb/license/illIndicators')) {
+
+            if (! (isEZB || isDatamanager)) {
+                return Constants.HTTP_FORBIDDEN
+            }
+
+            ApiBox tmp = ApiLicense.findLicenseBy(query, value)
+            result = (tmp.status != Constants.OBJECT_NOT_FOUND) ? tmp.status : null // TODO: compatibility fallback; remove
+
+            if (tmp.checkFailureCodes_3()) {
+                result = ApiEZB.requestIllIndicators((License) tmp.obj)
+            }
+        }
         else if (checkValidRequest('ezb/subscription')) {
 
             if (! (isEZB || isDatamanager)) {
@@ -350,6 +381,17 @@ class ApiManager {
     }
 */
 
+    /**
+     * Builds the response depending in the request and the requested object parameters
+     * @param request the {@link HttpServletRequest} request object
+     * @param obj the object type or list being requested
+     * @param query the field used to identify the object requested
+     * @param value the identifier value
+     * @param context the request context
+     * @param contextOrg the institution performing the request
+     * @param result the result {@link Map} of the query
+     * @return a {@link Map} containing the response status and data
+     */
     static Map<String, Object> buildResponse(HttpServletRequest request, String obj, String query, String value, String context, Org contextOrg, def result) {
 
         Map<String, Object> response = [:]

@@ -5,7 +5,7 @@
 
     <div class="field">
 
-        <table class="ui celled la-table compact table la-ignore-fixed">
+        <table class="ui celled la-js-responsive-table la-table compact table la-ignore-fixed">
             <thead>
             <tr>
                 <th>Person</th>

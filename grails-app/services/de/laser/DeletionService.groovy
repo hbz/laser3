@@ -6,6 +6,8 @@ import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
 import de.laser.oap.OrgAccessPoint
 import de.laser.properties.*
+import de.laser.stats.Counter4Report
+import de.laser.stats.Counter5Report
 import de.laser.system.SystemProfiler
 import de.laser.system.SystemTicket
 import de.laser.titles.TitleHistoryEventParticipant
@@ -13,6 +15,9 @@ import org.elasticsearch.action.delete.DeleteRequest
 import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestHighLevelClient
 
+/**
+ * This service handles safe complex object deletion
+ */
 //@CompileStatic
 //@Transactional
 class DeletionService {
@@ -34,6 +39,12 @@ class DeletionService {
     static String FLAG_SUBSTITUTE   = 'teal'
     static String FLAG_BLOCKER      = 'red'
 
+    /**
+     * Deletes the given license; displays eventual attached objects which may cause conflicts
+     * @param lic the license to delete
+     * @param dryRun should the deletion avoided and only information be fetched?
+     * @return a map returning the information about the license
+     */
     Map<String, Object> deleteLicense(License lic, boolean dryRun) {
 
         Map<String, Object> result = [:]
@@ -208,6 +219,12 @@ class DeletionService {
         result
     }
 
+    /**
+     * Deletes the given subscription; displays eventual attached objects which may cause conflicts
+     * @param sub the subscription to delete
+     * @param dryRun should the deletion avoided and only information be fetched?
+     * @return a map returning the information about the subscription
+     */
     Map<String, Object> deleteSubscription(Subscription sub, boolean dryRun) {
 
         Map<String, Object> result = [:]
@@ -463,6 +480,13 @@ class DeletionService {
         result
     }
 
+    /**
+     * Deletes the given organisation; displays eventual attached objects which may cause conflicts
+     * @param org the organisation to delete
+     * @param replacement unused
+     * @param dryRun should the deletion avoided and only information be fetched?
+     * @return a map returning the information about the organisation
+     */
     Map<String, Object> deleteOrganisation(Org org, Org replacement, boolean dryRun) {
 
         Map<String, Object> result = [:]
@@ -669,6 +693,13 @@ class DeletionService {
         result
     }
 
+    /**
+     * Deletes the given user; displays eventual attached objects which may cause conflicts
+     * @param user the user to delete
+     * @param replacement the user which should replace the deleted user and take his data
+     * @param dryRun should the deletion avoided and only information be fetched?
+     * @return a map returning the information about the user
+     */
     Map<String, Object> deleteUser(User user, User replacement, boolean dryRun) {
 
         Map<String, Object> result = [:]
@@ -767,12 +798,18 @@ class DeletionService {
         result
     }
 
+    /**
+     * Deletes the given package AND its attached objects; is a cleanup function for false package entries. Use this function
+     * thus with VERY MUCH CARE!
+     * @param pkg the package to delete
+     * @return true if the deletion was successful, false otherwise
+     */
     boolean deletePackage(Package pkg) {
         println "processing package #${pkg.id}"
         Package.withTransaction { status ->
             try {
                 //to be absolutely sure ...
-                List<Subscription> subsConcerned = Subscription.executeQuery("select ie.subscription from IssueEntitlement ie join ie.tipp tipp where tipp.pkg = :pkg and tipp.pkg.name != '' and ie.status != :deleted",[pkg:pkg,deleted: RDStore.TIPP_STATUS_DELETED])
+                List<Subscription> subsConcerned = Subscription.executeQuery("select ie.subscription from IssueEntitlement ie join ie.tipp tipp where tipp.pkg = :pkg and tipp.pkg.name != '' and ie.status != :removed",[pkg:pkg,removed: RDStore.TIPP_STATUS_REMOVED])
                 if(subsConcerned) {
                     println "issue entitlements detected on package to be deleted: ${subsConcerned} .. rollback"
                     status.setRollbackOnly()
@@ -780,7 +817,7 @@ class DeletionService {
                 }
                 else {
                     //deleting IECoverages and IssueEntitlements marked deleted or where package data has disappeared
-                    List<Long> iesConcerned = IssueEntitlement.executeQuery("select ie.id from IssueEntitlement ie join ie.tipp tipp where tipp.pkg = :pkg and (ie.status = :deleted or tipp.pkg.name = '')",[pkg:pkg,deleted: RDStore.TIPP_STATUS_DELETED])
+                    List<Long> iesConcerned = IssueEntitlement.executeQuery("select ie.id from IssueEntitlement ie join ie.tipp tipp where tipp.pkg = :pkg and (ie.status = :removed or tipp.pkg.name = '')",[pkg:pkg,deleted: RDStore.TIPP_STATUS_REMOVED])
                     if(iesConcerned) {
                         IssueEntitlementCoverage.executeUpdate("delete from IssueEntitlementCoverage ic where ic.issueEntitlement.id in :toDelete",[toDelete:iesConcerned])
                         PriceItem.executeUpdate("delete from PriceItem pc where pc.issueEntitlement.id in :toDelete",[toDelete:iesConcerned])
@@ -817,6 +854,12 @@ class DeletionService {
         }
     }
 
+    /**
+     * Deletes the given title duplicate after having rebased the depending issue entitlements to the replacement title
+     * @param tipp the title duplicate to delete
+     * @param replacement the replacement title record
+     * @return true if the deletion was successful, false otherwise
+     */
     boolean deleteTIPP(TitleInstancePackagePlatform tipp, TitleInstancePackagePlatform replacement) {
         println "processing tipp #${tipp.id}"
         //rebasing subscriptions
@@ -845,29 +888,34 @@ class DeletionService {
     /**
      * Use this method with VERY MUCH CARE!
      * Deletes a {@link Collection} of {@link TitleInstancePackagePlatform} objects WITH their depending objects ({@link TIPPCoverage} and {@link Identifier})
-     * @param tipp - the {@link Collection} of {@link TitleInstancePackagePlatform} to delete
+     * @param tipp the {@link Collection} of {@link TitleInstancePackagePlatform} to delete
      * @return the success flag
      */
     boolean deleteTIPPsCascaded(Collection<TitleInstancePackagePlatform> tippsToDelete) {
-        println "processing tipps ${tippsToDelete}"
+        println "processing tipps (${tippsToDelete.collect { TitleInstancePackagePlatform tipp -> tipp.id}})"
         TitleInstancePackagePlatform.withTransaction { status ->
             try {
                 Map<String,Collection<TitleInstancePackagePlatform>> toDelete = [toDelete:tippsToDelete]
-                Map<String,Collection<IssueEntitlement>> delIssueEntitlements = [toDelete:IssueEntitlement.findAllByTippInListAndStatus(tippsToDelete, RDStore.TIPP_STATUS_DELETED)]
+                Map<String,Collection<IssueEntitlement>> delIssueEntitlements = [toDelete:IssueEntitlement.findAllByTippInListAndStatus(tippsToDelete, RDStore.TIPP_STATUS_REMOVED)]
+                log.info("${PendingChange.executeUpdate('delete from PendingChange pc where pc.tippCoverage in (select tc from TIPPCoverage tc where tc.tipp in (:toDelete))',toDelete)} coverage pending changes deleted")
                 log.info("${TIPPCoverage.executeUpdate('delete from TIPPCoverage tc where tc.tipp in (:toDelete)',toDelete)} coverages deleted")
                 log.info("${Identifier.executeUpdate('delete from Identifier i where i.tipp in (:toDelete)',toDelete)} identifiers deleted")
                 log.info("${PriceItem.executeUpdate('delete from PriceItem pi where pi.tipp in (:toDelete)', toDelete)} price items deleted")
                 log.info("${OrgRole.executeUpdate('delete from OrgRole oo where oo.tipp in (:toDelete)', toDelete)} org roles deleted")
                 log.info("${TitleHistoryEventParticipant.executeUpdate('delete from TitleHistoryEventParticipant thep where thep.participant in (:toDelete)', toDelete)} title history event participants deleted")
                 log.info("${Fact.executeUpdate('delete from Fact f where f.relatedTitle in (:toDelete)', toDelete)} facts deleted")
+                log.info("${Counter4Report.executeUpdate('delete from Counter4Report c4r where c4r.title in (:toDelete)', toDelete)} COUNTER 4 reports deleted")
+                log.info("${Counter5Report.executeUpdate('delete from Counter5Report c5r where c5r.title in (:toDelete)', toDelete)} COUNTER 5 reports deleted")
                 log.info("${PendingChange.executeUpdate('delete from PendingChange pc where pc.tipp in (:toDelete)', toDelete)} pending changes deleted")
                 log.info("${Language.executeUpdate('delete from Language l where l.tipp in (:toDelete)', toDelete)} language entries deleted")
                 log.info("${DeweyDecimalClassification.executeUpdate('delete from DeweyDecimalClassification ddc where ddc.tipp in (:toDelete)', toDelete)} DDC entrie deleted")
-                log.info("${IssueEntitlementCoverage.executeUpdate('delete from IssueEntitlementCoverage ic where ic.issueEntitlement in (:toDelete)',delIssueEntitlements)} issue entitlement coverages deleted")
-                log.info("${CostItem.executeUpdate('update CostItem ci set ci.issueEntitlement = null where ci.issueEntitlement in (:toDelete)', delIssueEntitlements)} issue entitlement costs nullified")
-                log.info("${IssueEntitlementGroupItem.executeUpdate('delete from IssueEntitlementGroupItem iegi where iegi.ie in (:toDelete)', delIssueEntitlements)} issue entitlement group items deleted")
-                log.info("${PriceItem.executeUpdate('delete from PriceItem pi where pi.issueEntitlement in (:toDelete)', delIssueEntitlements)} issue entitlement price items deleted")
-                log.info("${IssueEntitlement.executeUpdate('delete from IssueEntitlement ie where ie in (:toDelete)', delIssueEntitlements)} deleted issue entitlements cleared")
+                if(delIssueEntitlements.toDelete.size() > 0) {
+                    log.info("${IssueEntitlementCoverage.executeUpdate('delete from IssueEntitlementCoverage ic where ic.issueEntitlement in (:toDelete)',delIssueEntitlements)} issue entitlement coverages deleted")
+                    log.info("${CostItem.executeUpdate('update CostItem ci set ci.issueEntitlement = null where ci.issueEntitlement in (:toDelete)', delIssueEntitlements)} issue entitlement costs nullified")
+                    log.info("${IssueEntitlementGroupItem.executeUpdate('delete from IssueEntitlementGroupItem iegi where iegi.ie in (:toDelete)', delIssueEntitlements)} issue entitlement group items deleted")
+                    log.info("${PriceItem.executeUpdate('delete from PriceItem pi where pi.issueEntitlement in (:toDelete)', delIssueEntitlements)} issue entitlement price items deleted")
+                    log.info("${IssueEntitlement.executeUpdate('delete from IssueEntitlement ie where ie in (:toDelete)', delIssueEntitlements)} deleted issue entitlements cleared")
+                }
                 log.info("${TitleInstancePackagePlatform.executeUpdate('delete from TitleInstancePackagePlatform tipp where tipp in (:toDelete)',toDelete)} tipps cleared")
                 return true
             }
@@ -880,6 +928,11 @@ class DeletionService {
         }
     }
 
+    /**
+     * Deletes the given issue entitlement with depending objects
+     * @param ie the issue entitlement to be deleted
+     * @return true if the deletion was successful, false otherwise
+     */
     boolean deleteIssueEntitlement(IssueEntitlement ie) {
         println "processing issue entitlement ${ie}"
         IssueEntitlement.withTransaction { status ->
@@ -898,6 +951,11 @@ class DeletionService {
         }
     }
 
+    /**
+     * Removes the given ElasticSearch entry (document) from the index
+     * @param id the id of the entry to remove
+     * @param className the domain class index from which the entry should be removed
+     */
     void deleteDocumentFromIndex(id, String className) {
         String es_index = ESWrapperService.es_indices.get(className)
         RestHighLevelClient esclient = ESWrapperService.getClient()

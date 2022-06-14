@@ -10,6 +10,10 @@ import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
+/**
+ * This service serves as mirror for the {@link de.laser.PlatformController}, containing its data manipulating
+ * methods
+ */
 @Transactional
 class PlatformControllerService {
 
@@ -21,11 +25,15 @@ class PlatformControllerService {
 
     //-------------------------------------------- derivation section --------------------------------------------------
 
+    /**
+     * Creates an OrgAccessPointLink with
+     * subscriptionPackage=passed subscriptionPackage | Platform = passed Platform | AccessPoint = null.
+     * This is a kind of marker to indicate that a subscriptionPackage specific access point configuration and no
+     * AccessPoint derivation from Platform is used
+     * @param params the parameter map containing the link details
+     * @return OK with the new link on success, false otherwise
+     */
     Map<String,Object> addDerivation(GrailsParameterMap params) {
-        // create an OrgAccessPointLink with
-        // subscriptionPackage=passed subscriptionPackage | Platform = passed Platform | AccessPoint = null
-        // this is a kind of marker to indicate that a subscriptionPackage specific AP configuration and no
-        // AccessPoint derivation from Platform is used
         Map<String,Object> check = checkDerivationParams(params), result = [:]
         if(check.status == STATUS_ERROR)
             check
@@ -39,10 +47,14 @@ class PlatformControllerService {
         }
     }
 
+    /**
+     * Deletes all OrgAccessPointLinks markers for the given platform und SubscriptionPackage
+     * The marker (OrgAccessPoint=null), which indicates that want to overwrite platform specific AccessPoint links,
+     * gets deleted too
+     * @param params the parameter mao containing the link details
+     * @return OK if the deletion was successful, false otherwise
+     */
     Map<String,Object> removeDerivation(GrailsParameterMap params) {
-        // delete marker all OrgAccessPointLinks for the given platform und SubscriptionPackage
-        // The marker (OrgAccessPoint=null), which indicates that want to overwrite platform specific AccessPoint links,
-        // gets deleted too
         Map<String,Object> check = checkDerivationParams(params), result = [:]
         if(check.status == STATUS_ERROR)
             check
@@ -53,6 +65,11 @@ class PlatformControllerService {
         }
     }
 
+    /**
+     * Validates the given input parameters checks if subscription package and platform are given
+     * @param params the parameter map whose input should be validated
+     * @return OK if the parameters are present and loaded, ERROR otherwise
+     */
     Map<String,Object> checkDerivationParams(GrailsParameterMap params) {
         Map<String,Object> result = [:]
         Locale locale = LocaleContextHolder.getLocale()
@@ -79,6 +96,12 @@ class PlatformControllerService {
 
     //------------------------------------------ access point linking section ------------------------------------------
 
+    /**
+     * Links the given access point to the given platform
+     * @param params the parameter map containing the link data
+     * @param apInstance the access point to link
+     * @return OK if the linking was successful and no duplicated is linked, ERROR otherwise
+     */
     Map<String,Object> linkAccessPoint(GrailsParameterMap params, OrgAccessPoint apInstance) {
         Map<String,Object> result = [:]
         // save link
@@ -108,21 +131,25 @@ class PlatformControllerService {
         [result:result,status:STATUS_OK]
     }
 
+    /**
+     * Deactivates the given access point link
+     * @param params the access point link to deactivate
+     * @return OK if the updating was successful, ERROR otherwise
+     */
     Map<String,Object> removeAccessPoint(GrailsParameterMap params) {
         Map<String,Object> result = [:]
-        // update active aopl, set active=false
         OrgAccessPointLink aoplInstance = OrgAccessPointLink.get(params.oapl_id)
-        aoplInstance.active = false
-        if (! aoplInstance.save()) {
-            result.error = "Error updateing AccessPoint for platform"
-            log.debug(aoplInstance.errors.toString())
-            [result:result,status:STATUS_ERROR]
-        }
+        aoplInstance.delete()
         [result:result,status:STATUS_OK]
     }
 
     //--------------------------------------------- helper section -------------------------------------------------
 
+    /**
+     * Sets parameters used by various controller calls
+     * @param params unused
+     * @return a map containing the context user and institution
+     */
     Map<String, Object> getResultGenerics(GrailsParameterMap params) {
 
         Map<String, Object> result = [:]

@@ -121,7 +121,7 @@
             </g:each>
         </g:if>
         <g:else>
-                <table class="ui celled la-table compact table">
+                <table class="ui celled la-js-responsive-table la-table compact table">
                     <thead>
 						<tr>
 							<th><g:message code="identifierNamespace.ns.label"/></th>
@@ -271,7 +271,7 @@
                                             }
                                         %>
                                         <g:if test="${tooltip}">
-                                            <span data-tooltip="Verwendet für ${tooltip.join(', ')}" data-position="left center"
+                                            <span data-content="Verwendet für ${tooltip.join(', ')}" data-position="left center"
                                                   class="la-long-tooltip la-popup-tooltip la-delay">
                                                 <g:link class="ui button icon" controller="admin" action="manageNamespaces"
                                                         params="${[cmd: 'details', oid: IdentifierNamespace.class.name + ':' + idNs.id]}"><i class="ui icon question"></i></g:link>

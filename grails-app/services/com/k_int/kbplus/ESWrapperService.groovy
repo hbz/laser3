@@ -24,6 +24,12 @@ import org.elasticsearch.cluster.health.ClusterHealthStatus
 import org.elasticsearch.cluster.health.ClusterIndexHealth
 import org.elasticsearch.rest.RestStatus
 
+/**
+ * This service wraps the ElasticSearch connection and configuration methods and
+ * handles the core ElasticSearch functionality (apart from search)
+ * @see ESSearchService
+ * @see DataloadService
+ */
 @Transactional
 class ESWrapperService {
 
@@ -38,7 +44,10 @@ class ESWrapperService {
     Map es_indices = [:]
     String es_host
 
-
+    /**
+     * Initialises the ElasticSearch connection and mapping parameters
+     * @return
+     */
     @javax.annotation.PostConstruct
     def init() {
         log.debug("ESWrapperService::init");
@@ -56,6 +65,10 @@ class ESWrapperService {
         log.debug("ES Init completed");
     }
 
+    /**
+     * Establishes the REST client connection to the ElasticSearch host
+     * @return
+     */
     RestHighLevelClient getClient() {
         RestHighLevelClient esclient = new RestHighLevelClient(
                 RestClient.builder(
@@ -85,16 +98,27 @@ class ESWrapperService {
         jsonParser.parse()
     }*/
 
+    /**
+     * Gets the ElasticSearch setting configuration file
+     * @return the parsed ElasticSearch settings
+     */
     def getSettings(){
         parseResource("${File.separator}elasticsearch${File.separator}es_settings.json")
     }
 
-
+    /**
+     * Gets the ElasticSearch mapping file
+     * @return the parsed ElasticSearch mapping
+     */
     def getMapping(){
         parseResource("${File.separator}elasticsearch${File.separator}es_mapping.json")
     }
 
-
+    /**
+     * Parses the file at the given path and returns its content as a JSON map
+     * @param resourcePath the path where the file is located
+     * @return the parsed content of the file
+     */
     private def parseResource(String resourcePath){
         def resource = this.class.classLoader.getResourceAsStream(resourcePath)
         if (resource == null){
@@ -110,6 +134,10 @@ class ESWrapperService {
         else log.error("resource at path ${resourcePath} unable to locate!")
     }
 
+    /**
+     * Checks if the connection to the ElasticSearch index is established and if it works
+     * @return true if the test was successful, false otherwise
+     */
     boolean testConnection() {
 
         RestHighLevelClient esclient = getClient()
@@ -138,6 +166,7 @@ class ESWrapperService {
 
     }
 
+    @Deprecated
     void clusterHealth(){
 
         RestHighLevelClient esclient = this.getClient()
@@ -169,6 +198,11 @@ class ESWrapperService {
         esclient.close()
     }
 
+    /**
+     * Drops the given index
+     * @param indexName the index to be deleted
+     * @return true if the deletion request was successful, false otherwise
+     */
     boolean deleteIndex(String indexName){
         log.info("deleteIndex ${indexName} ...")
         RestHighLevelClient esclient = this.getClient()
@@ -193,6 +227,14 @@ class ESWrapperService {
         }
     }
 
+    /**
+     * Creates the given index. The settings and mapping defined in the external resource files (see links to see where
+     * they are located) are being used to construct
+     * @param indexName the index to be built
+     * @return true if the creation request was successful, false otherwise
+     * @see #getSettings()
+     * @see #getMapping()
+     */
     boolean createIndex(String indexName){
         log.info("createIndex ${indexName}...")
         RestHighLevelClient esclient = this.getClient()

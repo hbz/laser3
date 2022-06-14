@@ -24,20 +24,19 @@ class OrganisationConsCfg extends BaseConfig {
                             'my-providerAndAgency'
                     ],
                     fields : [
-                            'country'           : FIELD_TYPE_REFDATA,
-                            'region'            : FIELD_TYPE_REFDATA,
-                            'customerType'      : FIELD_TYPE_CUSTOM_IMPL,
-                            'eInvoice'          : FIELD_TYPE_PROPERTY,
-                            'funderHskType'     : FIELD_TYPE_REFDATA,
-                            'funderType'        : FIELD_TYPE_REFDATA,
-                            'legalInfo'         : FIELD_TYPE_CUSTOM_IMPL,
-                            'libraryNetwork'    : FIELD_TYPE_REFDATA,
-                            'libraryType'       : FIELD_TYPE_REFDATA,
-                            'orgType'           : FIELD_TYPE_REFDATA_JOINTABLE,
-                            'propertyKey'       : FIELD_TYPE_CUSTOM_IMPL,
-                            'propertyValue'     : FIELD_TYPE_CUSTOM_IMPL,
-                            //'region'            : FIELD_TYPE_REFDATA,
-                            'subjectGroup'      : FIELD_TYPE_CUSTOM_IMPL,
+                            'country'           : [ type: FIELD_TYPE_REFDATA ],
+                            'region'            : [ type: FIELD_TYPE_REFDATA, spec: FIELD_IS_VIRTUAL ],
+                            'customerType'      : [ type: FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
+                            'eInvoice'          : [ type: FIELD_TYPE_PROPERTY ],
+                            'funderHskType'     : [ type: FIELD_TYPE_REFDATA ],
+                            'funderType'        : [ type: FIELD_TYPE_REFDATA ],
+                            'legalInfo'         : [ type: FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
+                            'libraryNetwork'    : [ type: FIELD_TYPE_REFDATA ],
+                            'libraryType'       : [ type: FIELD_TYPE_REFDATA ],
+                            'orgType'           : [ type: FIELD_TYPE_REFDATA_JOINTABLE ],
+                            'propertyKey'       : [ type: FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
+                            'propertyValue'     : [ type: FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
+                            'subjectGroup'      : [ type: FIELD_TYPE_CUSTOM_IMPL ]    // TODO custom_impl
                     ],
                     filter : [
                             default : [
@@ -53,30 +52,36 @@ class OrganisationConsCfg extends BaseConfig {
                     ],
                     query : [
                             default : [
-                                    'org' : [
-                                            'org-orgType',
-                                            'org-customerType',
-                                            'org-libraryType',
-                                            'org-region',
-                                            'org-subjectGroup',
-                                            'org-libraryNetwork',
-                                            'org-funderType',
-                                            'org-funderHskType',
-                                            'org-*'
+                                    org : [
+                                            'org-orgType' :         [ 'generic.org.orgType' ],
+                                            'org-customerType' :    [ 'generic.org.customerType' ],
+                                            'org-libraryType' :     [ 'generic.org.libraryType' ],
+                                            'org-region' :          [ 'generic.org.region' ],
+                                            'org-subjectGroup' :    [ 'generic.org.subjectGroup' ],
+                                            'org-libraryNetwork' :  [ 'generic.org.libraryNetwork' ],
+                                            'org-funderType' :      [ 'generic.org.funderType' ],
+                                            'org-funderHskType' :   [ 'generic.org.funderHskType' ],
+                                            'org-*' :               [ 'generic.all' ]
                                     ]
                             ],
                             providerAndAgency : [
-                                    'org' : [ 'org-orgType' ]
+                                    org : [
+                                            'org-orgType': [ 'generic.org.orgType' ]
+                                    ]
                             ],
                             provider : [
-                                    'org' : [ 'org-orgType' ]
+                                    org : [
+                                            'org-orgType': [ 'generic.org.orgType' ]
+                                    ]
                             ],
                             agency : [
-                                    'org' : [ 'org-orgType' ]
+                                    org : [
+                                            'org-orgType': [ 'generic.org.orgType' ]
+                                    ]
                             ]
                     ],
-                    query2 : [
-                            'distribution' : [
+                    distribution : [
+                            default : [
                                     'org-x-identifier' : [
                                              detailsTemplate     : 'organisation',
                                              chartTemplate       : '2axis2values_nonMatches',
@@ -84,8 +89,8 @@ class OrganisationConsCfg extends BaseConfig {
                                     ],
                                     'org-x-property' : [
                                             detailsTemplate     : 'organisation',
-                                            chartTemplate       : '2axis2values',
-                                            chartLabels         : [ 'base', 'x.properties' ]
+                                            chartTemplate       : '2axis3values',
+                                            chartLabels         : [ 'base', 'x.properties.2', 'x.properties.3' ]
                                    ]
                                     //'org-x-serverAccess' : 'Organisation nach Datenweitergabe',
                             ]

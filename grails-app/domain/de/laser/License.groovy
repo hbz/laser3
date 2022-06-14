@@ -24,6 +24,16 @@ import javax.persistence.Transient
 import java.text.Normalizer
 import java.text.SimpleDateFormat
 
+/**
+ * <p>One of the central domains in LAS:eR; only {@link Subscription} is more essential.</p>
+ * <p>A license is the entity which retains the framing conditions for one or more subscriptions. Like with subscriptions, there are consortial and local objects.
+ * Consortial objects have two levels: a parent and a child level whereas local objects have only one level. Former are used by consortia; their child objects are
+ * assigned to basic members or single users. Latter ones are used by single users. The main difference between consortia and local objects (counts for subscriptions as well!) is
+ * that consortia control both levels and domain attributes and properties ({@link LicenseProperty}) may be passed from the parent to the child object just as documents (the {@link DocContext}
+ * linking is being shared for that; technically, we multiply the pointers to the same document when we share one). On intellectual level, the passing of parental attributes to a child is
+ * named two different ways: domain attributes and properties are inherited to child objects, documents are shared among the children.</p>
+ * <p>The child-parent relation is represented by the {@link #instanceOf} field; a child is instance of a parent.</p>
+ */
 class License extends AbstractBaseWithCalculatedLastUpdated
         implements Auditable, CalculatedType, Permissions, ShareSupport, Comparable<License> {
 
@@ -39,7 +49,9 @@ class License extends AbstractBaseWithCalculatedLastUpdated
 
     License instanceOf
 
-    // If a license is slaved then any changes to instanceOf will automatically be applied to this license
+    /**
+     * If a license is slaved then any changes to instanceOf will automatically be applied to this license
+     */
     boolean isSlaved = false
     boolean isPublicForApi = false
 
@@ -49,7 +61,13 @@ class License extends AbstractBaseWithCalculatedLastUpdated
     @RefdataAnnotation(cat = RDConstants.LICENSE_CATEGORY, i18n = 'license.category.label')
     RefdataValue licenseCategory
 
+    /**
+     * the actual name of the license
+     */
     String reference
+    /**
+     * the sortable name of the license
+     */
     String sortableReference
 
     String noticePeriod
@@ -198,6 +216,11 @@ class License extends AbstractBaseWithCalculatedLastUpdated
         super.beforeDeleteHandler()
     }
 
+    /**
+     * Checks if the license is a consortial parent license and if the licensor relation (license <-> provider) is being shared
+     * @param sharedObject the object to be shared
+     * @return true if the conditions are met, false otherwise
+     */
     @Override
     boolean checkSharePreconditions(ShareableTrait sharedObject) {
         // needed to differentiate OrgRoles
@@ -209,10 +232,18 @@ class License extends AbstractBaseWithCalculatedLastUpdated
         false
     }
 
+    /**
+     * Checks whether this license is a consortial parent license
+     * @return true if the license is a consortial parent license, false otherwise
+     */
     boolean showUIShareButton() {
         _getCalculatedType() == CalculatedType.TYPE_CONSORTIAL
     }
 
+    /**
+     * Toggles the sharing of a {@link DocContext} or {@link OrgRole}
+     * @param sharedObject the object which should be shared or not
+     */
     void updateShare(ShareableTrait sharedObject) {
         log.debug('updateShare: ' + sharedObject)
 
@@ -232,6 +263,10 @@ class License extends AbstractBaseWithCalculatedLastUpdated
         }
     }
 
+    /**
+     * Toggles the sharing of all {@link DocContext}s and {@link OrgRole}s of this license with the given list of targets
+     * @param targets the {@link List} of {@link License}s whose documents and org relations should be updated
+     */
     void syncAllShares(List<ShareSupport> targets) {
         log.debug('synAllShares: ' + targets)
 
@@ -278,6 +313,10 @@ class License extends AbstractBaseWithCalculatedLastUpdated
         result
     }
 
+    /**
+     * Gets all members (!) of this (consortial parent) license
+     * @return a {@link List} of subscriber institutions ({@link Org})
+     */
     List<Org> getDerivedLicensees() {
         List<Org> result = []
 
@@ -292,7 +331,11 @@ class License extends AbstractBaseWithCalculatedLastUpdated
         result = result.sort {it.name}
     }
 
-    // used for views and dropdowns
+    /**
+     * Gets a concatenated string representation of the license's name.
+     * Used for views and dropdowns
+     * @return a concatenated string showing the license's name and consortium or subscriber's list
+     */
     String getReferenceConcatenated() {
         Org cons = getLicensingConsortium()
         List<Org> subscr = getAllLicensee()
@@ -307,33 +350,54 @@ class License extends AbstractBaseWithCalculatedLastUpdated
         }
     }
 
+    /**
+     * Retrieves the consortium which holds this license
+     * @return the licensing consortium {@link Org}
+     */
     Org getLicensingConsortium() {
         orgRelations.find { OrgRole or ->
             or.roleType == RDStore.OR_LICENSING_CONSORTIUM
         }?.org
     }
 
+    /**
+     * Retrieves the provider for this license
+     * @return the licensor provider {@link Org}
+     */
     Org getLicensor() {
         orgRelations.find { OrgRole or ->
             or.roleType == RDStore.OR_LICENSOR
         }?.org
     }
 
+    /**
+     * Retrieves the licensee org of this license. Is intended to use for licenses where only one licensee is linked (e.g. local licenses);
+     * if there are more than one licensees to this license (this is the case if members share one member license instance), the FIRST one is being returned
+     * (which may be random)
+     * @return the or one licensee {@link Org}
+     */
     Org getLicensee() {
         orgRelations.find { OrgRole or ->
             or.roleType in [RDStore.OR_LICENSEE, RDStore.OR_LICENSEE_CONS]
         }?.org
     }
+
+    /**
+     * Retrieves all licensee institutions of this license; this is the method to be used to get all licensees of a member license
+     * @return a {@link List} of member {@link Org}s who are linked to this license as members
+     */
     List<Org> getAllLicensee() {
         orgRelations.findAll { OrgRole or ->
             or.roleType in [RDStore.OR_LICENSEE, RDStore.OR_LICENSEE_CONS]
         }?.collect { OrgRole or -> or.org }
   }
 
+    @Deprecated
     DocContext getNote(String domain) {
         DocContext.findByLicenseAndDomain(this, domain)
     }
 
+    @Deprecated
   void setNote(String domain, String note_content) {
       withTransaction {
           DocContext note = DocContext.findByLicenseAndDomain(this, domain)
@@ -359,18 +423,35 @@ class License extends AbstractBaseWithCalculatedLastUpdated
       }
   }
 
+    @Deprecated
     String getGenericLabel() {
         return reference
     }
 
+    /**
+     * Checks if the given user may edit this license
+     * @param user the {@link de.laser.auth.User} whose rights should be verified
+     * @return true if the user has editing permissions on the license, false otherwise
+     */
     boolean isEditableBy(user) {
         hasPerm("edit", user)
     }
 
+    /**
+     * Checks if the given user may view this license
+     * @param user the {@link de.laser.auth.User} whose rights should be verified
+     * @return true if the user has viewing permissions on the license, false otherwise
+     */
     boolean isVisibleBy(user) {
       hasPerm('view', user)
     }
 
+    /**
+     * Checks if the given user has the given permission granted
+     * @param perm the permission to check
+     * @param user the {@link de.laser.auth.User} whose grant should be verified
+     * @return true if the grant for the user is given, false otherwise
+     */
     boolean hasPerm(perm, user) {
         Role adm = Role.findByAuthority('ROLE_ADMIN')
         Role yda = Role.findByAuthority('ROLE_YODA')
@@ -403,6 +484,11 @@ class License extends AbstractBaseWithCalculatedLastUpdated
         return false
     }
 
+    /**
+     * Equity check by the database id
+     * @param o the license to comapre with
+     * @return true if the database ids match, false otherwise
+     */
   @Override
   boolean equals (Object o) {
     //def obj = ClassUtils.deproxy(o)
@@ -415,17 +501,29 @@ class License extends AbstractBaseWithCalculatedLastUpdated
     return false
   }
 
+    /**
+     * Gets a string representation of this license
+     * @return the license's name, if it is set, the string "License" and the database id otherwise
+     */
   @Override
   String toString() {
     reference ? "${reference}" : "License ${id}"
   }
-  
+
+    /**
+     * Compares this license to another license by the database id
+     * @param other the license to compare with
+     * @return the comparison result (-1, 0 or 1), if the other instance lacks an id, -1 is being returned
+     */
   @Override
   int compareTo(License other){
       return other.id? other.id.compareTo(this.id) : -1
   }
 
-
+    /**
+     * Registers the change done on this license and hands the changes over to the member objects. A {@link PendingChange} is being set up for each; if the changes are auto-accepted (= slaved), the change is being accepted right away
+     * @param changeDocument the {@link Map} of change being processed
+     */
     @Transient
     def notifyDependencies(changeDocument) {
         log.debug("notifyDependencies(${changeDocument})")
@@ -483,15 +581,28 @@ class License extends AbstractBaseWithCalculatedLastUpdated
         }
     }
 
+    /**
+     * Gets all member licenses of this consortia license
+     * @return a {@link List} of licenses who are children of this license
+     */
     def getNonDeletedDerivedLicenses() {
         License.where{ instanceOf == this }
     }
 
+    /**
+     * Retrieves all property definition groups that the given institution has defined for this license
+     * @param contextOrg the {@link Org} whose property definition groups should be retrieved
+     * @return a {@link Map} of {@link PropertyDefinitionGroup}s; ordered by sorted, global, local or orphaned ones
+     */
     Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
         propertyService.getCalculatedPropDefGroups(this, contextOrg)
     }
 
-
+    /**
+     * Normalises the given name (i.e. removal of stopwords, elimination of special characters etc.) to make the license sortable
+     * @param input_title the name to normalise
+     * @return the normalised name string
+     */
   static String generateSortableReference(String input_title) {
     String result = ''
 
@@ -506,6 +617,10 @@ class License extends AbstractBaseWithCalculatedLastUpdated
     result
   }
 
+    /**
+     * Concatenates the license record for dropdown menu entries
+     * @return a concatenated string containing license name, status, running period and consortium or member
+     */
     String dropdownNamingConvention() {
         String statusString = "" + status ? status.getI10n('value') : RDStore.LICENSE_NO_STATUS.getI10n('value')
 
@@ -523,6 +638,10 @@ class License extends AbstractBaseWithCalculatedLastUpdated
         return result
     }
 
+    /**
+     * Retrieves all linked subscriptions to this license
+     * @return a {@link Set} of {@link Subscription}s connected to this license
+     */
     Set<Subscription> getSubscriptions() {
         Set<Subscription> result = Subscription.executeQuery("select li.destinationSubscription from Links li where li.sourceLicense = :license and li.linkType = :linkType",[license:this,linkType:RDStore.LINKTYPE_LICENSE])
         /*Links.findAllBySourceAndSourceTypeAndDestinationTypeAndLinkType(genericOIDService.getOID(this),RDStore.LINKTYPE_LICENSE).each { l ->

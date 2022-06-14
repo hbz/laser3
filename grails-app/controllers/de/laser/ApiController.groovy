@@ -12,6 +12,9 @@ import groovy.util.slurpersupport.GPathResult
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.http.HttpStatus
 
+/**
+ * This controller manages calls to the API
+ */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class ApiController {
 
@@ -19,6 +22,9 @@ class ApiController {
     ApiService apiService
     ExportService exportService
 
+    /**
+     * Call to the API landing page
+     */
     @Secured(['permitAll'])
     def index() {
         log.debug("API")
@@ -32,6 +38,9 @@ class ApiController {
         }
     }
 
+    /**
+     * Call to the API specification file
+     */
     @Secured(['permitAll'])
     def loadSpecs() {
         Map<String, Object> result = fillRequestMap(params)
@@ -44,6 +53,9 @@ class ApiController {
         }
     }
 
+    /**
+     * Call to the API changelog file
+     */
     @Secured(['permitAll'])
     def loadChangelog() {
         Map<String, Object> result = fillRequestMap(params)
@@ -56,6 +68,9 @@ class ApiController {
         }
     }
 
+    /**
+     * Delivers the current version
+     */
     @Secured(['permitAll'])
     def dispatch() {
         switch ( (params.version ?: 'v0').toLowerCase() ) {
@@ -65,6 +80,13 @@ class ApiController {
         }
     }
 
+    /**
+     * Fills the request map with the credentials passed by context. The mandatory presence of a context institution ensures
+     * that credentials are supplied iff the user is logged in when calling the API by using this method. A context institution requires
+     * a login to be present
+     * @param params (unused) the request parameter
+     * @return a {@link Map} containing api key, password and context if a context is supplied; when context is missing, the map values are empty
+     */
     private Map<String, Object> fillRequestMap (GrailsParameterMap params) {
         Map<String, Object> result = [:]
         Org org = contextService.getOrg()
@@ -79,6 +101,7 @@ class ApiController {
         result
     }
 
+    @Deprecated
     @Secured(['ROLE_API'])
     def importInstitutions() {
         log.info("import institutions via xml .. ROLE_API required")
@@ -100,6 +123,7 @@ class ApiController {
         render xml
     }
 
+    @Deprecated
     @Secured(['ROLE_API'])
     def setupLaserData() {
         log.info("import institutions via xml .. ROLE_API required")
@@ -121,6 +145,7 @@ class ApiController {
         render xml
     }
 
+    @Deprecated
     @Secured(['ROLE_API'])
     def importSubscriptions() {
         log.info("import subscriptions via xml .. ROLE_API required")
@@ -142,6 +167,12 @@ class ApiController {
         render xml
     }
 
+    /**
+     * This is the main entry point for API calls. The request is being delegated to the service methods handling the request
+     * and authorisation is being done here as well. The response type is being determined based on the request header and the
+     * response delivered accordingly. The request is being logged in the server in order to enable bug retracing and usage of
+     * the API
+     */
     @Secured(['permitAll'])
     def v0() {
         Org apiOrg = (Org) request.getAttribute('authorizedApiOrg')

@@ -11,7 +11,7 @@
 
                 </h2>
 
-                <table class="ui selectable celled table la-table la-ignore-fixed">
+                <table class="ui selectable celled table la-js-responsive-table la-table la-ignore-fixed">
                     <g:render template="comparisonPropertiesTable"
                               model="[group: groupedProps.getValue().groupTree, key: groupedProps.getKey().name, propBinding: groupedProps.getValue().binding]"/>
                 </table>
@@ -34,7 +34,7 @@
                 </g:else>
             </h2>
 
-            <table class="ui selectable celled table la-table">
+            <table class="ui selectable celled table la-js-responsive-table la-table">
                 <g:render template="comparisonPropertiesTable"
                           model="[group: orphanedProperties, key: message(code: 'subscription.properties')]"/>
             </table>
@@ -48,7 +48,7 @@
 
         <div class="content">
             <h5 class="ui header">${message(code: 'subscription.properties.private')} ${contextOrg.name}</h5>
-            <table class="ui selectable celled table la-table">
+            <table class="ui selectable celled table la-js-responsive-table la-table">
                 <g:render template="comparisonPropertiesTable"
                           model="[group: privateProperties, key: message(code: 'subscription.properties.private') + ' ' + contextOrg.name]"/>
             </table>

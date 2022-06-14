@@ -127,14 +127,28 @@
 }
 
 /*---------------
-    Blue
+    Orange
 ----------------*/
-.ui.blue.buttons .button.la-modern-button,
-.ui.blue.button.la-modern-button {
-  color: @blue;
+.ui.orange.buttons .button.la-modern-button,
+.ui.orange.button.la-modern-button {
+  color: @orange;
   background-color: transparent;
   &:hover {
-    background-color: @blue;
+    background-color: @orange;
     color: @white;
   }
 }
+
+/*---------------
+    Yellow
+----------------*/
+.ui.yellow.buttons .button.la-modern-button,
+.ui.yellow.button.la-modern-button {
+  color: @yellow;
+  background-color: transparent;
+  &:hover {
+    background-color: @yellow;
+    color: @white;
+  }
+}
+

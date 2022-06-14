@@ -2,6 +2,11 @@ package de.laser
 
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
+/**
+ * This class provides internationalisation for names and reference values; supported locales are German, English and French (whereas French is never used).
+ * The reference object is being stored as follows (note the OID notation how to store the object parameters): {@link #referenceClass}:{@link #referenceId}.{@link #referenceField};
+ * the internationalised strings are in value{locale}
+ */
 class I10nTranslation {
 
     def grailsApplication
@@ -47,6 +52,12 @@ class I10nTranslation {
 
     // -- getter and setter --
 
+    /**
+     *
+     * @param reference the reference object to look for
+     * @param referenceField the field to which internationalisation should be retrieved
+     * @return the internationalisation object for the given object's field
+     */
     static I10nTranslation get(Object reference, String referenceField) {
         reference = GrailsHibernateUtil.unwrapIfProxy(reference)
 
@@ -55,6 +66,13 @@ class I10nTranslation {
         i10n
     }
 
+    /**
+     * Gets the translation object for the given reference object's field in the given locale
+     * @param reference the reference object to look for
+     * @param referenceField the field to which internationalisation should be retrieved
+     * @param locale the locale to retrieve
+     * @return the value string in the given language
+     */
     static String get(Object reference, String referenceField, String locale) {
         reference = GrailsHibernateUtil.unwrapIfProxy(reference)
 
@@ -73,6 +91,13 @@ class I10nTranslation {
         }
     }
 
+    /**
+     * Sets the translation values for the given object's field
+     * @param reference the object which should receive the translations
+     * @param referenceField the field about to be translated
+     * @param values the {@link Map} of translations provided
+     * @return the new internationalisation object
+     */
     static I10nTranslation set(Object reference, String referenceField, Map values) {
         if (!reference || !referenceField)
             return
@@ -111,7 +136,19 @@ class I10nTranslation {
 
     // -- initializations --
 
-    // used in bootstap
+    /**
+     * Used in Bootstrap ({@link BootStrapService}): creates or updates the translations for the given object's field; these values are hard-coded in the source files which are as follows:
+     * <ul>
+     *  <li>RefdataValue.csv for the {@link RefdataValue} class</li>
+     *  <li>RefdataCategory.csv for the {@link RefdataCategory} class</li>
+     *  <li>PropertyDefinition.csv for the {@link de.laser.properties.PropertyDefinition} class</li>
+     *  <li>{@link BootStrapService#setIdentifierNamespace()} for the {@link IdentifierNamespace} class</li>
+     * </ul>
+     * @param reference the object to set the translation
+     * @param referenceField the field which should be translated
+     * @param translations the {@link Map} (in structure [locale: translation]) of translation strings
+     * @return the new internationalisation object
+     */
     static I10nTranslation createOrUpdateI10n(Object reference, String referenceField, Map translations) {
 
         Map<String, Object> values = [:] // no effect in set()
@@ -125,7 +162,12 @@ class I10nTranslation {
 
     // -- helper --
 
-    // de => de, de-DE => de, de_DE => de
+    /**
+     * Decodes the given locale string to determine the translation field to look for
+     * Examples: de => de, de-DE => de, de_DE => de
+     * @param locale the locale constant as string to decipher
+     * @return the decoded locale part to use in queries
+     */
     static String decodeLocale(String locale) {
 
         if(locale?.contains("-")) {
@@ -138,8 +180,25 @@ class I10nTranslation {
             return locale
         }
     }
+
+    /**
+     * Decodes the given {@link Locale} constant to determine the translation field to look for
+     * @param locale the locale constant (as {@link Locale}) to decipher
+     * @return the decoded locale string to use in queries
+     */
     static String decodeLocale(Locale locale) {
         decodeLocale(locale.toString())
+    }
+
+    static String getRefdataValueColumn(Locale locale) {
+        switch(decodeLocale(locale.toString())) {
+            case 'de': 'rdv_value_de'
+                break
+            case 'fr': 'rdv_value_fr'
+                break
+            default: 'rdv_value_en'
+                break
+        }
     }
 
 }

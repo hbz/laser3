@@ -25,10 +25,43 @@ class SemanticUiIconTagLib {
                 out << '<i aria-hidden="true" class="circular icon la-object-ebook"></i> '
                 break
             case 'Survey':
-                out << '<i aria-hidden="true" class="circular icon inverted blue chart pie"></i> '
+                out << '<i aria-hidden="true" class="circular icon inverted pink chart pie"></i> '
                 break
             case 'Workflow':
                 out << '<i aria-hidden="true" class="circular icon inverted brown icon tasks"></i> '
+                break
+            case 'Subscription':
+                out << '<i aria-hidden="true" class="circular icon inverted orange icon clipboard"></i> '
+                break
+            default:
+                out << '<i aria-hidden="true" class="circular icon la-object"></i> '
+                break
+        }
+    }
+    def childSubscriptionIcon = { attrs, body ->
+        out << '<i class="icon circular orange child la-subscriptionIsChild"></i> '
+    }
+
+    def subHeaderTitleIcon = { attrs, body ->
+
+        switch (attrs.type) {
+            case 'Journal':
+                out << '<i aria-hidden="true" class="circular icon la-object-journal"></i> '
+                break
+            case 'Database':
+                out << '<i aria-hidden="true" class="circular icon la-object-database"></i> '
+                break
+            case 'EBook':
+                out << '<i aria-hidden="true" class="circular icon la-object-ebook"></i> '
+                break
+            case 'Survey':
+                out << '<i aria-hidden="true" class="circular icon inverted pink chart pie"></i> '
+                break
+            case 'Workflow':
+                out << '<i aria-hidden="true" class="circular icon inverted brown icon tasks"></i> '
+                break
+            case 'Subscription':
+                out << '<i aria-hidden="true" class="circular icon inverted orange icon clipboard outline"></i> '
                 break
             default:
                 out << '<i aria-hidden="true" class="circular icon la-object"></i> '

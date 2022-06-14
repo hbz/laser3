@@ -6,9 +6,11 @@ import de.laser.helper.SwissKnife
 import de.laser.interfaces.CalculatedType
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
-import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 
+/**
+ * This class is a service mirror for {@link LicenseController} to capsule the complex data manipulation
+ * methods of the controller
+ */
 @Transactional
 class LicenseControllerService {
 
@@ -17,12 +19,17 @@ class LicenseControllerService {
 
     AuditService auditService
     ContextService contextService
-    MessageSource messageSource
     TaskService taskService
     LinksGenerationService linksGenerationService
 
     //------------------------------------ general or ungroupable section ------------------------------------------
 
+    /**
+     * Displays the tasks for the given license
+     * @param controller the controller instance
+     * @param params the request parameter map
+     * @return the tasks attached to the given license
+     */
     Map<String,Object> tasks(LicenseController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(controller, params, AccessService.CHECK_VIEW)
         if (!result) {
@@ -37,6 +44,13 @@ class LicenseControllerService {
 
     //--------------------------------------------- helper section -------------------------------------------------
 
+    /**
+     * Sets generic parameters for page calls which are widespreadly needed
+     * @param controller unused
+     * @param params the request parameter map
+     * @param checkOption the permission (edit or view) to check
+     * @return a map containing generic result data
+     */
     Map<String, Object> getResultGenericsAndCheckAccess(LicenseController controller, GrailsParameterMap params, String checkOption) {
 
         Map<String, Object> result = [:]
@@ -78,10 +92,22 @@ class LicenseControllerService {
         result
     }
 
+    /**
+     * Substitution call for {@link #showConsortiaFunctions(de.laser.Org, de.laser.License)}
+     * @param license the license to check
+     * @return result of {@link #showConsortiaFunctions(de.laser.Org, de.laser.License)}
+     */
     boolean showConsortiaFunctions(License license) {
         showConsortiaFunctions(contextService.getOrg(), license)
     }
 
+    /**
+     * Checks if the given institution is the licensing consortium for the given license and thus if consortial functions
+     * should be shown
+     * @param contextOrg the institution whose access should be checked
+     * @param license the license to check
+     * @return true in the given institution is the licensing consortium and if the license is a consortial parent license, false otherwise
+     */
     boolean showConsortiaFunctions(Org contextOrg, License license) {
         return license.getLicensingConsortium()?.id == contextOrg.id && license._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL
     }

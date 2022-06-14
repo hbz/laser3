@@ -17,7 +17,7 @@
 <div class="ui grid">
     <div class="twelve wide column">
 
-        <table class="ui celled la-table compact table">
+        <table class="ui celled la-js-responsive-table la-table compact table">
             <thead>
                 <tr>
                     <th>Schema</th>

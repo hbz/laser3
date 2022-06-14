@@ -25,12 +25,33 @@ import javax.validation.UnexpectedTypeException
 
 //import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
+/**
+ * This is the class reflecting the type of a Subscription/License/Org/Platform/PersonProperty. This is not the type of value the property can contain, see {@link AbstractPropertyWithCalculatedLastUpdated} for the value types!
+ * Property definitions may be general (the properties of such types are thus general, sometimes called custom) or private (properties of such types are private).
+ * The difference between general/custom and private properties is that general properties may be visible by every organisation accessing the owner object (their visibility is configurable) whereas private ones are viewable
+ * only by the tenant {@link Org}.
+ * Important note: private property definitions may be defined by each tenant individually by frontend;
+ * general property definitions are hard-coded (/src/main/webapp/setup/PropertyDefinition.csv) as they should be instance-independent and survive database resets. This is the same procedure as with reference data categories
+ * and their values
+ * @see SubscriptionProperty
+ * @see LicenseProperty
+ * @see OrgProperty
+ * @see PlatformProperty
+ * @see PersonProperty
+ * @see AbstractPropertyWithCalculatedLastUpdated
+ */
 @Slf4j
 class PropertyDefinition extends AbstractI10n implements Serializable, Comparable<PropertyDefinition> {
 
     static Log static_logger = LogFactory.getLog(PropertyDefinition)
 
+    /**
+     * general property viewable by everyone if public flag is true
+     */
     final static String CUSTOM_PROPERTY  = "CUSTOM_PROPERTY"
+    /**
+     * private property; view and use restricted to the tenant organisation
+     */
     final static String PRIVATE_PROPERTY = "PRIVATE_PROPERTY"
 
     final static String LIC_PROP    = 'License Property'
@@ -81,16 +102,26 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     String type
     String refdataCategory
 
-    // used for private properties
+    /**
+     * used for private properties; marks the owner who can define and see properties of this type
+     */
     Org tenant
 
-    // allows multiple occurences
+    /**
+     * allows multiple occurences within an object
+     */
     boolean multipleOccurrence = false
-    // mandatory
+    /**
+     * mandatory, i.e. the property must exist in the object
+     */
     boolean mandatory = false
-    // indicates this object is created via current bootstrap
+    /**
+     * indicates this object is created via current bootstrap (=> defined in /src/mail/webapp/setup/PropertyDefinition.csv)
+     */
     boolean isHardData = false
-    // indicates hard coded logic
+    /**
+     * indicates hard coded logic, i.e. the property is relevant for app behavior
+     */
     boolean isUsedForLogic = false
 
     Date dateCreated
@@ -155,6 +186,11 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
         dateCreated         (nullable: true)
     }
 
+    /**
+     * Factory method to create a new property definition
+     * @param map the configuration {@link Map} containing the parameters of the new property
+     * @return the new property definition object
+     */
     static PropertyDefinition construct(Map<String, Object> map) {
 
         withTransaction {
@@ -226,6 +262,12 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
         }
     }
 
+    /**
+     * Retrieves a general property definition by its name and object type (description)
+     * @param name the name of the property definition being searched
+     * @param descr the object type - one of the constants {@link #SUB_PROP}, {@link #LIC_PROP}, {@link #ORG_PROP}, {@link #PRS_PROP}, {@link #PLA_PROP} or {@link #SVY_PROP}
+     * @return a property definition; if multiple matches are found, a warning is generated and the first result is being returned
+     */
     static PropertyDefinition getByNameAndDescr(String name, String descr) {
 
         List<PropertyDefinition> result = PropertyDefinition.findAllByNameIlikeAndDescrAndTenantIsNull(name, descr)
@@ -242,6 +284,13 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
         }
     }
 
+    /**
+     * Retrieves a private property definition by its name, object type (description) and tenant
+     * @param name the name of the property definition being searched
+     * @param descr the object type - one of the constants {@link #SUB_PROP}, {@link #LIC_PROP}, {@link #ORG_PROP}, {@link #PRS_PROP}, {@link #PLA_PROP} or {@link #SVY_PROP}
+     * @param tenant the {@link Org} whose property definition should be retrieved
+     * @return a property definition; if multiple matches are found, a warning is generated and the first result is being returned
+     */
     static PropertyDefinition getByNameAndDescrAndTenant(String name, String descr, Org tenant) {
 
         List<PropertyDefinition> result = PropertyDefinition.findAllByNameIlikeAndDescrAndTenant(name, descr, tenant)
@@ -258,6 +307,11 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
         }
     }
 
+    /**
+     * Retrieves all
+     * @param descr
+     * @return
+     */
     static List<PropertyDefinition> getAllByDescr(String descr) {
         PropertyDefinition.findAllByDescrAndTenantIsNull(descr)
     }
@@ -395,7 +449,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
             OrgProperty.class.name
         else if (descr.contains("Survey"))
             SurveyResult.class.name
-        else 'de.laser.'+descr.replace(" ","")
+        else 'de.laser.properties.'+descr.replace(" ","")
     }
 
     int countUsages() {

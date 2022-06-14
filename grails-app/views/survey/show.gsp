@@ -31,10 +31,8 @@
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
 <semui:xEditable owner="${surveyInfo}" field="name" overwriteEditable="${surveyInfo.isSubscriptionSurvey ? false : editable}"/>
-<semui:surveyStatusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="show"/>
 </h1>
-
-
+<semui:surveyStatusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="show"/>
 
 <g:render template="nav"/>
 
@@ -220,7 +218,7 @@
         <br />
         <br />
 
-        <g:form action="surveyConfigFinish" method="post" class="ui form"
+        <g:form action="setSurveyConfigFinish" method="post" class="ui form"
                 params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID]">
 
             <div class="ui right floated compact segment">

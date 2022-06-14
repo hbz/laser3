@@ -8,6 +8,9 @@ import de.laser.helper.RDStore
 import de.laser.helper.SessionCacheWrapper
 import grails.plugin.springsecurity.annotation.Secured
 
+/**
+ * This controller manages pending change processing calls
+ */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class PendingChangeController  {
 
@@ -16,6 +19,9 @@ class PendingChangeController  {
     def executorWrapperService
     def contextService
 
+    /**
+     * Call to accept the given change and to trigger processing of the changes stored in the record
+     */
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def accept() {
@@ -57,6 +63,9 @@ class PendingChangeController  {
         redirect(url: request.getHeader('referer'))
     }
 
+    /**
+     * Call to reject the given change
+     */
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def reject() {
@@ -72,6 +81,9 @@ class PendingChangeController  {
         redirect(url: request.getHeader('referer'))
     }
 
+    /**
+     * Call to bulk-process a set of changes. Loops through the changes and performs accepting or rejecting
+     */
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def processAll() {
@@ -110,6 +122,9 @@ class PendingChangeController  {
         redirect(url: request.getHeader('referer'))
     }
 
+    /**
+     * Call to bulk-accept a set of changes. The changes are going to be looped and accepting triggered in each of them
+     */
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def acceptAll() {
@@ -128,6 +143,9 @@ class PendingChangeController  {
         redirect(url: request.getHeader('referer'))
     }
 
+    /**
+     * Call to bulk-reject a set of changes. The changes are going to be looped and rejecting triggered in each of them
+     */
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def rejectAll() {

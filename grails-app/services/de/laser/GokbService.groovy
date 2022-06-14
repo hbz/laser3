@@ -22,9 +22,14 @@ import org.elasticsearch.search.sort.FieldSortBuilder
 import org.elasticsearch.search.sort.SortOrder
 import org.grails.web.json.parser.JSONParser
 
+/**
+ * Is actually a we:kb service. It contains methods to communicate with the we:kb ElasticSearch index
+ * @see ApiSource
+ */
 @Transactional
 class GokbService {
 
+    @Deprecated
     Map<String, Object> getPackagesMap(ApiSource apiSource, def qterm = null, def suggest = true, def max = 2000) {
 
         log.info("getting Package map from gokb ..")
@@ -200,17 +205,34 @@ class GokbService {
         result
     }
 
+    @Deprecated
     Map geElasticsearchSuggests(final String apiUrl, final String query, final String type, final String role) {
         String url = buildUri(apiUrl+'/suggest', query, type, role, null)
         queryElasticsearch(url)
     }
 
+    /**
+     * Builds the query for the ElasticSearch index and retrieves the findings of the API
+     * @param apiUrl the URL for the we:kb ElasticSearch index
+     * @param query the query string
+     * @param type the component type to be fetched
+     * @param role (only to be used for organisation queries) the role of the organisation
+     * @param max the count of records to fetch
+     * @return the ElasticSearch result map
+     */
     Map geElasticsearchFindings(final String apiUrl, final String query, final String type,
                                 final String role, final Integer max) {
         String url = buildUri(apiUrl+'/find', query, type, role, max)
         queryElasticsearch(url)
     }
 
+    /**
+     * A wrapper for controller-fed filters using the ElasticSearch data
+     * @param ctrlResult the base result of the controller
+     * @param params the request parameter map
+     * @param esQuery the query string
+     * @return the ElasticSearch result map
+     */
     Map doQuery(Map ctrlResult, Map params, String esQuery) {
         Map result = [:]
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
@@ -230,6 +252,12 @@ class GokbService {
         result
     }
 
+    /**
+     * Sets up the parameters for the ElasticSearch result pagination
+     * @param ctrlResult the generics from the controller
+     * @param params the request parameter map
+     * @return the query string parts for sort, order, max and offset, in a named map
+     */
     Map<String, String> setupPaginationParams(Map ctrlResult, Map params) {
         String sort = params.sort ? "&sort=" + params.sort : "&sort=sortname"
         String order = params.order ? "&order=" + params.order : "&order=asc"
@@ -238,6 +266,13 @@ class GokbService {
         [sort: sort, order: order, max: max, offset: offset]
     }
 
+    /**
+     * Performs the given query on the we:kb ElasticSearch index API. Note that communication is not set to
+     * the index directly but an API endpoint takes the query and generates more complex ElasticSearch
+     * queries in order to limit external index access
+     * @param url the query string to pass to the we:kb ElasticSearch API
+     * @return the result map (access either as result.warning or result.info), reflecting the ElasticSearch response
+     */
     Map queryElasticsearch(String url){
         String compatibleUrl = url.replaceAll(" ", "+")
         log.info("querying: " + compatibleUrl)
@@ -269,6 +304,15 @@ class GokbService {
         result
     }
 
+    /**
+     * Builds the query string for the ElasticSearch API query
+     * @param stub a base stub containing generic component parameters
+     * @param query a name query restriction
+     * @param type the component type to use
+     * @param role (use only for componentType=Org) the organisational role of the queried organisation
+     * @param max the maximum count of entries to fetch
+     * @return the query URL string
+     */
     private String buildUri(final String stub, final String query, final String type, final String role, final Integer max) {
         String url = stub + "?status=Current&"
         if (query) {
@@ -286,6 +330,12 @@ class GokbService {
         url.substring(0, url.length() - 1)
     }
 
+    /**
+     * Retrieves a map containing the package record with title records from the given we:kb API source with the given UUID
+     * @param apiSource the we:kb ElasticSearch API source from which the data should be retrieved
+     * @param identifier the UUID of the queried package
+     * @return
+     */
     Map getPackageMapWithUUID(ApiSource apiSource, String identifier) {
 
         log.info("getting Package map from gokb ..")

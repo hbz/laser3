@@ -45,6 +45,11 @@ class SurveyControllerService {
 
     //--------------------------------------------- helper section -------------------------------------------------
 
+    /**
+     * Sets generic parameters common to many controller calls and checks permission grants
+     * @param params the request parameter map
+     * @return the result map with generic parameters
+     */
     Map<String, Object> getResultGenericsAndCheckAccess(GrailsParameterMap params) {
 
         Map<String, Object> result = [:]
@@ -68,6 +73,12 @@ class SurveyControllerService {
         result
     }
 
+    /**
+     * Gets the tasks to the given survey
+     * @param controller unused
+     * @param params the request parameter map
+     * @return OK with the tasks in case of success, ERROR otherwise
+     */
     Map<String,Object> tasks(SurveyController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params)
         if (!result) {
@@ -80,6 +91,11 @@ class SurveyControllerService {
         }
     }
 
+    /**
+     * Collects the data for the given renewal survey for the evaluation view
+     * @param params the request parameter map
+     * @return OK with the retrieved data in case of success, ERROR otherwise
+     */
     Map<String,Object> renewalEvaluation(GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params)
         if(!result)
@@ -88,7 +104,7 @@ class SurveyControllerService {
 
             result.parentSubscription = result.surveyConfig.subscription
             result.parentSubChilds = subscriptionService.getValidSubChilds(result.parentSubscription)
-            result.parentSuccessorSubscription = result.surveyConfig.subscription._getCalculatedSuccessor()
+            result.parentSuccessorSubscription = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
             result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
 
 

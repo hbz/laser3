@@ -16,18 +16,6 @@ class CostItemExport extends BaseDetailsExport {
 
     static String KEY = 'cost'
 
-    CostItemExport(String token, Map<String, Object> fields) {
-        this.token = token
-
-        // keeping order ..
-        getAllFields().keySet().each { k ->
-            if (k in fields.keySet() ) {
-                selectedExportFields.put(k, fields.get(k))
-            }
-        }
-        normalizeSelectedMultipleFields( this )
-    }
-
     static Map<String, Object> CONFIG_ORG_CONSORTIUM = [
 
             base : [
@@ -36,32 +24,36 @@ class CostItemExport extends BaseDetailsExport {
                     ],
                     fields : [
                             default: [
-                                    'costTitle'         : FIELD_TYPE_PROPERTY,
-                                    'costDescription'   : FIELD_TYPE_PROPERTY,
-                                    'reference'         : FIELD_TYPE_PROPERTY,
+                                    '@-cost-member+sortname+name' : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-cost-subscription'         : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-cost-package'              : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-cost-order'                : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-cost-invoice'              : [ type: FIELD_TYPE_CUSTOM_IMPL ],
 
-                                    'costInBillingCurrency'         : FIELD_TYPE_PROPERTY,
-                                    'costInBillingCurrencyAfterTax' : FIELD_TYPE_PROPERTY,
-                                    'billingCurrency'               : FIELD_TYPE_REFDATA,
-                                    'costInLocalCurrency'           : FIELD_TYPE_PROPERTY,
-                                    'costInLocalCurrencyAfterTax'   : FIELD_TYPE_PROPERTY,
-                                    '@-cost-taxKey'               : FIELD_TYPE_CUSTOM_IMPL,   // virtual
-                                    'costItemElementConfiguration'  : FIELD_TYPE_REFDATA,
-                                    'costItemStatus'                : FIELD_TYPE_REFDATA,
-                                    'startDate'                     : FIELD_TYPE_PROPERTY,
-                                    'endDate'                       : FIELD_TYPE_PROPERTY,
-                                    'datePaid'                      : FIELD_TYPE_PROPERTY,
-                                    'financialYear'                 : FIELD_TYPE_PROPERTY,
+                                    'costTitle'         : [ type: FIELD_TYPE_PROPERTY ],
+                                    'costDescription'   : [ type: FIELD_TYPE_PROPERTY ],
+                                    'reference'         : [ type: FIELD_TYPE_PROPERTY ],
 
-                                    '@-cost-member'       : FIELD_TYPE_CUSTOM_IMPL,       // virtual
-                                    '@-cost-subscription' : FIELD_TYPE_CUSTOM_IMPL,
-                                    '@-cost-package'      : FIELD_TYPE_CUSTOM_IMPL,
-                                    '@-cost-order'        : FIELD_TYPE_CUSTOM_IMPL,
-                                    '@-cost-invoice'      : FIELD_TYPE_CUSTOM_IMPL,
+                                    'costInBillingCurrency'         : [ type: FIELD_TYPE_PROPERTY ],
+                                    'costInBillingCurrencyAfterTax' : [ type: FIELD_TYPE_PROPERTY ],
+                                    'billingCurrency'               : [ type: FIELD_TYPE_REFDATA ],
+                                    'costInLocalCurrency'           : [ type: FIELD_TYPE_PROPERTY ],
+                                    'costInLocalCurrencyAfterTax'   : [ type: FIELD_TYPE_PROPERTY ],
+                                    '@-cost-taxKey'                 : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    'costItemElementConfiguration'  : [ type: FIELD_TYPE_REFDATA ],
+                                    'costItemStatus'                : [ type: FIELD_TYPE_REFDATA ],
+                                    'startDate'                     : [ type: FIELD_TYPE_PROPERTY ],
+                                    'endDate'                       : [ type: FIELD_TYPE_PROPERTY ],
+                                    'datePaid'                      : [ type: FIELD_TYPE_PROPERTY ],
+                                    'financialYear'                 : [ type: FIELD_TYPE_PROPERTY ]
                             ]
                     ],
             ]
     ]
+
+    CostItemExport(String token, Map<String, Object> fields) {
+        init(token, fields)
+    }
 
     @Override
     Map<String, Object> getSelectedFields() {
@@ -83,7 +75,7 @@ class CostItemExport extends BaseDetailsExport {
 
         fields.each{ f ->
             String key = f.key
-            String type = getAllFields().get(f.key)
+            String type = getAllFields().get(f.key)?.type
 
             // --> generic properties
             if (type == FIELD_TYPE_PROPERTY) {
@@ -123,10 +115,10 @@ class CostItemExport extends BaseDetailsExport {
                         content.add('')
                     }
                 }
-                else if (key == '@-cost-member') {
-                    Set<OrgRole> subscrOr = ci.sub.orgRelations.findAll{it.roleType.id in [RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id]}
-                    content.add( subscrOr.collect{ it.org.name + ( it.org.sortname ? ' (' + it.org.sortname +')' : '')}.join( CSV_VALUE_SEPARATOR ) )
-                }
+//                else if (key == '@-cost-member') {
+//                    Set<OrgRole> subscrOr = ci.sub.orgRelations.findAll{it.roleType.id in [RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id]}
+//                    content.add( subscrOr.collect{ it.org.name + ( it.org.sortname ? ' (' + it.org.sortname +')' : '')}.join( CSV_VALUE_SEPARATOR ) )
+//                }
                 else if (key == '@-cost-package') {
                     de.laser.Package pkg = ci.subPkg?.pkg
                     if (pkg) {
@@ -152,8 +144,14 @@ class CostItemExport extends BaseDetailsExport {
                     }
                 }
             }
+            // --> combined properties : TODO
+            else if (key in ['@-cost-member+sortname', '@-cost-member+name']) {
+                String prop = key.split('\\+')[1]
+                Set<OrgRole> subscrOr = ci.sub.orgRelations.findAll{it.roleType.id in [RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id]}
+                content.add( subscrOr.collect{  it.org.getProperty(prop) ?: '' }.join( CSV_VALUE_SEPARATOR ) )
+            }
             else {
-                content.add( '- not implemented -' )
+                content.add( '- ' + key + ' not implemented -' )
             }
         }
 

@@ -2,6 +2,9 @@ package de.laser.stats
 
 import de.laser.base.AbstractCounterApiSource
 
+/**
+ * Is actually deprecated and should keep SUSHI sources until we:kb was prepared for that; now, it serves merely as container for journal reports
+ */
 class Counter4ApiSource extends AbstractCounterApiSource{
 
     static final String JOURNAL_REPORT_1        = "JR1"

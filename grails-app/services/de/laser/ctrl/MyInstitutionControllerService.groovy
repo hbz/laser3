@@ -1,10 +1,5 @@
 package de.laser.ctrl
 
-import com.k_int.kbplus.ExecutorWrapperService
-import com.k_int.kbplus.FactService
-import com.k_int.kbplus.GenericOIDService
-import com.k_int.kbplus.GlobalSourceSyncService
-import com.k_int.kbplus.PackageService
 import de.laser.*
 import de.laser.auth.User
 import de.laser.helper.DateUtils
@@ -16,12 +11,12 @@ import de.laser.workflow.WfWorkflow
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.web.servlet.mvc.GrailsParameterMap
-import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
-import java.util.concurrent.ExecutorService
 
+/**
+ * This service is a mirror of the {@link MyInstitutionController} for the data manipulation operations
+ */
 @Transactional
 class MyInstitutionControllerService {
 
@@ -33,13 +28,16 @@ class MyInstitutionControllerService {
     def taskService
     def workflowService
 
-    FormService formService
-    SubscriptionService subscriptionService
-    MessageSource messageSource
-
     static final int STATUS_OK = 0
     static final int STATUS_ERROR = 1
 
+    /**
+     * Gets important information regarding the context institution for the user to display it on the dashboard.
+     * The information is grouped in tabs where information is being preloaded (except changes, notifications and surveys)
+     * @param controller the controller instance
+     * @param params the request parameter map
+     * @return OK if the request was successful, ERROR otherwise
+     */
     Map<String, Object> dashboard(MyInstitutionController controller, GrailsParameterMap params) {
         ProfilerUtils pu = new ProfilerUtils()
         pu.setBenchmark('init')
@@ -128,6 +126,12 @@ class MyInstitutionControllerService {
 
     //--------------------------------------------- helper section -------------------------------------------------
 
+    /**
+     * Sets parameters used in many calls of the controller such as the context user, institution and permissions
+     * @param controller unused
+     * @param params the request parameter map
+     * @return a map containing generic parameters
+     */
     Map<String, Object> getResultGenerics(MyInstitutionController controller, GrailsParameterMap params) {
 
         Map<String, Object> result = [:]
@@ -173,6 +177,7 @@ class MyInstitutionControllerService {
                 break
             case 'managePropertyDefinitions':
                 result.editable = false
+                result.changeProperties = user.hasRole('ROLE_ADMIN') || user.hasAffiliation('INST_EDITOR')
                 break
             default:
                 result.editable = accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_YODA')

@@ -14,7 +14,7 @@
 
       <h2 class="ui header">${message(code:'user.affiliation.plural')}</h2>
 
-      <table class="ui celled la-table table">
+      <table class="ui celled la-js-responsive-table la-table table">
         <thead>
           <tr>
             <th>${message(code:'user.id')}</th>
@@ -35,7 +35,7 @@
 
       <h2 class="ui header">${message(code:'user.role.plural')}</h2>
 
-      <table class="ui celled la-table table">
+      <table class="ui celled la-js-responsive-table la-table table">
         <thead>
           <tr>
             <th>${message(code:'user.role')}</th>

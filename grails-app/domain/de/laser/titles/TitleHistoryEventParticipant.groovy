@@ -2,6 +2,9 @@ package de.laser.titles
 
 import de.laser.TitleInstancePackagePlatform
 
+/**
+ * This class represents a participant {@link TitleInstancePackagePlatform} of a {@link TitleHistoryEvent}
+ */
 class TitleHistoryEventParticipant {
 
     TitleHistoryEvent event

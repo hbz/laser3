@@ -7,19 +7,42 @@ import java.util.List;
 import de.uni_freiburg.ub.Exception.InvalidIpAddressException;
 import de.uni_freiburg.ub.Exception.InvalidRangeException;
 
+/**
+ * Represents a collection of IP(v4/v6) ranges
+ * @see IpRange
+ * @see Ipv4Address
+ * @see Ipv6Address
+ */
 public class IpRangeCollection {
 
 	List<IpRange> ipRangeCollection;
 
+	/**
+	 * Constructor to initialise the empty collection of ranges
+	 */
 	public IpRangeCollection() {
 		this.ipRangeCollection = new LinkedList<IpRange>();
 	}
 
+	/**
+	 * Adds an IP range to the collection
+	 * @param ipRange the range to add
+	 * @return the collection with the added range
+	 * @throws InvalidIpAddressException if the object is not valid
+	 */
 	public IpRangeCollection add(IpRange ipRange) throws InvalidIpAddressException {
 		this.ipRangeCollection.add(ipRange);
 		return this;
 	}
 
+	/**
+	 * Outputs the ranges in the collection
+	 * @return the collection of IP ranges
+	 * @throws InvalidIpAddressException if an address is invalid
+	 * @throws InvalidRangeException if the range is invalid
+	 * @see IpAddress
+	 * @see IpRange
+	 */
 	public IpRangeCollection compact() throws InvalidIpAddressException, InvalidRangeException {
 		IpRangeCollection result = new IpRangeCollection();
 		IpRange currentRange;
@@ -62,6 +85,10 @@ public class IpRangeCollection {
 		return result;
 	}
 
+	/**
+	 * Outputs all ranges in the collection in their CIDR representations
+	 * @return a {@link List} of CIDR representation strings
+	 */
 	public List<String> toCidrStrings() {
 		List<String> cidr = new LinkedList<String>();
 
@@ -70,7 +97,11 @@ public class IpRangeCollection {
 		}
 		return cidr;
 	}
-	
+
+	/**
+	 * Outputs all ranges in the collection in range strings
+	 * @return a {@link List} of IP range strings
+	 */
 	public List<String> toRangeStrings() {
 		List<String> ranges = new LinkedList<String>();
 		
@@ -79,7 +110,11 @@ public class IpRangeCollection {
 		}
 		return ranges;
 	}
-	
+
+	/**
+	 * Output all input strings in this collection of ranges
+	 * @return a {@link List} of (raw) input strings
+	 */
 	public List<String> toInputStrings() {
 		List<String> ranges = new LinkedList<String>();
 		

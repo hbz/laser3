@@ -5,11 +5,17 @@ import de.laser.helper.RDStore
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
 
+/**
+ * This controller is for managing central system-wide announcements
+ */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AnnouncementController  {
 
     def contextService
 
+    /**
+     * Lists all current announcements
+     */
     @Secured(['ROLE_ADMIN'])
     def index() {
         Map<String, Object> result = [:]
@@ -19,6 +25,9 @@ class AnnouncementController  {
         result
     }
 
+    /**
+     * Creates a new announcement with to the given parameters and returns to the list of announcements
+     */
     @Secured(['ROLE_ADMIN'])
     @Transactional
     def createAnnouncement() {

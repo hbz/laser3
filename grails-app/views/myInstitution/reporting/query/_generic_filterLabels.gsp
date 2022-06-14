@@ -12,13 +12,8 @@
                     </g:if>
                     <g:else>
                         &middot; ${label.value.label}:
-                        <g:if test="${GenericHelper.isFieldMultiple(label.key)}">
-                            <g:if test="${label.value.value instanceof String}">
-                                ${label.value.value}
-                            </g:if>
-                            <g:else>
-                                ${label.value.value.join(', ')}
-                            </g:else>
+                        <g:if test="${GenericHelper.isCollection(label.value.value)}">
+                            ${label.value.value.join(', ')}
                         </g:if>
                         <g:else>
                             ${label.value.value}
@@ -45,13 +40,8 @@
                             </g:if>
                             <g:else>
                                 <br/> - ${label.value.label}:
-                                <g:if test="${GenericHelper.isFieldMultiple(label.key)}">
-                                    <g:if test="${label.value.value instanceof String}">
-                                        ${label.value.value}
-                                    </g:if>
-                                     <g:else>
-                                         ${label.value.value.join(', ')}
-                                     </g:else>
+                                <g:if test="${GenericHelper.isCollection(label.value.value)}">
+                                    ${label.value.value.join(', ')}
                                 </g:if>
                                 <g:else>
                                     ${label.value.value}
@@ -80,16 +70,11 @@
                                 </g:if>
                                 <g:else>
                                     - ${label.value.label}:
-                                    <g:if test="${GenericHelper.isFieldMultiple(label.key)}">
-                                        <g:if test="${label.value.value instanceof String}">
-                                            ${label.value.value} <br />
-                                        </g:if>
-                                        <g:else>
-                                            ${label.value.value.join(', ')} <br />
-                                        </g:else>
+                                    <g:if test="${GenericHelper.isCollection(label.value.value)}">
+                                        ${label.value.value.join(', ')} <br />
                                     </g:if>
                                     <g:else>
-                                        ${label.value.value} <br/>
+                                        ${label.value.value} <br />
                                     </g:else>
                                 </g:else>
                             </g:if>

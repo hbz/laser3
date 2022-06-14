@@ -13,6 +13,9 @@ import org.elasticsearch.search.builder.SearchSourceBuilder
 import org.elasticsearch.search.sort.FieldSortBuilder
 import org.elasticsearch.search.sort.SortOrder
 
+/**
+ * This service manages search requests for the app's ElasticSearch service
+ */
 @Transactional
 class ESSearchService{
 // Map the parameter names we use in the webapp with the ES fields
@@ -30,10 +33,21 @@ class ESSearchService{
 
   def ESWrapperService
 
+  /**
+   * Substitution call for requests, fetching the reverse map
+   * @param params the search parameter map
+   * @return the results of {@link #search(java.lang.Object, java.lang.Object)}
+   */
   def search(params){
     search(params,reversemap)
   }
 
+  /**
+   * Prepares the index query, sets score weights of the query and performs the search against the ElasticSearch index
+   * @param params the search request parameters
+   * @param field_map the map containing which search parameter is represented by which index field
+   * @return the search result hits of the query
+   */
   def search(params, field_map){
     // log.debug("Search Index, params.coursetitle=${params.coursetitle}, params.coursedescription=${params.coursedescription}, params.freetext=${params.freetext}")
     log.debug("ESSearchService::search - ${params}")
@@ -174,6 +188,15 @@ class ESSearchService{
     result
   }
 
+  /**
+   * Here is the ElasticSearch query (a query string query) actually being built.
+   * The parameter map is being taken, the reverse map consulted to map the queried data on the ElasticSearch
+   * index and the query string returned for execution
+   * @param params the search parameter map
+   * @param field_map the reverse map containing the mapping of fields in the index
+   * @return the prepared query string
+   * @see ESWrapperService#es_indices
+   */
   String buildQuery(params,field_map) {
     //log.debug("BuildQuery... with params ${params}. ReverseMap: ${field_map}")
 

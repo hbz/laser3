@@ -6,6 +6,11 @@ import de.laser.annotations.RefdataAnnotation
 import de.laser.traits.ShareableTrait
 import org.grails.datastore.mapping.engine.event.PostUpdateEvent
 
+/**
+ * When a user sees a document, this is what s/he sees actually: the connection between a {@link Doc} and the object the document is related to.
+ * In LAS:eR, documents are mostly not on their own, they are always attached to an object. There is an exception (see /myInstitution/documents for that) when a document is for internal purposes only (which may be shared
+ * occasionally); but even then, there is a link - in that case, the context org. Technically, this is the same result as attaching a document to the context org (may even be done there).
+ */
 class DocContext implements ShareableTrait, Comparable {
 
     def deletionService
@@ -20,7 +25,7 @@ class DocContext implements ShareableTrait, Comparable {
         org:            Org,
         /* sharedFrom:     DocContext, */ // self-referential GORM problem
         surveyConfig:   SurveyConfig
-  ]
+    ]
 
     @RefdataAnnotation(cat = RDConstants.DOCUMENT_CONTEXT_STATUS)
     RefdataValue status
@@ -37,10 +42,10 @@ class DocContext implements ShareableTrait, Comparable {
     Date dateCreated
     Date lastUpdated
 
-  // We may attach a note to a particular column, in which case, we set domain here as a discriminator
-  String domain
+    // We may attach a note to a particular column, in which case, we set domain here as a discriminator
+    String domain
 
-  static mapping = {
+    static mapping = {
                id column:'dc_id'
           version column:'dc_version'
             owner column:'dc_doc_fk', sort:'title', order:'asc', index:'doc_owner_idx'
@@ -61,26 +66,30 @@ class DocContext implements ShareableTrait, Comparable {
       dateCreated column: 'dc_date_created'
       lastUpdated column: 'dc_last_updated'
 
-  }
+    }
 
-  static constraints = {
-    doctype     (nullable:true)
-    license     (nullable:true)
-    subscription(nullable:true)
-    pkg         (nullable:true)
-    org         (nullable:true)
-    link        (nullable:true)
-    domain      (nullable:true, blank:false)
-    status      (nullable:true)
-      sharedFrom    (nullable: true)
-      shareConf     (nullable: true)
-      targetOrg     (nullable: true)
-      surveyConfig  (nullable: true)
+    static constraints = {
+        doctype     (nullable:true)
+        license     (nullable:true)
+        subscription(nullable:true)
+        pkg         (nullable:true)
+        org         (nullable:true)
+        link        (nullable:true)
+        domain      (nullable:true, blank:false)
+        status      (nullable:true)
+        sharedFrom    (nullable: true)
+        shareConf     (nullable: true)
+        targetOrg     (nullable: true)
+        surveyConfig  (nullable: true)
 
-      // Nullable is true, because values are already in the database
-      lastUpdated (nullable: true)
-      dateCreated (nullable: true)
-  }
+        // Nullable is true, because values are already in the database
+        lastUpdated (nullable: true)
+        dateCreated (nullable: true)
+    }
+
+    /**
+     * Triggers after the database removal of the document context also the ElasticSearch index removal
+     */
     def afterDelete() {
         deletionService.deleteDocumentFromIndex(this.getClass().getSimpleName().toLowerCase()+":"+this.id, this.class.simpleName)
     }
@@ -98,6 +107,11 @@ class DocContext implements ShareableTrait, Comparable {
         deleteShare_trait()
     }
 
+    /**
+     * Comparator method; the owner document's titles are being compared against each other
+     * @param o the {@link DocContext} to compare with
+     * @return the comparison result (-1, 0 or 1)
+     */
     int compareTo(Object o) {
         int result = 0
         DocContext dc = (DocContext) o

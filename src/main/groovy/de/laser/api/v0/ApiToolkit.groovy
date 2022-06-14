@@ -2,14 +2,20 @@ package de.laser.api.v0
 
 import de.laser.Org
 import de.laser.OrgSetting
+import de.laser.RefdataValue
 import de.laser.helper.Constants
+import groovy.sql.GroovyRowResult
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang.RandomStringUtils
+import org.codehaus.groovy.ant.Groovy
 import org.springframework.web.context.request.RequestAttributes
 import org.springframework.web.context.request.RequestContextHolder
 
 import java.text.SimpleDateFormat
 
+/**
+ * This class is a toolbox for checkings and validations during the API usage
+ */
 @Slf4j
 class ApiToolkit {
 
@@ -26,6 +32,10 @@ class ApiToolkit {
 
     static final DATE_TIME_PATTERN      = "yyyy-MM-dd'T'HH:mm:ss"
 
+    /**
+     * Gets all defined API levels
+     * @return a {@link List} of API level constants
+     */
     static List getAllApiLevels() {
         [
             API_LEVEL_READ,
@@ -37,6 +47,11 @@ class ApiToolkit {
             API_LEVEL_INVOICETOOL
         ]
     }
+
+    /**
+     * Gets all API levels which have reading permissions
+     * @return a {@link List} of API levels with reading rights granted
+     */
     static List getReadingApiLevels() {
         [
             API_LEVEL_READ,
@@ -47,12 +62,41 @@ class ApiToolkit {
             API_LEVEL_INVOICETOOL
         ]
     }
+
+    /**
+     * Gets all API levels which have writing permissions
+     * @return a {@link List} of API levelsm with writing rights granted
+     */
     static List getWritingApiLevels() {
         [
             API_LEVEL_WRITE
         ]
     }
 
+    static String getStartOfYearRing() {
+        Calendar calendar = GregorianCalendar.getInstance()
+        calendar.set(Calendar.DAY_OF_YEAR, 1)
+        calendar.set(Calendar.HOUR, 0)
+        calendar.set(Calendar.MINUTE, 0)
+        calendar.set(Calendar.SECOND, 0)
+        calendar.format(DATE_TIME_PATTERN)
+    }
+
+    static String getEndOfYearRing() {
+        Calendar calendar = GregorianCalendar.getInstance()
+        calendar.set(Calendar.MONTH, 11) //java calendar months range between 0-11
+        calendar.set(Calendar.DAY_OF_MONTH, 31)
+        calendar.set(Calendar.HOUR, 0)
+        calendar.set(Calendar.MINUTE, 0)
+        calendar.set(Calendar.SECOND, 0)
+        calendar.format(DATE_TIME_PATTERN)
+    }
+
+    /**
+     * Sets the given API level; if the not existent, API credentials will be created as well
+     * @param org the institution ({@link Org}) to which the API level should be set up
+     * @param apiLevel the API level to define
+     */
     static void setApiLevel(Org org, String apiLevel) {
 
         if (! getAllApiLevels().contains(apiLevel)) {
@@ -71,6 +115,10 @@ class ApiToolkit {
         }
     }
 
+    /**
+     * Revokes the API level and the API credentials from the given institution
+     * @param org the institution ({@link Org}) from which the API rights should be revoked
+     */
     static void removeApiLevel(Org org) {
 
         OrgSetting.delete(org, OrgSetting.KEYS.API_LEVEL)
@@ -78,6 +126,12 @@ class ApiToolkit {
         OrgSetting.delete(org, OrgSetting.KEYS.API_PASSWORD)
     }
 
+    /**
+     * Checks if the given institution has the given API level granted
+     * @param org the institution ({@link Org}) to be checked
+     * @param apiLevel the API level to be verified
+     * @return true if the level has been granted to the org, false otherwise
+     */
     static boolean hasApiLevel(Org org, String apiLevel) {
         def orgSetting = OrgSetting.get(org, OrgSetting.KEYS.API_LEVEL)
 
@@ -87,11 +141,20 @@ class ApiToolkit {
         return false
     }
 
+    /**
+     * Checks if the debugMode flag is set among the request parameters
+     * @return the flag value if it is set, null otherwise
+     */
     static boolean isDebugMode() {
         RequestAttributes reqAttr = RequestContextHolder.currentRequestAttributes()
         reqAttr.getAttribute('debugMode', RequestAttributes.SCOPE_REQUEST)
     }
 
+    /**
+     * Removes the debug information from the response if the debugMode flag is missing
+     * @param list the response list containing the objects
+     * @return the cleaned response list
+     */
     static Collection<Object> cleanUpDebugInfo(Collection<Object> list) {
         if (! isDebugMode()) {
             list.removeAll(Constants.HTTP_FORBIDDEN)
@@ -100,6 +163,13 @@ class ApiToolkit {
         list
     }
 
+    /**
+     * Cleans up the given response {@link Map} from null values or empty lists if specified
+     * @param map the response map to be cleaned
+     * @param removeNullValues should null values be removed?
+     * @param removeEmptyLists should empty lists being removed?
+     * @return the cleaned map
+     */
     static Map<String, Object> cleanUp(Map map, boolean removeNullValues, boolean removeEmptyLists) {
         if (! map) {
             return null
@@ -116,6 +186,13 @@ class ApiToolkit {
         map
     }
 
+    /**
+     * Cleans up the given response {@link List} from null values or empty lists if specified
+     * @param list the response list to be cleaned
+     * @param removeNullValues should null values be removed?
+     * @param removeEmptyLists should empty lists being removed?
+     * @return the cleaned list
+     */
     static Collection<Object> cleanUp(Collection<Object> list, boolean removeNullValues, boolean removeEmptyLists) {
         if (! list) {
             return null
@@ -131,6 +208,11 @@ class ApiToolkit {
         list
     }
 
+    /**
+     * Outputs the given date with the internal format ({@link #DATE_TIME_PATTERN})
+     * @param date the date to format
+     * @return the date string in the format specified in {@link #DATE_TIME_PATTERN}
+     */
     static String formatInternalDate(Date date) {
         if (! date) {
             return null
@@ -140,6 +222,12 @@ class ApiToolkit {
         sdf.format(date)
     }
 
+    /**
+     * Parses the timespan specified in the given query
+     * @param query the fields whose values are specified, comma-separated
+     * @param value the values, comma-separated
+     * @return a {@link Map} containing the parsed key:value pairs
+     */
     static Object parseTimeLimitedQuery(String query, String value) {
         String[] queries = query.split(",")
         String[] values = value.split(",")

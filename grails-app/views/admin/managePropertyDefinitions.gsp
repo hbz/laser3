@@ -37,7 +37,7 @@
                     <g:message code="propertyDefinition.${entry.key}.label" default="${entry.key}" />
                 </div>
                 <div class="content">
-                    <table class="ui celled la-table compact table">
+                    <table class="ui celled la-js-responsive-table la-table compact table">
                         <thead>
                         <tr>
                             <th></th>
@@ -130,28 +130,28 @@
                                     <td class="x">
 
                                         <g:if test="${pd.mandatory}">
-                                            <g:link action="managePropertyDefinitions" data-content="${message(code:'propertyDefinition.unsetMandatory.label')}" data-position="left"
+                                            <g:link action="managePropertyDefinitions" data-content="${message(code:'propertyDefinition.unsetMandatory.label')}" data-position="top left"
                                                     params="${[cmd: 'toggleMandatory', pd: genericOIDService.getOID(pd)]}" class="ui icon yellow button la-modern-button la-popup-tooltip la-delay">
                                                 <i class="star icon"></i>
                                             </g:link>
                                         </g:if>
                                         <g:else>
-                                            <g:link action="managePropertyDefinitions" data-content="${message(code:'propertyDefinition.setMandatory.label')}" data-position="left"
-                                                    params="${[cmd: 'toggleMandatory', pd: genericOIDService.getOID(pd)]}" class="ui icon button la-modern-button la-popup-tooltip la-delay">
-                                                <i class="star yellow icon"></i>
+                                            <g:link action="managePropertyDefinitions" data-content="${message(code:'propertyDefinition.setMandatory.label')}" data-position="top left"
+                                                    params="${[cmd: 'toggleMandatory', pd: genericOIDService.getOID(pd)]}" class="ui icon button blue la-modern-button la-popup-tooltip la-delay">
+                                                <i class="la-star slash icon"></i>
                                             </g:link>
                                         </g:else>
                                         <g:if test="${!multiplePdList?.contains(pd.id)}">
                                             <g:if test="${pd.multipleOccurrence}">
-                                                <g:link action="managePropertyDefinitions" data-content="${message(code:'propertyDefinition.unsetMultiple.label')}" data-position="left"
-                                                        params="${[cmd: 'toggleMultipleOccurrence', pd: genericOIDService.getOID(pd)]}" class="ui icon la-modern-button orange button la-popup-tooltip la-delay">
+                                                <g:link action="managePropertyDefinitions" data-content="${message(code:'propertyDefinition.unsetMultiple.label')}" data-position="top left"
+                                                        params="${[cmd: 'toggleMultipleOccurrence', pd: genericOIDService.getOID(pd)]}" class="ui icon orange la-modern-button button la-popup-tooltip la-delay">
                                                     <i class="redo slash icon"></i>
                                                 </g:link>
                                             </g:if>
                                             <g:else>
-                                                <g:link action="managePropertyDefinitions" data-content="${message(code:'propertyDefinition.setMultiple.label')}" data-position="left"
-                                                        params="${[cmd: 'toggleMultipleOccurrence', pd: genericOIDService.getOID(pd)]}" class="ui icon button la-modern-button la-popup-tooltip la-delay">
-                                                    <i class="redo orange icon"></i>
+                                                <g:link action="managePropertyDefinitions" data-content="${message(code:'propertyDefinition.setMultiple.label')}" data-position="top left"
+                                                        params="${[cmd: 'toggleMultipleOccurrence', pd: genericOIDService.getOID(pd)]}" class="ui icon blue button la-modern-button la-popup-tooltip la-delay">
+                                                    <i class="la-redo slash icon"></i>
                                                 </g:link>
                                             </g:else>
                                         </g:if>
@@ -167,7 +167,7 @@
                                         <sec:ifAnyGranted roles="ROLE_YODA">
                                             <g:if test="${usedPdList?.contains(pd.id)}">
                                                 <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'propertyDefinition.exchange.label')}">
-                                                    <button class="ui icon button la-modern-button" data-href="#replacePropertyDefinitionModal" data-semui="modal"
+                                                    <button class="ui icon blue button la-modern-button" data-href="#replacePropertyDefinitionModal" data-semui="modal"
                                                             data-xcg-pd="${pd.class.name}:${pd.id}"
                                                             data-xcg-type="${pd.type}"
                                                             data-xcg-rdc="${pd.refdataCategory}"
@@ -196,67 +196,7 @@
 			</g:each>
         </div>
 
-
-        <semui:modal id="replacePropertyDefinitionModal" message="propertyDefinition.exchange.label" isEditModal="isEditModal">
-            <g:form class="ui form" url="[controller: 'admin', action: 'managePropertyDefinitions']">
-                <input type="hidden" name="cmd" value="replacePropertyDefinition"/>
-                <input type="hidden" name="xcgPdFrom" value=""/>
-
-                <p>
-                    <strong>WARNUNG</strong>
-                </p>
-
-                <p>
-                    Alle Vorkommen von <strong class="xcgInfo"></strong> in der Datenbank durch folgende Eigenschaft ersetzen:
-                </p>
-
-                <div class="field">
-                    <label for="xcgPdTo">&nbsp;</label>
-                    <select id="xcgPdTo"></select>
-                </div>
-
-                <p>
-                    Die gesetzten Werte bleiben erhalten!
-                </p>
-
-            </g:form>
-
-            <laser:script file="${this.getGroovyPageFileName()}">
-                        $('button[data-xcg-pd]').on('click', function(){
-
-                            var pd = $(this).attr('data-xcg-pd');
-                            //var type = $(this).attr('data-xcg-type');
-                            //var rdc = $(this).attr('data-xcg-rdc');
-
-                            $('#replacePropertyDefinitionModal .xcgInfo').text($(this).attr('data-xcg-debug'));
-                            $('#replacePropertyDefinitionModal input[name=xcgPdFrom]').attr('value', pd);
-
-                            $.ajax({
-                                url: '<g:createLink controller="ajaxJson" action="searchPropertyAlternativesByOID"/>' + '?oid=' + pd,
-                                success: function (data) {
-                                    var select = '<option></option>';
-                                    for (var index = 0; index < data.length; index++) {
-                                        var option = data[index];
-                                        if (option.value != pd) {
-                                            select += '<option value="' + option.value + '">' + option.text + '</option>';
-                                        }
-                                    }
-                                    select = '<select id="xcgPdTo" name="xcgPdTo" class="ui search selection dropdown">' + select + '</select>';
-
-                                    $('label[for=xcgPdTo]').next().replaceWith(select);
-
-                                    $('#xcgPdTo').dropdown({
-                                        duration: 150,
-                                        transition: 'fade'
-                                    });
-
-                                }, async: false
-                            });
-                        })
-            </laser:script>
-
-        </semui:modal>
-
+        <g:render template="/myInstitution/replacePropertyDefinition" model="[action: actionName]"/>
 
         <semui:modal id="addPropertyDefinitionModal" message="propertyDefinition.create_new.label">
 

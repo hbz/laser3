@@ -3,6 +3,11 @@ package de.laser.stats
 import de.laser.Org
 import de.laser.Platform
 
+/**
+ * This class was originally designed for retain missing periods of data and is now used
+ * as temporary entity to mark periods which could not be retrieved due to a server fault and whose
+ * request should be retried later
+ */
 class StatsMissingPeriod implements Comparable {
 
     Platform platform

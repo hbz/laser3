@@ -16,46 +16,50 @@
     boolean editable2 = accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")
     Set<DocContext> documentSet = ownobj.documents
 
+    //Those are the rights settings the DMS needs to cope with. See the following documentation which is currently a requirement specification, too, and serves as base for ERMS-2393
     if(ownobj instanceof Org && ownobj.id == contextOrg.id) {
+        //get all documents which has been attached to this org
         documentSet.addAll(docstoreService.getTargettedDocuments(ownobj))
     }
 
     documentSet.sort{it.owner?.title}.each{ it ->
-        boolean visible = false
-        boolean inOwnerOrg = false
-        boolean inTargetOrg = false
+        boolean visible = false //is the document visible?
+        boolean inOwnerOrg = false //are we owners of the document?
+        boolean inTargetOrg = false //are we in the org to which a document is attached?
+
+        if(it.owner.owner?.id == contextOrg.id){
+            inOwnerOrg = true
+        }
+        if(contextOrg.id == it.targetOrg?.id) {
+            inTargetOrg = true
+        }
+
         if(it.org) {
-
-            if(it.owner.owner?.id == contextOrg.id){
-                inOwnerOrg = true
-            }
-
-            else if(contextOrg.id == it.targetOrg?.id) {
-                inTargetOrg = true
-            }
-
-
             switch(it.shareConf) {
-                case RDStore.SHARE_CONF_UPLOADER_ORG: if(inOwnerOrg) visible = true
+                case RDStore.SHARE_CONF_UPLOADER_ORG: if(inOwnerOrg) visible = true //visible only for thes users of org which uploaded the document
                     break
-                case RDStore.SHARE_CONF_UPLOADER_AND_TARGET: if(inOwnerOrg || inTargetOrg) visible = true
+                case RDStore.SHARE_CONF_UPLOADER_AND_TARGET: if(inOwnerOrg || inTargetOrg) visible = true //the owner org and the target org may see the document i.e. the document has been shared with the target org
                     break
                 case RDStore.SHARE_CONF_CONSORTIUM:
                 case RDStore.SHARE_CONF_ALL: visible = true //definition says that everyone with "access" to target org. How are such access roles defined and where?
                     break
                 default:
+                    //fallback: documents are visible if share configuration is missing or obsolete
                     if (!it.shareConf) {
                         visible = it.org == null
                     }
                     break
             }
         }
-        else if(it.owner.owner?.id == contextOrg.id || it.sharedFrom)
+        else if(inOwnerOrg || it.sharedFrom)
+            //other owner objects than orgs - in particular licenses and subscriptions: visibility is set if the owner org visits the owner object or sharing is activated
             visible = true
         if ((it.sharedFrom || inTargetOrg) && visible) {
+            //a shared item; assign it to the shared docs section
             sharedItems << it
         }
         else if(visible) {
+            //an item directly attached to the owner object
             baseItems << it
         }
     }
@@ -67,7 +71,7 @@
                 <div class="ui small feed content la-js-dont-hide-this-card">
                     <div class="ui grid summary">
                         <div class="eight wide column la-column-right-lessPadding">
-                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="js-no-wait-wheel la-break-all">
+                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="js-no-wait-wheel la-break-all" target="_blank">
                                 <g:if test="${docctx.owner?.title}">
                                     ${docctx.owner.title}
                                 </g:if>
@@ -165,7 +169,7 @@
 
                     <div class="ui grid summary">
                         <div class="twelve wide column">
-                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="js-no-wait-wheel">
+                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="js-no-wait-wheel" target="_blank">
                                 <g:if test="${docctx.owner?.title}">
                                     ${docctx.owner.title}
                                 </g:if>

@@ -5,6 +5,12 @@ import de.laser.helper.RDStore
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException
 
+/**
+ * This controller is responsible for contact address display and manipulation
+ * @see Address
+ * @see Contact
+ * @see Person
+ */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AddressController  {
 
@@ -14,11 +20,18 @@ class AddressController  {
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
+    /**
+     * Index call
+     * @return the addressbook of the context institution
+     */
     @Secured(['ROLE_USER'])
     def index() {
         redirect controller: 'myInstitution', action: 'addressbook'
     }
 
+    /**
+     * Creates a new address with the given parameters
+     */
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def create() {
@@ -57,6 +70,10 @@ class AddressController  {
         }
     }
 
+    /**
+     * Shows the given address details
+     * @return a modal containing the address details
+     */
     @Secured(['ROLE_USER'])
     def show() {
         Address addressInstance = Address.get(params.id)
@@ -98,6 +115,9 @@ class AddressController  {
         render template: "/templates/cpa/addressFormModal", model: model
     }
 
+    /**
+     * Updates the given address with the given updated data
+     */
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def edit() {
@@ -152,6 +172,9 @@ class AddressController  {
         }
     }
 
+    /**
+     * Deletes the given address
+     */
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")', wtc = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {

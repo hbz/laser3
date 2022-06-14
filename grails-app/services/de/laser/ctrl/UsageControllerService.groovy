@@ -5,6 +5,9 @@ import de.laser.*
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 
+/**
+ * This service is a mirror of the {@link UsageController} containing its data manipulation methods
+ */
 @Transactional
 class UsageControllerService {
 
@@ -17,6 +20,12 @@ class UsageControllerService {
 
     //--------------------------------------------- helper section -------------------------------------------------
 
+    /**
+     * Gets the current state of the Nationaler Statistikserver data
+     * @param controller unused
+     * @param params unused
+     * @return a map containing the current overview of the Nationaler Statistikserver state, platforms and participants
+     */
     Map<String, Object> initResult(UsageController controller, GrailsParameterMap params) {
         Map<String, Object> result = [:]
 

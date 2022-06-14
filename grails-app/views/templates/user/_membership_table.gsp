@@ -5,7 +5,7 @@
     <div class="content">
     <h2 class="ui dividing header">${message(code: 'profile.membership.existing')}</h2>
 
-    <table class="ui celled la-table table">
+    <table class="ui celled la-js-responsive-table la-table table">
         <thead>
         <tr>
             <th>${message(code: 'profile.membership.org')}</th>

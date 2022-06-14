@@ -84,7 +84,10 @@
         %>
 
         <h1 class="ui icon header la-noMargin-top">
-            <semui:headerIcon />${message(code:'subscription.details.financials.label')} ${message(code:'default.for')} ${subscription} <semui:totalNumber total="${total.join(' / ')}"/>
+            <semui:headerTitleIcon type="Subscription"/>
+            <g:render template="/subscription/iconSubscriptionIsChild"/>
+
+            ${message(code:'subscription.details.financials.label')} ${message(code:'default.for')} ${subscription} <semui:totalNumber total="${total.join(' / ')}"/>
         </h1>
         <semui:anualRings mapping="subfinance" object="${subscription}" controller="finance" action="index" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
@@ -95,7 +98,7 @@
             <g:render template="/subscription/message" model="${[contextOrg: institution, subscription: subscription]}"/>
         </g:if>
 
-        <g:render template="result" model="[own:own,cons:cons,subscr:subscr,showView:showView,filterPresets:filterPresets,fixedSubscription:subscription]" />
+        <g:render template="result" model="[own:own,cons:cons,subscr:subscr,showView:showView,filterPresets:filterPresets,fixedSubscription:subscription,ciTitles:ciTitles]" />
 
         <g:render template="export/individuallyExportModal" model="[modalID: 'individuallyExportModal']" />
     </body>

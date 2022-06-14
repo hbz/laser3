@@ -19,6 +19,17 @@ import java.text.Normalizer
 import java.text.SimpleDateFormat
 import java.util.regex.Pattern
 
+/**
+ * Deprecated but kept intact because of an eventual reinstauration of the Global Open Knowledge Base (GOKb)
+ * This class is reflecting a bibliographic record. Every title instance may occur in different package or platform contexts; as this may extremely vary, even the title's name, this central instance is unusable as such in
+ * subscription context. Everything reflected by this class is being kept track in the {@link TitleInstancePackagePlatform} class. Title instances are specified by their title type; they were represented in inheriting classes:
+ * <ul>
+ *     <li>{@link BookInstance}</li>
+ *     <li>{@link DatabaseInstance}</li>
+ *     <li>{@link JournalInstance}</li>
+ * </ul>
+ * @see TitleInstancePackagePlatform
+ */
 @Deprecated
 @Slf4j
 class TitleInstance extends AbstractBaseWithCalculatedLastUpdated {
@@ -134,6 +145,11 @@ class TitleInstance extends AbstractBaseWithCalculatedLastUpdated {
         super.beforeDeleteHandler()
     }
 
+    /**
+     * Gets the value of a title instance's identifier of the given type
+     * @param idtype the identifier namespace string to be queried
+     * @return the identifier value or null if not found
+     */
   String getIdentifierValue(String idtype) {
     String result
     ids?.each { id ->
@@ -143,7 +159,10 @@ class TitleInstance extends AbstractBaseWithCalculatedLastUpdated {
     result
   }
 
-
+    /**
+     * Retrieves among the {@link OrgRole}s the title's publisher
+     * @return the publisher {@link Org}
+     */
   Org getPublisher() {
     Org result
     orgs.each { o ->
@@ -157,6 +176,7 @@ class TitleInstance extends AbstractBaseWithCalculatedLastUpdated {
   /**
    * Attempt to look up a title instance which has any of the listed identifiers
    * @param candidate_identifiers A list of maps containing identifiers and namespaces [ { namespace:'ISSN', value:'Xnnnn-nnnn' }, {namespace:'ISSN', value:'Xnnnn-nnnn'} ]
+   * @return a {@link List} of matches, empty if no results are found
    */
     @Deprecated
   static def findByIdentifier(candidate_identifiers) {
@@ -202,10 +222,23 @@ class TitleInstance extends AbstractBaseWithCalculatedLastUpdated {
     return result;
   }
 
+    /**
+     * Gets the first, the last and a list of {@link IssueEntitlement}s of the given institution
+     * @param institution the {@link Org} whose entitlements should be retrieved
+     * @param dateformat the format to output the retrieved dates
+     * @return a {@link Map} containing the earliest and the latest issue entitlement date and the {@link List} of {@link IssueEntitlement}s retrieved
+     */
     def getInstitutionalCoverageSummary(institution, dateformat) {
         getInstitutionalCoverageSummary(institution, dateformat, null)
     }
 
+    /**
+     * Gets the first, the last and a list of {@link IssueEntitlement}s of the given institution within a given date range
+     * @param institution the {@link Org} whose entitlements should be retrieved
+     * @param dateformat the format to output the retrieved dates
+     * @param date_restriction the date range within which the {@link IssueEntitlement} {@link de.laser.Subscription}'s start/end date have to be
+     * @return a {@link Map} containing the earliest and the latest issue entitlement date and the {@link List} of {@link IssueEntitlement}s retrieved
+     */
     def getInstitutionalCoverageSummary(institution, dateformat, date_restriction) {
         SimpleDateFormat sdf = new SimpleDateFormat(dateformat)
         String qry = """
@@ -242,6 +275,12 @@ select ie from IssueEntitlement as ie JOIN ie.subscription.orgRelations as o
         ]
     }
 
+    /**
+     * Copied into {@link TitleInstancePackagePlatform}
+     * Generates a normalized sort title string from the given input title
+     * @param input_title the input title string to normalize
+     * @return the normalized title
+     */
   static String generateSortTitle(String input_title) {
     if ( ! input_title ) return null;
 
@@ -254,6 +293,12 @@ select ie from IssueEntitlement as ie JOIN ie.subscription.orgRelations as o
     return  s1.trim()  
   }
 
+    /**
+     * Copied into {@link TitleInstancePackagePlatform}
+     * Similar to generateSortTitle(), this generates a normalized string representation of the input title but according to different rules
+     * @param input_title the input title string to normalize
+     * @return the normalized title
+     */
   static String generateNormTitle(String input_title) {
     if (!input_title) return null;
 
@@ -266,6 +311,12 @@ select ie from IssueEntitlement as ie JOIN ie.subscription.orgRelations as o
     return asciify(result)
   }
 
+    /**
+     * Not used
+     * Should generate (probably?) another way of a sortable title string ... again - different from generateSortTile() and generateNormTitle()
+     * @param s the input string to process
+     * @return the normalized title
+     */
   static String generateKeyTitle(String s) {
     def result = null
     if ( s != null ) {
@@ -292,6 +343,11 @@ select ie from IssueEntitlement as ie JOIN ie.subscription.orgRelations as o
     return result;
   }
 
+    /**
+     * Converts the given string into a stream of ASCII charts to avoid encoding issues - does work only for latin-1!
+     * @param s the input string to process
+     * @return the "asciified" string
+     */
     protected static String asciify(String s) {
         char[] c = s.toCharArray();
         StringBuffer b = new StringBuffer();
@@ -511,6 +567,10 @@ select ie from IssueEntitlement as ie JOIN ie.subscription.orgRelations as o
         return c;
     }
 
+    /**
+     * Abstract method to retrieve the title instance type as icon string
+     * @return
+     */
     String printTitleType() {
 
     }

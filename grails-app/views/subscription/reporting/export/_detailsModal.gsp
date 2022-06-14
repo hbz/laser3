@@ -22,14 +22,14 @@
             </div>
     --}%
 
-        <g:set var="dcSize" value="${LocalExportHelper.getDetailsCache(token).idList.size()}" />
+        <g:set var="dcSize" value="${LocalExportHelper.getDetailsCache(token).idList?.size() ?: 0}" />
         <g:if test="${dcSize > 50}">
             <div class="ui info message">
                 <i class="info circle icon"></i> ${message(code: 'reporting.modal.export.todoTime')}
             </div>
         </g:if>
 
-        <g:form controller="ajaxHtml" action="chartDetailsExport" method="POST" target="_blank">
+        <g:form controller="ajaxHtml" action="chartDetailsExport" method="POST" target="_blank" style="margin:0">
 
             <div class="ui form">
 
@@ -68,7 +68,7 @@
 
                 <div class="fields">
 
-                    <g:each in="${formFields.findAll { ['x-identifier','@-org-accessPoint','@-org-contact','@-org-readerNumber', '@-entitlement-tippIdentifier'].contains( it.key ) }}" var="field" status="fc">%{-- TODO --}%
+                    <g:each in="${formFields.findAll{ BaseDetailsExport.isFieldMultiple( it.key ) }}" var="field" status="fc">%{-- TODO --}%
                         <div class="wide eight field">
 
                             <g:set var="multiList" value="${BaseDetailsExport.getMultipleFieldListForDropdown(field.key, export.getCurrentConfig( export.KEY ))}" />
@@ -94,7 +94,7 @@
             <div class="ui vertical segment">
                 <div class="fields">
 
-                    <div id="fileformat-details-csv" class="wide eight field">
+                    <div class="wide eight field fileformat-details-csv">
                         <label>${message(code: 'reporting.modal.export.cfg.csv')}</label>
                         <p>
                             ${message(code: 'reporting.modal.export.cfg.csv.fieldSeparator')}: <span class="ui circular label">${BaseDetailsExport.CSV_FIELD_SEPARATOR}</span> <br />
@@ -108,7 +108,7 @@
                             </span>
                         </p>
                     </div>
-                    <div id="fileformat-details-xlsx" class="wide eight field">
+                    <div class="wide eight field fileformat-details-xlsx">
                         <label>${message(code: 'reporting.modal.export.cfg.xlsx')}</label>
                         <p>
                             <br />
@@ -121,18 +121,32 @@
                                 <input type="checkbox" name="hideEmptyResults-xlsx" id="hideEmptyResults-xlsx" />
                                 <label for="hideEmptyResults-xlsx">${message(code: 'reporting.modal.export.cfg.hideEmptyResults')}</label>
                             </span>
+                            <br />
+                            <span class="ui checkbox">
+                                <input type="checkbox" name="useHyperlinks-xlsx" id="useHyperlinks-xlsx" />
+                                <label for="useHyperlinks-xlsx">${message(code: 'reporting.modal.export.cfg.useHyperlinks')}</label>
+                            </span>
                         </p>
                     </div>
-                    <div id="fileformat-details-pdf" class="wide eight field">
+                    <div class="wide eight field fileformat-details-pdf">
                         <label>${message(code: 'reporting.modal.export.cfg.pdf')}</label>
                         <p>
-                            ${message(code: 'reporting.modal.export.cfg.pdf.pageFormat')}: <span class="ui circular label">${message(code: 'reporting.modal.export.cfg.pdf.pageFormat.default')}</span> <br />
                             ${message(code: 'reporting.modal.export.cfg.pdf.queryInfo')}: <span class="ui circular label">${message(code: 'reporting.modal.export.cfg.pdf.queryInfo.default')}</span> <br />
                         </p>
                         <p>
                             <span class="ui checkbox">
+                                <input type="checkbox" name="useLineNumbers-pdf" id="useLineNumbers-pdf" checked="checked" />
+                                <label for="useLineNumbers-pdf">${message(code: 'reporting.modal.export.cfg.pdf.useLineNumbers')}</label>
+                            </span>
+                            <br />
+                            <span class="ui checkbox">
                                 <input type="checkbox" name="hideEmptyResults-pdf" id="hideEmptyResults-pdf" />
                                 <label for="hideEmptyResults-pdf">${message(code: 'reporting.modal.export.cfg.hideEmptyResults')}</label>
+                            </span>
+                            <br />
+                            <span class="ui checkbox">
+                                <input type="checkbox" name="useHyperlinks-pdf" id="useHyperlinks-pdf" />
+                                <label for="useHyperlinks-pdf">${message(code: 'reporting.modal.export.cfg.useHyperlinks')}</label>
                             </span>
                         </p>
                     </div>
@@ -150,6 +164,13 @@
                                     optionKey="key"
                                     optionValue="${{it.value[0]}}"
                                     optionExpl="${{it.value[1]}}" /> --}%
+                        </div>
+                        <div class="ui field fileformat-details-pdf" style="margin-bottom: 1em !important;">
+                            <label>${message(code: 'reporting.modal.export.cfg.pdf.pageFormat')}</label>
+                            <g:select name="pageFormat-pdf" id="pageFormat-pdf" class="ui selection dropdown la-not-clearable"
+                                      optionKey="key" optionValue="${{message(code: 'reporting.modal.export.cfg.pdf.format.' + it.key)}}"
+                                      from="${BaseExportHelper.PDF_OPTIONS}"
+                            />
                         </div>
                         <div class="field">
                             <label for="filename-details">${message(code: 'default.fileName.label')}</label>
@@ -171,8 +192,8 @@
     <laser:script file="${this.getGroovyPageFileName()}">
 
         $('#${modalID} select[name=fileformat]').on( 'change', function() {
-            $('#${modalID} *[id^=fileformat-details-').addClass('hidden')
-            $('#${modalID} *[id^=fileformat-details-' + $('#${modalID} select[name=fileformat]').val()).removeClass('hidden')
+            $('#${modalID} div[class*=fileformat-details-').addClass('hidden')
+            $('#${modalID} div[class*=fileformat-details-' + $('#${modalID} select[name=fileformat]').val()).removeClass('hidden')
         }).trigger('change');
     </laser:script>
 

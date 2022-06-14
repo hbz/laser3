@@ -1,7 +1,7 @@
 <%@ page import="de.laser.TitleInstancePackagePlatform" %>
 <laser:serviceInjection/>
 <semui:form>
-    <table class="ui selectable celled table la-table la-ignore-fixed">
+    <table class="ui selectable celled table la-js-responsive-table la-table la-ignore-fixed">
         <thead>
             <tr>
                 <th rowspan="2">${message(code: 'default.compare.title')}</th>

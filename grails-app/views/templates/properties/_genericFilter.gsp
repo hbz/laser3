@@ -3,7 +3,7 @@
 <laser:serviceInjection/>
 <%--params.filterProp: ${params.filterProp}--%>
 <div class="field">
-    <label for="filterPropDef">${message(code: 'subscription.property.search')}
+    <label for="filterPropDef">${label}
         <i class="question circle icon la-popup"></i>
         <span class="ui popup">
             <i class="shield alternate icon"></i> = ${message(code: 'subscription.properties.my')}
@@ -94,6 +94,7 @@
                                 clearable: true,
                                 forceSelection: false,
                                 selectOnKeydown: false,
+                                message: {noResults:JSPC.dict.get('select2.noMatchesFound', JSPC.currLanguage)},
                                 onChange: function (value, text, $selectedItem) {
                                     value !== '' ? $(this).addClass("la-filter-selected") : $(this).removeClass("la-filter-selected");
                                 }
@@ -206,6 +207,7 @@
                         clearable: true,
                         forceSelection: false,
                         selectOnKeydown: false,
+                        message: {noResults:JSPC.dict.get('select2.noMatchesFound', JSPC.currLanguage)},
                         onChange: function (value, text, $selectedItem) {
                             value !== '' ? $(this).addClass("la-filter-selected") : $(this).removeClass("la-filter-selected");
                             if ((typeof $selectedItem != 'undefined')){

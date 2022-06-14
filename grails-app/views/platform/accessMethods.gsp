@@ -31,7 +31,7 @@
         <g:render template="nav" contextPath="." />
 
         <g:form class="form" url="[controller: 'accessMethod', action: 'create']" method="POST">
-            <table  class="ui celled la-table table">
+            <table  class="ui celled la-js-responsive-table la-table table">
                 <thead>
                         <tr>
                             <g:sortableColumn property="AccessMethod" title="${message(code: 'accessMethod.label')}" />

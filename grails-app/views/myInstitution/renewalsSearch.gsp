@@ -106,7 +106,7 @@
         <g:if test="${hits}">
 
             <div id="resultsarea">
-                <table class="ui celled la-table table">
+                <table class="ui celled la-js-responsive-table la-table table">
                     <thead>
                     <tr>
                         <th>${message(code: 'package.show.pkg_name')}</th>
@@ -164,7 +164,7 @@
             %{--value="">${message(code: 'myinst.renewalSearch.generateonline')}</button>--}%
 
             </g:if>
-            <table class="ui celled la-table table">
+            <table class="ui celled la-js-responsive-table la-table table">
                 <thead>
                 <tr>
                     <th><h4 class="ui header">${message(code: 'myinst.renewalSearch.basket')}</h4>
@@ -182,7 +182,7 @@
                     <td><g:if test="${itm.getClass().getName() != Subscription.class.name}">
                         <i class="gift icon"></i>${itm.name}
                     </g:if><g:else>
-                        <i class="folder open outline icon"></i>${itm.name}<hr />
+                        <i class="clipboard outline icon"></i>${itm.name}<hr />
                     </g:else>
                     </td>
                     <td><g:if test="${itm.getClass().getName() != Subscription.class.name}">

@@ -41,7 +41,7 @@
 
     <div data-tab="first" class="ui bottom attached tab segment active" style="border-top: 1px solid #d4d4d5;">
 
-        <table class="ui celled la-table compact table" id="heatTable">
+        <table class="ui celled la-js-responsive-table la-table compact table" id="heatTable">
             <thead>
             <tr>
                 <th>Url</th>
@@ -98,7 +98,21 @@
                             <span>${avg}</span>
                         </g:else>
                     </td>
-                    <td><strong>${((double) stat[0]).round(1)}</strong></td>
+                    <td>
+                        <g:set var="heat" value="${((double) stat[0]).round(2)}" />
+                        <g:if test="${heat >= 3}">
+                            <span class="ui circular red label"> ${heat} </span>
+                        </g:if>
+                        <g:elseif test="${heat >= 2}">
+                            <span class="ui circular orange label"> ${heat} </span>
+                        </g:elseif>
+                        <g:elseif test="${heat >= 1}">
+                            <span class="ui circular yellow label"> ${heat} </span>
+                        </g:elseif>
+                        <g:else>
+                            <span class="ui circular label"> ${heat} </span>
+                        </g:else>
+                    </td>
                 </tr>
             </g:each>
             </tbody>
@@ -108,7 +122,7 @@
 
     <div data-tab="second" class="ui bottom attached tab segment" style="border-top: 1px solid #d4d4d5;">
 
-        <table class="ui celled la-table compact table" id="globalTable">
+        <table class="ui celled la-js-responsive-table la-table compact table" id="globalTable">
             <thead>
                 <tr>
                     <th>Url</th>
@@ -156,10 +170,10 @@
                         <td>
                             <g:set var="avg" value="${((double) stat[2] / 1000).round(2)}" />
                             <g:if test="${avg >= 8}">
-                                <span style="color:red"> ${avg} </span>
+                                <strong style="color:red"> ${avg} </strong>
                             </g:if>
                             <g:elseif test="${avg >= 4}">
-                                <span style="color:orange"> ${avg} </span>
+                                <strong style="color:orange"> ${avg} </strong>
                             </g:elseif>
                             <g:else>
                                 <span>${avg}</span>
@@ -193,7 +207,7 @@
                 </div>
             </div>
         </div>
-        <table class="ui celled la-table compact table" id="contextTable">
+        <table class="ui celled la-js-responsive-table la-table compact table" id="contextTable">
             <thead>
                 <tr>
                     <th>Url</th>
@@ -212,10 +226,10 @@
                     <td>
                         <g:set var="avg" value="${((double) bench[2] / 1000).round(2)}" />
                         <g:if test="${avg >= 8}">
-                            <span style="color:red"> ${avg} </span>
+                            <strong style="color:red"> ${avg} </strong>
                         </g:if>
                         <g:elseif test="${avg >= 4}">
-                            <span style="color:orange"> ${avg} </span>
+                            <strong style="color:orange"> ${avg} </strong>
                         </g:elseif>
                         <g:else>
                             <span>${avg}</span>

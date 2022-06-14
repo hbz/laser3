@@ -53,7 +53,7 @@
         </div>
     </div>
 
-    <div class="ui top attached tabular menu">
+    <div class="ui top attached stackable tabular menu">
         <a class="active item" data-tab="IPv4">IPv4 <semui:totalNumber total="${accessPointDataList.ipv4Ranges.size()}"/></a>
         <a class="item" data-tab="IPv6">IPv6 <semui:totalNumber total="${accessPointDataList.ipv6Ranges.size()}"/></a>
     </div>
@@ -67,7 +67,7 @@
         </span>--}%
         </h3>
 
-        <table class="ui celled la-table table very compact">
+        <table class="ui celled la-js-responsive-table la-table table very compact">
             <thead>
             <tr>
                 <th>${message(code: 'accessPoint.ip.format.input')}</th>
@@ -137,7 +137,7 @@
     </span>--}%
     </h3>
 
-    <table class="ui celled la-table table very compact">
+    <table class="ui celled la-js-responsive-table la-table table very compact">
         <thead>
         <tr>
             <th>${message(code: 'accessPoint.ip.format.input')}</th>

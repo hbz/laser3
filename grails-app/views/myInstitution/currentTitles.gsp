@@ -195,7 +195,7 @@
         <div>
             <g:if test="${titles}">
                 <g:set var="counter" value="${offset + 1}"/>
-                <table class="ui sortable celled la-table table ">
+                <table class="ui sortable celled la-js-responsive-table la-table table ">
                     <thead>
                     <tr>
                         <th>${message(code: 'sidewide.number')}</th>
@@ -249,14 +249,14 @@
                                 String instanceFilter = ''
                                 if (institution.getCustomerType() == "ORG_CONSORTIUM")
                                     instanceFilter += ' and sub.instanceOf = null'
-                                Set<IssueEntitlement> title_coverage_info = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo where oo.org = :context and ie.tipp = :tipp and sub.status = :current' + instanceFilter, [context: institution, tipp: tipp, current: RDStore.SUBSCRIPTION_CURRENT])
+                                Set<IssueEntitlement> title_coverage_info = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo where oo.org = :context and ie.tipp = :tipp and sub.status = :current and ie.status != :deleted' + instanceFilter, [deleted: RDStore.TIPP_STATUS_DELETED, context: institution, tipp: tipp, current: RDStore.SUBSCRIPTION_CURRENT])
                             %>
                             <td>
 
                                 <div class="ui three column grid">
                                     <g:each in="${title_coverage_info}" var="ie">
                                         <div class="sixteen wide column">
-                                            <i class="icon clipboard outline outline la-list-icon"></i>
+                                            <i class="icon clipboard outline la-list-icon"></i>
                                             <g:link controller="subscription" action="index"
                                                     id="${ie.subscription.id}">${ie.subscription.dropdownNamingConvention(institution)}</g:link>
                                             &nbsp;
@@ -318,7 +318,14 @@
                                         </div>
 
                                         <div class="eight wide column">
-                                            ${message(code: 'issueEntitlement.perpetualAccessBySub.label') + ':'}  ${ie.perpetualAccessBySub ? "${RDStore.YN_YES.getI10n('value')}: ${ie.perpetualAccessBySub.dropdownNamingConvention()}" : RDStore.YN_NO.getI10n('value') }
+                                            ${message(code: 'issueEntitlement.perpetualAccessBySub.label') + ':'}
+                                            <%
+                                                if (ie.perpetualAccessBySub) {
+                                                    println g.link([action: 'index', controller: 'subscription', id: ie.perpetualAccessBySub.id], "${RDStore.YN_YES.getI10n('value')}: ${ie.perpetualAccessBySub.dropdownNamingConvention()}")
+                                                } else {
+                                                    println RDStore.YN_NO.getI10n('value')
+                                                }
+                                            %>
                                         </div>
                                     </g:each>
                                 </div>

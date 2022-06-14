@@ -16,9 +16,18 @@ import de.laser.interfaces.DeleteFlag
 import javax.persistence.Transient
 import java.time.Year
 
+/**
+ * Represents a cost item which belongs to an {@link Org} and may be linked above that to a {@link Subscription} or to a {@link SurveyOrg}.
+ * A cost item cannot be linked simultaneously to a {@link Subscription} and to a {@link SurveyOrg}.
+ */
 class CostItem extends AbstractBase
         implements DeleteFlag, CalculatedType  {
 
+    /**
+     * The tax types which are currently allowed in the system;
+     * an association between the {@link RefdataValue} of category {@link RDConstants#TAX_TYPE} and the actual tax rate (7 or 19 %, their reduced variants for 2020 5 resp. 16 % or 0 %)
+     * and a display flag
+     */
     static enum TAX_TYPES {
         TAXABLE_7          (RefdataValue.getByValueAndCategory('taxable', RDConstants.TAX_TYPE),7,true),
         TAXABLE_19         (RefdataValue.getByValueAndCategory('taxable', RDConstants.TAX_TYPE),19,true),
@@ -69,20 +78,13 @@ class CostItem extends AbstractBase
     @RefdataAnnotation(cat = RDConstants.COST_CONFIGURATION, i18n = 'financials.costItemConfiguration')
     RefdataValue costItemElementConfiguration
 
-    @RefdataAnnotation(cat = RDConstants.TAX_TYPE)
-    RefdataValue taxCode          //to be deleted, will be replaced by TAX_TYPES
-
     @RefdataAnnotation(cat = RDConstants.CURRENCY, i18n = 'financials.currency')
     RefdataValue billingCurrency
-
-    //Boolean includeInSubscription include in sub details page - is in fact always true
 
     Double costInBillingCurrency   //The actual amount - new cost ex tax
     Double costInLocalCurrency     //local amount entered
     Double currencyRate
 
-    //legacy, to be replaced by ...
-    Integer taxRate
     //... this construct:
     TAX_TYPES taxKey
 
@@ -107,12 +109,7 @@ class CostItem extends AbstractBase
 
     //Edits...
     Date lastUpdated
-    //User lastUpdatedBy
     Date dateCreated
-    //User createdBy
-
-    //@Transient
-    //def budgetcodes //Binds getBudgetcodes
 
     static final TAX_RATES = [ 0, 5, 7, 16, 19 ]
 
@@ -141,13 +138,10 @@ class CostItem extends AbstractBase
         currencyRate    column: 'ci_currency_rate'
         finalCostRounding               column:'ci_final_cost_rounding'
         billingSumRounding              column:'ci_billing_sum_rounding'
-        taxCode         column: 'ci_tax_code'
-        taxRate                         column: 'ci_tax_rate'
         taxKey          column: 'ci_tax_enum'
         invoiceDate                     column: 'ci_invoice_date'
         financialYear                   column: 'ci_financial_year'
         isVisibleForSubscriber          column: 'ci_is_viewable'
-        //includeInSubscription column: 'ci_include_in_subscr'
         costItemCategory    column: 'ci_cat_rv_fk'
         costItemElement     column: 'ci_element_rv_fk'
         costItemElementConfiguration column: 'ci_element_configuration_rv_fk'
@@ -182,8 +176,6 @@ class CostItem extends AbstractBase
         datePaid        (nullable: true)
         costInLocalCurrency (nullable: true)
         currencyRate(nullable: true)
-        taxCode     (nullable: true)
-        taxRate     (nullable: true)
         taxKey      (nullable: true)
         invoiceDate (nullable: true)
         financialYear(nullable: true)
@@ -216,6 +208,10 @@ class CostItem extends AbstractBase
         super.beforeDeleteHandler()
     }
 
+    /**
+     * Determines the type of the cost item - is it a shared consortial item or local resp. hidden item?
+     * @return a {@link CalculatedType} constant (TYPE_CONSORTIAL or TYPE_LOCAL)
+     */
     @Override
     // currently only used for API
     String _getCalculatedType() {
@@ -226,6 +222,10 @@ class CostItem extends AbstractBase
         CalculatedType.TYPE_LOCAL // boolean flag = false -> local costs or hidden consortia costs
     }
 
+    /**
+     * Gets the list of {@link BudgetCode}s to which this cost item is belonging to
+     * @return a {@link List} of {@link BudgetCode}s
+     */
     List<BudgetCode> getBudgetcodes() {
         BudgetCode.executeQuery(
                 "select bc from BudgetCode as bc, CostItemGroup as cig, CostItem as ci where cig.costItem = ci and cig.budgetCode = bc and ci = :costitem",
@@ -233,22 +233,40 @@ class CostItem extends AbstractBase
         )
     }
 
+    /**
+     * Executes the tax calculation of the local sum and returns the final local cost
+     * @return the local cost after taxation
+     */
+    //needs to be def because of GORM magic, looking for a database mapping ...
     def getCostInLocalCurrencyAfterTax() {
         Double result = ( costInLocalCurrency ?: 0.0 ) * ( taxKey ? ((taxKey.taxRate/100) + 1) : 1.0 )
 
         finalCostRounding ? result.round(0) : result.round(2)
     }
 
+    /**
+     * Executes the tax calculation of the billing sum and returns the final billing cost
+     * @return the billing cost after taxation
+     */
+    //needs to be def because of GORM magic, looking for a database mapping ...
     def getCostInBillingCurrencyAfterTax() {
         Double result = ( costInBillingCurrency ?: 0.0 ) * ( taxKey ? ((taxKey.taxRate/100) + 1) : 1.0 )
 
         finalCostRounding ? result.round(0) : result.round(2)
     }
 
+    /**
+     * Determines the start date of the cost period covered by this cost item; as fallback, the {@link Subscription}'s start date is being taken if it is set
+     * @return the start date of the cost item; if not specified, the owner {@link Subscription}'s start date; null if that is missing as well
+     */
     Date getDerivedStartDate() {
         startDate ? startDate : sub?.startDate
     }
 
+    /**
+     * Determines the end date of the cost period covered by this cost item; as fallback, the {@link Subscription}'s end date is being taken if it is set
+     * @return the end date of the cost item; if not specified, the owner {@link Subscription}'s end date; null if that is missing as well
+     */
     Date getDerivedEndDate() {
         endDate ? endDate : sub?.endDate
     }

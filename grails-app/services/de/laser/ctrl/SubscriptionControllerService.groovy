@@ -29,9 +29,10 @@ import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import groovy.time.TimeCategory
 import org.apache.commons.lang3.RandomStringUtils
-import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
+import org.hibernate.SQLQuery
+import org.hibernate.Session
 import org.grails.orm.hibernate.cfg.GrailsDomainBinder
 import org.grails.orm.hibernate.cfg.PropertyConfig
 import org.springframework.context.MessageSource
@@ -44,6 +45,9 @@ import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.concurrent.ExecutorService
 
+/**
+ * This service is a container for those methods of the {@link SubscriptionController} which contain complex data manipulation operations
+ */
 @Transactional
 class SubscriptionControllerService {
 
@@ -75,9 +79,16 @@ class SubscriptionControllerService {
     WorkflowService workflowService
     ManagementService managementService
     PendingChangeService pendingChangeService
+    def sessionFactory
 
     //-------------------------------------- general or ungroupable section -------------------------------------------
 
+    /**
+     * Loads the given subscription details and returns them to the details view. If mandatory properties are missing,
+     * they will be created; that is why this method needs to be transactional
+     * @param params the request parameter map
+     * @return the given subscription's details
+     */
     Map<String,Object> show(GrailsParameterMap params) {
         ProfilerUtils pu = new ProfilerUtils()
         pu.setBenchmark('1')
@@ -288,6 +299,12 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Loads the tasks attached to the given subscription
+     * @param controller unused
+     * @param params the request parameter map
+     * @return the tasks for the given subscription
+     */
     Map<String,Object> tasks(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result)
@@ -299,6 +316,12 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Reveals the inheritance history for the given subscription
+     * @param controller unused
+     * @param params the request parameter map
+     * @return a list of audit log events for the given subscription
+     */
     Map<String,Object> history(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if (!result) {
@@ -315,6 +338,7 @@ class SubscriptionControllerService {
         }
     }
 
+    @Deprecated
     Map<String,Object> changes(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if (!result) {
@@ -333,6 +357,12 @@ class SubscriptionControllerService {
 
     //--------------------------------------------- statistics section -----------------------------------------------------------
 
+    /**
+     * Reveals the usage data for the given subscription. The usage data may be filtered; one report type and one metric type
+     * is default. COUNTER 4 data is being retrieved as fallback if no COUNTER 5 data exists
+     * @param params the request parameter map
+     * @return the usage data, grouped by month
+     */
     Map<String, Object> stats(GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         SwissKnife.setPaginationParams(result, params, result.user)
@@ -356,23 +386,23 @@ class SubscriptionControllerService {
                 }
             }
             //at this point, we should be sure that at least the parent subscription has a holding!
-            Subscription refSub
+            Set<Subscription> refSubs
             if (params.statsForSurvey == true) {
                 if(params.loadFor == 'allIEsStats')
-                    refSub = result.subscription.instanceOf //look at statistics of the whole set of titles, i.e. of the consortial parent subscription
+                    refSubs = [result.subscription.instanceOf] //look at statistics of the whole set of titles, i.e. of the consortial parent subscription
                 else if(params.loadFor == 'holdingIEsStats')
-                    refSub = result.subscription._getCalculatedPrevious() //look at the statistics of the member, i.e. the member's stock of the previous year
+                    refSubs = result.subscription._getCalculatedPrevious() //look at the statistics of the member, i.e. the member's stock of the previous year
             }
             else if(subscriptionService.getCurrentIssueEntitlementIDs(result.subscription).size() > 0){
-                refSub = result.subscription
+                refSubs = [result.subscription]
             }
-            else refSub = result.subscription.instanceOf
+            else refSubs = [result.subscription.instanceOf]
             Set<Counter4Report> c4usages = []
             Set<Counter5Report> c5usages = []
             List count4check = [], c4sums = [], count5check = [], c5sums = [], monthsInRing = []
             if(!params.tab)
                 params.tab = 'total'
-            if(subscribedPlatforms && refSub) {
+            if(subscribedPlatforms && refSubs) {
                 String sort
                 if(params.sort && !params.exportXLS) {
                     String secondarySort
@@ -393,9 +423,9 @@ class SubscriptionControllerService {
                 }
                 result.subscribedPlatforms = subscribedPlatforms
                 ArrayList<Object> filterData = prepareFilter(params, result)
-                String filter = filterData[0], dateRange = filterData[1]
+                String filter = filterData[0], dateRange = filterData[1], sqlDateRange = filterData[4]
                 Map<String, Object> queryParams = filterData[2] as Map<String, Object>
-                queryParams.refSub = refSub
+                queryParams.refSubs = refSubs
                 queryParams.acceptStatus = RDStore.IE_ACCEPT_STATUS_FIXED
                 queryParams.current = RDStore.TIPP_STATUS_CURRENT
                 monthsInRing.addAll(filterData[3] as List)
@@ -404,14 +434,27 @@ class SubscriptionControllerService {
                 result.endDate = queryParams.endDate
                 result.customer = queryParams.customer.id
                 result.platforms = queryParams.platforms.collect { Platform plat -> plat.id }
-                Map<String, Object> c5CheckParams = [customer: queryParams.customer, platforms: queryParams.platforms, refSub: refSub, acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED, current: RDStore.TIPP_STATUS_CURRENT]
+                Map<String, Object> c5CheckParams = [customer: queryParams.customer, platforms: queryParams.platforms, refSubs: refSubs, acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED, current: RDStore.TIPP_STATUS_CURRENT]
                 if(dateRange) {
                     c5CheckParams.startDate = queryParams.startDate
                     c5CheckParams.endDate = queryParams.endDate
                 }
-                count5check.addAll(Counter5Report.executeQuery('select count(r.id) from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null)'+dateRange, c5CheckParams))
-                if(count5check.get(0) == 0) {
-                    Set availableReportTypes = Counter4Report.executeQuery('select r.reportType from Counter4Report r where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null)'+dateRange+' order by r.reportType asc', c5CheckParams)
+                Session sess = sessionFactory.getCurrentSession()
+                SQLQuery query = sess.createSQLQuery('select * from counter5report where c5r_report_institution_fk = :customer and c5r_platform_fk in (:platforms) and (c5r_title_fk in (select ie_tipp_fk from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk in (:refSubs) and ie_accept_status_rv_fk = :acceptStatus and ie_status_rv_fk = :current and tipp_status_rv_fk = :current) or c5r_title_fk is null)'+sqlDateRange)
+                query.setParameter('customer', c5CheckParams.customer.id)
+                query.setParameterList('platforms', c5CheckParams.platforms.collect { Platform plat -> plat.id })
+                query.setParameterList('refSubs', refSubs.collect{ Subscription s -> s.id })
+                query.setParameter('acceptStatus', RDStore.IE_ACCEPT_STATUS_FIXED.id)
+                query.setParameter('current', RDStore.TIPP_STATUS_CURRENT.id)
+                if(c5CheckParams.startDate)
+                    query.setParameter('startDate', new Timestamp(c5CheckParams.startDate.getTime()))
+                if(c5CheckParams.endDate)
+                    query.setParameter('endDate', new Timestamp(c5CheckParams.endDate.getTime()))
+                query.addEntity(Counter5Report)
+                count5check.addAll(query.list())
+                //count5check.addAll(Counter5Report.executeQuery('select count(r.id) from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription in (:refSubs) and ie.acceptStatus = :acceptStatus) or r.title is null)'+dateRange, c5CheckParams, [max: 1]))
+                if(count5check.size() == 0) {
+                    Set availableReportTypes = Counter4Report.executeQuery('select r.reportType from Counter4Report r where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription in (:refSubs) and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null)'+dateRange+' order by r.reportType asc', c5CheckParams)
                     result.reportTypes = availableReportTypes
                     if(!params.reportType) {
                         if(availableReportTypes)
@@ -421,7 +464,7 @@ class SubscriptionControllerService {
                     else result.reportType = params.reportType
                     filter += " and r.reportType in (:reportType) "
                     queryParams.reportType = result.reportType
-                    Set availableMetricTypes = Counter4Report.executeQuery('select r.metricType from Counter4Report r where r.reportInstitution = :customer and r.platform in (:platforms) and r.reportType in (:reportType) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null)'+dateRange, c5CheckParams+[reportType: result.reportType])
+                    Set availableMetricTypes = Counter4Report.executeQuery('select r.metricType from Counter4Report r where r.reportInstitution = :customer and r.platform in (:platforms) and r.reportType in (:reportType) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription in (:refSubs) and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null)'+dateRange, c5CheckParams+[reportType: result.reportType])
                     result.metricTypes = availableMetricTypes
                     if(!params.metricType) {
                         if(availableMetricTypes)
@@ -431,10 +474,9 @@ class SubscriptionControllerService {
                     else result.metricType = params.metricType
                     filter += " and r.metricType = :metricType "
                     queryParams.metricType = result.metricType
-
-                    c4sums.addAll(Counter4Report.executeQuery('select new map(r.reportType as reportType, r.reportFrom as reportMonth, r.metricType as metricType, r.category as reportCategory, sum(r.reportCount) as reportCount) from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null)'+filter+dateRange+' group by r.reportFrom, r.metricType, r.reportType, r.category order by r.reportFrom asc, r.metricType asc', queryParams))
-                    c4usages.addAll(Counter4Report.executeQuery('select r from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null)'+filter+dateRange+' order by '+sort, queryParams, [max: result.max, offset: result.offset]))
-                    count4check.addAll(Counter4Report.executeQuery('select count(r.id) from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null)'+filter+dateRange, queryParams))
+                    c4sums.addAll(Counter4Report.executeQuery('select new map(r.reportType as reportType, r.reportFrom as reportMonth, r.metricType as metricType, r.category as reportCategory, sum(r.reportCount) as reportCount) from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription in (:refSubs) and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null)'+filter+dateRange+' group by r.reportFrom, r.metricType, r.reportType, r.category order by r.reportFrom asc, r.metricType asc', queryParams))
+                    c4usages.addAll(Counter4Report.executeQuery('select r from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription in (:refSubs) and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null)'+filter+dateRange+' order by '+sort, queryParams, [max: result.max, offset: result.offset]))
+                    count4check.addAll(Counter4Report.executeQuery('select count(r.id) from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription in (:refSubs) and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null)'+filter+dateRange, queryParams))
                     result.total = count4check.get(0)
                     result.sums = c4sums
                     result.usages = c4usages
@@ -442,10 +484,10 @@ class SubscriptionControllerService {
                     monthQueryParams.remove('startDate')
                     monthQueryParams.remove('endDate')
                     monthQueryParams.monthsInRing = monthsInRing
-                    result.monthsInRing = Counter4Report.executeQuery('select r.reportFrom from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null) and r.reportFrom in (:monthsInRing)'+filter+' group by r.reportFrom, r.metricType, r.reportType order by r.reportFrom asc, r.metricType asc', monthQueryParams) as Set
+                    result.monthsInRing = Counter4Report.executeQuery('select r.reportFrom from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription in (:refSubs) and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null) and r.reportFrom in (:monthsInRing)'+filter+' group by r.reportFrom, r.metricType, r.reportType order by r.reportFrom asc, r.metricType asc', monthQueryParams) as Set
                 }
                 else {
-                    Set availableReportTypes = Counter5Report.executeQuery('select lower(r.reportType) from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null)'+dateRange+' order by r.reportType asc', c5CheckParams)
+                    Set availableReportTypes = Counter5Report.executeQuery('select lower(r.reportType) from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription in (:refSubs) and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null)'+dateRange+' order by r.reportType asc', c5CheckParams)
                     result.reportTypes = availableReportTypes
                     if(!params.reportType) {
                         if(availableReportTypes)
@@ -455,8 +497,14 @@ class SubscriptionControllerService {
                     else result.reportType = params.reportType
                     filter += " and lower(r.reportType) in (:reportType) "
                     queryParams.reportType = result.reportType
-                    Set availableMetricTypes = Counter5Report.executeQuery('select r.metricType from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms) and lower(r.reportType) in (:reportType) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null)'+dateRange, c5CheckParams+[reportType: result.reportType])
+                    Set availableMetricTypes = [], availableAccessTypes = []
+                    List metricAccessRows = Counter5Report.executeQuery('select r.metricType, r.accessType from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms) and lower(r.reportType) in (:reportType) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription in (:refSubs) and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null)'+dateRange, c5CheckParams+[reportType: result.reportType])
+                    metricAccessRows.each { rows ->
+                        availableMetricTypes << rows[0]
+                        availableAccessTypes << rows[1]
+                    }
                     result.metricTypes = availableMetricTypes
+                    result.accessTypes = availableAccessTypes
                     if(!params.metricType) {
                         if(availableMetricTypes)
                             result.metricType = availableMetricTypes[0]
@@ -465,16 +513,16 @@ class SubscriptionControllerService {
                     else result.metricType = params.metricType
                     filter += " and r.metricType = :metricType "
                     queryParams.metricType = result.metricType
-                    c5sums.addAll(Counter5Report.executeQuery('select new map(r.reportType as reportType, r.reportFrom as reportMonth, r.metricType as metricType, sum(r.reportCount) as reportCount) from Counter5Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null)'+filter+dateRange+' group by r.reportFrom, r.metricType, r.reportType order by r.reportFrom asc, r.metricType asc', queryParams))
-                    c5usages.addAll(Counter5Report.executeQuery('select r from Counter5Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null)'+filter+dateRange+' order by '+sort, queryParams, [max: result.max, offset: result.offset]))
-                    result.total = Counter5Report.executeQuery('select count(r) from Counter5Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null)'+filter+dateRange, queryParams).get(0)
+                    c5sums.addAll(Counter5Report.executeQuery('select new map(r.reportType as reportType, r.reportFrom as reportMonth, r.metricType as metricType, sum(r.reportCount) as reportCount) from Counter5Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription in (:refSubs) and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null)'+filter+dateRange+' group by r.reportFrom, r.metricType, r.reportType order by r.reportFrom asc, r.metricType asc', queryParams))
+                    c5usages.addAll(Counter5Report.executeQuery('select r from Counter5Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription in (:refSubs) and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null)'+filter+dateRange+' order by '+sort, queryParams, [max: result.max, offset: result.offset]))
+                    result.total = Counter5Report.executeQuery('select count(r) from Counter5Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription in (:refSubs) and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null)'+filter+dateRange, queryParams).get(0)
                     result.sums = c5sums
                     result.usages = c5usages
                     Map<String, Object> monthQueryParams = queryParams.clone()
                     monthQueryParams.remove('startDate')
                     monthQueryParams.remove('endDate')
                     monthQueryParams.monthsInRing = monthsInRing
-                    result.monthsInRing = Counter5Report.executeQuery('select r.reportFrom from Counter5Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null) and r.reportFrom in (:monthsInRing)'+filter+' group by r.reportFrom, r.metricType, r.reportType order by r.reportFrom asc, r.metricType asc', monthQueryParams) as Set
+                    result.monthsInRing = Counter5Report.executeQuery('select r.reportFrom from Counter5Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription in (:refSubs) and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null) and r.reportFrom in (:monthsInRing)'+filter+' group by r.reportFrom, r.metricType, r.reportType order by r.reportFrom asc, r.metricType asc', monthQueryParams) as Set
                 }
             }
             else {
@@ -486,6 +534,11 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Gets the usage data for the given subscription and prepares the available report types in Excel sheets
+     * @param params the request parameter map
+     * @return a map containing the usage data
+     */
     Map<String, Object> statsForExport(GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result)
@@ -493,21 +546,21 @@ class SubscriptionControllerService {
         else {
             Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: result.subscription])
             //at this point, we should be sure that at least the parent subscription has a holding!
-            Subscription refSub
+            Set<Subscription> refSubs
             if (params.statsForSurvey == true) {
                 if(params.loadFor == 'allIEsStats')
-                    refSub = result.subscription.instanceOf //look at statistics of the whole set of titles, i.e. of the consortial parent subscription
+                    refSubs = [result.subscription.instanceOf] //look at statistics of the whole set of titles, i.e. of the consortial parent subscription
                 else if(params.loadFor == 'holdingIEsStats')
-                    refSub = result.subscription._getCalculatedPrevious() //look at the statistics of the member, i.e. the member's stock of the previous year
+                    refSubs = result.subscription._getCalculatedPrevious() //look at the statistics of the member, i.e. the member's stock of the previous year
             }
             else if(subscriptionService.getCurrentIssueEntitlementIDs(result.subscription).size() > 0){
-                refSub = result.subscription
+                refSubs = [result.subscription]
             }
-            else refSub = result.subscription.instanceOf
+            else refSubs = [result.subscription.instanceOf]
             Set<Counter4Report> c4usages = []
             Set<Counter5Report> c5usages = []
             List c4sums = [], c5sums = [], monthsInRing = []
-            if(subscribedPlatforms && refSub) {
+            if(subscribedPlatforms && refSubs) {
                 String sort = "title.name asc, r.reportType asc, r.reportFrom desc"
                 result.subscribedPlatforms = subscribedPlatforms
                 ArrayList<Object> filterData = prepareFilter(params, result)
@@ -519,53 +572,57 @@ class SubscriptionControllerService {
                 result.dateRun = GregorianCalendar.getInstance().getTime()
                 result.startDate = queryParams.startDate
                 result.endDate = queryParams.endDate
-                queryParams.refSub = refSub
+                queryParams.refSubs = refSubs
                 queryParams.acceptStatus = RDStore.IE_ACCEPT_STATUS_FIXED
-                Map<String, Object> c5CheckParams = [customer: queryParams.customer, platforms: queryParams.platforms, refSub: refSub, acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED]
+                queryParams.current = RDStore.TIPP_STATUS_CURRENT
+                Map<String, Object> c5CheckParams = [customer: queryParams.customer, platforms: queryParams.platforms, refSubs: refSubs, acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED, current: RDStore.TIPP_STATUS_CURRENT]
                 if(dateRange) {
                     c5CheckParams.startDate = queryParams.startDate
                     c5CheckParams.endDate = queryParams.endDate
                 }
-                if(Counter5Report.executeQuery('select count(r.id) from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub and ie.acceptStatus = :acceptStatus) or r.title is null)'+dateRange, c5CheckParams)?.get(0) == 0) {
-                    if(filter) {
+                if(Counter5Report.executeQuery('select count(r.id) from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription in (:refSubs) and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null)'+dateRange, c5CheckParams)?.get(0) == 0) {
+                    if(params.data == 'fetchFiltered' && params.reportType && params.metricType) {
                         filter += " and r.reportType in (:reportType) "
                         queryParams.reportType = params.reportType
                         filter += " and r.metricType = :metricType "
                         queryParams.metricType = params.metricType
                     }
                     Map<String, Object> platformReportParams = queryParams.clone()
-                    platformReportParams.remove("refSub")
+                    platformReportParams.remove("refSubs")
                     platformReportParams.remove("acceptStatus")
+                    platformReportParams.remove("current")
                     platformReportParams.pr = Counter4ApiSource.PLATFORM_REPORT_1
-                    Set availableMetricTypes = Counter4Report.executeQuery('select r.metricType from Counter4Report r where r.reportInstitution = :customer and r.platform in (:platforms) and r.reportType in (:reportType) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub and ie.acceptStatus = :acceptStatus) or r.title is null)'+dateRange, c5CheckParams+[reportType: result.reportType])
+                    Set availableMetricTypes = Counter4Report.executeQuery('select r.metricType from Counter4Report r where r.reportInstitution = :customer and r.platform in (:platforms) and r.reportType in (:reportType) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription in (:refSubs) and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null)'+dateRange, c5CheckParams+[reportType: result.reportType])
                     result.metricTypes = availableMetricTypes
-                    result.total = Counter4Report.executeQuery('select new map(r.metricType as metricType, r.reportType as reportType, sum(r.reportCount) as reportCount) from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub and ie.acceptStatus = :acceptStatus) or r.title is null)'+filter+dateRange+' group by r.reportType, r.metricType order by r.metricType asc', queryParams)
+                    result.total = Counter4Report.executeQuery('select new map(r.metricType as metricType, r.reportType as reportType, sum(r.reportCount) as reportCount) from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription in (:refSubs) and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null)'+filter+dateRange+' group by r.reportType, r.metricType order by r.metricType asc', queryParams)
                     if(params.data == 'fetchAll')
                         result.total.addAll(Counter4Report.executeQuery('select new map(r.metricType as metricType, r.publisher as publisher, r.reportType as reportType, sum(r.reportCount) as reportCount) from Counter4Report r where r.reportInstitution = :customer and r.platform in (:platforms) and r.reportType = :pr'+filter+dateRange+' group by r.reportType, r.metricType, r.publisher order by r.metricType asc', platformReportParams))
                     if(params.data == 'fetchAll') {
-                        c4sums.addAll(Counter4Report.executeQuery('select new map(r.reportType as reportType, r.reportFrom as reportMonth, r.metricType as metricType, r.category as reportCategory, r.platform as platform, sum(r.reportCount) as reportCount) from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub and ie.acceptStatus = :acceptStatus) or r.title is null) and r.reportType != :pr'+filter+dateRange+' group by r.reportFrom, r.metricType, r.reportType, r.category, r.platform order by r.reportFrom asc, r.metricType asc', queryParams+[pr: Counter4ApiSource.PLATFORM_REPORT_1]))
+                        c4sums.addAll(Counter4Report.executeQuery('select new map(r.reportType as reportType, r.reportFrom as reportMonth, r.metricType as metricType, r.category as reportCategory, r.platform as platform, sum(r.reportCount) as reportCount) from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription in (:refSubs) and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null) and r.reportType != :pr'+filter+dateRange+' group by r.reportFrom, r.metricType, r.reportType, r.category, r.platform order by r.reportFrom asc, r.metricType asc', queryParams+[pr: Counter4ApiSource.PLATFORM_REPORT_1]))
                         c4sums.addAll(Counter4Report.executeQuery('select new map(r.reportType as reportType, r.publisher as publisher, r.reportFrom as reportMonth, r.metricType as metricType, r.category as reportCategory, r.platform as platform, sum(r.reportCount) as reportCount) from Counter4Report r where r.reportInstitution = :customer and r.platform in (:platforms) and r.reportType = :pr' + filter + dateRange + ' group by r.reportFrom, r.metricType, r.reportType, r.category, r.platform, r.publisher order by r.reportFrom asc, r.metricType asc', platformReportParams))
                     }
-                    else c4sums.addAll(Counter4Report.executeQuery('select new map(r.reportType as reportType, r.reportFrom as reportMonth, r.metricType as metricType, r.category as reportCategory, r.platform as platform, sum(r.reportCount) as reportCount) from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub and ie.acceptStatus = :acceptStatus) or r.title is null)'+filter+dateRange+' group by r.reportFrom, r.metricType, r.reportType, r.category, r.platform order by r.reportFrom asc, r.metricType asc', queryParams))
-                    c4usages.addAll(Counter4Report.executeQuery('select r from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub and ie.acceptStatus = :acceptStatus) or r.title is null)'+filter+dateRange+' order by '+sort, queryParams, [max: result.max, offset: result.offset]))
+                    else c4sums.addAll(Counter4Report.executeQuery('select new map(r.reportType as reportType, r.reportFrom as reportMonth, r.metricType as metricType, r.category as reportCategory, r.platform as platform, sum(r.reportCount) as reportCount) from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription in (:refSubs) and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null)'+filter+dateRange+' group by r.reportFrom, r.metricType, r.reportType, r.category, r.platform order by r.reportFrom asc, r.metricType asc', queryParams))
+                    c4usages.addAll(Counter4Report.executeQuery('select r from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription in (:refSubs) and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null)'+filter+dateRange+' order by '+sort, queryParams, [max: result.max, offset: result.offset]))
                     result.sums = c4sums
                     result.usages = c4usages
-                    result.reportTypes = Counter4Report.executeQuery('select r.reportType from Counter4Report r where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub and ie.acceptStatus = :acceptStatus) or r.title is null)'+dateRange+' order by r.reportFrom asc', c5CheckParams)
+                    result.reportTypes = Counter4Report.executeQuery('select r.reportType from Counter4Report r where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription in (:refSubs) and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null)'+dateRange+' order by r.reportFrom asc', c5CheckParams)
                     result.revision = 'counter4'
                 }
                 else {
-                    if(filter) {
+                    if(params.data == 'fetchFiltered' && params.reportType && params.metricType) {
                         filter += " and lower(r.reportType) in (:reportType) "
                         queryParams.reportType = params.reportType
                         filter += " and r.metricType = :metricType "
                         queryParams.metricType = params.metricType
                     }
-                    result.total = Counter5Report.executeQuery('select new map(r.metricType as metricType, r.reportType as reportType, sum(r.reportCount) as reportCount) from Counter5Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub and ie.acceptStatus = :acceptStatus) or r.title is null)'+filter+dateRange+' group by r.metricType, r.reportType order by r.metricType asc', queryParams)
-                    c5sums.addAll(Counter5Report.executeQuery('select new map(r.reportType as reportType, r.reportFrom as reportMonth, r.metricType as metricType, r.platform as platform, sum(r.reportCount) as reportCount) from Counter5Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub and ie.acceptStatus = :acceptStatus) or r.title is null)'+filter+dateRange+' group by r.reportFrom, r.metricType, r.reportType, r.platform order by r.reportFrom asc, r.metricType asc', queryParams))
-                    c5usages.addAll(Counter5Report.executeQuery('select r from Counter5Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub and ie.acceptStatus = :acceptStatus) or r.title is null)'+filter+dateRange+' order by '+sort, queryParams, [max: result.max, offset: result.offset]))
+                    Set availableMetricTypes = Counter5Report.executeQuery('select r.metricType from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms) and lower(r.reportType) in (:reportType) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription in (:refSubs) and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null)'+dateRange, c5CheckParams+[reportType: result.reportType])
+                    result.metricTypes = availableMetricTypes
+                    result.total = Counter5Report.executeQuery('select new map(r.metricType as metricType, r.reportType as reportType, sum(r.reportCount) as reportCount) from Counter5Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription in (:refSubs) and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null)'+filter+dateRange+' group by r.metricType, r.reportType order by r.metricType asc', queryParams)
+                    c5sums.addAll(Counter5Report.executeQuery('select new map(r.reportType as reportType, r.reportFrom as reportMonth, r.metricType as metricType, r.platform as platform, sum(r.reportCount) as reportCount) from Counter5Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription in (:refSubs) and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null)'+filter+dateRange+' group by r.reportFrom, r.metricType, r.reportType, r.platform order by r.reportFrom asc, r.metricType asc', queryParams))
+                    c5usages.addAll(Counter5Report.executeQuery('select r from Counter5Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription in (:refSubs) and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null)'+filter+dateRange+' order by '+sort, queryParams, [max: result.max, offset: result.offset]))
                     result.sums = c5sums
                     result.usages = c5usages
-                    result.reportTypes = Counter5Report.executeQuery('select r.reportType from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription = :refSub and ie.acceptStatus = :acceptStatus) or r.title is null)'+dateRange+' order by r.reportFrom asc', c5CheckParams)
+                    result.reportTypes = Counter5Report.executeQuery('select r.reportType from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription in (:refSubs) and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null)'+dateRange+' order by r.reportFrom asc', c5CheckParams)
                     result.revision = 'counter5'
                 }
             }
@@ -574,13 +631,27 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Takes the given request parameters and assembles the query filter for the usage query
+     * @param params the request parameter map containing filter input
+     * @param result the generics result map, containing implicite relevant data
+     * @return a list of filter data, of structure:
+     * <ol start="0">
+     *     <li>HQL filter string</li>
+     *     <li>HQL date range</li>
+     *     <li>query parameter map</li>
+     *     <li>months contained in the observed time span</li>
+     *     <li>SQL date range</li>
+     * </ol>
+     */
     ArrayList<Object> prepareFilter(GrailsParameterMap params, Map<String, Object> result) {
-        String dateRange, filter = ""
+        String dateRange, sqlDateRange, filter = ""
         List monthsInRing = []
         Map<String, Object> queryParams = [customer: result.subscription.getSubscriber(), platforms: result.subscribedPlatforms]
         Calendar startTime = GregorianCalendar.getInstance(), endTime = GregorianCalendar.getInstance()
         if(result.subscription.startDate && result.subscription.endDate) {
             dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
+            sqlDateRange = " and c5r_report_from >= :startDate and c5r_report_to <= :endDate "
             if(params.tab == 'total' || params.data == 'fetchAll') {
                 queryParams.startDate = result.subscription.startDate
                 queryParams.endDate = result.subscription.endDate
@@ -599,6 +670,7 @@ class SubscriptionControllerService {
         }
         else if(result.subscription.startDate) {
             dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
+            sqlDateRange = " and c5r_report_from >= :startDate and c5r_report_to <= :endDate "
             if(params.tab == 'total' || params.data == 'fetchAll') {
                 queryParams.startDate = result.subscription.startDate
                 queryParams.endDate = new Date()
@@ -617,9 +689,11 @@ class SubscriptionControllerService {
         else {
             if(params.tab == 'total') {
                 dateRange = ''
+                sqlDateRange = ''
             }
             else {
                 dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
+                sqlDateRange = " and c5r_report_from >= :startDate and c5r_report_to <= :endDate "
                 Calendar filterTime = GregorianCalendar.getInstance()
                 Date filterDate = DateUtils.getSDF_yearMonth().parse(params.tab)
                 filterTime.setTime(filterDate)
@@ -627,13 +701,19 @@ class SubscriptionControllerService {
                 filterTime.set(Calendar.DATE,filterTime.getActualMaximum(Calendar.DAY_OF_MONTH))
                 queryParams.endDate = filterTime.getTime()
             }
-            startTime.set(2018, 0, 1)
+            startTime.set(Calendar.DAY_OF_YEAR, 1)
             endTime.setTime(new Date())
         }
-        while(startTime.before(endTime)) {
-            monthsInRing << startTime.getTime()
-            startTime.add(Calendar.MONTH, 1)
+        if(params.tab && params.tab != 'total' && params.exportXLS && params.data != 'fetchAll') {
+            monthsInRing << DateUtils.getSDF_yearMonth().parse(params.tab)
         }
+        else {
+            while(startTime.before(endTime)) {
+                monthsInRing << startTime.getTime()
+                startTime.add(Calendar.MONTH, 1)
+            }
+        }
+
         if(params.data != 'fetchAll') {
             if(params.series_names) {
                 filter += " and title.seriesName in (:seriesName) "
@@ -702,11 +782,17 @@ class SubscriptionControllerService {
             }
 
         }
-        [filter, dateRange, queryParams, monthsInRing]
+        [filter, dateRange, queryParams, monthsInRing, sqlDateRange]
     }
 
     //--------------------------------------------- new subscription creation -----------------------------------------------------------
 
+    /**
+     * Prepares the new subscription form
+     * @param controller unused
+     * @param params the request parameter map
+     * @return a map containing defaults or ERROR if permission is not granted
+     */
     Map<String,Object> emptySubscription(SubscriptionController controller, GrailsParameterMap params) {
         Map<String, Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         if(result.editable) {
@@ -732,6 +818,12 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Takes the submitted parameters and creates a new subscription instance based on the given input
+     * @param controller unused
+     * @param params the input parameter map
+     * @return OK if the creation was successful, ERROR otherwise
+     */
     Map<String,Object> processEmptySubscription(SubscriptionController controller, GrailsParameterMap params) {
         log.debug( params.toMapString() )
         Map<String, Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
@@ -825,6 +917,12 @@ class SubscriptionControllerService {
 
     //--------------------------------------------- document section ----------------------------------------------
 
+    /**
+     * Gets the notes attached to the given subscription
+     * @param controller unused
+     * @param params the request parameter map
+     * @return the list of notes for the given subscription, ERROR in case of missing grants
+     */
     Map<String,Object> notes(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result)
@@ -835,6 +933,12 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Gets the documents attached to the given subscription
+     * @param controller unused
+     * @param params the request parameter map
+     * @return the list of documents for the given subscription, ERROR in case of missing grants
+     */
     Map<String,Object> documents(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result)
@@ -847,6 +951,12 @@ class SubscriptionControllerService {
 
     //--------------------------------- consortia members section ----------------------------------------------
 
+    /**
+     * Retrieves the members of the given consortial subscription
+     * @param controller unused
+     * @param params the request parameter map, containing also the filter input
+     * @return the (filtered) result set, either with a basic set of information (for HTML display) or with further data (for Excel export)
+     */
     Map<String,Object> members(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         ProfilerUtils pu = new ProfilerUtils()
@@ -902,6 +1012,12 @@ class SubscriptionControllerService {
         [result:result,status:STATUS_OK]
     }
 
+    /**
+     * Lists institutions and sets default parameters for the member adding form
+     * @param controller unused
+     * @param params the request parameter map
+     * @return OK with the result map in case of success, ERROR otherwise
+     */
     Map<String,Object> addMembers(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         if(!result)
@@ -923,6 +1039,12 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Takes the submitted parameters and creates member subscription instances based on the given input
+     * @param controller unused
+     * @param params the input parameter map
+     * @return OK if the creation was successful, ERROR otherwise
+     */
     Map<String,Object> processAddMembers(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
@@ -967,6 +1089,7 @@ class SubscriptionControllerService {
                     excludes << 'freezeHolding'
                     excludes.addAll(PendingChangeConfiguration.SETTING_KEYS.collect { String key -> key+PendingChangeConfiguration.NOTIFICATION_SUFFIX})
                     Set<AuditConfig> inheritedAttributes = AuditConfig.findAllByReferenceClassAndReferenceIdAndReferenceFieldNotInList(Subscription.class.name,result.subscription.id, excludes)
+                    List<Subscription> memberSubs = []
                     members.each { Org cm ->
                         log.debug("Generating separate slaved instances for members")
                         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
@@ -1036,19 +1159,22 @@ class SubscriptionControllerService {
 
                             memberSub.refresh()
 
-                            packagesToProcess.each { Package pkg ->
-                                if(params.linkWithEntitlements)
-                                    subscriptionService.addToSubscriptionCurrentStock(memberSub, result.subscription, pkg)
-                                else
-                                    subscriptionService.addToSubscription(memberSub, pkg, false)
-                            }
-
                             licensesToProcess.each { License lic ->
                                 subscriptionService.setOrgLicRole(memberSub,lic,false)
                             }
-
+                            memberSubs << memberSub
                         }
                                 //}
+                    }
+
+                    packagesToProcess.each { Package pkg ->
+                        subscriptionService.addToMemberSubscription(result.subscription, memberSubs, pkg, params.linkWithEntitlements == 'on')
+                        /*
+                        if()
+                            subscriptionService.addToSubscriptionCurrentStock(memberSub, result.subscription, pkg)
+                        else
+                            subscriptionService.addToSubscription(memberSub, pkg, false)
+                        */
                     }
 
                     result.subscription.syncAllShares(synShareTargetList)
@@ -1063,6 +1189,14 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Inserts afterwards a succession link between two member subscription; this procedure is used
+     * if two subscription year rings have been inserted without taking the renewal procedure (upon initial
+     * data insertion for example)
+     * @param controller unused
+     * @param params the request parameter map
+     * @return OK with the result map if the creation was successful, ERROR otherwise
+     */
     Map<String,Object> linkNextPrevMemberSub(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result) {
@@ -1093,6 +1227,13 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Manages the call for the given member management view, setting generic parameters
+     * @param controller the controller instance
+     * @param params the request parameter map
+     * @param input_file a document file to be uploaded to several instances
+     * @return OK if the permission grant check was successful, ERROR otherwise
+     */
     Map<String,Object> membersSubscriptionsManagement(SubscriptionController controller, GrailsParameterMap params, input_file) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if (!result) {
@@ -1109,6 +1250,12 @@ class SubscriptionControllerService {
 
     //--------------------------------------- survey section -------------------------------------------
 
+    /**
+     * Lists the surveys related the given member subscription
+     * @param controller unused
+     * @param params the request parameter map
+     * @return a list of surveys linked to the given member subscription
+     */
     Map<String,Object> surveys(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if (!result) {
@@ -1124,6 +1271,12 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Lists the surveys related to the given consortial subscription
+     * @param controller unused
+     * @param params the request parameter map
+     * @return a list of surveys linked to the given consortial subscription
+     */
     Map<String,Object> surveysConsortia(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if (!result) {
@@ -1136,6 +1289,14 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Initialises the title renewal process by loading the title selection view for the given member. The list of
+     * selectable titles can be exported along with usage data also as an Excel worksheet which then may be reuploaded
+     * again
+     * @param controller unused
+     * @param params the request parameter map
+     * @return OK with the result map containing defaults in case of success, ERROR otherwise
+     */
     Map<String,Object> renewEntitlementsWithSurvey(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
 
@@ -1155,24 +1316,27 @@ class SubscriptionControllerService {
             result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
             result.surveyInfo = result.surveyConfig.surveyInfo
 
-            Subscription previousSubscription = newSub._getCalculatedPrevious()
+            Subscription previousSubscription = newSub._getCalculatedPreviousForSurvey()
             Subscription baseSub = result.surveyConfig.subscription ?: newSub.instanceOf
 
             result.subscriber = newSub.getSubscriber()
 
             result.subscriberSubs = []
-            List<Subscription> subscriptions = Subscription.executeQuery('select oo.sub from OrgRole oo where oo.org = :subscriber and oo.roleType in (:roleTypes)', [subscriber: result.subscriber, roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])
-            if(subscriptions) {
-                result.subscriberSubs = subscriptions
+
+            Set<Subscription> subscriptions = []
+            if(result.surveyConfig.pickAndChoosePerpetualAccess) {
+                subscriptions = linksGenerationService.getSuccessionChain(newSub, 'sourceSubscription')
+                subscriptions << newSub
+                if (subscriptions) {
+                    result.subscriberSubs = subscriptions.toList()
+                }
             }
 
             if (params.hasPerpetualAccess) {
-                params.hasPerpetualAccessBySubs = subscriptions
-                result.hasPerpetualAccess = params.hasPerpetualAccess
-                params.remove('hasPerpetualAccess')
+                    params.hasPerpetualAccessBySubs = subscriptions
             }
 
-            List<IssueEntitlement> sourceIEs = []
+            List<Long> sourceIEs = []
             if(params.tab == 'allIEs') {
                 Map query = filterService.getIssueEntitlementQuery(params, baseSub)
                 sourceIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
@@ -1183,13 +1347,28 @@ class SubscriptionControllerService {
             }
             if(params.tab == 'currentIEs') {
                 GrailsParameterMap parameterMap = params.clone()
-                Map query = filterService.getIssueEntitlementQuery(parameterMap+[ieAcceptStatusFixed: true], previousSubscription)
-                List<IssueEntitlement> previousIes = previousSubscription ? IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams) : []
-                sourceIEs = sourceIEs + previousIes
+                Map query = [:]
+                if(subscriptions) {
+                    query = filterService.getIssueEntitlementQuery(parameterMap + [ieAcceptStatusFixed: true], subscriptions)
+                    List<Long> previousIes = previousSubscription ? IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams) : []
+                    sourceIEs = sourceIEs + previousIes
+                }
 
                 query = filterService.getIssueEntitlementQuery(parameterMap+[ieAcceptStatusFixed: true], newSub)
-                List<IssueEntitlement> currentIes = newSub ? IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams) : []
+                List<Long> currentIes = newSub ? IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams) : []
                 sourceIEs = sourceIEs + currentIes
+
+            }
+
+            if(params.tab == 'toBeSelectedIEs') {
+                Map allQuery = filterService.getIssueEntitlementQuery(params, baseSub)
+                List<Long> allTippIDs = IssueEntitlement.executeQuery("select ie.tipp.id " + allQuery.query, allQuery.queryParams)
+                Map query = filterService.getIssueEntitlementQuery(params+[ieAcceptStatusNotFixed: true], newSub)
+                List<Long> selectedTippIDs = IssueEntitlement.executeQuery("select ie.tipp.id " + query.query, query.queryParams)
+                List<Long> toBeSelectedTippIDs = allTippIDs - selectedTippIDs
+                allQuery.query = allQuery.query.replace("where", "where ie.tipp.id in (:tippIds) and ")
+                allQuery.queryParams.tippIds = toBeSelectedTippIDs
+                sourceIEs = IssueEntitlement.executeQuery("select ie.id " + allQuery.query, allQuery.queryParams)
 
             }
 
@@ -1198,8 +1377,13 @@ class SubscriptionControllerService {
             }
 
             result.countSelectedIEs = subscriptionService.countIssueEntitlementsNotFixed(newSub)
-            result.countCurrentIEs = (previousSubscription ? subscriptionService.countIssueEntitlementsFixed(previousSubscription) : 0) + subscriptionService.countIssueEntitlementsFixed(newSub)
+            if (result.surveyConfig.pickAndChoosePerpetualAccess) {
+                result.countCurrentIEs = surveyService.countPerpetualAccessTitlesBySub(result.subscription)
+            } else {
+                result.countCurrentIEs = (result.previousSubscription ? subscriptionService.countIssueEntitlementsFixed(result.previousSubscription) : 0) + subscriptionService.countIssueEntitlementsFixed(result.subscription)
+            }
             result.countAllIEs = subscriptionService.countIssueEntitlementsFixed(baseSub)
+            result.toBeSelectedIEs = result.countAllIEs - result.countSelectedIEs
 
             result.num_ies_rows = sourceIEs.size()
 
@@ -1306,11 +1490,28 @@ class SubscriptionControllerService {
 
     //-------------------------------------- packages section ------------------------------------------
 
+    /**
+     * Queries the we:kb ElasticSearch index and returns a (filtered) list of packages which may be linked to the
+     * given subscription
+     * @param controller unused
+     * @param params the request parameter map, containing also filter parameters to limit the package results
+     * @return a filtered list of packages
+     * @see ApiSource
+     * @see Package
+     */
     Map<String,Object> linkPackage(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         if(!result)
             [result:null,status:STATUS_ERROR]
         else {
+            Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
+            Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
+            threadArray.each { Thread thread ->
+                if (thread.name == 'PackageTransfer_'+result.subscription.id && !SubscriptionPackage.findBySubscriptionAndPkg(result.subscription,Package.findByGokbId(params.addUUID))) {
+                    result.message = messageSource.getMessage('subscription.details.linkPackage.thread.running',null,LocaleContextHolder.getLocale())
+                    result.bulkProcessRunning = true
+                }
+            }
             if (result.subscription.packages) {
                 result.pkgs = []
                     result.subscription.packages.each { sp ->
@@ -1427,20 +1628,23 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Takes the submitted parameters and links the given package to the given subscription. Consortia may link
+     * the package on parent level only or also on member level; along with the linking, changes handling (the
+     * pending change configuration) is also set up. If the package did not exist in the app on the moment of linking,
+     * the data will be fetched from we:kb. The overall procedure may take time; it is thus deployed onto a parallel
+     * process
+     * @param controller unused
+     * @param params the input parameter map
+     * @return OK if the linking was successful, ERROR otherwise
+     */
     Map<String,Object> processLinkPackage(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         if(!result)
             [result:null,status:STATUS_ERROR]
         else {
-            Locale locale = LocaleContextHolder.getLocale()
-            Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
-            Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
-            threadArray.each { Thread thread ->
-                if (thread.name == 'PackageSync_'+result.subscription.id && !SubscriptionPackage.findBySubscriptionAndPkg(result.subscription,Package.findByGokbId(params.addUUID))) {
-                    result.message = messageSource.getMessage('subscription.details.linkPackage.thread.running',null,locale)
-                }
-            }
-            if(params.addUUID) {
+            boolean bulkProcessRunning = false
+            if(params.addUUID && !bulkProcessRunning) {
                 String pkgUUID = params.addUUID
                 String addType = params.addType
                 String addTypeChildren = params.addTypeChildren
@@ -1450,33 +1654,33 @@ class SubscriptionControllerService {
                 log.debug("linkPackage. Global Record Source URL: " +source.uri)
                 globalSourceSyncService.source = source
                 globalSourceSyncService.defineMapFields()
-                if(!Package.findByGokbId(pkgUUID)) {
-                    //to be deployed in parallel thread
-                    executorService.execute({
-                        Thread.currentThread().setName("PackageSync_"+result.subscription.id)
+                //to be deployed in parallel thread
+                executorService.execute({
+                    Thread.currentThread().setName("PackageTransfer_"+result.subscription.id)
+                    if(!Package.findByGokbId(pkgUUID)) {
                         try {
                             Map<String,Object> queryResult = globalSourceSyncService.fetchRecordJSON(false,[componentType:'TitleInstancePackagePlatform',pkg:pkgUUID,max:5000])
                             if(queryResult.error && queryResult.error == 404) {
                                 log.error("we:kb server currently unavailable")
                             }
                             else {
-                                if(queryResult.records && queryResult.count > 0) {
-                                    if(queryResult.count > 5000)
-                                        globalSourceSyncService.processScrollPage(queryResult, 'TitleInstancePackagePlatform', null, pkgUUID)
-                                    else
-                                        globalSourceSyncService.updateRecords(queryResult.records, 0)
-                                }
-                                else {
-                                    globalSourceSyncService.createOrUpdatePackage(pkgUUID)
+                                Package.withNewTransaction {
+                                    if(queryResult.records && queryResult.count > 0) {
+                                        if(queryResult.count > 5000)
+                                            globalSourceSyncService.processScrollPage(queryResult, 'TitleInstancePackagePlatform', null, pkgUUID)
+                                        else
+                                            globalSourceSyncService.updateRecords(queryResult.records, 0)
+                                    }
+                                    else {
+                                        globalSourceSyncService.createOrUpdatePackage(pkgUUID)
+                                    }
                                 }
                                 Package pkgToLink = Package.findByGokbId(pkgUUID)
                                 result.packageName = pkgToLink.name
                                 log.debug("Add package ${addType} entitlements to subscription ${result.subscription}")
                                 subscriptionService.addToSubscription(result.subscription, pkgToLink, addType == 'With')
                                 if(addTypeChildren) {
-                                    Subscription.findAllByInstanceOf(result.subscription).each { Subscription childSub ->
-                                        subscriptionService.addToSubscription(childSub, pkgToLink, addTypeChildren == 'WithForChildren')
-                                    }
+                                    subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, addTypeChildren == 'WithForChildren')
                                 }
                                 subscriptionService.addPendingChangeConfiguration(result.subscription, pkgToLink, params.clone())
                             }
@@ -1485,31 +1689,37 @@ class SubscriptionControllerService {
                             log.error("sync job has failed, please consult stacktrace as follows: ")
                             e.printStackTrace()
                         }
-                    })
-                }
-                else {
-                    Package pkgToLink = globalSourceSyncService.createOrUpdatePackage(pkgUUID)
-                    log.debug("Add package ${addType} entitlements to subscription ${result.subscription}")
-                    subscriptionService.addToSubscription(result.subscription, pkgToLink, addType == 'With')
-                    if(addTypeChildren) {
-                        Subscription.findAllByInstanceOf(result.subscription).each { Subscription childSub ->
-                            subscriptionService.addToSubscription(childSub, pkgToLink, addTypeChildren == 'WithForChildren')
-                        }
                     }
-                    subscriptionService.addPendingChangeConfiguration(result.subscription, pkgToLink, params.clone())
-                }
+                    else {
+                        Package pkgToLink = globalSourceSyncService.createOrUpdatePackage(pkgUUID)
+                        log.debug("Add package ${addType} entitlements to subscription ${result.subscription}")
+                        subscriptionService.addToSubscription(result.subscription, pkgToLink, addType == 'With')
+                        if(addTypeChildren) {
+                            subscriptionService.addToMemberSubscription(result.subscription, Subscription.findAllByInstanceOf(result.subscription), pkgToLink, addTypeChildren == 'WithForChildren')
+                        }
+                        subscriptionService.addPendingChangeConfiguration(result.subscription, pkgToLink, params.clone())
+                    }
+                })
             }
 
             [result:result,status:STATUS_OK]
         }
     }
 
+    /**
+     * Unlinks the given package from the given subscription, eliminating eventual dependent objects. The unlinking
+     * is taking place if the call has been confirmed
+     * @param controller unused
+     * @param params the request parameter map
+     * @return OK with the result of call in case of success (this may be the list of conflicts when the confirm has not been sent yet)
+     * or ERROR in case of an error
+     */
     Map<String,Object> unlinkPackage(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         result.package = Package.get(params.package)
         Locale locale = LocaleContextHolder.getLocale()
         if(params.confirmed) {
-            if(result.package.unlinkFromSubscription(result.subscription, result.institution, true)){
+            if(packageService.unlinkFromSubscription(result.package, result.subscription, result.institution, true)){
                 result.message = messageSource.getMessage('subscription.details.unlink.successfully',null,locale)
                 [result:result,status:STATUS_OK]
             }else {
@@ -1520,7 +1730,7 @@ class SubscriptionControllerService {
         else {
             String query = "select ie.id from IssueEntitlement ie, Package pkg where ie.subscription =:sub and pkg.id =:pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
             Map<String,Object> queryParams = [sub: result.subscription, pkg_id: result.package.id]
-            int numOfPCs = result.package.removePackagePendingChanges([result.subscription.id], false)
+            int numOfPCs = packageService.removePackagePendingChanges(result.package, [result.subscription.id], false)
             int numOfIEs = IssueEntitlement.executeQuery(query, queryParams).size()
             int numOfCIs = CostItem.findAllBySubPkg(SubscriptionPackage.findBySubscriptionAndPkg(result.subscription,result.package)).size()
             List conflictsList = packageService.listConflicts(result.package,result.subscription,numOfPCs,numOfIEs,numOfCIs)
@@ -1531,7 +1741,7 @@ class SubscriptionControllerService {
                     String queryChildSubs = "select ie.id from IssueEntitlement ie, Package pkg where ie.subscription in (:sub) and pkg.id =:pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
                     Map<String,Object> queryParamChildSubs = [sub: childSubs, pkg_id: result.package.id]
                     List childSubsPackages = SubscriptionPackage.findAllBySubscriptionInListAndPkg(childSubs, result.package)
-                    int numOfPCsChildSubs = result.package.removePackagePendingChanges(childSubs.id, false)
+                    int numOfPCsChildSubs = packageService.removePackagePendingChanges(result.package, childSubs.id, false)
                     int numOfIEsChildSubs = IssueEntitlement.executeQuery(queryChildSubs, queryParamChildSubs).size()
                     int numOfCIsChildSubs = childSubsPackages ? CostItem.findAllBySubPkgInList(childSubsPackages).size() : 0
                     if(numOfPCsChildSubs > 0 || numOfIEsChildSubs > 0 || numOfCIsChildSubs > 0) {
@@ -1546,6 +1756,13 @@ class SubscriptionControllerService {
 
     //-------------------------------- issue entitlements holding --------------------------------------
 
+    /**
+     * Retrieves the current subscription holding; the list may be filtered with the given params. Titles may
+     * also be enriched by individual parameters submitted by KBART file; this file is being processed here as well
+     * @param controller unused
+     * @param params the request parameters including filter data and / or an eventual enrichment file
+     * @return OK if the retrieval was successful, ERROR otherwise
+     */
     Map<String,Object> index(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result)
@@ -1555,7 +1772,7 @@ class SubscriptionControllerService {
             Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
             Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
             threadArray.each {
-                if (it.name == 'PackageSync_'+result.subscription.id) {
+                if (it.name == 'PackageTransfer_'+result.subscription.id) {
                     result.message = messageSource.getMessage('subscription.details.linkPackage.thread.running',null,locale)
                 }
                 else if (it.name == 'EntitlementEnrichment_'+result.subscription.id) {
@@ -1618,11 +1835,17 @@ class SubscriptionControllerService {
             if (executorWrapperService.hasRunningProcess(result.subscription)) {
                 result.processingpc = true
             }
+            result.considerInBatch = ["sort", "order", "offset", "max", "status", "pkgfilter", "asAt", "series_name", "subject_reference", "ddc", "language", "yearsFirstOnline", "identifier", "title_types", "publishers", "coverageDepth", "inTitleGroups"]
 
             [result:result,status:STATUS_OK]
         }
     }
 
+    /**
+     * Gets the changes applied to or applicable to the given subscription
+     * @param params the request parameter map
+     * @return a tab view of the changes, grouped by event type
+     */
     Map<String,Object> entitlementChanges(GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         SwissKnife.setPaginationParams(result,params,(User) result.user)
@@ -1723,6 +1946,20 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Lists the titles in the package which have not yet been added to the subscription. If the call has been
+     * called with an upload, the data provided with the given KBART file will be processed, so that
+     * <ul>
+     *     <li>either titles will be preselected based on the given identifiers</li>
+     *     <li>or local price statements will be added to the title candidates</li>
+     *     <li>or local coverage statements will be added to the title candidates</li>
+     * </ul>
+     * The data submitted will be stored in cache and may be corrected before actually add them to the issue
+     * entitlements which in turn will be persisted and added to the subscription
+     * @param controller unused
+     * @param params the request parameter map
+     * @return the title list; with or without the enriched information from a KBART upload
+     */
     Map<String,Object> addEntitlements(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         if (!result) {
@@ -1771,7 +2008,11 @@ class SubscriptionControllerService {
             params.subscription = result.subscription
             params.issueEntitlementStatus = ie_current
             params.addEntitlements = true
-            Map<String, Object> query = filterService.getTippQuery(params, result.subscription.packages?.pkg)
+            List packages = []
+            if(params.pkgfilter)
+                packages << Package.get(params.pkgfilter)
+            else packages = result.subscription.packages?.pkg
+            Map<String, Object> query = filterService.getTippQuery(params, packages)
             result.filterSet = query.filterSet
 
             if(result.subscription.packages?.pkg) {
@@ -1784,9 +2025,13 @@ class SubscriptionControllerService {
                                                                issn : IdentifierNamespace.findByNsAndNsType('issn', TitleInstancePackagePlatform.class.name), pisbn: IdentifierNamespace.findByNsAndNsType('pisbn', TitleInstancePackagePlatform.class.name)]
                 result.num_tipp_rows = tippIds.size()
                 result.tipps = tipps
+                result.tippIDs = tippIds
                 Map<String, Object> identifiers = [zdbIds: [], onlineIds: [], printIds: [], unidentified: []]
                 Map<String, Map> issueEntitlementOverwrite = [:]
                 result.issueEntitlementOverwrite = [:]
+                if(!params.pagination) {
+                    checkedCache.put('checked', [:])
+                }
                 if (params.kbartPreselect && !params.pagination) {
                     MultipartFile kbartFile = params.kbartPreselect
                     identifiers.filename = kbartFile.originalFilename
@@ -1862,6 +2107,7 @@ class SubscriptionControllerService {
                             errorList.add(messageSource.getMessage('subscription.details.addEntitlements.duplicatePriceColumn', null, locale))
                         } else isUniqueListpriceColumn = true
                     }
+                    Set<String> selectedTippIds = []
                     //after having read off the header row, pop the first row
                     rows.remove(0)
                     rows.eachWithIndex { row, int i ->
@@ -1869,14 +2115,14 @@ class SubscriptionControllerService {
                         ArrayList<String> cols = row.split('\t')
                         Map<String, Object> idCandidate = [:]
                         String ieCandIdentifier
-                        if (colMap.zdbCol >= 0 && cols[colMap.zdbCol]) {
+                        if (colMap.zdbCol >= 0 && !cols[colMap.zdbCol]?.trim()?.isEmpty()) {
                             identifiers.zdbIds.add(cols[colMap.zdbCol])
                             idCandidate = [namespaces: namespaces.zdb, value: cols[colMap.zdbCol]]
                             if (issueEntitlementOverwrite[cols[colMap.zdbCol]])
                                 ieCandidate = issueEntitlementOverwrite[cols[colMap.zdbCol]]
                             else ieCandIdentifier = cols[colMap.zdbCol]
                         }
-                        if (colMap.onlineIdentifierCol >= 0 && cols[colMap.onlineIdentifierCol]) {
+                        if (colMap.onlineIdentifierCol >= 0 && !cols[colMap.onlineIdentifierCol]?.trim()?.isEmpty()) {
                             identifiers.onlineIds.add(cols[colMap.onlineIdentifierCol])
                             idCandidate = [namespaces: [], value: cols[colMap.onlineIdentifierCol]]
                             idCandidate.namespaces.add(namespaces.eissn)
@@ -1886,7 +2132,7 @@ class SubscriptionControllerService {
                             else if (issueEntitlementOverwrite[cols[colMap.onlineIdentifierCol]])
                                 ieCandidate = issueEntitlementOverwrite[cols[colMap.onlineIdentifierCol]]
                         }
-                        if (colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol]) {
+                        if (colMap.printIdentifierCol >= 0 && !cols[colMap.printIdentifierCol]?.trim()?.isEmpty()) {
                             identifiers.printIds.add(cols[colMap.printIdentifierCol])
                             idCandidate = [namespaces: [], value: cols[colMap.printIdentifierCol]]
                             idCandidate.namespaces.add(namespaces.issn)
@@ -1987,23 +2233,20 @@ class SubscriptionControllerService {
                             }
                         }
                         if (ieCandIdentifier) {
+                            Map<String, Object> unfilteredParams = [pkgs:result.subscription.packages.pkg, deleted:RDStore.TIPP_STATUS_REMOVED, value: ieCandIdentifier]
+                            //check where indices are needed!
+                            List<String> matches = TitleInstancePackagePlatform.executeQuery('select tipp.gokbId from TitleInstancePackagePlatform tipp join tipp.ids id where tipp.pkg in (:pkgs) and tipp.status != :deleted and id.value = :value',unfilteredParams)
                             ieCoverages.add(covStmt)
                             ieCandidate.coverages = ieCoverages
-                            issueEntitlementOverwrite[ieCandIdentifier] = ieCandidate
+                            matches.each { String match ->
+                                issueEntitlementOverwrite[match] = ieCandidate
+                                selectedTippIds << match
+                            }
                         }
                     }
                     result.checked = [:]
-                    Map<String, Object> unfilteredParams = [pkg:result.subscription.packages.pkg, deleted:RDStore.TIPP_STATUS_DELETED]
-                    Set<String> selectedTippIds = [], identifierValues = []
-                    identifiers.values().each { subList ->
-                        if(subList instanceof List)
-                            identifierValues.addAll(subList)
-                    }
-                    identifierValues.collate(32700).each { List<String> chunk ->
-                        unfilteredParams.idList = chunk
-                        selectedTippIds.addAll(TitleInstancePackagePlatform.executeQuery('select tipp.gokbId from TitleInstancePackagePlatform tipp join tipp.ids id where tipp.pkg = :pkg and tipp.status != :deleted and id.value in (:idList)',unfilteredParams))
-                        selectedTippIds.removeAll(addedTipps)
-                    }
+                    result.issueEntitlementOverwrite = issueEntitlementOverwrite
+                    selectedTippIds.removeAll(addedTipps)
                     selectedTippIds.each { String wekbId ->
                         //println("located tipp: ${wekbId}")
                         result.checked[wekbId] = "checked"
@@ -2028,8 +2271,8 @@ class SubscriptionControllerService {
                 }
                 /*
                 if (!params.pagination) {
-                List<Map> allTippsFiltered = TitleInstancePackagePlatform.executeQuery("select new map(tipp.titleType as titleType, tipp.gokbId as gokbId) from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg and tipp.status != :deleted",unfilteredParams)
-                    List<Map> identifierRows = Identifier.executeQuery("select new map(tipp.gokbId as gokbId, id.value as value, ns.ns as namespace) from Identifier id join id.ns ns join id.tipp tipp where tipp.pkg = :pkg and tipp.status != :deleted",unfilteredParams)
+                List<Map> allTippsFiltered = TitleInstancePackagePlatform.executeQuery("select new map(tipp.titleType as titleType, tipp.gokbId as gokbId) from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg and tipp.status != :removed",unfilteredParams)
+                    List<Map> identifierRows = Identifier.executeQuery("select new map(tipp.gokbId as gokbId, id.value as value, ns.ns as namespace) from Identifier id join id.ns ns join id.tipp tipp where tipp.pkg = :pkg and tipp.status != :removed",unfilteredParams)
                     Map<String, Set> allIdentifiers = [:]
                     identifierRows.each { Map row ->
                         Set<Map> ids = allIdentifiers.get(row.gokbId)
@@ -2076,6 +2319,11 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Marks the given issue entitlement as deleted and thus removes it from the holding
+     * @param params the request parameter map
+     * @return OK if the status update was successful, ERROR otherwise
+     */
     Map<String,Object> removeEntitlement(GrailsParameterMap params) {
         IssueEntitlement ie = IssueEntitlement.get(params.ieid)
         ie.status = RDStore.TIPP_STATUS_DELETED
@@ -2084,6 +2332,11 @@ class SubscriptionControllerService {
         else [result:null,status:STATUS_ERROR]
     }
 
+    /**
+     * Removes the given issue entitlement and deletes also the corresponding issue entitlement group item
+     * @param params the request parameter map
+     * @return OK if the deletion and status update were successful, false otherwise
+     */
     Map<String,Object> removeEntitlementWithIEGroups(GrailsParameterMap params) {
         IssueEntitlement ie = IssueEntitlement.get(params.ieid)
         RefdataValue oldStatus = ie.status
@@ -2106,6 +2359,12 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Adds the cached title candidates to the holding and persists also eventually recorded enrichments of the titles
+     * @param controller unused
+     * @param params the request parameter map
+     * @return OK if the persisting was successful, ERROR otherwise
+     */
     Map<String,Object> processAddEntitlements(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_EDIT)
         if (!result) {
@@ -2113,42 +2372,38 @@ class SubscriptionControllerService {
         }
         else {
             Locale locale = LocaleContextHolder.getLocale()
-            RefdataValue ie_accept_status = RDStore.IE_ACCEPT_STATUS_FIXED
-            int addTitlesCount = 0
             SessionCacheWrapper sessionCache = contextService.getSessionCache()
             Map cache = sessionCache.get("/subscription/addEntitlements/${result.subscription.id}")
-            Map issueEntitlementCandidates = cache?.get('issueEntitlementCandidates')
+            Map issueEntitlementCandidates = cache && cache.containsKey('issueEntitlementCandidates') ? cache.get('issueEntitlementCandidates') : [:]
             if(!params.singleTitle) {
                 Map checked = cache.get('checked')
                 if(checked) {
-                    executorService.execute({
-                        Thread.currentThread().setName("EntitlementEnrichment_${result.subscription.id}")
-                        IssueEntitlement.withNewTransaction { TransactionStatus ts ->
-                            checked.each { k, v ->
-                                if(v == 'checked') {
-                                    try {
-                                        if(issueEntitlementCandidates?.get(k) || Boolean.valueOf(params.uploadPriceInfo))  {
-                                            if(subscriptionService.addEntitlement(result.subscription, k, issueEntitlementCandidates?.get(k), Boolean.valueOf(params.uploadPriceInfo), ie_accept_status))
-                                                log.debug("Added tipp ${k} to sub ${result.subscription.id} with issue entitlement overwrites")
-                                        }
-                                        else if(subscriptionService.addEntitlement(result.subscription,k,null,false, ie_accept_status)) {
-                                            log.debug("Added tipp ${k} to sub ${result.subscription.id}")
-                                        }
-                                        addTitlesCount++
-                                        if(addTitlesCount > 0 && addTitlesCount % 10000 == 0) {
-                                            log.debug("interim flush at ${addTitlesCount}")
-                                            ts.flush()
-                                        }
+                    //executorService.execute({
+                        //Thread.currentThread().setName("EntitlementEnrichment_${result.subscription.id}")
+                        subscriptionService.bulkAddEntitlements(result.subscription, issueEntitlementCandidates, checked, Boolean.valueOf(params.uploadPriceInfo), RDStore.IE_ACCEPT_STATUS_FIXED.id, false)
+                        //IssueEntitlement.withNewTransaction { TransactionStatus ts ->
+                        /*
+                        checked.each { k, v ->
+                            if(v == 'checked') {
+                                try {
+                                    /*
+                                | Boolean.valueOf(params.uploadPriceInfo))  {
+                                        if(subscriptionService.addEntitlement(result.subscription, k, issueEntitlementCandidates?.get(k), Boolean.valueOf(params.uploadPriceInfo), ie_accept_status))
+                                            log.debug("Added tipp ${k} to sub ${result.subscription.id} with issue entitlement overwrites")
                                     }
-                                    catch (EntitlementCreationException e) {
-                                        result.error = e.getMessage()
+                                    else if(subscriptionService.addEntitlement(result.subscription,k,null,false, ie_accept_status)) {
+                                        log.debug("Added tipp ${k} to sub ${result.subscription.id}")
                                     }
+
+                                }
+                                catch (EntitlementCreationException e) {
+                                    result.error = e.getMessage()
                                 }
                             }
                         }
-                        Object[] args = [addTitlesCount]
-                        result.message = messageSource.getMessage('subscription.details.addEntitlements.titlesAddToSub',args,locale)
-                    })
+                        */
+                        //}
+                    //})
                 }
                 else {
                     log.error('cache error or no titles selected')
@@ -2158,11 +2413,11 @@ class SubscriptionControllerService {
                 try {
                     Object[] args = [TitleInstancePackagePlatform.findByGokbId(params.singleTitle)?.name]
                     if(issueEntitlementCandidates?.get(params.singleTitle) || Boolean.valueOf(params.uploadPriceInfo))  {
-                        if(subscriptionService.addEntitlement(result.subscription, params.singleTitle, issueEntitlementCandidates?.get(params.singleTitle), Boolean.valueOf(params.uploadPriceInfo), ie_accept_status))
+                        if(subscriptionService.addEntitlement(result.subscription, params.singleTitle, issueEntitlementCandidates?.get(params.singleTitle), Boolean.valueOf(params.uploadPriceInfo), RDStore.IE_ACCEPT_STATUS_FIXED))
                             log.debug("Added tipp ${params.singleTitle} to sub ${result.subscription.id} with issue entitlement overwrites")
                         result.message = messageSource.getMessage('subscription.details.addEntitlements.titleAddToSub', args,locale)
                     }
-                    else if(subscriptionService.addEntitlement(result.subscription, params.singleTitle, null, true, ie_accept_status))
+                    else if(subscriptionService.addEntitlement(result.subscription, params.singleTitle, null, true, RDStore.IE_ACCEPT_STATUS_FIXED))
                         log.debug("Added tipp ${params.singleTitle} to sub ${result.subscription.id}")
                     result.message = messageSource.getMessage('subscription.details.addEntitlements.titleAddToSub', args,locale)
                 }
@@ -2174,6 +2429,12 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Reverts the changes applied to the given subscription after its end of running. As the process
+     * may affect a large amount of entries, the process is deployed to a parallel thread
+     * @param params the request parameter map
+     * @return OK if the execution was successful, false otherwise
+     */
     Map<String,Object> resetHoldingToSubEnd(GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_EDIT)
         if(!result) {
@@ -2299,6 +2560,12 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Performs the given bulk operation on the subscription title holding
+     * @param controller unused
+     * @param params the request parameter map
+     * @return OK if the execution was successful, false otherwise
+     */
     Map<String,Object> subscriptionBatchUpdate(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_EDIT)
         if (!result) {
@@ -2307,54 +2574,119 @@ class SubscriptionControllerService {
         else {
             SimpleDateFormat formatter = DateUtils.getSDF_NoTime()
             boolean error = false
-            params.each { Map.Entry<Object,Object> p ->
-                if (p.key.startsWith('_bulkflag.') && (p.value == 'on')) {
-                    String ie_to_edit = p.key.substring(10)
-                    IssueEntitlement ie = IssueEntitlement.get(ie_to_edit)
-                    if (params.bulkOperation == "edit") {
-                        if (params.bulk_access_start_date && (params.bulk_access_start_date.trim().length() > 0)) {
-                            ie.accessStartDate = formatter.parse(params.bulk_access_start_date)
-                        }
-                        if (params.bulk_access_end_date && (params.bulk_access_end_date.trim().length() > 0)) {
-                            ie.accessEndDate = formatter.parse(params.bulk_access_end_date)
-                        }
-                        /* legacy???
-                        if (params.bulk_medium.trim().length() > 0) {
-                            RefdataValue selected_refdata = (RefdataValue) genericOIDService.resolveOID(params.bulk_medium.trim())
-                            log.debug("Selected medium is ${selected_refdata}");
-                            ie.medium = selected_refdata
+            if(params.chkall == 'on') {
+                params.ieAcceptStatusFixed = true
+                Map<String, Object> query = filterService.getIssueEntitlementQuery(params, result.subscription)
+                if(params.bulkOperation == "edit") {
+                    if (params.bulk_access_start_date && (params.bulk_access_start_date.trim().length() > 0)) {
+                        Date accessStartDate = formatter.parse(params.bulk_access_start_date)
+                        String updateQuery = "update IssueEntitlement e set e.accessStartDate = :accessStartDate where e.id in (select ie.id ${query.query})"
+                        IssueEntitlement.executeUpdate(updateQuery, query.queryParams+[accessStartDate: accessStartDate])
+                    }
+                    if (params.bulk_access_end_date && (params.bulk_access_end_date.trim().length() > 0)) {
+                        Date accessEndDate = formatter.parse(params.bulk_access_end_date)
+                        String updateQuery = "update IssueEntitlement e set e.accessEndDate = :accessEndDate where e.id in (select ie.id ${query.query})"
+                        IssueEntitlement.executeUpdate(updateQuery, query.queryParams+[accessEndDate: accessEndDate])
+                    }
+                    if (params.titleGroupInsert && (params.titleGroupInsert.trim().length() > 0)) {
+                        Sql sql = GlobalService.obtainSqlConnection()
+                        params.select = 'bulkInsertTitleGroup'
+                        if(!params.pkgIds && !params.pkgfilter)
+                            params.pkgIds = result.subscription.packages.pkg.id
+                        Map<String, Object> sqlQuery = filterService.prepareTitleSQLQuery(params, IssueEntitlement.class.name, sql)
+                        //log.debug("insert into issue_entitlement_group_item (igi_version, igi_date_created, igi_ie_fk, igi_ie_group_fk, igi_last_updated) "+sqlQuery.query+" where "+sqlQuery.where+" and not exists(select igi_id from issue_entitlement_group_item where igi_ie_fk = ie_id)")
+                        //log.debug(sqlQuery.params.toMapString())
+                        sql.execute("insert into issue_entitlement_group_item (igi_version, igi_date_created, igi_ie_fk, igi_ie_group_fk, igi_last_updated) "+sqlQuery.query+" where "+sqlQuery.where+" and not exists(select igi_id from issue_entitlement_group_item where igi_ie_fk = ie_id)", sqlQuery.params)
+                        /*if(entitlementGroup && !IssueEntitlementGroupItem.findByIeGroupAndIe(entitlementGroup, ie) && !IssueEntitlementGroupItem.findByIe(ie)){
+                            IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
+                                    ie: ie,
+                                    ieGroup: entitlementGroup)
+                            if (!issueEntitlementGroupItem.save()) {
+                                log.error("Problem saving IssueEntitlementGroupItem ${issueEntitlementGroupItem.errors}")
+                            }
                         }*/
-                        if (params.titleGroup && (params.titleGroup.trim().length() > 0)) {
-                            IssueEntitlementGroup entitlementGroup = IssueEntitlementGroup.get(Long.parseLong(params.titleGroup))
-                            if(entitlementGroup && !IssueEntitlementGroupItem.findByIeGroupAndIe(entitlementGroup, ie) && !IssueEntitlementGroupItem.findByIe(ie)){
-                                IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
-                                        ie: ie,
-                                        ieGroup: entitlementGroup)
-                                if (!issueEntitlementGroupItem.save()) {
-                                    log.error("Problem saving IssueEntitlementGroupItem ${issueEntitlementGroupItem.errors}")
+                    }
+                }
+                else if(params.bulkOperation in ["remove", "removeWithChildren"]) {
+                    if(params.bulkOperation == "removeWithChildren") {
+                        //case statement fails to evaluate with parameters ... so, let's go the hard-coded way!
+                        String deleteMemberQuery = "update IssueEntitlement e set e.status.id = ${RDStore.TIPP_STATUS_REMOVED.id} where e.subscription in (:subscriptions) and e.tipp in (select tipp ${query.query})"
+                        query.queryParams.subscriptions.addAll(result.subscription.getDerivedSubscriptions())
+                        IssueEntitlement.executeUpdate(deleteMemberQuery, query.queryParams)
+                    }
+                    else {
+                        String deleteQuery = "update IssueEntitlement e set e.status.id = ${RDStore.TIPP_STATUS_REMOVED.id} where e.subscription in (:subscriptions) and e.id in (select ie.id ${query.query})"
+                        IssueEntitlement.executeUpdate(deleteQuery, query.queryParams)
+                    }
+                }
+            }
+            else {
+                params.each { Map.Entry<Object,Object> p ->
+                    if (p.key.startsWith('_bulkflag.') && (p.value == 'on')) {
+                        String ie_to_edit = p.key.substring(10)
+                        IssueEntitlement ie = IssueEntitlement.get(ie_to_edit)
+                        if (params.bulkOperation == "edit") {
+                            if (params.bulk_access_start_date && (params.bulk_access_start_date.trim().length() > 0)) {
+                                ie.accessStartDate = formatter.parse(params.bulk_access_start_date)
+                            }
+                            if (params.bulk_access_end_date && (params.bulk_access_end_date.trim().length() > 0)) {
+                                ie.accessEndDate = formatter.parse(params.bulk_access_end_date)
+                            }
+                            /* legacy???
+                            if (params.bulk_medium.trim().length() > 0) {
+                                RefdataValue selected_refdata = (RefdataValue) genericOIDService.resolveOID(params.bulk_medium.trim())
+                                log.debug("Selected medium is ${selected_refdata}");
+                                ie.medium = selected_refdata
+                            }*/
+                            if (params.titleGroupInsert && (params.titleGroupInsert.trim().length() > 0)) {
+                                IssueEntitlementGroup entitlementGroup = IssueEntitlementGroup.get(params.titleGroupInsert)
+                                if(entitlementGroup && !IssueEntitlementGroupItem.findByIe(ie)){
+                                    IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
+                                            ie: ie,
+                                            ieGroup: entitlementGroup)
+                                    if (!issueEntitlementGroupItem.save()) {
+                                        log.error("Problem saving IssueEntitlementGroupItem ${issueEntitlementGroupItem.errors}")
+                                    }
                                 }
                             }
+                            if (!ie.save()) {
+                                log.error("Problem saving ${ie.errors.getAllErrors().toListString()}")
+                                error = true
+                            }
                         }
-                        if (!ie.save()) {
-                            log.error("Problem saving ${ie.errors}")
-                            error = true
-                        }
-                    } else if (params.bulkOperation == "remove") {
-                        log.debug("Updating ie ${ie.id} status to deleted")
-                        ie.status = RDStore.TIPP_STATUS_DELETED
-                        if (!ie.save()) {
-                            log.error("Problem saving ${ie.errors}")
-                            error = true
+                        else if (params.bulkOperation in ["remove", "removeWithChildren"]) {
+                            if(ie.tipp.status == RDStore.TIPP_STATUS_REMOVED) {
+                                log.debug("Updating ie ${ie.id} status to removed")
+                                ie.status = RDStore.TIPP_STATUS_REMOVED
+                            }
+                            else {
+                                log.debug("Updating ie ${ie.id} status to deleted")
+                                ie.status = RDStore.TIPP_STATUS_DELETED
+                            }
+                            if (ie.save()) {
+                                if(params.bulkOperation == "removeWithChildren")
+                                    IssueEntitlement.executeUpdate('update IssueEntitlement ie set ie.status = :newStatus where ie.subscription in (select s from Subscription s where s.instanceOf = :parent) and ie.tipp = :tipp', [parent: ie.subscription, tipp: ie.tipp, newStatus: ie.status])
+                            }
+                            else {
+                                log.error("Problem saving ${ie.errors.getAllErrors().toListString()}")
+                                error = true
+                            }
                         }
                     }
                 }
             }
+
             if(error)
                 [result:result,status:STATUS_ERROR]
             else [result:result,status:STATUS_OK]
         }
     }
 
+    /**
+     * Adds an empty price item for the given issue entitlement
+     * @param params the request parameter map
+     * @return OK if the creation was successful, ERROR otherwise
+     */
     Map<String,Object> addEmptyPriceItem(GrailsParameterMap params) {
         Map<String,Object> result = [:]
         Locale locale = LocaleContextHolder.getLocale()
@@ -2381,6 +2713,11 @@ class SubscriptionControllerService {
         [result:result,status:STATUS_OK]
     }
 
+    /**
+     * Removes the given price item from the issue entitlement
+     * @param params the request parameter map
+     * @return OK if the removal was successful, ERROR otherwise
+     */
     Map<String,Object> removePriceItem(GrailsParameterMap params) {
         PriceItem priceItem = PriceItem.get(params.priceItem)
         if(priceItem) {
@@ -2393,6 +2730,11 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Adds an empty coverage statement for the given issue entitlement
+     * @param params the request parameter map
+     * @return OK if the creation was successful, ERROR otherwise
+     */
     Map<String,Object> addCoverage(GrailsParameterMap params) {
         IssueEntitlement base = IssueEntitlement.get(params.issueEntitlement)
         if(base) {
@@ -2412,6 +2754,11 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Removes the given coverage statement from the issue entitlement
+     * @param params the request parameter map
+     * @return OK if the removal was successful, false otherwise
+     */
     Map<String,Object> removeCoverage(GrailsParameterMap params) {
         IssueEntitlementCoverage ieCoverage = IssueEntitlementCoverage.get(params.ieCoverage)
         if(ieCoverage) {
@@ -2426,6 +2773,13 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Opens the title group view to edit it, setting parameters for the view.
+     * If the processing command has been submitted, the form data submitted will be taken and the group updated with the given data
+     * @param controller unused
+     * @param params the request parameter map
+     * @return OK if the editing / the call was successful, ERROR otherwise
+     */
     Map<String,Object> editEntitlementGroupItem(SubscriptionController controller, GrailsParameterMap params) {
         Map<String, Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         result.ie = IssueEntitlement.get(params.ie)
@@ -2458,6 +2812,13 @@ class SubscriptionControllerService {
         else [result:result,status:STATUS_ERROR]
     }
 
+    /**
+     * Takes the submitted parameters and creates a new issue entitlement group if a such does not exist for the
+     * given subscription. Checked is the name of the group
+     * @param controller unused
+     * @param params the request parameter map
+     * @return OK if the creation was successful, ERROR otherwise
+     */
     Map<String,Object> processCreateEntitlementGroup(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         Locale locale = LocaleContextHolder.getLocale()
@@ -2478,6 +2839,11 @@ class SubscriptionControllerService {
         [result:result,status:STATUS_ERROR]
     }
 
+    /**
+     *
+     * @param params
+     * @return
+     */
     Map<String,Object> removeEntitlementGroup(GrailsParameterMap params) {
         IssueEntitlementGroup issueEntitlementGroup = IssueEntitlementGroup.get(params.titleGroup)
         if(issueEntitlementGroup) {
@@ -2489,6 +2855,7 @@ class SubscriptionControllerService {
         else [result:null,status:STATUS_ERROR]
     }
 
+    @Deprecated
     Map<String,Object> processRenewEntitlements(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_EDIT)
         if(!result)
@@ -2526,6 +2893,12 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Takes the submitted input and adds the selected titles to the (preliminary) subscription holding from cache
+     * @param controller unused
+     * @param params the request parameter map
+     * @return OK if the selection (adding and/or removing of issue entitlements) was successful, ERROR otherwise
+     */
     Map<String,Object> processRenewEntitlementsWithSurvey(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result) {
@@ -2637,6 +3010,13 @@ class SubscriptionControllerService {
 
     //--------------------------------------------- renewal section ---------------------------------------------
 
+    /**
+     * Takes the submitted base parameters and creates a successor subscription instance with the given input.
+     * The new instance will be linked automatically to the predecessor instance
+     * @param controller unused
+     * @param params the request parameter map
+     * @return OK if the copying and basic setup were successful, ERROR otherwise
+     */
     Map<String,Object> processRenewSubscription(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_EDIT)
         if(!result) {
@@ -2719,6 +3099,11 @@ class SubscriptionControllerService {
 
     //------------------------------------------------ copy section ---------------------------------------------
 
+    /**
+     * Initialises the copying of the given subscription, taking the base parameters and creating a copy of the instance
+     * @param params the request parameter map
+     * @return OK in case of success, ERROR otherwise
+     */
     Map<String,Object> copySubscription(GrailsParameterMap params) {
         Map<String,Object> result = setCopyResultGenerics(params)
         if(!result)
@@ -2763,6 +3148,11 @@ class SubscriptionControllerService {
         }
     }
 
+    /**
+     * Gets the copy parameters for the given copy section
+     * @param params the request parameter map
+     * @return OK if the retrieval was successful, containing also the data for the given step, false otherwise
+     */
     Map<String,Object> copyElementsIntoSubscription(GrailsParameterMap params) {
         Map<String,Object> result = setCopyResultGenerics(params)
         if (!result) {
@@ -2795,6 +3185,7 @@ class SubscriptionControllerService {
 
     //--------------------------------------------- admin section -------------------------------------------------
 
+    @Deprecated
     Map<String,Object> pendingChanges(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if (!result) {
@@ -2821,6 +3212,12 @@ class SubscriptionControllerService {
 
     //--------------------------------------------- helper section -------------------------------------------------
 
+    /**
+     * Filters the member subscribers by the given parameter map
+     * @param params the filter parameter map
+     * @param parentSub the subscription whose members should be queried
+     * @return a map of structure [sub: subscription, orgs: subscriber] containing the query results
+     */
     List<Map> getFilteredSubscribers(GrailsParameterMap params, Subscription parentSub) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         params.remove("max")
@@ -2859,6 +3256,11 @@ class SubscriptionControllerService {
         filteredSubChilds
     }
 
+    /**
+     * Sets generic parameters for the element copy calls, ensuring also permission grants
+     * @param params the request parameter map
+     * @return a result map with common parameters when permissions are granted, null otherwise, resulting in ERROR results
+     */
     Map<String,Object> setCopyResultGenerics(GrailsParameterMap params) {
         Map<String, Object> result = [:]
         result.user = contextService.getUser()
@@ -2889,6 +3291,13 @@ class SubscriptionControllerService {
         else result
     }
 
+    /**
+     * Sets parameters used for many controller calls and checks permissions to the given subscription instance.
+     * If no result map is being returned, the controller calls will return ERROR
+     * @param params the request parameter map
+     * @param checkOption the permissions to be checked
+     * @return a result map with the basic parameters upon success, null on failure which results in returning ERROR status
+     */
     Map<String, Object> getResultGenericsAndCheckAccess(GrailsParameterMap params, String checkOption) {
 
         Map<String, Object> result = [:]
@@ -2980,18 +3389,27 @@ class SubscriptionControllerService {
         result
     }
 
-
+    /**
+     * Initialises the reporting index for the given subscription
+     * @param params the request parameter map
+     * @return OK if the retrieval was successful, ERROR otherwise
+     */
     Map<String,Object> reporting(GrailsParameterMap params) {
         Map<String, Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         Subscription sub = Subscription.get(params.id)
 
         result.token         = params.token ?: RandomStringUtils.randomAlphanumeric(16) // -> static token
-        result.cfgQueryList  = SubscriptionReport.CONFIG.base.query.default
-        result.cfgQueryList2 = SubscriptionReport.getCurrentQuery2Config( sub )
+        result.cfgQueryList    = SubscriptionReport.getCurrentQueryConfig( sub )
+        result.cfgTimelineList = SubscriptionReport.getCurrentTimelineConfig( sub )
 
         [result: result, status: (result ? STATUS_OK : STATUS_ERROR)]
     }
 
+    /**
+     * Gets the workflows linked to the given subscription
+     * @param params the request parameter map
+     * @return OK if the retrieval was successful, ERROR otherwise
+     */
     Map<String,Object> workflows(GrailsParameterMap params) {
         Map<String, Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
 

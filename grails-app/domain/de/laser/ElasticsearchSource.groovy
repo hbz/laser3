@@ -1,5 +1,11 @@
 package de.laser
 
+/**
+ * A source pointing to an ElasticSearch index.
+ * IMPORTANT: LAS:eR is fed by two indices: the local ElasticSearch index whose sources are being kept here. These ES indices mirror the LAS:eR data (see {@link com.k_int.kbplus.DataloadService})
+ * Then, there are external ElasticSearch indices serving as data sources; package and platform data are being loaded on-the-fly from we:kb instances. Those sources are being recorded in {@link ApiSource}.
+ * Moreover, title data is being mirrored from we:kb instances as well; this is done by bulk synchronisation and those API sources are being recorded in {@link GlobalRecordSource}s
+ */
 class ElasticsearchSource {
 
     String identifier

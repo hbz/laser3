@@ -25,14 +25,13 @@
 </semui:controlButtons>
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerTitleIcon type="Survey"/>
-${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}
+${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}</h1>
 <semui:surveyStatus object="${surveyInfo}"/>
-</h1>
+
 
 <semui:messages data="${flash}"/>
 
 <br />
-
 <g:if test="${surveyConfig.isResultsSetFinishByOrg(institution)}">
     <div class="ui icon positive message">
         <i class="info icon"></i>
@@ -58,7 +57,7 @@ ${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}
 
         <g:if test="${choosenOrg}">
             <g:set var="choosenOrgCPAs" value="${choosenOrg.getGeneralContactPersons(false)}"/>
-            <table class="ui table la-table compact">
+            <table class="ui table la-js-responsive-table la-table compact">
                 <tbody>
                 <tr>
                     <td>
@@ -82,7 +81,7 @@ ${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}
             </table>
         </g:if>
 
-        <div class="ui form">
+        <div class="ui form la-padding-left-07em">
             <div class="field">
                 <label>
                     <g:message code="surveyInfo.comment.label"/>

@@ -6,6 +6,10 @@ import de.laser.annotations.RefdataAnnotation
 import groovy.util.logging.Slf4j
 import org.apache.commons.logging.LogFactory
 
+/**
+ * A physical address of a {@link Person} or an {@link Org}. Email-addresses and other contact possibilities than the physical address are represented by the {@link Contact} domain
+ * @see Contact
+ */
 @Slf4j
 class Address {
 
@@ -21,6 +25,12 @@ class Address {
     Date dateCreated
     Date lastUpdated
 
+    /**
+     * The region may be located in Germany, Austria, Switzerland; since multi-annotation is not supported and the annotation is used by logic, the categories are being named only in Groovydoc
+     * @see RDConstants#REGIONS_DE
+     * @see RDConstants#REGIONS_AT
+     * @see RDConstants#REGIONS_CH
+     */
     @RefdataAnnotation(cat = '?')
     RefdataValue region
 
@@ -88,16 +98,41 @@ class Address {
         lastUpdated (nullable: true)
         dateCreated (nullable: true)
     }
-    
+
+    /**
+     * Gets all address types
+     * @return a {@link List} of {@link RefdataValue}s of category {@link RDConstants#ADDRESS_TYPE}
+     */
     static List<RefdataValue> getAllRefdataValues() {
         RefdataCategory.getAllRefdataValues(RDConstants.ADDRESS_TYPE)
     }
-    
+
+    /**
+     * Outputs the address as human-readable string
+     * @return the concatenated address string
+     */
     @Override
     String toString() {
         zipcode + ' ' + city + ', ' + street_1 + ' ' + street_2 + ' (' + id + '); ' + type.each {it.value}.join(',')
     }
 
+    /**
+     * Looks up the address with the arguments listed below
+     * @param name name
+     * @param street1 first line of street
+     * @param street2 second line of street
+     * @param zipcode postal code
+     * @param city city
+     * @param region region (if in Germany, Austria or Switzerland)
+     * @param country country
+     * @param postbox postal box address
+     * @param pobZipcode the postal code of the box
+     * @param pobCity the city where the postal box is located
+     * @param type the type of address
+     * @param person the person to whom this address is linked
+     * @param organisation the organisation to whom this address is linked
+     * @return the address or null if not found
+     */
     static Address lookup(
             String name,
             String street1,
@@ -136,6 +171,23 @@ class Address {
         address
     }
 
+    /**
+     * Looks up the address with the arguments listed below; if not found, it will be created
+     * @param name name
+     * @param street1 first line of street
+     * @param street2 second line of street
+     * @param zipcode postal code
+     * @param city city
+     * @param region region (if in Germany, Austria or Switzerland)
+     * @param country country
+     * @param postbox postal box address
+     * @param pobZipcode the postal code of the box
+     * @param pobCity the city where the postal box is located
+     * @param type the type of address
+     * @param person the person to whom this address is linked
+     * @param organisation the organisation to whom this address is linked
+     * @return the address
+     */
     static Address lookupOrCreate(
             String name,
             String street1,
@@ -192,6 +244,7 @@ class Address {
         }
     }
 
+    @Deprecated
     String generateGoogleMapURL(){
         String url = ''
         if (this.name) url += this.name

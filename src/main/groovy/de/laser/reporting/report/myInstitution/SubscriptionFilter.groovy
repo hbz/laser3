@@ -31,8 +31,8 @@ class SubscriptionFilter extends BaseFilter {
         ContextService contextService  = mainContext.getBean('contextService')
         SubscriptionsQueryService subscriptionsQueryService = mainContext.getBean('subscriptionsQueryService')
 
-        String filterSource = params.get(BaseConfig.FILTER_PREFIX + 'subscription' + BaseConfig.FILTER_SOURCE_POSTFIX)
-        filterResult.labels.put('base', [source: BaseConfig.getMessage('subscription.source.' + filterSource)])
+        String filterSource = getCurrentFilterSource(params, BaseConfig.KEY_SUBSCRIPTION)
+        filterResult.labels.put('base', [source: BaseConfig.getSourceLabel(BaseConfig.KEY_SUBSCRIPTION, filterSource)])
 
         switch (filterSource) {
             case 'all-sub':
@@ -64,7 +64,7 @@ class SubscriptionFilter extends BaseFilter {
 
         //println queryParams
 
-        String cmbKey = BaseConfig.FILTER_PREFIX + 'subscription_'
+        String cmbKey = BaseConfig.FILTER_PREFIX + BaseConfig.KEY_SUBSCRIPTION + '_'
         int pCount = 0
 
         getCurrentFilterKeys(params, cmbKey).each{ key ->
@@ -90,12 +90,9 @@ class SubscriptionFilter extends BaseFilter {
                     else if (Subscription.getDeclaredField(p).getType() in [boolean, Boolean]) {
                         RefdataValue rdv = RefdataValue.get(params.long(key))
 
-                        if (rdv == RDStore.YN_YES) {
-                            whereParts.add( 'sub.' + p + ' is true' )
-                        }
-                        else if (rdv == RDStore.YN_NO) {
-                            whereParts.add( 'sub.' + p + ' is false' )
-                        }
+                        if (rdv == RDStore.YN_YES)     { whereParts.add( 'sub.' + p + ' is true' ) }
+                        else if (rdv == RDStore.YN_NO) { whereParts.add( 'sub.' + p + ' is false' ) }
+
                         filterLabelValue = rdv.getI10n('value')
                     }
                     else {
@@ -112,12 +109,12 @@ class SubscriptionFilter extends BaseFilter {
                 }
                 // --> refdata join tables
                 else if (pType == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
-                    println ' ------------ not implemented ------------ '
+                    println ' --- ' + pType +' not implemented --- '
                 }
                 // --> custom filter implementation
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
 
-                    if (p == BaseConfig.CUSTOM_IMPL_KEY_ANNUAL) {
+                    if (p == BaseConfig.CI_GENERIC_ANNUAL) {
                         List tmpList = []
 
                         params.list(key).each { pk ->
@@ -126,28 +123,28 @@ class SubscriptionFilter extends BaseFilter {
                             }
                             else {
                                 tmpList.add('( (YEAR(sub.startDate) <= :p' + (++pCount) + ' or sub.startDate is null) and (YEAR(sub.endDate) >= :p' + pCount + ' or sub.endDate is null) )')
-                                queryParams.put('p' + pCount, pk as Integer)
+                                queryParams.put('p' + pCount, pk as Integer) // integer - hql
                             }
                         }
                         whereParts.add( '(' + tmpList.join(' or ') + ')' )
 
                         Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(p)
-                        List labels = customRdv.get('from').findAll { it -> it.id in params.list(key).collect{ it2 -> Integer.parseInt(it2) } }
+                        List labels = customRdv.get('from').findAll { it -> it.id in params.list(key).collect{ it2 -> Long.parseLong(it2) } }
                         filterLabelValue = labels.collect { it.get('value_de') } // TODO
                     }
-                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_STARTDATE_LIMIT) {
+                    else if (p == BaseConfig.CI_GENERIC_STARTDATE_LIMIT) {
                         whereParts.add( '(YEAR(sub.startDate) >= :p' + (++pCount) + ')')
                         queryParams.put('p' + pCount, params.int(key))
 
                         filterLabelValue = params.get(key)
                     }
-                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_ENDDATE_LIMIT) {
+                    else if (p == BaseConfig.CI_GENERIC_ENDDATE_LIMIT) {
                         whereParts.add( '(YEAR(sub.endDate) <= :p' + (++pCount) + ')')
                         queryParams.put('p' + pCount, params.int(key))
 
                         filterLabelValue = params.get(key)
                     }
-                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_PROPERTY_KEY) {
+                    else if (p == BaseConfig.CI_CTX_PROPERTY_KEY) {
                         Long pValue = params.long('filter:subscription_propertyValue')
 
                         String pq = getPropertyFilterSubQuery(
@@ -176,6 +173,8 @@ class SubscriptionFilter extends BaseFilter {
 
         filterResult.data.put('subscriptionIdList', queryParams.subscriptionIdList ? Subscription.executeQuery( query, queryParams ) : [])
 
+        // -- SUB --
+
         BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).keySet().each{ pk ->
             if (pk != 'base') {
                 if (pk == 'memberSubscription') {
@@ -196,8 +195,8 @@ class SubscriptionFilter extends BaseFilter {
 
     static void _handleInternalSubFilter(GrailsParameterMap params, String partKey, Map<String, Object> filterResult) {
 
-        String filterSource = params.get(BaseConfig.FILTER_PREFIX + partKey + BaseConfig.FILTER_SOURCE_POSTFIX)
-        filterResult.labels.put(partKey, [source: BaseConfig.getMessage(BaseConfig.KEY_SUBSCRIPTION + '.source.' + filterSource)])
+        String filterSource = getCurrentFilterSource(params, partKey)
+        filterResult.labels.put(partKey, [source: BaseConfig.getSourceLabel(BaseConfig.KEY_SUBSCRIPTION, filterSource)])
 
         if (! filterResult.data.get('subscriptionIdList')) {
             filterResult.data.put( partKey + 'IdList', [] )
@@ -233,12 +232,9 @@ class SubscriptionFilter extends BaseFilter {
                     else if (Subscription.getDeclaredField(p).getType() in [boolean, Boolean]) {
                         RefdataValue rdv = RefdataValue.get(params.long(key))
 
-                        if (rdv == RDStore.YN_YES) {
-                            whereParts.add( 'mbr.' + p + ' is true' )
-                        }
-                        else if (rdv == RDStore.YN_NO) {
-                            whereParts.add( 'mbr.' + p + ' is false' )
-                        }
+                        if (rdv == RDStore.YN_YES)     { whereParts.add( 'mbr.' + p + ' is true' ) }
+                        else if (rdv == RDStore.YN_NO) { whereParts.add( 'mbr.' + p + ' is false' ) }
+
                         filterLabelValue = rdv.getI10n('value')
                     }
                     else {
@@ -255,12 +251,12 @@ class SubscriptionFilter extends BaseFilter {
                 }
                 // --> refdata join tables
                 else if (pType == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
-                    println ' ------------ not implemented ------------ '
+                    println ' --- ' + pType +' not implemented --- '
                 }
                 // --> custom filter implementation
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
 
-                    if (p == BaseConfig.CUSTOM_IMPL_KEY_ANNUAL) {
+                    if (p == BaseConfig.CI_GENERIC_ANNUAL) {
                         List tmpList = []
 
                         params.list(key).each { pk ->
@@ -275,22 +271,22 @@ class SubscriptionFilter extends BaseFilter {
                         whereParts.add( '(' + tmpList.join(' or ') + ')' )
 
                         Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(p)
-                        List labels = customRdv.get('from').findAll { it -> it.id in params.list(key).collect{ it2 -> Integer.parseInt(it2) } }
+                        List labels = customRdv.get('from').findAll { it -> it.id in params.list(key).collect{ it2 -> Long.parseLong(it2) } }
                         filterLabelValue = labels.collect { it.get('value_de') } // TODO
                     }
-                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_STARTDATE_LIMIT) {
+                    else if (p == BaseConfig.CI_GENERIC_STARTDATE_LIMIT) {
                         whereParts.add( '(YEAR(mbr.startDate) >= :p' + (++pCount) + ')')
                         queryParams.put('p' + pCount, params.int(key))
 
                         filterLabelValue = params.get(key)
                     }
-                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_ENDDATE_LIMIT) {
+                    else if (p == BaseConfig.CI_GENERIC_ENDDATE_LIMIT) {
                         whereParts.add( '(YEAR(mbr.endDate) <= :p' + (++pCount) + ')')
                         queryParams.put('p' + pCount, params.int(key))
 
                         filterLabelValue = params.get(key)
                     }
-                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_PROPERTY_KEY) {
+                    else if (p == BaseConfig.CI_CTX_PROPERTY_KEY) {
                         Long pValue = params.long('filter:memberSubscription_propertyValue')
 
                         String pq = getPropertyFilterSubQuery(
@@ -321,10 +317,9 @@ class SubscriptionFilter extends BaseFilter {
 
     static void _handleInternalOrgFilter(GrailsParameterMap params, String partKey, Map<String, Object> filterResult) {
 
-        String filterSource = params.get(BaseConfig.FILTER_PREFIX + partKey + BaseConfig.FILTER_SOURCE_POSTFIX)
-        filterResult.labels.put(partKey, [source: BaseConfig.getMessage(BaseConfig.KEY_SUBSCRIPTION + '.source.' + filterSource)])
+        String filterSource = getCurrentFilterSource(params, partKey)
+        filterResult.labels.put(partKey, [source: BaseConfig.getSourceLabel(BaseConfig.KEY_SUBSCRIPTION, filterSource)])
 
-        //println 'internalOrgFilter() ' + params + ' >>>>>>>>>>>>>>>< ' + partKey
         if (! filterResult.data.get('subscriptionIdList')) {
             filterResult.data.put( partKey + 'IdList', [] )
         }
@@ -352,7 +347,6 @@ class SubscriptionFilter extends BaseFilter {
         int pCount = 0
 
         getCurrentFilterKeys(params, cmbKey).each { key ->
-            //println key + " >> " + params.get(key)
             List<String> validPartKeys = ['member', 'consortium', 'provider', 'agency']
 
             if (params.get(key)) {
@@ -380,12 +374,9 @@ class SubscriptionFilter extends BaseFilter {
                     else if (Org.getDeclaredField(p).getType() in [boolean, Boolean]) {
                         RefdataValue rdv = RefdataValue.get(params.long(key))
 
-                        if (rdv == RDStore.YN_YES) {
-                            whereParts.add( 'org.' + p + ' is true' )
-                        }
-                        else if (rdv == RDStore.YN_NO) {
-                            whereParts.add( 'org.' + p + ' is false' )
-                        }
+                        if (rdv == RDStore.YN_YES)     { whereParts.add( 'org.' + p + ' is true' ) }
+                        else if (rdv == RDStore.YN_NO) { whereParts.add( 'org.' + p + ' is false' ) }
+
                         filterLabelValue = rdv.getI10n('value')
                     }
                     else {
@@ -405,7 +396,7 @@ class SubscriptionFilter extends BaseFilter {
                 // --> refdata join tables
                 else if (pType == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
 
-                    if (p == BaseConfig.CUSTOM_IMPL_KEY_ORG_TYPE) {
+                    if (p == BaseConfig.RDJT_GENERIC_ORG_TYPE) {
                         whereParts.add('exists (select ot from org.orgType ot where ot = :p' + (++pCount) + ')')
                         queryParams.put('p' + pCount, RefdataValue.get(params.long(key)))
 
@@ -415,21 +406,21 @@ class SubscriptionFilter extends BaseFilter {
                 // --> custom filter implementation
                 else if (pType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
 
-                    if (p == BaseConfig.CUSTOM_IMPL_KEY_SUBJECT_GROUP) {
+                    if (p == BaseConfig.CI_GENERIC_SUBJECT_GROUP) {
                         queryBase = queryBase + ' join org.subjectGroup osg join osg.subjectGroup rdvsg'
                         whereParts.add('rdvsg.id = :p' + (++pCount))
                         queryParams.put('p' + pCount, params.long(key))
 
                         filterLabelValue = RefdataValue.get(params.long(key)).getI10n('value')
                     }
-                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_LEGAL_INFO) {
+                    else if (p == BaseConfig.CI_GENERIC_LEGAL_INFO) {
                         long li = params.long(key)
                         whereParts.add( getLegalInfoQueryWhereParts(li) )
 
                         Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(p)
                         filterLabelValue = customRdv.get('from').find{ it.id == li }.value_de
                     }
-                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_CUSTOMER_TYPE) {
+                    else if (p == BaseConfig.CI_GENERIC_CUSTOMER_TYPE) {
                         queryBase = queryBase + ' , OrgSetting oss'
 
                         whereParts.add('oss.org = org and oss.key = :p' + (++pCount))
@@ -441,7 +432,7 @@ class SubscriptionFilter extends BaseFilter {
                         Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(p)
                         filterLabelValue = customRdv.get('from').find{ it.id == params.long(key) }.value_de
                     }
-                    else if (p == BaseConfig.CUSTOM_IMPL_KEY_PROPERTY_KEY) {
+                    else if (p == BaseConfig.CI_CTX_PROPERTY_KEY) {
                         Long pValue = params.long('filter:member_propertyValue')
 
                         String pq = getPropertyFilterSubQuery(

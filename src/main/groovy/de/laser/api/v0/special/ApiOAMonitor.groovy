@@ -18,11 +18,16 @@ import grails.converters.JSON
 import groovy.util.logging.Slf4j
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
+/**
+ * This class is an endpoint implemented for the OA monitor of the Jülich research centre (FZ Jülich)
+ */
 @Slf4j
 class ApiOAMonitor {
 
     /**
-     * checks OAMONITOR_SERVER_ACCESS
+     * Checks OAMONITOR_SERVER_ACCESS, i.e. if the given institution authorised access to its data for the OA monitor endpoint
+     * @param org the institution ({@link Org}) whose data should be accessed
+     * @return true if access is granted, false otherwise
      */
     static boolean calculateAccess(Org org) {
 
@@ -36,7 +41,10 @@ class ApiOAMonitor {
     }
 
     /**
-     * checks implicit OAMONITOR_SERVER_ACCESS
+     * Checks if the given subscription is accessible.
+     * Checks implicitly OAMONITOR_SERVER_ACCESS, i.e. if the requested institution is among those who authorised access to the OA monitor endpoint
+     * @param sub the {@link Subscription} to which access is requested
+     * @return true if access is granted, false otherwise
      */
     static boolean calculateAccess(Subscription sub) {
 
@@ -65,7 +73,8 @@ class ApiOAMonitor {
     }
 
     /**
-     * checks OAMONITOR_SERVER_ACCESS
+     * Retrieves all institutions which have given access to the OA monitor.
+     * Checks OAMONITOR_SERVER_ACCESS; here those which have granted access to their data for the OA monitor
      */
     static private List<Org> getAccessibleOrgs() {
 
@@ -81,9 +90,10 @@ class ApiOAMonitor {
     }
 
     /**
-     * checks implicit OAMONITOR_SERVER_ACCESS
-     *
-     * @return JSON
+     * Lists the details of all institutions which have granted access to the OA monitor endpoint.
+     * Checks implicit OAMONITOR_SERVER_ACCESS, i.e. if the requested institution is among those which gave permission to
+     * the OA monitor
+     * @return a {@link JSON} containing a list of the organisation stubs
      */
     static JSON getAllOrgs() {
         Collection<Object> result = []
@@ -97,7 +107,10 @@ class ApiOAMonitor {
     }
 
     /**
+     * Requests the given institution and returns a {@link Map} containing the requested institution's details if
+     * the requesting institution has access to the details
      * @return JSON | FORBIDDEN
+     * @see Org
      */
     static requestOrganisation(Org org, Org context) {
         Map<String, Object> result = [:]
@@ -111,9 +124,7 @@ class ApiOAMonitor {
 
             result.globalUID    = org.globalUID
             result.gokbId       = org.gokbId
-            result.comment      = org.comment
             result.name         = org.name
-            result.scope        = org.scope
             result.shortname    = org.shortname
             result.sortname     = org.sortname
             result.region       = org.region?.value
@@ -149,7 +160,12 @@ class ApiOAMonitor {
     }
 
     /**
+     * Requests the given subscription and returns a {@link Map} containing the requested subscription's details if
+     * the requesting institution has access to the details
+     * @param sub the {@link Subscription} to be retrieved
+     * @param context the institution ({@link Org}) requesting access (in most cases the OA monitor)
      * @return JSON | FORBIDDEN
+     * @see Subscription
      */
     static requestSubscription(Subscription sub, Org context) {
         Map<String, Object> result = [:]
@@ -223,7 +239,7 @@ class ApiOAMonitor {
             else {
                 filtered = sub.costItems
             }
-            result.costItems = ApiCollectionReader.getCostItemCollection(filtered)
+            result.costItems = ApiCollectionReader.getCostItemCollection(filtered, context)
 
             ApiToolkit.cleanUp(result, true, true)
         }
@@ -231,6 +247,11 @@ class ApiOAMonitor {
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
     }
 
+    /**
+     * Retrieves a collection of subscriptions the given institution subscribed
+     * @param org the institution whose subscriptions should be retrieved
+     * @return a {@link Collection} of {@link Subscription}s
+     */
     static private Collection<Object> getSubscriptionCollection(Org org) {
         if (!org ) {
             return null
@@ -260,11 +281,16 @@ class ApiOAMonitor {
         ApiToolkit.cleanUp(result, true, true)
     }
 
+    /**
+     * Retrieves a list of packages with their titles, those delivered in stubs with the essential information
+     * @param list the list of subscribed packages whose titles should be enumerated
+     * @return a {@link Collection} of packages with title stubs
+     */
     static Collection<Object> getPackageCollectionWithTitleStubMaps(Collection<SubscriptionPackage> list) {
         Collection<Object> result = []
 
         list.each { subPkg ->
-            Map<String, Object> pkg = ApiUnsecuredMapReader.getPackageStubMap(subPkg.pkg) // com.k_int.kbplus.Package
+            Map<String, Object> pkg = ApiUnsecuredMapReader.getPackageStubMap(subPkg.pkg) // de.laser.Package
 
             pkg.organisations = ApiCollectionReader.getOrgLinkCollection(subPkg.pkg.orgs, ApiReader.IGNORE_PACKAGE, null) // de.laser.OrgRole
             result << pkg

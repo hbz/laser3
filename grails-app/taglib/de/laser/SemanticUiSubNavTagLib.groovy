@@ -50,13 +50,13 @@ class SemanticUiSubNavTagLib {
 
         def (text, message) = SwissKnife.getTextAndMessage(attrs)
         String linkBody  = (text && message) ? text + " - " + message : text + message
-        String aClass    = ((this.pageScope.variables?.actionName == attrs.action) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
+        String aClass    = ((this.pageScope.variables?.actionName == attrs.action && (attrs.tab == params.tab || attrs.tab == params[attrs.subTab])) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
 
         String tooltip = attrs.tooltip ?: ""
         Integer counts = attrs.counts ? attrs.counts as Integer : null
 
         if(tooltip != "") {
-            linkBody = '<div data-tooltip="' + tooltip + '" data-position="bottom center">' + linkBody + '</div>'
+            linkBody = '<div class="la-popup-tooltip la-delay" data-content="' + tooltip + '">' + linkBody + '</div>'
         }
 
         if (counts) {

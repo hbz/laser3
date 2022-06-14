@@ -24,6 +24,9 @@ import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
 
+/**
+ * This controller is responsible for the license related calls
+ */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class LicenseController {
 
@@ -52,6 +55,9 @@ class LicenseController {
 
     //----------------------------------------- general or ungroupable section ----------------------------------------
 
+    /**
+     * Shows the given license
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def show() {
@@ -282,6 +288,9 @@ class LicenseController {
       */
   }
 
+    /**
+     * Gets the tasks connected to this license
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def tasks() {
@@ -301,6 +310,10 @@ class LicenseController {
         ctrlResult.result
     }
 
+    /**
+     * Call to delete the given license; a parameter specifies whether the deletion should be executed or not
+     * @return the view showing the attached object to the given license
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
@@ -316,6 +329,9 @@ class LicenseController {
         result
     }
 
+    /**
+     * Creates a new member license to the given consortial license if it not exists
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_EDTIOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def processAddMembers() {
@@ -400,6 +416,10 @@ class LicenseController {
         }
     }
 
+    /**
+     * Processes a linking between one or more subscriptions. Depending on the call level,
+     * the action redirects to the appropriate table
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
   def linkToSubscription(){
@@ -442,6 +462,9 @@ class LicenseController {
         redirect action: action, params: params
   }
 
+    /**
+     * Opens possible subscriptions to link to the given license; the parent level is being considered
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     Map<String,Object> linkLicenseToSubs() {
@@ -452,6 +475,9 @@ class LicenseController {
         result
     }
 
+    /**
+     * Shows all subscriptions linked to the current license
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def linkedSubs() {
@@ -461,11 +487,12 @@ class LicenseController {
         }
         result.subscriptions = []
         result.putAll(setSubscriptionFilterData())
+        result.subscriptionsForFilter = []
         if(params.status != 'FETCH_ALL') {
-            result.subscriptionsForFilter = Subscription.executeQuery("select l.destinationSubscription from Links l join l.destinationSubscription s where s.status.id = :status and l.sourceLicense = :lic and l.linkType = :linkType" , [status:params.status as Long, lic:result.license, linkType:RDStore.LINKTYPE_LICENSE] )
+            result.subscriptionsForFilter.addAll(Subscription.executeQuery("select l.destinationSubscription from Links l join l.destinationSubscription s where s.status.id = :status and l.sourceLicense = :lic and l.linkType = :linkType" , [status:params.status as Long, lic:result.license, linkType:RDStore.LINKTYPE_LICENSE] ))
         }
         else if(params.status == 'FETCH_ALL') {
-            result.subscriptionsForFilter = Subscription.executeQuery("select l.destinationSubscription from Links l where l.sourceLicense = :lic and l.linkType = :linkType" , [lic:result.license, linkType:RDStore.LINKTYPE_LICENSE] )
+            result.subscriptionsForFilter.addAll(Subscription.executeQuery("select l.destinationSubscription from Links l where l.sourceLicense = :lic and l.linkType = :linkType" , [lic:result.license, linkType:RDStore.LINKTYPE_LICENSE] ))
         }
         if(result.license._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.license.getLicensingConsortium().id == result.institution.id) {
             Set<RefdataValue> subscriberRoleTypes = [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]
@@ -536,6 +563,9 @@ class LicenseController {
         result
     }
 
+    /**
+     * Lists the member licenses to the given consortial license
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def members() {
@@ -586,6 +616,9 @@ class LicenseController {
         result
     }
 
+    /**
+     * Opens possible subscriptions to link to the given license; the member level is being considered
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def linkMemberLicensesToSubs() {
@@ -599,7 +632,7 @@ class LicenseController {
     /**
      * this is very ugly and should be subject of refactor - - but unfortunately, the
      * {@link SubscriptionsQueryService#myInstitutionCurrentSubscriptionsBaseQuery(java.lang.Object, de.laser.Org)}
-     * requires the {@link org.codehaus.groovy.grails.web.servlet.mvc.GrailsParameterMap} as parameter.
+     * requires the {@link GrailsParameterMap} as parameter.
      * @return validOn and defaultSet-parameters of the filter
      */
     private Map<String,Object> setSubscriptionFilterData() {
@@ -625,6 +658,10 @@ class LicenseController {
         result
     }
 
+    /**
+     * Gets the linked consortia member institution IDs for filter views
+     * @return a {@link List} of institution IDs
+     */
     private ArrayList<Long> getOrgIdsForFilter() {
         Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, accessService.CHECK_VIEW)
         GrailsParameterMap tmpParams = (GrailsParameterMap) params.clone()
@@ -641,6 +678,7 @@ class LicenseController {
         Org.executeQuery(fsq.query, fsq.queryParams, tmpParams)
     }
 
+    @Deprecated
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def pendingChanges() {
@@ -675,6 +713,7 @@ class LicenseController {
         result
     }
 
+    @Deprecated
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def history() {
@@ -723,7 +762,9 @@ class LicenseController {
 
   }
 
-
+    /**
+     * Should enumerate the changes done on the given license, function currently undetermined
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def changes() {
@@ -751,6 +792,12 @@ class LicenseController {
         result
     }
 
+    /**
+     * Opens the notes view for the given license
+     * @return a {@link List} of notes ({@link Doc})
+     * @see Doc
+     * @see DocContext
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def notes() {
@@ -761,6 +808,12 @@ class LicenseController {
         result
     }
 
+    /**
+     * Opens the documents view for the given license
+     * @return a {@link List} of {@link Doc}s (except notes) linked to the given license
+     * @see Doc
+     * @see DocContext
+     */
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
@@ -773,6 +826,9 @@ class LicenseController {
         result
     }
 
+    /**
+     * Call to delete the given document
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def deleteDocuments() {
@@ -783,6 +839,11 @@ class LicenseController {
         redirect controller: 'license', action:params.redirectAction, id:params.instanceId /*, fragment:'docstab' */
     }
 
+    /**
+     * Should create an empty license?
+     * @deprecated use {@link MyInstitutionController#emptyLicense()} instead
+     */
+    @Deprecated
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
   def create() {
@@ -791,6 +852,9 @@ class LicenseController {
     result
   }
 
+    /**
+     * Entry point for copying a license
+     */
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
@@ -890,6 +954,9 @@ class LicenseController {
 
     }
 
+    /**
+     * Controller menu for copying components of the given license into another license
+     */
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def copyElementsIntoLicense() {

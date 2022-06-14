@@ -6,6 +6,8 @@ import de.laser.helper.Constants
 import de.laser.helper.DateUtils
 import de.laser.helper.RDConstants
 import de.laser.helper.RDStore
+import de.laser.properties.LicenseProperty
+import de.laser.properties.PropertyDefinition
 import grails.converters.JSON
 import grails.util.Holders
 import groovy.sql.GroovyRowResult
@@ -17,11 +19,16 @@ import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 import java.text.SimpleDateFormat
 
+/**
+ * This class is an endpoint implemented for the Electronic Journals Library (Elektronische Zeitschriftenbibliothek) of the <a href="https://ezb.uni-regensburg.de/index.phtml?bibid=AAAAA&colors=7&lang=en">Regensburg university library</a>.
+ */
 @Slf4j
 class ApiEZB {
 
     /**
-     * checks EZB_SERVER_ACCESS
+     * Checks EZB_SERVER_ACCESS, i.e. if the given institution authorised access to its data for the EZB endpoint
+     * @param org the institution ({@link Org}) whose data should be accessed
+     * @return true if access is granted, false otherwise
      */
     static boolean calculateAccess(Org org) {
 
@@ -38,7 +45,10 @@ class ApiEZB {
     }
 
     /**
-     * checks implicit EZB_SERVER_ACCESS
+     * Checks if the given subscription is accessible.
+     * Checks implicitly EZB_SERVER_ACCESS, i.e. if the requested institution is among those who authorised access to the EZB endpoint
+     * @param sub the {@link Subscription} to which access is requested
+     * @return true if access is granted, false otherwise
      */
     static boolean calculateAccess(Subscription sub) {
 
@@ -67,7 +77,40 @@ class ApiEZB {
     }
 
     /**
-     * checks EZB_SERVER_ACCESS
+     * Checks if the given license is accessible.
+     * Checks implicitly EZB_SERVER_ACCESS, i.e. if the requested institution is among those who authorised access to the EZB endpoint
+     * @param lic the {@link License} to which access is requested
+     * @return true if access is granted, false otherwise
+     */
+    static boolean calculateAccess(License lic) {
+
+        boolean hasAccess = false
+
+        if (! lic.isPublicForApi) {
+            hasAccess = false
+        }
+        else {
+            List<Org> orgs = getAccessibleOrgs()
+
+            if (orgs) {
+                List<OrgRole> valid = OrgRole.executeQuery(
+                        "select oo from OrgRole oo join oo.lic lic join oo.org org " +
+                        "where lic = :lic and org in (:orgs) and oo.roleType in (:roles) ", [
+                            lic  : lic,
+                            orgs : orgs,
+                            roles: [RDStore.OR_LICENSING_CONSORTIUM, RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSEE]
+                        ]
+                )
+                hasAccess = ! valid.isEmpty()
+            }
+        }
+
+        hasAccess
+    }
+
+    /**
+     * Retrieves all institutions which have given access to the EZB.
+     * Checks EZB_SERVER_ACCESS; here those which have granted access to their data for the EZB
      */
     static private List<Org> getAccessibleOrgs() {
 
@@ -84,9 +127,9 @@ class ApiEZB {
     }
 
     /**
-     * checks implicit EZB_SERVER_ACCESS
-     *
-     * @return JSON
+     * Lists the details of all institutions which have granted access to the EZB endpoint.
+     * Checks implicit EZB_SERVER_ACCESS, i.e. if the requested institution is among those which gave permission to EZB
+     * @return a {@link JSON} containing a list of the organisation stubs
      */
     static JSON getAllOrgs() {
         Collection<Object> result = []
@@ -100,8 +143,9 @@ class ApiEZB {
     }
 
     /**
-     * checks implicit EZB_SERVER_ACCESS
-     *
+     * Retrieves a list of all accessible subscriptions for the EZB harvester
+     * @param changedFrom a timestamp from which recent subscriptions should be retrieved
+     * @param contextOrg the institution (the EZB service organisation) requesting access
      * @return JSON | FORBIDDEN
      */
     static JSON getAllSubscriptions(Date changedFrom = null, Org contextOrg) {
@@ -134,7 +178,11 @@ class ApiEZB {
     }
 
     /**
+     * Requests the given subscription and returns a TSV table containing the requested subscription's details if the requesting institution has access to the details.
+     * The table is in the KBART format, see the <a href="https://www.niso.org/standards-committees/kbart">KBART specification</a>.
+     * @param sub the {@link Subscription} to be retrieved
      * @return TSV | FORBIDDEN
+     * @see Subscription
      */
     static requestSubscription(Subscription sub) {
         Map<String, List> export
@@ -154,45 +202,25 @@ class ApiEZB {
             else {
                 log.error("No platform available! Continue without proprietary namespace!")
             }
-            def dataSource = Holders.grailsApplication.mainContext.getBean('dataSource')
-            Sql sql = new Sql(dataSource)
-            //copy needed because exportService cannot be used in static context! This is a temp solution!
+            Sql sql = GlobalService.obtainSqlConnection()
             log.debug("Begin generateTitleExportKBARTSQL")
             sql.withTransaction {
                 List<String> titleHeaders = getBaseTitleHeaders()
                 List<GroovyRowResult> entitlementRows = sql.rows("select ie_id, ie_name, ie_sortname, ie_access_start_date, ie_access_end_date, ie_medium_rv_fk, ie_status_rv_fk, " +
-                        "tipp_id, tipp_pkg_fk, tipp_host_platform_url, tipp_date_first_in_print, tipp_date_first_online, tipp_first_author, tipp_first_editor, tipp_access_type_rv_fk, " +
+                        "tipp_id, tipp_pkg_fk, tipp_host_platform_url, tipp_date_first_in_print, tipp_date_first_online, tipp_first_author, tipp_first_editor, " +
                         "tipp_publisher_name, tipp_volume, tipp_edition_number, tipp_last_updated, tipp_series_name, tipp_subject_reference, tipp_access_type_rv_fk, tipp_open_access_rv_fk, " +
                         "case tipp_title_type when 'Journal' then 'serial' when 'Book' then 'monograph' when 'Database' then 'database' else 'other' end as title_type, " +
                         "case ie_access_start_date when null then tipp_access_start_date else ie_access_start_date end as access_start_date, " +
                         "case ie_access_end_date when null then tipp_access_end_date else ie_access_end_date end as access_end_date " +
-                        "from issue_entitlement left join issue_entitlement_coverage on ie_id = ic_ie_fk join title_instance_package_platform on ie_tipp_fk = tipp_id " +
+                        "from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id " +
                         "where ie_subscription_fk = :subId and ie_status_rv_fk != :deleted order by ie_sortname, ie_name", [subId: sub.id, deleted: RDStore.TIPP_STATUS_DELETED.id])
-                log.debug("select ie_id, ie_name, ie_sortname, ie_access_start_date, ie_access_end_date, ie_medium_rv_fk, ie_status_rv_fk, " +
-                        "tipp_id, tipp_pkg_fk, tipp_host_platform_url, tipp_date_first_in_print, tipp_date_first_online, tipp_first_author, tipp_first_editor, tipp_access_type_rv_fk, " +
-                        "tipp_publisher_name, tipp_volume, tipp_edition_number, tipp_last_updated, tipp_series_name, tipp_subject_reference, tipp_access_type_rv_fk, tipp_open_access_rv_fk, " +
-                        "case tipp_title_type when 'Journal' then 'serial' when 'Book' then 'monograph' when 'Database' then 'database' else 'other' end as title_type, " +
-                        "case ie_access_start_date when null then tipp_access_start_date else ie_access_start_date end as access_start_date, " +
-                        "case ie_access_end_date when null then tipp_access_end_date else ie_access_end_date end as access_end_date " +
-                        "from issue_entitlement left join issue_entitlement_coverage on ie_id = ic_ie_fk join title_instance_package_platform on ie_tipp_fk = tipp_id " +
-                        "where ie_subscription_fk = ${sub.id} and ie_status_rv_fk != ${RDStore.TIPP_STATUS_DELETED.id} order by ie_sortname, ie_name")
                 List<GroovyRowResult> packageData = sql.rows('select pkg_id, pkg_name from subscription_package join package on sp_pkg_fk = pkg_id where sp_sub_fk = :subId', [subId: sub.id])
                 List<GroovyRowResult> packageIDs = sql.rows('select id_pkg_fk, id_value, idns_ns from identifier join identifier_namespace on id_ns_fk = idns_id join subscription_package on id_pkg_fk = sp_pkg_fk where sp_sub_fk = :subId', [subId: sub.id])
                 log.debug("select id_pkg_fk, id_value, idns_ns from identifier join identifier_namespace on id_ns_fk = idns_id join subscription_package on id_pkg_fk = sp_pkg_fk where sp_sub_fk = ${sub.id}")
                 List<GroovyRowResult> otherTitleIdentifierNamespaces = sql.rows('select distinct(idns_ns) from identifier_namespace join identifier on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id join issue_entitlement on tipp_id = ie_tipp_fk where ie_subscription_fk = :subId and lower(idns_ns) != any(:coreTitleNS)', [subId: sub.id, coreTitleNS: sql.connection.createArrayOf('varchar', IdentifierNamespace.CORE_TITLE_NS as Object[])])
                 log.debug("select distinct(idns_ns) from identifier_namespace join identifier on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id join issue_entitlement on tipp_id = ie_tipp_fk where ie_subscription_fk = :subId and lower(idns_ns) != any(${IdentifierNamespace.CORE_TITLE_NS.toListString()})")
-                List<GroovyRowResult> priceItemRows = sql.rows('select pi_id, pi_ie_fk, pi_list_currency_rv_fk, pi_list_price, pi_local_currency_rv_fk, pi_local_price from price_item join issue_entitlement on pi_ie_fk = ie_id where ie_subscription_fk = :subId', [subId: sub.id])
-                Map<Long, Map<RefdataValue, GroovyRowResult>> priceItems = [:]
-                priceItemRows.each { GroovyRowResult piRow ->
-                    Map<RefdataValue, GroovyRowResult> priceItemMap = priceItems.get(piRow['pi_ie_fk'])
-                    if(!priceItemMap)
-                        priceItemMap = [:]
-                    RefdataValue listCurrency = RefdataValue.get(piRow['pi_list_currency_rv_fk'])
-                    if(listCurrency) {
-                        priceItemMap.put(listCurrency.value, piRow)
-                        priceItems.put(piRow['pi_ie_fk'], priceItemMap)
-                    }
-                }
+                List<GroovyRowResult> priceItemRows = sql.rows('select pi_id, pi_ie_fk, (select rdv_value from refdata_value where rdv_id = pi_list_currency_rv_fk) as pi_list_currency, pi_list_price, (select rdv_value from refdata_value where rdv_id = pi_local_currency_rv_fk) as pi_local_currency, pi_local_price from price_item join issue_entitlement on pi_ie_fk = ie_id where ie_subscription_fk = :subId', [subId: sub.id])
+                Map<Long, Map<String, GroovyRowResult>> priceItems = ApiToolkit.preprocessPriceItemRows(priceItemRows)
                 titleHeaders.addAll(otherTitleIdentifierNamespaces.collect { GroovyRowResult ns -> "${ns['idns_ns']}_identifier"})
                 export = [titleRow:titleHeaders,columnData:[]]
                 long start = System.currentTimeMillis()
@@ -220,6 +248,49 @@ class ApiEZB {
         return (hasAccess ? export : Constants.HTTP_FORBIDDEN)
     }
 
+    /**
+     * Requests the ILL indicators (interlibrary loan indicators) for the given license and outputs them as a set of {@link LicenseProperty} records in a JSON array
+     * @param lic the license whose interlibrary loan
+     * @return JSON | FORBIDDEN
+     * @see License
+     */
+    static requestIllIndicators(License lic) {
+        List<Map<String, Object>> result = []
+        if(!lic) {
+            return null
+        }
+        boolean hasAccess = calculateAccess(lic)
+        if(hasAccess) {
+            Set<PropertyDefinition> illIndicators = PropertyDefinition.findAllByNameInListAndDescr(['Ill ZETA code', 'Ill ZETA electronic forbidden', 'Ill ZETA inland only'], PropertyDefinition.LIC_PROP)
+            lic.propertySet.findAll { LicenseProperty lp -> lp.type.id in illIndicators.id }?.each { LicenseProperty lp ->
+                Map<String, Object> out = [:]
+                out.token           = lp.type.name
+                out.scope           = lp.type.descr
+                out.note            = lp.note
+                out.isPublic        = lp.isPublic ? RDStore.YN_YES.value : RDStore.YN_NO.value
+                out.value           = lp.refValue ? lp.refValue.value : null
+                out.type            = PropertyDefinition.validTypes[lp.type.type]['en']
+                out.refdataCategory = lp.type.refdataCategory
+                out.paragraph       = lp.paragraph
+                result << ApiToolkit.cleanUp(out, true, true)
+            }
+        }
+        return (hasAccess ? (result ? new JSON(result) : null) : Constants.HTTP_FORBIDDEN)
+    }
+
+    //-------------------------------------- helper methods -------------------------------------------
+
+    /**
+     * Builds a row for the KBART export table, assembling the data contained in the output
+     * @param sql the {@link Sql} connection
+     * @param row the base database row
+     * @param packageIDs the list of package identifiers
+     * @param titleNS the proprietary identifier namespace of the provider
+     * @param otherTitleIdentifierNamespaces other identifier namespaces apart from the core title identifier namespaces
+     * @param allPriceItems the {@link de.laser.finance.PriceItem} map for the given holding
+     * @return a {@link List} containing the columns for the next row of the export table
+     * @see IdentifierNamespace
+     */
     static List buildRow(Sql sql, GroovyRowResult row, List<GroovyRowResult> packageIDs, String titleNS, List<GroovyRowResult> otherTitleIdentifierNamespaces, Map<Long, Map<RefdataValue, GroovyRowResult>> allPriceItems) {
         SimpleDateFormat formatter = DateUtils.getSDF_ymd()
         List<GroovyRowResult> identifiers = sql.rows('select id_value, idns_ns from identifier join identifier_namespace on id_ns_fk = idns_id where id_tipp_fk = :tipp', [tipp: row['tipp_id']])
@@ -284,8 +355,6 @@ class ApiEZB {
         outRow.add(' ')
         //preceding_publication_title_id (no values defined for LAS:eR, must await we:kb)
         outRow.add(' ')
-        //access_type (no values defined for LAS:eR, must await we:kb)
-        outRow.add(row['tipp_access_type_rv_fk'] ? RefdataValue.get(row['tipp_access_type_rv_fk'])?.value : ' ')
         //package_name
         outRow.add(row['pkg_name'] ?: ' ')
         //package_id
@@ -320,7 +389,7 @@ class ApiEZB {
         outRow.add(row['tipp_subject_reference'] ?: '')
         //status
         outRow.add(row['ie_status_rv_fk'] ? RefdataValue.get(row['ie_status_rv_fk'])?.value : '')
-        //access_type
+        //access_type (no values defined for LAS:eR, must await we:kb)
         outRow.add(row['tipp_access_type_rv_fk'] ? RefdataValue.get(row['tipp_access_type_rv_fk'])?.value : '')
         //oa_type
         outRow.add(row['tipp_open_access_rv_fk'] ? RefdataValue.get(row['tipp_open_access_rv_fk'])?.value : '')
@@ -353,6 +422,10 @@ class ApiEZB {
         outRow
     }
 
+    /**
+     * Returns the base title headers for the KBART table
+     * @return a {@link List} of title headers; they are specified according to the KBART standard (<a href="https://groups.niso.org/higherlogic/ws/public/download/16900/RP-9-2014_KBART.pdf">see here, section 6.6</a>)
+     */
     static List<String> getBaseTitleHeaders() {
         ['publication_title',
          'print_identifier',
@@ -378,7 +451,6 @@ class ApiEZB {
          'first_editor',
          'parent_publication_title_id',
          'preceding_publication_title_id',
-         'access_type',
          'package_name',
          'package_id',
          'last_changed',
@@ -399,6 +471,10 @@ class ApiEZB {
          'access_type',
          'oa_type',
          'zdb_ppn',
+         'ezb_anchor',
+         'ezb_collection_id',
+         'subscription_isil',
+         'subscription_isci',
          'listprice_eur',
          'listprice_gbp',
          'listprice_usd',
@@ -407,6 +483,13 @@ class ApiEZB {
          'localprice_usd']
     }
 
+    /**
+     * Concatenates the given list of identifiers of a given namespace to a character-separated string enumeration
+     * @param rows the list of identifier records
+     * @param namespace the namespace within which the concatenating identifiers are
+     * @param separator the character separating the entries
+     * @return the concatenated enumeration string
+     */
     static String joinIdentifiers(List<GroovyRowResult> rows, String namespace, String separator) {
         String joined = ' '
         List values = []

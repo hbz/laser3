@@ -5,35 +5,34 @@
 <semui:modal id="costItem_ajaxModal" formID="editCost_${idSuffix}" text="${modalText}" msgSave="${submitButtonLabel}">
     <g:if test="${costItem}">
         <g:if test="${showVisibilitySettings && costItem.isVisibleForSubscriber}">
-            <div class="content la-twoSided-ribbon">
-                <div class="ui orange ribbon label">
-                    <strong>${costItem.sub.getSubscriber()}</strong>
-                </div>
+            <div class="ui orange ribbon label">
+                <strong>${costItem.sub.getSubscriber()}</strong>
             </div>
         </g:if>
         <g:elseif test="${copyCostsFromConsortia}">
-            <div class="content la-twoSided-ribbon">
-                <div class="ui blue ribbon label">
-                    <strong><g:message code="financials.transferConsortialCosts"/>: </strong>
-                </div>
+            <div class="ui orange ribbon label">
+                <strong><g:message code="financials.transferConsortialCosts"/>: </strong>
             </div>
         </g:elseif>
         <g:elseif test="${subscription}">
-            <div class="content la-twoSided-ribbon">
-                <div class="ui orange ribbon label">
-                    <strong>${subscription.getSubscriber().name}</strong>
-                </div>
+            <div class="ui orange ribbon label">
+                <strong>${subscription.getSubscriber().name}</strong>
             </div>
         </g:elseif>
-        <div class="content la-twoSided-ribbon">
-            <div class="ui orange right ribbon label">
-                <strong><g:message code="globalUID.label"/>: ${costItem.globalUID}</strong>
-            </div>
-        </div>
+        <div class="ui blue right right floated mini button la-js-clickButton" data-position="top center" data-title="${costItem.globalUID}"><g:message code="globalUID.label"/></div>
+        <laser:script>
+            $('.la-js-clickButton')
+              .popup({
+                on: 'click'
+              })
+            ;
+        </laser:script>
     </g:if>
-    <g:form class="ui small form" name="editCost_${idSuffix}" url="${formUrl}">
-        <g:render template="costItemInput" />
-    </g:form>
+
+        <g:form class="ui small form clearing segment la-form" name="editCost_${idSuffix}" url="${formUrl}">
+            <g:render template="costItemInput" />
+        </g:form>
+
     <%--
     <g:form class="ui small form" id="editCost" url="${formUrl}">
         <g:if test="${costItem}">

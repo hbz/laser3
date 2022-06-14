@@ -1,15 +1,16 @@
-<%@ page import="de.laser.reporting.report.myInstitution.base.BaseDetails; de.laser.properties.OrgProperty; de.laser.IdentifierNamespace; de.laser.Identifier; de.laser.helper.RDStore; de.laser.Org; de.laser.properties.PropertyDefinition;" %>
+<%@ page import="de.laser.reporting.report.ElasticSearchHelper; de.laser.reporting.report.myInstitution.base.BaseDetails; de.laser.properties.OrgProperty; de.laser.IdentifierNamespace; de.laser.Identifier; de.laser.helper.RDStore; de.laser.Org; de.laser.properties.PropertyDefinition;" %>
 <laser:serviceInjection />
+<g:set var="wekb" value="${ElasticSearchHelper.getCurrentApiSource()}"/>
 
 <g:render template="/myInstitution/reporting/details/top" />
 
 <div class="ui segment">
-    <table class="ui table la-table compact">
+    <table class="ui table la-js-responsive-table la-table compact">
         <thead>
         <tr>
             <th></th>
             <th>${message(code:'org.sortname.label')}</th>
-            %{-- TODO --}%<th>${(labels.first().trim() != 'distribution') ? labels.first().trim() : 'Name'}</th>%{-- TODO --}%
+            %{-- TODO --}%<th>${labels.first().trim() in ['Verteilung', 'Distribution'] ? 'Name' : labels.first().trim()}</th>%{-- TODO --}%
             <g:if test="${query == 'org-x-property'}">
                 <th>${message(code:'reporting.details.property.value')}</th>
             </g:if>
@@ -18,6 +19,7 @@
             </g:elseif>
             <g:if test="${query.startsWith('provider-')}">
                 <th>${message(code:'org.platforms.label')}</th>
+                <th>${message(code:'wekb')}</th>
             </g:if>
             %{--<th></th>--}%
         </tr>
@@ -32,20 +34,7 @@
                     </td>
                     <g:if test="${query == 'org-x-property'}">
                         <td>
-                            <%
-                                List<OrgProperty> properties = BaseDetails.getPropertiesGeneric(org, id as Long, contextService.getOrg()) as List<OrgProperty>
-
-                                println properties.collect { op ->
-                                    String result = (op.type.tenant?.id == contextService.getOrg().id) ? '<i class="icon shield alternate"></i>' : ''
-
-                                    if (op.getType().isRefdataValueType()) {
-                                        result += (op.getRefValue() ? op.getRefValue().getI10n('value') : '')
-                                    } else {
-                                        result += (op.getValue() ?: '')
-                                    }
-                                    result
-                                }.sort().findAll().join(' ,<br/>') // removing empty and null values
-                            %>
+                            <laser:reportObjectProperties owner="${org}" tenant="${contextService.getOrg()}" propDefId="${id}" />
                         </td>
                     </g:if>
                     <g:elseif test="${query == 'org-x-identifier'}">
@@ -61,6 +50,16 @@
                             <g:each in="${org.platforms}" var="plt">
                                 <g:link controller="platform" action="show" id="${plt.id}" target="_blank">${plt.name}</g:link><br/>
                             </g:each>
+                        </td>
+                        <td>
+                            <g:if test="${wekb?.baseUrl && org.gokbId}">
+                                <a href="${wekb.baseUrl + '/public/orgContent/' + org.gokbId}" target="_blank">
+                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code:'reporting.chart.result.link.unchecked.label')}"
+                                            data-position="top right">
+                                        <i class="icon external alternate grey"></i>
+                                    </span>
+                                </a>
+                            </g:if>
                         </td>
                     </g:if>
                     %{--

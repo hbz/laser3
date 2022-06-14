@@ -48,7 +48,7 @@ ${surveyInfo.name}
     <div>
         <hr />
 
-        <table class="ui celled la-table table">
+        <table class="ui celled la-js-responsive-table la-table table">
             <tbody>
             <input type="hidden" name="subscription.old_subid" value="${permissionInfo?.sub_id}"/>
 

@@ -9,6 +9,11 @@ import groovy.json.JsonSlurper
 import groovy.util.logging.Slf4j
 import org.grails.web.json.JSONElement
 
+/**
+ * A filter configuration, serving as bookmark for a user. A user may store his filter settings as bookmarks; the
+ * current setting is then persisted as JSON string in {@link #filterMap}
+ * @see User
+ */
 @Slf4j
 class ReportingFilter {
 
@@ -48,6 +53,15 @@ class ReportingFilter {
         dateCreated     (nullable: true)
     }
 
+    /**
+     * Creates or updates a filter bookmark with the given cached settings; if there is no configuration sored for the
+     * given owner and token, it will be created
+     * @param rCache the filter settings to be stored including a token which serves as a unique identifier for afterwards loading
+     * @param owner the {@link de.laser.auth.User} whose configuration should be stored
+     * @param title the name of the filter
+     * @param description a description string describing the filter setting
+     * @return the new or updated filter instance
+     */
     static ReportingFilter construct(ReportingCache rCache, User owner, String title, String description) {
 
         withTransaction {
@@ -74,6 +88,10 @@ class ReportingFilter {
         }
     }
 
+    /**
+     * Parses the stored filter map and returns that parsed map; if no configuration is stored (yet), an empty map will be returned
+     * @return the filter setting as JSON, if a value is persisted, an empty object otherwise
+     */
     JSONElement getParsedFilterMap() {
         JSONElement json
         try {
@@ -85,6 +103,10 @@ class ReportingFilter {
         json
     }
 
+    /**
+     * Returns the filter labels as parsed map
+     * @return the labels in a {@link Map}, an empty object, if an exception occurs
+     */
     Map<String, Object> getParsedLabels() {
         Map<String, Object> map
         try {

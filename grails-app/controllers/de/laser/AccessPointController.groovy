@@ -13,6 +13,14 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook
 
 import java.text.SimpleDateFormat
 
+/**
+ * This controller is responsible for manipulating access points. See the domain definitions how access points are being used.
+ * This controller has been migrated from Grails 2 to Grails 3; during that migration, object manipulation methods have been
+ * moved to services. The service containing this controller's object-manipulating methods is {@link AccessPointControllerService}
+ * @see OrgAccessPoint
+ * @see de.uni_freiburg.ub.IpRange
+ * @see AccessPointControllerService
+ */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AccessPointController  {
 
@@ -27,6 +35,10 @@ class AccessPointController  {
 
     //static allowedMethods = [create: ['GET', 'POST'], delete: ['GET', 'POST'], dynamicSubscriptionList: ['POST'], dynamicPlatformList: ['POST']]
 
+    /**
+     * Adds a new IP range with the given parameters. The distinction between v4 and v6 just as the validation is done in the service
+     * @see AccessPointControllerService#addIpRange(grails.web.servlet.mvc.GrailsParameterMap)
+     */
     @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")
@@ -43,6 +55,10 @@ class AccessPointController  {
         }
     }
 
+    /**
+     * Loads a list of subscriptions linked to the given {@link OrgAccessPoint}
+     * @returns a table view listing the resulting subscriptions
+     */
     @Secured(['ROLE_USER'])
     def dynamicSubscriptionList() {
         OrgAccessPoint orgAccessPoint = OrgAccessPoint.get(params.id)
@@ -63,6 +79,10 @@ class AccessPointController  {
         render(template: "linked_subs_table", model: [linkedPlatformSubscriptionPackages: linkedPlatformSubscriptionPackages, params:params])
     }
 
+    /**
+     * Loads a list of platforms linked to the given {@link OrgAccessPoint}
+     * @return a table view listing the resulting platforms
+     */
     @Secured(['ROLE_USER'])
     def dynamicPlatformList() {
         OrgAccessPoint orgAccessPoint = OrgAccessPoint.get(params.id)
@@ -88,6 +108,11 @@ class AccessPointController  {
         render(template: "linked_platforms_table", model: [linkedPlatforms: linkedPlatforms, params:params, accessPoint: orgAccessPoint])
     }
 
+    /**
+     * Opens the access point creation view form the specified access type; if an IP access point should be configured, already existing ones are filtered out
+     * @return the access point creation view which in turn outputs the fragment with the fields which need to be filled out
+     * @see OrgAccessPoint
+     */
     @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
@@ -111,6 +136,10 @@ class AccessPointController  {
 
     }
 
+    /**
+     * Takes the given input parameters and builds a new access point for the institution
+     * @return the edit view in case of success, the creation form page otherwise
+     */
     @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
@@ -129,6 +158,10 @@ class AccessPointController  {
         }
     }
 
+    /**
+     * Handles the deletion call of the given access point to the service
+     * @return the list of institution's access points in case of success
+     */
     @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
@@ -153,121 +186,73 @@ class AccessPointController  {
         }
     }
 
+    /**
+     * Handles the call for editing an IP based access point
+     * @return the IP editing view
+     * @see OrgAccessPointLink
+     * @see de.uni_freiburg.ub.Ipv4Address
+     * @see de.uni_freiburg.ub.Ipv6Address
+     */
     @Secured(['ROLE_USER'])
     def edit_ip() {
         _edit()
-        /*
-        OrgAccessPoint orgAccessPoint = OrgAccessPoint.get(params.id)
-        Org org = orgAccessPoint.org
-        Long orgId = org.id
-        Org contextOrg = contextService.org
-        boolean inContextOrg = (orgId == contextOrg.id)
-
-        if (params.exportXLSX) {
-            SXSSFWorkbook wb
-            SimpleDateFormat sdf = DateUtil.getSDF_NoTimeNoPoint()
-            String datetoday = sdf.format(new Date(System.currentTimeMillis()))
-            String filename = "${datetoday}_" + escapeService.escapeString(orgAccessPoint.name)
-            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            wb = (SXSSFWorkbook) accessPointService.exportAccessPoints([orgAccessPoint], contextService.org)
-            wb.write(response.outputStream)
-            response.outputStream.flush()
-            response.outputStream.close()
-            wb.dispose()
-            return
-        }else {
-
-            Boolean autofocus = (params.autofocus) ? true : false
-            Boolean activeChecksOnly = (params.checked == 'false') ? false : true
-
-            Map<String, Object> accessPointDataList = orgAccessPoint.getAccessPointIpRanges()
-
-            orgAccessPoint.getAllRefdataValues(RDConstants.IPV6_ADDRESS_FORMAT)
-
-            List<Long> currentSubIds = orgTypeService.getCurrentSubscriptionIds(orgAccessPoint.org)
-
-            String sort = params.sort ?: "LOWER(p.name)"
-            String order = params.order ?: "ASC"
-            String qry1 = "select new map(p as platform,oapl as aplink) from Platform p join p.oapp as oapl where oapl.active = true and oapl.oap=${orgAccessPoint.id} and oapl.subPkg is null order by ${sort} ${order}"
-
-            ArrayList<HashMap> linkedPlatforms = Platform.executeQuery(qry1)
-            linkedPlatforms.each() {
-                String qry2 = """
-            SELECT distinct s from Subscription s
-            JOIN s.packages as sp
-            JOIN sp.pkg as pkg
-            JOIN pkg.tipps as tipps
-            WHERE s.id in (:currentSubIds)
-            AND tipps.platform.id = ${it.platform.id}
-            AND NOT EXISTS 
-            (SELECT ioapl from OrgAccessPointLink ioapl
-                WHERE ioapl.active=true and ioapl.subPkg=sp and ioapl.oap is null)
-"""
-                if (activeChecksOnly) {
-                    qry2 += " AND s.status = ${RDStore.SUBSCRIPTION_CURRENT.id}"
-                }
-                ArrayList linkedSubs = Subscription.executeQuery(qry2, [currentSubIds: currentSubIds])
-                it['linkedSubs'] = linkedSubs
-            }
-
-            String qry3 = """
-            Select p, sp, s from Platform p
-            JOIN p.oapp as oapl
-            JOIN oapl.subPkg as sp
-            JOIN sp.subscription as s
-            WHERE oapl.active=true and oapl.oap=${orgAccessPoint.id}
-            AND s.id in (:currentSubIds) 
-            AND EXISTS (SELECT 1 FROM OrgAccessPointLink ioapl 
-                where ioapl.subPkg=oapl.subPkg and ioapl.platform=p and ioapl.oap is null)
-            AND s.status = ${RDStore.SUBSCRIPTION_CURRENT.id}    
-"""
-            ArrayList linkedPlatformSubscriptionPackages = Platform.executeQuery(qry3, [currentSubIds: currentSubIds])
-
-            return [
-                    accessPoint                       : orgAccessPoint,
-                    accessPointDataList               : accessPointDataList,
-                    orgId                             : orgId,
-                    platformList                      : orgAccessPoint.getNotLinkedPlatforms(),
-                    linkedPlatforms                   : linkedPlatforms,
-                    linkedPlatformSubscriptionPackages: linkedPlatformSubscriptionPackages,
-                    ip                                : params.ip,
-                    editable                          : ((accessService.checkPermAffiliation('ORG_BASIC_MEMBER', 'INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR'))),
-                    autofocus                         : autofocus,
-                    orgInstance                       : orgAccessPoint.org,
-                    inContextOrg                      : inContextOrg,
-                    activeSubsOnly                    : activeChecksOnly,
-                    institution                       : contextOrg
-            ]
-        }
-        */
     }
 
+    /**
+     * Handles the call for editing a VPN based access point
+     * @return the VPN editing view
+     * @see de.laser.oap.OrgAccessPointVpn
+     */
     @Secured(['ROLE_USER'])
     def edit_vpn() {
         _edit()
     }
 
+    /**
+     * Handles the call for editing an OpenAthens based access point
+     * @return the OpenAthens editing view
+     * @see de.laser.oap.OrgAccessPointOA
+     */
     @Secured(['ROLE_USER'])
     def edit_oa() {
         _edit()
     }
 
+    /**
+     * Handles the call for editing a proxy based access point
+     * @return the proxy editing view
+     * @see de.laser.oap.OrgAccessPointProxy
+     */
     @Secured(['ROLE_USER'])
     def edit_proxy() {
         _edit()
     }
 
+    /**
+     * Handles the call for editing an OCLC EZProxy based access point
+     * @return the EZProxy editing view
+     * @see de.laser.oap.OrgAccessPointEzproxy
+     */
     @Secured(['ROLE_USER'])
     def edit_ezproxy() {
         _edit()
     }
 
+    /**
+     * Handles the call for editing a Shibboleth based access point
+     * @return the Shibboleth editing view
+     * @see de.laser.oap.OrgAccessPointShibboleth
+     */
     @Secured(['ROLE_USER'])
     def edit_shibboleth() {
         _edit()
     }
 
+    /**
+     * Collects the different edit calls and returns the data. It is also possible to export attached access methods to the given point type;
+     * in that case, the attached access methods are being collected and printed to a table
+     * @return the editing view for the given access point or the export table if an export parameter has been specified
+     */
     private _edit() {
         OrgAccessPoint orgAccessPoint = OrgAccessPoint.get(params.id)
         Org org = orgAccessPoint.org
@@ -292,7 +277,7 @@ class AccessPointController  {
             Boolean activeChecksOnly = (params.checked == 'false')
             Map<String, Object> accessPointDataList = orgAccessPoint.getAccessPointIpRanges()
             List<Long> currentSubIds = orgTypeService.getCurrentSubscriptionIds(orgAccessPoint.org)
-            orgAccessPoint.getAllRefdataValues(RDConstants.IPV6_ADDRESS_FORMAT)
+            RefdataCategory.getAllRefdataValues(RDConstants.IPV6_ADDRESS_FORMAT)
             List<HashMap> linkedPlatforms = accessPointService.getLinkedPlatforms(params, orgAccessPoint)
             linkedPlatforms.each() {
                 String qry2 = """
@@ -345,6 +330,9 @@ class AccessPointController  {
         }
     }
 
+    /**
+     * Handles the deletion call for the given IP range to the service
+     */
     @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")
@@ -354,6 +342,9 @@ class AccessPointController  {
         redirect(url: request.getHeader('referer'))
     }
 
+    /**
+     * Controller call to link an access point to a given platform
+     */
     @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")
@@ -365,6 +356,9 @@ class AccessPointController  {
         redirect(url: request.getHeader('referer'))
     }
 
+    /**
+     * Controller call to unlink an access point from a given platform
+     */
     @DebugAnnotation(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")

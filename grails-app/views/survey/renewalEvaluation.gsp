@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'surveyInfo.evaluation')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'survey.label')} (${message(code: 'surveyInfo.evaluation')})</title>
 
 </head>
 
@@ -107,7 +107,7 @@ ${surveyInfo.name}
                 <g:link controller="subscription" action="members" id="${subscription.id}">
                     <strong>${message(code: 'surveyconfig.subOrgs.label')}:</strong>
 
-                    <div class="ui circular label">
+                    <div class="ui blue circular label">
                         ${countParticipants.subMembers}
                     </div>
                 </g:link>
@@ -119,7 +119,7 @@ ${surveyInfo.name}
                         params="[surveyConfigID: surveyConfig.id]">
                     <strong>${message(code: 'surveyconfig.orgs.label')}:</strong>
 
-                    <div class="ui circular label">${countParticipants.surveyMembers}</div>
+                    <div class="ui blue circular label">${countParticipants.surveyMembers}</div>
                 </g:link>
 
                 <g:if test="${countParticipants.subMembersWithMultiYear > 0}">
@@ -142,8 +142,18 @@ ${surveyInfo.name}
             <div class="ui card">
                 <div class="content">
                     <h2 class="ui header">${message(code:'renewalEvaluation.propertiesChanged')}</h2>
+
+                    <g:if test="${propertiesChanged}">
+                        <g:link class="ui right floated button" controller="survey" action="showPropertiesChanged"
+                                id="${surveyConfig.surveyInfo.id}"
+                                params="[surveyConfigID: surveyConfig.id, tab: params.tab, exportXLSX: true]">
+                            Export ${message(code: 'renewalEvaluation.propertiesChanged')}
+                        </g:link>
+                        <br>
+                        <br>
+                    </g:if>
                     <div>
-                        <table class="ui la-table table">
+                        <table class="ui la-js-responsive-table la-table table">
                             <thead>
                             <tr>
                                 <th class="center aligned">${message(code: 'sidewide.number')}</th>
@@ -184,7 +194,7 @@ ${surveyInfo.name}
 
     <semui:form>
 
-        <div class="ui top attached tabular menu">
+        <div class="ui top attached stackable tabular menu">
             <a class="active item" data-tab="orgsContinuetoSubscription">
                 ${message(code: 'renewalEvaluation.continuetoSubscription.label')} <semui:totalNumber
                         total="${orgsContinuetoSubscription.size()}"/>
@@ -251,7 +261,7 @@ ${surveyInfo.name}
             <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'renewalEvaluation.withMultiYearTermSub.label')} <semui:totalNumber
                     total="${orgsWithMultiYearTermSub.size()}"/></h4>
 
-            <table class="ui celled la-table table">
+            <table class="ui celled la-js-responsive-table la-table table">
                 <thead>
                 <tr>
                     <th class="center aligned">${message(code: 'sidewide.number')}</th>
@@ -285,11 +295,12 @@ ${surveyInfo.name}
                                     <g:link controller="subscription" action="show" id="${sub.id}"
                                             class="ui button icon"><i class="icon clipboard"></i></g:link>
                                 </g:if>
-                                <g:if test="${sub._getCalculatedSuccessor()}">
+                                <g:if test="${sub._getCalculatedPreviousForSurvey()}">
                                     <br/>
                                     <br/>
+                                    <%-- TODO Moe --%>
                                     <g:link controller="subscription" action="show"
-                                            id="${sub._getCalculatedSuccessor()?.id}"
+                                            id="${sub._getCalculatedPreviousForSurvey()?.id}"
                                             class="ui button icon"><i class="icon yellow clipboard"></i></g:link>
                                 </g:if>
                             </td>
@@ -305,7 +316,7 @@ ${surveyInfo.name}
             <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'renewalEvaluation.orgsWithParticipationInParentSuccessor.label')} <semui:totalNumber
                     total="${orgsWithParticipationInParentSuccessor.size() }"/></h4>
 
-            <table class="ui celled la-table table">
+            <table class="ui celled la-js-responsive-table la-table table">
                 <thead>
                 <tr>
                     <th class="center aligned">${message(code: 'sidewide.number')}</th>
@@ -338,11 +349,12 @@ ${surveyInfo.name}
                                     <g:link controller="subscription" action="show" id="${sub.id}"
                                             class="ui button icon"><i class="icon clipboard"></i></g:link>
                                 </g:if>
-                                <g:if test="${sub._getCalculatedSuccessor()}">
+                                <g:if test="${sub._getCalculatedPreviousForSurvey()}">
                                     <br/>
                                     <br/>
+                                    <%-- TODO Moe --%>
                                     <g:link controller="subscription" action="show"
-                                            id="${sub._getCalculatedSuccessor()?.id}"
+                                            id="${sub._getCalculatedPreviousForSurvey()?.id}"
                                             class="ui button icon"><i class="icon yellow clipboard"></i></g:link>
                                 </g:if>
                             </td>
@@ -357,7 +369,7 @@ ${surveyInfo.name}
     </semui:form>
 
 
-    <g:form action="renewalSent" method="post" class="ui form"
+    <g:form action="workflowRenewalSent" method="post" class="ui form"
             params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID]">
 
         <div class="ui right floated compact segment">

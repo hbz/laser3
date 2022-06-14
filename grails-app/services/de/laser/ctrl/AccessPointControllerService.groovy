@@ -12,6 +12,9 @@ import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.dao.DataIntegrityViolationException
 
+/**
+ * This service is a container for the complex data manipulation methods of the {@link AccessPointController}
+ */
 @Transactional
 class AccessPointControllerService {
 
@@ -22,6 +25,11 @@ class AccessPointControllerService {
     static final int STATUS_OK = 0
     static final int STATUS_ERROR = 1
 
+    /**
+     * Adds the given IP range to the institution's access points after validating the input
+     * @param params the parameter map containing the input
+     * @return the status map: OK if the submit was successful, ERROR otherwise
+     */
     Map<String,Object> addIpRange(GrailsParameterMap params) {
         Map<String,Object> result = [:]
         OrgAccessPoint orgAccessPoint = OrgAccessPoint.get(params.id)
@@ -79,6 +87,12 @@ class AccessPointControllerService {
         else [result:result,status:STATUS_OK]
     }
 
+    /**
+     * Creates a new access point for the given institution with the given access method
+     * @param params the parameter map containing the input
+     * @param accessMethod the access method for the new access point
+     * @return OK if the creation was successful, ERROR otherwise
+     */
     Map<String,Object> createAccessPoint(GrailsParameterMap params, RefdataValue accessMethod) {
         Map<String,Object> result = [:]
         Locale locale = LocaleContextHolder.getLocale()
@@ -122,6 +136,11 @@ class AccessPointControllerService {
         }
     }
 
+    /**
+     * Deletes the given access point if no platforms nor subscriptions are linked to it
+     * @param params the parameter map containing the id to delete
+     * @return OK if the deletion was successful, ERROR otherwise
+     */
     Map<String,Object> delete(GrailsParameterMap params) {
         Map<String,Object> result = [:]
         Locale locale = LocaleContextHolder.getLocale()

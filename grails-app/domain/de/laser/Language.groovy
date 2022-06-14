@@ -6,6 +6,13 @@ import de.laser.interfaces.CalculatedLastUpdated
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
+/**
+ * A container class to retain language classifications of titles and packages.
+ * The structure is the same as in {@link DeweyDecimalClassification} just as the purpose is
+ * @see TitleInstancePackagePlatform
+ * @see Package
+ * @see DeweyDecimalClassification
+ */
 class Language implements CalculatedLastUpdated, Comparable {
 
     def cascadingUpdateService
@@ -44,6 +51,11 @@ class Language implements CalculatedLastUpdated, Comparable {
         lastUpdatedCascading  column: 'lang_last_updated_cascading'
     }
 
+    /**
+     * Compares two entries against their underlying reference value
+     * @param o the other entry to compare with
+     * @return the comparison result of the {@link RefdataValue}s
+     */
     @Override
     int compareTo(Object o) {
         Language lang2 = (Language) o
@@ -73,6 +85,11 @@ class Language implements CalculatedLastUpdated, Comparable {
         (lastUpdatedCascading > lastUpdated) ? lastUpdatedCascading : lastUpdated
     }
 
+    /**
+     * Constructor to set up a new language entry with the given config parameters
+     * @param configMap the {@link Map} containing the configuration parameters
+     * @return the new language instance or null on failure
+     */
     static Language construct(Map<String, Object> configMap) {
         if(configMap.tipp || configMap.pkg) {
             Language lang = new Language(language: configMap.language)

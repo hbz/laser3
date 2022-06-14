@@ -1,7 +1,7 @@
 <laser:serviceInjection/>
 <g:form id="delete_doc_form" url="[controller:"${controllerName}",action:'deleteDocuments']" method="post">
 
-    <table class="ui celled la-table table license-documents">
+    <table class="ui celled la-js-responsive-table la-table table license-documents">
         <thead>
         <tr>
             <%--<g:if test="${editable}"><th>${message(code:'default.select.label')}</th></g:if> : REMOVED BULK --%>
@@ -58,7 +58,9 @@
                                aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                 <i aria-hidden="true" class="write icon"></i>
                             </a>
-                            <g:link controller="${controllerName}" action="deleteDocuments" class="ui icon negative button la-modern-button"
+                            <g:link controller="${controllerName}" action="deleteDocuments" class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.notes", args: [docctx.owner.title])}"
+                                    data-confirm-term-how="delete"
                                     params='[instanceId:"${instance.id}", deleteId:"${docctx.id}", redirectAction:"${actionName}"]'
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">

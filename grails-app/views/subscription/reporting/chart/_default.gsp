@@ -55,7 +55,7 @@
                 },
                 itemStyle: {
                     color: function(params) {
-                        if (JSPC.helper.contains(['${BaseQuery.getMessage(BaseQuery.NO_DATA_LABEL)}'], params.name)) {
+                        if (JSPC.helper.contains(['${BaseQuery.getChartLabel(BaseQuery.NO_DATA_LABEL)}'], params.name)) {
                             return JSPC.app.reporting.helper.series._color.redInactive
                         } else {
                             return JSPC.app.reporting.helper.series._color.blue
@@ -66,3 +66,9 @@
         ]
     };
 </g:if>
+<g:elseif test="${data != null && data.isEmpty()}">
+    JSPC.app.reporting.current.chart.statusCode = 204
+</g:elseif>
+<g:else>
+    JSPC.app.reporting.current.chart.statusCode = 500
+</g:else>

@@ -1,9 +1,9 @@
-<%@ page import="de.laser.IssueEntitlement; de.laser.helper.RDStore; de.laser.ApiSource; de.laser.TitleInstancePackagePlatform;" %>
+<%@ page import="de.laser.IssueEntitlement; de.laser.helper.RDStore; de.laser.ApiSource; de.laser.TitleInstancePackagePlatform; de.laser.base.AbstractReport" %>
 <div class="sixteen wide column">
     <g:set var="counter" value="${offset + 1}"/>
 
 
-    <table class="ui sortable celled la-table table la-ignore-fixed la-bulk-header" id="surveyEntitlements">
+    <table class="ui sortable celled la-js-responsive-table la-table table la-ignore-fixed la-bulk-header" id="surveyEntitlements">
         <thead>
         <tr>
             <th>
@@ -24,7 +24,7 @@
         </thead>
         <tbody>
 
-        <g:each in="${stats}" var="stat">
+        <g:each in="${stats.findAll { AbstractReport rep -> rep.title != null }}" var="stat">
             <g:set var="tipp" value="${TitleInstancePackagePlatform.get(stat.title.id)}"/>
             <g:set var="ie" value="${IssueEntitlement.findByTippAndSubscriptionAndStatusAndAcceptStatus(stat.title, subscription, RDStore.TIPP_STATUS_CURRENT, RDStore.IE_ACCEPT_STATUS_FIXED)}"/>
             <g:set var="ieInNewSub"
@@ -62,7 +62,7 @@
                         </div>
                     </g:if>
 
-                    <g:if test="${previousSubscription && surveyService.titleContainedBySubscription(previousSubscription, tipp)?.acceptStatus == RDStore.IE_ACCEPT_STATUS_FIXED}">
+                    <g:if test="${!participantPerpetualAccessToTitle && previousSubscription && surveyService.titleContainedBySubscription(previousSubscription, tipp)?.acceptStatus == RDStore.IE_ACCEPT_STATUS_FIXED}">
                         <div class="la-inline-flexbox la-popup-tooltip la-delay" data-content="${message(code: 'renewEntitlementsWithSurvey.ie.existsInPreviousSubscription')}" data-position="left center" data-variation="tiny">
                             <i class="icon redo alternate orange"></i>
                         </div>

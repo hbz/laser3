@@ -4,6 +4,8 @@ import de.laser.IdentifierNamespace
 import de.laser.RefdataValue
 import de.laser.reporting.export.myInstitution.LicenseExport
 import de.laser.reporting.export.myInstitution.OrgExport
+import de.laser.reporting.export.myInstitution.PackageExport
+import de.laser.reporting.export.myInstitution.PlatformExport
 import de.laser.reporting.export.myInstitution.SubscriptionExport
 import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.export.base.BaseDetailsExport
@@ -25,12 +27,24 @@ class GlobalExportHelper extends BaseExportHelper {
         else if (tmpl == OrgExport.KEY) {
             return new OrgExport( token, selectedFields )
         }
+        else if (tmpl == PackageExport.KEY) {
+            return new PackageExport( token, selectedFields )
+        }
+        else if (tmpl == PlatformExport.KEY) {
+            return new PlatformExport( token, selectedFields )
+        }
         else if (tmpl == SubscriptionExport.KEY) {
             return new SubscriptionExport( token, selectedFields )
         }
     }
 
     // ----- Cache -----
+
+    static Map<String, Object> getMeta(String token) {
+
+        ReportingCache rCache = new ReportingCache( ReportingCache.CTX_GLOBAL, token )
+        rCache.readMeta()
+    }
 
     static Map<String, Object> getFilterCache(String token) {
 
@@ -95,8 +109,8 @@ class GlobalExportHelper extends BaseExportHelper {
     static List<String> getIncompleteQueryLabels(String token) {
 
         Map<String, Object> queryCache = getQueryCache( token )
-        String prefix = queryCache.query.split('-')[0]
-        Map<String, Object> cfg = BaseConfig.getCurrentConfigByPrefix( prefix )
+        //String prefix = queryCache.query.split('-')[0]
+        Map<String, Object> cfg = BaseConfig.getCurrentConfigByFilter( getMeta(token).filter )
         BaseQuery.getQueryLabels(cfg, queryCache.query as String) // TODO
     }
 
@@ -106,13 +120,13 @@ class GlobalExportHelper extends BaseExportHelper {
 
         if ( BaseDetailsExport.isFieldMultiple(fieldName) ) {
             //String label = BaseDetailsExport.CUSTOM_LABEL.get(fieldName)
-            String label = BaseDetailsExport.getMessage(fieldName)
+            String label = BaseDetailsExport.getExportLabel(fieldName)
 
             if (fieldName == 'x-identifier') {
                 List<Long> selList = export.getSelectedFields().get(fieldName) as List<Long>
                 label += (selList ? ': ' + selList.collect{it ->
                     IdentifierNamespace idns = IdentifierNamespace.get(it)
-                    idns.getI10n('name') ?: idns.ns + ' *'
+                    idns.getI10n('name') ?: GenericHelper.flagUnmatched( idns.ns )
                 }.join(', ') : '')
             }
             else if (fieldName == '@-org-accessPoint') {
@@ -124,7 +138,7 @@ class GlobalExportHelper extends BaseExportHelper {
                 label += (selList ? ': ' + selList.collect{it -> RefdataValue.get(it).getI10n('value') }.join(', ') : '') // TODO - export
             }
             else if (fieldName == '@-org-readerNumber') {
-                List selList = export.getSelectedFields().get(fieldName)
+                List selList = export.getSelectedFields().get(fieldName) as List
                 List semList = selList.findAll{ it.startsWith('sem-') }.collect{ RefdataValue.get( it.replace('sem-', '') ).getI10n('value') }
                 List ddList  = selList.findAll{ it.startsWith('dd-') }.collect{ it.replace('dd-', 'Stichtage ') }
                 label += (selList ? ': ' + (semList + ddList).join(', ') : '') // TODO - export
@@ -132,17 +146,15 @@ class GlobalExportHelper extends BaseExportHelper {
 
             return label
         }
-        else if (fieldName == 'x-property') {
-            return 'Merkmal: ' + getQueryCache( export.token ).labels.labels[2] // TODO - modal
+        else if (fieldName in ['x-property', 'x-memberSubscriptionProperty']) {
+            return BaseDetailsExport.getExportLabel('x-property') + ': ' + getQueryCache( export.token ).labels.labels[2] // TODO - modal
         }
-        else if (fieldName == 'x-memberSubscriptionProperty') {
-            return 'Merkmal: ' + getQueryCache( export.token ).labels.labels[2] // TODO - modal
-        }
-        else if (BaseDetailsExport.CUSTOM_FIELD_KEYS.contains(fieldName)) {
-            return BaseDetailsExport.getMessage(fieldName)
+        else if (fieldName in ['globalUID', 'x-provider'] || fieldName.startsWith('@')) {
+            return BaseDetailsExport.getExportLabel(fieldName)
         }
 
-        // --- adapter ---
+        // --- adapter - label from config ---
+        // println 'GlobalExportHelper.getFieldLabel() - adapter: ' + fieldName
 
         String cfg = getCachedConfigStrategy( export.token )
         Map<String, Object> objConfig = export.getCurrentConfig( export.KEY ).base

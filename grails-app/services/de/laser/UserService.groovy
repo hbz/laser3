@@ -12,6 +12,9 @@ import grails.web.mvc.FlashScope
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.validation.FieldError
 
+/**
+ * This service handles generic user-related matters
+ */
 @Transactional
 class UserService {
 
@@ -21,7 +24,11 @@ class UserService {
     def messageSource
     def grailsApplication
 
-    // called after every successful login
+    /**
+     * This method is called after every successful login and checks if mandatory settings have been made for the given user.
+     * If the settings are missing, they will be created to defaults which the user may configure afterwards
+     * @param user the user whose presets should be verified
+     */
     void initMandatorySettings(User user) {
         log.debug('initMandatorySettings for user #' + user.id)
 
@@ -49,6 +56,11 @@ class UserService {
         user.getSetting(UserSetting.KEYS.IS_NOTIFICATION_FOR_SYSTEM_MESSAGES, RDStore.YN_YES)
     }
 
+    /**
+     * Lists the users matching the given request parameters
+     * @param params the request parameter map
+     * @return a list of users, either globally or belonging to a given institution
+     */
     Set<User> getUserSet(Map params) {
         // only context org depending
         List baseQuery = ['select distinct u from User u']
@@ -76,6 +88,12 @@ class UserService {
         User.executeQuery(query, queryParams /*,params */)
     }
 
+    /**
+     * Inserts a new user account with the given parameters
+     * @param params the parameters specifying the account details
+     * @param flash the message container
+     * @return the new user object or the error messages (null) in case of failure
+     */
     User addNewUser(Map params, FlashScope flash) {
         Locale locale = LocaleContextHolder.getLocale()
         User user = new User(params)
@@ -122,6 +140,14 @@ class UserService {
         user
     }
 
+    /**
+     * Checks whether the arguments are set to link the given user to the given institution, gets the institution
+     * and formal role objects and hands the call to the {@link InstAdmService} to perform linking
+     * @param user the user to link
+     * @param orgId the institution ID to which the user should be linked
+     * @param formalRoleId the ID of the role to attribute to the given user
+     * @param flash the message container
+     */
     def addAffiliation(User user, orgId, formalRoleId, flash) {
         Org org = Org.get(orgId)
         Role formalRole = Role.get(formalRoleId)
@@ -131,6 +157,15 @@ class UserService {
         }
     }
 
+    /**
+     * Checks the user's permissions in the given institution
+     * @param user the user to check
+     * @param userRoleName the user's role (permission grant) in the institution to be checked
+     * @param globalRoleName the (eventual) global permission which may override local permissions
+     * @param mode AND: local affiliation is necessary even if global roles are granted, OR: global roles override missing local affiliation
+     * @param orgToCheck the institution to which affiliation should be checked
+     * @return true if the given permission is granted to the user in the given institution (or a missing one overridden by global roles), false otherwise
+     */
     boolean checkAffiliation(User user, String userRoleName, String globalRoleName, String mode, Org orgToCheck) {
 
         boolean check = false
@@ -183,6 +218,11 @@ class UserService {
         check
     }
 
+    /**
+     * This setup was used only for QA in order to create test accounts for the hbz employees. Is disused as everyone should start from scratch when using the system
+     * @param orgs the configuration {@link Map} containing the affiliation configurations to process
+     */
+    @Deprecated
     void setupAdminAccounts(Map<String,Org> orgs) {
         List adminUsers = grailsApplication.config.adminUsers
         List<String> customerTypes = ['konsorte','vollnutzer','konsortium']

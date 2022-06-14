@@ -6,6 +6,11 @@ import de.laser.helper.RDConstants
 import de.laser.annotations.RefdataAnnotation
 import groovy.util.logging.Slf4j
 
+/**
+ * An access method to a given {@link Platform}; the given access method may be restricted to a certain timespan. The access method itself is one value of the controlled list of access methods
+ * @see RDConstants#ACCESS_METHOD
+ * @see Platform
+ */
 @Slf4j
 class PlatformAccessMethod extends AbstractBase {
 

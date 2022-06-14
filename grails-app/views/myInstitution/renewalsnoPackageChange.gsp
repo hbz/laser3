@@ -33,7 +33,7 @@
         <hr />
         <g:if test="${entitlements}">
             ${message(code: 'myinst.renewalUpload.noupload.note', args: [institution.name])}<br />
-            <table class="ui celled la-table table">
+            <table class="ui celled la-js-responsive-table la-table table">
                 <tbody>
                 <input type="hidden" name="subscription.copy_docs" value="${permissionInfo?.sub_id}"/>
                 <input type="hidden" name="subscription.name" value="${permissionInfo?.sub_name}"/>
@@ -70,7 +70,7 @@
                 </g:if>
             </div>
             <br /><hr />
-            <table class="ui celled la-table table">
+            <table class="ui celled la-js-responsive-table la-table table">
                 <thead>
                 <tr>
                     <th></th>

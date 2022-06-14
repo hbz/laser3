@@ -1,5 +1,5 @@
 
-<table class="ui table la-table compact">
+<table class="ui table la-js-responsive-table la-table compact">
     <thead>
         <tr>
             <th>Class.Field</th>

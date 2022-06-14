@@ -1,13 +1,13 @@
 <%@ page import="de.laser.reporting.report.local.SubscriptionReport" %>
 <div class="ui segment form">
 
-    <div class="fields <laser:numberToString number="${cfgQueryList2.size() + 2}" min="2"/>">
-        <g:each in="${cfgQueryList2}" var="cfgQuery" status="qci">
-            <g:each in="${cfgQuery}" var="field">
+    <div class="fields <laser:numberToString number="${cfgTimelineList.size() + 2}" min="2"/>">
+        <g:each in="${cfgTimelineList}" var="cfgTimeline" status="ti">
+            <g:each in="${cfgTimeline}" var="field">
                 <div class="field">
-                    <label for="query-chooser-2-${qci}">${SubscriptionReport.getMessage(field.key)}</label>
+                    <label for="query-chooser-2-${ti}">${SubscriptionReport.getMessage('timeline')}</label>
                     <g:select name="query-chooser-2"
-                              id="query-chooser-2-${qci}"
+                              id="query-chooser-2-${ti}"
                               from="${field.value}"
                               optionKey="${{it.key}}"
                               optionValue="${{SubscriptionReport.getMessage('timeline.' + it.key)}}"
@@ -17,15 +17,15 @@
             </g:each>
         </g:each>
 
-        <g:each in="${cfgQueryList}" var="cfgQuery" status="qci">
+        <g:each in="${cfgQueryList}" var="cfgQuery" status="qi">
             <g:each in="${cfgQuery}" var="field">
                 <div class="field">
-                    <label for="query-chooser-1-${qci}">${SubscriptionReport.getMessage(field.key)}</label>
+                    <label for="query-chooser-1-${qi}">${SubscriptionReport.getMessage(field.key)}</label>
                     <g:select name="query-chooser-1"
-                              id="query-chooser-1-${qci}"
+                              id="query-chooser-1-${qi}"
                               from="${field.value}"
-                              optionKey="${{it}}"
-                              optionValue="${{SubscriptionReport.getMessage('query.' + it)}}"
+                              optionKey="${{it.key}}"
+                              optionValue="${{SubscriptionReport.getQueryLabel(it.key, it.value)}}"
                               class="ui selection dropdown la-not-clearable"
                               noSelection="${['': message(code: 'default.select.choose.label')]}" />
                 </div>

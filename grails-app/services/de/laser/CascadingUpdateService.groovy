@@ -4,9 +4,18 @@ import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.titles.TitleInstance
 import grails.gorm.transactions.Transactional
 
+/**
+ * This service updates timestamps of depending objects if an object update has been triggered. This is essential for
+ * API output since harvesters pay attention on the last update of an superordinate object - which is then updated, too
+ */
 //@Transactional needed to be deactivated, cf. https://stackoverflow.com/a/57656283 - two transactional annotated methods may enter in conflict
 class CascadingUpdateService {
 
+    /**
+     * Updates all identifier time stamps belonging to the updated namespace and the namespace timestamp itself
+     * @param obj the triggering identifier namespace
+     * @param luc the timestamp of update
+     */
     void update(IdentifierNamespace obj, Date luc) {
         log(obj, luc)
 
@@ -17,6 +26,11 @@ class CascadingUpdateService {
         Identifier.findAllByNs(obj).each{ i -> update(i, luc) }
     }
 
+    /**
+     * Updates the superordinate timestamp of the given identifier and the identifier timestamp itself
+     * @param obj the triggering identifier
+     * @param luc the timestamp of update
+     */
     void update(Identifier obj, Date luc) {
         log(obj, luc)
 
@@ -33,6 +47,11 @@ class CascadingUpdateService {
         //        tipp:   TitleInstancePackagePlatform
     }
 
+    /**
+     * Updates the given Dewey decimal classification and the superordinate package timestamps
+     * @param obj the updated Dewey decimal classification
+     * @param luc the timestamp of update
+     */
     void update(DeweyDecimalClassification obj, Date luc) {
         log(obj, luc)
 
@@ -46,6 +65,11 @@ class CascadingUpdateService {
         //        tipp:   TitleInstancePackagePlatform
     }
 
+    /**
+     * Updates the given language record and the superordinate package timestamps
+     * @param obj the updated language
+     * @param luc the timestamp of update
+     */
     void update(Language obj, Date luc) {
         log(obj, luc)
 
@@ -59,6 +83,11 @@ class CascadingUpdateService {
         //        tipp:   TitleInstancePackagePlatform
     }
 
+    /**
+     * Updates the given alternative name record and the superordinate object's timestamps
+     * @param obj the updated alternative name
+     * @param luc the timestamp of update
+     */
     void update(AlternativeName obj, Date luc) {
         log(obj, luc)
 
@@ -72,6 +101,11 @@ class CascadingUpdateService {
         if (obj.org)      { update(obj.org, luc) }
     }
 
+    /**
+     * Updates the given property and the owner object timestamps
+     * @param obj the updated property
+     * @param luc the timestamp of update
+     */
     void update(AbstractPropertyWithCalculatedLastUpdated obj, Date luc) {
         log(obj, luc)
 
@@ -82,6 +116,11 @@ class CascadingUpdateService {
         if (obj.owner) { update(obj.owner, luc) }
     }
 
+    /**
+     * Updates the given license timestamp
+     * @param obj the updated license
+     * @param luc the timestamp of update
+     */
     void update(License obj, Date luc) {
         log(obj, luc)
 
@@ -90,6 +129,11 @@ class CascadingUpdateService {
         ])
     }
 
+    /**
+     * Updates the given organisation timestamp
+     * @param obj the updated organisation
+     * @param luc the timestamp of update
+     */
     void update(Org obj, Date luc) {
         log(obj, luc)
 
@@ -98,6 +142,11 @@ class CascadingUpdateService {
         ])
     }
 
+    /**
+     * Updates the given package timestamp
+     * @param obj the updated package
+     * @param luc the timestamp of update
+     */
     void update(Package obj, Date luc) {
         log(obj, luc)
 
@@ -106,6 +155,11 @@ class CascadingUpdateService {
         ])
     }
 
+    /**
+     * Updates the given person contact timestamp
+     * @param obj the updated person contact
+     * @param luc the timestamp of update
+     */
     void update(Person obj, Date luc) {
         log(obj, luc)
 
@@ -114,6 +168,11 @@ class CascadingUpdateService {
         ])
     }
 
+    /**
+     * Updates the given platform timestamp
+     * @param obj the updated platform
+     * @param luc the timestamp of update
+     */
     void update(Platform obj, Date luc) {
         log(obj, luc)
 
@@ -122,6 +181,11 @@ class CascadingUpdateService {
         ])
     }
 
+    /**
+     * Updates the given subscription timestamp
+     * @param obj the updated subscription
+     * @param luc the timestamp of update
+     */
     void update(Subscription obj, Date luc) {
         log(obj, luc)
 
@@ -130,6 +194,11 @@ class CascadingUpdateService {
         ])
     }
 
+    /**
+     * Updates the given license survey property
+     * @param obj the updated survey property
+     * @param luc the timestamp of update
+     */
     void update(SurveyResult obj, Date luc) {
         log(obj, luc)
 
@@ -145,6 +214,11 @@ class CascadingUpdateService {
         ])
     }*/
 
+    /**
+     * Logs the timestamp update
+     * @param obj the object which has been updated
+     * @param luc the timestamp of update
+     */
     private void log(Object obj, Date luc) {
         log.debug ('cascading update for ' + obj.class.simpleName + ':' + obj.id + ' -> [' + obj.lastUpdatedCascading + '] set to [' + luc + ']')
     }

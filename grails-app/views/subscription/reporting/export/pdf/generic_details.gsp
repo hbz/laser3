@@ -5,6 +5,10 @@
     <title>${title}</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <g:render template="/templates/reporting/export/pdfStyle" />
+
+    <g:if test="${options.pageFormat}">
+        <style type="text/css"> th, td { word-break: break-all; } </style>
+    </g:if>
 </head>
 <body>
     <p><span class="warningTMP">DEMO : Funktionalität in Entwicklung</span></p>
@@ -22,7 +26,9 @@
     <table>
         <thead>
             <tr>
-                <th></th>
+                <g:if test="${options.useLineNumbers}">
+                    <th></th>
+                </g:if>
                 <g:each in="${header}" var="cell">
                     <th>${cell[0]}</th>
                 </g:each>
@@ -31,11 +37,33 @@
         <tbody>
             <g:each in="${content}" var="row" status="i">
                 <tr <% if(i%2==0) { print 'class="odd"' } else { print 'class="even"' }%>>
-                    <td>${i+1}.</td>
+                    <g:if test="${options.useLineNumbers}">
+                        <td>${i+1}.</td>
+                    </g:if>
                     <g:each in="${row}" var="cell" status="j">
                         <td <% if(j%2==0) { print 'class="odd"' } else { print 'class="even"' }%>>
                             <g:each in="${cell}" var="cp">
-                                ${cp}<br/>
+                                <g:if test="${cp.startsWith('http://') || cp.startsWith('https://')}">
+                                    <g:if test="${cp.indexOf('@') > 0}">
+                                        <g:if test="${options.useHyperlinks}">
+                                            <a href="${cp.split('@')[0]}">${cp.split('@')[1]}</a><br/>%{-- masking globalUID and gokbId --}%
+                                        </g:if>
+                                        <g:else>
+                                            ${cp.split('@')[0]}<br/>
+                                        </g:else>
+                                    </g:if>
+                                    <g:else>
+                                        <g:if test="${options.useHyperlinks}">
+                                            <a href="${cp}">${cp}</a><br/>
+                                        </g:if>
+                                        <g:else>
+                                            ${cp}<br/>
+                                        </g:else>
+                                    </g:else>
+                                </g:if>
+                                <g:else>
+                                    ${cp}<br/>
+                                </g:else>
                             </g:each>
                         </td>
                     </g:each>
@@ -43,6 +71,7 @@
             </g:each>
         </tbody>
     </table>
+
 </body>
 </html>
 

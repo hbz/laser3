@@ -447,14 +447,51 @@
         406:
           $ref: "#/components/responses/notAcceptable"
 
+  /ezb/license/illIndicators:
+
+    get:
+      tags:
+        - "Special: EZB"
+      summary: Retrieving the interlibrary loan (ILL) indicators for a given license
+      description: >
+        Supported are queries by following identifiers: *globalUID* and *ns:identifier*. *Ns:identifier* value has to be defined like this: _ezb_anchor:acs_
+
+      parameters:
+        - $ref: "#/components/parameters/q"
+        - $ref: "#/components/parameters/v"
+        - $ref: "#/components/parameters/authorization"
+
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PropertySet"
+        400:
+          $ref: "#/components/responses/badRequest"
+        401:
+          $ref: "#/components/responses/notAuthorized"
+        403:
+          $ref: "#/components/responses/forbidden"
+        404:
+          description: Valid request, but license not found
+        406:
+          $ref: "#/components/responses/notAcceptable"
+        412:
+          $ref: "#/components/responses/preconditionFailed"
+
   /ezb/subscription:
 
     get:
       tags:
-        - Datamanager
+        - "Special: EZB"
       summary: Retrieving a single subscription with more information
       description: >
-        Retrieves a list of the given subscription's holding according to the KBART standard, enriched by columns used in LAS:eR
+        Retrieves a list of the given subscription's holding according to the KBART standard (<a href="https://groups.niso.org/higherlogic/ws/public/download/16900/RP-9-2014_KBART.pdf">see here</a>), enriched by columns used in LAS:eR.
+        Although the structure suggests JSON, the response is a tabulator-separated table in plain-text format (TSV, MIME-type text/tab-separated-values). Order of the fields (= columns) is as specified in KBART reference linked above;
+        KBART-standard defined columns go until "access_type". Columns listed after "access_type" are LAS:eR-proprietary fields and definitions come from the internal definition (<a href="https://dienst-wiki.hbz-nrw.de/display/KOE/KBART+to+LAS%3AeR">see here</a>).
+        The columns appearing after 'localprice_usd' are further identifier columns and varying, depending on the underlying namespaces to which title identifiers are available. Please refer to the we:kb for a complete list of possible namespaces.
 
       parameters:
         - $ref: "#/components/parameters/q"
@@ -467,7 +504,7 @@
           content:
             text/tab-separated-values:
               schema:
-                $ref: "#/components/schemas/PlaceholderObject"
+                $ref: "#/components/schemas/Subscription_KBART"
         400:
           $ref: "#/components/responses/badRequest"
         401:
@@ -479,7 +516,7 @@
 
     get:
       tags:
-        - Datamanager
+        - "Special: EZB"
       summary: Retrieving a list of subscriptions eligible for EZB yellow tagging
       description: >
         Retrieving a list of subscriptions of organisations that have granted the data exchange. An optional parameter changedFrom may be submitted
@@ -507,7 +544,7 @@
 
     get:
       tags:
-        - Datamanager
+        - "Special: OAMonitor"
       summary: Retrieving a list of appropriate organisations
       description: >
         Retrieving a list of organisations that have granted the data exchange
@@ -535,7 +572,7 @@
 
     get:
       tags:
-        - Datamanager
+        - "Special: OAMonitor"
       summary: Retrieving a single organisation with more information
       description: >
         **EXPERIMENTAL**
@@ -569,7 +606,7 @@
 
     get:
       tags:
-        - Datamanager
+        - "Special: OAMonitor"
       summary: Retrieving a single subscription with more information
       description: >
         **EXPERIMENTAL**
@@ -600,7 +637,7 @@
 
     get:
       tags:
-        - Datamanager
+        - "Special: Nationaler Statistikserver"
       summary: Retrieving a list of appropriate packages
       description: >
         Retrieving a list of packages related to organisations that have granted the data exchange
@@ -629,7 +666,7 @@
 
     get:
       tags:
-        - Datamanager
+        - "Special: Nationaler Statistikserver"
       summary: Retrieving a single package with more information
       description: >
         **EXPERIMENTAL**

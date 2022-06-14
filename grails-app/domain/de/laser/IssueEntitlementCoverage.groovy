@@ -3,6 +3,10 @@ package de.laser
 
 import de.laser.base.AbstractCoverage
 
+/**
+ * The coverage record for a local journal holding entry. The fields are the same as in {@link TIPPCoverage} as all of them may differ from the global level
+ * (see {@link IssueEntitlement} vs. {@link TitleInstancePackagePlatform})
+ */
 class IssueEntitlementCoverage extends AbstractCoverage {
 
     Date dateCreated

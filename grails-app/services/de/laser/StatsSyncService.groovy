@@ -36,16 +36,23 @@ import java.time.format.DateTimeFormatter
 import static java.time.temporal.TemporalAdjusters.firstDayOfYear
 import java.util.concurrent.ExecutorService
 
+/**
+ * This service manages the synchronisation of usage statistics, both for the Nationaler Statistikserver and for the
+ * internal statistic component
+ */
 @Transactional
 class StatsSyncService {
 
     static final THREAD_POOL_SIZE = 8
     static final SYNC_STATS_FROM = '2012-01-01'
+    static final MONTH_DUE_DATE = 28 //default is 28, do not commit other days!
+    static final YEARLY_MONTH = Calendar.DECEMBER
+    static final HALF_YEARLY_MONTHS = [Calendar.JUNE, YEARLY_MONTH]
+    static final QUARTERLY_MONTHS = HALF_YEARLY_MONTHS+[Calendar.MARCH, Calendar.SEPTEMBER]
 
     ExecutorService executorService
     def factService
     def globalService
-     //def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
     def queryParams = [:]
     def errors = []
     Map<String,List> availableReportCache = [:]
@@ -64,6 +71,9 @@ class StatsSyncService {
     static boolean running = false
     static transactional = false
 
+    /**
+     * Initialises synchronisation process
+     */
     def initSync() {
         log.debug("StatsSyncService::doSync ${this.hashCode()}")
         if (running) {
@@ -84,6 +94,10 @@ class StatsSyncService {
         availableReportCache = [:]
     }
 
+    /**
+     * Generates a query for the title instances
+     * @return the title instance query
+     */
     private String getTitleInstancesForUsageQuery() {
         // Distinct list of titles ids, the platform, subscribing organisation and the zdbid
         //TODO change from string comparison to ID comparison
@@ -107,6 +121,10 @@ class StatsSyncService {
         return hql
     }
 
+    /**
+     * Adds the platform and reporting institution IDs to the query parameter map
+     * @param params the request parameter map
+     */
     void addFilters(params) {
         queryParams = [:]
         if (params.supplier != 'null'){
@@ -117,11 +135,19 @@ class StatsSyncService {
         }
     }
 
+    /**
+     * Starts the Nationaler Statistikserver synchronisation process and puts the process on a new thread
+     */
     void doSync() {
         initSync()
         executorService.execute({ internalDoSync() })
     }
 
+    /**
+     * Starts the internal statistics synchronisation process, i.e. loading usage data directly from the providers
+     * and puts the process on a new thread
+     * @param incremental should only new data being loaded or a full data reload done?
+     */
     void doFetch(boolean incremental) {
         log.debug("fetching data from providers started")
         if (running) {
@@ -132,6 +158,10 @@ class StatsSyncService {
         executorService.execute({ internalDoFetch(incremental) })
     }
 
+    /**
+     * Nationaler Statistikserver
+     * Initialises the multithreading process performing the data load
+     */
     void internalDoSync() {
         try {
             log.debug("create thread pool")
@@ -166,18 +196,70 @@ class StatsSyncService {
         }
     }
 
+    /**
+     * Internal
+     * Performs the loading of the SUSHI sources from the we:kb instance and loads the data from the SUSHI endpoints defined there.
+     * Both COUNTER 4 and COUNTER 5 are being processed here
+     * @param incremental should only newest data being fetched or a full data reload done?
+     */
     void internalDoFetch(boolean incremental) {
         //List<Counter4ApiSource> c4SushiSources = Counter4ApiSource.executeQuery("select c4as from Counter4ApiSource c4as where not exists (select c5as.id from Counter5ApiSource c5as where c5as.provider = c4as.provider and c5as.platform = c4as.platform)")//[]
         //List<Counter5ApiSource> c5SushiSources = Counter5ApiSource.findAll()
-            ApiSource apiSource = ApiSource.findByActive(true)
-            List<List> c4SushiSources = [], c5SushiSources = []
-            //process each platform with a SUSHI API
+        ApiSource apiSource = ApiSource.findByActive(true)
+        List<List> c4SushiSources = [], c5SushiSources = []
+        //process each platform with a SUSHI API
+        try {
             HTTPBuilder http = new HTTPBuilder(apiSource.baseUrl+apiSource.fixToken+'/sushiSources')
             http.request(Method.GET, ContentType.JSON) { req ->
                 response.success = { resp, json ->
                     if(resp.status == 200) {
-                        c4SushiSources.addAll(json.counter4ApiSources)
-                        c5SushiSources.addAll(json.counter5ApiSources)
+                        if(incremental) {
+                            Calendar now = GregorianCalendar.getInstance()
+                            json.counter4ApiSources.each { c4as ->
+                                boolean add = false
+                                switch(c4as[2]) {
+                                    case 'Daily': add = true
+                                        break
+                                    case 'Weekly': add = now.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY
+                                        break
+                                    case 'Monthly': add = now.get(Calendar.DAY_OF_MONTH) == MONTH_DUE_DATE
+                                        break
+                                    case 'Quarterly': add = now.get(Calendar.DAY_OF_MONTH) == MONTH_DUE_DATE && now.get(Calendar.MONTH) in QUARTERLY_MONTHS
+                                        break
+                                    case 'Half-Yearly': add = now.get(Calendar.DAY_OF_MONTH) == MONTH_DUE_DATE && now.get(Calendar.MONTH) in HALF_YEARLY_MONTHS
+                                        break
+                                    case 'Yearly': add = now.get(Calendar.DAY_OF_MONTH) == MONTH_DUE_DATE && now.get(Calendar.MONTH) == YEARLY_MONTH
+                                        break
+                                }
+                                if(add) {
+                                    c4SushiSources.add(c4as)
+                                }
+                            }
+                            json.counter5ApiSources.each { c5as ->
+                                boolean add = false
+                                switch(c5as[2]) {
+                                    case 'Daily': add = true
+                                        break
+                                    case 'Weekly': add = now.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY
+                                        break
+                                    case 'Monthly': add = now.get(Calendar.DAY_OF_MONTH) == MONTH_DUE_DATE
+                                        break
+                                    case 'Quarterly': add = now.get(Calendar.DAY_OF_MONTH) == MONTH_DUE_DATE && now.get(Calendar.MONTH) in QUARTERLY_MONTHS
+                                        break
+                                    case 'Half-Yearly': add = now.get(Calendar.DAY_OF_MONTH) == MONTH_DUE_DATE && now.get(Calendar.MONTH) in HALF_YEARLY_MONTHS
+                                        break
+                                    case 'Yearly': add = now.get(Calendar.DAY_OF_MONTH) == MONTH_DUE_DATE && now.get(Calendar.MONTH) == YEARLY_MONTH
+                                        break
+                                }
+                                if(add) {
+                                    c5SushiSources.add(c5as)
+                                }
+                            }
+                        }
+                        else {
+                            c4SushiSources.addAll(json.counter4ApiSources)
+                            c5SushiSources.addAll(json.counter5ApiSources)
+                        }
                     }
                     else {
                         log.error("server response: ${resp.statusLine}")
@@ -188,12 +270,15 @@ class StatsSyncService {
                 }
             }
             http.shutdown()
-            Set<Long> namespaces = [IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISSN, TitleInstancePackagePlatform.class.name).id, IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISBN, TitleInstancePackagePlatform.class.name).id, IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.DOI, TitleInstancePackagePlatform.class.name).id]
-            def dataSource = Holders.grailsApplication.mainContext.getBean('dataSource')
+        }
+        catch (Exception ignored) {
+            log.error("we:kb unavailable ... postpone next run!")
+        }
+        Set<Long> namespaces = [IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISSN, TitleInstancePackagePlatform.class.name).id, IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISSN, TitleInstancePackagePlatform.class.name).id, IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISBN, TitleInstancePackagePlatform.class.name).id, IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.PISBN, TitleInstancePackagePlatform.class.name).id, IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.DOI, TitleInstancePackagePlatform.class.name).id]
             //c4SushiSources.each { Counter4ApiSource c4as ->
             c4SushiSources.each { List c4as ->
-                /*Set titles = TitleInstancePackagePlatform.executeQuery('select new map(id.value as identifier, tipp.id as title) from Identifier id  join id.tipp tipp where tipp.platform = :plat and tipp.status != :deleted',
-                        [plat: c4as.platform, deleted: RDStore.TIPP_STATUS_DELETED])*/
+                /*Set titles = TitleInstancePackagePlatform.executeQuery('select new map(id.value as identifier, tipp.id as title) from Identifier id  join id.tipp tipp where tipp.platform = :plat and tipp.status != :removed',
+                        [plat: c4as.platform, removed: RDStore.TIPP_STATUS_REMOVED])*/
                 Platform c4asPlatform = Platform.findByGokbId(c4as[0] as String)
                 if(c4as[1] != null) {
                     String statsUrl = c4as[1] //.endsWith('/') ? c4as[1] : c4as[1]+'/' does not work with every platform!
@@ -201,13 +286,13 @@ class StatsSyncService {
                     if(keyPairs) {
                         GParsPool.withPool(THREAD_POOL_SIZE) { pool ->
                             keyPairs.eachWithIndexParallel { Map keyPair, int i ->
-                                Sql sql = new Sql(dataSource)
+                                Sql sql = GlobalService.obtainSqlConnection()
                                 //TitleInstancePackagePlatform.withNewSession {
                                 sql.withTransaction {
                                     List laserStatsCursor = sql.rows("select lsc_latest_from_date, lsc_latest_to_date, lsc_report_id from laser_stats_cursor where lsc_platform_fk = :platform and lsc_customer_fk = :customer", [platform: c4asPlatform.id, customer: keyPair.customerId])
                                     boolean onlyNewest = laserStatsCursor ? incremental : false
-                                    //List<GroovyRowResult> titles = sql.rows("select id_value as identifier, id_tipp_fk as title from identifier join title_instance_package_platform on id_tipp_fk = tipp_id where tipp_plat_fk = :plat and exists (select or_id from org_role join issue_entitlement on or_sub_fk = ie_subscription_fk where ie_tipp_fk = tipp_id and or_org_fk = :customer and ie_status_rv_fk != :deleted)",
-                                    //        [plat: c4as.platform.id, customer: keyPair.customer.id, deleted: RDStore.TIPP_STATUS_DELETED.id]
+                                    //List<GroovyRowResult> titles = sql.rows("select id_value as identifier, id_tipp_fk as title from identifier join title_instance_package_platform on id_tipp_fk = tipp_id where tipp_plat_fk = :plat and exists (select or_id from org_role join issue_entitlement on or_sub_fk = ie_subscription_fk where ie_tipp_fk = tipp_id and or_org_fk = :customer and ie_status_rv_fk != :removed)",
+                                    //        [plat: c4as.platform.id, customer: keyPair.customer.id, removed: RDStore.TIPP_STATUS_REMOVED.id]
                                     Map<String, Object> calendarConfig = initCalendarConfig(onlyNewest)
                                     //DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
                                     Calendar startTime = GregorianCalendar.getInstance(), currentYearEnd = GregorianCalendar.getInstance()
@@ -310,7 +395,7 @@ class StatsSyncService {
                     if(keyPairs) {
                         GParsPool.withPool(THREAD_POOL_SIZE) { pool ->
                             keyPairs.eachWithIndexParallel { Map<String, Object> keyPair, int i ->
-                                Sql sql = new Sql(dataSource)
+                                Sql sql = GlobalService.obtainSqlConnection()
                                 sql.withTransaction {
                                     List laserStatsCursor = sql.rows("select lsc_latest_from_date, lsc_latest_to_date,lsc_report_id from laser_stats_cursor where lsc_platform_fk = :platform and lsc_customer_fk = :customer", [platform: c5asPlatform.id, customer: keyPair.customerId])
                                     boolean onlyNewest = laserStatsCursor ? incremental : false
@@ -426,11 +511,32 @@ class StatsSyncService {
             log.debug("fetch stats finished")
     }
 
+    /**
+     * Internal
+     * Marks an error which occurred during a sync run as {@link SystemEvent} for that administrators get notified
+     * @param sql the SQL connection to use
+     * @param result the request response containing details of the error circumstances
+     */
     void notifyError(Sql sql, Map result) {
         Map<String, Object> event = SystemEvent.DEFINED_EVENTS.STATS_SYNC_JOB_WARNING
         sql.executeInsert('insert into system_event (se_category, se_created, se_payload, se_relevance, se_token) values (:cat, now(), :error, :rel, :token)', [cat: event.category.value, error: new JSON(result).toString(false), rel: event.relevance.value, token: 'STATS_SYNC_JOB_WARNING'])
     }
 
+    /**
+     * Internal
+     * Executes a request for statistics data from a provider's server according to COUNTER 4 and enters the statistics data read off from the given server.
+     * The usage data is then being inserted for each title context
+     * @param sql the SQL connection to use for data flow
+     * @param statsUrl the URL from where usage should be retrieved
+     * @param reportID the report which should be fetched
+     * @param now the current time
+     * @param startTime the start of reporting time span
+     * @param endTime the end of reporting time span
+     * @param c4asPlatform the platform for which usage data should be retrieved
+     * @param keyPair the customer number-requestor ID/API key pair used to authentify the customer
+     * @param namespaces the identifier namespaces within which a matching identifier may be contained
+     * @return a map containing the request status - success or error on failure
+     */
     Map<String, Object> performCounter4Request(Sql sql, String statsUrl, String reportID, Calendar now, Calendar startTime, Calendar endTime, Platform c4asPlatform, Map keyPair, Set<Long> namespaces) {
         StreamingMarkupBuilder requestBuilder = new StreamingMarkupBuilder()
         def requestBody = requestBuilder.bind {
@@ -563,7 +669,7 @@ class StatsSyncService {
                                 identifiers << identifier.text()
                             }
                             int ctr = 0
-                            List<GroovyRowResult> rows = sql.rows("select tipp_id from title_instance_package_platform join identifier on id_tipp_fk = tipp_id where id_value = any(:identifiers) and id_ns_fk = any(:namespaces) and tipp_plat_fk = :platform and tipp_status_rv_fk != :deleted", [identifiers: sql.connection.createArrayOf('varchar', identifiers as Object[]), namespaces: sql.connection.createArrayOf('bigint', namespaces as Object[]), platform: c4asPlatform.id, deleted: RDStore.TIPP_STATUS_DELETED.id])
+                            List<GroovyRowResult> rows = sql.rows("select tipp_id from title_instance_package_platform join identifier on id_tipp_fk = tipp_id where id_value = any(:identifiers) and id_ns_fk = any(:namespaces) and tipp_plat_fk = :platform and tipp_status_rv_fk != :removed", [identifiers: sql.connection.createArrayOf('varchar', identifiers as Object[]), namespaces: sql.connection.createArrayOf('bigint', namespaces as Object[]), platform: c4asPlatform.id, removed: RDStore.TIPP_STATUS_REMOVED.id])
                             //Map row = titles.find { rowMap -> rowMap.identifier == reportItem.'ns2:ItemIdentifier'.'ns2:Value'.text() }
                             //GPathResult reportItem = reportItems.findAll { reportItem -> identifier == reportItem.'ns2:ItemIdentifier'.'ns2:Value'.text() }
                             if(rows) {
@@ -626,6 +732,18 @@ class StatsSyncService {
         else [error: true]
     }
 
+    /**
+     * Internal
+     * Executes a request for statistics data from a provider's server according to COUNTER 5 and enters the statistics data read off from the given server.
+     * The usage data is then being inserted for each title context
+     * @param sql the SQL connection to use for data flow
+     * @param url the URL from where usage should be retrieved
+     * @param reportId the report which should be fetched
+     * @param c5asPlatform the platform for which usage data should be retrieved
+     * @param keyPair the customer number-requestor ID/API key pair used to authentify the customer
+     * @param namespaces the identifier namespaces within which a matching identifier may be contained
+     * @return a map containing the request status - success or error on failure
+     */
     Map<String, Object> performCounter5Request(Sql sql, String url, String reportId, Platform c5asPlatform, Map keyPair, Set<Long> namespaces) {
         Map<String, Object> report = fetchJSONData(url)
         if(report.header) {
@@ -691,10 +809,10 @@ class StatsSyncService {
                     log.debug("${Thread.currentThread().getName()} reports success: ${resultCount.length}")
                 }
                 else {
-                    int[] resultCount = sql.withBatch( "insert into counter5report (c5r_version, c5r_title_fk, c5r_publisher, c5r_platform_fk, c5r_report_institution_fk, c5r_report_type, c5r_metric_type, c5r_report_from, c5r_report_to, c5r_report_count) " +
-                            "values (:version, :title, :publisher, :platform, :reportInstitution, :reportType, :metricType, :reportFrom, :reportTo, :reportCount) " +
+                    int[] resultCount = sql.withBatch( "insert into counter5report (c5r_version, c5r_title_fk, c5r_publisher, c5r_platform_fk, c5r_report_institution_fk, c5r_report_type, c5r_metric_type, c5r_access_type, c5r_access_method, c5r_report_from, c5r_report_to, c5r_report_count) " +
+                            "values (:version, :title, :publisher, :platform, :reportInstitution, :reportType, :metricType, :accessType, :accessMethod, :reportFrom, :reportTo, :reportCount) " +
                             "on conflict on constraint unique_counter_5_report do " +
-                            "update set c5r_report_count = :reportCount") { stmt ->
+                            "update set c5r_report_count = :reportCount, c5r_access_type = :accessType, c5r_access_method = :accessMethod") { stmt ->
                         int t = 0
                         report.items.each { Map reportItem ->
                             int ctr = 0
@@ -708,7 +826,7 @@ class StatsSyncService {
                                    issn = reportItem["Item_ID"].find { idData -> idData["Type"] == "ISSN" }?.Value
                              */
                             //Set<TitleInstancePackagePlatform> titles = TitleInstancePackagePlatform.executeQuery('select tipp from Identifier id join id.tipp tipp where ((id.value = :doi and id.ns.ns = :doiNs) or (id.value = :isbn and id.ns.ns = :isbnNs) or (id.value = :issn and id.ns.ns = :issnNs)) and tipp.platform = :plat and exists (select ie.id from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo where oo.org = :customer and ie.tipp = tipp)',[doi: doi, doiNs: IdentifierNamespace.DOI, isbn: isbn, isbnNs: IdentifierNamespace.ISBN, issn: issn, issnNs: IdentifierNamespace.EISSN, plat: c5as.platform, customer: keyPair.customer])
-                            List<GroovyRowResult> rows = sql.rows("select tipp_id from title_instance_package_platform join identifier on id_tipp_fk = tipp_id where id_value = any(:identifiers) and id_ns_fk = any(:namespaces) and tipp_plat_fk = :platform and tipp_status_rv_fk != :deleted", [identifiers: sql.connection.createArrayOf('varchar', identifiers as Object[]), namespaces: sql.connection.createArrayOf('bigint', namespaces as Object[]), platform: c5asPlatform.id, deleted: RDStore.TIPP_STATUS_DELETED.id])
+                            List<GroovyRowResult> rows = sql.rows("select tipp_id from title_instance_package_platform join identifier on id_tipp_fk = tipp_id where id_value = any(:identifiers) and id_ns_fk = any(:namespaces) and tipp_plat_fk = :platform and tipp_status_rv_fk != :removed", [identifiers: sql.connection.createArrayOf('varchar', identifiers as Object[]), namespaces: sql.connection.createArrayOf('bigint', namespaces as Object[]), platform: c5asPlatform.id, removed: RDStore.TIPP_STATUS_REMOVED.id])
                             List<Map> performances = reportItem.Performance as List<Map>
                             if(rows) {
                                 //GroovyRowResult row = rows[0] //this is necessary because the same title may be available in different packages and we do not want duplicates! ERROR! See COUNTER 4 - the package context is too important; I must save the usage data for each context
@@ -725,12 +843,8 @@ class StatsSyncService {
                                             configMap.publisher = reportItem.Publisher
                                             configMap.reportFrom = new Timestamp(DateUtils.parseDateGeneric(performance.Period.Begin_Date).getTime())
                                             configMap.reportTo = new Timestamp(DateUtils.parseDateGeneric(performance.Period.End_Date).getTime())
-                                            configMap.accessType = report.header.Report_Filters.find{
-                                                filterData -> filterData["Name"] == "Access_Type" }
-                                                    ?.Value
-                                            configMap.accessMethod = report.header.Report_Filters.find{
-                                                filterData -> filterData["Name"] == "Access_Method" }
-                                                    ?.Value
+                                            configMap.accessType = reportItem.Access_Type
+                                            configMap.accessMethod = reportItem.Access_Method
                                             configMap.metricType = instance.Metric_Type
                                             configMap.reportCount = instance.Count as int
                                             stmt.addBatch(configMap)
@@ -771,6 +885,7 @@ class StatsSyncService {
         else {*/
     }
 
+    @Deprecated
     boolean createSushiSource(Map<String, Object> configMap) {
         AbstractCounterApiSource source = AbstractCounterApiSource.construct(configMap)
         if(source) {
@@ -780,6 +895,7 @@ class StatsSyncService {
         else false
     }
 
+    @Deprecated
     boolean updateStatsSource(GrailsParameterMap params) {
         AbstractCounterApiSource source
         if(params.c4source) {
@@ -801,6 +917,7 @@ class StatsSyncService {
         false
     }
 
+    @Deprecated
     boolean deleteStatsSource(GrailsParameterMap params) {
         if(params.counter4) {
             Counter4ApiSource source = Counter4ApiSource.get(params.counter4)
@@ -815,6 +932,13 @@ class StatsSyncService {
         false
     }
 
+    /**
+     * Internal
+     * Fetches the given COUNTER 5 report from the given URL and returns the JSON response
+     * @param url the URL to fetch data from
+     * @param requestList is the list of available reports fetched?
+     * @return the JSON response map
+     */
     Map<String, Object> fetchJSONData(String url, boolean requestList = false) {
         Map<String, Object> result = [:]
         try {
@@ -856,6 +980,13 @@ class StatsSyncService {
         result
     }
 
+    /**
+     * Internal
+     * Fetches the given COUNTER 4 report from the given URL and returns the XML node
+     * @param url the URL to fetch data from
+     * @param requestBody is the list of available reports fetched?
+     * @return the response body or an error map upon failure
+     */
     def fetchXMLData(String url, requestBody) {
         def result = null
         try  {
@@ -886,6 +1017,12 @@ class StatsSyncService {
         result
     }
 
+    /**
+     * Internal
+     * Initialises the calendar map for the next bunch of requests
+     * @param onlyNewest should only the most recent data be fetched?
+     * @return the parameter map containing the time span and the breakpoints for the request loop
+     */
     Map<String, Object> initCalendarConfig(boolean onlyNewest) {
         Calendar now = GregorianCalendar.getInstance()
         Date startDate, endNextRun, endTime
@@ -898,13 +1035,21 @@ class StatsSyncService {
             endNextRun = endTime
         }
         else {
-            startDate = DateUtils.getSDF_ymd().parse("2018-01-01")
-            endNextRun = DateUtils.getSDF_ymd().parse("2018-12-31")
+            Calendar currentYear = GregorianCalendar.getInstance()
+            //initially set to January 1st, '18; set flexibly to start of current year
+            currentYear.set(Calendar.DAY_OF_YEAR, 1)
+            startDate = currentYear.getTime()
+            endNextRun = now.getTime()
             endTime = now.getTime()
         }
         [startDate: startDate, endTime: endTime, endNextRun: endNextRun, now: now]
     }
 
+    /**
+     * Nationaler Statistikserver
+     * @param s generates an MD5 hash of the given string
+     * @return a MD5 integer sum
+     */
     String generateMD5(String s) {
         MessageDigest digest = MessageDigest.getInstance("MD5")
         digest.update(s.bytes)
@@ -912,6 +1057,7 @@ class StatsSyncService {
     }
 
     /**
+     * Nationaler Statistikserver
      * Query NatStat v5 reports endpoint to get the available reports for a supplier
      * @param queryParams
      * @return List Available reports for supplier
@@ -958,6 +1104,12 @@ class StatsSyncService {
         }
     }
 
+    /**
+     * Nationaler Statistikserver
+     * Resolves the objects in the given list item
+     * @param listItem the list with the object keys
+     * @return the list with the resolved objects
+     */
     ArrayList getObjectsForItem(listItem) {
        [
             TitleInstancePackagePlatform.get(listItem[0]),
@@ -967,6 +1119,12 @@ class StatsSyncService {
         ]
     }
 
+    /**
+     * Nationaler Statistikserver
+     * Gets the available report list for the given platform
+     * @param queryParams the basic query parameter map
+     * @return a list of relevant report types
+     */
     List<RefdataValue> getRelevantReportList(Map<String,String> queryParams) {
         List<RefdataValue> reports = RefdataCategory.getAllRefdataValues(RDConstants.FACT_TYPE)
         List availableReports = getAvailableReportsForPlatform(queryParams)
@@ -980,6 +1138,13 @@ class StatsSyncService {
         return reports
     }
 
+    /**
+     * Nationaler Statistikserver
+     * Initialises the loading options for the given list item
+     * @param listItem the list item to process
+     * @param mostRecentClosedPeriod the most recent period for the sync run
+     * @return the sync options for the given list
+     */
     StatsSyncServiceOptions initializeStatsSyncServiceOptions(listItem, mostRecentClosedPeriod) {
         StatsSyncServiceOptions options = new StatsSyncServiceOptions()
         List itemObjects = getObjectsForItem(listItem)
@@ -989,6 +1154,12 @@ class StatsSyncService {
         return options
     }
 
+    /**
+     * Nationaler Statistikserver
+     * Gets the cursor for the given configuration row
+     * @param options the row containing the report institution, the platform, the identifier and the title
+     * @return the {@link StatsTripleCursor} for the given row
+     */
     StatsTripleCursor getCursor(StatsSyncServiceOptions options) {
         // There could be more than one (if we have gaps in usage), get the newest one
         StatsTripleCursor csr = StatsTripleCursor.findByTitleIdAndSupplierIdAndCustomerIdAndFactType(
@@ -1009,6 +1180,12 @@ class StatsSyncService {
         return csr
     }
 
+    /**
+     * Nationaler Statistikserver
+     * Processes the given list item
+     * @param listItem the list item to fetch data for
+     * @param mostRecentClosedPeriod the most recent period for the sync run
+     */
     void processListItem(Object listItem, String mostRecentClosedPeriod) {
         SushiClient sushiClient = new SushiClient()
         Long start_time = System.currentTimeMillis()
@@ -1058,6 +1235,13 @@ class StatsSyncService {
         }
     }
 
+    /**
+     * Nationaler Statistikserver
+     * Reads the usage records from the given XML body and updates the row and the cursor
+     * @param xml the XML body
+     * @param options the query options used
+     * @param csr the stats triple cursor to update
+     */
     void writeUsageRecords(xml, options, csr) {
         checkStatsTitleCount(xml)
         List itemPerformances = xml.depthFirst().findAll {
@@ -1147,6 +1331,15 @@ class StatsSyncService {
         }
     }
 
+    /**
+     * Nationaler Statistikserver
+     * Writes a new stats triple cursor with the given arguments
+     * @param factCount the count of facts to be recorded
+     * @param begin the report month start
+     * @param end the report month end
+     * @param options the options containing the title, platform, identifier and report type to record
+     * @return the new stats triple cursor
+     */
     private StatsTripleCursor writeNewCsr(factCount, begin, end, options){
         StatsTripleCursor csr = new StatsTripleCursor()
         csr.availFrom = new SimpleDateFormat('yyyy-MM').parse(begin)
@@ -1161,6 +1354,13 @@ class StatsSyncService {
         return csr
     }
 
+    /**
+     * Nationaler Statistikserver
+     * Reads the item performances for the given range
+     * @param itemPerformances the list of performances to check
+     * @param range the start and end date to query
+     * @return all performances in the given range
+     */
     List getItemPerformancesForRange(itemPerformances, range) {
         itemPerformances.findAll {
             it.Period.Begin.text().substring(0,7) >= range["begin"] &&
@@ -1168,6 +1368,14 @@ class StatsSyncService {
         }
     }
 
+    /**
+     * Nationaler Statistikserver
+     * Determines the range before the first item performance
+     * @param itemPerformances the available performances
+     * @param options unused
+     * @param notProcessedMonths missing months
+     * @return the range map containing the month before the first available usage period
+     */
     Map<String,String> getRangeBeforeFirstItemPerformanceElement(List itemPerformances, StatsSyncServiceOptions options, List<String> notProcessedMonths) {
         Map<String,String> rangeMap = [:]
         String firstItemPerformanceBeginPeriod = itemPerformances.first().Period.Begin.text().substring(0,7)
@@ -1191,6 +1399,14 @@ class StatsSyncService {
         return rangeMap
     }
 
+    /**
+     * Nationaler Statistikserver
+     * Lists the usage ranges in the given list of performances
+     * @param itemPerformances the available performances
+     * @param options the request parameters
+     * @param notProcessedMonths missing months
+     * @return a list of usage range starts and ends
+     */
     List<Map> getUsageRanges(List itemPerformances, StatsSyncServiceOptions options, List<String> notProcessedMonths) {
         log.debug('Get Usage ranges for API call from/to Period')
         List ranges = []
@@ -1262,6 +1478,14 @@ class StatsSyncService {
         return ranges + followingRanges
     }
 
+    /**
+     * Nationaler Statistikserver
+     * Fills the range map with gaps
+     * @param options the request options
+     * @param notProcessedMonths the missing months
+     * @param begin the start of the range map
+     * @return the filled list of month ranges
+     */
     private List<Map> actualRangePlusFollowingNoUsageRanges(StatsSyncServiceOptions options, List<String> notProcessedMonths, String begin)
     {
         List<Map> ranges = []
@@ -1320,12 +1544,26 @@ class StatsSyncService {
         return ranges
     }
 
+    /**
+     * Nationaler Statistikserver
+     * Adds the given count of months to the given base
+     * @param baseMonth the starting month
+     * @param count the count of months to add
+     * @return the calculated time point
+     */
     private String plusMonths(CharSequence baseMonth, Long count) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern('yyyy-MM')
         YearMonth localDate = YearMonth.parse(baseMonth, formatter)
         return localDate.plusMonths(count).toString()
     }
 
+    /**
+     * Nationaler Statistikserver
+     * Subtracts the given count of months to the given base
+     * @param baseMonth the starting month
+     * @param count the count of months to subtract
+     * @return the calculated time point
+     */
     private String minusMonths(CharSequence baseMonth, Long count) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern('yyyy-MM')
         YearMonth localDate = YearMonth.parse(baseMonth, formatter)
@@ -1333,9 +1571,10 @@ class StatsSyncService {
     }
 
     /**
+     * Nationaler Statistikserver
      * Not processed months when getting a 3031 Exception
-     * @param xml
-     * @return
+     * @param xml the XML body
+     * @return a list of months not being processed
      */
     List getNotProcessedMonths(xml) {
         if (xml.Exception.isEmpty() == false && xml.Exception.Number == '3031') {
@@ -1350,7 +1589,11 @@ class StatsSyncService {
         return []
     }
 
-
+    /**
+     * Nationaler Statistikserver
+     * Gets the count of the titles in the given XML body
+     * @param xml the XML repsonse body with the usage data
+     */
     void checkStatsTitleCount(xml) {
         List statsTitles = xml.depthFirst().findAll {
             it.name() == 'ItemName'
@@ -1362,6 +1605,12 @@ class StatsSyncService {
         }
     }
 
+    /**
+     * Nationaler Statistikserver
+     * Gets the next period from the given cursor
+     * @param csr the cursor from which the next month should be calculated
+     * @return the next period start
+     */
     String getNextFromPeriod(StatsTripleCursor csr) {
         String acceptedFormat = "yyyy-MM-dd"
         Date fromPeriodForAPICall
@@ -1381,14 +1630,25 @@ class StatsSyncService {
         return fromPeriodForAPICall.format(acceptedFormat)
     }
 
+    /**
+     * Nationaler Statistikserver
+     * Calculates the month start two months backwards from now
+     * @return the start of the month two months behind now
+     */
     private String getMostRecentClosedPeriod() {
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(new Date());
+        Calendar cal = Calendar.getInstance()
+        cal.setTime(new Date())
         cal.add(Calendar.MONTH, -2)
         cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH))
         return cal.format('yyyy-MM-dd')
     }
 
+    /**
+     * Nationaler Statistikserver
+     * Checks if the given metric key is among the supported ones
+     * @param metric the metric to check
+     * @return true if the metric is among the supported ones, false otherwise
+     */
     private Boolean isAllowedMetric(metric) {
         if (metric in ['ft_total', 'search_reg', 'search_fed', 'record_view', 'result_click']) {
             return true
@@ -1396,7 +1656,12 @@ class StatsSyncService {
         return false
     }
 
-    // period=>[metric1=>value,metric2=>value...]
+    /**
+     * Nationaler Statistikserver
+     * Gets the period usage map of the given list of item performances
+     * @param itemPerformances the performances to output as map
+     * @return a map of structure period=>[metric1=>value,metric2=>value...]
+     */
     private Map<String,Map> getPeriodUsageMap(ArrayList itemPerformances) {
         Map map = [:]
         // every ItemPerformance can have several Instances (DB/PR Reports up to 2, JR1 up to 3...)
@@ -1425,6 +1690,12 @@ class StatsSyncService {
         return map
     }
 
+    /**
+     * Nationaler Statistikserver
+     * Gets the last day of the given month
+     * @param yearMonthString the month to get the last day of
+     * @return the full string of the last month of the day
+     */
     private String getDateForLastDayOfMonth(yearMonthString) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM")
         GregorianCalendar cal = new GregorianCalendar()
@@ -1433,6 +1704,12 @@ class StatsSyncService {
         return "${cal.get(Calendar.YEAR)}-${String.format('%02d',cal.get(Calendar.MONTH)+1)}-${cal.get(Calendar.DAY_OF_MONTH)}"
     }
 
+    /**
+     * Nationaler Statistikserver
+     * Gets the SUSHI error message from the given XML response body
+     * @param xml
+     * @return
+     */
     private getSushiErrorMessage(xml) {
         if (xml.Exception.isEmpty() == false) {
             def errorNumber = xml.Exception.Number
@@ -1444,26 +1721,56 @@ class StatsSyncService {
         return false
     }
 
+    /**
+     * Nationaler Statistikserver
+     * Checks if the given XML response contains the SUSHI 3030 error
+     * @param xml the XML response body
+     * @return true if the Exception element is filled with the code 3030, false otherwise
+     */
     private Boolean isNoUsageAvailableException(xml)
     {
         return (xml.Exception.isEmpty() == false && xml.Exception.Number == '3030')
     }
 
+    /**
+     * Nationaler Statistikserver
+     * Checks if the given XML response is empty
+     * @param xml the XML response body
+     * @return true if the Exception element is empty, false otherwise
+     */
     private Boolean isEmptyReport(xml)
     {
         return (xml.Report.Report.isEmpty() == true || xml.Report.isEmpty() == true)
     }
 
+    /**
+     * Nationaler Statistikserver
+     * Checks if the given XML response contains a different SUSHI error than code 3031
+     * @param xml the XML response body
+     * @return true if the Exception element is filled with the code other than 3031, false otherwise
+     */
     private Boolean isOtherExceptionWithoutUsageData(xml)
     {
         return (xml.Exception.isEmpty() == false && xml.Exception.Number != '3031')
     }
 
+    /**
+     * Nationaler Statistikserver
+     * Checks if the given XML response contains no customer
+     * @param xml the XML response body
+     * @return true if there is no customer, false otherwise
+     */
     private Boolean isEmptyReportWithoutCustomer(xml)
     {
         return (xml.Report.Report.Customer.isEmpty() == true)
     }
 
+    /**
+     * Checks if the given XML body contains usage data for the given title
+     * @param xml the XML response
+     * @param titleId the title to check
+     * @return true if there is a usage for the given title, false otherwise
+     */
     private Boolean responseHasUsageData(xml, titleId) {
         // 3030 Exception-> Zero usage
         if (isNoUsageAvailableException(xml)){
@@ -1488,6 +1795,9 @@ class StatsSyncService {
         }
     }
 
+    /**
+     * Increments the activity histogram by a completed process
+     */
     static synchronized void incrementActivityHistogram() {
         SimpleDateFormat sdf = new SimpleDateFormat('yyyy/MM/dd HH:mm')
         def col_identifier = sdf.format(new Date())

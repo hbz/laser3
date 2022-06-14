@@ -13,6 +13,9 @@
     </semui:controlButtons>
 
     <h1 class="ui icon header la-noMargin-top"><semui:headerIcon />
+        <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
+            <g:render template="iconSubscriptionIsChild"/>
+        </g:if>
         <semui:xEditable owner="${subscription}" field="name" />
     </h1>
     <semui:anualRings object="${subscription}" controller="subscription" action="history" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
@@ -24,7 +27,7 @@
         <g:render template="message" />
     </g:if>
 
-      <table  class="ui celled la-table table">
+      <table  class="ui celled la-js-responsive-table la-table table">
         <thead>
             <tr>
               <th>${message(code:'default.eventID.label')}</th>

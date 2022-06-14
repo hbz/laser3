@@ -230,7 +230,7 @@
         <g:render template="/templates/workflow/opResult" model="${[key:key, cmd:cmd, status:status, obj:workflow]}" />
     </g:if>
 
-    <table class="ui celled la-table compact table">
+    <table class="ui celled la-js-responsive-table la-table compact table">
         <thead>
             <tr>
                 <th>${message(code:'workflow.label')}</th>
@@ -292,7 +292,7 @@
         <g:render template="/templates/workflow/opResult" model="${[key:key, cmd:cmd, status:status, obj:task]}" />
     </g:if>
 
-    <table class="ui celled la-table compact table">
+    <table class="ui celled la-js-responsive-table la-table compact table">
         <thead>
             <tr>
                 <th>${message(code:'workflow.task.label')}</th>
@@ -405,7 +405,7 @@
         <g:render template="/templates/workflow/opResult" model="${[key:key, cmd:cmd, status:status, obj:condition]}" />
     </g:if>
 
-    <table class="ui celled la-table compact table">
+    <table class="ui celled la-js-responsive-table la-table compact table">
         <thead>
         <tr>
             <th>${message(code:'workflow.condition.label')}</th>

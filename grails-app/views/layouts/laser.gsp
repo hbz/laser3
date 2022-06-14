@@ -83,8 +83,8 @@
                                     <div class="divider"></div>
                                     <semui:link generateElementId="true" class="item" role="menuitem" controller="gasco">${message(code:'menu.public.gasco_monitor')}</semui:link>
 
-                                    <a id="wekb" href="${message(code:'url.wekb.' + currentServer)}" class="item" role="menuitem">we:kb</a>
-                                    <a id="ygor" href="${message(code:'url.ygor.' + currentServer)}" class="item" role="menuitem">YGOR</a>
+                                    <a id="wekb" href="${message(code:'url.wekb.' + currentServer)}"  target="_blank" class="item" role="menuitem">we:kb</a>
+                                    <a id="ygor" href="${message(code:'url.ygor.' + currentServer)}" target="_blank" class="item" role="menuitem">YGOR</a>
                             </div>
                         </div>
 
@@ -259,6 +259,7 @@
                                     <div class="menu" role="menu">
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="appInfo">${message(code:'menu.admin.appInfo')}</semui:link>
                                         <semui:link generateElementId="true" class="item" controller="admin" action="systemEvents">${message(code:'menu.admin.systemEvents')}</semui:link>
+                                        <semui:link generateElementId="true" class="item" controller="admin" action="testMailSending">Test Mail Sending</semui:link>
 
                                         <div class="divider"></div>
 
@@ -362,15 +363,14 @@
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="systemEvents">${message(code:'menu.admin.systemEvents')}</semui:link>
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="appConfig">${message(code:'menu.yoda.appConfig')}</semui:link>
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="appThreads">${message(code:'menu.yoda.appThreads')}</semui:link>
+                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="quartzInfo">${message(code:'menu.yoda.quartzInfo')}</semui:link>
+                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="cacheInfo">${message(code:'menu.yoda.cacheInfo')}</semui:link>
 
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="systemProfiler"><i class="stopwatch icon"></i>${message(code:'menu.yoda.systemProfiler')}</semui:link>
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="activityProfiler"><i class="stopwatch icon"></i>${message(code:'menu.yoda.activityProfiler')}</semui:link>
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="timelineProfiler"><i class="stopwatch icon"></i>${message(code:'menu.yoda.timelineProfiler')}</semui:link>
 
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="quartzInfo">${message(code:'menu.yoda.quartzInfo')}</semui:link>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="cacheInfo">${message(code:'menu.yoda.cacheInfo')}</semui:link>
-
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="appSecurity">${message(code:'menu.yoda.security')}</semui:link>
+                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="appSecurity">${message(code:'menu.yoda.appSecurity')}</semui:link>
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="userMatrix">${message(code:'menu.yoda.userMatrix')}</semui:link>
 
                                         <%--<a class="item" role="menuitem" href="${g.createLink(uri:'/monitoring')}">App Monitoring</a>--%>
@@ -421,7 +421,7 @@
                                         </div>
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="manageGlobalSources">${message(code:'menu.yoda.manageGlobalSources')}</semui:link>
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="getTIPPsWithoutGOKBId">${message(code:'menu.yoda.purgeTIPPsWithoutGOKBID')}</semui:link>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="expungeDeletedTIPPs">${message(code:'menu.yoda.expungeDeletedTIPPs')}</semui:link>
+                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="expungeRemovedTIPPs">${message(code:'menu.yoda.expungeRemovedTIPPs')}</semui:link>
                                         <%--<semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="matchPackageHoldings">${message(code:'menu.admin.bulkOps.matchPackageHoldings')}</semui:link>--%>
                                     </div>
                                 </div>
@@ -475,9 +475,7 @@
                                         <i  class="dropdown icon"></i>
                                     </div>
                                     <div class="menu" role="menu">
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="migrateNatStatSettings">Migrate NatStat Settings (0.20)</semui:link>
-                                        <%--<semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="remapOriginEditUrl">Remap OriginEditUrl (0.20)</semui:link>--%>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="checkIssueEntitlementPackages"><g:message code="menu.admin.checkIssueEntitlementPackages"/> (0.20)</semui:link>
+                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="checkOrgLicRoles"><g:message code="menu.admin.checkOrgLicRoles"/></semui:link>
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="dbmFixPrivateProperties">Fix Private Properties</semui:link>
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="replaceUserSettingDashboardReminderPeriod">Replace UserSetting Dashboard ReminderPeriod in Database</semui:link>
                                         <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="cleanUpSurveys">Clean Up Surveys with Multi Term</semui:link>

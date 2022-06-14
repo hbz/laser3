@@ -7,8 +7,10 @@ import de.laser.annotations.DebugAnnotation
 import de.laser.auth.User
 import de.laser.auth.UserOrg
 import de.laser.finance.CostItem
+import de.laser.finance.PriceItem
 import de.laser.helper.*
 import de.laser.properties.PropertyDefinition
+import de.laser.properties.SubscriptionProperty
 import de.laser.stats.Counter4ApiSource
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5ApiSource
@@ -19,15 +21,19 @@ import grails.gorm.transactions.Transactional
 import grails.plugins.mail.MailService
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
+import groovy.sql.Sql
 import groovy.time.TimeCategory
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.i18n.LocaleContextHolder
 
 import java.nio.file.Files
 import java.nio.file.Path
-import java.text.DateFormat
+import java.sql.Connection
 import java.text.SimpleDateFormat
 
+/**
+ * This service manages survey handling
+ */
 @Transactional
 class SurveyService {
 
@@ -43,16 +49,26 @@ class SurveyService {
     SubscriptionService subscriptionService
     FilterService filterService
 
+    LinksGenerationService linksGenerationService
+
     SimpleDateFormat formatter = DateUtils.getSDF_dmy()
     String from
 
+    /**
+     * Constructor method
+     */
     @javax.annotation.PostConstruct
     void init() {
         from = ConfigUtils.getNotificationsEmailFrom()
         messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
     }
 
-
+    /**
+     * Checks if the given survey information is editable by the given institution
+     * @param org the institution to check
+     * @param surveyInfo the survey information which should be accessed
+     * @return true if the survey data can be manipulated, false otherwise
+     */
     boolean isEditableSurvey(Org org, SurveyInfo surveyInfo) {
 
         if (accessService.checkPermAffiliationX('ORG_CONSORTIUM', 'INST_EDITOR', 'ROLE_ADMIN') && surveyInfo.owner?.id == contextService.getOrg().id) {
@@ -106,6 +122,12 @@ class SurveyService {
 
     }
 
+    /**
+     * Builds the navigation between the given surveys
+     * @param surveyInfo the survey within which navigation should be possible
+     * @param surveyConfig the surveys to be linked
+     * @return the map containing the previous and the next objects
+     */
     Map<String, Object> getConfigNavigation(SurveyInfo surveyInfo, SurveyConfig surveyConfig) {
         Map<String, Object> result = [:]
         int currentOrder = surveyConfig.configOrder
@@ -125,6 +147,7 @@ class SurveyService {
 
     }
 
+    @Deprecated
     boolean isContinueToParticipate(Org org, SurveyConfig surveyConfig) {
         def participationProperty = RDStore.SURVEY_PROPERTY_PARTICIPATION
 
@@ -133,6 +156,7 @@ class SurveyService {
         return result
     }
 
+    @Deprecated
     private boolean save(obj, flash) {
         if (obj.save()) {
             log.debug("Save ${obj} ok")
@@ -145,6 +169,12 @@ class SurveyService {
         }
     }
 
+    /**
+     * Exports the given surveys
+     * @param surveyConfigs the surveys to export
+     * @param contextOrg the institution whose perspective should be taken
+     * @return an Excel worksheet containing the survey data
+     */
     def exportSurveys(List<SurveyConfig> surveyConfigs, Org contextOrg) {
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
 
@@ -442,6 +472,12 @@ class SurveyService {
         return exportService.generateXLSXWorkbook(sheetData)
     }
 
+    /**
+     * Exports the cost items of the given surveys
+     * @param surveyConfigs the surveys whose cost items should be exported
+     * @param contextOrg the institution whose perspective should be taken
+     * @return an Excel worksheet containing the cost item data
+     */
     def exportSurveyCostItems(List<SurveyConfig> surveyConfigs, Org contextOrg) {
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
 
@@ -605,6 +641,11 @@ class SurveyService {
         return exportService.generateXLSXWorkbook(sheetData)
     }
 
+    /**
+     * Sends an email to the survey owner that the given participant finished the survey
+     * @param surveyInfo the survey which has been finished
+     * @param participationFinish the participant who finished the survey
+     */
     def emailToSurveyOwnerbyParticipationFinish(SurveyInfo surveyInfo, Org participationFinish){
 
         if (grailsApplication.config.grails.mail.disabled == true) {
@@ -640,7 +681,11 @@ class SurveyService {
                                     ccAddress = user.getSetting(UserSetting.KEYS.NOTIFICATION_CC_EMAILADDRESS, null)?.getValue()
                                 }
 
-                                List surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(participationFinish, surveyInfo.surveyConfigs[0]).sort { it.surveyConfig.configOrder }
+                                List surveyResults = []
+
+                                surveyInfo.surveyConfigs[0].getSortedSurveyProperties().each{ PropertyDefinition propertyDefinition ->
+                                    surveyResults << SurveyResult.findByParticipantAndSurveyConfigAndType(participationFinish, surveyInfo.surveyConfigs[0], propertyDefinition)
+                                }
 
                                 if (isNotificationCCbyEmail && ccAddress) {
                                     mailService.sendMail {
@@ -674,7 +719,11 @@ class SurveyService {
 
     }
 
-
+    /**
+     * Sends an email to the survey participant as confirmation that the given participant finished the survey
+     * @param surveyInfo the survey which has been finished
+     * @param participationFinish the participant who finished the survey
+     */
     def emailToSurveyParticipationByFinish(SurveyInfo surveyInfo, Org participationFinish){
 
         if (grailsApplication.config.grails.mail.disabled == true) {
@@ -731,7 +780,11 @@ class SurveyService {
                                 ccAddress = user.getSetting(UserSetting.KEYS.NOTIFICATION_CC_EMAILADDRESS, null)?.getValue()
                             }
 
-                            List surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(participationFinish, surveyInfo.surveyConfigs[0]).sort { it.surveyConfig.configOrder }
+                            List surveyResults = []
+
+                            surveyInfo.surveyConfigs[0].getSortedSurveyProperties().each{ PropertyDefinition propertyDefinition ->
+                                surveyResults << SurveyResult.findByParticipantAndSurveyConfigAndType(participationFinish, surveyInfo.surveyConfigs[0], propertyDefinition)
+                            }
 
                             if (isNotificationCCbyEmail && ccAddress) {
                                 mailService.sendMail {
@@ -765,6 +818,12 @@ class SurveyService {
 
     }
 
+    /**
+     * Exports the surveys of the given participant
+     * @param surveyConfigs the surveys in which the given institution takes part
+     * @param participant the participant institution
+     * @return an Excel worksheet containing the export
+     */
     def exportSurveysOfParticipant(List surveyConfigs, Org participant) {
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
 
@@ -909,7 +968,11 @@ class SurveyService {
         return exportService.generateXLSXWorkbook(sheetData)
     }
 
-    def emailsToSurveyUsers(List surveyInfoIds){
+    /**
+     * Sends an email to the given survey participants
+     * @param surveyInfoIds the IDs of the survey participations
+     */
+    void emailsToSurveyUsers(List surveyInfoIds){
 
         def surveys = SurveyInfo.findAllByIdInList(surveyInfoIds)
 
@@ -940,7 +1003,13 @@ class SurveyService {
 
     }
 
-    def emailsToSurveyUsersOfOrg(SurveyInfo surveyInfo, Org org, boolean reminderMail){
+    /**
+     * Sends mails to the users of the given institution
+     * @param surveyInfo the survey information to be sent
+     * @param org the institution whose users should be notified
+     * @param reminderMail is it a reminder about the survey completion?
+     */
+    void emailsToSurveyUsersOfOrg(SurveyInfo surveyInfo, Org org, boolean reminderMail){
 
         //Only User that approved
         List<UserOrg> userOrgs = UserOrg.findAllByOrg(org)
@@ -955,6 +1024,13 @@ class SurveyService {
         }
     }
 
+    /**
+     * Sends a mail about the survey to the given user of the given institution about the given surveys
+     * @param user the user to be notified
+     * @param org the institution of the user
+     * @param surveyEntries the survey information to process
+     * @param reminderMail is it a reminder?
+     */
     private void sendSurveyEmail(User user, Org org, List<SurveyInfo> surveyEntries, boolean reminderMail) {
 
         if (grailsApplication.config.grails.mail.disabled == true) {
@@ -1026,6 +1102,14 @@ class SurveyService {
         }
     }
 
+    /**
+     * Limits the given institution query to the set of institution IDs
+     * @param orgIDs the institution IDs to fetch
+     * @param query the query string
+     * @param queryParams the query parameters
+     * @param params the request parameter map
+     * @return a list of institutions matching the filter
+     */
     List getfilteredSurveyOrgs(List orgIDs, String query, queryParams, params) {
 
         if (!(orgIDs?.size() > 0)) {
@@ -1042,6 +1126,11 @@ class SurveyService {
         return Org.executeQuery(tmpQuery, tmpQueryParams, params)
     }
 
+    /**
+     * Retrieves the counts of surveys in the different stages
+     * @param parameterMap the filter parameter map
+     * @return the counts for each survey stage
+     */
     Map<String,Object> getSurveyConfigCounts(GrailsParameterMap parameterMap) {
         Map<String, Object> result = [:]
 
@@ -1062,6 +1151,14 @@ class SurveyService {
         return result
     }
 
+    /**
+     * Sets the count of surveys for the given tab
+     * @param result the result map
+     * @param tab the tab for which the count should be set
+     * @param parameterMap the request parameter map
+     * @param owner the context consortium
+     * @return the map enriched with information
+     */
     private Map setSurveyConfigCounts(Map result, String tab, GrailsParameterMap parameterMap, Org owner){
         SimpleDateFormat sdFormat = DateUtils.getSDF_NoTime()
         Map<String,Object> fsq = [:]
@@ -1078,6 +1175,11 @@ class SurveyService {
 
     }
 
+    /**
+     * Gets the survey properties for the given institution
+     * @param contextOrg the institution whose survey properties should be retrieved
+     * @return a sorted list of property definitions
+     */
     List getSurveyProperties(Org contextOrg) {
         List props = []
 
@@ -1098,6 +1200,12 @@ class SurveyService {
         return props
     }
 
+    /**
+     * Adds the given survey property (= question) to the survey
+     * @param surveyConfig the survey to which the property should be added
+     * @param surveyProperty the survey property (= question) to add
+     * @return true if the adding was successful, false otherwise
+     */
     boolean addSurPropToSurvey(SurveyConfig surveyConfig, PropertyDefinition surveyProperty) {
 
         if (!SurveyConfigProperties.findAllBySurveyPropertyAndSurveyConfig(surveyProperty, surveyConfig) && surveyProperty && surveyConfig) {
@@ -1112,6 +1220,10 @@ class SurveyService {
         }
     }
 
+    /**
+     * Adds the members of the underlying subscription to the given survey
+     * @param surveyConfig the survey config to which members should be added
+     */
     void addSubMembers(SurveyConfig surveyConfig) {
         Map<String, Object> result = [:]
         result.institution = contextService.getOrg()
@@ -1174,6 +1286,12 @@ class SurveyService {
 
     }
 
+    /**
+     * Copies the documents, notes, tasks, participations and properties related to the given survey into the given new survey
+     * @param oldSurveyConfig the survey from which data should be taken
+     * @param newSurveyConfig the survey into which data should be copied
+     * @param params the request parameter map
+     */
     void copySurveyConfigCharacteristic(SurveyConfig oldSurveyConfig, SurveyConfig newSurveyConfig, params){
         oldSurveyConfig.documents.each { dctx ->
             //Copy Docs
@@ -1255,6 +1373,12 @@ class SurveyService {
         }
     }
 
+    /**
+     * Gets the count map of survey participations for the given participant
+     * @param participant the institution whose participations should be counted
+     * @param parameterMap the request parameter map
+     * @return the counts for each tab
+     */
     private def getSurveyParticipantCounts_New(Org participant, GrailsParameterMap parameterMap){
         Map<String, Object> result = [:]
 
@@ -1289,6 +1413,15 @@ class SurveyService {
         return result
     }
 
+    /**
+     * Sets the count of survey participations for the given tab
+     * @param result the result map
+     * @param tab the tab for which the count should be set
+     * @param parameterMap the request parameter map
+     * @param participant the participant whose participations should be counted
+     * @param owner the context consortium
+     * @return the map enriched with information
+     */
     private Map setSurveyParticipantCounts(Map result, String tab, GrailsParameterMap parameterMap, Org participant, Org owner = null){
         SimpleDateFormat sdFormat = DateUtils.getSDF_NoTime()
         Map fsq = [:]
@@ -1309,6 +1442,7 @@ class SurveyService {
 
     }
 
+    @Deprecated
     private def getSurveyParticipantCounts(Org participant){
         Map<String, Object> result = [:]
 
@@ -1329,6 +1463,15 @@ class SurveyService {
         return result
     }
 
+    /**
+     * Get the usage statistics for the given participant
+     * @param result the result map with the base data
+     * @param params the request parameter map
+     * @param subscription the subscription to which usage details should be retrieved
+     * @param participant the participant whose data should be retrieved
+     * @param titles the title IDs upon which usage data may be restricted
+     * @return the enriched result map with the usage data
+     */
     Map<String, Object> getStatsForParticipant(Map<String, Object> result, GrailsParameterMap params, Subscription subscription, Org participant, List<Long> titles){
         Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: subscription])
 
@@ -1546,6 +1689,13 @@ class SurveyService {
         result
     }
 
+    /**
+     * Called from views
+     * Checks if the participant has perpetual access to the given title
+     * @param subscriptions the subscriptions of the participant
+     * @param tipp the title whose access should be checked
+     * @return true if there is a title with perpetual access, false otherwise
+     */
     boolean hasParticipantPerpetualAccessToTitle(List<Subscription> subscriptions, TitleInstancePackagePlatform tipp){
 
             Integer countIes = IssueEntitlement.executeQuery('select count(ie.id) from IssueEntitlement ie join ie.tipp tipp where tipp.hostPlatformURL = :hostPlatformURL ' +
@@ -1562,6 +1712,13 @@ class SurveyService {
             }
     }
 
+    /**
+     * Called from views
+     * Checks if the given title is contained by the given subscription
+     * @param subscription the subscription whose holding should be checked
+     * @param tipp the title whose presence should be checked
+     * @return true if the given subscription contains the title, false otherwise
+     */
     IssueEntitlement titleContainedBySubscription(Subscription subscription, TitleInstancePackagePlatform tipp) {
         IssueEntitlement ie
         if(subscription.packages && tipp.pkg in subscription.packages.pkg) {
@@ -1575,11 +1732,17 @@ class SurveyService {
         return ie
     }
 
+    /**
+     * Checks if there is a customer number recorded to the subscribed platform of the participant
+     * @param subscription the subscription whose nominal platform should be retrieved
+     * @param org the participant whose customer number should be checked
+     * @return true if there is a customer number recorded, false otherwise
+     */
     boolean showStatisticByParticipant(Subscription subscription, Org org) {
         Map<String, Object> result = [:]
 
         Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: subscription])
-        if(subscribedPlatforms) {
+        if (subscribedPlatforms) {
             List<CustomerIdentifier> customerIdentifiers = CustomerIdentifier.findAllByCustomerAndPlatformInList(org, subscribedPlatforms)
             customerIdentifiers.size() > 0
         }else {
@@ -1588,4 +1751,166 @@ class SurveyService {
 
     }
 
+    def exportPropertiesChanged(SurveyConfig surveyConfig, def participants, Org contextOrg) {
+        Map sheetData = [:]
+        List titles = [messageSource.getMessage('org.sortname.label', null, LocaleContextHolder.getLocale()),
+                       messageSource.getMessage('subscription.details.consortiaMembers.label', null, LocaleContextHolder.getLocale()),
+                       messageSource.getMessage('propertyDefinition.label', null, LocaleContextHolder.getLocale()),
+                       messageSource.getMessage('subscription', null, LocaleContextHolder.getLocale()) + ' - ' + messageSource.getMessage('propertyDefinition.label', null, LocaleContextHolder.getLocale()),
+                       messageSource.getMessage('survey.label', null, LocaleContextHolder.getLocale()) + ' - ' + messageSource.getMessage('propertyDefinition.label', null, LocaleContextHolder.getLocale()),
+        ]
+        List changedProperties = []
+        List propList = surveyConfig.surveyProperties.surveyProperty
+
+        propList.each { PropertyDefinition propertyDefinition ->
+            PropertyDefinition subPropDef = PropertyDefinition.getByNameAndDescr(propertyDefinition.name, PropertyDefinition.SUB_PROP)
+            if (subPropDef) {
+                List row = []
+                participants.each { SurveyOrg surveyOrg ->
+                    Subscription subscription = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
+                            [parentSub  : surveyConfig.subscription,
+                             participant: surveyOrg.org
+                            ])[0]
+                    SurveyResult surveyResult = SurveyResult.findByParticipantAndTypeAndSurveyConfigAndOwner(surveyOrg.org, propertyDefinition, surveyConfig, contextOrg)
+                    SubscriptionProperty subscriptionProperty = SubscriptionProperty.findByTypeAndOwnerAndTenant(subPropDef, subscription, contextOrg)
+
+                    if (surveyResult && subscriptionProperty) {
+                        String surveyValue = surveyResult.getValue()
+                        String subValue = subscriptionProperty.getValue()
+                        if (surveyValue != subValue) {
+                            row = []
+                            row.add([field: surveyOrg.org.sortname ?: '', style: null])
+                            row.add([field: surveyOrg.org.name ?: '', style: null])
+                            row.add([field: propertyDefinition.getI10n('name') ?: '', style: null])
+                            row.add([field: subscriptionProperty.type.isRefdataValueType() ? subscriptionProperty.refValue?.getI10n("value") : '', style: null])
+                            row.add([field: surveyResult.getResult() ?: '', style: null])
+
+                            changedProperties.add(row)
+                        }
+                    }
+
+                }
+                if (row.size() > 0) {
+                    changedProperties.add([])
+                    changedProperties.add([])
+                }
+            }
+
+        }
+
+        sheetData.put(escapeService.escapeString(surveyConfig.getConfigNameShort()), [titleRow: titles, columnData: changedProperties])
+
+        return exportService.generateXLSXWorkbook(sheetData)
     }
+
+    void transferPerpetualAccessTitlesOfOldSubs(List<Long> entitlementsToTake, Subscription participantSub) {
+        Sql sql = GlobalService.obtainSqlConnection()
+        Connection connection = sql.dataSource.getConnection()
+
+        List newIes = sql.executeInsert("insert into issue_entitlement (ie_version, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_reason, ie_medium_rv_fk, ie_status_rv_fk, ie_accept_status_rv_fk, ie_name, ie_sortname, ie_perpetual_access_by_sub_fk) " +
+                "select 0, now(), now(), ${participantSub.id},  ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_reason, ie_medium_rv_fk, ie_status_rv_fk, ${RDStore.IE_ACCEPT_STATUS_FIXED.id}, ie_name, ie_sortname, ie_perpetual_access_by_sub_fk from issue_entitlement where ie_tipp_fk not in (select ie_tipp_fk from issue_entitlement where ie_subscription_fk = ${participantSub.id}) and ie_id = any(:ieIds)", [ieIds: connection.createArrayOf('bigint', entitlementsToTake.toArray())])
+
+        if(newIes.size() > 0){
+
+            List newIesIds = newIes.collect {it[0]}
+
+           sql.executeInsert('''insert into issue_entitlement_coverage (ic_version, ic_ie_fk, ic_date_created, ic_last_updated, ic_start_date, ic_start_volume, ic_start_issue, ic_end_date, ic_end_volume, ic_end_issue, ic_coverage_depth, ic_coverage_note, ic_embargo)
+            select 0, i.ie_id, now(), now(), ic_start_date, ic_start_volume, ic_start_issue, ic_end_date, ic_end_volume, ic_end_issue, ic_coverage_depth, ic_coverage_note, ic_embargo from issue_entitlement_coverage
+            join issue_entitlement ie on ie.ie_id = issue_entitlement_coverage.ic_ie_fk
+            join title_instance_package_platform tipp on tipp.tipp_id = ie.ie_tipp_fk
+            join issue_entitlement i on tipp.tipp_id = i.ie_tipp_fk
+            where i.ie_id = any(:newIeIds)
+            and ie.ie_id = any(:ieIds) order  by ic_last_updated DESC''', [newIeIds: connection.createArrayOf('bigint', newIesIds.toArray()), ieIds: connection.createArrayOf('bigint', entitlementsToTake.toArray())])
+
+
+            sql.executeInsert('''insert into price_item (version, pi_ie_fk, pi_date_created, pi_last_updated, pi_guid, pi_list_currency_rv_fk, pi_list_price)
+                                select 0, i.ie_id, now(), now(), concat('priceitem:',gen_random_uuid()), pi_list_currency_rv_fk, pi_list_price from price_item
+                                join issue_entitlement ie on ie.ie_id = price_item.pi_ie_fk
+                                join title_instance_package_platform tipp on tipp.tipp_id = ie.ie_tipp_fk
+                                join issue_entitlement i on tipp.tipp_id = i.ie_tipp_fk
+                                where i.ie_id = any(:newIeIds)
+                                and ie.ie_id = any(:ieIds) order  by pi_last_updated DESC''', [newIeIds: connection.createArrayOf('bigint', newIesIds.toArray()), ieIds: connection.createArrayOf('bigint', entitlementsToTake.toArray())])
+
+        }
+    }
+
+    List<IssueEntitlement> getPerpetualAccessIesBySub(Subscription subscription) {
+        Set<Subscription> subscriptions = linksGenerationService.getSuccessionChain(subscription, 'sourceSubscription')
+        subscriptions << subscription
+        List<IssueEntitlement> issueEntitlements = []
+
+        if(subscriptions.size() > 0) {
+            List<Object> subIds = []
+            subIds.addAll(subscriptions.id)
+            Sql sql = GlobalService.obtainSqlConnection()
+            Connection connection = sql.dataSource.getConnection()
+            def ieIds = sql.rows("select ie.ie_id from issue_entitlement ie join title_instance_package_platform tipp on tipp.tipp_id = ie.ie_tipp_fk " +
+                    "where ie.ie_subscription_fk = any(:subs) and ie.ie_accept_status_rv_fk = :acceptStatus " +
+                    "and tipp.tipp_status_rv_fk = :tippStatus and ie.ie_status_rv_fk = :tippStatus " +
+                    "and tipp.tipp_host_platform_url in " +
+                    "(select tipp2.tipp_host_platform_url from issue_entitlement ie2 join title_instance_package_platform tipp2 on tipp2.tipp_id = ie2.ie_tipp_fk " +
+                    "where ie2.ie_subscription_fk = any(:subs) " +
+                    "and ie2.ie_perpetual_access_by_sub_fk = any(:subs) " +
+                    "and ie2.ie_accept_status_rv_fk = :acceptStatus " +
+                    "and tipp2.tipp_status_rv_fk = :tippStatus and ie2.ie_status_rv_fk = :tippStatus)", [subs: connection.createArrayOf('bigint', subIds.toArray()), acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED.id, tippStatus: RDStore.TIPP_STATUS_CURRENT.id])
+
+            issueEntitlements = ieIds.size() > 0 ? IssueEntitlement.executeQuery("select ie from IssueEntitlement ie where ie.id in (:ieIDs)", [ieIDs: ieIds.ie_id]) : []
+        }
+        return issueEntitlements
+    }
+
+    List<Long> getPerpetualAccessIeIDsBySub(Subscription subscription) {
+        Set<Subscription> subscriptions = linksGenerationService.getSuccessionChain(subscription, 'sourceSubscription')
+        subscriptions << subscription
+        List<Long> issueEntitlementIds = []
+
+        if(subscriptions.size() > 0) {
+            List<Object> subIds = []
+            subIds.addAll(subscriptions.id)
+            Sql sql = GlobalService.obtainSqlConnection()
+            Connection connection = sql.dataSource.getConnection()
+            def ieIds = sql.rows("select ie.ie_id from issue_entitlement ie join title_instance_package_platform tipp on tipp.tipp_id = ie.ie_tipp_fk " +
+                    "where ie.ie_subscription_fk = any(:subs) and ie.ie_accept_status_rv_fk = :acceptStatus " +
+                    "and tipp.tipp_status_rv_fk = :tippStatus and ie.ie_status_rv_fk = :tippStatus " +
+                    "and tipp.tipp_host_platform_url in " +
+                    "(select tipp2.tipp_host_platform_url from issue_entitlement ie2 join title_instance_package_platform tipp2 on tipp2.tipp_id = ie2.ie_tipp_fk " +
+                    "where ie2.ie_subscription_fk = any(:subs) " +
+                    "and ie2.ie_perpetual_access_by_sub_fk = any(:subs) " +
+                    "and ie2.ie_accept_status_rv_fk = :acceptStatus " +
+                    "and tipp2.tipp_status_rv_fk = :tippStatus and ie2.ie_status_rv_fk = :tippStatus)", [subs: connection.createArrayOf('bigint', subIds.toArray()), acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED.id, tippStatus: RDStore.TIPP_STATUS_CURRENT.id])
+
+            issueEntitlementIds = ieIds.ie_id
+        }
+        return issueEntitlementIds
+    }
+
+    Integer countPerpetualAccessTitlesBySub(Subscription subscription) {
+        Integer count = 0
+        Set<Subscription> subscriptions = linksGenerationService.getSuccessionChain(subscription, 'sourceSubscription')
+        subscriptions << subscription
+
+        if(subscriptions.size() > 0) {
+            List<Object> subIds = []
+            subIds.addAll(subscriptions.id)
+            Sql sql = GlobalService.obtainSqlConnection()
+            Connection connection = sql.dataSource.getConnection()
+            /*def titles = sql.rows("select count(tipp.tipp_id) from issue_entitlement ie join title_instance_package_platform tipp on tipp.tipp_id = ie.ie_tipp_fk " +
+                    "where ie.ie_subscription_fk = any(:subs) and ie.ie_accept_status_rv_fk = :acceptStatus " +
+                    "and tipp.tipp_status_rv_fk = :tippStatus and ie.ie_status_rv_fk = :tippStatus " +
+                    "and tipp.tipp_host_platform_url in " +
+                    "(select tipp2.tipp_host_platform_url from issue_entitlement ie2 join title_instance_package_platform tipp2 on tipp2.tipp_id = ie2.ie_tipp_fk " +
+                    " where ie2.ie_perpetual_access_by_sub_fk = any(:subs)" +
+                    " and ie2.ie_accept_status_rv_fk = :acceptStatus" +
+                    " and tipp2.tipp_status_rv_fk = :tippStatus and ie2.ie_status_rv_fk = :tippStatus) group by tipp.tipp_id", [subs: connection.createArrayOf('bigint', subIds.toArray()), acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED.id, tippStatus: RDStore.TIPP_STATUS_CURRENT.id])*/
+
+            def titles = sql.rows("select count(tipp2.tipp_host_platform_url) from issue_entitlement ie2 join title_instance_package_platform tipp2 on tipp2.tipp_id = ie2.ie_tipp_fk " +
+                    " where ie2.ie_subscription_fk = any(:subs) and ie2.ie_perpetual_access_by_sub_fk = any(:subs)" +
+                    " and ie2.ie_accept_status_rv_fk = :acceptStatus" +
+                    " and tipp2.tipp_status_rv_fk = :tippStatus and ie2.ie_status_rv_fk = :tippStatus group by tipp2.tipp_host_platform_url", [subs: connection.createArrayOf('bigint', subIds.toArray()), acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED.id, tippStatus: RDStore.TIPP_STATUS_CURRENT.id])
+
+            count = titles.size()
+        }
+        return count
+    }
+
+}

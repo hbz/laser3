@@ -23,6 +23,13 @@ import org.grails.web.json.JSONElement
 import java.sql.Timestamp
 import java.util.concurrent.ExecutorService
 
+/**
+ * This service is actually deprecated as whole and the only method which is not marked as deprecated is subject
+ * of refactoring, too. This service handles the so-called inheritance of properties between consortial and their
+ * derived objects. If a change is being done, a pending change object will be created which retains what has been
+ * changed on what and that change is being applied to every object derived from the object on which the change
+ * has been triggered
+ */
 @Transactional
 class ChangeNotificationService extends AbstractLockableService {
 
@@ -35,6 +42,7 @@ class ChangeNotificationService extends AbstractLockableService {
     // N,B, This is critical for this service as it's called from domain object OnChange handlers
     static transactional = false
 
+    @Deprecated
   void broadcastEvent(String contextObjectOID, changeDetailDocument) {
     // log.debug("broadcastEvent(${contextObjectOID},${changeDetailDocument})");
 
@@ -51,8 +59,7 @@ class ChangeNotificationService extends AbstractLockableService {
   }
 
 
-  // Gather together all the changes for a give context object, formate them into an aggregated document
-  // notify any registered channels
+  @Deprecated
   boolean aggregateAndNotifyChanges() {
       if(!running) {
           running = true
@@ -68,8 +75,7 @@ class ChangeNotificationService extends AbstractLockableService {
       }
   }
 
-
-    // Sum up all pending changes by OID and write a unified message
+    @Deprecated
     def internalAggregateAndNotifyChanges() {
 
         boolean running = true
@@ -93,6 +99,7 @@ class ChangeNotificationService extends AbstractLockableService {
         }
     }
 
+    @Deprecated
     def innerInternalAggregateAndNotifyChanges(List<ChangeNotificationQueueItem> queueItems) throws Exception {
 
         queueItems.each { poidc ->
@@ -250,7 +257,7 @@ class ChangeNotificationService extends AbstractLockableService {
     @Deprecated
     /**
      * This method registers pending changes and is going to be kept because of backwards compatibility.
-     * Is going to be replaced by PendingChangeFactory ({@link PendingChange}.construct())
+     * @deprecated Is going to be replaced by PendingChangeFactory ({@link PendingChange#construct()})
      */
     PendingChange registerPendingChange(String prop, def target, def objowner, def changeMap, String msgToken, def msgParams, String legacyDesc) {
         log.debug("Register pending change ${prop} ${target.class.name}:${target.id}")
@@ -321,6 +328,7 @@ class ChangeNotificationService extends AbstractLockableService {
         }
     }
 
+    @Deprecated
     def determinePendingChangeBehavior(Map<String,Object> args, String msgToken, SubscriptionPackage subscriptionPackage) {
         println("determinePendingChangeBehavior")
         /*

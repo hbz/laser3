@@ -13,9 +13,9 @@
         </p>
         <p>
             <i class="icon circle green"></i> Teilnehmer hinzugefügt, <br />
-            <i class="icon circle red"></i> Teilnehmer entfernt
+            <i class="icon circle red"></i> Teilnehmer entfernt, <br />
+            <i class="icon circle blue"></i> Aktuelle Teilnehmer
         </p>
-        <p>Aktuelle Teilnehmer sind unter <i class="icon circle blue"></i> zu finden.</p>
     </div>
     <div class="help-section" data-help-section="timeline-cost">
         <p class="ui header">
@@ -42,9 +42,9 @@
         </p>
         <p>
             <i class="icon circle green"></i> Titel hinzugefügt, <br />
-            <i class="icon circle red"></i>Titel entfernt
+            <i class="icon circle red"></i> Titel entfernt, <br />
+            <i class="icon circle blue"></i> Aktueller Bestand
         </p>
-        <p>Der aktuelle Bestand ist unter <i class="icon circle blue"></i> zu finden.</p>
     </div>
     <div class="help-section" data-help-section="timeline-annualMember-subscription">
         <p class="ui header">
@@ -60,7 +60,7 @@
     </div>
 
     <div class="help-section" data-help-section="default">
-        ${message(code:'reporting.help.infoMissing')}
+        ${message(code:'reporting.ui.global.help.missing')}
     </div>
 </semui:infoModal>
 
@@ -75,7 +75,7 @@
         $('#${modalID} .help-section').hide();
         $current = $('#${modalID} .help-section[data-help-section=' + JSPC.app.reporting.current.request.query + ']');
         if (! $current.length) {
-            $current = $('#${modalID} .help-section[data-help-section=default]')
+            $current = $('#${modalID} .help-section[data-help-section=default]');
         }
         $current.show();
     }

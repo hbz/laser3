@@ -5,6 +5,9 @@ import org.springframework.security.access.annotation.Secured
 
 // 2.0
 
+/**
+ * This controller is responsible for session destructing upon logout
+ */
 @Secured('permitAll')
 class LogoutController {
 

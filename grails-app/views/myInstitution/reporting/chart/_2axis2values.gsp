@@ -12,7 +12,7 @@
             ]
         },
         legend: JSPC.app.reporting.helper._pie.legend,
-        toolbox: JSPC.app.reporting.helper.toolbox,
+        toolbox: JSPC.app.reporting.helper._pie.toolbox,
         tooltip: {
             trigger: 'item',
             formatter (params) {
@@ -26,8 +26,8 @@
             {
                 name: '${labels.chart[0]}',
                 type: 'pie',
-                radius: '70%',
-                center: ['60%', '45%'],
+                radius: [0, '70%'],
+                center: ['50%', '40%'],
                 minAngle: 1,
                 minShowLabelAngle: 1,
                 encode: {
@@ -129,3 +129,9 @@
         ]
     };
 </g:elseif>
+<g:elseif test="${data != null && data.isEmpty()}">
+    JSPC.app.reporting.current.chart.statusCode = 204
+</g:elseif>
+<g:else>
+    JSPC.app.reporting.current.chart.statusCode = 500
+</g:else>

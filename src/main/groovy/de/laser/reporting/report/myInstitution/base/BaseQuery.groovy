@@ -4,8 +4,10 @@ import de.laser.I10nTranslation
 import de.laser.IdentifierNamespace
 import de.laser.Org
 import de.laser.RefdataValue
+import de.laser.auth.Role
 import de.laser.helper.DateUtils
 import de.laser.properties.PropertyDefinition
+import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.local.SubscriptionReport
 import grails.util.Holders
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -17,18 +19,21 @@ import java.time.Year
 
 class BaseQuery {
 
-    static String NO_DATA_LABEL         = 'noData.label'
-    static String NO_MATCH_LABEL        = 'noMatch.label'
-    static String NO_IDENTIFIER_LABEL   = 'noIdentifier.label'
-    static String NO_PLATFORM_LABEL     = 'noPlatform.label'
-    static String NO_PROVIDER_LABEL     = 'noProvider.label'
-    static String NO_STARTDATE_LABEL    = 'noStartDate.label'
-    static String NO_ENDDATE_LABEL      = 'noEndDate.label'
+    static String NO_DATA_LABEL              = 'noData.label'
+    static String NO_MATCH_LABEL             = 'noMatch.label'
+    static String NO_COUNTERPART_LABEL       = 'noCounterpart.label'
+    static String NO_IDENTIFIER_LABEL        = 'noIdentifier.label'
+    static String NO_PLATFORM_LABEL          = 'noPlatform.label'
+    static String NO_PLATFORM_PROVIDER_LABEL = 'noPlatformProvider.label'
+    static String NO_PROVIDER_LABEL          = 'noProvider.label'
+    static String NO_STARTDATE_LABEL         = 'noStartDate.label'
+    static String NO_ENDDATE_LABEL           = 'noEndDate.label'
 
-    static int NO_DATA_ID       = 0
-    static int SPEC_DATA_ID_1   = 9990001
-    static int SPEC_DATA_ID_2   = 9990002
-    static int SPEC_DATA_ID_3   = 9990003
+    static def NO_DATA_ID           = null
+    static int NO_COUNTERPART_ID    = 0 // dyn.neg.values for unmapped es refdata
+    static int FAKE_DATA_ID_1       = -1
+    static int FAKE_DATA_ID_2       = -2
+    static int FAKE_DATA_ID_3       = -3
 
     static String SQM_MASK      = "\\\\\'"
 
@@ -59,22 +64,22 @@ class BaseQuery {
             String cfgKey = it.value.get('meta').cfgKey
 
             it.value.get('query')?.default?.each { it2 ->
-                if (it2.value.contains(query)) {
-                    if (cfgKey == 'SubscriptionReport') {
-                        meta = [SubscriptionReport.getMessage(it2.key), SubscriptionReport.getMessage('query.' + query) ]
+                if (it2.value.containsKey(query)) {
+                    if (cfgKey == BaseConfig.KEY_LOCAL_SUBSCRIPTION) {
+                        meta = [SubscriptionReport.getMessage(it2.key), SubscriptionReport.getQueryLabel(query, it2.value.get(query))]
                     } else {
-                        meta = [ BaseConfig.getMessage(it2.key), BaseConfig.getMessage(cfgKey + '.query.' + query) ]
+                        meta = [BaseConfig.getConfigLabel(it2.key), BaseConfig.getQueryLabel(cfgKey, query, it2.value.get(query))]
                     }
                 }
             }
-            // TODO - query dist
-            it.value.get('query2')?.each { it2 ->
+            it.value.get('distribution')?.each { it2 ->
                 if (it2.value.containsKey(query)) {
-                    if (cfgKey == 'SubscriptionReport') {
-                        meta = [SubscriptionReport.getMessage(it2.key), SubscriptionReport.getMessage('timeline.' + query) ]
-                    } else {
-                        meta = [ BaseConfig.getMessage(it2.key), BaseConfig.getMessage(cfgKey + '.dist.' + query) ]
-                    }
+                    meta = [BaseConfig.getConfigLabel('distribution'), BaseConfig.getDistributionLabel(cfgKey, query) ]
+                }
+            }
+            it.value.get('timeline')?.each { it2 ->
+                if (it2.value.containsKey(query)) {
+                    meta = [SubscriptionReport.getMessage(it2.key), SubscriptionReport.getMessage('timeline.' + query) ]
                 }
             }
         }
@@ -110,6 +115,26 @@ class BaseQuery {
         handleGenericNonMatchingData( query, nonMatchingHql, idList, result )
     }
 
+    static void handleGenericAllSignOrphanedQuery(String query, String dataHql, String dataDetailsHql, List<Long> idList, List<Long> orphanedIdList, Map<String, Object> result) {
+
+        result.data = idList ? Org.executeQuery( dataHql, [idList: idList] ) : []
+
+        result.data.each { d ->
+            d[3] = orphanedIdList.contains(d[0]) ? 1 : 0
+            d[2] = d[3] ? 0 : 1
+            d[0] = Math.abs(d[1].hashCode())
+
+            result.dataDetails.add([
+                    query : query,
+                    id    : d[0],
+                    label : d[1],
+                    idList: Org.executeQuery( dataDetailsHql, [idList: idList, d: d[1]] ),
+                    value1: d[2], // matched
+                    value2: d[3]  // orphaned
+            ])
+        }
+    }
+
     static void handleGenericAllQuery(String query, String dataHql, String dataDetailsHql, List<Long> idList, Map<String, Object> result) {
 
         result.data = idList ? Org.executeQuery( dataHql, [idList: idList] ) : []
@@ -143,24 +168,39 @@ class BaseQuery {
         handleGenericNonMatchingData( query, nonMatchingHql, idList, result )
     }
 
+    static void handleGenericRoleQuery(String query, String dataHql, String dataDetailsHql, String nonMatchingHql, List<Long> idList, Map<String, Object> result) {
+
+        result.data = idList ? Org.executeQuery( dataHql, [idList: idList] ) : []
+
+        result.data.each { d ->
+            d[1] = Role.get(d[0]).getI10n('authority')
+
+            result.dataDetails.add( [
+                    query:  query,
+                    id:     d[0],
+                    label:  d[1],
+                    idList: Org.executeQuery( dataDetailsHql, [idList: idList, d: d[0]] )
+            ])
+        }
+        handleGenericNonMatchingData( query, nonMatchingHql, idList, result )
+    }
+
     static void handleGenericNonMatchingData(String query, String hql, List<Long> idList, Map<String, Object> result) {
 
         List<Long> noDataList = idList ? Org.executeQuery( hql, [idList: idList] ) : []
 
-        if (noDataList) {
-            handleGenericNonMatchingData1Value_TMP(query, NO_DATA_LABEL, noDataList, result)
-        }
+        handleGenericNonMatchingData1Value_TMP(query, NO_DATA_LABEL, noDataList, result)
     }
 
     static void handleGenericNonMatchingData1Value_TMP(String query, String label, List<Long> noDataList, Map<String, Object> result) {
 
         if (noDataList) {
-            result.data.add([null, getMessage(label), noDataList.size()])
+            result.data.add([NO_DATA_ID, getChartLabel(label), noDataList.size()])
 
             result.dataDetails.add([
                     query : query,
-                    id    : null,
-                    label : getMessage(label),
+                    id    : NO_DATA_ID,
+                    label : getChartLabel(label),
                     idList: noDataList,
             ])
         }
@@ -169,12 +209,12 @@ class BaseQuery {
     static void handleGenericNonMatchingData2Values_TMP(String query, String label, List<Long> noDataIdList, Map<String, Object> result) {
 
         if (noDataIdList) {
-            result.data.add([null, getMessage(label), noDataIdList.size()])
+            result.data.add([NO_DATA_ID, getChartLabel(label), noDataIdList.size()])
 
             result.dataDetails.add([
                     query : query,
-                    id    : null,
-                    label : getMessage(label),
+                    id    : NO_DATA_ID,
+                    label : getChartLabel(label),
                     idList: noDataIdList,
                     value1: 0,
                     value2: noDataIdList.size()
@@ -232,7 +272,7 @@ class BaseQuery {
                     dataDetailsHqlPart + " and ns.id = :d and ident.value is not null and trim(ident.value) != ''",
                     [idList: idList, d: d[0]]
             )
-            d[1] = IdentifierNamespace.get(d[0]).getI10n('name') ?: d[1] + ' *'
+            d[1] = IdentifierNamespace.get(d[0]).getI10n('name') ?: GenericHelper.flagUnmatched(d[1])
 
             result.dataDetails.add([
                     query : query,
@@ -247,9 +287,7 @@ class BaseQuery {
         List<Long> nonMatchingIdList = idList.minus( result.dataDetails.collect { it.idList }.flatten() )
         List<Long> noDataList = nonMatchingIdList ? Org.executeQuery( nonMatchingHql, [idList: nonMatchingIdList] ) : []
 
-        if (noDataList) {
-            handleGenericNonMatchingData2Values_TMP(query, NO_IDENTIFIER_LABEL, noDataList, result)
-        }
+        handleGenericNonMatchingData2Values_TMP(query, NO_IDENTIFIER_LABEL, noDataList, result)
     }
 
     static void handleGenericPropertyXQuery(String query, String dataHqlPart, String dataDetailsHqlPart, List<Long> idList, Org ctxOrg, Map<String, Object> result) {
@@ -264,17 +302,24 @@ class BaseQuery {
         result.data.each { d ->
             d[1] = PropertyDefinition.get(d[0]).getI10n('name')
 
-            List<Long> objIdList =  Org.executeQuery(
-                    dataDetailsHqlPart + ' and (prop.tenant = :ctxOrg or prop.isPublic = true) and pd.id = :d order by pd.name_' + locale,
+            List<Long> obj2IdList =  Org.executeQuery(
+                    dataDetailsHqlPart + ' and (prop.isPublic = true) and pd.id = :d order by pd.name_' + locale,
+                    [idList: idList, d: d[0]]
+            )
+            List<Long> obj3IdList =  Org.executeQuery(
+                    dataDetailsHqlPart + ' and (prop.tenant = :ctxOrg and prop.isPublic != true) and pd.id = :d order by pd.name_' + locale,
                     [idList: idList, d: d[0], ctxOrg: ctxOrg]
             )
+            int obj2IdListSize = obj2IdList.size()
+            int obj3IdListSize = obj3IdList.size()
             result.dataDetails.add([
                     query : query,
                     id    : d[0],
                     label : d[1],
-                    idList: objIdList,
-                    value1: objIdList.size(),
-                    value2: objIdList.unique().size()
+                    idList: obj3IdList + obj2IdList,
+                    value1: obj3IdList.unique().size() + obj2IdList.unique().size(),
+                    value2: obj2IdListSize,
+                    value3: obj3IdListSize
             ])
         }
     }
@@ -305,39 +350,38 @@ class BaseQuery {
 
         List<Long> sp1DataList = Org.executeQuery( 'select dc.id from ' + domainClass + ' dc where dc.id in (:idList) and dc.startDate != null and dc.endDate is null', [idList: idList] )
         if (sp1DataList) {
-            result.data.add([SPEC_DATA_ID_1, getMessage(NO_ENDDATE_LABEL), sp1DataList.size()])
+            result.data.add([FAKE_DATA_ID_1, getChartLabel(NO_ENDDATE_LABEL), sp1DataList.size()])
 
             result.dataDetails.add([
                     query : query,
-                    id    : SPEC_DATA_ID_1,
-                    label : getMessage(NO_ENDDATE_LABEL),
+                    id    : FAKE_DATA_ID_1,
+                    label : getChartLabel(NO_ENDDATE_LABEL),
                     idList: sp1DataList
             ])
         }
 
         List<Long> sp2DataList = Org.executeQuery( 'select dc.id from ' + domainClass + ' dc where dc.id in (:idList) and dc.startDate is null and dc.endDate != null', [idList: idList] )
         if (sp2DataList) {
-            result.data.add([SPEC_DATA_ID_2, getMessage(NO_STARTDATE_LABEL), sp2DataList.size()])
+            result.data.add([FAKE_DATA_ID_2, getChartLabel(NO_STARTDATE_LABEL), sp2DataList.size()])
 
             result.dataDetails.add([
                     query : query,
-                    id    : SPEC_DATA_ID_2,
-                    label : getMessage(NO_STARTDATE_LABEL),
+                    id    : FAKE_DATA_ID_2,
+                    label : getChartLabel(NO_STARTDATE_LABEL),
                     idList: sp2DataList
             ])
         }
 
         List<Long> noDataList = Org.executeQuery( 'select dc.id from ' + domainClass + ' dc where dc.id in (:idList) and dc.startDate is null and dc.endDate is null', [idList: idList] )
-        if (noDataList) {
-            handleGenericNonMatchingData1Value_TMP(query, NO_DATA_LABEL, noDataList, result)
-        }
+
+        handleGenericNonMatchingData1Value_TMP(query, NO_DATA_LABEL, noDataList, result)
     }
 
-    static String getMessage(String token) {
+    static String getChartLabel(String token) {
+        //println 'getChartLabel(): ' + token
         MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         Locale locale = LocaleContextHolder.getLocale()
 
-        // println ' ---> ' + 'reporting.query.base.' + token
-        messageSource.getMessage('reporting.query.base.' + token, null, locale)
+        messageSource.getMessage('reporting.chart.result.' + token, null, locale)
     }
 }

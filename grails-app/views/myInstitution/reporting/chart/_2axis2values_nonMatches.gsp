@@ -12,13 +12,13 @@
             ]
         },
         legend: JSPC.app.reporting.helper._pie.legend,
-        toolbox: JSPC.app.reporting.helper.toolbox,
+        toolbox: JSPC.app.reporting.helper._pie.toolbox,
         tooltip: {
             trigger: 'item',
             formatter (params) {
                 var str = params.name
 
-                if (JSPC.helper.contains(['${BaseQuery.getMessage(BaseQuery.NO_IDENTIFIER_LABEL)}', '${BaseQuery.getMessage(BaseQuery.NO_PLATFORM_LABEL)}', '${BaseQuery.getMessage(BaseQuery.NO_PROVIDER_LABEL)}'], str)) {
+                if (JSPC.helper.contains(['${BaseQuery.getChartLabel(BaseQuery.NO_IDENTIFIER_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_PLATFORM_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_PROVIDER_LABEL)}'], str)) {
                     return str + JSPC.app.reporting.helper.tooltip.getEntry(params.marker, ' ', Math.abs(params.value[3]))
                 }
                 str += JSPC.app.reporting.helper.tooltip.getEntry(params.marker, '${labels.chart[0]}', params.value[3])
@@ -30,8 +30,8 @@
             {
                 name: '${labels.chart[0]}',
                 type: 'pie',
-                radius: '70%',
-                center: ['60%', '45%'],
+                radius: [0, '70%'],
+                center: ['50%', '40%'],
                 minAngle: 1,
                 minShowLabelAngle: 1,
                 encode: {
@@ -39,7 +39,17 @@
                     value: 'value2',
                     id: 'id'
                 },
-                emphasis: JSPC.app.reporting.helper.series._pie.emphasis
+                emphasis: JSPC.app.reporting.helper.series._pie.emphasis,
+                itemStyle: {
+                    color: function(params) {
+                        if (JSPC.helper.contains(['${BaseQuery.getChartLabel(BaseQuery.NO_IDENTIFIER_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_PLATFORM_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_PROVIDER_LABEL)}'], params.name)) {
+                            return JSPC.app.reporting.helper.series._color.redInactiveSolid
+                        }
+                        else {
+                            return JSPC.app.reporting.helper.series._color.palette[params.dataIndex % JSPC.app.reporting.helper.series._color.palette.length];
+                        }
+                    }
+                }
             },
         ]
     };
@@ -66,7 +76,7 @@
             formatter (params) {
                 var str = params[0].name
 
-                if (JSPC.helper.contains(['${BaseQuery.getMessage(BaseQuery.NO_IDENTIFIER_LABEL)}', '${BaseQuery.getMessage(BaseQuery.NO_PLATFORM_LABEL)}', '${BaseQuery.getMessage(BaseQuery.NO_PROVIDER_LABEL)}'], str)) {
+                if (JSPC.helper.contains(['${BaseQuery.getChartLabel(BaseQuery.NO_IDENTIFIER_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_PLATFORM_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_PROVIDER_LABEL)}'], str)) {
                     return str + JSPC.app.reporting.helper.tooltip.getEntry(params[0].marker, ' ', Math.abs(params[0].value[3]))
                 }
 
@@ -122,7 +132,7 @@
                 },
                 itemStyle: {
                     color: function(params) {
-                        if (JSPC.helper.contains(['${BaseQuery.getMessage(BaseQuery.NO_IDENTIFIER_LABEL)}', '${BaseQuery.getMessage(BaseQuery.NO_PLATFORM_LABEL)}', '${BaseQuery.getMessage(BaseQuery.NO_PROVIDER_LABEL)}'], params.name)) {
+                        if (JSPC.helper.contains(['${BaseQuery.getChartLabel(BaseQuery.NO_IDENTIFIER_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_PLATFORM_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_PROVIDER_LABEL)}'], params.name)) {
                             return JSPC.app.reporting.helper.series._color.redInactive
                         } else {
                             return JSPC.app.reporting.helper.series._color.blue
@@ -150,3 +160,9 @@
         ]
     };
 </g:elseif>
+<g:elseif test="${data != null && data.isEmpty()}">
+    JSPC.app.reporting.current.chart.statusCode = 204
+</g:elseif>
+<g:else>
+    JSPC.app.reporting.current.chart.statusCode = 500
+</g:else>

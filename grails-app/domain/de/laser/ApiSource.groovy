@@ -1,9 +1,19 @@
 package de.laser
 
+/**
+ * Represents an external Elasticsearch-API-Source. Currently in use to retain we:kb API connections which are not used for bulk operations;
+ * the title synchronisation is being done via {@link GlobalRecordSource}s
+ */
 class ApiSource {
 
+    /**
+     * List all possible API types here
+     */
     enum ApiTyp
     {
+        /**
+         * The we:kb is a fork of the GOKb
+         */
         GOKBAPI
     }
 

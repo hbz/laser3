@@ -27,77 +27,25 @@ class SubscriptionReport {
     static String NO_STARTDATE = 'Ohne Laufzeit-Beginn'
     static String NO_ENDDATE = 'Ohne Laufzeit-Ende'
 
-    static Map<String, Object> CONFIG = [
+    static Map<String, Object> getCurrentConfig(Subscription sub) {
 
-            base : [
-                    meta : [
-                            cfgKey: 'SubscriptionReport'
-                    ],
-                    query: [
-                            default: [
-                                    'tipp' : [
-                                            'tipp-publisherName',
-                                            'tipp-seriesName',
-                                            'tipp-subjectReference',
-                                            'tipp-titleType',
-                                            'tipp-medium',
-                                            'tipp-ddcs',
-                                            'tipp-languages'
-                                          //  'tipp-package',
-                                          //  'tipp-platform'
-                                    ]
-                            ]
-                    ],
+        String calcType = sub._getCalculatedType()
+        // println '>> ' + calcType
 
-                    query2: [
-                            default: [
-                                    'timeline' : [
-                                            'timeline-entitlement' : [
-                                                    chart : '1axis3values',
-                                                    chartLabels : [ 'entitlement.1', 'entitlement.2', 'entitlement.3' ]
-                                            ]
-                                    ]
-                            ],
-                            consAtcons: [
-                                    'timeline' : [
-                                            'timeline-member' : [
-                                                    chart : '1axis3values',
-                                                    chartLabels : [ 'member.1', 'member.2', 'member.3' ]
-                                            ],
-                                            'timeline-cost' : [
-                                                    chart : 'cost',
-                                                    chartLabels : [ 'cost.1', 'cost.2', 'cost.3', 'cost.4' ]
-                                            ],
-                                            'timeline-entitlement' : [
-                                                    chart : '1axis3values',
-                                                    chartLabels : [ 'entitlement.1', 'entitlement.2', 'entitlement.3' ]
-                                            ],
-                                            'timeline-annualMember-subscription' : [
-                                                    chart       : 'annualMember',
-                                                    chartLabels : [ 'annualMember-subscription' ]
-                                            ],
-                                    ]
-                            ],
-
-                    ]
-            ]
-    ]
-
-    static Map<String, Object> getCurrentQuery2Config(Subscription sub) {
-        if (sub.getConsortia()) {
-            if (! sub.getAllSubscribers()) {
-//                println '- consortium @ subscriptionCons'
-                return SubscriptionReport.CONFIG.base.query2.consAtcons
-            }
-            else {
-//                println '- consortium @ subscriptionMember'
-//                println '- subscriber @ subscriptionMember'
-            }
+        if (calcType in [Subscription.TYPE_CONSORTIAL]) {
+            return SubscriptionXCfg.CONFIG_CONS_AT_CONS
         }
         else {
-//            println '- locals'
+            return SubscriptionXCfg.CONFIG
         }
-        SubscriptionReport.CONFIG.base.query2.default
+    }
+
+    static Map<String, Object> getCurrentQueryConfig(Subscription sub) {
+        getCurrentConfig( sub ).base.query.default
+    }
+
+    static Map<String, Object> getCurrentTimelineConfig(Subscription sub) {
+        getCurrentConfig( sub ).base.timeline
     }
 
     static List<String> getTimelineQueryLabels(GrailsParameterMap params) {
@@ -106,13 +54,12 @@ class SubscriptionReport {
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         Subscription sub = Subscription.get(params.id)
 
-        CONFIG.base.query2.each { cats ->
-            cats.value.each {it ->
-                if (it.value.containsKey(params.query)) {
-                    String sd = sub.startDate ? sdf.format(sub.startDate) : NO_STARTDATE
-                    String ed = sub.endDate ? sdf.format(sub.endDate) : NO_ENDDATE
-                    meta = [ getMessage( it.key ), getMessage( 'timeline.' + params.query ), "${sd} - ${ed}" ]
-                }
+        // TODO
+        getCurrentConfig( Subscription.get(params.token.split('#')[1]) ).base.timeline.each { cats ->
+            if (cats.value.containsKey(params.query)) {
+                String sd = sub.startDate ? sdf.format(sub.startDate) : NO_STARTDATE
+                String ed = sub.endDate ? sdf.format(sub.endDate) : NO_ENDDATE
+                meta = [ getMessage( 'timeline'), getMessage( 'timeline.' + params.query ), "${sd} - ${ed}" ]
             }
         }
         meta
@@ -120,11 +67,10 @@ class SubscriptionReport {
     static List<String> getTimelineQueryLabelsForAnnual(GrailsParameterMap params) {
         List<String> meta = []
 
-        CONFIG.base.query2.each { cats ->
-            cats.value.each {it ->
-                if (it.value.containsKey(params.query)) {
-                    meta = [ getMessage( it.key ), getMessage( 'timeline.' + params.query ), "${params.id}" ]
-                }
+        // TODO
+        getCurrentConfig( Subscription.get(params.token.split('#')[1]) ).base.timeline.each { cats ->
+            if (cats.value.containsKey(params.query)) {
+                meta = [ getMessage( 'timeline'), getMessage( 'timeline.' + params.query ), "${params.id}" ]
             }
         }
         meta
@@ -150,7 +96,7 @@ class SubscriptionReport {
             Subscription sub = Subscription.get(id)
             List<Subscription> timeline = getTimeline(sub)
 
-            if (params.query.startsWith('timeline')) {
+            if (prefix == 'timeline') {
 
                 if (params.query == 'timeline-member') {
                     List<List<Long>> subIdLists = []
@@ -384,9 +330,7 @@ class SubscriptionReport {
                             'select tipp.id from TitleInstancePackagePlatform tipp where tipp.id in (:idList)', [idList: nonMatchingIdList]
                     ) : []
 
-                    if (noDataList) {
-                        BaseQuery.handleGenericNonMatchingData1Value_TMP(params.query, BaseQuery.NO_DATA_LABEL, noDataList, result)
-                    }
+                    BaseQuery.handleGenericNonMatchingData1Value_TMP(params.query, BaseQuery.NO_DATA_LABEL, noDataList, result)
                 }
                 else if (params.query == 'tipp-languages') {
 
@@ -414,9 +358,7 @@ class SubscriptionReport {
                             'select tipp.id from TitleInstancePackagePlatform tipp where tipp.id in (:idList)', [idList: nonMatchingIdList]
                     ) : []
 
-                    if (noDataList) {
-                        BaseQuery.handleGenericNonMatchingData1Value_TMP(params.query, BaseQuery.NO_DATA_LABEL, noDataList, result)
-                    }
+                    BaseQuery.handleGenericNonMatchingData1Value_TMP(params.query, BaseQuery.NO_DATA_LABEL, noDataList, result)
                 }
                 /* else if (params.query == 'tipp-platform') {
 
@@ -456,8 +398,89 @@ class SubscriptionReport {
 
                 result.put('objectReference', id) // workaround : XYZ
             }
+
+            else if (prefix == 'member') {
+
+                List<Long> idList = Org.executeQuery(
+                        'select distinct ro.org.id from Subscription s join s.derivedSubscriptions m join m.orgRelations ro where s.id = :id and ro.roleType in (:roleTypes)',
+                        [id: id, roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]
+                )
+
+                if (params.query == 'member-country') {
+                    processSimpleMemberRefdataQuery(params.query, 'country', idList, result)
+                }
+                else if (params.query == 'member-customerType') {
+
+                    BaseQuery.handleGenericRoleQuery(
+                            params.query,
+                            'select r.id, r.authority, count(*) from Org o, OrgSetting oss, Role r where oss.org = o and oss.key = \'CUSTOMER_TYPE\' and o.id in (:idList) and oss.roleValue = r group by r.id',
+                            'select o.id from Org o, OrgSetting oss where oss.org = o and oss.key = \'CUSTOMER_TYPE\' and o.id in (:idList) and oss.roleValue.id = :d order by o.sortname, o.name',
+                            'select distinct o.id from Org o where o.id in (:idList) and not exists (select oss from OrgSetting oss where oss.org = o and oss.key = \'CUSTOMER_TYPE\')',
+                            idList,
+                            result
+                    )
+                }
+                else if (params.query == 'member-eInvoicePortal') {
+                    processSimpleMemberRefdataQuery(params.query, 'eInvoicePortal', idList, result)
+
+                }else if (params.query == 'member-funderHskType') {
+                    processSimpleMemberRefdataQuery(params.query, 'funderHskType', idList, result)
+                }
+                else if (params.query == 'member-funderType') {
+                    processSimpleMemberRefdataQuery(params.query, 'funderType', idList, result)
+                }
+                else if (params.query == 'member-libraryNetwork') {
+                    processSimpleMemberRefdataQuery(params.query, 'libraryNetwork', idList, result)
+                }
+                else if (params.query == 'member-libraryType') {
+                    processSimpleMemberRefdataQuery(params.query, 'libraryType', idList, result)
+                }
+                else if (params.query == 'member-orgType') {
+
+                    BaseQuery.handleGenericRefdataQuery(
+                            params.query,
+                            'select p.id, p.value_de, count(*) from Org o join o.orgType p where o.id in (:idList) group by p.id, p.value_de order by p.value_de',
+                            'select o.id from Org o join o.orgType p where o.id in (:idList) and p.id = :d order by o.sortname, o.name',
+                            'select distinct o.id from Org o where o.id in (:idList) and not exists (select ot from o.orgType ot)',
+                            idList,
+                            result
+                    )
+                }
+                else if (params.query == 'member-region') {
+                    processSimpleMemberRefdataQuery(params.query, 'region', idList, result)
+                }
+                else if (params.query == 'member-subjectGroup') {
+
+                    BaseQuery.handleGenericRefdataQuery(
+                            params.query,
+                            'select p.id, p.value_de, count(*) from Org o join o.subjectGroup rt join rt.subjectGroup p where o.id in (:idList) group by p.id, p.value_de order by p.value_de',
+                            'select o.id from Org o join o.subjectGroup rt join rt.subjectGroup p where o.id in (:idList) and p.id = :d order by o.sortname, o.name',
+                            'select distinct o.id from Org o where o.id in (:idList) and not exists (select osg from OrgSubjectGroup osg where osg.org = o)',
+                            idList,
+                            result
+                    )
+                }
+            }
         }
+
         result
+    }
+
+    static void processSimpleMemberRefdataQuery(String query, String refdata, List idList, Map<String, Object> result) {
+
+        List<String> PROPERTY_QUERY = [
+                'select p.id, p.value_de, count(*) ',
+                ' group by p.id, p.value_de order by p.value_de'
+        ]
+
+        BaseQuery.handleGenericRefdataQuery(
+                query,
+                PROPERTY_QUERY[0] + 'from Org o join o.' + refdata + ' p where o.id in (:idList)' + PROPERTY_QUERY[1],
+                'select o.id from Org o join o.' + refdata + ' p where o.id in (:idList) and p.id = :d order by o.sortname, o.name',
+                'select distinct o.id from Org o where o.id in (:idList) and o.' + refdata + ' is null',
+                idList,
+                result
+        )
     }
 
     static void processSimpleTippQuery(String query, String property, List idList, Map<String, Object> result) {
@@ -526,7 +549,18 @@ class SubscriptionReport {
         MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
         Locale locale = LocaleContextHolder.getLocale()
 
-        // println ' ---> ' + 'reporting.local.subscription.' + token
         messageSource.getMessage('reporting.local.subscription.' + token, null, locale)
+    }
+
+    static String getQueryLabel(String qKey, List qValues) {
+        //println 'getQueryLabel(): ' + qKey + ' - ' + qValues
+        MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+        Locale locale = LocaleContextHolder.getLocale()
+
+        if (qValues[0].startsWith('generic')) {
+            messageSource.getMessage('reporting.cfg.' + qValues[0], null, locale)
+        } else {
+            messageSource.getMessage('reporting.local.subscription.query.' + qKey, null, locale) // TODO
+        }
     }
 }

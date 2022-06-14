@@ -118,7 +118,7 @@
 
         <div class="three fields">
 
-            <g:render template="/templates/properties/genericFilter" model="[propList: propList, hideFilterProp: true]"/>
+            <g:render template="/templates/properties/genericFilter" model="[propList: propList, hideFilterProp: true, label:message(code: 'subscription.property.search')]"/>
 
             <div class="field">
                 <label>${message(code: 'surveyInfo.type.label')}</label>
@@ -205,7 +205,7 @@
 
     </semui:tabs>
 
-    <table class="ui celled sortable table la-table">
+    <table class="ui celled sortable table la-js-responsive-table la-table">
         <thead>
         <tr>
             <th rowspan="2" class="center aligned">

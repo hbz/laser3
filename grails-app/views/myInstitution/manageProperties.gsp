@@ -20,7 +20,7 @@
 
 <semui:filter>
     <g:form action="manageProperties" method="post" class="ui form" id="${params.id}">
-        <g:render template="/templates/properties/genericFilter" model="[propList: propList, hideFilterProp: true]"/>
+        <g:render template="/templates/properties/genericFilter" model="[propList: propList, hideFilterProp: true, label:message(code: 'subscription.property.search')]"/>
 
         <div class="field la-field-right-aligned">
             <a href="${request.forwardURI}"
@@ -94,7 +94,7 @@
                     <input id="filterPropValue" type="text" name="filterPropValue" placeholder="${message(code: 'license.search.property.ph')}"/>
                 </g:else>
             </div>
-            <table class="ui celled la-table table" id="withoutPropTable">
+            <table class="ui celled la-js-responsive-table la-table table" id="withoutPropTable">
                 <thead>
                     <tr>
                         <th colspan="5">
@@ -108,7 +108,7 @@
                         </th>
                         <g:if test="${showConsortiaFunctions && auditable}">
                             <th>
-                                <span data-tooltip="${message(code:'property.manageProperties.markForAudit')}"><i class="ui thumbtack icon"></i></span><br />
+                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.manageProperties.markForAudit')}"><i class="ui thumbtack icon"></i></span><br />
                                 <g:checkBox name="membersAuditListToggler" id="membersAuditListToggler" checked="false"/>
                             </th>
                         </g:if>
@@ -333,7 +333,7 @@
                 </g:else>
             </div>
 
-            <table class="ui celled la-table table" id="existingObjTable">
+            <table class="ui celled la-js-responsive-table la-table table" id="existingObjTable">
                 <thead>
                     <tr>
                         <th colspan="6">

@@ -139,7 +139,7 @@
                     <td><g:checkBox name="copySurvey.copySurveyProperties" value="${true}"/></td>
                     <td>${message(code: 'copySurvey.copySurveyProperties')}</td>
                     <td>
-                        <table class="ui celled sortable table la-table">
+                        <table class="ui celled sortable table la-js-responsive-table la-table">
                             <thead>
                             <tr>
                                 <th class="center aligned">${message(code: 'sidewide.number')}</th>
@@ -208,7 +208,7 @@
                     <td>
                         <g:each in="${surveyConfig.documents.sort { it.owner.title }}" var="docctx">
                             <g:if test="${(((docctx.owner.contentType == 1) || (docctx.owner.contentType == 3)) && (docctx.status?.value != 'Deleted'))}">
-                                <g:link controller="docstore" id="${docctx.owner.uuid}">
+                                <g:link controller="docstore" id="${docctx.owner.uuid}" target="_blank">
                                     <g:if test="${docctx.owner.title}">
                                         ${docctx.owner.title}
                                     </g:if>
@@ -265,7 +265,7 @@
                     <td><g:checkBox name="copySurvey.copyParticipants" value="${true}"/></td>
                     <td>${message(code: 'copySurvey.copyParticipants')}</td>
                     <td>
-                        <table class="ui sortable celled la-table table">
+                        <table class="ui sortable celled la-js-responsive-table la-table table">
 
                             <thead>
                             <tr>
@@ -353,7 +353,7 @@
             <div class="four fields">
 
                 <!-- 2-1 + 2-2 -->
-                <g:render template="/templates/properties/genericFilter" model="[propList: propList]"/>
+                <g:render template="/templates/properties/genericFilter" model="[propList: propList, label:message(code: 'subscription.property.search')]"/>
 
                 <!-- 2-3 -->
                 <div class="field">
@@ -403,7 +403,7 @@
             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, workFlow: '2']">
         <div class="subscription-results">
             <g:if test="${subscriptions}">
-                <table class="ui celled sortable table table-tworow la-table">
+                <table class="ui celled sortable table table-tworow la-js-responsive-table la-table">
                     <thead>
                     <tr>
                         <th rowspan="2" class="center aligned"></th>

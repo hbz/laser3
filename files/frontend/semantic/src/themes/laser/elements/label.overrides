@@ -1,11 +1,13 @@
-.finance_index .ui.ribbon.label {
+.finance_index .ui.ribbon.label,
+.finance_subFinancialData .ui.ribbon.label{
   left: calc(-1rem - 1.8em);
   top: -22px;
 }
 .ui.modal>.content.la-twoSided-ribbon {
   padding: 0 1.5rem 0 1.5rem;
 }
-.finance_index .ui.right.ribbon.label {
+.finance_index .ui.right.ribbon.label,
+ .finance_subFinancialData .ui.right.ribbon.label{
   left: calc(104.2%);
   top: -22px;
 }
@@ -19,9 +21,14 @@
   position: relative;
   padding-left: 0.2em;
   padding-right: 0.2em;
+  margin-bottom: 1.2em;
   background-color: @laSecondaryBackground;
   border: 1px solid #d3dae3;
   vertical-align: super;
+  margin: 0 1.142857em;
+  .ui.tiny.label {
+    font-size: .45rem;
+  }
   .icon {
     font-size: 1em;
     width: auto;
@@ -57,6 +64,53 @@
   .la-annual-rings-text {
     vertical-align: sub;
     padding-right: 0.5em;
+  }
+}
+// annual rings modern
+.ui.la-annual-rings-modern {
+  display: inline-flex;
+  padding-left: 0.2em;
+  padding-right: 0.2em;
+  margin-bottom: 1.2em;
+  background-color: transparent;
+  border: none;
+  vertical-align: super;
+  align-items:center;
+  .icon {
+    //margin: 0em @iconDistance 0em @iconDistance;
+  }
+  >a {
+    opacity: 1;
+    text-decoration: none;
+    display: inline-block;
+    width: 2.1em;
+    &:hover {
+      filter: brightness(0.85);
+    }
+  }
+  i.disabled.icon {
+    opacity: 0!important;
+    //margin: 0 0 0 .1em;
+  }
+  .la-status-active {
+    color: @green;
+    opacity: 1;
+  }
+  .la-status-inactive {
+    color: @red;
+    opacity: 1;
+  }
+  .la-status-else {
+    color: @yellow;
+    opacity: 1;
+  }
+  .la-annual-rings-text {
+    padding: 3px;
+    margin-top: 0.3rem;
+    margin-right: -0.3em;
+    color: rgba(0,0,0,.6);
+    letter-spacing: 0.05em;
+    font-weight: 700;
   }
 }
 
@@ -215,4 +269,39 @@
   z-index: 999;
   padding:0.2em;
   font-size: 2.5rem;
+}
+
+/* Label for survey types */
+
+.ui.label.survey-renewal,
+.ui.label.survey-interest,
+.ui.label.survey-selection,
+.ui.label.survey-subscription {
+  vertical-align: super;
+  min-width: 150px!important;
+  text-align: center;
+  border-radius: 5px;
+}
+
+
+.ui.label.survey-renewal {
+  background-color: @lightGreenGenerated ;
+}
+
+.ui.label.survey-interest {
+  background-color:  @lightRedGenerated;
+}
+
+.ui.label.survey-selection {
+  background-color: @lightBlueGenerated;
+}
+.ui.label.survey-subscription {
+  background-color: @lightOrangeGenerated;
+}
+
+a .ui.circular.label {
+  &:hover, &:focus {
+    border-radius: 0;
+    transition:border-radius;
+  }
 }

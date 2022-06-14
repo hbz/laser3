@@ -14,7 +14,7 @@
         </g:each>
     </semui:tabs>
     <div class="ui bottom attached tab active">
-        <table class="ui la-table table">
+        <table class="ui la-js-responsive-table la-table table">
             <thead>
             <tr>
                 <th class="three wide">${message(code: 'consortium.member')}</th>

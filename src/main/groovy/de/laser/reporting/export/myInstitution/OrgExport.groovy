@@ -21,6 +21,8 @@ import de.laser.oap.OrgAccessPointShibboleth
 import de.laser.oap.OrgAccessPointVpn
 import de.laser.reporting.export.GlobalExportHelper
 import de.laser.reporting.export.base.BaseDetailsExport
+import de.laser.reporting.report.GenericHelper
+import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseDetails
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
@@ -29,7 +31,7 @@ import org.springframework.context.i18n.LocaleContextHolder
 
 class OrgExport extends BaseDetailsExport {
 
-    static String KEY = 'organisation'
+    static String KEY = BaseConfig.KEY_ORGANISATION
 
     static Map<String, Object> CONFIG_X = [
 
@@ -39,59 +41,48 @@ class OrgExport extends BaseDetailsExport {
                     ],
                     fields : [
                             default: [
-                                    'globalUID'         : FIELD_TYPE_PROPERTY,
-                                    'sortname'          : FIELD_TYPE_PROPERTY,
-                                    'name'              : FIELD_TYPE_PROPERTY,
-                                    'customerType'      : FIELD_TYPE_CUSTOM_IMPL,
-                                    'orgType'           : FIELD_TYPE_REFDATA_JOINTABLE,
-                                    'libraryType'       : FIELD_TYPE_REFDATA,
-                                    'libraryNetwork'    : FIELD_TYPE_REFDATA,
-                                    'funderHskType'     : FIELD_TYPE_REFDATA,
-                                    'funderType'        : FIELD_TYPE_REFDATA,
-                                    'country'           : FIELD_TYPE_REFDATA,
-                                    'legalInfo'         : FIELD_TYPE_CUSTOM_IMPL,
-                                    'eInvoice'          : FIELD_TYPE_PROPERTY,
-                                    '@-org-contact'       : FIELD_TYPE_CUSTOM_IMPL,       // virtual
-                                    'x-property'            : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
-                                    'x-identifier'          : FIELD_TYPE_CUSTOM_IMPL,
-                                    '@-org-accessPoint'   : FIELD_TYPE_CUSTOM_IMPL,       // virtual
-                                    '@-org-readerNumber'  : FIELD_TYPE_CUSTOM_IMPL,       // virtual
-                                    'subjectGroup'          : FIELD_TYPE_CUSTOM_IMPL
+                                    'globalUID'         : [ type: FIELD_TYPE_PROPERTY ],
+                                    '+sortname+name'    : [ type: FIELD_TYPE_COMBINATION ],
+                                    'customerType'      : [ type: FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
+                                    'orgType'           : [ type: FIELD_TYPE_REFDATA_JOINTABLE ],
+                                    'libraryType'       : [ type: FIELD_TYPE_REFDATA ],
+                                    'libraryNetwork'    : [ type: FIELD_TYPE_REFDATA ],
+                                    'funderHskType'     : [ type: FIELD_TYPE_REFDATA ],
+                                    'funderType'        : [ type: FIELD_TYPE_REFDATA ],
+                                    'country'           : [ type: FIELD_TYPE_REFDATA ],
+                                    'legalInfo'         : [ type: FIELD_TYPE_CUSTOM_IMPL ],   // TODO custom_impl
+                                    'eInvoice'          : [ type: FIELD_TYPE_PROPERTY ],
+                                    '@-org-contact'     : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    'x-property'        : [ type: FIELD_TYPE_CUSTOM_IMPL_QDP ],
+                                    'x-identifier'      : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-org-accessPoint' : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-org-readerNumber': [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    'subjectGroup'      : [ type: FIELD_TYPE_CUSTOM_IMPL ]   // TODO custom_impl
                             ],
                             provider: [
-                                    'globalUID'         : FIELD_TYPE_PROPERTY,
-                                    'sortname'          : FIELD_TYPE_PROPERTY,
-                                    'name'              : FIELD_TYPE_PROPERTY,
-                                    'orgType'           : FIELD_TYPE_REFDATA_JOINTABLE,
-                                    'country'           : FIELD_TYPE_REFDATA,
-                                    '@-org-contact'   : FIELD_TYPE_CUSTOM_IMPL,       // virtual
-                                    'x-property'        : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp,
-                                    'x-identifier'      : FIELD_TYPE_CUSTOM_IMPL,
+                                    'globalUID'         : [ type: FIELD_TYPE_PROPERTY ],
+                                    '+sortname+name'    : [ type: FIELD_TYPE_COMBINATION ],
+                                    'orgType'           : [ type: FIELD_TYPE_REFDATA_JOINTABLE ],
+                                    'country'           : [ type: FIELD_TYPE_REFDATA ],
+                                    '@-org-contact'     : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    'x-property'        : [ type: FIELD_TYPE_CUSTOM_IMPL_QDP ],
+                                    'x-identifier'      : [ type: FIELD_TYPE_CUSTOM_IMPL ],
                             ],
                             agency: [
-                                    'globalUID'         : FIELD_TYPE_PROPERTY,
-                                    'sortname'          : FIELD_TYPE_PROPERTY,
-                                    'name'              : FIELD_TYPE_PROPERTY,
-                                    'orgType'           : FIELD_TYPE_REFDATA_JOINTABLE,
-                                    'country'           : FIELD_TYPE_REFDATA,
-                                    '@-org-contact'   : FIELD_TYPE_CUSTOM_IMPL,       // virtual
-                                    'x-property'        : FIELD_TYPE_CUSTOM_IMPL_QDP,   // qdp
-                                    'x-identifier'      : FIELD_TYPE_CUSTOM_IMPL,
+                                    'globalUID'         : [ type: FIELD_TYPE_PROPERTY ],
+                                    '+sortname+name'    : [ type: FIELD_TYPE_COMBINATION ],
+                                    'orgType'           : [ type: FIELD_TYPE_REFDATA_JOINTABLE ],
+                                    'country'           : [ type: FIELD_TYPE_REFDATA ],
+                                    '@-org-contact'     : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    'x-property'        : [ type: FIELD_TYPE_CUSTOM_IMPL_QDP ],
+                                    'x-identifier'      : [ type: FIELD_TYPE_CUSTOM_IMPL ],
                             ]
                     ]
             ]
     ]
 
     OrgExport (String token, Map<String, Object> fields) {
-        this.token = token
-
-        // keeping order ..
-        getAllFields().keySet().each { k ->
-            if (k in fields.keySet() ) {
-                selectedExportFields.put(k, fields.get(k))
-            }
-        }
-        normalizeSelectedMultipleFields( this )
+        init(token, fields)
     }
 
     @Override
@@ -116,13 +107,13 @@ class OrgExport extends BaseDetailsExport {
 
         fields.each{ f ->
             String key = f.key
-            String type = getAllFields().get(f.key)
+            String type = getAllFields().get(f.key)?.type
 
             // --> generic properties
             if (type == FIELD_TYPE_PROPERTY) {
 
                 if (key == 'globalUID') {
-                    content.add( g.createLink( controller: 'org', action: 'show', absolute: true ) + '/' + org.getProperty(key) as String )
+                    content.add( g.createLink( controller: 'org', action: 'show', absolute: true ) + '/' + org.getProperty(key) + '@' + org.getProperty(key) )
                 }
                 else {
                     content.add( getPropertyContent(org, key, Org.getDeclaredField(key).getType()) )
@@ -171,7 +162,7 @@ class OrgExport extends BaseDetailsExport {
                         ids = Identifier.executeQuery( "select i from Identifier i where i.value != null and i.value != '' and i.org = :org and i.ns.id in (:idnsList)",
                                 [org: org, idnsList: f.value] )
                     }
-                    content.add( ids.collect{ (it.ns.getI10n('name') ?: it.ns.ns + ' *') + ':' + it.value }.join( CSV_VALUE_SEPARATOR ))
+                    content.add( ids.collect{ (it.ns.getI10n('name') ?: GenericHelper.flagUnmatched( it.ns.ns )) + ':' + it.value }.join( CSV_VALUE_SEPARATOR ))
                 }
                 else if (key == '@-org-contact') {
                     List coList = []
@@ -238,7 +229,7 @@ class OrgExport extends BaseDetailsExport {
 
                     List entries = []
                     List<Long> semIdList = f.value.findAll{ it.startsWith('sem-') }.collect{ Long.parseLong( it.replace('sem-', '') ) }
-                    List<Integer> ddList = f.value.findAll{ it.startsWith('dd-') }.collect{ Integer.parseInt( it.replace('dd-', '') ) }
+                    List<Integer> ddList = f.value.findAll{ it.startsWith('dd-') }.collect{ Integer.parseInt( it.replace('dd-', '') ) } // integer - hql
 
                     if (semIdList) {
 
@@ -306,6 +297,9 @@ class OrgExport extends BaseDetailsExport {
 
                     content.add( oapList.join( CSV_VALUE_SEPARATOR ) )
                 }
+                else {
+                    content.add( '- ' + key + ' not implemented -' )
+                }
             }
             // --> custom query depending filter implementation
             else if (type == FIELD_TYPE_CUSTOM_IMPL_QDP) {
@@ -316,9 +310,16 @@ class OrgExport extends BaseDetailsExport {
                     List<String> properties = BaseDetails.resolvePropertiesGeneric(org, pdId, contextService.getOrg())
                     content.add( properties.findAll().join( CSV_VALUE_SEPARATOR ) ) // removing empty and null values
                 }
+                else {
+                    content.add( '- ' + key + ' not implemented -' )
+                }
+            }
+            // --> combined properties : TODO
+            else if (key in ['sortname', 'name']) {
+                content.add( getPropertyContent(org, key, Org.getDeclaredField(key).getType()) )
             }
             else {
-                content.add( '- not implemented -' )
+                content.add( '- ' + key + ' not implemented -' )
             }
         }
 

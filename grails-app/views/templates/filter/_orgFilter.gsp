@@ -19,7 +19,15 @@
 
             <g:if test="${field.equalsIgnoreCase('name')}">
                 <div class="field">
-                    <label for="orgNameContains">${actionName == 'listProvider' ? message(code: 'org.search.provider.contains') : message(code: 'org.search.contains')}</label>
+                    <label for="orgNameContains">
+                        <g:if test="${actionName in ['listProvider', 'currentProviders']}">
+                            <g:message code="org.search.provider.contains"/>
+                            <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay" data-content="${message(code:'org.search.provider.contains.tooltip')}">
+                                <i class="question circle icon"></i>
+                            </span>
+                        </g:if>
+                        <g:else><g:message code="org.search.contains"/></g:else>
+                    </label>
                     <input type="text" id="orgNameContains" name="orgNameContains"
                            placeholder="${message(code:'default.search.ph')}"
                            value="${params.orgNameContains}"/>
@@ -38,7 +46,19 @@
             </g:if>
 
             <g:if test="${field.equalsIgnoreCase('property&value')}">
-                <g:render template="/templates/properties/genericFilter" model="[propList: propList]"/>
+                <g:render template="/templates/properties/genericFilter" model="[propList: propList, label:message(code: 'subscription.property.search')]"/>
+            </g:if>
+
+            <g:if test="${field.equalsIgnoreCase('privateContacts')}">
+                <div class="field">
+                    <label for="privateContact">
+                        <g:message code="contact.name"/>
+                        <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay" data-content="${message(code:'org.search.contact.tooltip')}">
+                            <i class="question circle icon"></i>
+                        </span>
+                    </label>
+                    <input id="privateContact" name="privateContact" type="text" placeholder="${message(code: 'default.search.ph')}" value="${params.privateContact}"/>
+                </div>
             </g:if>
 
             <g:if test="${field.equalsIgnoreCase('type')}">
@@ -207,6 +227,13 @@
                             </div>
                         </div>
                     </div>
+                </div>
+            </g:if>
+
+            <g:if test="${field.equalsIgnoreCase('platform')}">
+                <div class="field">
+                    <label for="platform"><g:message code="platform.name"/></label>
+                    <input id="platform" name="platform" type="text" placeholder="${message(code: 'default.search.ph')}" value="${params.platform}"/>
                 </div>
             </g:if>
 

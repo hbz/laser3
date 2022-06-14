@@ -5,6 +5,10 @@ import de.laser.titles.TitleInstance
 import de.laser.helper.RDConstants
 import de.laser.annotations.RefdataAnnotation
 
+/**
+ * This class represents a statistics entry (usage report) which comes from the national statistics server (Nationaler Statistikserver).
+ * It thus has not to be confounded with {@link de.laser.stats.Counter4Report} nor {@link de.laser.stats.Counter5Report}. Otherwise, it follows COUNTER Revision 4, so it should be compatible with {@link de.laser.stats.Counter4Report}
+ */
 class Fact {
 
     Date factFrom

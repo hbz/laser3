@@ -1,7 +1,10 @@
 package de.laser.api.v0.entities
 
+import de.laser.Combo
 import de.laser.Identifier
 import de.laser.Org
+import de.laser.OrgSubjectGroup
+import de.laser.RefdataValue
 import de.laser.api.v0.*
 import de.laser.helper.Constants
 import de.laser.helper.RDStore
@@ -9,11 +12,18 @@ import grails.converters.JSON
 import groovy.util.logging.Slf4j
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
+/**
+ * An API representation of an {@link Org}
+ */
 @Slf4j
 class ApiOrg {
 
     /**
-     * @return ApiBox(obj: Org | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND | OBJECT_STATUS_DELETED)
+     * Locates the given {@link Org} and returns the object (or null if not found) and the request status for further processing
+     * @param the field to look for the identifier, one of {id, globalUID, gokbId, ns:identifier}
+     * @param the identifier value
+     * @return {@link ApiBox}(obj: Org | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND | OBJECT_STATUS_DELETED)
+     * @see ApiBox#validatePrecondition_1()
      */
     static ApiBox findOrganisationBy(String query, String value) {
         ApiBox result = ApiBox.get()
@@ -45,6 +55,11 @@ class ApiOrg {
     }
 
     /**
+     * Checks if the given institution can access the given target organisation. The organisation
+     * is returned in case of success
+     * @param org the {@link Org} whose details should be retrieved
+     * @param context the institution ({@link Org}) requesting the organisation
+     * @param isInvoiceTool is the request done by the hbz invoice tool?
      * @return JSON | FORBIDDEN
      */
     static requestOrganisation(Org org, Org context, boolean isInvoiceTool) {
@@ -59,6 +74,10 @@ class ApiOrg {
     }
 
     /**
+     * Assembles the given organisation attributes into a {@link Map}. The schema of the map can be seen in
+     * schemas.gsp
+     * @param org the {@link Org} which should be output
+     * @param context the institution ({@link Org}) requesting
      * @return Map<String, Object>
      */
     static Map<String, Object> getOrganisationMap(Org org, Org context) {
@@ -66,18 +85,29 @@ class ApiOrg {
 
         org = GrailsHibernateUtil.unwrapIfProxy(org)
 
-        result.globalUID    = org.globalUID
-        result.gokbId       = org.gokbId
-        result.comment      = org.comment
-        result.name         = org.name
-        result.scope        = org.scope
-        result.shortname    = org.shortname
-        result.sortname     = org.sortname
-        result.region       = org.region?.value
-        result.country      = org.country?.value
-        result.libraryType  = org.libraryType?.value
-        result.lastUpdated  = ApiToolkit.formatInternalDate(org._getCalculatedLastUpdated())
-        result.eInvoice  = org.eInvoice ? 'Yes' : 'No'
+        result.globalUID           = org.globalUID
+        result.gokbId              = org.gokbId
+        result.name                = org.name
+        result.altNames            = ApiCollectionReader.getAlternativeNameCollection(org.altnames)
+        result.shortname           = org.shortname
+        result.sortname            = org.sortname
+        result.lastUpdated         = ApiToolkit.formatInternalDate(org._getCalculatedLastUpdated())
+        result.eInvoice            = org.eInvoice ? RDStore.YN_YES.value : RDStore.YN_NO.value
+        result.url                 = org.url
+        result.urlGov              = org.urlGov
+        result.linkResolverBaseURL = org.linkResolverBaseURL
+        result.legalPatronName     = org.legalPatronName
+
+        result.retirementDate      = org.retirementDate ? ApiToolkit.formatInternalDate(org.retirementDate) : null
+        result.links               = []
+
+        Set<Combo> links = Combo.executeQuery('select c from Combo c where (c.fromOrg = :org or c.toOrg = :org) and c.type != :excludes', [org: org, excludes: RDStore.COMBO_TYPE_CONSORTIUM])
+        links.each { Combo c ->
+            if(c.fromOrg == org)
+                result.links << [linktype: c.type.value, org: ApiUnsecuredMapReader.getOrganisationStubMap(c.toOrg)]
+            else if(c.toOrg == org)
+                result.links << [linktype: c.type.value, org: ApiUnsecuredMapReader.getOrganisationStubMap(c.fromOrg)]
+        }
 
         //result.fteStudents  = org.fteStudents // TODO dc/table readerNumber
         //result.fteStaff     = org.fteStaff // TODO dc/table readerNumber
@@ -85,9 +115,16 @@ class ApiOrg {
         // RefdataValues
 
         result.eInvoicePortal = org.eInvoicePortal?.value
-        result.sector       = org.sector?.value
-        result.type         = org.orgType?.collect{ it.value }
-        result.status       = org.status?.value
+        result.region         = org.region?.value
+        result.country        = org.country?.value
+        result.libraryType    = org.libraryType?.value
+        result.funderType     = org.funderType?.value
+        result.funderHskType  = org.funderHskType?.value
+        result.subjectGroup   = org.subjectGroup?.collect { OrgSubjectGroup subjectGroup -> subjectGroup.subjectGroup.value }
+        result.libraryNetwork = org.libraryNetwork?.value
+        result.sector         = org.sector?.value
+        result.type           = org.orgType?.collect{ it.value }
+        result.status         = org.status?.value
 
         // References
 

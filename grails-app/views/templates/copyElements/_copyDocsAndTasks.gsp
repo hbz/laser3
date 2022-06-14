@@ -18,21 +18,26 @@
             params="[workFlowPart: workFlowPart, sourceObjectId: genericOIDService.getOID(sourceObject), targetObjectId: genericOIDService.getOID(targetObject), isRenewSub: isRenewSub, fromSurvey: fromSurvey, copyObject: copyObject]"
             method="post" class="ui form newLicence">
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
-        <table class="ui celled table table-tworow la-table">
+        <table class="ui celled table table-tworow la-js-responsive-table la-table">
             <thead>
             %{--DOCUMENTS:--}%
                 <tr>
                     <th class="six wide">
                         <g:if test="${sourceObject}"><g:link controller="${sourceObject.getClass().getSimpleName().toLowerCase()}" action="show" id="${sourceObject.id}">${sourceObject.dropdownNamingConvention()}</g:link></g:if>
                     </th>
-                    <th class="one wide center aligned">
+                    <g:if test="${isConsortialObjects}">
+                        <th class="one wide center aligned">
+                            <g:message code="copyElementsIntoObject.share"/> / <g:message code="copyElementsIntoObject.audit"/>
+                        </th>
+                    </g:if>
+                    <th class="one wide center aligned" data-label="${message(code:'responsive.table.selectElement')}">
                         <input type="checkbox"  data-action="copy" onClick="JSPC.app.toggleAllCheckboxes(this)" checked />
                     </th>
                     <g:if test="${!copyObject}">
                                 <th class="six wide">
                                     <g:if test="${targetObject}"><g:link controller="${targetObject.getClass().getSimpleName().toLowerCase()}" action="show" id="${targetObject.id}">${targetObject.dropdownNamingConvention()}</g:link></g:if>
                                 </th>
-                                <th class="one wide center aligned">
+                                <th class="one wide center aligned" data-label="${message(code:'responsive.table.selectElement')}">
                                     <g:if test="${targetObject}">
                                         <input class="setDeletionConfirm" type="checkbox" data-action="delete" onClick="JSPC.app.toggleAllCheckboxes(this)" />
                                     </g:if>
@@ -44,11 +49,11 @@
                 <tr>
                     <td  name="copyObject.takeDocs.source">
                         <strong><i class="file outline icon"></i>&nbsp${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.takeDocs")}:</strong><br />
-                        <g:each in="${sourceObject.documents.sort { it.owner?.title?.toLowerCase()}}" var="docctx">
+                        <g:each in="${sourceDocuments}" var="docctx">
                             <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_FILE) && (docctx.status?.value != 'Deleted') && (docctx.owner?.owner?.id == contextService.getOrg().id))}">
                                 <div data-id="${docctx.id}" class="la-element">
                                     <label>
-                                        <g:link controller="docstore" id="${docctx.owner.uuid}">
+                                        <g:link controller="docstore" id="${docctx.owner.uuid}" target="_blank">
                                             <g:if test="${docctx.owner?.title}">
                                                 ${docctx.owner.title}
                                             </g:if>
@@ -62,29 +67,26 @@
                                             </g:else>
                                         </g:link>(${docctx.owner.type.getI10n("value")})
                                     </label>
-                                    <g:if test="${isConsortialObjects}">
-                                        <div class="right aligned wide column">
-                                            <g:if test="${docctx.isShared}">
-                                                <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
-                                                <i class="la-share icon la-js-editmode-icon"></i>
-                                                </span>
-                                            </g:if>
-                                            <g:else>
-                                                <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.off')}">
-                                                <i class="la-share slash icon la-js-editmode-icon"></i>
-                                                </span>
-                                            </g:else>
-
-                                        </div>
-                                    </g:if>
                                 </div>
                             </g:if>
                         </g:each>
                     </td>
+                    <g:if test="${isConsortialObjects}">
+                        <td class="center aligned">
+                            <g:each in="${sourceDocuments}" var="docctx">
+                                <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_FILE) && (docctx.status?.value != 'Deleted') && (docctx.owner?.owner?.id == contextService.getOrg().id))}">
+                                    <div class="ui checkbox la-toggle-radio la-inherit">
+                                        <g:checkBox name="copyObject.toggleShare" value="${docctx.id}"
+                                                    checked="${docctx.isShared ? 'true' : 'false'}"/>
+                                    </div>
+                                </g:if>
+                            </g:each>
+                        </td>
+                    </g:if>
                     %{--COPY:--}%
                     <td class="center aligned">
                         <br />
-                        <g:each in="${sourceObject.documents.sort { it.owner?.title?.toLowerCase()}}" var="docctx">
+                        <g:each in="${sourceDocuments}" var="docctx">
                             <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_FILE) && (docctx.status?.value != 'Deleted') && (docctx.owner?.owner?.id == contextService.getOrg().id))}">
                                 %{--<div class="ui checkbox">--}%
                                 <div class="ui checkbox la-toggle-radio la-replace">
@@ -100,10 +102,10 @@
                             <strong><i class="file outline icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeDocs")}:</strong><br />
                             <div>
                                 <g:if test="${targetObject}">
-                                    <g:each in="${targetObject.documents.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
+                                    <g:each in="${targetDocuments}" var="docctx">
                                         <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_FILE) && (docctx.status?.value != 'Deleted') && (docctx.owner?.owner?.id == contextService.getOrg().id))}">
                                             <div data-id="${docctx.id}" class="la-element">
-                                                <g:link controller="docstore" id="${docctx.owner.uuid}">
+                                                <g:link controller="docstore" id="${docctx.owner.uuid}" target="_blank">
                                                     <g:if test="${docctx.owner?.title}">
                                                         ${docctx.owner.title}
                                                     </g:if>
@@ -141,7 +143,7 @@
                         %{--DELETE:--}%
                         <td>
                             <br />
-                            <g:each in="${targetObject.documents?.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
+                            <g:each in="${targetDocuments}" var="docctx">
                                 <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_FILE) && (docctx.status?.value != 'Deleted') && (docctx.owner?.owner?.id == contextService.getOrg().id))}">
                                     %{--<div class="ui checkbox">--}%
                                     <div class="ui checkbox la-toggle-radio la-noChange setDeletionConfirm">
@@ -158,7 +160,7 @@
                 <tr>
                     <td name="copyObject.takeAnnouncements.source">
                         <strong><i class="sticky note outline icon"></i>&nbsp${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.takeAnnouncements")}:</strong><br />
-                        <g:each in="${sourceObject.documents.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
+                        <g:each in="${sourceDocuments}" var="docctx">
                             <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.getOrg().id)}">
                                 <div data-id="${docctx.id}" class="la-element">
                                     <label>
@@ -173,30 +175,26 @@
                                                 format="${message(code: 'default.date.format.notime')}"
                                                 date="${docctx.owner.dateCreated}"/>)
                                     </label>
-
-                                    <g:if test="${isConsortialObjects}">
-                                        <div class="right aligned wide column">
-                                            <g:if test="${docctx.isShared}">
-                                                <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
-                                                    <i class="la-share icon la-js-editmode-icon"></i>
-                                                </span>
-                                            </g:if>
-                                            <g:else>
-                                                <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.off')}">
-                                                    <i class="la-share slash icon la-js-editmode-icon"></i>
-                                                </span>
-                                            </g:else>
-
-                                        </div>
-                                    </g:if>
                                 </div>
                             </g:if>
                         </g:each>
                     </td>
+                    <g:if test="${isConsortialObjects}">
+                        <td class="center aligned">
+                            <g:each in="${sourceDocuments}" var="docctx">
+                                <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.getOrg().id)}">
+                                    <div class="ui checkbox la-toggle-radio la-inherit">
+                                        <g:checkBox name="copyObject.toggleShare" value="${docctx.id}"
+                                                    checked="${docctx.isShared ? 'true' : 'false'}"/>
+                                    </div>
+                                </g:if>
+                            </g:each>
+                        </td>
+                    </g:if>
                     %{--COPY:--}%
                     <td class="center aligned">
                     <br />
-                        <g:each in="${sourceObject.documents.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
+                        <g:each in="${sourceDocuments}" var="docctx">
                             <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.getOrg().id)}">
                                 %{--<div data-id="${docctx.id} " class="la-element">--}%
                                     %{--<div class="ui checkbox">--}%
@@ -213,7 +211,7 @@
                                         <strong><i class="sticky note outline icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeAnnouncements")}:</strong><br />
                                         <div>
                                             <g:if test="${targetObject}">
-                                                <g:each in="${targetObject.documents.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
+                                                <g:each in="${targetDocuments}" var="docctx">
                                                     <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.getOrg().id)}">
                                                         <div data-id="${docctx.id}" class="la-element">
                                                             <g:if test="${docctx.owner.title}">
@@ -252,7 +250,7 @@
                                     <br />
                                         <div>
                                             <g:if test="${targetObject}">
-                                                <g:each in="${targetObject.documents.sort { it.owner?.title?.toLowerCase() }}" var="docctx">
+                                                <g:each in="${targetDocuments}" var="docctx">
                                                     <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.getOrg().id)}">
                                                         %{--<div class="ui checkbox">--}%
                                                         <div class="ui checkbox la-toggle-radio la-noChange setDeletionConfirm">
@@ -293,6 +291,7 @@
                             </div>
                         </g:each>
                     </td>
+                    <td></td>
                     <g:if test="${!copyObject && targetObject}">
                                 <td  name="copyObject.takeTasks.target">
                                     <strong><i class="checked calendar icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeTasks")}:</strong><br />

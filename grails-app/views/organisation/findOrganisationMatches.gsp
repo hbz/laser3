@@ -43,7 +43,7 @@
 
 				<g:if test="${organisationMatches != null}">
 					<g:if test="${organisationMatches.size()>0}">
-						<table class="ui celled la-table table">
+						<table class="ui celled la-js-responsive-table la-table table">
 							<thead>
 								<tr>
 									<th>${message(code:'default.name.label')}</th>

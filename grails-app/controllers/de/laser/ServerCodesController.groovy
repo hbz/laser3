@@ -5,11 +5,17 @@ import grails.core.GrailsApplication
 import grails.plugin.springsecurity.annotation.Secured
 import org.grails.exceptions.ExceptionUtils
 
+/**
+ * This controller handles the server code mapping output
+ */
 @Secured(['permitAll'])
 class ServerCodesController {
 
     GrailsApplication grailsApplication
 
+    /**
+     * Shows the error page with stack trace extracts; acts on codes 403, 405 and 500
+     */
     def error() {
         Map<String, Object> result = [
                 exception: request.getAttribute('exception') ?: request.getAttribute('javax.servlet.error.exception'),
@@ -44,16 +50,25 @@ class ServerCodesController {
         render view:'error' , model: result
     }
 
+    /**
+     * Shows the unauthorised access page, mapping for code 401
+     */
     def forbidden() {
         Map<String, Object> result = [status: request.getAttribute('javax.servlet.error.status_code')]
         render view:'forbidden' , model: result
     }
 
+    /**
+     * Shows the resource not found page, mapping for code 404
+     */
     def notFound() {
         Map<String, Object> result = [status: request.getAttribute('javax.servlet.error.status_code')]
         render view:'notFound' , model: result
     }
 
+    /**
+     * Shows the service unavailable page
+     */
     def unavailable() {
         Map<String, Object> result = [status: request.getAttribute('javax.servlet.error.status_code')]
         render view:'unavailable' , model: result

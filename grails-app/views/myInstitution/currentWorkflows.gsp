@@ -93,7 +93,7 @@
     </g:else>
 </g:elseif>
 
-<table class="ui celled table la-table">
+<table class="ui celled table la-js-responsive-table la-table">
     <thead>
         <tr>
             <th rowspan="2">${message(code:'default.status.label')}</th>

@@ -4,6 +4,10 @@ import de.laser.Org
 import de.laser.ContextService
 import grails.util.Holders
 
+/**
+ * This class keeps track of the loading times for each page. Recorded is every page which has a longer loading time than 1000 msecs
+ * @see de.laser.ajax.AjaxController#notifyProfiler()
+ */
 class SystemProfiler {
 
     final static long THRESHOLD_MS = 1000
@@ -36,6 +40,10 @@ class SystemProfiler {
         archive (nullable:true, blank:false)
     }
 
+    /**
+     * Delivers the current version of the system environment according to the metadata file (build.gradle)
+     * @return the current version
+     */
     static String getCurrentArchive() {
         String av = Holders.grailsApplication.metadata['info.app.version'] ?: 'unkown'
         List<String> avList = av.split("\\.")
@@ -46,8 +54,11 @@ class SystemProfiler {
         return av
     }
 
-    // triggerd via AjaxController.notifyProfiler()
-
+    /**
+     * Triggered via {@link de.laser.ajax.AjaxController#notifyProfiler()} where the given action the given delay time is being recorded
+     * @param delta the time deviation from 1000 msecs
+     * @param actionUri the action to record the loading time for
+     */
     static void update(long delta, String actionUri) {
 
         ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')

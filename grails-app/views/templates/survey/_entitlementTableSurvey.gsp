@@ -5,7 +5,7 @@
     <g:set var="sumlocalPrice" value="${0}"/>
 
 
-    <table class="ui sortable celled la-table table la-ignore-fixed la-bulk-header" id="surveyEntitlements">
+    <table class="ui sortable celled la-js-responsive-table la-table table la-ignore-fixed la-bulk-header" id="surveyEntitlements">
         <thead>
         <tr>
             <th>
@@ -37,7 +37,7 @@
             <tr data-gokbId="${tipp.gokbId}" data-tippId="${tipp.id}" data-ieId="${ie.id}" data-index="${counter}" class="${checkedCache ? (checkedCache[ie.id.toString()] ? 'positive' : '') : ''}">
                 <td>
 
-                    <g:if test="${(params.tab == 'previousIEs' || params.tab == 'allIEs' || params.tab == 'currentIEs') && (editable && !ieInNewSub && allowedToSelect)}">
+                    <g:if test="${(params.tab == 'previousIEs' || params.tab == 'allIEs' || params.tab == 'toBeSelectedIEs' || params.tab == 'currentIEs') && (editable && !ieInNewSub && allowedToSelect)}">
                         <input type="checkbox" name="bulkflag" class="bulkcheck" ${checkedCache ? checkedCache[ie.id.toString()] : ''}>
                     </g:if>
                     <g:elseif test="${editable && allowedToSelect && params.tab == 'selectedIEs'}">
@@ -60,7 +60,7 @@
                         </div>
                     </g:if>
 
-                    <g:if test="${previousSubscription && surveyService.titleContainedBySubscription(previousSubscription, tipp)?.acceptStatus == RDStore.IE_ACCEPT_STATUS_FIXED}">
+                    <g:if test="${!participantPerpetualAccessToTitle && previousSubscription && surveyService.titleContainedBySubscription(previousSubscription, tipp)?.acceptStatus == RDStore.IE_ACCEPT_STATUS_FIXED}">
                         <div class="la-inline-flexbox la-popup-tooltip la-delay" data-content="${message(code: 'renewEntitlementsWithSurvey.ie.existsInPreviousSubscription')}" data-position="left center" data-variation="tiny">
                             <i class="icon redo alternate orange"></i>
                         </div>
@@ -73,29 +73,29 @@
                     <!-- START TEMPLATE -->
                         <g:render template="/templates/title_short"
                                   model="${[ie: ie, tipp: ie.tipp,
-                                            showPackage: showPackage, showPlattform: showPlattform, showCompact: true, showEmptyFields: false, overwriteEditable: false, participantPerpetualAccessToTitle: (participantPerpetualAccessToTitle && params.tab != 'currentIEs')]}"/>
+                                            showPackage: showPackage, showPlattform: showPlattform, showCompact: true, showEmptyFields: false, overwriteEditable: false, participantPerpetualAccessToTitle: (participantPerpetualAccessToTitle)]}"/>
                     <!-- END TEMPLATE -->
                 </td>
                 <td>
                     <g:if test="${ieInNewSub?.priceItems}">
                             <g:each in="${ieInNewSub.priceItems}" var="priceItem" status="i">
-                                <g:message code="tipp.price.listPrice"/>: <semui:xEditable field="listPrice"
+                                <g:message code="tipp.price.listPrice"/>:%{-- <semui:xEditable field="listPrice"
                                                                                            owner="${priceItem}"
                                                                                            format=""
                                                                                            overwriteEditable="${false}"/>
                                 <semui:xEditableRefData
                                         field="listCurrency" owner="${priceItem}"
                                         config="Currency"
-                                        overwriteEditable="${false}"/> <%--<g:formatNumber number="${priceItem.listPrice}" type="currency" currencyCode="${priceItem.listCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%><br/>
+                                        overwriteEditable="${false}"/>--}% <g:formatNumber number="${priceItem.listPrice}" type="currency" currencyCode="${priceItem.listCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/><br/>
 
                                 <g:if test="${priceItem.localCurrency}">
-                                    <g:message code="tipp.price.localPrice"/>: <semui:xEditable field="localPrice"
+                                    <g:message code="tipp.price.localPrice"/>: %{--<semui:xEditable field="localPrice"
                                                                                                 owner="${priceItem}"
                                                                                                 overwriteEditable="${false}"/>
                                     <semui:xEditableRefData
                                             field="localCurrency" owner="${priceItem}"
                                             config="Currency"
-                                            overwriteEditable="${false}"/> <%--<g:formatNumber number="${priceItem.localPrice}" type="currency" currencyCode="${priceItem.localCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%>
+                                            overwriteEditable="${false}"/>--}% <g:formatNumber number="${priceItem.localPrice}" type="currency" currencyCode="${priceItem.localCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>
                                 <%--<semui:xEditable field="startDate" type="date"
                                                  owner="${priceItem}"/><semui:dateDevider/><semui:xEditable
                                     field="endDate" type="date"
@@ -109,21 +109,21 @@
                     <g:else>
                         <g:if test="${ie?.priceItems}">
                             <g:each in="${ie.priceItems}" var="priceItem" status="i">
-                                <g:message code="tipp.price.listPrice"/>: <semui:xEditable field="listPrice"
+                                <g:message code="tipp.price.listPrice"/>: %{--<semui:xEditable field="listPrice"
                                                                                            owner="${priceItem}"
                                                                                            format=""
                                                                                            overwriteEditable="${false}"/> <semui:xEditableRefData
                                     field="listCurrency" owner="${priceItem}"
                                     config="Currency"
-                                    overwriteEditable="${false}"/> <%--<g:formatNumber number="${priceItem.listPrice}" type="currency" currencyCode="${priceItem.listCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%><br/>
+                                    overwriteEditable="${false}"/>--}% <g:formatNumber number="${priceItem.listPrice}" type="currency" currencyCode="${priceItem.listCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/><br/>
 
                                 <g:if test="${priceItem.localCurrency}">
-                                    <g:message code="tipp.price.localPrice"/>: <semui:xEditable field="localPrice"
+                                    <g:message code="tipp.price.localPrice"/>: %{--<semui:xEditable field="localPrice"
                                                                                                 owner="${priceItem}"
                                                                                                 overwriteEditable="${false}"/> <semui:xEditableRefData
                                         field="localCurrency" owner="${priceItem}"
                                         config="Currency"
-                                        overwriteEditable="${false}"/> <%--<g:formatNumber number="${priceItem.localPrice}" type="currency" currencyCode="${priceItem.localCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%>
+                                        overwriteEditable="${false}"/>--}% <g:formatNumber number="${priceItem.localPrice}" type="currency" currencyCode="${priceItem.localCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>
                                 <%--<semui:xEditable field="startDate" type="date"
                                                  owner="${priceItem}"/><semui:dateDevider/><semui:xEditable
                                     field="endDate" type="date"
@@ -137,7 +137,7 @@
                     </g:else>
                 </td>
                 <td>
-                    <g:if test="${(params.tab == 'allIEs' || params.tab == 'selectedIEs') && editable && ieInNewSub && allowedToSelect}">
+                    <g:if test="${(params.tab == 'allIEs' || params.tab == 'selectedIEs' || params.tab == 'toBeSelectedIEs') && editable && ieInNewSub && allowedToSelect}">
                         <g:link class="ui icon positive button la-popup-tooltip la-delay"
                                 action="processRemoveIssueEntitlementsSurvey"
                                 params="${[id: newSub.id, singleTitle: ieInNewSub.id, packageId: packageId, surveyConfigID: surveyConfig?.id]}"
@@ -147,7 +147,7 @@
                     </g:if>
 
 
-                    <g:if test="${(params.tab == 'allIEs'|| params.tab == 'currentIEs') && editable && !ieInNewSub && allowedToSelect }">
+                    <g:if test="${(params.tab == 'allIEs'|| params.tab == 'currentIEs' || params.tab == 'toBeSelectedIEs') && editable && !ieInNewSub && allowedToSelect }">
                         <g:link class="ui icon button blue la-modern-button la-popup-tooltip la-delay"
                                 action="processAddIssueEntitlementsSurvey"
                                 params="${[id: newSub.id, singleTitle: ie.id, surveyConfigID: surveyConfig?.id]}"

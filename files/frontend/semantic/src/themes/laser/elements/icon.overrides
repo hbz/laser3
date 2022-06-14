@@ -1784,6 +1784,15 @@ i.icon.la-thumbtack-regular {
 i.icon.la-consortia {
   font-family: 'icomoon';
 }
+i.icon.la-star.slash {
+  font-family: 'icomoon';
+}
+i.icon.la-redo.slash {
+  font-family: 'icomoon';
+}
+i.icon.la-exchange.slash {
+  font-family: 'icomoon';
+}
 // to turn off all the buttons on a side
 // the other part of the button is the SEMANTIC UI Icon: 'hand pointer outline'
 
@@ -1816,6 +1825,10 @@ i.icon.la-greater-than-equal:before { content: "\e914"; }
 i.icon.la-open:before { content: "\e915"; }
 i.icon.la-thumbtack-regular:before { content: "\e916"; }
 i.icon.la-consortia:before { content: "\e917"; }
+/**/
+i.icon.la-star.slash:before { content: "\e918"; }
+i.icon.la-redo.slash:before { content: "\e919"; }
+i.icon.la-exchange.slash:before { content: "\e91a"; }
 /*******************************
            Laser Icons
 *******************************/
@@ -1915,7 +1928,7 @@ i.inverted.circular.la-light-grey.icon {
   content: "\f1ea";
   color: white;
 }
-// ****  databas **** //
+// ****  database **** //
 .icon.la-database {
   background-color: @title;
 }
@@ -1946,4 +1959,30 @@ i.inverted.circular.icon.la-filter-icon {
 }
 .la-rotate {
   transform: translateY(3px) rotate(90deg);
+}
+
+// Child Subscription
+.la-subscriptionIsChild {
+  position: absolute;
+  left: 24px;
+  top: -15px;
+  background-color: white;
+  font-size: .6em!important;
+  box-shadow: 0 0 0 0.1em #fa820a inset!important;
+  padding: 0em;
+  transition: all 0.5s ease;
+}
+/* change style when page scrolled down*/
+i.orange.icon.la-subscriptionIsChild.fixed {
+  position: fixed;
+  margin-left: 150px!important;
+  background-color:transparent!important;
+  color: gray!important;
+  box-shadow: none!important;
+  transition: all 1s ease;
+}
+@media only screen and (max-width: @computerBreakpoint  ) {
+  i.orange.icon.la-subscriptionIsChild.fixed {
+    display: none;
+  }
 }

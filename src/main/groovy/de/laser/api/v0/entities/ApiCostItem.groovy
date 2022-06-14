@@ -1,5 +1,6 @@
 package de.laser.api.v0.entities
 
+import de.laser.finance.BudgetCode
 import de.laser.finance.CostItem
 import de.laser.Org
 import de.laser.api.v0.*
@@ -10,10 +11,17 @@ import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 import java.sql.Timestamp
 
+/**
+ * An API representation of a {@link CostItem}
+ */
 class ApiCostItem {
 
     /**
-     * @return ApiBox(obj: CostItem | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND | OBJECT_STATUS_DELETED)
+     * Locates the given {@link CostItem} and returns the object (or null if not found) and the request status for further processing
+     * @param the field to look for the identifier, one of {id, globalUID}
+     * @param the identifier value
+     * @return {@link ApiBox}(obj: CostItem | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND | OBJECT_STATUS_DELETED)
+     * @see ApiBox#validatePrecondition_1()
      */
     static ApiBox findCostItemBy(String query, String value) {
         ApiBox result = ApiBox.get()
@@ -39,7 +47,10 @@ class ApiCostItem {
     }
 
     /**
-     * @return boolean
+     * Checks if the requesting institution can access to the given cost item
+     * @param costItem the {@link CostItem} to which access is being requested
+     * @param context the institution ({@link Org}) requesting access
+     * @return true if the access is granted, false otherwise
      */
     static boolean calculateAccess(CostItem costItem, Org context) {
 
@@ -51,7 +62,13 @@ class ApiCostItem {
 
         hasAccess
     }
+
     /**
+     * Checks if the given institution can access the given cost item. The cost item
+     * is returned in case of success
+     * @param costItem the {@link CostItem} whose details should be retrieved
+     * @param context the institution ({@link Org}) requesting the cost item
+     * @param isInvoiceTool is the request done by the hbz invoice tool?
      * @return JSON | FORBIDDEN
      */
     static requestCostItem(CostItem costItem, Org context, boolean isInvoiceTool){
@@ -66,7 +83,13 @@ class ApiCostItem {
     }
 
     /**
+     * Checks if the requesting institution can access the cost item list of the requested institution.
+     * The list of cost items is returned in case of success
+     * @param owner the institution whose cost items should be retrieved
+     * @param context the institution who requests the list
+     * @param isInvoiceTool is the hbz invoice tool doing the request?
      * @return JSON | FORBIDDEN
+     * @see Org
      */
     static requestCostItemList(Org owner, Org context, boolean isInvoiceTool){
         Collection<Object> result = []
@@ -86,6 +109,13 @@ class ApiCostItem {
     }
 
     /**
+     * Checks if the requesting institution can access the cost item list of the requested institution.
+     * The list of cost items is returned in case of success; the list contains only items which have
+     * been updated since the given timestamp
+     * @param owner the institution whose cost items should be retrieved
+     * @param context the institution who requests the list
+     * @param timestamp the point of time since when the cost items have been updated
+     * @param isInvoiceTool is the hbz invoice tool doing the request?
      * @return JSON | FORBIDDEN
      */
     static requestCostItemListWithTimeStamp(Org owner, Org context, String timestamp, boolean isInvoiceTool){
@@ -109,6 +139,11 @@ class ApiCostItem {
     }
 
     /**
+     * Assembles the given cost item attributes into a {@link Map}. The schema of the map can be seen in
+     * schemas.gsp
+     * @param costItem the {@link CostItem} which should be output
+     * @param context the institution ({@link Org}) requesting
+     * @param isInvoiceTool is the hbz invoice tool doing the request?
      * @return Map<String, Object>
      */
 
@@ -123,20 +158,22 @@ class ApiCostItem {
         result.costInBillingCurrencyAfterTax    = costItem.costInBillingCurrencyAfterTax
         result.costInLocalCurrency              = costItem.costInLocalCurrency
         result.costInLocalCurrencyAfterTax      = costItem.costInLocalCurrencyAfterTax
+        result.finalCostRounding   = costItem.finalCostRounding ? 'Yes' : 'No'
+        result.billingSumRounding  = costItem.billingSumRounding ? 'Yes' : 'No'
 
         result.costTitle           = costItem.costTitle
         result.costDescription     = costItem.costDescription
         result.currencyRate        = costItem.currencyRate
-        result.dateCreated         = ApiToolkit.formatInternalDate(costItem.dateCreated)
-        result.datePaid            = ApiToolkit.formatInternalDate(costItem.datePaid)
+        result.startDate           = ApiToolkit.formatInternalDate(costItem.startDate)
         result.endDate             = ApiToolkit.formatInternalDate(costItem.endDate)
-        result.finalCostRounding   = costItem.finalCostRounding ? 'Yes' : 'No'
+        result.datePaid            = ApiToolkit.formatInternalDate(costItem.datePaid)
         result.invoiceDate         = ApiToolkit.formatInternalDate(costItem.invoiceDate)
+        result.financialYear       = costItem.financialYear?.value
+        result.dateCreated         = ApiToolkit.formatInternalDate(costItem.dateCreated)
         result.lastUpdated         = ApiToolkit.formatInternalDate(costItem.lastUpdated)
 
         result.reference           = costItem.reference
-        result.startDate           = ApiToolkit.formatInternalDate(costItem.startDate)
-        result.taxRate             = costItem.taxKey?.taxRate ?: ((costItem.taxKey?.taxRate == 0) ? costItem.taxKey?.taxRate : costItem.taxRate)
+        result.taxRate             = costItem.taxKey?.taxRate ?: ((costItem.taxKey?.taxRate == 0) ? costItem.taxKey?.taxRate : null)
 
         result.isVisibleForSubscriber = costItem.isVisibleForSubscriber ? 'Yes' : 'No'
 
@@ -149,18 +186,21 @@ class ApiCostItem {
         result.costItemCategory    = costItem.costItemCategory?.value
         result.billingCurrency     = costItem.billingCurrency?.value
         result.costItemElement     = costItem.costItemElement?.value
-        result.taxCode             = costItem.taxKey?.taxType?.value ?: costItem.taxCode?.value
+        result.taxCode             = costItem.taxKey?.taxType?.value ?: null
         result.costItemElementConfiguration = costItem.costItemElementConfiguration?.value
 
         // References
 
-        result.owner    = ApiUnsecuredMapReader.getOrganisationStubMap(costItem.owner) // com.k_int.kbplus.Org
-        result.sub      = ApiStubReader.requestSubscriptionStub(costItem.sub, context, isInvoiceTool) // com.k_int.kbplus.Subscription // RECURSION ???
-        //result.subPkg   = ApiStubReader.resolveSubscriptionPackageStub(costItem.subPkg, ApiCollectionReader.IGNORE_SUBSCRIPTION, context) // de.laser.SubscriptionPackage
-        result.issueEntitlement = ApiIssueEntitlement.getIssueEntitlementMap(costItem.issueEntitlement, ApiReader.IGNORE_ALL, context) // de.laser.IssueEntitlement
-        result.order    = ApiUnsecuredMapReader.getOrderMap(costItem.order) // de.laser.finance.Order
-        result.invoice  = ApiUnsecuredMapReader.getInvoiceMap(costItem.invoice)
-        result.surveyOrg = costItem?.surveyOrg ?: null
+        result.owner    = ApiUnsecuredMapReader.getOrganisationStubMap(costItem.owner) // de.laser.Org
+        result.sub      = ApiStubReader.requestSubscriptionStub(costItem.sub, context, isInvoiceTool) // de.laser.Subscription // RECURSION ???
+        result.subPkg   = ApiStubReader.requestSubscriptionPackageStubMixed(costItem.subPkg, ApiReader.IGNORE_SUBSCRIPTION, context) // de.laser.SubscriptionPackage
+        result.issueEntitlement = ApiIssueEntitlement.getIssueEntitlementMap(costItem.issueEntitlement, ApiReader.IGNORE_SUBSCRIPTION_AND_PACKAGE, context) // de.laser.IssueEntitlement
+        if(costItem.issueEntitlementGroup)
+            result.titleGroup = ApiIssueEntitlement.getTitleGroupMap(costItem.issueEntitlementGroup, context) //de.laser.IssueEntitlementGroup
+        result.budgetCodes = costItem.budgetcodes.collect { BudgetCode bc -> bc.value }.unique()
+        result.orderNumber    = costItem.order?.orderNumber
+        result.invoiceNumber  = costItem.invoice?.invoiceNumber
+        result.surveyOrg = costItem.surveyOrg ?: null
 
         ApiToolkit.cleanUp(result, true, true)
     }

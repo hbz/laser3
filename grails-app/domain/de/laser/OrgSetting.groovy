@@ -5,14 +5,30 @@ import de.laser.auth.Role
 import de.laser.helper.RDConstants
 import de.laser.annotations.RefdataAnnotation
 
+/**
+ * This class represents organisation-wide configuration settings, see the enum {@link OrgSetting.KEYS} for the possible settings.
+ * All of them trigger further functionality; the {@link OrgSetting.KEYS#CUSTOMER_TYPE} for example is a key setting and the
+ * distinction factor between institutions and (other) organisations (see {@link Org} for the definition of both). Organisations
+ * do not have a CUSTOMER_TYPE while institutions mandatorily do have one; they are at least ORG_BASIC_MEMBERs. See {@link Role} for
+ * the possible customer types to be granted.
+ * UserSetting is a class with the same functionality for users
+ * @see Org
+ * @see OrgSetting.KEYS
+ * @see Role
+ * @see UserSetting
+ * @see de.laser.auth.User
+ */
 class OrgSetting {
 
     def genericOIDService
 
     final static SETTING_NOT_FOUND = "SETTING_NOT_FOUND"
-    //in order of display
+    //in order of display at ids.gsp, used there
     final static SETTING_TABS = ['general', 'api', 'ezb', 'natstat', 'oamonitor']
 
+    /**
+     * The settings for an {@link Org} which can be configured
+     */
     static enum KEYS {
         API_LEVEL                   (String),
         API_KEY                     (String),
@@ -76,7 +92,11 @@ class OrgSetting {
         dateCreated (nullable: true)
     }
 
-    // only these settings are editable by orgs themselves
+    /**
+     * Gets a list of settings for display on the settings.gsp page.
+     * Only these settings are editable by the institutions themselves
+     * @return a {@link List} of {@link OrgSetting.KEYS} which are editable
+     */
     static List<OrgSetting.KEYS> getEditableSettings() {
         [
                 OrgSetting.KEYS.EZB_SERVER_ACCESS,
@@ -87,9 +107,9 @@ class OrgSetting {
         ]
     }
 
-    /*
-        returns user depending setting for given key
-        or SETTING_NOT_FOUND if not
+    /**
+     * Returns organisation depending setting for given key or SETTING_NOT_FOUND if not
+     * @return the organisation setting if found, SETTING_NOT_FOUND constant otherwise
      */
     static def get(Org org, KEYS key) {
 
@@ -97,8 +117,9 @@ class OrgSetting {
         oss ?: SETTING_NOT_FOUND
     }
 
-    /*
-        adds new org depending setting (with value) for given key
+    /**
+     * Adds a new organisation depending setting (with value) for the given key
+     * @return the new organisation setting
      */
     static OrgSetting add(Org org, KEYS key, def value) {
 
@@ -111,8 +132,8 @@ class OrgSetting {
         }
     }
 
-    /*
-        deletes org depending setting for given key
+    /**
+     * Deletes the organisation depending setting for the given key
      */
     static void delete(Org org, KEYS key) {
 
@@ -122,8 +143,9 @@ class OrgSetting {
         }
     }
 
-    /*
-        gets parsed value by key.type
+    /**
+     * Gets parsed value by {@link OrgSetting.KEYS#type}
+     * @return the value of the organisation setting
      */
     def getValue() {
 
@@ -149,8 +171,8 @@ class OrgSetting {
         result
     }
 
-    /*
-        sets value by key.type
+    /**
+     * Sets the value for the organisation setting by {@link OrgSetting.KEYS#type}
      */
     def setValue(def value) {
 

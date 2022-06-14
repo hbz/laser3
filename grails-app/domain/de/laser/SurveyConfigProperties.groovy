@@ -2,6 +2,11 @@ package de.laser
 
 import de.laser.properties.PropertyDefinition
 
+/**
+ * This domain connects survey configs with property definitions and thus permits the configuration of survey properties, i.e. which questions should be asked in the given survey
+ * @see SurveyConfig
+ * @see PropertyDefinition
+ */
 class SurveyConfigProperties {
 
     SurveyConfig surveyConfig

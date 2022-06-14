@@ -1,46 +1,55 @@
-<%@ page import="de.laser.Org; de.laser.properties.PropertyDefinition" %>
-
 <!doctype html>
 <html>
 <head>
     <meta name="layout" content="laser">
     <title>${message(code:'laser')} : ${message(code:'menu.yoda.appConfig')} </title>
-    <%-- r:require module="annotations" / --%>
 </head>
 <body>
 
 <semui:breadcrumbs>
     <semui:crumb message="menu.yoda.dash" controller="yoda" action="index"/>
-    <semui:crumb text="Application Config" class="active"/>
+    <semui:crumb message="menu.yoda.appConfig" class="active"/>
 </semui:breadcrumbs>
 
 <h1 class="ui header la-clear-before la-noMargin-top">${message(code:'menu.yoda.appConfig')}</h1>
 
-<p>${message(code:'sys.properties')}</p>
+%{--<h2 class="ui header">${message(code:'sys.properties')}</h2>--}%
 
-<laser:script file="${this.getGroovyPageFileName()}">
-    c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_1");
-</laser:script>
+<table class="ui sortable celled la-js-responsive-table la-table compact table">
+    <thead>
+    <tr>
+        <th></th>
+        <th></th>
+        <th></th>
+    </tr>
+    </thead>
+    <tbody>
+        <g:each in="${currentConfig.keySet().sort()}" var="key" status="i">
+            <%
+                String color = ''
+                if (key.startsWith('grails.plugin'))        { color = '#FDEBD0' }
+                else if (key.startsWith('grails'))          { color = '#FEF9E7' }
+                else if (key.startsWith('dataSource'))      { color = '#F4ECF7' }
+                else if (key.startsWith('java'))            { color = '#D6EAF8' }
+                else if (key.startsWith('spring'))          { color = '#D5F5E3' }
 
-<g:form action="appConfig" method="POST" class="ui form">
-    <input type="submit" name="one" class="ui button" value="Refresh"  />
-</g:form>
-<h2 class="ui header"> Current output for Holders.config</h2>
-<div class="ui form">
-    <g:each in="${currentconf.keySet().sort()}" var="key">
-        <div class="field">
-            <label>${key}</label>
-
-            <g:if test="${blacklist.contains(key)}">
-                <g:textArea readonly="" rows="2" style="width:95%" name="key" value="=== C O N C E A L E D ==="/>
-            </g:if>
-            <g:else>
-                <g:textArea readonly="" rows="2" style="width:95%" name="key" value="${currentconf.get(key)}" escapeHtml="false" />
-            </g:else>
-
-        </div>
-    </g:each>
-</div>
+                if (color) { color = 'background-color:' + color }
+            %>
+            <tr>
+                <td style="${color}">${i+1}.</td>
+                <td>${key}</td>
+                <td>
+                    <g:if test="${blacklist.contains(key)}">
+                        <span style="color:orange"> == C O N C E A L E D === </span>
+                    </g:if>
+                    <g:else>
+                        ${currentConfig.get(key)}
+                    </g:else>
+                </td>
+            </tr>
+        </g:each>
+    </tbody>
+</table>
 
 </body>
 </html>

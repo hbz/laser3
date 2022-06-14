@@ -2,9 +2,15 @@ package de.laser
 
 import grails.plugin.springsecurity.annotation.Secured
 
+/**
+ * This controller manages global Nationaler Statistikserver management views
+ */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class StatsController  {
 
+    /**
+     * Shows the statistics overview for the Nationaler Statistikserver data situation
+     */
   @Secured(['ROLE_ADMIN'])
   def statsHome() { 
     Map<String, Object> result = [:]
@@ -97,6 +103,13 @@ group by o
     result
   }
 
+    /**
+     * Sets the given value to the given map key of the given organisation entry
+     * @param m the map to process
+     * @param o the organisation for which the record should be stored
+     * @param prop the key to store the value under
+     * @param value the value to store
+     */
   private def storeOrgInfo(m, o, prop, value) {
     if ( m[o] == null )
       m[o] = [:]

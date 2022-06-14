@@ -14,6 +14,18 @@ import grails.util.Holders
 import grails.web.mapping.LinkGenerator
 import org.springframework.context.i18n.LocaleContextHolder
 
+/**
+ * This service takes care of the due dates: sets up and sends reminders about task end dates, due dates and notice periods linked to subscriptions, surveys or date properties (for organisations, subscriptions, platforms, person contacts or licenses)
+ * @see de.laser.properties.SubscriptionProperty#dateValue
+ * @see de.laser.properties.OrgProperty#dateValue
+ * @see de.laser.properties.LicenseProperty#dateValue
+ * @see de.laser.properties.PersonProperty#dateValue
+ * @see de.laser.properties.PlatformProperty#dateValue
+ * @see Task#endDate
+ * @see Subscription#endDate
+ * @see Subscription#manualCancellationDate
+ * @see SurveyInfo#endDate
+ */
 //@Transactional
 class DashboardDueDatesService {
 
@@ -29,6 +41,9 @@ class DashboardDueDatesService {
     boolean update_running = false
     private static final String QRY_ALL_ORGS_OF_USER = "select distinct o from Org as o where exists ( select uo from UserOrg as uo where uo.org = o and uo.user = :user) order by o.name"
 
+    /**
+     * Initialises the service with configuration parameters
+     */
     @javax.annotation.PostConstruct
     void init() {
         from = ConfigUtils.getNotificationsEmailFrom()
@@ -38,7 +53,16 @@ class DashboardDueDatesService {
         log.debug("Initialised DashboardDueDatesService...")
     }
 
+    /**
+     * Triggered by cronjob; may also be triggered by Yoda
+     * Starts updating and setting up reminders if their reminder date is reached
+     * @param isUpdateDashboardTableInDatabase should the dashboard table being updated?
+     * @param isSendEmailsForDueDatesOfAllUsers should reminder mails be sent to the users?
+     * @param flash a message container ({@link grails.web.mvc.FlashScope} if request context is given, an empty map otherwise)
+     * @return true if succeeded, false otherwise
+     */
     boolean takeCareOfDueDates(boolean isUpdateDashboardTableInDatabase, boolean isSendEmailsForDueDatesOfAllUsers, def flash) {
+        //workaround to generate messages when FlashScope is missing due to missing request context
         if (flash == null) flash = [:]
         flash.message = ''
         flash.error = ''
@@ -74,6 +98,12 @@ class DashboardDueDatesService {
             return true
         }
     }
+
+    /**
+     * Updates the {@link DashboardDueDate} table and inserts new reminders for which no reminder exists yet
+     * @param flash the message container
+     * @return the message container, filled with the processing output
+     */
     private updateDashboardTableInDatabase(def flash){
         SystemEvent.createEvent('DBDD_SERVICE_START_2')
         SystemEvent.createEvent('DBDD_SERVICE_START_COLLECT_DASHBOARD_DATA')
@@ -142,6 +172,11 @@ class DashboardDueDatesService {
         flash
     }
 
+    /**
+     * Collects the {@link User}s to remind per mail and processes the dashboard entries for each {@link Org} the user is affiliated with
+     * @param flash the message collector container
+     * @return the message collector container with the processing output
+     */
     private sendEmailsForDueDatesOfAllUsers(def flash) {
         try {
             SystemEvent.createEvent('DBDD_SERVICE_START_3')
@@ -167,6 +202,12 @@ class DashboardDueDatesService {
         flash
     }
 
+    /**
+     * Sends the mail to the given {@link User}; the current affiliation is handed to the mail as well in order to let the user know the context s/he should act
+     * @param user the {@link User} who should be reminded
+     * @param org the context {@link Org} the object is settled in
+     * @param dashboardEntries the {@link List} of {@link DashboardDueDate}s to process
+     */
     private void sendEmail(User user, Org org, List<DashboardDueDate> dashboardEntries) {
         String emailReceiver = user.getEmail()
         Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', RDConstants.LANGUAGE)).value.toString())
@@ -271,6 +312,15 @@ class DashboardDueDatesService {
             log.debug("DashboardDueDatesService - finished sendEmail() to "+ user.displayName + " (" + user.email + ") " + org.name);
         }
     }
+
+    /**
+     * Gets all due dates of the given user in the given context org; query can be limited to hidden (shown) / (un-)done tasks
+     * @param user the {@link User} whose due dates are to be queried
+     * @param org the {@link Org} whose context is requested
+     * @param isHidden are the tasks hidden?
+     * @param isDone are the tasts done?
+     * @return a {@link List} of {@link DashboardDueDate} entries to be processed
+     */
     List<DashboardDueDate> getDashboardDueDates(User user, Org org, isHidden, isDone) {
         List liste = DashboardDueDate.executeQuery(
                 """select das from DashboardDueDate as das 
@@ -281,6 +331,16 @@ class DashboardDueDatesService {
         liste
     }
 
+    /**
+     * Gets all due dates of the given user in the given context org; query can be limited to hidden (shown) / (un-)done tasks and paginated
+     * @param user the {@link User} whose due dates are to be queried
+     * @param org the {@link Org} whose context is requested
+     * @param isHidden are the tasks hidden?
+     * @param isDone are the tasts done?
+     * @param max the maximum count of entries to load
+     * @param offset the number of entry to start from
+     * @return a {@link List} of {@link DashboardDueDate} entries to be processed
+     */
     List<DashboardDueDate> getDashboardDueDates(User user, Org org, isHidden, isDone, max, offset){
         List liste = DashboardDueDate.executeQuery(
                 """select das from DashboardDueDate as das join das.dueDateObject ddo 

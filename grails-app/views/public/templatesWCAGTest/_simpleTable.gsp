@@ -1,4 +1,4 @@
-<table class="ui celled sortable table table-tworow la-table">
+<table class="ui celled sortable table table-tworow la-js-responsive-table la-table">
     <thead>
     <tr>
         <th scope="col" rowspan="2" class="center aligned">

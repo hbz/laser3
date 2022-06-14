@@ -10,6 +10,10 @@ import de.laser.helper.ServerUtils
 import grails.util.Holders
 import net.sf.json.JSON
 
+/**
+ * This class reflects system-wide messages which can be shown on the dashboard (for announcements).
+ * The system announcement may be sent moreover to users who subscribed to these reminders. This reminder setting may be done in the user profile (and is stored as a {@link UserSetting}).
+ */
 class SystemAnnouncement {
 
     def grailsApplication
@@ -51,6 +55,11 @@ class SystemAnnouncement {
         lastUpdated (nullable:true)
     }
 
+    /**
+     * Retrieves a {@link List} of system announces which have been published in the given period of days
+     * @param periodInDays the amount of days to look back for recently published messages
+     * @return a {@link List} of system announces
+     */
     static List<SystemAnnouncement> getPublished(int periodInDays) {
         Date dcCheck = (new Date()).minus(periodInDays)
 
@@ -61,6 +70,10 @@ class SystemAnnouncement {
         )
     }
 
+    /**
+     * Gets all users who should be notified about system messages. The criteria to be checked is the {@link UserSetting.KEYS#IS_NOTIFICATION_FOR_SYSTEM_MESSAGES} setting
+     * @return a {@link List} of {@link User}s to be notified
+     */
     static List<User> getRecipients() {
         User.executeQuery(
                 'select u from UserSetting uss join uss.user u where uss.key = :ussKey and uss.rdValue = :ussValue order by u.id',
@@ -68,17 +81,35 @@ class SystemAnnouncement {
         )
     }
 
+    /**
+     * Strips the chars '<' and '>' from a given string
+     * @param s the string to be sanitized
+     * @return the sanitized string
+     */
     static String cleanUp(String s) {
         s.replaceAll("\\<.*?>","")
     }
+
+    /**
+     * Sanitizes the title of the system message
+     * @return the sanitized title string
+     */
     String getCleanTitle() {
         SystemAnnouncement.cleanUp(escapeService.replaceUmlaute(title))
     }
 
+    /**
+     * Sanitizes the content of the system message
+     * @return the sanitized content string
+     */
     String getCleanContent() {
         SystemAnnouncement.cleanUp(escapeService.replaceUmlaute(content))
     }
 
+    /**
+     * Publishes the system message via the given channels (display on pages, sending of reminder mails)
+     * @return true if the publishing was successful, false otherwise
+     */
     boolean publish() {
         if (grailsApplication.config.grails.mail.disabled == true) {
             println 'SystemAnnouncement.publish() failed due grailsApplication.config.grails.mail.disabled = true'
@@ -102,7 +133,7 @@ class SystemAnnouncement {
                 }
                 catch (Exception e) {
                     log.error(e.getMessage())
-                    log.error(e.getStackTrace())
+                    e.printStackTrace()
                     failedUserIds << u.id
                 }
             }
@@ -126,6 +157,11 @@ class SystemAnnouncement {
         }
     }
 
+    /**
+     * Sends a mail to a given user. The system announcement is being included in a mail template
+     * @param user the {@link User} to be notified
+     * @throws Exception
+     */
     private void sendMail(User user) throws Exception {
 
         def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')

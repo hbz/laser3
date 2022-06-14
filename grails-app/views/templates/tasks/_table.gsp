@@ -7,7 +7,7 @@
 
         <h2 class="ui header">${message(code: 'task.myTasks.header')} <semui:totalNumber total="${taskInstanceCount}"/></h2>
 
-        <table class="ui sortable celled la-table table">
+        <table class="ui sortable celled la-js-responsive-table la-table table">
             <thead>
             <tr>
                 <g:sortableColumn property="lower(t.title)" title="${message(code: 'task.title.label')}"/>

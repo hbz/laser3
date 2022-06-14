@@ -30,7 +30,7 @@
 <semui:messages data="${flash}"/>
 
 <g:if test="${surveys}">
-    <table class="ui celled sortable table la-table">
+    <table class="ui celled sortable table la-js-responsive-table la-table">
         <thead>
         <tr>
 
@@ -126,7 +126,7 @@
                 <td class="center aligned">
                         <g:link controller="survey" action="surveyConfigDocs" id="${surveyInfo.id}"
                                 params="[surveyConfigID: surveyConfig.id]" class="ui icon">
-                            <div class="ui circular label">
+                            <div class="ui blue circular label">
                                 ${surveyConfig.getCurrentDocs().size() ?: 0}
                             </div>
                         </g:link>

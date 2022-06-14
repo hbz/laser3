@@ -3,6 +3,7 @@
 <%
     boolean parentAtChild = false
 
+    //for ERMS-2393/3933: this is a request parameter for the DMS rights management interface
     if(instance instanceof Subscription) {
         if(contextService.getOrg().id == instance.getConsortia()?.id && instance.instanceOf) {
             if(instance._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION)
@@ -18,7 +19,7 @@
 
 <g:form id="delete_doc_form" url="${[controller:"${controllerName}" ,action:'deleteDocuments']}" method="post">
 
-    <table class="ui celled la-table table license-documents">
+    <table class="ui celled la-js-responsive-table la-table table license-documents">
         <thead>
             <tr>
                 <%--<g:if test="${editable}"><th>${message(code:'default.select.label')}</th></g:if> : REMOVED BULK--%>
@@ -38,41 +39,51 @@
             </tr>
         </thead>
         <tbody>
+            <%-- Those are the rights settings the DMS needs to cope with. See the following documentation which is currently a requirement specification, too, and serves as base for ERMS-2393 --%>
             <%
                 Set documentSet = instance.documents
-                if(instance instanceof Org && inContextOrg){
+                if(instance instanceof Org && inContextOrg) {
+                    //get all documents which has been attached to this org
                     documentSet.addAll(docstoreService.getTargettedDocuments(instance))
                 }
             %>
             <g:each in="${documentSet.sort{it?.owner?.title?.toLowerCase()}}" var="docctx">
                 <%
-                    boolean visible = false
-                    boolean inOwnerOrg = false
-                    boolean inTargetOrg = false
+                    boolean visible = false //is the document visible?
+                    boolean inOwnerOrg = false //are we owners of the document?
+                    boolean inTargetOrg = false //are we in the org to which a document is attached?
 
+                    //these settings count only if we view an org's documents
                     if(docctx.owner.owner?.id == contextService.getOrg().id)
                         inOwnerOrg = true
                     else if(contextService.getOrg().id == docctx.targetOrg?.id)
                         inTargetOrg = true
                     if(docctx.org) {
                         switch(docctx.shareConf) {
-                            case RDStore.SHARE_CONF_UPLOADER_ORG: if(inOwnerOrg) visible = true
+                            case RDStore.SHARE_CONF_UPLOADER_ORG: if(inOwnerOrg) visible = true //visible only for thes users of org which uploaded the document
                                 break
-                            case RDStore.SHARE_CONF_UPLOADER_AND_TARGET: if(inOwnerOrg || inTargetOrg) visible = true
+                            case RDStore.SHARE_CONF_UPLOADER_AND_TARGET: if(inOwnerOrg || inTargetOrg) visible = true //the owner org and the target org may see the document i.e. the document has been shared with the target org
                                 break
                             case RDStore.SHARE_CONF_CONSORTIUM:
                             case RDStore.SHARE_CONF_ALL: visible = true //definition says that everyone with "access" to target org. How are such access roles defined and where?
                                 break
                             default:
+                                //fallback: documents are visible if share configuration is missing or obsolete
                                 if(docctx.shareConf) println docctx.shareConf
                                 else visible = true
                                 break
                         }
                     }
                     else if(inOwnerOrg || docctx.sharedFrom) {
+                        //other owner objects than orgs - in particular licenses and subscriptions: visibility is set if the owner org visits the owner object or sharing is activated
                         visible = true
                     }
                     else {
+                        /*
+                            this is a special clause for consortia member objects:
+                            - the consortium can see the documents it shared itself (directly attached documents are catched by the clause above because inOwnerOrg is true)
+                            - the single user member uploaded a document which should only be visible by the uploading member itself
+                         */
                         if((parentAtChild && docctx.sharedFrom) || !parentAtChild && docctx.owner?.owner?.id == contextService.getOrg().id) {
                             visible = true
                         }
@@ -140,7 +151,7 @@
                                         </g:else>
                                     </g:if>
                                 </g:if>
-                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button"><i class="download icon"></i></g:link>
+                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i class="download icon"></i></g:link>
                                 <g:if test="${accessService.checkMinUserOrgRole(user,docctx.owner.owner,"INST_EDITOR") && inOwnerOrg}">
                                     <button type="button" class="ui icon blue button la-modern-button la-popup-tooltip la-delay" data-semui="modal" href="#modalEditDocument_${docctx.id}" data-content="${message(code:"template.documents.edit")}"><i class="pencil icon"></i></button>
                                 </g:if>

@@ -14,7 +14,7 @@
 
     <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="menu.admin.serverDifferences"/></h1>
 
-    <table class="ui celled la-table table">
+    <table class="ui celled la-js-responsive-table la-table table">
         <thead>
         <tr>
             <th>Jira</th>

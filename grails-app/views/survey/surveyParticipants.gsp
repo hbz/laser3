@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'survey.label')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'survey.label')} (${message(code: 'surveyParticipants.label')})</title>
 </head>
 
 <body>
@@ -24,8 +24,9 @@
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
 <semui:xEditable owner="${surveyInfo}" field="name"/>
-<semui:surveyStatusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="surveyParticipants"/>
 </h1>
+<semui:surveyStatusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="surveyParticipants"/>
+
 
 <g:render template="nav"/>
 
@@ -53,7 +54,7 @@
 <g:if test="${surveyConfig}">
     <div class="ui grid">
         <div class="sixteen wide stretched column">
-            <div class="ui top attached tabular menu">
+            <div class="ui top attached stackable tabular menu">
 
                 <g:if test="${surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]}">
                     <g:link class="item ${params.tab == 'selectedSubParticipants' ? 'active' : ''}"

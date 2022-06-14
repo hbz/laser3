@@ -56,14 +56,16 @@
 
 <g:if test="${records}">
 
-    <table class="ui sortable celled la-table table">
+    <table class="ui sortable celled la-js-responsive-table la-table table">
         <thead>
         <tr>
             <th>${message(code: 'sidewide.number')}</th>
             <g:sortableColumn property="name"
                               title="${message(code: 'package.show.pkg_name')}"
                               params="${params}"/>
-            <th>${message(code: 'package.compare.overview.tipps')}</th>
+            <g:sortableColumn property="titleCount"
+                              title="${message(code: 'package.compare.overview.tipps')}"
+                              params="${params}"/>
             <g:sortableColumn property="providerName" title="${message(code: 'package.content_provider')}"
                               params="${params}"/>
             <g:sortableColumn property="nominalPlatformName"
@@ -141,8 +143,8 @@
                 </td>
                 <td class="right aligned">
                     <g:if test="${editable && (!pkgs || !(record.uuid in pkgs))}">
-
-                        <button type="button" class="ui icon button la-popup-tooltip la-delay"
+                        <g:set var="disabled" value="${bulkProcessRunning ? 'disabled' : ''}" />
+                        <button type="button" class="ui icon button la-popup-tooltip la-delay ${disabled}"
                                 data-addUUID="${record.uuid}"
                                 data-packageName="${record.name}"
                                 data-semui="modal"
@@ -245,8 +247,8 @@
                             <th class="control-label">
                                 <g:message code="subscription.packages.setting.label"/>
                             </th>
-                            <th class="control-label"
-                                data-tooltip="${message(code: "subscription.packages.notification.label")}">
+                            <th class="control-label la-popup-tooltip la-delay"
+                                data-content="${message(code: "subscription.packages.notification.label")}">
                                 <i class="ui large icon bullhorn"></i>
                             </th>
                         </tr>
@@ -286,7 +288,7 @@
                     </table>
                 </div>
                 <div class="inline field">
-                    <label for="freezeHolding"><g:message code="subscription.packages.freezeHolding"/> <span data-tooltip="${message(code: 'subscription.packages.freezeHolding.expl')}"><i class="ui question circle icon"></i></span></label>
+                    <label for="freezeHolding"><g:message code="subscription.packages.freezeHolding"/> <span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.packages.freezeHolding.expl')}"><i class="ui question circle icon"></i></span></label>
                     <g:checkBox class="ui checkbox" name="freezeHolding" checked="${false}"/>
                 </div>
             </div>
@@ -320,10 +322,10 @@
 
                         <table class="ui table compact la-table-height53px">
                             <tr>
-                                <th class="control-label" data-tooltip="${message(code: "subscription.packages.auditable")}">
+                                <th class="control-label la-popup-tooltip la-delay" data-contet="${message(code: "subscription.packages.auditable")}">
                                     <i class="ui large icon thumbtack"></i>
                                 </th>
-                                <th class="control-label" data-tooltip="${message(code: "subscription.packages.notification.auditable")}">
+                                <th class="control-label la-popup-tooltip la-delay" data-content="${message(code: "subscription.packages.notification.auditable")}">
                                     <i class="ui large icon bullhorn"></i>
                                 </th>
                             </tr>
@@ -352,7 +354,7 @@
                         </table>
                     </div>
                     <div class="inline field">
-                        <label for="freezeHoldingAudit"><g:message code="subscription.packages.freezeHolding"/> <span data-tooltip="${message(code: 'subscription.packages.freezeHolding.expl')}"><i class="ui question circle icon"></i></span></label>
+                        <label for="freezeHoldingAudit"><g:message code="subscription.packages.freezeHolding"/> <span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.packages.freezeHolding.expl')}"><i class="ui question circle icon"></i></span></label>
                         <g:checkBox class="ui checkbox" name="freezeHoldingAudit" checked="${false}"/>
                     </div>
                 </div>

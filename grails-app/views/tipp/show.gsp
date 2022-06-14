@@ -234,7 +234,7 @@
 
         <div class="content">
 
-            <table class="ui celled la-table table ">
+            <table class="ui celled la-js-responsive-table la-table table ">
                 <thead>
                 <tr>
                     %{--<th><g:message code="title.edit.component_id.label"/></th>--}%
@@ -269,7 +269,7 @@
                     <div class="header">${message(code: 'title.show.history.label')}</div>
                 </div>
                 <div class="content">
-                    <table class="ui celled la-table table">
+                    <table class="ui celled la-js-responsive-table la-table table">
                         <thead>
                             <tr>
                                 <th>${message(code: 'default.date.label')}</th>

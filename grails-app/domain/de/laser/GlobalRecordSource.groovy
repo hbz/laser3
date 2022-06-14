@@ -2,6 +2,20 @@ package de.laser
 
 import javax.persistence.Transient
 
+/**
+ * This is a source entry to an ElasticSearch scroll endpoint; it is currently used for we:kb data mirroring but may be extended to other sources as well
+ * A source may have a record type ({@link #rectype}):
+ * <ul>
+ *     <li>{@link Package}</li>
+ *     <li>{@link Org}</li>
+ *     <li>{@link TitleInstancePackagePlatform}</li>
+ * </ul>
+ * and a source type ({@link #type}):
+ * <ul>
+ *     <li>OAI (deprecated)</li>
+ *     <li>JSON</li>
+ * </ul>
+ */
 class GlobalRecordSource {
 
     String identifier
@@ -59,17 +73,23 @@ class GlobalRecordSource {
       dateCreated (nullable: true)
     }
 
+    @Deprecated
     @Transient
     String getBaseUrl() {
         // For now, assume type=gokb - and trim off the oai/packages
         uri.replaceAll('oai.*','');
     }
 
+    @Deprecated
     @Transient
     String getBaseEditUrl() {
         editUri.replaceAll('oai.*','')
     }
 
+    /**
+     * Removes a global record source
+     * @param source_id the ID of the source to be deleted
+     */
     @Transient
     static void removeSource(source_id) {
         GlobalRecordSource.executeUpdate("delete GlobalRecordSource grs where grs.id = :id", [id: source_id])

@@ -1,5 +1,6 @@
 package de.laser
 
+@Deprecated
 class ChangeNotificationQueueItem {
 
   String oid

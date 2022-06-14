@@ -1,6 +1,8 @@
 package com.k_int.kbplus
 
 import de.laser.ContextService
+import de.laser.FilterService
+import de.laser.GlobalService
 import de.laser.Identifier
 import de.laser.IdentifierNamespace
 import de.laser.IssueEntitlement
@@ -29,6 +31,7 @@ import de.laser.stats.Counter5ApiSource
 import de.laser.stats.Counter5Report
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
+import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import org.apache.poi.POIXMLProperties
 import org.apache.poi.ss.usermodel.Cell
@@ -49,6 +52,8 @@ import org.springframework.context.i18n.LocaleContextHolder
 
 import java.awt.*
 import java.math.RoundingMode
+import java.sql.Connection
+import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.util.List
 
@@ -69,18 +74,20 @@ class ExportService {
 	SimpleDateFormat formatter = DateUtils.getSDF_ymd()
 	MessageSource messageSource
 	ContextService contextService
+	FilterService filterService
 
 	/**
-		new CSV/TSV export interface - should subsequently replace StreamOutLicenseCSV, StreamOutSubsCSV and StreamOutTitlesCSV
-		expect data in structure:
-		@param titleRow - {@link Collection} of column headers [header1,header2,...,headerN]
-		@param columnData - {@link Collection} of the rows, each row is itself a {@link Collection}:
-	 	[
-		 	[column1, column2, ..., columnN], //for row 1
-		 	[column1, column2, ..., columnN], //for row 2
-		 	...
-		 	[column1, column2, ..., columnN]  //for row N
-		]
+	 * new CSV/TSV export interface - should subsequently replace StreamOutLicenseCSV, StreamOutSubsCSV and StreamOutTitlesCSV
+	 * expect data in structure:
+	 * @param titleRow {@link Collection} of column headers [header1,header2,...,headerN]
+	 * @param columnData {@link Collection} of the rows, each row is itself a {@link Collection}:
+	 * [
+	 *   [column1, column2, ..., columnN], //for row 1
+	 *   [column1, column2, ..., columnN], //for row 2
+	 *   ...
+	 *   [column1, column2, ..., columnN]  //for row N
+	 * ]
+	 * @return the table formatted as a character-separated string
 	 */
 	String generateSeparatorTableString(Collection titleRow, Collection columnData,String separator) {
 		List output = []
@@ -94,17 +101,18 @@ class ExportService {
 	}
 
 	/**
-		new XSLX export interface - should subsequently collect the Excel export points
-		expect data in structure:
-		 [sheet:
-		 	titleRow: [colHeader1, colHeader2, ..., colHeaderN]
-			columnData:[
-				[field:field1,style:style1], //for row 1
-				[field:field2,style:style2], //for row 2
-				...,
-				[field:fieldN,style:styleN]  //for row N
-			]
-		 ]
+	 * new XSLX export interface - should subsequently collect the Excel export points
+	 * @param sheets the Map of sheets to export. Expect data in structure:
+	 * [sheet:
+	 *   titleRow: [colHeader1, colHeader2, ..., colHeaderN]
+	 *   columnData:[
+	 *     [field:field1,style:style1], //for row 1
+	 *     [field:field2,style:style2], //for row 2
+	 *     ...,
+	 *     [field:fieldN,style:styleN]  //for row N
+	 *   ]
+	 * ]
+	 * @return an Excel map as SXSSFWorkbook
 	 */
     SXSSFWorkbook generateXLSXWorkbook(Map sheets) {
 		Locale locale = LocaleContextHolder.getLocale()
@@ -125,6 +133,8 @@ class ExportService {
 		XSSFFont font = wb.createFont()
 		font.setBold(true)
 		bold.setFont(font)
+		XSSFCellStyle lb = wb.createCellStyle()
+		lb.setWrapText(true)
 		Map workbookStyles = ['positive':csPositive,'neutral':csNeutral,'negative':csNegative,'bold':bold]
 		SXSSFWorkbook output = new SXSSFWorkbook(wb,50,true)
 		output.setCompressTempFiles(true)
@@ -161,6 +171,8 @@ class ExportService {
 						cell = row.createCell(cellnum++)
 						if (cellData.field instanceof String) {
 							cell.setCellValue((String) cellData.field)
+							if(cellData.field.contains('\n'))
+								cell.setCellStyle(lb)
 						} else if (cellData.field instanceof Integer) {
 							cell.setCellValue((Integer) cellData.field)
 						} else if (cellData.field instanceof Double || cellData.field instanceof BigDecimal) {
@@ -196,6 +208,14 @@ class ExportService {
         output
     }
 
+	/**
+	 * Prepares the given collection of institutions or organisations for the export in the given format
+	 * @param orgs the collection of organisations (or institutions) to export
+	 * @param message the title of the Excel worksheet
+	 * @param addHigherEducationTitles should be columns included which count only for institutions?
+	 * @param format the file format for the export
+	 * @return depending on the format, an Excel worksheet or a CSV file
+	 */
 	def exportOrg(Collection orgs, String message, boolean addHigherEducationTitles, String format) {
 		Locale locale = LocaleContextHolder.getLocale()
 		List titles = [messageSource.getMessage('org.sortname.label',null,locale), 'Name', messageSource.getMessage('org.shortname.label',null,locale),messageSource.getMessage('globalUID.label',null,locale)]
@@ -463,9 +483,9 @@ class ExportService {
 	}
 
 	/**
-	 * Retrieves for the given property definition type and organisation of list of headers, containing property definition names. Includes custom and privare properties
-	 * @param propDefConst - a {@link PropertyDefinition} constant which property definition type should be loaded
-	 * @param contextOrg - the context {@link de.laser.Org}
+	 * Retrieves for the given property definition type and organisation of list of headers, containing property definition names. Includes custom and private properties
+	 * @param propDefConst a {@link PropertyDefinition} constant which property definition type should be loaded
+	 * @param contextOrg the context {@link Org}
 	 * @return a {@link List} of headers
 	 */
 	List<String> loadPropListHeaders(Set<PropertyDefinition> propSet) {
@@ -478,11 +498,10 @@ class ExportService {
 
 	/**
 	 * Fetches for the given {@link Set} of {@link PropertyDefinition}s the values and inserts them into the cell of the given format
-	 *
-	 * @param propertyDefinitions - the {@link Set} of {@link PropertyDefinition}s to read the values off
-	 * @param format - the format (Excel or CSV) in which the values should be outputted
-	 * @param target - the target object whose property set should be consulted
-	 * @param childObjects - a {@link Map} of dependent objects
+	 * @param propertyDefinitions the {@link Set} of {@link PropertyDefinition}s to read the values off
+	 * @param format the format (Excel or CSV) in which the values should be outputted
+	 * @param target the target object whose property set should be consulted
+	 * @param childObjects a {@link Map} of dependent objects
 	 * @return a {@link List} or a {@link List} of {@link Map}s for the export sheet containing the value
 	 */
 	List processPropertyListValues(Set<PropertyDefinition> propertyDefinitions, String format, def target, Map childObjects, Map objectNames, Org contextOrg) {
@@ -527,10 +546,14 @@ class ExportService {
 	}
 
 	/**
-	 *
-	 * @param grailsParameterMap
-	 * @param data - the retrieved and filtered COUNTER data
-	 * @return
+	 * Exports the given usage data in an Excel worksheet. The export is COUNTER compliant unless it is used for
+	 * the title selection survey; then, additional data is needed which is not covered by the COUNTER compliance
+	 * @param params the filter parameter map
+	 * @param data the retrieved and filtered COUNTER data
+	 * @param showPriceDate should price columns be displayed?
+	 * @param showMetricType should the metric type be included (what seems not to be the case per definition in COUNTER 4)?
+	 * @param showOtherData should other data be displayed?
+	 * @return an Excel worksheet of the usage report, either according to the COUNTER 4 or COUNTER 5 format
 	 */
 	SXSSFWorkbook exportReport(GrailsParameterMap params, Map data, Boolean showPriceDate = false, Boolean showMetricType = false, Boolean showOtherData = false) {
 		Locale locale = LocaleContextHolder.getLocale()
@@ -558,7 +581,7 @@ class ExportService {
 			SXSSFSheet sheet = wb.createSheet(reportType)
 			sheet.flushRows(10)
 			sheet.setAutobreaks(true)
-			LinkedHashSet<String> columnHeaders
+			LinkedHashSet<String> columnHeaders = []
 			Map<TitleInstancePackagePlatform, Map> titleRows = [:]
 			int rowno = 0
 			//revision 4
@@ -588,7 +611,7 @@ class ExportService {
 				headerRow = sheet.createRow(6)
 				cell = headerRow.createCell(0)
 				cell.setCellValue(data.dateRun.format('yyyy-MM-dd'))
-				columnHeaders = Counter4Report.COLUMN_HEADERS.valueOf(reportType).headers
+				columnHeaders.addAll(Counter4Report.COLUMN_HEADERS.valueOf(reportType).headers)
 				columnHeaders.addAll(data.monthsInRing.collect { Date month -> month.format('yyyy-MM') })
 				if(showPriceDate) {
 					columnHeaders.addAll(["List Price EUR", "List Price GBP", "List Price USD"])
@@ -763,7 +786,7 @@ class ExportService {
 			//revision 5
 			else if(data.revision == 'counter5') {
 				//the header
-				columnHeaders = Counter5Report.COLUMN_HEADERS.valueOf(reportType.toUpperCase()).headers
+				columnHeaders.addAll(Counter5Report.COLUMN_HEADERS.valueOf(reportType.toUpperCase()).headers)
 				Row headerRow = sheet.createRow(0)
 				cell = headerRow.createCell(0)
 				cell.setCellValue("Report_Name")
@@ -884,6 +907,19 @@ class ExportService {
 		wb
 	}
 
+	/**
+	 * Assembles the rows containing the usages for each title according to the given report type.
+	 * The reports exports are COUNTER-compliant unless if used for other purposes which make the
+	 * display of other data necessary as well, i.e. list prices, for pick-and-choose purposes
+	 * @param usages the data to prepare
+	 * @param propIdNamespaces the proprietary namespace(s) of the provider
+	 * @param reportType the report type which is about to be exported
+	 * @param showPriceDate should the list price shown?
+	 * @param showMetricType should the metric types be included in the report?
+	 * @param showOtherData should other data being shown as well?
+	 * @param metricType (for COUNTER 4 exports only) the metric typ which should be exported
+	 * @return a map of titles with the row containing the columns as specified for the given report
+	 */
 	Map<TitleInstancePackagePlatform, Map<String, Map>> prepareTitleRows(Set<AbstractReport> usages, Set<IdentifierNamespace> propIdNamespaces, String reportType, Boolean showPriceDate = false, Boolean showMetricType = false, Boolean showOtherData = false, String metricType = 'ft_total') {
 		Map<TitleInstancePackagePlatform, Map<String, Map>> titleRows = [:]
 		//inconsistent storage of the report type makes that necessary
@@ -1014,8 +1050,8 @@ class ExportService {
 
 	/**
 	 * Make a XLSX export of cost item results
-	 * @param result - passed from index
-	 * @return
+	 * @param result the loaded financial data
+	 * @return a Excel worksheet of the given cost data
 	 */
 	SXSSFWorkbook processFinancialXLSX(Map<String,Object> result) {
 		Locale locale = LocaleContextHolder.getLocale()
@@ -1386,9 +1422,9 @@ class ExportService {
 	}
 
 	/**
-	 *
-	 * @param propDefGroups
-	 * @return
+	 * Exports the current usage of the property definitions within the defined groups
+	 * @param propDefGroups the property definition groups of the institution
+	 * @return an Excel worksheet containing the property distribution among the objects grouped per object type and property definition group
 	 */
 	Map<String,Map> generatePropertyGroupUsageXLS(Map propDefGroups) {
 		Locale locale = LocaleContextHolder.getLocale()
@@ -1414,17 +1450,41 @@ class ExportService {
 
 	/**
 	 * Generates a title stream export list according to the KBART II-standard but enriched with proprietary fields such as ZDB-ID
-	 * The standard is defined here: <a href="https://www.uksg.org/kbart/s5/guidelines/data_fields">KBART definition</a>
-	 *
-	 * @param entitlementData - a {@link Collection} containing the actual data
+	 * The standard is defined here: <a href="https://www.niso.org/standards-committees/kbart">KBART definition</a>
+	 * @param entitlementData a {@link Collection} containing the actual data
 	 * @return a {@link Map} containing lists for the title row and the column data
 	 */
-	Map<String,List> generateTitleExportKBART(Collection<Long> entitlementIDs, String entitlementInstance) {
+	Map<String,List> generateTitleExportKBART(Map configMap, String entitlementInstance) {
 		log.debug("Begin generateTitleExportKBART")
-		Set<IdentifierNamespace> otherTitleIdentifierNamespaces = getOtherIdentifierNamespaces(entitlementIDs,entitlementInstance)
+		Sql sql = GlobalService.obtainSqlConnection()
 		List<String> titleHeaders = getBaseTitleHeaders()
+		Map<String, List> export = [titleRow:titleHeaders]
+		List rows = []
+		Map<String, Object> data = getTitleData(configMap, entitlementInstance, sql)
+		data.titles.eachWithIndex { GroovyRowResult title, int outer ->
+			if(entitlementInstance == IssueEntitlement.class.name && data.coverageMap.get(title['ie_id'])) {
+				data.coverageMap.get(title['ie_id']).eachWithIndex { GroovyRowResult covStmt, int inner ->
+					println "now processing coverage statement ${inner} for record ${outer}"
+					covStmt.putAll(title)
+					rows.add(buildRow('kbart', covStmt, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces))
+				}
+			}
+			else if(entitlementInstance == TitleInstancePackagePlatform.class.name && data.coverageMap.get(title['tipp_id'])) {
+				data.coverageMap.get(title['tipp_id']).eachWithIndex { GroovyRowResult covStmt, int inner ->
+					println "now processing coverage statement ${inner} for record ${outer}"
+					covStmt.putAll(title)
+					rows.add(buildRow('kbart', covStmt, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces))
+				}
+			}
+			else {
+				println "now processing record ${outer}"
+				rows.add(buildRow('kbart', title, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces))
+			}
+		}
+		export.columnData = rows
+		/*
+		Set<IdentifierNamespace> otherTitleIdentifierNamespaces = getOtherIdentifierNamespaces(entitlementIDs,entitlementInstance)
 		titleHeaders.addAll(otherTitleIdentifierNamespaces.collect { IdentifierNamespace ns -> "${ns.ns}_identifer"})
-		Map<String,List> export = [titleRow:titleHeaders,columnData:[]]
 		int max = 500
 		TitleInstancePackagePlatform.withSession { Session sess ->
 			for(int offset = 0; offset < entitlementIDs.size(); offset+=max) {
@@ -1567,8 +1627,6 @@ class ExportService {
 					row.add(' ')
 					//preceding_publication_title_id (no values defined for LAS:eR, must await GOKb)
 					row.add(' ')
-					//access_type (no values defined for LAS:eR, must await GOKb)
-					row.add(tipp.accessType ? tipp.accessType.value : ' ')
 					/*
                     switch(entitlement.tipp.payment) {
                         case RDStore.TIPP_PAYMENT_OA: row.add('F')
@@ -1577,7 +1635,7 @@ class ExportService {
                             break
                         default: row.add(' ')
                             break
-                    }*/
+                    }
 					//package_name
 					row.add(tipp.pkg.name ?: ' ')
 					//package_id
@@ -1618,14 +1676,14 @@ class ExportService {
 					row.add(tipp.subjectReference ?: '')
 					//status
 					row.add(tipp.status.value ?: '')
-					//access_type
+					//access_type (no values defined for LAS:eR, must await GOKb)
 					row.add(tipp.accessType ? tipp.accessType.value : '')
 					//oa_type
 					row.add(tipp.openAccess ? tipp.openAccess.value : '')
 
 					//zdb_ppn
 					row.add(joinIdentifiers(tipp.ids,IdentifierNamespace.ZDB_PPN,','))
-					/*if(entitlement) {
+					if(entitlement) {
                         //ezb_anchor
                         row.add(joinIdentifiers(entitlement.subscription.ids,IdentifierNamespace.EZB_ANCHOR,','))
                         //ezb_collection_id
@@ -1641,15 +1699,15 @@ class ExportService {
                         row.add(' ')
                         row.add(' ')
                         row.add(' ')
-                    }*/
-					/*//ISSNs
+                    }
+					//ISSNs
                     row.add(joinIdentifiers(tipp.ids,IdentifierNamespace.ISSN,','))
                     //eISSNs
                     row.add(joinIdentifiers(tipp.ids,IdentifierNamespace.EISSN,','))
                     //pISBNs
                     row.add(joinIdentifiers(tipp.ids,IdentifierNamespace.PISBN,','))
                     //ISBNs
-                    row.add(joinIdentifiers(tipp.ids,IdentifierNamespace.PISBN,','))*/
+                    row.add(joinIdentifiers(tipp.ids,IdentifierNamespace.PISBN,','))
 					//other identifier namespaces
 
 					if(entitlement?.priceItems) {
@@ -1698,10 +1756,18 @@ class ExportService {
 				sess.flush()
 			}
 		}
+		*/
 		log.debug("End generateTitleExportKBART")
 		export
 	}
 
+	/**
+	 * Concatenates the set of identifiers belonging to the given namespace to a character-separated list
+	 * @param ids the set of identifiers to output
+	 * @param namespace the namespace whose identifiers should be concatenated
+	 * @param separator the character to use for separation
+	 * @return the concatenated string of identifiers
+	 */
 	String joinIdentifiers(Set<Identifier>ids, String namespace, String separator) {
 		String joined = ' '
 		List values = []
@@ -1715,6 +1781,17 @@ class ExportService {
 		joined
 	}
 
+	String joinIdentifiersSQL(List<String> ids, String separator) {
+		String joined = ' '
+		if(ids)
+			joined = ids.join(separator)
+		joined
+	}
+
+	/**
+	 * became a duplicate of generateTitleExportKBART - separate usage intended???
+	 */
+	@Deprecated
 	Map<String,List> generateTitleExportCSV(Collection entitlementIDs, String entitlementInstance) {
 		log.debug("Begin generateTitleExportCSV")
 		Set<IdentifierNamespace> otherTitleIdentifierNamespaces = getOtherIdentifierNamespaces(entitlementIDs,entitlementInstance)
@@ -2004,12 +2081,20 @@ class ExportService {
 		export
 	}
 
-	Map<String, List> generateTitleExportXLS(Collection entitlementIDs, String entitlementInstance, List<Date> showStatsInMonthRings = [], Org subscriber = null, Collection perpetuallyPurchasedTitleURLs = []) {
-		log.debug("Begin generateTitleExportXLS")
+	/**
+	 * Was initially set up for generating Excel-export; as for some reason, the CSV export has been abandoned, this export is now
+	 * generic export for non-KBART headers, used for purposes where the KBART headers are not needed in full.
+	 * To use this export for tab-separated values, access result.rows.field directly for the data; it is like PHP's array_column()
+	 * @param entitlementIDs the IDs of the issue entitlements or title instances to export
+	 * @param entitlementInstance the class name to look for the complete objects
+	 * @return a {@link Map} containing headers and data for export; it may be used for Excel worksheets as style information is defined in format-style maps or for
+	 * raw text output; access rows.field for the bare data
+	 */
+	Map<String, List> generateTitleExportCustom(Map configMap, String entitlementInstance, List showStatsInMonthRings = [], Org subscriber = null, Collection perpetuallyPurchasedTitleURLs = []) {
+		log.debug("Begin generateTitleExportCustom")
+		Sql sql = GlobalService.obtainSqlConnection()
 		Locale locale = LocaleContextHolder.getLocale()
-
-		Set<IdentifierNamespace> otherTitleIdentifierNamespaces = getOtherIdentifierNamespaces(entitlementIDs,entitlementInstance)
-		Set<IdentifierNamespace> coreTitleIdentifierNamespaces = getCoreIdentifierNamespaces(entitlementIDs,entitlementInstance)
+		Map<String, Object> data = getTitleData(configMap, entitlementInstance, sql)
 		List<String> titleHeaders = [
 				messageSource.getMessage('tipp.name',null,locale),
 				'Print Identifier',
@@ -2048,247 +2133,42 @@ class ExportService {
 				messageSource.getMessage('tipp.localprice_eur',null,locale),
 				messageSource.getMessage('tipp.localprice_gbp',null,locale),
 				messageSource.getMessage('tipp.localprice_usd',null,locale)]
-		titleHeaders.addAll(coreTitleIdentifierNamespaces.collect {IdentifierNamespace ns -> "${ns.ns}"})
-		titleHeaders.addAll(otherTitleIdentifierNamespaces.collect {IdentifierNamespace ns -> "${ns.ns}"})
-
+		titleHeaders.addAll(data.coreTitleIdentifierNamespaces.collect { GroovyRowResult row -> row['idns_ns']})
+		titleHeaders.addAll(data.otherTitleIdentifierNamespaces.collect { GroovyRowResult row -> row['idns_ns']})
 		if(showStatsInMonthRings){
 			titleHeaders.addAll(showStatsInMonthRings.collect { Date month -> month.format('yyyy-MM') })
 		}
 		List rows = []
 		Map<String,List> export = [titles:titleHeaders]
-		int max = 500
-		TitleInstancePackagePlatform.withSession { Session sess ->
-			for(int offset = 0; offset < entitlementIDs.size(); offset+=max) {
-				List allRows = []
-				Set<TitleInstancePackagePlatform> titleInstances = []
-				//this double structure is necessary because the KBART standard foresees for each coverageStatement an own row with the full data
-				if(entitlementInstance == TitleInstancePackagePlatform.class.name) {
-					titleInstances.addAll(TitleInstancePackagePlatform.findAllByIdInList(entitlementIDs.drop(offset).take(max),[sort:'sortname']))
-					titleInstances.each { TitleInstancePackagePlatform tipp ->
-						if(!tipp.coverages && !tipp.priceItems) {
-							allRows << tipp
-						}
-						else if(tipp.coverages.size() > 1){
-							tipp.coverages.each { AbstractCoverage covStmt ->
-								allRows << covStmt
-							}
-						}
-						else {
-							allRows << tipp
-						}
-					}
+		data.titles.eachWithIndex { GroovyRowResult title, int outer ->
+			if(entitlementInstance == IssueEntitlement.class.name && data.coverageMap.get(title['ie_id'])) {
+				data.coverageMap.get(title['ie_id']).eachWithIndex { GroovyRowResult covStmt, int inner ->
+					println "now processing coverage statement ${inner} for record ${outer}"
+					covStmt.putAll(title)
+					rows.add(buildRow('excel', covStmt, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces, perpetuallyPurchasedTitleURLs, showStatsInMonthRings, subscriber))
 				}
-				else if(entitlementInstance == IssueEntitlement.class.name) {
-					Set<IssueEntitlement> issueEntitlements = IssueEntitlement.findAllByIdInList(entitlementIDs.drop(offset).take(max),[sort:'tipp.sortname'])
-					issueEntitlements.each { IssueEntitlement entitlement ->
-						titleInstances << entitlement.tipp
-						if(!entitlement.coverages && !entitlement.priceItems) {
-							allRows << entitlement
-						}
-						else if(entitlement.coverages.size() > 1){
-							entitlement.coverages.each { AbstractCoverage covStmt ->
-								allRows << covStmt
-							}
-						}
-						else {
-							allRows << entitlement
-						}
-					}
+			}
+			else if(entitlementInstance == TitleInstancePackagePlatform.class.name && data.coverageMap.get(title['tipp_id'])) {
+				data.coverageMap.get(title['tipp_id']).eachWithIndex { GroovyRowResult covStmt, int inner ->
+					println "now processing coverage statement ${inner} for record ${outer}"
+					covStmt.putAll(title)
+					rows.add(buildRow('excel', covStmt, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces, perpetuallyPurchasedTitleURLs, showStatsInMonthRings, subscriber))
 				}
-				Map<TitleInstancePackagePlatform, Map<Integer, AbstractReport>> reportMap = [:]
-				if(showStatsInMonthRings && subscriber) {
-
-					String dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
-
-					Calendar filterTime = GregorianCalendar.getInstance()
-					filterTime.setTime(showStatsInMonthRings.first())
-					filterTime.set(Calendar.DATE, filterTime.getActualMinimum(Calendar.DAY_OF_MONTH))
-					Date startDate = filterTime.getTime()
-					filterTime.setTime(showStatsInMonthRings.last())
-					filterTime.set(Calendar.DATE, filterTime.getActualMaximum(Calendar.DAY_OF_MONTH))
-					Date endDate = filterTime.getTime()
-
-					Map<String, Object> queryParams = [customer: subscriber, platforms: titleInstances.platform.unique(), startDate: startDate, endDate: endDate, titles: titleInstances]
-
-					List counterReportRows
-					counterReportRows = Counter5Report.executeQuery('select r, Month(r.reportFrom) as reportMonth from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms) and r.title in (:titles) and lower(r.reportType) = :defaultReport and r.metricType = :defaultMetric'+dateRange, queryParams+[defaultReport: Counter5ApiSource.TITLE_MASTER_REPORT, defaultMetric: 'Unique_Title_Requests'])
-					if(!counterReportRows)
-						counterReportRows = Counter4Report.executeQuery('select r, Month(r.reportFrom) as reportMonth from Counter4Report r where r.reportInstitution = :customer and r.platform in (:platforms) and r.title in (:titles) and r.reportType in (:defaultReports) and r.metricType = :defaultMetric'+dateRange, queryParams+[defaultReports: [Counter4ApiSource.BOOK_REPORT_1, Counter4ApiSource.JOURNAL_REPORT_1], defaultMetric: 'ft_total'])
-					counterReportRows.each { reportRow ->
-						Map<Integer, AbstractReport> usageMap = reportMap.get(reportRow[0].title)
-						if(!usageMap)
-							usageMap = [:]
-						usageMap.put(reportRow[1], reportRow[0])
-						reportMap.put(reportRow[0].title,usageMap)
-					}
-				}
-				allRows.each { rowData ->
-					IssueEntitlement entitlement = getIssueEntitlement(rowData)
-					TitleInstancePackagePlatform tipp = getTipp(rowData)
-					String style = null
-					if(tipp.hostPlatformURL in perpetuallyPurchasedTitleURLs)
-						style = 'negative'
-					AbstractCoverage covStmt = getCoverageStatement(rowData)
-					List row = []
-					row.add([field: tipp.name ?: '', style:style])
-					//print_identifier - namespace pISBN is proprietary for LAS:eR because no eISBN is existing and ISBN is used for eBooks as well
-					if(tipp.getIdentifierValue('pISBN'))
-						row.add([field: tipp.getIdentifierValue('pISBN'), style:style])
-					else if(tipp.getIdentifierValue('ISSN'))
-						row.add([field: tipp.getIdentifierValue('ISSN'), style:style])
-					else row.add([field: '', style:style])
-					//online_identifier
-					if(tipp.getIdentifierValue('ISBN'))
-						row.add([field: tipp.getIdentifierValue('ISBN'), style:style])
-					else if(tipp.getIdentifierValue('eISSN'))
-						row.add([field: tipp.getIdentifierValue('eISSN'), style:style])
-					else row.add([field: '', style:style])
-
-					row.add([field: tipp.pkg.name ?: '', style:style])
-					row.add([field: tipp.platform.name ?: '', style:style])
-					switch(tipp.titleType) {
-						case "Journal": row.add([field:'serial', style:style])
-							break
-						case "Book": row.add([field:'monograph', style:style])
-							break
-						case "Database": row.add([field:'database', style:style])
-							break
-						default: row.add([field:'other', style:style])
-							break
-					}
-					row.add([field: tipp.publisherName ? tipp.publisherName : '', style:style])
-					row.add([field: tipp.medium ? tipp.medium.getI10n('value') : '', style:style])
-					row.add([field: tipp.accessStartDate ? formatter.format(tipp.accessStartDate) : '', style:style])
-					row.add([field: tipp.accessEndDate ? formatter.format(tipp.accessEndDate) : '', style:style])
-					row.add([field: tipp.hostPlatformURL ?: '', style:style])
-					row.add([field: tipp.firstAuthor ?: '', style:style])
-					row.add([field: tipp.firstEditor ?: '', style:style])
-					if(covStmt) {
-						//date_first_issue_online
-						row.add([field: covStmt.startDate ? formatter.format(covStmt.startDate) : ' ', style:style])
-						//num_first_volume_online
-						row.add([field: covStmt.startVolume ?: ' ', style:style])
-						//num_first_issue_online
-						row.add([field: covStmt.startIssue ?: ' ', style:style])
-						//date_last_issue_online
-						row.add([field: covStmt.endDate ? formatter.format(covStmt.endDate) : ' ', style:style])
-						//num_last_volume_online
-						row.add([field: covStmt.endVolume ?: ' ', style:style])
-						//num_last_issue_online
-						row.add([field: covStmt.endIssue ?: ' ', style:style])
-						//embargo_information
-						row.add([field: covStmt.embargo ?: ' ', style:style])
-						//coverage_depth
-						row.add([field: covStmt.coverageDepth ?: ' ', style:style])
-						//notes
-						row.add([field: covStmt.coverageNote ?: ' ', style:style])
-					}
-					else {
-						//empty values for coverage fields
-						row.add([field: '', style:style])
-						row.add([field: '', style:style])
-						row.add([field: '', style:style])
-						row.add([field: '', style:style])
-						row.add([field: '', style:style])
-						row.add([field: '', style:style])
-						row.add([field: '', style:style])
-						row.add([field: '', style:style])
-						row.add([field: '', style:style])
-					}
-
-					if(tipp.titleType == 'Book') {
-						row.add([field: tipp.dateFirstInPrint ? formatter.format(tipp.dateFirstInPrint) : ' ', style:style])
-						row.add([field: tipp.dateFirstOnline ? formatter.format(tipp.dateFirstOnline) : ' ', style:style])
-						row.add([field: tipp.volume ?: ' ', style:style])
-						row.add([field: tipp.editionNumber ?: ' ', style:style])
-					}
-					else {
-						//empty values from date_monograph_published_print to first_editor
-						row.add([field: '', style:style])
-						row.add([field: '', style:style])
-						row.add([field: '', style:style])
-						row.add([field: '', style:style])
-					}
-					row.add([field: tipp.seriesName ?: ' ', style:style])
-					row.add([field: tipp.subjectReference ?: ' ', style:style])
-					row.add([field: tipp.status ? tipp.status.getI10n('value') : ' ', style:style])
-					row.add([field: tipp.accessType ? tipp.accessType.getI10n('value') : ' ', style:style])
-					row.add([field: tipp.openAccess ? tipp.openAccess.getI10n('value') : ' ', style:style])
-
-					if(entitlement?.priceItems) {
-						//listprice_eur
-						row.add([field: entitlement.priceItems.find {it.listCurrency == RDStore.CURRENCY_EUR}?.listPrice ?: ' ', style:style])
-						//listprice_gbp
-						row.add([field: entitlement.priceItems.find {it.listCurrency == RDStore.CURRENCY_GBP}?.listPrice ?: ' ', style:style])
-						//listprice_usd
-						row.add([field: entitlement.priceItems.find {it.listCurrency == RDStore.CURRENCY_USD}?.listPrice ?: ' ', style:style])
-						//localprice_eur
-						row.add([field: entitlement.priceItems.find {it.localCurrency == RDStore.CURRENCY_EUR}?.localPrice ?: ' ', style:style])
-						//localprice_gbp
-						row.add([field: entitlement.priceItems.find {it.localCurrency == RDStore.CURRENCY_GBP}?.localPrice ?: ' ', style:style])
-						//localprice_usd
-						row.add([field: entitlement.priceItems.find {it.localCurrency == RDStore.CURRENCY_USD}?.localPrice ?: ' ', style:style])
-					} else if (tipp.priceItems) {
-						//listprice_eur
-						row.add([field: tipp.priceItems.find { it.listCurrency == RDStore.CURRENCY_EUR }?.listPrice ?: ' ', style:style])
-						//listprice_gbp
-						row.add([field: tipp.priceItems.find { it.listCurrency == RDStore.CURRENCY_GBP }?.listPrice ?: ' ', style:style])
-						//listprice_usd
-						row.add([field: tipp.priceItems.find { it.listCurrency == RDStore.CURRENCY_USD }?.listPrice ?: ' ', style:style])
-						//localprice_eur
-						row.add([field: tipp.priceItems.find { it.localCurrency == RDStore.CURRENCY_EUR }?.localPrice ?: ' ', style:style])
-						//localprice_gbp
-						row.add([field: tipp.priceItems.find { it.localCurrency == RDStore.CURRENCY_GBP }?.localPrice ?: ' ', style:style])
-						//localprice_usd
-						row.add([field: tipp.priceItems.find { it.localCurrency == RDStore.CURRENCY_USD }?.localPrice ?: ' ', style:style])
-					}
-					else {
-						//empty values for price item columns
-						row.add([field: ' ', style:style])
-						row.add([field: ' ', style:style])
-						row.add([field: ' ', style:style])
-						row.add([field: ' ', style:style])
-						row.add([field: ' ', style:style])
-						row.add([field: ' ', style:style])
-					}
-
-					coreTitleIdentifierNamespaces.each { IdentifierNamespace ns ->
-						row.add(field: joinIdentifiers(tipp.ids,ns.ns,','), style: style)
-					}
-					otherTitleIdentifierNamespaces.each { IdentifierNamespace ns ->
-						row.add(field: joinIdentifiers(tipp.ids,ns.ns,','), style: style)
-					}
-
-					if(entitlement && showStatsInMonthRings && subscriber) {
-						Calendar filterTime = GregorianCalendar.getInstance()
-						Map<Integer, AbstractReport> usageMap = reportMap.get(entitlement.tipp)
-						showStatsInMonthRings.each { Date month ->
-							filterTime.setTime(month)
-							AbstractReport counterReport
-							if(usageMap) {
-								counterReport = usageMap.get(filterTime.get(Calendar.MONTH)+1) //+1 because Calendar.MONTH ranges from 0 to 11
-							}
-							if(counterReport){
-								//println(counterReport)
-								//println(counterReport.reportCount ?: '')
-								row.add([field: counterReport.reportCount ?: '', style:style])
-							}
-							else
-								row.add([field: ' ', style:style])
-						}
-					}
-
-					rows.add(row)
-				}
-				println("flushing after ${offset} ...")
-				sess.flush()
+			}
+			else {
+				println "now processing record ${outer}"
+				rows.add(buildRow('excel', title, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces, perpetuallyPurchasedTitleURLs, showStatsInMonthRings, subscriber))
 			}
 		}
 		export.rows = rows
-		log.debug("End generateTitleExportXLS")
+		log.debug("End generateTitleExportCustom")
 		export
 	}
 
+	/**
+	 * Gets the list of column headers for KBART export
+	 * @return a list of column headers
+	 */
 	List<String> getBaseTitleHeaders() {
 		['publication_title',
 		 'print_identifier',
@@ -2314,7 +2194,6 @@ class ExportService {
 		 'first_editor',
 		 'parent_publication_title_id',
 		 'preceding_publication_title_id',
-		 'access_type',
 		 'package_name',
 		 'package_id',
 		 'last_changed',
@@ -2345,6 +2224,7 @@ class ExportService {
 		 'localprice_usd']
 	}
 
+	@Deprecated
 	List<String> getBaseTitleHeadersForCSV() {
 		['publication_title',
 		 'print_identifier',
@@ -2402,6 +2282,227 @@ class ExportService {
 		 'perpetual_access']
 	}
 
+	/**
+	 * Builds a row for the export table, assembling the data contained in the output
+	 * @param format the format of the exporting table
+	 * @param titleRecord the title to be displayed in the row
+	 * @param identifierMap a map of title {@link Identifier}s
+	 * @param priceItemMap a map of title {@link de.laser.finance.PriceItem}s
+	 * @param reportMap a map of COUNTER reports (see {@link AbstractReport} implementations)
+	 * @param perpetuallyPurchasedTitleURLs a list of title URLs of titles which the given subscriber have perpetually bought
+	 * @param coreTitleIdentifierNamespaces {@link List} of identifier namespaces which are core set for titles
+	 * @param otherTitleIdentifierNamespaces {@link List} of identifier namespaces beyond the core set
+	 * @param showStatsInMonthRings if given: a {@link List} of usage report months
+	 * @param subscriber the institution ({@link Org}) whose holding should be exported
+	 * @return a {@link List} containing the columns for the next output row
+	 */
+	List buildRow(String format, GroovyRowResult titleRecord, Map identifierMap, Map priceItemMap, Map reportMap, List<GroovyRowResult> coreTitleIdentifierNamespaces, List<GroovyRowResult> otherTitleIdentifierNamespaces, Collection perpetuallyPurchasedTitleURLs = [], List showStatsInMonthRings = [], Org subscriber = null) {
+		titleRecord.identifiers = identifierMap.get(titleRecord['tipp_id'])
+		if(titleRecord.containsKey('ie_id')) {
+			titleRecord.priceItems = priceItemMap.get(titleRecord['ie_id'])
+		}
+		else {
+			titleRecord.priceItems = priceItemMap.get(titleRecord['tipp_id'])
+		}
+		if(reportMap.containsKey(titleRecord['tipp_id']))
+			titleRecord.usages = reportMap.get(titleRecord['tipp_id'])
+		String style = null
+		if(titleRecord['tipp_host_platform_url'] in perpetuallyPurchasedTitleURLs)
+			style = 'negative'
+		List row = []
+		row.add(createCell(format, titleRecord['name'], style))
+		if(titleRecord.identifiers) {
+			//print_identifier - namespace pISBN is proprietary for LAS:eR because no eISBN is existing and ISBN is used for eBooks as well
+			if(titleRecord.identifiers.get('pisbn'))
+				row.add(createCell(format, joinIdentifiersSQL(titleRecord.identifiers.get('pisbn'), ','), style))
+			else if(titleRecord.identifiers.get('issn'))
+				row.add(createCell(format, joinIdentifiersSQL(titleRecord.identifiers.get('issn'), ','), style))
+			else row.add(createCell(format, '', style))
+			//online_identifier
+			if(titleRecord.identifiers.get('isbn'))
+				row.add(createCell(format, joinIdentifiersSQL(titleRecord.identifiers.get('isbn'), ','), style))
+			else if(titleRecord.identifiers.get('eissn'))
+				row.add(createCell(format, joinIdentifiersSQL(titleRecord.identifiers.get('eissn'), ','), style))
+			else row.add(createCell(format, '', style))
+		}
+		else {
+			row.add(createCell(format, '', style))
+			row.add(createCell(format, '', style))
+		}
+		row.add(createCell(format, titleRecord['tipp_pkg_name'] ?: '', style))
+		row.add(createCell(format, titleRecord['tipp_plat_name'] ?: '', style))
+		row.add(createCell(format, titleRecord['title_type'], style))
+		row.add(createCell(format, titleRecord['tipp_publisher_name'] ? titleRecord['tipp_publisher_name'] : '', style))
+		row.add(createCell(format, titleRecord['tipp_medium'] ? titleRecord['tipp_medium'] : '', style))
+		row.add(createCell(format, titleRecord['accessStartDate'] ? formatter.format(titleRecord['accessStartDate']) : '', style))
+		row.add(createCell(format, titleRecord['accessEndDate'] ? formatter.format(titleRecord['accessEndDate']) : '', style))
+		row.add(createCell(format, titleRecord['tipp_host_platform_url'] ?: '', style))
+		row.add(createCell(format, titleRecord['tipp_first_author'] ?: '', style))
+		row.add(createCell(format, titleRecord['tipp_first_editor'] ?: '', style))
+		//date_first_issue_online
+		row.add(createCell(format, titleRecord.containsKey('startDate') && titleRecord.startDate ? formatter.format(titleRecord.startDate) : ' ', style))
+		//num_first_volume_online
+		row.add(createCell(format, titleRecord.containsKey('startVolume') && titleRecord.startVolume ?: ' ', style))
+		//num_first_issue_online
+		row.add(createCell(format, titleRecord.containsKey('startIssue') && titleRecord.startIssue ?: ' ', style))
+		//date_last_issue_online
+		row.add(createCell(format, titleRecord.containsKey('endDate') && titleRecord.endDate ? formatter.format(titleRecord.endDate) : ' ', style))
+		//num_last_volume_online
+		row.add(createCell(format, titleRecord.containsKey('endVolume') && titleRecord.endVolume ?: ' ', style))
+		//num_last_issue_online
+		row.add(createCell(format, titleRecord.containsKey('endIssue') && titleRecord.endIssue ?: ' ', style))
+		//embargo_information
+		row.add(createCell(format, titleRecord.containsKey('embargo') && titleRecord.embargo ?: ' ', style))
+		//coverage_depth
+		row.add(createCell(format, titleRecord.containsKey('coverageDepth') && titleRecord.coverageDepth ?: ' ', style))
+		//notes
+		row.add(createCell(format, titleRecord.containsKey('coverageNote') && titleRecord.coverageNote ?: ' ', style))
+		if(titleRecord['title_type'] == 'monograph') {
+			row.add(createCell(format, titleRecord['tipp_date_first_in_print'] ? formatter.format(titleRecord['tipp_date_first_in_print']) : ' ', style))
+			row.add(createCell(format, titleRecord['tipp_date_first_online'] ? formatter.format(titleRecord['tipp_date_first_online']) : ' ', style))
+			row.add(createCell(format, titleRecord['tipp_volume'] ?: ' ', style))
+			row.add(createCell(format, titleRecord['tipp_edition_number'] ?: ' ', style))
+		}
+		else {
+			//empty values from date_monograph_published_print to first_editor
+			row.add(createCell(format, '', style))
+			row.add(createCell(format, '', style))
+			row.add(createCell(format, '', style))
+			row.add(createCell(format, '', style))
+		}
+		row.add(createCell(format, titleRecord['tipp_series_name'] ?: ' ', style))
+		row.add(createCell(format, titleRecord['tipp_subject_reference'] ?: ' ', style))
+		row.add(createCell(format, titleRecord['status'] ?: ' ', style))
+		row.add(createCell(format, titleRecord['accessType'] ?: ' ', style))
+		row.add(createCell(format, titleRecord['openAccess'] ?: ' ', style))
+		if(titleRecord.priceItems) {
+			//listprice_eur
+			row.add(createCell(format, titleRecord.priceItems.get(RDStore.CURRENCY_EUR.value)?.get('pi_list_price') ?: ' ', style))
+			//listprice_gbp
+			row.add(createCell(format, titleRecord.priceItems.get(RDStore.CURRENCY_GBP.value)?.get('pi_list_price') ?: ' ', style))
+			//listprice_usd
+			row.add(createCell(format, titleRecord.priceItems.get(RDStore.CURRENCY_USD.value)?.get('pi_list_price') ?: ' ', style))
+			//localprice_eur
+			row.add(createCell(format, titleRecord.priceItems.get(RDStore.CURRENCY_EUR.value)?.get('pi_local_price') ?: ' ', style))
+			//localprice_gbp
+			row.add(createCell(format, titleRecord.priceItems.get(RDStore.CURRENCY_GBP.value)?.get('pi_local_price') ?: ' ', style))
+			//localprice_usd
+			row.add(createCell(format, titleRecord.priceItems.get(RDStore.CURRENCY_USD.value)?.get('pi_local_price') ?: ' ', style))
+		}
+		else {
+			//empty values for price item columns
+			row.add(createCell(format, ' ', style))
+			row.add(createCell(format, ' ', style))
+			row.add(createCell(format, ' ', style))
+			row.add(createCell(format, ' ', style))
+			row.add(createCell(format, ' ', style))
+			row.add(createCell(format, ' ', style))
+		}
+
+		coreTitleIdentifierNamespaces.each { GroovyRowResult ns ->
+			row.add(createCell(format, joinIdentifiersSQL(titleRecord.identifiers.get(ns['idns_ns']), ','), style))
+		}
+		otherTitleIdentifierNamespaces.each { GroovyRowResult ns ->
+			row.add(createCell(format, joinIdentifiersSQL(titleRecord.identifiers.get(ns['idns_ns']),','), style))
+		}
+
+		if(showStatsInMonthRings && subscriber) {
+			Map<Date, GroovyRowResult> usageMap = reportMap.get(titleRecord['tipp_id'])
+			if(usageMap) {
+				Calendar filterTime = GregorianCalendar.getInstance()
+				showStatsInMonthRings.each { Date month ->
+					filterTime.setTime(month)
+					GroovyRowResult counterReport
+					counterReport = usageMap.get(filterTime.getTime())
+					if(counterReport){
+						//println(counterReport)
+						//println(counterReport.reportCount ?: '')
+						row.add(createCell(format, counterReport['report_count'] ?: '', style))
+					}
+					else
+						row.add(createCell(format, ' ', style))
+				}
+			}
+		}
+		row
+	}
+
+	def createCell(String format, data, String style = null) {
+		if(format == 'excel')
+			[field: data, style: style]
+		else {
+			if(format == 'kbart' && data == '')
+				' '
+			else "${data}"
+		}
+	}
+
+	Map<String, Object> getTitleData(Map configMap, String entitlementInstance, Sql sql, List showStatsInMonthRings = [], Org subscriber = null) {
+		Map<String, Object> queryData = filterService.prepareTitleSQLQuery(configMap, entitlementInstance, sql)
+		List<GroovyRowResult> titles = sql.rows(queryData.query+queryData.join+' where '+queryData.where+queryData.order, queryData.params),
+							  identifiers, coverages, priceItems, coreTitleIdentifierNamespaces, otherTitleIdentifierNamespaces
+		Map<Long, List<GroovyRowResult>> coverageMap = [:], priceItemMap = [:]
+		Map<Long, Map<Date, GroovyRowResult>> reportMap = [:]
+		Map<Long, Map<String, List<String>>> identifierMap = [:]
+		List<String> coreTitleNSrestricted = IdentifierNamespace.CORE_TITLE_NS.collect { String coreTitleNS ->
+			!(coreTitleNS in [IdentifierNamespace.ISBN, IdentifierNamespace.PISBN, IdentifierNamespace.ISSN, IdentifierNamespace.EISSN])
+		}
+		if(entitlementInstance == TitleInstancePackagePlatform.class.name) {
+			identifiers = sql.rows("select id_tipp_fk, id_value, idns_ns from identifier join identifier_namespace on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id ${queryData.join} where ${queryData.where}", queryData.params)
+			coverages = sql.rows("select tc_tipp_fk, tc_start_date as startDate, tc_start_volume as startVolume, tc_start_issue as startIssue, tc_end_date as endDate, tc_end_volume as endIssue, tc_end_issue as endIssue, tc_coverage_note as coverageNote, tc_coverage_depth as coverageDepth, tc_embargo as embargo from tippcoverage join title_instance_package_platform on tc_tipp_fk = tipp_id ${queryData.join} where ${queryData.where}", queryData.params)
+			priceItems = sql.rows("select pi_tipp_fk, pi_list_price, (select rdv_value from refdata_value where rdv_id = pi_list_currency_rv_fk) as pi_list_currency, pi_local_price, (select rdv_value from refdata_value where rdv_id = pi_local_currency_rv_fk) as pi_local_currency from price_item join title_instance_package_platform on pi_tipp_fk = tipp_id ${queryData.join} where ${queryData.where}", queryData.params)
+			coreTitleIdentifierNamespaces = sql.rows("select distinct idns_ns from identifier_namespace join identifier on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id ${queryData.join} where idns_ns in ('${coreTitleNSrestricted.join("','")}') and ${queryData.where}", queryData.params)
+			otherTitleIdentifierNamespaces = sql.rows("select distinct idns_ns from identifier_namespace join identifier on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id ${queryData.join} where idns_ns not in ('${IdentifierNamespace.CORE_TITLE_NS.join("','")}') and ${queryData.where}", queryData.params)
+			identifierMap.putAll(preprocessIdentifierRows(identifiers))
+			coverageMap.putAll(preprocessRows(coverages, 'tc_tipp_fk'))
+			priceItemMap.putAll(preprocessPriceItemRows(priceItems, 'pi_tipp_fk'))
+		}
+		else if(entitlementInstance == IssueEntitlement.class.name) {
+			identifiers = sql.rows("select id_tipp_fk, id_value, idns_ns from identifier join identifier_namespace on id_ns_fk = idns_id join issue_entitlement on ie_tipp_fk = id_tipp_fk join title_instance_package_platform on ie_tipp_fk = tipp_id where ${queryData.where}", queryData.params)
+			coverages = sql.rows("select ic_ie_fk, ic_start_date as startDate, ic_start_volume as startVolume, ic_start_issue as startIssue, ic_end_date as endDate, ic_end_volume as endVolume, ic_end_issue as endIssue, ic_coverage_note as coverageNote, ic_coverage_depth as coverageDepth, ic_embargo as embargo from issue_entitlement_coverage join issue_entitlement on ic_ie_fk = ie_id join title_instance_package_platform on ie_tipp_fk = tipp_id where ${queryData.where}", queryData.params)
+			priceItems = sql.rows("select pi_ie_fk, pi_list_price, (select rdv_value from refdata_value where rdv_id = pi_list_currency_rv_fk) as pi_list_currency, pi_local_price, (select rdv_value from refdata_value where rdv_id = pi_local_currency_rv_fk) as pi_local_currency from price_item join issue_entitlement on pi_ie_fk = ie_id join title_instance_package_platform on ie_tipp_fk = tipp_id where ${queryData.where}", queryData.params)
+			coreTitleIdentifierNamespaces = sql.rows("select distinct idns_ns from identifier_namespace join identifier on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id join issue_entitlement on ie_tipp_fk = tipp_id where idns_ns in ('${coreTitleNSrestricted.join("','")}') and ${queryData.where}", queryData.params)
+			otherTitleIdentifierNamespaces = sql.rows("select distinct idns_ns from identifier_namespace join identifier on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id join issue_entitlement on ie_tipp_fk = tipp_id where idns_ns not in ('${IdentifierNamespace.CORE_TITLE_NS.join("','")}') and ${queryData.where}", queryData.params)
+			identifierMap.putAll(preprocessIdentifierRows(identifiers))
+			coverageMap.putAll(preprocessRows(coverages, 'ic_ie_fk'))
+			priceItemMap.putAll(preprocessPriceItemRows(priceItems, 'pi_ie_fk'))
+			if(showStatsInMonthRings && subscriber) {
+				Connection connection = sql.dataSource.getConnection()
+				Calendar filterTime = GregorianCalendar.getInstance()
+				filterTime.setTime(showStatsInMonthRings.first())
+				filterTime.set(Calendar.DATE, filterTime.getActualMinimum(Calendar.DAY_OF_MONTH))
+				Timestamp startDate = new Timestamp(filterTime.getTime().getTime())
+				filterTime.setTime(showStatsInMonthRings.last())
+				filterTime.set(Calendar.DATE, filterTime.getActualMaximum(Calendar.DAY_OF_MONTH))
+				Timestamp endDate = new Timestamp(filterTime.getTime().getTime())
+				List<Map<Date, GroovyRowResult>> counterReportRows
+				counterReportRows = sql.rows('select c5r_title_fk as title, c5r_report_from as report_from, c5r_report_to as report_to, c5r_report_count as report_count from counter5report join title_instance_package_platform on c5r_title_fk = tipp_id join issue_entitlement on ie_tipp_fk = c5r_title_fk where c5r_report_institution_fk = :customer and lower(c5r_report_type) = :defaultReport and c5r_metric_type = :defaultMetric and c5r_report_from >= :startDate and c5r_report_to <= :endDate and '+queryData.where, queryData.params+[customer: subscriber.id, startDate: startDate, endDate: endDate, defaultReport: Counter5ApiSource.TITLE_MASTER_REPORT, defaultMetric: 'Unique_Title_Requests'])
+				if(!counterReportRows) {
+					List<Object> defaultReports = [Counter4ApiSource.BOOK_REPORT_1, Counter4ApiSource.JOURNAL_REPORT_1]
+					counterReportRows = Counter4Report.executeQuery('select c4r_title_fk as title, c4r_report_from as report_from, c4r_report_to as report_to, c4r_report_count as report_count from counter4report join title_instance_package_platform on c4r_title_fk = tipp_id join issue_entitlement on ie_tipp_fk = c4r_title_fk where c4r_report_institution_fk = :customer and c4r_report_type = any(:defaultReports) and c4r_metric_type = :defaultMetric and c4r_report_from >= :startDate and c4r_report_to <= :endDate and ' + queryData.where, queryData.params + [customer: subscriber.id, startDate: startDate, endDate: endDate, defaultReports: connection.createArrayOf('varchar', defaultReports.toArray()), defaultMetric: 'ft_total'])
+				}
+				counterReportRows.each { GroovyRowResult reportRow ->
+					Map<Date, GroovyRowResult> usageMap = reportMap.get(reportRow['title'])
+					if(!usageMap)
+						usageMap = [:]
+					usageMap.put((Date) reportRow['report_from'], reportRow)
+					reportMap.put((Long) reportRow['title'], usageMap)
+				}
+			}
+		}
+		else {
+			coreTitleIdentifierNamespaces = []
+			otherTitleIdentifierNamespaces = []
+		}
+		[titles: titles, coverageMap: coverageMap, priceItemMap: priceItemMap, identifierMap: identifierMap, reportMap: reportMap,
+		 coreTitleIdentifierNamespaces: coreTitleIdentifierNamespaces, otherTitleIdentifierNamespaces: otherTitleIdentifierNamespaces]
+	}
+
+	/**
+	 * Determines the issue entitlement instance of the given object
+	 * @param rowData the object containing the issue entitlement
+	 * @return the {@link IssueEntitlement} instance
+	 */
 	IssueEntitlement getIssueEntitlement(rowData) {
 		if(rowData instanceof IssueEntitlement) {
 			return (IssueEntitlement) rowData
@@ -2412,6 +2513,11 @@ class ExportService {
 		null
 	}
 
+	/**
+	 * Determines the title instance of the given object
+	 * @param rowData the object containing the title
+	 * @return the {@link TitleInstancePackagePlatform} title instance
+	 */
 	TitleInstancePackagePlatform getTipp(rowData) {
 		if(rowData instanceof IssueEntitlement) {
 			return rowData.tipp
@@ -2428,6 +2534,13 @@ class ExportService {
 		null
 	}
 
+	/**
+	 * Determines the coverage statement, based on the instance type of the object
+	 * @param rowData the title whose coverage statement should be recovered
+	 * @return the coverage statement or null if there are more than one or none.
+	 * If there are more than one coverage statements for a title, the set of coverages is processed in
+	 * a loop elsewhere
+	 */
 	AbstractCoverage getCoverageStatement(rowData) {
 		if(rowData instanceof IssueEntitlement) {
 			return rowData.coverages.size() == 1 ? (IssueEntitlementCoverage) rowData.coverages[0] : null
@@ -2444,6 +2557,12 @@ class ExportService {
 		null
 	}
 
+	/**
+	 * Gets all namespaces in which the given entitlements have identifiers and which are not among the core namespaces
+	 * @param entitlements the title IDs whose identifiers should be queried
+	 * @param entitlementInstance the type of instance whose IDs have been submitted
+	 * @return a {@link Set} of {@link IdentifierNamespace}s whose identifiers should be exported
+	 */
 	Set<IdentifierNamespace> getOtherIdentifierNamespaces(Collection<Long> entitlements,String entitlementInstance) {
 		Set<IdentifierNamespace> result = []
 		//32768 is the maximum number of placeholders Postgres supports. Some placeholders must be reserved for coreTitleNS.
@@ -2461,6 +2580,12 @@ class ExportService {
 		result
 	}
 
+	/**
+	 * Gets all core title namespaces in which the given entitlements have identifiers
+	 * @param entitlements the title IDs whose identifiers should be queried
+	 * @param entitlementInstance the type of instance whose IDs have been submitted
+	 * @return a {@link Set} of {@link IdentifierNamespace}s whose identifiers should be exported
+	 */
 	Set<IdentifierNamespace> getCoreIdentifierNamespaces(Collection<Long> entitlements,String entitlementInstance) {
 		Set<IdentifierNamespace> result = []
 		entitlements.collate(32767-IdentifierNamespace.CORE_TITLE_NS.size()).each { Collection<Long> entitlementChunk ->
@@ -2474,4 +2599,47 @@ class ExportService {
 		}
 		result
 	}
+
+	static Map<Long, List<GroovyRowResult>> preprocessRows(List<GroovyRowResult> rows, String tippKey) {
+		Map<Long, List<GroovyRowResult>> result = [:]
+		rows.each { GroovyRowResult row ->
+			List<GroovyRowResult> resList = result.get(row[tippKey])
+			if(!resList)
+				resList = []
+			resList << row
+			result.put(row[tippKey], resList)
+		}
+		result
+	}
+
+	static Map<Long, Map<String, GroovyRowResult>> preprocessPriceItemRows(List<GroovyRowResult> priceItemRows, String tippKey) {
+		Map<Long, Map<String, GroovyRowResult>> priceItems = [:]
+		priceItemRows.each { GroovyRowResult piRow ->
+			Map<String, GroovyRowResult> priceItemMap = priceItems.get(piRow[tippKey])
+			if(!priceItemMap)
+				priceItemMap = [:]
+			if(piRow['pi_list_currency']) {
+				priceItemMap.put(piRow['pi_list_currency'], piRow)
+				priceItems.put(piRow[tippKey], priceItemMap)
+			}
+		}
+		priceItems
+	}
+
+	static Map<Long, Map<String, List<String>>> preprocessIdentifierRows(List<GroovyRowResult> rows) {
+		Map<Long, Map<String, List<String>>> identifiers = [:]
+		rows.each { GroovyRowResult row ->
+			Map<String, List<String>> idMap = identifiers.get(row['id_tipp_fk'])
+			if(!idMap)
+				idMap = [:]
+			List<String> idValues = idMap.get(row['idns_ns'])
+			if(!idValues)
+				idValues = []
+			idValues << row['id_value']
+			idMap.put(row['idns_ns'], idValues)
+			identifiers.put(row['id_tipp_fk'], idMap)
+		}
+		identifiers
+	}
+
 }

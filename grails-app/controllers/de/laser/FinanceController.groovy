@@ -19,6 +19,15 @@ import javax.servlet.ServletOutputStream
 import java.math.RoundingMode
 import java.text.SimpleDateFormat
 
+/**
+ * This is one of the more complex controllers in the app. It is responsible for managing the financial display and cost manipulation
+ * calls.
+ * This controller belongs to those which have received a service mirror to capsulate the complex data manipulation functions defined
+ * directly in the controller in Grails 2
+ * @see CostItem
+ * @see FinanceControllerService
+ * @see FinanceService
+ */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class FinanceController  {
 
@@ -31,6 +40,11 @@ class FinanceController  {
     PendingChangeService pendingChangeService
     ExportClickMeService exportClickMeService
 
+    /**
+     * Returns the financial overview page for the context institution. The number of visible tabs and
+     * the cost items listed in them depends on the perspective taken and specified in the parameter map.
+     * To see the decision tree, view {@link FinanceControllerService#getResultGenerics(grails.web.servlet.mvc.GrailsParameterMap)}
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 0)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def index() {
@@ -38,6 +52,7 @@ class FinanceController  {
         try {
             Map<String,Object> result = financeControllerService.getResultGenerics(params)
             result.financialData = financeService.getCostItems(params,result)
+            result.ciTitles = result.financialData.ciTitles
             result.filterPresets = result.financialData.filterPresets
             result.filterSet = result.financialData.filterSet
             result.benchMark = result.financialData.benchMark
@@ -52,6 +67,11 @@ class FinanceController  {
         }
     }
 
+    /**
+     * Returns the financial details view for the given subscription. The display depends upon the perspective taken
+     * and specified in the parameter map, see {@link FinanceControllerService#getResultGenerics(grails.web.servlet.mvc.GrailsParameterMap)} for
+     * the decision tree
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 0)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def subFinancialData() {
@@ -80,6 +100,7 @@ class FinanceController  {
                     [sub: result.subscription, ctxOrg: result.contextOrg]
             )[0]
             result.financialData = financeService.getCostItemsForSubscription(params,result)
+            result.ciTitles = result.financialData.ciTitles
             result.filterPresets = result.financialData.filterPresets
             result.filterSet = result.financialData.filterSet
             result.allCIElements = CostItemElementConfiguration.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :org',[org:result.institution])
@@ -93,6 +114,11 @@ class FinanceController  {
         }
     }
 
+    /**
+     * Exports the given financial data. Beware that multi-tab view is only possible in Excel; bare text exports
+     * can only display the currently visible (= active) tab!
+     * @return the financial data tab(s), as Excel worksheet or CSV export file
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 0)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def financialsExport()  {
@@ -403,6 +429,9 @@ class FinanceController  {
         }
     }
 
+    /**
+     * Calls the cost item creation modal and sets the edit parameters
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 0)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     Object newCostItem() {
@@ -420,6 +449,9 @@ class FinanceController  {
         render(template: "/finance/ajaxModal", model: result)
     }
 
+    /**
+     * Calls the cost item creation modal, sets the edit parameters and prefills the form values with the existing cost item data
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 0)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     Object editCostItem() {
@@ -434,6 +466,11 @@ class FinanceController  {
         render(template: "/finance/ajaxModal", model: result)
     }
 
+    /**
+     * Calls the cost item creation modal, sets the editing parameters and prefills the form values with the copy base data.
+     * After submitting the form, a new cost item will be created which has the current one as base, taking those values
+     * submitted in the modal
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")',ctrlService = 0)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     Object copyCostItem() {
@@ -451,6 +488,9 @@ class FinanceController  {
         render template: "/finance/ajaxModal", model: result
     }
 
+    /**
+     * Call to delete a given cost item
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def deleteCostItem() {
@@ -460,6 +500,9 @@ class FinanceController  {
         redirect(uri: request.getHeader('referer').replaceAll('(#|\\?).*', ''), params: [showView: ctrlResult.result.showView, offset: params.offset])
     }
 
+    /**
+     * Call to process the submitted form values in order to create or update a cost item
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def createOrUpdateCostItem() {
@@ -473,6 +516,9 @@ class FinanceController  {
         redirect(uri: request.getHeader('referer').replaceAll('(#|\\?).*', ''), params: [showView: ctrlResult.result.showView, offset: params.offset])
     }
 
+    /**
+     * Call to import cost items submitted from the import post processing view
+     */
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
@@ -489,6 +535,9 @@ class FinanceController  {
         }
     }
 
+    /**
+     * Marks a change done by the consortium as acknowledged by the single user who copied the given cost item
+     */
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", ctrlService = 2)
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR") })
     def acknowledgeChange() {
@@ -498,6 +547,9 @@ class FinanceController  {
         redirect(uri:request.getHeader('referer'))
     }
 
+    /**
+     * Call to process the data in the bulk editing form and to apply the changes to the picked cost items
+     */
     @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")

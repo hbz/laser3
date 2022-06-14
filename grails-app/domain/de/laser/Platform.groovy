@@ -16,6 +16,10 @@ import org.apache.commons.logging.LogFactory
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import grails.web.servlet.mvc.GrailsParameterMap
 
+/**
+ * This class represents a platform record. A platform is a portal where providers offer access to titles subscribed via packages.
+ * This class is a mirror of the we:kb-implementation of Platform, <a href="https://github.com/hbz/wekb/blob/wekb-dev/server/gokbg3/grails-app/domain/org/gokb/cred/Platform.groovy">cf. with the we:kb-implementation</a>
+ */
 class Platform extends AbstractBaseWithCalculatedLastUpdated {
 
   def grailsApplication
@@ -37,10 +41,10 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
   @RefdataAnnotation(cat = RDConstants.PLATFORM_STATUS)
   RefdataValue status
 
-  @RefdataAnnotation(cat = RDConstants.Y_N)
+  @RefdataAnnotation(cat = RDConstants.Y_N, i18n = 'platform.serviceProvider')
   RefdataValue serviceProvider
 
-  @RefdataAnnotation(cat = RDConstants.Y_N)
+  @RefdataAnnotation(cat = RDConstants.Y_N, i18n = 'platform.softwareProvider')
   RefdataValue softwareProvider
 
   Date dateCreated
@@ -189,10 +193,21 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
       }
   }
 
+  /**
+   * Retrieves the property definition groups defined by the given institution for this platform
+   * @param contextOrg the {@link Org} whose property definition groups should be retrieved
+   * @return a {@link Map} of {@link PropertyDefinitionGroup}s, ordered by sorted, global, local and orphaned property definitions
+   */
     Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
         propertyService.getCalculatedPropDefGroups(this, contextOrg)
     }
 
+  /**
+   * Checks whether this platform uses access points defined for the given subscription package
+   * @param contextOrg unused
+   * @param subscriptionPackage the subscription (represented by the {@link SubscriptionPackage} link) whose configurations should be verified
+   * @return true if there are access point configurations linked to this platform and the given subscription package, false otherwise
+   */
   boolean usesPlatformAccessPoints(contextOrg, subscriptionPackage){
     // TODO do we need the contextOrg?
     // look for OrgAccessPointLinks for this platform and a given subscriptionPackage, if we can find that "marker",
@@ -202,6 +217,12 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
     (result) ? false : true
   }
 
+  /**
+   * Called from currentPlatforms.gsp
+   * Gets all access point configurations for this platform and the given institution
+   * @param contextOrg the context {@link Org} whose configurations should be retrieved
+   * @return a {@link List} of {@link OrgAccessPoint}s pointing to this platform and defined by the given institution
+   */
   def getContextOrgAccessPoints(contextOrg) {
     String hql = "select oap from OrgAccessPoint oap " +
         "join oap.oapp as oapp where oap.org=:org and oapp.active = true and oapp.platform.id =${this.id} and oapp.subPkg is null order by LOWER(oap.name)"
@@ -209,6 +230,7 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
     return result
   }
 
+  @Deprecated
   def getNotActiveAccessPoints(org){
     String notActiveAPLinkQuery = "select oap from OrgAccessPoint oap where oap.org =:institution "
     notActiveAPLinkQuery += "and not exists ("
@@ -217,6 +239,11 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
     OrgAccessPoint.executeQuery(notActiveAPLinkQuery, [institution : org])
   }
 
+  /**
+   * Gets a list of platform records for a dropdown display. The records may be filtered by the given parameter map
+   * @param params the parameter map which contains the filter parameters
+   * @return a {@link List} of {@link Map}s in the format [id: id, text: text], containing the selectable records
+   */
   static def refdataFind(GrailsParameterMap params) {
     GenericOIDService genericOIDService = (GenericOIDService) Holders.grailsApplication.mainContext.getBean('genericOIDService')
 
@@ -240,6 +267,10 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
     name
   }
 
+  /**
+   * Gets the titles provided on this platform marked as current
+   * @return a {@link Set} of {@link TitleInstancePackagePlatform}s, linked to this platform and marked as current
+   */
   def getCurrentTipps() {
     def result = this.tipps?.findAll{it?.status?.id == RDStore.TIPP_STATUS_CURRENT.id}
 

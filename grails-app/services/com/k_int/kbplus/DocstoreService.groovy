@@ -14,9 +14,13 @@ import org.apache.commons.io.IOUtils
 import java.util.zip.ZipEntry
 import java.util.zip.ZipOutputStream
 
+/**
+ * This service is one step behind {@link de.laser.ctrl.DocstoreControllerService} and contains helper methods for document retrieval
+ */
 @Transactional
 class DocstoreService {
 
+    @Deprecated
   File zipDirectory(File directory) throws IOException {
     File testZip = File.createTempFile("bag.", ".zip");
     String path = directory.getAbsolutePath();
@@ -38,6 +42,7 @@ class DocstoreService {
     return testZip;
   }
 
+    @Deprecated
   ArrayList<File> getFileList(File file) {
     ArrayList<File> fileList = new ArrayList<File>();
     if (file.isFile()) {
@@ -51,13 +56,18 @@ class DocstoreService {
     return fileList;
   }
 
+    /**
+     * Deletes a document with the given parameter map.
+     * Used in:
+     * <ul>
+     *     <li>{@link de.laser.LicenseController}</li>
+     *     <li>{@link de.laser.MyInstitutionController}</li>
+     *     <li>{@link de.laser.PackageController}</li>
+     *     <li>{@link de.laser.SubscriptionController}</li>
+     * </ul>
+     * @param params the parameter map, coming from one of the controllers specified in the list above
+     */
     def unifiedDeleteDocuments(params) {
-
-        // copied from / used in ..
-        // licenseController
-        // MyInstitutionsController
-        // PackageController
-        // SubscriptionDetailsController
 
         params.each { p ->
             if (p.key.startsWith('_deleteflag.') ) {
@@ -88,11 +98,22 @@ class DocstoreService {
         }
     }
 
+    /**
+     * Retrieves all documents which have been attached to the given organisation and are visible by the same organisation
+     * @param org the {@link Org} which has been marked as target
+     * @return a {@link List} of matching documents
+     */
     List getTargettedDocuments(Org org) {
         List<DocContext> furtherDocs = DocContext.findAllByTargetOrgAndShareConf(org,RDStore.SHARE_CONF_UPLOADER_AND_TARGET)
         furtherDocs
     }
 
+    /**
+     * Retrieves and orders the documents attached to an instance of a given org for an export view. Currently used by the license PDF export, but should be extended
+     * @param contextOrg the {@link Org} whose documents should be retrieved
+     * @param instance the owner object ({@link Subscription}/{@link License}/{@link Org}/{@link SurveyConfig}) whose attached documents should be retrieved
+     * @return a {@link Map} with a {@link SortedSet} of {@link DocContext}s containing links to the documents attached to the owner object
+     */
     //this method may serve as document view refactoring base
     Map<String, SortedSet<DocContext>> getDocumentsForExport(Org contextOrg, instance) {
         boolean parentAtChild = false
@@ -149,6 +170,12 @@ class DocstoreService {
         [filteredDocuments: filteredDocuments, sharedItems: sharedItems]
     }
 
+    /**
+     * Retrieves and orders the notes attached to an instance of a given org for an export view. Currently used by the license PDF export, but should be extended
+     * @param contextOrg the {@link Org} whose documents should be retrieved
+     * @param instance the owner object ({@link Subscription}/{@link License}/{@link Org}/{@link SurveyConfig}) whose attached documents should be retrieved
+     * @return a {@link Map} with a {@link SortedSet} of {@link DocContext}s containing notes attached to the owner object
+     */
     Map<String, SortedSet<DocContext>> getNotesForExport(Org contextOrg, instance) {
         String instanceClause
         SortedSet<DocContext> filteredDocuments = new TreeSet<DocContext>(), sharedItems = new TreeSet<DocContext>()

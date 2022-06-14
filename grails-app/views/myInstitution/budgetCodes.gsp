@@ -26,12 +26,18 @@
             </div>
         </g:if>
 
-    <table class="ui celled sortable table la-table compact">
+    <table class="ui celled sortable table la-js-responsive-table la-table compact">
         <thead>
             <tr>
                 <th>${message(code: 'financials.budgetCode')}</th>
                 <th>${message(code: 'financials.budgetCode.description')}</th>
-                <th>${message(code: 'financials.budgetCode.usage')}</th>
+                <th>
+                    ${message(code: 'financials.budgetCode.usage')}
+                    <span data-position="right center" class="la-popup-tooltip la-delay"
+                          data-content="${message(code: 'financials.budgetCode.usage.explanation')}">
+                        <i class="question circle icon"></i>
+                    </span>
+                </th>
                 <g:if test="${editable}">
                     <th class="la-action-info one wide">${message(code:'default.actions.label')}</th>
                 </g:if>
@@ -47,37 +53,16 @@
                         <semui:xEditable owner="${bcode}" field="descr" />
                     </td>
                     <td>
-                        <div class="ui list">
-                            <g:each in="${costItemGroups.get(bcode)}" var="cig">
-
-                                <div class="item">
-                                    <g:if test="${cig.costItem.sub}">
-                                        <g:link mapping="subfinance" params="[sub:cig.costItem.sub.id]">${cig.costItem.sub.name}</g:link>
-                                    </g:if>
-
-                                    <g:if test="${cig.costItem.costTitle}">
-                                        - ${cig.costItem.costTitle}
-                                    </g:if>
-                                    <g:elseif test="${cig.costItem.costTitle}">
-                                        - ${cig.costItem.globalUID}
-                                    </g:elseif>
-
-                                    <g:if test="${cig.costItem.costDescription}">
-                                        (${cig.costItem.costDescription})
-                                    </g:if>
-                                </div>
-                            </g:each>
-                        </div>
+                        <g:link controller="finance" action="index"
+                                params="[filterCIBudgetCode: bcode.id, submit: message(code:'default.filter.label')]">
+                            <div class="ui blue circular label">
+                                ${costItemGroups.get(bcode) ?: 0}
+                            </div>
+                        </g:link>
                     </td>
                     <g:if test="${editable}">
                         <td class="x">
-                            <g:if test="${costItemGroups.get(bcode)}">
-                                <g:link controller="myInstitution" action="finance"  class="ui icon button"
-                                        params="[filterCIBudgetCode: bcode.id, submit: message(code:'default.filter.label')]">
-                                    <i class="share icon"></i>
-                                </g:link>
-                            </g:if>
-                            <g:else>
+                            <g:if test="${!costItemGroups.get(bcode)}">
                                 <g:link controller="myInstitution"
                                         action="budgetCodes"
                                         params="${[cmd: 'deleteBudgetCode', bc: BudgetCode.class.name + ':' + bcode.id]}"
@@ -88,7 +73,7 @@
                                         aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                     <i class="trash alternate outline icon"></i>
                                 </g:link>
-                            </g:else>
+                            </g:if>
                         </td>
                     </g:if>
                 </tr>

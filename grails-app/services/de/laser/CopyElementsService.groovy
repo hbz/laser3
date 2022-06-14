@@ -3,6 +3,7 @@ package de.laser
 
 import com.k_int.kbplus.DocstoreService
 import com.k_int.kbplus.GenericOIDService
+import com.k_int.kbplus.PackageService
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.exceptions.CreationException
 import de.laser.finance.CostItem
@@ -15,7 +16,9 @@ import de.laser.oap.OrgAccessPointLink
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
 import grails.gorm.transactions.Transactional
+import grails.util.Holders
 import grails.web.mvc.FlashScope
+import groovy.sql.Sql
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.grails.web.servlet.mvc.GrailsWebRequest
 import org.grails.web.util.WebUtils
@@ -27,6 +30,10 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.util.concurrent.ExecutorService
 
+/**
+ * This service holds the complex element copy functionality methods which enable to copy
+ * elements between all kinds of objects
+ */
 @Transactional
 class CopyElementsService {
 
@@ -41,6 +48,7 @@ class CopyElementsService {
     FormService formService
     LicenseService licenseService
     CompareService compareService
+    PackageService packageService
 
     static final String WORKFLOW_DATES_OWNER_RELATIONS = '1'
     static final String WORKFLOW_PACKAGES_ENTITLEMENTS = '5'
@@ -49,8 +57,11 @@ class CopyElementsService {
     static final String WORKFLOW_PROPERTIES = '4'
     static final String WORKFLOW_END = '6'
 
-    boolean bulkOperationRunning = false
-
+    /**
+     * Gets a list of base attributes for the given object type
+     * @param obj the object type which should be copied
+     * @return a list of base attributes for the given object type
+     */
     List<String> allowedProperties(Object obj) {
         List<String> result = []
         switch (obj.class.simpleName) {
@@ -74,6 +85,11 @@ class CopyElementsService {
         result
     }
 
+    /**
+     * Loads the data for the subscription dates, license, organisational relations and links for the given subscriptions
+     * @param params the request parameter map
+     * @return the related objects each for both source and target objects
+     */
     Map loadDataFor_DatesOwnerRelations(Map params) {
         Map<String, Object> result = [:]
         Object sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
@@ -131,6 +147,11 @@ class CopyElementsService {
         result
     }
 
+    /**
+     * Loads the data for the subscription documents, notes and tasks for the given subscriptions
+     * @param params the request parameter map
+     * @return the related objects each for both source and target objects
+     */
     Map loadDataFor_DocsAnnouncementsTasks(Map params) {
         Map<String, Object> result = [:]
         Object sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
@@ -141,11 +162,18 @@ class CopyElementsService {
 
         result.sourceObject = sourceObject
         result.targetObject = targetObject
+        result.sourceDocuments = sourceObject.documents.sort { it.owner?.title?.toLowerCase()}
+        result.targetDocuments = targetObject?.documents?.sort { it.owner?.title?.toLowerCase()} //null check needed because targetObject may not necessarily exist at that point and GORM does not always initialises sets
         result.sourceTasks = taskService.getTasksByObject(result.sourceObject)
         result.targetTasks = taskService.getTasksByObject(result.targetObject)
         result
     }
 
+    /**
+     * Loads the subscribers to copy or delete
+     * @param params the request parameter map
+     * @return the subscribers each for both source and target objects
+     */
     Map loadDataFor_Subscriber(Map params) {
         Map<String, Object> result = [:]
         result.sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
@@ -160,6 +188,11 @@ class CopyElementsService {
         result
     }
 
+    /**
+     * Loads the properties to copy or delete
+     * @param params the request parameter map
+     * @return the public and private properties each for both source and target objects
+     */
     Map loadDataFor_Properties(Map params) {
         LinkedHashMap result = [customProperties: [:], privateProperties: [:]]
         Object sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
@@ -177,12 +210,12 @@ class CopyElementsService {
         if(sourceObject instanceof SurveyConfig) {
             Org contextOrg = contextService.getOrg()
             objectsToCompare.each { Object obj ->
-                        Map customProperties = result.customProperties
-                        customProperties = comparisonService.buildComparisonTreePropertyDefintion(customProperties, obj, obj.surveyProperties.surveyProperty.findAll { it.tenant == null }.sort { it.getI10n('name') })
-                        result.customProperties = customProperties
-                        Map privateProperties = result.privateProperties
-                        privateProperties = comparisonService.buildComparisonTreePropertyDefintion(privateProperties, obj, obj.surveyProperties.surveyProperty.findAll { it.tenant?.id == contextOrg.id }.sort { it.getI10n('name') })
-                        result.privateProperties = privateProperties
+                Map customProperties = result.customProperties
+                customProperties = comparisonService.buildComparisonTreePropertyDefintion(customProperties, obj, obj.surveyProperties.surveyProperty.findAll { it.tenant == null }.sort { it.getI10n('name') })
+                result.customProperties = customProperties
+                Map privateProperties = result.privateProperties
+                privateProperties = comparisonService.buildComparisonTreePropertyDefintion(privateProperties, obj, obj.surveyProperties.surveyProperty.findAll { it.tenant?.id == contextOrg.id }.sort { it.getI10n('name') })
+                result.privateProperties = privateProperties
             }
         }
 
@@ -222,6 +255,11 @@ class CopyElementsService {
         result
     }*/
 
+    /**
+     * Loads the subscription holdings to copy or delete
+     * @param params the request parameter map
+     * @return the subscription holdings each for both source and target objects
+     */
     Map loadDataFor_PackagesEntitlements(Map params) {
         Map<String, Object> result = [:]
         Object sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
@@ -233,10 +271,16 @@ class CopyElementsService {
         result
     }
 
+    /**
+     * Copies the subscribers from the source into the target subscription
+     * @param subscriptionToTake the subscribers to take
+     * @param targetObject the target object into which the subscribers should be copied
+     * @param flash the message container
+     */
     void copySubscriber(List<Subscription> subscriptionToTake, Object targetObject, def flash) {
         Locale locale = LocaleContextHolder.getLocale()
         targetObject.refresh()
-        List<Subscription> targetChildSubs = subscriptionService.getValidSubChilds(targetObject)
+        List<Subscription> targetChildSubs = subscriptionService.getValidSubChilds(targetObject), memberHoldingsToTransfer = []
         subscriptionToTake.each { Subscription subMember ->
             //Gibt es mich schon in der Ziellizenz?
             Org found = targetChildSubs?.find { Subscription targetSubChild -> targetSubChild.getSubscriber() == subMember.getSubscriber() }?.getSubscriber()
@@ -293,19 +337,20 @@ class CopyElementsService {
                     }
                 }
 
+                //only the bare properties should be transferred
                 if (subMember.propertySet) {
                     Org org = contextService.getOrg()
-                        //customProperties of ContextOrg && privateProperties of ContextOrg
-                        subMember.propertySet.each {subProp ->
-                            if((subProp.type.tenant == null && (subProp.tenant?.id == org.id || subProp.tenant == null)) || subProp.type.tenant?.id == org.id)
-                            {
-                                SubscriptionProperty copiedProp = new SubscriptionProperty(type: subProp.type, owner: newSubscription, isPublic: subProp.isPublic, tenant: subProp.tenant)
-                                copiedProp = subProp.copyInto(copiedProp)
-                                copiedProp.save()
-                            }
+                    //customProperties of ContextOrg && privateProperties of ContextOrg
+                    subMember.propertySet.each {subProp ->
+                        if((subProp.type.tenant == null && (subProp.tenant?.id == org.id || subProp.tenant == null)) || subProp.type.tenant?.id == org.id)
+                        {
+                            SubscriptionProperty copiedProp = new SubscriptionProperty(type: subProp.type, owner: newSubscription, isPublic: subProp.isPublic, tenant: subProp.tenant)
+                            copiedProp = subProp.copyInto(copiedProp)
+                            copiedProp.save()
                         }
+                    }
 
-                   /* for (prop in subMember.propertySet) {
+                    /* for (prop in subMember.propertySet) {
                         SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSubscription, isPublic: prop.isPublic, tenant: prop.tenant)
                         copiedProp = prop.copyInto(copiedProp)
                         copiedProp.save()
@@ -343,24 +388,30 @@ class CopyElementsService {
                         pkg.properties.oapls = null
                         pkg.properties.pendingChangeConfig = null
                         SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
-                        InvokerHelper.setProperties(newSubscriptionPackage, pkg.properties)
+                        //InvokerHelper.setProperties(newSubscriptionPackage, pkg.properties)
                         newSubscriptionPackage.subscription = newSubscription
-
+                        newSubscriptionPackage.pkg = pkg.pkg
                         if (newSubscriptionPackage.save()) {
                             pkgOapls.each { oapl ->
 
-                                def oaplProperties = oapl.properties
-                                oaplProperties.globalUID = null
+                                //oapl.globalUID = null
                                 OrgAccessPointLink newOrgAccessPointLink = new OrgAccessPointLink()
-                                InvokerHelper.setProperties(newOrgAccessPointLink, oaplProperties)
+                                //InvokerHelper.setProperties(newOrgAccessPointLink, oaplProperties)
+                                newOrgAccessPointLink.platform = oapl.platform
+                                newOrgAccessPointLink.oap = oapl.oap
+                                newOrgAccessPointLink.active = oapl.active
                                 newOrgAccessPointLink.subPkg = newSubscriptionPackage
                                 newOrgAccessPointLink.save()
                             }
                         }
                     }
                 }
-                if (subMember.issueEntitlements && targetObject.issueEntitlements) {
-                    subMember.issueEntitlements?.each { ie ->
+                if (IssueEntitlement.executeQuery('select count(ie.id) from IssueEntitlement ie where ie.subscription = :member', [member: subMember])[0] > 0 && IssueEntitlement.executeQuery('select count(ie.id) from IssueEntitlement ie where ie.subscription = :target', [target: targetObject])[0] > 0) {
+                    memberHoldingsToTransfer << newSubscription
+                    //Sql sql = GlobalService.obtainSqlConnection()
+                    //List sourceHolding = sql.rows("select * from title_instance_package_platform join issue_entitlement on tipp_id = ie_tipp_fk where ie_subscription_fk = :source and ie_status_rv_fk = :current", [source: subMember.id, current: RDStore.TIPP_STATUS_CURRENT.id])
+                    //packageService.bulkAddHolding(sql, newSubscription.id, sourceHolding, subMember.hasPerpetualAccess)
+                    /*subMember.issueEntitlements?.each { ie ->
                         if (ie.status != RDStore.TIPP_STATUS_DELETED) {
                             def ieProperties = ie.properties
                             ieProperties.globalUID = null
@@ -391,7 +442,7 @@ class CopyElementsService {
                                 }
                             }
                         }
-                    }
+                    }*/
                 }
 
                 //OrgRole
@@ -417,8 +468,19 @@ class CopyElementsService {
 //                }
             }
         }
+        if(memberHoldingsToTransfer) {
+            targetObject.packages.each { SubscriptionPackage targetPkg ->
+                subscriptionService.addToMemberSubscription(targetObject, memberHoldingsToTransfer, targetPkg.pkg, true)
+            }
+        }
     }
 
+    /**
+     * Copies the participants from the source into the target survey
+     * @param orgToTake the participants to take
+     * @param targetObject the target object into which the participants should be copied
+     * @param flash the message container
+     */
     void copySurveyParticipants(List<Org> orgToTake, Object targetObject, def flash) {
         targetObject.refresh()
 
@@ -431,6 +493,12 @@ class CopyElementsService {
         }
     }
 
+    /**
+     * Deletes the given participants from the target object
+     * @param orgToTake the participants to remove
+     * @param targetObject the target object from which the participants should be removed
+     * @param flash the message container
+     */
     void deleteSurveyParticipants(List<Org> orgToDelete, Object targetObject, def flash) {
         targetObject.refresh()
 
@@ -443,6 +511,11 @@ class CopyElementsService {
         }
     }
 
+    /**
+     * Processes the transfer of given base properties
+     * @param params the request parameters
+     * @return the source and target objects for the next copy step
+     */
     Map copyObjectElements_DatesOwnerRelations(Map params) {
         Map<String, Object> result = [:]
         FlashScope flash = getCurrentFlashScope()
@@ -549,6 +622,11 @@ class CopyElementsService {
         result
     }
 
+    /**
+     * Processes the given documents / notes / tasks transfer
+     * @param params the request parameters
+     * @return the source and target objects for the next copy step
+     */
     Map copyObjectElements_DocsAnnouncementsTasks(Map params) {
         Map<String, Object> result = [:]
         FlashScope flash = getCurrentFlashScope()
@@ -569,9 +647,10 @@ class CopyElementsService {
             }
 
             if (params.list('copyObject.takeDocIds') && isBothObjectsSet(sourceObject, targetObject)) {
-                def toCopyDocs = []
+                def toCopyDocs = [], toShare = []
                 params.list('copyObject.takeDocIds').each { doc -> toCopyDocs << Long.valueOf(doc) }
-                copyDocs(sourceObject, toCopyDocs, targetObject, flash)
+                params.list('copyObject.toggleShare').each { doc -> toShare << Long.valueOf(doc) }
+                copyDocs(sourceObject, toCopyDocs, targetObject, flash, toShare)
                 isTargetSubChanged = true
             }
 
@@ -583,9 +662,10 @@ class CopyElementsService {
             }
 
             if (params.list('copyObject.takeAnnouncementIds') && isBothObjectsSet(sourceObject, targetObject)) {
-                def toCopyAnnouncements = []
+                def toCopyAnnouncements = [], toShare = []
                 params.list('copyObject.takeAnnouncementIds').each { announcement -> toCopyAnnouncements << Long.valueOf(announcement) }
-                copyAnnouncements(sourceObject, toCopyAnnouncements, targetObject, flash)
+                params.list('copyObject.toggleShare').each { doc -> toShare << Long.valueOf(doc) }
+                copyAnnouncements(sourceObject, toCopyAnnouncements, targetObject, flash, toShare)
                 isTargetSubChanged = true
             }
 
@@ -613,6 +693,7 @@ class CopyElementsService {
         result
     }
 
+    @Deprecated
     Map copyObjectElements_Identifiers(Map params) {
         Map<String, Object> result = [:]
         FlashScope flash = getCurrentFlashScope()
@@ -648,6 +729,11 @@ class CopyElementsService {
         result
     }
 
+    /**
+     * Processes the transfer of the subscribers
+     * @param params the request parameters
+     * @return the source and target objects for the next copy step
+     */
     Map copyObjectElements_Subscriber(Map params) {
         Map<String, Object> result = [:]
         FlashScope flash = getCurrentFlashScope()
@@ -687,6 +773,11 @@ class CopyElementsService {
         result
     }
 
+    /**
+     * Processes the transfer of the properties
+     * @param params the request parameters
+     * @return the source and target objects for the next copy step
+     */
     Map copyObjectElements_Properties(Map params) {
         LinkedHashMap result = [:]
         Object sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
@@ -730,6 +821,12 @@ class CopyElementsService {
         result
     }
 
+    /**
+     * Processes the transfer of the subscription holding.
+     * As this process may take much time, it is deployed onto a parallel thread
+     * @param params the request parameters
+     * @return the source and target objects for the next copy step
+     */
     Map copyObjectElements_PackagesEntitlements(Map params) {
         Map<String, Object> result = [:]
         FlashScope flash = getCurrentFlashScope()
@@ -738,8 +835,14 @@ class CopyElementsService {
         Object targetObject = params.targetObjectId ? genericOIDService.resolveOID(params.targetObjectId) : null
 
         if (formService.validateToken(params)) {
-            boolean isTargetSubChanged = false
-
+            boolean bulkOperationRunning = false
+            Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
+            Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
+            threadArray.each {
+                if (it.name == 'PackageTransfer_'+targetObject?.id) {
+                    bulkOperationRunning = true
+                }
+            }
             if (params.subscription?.deletePackageSettings && isBothObjectsSet(sourceObject, targetObject)) {
                 List<SubscriptionPackage> packageSettingsToDelete = params.list('subscription.deletePackageSettings').collect {
                     genericOIDService.resolveOID(it)
@@ -751,53 +854,69 @@ class CopyElementsService {
                     }
                     PendingChangeConfiguration.executeUpdate('delete from PendingChangeConfiguration pcc where pcc.subscriptionPackage = :sp', [sp: toDelete])
                 }
-                isTargetSubChanged = true
             }
 
-            if(!bulkOperationRunning) {
-                bulkOperationRunning = true
+            log.debug(params.toMapString())
+            if(!bulkOperationRunning && isBothObjectsSet(sourceObject, targetObject, flash) && params.copyElementsSubmit) {
+                flash.message = messageSource.getMessage('subscription.details.linkPackage.thread.running',null,LocaleContextHolder.getLocale())
                 executorService.execute({
                     try {
-                        Thread.currentThread().setName("PackageTransfer_${sourceObject.id}")
-                        if (params.subscription?.deletePackageIds && isBothObjectsSet(sourceObject, targetObject, flash)) {
+                        Thread.currentThread().setName("PackageTransfer_${targetObject.id}")
+                        if (params.subscription?.deletePackageIds) {
                             List<SubscriptionPackage> packagesToDelete = params.list('subscription.deletePackageIds').collect { genericOIDService.resolveOID(it) }
                             deletePackages(packagesToDelete, targetObject, flash)
-                            isTargetSubChanged = true
                         }
-                        if (params.subscription?.takePackageIds && isBothObjectsSet(sourceObject, targetObject, flash)) {
+                        if (params.subscription?.takePackageIds) {
                             List<SubscriptionPackage> packagesToTake = params.list('subscription.takePackageIds').collect { genericOIDService.resolveOID(it) }
                             copyPackages(packagesToTake, targetObject, flash)
-                            isTargetSubChanged = true
                         }
 
-                        if (params.subscription?.takePackageSettings && isBothObjectsSet(sourceObject, targetObject, flash)) {
-                            List<SubscriptionPackage> packageSettingsToTake = params.list('subscription.takePackageSettings').collect { genericOIDService.resolveOID(it) }
-                            packageSettingsToTake.each { SubscriptionPackage sp ->
-                                //explicit loading of service needed because lazy initialisation gives null
-                                copyPendingChangeConfiguration(PendingChangeConfiguration.findAllBySubscriptionPackage(sp), SubscriptionPackage.findBySubscriptionAndPkg(targetObject, sp.pkg))
+                        if (params.subscription?.takePackageSettings) {
+                            List takePackageNotifications = params.list('subscription.takePackageNotifications'),
+                            takePackageSettingAudit = params.list('subscription.takePackageSettingAudit'),
+                            takePackageNotificationAudit = params.list('subscription.takePackageNotificationAudit')
+                            params.list('subscription.takePackageSettings').each { String val ->
+                                String[] setting = val.split('§')
+                                boolean withNotification = takePackageNotifications.findIndexOf { String notification -> notification.split('§')[1] == setting[1]} > -1,
+                                settingAudit = takePackageSettingAudit.findIndexOf { String settingAudit -> settingAudit.split('§')[1] == setting[1]} > -1,
+                                notificationAudit = takePackageNotificationAudit.findIndexOf { String notificationAudit -> notificationAudit.split('§')[1] == setting[1]} > -1
+                                SubscriptionPackage sourcePackage = genericOIDService.resolveOID(setting[0])
+                                SubscriptionPackage targetPackage = SubscriptionPackage.findBySubscriptionAndPkg(targetObject, sourcePackage.pkg)
+                                if(setting[2] != 'null' && targetPackage) {
+                                    Map<String, Object> configSettings = [subscriptionPackage: targetPackage, settingValue: RefdataValue.get(setting[2]), settingKey: setting[1], withNotification: withNotification]
+                                    PendingChangeConfiguration newPcc = PendingChangeConfiguration.construct(configSettings)
+                                    if (newPcc) {
+                                        if (settingAudit && !AuditConfig.getConfig(targetObject, setting[1]))
+                                            AuditConfig.addConfig(targetObject, setting[1])
+                                        else if (!settingAudit && AuditConfig.getConfig(targetObject, setting[1]))
+                                            AuditConfig.removeConfig(targetObject, setting[1])
+                                        if (notificationAudit && !AuditConfig.getConfig(targetObject, setting[1]+PendingChangeConfiguration.NOTIFICATION_SUFFIX))
+                                            AuditConfig.addConfig(targetObject, setting[1]+PendingChangeConfiguration.NOTIFICATION_SUFFIX)
+                                        else if (!notificationAudit && AuditConfig.getConfig(targetObject, setting[1]+PendingChangeConfiguration.NOTIFICATION_SUFFIX))
+                                            AuditConfig.removeConfig(targetObject, setting[1]+PendingChangeConfiguration.NOTIFICATION_SUFFIX)
+                                    }
+                                }
                             }
-                            isTargetSubChanged = true
                         }
 
-                        if (params.subscription?.takeTitleGroups && isBothObjectsSet(sourceObject, targetObject, flash)) {
+                        if (params.subscription?.takeTitleGroups) {
                             List<IssueEntitlementGroup> takeTitleGroups = params.list('subscription.takeTitleGroups').collect { genericOIDService.resolveOID(it) }
                             copyIssueEntitlementGroupItem(takeTitleGroups, targetObject)
-
                         }
 
-                        if (params.subscription?.deleteTitleGroups && isBothObjectsSet(sourceObject, targetObject, flash)) {
+                        if (params.subscription?.deleteTitleGroups) {
                             List<IssueEntitlementGroup> deleteTitleGroups = params.list('subscription.deleteTitleGroups').collect { genericOIDService.resolveOID(it) }
                             deleteIssueEntitlementGroupItem(deleteTitleGroups)
-
                         }
                     }
                     catch (Exception e) {
                         e.printStackTrace()
                     }
-                    bulkOperationRunning = false
                 })
             }
-
+            else if(bulkOperationRunning) {
+                flash.message = messageSource.getMessage('subscription.details.linkPackage.thread.running',null,LocaleContextHolder.getLocale())
+            }
             /*if (params.subscription?.deleteEntitlementIds && isBothObjectsSet(sourceObject, targetObject)) {
                 List<IssueEntitlement> entitlementsToDelete = params.list('subscription.deleteEntitlementIds').collect { genericOIDService.resolveOID(it) }
                 deleteEntitlements(entitlementsToDelete, targetObject, flash)
@@ -818,6 +937,13 @@ class CopyElementsService {
         result
     }
 
+    /**
+     * Deletes the given tasks from the target object
+     * @param toDeleteTasks the tasks which should be deleted
+     * @param targetObject the target object from which the tasks should be deleted
+     * @param flash the message container
+     * @return true if the deletion was successful, false otherwise
+     */
     boolean deleteTasks(List<Long> toDeleteTasks, Object targetObject, def flash) {
         Locale locale = LocaleContextHolder.getLocale()
         boolean isInstAdm = contextService.getUser().hasAffiliation("INST_ADM")
@@ -838,6 +964,14 @@ class CopyElementsService {
         }
     }
 
+    /**
+     * Copies the given task list into the target object
+     * @param sourceObject the object from which the tasks should be taken
+     * @param toCopyTasks the task IDs to be copied
+     * @param targetObject the target object into which the tasks should be copied
+     * @param flash the message container
+     * @return true if the transfer was successful, false otherwise
+     */
     boolean copyTasks(Object sourceObject, def toCopyTasks, Object targetObject, def flash) {
         toCopyTasks.each { tsk ->
             def task
@@ -859,7 +993,15 @@ class CopyElementsService {
         }
     }
 
-    boolean copyAnnouncements(Object sourceObject, def toCopyAnnouncements, Object targetObject, def flash) {
+    /**
+     * Copies the given notes into the target object
+     * @param sourceObject the object from which the tasks should be taken
+     * @param toCopyAnnouncements the note IDs to be copied
+     * @param targetObject the target object into which the tasks should be copied
+     * @param flash the message container
+     * @return true if the transfer was successful, false otherwise
+     */
+    boolean copyAnnouncements(Object sourceObject, def toCopyAnnouncements, Object targetObject, def flash, def toShare = []) {
         sourceObject.documents?.each { dctx ->
             if (dctx.id in toCopyAnnouncements) {
                 if ((dctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(dctx.domain) && (dctx.status?.value != 'Deleted')) {
@@ -868,6 +1010,9 @@ class CopyElementsService {
                     save(newDoc, flash)
                     DocContext newDocContext = new DocContext()
                     InvokerHelper.setProperties(newDocContext, dctx.properties)
+                    if(dctx.id in toShare)
+                        newDocContext.isShared = true
+                    else newDocContext.isShared = false
                     newDocContext."${targetObject.getClass().getSimpleName().toLowerCase()}" = targetObject
                     newDocContext.owner = newDoc
                     save(newDocContext, flash)
@@ -876,6 +1021,12 @@ class CopyElementsService {
         }
     }
 
+    /**
+     * Deletes the given notes from the target object
+     * @param toDeleteAnnouncements the notes which should be deleted
+     * @param targetObject the target object from which the tasks should be deleted
+     * @param flash unused
+     */
     def deleteAnnouncements(List<Long> toDeleteAnnouncements, Object targetObject, def flash) {
         targetObject.documents.each {
             if (toDeleteAnnouncements.contains(it.id) && it.owner?.contentType == Doc.CONTENT_TYPE_STRING && !(it.domain)) {
@@ -886,6 +1037,14 @@ class CopyElementsService {
         }
     }
 
+    /**
+     * Copies the given identifiers into the target object
+     * @param sourceObject unused
+     * @param toCopyIdentifiers the identifiers to be copied
+     * @param targetObject the target object into which the tasks should be copied
+     * @param takeAudit which identifiers should be inherited?
+     * @param flash unused
+     */
     void copyIdentifiers(Object sourceObject, List<Identifier> toCopyIdentifiers, Object targetObject, List takeAudit, def flash) {
         toCopyIdentifiers.each { Identifier sourceIdentifier ->
             def owner = targetObject
@@ -905,6 +1064,12 @@ class CopyElementsService {
         }
     }
 
+    /**
+     * Deletes the given identifiers from the target object
+     * @param toDeleteIdentifiers the identifiers which should be deleted
+     * @param targetObject the target object from which the tasks should be deleted
+     * @param flash unused
+     */
     void deleteIdentifiers(List<Identifier> toDeleteIdentifiers, Object targetObject, def flash) {
         String attr = Identifier.getAttributeName(targetObject)
         Identifier.executeUpdate('delete from Identifier i where i.instanceOf in (:toDeleteIdentifiers)')
@@ -916,6 +1081,13 @@ class CopyElementsService {
         Object[] args = [countDeleted]
     }
 
+    /**
+     * Copies the given list of subscription / license links into the target object
+     * @param sourceObject the source object from which the links should be taken
+     * @param toCopyLinks the list of links to transfer
+     * @param targetObject the target object into which the links should be copied
+     * @param flash unused
+     */
     void copyLinks(Object sourceObject, List<Links> toCopyLinks, Object targetObject, def flash) {
         toCopyLinks.each { Links sourceLink ->
             Map<String, Object> configMap = [owner: sourceLink.owner, linkType: sourceLink.linkType]
@@ -934,12 +1106,24 @@ class CopyElementsService {
         }
     }
 
+    /**
+     * Deletes the given links
+     * @param toDeleteLinks the links to be deleted
+     * @param flash unused
+     */
     void deleteLinks(List<Links> toDeleteLinks, def flash) {
         int countDeleted = Identifier.executeUpdate('delete from Links li where li in (:toDeleteLinks)',
                 [toDeleteLinks: toDeleteLinks])
         Object[] args = [countDeleted]
     }
 
+    /**
+     * Marks the given documents as deleted (from the given target)
+     * @param toDeleteDocs the documents which should be marked as deleted
+     * @param targetObject unused
+     * @param flash unused
+     * @return the count of entries marked as deleted
+     */
     def deleteDocs(List<Long> toDeleteDocs, Object targetObject, def flash) {
         log.debug("toDeleteDocCtxIds: " + toDeleteDocs)
         def updated = DocContext.executeUpdate("UPDATE DocContext set status = :del where id in (:ids)",
@@ -947,7 +1131,15 @@ class CopyElementsService {
         log.debug("Number of deleted (per Flag) DocCtxs: " + updated)
     }
 
-    boolean copyDocs(Object sourceObject, def toCopyDocs, Object targetObject, def flash) {
+    /**
+     * Copies the given list of documents into the target object
+     * @param sourceObject the source object from which the documents should be copied
+     * @param toCopyDocs the list of document context IDs to copy
+     * @param targetObject the target object into which the documents should be copied
+     * @param flash the message container
+     * @return true if the transfer was successful, false otherwise
+     */
+    boolean copyDocs(Object sourceObject, def toCopyDocs, Object targetObject, def flash, def toShare = []) {
         sourceObject.documents?.each { dctx ->
             if (dctx.id in toCopyDocs) {
                 if ((dctx.owner?.contentType == Doc.CONTENT_TYPE_FILE) && (dctx.status?.value != 'Deleted')) {
@@ -959,6 +1151,9 @@ class CopyElementsService {
 
                         DocContext newDocContext = new DocContext()
                         InvokerHelper.setProperties(newDocContext, dctx.properties)
+                        if(dctx.id in toShare)
+                            newDocContext.isShared = true
+                        else newDocContext.isShared = false
                         newDocContext."${targetObject.getClass().getSimpleName().toLowerCase()}" = targetObject
                         newDocContext.owner = newDoc
                         save(newDocContext, flash)
@@ -978,6 +1173,15 @@ class CopyElementsService {
         }
     }
 
+    /**
+     * Copies the given properties into the target object
+     * @param properties the properties to be copied
+     * @param targetObject the target object into which the properties should be copied
+     * @param isRenewSub unused
+     * @param flash the message container
+     * @param auditProperties the properties which should be inhertied in the target object
+     * @return true if the transfer was successful, false otherwise
+     */
     boolean copyProperties(List<AbstractPropertyWithCalculatedLastUpdated> properties, Object targetObject, boolean isRenewSub, def flash, List auditProperties) {
         String classString = targetObject.class.name
         String ownerClassName = classString.substring(classString.lastIndexOf(".") + 1)
@@ -1045,6 +1249,13 @@ class CopyElementsService {
         }
     }
 
+    /**
+     * Copies the given survey properties (i.e. survey questions) into the target survey
+     * @param properties the properties to copy
+     * @param sourceObject the source survey from which the questions should be taken
+     * @param targetObject the target survey into which the questions should be copied
+     * @return true if the transfer was successful, false otherwise
+     */
     boolean copySurveyProperties(List<PropertyDefinition> properties, Object sourceObject, Object targetObject) {
         properties.each { PropertyDefinition prop ->
             SurveyConfigProperties sourceSurveyConfigProperty = SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(sourceObject, prop)
@@ -1055,6 +1266,11 @@ class CopyElementsService {
         }
     }
 
+    /**
+     * Deletes the given properties along with eventual inheritance settings
+     * @param properties the properties to delete
+     * @return true if deletion was succesful, false otherwise
+     */
     boolean deleteProperties(List<AbstractPropertyWithCalculatedLastUpdated> properties) {
         properties.each { AbstractPropertyWithCalculatedLastUpdated prop ->
             def owner = prop.owner
@@ -1069,6 +1285,12 @@ class CopyElementsService {
         }
     }
 
+    /**
+     * Deletes the given survey properties (i.e. survey questions) from the target survey
+     * @param properties the properties to be deleted
+     * @param targetObject the target survey into which the questions should be copied
+     * @return true if the transfer was successful, false otherwise
+     */
     boolean deleteSurveyProperties(List<PropertyDefinition> properties, Object targetObject) {
         properties.each { PropertyDefinition prop ->
             SurveyConfigProperties surveyConfigProperty = SurveyConfigProperties.findBySurveyConfigAndSurveyProperty(targetObject, prop)
@@ -1078,7 +1300,14 @@ class CopyElementsService {
         }
     }
 
-
+    /**
+     * Transfers the given attribute from the source into the target object
+     * @param sourceObject the source object from which the attribute should be taken
+     * @param targetObject the target object into which the attribute should be copied
+     * @param flash the message container
+     * @param propertyName the attrbiute to be transferred
+     * @return true if the transfer was successful, false otherwise
+     */
     boolean copyObjectProperty(Object sourceObject, Object targetObject, def flash, String propertyName) {
 
         if (sourceObject.getClass() == targetObject.getClass()) {
@@ -1090,6 +1319,7 @@ class CopyElementsService {
 
     }
 
+    @Deprecated
     boolean deleteObjectProperty(Object targetObject, def flash, String propertyName) {
 
         if (targetObject.hasProperty(propertyName)) {
@@ -1103,6 +1333,14 @@ class CopyElementsService {
 
     }
 
+    /**
+     * Sets the inheritance flag for the given attribute
+     * @param sourceObject the source object
+     * @param targetObject the target object
+     * @param flash unused
+     * @param propertyName the attribute which should be inherited
+     * @return true if the config could be set, false otherwise
+     */
     boolean toggleAuditObjectProperty(Object sourceObject, Object targetObject, def flash, String propertyName) {
 
         if (sourceObject.getClass() == targetObject.getClass()) {
@@ -1113,24 +1351,52 @@ class CopyElementsService {
 
     }
 
+    /**
+     * Removes the inheritance flag for the given attribute
+     * @param targetObject the target object
+     * @param flash unused
+     * @param propertyName the attribute which should be inherited
+     * @return true if the config could be removed, false otherwise
+     */
     boolean removeToggleAuditObjectProperty(Object targetObject, def flash, String propertyName) {
         if (targetObject.hasProperty(propertyName) && AuditConfig.getConfig(targetObject, propertyName)) {
             AuditConfig.removeConfig(targetObject, propertyName)
         }
     }
 
+    /**
+     * Unlinks the given licenses from the target object
+     * @param toDeleteLicenses the licenses to be unlinked
+     * @param targetObject the target object from which the license should be unlinked
+     * @param flash unused
+     * @return true if the unlinking was successful, false otherwise
+     */
     boolean deleteLicenses(List<License> toDeleteLicenses, Object targetObject, def flash) {
         toDeleteLicenses.each { License lic ->
             subscriptionService.setOrgLicRole(targetObject, lic, true)
         }
     }
 
+    /**
+     * Links the licenses to the target object
+     * @param toCopyLicenses the licenses to be linked
+     * @param targetObject the target object to which the licenses should be linked
+     * @param flash unused
+     * @return true if the linking was successful, false otherwise
+     */
     boolean copyLicenses(List<License> toCopyLicenses, Object targetObject, def flash) {
         toCopyLicenses.each { License lic ->
             subscriptionService.setOrgLicRole(targetObject, lic, false)
         }
     }
 
+    /**
+     * Deletes the given organisational relations from the target object
+     * @param toDeleteOrgRelations the relations to be deleted
+     * @param targetObject the target object from which the relations should be removed
+     * @param flash unused
+     * @return true if the unlinking was successful, false otherwise
+     */
     boolean deleteOrgRelations(List<OrgRole> toDeleteOrgRelations, Object targetObject, def flash) {
         OrgRole.executeUpdate(
                 "delete from OrgRole o where o in (:orgRelations) and o.sub = :sub and o.roleType not in (:roleTypes)",
@@ -1138,6 +1404,13 @@ class CopyElementsService {
         )
     }
 
+    /**
+     * Unlinks the given persons from the target object
+     * @param toDeletePersonRoles the person roles which should be unlinked
+     * @param targetObject the target object from which the person contacts should be unlinked
+     * @param flash unused
+     * @return true if the unlinking was successful, false otherwise
+     */
     boolean deleteSpecificSubscriptionEditors(List<PersonRole> toDeletePersonRoles, Object targetObject, def flash) {
         PersonRole.executeUpdate(
                 "delete from PersonRole pr where pr in (:personRoles) and pr.sub = :sub",
@@ -1145,6 +1418,14 @@ class CopyElementsService {
         )
     }
 
+    /**
+     * Links the given organisations to the target object
+     * @param toDeleteOrgRelations the relations to be linked
+     * @param sourceObject the source object from which the organisational relations should be taken
+     * @param targetObject the target object to which the organisations should be linked
+     * @param flash the message container
+     * @return true if the linking was successful, false otherwise
+     */
     boolean copyOrgRelations(List<OrgRole> toCopyOrgRelations, Object sourceObject, Object targetObject, def flash) {
         Locale locale = LocaleContextHolder.getLocale()
         if (!targetObject.orgRelations)
@@ -1176,6 +1457,14 @@ class CopyElementsService {
         }
     }
 
+    /**
+     * Copies the given person contacts into the target object
+     * @param toCopyPersonRoles the contacts to be copied
+     * @param sourceObject the source object from which the contacts should be taken
+     * @param targetObject the target object to which the contacts should be linked
+     * @param flash the message container
+     * @return true if the transfer was successful, false otherwise
+     */
     boolean copySpecificSubscriptionEditors(List<PersonRole> toCopyPersonRoles, Object sourceObject, Object targetObject, def flash) {
 
         toCopyPersonRoles.each { prRole ->
@@ -1199,6 +1488,14 @@ class CopyElementsService {
 
     }
 
+    /**
+     * Unlinks the given packages from the target object. The issue entitlements are going to be marked
+     * as deleted as well
+     * @param packagesToDelete the packages which should be unlinked
+     * @param targetObject the target object from which the package should be unlinked
+     * @param flash the message container
+     * @return true if the unlinking was successful, false otherwise
+     */
     boolean deletePackages(List<SubscriptionPackage> packagesToDelete, Object targetObject, def flash) {
         //alle IEs löschen, die zu den zu löschenden Packages gehören
 //        targetObject.issueEntitlements.each{ ie ->
@@ -1231,22 +1528,27 @@ class CopyElementsService {
         }
     }
 
+    /**
+     * Links the given packages to the target object and sets up the title holdings, access point links and pending
+     * change configurations
+     * @param packagesToTake the packages to be linked to the target object
+     * @param targetObject the target object which should be linked to the packages
+     * @param flash the message container
+     * @return true if the linking was successful, false otherwise
+     */
     boolean copyPackages(List<SubscriptionPackage> packagesToTake, Object targetObject, def flash) {
         Locale locale = LocaleContextHolder.getLocale()
         packagesToTake.each { SubscriptionPackage subscriptionPackage ->
-            if (SubscriptionPackage.findByPkgAndSubscription(subscriptionPackage.pkg, targetObject)) { //targetObject.packages?.find { it.pkg?.id == subscriptionPackage.pkg?.id }
-                Object[] args = [subscriptionPackage.pkg.name]
-                flash.error += messageSource.getMessage('subscription.err.packageAlreadyExistsInTargetSub', args, locale)
-            } else {
+            if (!SubscriptionPackage.findByPkgAndSubscription(subscriptionPackage.pkg, targetObject)) {
                 List<OrgAccessPointLink> pkgOapls = []
                 if(subscriptionPackage.oapls)
                     pkgOapls << OrgAccessPointLink.findAllByIdInList(subscriptionPackage.oapls.id)
-                subscriptionPackage.properties.oapls = null
-                subscriptionPackage.properties.pendingChangeConfig = null //copied in next step
+                subscriptionPackage.oapls = null
+                subscriptionPackage.pendingChangeConfig = null //copied in next step
                 SubscriptionPackage newSubscriptionPackage = new SubscriptionPackage()
-                InvokerHelper.setProperties(newSubscriptionPackage, subscriptionPackage.properties)
+                newSubscriptionPackage.pkg = subscriptionPackage.pkg
                 newSubscriptionPackage.subscription = targetObject
-
+                newSubscriptionPackage.freezeHolding = subscriptionPackage.freezeHolding //may be subject of setting change
                 if (save(newSubscriptionPackage, flash)) {
                     pkgOapls.each { OrgAccessPointLink oapl ->
 
@@ -1257,6 +1559,10 @@ class CopyElementsService {
                         newOrgAccessPointLink.subPkg = newSubscriptionPackage
                         newOrgAccessPointLink.save()
                     }
+                    Sql sql = GlobalService.obtainSqlConnection()
+                    //List subscriptionHolding = sql.rows("select * from title_instance_package_platform join issue_entitlement on tipp_id = ie_tipp_fk where tipp_pkg_fk = :pkgId and ie_subscription_fk = :source", [pkgId: newSubscriptionPackage.pkg.id, source: subscriptionPackage.subscription.id])
+                    packageService.bulkAddHolding(sql, targetObject.id, newSubscriptionPackage.pkg.id, targetObject.hasPerpetualAccess)
+                    /*
                     List<IssueEntitlement> targetIEs = subscriptionService.getIssueEntitlements(targetObject)
                             //.findAll { it.tipp.id == ie.tipp.id && it.status != RDStore.TIPP_STATUS_DELETED }
                     subscriptionPackage.getIssueEntitlementsofPackage().each { ie ->
@@ -1296,11 +1602,18 @@ class CopyElementsService {
                             }
                         }
                     }
+                     */
                 }
             }
         }
     }
 
+    /**
+     * Transfers the pending change configuration into the target subscription-package
+     * @param configs the configurations to take
+     * @param target the target subscription package to which the configurations should be applied
+     * @return true if the transfer was successful, false otherwise
+     */
     boolean copyPendingChangeConfiguration(Collection<PendingChangeConfiguration> configs, SubscriptionPackage target) {
         configs.each { PendingChangeConfiguration config ->
             Map<String, Object> configSettings = [subscriptionPackage: target, settingValue: config.settingValue, settingKey: config.settingKey, withNotification: config.withNotification]
@@ -1314,6 +1627,13 @@ class CopyElementsService {
         }
     }
 
+    /**
+     * Marks the given titles as deleted
+     * @param entitlementsToDelete the titles which should be marked as deleted
+     * @param targetObject unused
+     * @param flash the message container
+     * @return true if the deletion was deleted
+     */
     boolean deleteEntitlements(List<IssueEntitlement> entitlementsToDelete, Object targetObject, def flash) {
         entitlementsToDelete.each {
             it.status = RDStore.TIPP_STATUS_DELETED
@@ -1324,6 +1644,13 @@ class CopyElementsService {
 //                [entitlementsToDelete: entitlementsToDelete, sub: targetObject])
     }
 
+    /**
+     * Adds the given titles to the target object's holding
+     * @param entitlementsToTake the titles which should be inserted
+     * @param targetObject the target subscription to which the titles should be added
+     * @param flash the message container
+     * @return true if the entitlements were successfully transferred, false otherwise
+     */
     boolean copyEntitlements(List<IssueEntitlement> entitlementsToTake, Object targetObject, def flash) {
         Locale locale = LocaleContextHolder.getLocale()
         entitlementsToTake.each { ieToTake ->
@@ -1366,9 +1693,14 @@ class CopyElementsService {
         }
     }
 
+    /**
+     * Saves the given object
+     * @param obj the object to persist
+     * @param flash the message container
+     * @return true if the saving was successful, false otherwise
+     */
     private boolean save(obj, flash) {
         Locale locale = LocaleContextHolder.getLocale()
-        //Flush muss drin bleiben sonst werden die Werte nicht gespeichert
         if (obj.save()) {
             log.debug("Save ${obj} ok")
             return true
@@ -1380,6 +1712,12 @@ class CopyElementsService {
         }
     }
 
+    /**
+     * Deletes the given object
+     * @param obj the object to be deleted
+     * @param flash the message container
+     * @return (actually) true if the deletion was successful
+     */
     private boolean delete(obj, flash) {
         Locale locale = LocaleContextHolder.getLocale()
         if (obj) {
@@ -1390,6 +1728,13 @@ class CopyElementsService {
         }
     }
 
+    /**
+     * Checks if both source and target objects are loaded
+     * @param sourceObject the source object
+     * @param targetObject the target object
+     * @param flash the message container
+     * @return true if both objects are not null, false otherwise
+     */
     boolean isBothObjectsSet(Object sourceObject, Object targetObject, FlashScope flash = getCurrentFlashScope()) {
         Locale locale = LocaleContextHolder.getLocale()
 
@@ -1402,6 +1747,11 @@ class CopyElementsService {
         return true
     }
 
+    /**
+     * Builds the comparison tree for the objects to be compared
+     * @param objectsToCompare the objects whose property sets should be displayed
+     * @return the inverted tree property-object map
+     */
     Map regroupObjectProperties(List<Object> objectsToCompare) {
         compareService.compareProperties(objectsToCompare)
     }
@@ -1413,6 +1763,11 @@ class CopyElementsService {
         grailsWebRequest.attributes.getFlashScope(request)
     }
 
+    /**
+     * Copies the given issue entitlement groups and their items
+     * @param ieGroups the issue entitlement groups to take
+     * @param targetObject the target into which the new records should be copied
+     */
     boolean copyIssueEntitlementGroupItem(List<IssueEntitlementGroup> ieGroups, Object targetObject) {
 
             ieGroups.each { ieGroup ->
@@ -1440,6 +1795,10 @@ class CopyElementsService {
             }
     }
 
+    /**
+     * Deletes the given issue entitlement groups and their items
+     * @param ieGroups the issue entitlement groups to clear
+     */
     boolean deleteIssueEntitlementGroupItem(List<IssueEntitlementGroup> ieGroups) {
 
         ieGroups.each { ieGroup ->

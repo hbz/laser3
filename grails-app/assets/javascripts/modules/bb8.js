@@ -51,6 +51,7 @@ bb8 = {
                 bb8.init(update)
                 tooltip.init(update)
                 a11yIcon.init(update)
+                responsiveTables.init('body')
 
                 $("html").css("cursor", "auto")
 
@@ -93,6 +94,7 @@ bb8 = {
                 bb8.init(update)
                 tooltip.init(update)
                 a11yIcon.init(update)
+                responsiveTables.init('body')
 
                 $("html").css("cursor", "auto")
 

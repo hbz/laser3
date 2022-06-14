@@ -8,6 +8,21 @@ import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.i18n.LocaleContextHolder
 
+/**
+ * A controlled list entry. Reference data values are composed as follows:
+ * <ul>
+ *     <li>a category to which they belong ({@link #owner})</li>
+ *     <li>an independent key string ({@link #value})</li>
+ *     <li>localised translation strings of the list denominators ({@link #value_de} and {@link #value_en})</li>
+ *     <li>localised translation strings of the explanations given to the list entry ({@link #expl_de} and {@link #expl_en})</li>
+ * </ul>
+ * Reference data values may be defined per frontend; but they are not hard-coded, i.e. they do not persist database changes and resets nor are they instance-independent. To ensure this,
+ * define a new controlled list entry (reference data value) in /src/main/webapp/setup/RefdataValue.csv. Then, the entry will be inserted or updated upon startup of the webapp -
+ * the procedure is the same as with property definitions or reference data categories
+ * @see RefdataCategory
+ * @see AbstractI10n
+ * @see de.laser.properties.PropertyDefinition
+ */
 class RefdataValue extends AbstractI10n implements Comparable<RefdataValue> {
 
     def grailsApplication
@@ -76,6 +91,11 @@ class RefdataValue extends AbstractI10n implements Comparable<RefdataValue> {
         dateCreated (nullable: true)
     }
 
+    /**
+     * Updates a reference data value with the given configuration map. If no reference data is found with the given value key, it will be created
+     * @param map the parameter map containing the updated reference data
+     * @return the new reference data instance
+     */
     static RefdataValue construct(Map<String, Object> map) {
 
         withTransaction {
@@ -114,6 +134,11 @@ class RefdataValue extends AbstractI10n implements Comparable<RefdataValue> {
         }
     }
 
+    /**
+     * Finds reference data values matching the given query string. Queried is among the values in the current server locale
+     * @param params the parameter map containing the search query
+     * @return a {@link Map} of the structure [id: oid, text: localised reference value string] for dropdown display
+     */
     static def refdataFind(GrailsParameterMap params) {
         List<Map<String, Object>> result = []
         List<RefdataValue> matches = []
@@ -142,19 +167,37 @@ class RefdataValue extends AbstractI10n implements Comparable<RefdataValue> {
     }
 
     // called from AjaxController.resolveOID2()
+    @Deprecated
     static def refdataCreate(value) {
         // return new RefdataValue(value:value);
         return null;
     }
 
+    /**
+     * Performs a fuzzy search with the given key string
+     * @param value the (sub-)string of the reference key to be searched
+     * @return the reference data value matching the given key string
+     */
     static RefdataValue getByValue(String value) {
         RefdataValue.findByValueIlike(value)
     }
 
+    /**
+     * Gets a reference data value by the given value key and belonging to the given category name
+     * @param value the key to search for
+     * @param category the category constant the requested reference data value is belonging to
+     * @return the reference data value matching to the given key and category
+     */
     static RefdataValue getByValueAndCategory(String value, String category) {
         RefdataValue.findByValueIlikeAndOwner(value, RefdataCategory.findByDescIlike(category))
     }
 
+    /**
+     * This method gets a reference data value by the given category name and German value string
+     * @param categoryName the category to which the queried reference data value belongs to
+     * @param value the German value string to search for
+     * @return the reference data value matching the queried value and belonging to the given category name
+     */
     static RefdataValue getByCategoryDescAndI10nValueDe(String categoryName, String value) {
         if (!categoryName || !value) {
             return null
@@ -165,6 +208,12 @@ class RefdataValue extends AbstractI10n implements Comparable<RefdataValue> {
         return (data.size() > 0) ? data[0] : null
     }
 
+    /**
+     * This method gets a reference data value by the given list of category names and German value string
+     * @param categoryNames a {@link List} of category names to look
+     * @param value the German value string to look for
+     * @return the reference data value matching to the given query string and belonging to one of the given categories - if multiple results are found, the first result is being returned
+     */
     static RefdataValue getByCategoriesDescAndI10nValueDe(List categoryNames, String value) {
         if (!categoryNames || !value) {
             return null
@@ -175,6 +224,10 @@ class RefdataValue extends AbstractI10n implements Comparable<RefdataValue> {
         return (data.size() > 0) ? data[0] : null
     }
 
+    /**
+     * Helper method: Determines for the reader number entry form the current semester and returns the appropriate reference data value
+     * @return the reference data value representing the current semester
+     */
     static RefdataValue getCurrentSemester() {
         Calendar now = GregorianCalendar.getInstance(), adjacentYear = GregorianCalendar.getInstance()
         //Month is zero-based, April-September is summer term
@@ -193,6 +246,12 @@ class RefdataValue extends AbstractI10n implements Comparable<RefdataValue> {
         RefdataValue.getByValue(semesterKey)
     }
 
+    /**
+     * Compares this reference data value to another, based on the order; if the order is equal, the internationalised value strings are being compared.
+     * The user-defined order is defined in {@link RefdataReorderService#reorderRefdata()}
+     * @param rdv the other reference data value to compare with
+     * @return the comparison result (-1, 0, 1)
+     */
     int compareTo(RefdataValue rdv) {
 
         def a = rdv.order  ?: 0
@@ -212,15 +271,20 @@ class RefdataValue extends AbstractI10n implements Comparable<RefdataValue> {
         }
     }
 
-    // still provide OLD mapping for string compares and such stuff
+    /**
+     * Returns the value key of the reference data value
+     * @return the value key
+     */
     String toString() {
+        // still provide OLD mapping for string compares and such stuff
         value
     }
 
     /**
-    * Equality should be decided like this, although we currently got duplicates
-    * refdatavalue for same string value
-    **/
+     * Checks if the other reference data value instance has the same database id as this one
+     * @param o the other object to compare this instance with
+     * @return true if the database ids match, false otherwise
+     */
     @Override
     boolean equals (Object o) {
         //def obj = ClassUtils.deproxy(o)
@@ -233,6 +297,10 @@ class RefdataValue extends AbstractI10n implements Comparable<RefdataValue> {
         return false
     }
 
+    /**
+     * Prepares this reference value entry for the ElasticSearch index mapping
+     * @return a {@link Map} represendung the ElasticSearch document structure for reference data values
+     */
     Map getMapForES(){
             return ['id':    this.id,
                     'value':    this.value,

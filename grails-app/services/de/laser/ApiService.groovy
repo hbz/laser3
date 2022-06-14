@@ -15,6 +15,7 @@ import groovy.util.slurpersupport.GPathResult
 
 import java.text.SimpleDateFormat
 
+@Deprecated
 @Slf4j
 @Transactional
 class ApiService {
@@ -22,8 +23,8 @@ class ApiService {
     def messageSource
 
     /**
-     * 
-     * @param s
+     * Strips whitespaces from the given string
+     * @param s the string to sanitise
      * @return trimmed string with multiple whitespaces removed
      */
     private String normString(String str){
@@ -35,9 +36,9 @@ class ApiService {
     }
 
     /**
-     * 
-     * @param obj
-     * @return list with children of given object or object if no children
+     * Reduces the child level and flattens the given object with children to a single level
+     * @param obj the object to flatten
+     * @return list with children of given object or object if no children exist
      */
     private List flattenToken(Object obj){
         List result = []
@@ -395,6 +396,7 @@ class ApiService {
         return xml
     }
 
+    @Deprecated
     GPathResult makeshiftSubscriptionImport(GPathResult xml){
 
         // TODO: in progress - erms-746
@@ -408,11 +410,15 @@ class ApiService {
             log.debug("processing ${strName} / ${rdvType.getI10n('value')}")
         }
     }
-
-    /*
-        hic codex data pro organisationibus atque utilisatoribus ex fontem datium leget et in repositorium datium scribit. Fons datium omnia data vel partem datium continere potet; in ultimo caso data incrementum est
-        We should not think in Latin - this code reads off data from an existing dump and writes them into the database. This may be the entire datasource or a part of it; in latter case, this is an increment
-    */
+    
+    /**
+     * hic codex data pro organisationibus atque utilisatoribus ex fontem datium leget et in repositorium datium scribit. Fons datium
+     * omnia data vel partem datium continere potet; in ultimo caso data incrementum est
+     * We should not think in Latin - this code reads off data from an existing dump and writes them into the database. This may be the
+     * entire datasource or a part of it; in latter case, this is an increment
+     * @param baseFile input file containing the data
+     */
+    @Deprecated
     void setupBasicData(File baseFile) {
         try {
             SimpleDateFormat sdf = new SimpleDateFormat('yyyy-MM-dd HH:mm:ss.S')
@@ -511,7 +517,6 @@ class ApiService {
                             ciec.save()
                         }
                         orgData.ids.id.each { idData ->
-                            // TODO [ticket=1789] check setup basic data
                             log.debug("----- processing identifiers -----")
                             //log.debug("ns: ${IdentifierNamespace.findByNs(idData.@namespace.text())}")
                             //log.debug("value: ${idData.@value.text()}")

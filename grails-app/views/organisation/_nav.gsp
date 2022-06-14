@@ -8,14 +8,14 @@
     <semui:subNavItem controller="organisation" action="show" params="${breadcrumbParams}" message="org.nav.details"/>
     <semui:subNavItem controller="organisation" action="ids" params="${breadcrumbParams}" message="org.nav.ids"/>
     <g:if test="${inContextOrg}">
-        <semui:subNavItem controller="organisation" action="myPublicContacts" params="${[id: institution.id]}" message="menu.institutions.publicContacts" />
+        <semui:subNavItem controller="organisation" action="myPublicContacts" params="${[id: institution.id]}" message="menu.institutions.publicContactsHyphen" />
     </g:if>
     <g:elseif test="${(contextCustomerType == 'ORG_CONSORTIUM' && !isProviderOrAgency)}">
-        <semui:subNavItem controller="organisation" action="myPublicContacts" params="${[id: orgInstance.id]}" message="menu.institutions.publicContacts" />
+        <semui:subNavItem controller="organisation" action="myPublicContacts" params="${[id: orgInstance.id]}" message="menu.institutions.publicContactsHyphen" />
     </g:elseif>
     <g:else>
         <g:if test="${!isProviderOrAgency}">
-            <semui:subNavItem disabled="true" controller="organisation" action="myPublicContacts" message="menu.institutions.publicContacts" />
+            <semui:subNavItem disabled="true" controller="organisation" action="myPublicContacts" message="menu.institutions.publicContactsHyphen" />
         </g:if>
     </g:else>
     <g:if test="${!isProviderOrAgency}">

@@ -7,10 +7,17 @@ import de.laser.helper.Constants
 import grails.converters.JSON
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
+/**
+ * An API representation of a {@link OrgAccessPoint}
+ */
 class ApiOrgAccessPoint {
 
     /**
-     * @return ApiBox(obj: CostItem | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND | OBJECT_STATUS_DELETED)
+     * Locates the given {@link OrgAccessPoint} and returns the object (or null if not found) and the request status for further processing
+     * @param the field to look for the identifier, one of {id, globalUID}
+     * @param the identifier value
+     * @return ApiBox(obj: OrgAccessPoint | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND | OBJECT_STATUS_DELETED)
+     * @see ApiBox#validatePrecondition_1()
      */
     static ApiBox findAccessPointBy(String query, String value) {
         ApiBox result = ApiBox.get()
@@ -34,7 +41,10 @@ class ApiOrgAccessPoint {
     }
 
     /**
-     * @return boolean
+     * Checks if the requesting institution can access to the given access point
+     * @param orgAccessPoint the {@link OrgAccessPoint} to which access is being requested
+     * @param context the institution ({@link Org}) requesting access
+     * @return true if the access is granted, false otherwise
      */
     static boolean calculateAccess(OrgAccessPoint orgAccessPoint, Org context) {
 
@@ -46,7 +56,12 @@ class ApiOrgAccessPoint {
 
         hasAccess
     }
+
     /**
+     * Checks if the given institution can access the given access point. The access point
+     * is returned in case of success
+     * @param orgAccessPoint the {@link OrgAccessPoint} whose details should be retrieved
+     * @param context the institution ({@link Org}) requesting the access point
      * @return JSON | FORBIDDEN
      */
     static requestOrgAccessPoint(OrgAccessPoint orgAccessPoint, Org context){
@@ -61,7 +76,12 @@ class ApiOrgAccessPoint {
     }
 
     /**
+     * Checks if the requesting institution can access the access point list of the requested institution.
+     * The list of access points is returned in case of success
+     * @param owner the institution whose cost items should be retrieved
+     * @param context the institution who requests the list
      * @return JSON | FORBIDDEN
+     * @see Org
      */
     static requestOrgAccessPointList(Org owner, Org context){
         Collection<Object> result = []
@@ -76,9 +96,12 @@ class ApiOrgAccessPoint {
     }
 
     /**
+     * Assembles the given access point attributes into a {@link Map}. The schema of the map can be seen in
+     * schemas.gsp
+     * @param orgAccessPoint the {@link OrgAccessPoint} which should be output
+     * @param context the institution ({@link Org}) requesting
      * @return Map<String, Object>
      */
-
     static Map<String, Object> getOrgAccessPointMap(OrgAccessPoint orgAccessPoint, Org context){
         Map<String, Object> result = [:]
 
@@ -123,7 +146,6 @@ class ApiOrgAccessPoint {
         if(orgAccessPoint.accessMethod.value == 'openathens'){
            result."${orgAccessPoint.accessMethod.value}".name   = orgAccessPoint.name
            result."${orgAccessPoint.accessMethod.value}".entityid   = orgAccessPoint.hasProperty('entityId') ? orgAccessPoint.entityId : ''
-           result."${orgAccessPoint.accessMethod.value}".url   = orgAccessPoint.hasProperty('url') ? orgAccessPoint.url : ''
 
         }
 
@@ -145,7 +167,6 @@ class ApiOrgAccessPoint {
         if(orgAccessPoint.accessMethod.value == 'shibboleth'){
            result."${orgAccessPoint.accessMethod.value}".name   = orgAccessPoint.name
            result."${orgAccessPoint.accessMethod.value}".entityid   = orgAccessPoint.hasProperty('entityId') ? orgAccessPoint.entityId : ''
-           result."${orgAccessPoint.accessMethod.value}".url   = orgAccessPoint.hasProperty('url') ? orgAccessPoint.url : ''
         }
 
         ApiToolkit.cleanUp(result, true, true)

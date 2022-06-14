@@ -45,7 +45,7 @@
 
                 <div class="content">
 
-                    <table class="ui celled striped table la-table">
+                    <table class="ui celled striped table la-js-responsive-table la-table">
                         <thead>
                         <tr>
                             <th><g:message code="myinst.subscriptionImport.tsvColumnName"/></th>

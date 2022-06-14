@@ -10,9 +10,23 @@ import org.springframework.context.ApplicationContext
 
 class BaseFilter {
 
-    static Set<String> getCurrentFilterKeys(GrailsParameterMap params, String cmbKey) {
+    static String getCurrentFilterSource(GrailsParameterMap params, String source) {
+        params.get(BaseConfig.FILTER_PREFIX + source + BaseConfig.FILTER_SOURCE_POSTFIX)
+    }
 
+    static Set<String> getCurrentFilterKeys(GrailsParameterMap params, String cmbKey) {
         params.keySet().findAll{ it.toString().startsWith(cmbKey) && ! it.toString().endsWith(BaseConfig.FILTER_SOURCE_POSTFIX) }
+    }
+
+    static List<String> getRestrictedConfigSources(Map<String, Object> config) {
+        ContextService contextService = (ContextService) Holders.grailsApplication.mainContext.getBean('contextService')
+
+        if (contextService.getUser().hasRole(['ROLE_ADMIN', 'ROLE_YODA'])) {
+            config.source
+        }
+        else {
+            config.source.findAll{ ! it.endsWith('-deleted') } as List<String>
+        }
     }
 
     static String getDateModifier(String modifier) {
@@ -77,5 +91,11 @@ class BaseFilter {
 
         List<Long> idList = params?.filterCache?.data?.get(prefix + 'IdList')?.collect { it as Long }
         return idList ?: []
+    }
+
+    static Map<String, Object> getCachedFilterESRecords(prefix, params) {
+
+        Map<String, Object> esRecords = params?.filterCache?.data?.get(prefix + 'ESRecords')
+        return esRecords ?: [:]
     }
 }

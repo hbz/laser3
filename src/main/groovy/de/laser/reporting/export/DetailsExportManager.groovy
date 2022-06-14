@@ -3,6 +3,7 @@ package de.laser.reporting.export
 import de.laser.IssueEntitlement
 import de.laser.License
 import de.laser.Org
+import de.laser.Platform
 import de.laser.Subscription
 import de.laser.finance.CostItem
 import de.laser.helper.DateUtils
@@ -12,6 +13,8 @@ import de.laser.reporting.export.local.CostItemExport
 import de.laser.reporting.export.local.IssueEntitlementExport
 import de.laser.reporting.export.myInstitution.LicenseExport
 import de.laser.reporting.export.myInstitution.OrgExport
+import de.laser.reporting.export.myInstitution.PackageExport
+import de.laser.reporting.export.myInstitution.PlatformExport
 import de.laser.reporting.export.myInstitution.SubscriptionExport
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import grails.util.Holders
@@ -117,6 +120,12 @@ class DetailsExportManager {
                 else if (it instanceof Double) {
                     return g.formatNumber( number: it, type: 'currency',  currencySymbol: '' ).trim()
                 }
+                else if (it instanceof String && (it.startsWith('http://') || it.startsWith('https://'))) {
+                    // masking globalUID and gokbId
+                    if (it.indexOf('@') > 0) {
+                        it = it.split('@')[0]
+                    }
+                }
                 return it as String
             } // TODO date, double, etc
 
@@ -179,7 +188,7 @@ class DetailsExportManager {
                 Row entry = sheet.createRow(idx + 1)
                 int cellHeight = 1
                 row.eachWithIndex { val, i ->
-                    int h = BaseExportHelper.updateCell(workbook, entry.createCell(i), val, options.insertNewLines)
+                    int h = BaseExportHelper.updateCell(workbook, entry.createCell(i), val, options.insertNewLines, options.useHyperlinks)
                     cellHeight = h > cellHeight ? h : cellHeight
                 }
                 if (cellHeight > 1) {
@@ -251,14 +260,13 @@ class DetailsExportManager {
 
         List<Object> result = []
 
-        if (export.KEY == LicenseExport.KEY) {
-            result = License.executeQuery('select l from License l where l.id in (:idList) order by l.reference', [idList: idList])
-        }
-        else if (export.KEY == OrgExport.KEY) {
-            result = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
-        }
-        else if (export.KEY == SubscriptionExport.KEY) {
-            result = Subscription.executeQuery('select s from Subscription s where s.id in (:idList) order by s.name', [idList: idList])
+        if (export.KEY == CostItemExport.KEY) {
+//            Long subId = LocalExportHelper.getDetailsCache( export.token ).id
+//            result = CostItem.executeQuery(
+//                    'select ci from CostItem ci where ci.sub.id = :subId and ci.id in (:idList) order by ci.id',
+//                    [subId: subId, idList: idList]
+//            )
+            result = CostItem.executeQuery('select ci from CostItem ci where ci.id in (:idList) order by ci.id', [idList: idList])
         }
         else if (export.KEY == IssueEntitlementExport.KEY) {
             Long subId = LocalExportHelper.getDetailsCache( export.token ).id
@@ -267,14 +275,22 @@ class DetailsExportManager {
                     [subId: subId, idList: idList]
             )
         }
-        else if (export.KEY == CostItemExport.KEY) {
-//            Long subId = LocalExportHelper.getDetailsCache( export.token ).id
-//            result = CostItem.executeQuery(
-//                    'select ci from CostItem ci where ci.sub.id = :subId and ci.id in (:idList) order by ci.id',
-//                    [subId: subId, idList: idList]
-//            )
-            result = CostItem.executeQuery('select ci from CostItem ci where ci.id in (:idList) order by ci.id', [idList: idList])
+        else if (export.KEY == LicenseExport.KEY) {
+            result = License.executeQuery('select l from License l where l.id in (:idList) order by l.reference', [idList: idList])
         }
+        else if (export.KEY == OrgExport.KEY) {
+            result = Org.executeQuery('select o from Org o where o.id in (:idList) order by o.sortname, o.name', [idList: idList])
+        }
+        else if (export.KEY == PackageExport.KEY) {
+            result = de.laser.Package.executeQuery('select p from Package p where p.id in (:idList) order by p.sortname, p.name', [idList: idList])
+        }
+        else if (export.KEY == PlatformExport.KEY) {
+            result = Platform.executeQuery('select p from Platform p where p.id in (:idList) order by p.name', [idList: idList])
+        }
+        else if (export.KEY == SubscriptionExport.KEY) {
+            result = Subscription.executeQuery('select s from Subscription s where s.id in (:idList) order by s.name', [idList: idList])
+        }
+
         result
     }
 }

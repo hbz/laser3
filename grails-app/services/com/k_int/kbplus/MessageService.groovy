@@ -3,6 +3,7 @@ package com.k_int.kbplus
 import de.laser.ContentItem
 import grails.gorm.transactions.Transactional
 
+@Deprecated
 @Transactional
 class MessageService {
 

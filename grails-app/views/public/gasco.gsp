@@ -38,13 +38,13 @@
 
                                 <g:each in="${subkinds}" var="subKind">
 
-                                        <g:if test="${subKind.value == 'National Licence'}">
+                                        <g:if test="${subKind.value == RDStore.SUBSCRIPTION_KIND_NATIONAL.value}">
                                             <div class="inline field js-nationallicence">
                                         </g:if>
-                                        <g:elseif test="${subKind.value == 'Alliance Licence'}">
+                                        <g:elseif test="${subKind.value == RDStore.SUBSCRIPTION_KIND_ALLIANCE.value}">
                                             <div class="inline field js-alliancelicence">
                                         </g:elseif>
-                                        <g:elseif test="${subKind.value == 'Consortial Licence'}">
+                                        <g:elseif test="${subKind.value == RDStore.SUBSCRIPTION_KIND_CONSORTIAL.value}">
                                             <div class="inline field js-consortiallicence">
                                         </g:elseif>
                                         <g:else>
@@ -122,7 +122,7 @@
 
     <g:if test="${subscriptions}">
 
-    <table class="ui celled la-table table">
+    <table class="ui celled la-js-responsive-table la-table table">
         <thead>
         <tr>
             <th>${message(code:'sidewide.number')}</th>

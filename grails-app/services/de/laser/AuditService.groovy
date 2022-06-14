@@ -9,12 +9,21 @@ import grails.plugins.orm.auditable.Auditable
 
 import javax.persistence.Transient
 
+/**
+ * This service manages inheritance triggering, i.e. if a property has been changed which is inherited to member objects,
+ * the change is being processed to the member objects
+ */
 //@CompileStatic
 @Transactional
 class AuditService {
 
     def changeNotificationService
 
+    /**
+     * Retrieves the list of properties which trigger inheritance for the given object
+     * @param obj the object upon which a change has been performed
+     * @return a list of properties which trigger inheritance
+     */
     def getWatchedProperties(Auditable obj) {
         def result = []
 
@@ -34,14 +43,30 @@ class AuditService {
         result
     }
 
+    /**
+     * Substitution call for {@link AuditConfig#getConfig(java.lang.Object)}
+     * @param obj the object whose inheritance should be checked
+     * @return the result of {@link AuditConfig#getConfig(java.lang.Object)}
+     */
     AuditConfig getAuditConfig(Auditable obj) {
         AuditConfig.getConfig(obj)
     }
 
+    /**
+     * Substitution call for {@link AuditConfig#getConfig(java.lang.Object, java.lang.String)}
+     * @param obj the object whose inheritance should be checked
+     * @param field the field whose inheritance flag should be checked
+     * @return the result of {@link AuditConfig#getConfig(java.lang.Object, java.lang.String)}
+     */
     AuditConfig getAuditConfig(Auditable obj, String field) {
         AuditConfig.getConfig(obj, field)
     }
 
+    /**
+     * Retrieves all inheritance settings for the given object
+     * @param obj the object whose settings should be retrieved
+     * @return a map of structure [field: setting] reflecting the inheritance configuration of the given object
+     */
     Map<String,AuditConfig> getAllAuditConfigs(Auditable obj) {
         Map<String,AuditConfig> auditConfigMap = [:]
         List<AuditConfig> auditConfigs = AuditConfig.findAllByReferenceClassAndReferenceId(obj.class.name,obj.id)
@@ -51,6 +76,12 @@ class AuditService {
         auditConfigMap
     }
 
+    /**
+     * Propagates the deletion of a public subscription or license property to member objects
+     * @param obj the deleted property object
+     * @see LicenseProperty
+     * @see SubscriptionProperty
+     */
     @Transient
     def beforeDeleteHandler(Auditable obj) {
 
@@ -85,6 +116,7 @@ class AuditService {
         }
     }
 
+    @Deprecated
     @Transient
     def beforeSaveHandler(Auditable obj) {
 
@@ -93,6 +125,15 @@ class AuditService {
         }
     }
 
+    /**
+     * Propagates a change on the given object; a pending change object is being generated which
+     * tracks the change from old to new for that it may be decided whether the change should be applied on a
+     * given member object or not
+     * @param obj the object on which a change has been performed
+     * @param oldMap the map of old values
+     * @param newMap the map of new values
+     * @see PendingChange
+     */
     @Transient
     def beforeUpdateHandler(Auditable obj, def oldMap, def newMap) {
 
@@ -166,6 +207,7 @@ class AuditService {
                                             OID  : "${obj.class.name}:${obj.id}",
                                             event: "${obj.class.simpleName}.updated",
                                             prop : cp,
+                                            type : obj."${cp}".class.name,
                                             old  : oldMap[cp],
                                             new  : newMap[cp]
                                     ]

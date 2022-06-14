@@ -2,6 +2,7 @@ package de.laser
 
 import grails.plugin.springsecurity.annotation.Secured
 
+@Deprecated
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class ResourcesController {
 
@@ -9,7 +10,9 @@ class ResourcesController {
      * Provides a file download. The filename has to be specified at the id position (i.e. the third parameter of the request path)
      *
      * @return the requested file
+     * @deprecated was one of my first contributions to the app; file download is now handled in the respective cotroller calls
      */
+    @Deprecated
     @Secured(['ROLE_USER'])
     def downloadFile() {
         //Get the current working server root to have an absolute path to work with

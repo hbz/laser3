@@ -11,6 +11,10 @@ import de.uni_freiburg.ub.Exception.InvalidBlockException;
 import de.uni_freiburg.ub.Exception.InvalidIpAddressException;
 import de.uni_freiburg.ub.Exception.InvalidRangeException;
 
+/**
+ * Represents a range of IP addresses. IPv4 and IPv6 are supported. This IP range is used for IP-based access configurations where access control is regulated with IP ranges
+ * @see IpAddress
+ */
 public class IpRange {
 
 	protected IpAddress upperLimit;
@@ -18,6 +22,13 @@ public class IpRange {
 	protected Integer cidrSuffix = null;
 	protected String inputString = "";
 
+	/**
+	 * Constructor for an IP range between the given lower and upper limit addresses
+	 * @param lowerLimit the lower IP address of the range
+	 * @param upperLimit the upper IP address of the range
+	 * @see IpAddress
+	 * @throws InvalidRangeException if the lower limit is above the upper limit
+	 */
 	public IpRange(IpAddress lowerLimit, IpAddress upperLimit) {
 		if (lowerLimit.isGreater(upperLimit)) {
 			throw new InvalidRangeException();
@@ -26,19 +37,41 @@ public class IpRange {
 		this.lowerLimit = lowerLimit;
 		this.upperLimit = upperLimit;
 	}
-	
+
+	/**
+	 * Constructor for an IP range between the given lower and upper limit addresses; the IP range itself is also given as raw input string
+	 * @param lowerLimit the lower IP address of the range
+	 * @param upperLimit the upper IP address of the range
+	 * @param input the raw input string
+	 * @see IpAddress
+	 * @throws InvalidRangeException if the lower limit is above the upper limit
+	 */
 	public IpRange(IpAddress lowerLimit, IpAddress upperLimit, String input) {
 		this(lowerLimit, upperLimit);
 		inputString = input;
-	}		
+	}
 
+	/**
+	 * Constructor for an IP range between the given lower and upper limit addresses with the given CIDR suffix
+	 * @param lowerLimit the lower IP address of the range
+	 * @param upperLimit the upper IP address of the range
+	 * @param cidrSuffix the CIDR suffix, specifying the number of addresses in the range
+	 * @see IpAddress
+	 * @throws InvalidRangeException if the lower limit is above the upper limit
+	 */
 	public IpRange(IpAddress lowerLimit, IpAddress upperLimit, int cidrSuffix) {
 		this(lowerLimit, upperLimit);
 		this.cidrSuffix = cidrSuffix;
 	}
 
+	/**
+	 * Parses the given string to a valid IpRange
+	 * @param s the input string to parse
+	 * @return the parsed {@link IpRange}
+	 * @throws InvalidRangeException if the string is not valid
+	 */
 	public static IpRange parseIpRange(String s) throws InvalidRangeException {
-		// remove all withspace characters
+		// remove all whitespace characters
 		s = StringUtils.removeAll(s, "\\s");
 
 		// handle cidr notation
@@ -70,6 +103,13 @@ public class IpRange {
 		}
 	}
 
+	/**
+	 * Retrieves the blocks of IP addresses in the given (partial/wildcarded) address
+	 * @param ipAddr the input string
+	 * @return the array of blocks of IP addresses covered by wildcards
+	 * @throws InvalidBlockException if the block is improperly defined
+	 * @throws InvalidRangeException if the range specified is ivalid
+	 */
 	protected static String[] getBlocks(String ipAddr) throws InvalidBlockException, InvalidRangeException {
 		String[] blocks = ipAddr.split("\\.");
  
@@ -158,6 +198,14 @@ public class IpRange {
 		return new String[] { blockA, blockB, blockC, blockD };
 	}
 
+	/**
+	 * Itemises the given input string into an IP range
+	 * @param s the input string
+	 * @return the parsed range
+	 * @throws InvalidBlockException if the block is improperly defined
+	 * @throws InvalidRangeException if the range is incorrectly defined
+	 * @see IpRange
+	 */
 	protected static IpRange getRange(String s) throws InvalidBlockException, InvalidRangeException {
 
 		if (s.contains(":")) {
@@ -279,6 +327,11 @@ public class IpRange {
 		}
 	}
 
+	/**
+	 * Outputs the range from lower to upper limit as string
+	 * @return the range as string
+	 * @throws InvalidIpAddressException if one of the addresses is not correctly defined
+	 */
 	public String toRangeString() throws InvalidIpAddressException {
 		String lower = lowerLimit.toString();
 		String upper = upperLimit.toString();
@@ -287,14 +340,28 @@ public class IpRange {
 		return ipRange;
 	}
 
+	/**
+	 * Gets the lower limit of the range
+	 * @return the lower {@link IpAddress}
+	 * @throws InvalidIpAddressException if the address is incorrect
+	 */
 	public IpAddress getLowerLimit() throws InvalidIpAddressException {
 		return this.lowerLimit;
 	}
 
+	/**
+	 * Gets the upper limit of the range
+	 * @return the upper {@link IpAddress}
+	 * @throws InvalidIpAddressException if the address is incorrect
+	 */
 	public IpAddress getUpperLimit() throws InvalidIpAddressException {
 		return this.upperLimit;
 	}
 
+	/**
+	 * Outputs the range as CIDR strings
+	 * @return the {@link List} of {@link IpAddress}es in CIDR representation
+	 */
 	public List<String> toCidr() {
 
 		List<String> result = new LinkedList<String>();
@@ -312,10 +379,24 @@ public class IpRange {
 		return result;
 	}
 
+	/**
+	 * Outputs the addresses between lower and upper limits in a {@link Map} of {@link IpAddress} and {@link IpRange}
+	 * @param lowerAddr the lower {@link IpAddress}
+	 * @param upperAddr the upper {@link IpAddress}
+	 * @return a {@link Map} containing the ranges (in CIDR notation) for each address in the range
+	 */
 	private static Map<IpAddress, IpRange> getCidr(IpAddress lowerAddr, IpAddress upperAddr) {
 		return getCidr(0, lowerAddr, upperAddr, new TreeMap<IpAddress, IpRange>());
 	}
 
+	/**
+	 * Outputs the addresses between lower and upper limits in a {@link Map} of {@link IpAddress} and {@link IpRange}, starting from the given suffix, into the given output map
+	 * @param n the starting CIDR suffix
+	 * @param lower the lower {@link IpAddress}
+	 * @param upper the upper {@link IpAddress}
+	 * @param allRanges the output map where the ranges are being filled
+	 * @return the input map allRanged filled with values
+	 */
 	private static Map<IpAddress, IpRange> getCidr(int n, IpAddress lower, IpAddress upper,
 			Map<IpAddress, IpRange> allRanges) {
 		if (lower.isGreater(upper)) {
@@ -363,15 +444,27 @@ public class IpRange {
 
 		return allRanges;
 	}
-	
+
+	/**
+	 * Outputs the range between lower and upper as string
+	 * @return the range string
+	 */
 	public String toString() {
 		return lowerLimit.toString() +"-"+upperLimit.toString();
 	}
-	
+
+	/**
+	 * Gets the raw input string of the range
+	 * @return the raw input string
+	 */
 	public String toInputString() {
 		return inputString;
 	}
-	
+
+	/**
+	 * Gets the version of the IP range
+	 * @return the IP revision version (v4/v6)
+	 */
 	public String getIpVersion() {
 		if (upperLimit instanceof Ipv4Address) {
 			return "v4";

@@ -122,10 +122,10 @@
 
 //@pageBackground      : #f3f4f7;
 @pageBackground      : #f4f8f9;
-@pageOverflowX       : hidden;
+@pageOverflowX       : auto;
 
 @lineHeight          : 1.4285em;
-@textColor           : rgba(0, 0, 0, 0.87);
+@textColor           : @black;  /* laser-black -matching the blue */
 
 /*-------------------
       Paragraph
@@ -252,7 +252,7 @@
 
 @subscription     :    @orange; /* hbz-orange */
 @package          :    @violet; /*@violet */
-@title            :    @blue; /* hbz-blue */
+@title            :    @purple; /* light-blue -  mismatch because semantic ui definition*/
 @license          :    #008C25; /* Dark Green */
 @organisation      :   @teal; /* bluegreen */
 @platform      :    @o-yellow;
@@ -272,7 +272,17 @@
 @laSecondaryColor   : @blue; /*blue gray for buttons */
 @laSecondaryBackground: #fffaf5; /*light orange for elements are secondary */
 
-
+/*---  Generated Light Colors  (Pastels) ---*/
+@lightRedGenerated         : lighten( @red, 40%);
+@lightOrangeGenerated      : lighten( @orange, 40% );
+@lightYellowGenerated      : lighten( @yellow, 40% );
+@lightOliveGenerated       : lighten( @olive, 40% );
+@lightGreenGenerated       : lighten( @green, 40% );
+@lightTealGenerated        : lighten( @teal, 40% );
+@lightBlueGenerated        : lighten( @blue, 40% );
+@lightVioletGenerated      : lighten( @violet, 40% );
+@lightPinkGenerated        : lighten( @pink, 40% );
+@lightBrownGenerated       : lighten( @brown, 40% );
 
 /*---  Light Colors  ---*/
 @lightRed         : #FF695E;

@@ -1,5 +1,8 @@
 package de.laser.workflow
 
+/**
+ * A prototype of a workflow condition. For the actual condition, see {@link WfCondition}
+ */
 class WfConditionPrototype extends WfConditionBase {
 
     static final String KEY = 'WF_CONDITION_PROTOTYPE'
@@ -41,10 +44,19 @@ class WfConditionPrototype extends WfConditionBase {
         file1_title     (nullable: true)
     }
 
+    /**
+     * Checks whether this condition is used by any {@link WfTaskPrototype}
+     * @return is there any {@link WfTaskPrototype} linked to this condition?
+     */
     boolean inUse() {
         WfTaskPrototype.findByCondition( this ) != null
     }
 
+    /**
+     * Factory method to instantiate a new {@link WfCondition} based on this prototype
+     * @return the new {@link WfCondition}
+     * @throws Exception
+     */
     WfCondition instantiate() throws Exception {
 
         WfCondition condition = new WfCondition(
@@ -72,6 +84,10 @@ class WfConditionPrototype extends WfConditionBase {
         condition
     }
 
+    /**
+     * Gets the task prototype associated to this prototype. A warning is being emit when there are multiple matches to this condition prototype; in such a case, the first is being returned (ordered by id)
+     * @return the associated {@link WfTaskPrototype}
+     */
     WfTaskPrototype getTask() {
         List<WfTaskPrototype> result = WfTaskPrototype.executeQuery('select tp from WfTaskPrototype tp where condition = :current order by id', [current: this] )
 

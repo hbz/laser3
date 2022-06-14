@@ -1,4 +1,4 @@
-<%@ page import="de.laser.PendingChangeConfiguration; de.laser.IssueEntitlement; de.laser.SubscriptionController; de.laser.helper.RDStore; de.laser.Person; de.laser.Subscription; de.laser.FormService;" %>
+<%@ page import="de.laser.PendingChangeConfiguration; de.laser.IssueEntitlement; de.laser.SubscriptionController; de.laser.helper.RDStore; de.laser.Person; de.laser.Subscription; de.laser.FormService; de.laser.helper.RDConstants; de.laser.RefdataCategory; org.springframework.context.i18n.LocaleContextHolder; de.laser.I10nTranslation" %>
 <laser:serviceInjection/>
 
 <g:set var="formService" bean="formService"/>
@@ -16,7 +16,7 @@
     <g:form controller="${controllerName}" action="${actionName}" id="${params.id}" data-confirm-id="copyElements_form"
             params="[workFlowPart: workFlowPart, sourceObjectId: genericOIDService.getOID(sourceObject), targetObjectId: genericOIDService.getOID(targetObject), isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
             method="post" class="ui form newLicence">
-        <table class="ui celled table table-tworow la-table">
+        <table class="ui celled table table-tworow la-js-responsive-table la-table">
             <thead>
             <tr>
                 <th class="six wide">
@@ -113,36 +113,88 @@
                                             </div>
 
                                             <div class="content">
-                                                <ul>
-                                                    <g:each in="${packageSettings}"
-                                                            var="pcc">
-                                                        <g:if test="${!(pcc.settingKey in [PendingChangeConfiguration.NEW_PRICE,
-                                                                                           PendingChangeConfiguration.PRICE_UPDATED,
-                                                                                           PendingChangeConfiguration.PRICE_DELETED])}">
-                                                            <li class="la-copyPack-item">
-                                                                <g:message
-                                                                        code="subscription.packages.${pcc.settingKey}"/>: ${pcc.settingValue ? pcc.settingValue.getI10n('value') : RDStore.PENDING_CHANGE_CONFIG_PROMPT.getI10n('value')} (<g:message
-                                                                    code="subscription.packages.notification.label"/>: ${pcc.withNotification ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')})
-                                                                <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')}">
-                                                                    <g:if test="${!(pcc.settingKey in excludes)}">
-                                                                        <g:if test="${auditService.getAuditConfig(sourceObject, pcc.settingKey)}">
-                                                                            <span data-tooltip="${message(code: 'subscription.packages.auditable')}"><i
-                                                                                    class="ui thumbtack icon"></i></span>
+                                                <table>
+                                                    <thead>
+                                                        <tr>
+                                                            <th><g:message code="subscription.packages.changeType.label"/></th>
+                                                            <th><g:message code="subscription.packages.setting.label"/></th>
+                                                            <th>
+                                                                <span class="la-popup-tooltip la-delay" data-content="${message(code:"subscription.packages.notification.label")}">
+                                                                    <i class="ui large icon bullhorn"></i>
+                                                                </span>
+                                                            </th>
+                                                            <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')}">
+                                                                <th>
+                                                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.packages.auditable')}">
+                                                                        <i class="ui large icon thumbtack"></i>
+                                                                    </span>
+                                                                </th>
+                                                                <th>
+                                                                    <span class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.packages.notification.auditable')}">
+                                                                        <i class="ui large icon bullhorn"></i>
+                                                                    </span>
+                                                                </th>
+                                                            </g:if>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <g:each in="${packageSettings}"
+                                                                var="pcc">
+                                                            <g:if test="${!(pcc.settingKey in [PendingChangeConfiguration.NEW_PRICE,
+                                                                                               PendingChangeConfiguration.PRICE_UPDATED,
+                                                                                               PendingChangeConfiguration.PRICE_DELETED])}">
+                                                                <tr class="la-copyPack-item" data-pkgid="${sp.id}">
+                                                                    <td><g:message code="subscription.packages.${pcc.settingKey}"/></td>
+                                                                    <td>
+                                                                        <g:if test="${!(pcc.settingKey in excludes)}">
+                                                                            <laser:select class="ui dropdown"
+                                                                                          name="subscription.takePackageSettings" from="${RefdataCategory.getAllRefdataValues(RDConstants.PENDING_CHANGE_CONFIG_SETTING)}"
+                                                                                          optionKey="${{genericOIDService.getOID(sp)+'§'+pcc.settingKey+'§'+it.id}}" optionValue="value" data-pkgid="${sp.id}"
+                                                                                          value="${pcc.settingValue ? genericOIDService.getOID(sp)+'§'+pcc.settingKey+'§'+pcc.settingValue.id : RDStore.PENDING_CHANGE_CONFIG_PROMPT.id}"/>
                                                                         </g:if>
+                                                                    </td>
+                                                                    <td>
+                                                                        <div class="ui checkbox la-toggle-radio la-replace">
+                                                                            <g:checkBox name="subscription.takePackageNotifications"
+                                                                                        value="${genericOIDService.getOID(sp)}§${pcc.settingKey}§withNotification" data-pkgid="${sp.id}"
+                                                                                        data-action="copy" checked="${true}"/>
+                                                                        </div>
+                                                                    </td>
+                                                                    <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')}">
+                                                                        <g:if test="${!(pcc.settingKey in excludes)}">
+                                                                            <td>
+                                                                                <div class="ui checkbox la-toggle-radio la-inherit">
+                                                                                    <g:checkBox name="subscription.takePackageSettingAudit"
+                                                                                                value="${genericOIDService.getOID(sp)}§${pcc.settingKey}§settingAudit}" data-pkgid="${sp.id}"
+                                                                                                data-action="copy" checked="${true}"/>
+                                                                                </div>
+                                                                            </td>
+                                                                            <td>
+                                                                                <div class="ui checkbox la-toggle-radio la-inherit">
+                                                                                    <g:checkBox name="subscription.takePackageNotificationAudit"
+                                                                                                value="${genericOIDService.getOID(sp)}§${pcc.settingKey}§notificationAudit}" data-pkgid="${sp.id}"
+                                                                                                data-action="copy" checked="${true}"/>
+                                                                                </div>
+                                                                            </td>
+                                                                        </g:if>
+                                                                        <g:else>
+                                                                            <td></td>
+                                                                            <td></td>
+                                                                        </g:else>
                                                                     </g:if>
-                                                                </g:if>
-                                                            </li>
-                                                        </g:if>
-                                                    </g:each>
-                                                </ul>
+                                                                </tr>
+                                                            </g:if>
+                                                        </g:each>
+                                                    </tbody>
+                                                </table>
                                             </div>
                                         </div>
 
-                                        <div class="ui checkbox la-toggle-radio la-replace">
+                                        <%--<div class="ui checkbox la-toggle-radio la-replace">
                                             <g:checkBox name="subscription.takePackageSettings"
                                                         value="${genericOIDService.getOID(sp)}" data-pkgid="${sp.id}"
                                                         data-action="copy" checked="${true}"/>
-                                        </div>
+                                        </div>--%>
                                     </div>
                                 </g:if>
                             </div>
@@ -228,8 +280,8 @@
                                                                 <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')}">
                                                                     <g:if test="${!(pcc.settingKey in excludes)}">
                                                                         <g:if test="${auditService.getAuditConfig(targetObject, pcc.settingKey)}">
-                                                                            <span data-tooltip="${message(code: 'subscription.packages.auditable')}"><i
-                                                                                    class="ui thumbtack icon"></i></span>
+                                                                            <span class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.packages.auditable')}"><i
+                                                                                    class="ui thumbtack icon "></i></span>
                                                                         </g:if>
                                                                     </g:if>
                                                                 </g:if>
@@ -239,6 +291,7 @@
                                                 </ul>
                                             </div>
                                         </div>
+                                        <%--
                                         <g:if test="${sp.pendingChangeConfig}">
                                             <div class="ui checkbox la-toggle-radio la-noChange setDeletionConfirm">
                                                 <g:checkBox name="subscription.deletePackageSettings"
@@ -247,6 +300,7 @@
                                                             data-action="delete" checked="${false}"/>
                                             </div>
                                         </g:if>
+                                        --%>
                                     </div>
                                 </g:if>
 
@@ -393,8 +447,8 @@
         </g:elseif>
         <g:else>
             <div class="sixteen wide field" style="text-align: right;">
-                <g:set var="submitDisabled" value="${(sourceObject && targetObject) ? '' : 'disabled'}"/>
-                <input type="submit" id="copyElementsSubmit" class="ui button js-click-control"
+                <g:set var="submitDisabled" value="${(sourceObject && targetObject) || processRunning ? '' : 'disabled'}"/>
+                <input type="submit" name="copyElementsSubmit" id="copyElementsSubmit" class="ui button js-click-control"
                        data-confirm-id="copyElements"
                        data-confirm-tokenMsg="${message(code: 'copyElementsIntoObject.delete.elements', args: [g.message(code:  "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}"
                        data-confirm-term-how="delete"
@@ -484,11 +538,11 @@
                 var pkgOid = $(elem).attr('data-pkgid'); // FEHLER dk !?
                 //var pkgOid = $(elem).attr('data-pkgoid'); // dk
                 if (elem.checked) {
-                    $('.table tr td[name="subscription.takePackages.source"] div[data-pkgoid="' + elem.value + '"] div.la-copyPack-container').addClass('willStay');
-                    $('.table tr td[name="subscription.takePackages.target"] div[data-pkgoid="' + elem.value + '"] div.la-copyPack-container').addClass('willStay');
+                    $('.table tr td[name="subscription.takePackages.source"] li[data-pkgid="' + elem.value + '"] div.la-copyPack-container').addClass('willStay');
+                    $('.table tr td[name="subscription.takePackages.target"] li[data-pkgid="' + elem.value + '"] div.la-copyPack-container').addClass('willStay');
                 } else {
-                    $('.table tr td[name="subscription.takePackages.source"] div[data-pkgoid="' + elem.value + '"] div.la-copyPack-container').removeClass('willStay');
-                    $('.table tr td[name="subscription.takePackages.target"] div[data-pkgoid="' + elem.value + '"] div.la-copyPack-container').removeClass('willStay');
+                    $('.table tr td[name="subscription.takePackages.source"] li[data-pkgid="' + elem.value + '"] div.la-copyPack-container').removeClass('willStay');
+                    $('.table tr td[name="subscription.takePackages.target"] li[data-pkgid="' + elem.value + '"] div.la-copyPack-container').removeClass('willStay');
                 }
             },
 
@@ -496,9 +550,9 @@
                 var pkgOid = $(elem).attr('data-pkgid'); // FEHLER dk !?
                 //var pkgOid = $(elem).attr('data-pkgoid'); // dk
                 if (elem.checked) {
-                    $('.table tr td[name="subscription.takePackages.target"] div[data-pkgoid="' + pkgOid + '"] div.la-copyPack-container').addClass('willBeReplacedStrong');
+                    $('.table tr td[name="subscription.takePackages.target"] div[data-pkgid="' + pkgOid + '"] div.la-copyPack-container').addClass('willBeReplacedStrong');
                 } else {
-                    $('.table tr td[name="subscription.takePackages.target"] div[data-pkgoid="' + pkgOid + '"] div.la-copyPack-container').removeClass('willBeReplacedStrong');
+                    $('.table tr td[name="subscription.takePackages.target"] div[data-pkgid="' + pkgOid + '"] div.la-copyPack-container').removeClass('willBeReplacedStrong');
                 }
             },
 

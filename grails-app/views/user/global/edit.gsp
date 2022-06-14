@@ -76,7 +76,7 @@
             <div class="column wide eight">
                 <div class="ui segment form">
 
-                    <table class="ui celled la-table compact table">
+                    <table class="ui celled la-js-responsive-table la-table compact table">
                         <thead>
                         <tr>
                             <th>${message(code:'user.role')}</th>

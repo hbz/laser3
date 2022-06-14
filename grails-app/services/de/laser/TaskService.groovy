@@ -9,6 +9,9 @@ import grails.web.servlet.mvc.GrailsParameterMap
 import org.grails.web.util.WebUtils
 import org.springframework.context.i18n.LocaleContextHolder
 
+/**
+ * This service retrieves data for task retrieval and creation
+ */
 @Transactional
 class TaskService {
 
@@ -20,10 +23,26 @@ class TaskService {
 
     private static final String select_with_join = 'select t from Task t LEFT JOIN t.responsibleUser ru '
 
+    /**
+     * Called from view for edit override
+     * Checks if the given task may be edited by the given user
+     * @param task the task to be checked
+     * @param user the user accessing the task
+     * @param org the context institution of the user
+     * @return true if the user is creator or responsible of the task or the user belongs to the institution responsible for the task
+     */
     boolean isTaskEditableBy(Task task, User user, Org org) {
         task.creator == user || task.responsibleUser?.id == user.id || task.responsibleOrg?.id == org.id
     }
 
+    /**
+     * Loads the user's tasks for the given object
+     * @param offset the pagination offset from which data should be loaded
+     * @param user the user whose tasks should be retrieved
+     * @param contextOrg the user's context institution
+     * @param object the object to which the tasks are attached
+     * @return a list of accessible tasks
+     */
     Map<String, Object> getTasks(int offset, User user, Org contextOrg, object) {
         Map<String, Object> result = [:]
         result.taskInstanceList = getTasksByResponsiblesAndObject(user, contextOrg, object)
@@ -35,6 +54,13 @@ class TaskService {
         result
     }
 
+    /**
+     * Loads the user's tasks for the given object; the output is for a PDF export
+     * @param user the user whose tasks should be retrieved
+     * @param contextOrg the user's context institution
+     * @param object the object to which the tasks are attached
+     * @return a list of accessible tasks
+     */
     Set<Task> getTasksForExport(User user, Org contextOrg, object) {
         Set<Task> result = []
         result.addAll(getTasksByResponsiblesAndObject(user, contextOrg, object))
@@ -42,6 +68,11 @@ class TaskService {
         result
     }
 
+    /**
+     * Gets the tasks for the given object
+     * @param obj the object whose tasks should be retrieved
+     * @return a list of tasks
+     */
     List<Task> getTasksByObject(obj) {
         List<Task> tasks = []
         switch (obj.getClass().getSimpleName()) {
@@ -64,6 +95,13 @@ class TaskService {
         tasks
     }
 
+    /**
+     * Gets the tasks which the given user has created
+     * @param user the user whose tasks should be retrieved
+     * @param queryMap an eventual filter restricting the output
+     * @param flag should only tasks without tenant appear?
+     * @return a list of tasks matching the given criteria
+     */
     List<Task> getTasksByCreator(User user, Map queryMap, flag) {
         List<Task> tasks = []
         if (user) {
@@ -84,39 +122,120 @@ class TaskService {
         }
         tasks
     }
+
+    /**
+     * Retrieves tasks the given user created for the given license, paginated by the given parameter map
+     * @param user the user whose tasks should be retrieved
+     * @param obj the license to which the tasks are attached
+     * @param params a pagination parameter map
+     * @return a paginated list of tasks
+     */
     List<Task> getTasksByCreatorAndObject(User user, License obj,  Object params) {
         (user && obj)? Task.findAllByCreatorAndLicense(user, obj, params) : []
     }
+
+    /**
+     * Retrieves tasks the given user created for the given organisation, paginated by the given parameter map
+     * @param user the user whose tasks should be retrieved
+     * @param obj the organisation to which the tasks are attached
+     * @param params a pagination parameter map
+     * @return a paginated list of tasks
+     */
     List<Task> getTasksByCreatorAndObject(User user, Org obj,  Object params) {
         (user && obj) ?  Task.findAllByCreatorAndOrg(user, obj, params) : []
     }
+
+    /**
+     * Retrieves tasks the given user created for the given package, paginated by the given parameter map
+     * @param user the user whose tasks should be retrieved
+     * @param obj the package to which the tasks are attached
+     * @param params a pagination parameter map
+     * @return a paginated list of tasks
+     */
     List<Task> getTasksByCreatorAndObject(User user, Package obj,  Object params) {
         (user && obj) ?  Task.findAllByCreatorAndPkg(user, obj, params) : []
     }
+
+    /**
+     * Retrieves tasks the given user created for the given subscription, paginated by the given parameter map
+     * @param user the user whose tasks should be retrieved
+     * @param obj the subscription to which the tasks are attached
+     * @param params a pagination parameter map
+     * @return a paginated list of tasks
+     */
     List<Task> getTasksByCreatorAndObject(User user, Subscription obj,  Object params) {
         (user && obj) ?  Task.findAllByCreatorAndSubscription(user, obj, params) : []
     }
+
+    /**
+     * Retrieves tasks the given user created for the given survey, paginated by the given parameter map
+     * @param user the user whose tasks should be retrieved
+     * @param obj the survey to which the tasks are attached
+     * @param params a pagination parameter map
+     * @return a paginated list of tasks
+     */
     List<Task> getTasksByCreatorAndObject(User user, SurveyConfig obj,  Object params) {
         (user && obj) ?  Task.findAllByCreatorAndSurveyConfig(user, obj, params) : []
     }
+
+    /**
+     * Retrieves all tasks the given user created for the given license
+     * @param user the user whose tasks should be retrieved
+     * @param obj the license to which the tasks are attached
+     * @return a complete list of tasks
+     */
     List<Task> getTasksByCreatorAndObject(User user, License obj ) {
         (user && obj)? Task.findAllByCreatorAndLicense(user, obj) : []
     }
+
+    /**
+     * Retrieves all tasks the given user created for the given organisation
+     * @param user the user whose tasks should be retrieved
+     * @param obj the organisation to which the tasks are attached
+     * @return a complete list of tasks
+     */
     List<Task> getTasksByCreatorAndObject(User user, Org obj ) {
         (user && obj) ?  Task.findAllByCreatorAndOrg(user, obj) : []
     }
+
+    /**
+     * Retrieves all tasks the given user created for the given package
+     * @param user the user whose tasks should be retrieved
+     * @param obj the package to which the tasks are attached
+     * @return a complete list of tasks
+     */
     List<Task> getTasksByCreatorAndObject(User user, Package obj ) {
         (user && obj) ?  Task.findAllByCreatorAndPkg(user, obj) : []
     }
+
+    /**
+     * Retrieves all tasks the given user created for the given subscription
+     * @param user the user whose tasks should be retrieved
+     * @param obj the subscription to which the tasks are attached
+     * @return a complete list of tasks
+     */
     List<Task> getTasksByCreatorAndObject(User user, Subscription obj) {
         (user && obj) ?  Task.findAllByCreatorAndSubscription(user, obj) : []
     }
+
+    /**
+     * Retrieves all tasks the given user created for the given survey
+     * @param user the user whose tasks should be retrieved
+     * @param obj the survey to which the tasks are attached
+     * @return a complete list of tasks
+     */
     List<Task> getTasksByCreatorAndObject(User user, SurveyConfig obj) {
         (user && obj) ?  Task.findAllByCreatorAndSurveyConfig(user, obj) : []
     }
 
+    /**
+     * Chop everything off beyond the user's pagination limit
+     * @param taskInstanceList the complete list of tasks
+     * @param user the user whose default page size should be taken
+     * @param offset the offset of entries
+     * @return the reduced list of tasks
+     */
     List<Task> chopOffForPageSize(List taskInstanceList, User user, int offset){
-        //chop everything off beyond the user's pagination limit
         int taskInstanceCount = taskInstanceList.size() ?: 0
         if (taskInstanceCount > user.getDefaultPageSize()) {
             try {
@@ -128,6 +247,13 @@ class TaskService {
         }
         taskInstanceList
     }
+
+    /**
+     * Gets the tasks for which the given user is responsible, restricted by an optional query
+     * @param user the user responsible for those tasks which should be retrieved
+     * @param queryMap eventual filter parameters
+     * @return a (filtered) list of tasks
+     */
     List<Task> getTasksByResponsible(User user, Map queryMap) {
         List<Task> tasks = []
         if (user) {
@@ -140,6 +266,12 @@ class TaskService {
         tasks
     }
 
+    /**
+     * Gets the tasks for which the given institution is responsible, restricted by an optional query
+     * @param org the institution responsible for those tasks which should be retrieved
+     * @param queryMap eventual filter parameters
+     * @return a (filtered) list of tasks
+     */
     List<Task> getTasksByResponsible(Org org, Map queryMap) {
         List<Task> tasks = []
         if (org) {
@@ -152,6 +284,13 @@ class TaskService {
         tasks
     }
 
+    /**
+     * Gets the tasks for which the given user or institution is responsible, restricted by an optional query
+     * @param user the user responsible for those tasks which should be retrieved
+     * @param org the institution responsible for those tasks which should be retrieved
+     * @param queryMap eventual filter parameters
+     * @return a (filtered) list of tasks
+     */
     List<Task> getTasksByResponsibles(User user, Org org, Map queryMap) {
         List<Task> tasks = []
 
@@ -169,10 +308,12 @@ class TaskService {
         tasks
     }
 
+    @Deprecated
     List<Task> getTasksByResponsibleAndObject(User user, Object obj) {
         getTasksByResponsibleAndObject(user, obj, [sort: 'endDate', order: 'asc'])
     }
 
+    @Deprecated
     List<Task> getTasksByResponsibleAndObject(Org org, Object obj) {
         getTasksByResponsibleAndObject(org, obj, [sort: 'endDate', order: 'asc'])
     }
@@ -204,6 +345,13 @@ class TaskService {
         tasks
     }
 
+    /**
+     * Gets tasks for the given object for which the given user is responsible, sorted by the given parameter map
+     * @param user the user responsible for the queried tasks
+     * @param obj the object to which the tasks are attached
+     * @param params the sorting parameter map
+     * @return a sorted list of tasks
+     */
     List<Task> getTasksByResponsibleAndObject(User user, Object obj,  Map params) {
         List<Task> tasks = []
         params = addDefaultOrder(null, params)
@@ -229,6 +377,13 @@ class TaskService {
         tasks
     }
 
+    /**
+     * Gets tasks for the given object for which the given institution is responsible, sorted by the given parameter map
+     * @param org the institution responsible for the queried tasks
+     * @param obj the object to which the tasks are attached
+     * @param params the sorting parameter map
+     * @return a sorted list of tasks
+     */
     List<Task> getTasksByResponsibleAndObject(Org org, Object obj,  Object params) {
         List<Task> tasks = []
         params = addDefaultOrder(null, params)
@@ -254,6 +409,14 @@ class TaskService {
         tasks
     }
 
+    /**
+     * Gets tasks for the given object for which the given user or institution is responsible, sorted by the given parameter map
+     * @param user the user responsible for the queried tasks
+     * @param org the institution responsible for the queried tasks
+     * @param obj the object to which the tasks are attached
+     * @param params the sorting parameter map
+     * @return a sorted list of tasks
+     */
     List<Task> getTasksByResponsiblesAndObject(User user, Org org, Object obj,  Object params) {
         List<Task> tasks = []
         List<Task> a = getTasksByResponsibleAndObject(user, obj, params)
@@ -263,6 +426,11 @@ class TaskService {
         tasks
     }
 
+    /**
+     * Gets the possible selection values for the given institution to create a new task
+     * @param contextOrg the institution whose perspective is going to be taken
+     * @return a map containing prefilled lists for dropdowns
+     */
     Map<String, Object> getPreconditions(Org contextOrg) {
         Map<String, Object> result = [:]
 
@@ -277,11 +445,21 @@ class TaskService {
         result
     }
 
+    /**
+     * Gets a list of all packages for dropdown output
+     * @param contextOrg unused
+     * @return a list of packages
+     */
     private List<Package> getPackagesDropdown(Org contextOrg) {
         List<Package> validPackages        = Package.findAll("from Package p where p.name != '' and p.name != null order by lower(p.sortname) asc") // TODO
         validPackages
     }
 
+    /**
+     * Gets a list of all users for dropdown output
+     * @param contextOrg the institution whose affiliated users should be retrieved
+     * @return a list of users
+     */
     private List<User> getUserDropdown(Org contextOrg) {
         List<User> validResponsibleUsers   = contextOrg ? User.executeQuery(
                 "select u from User as u where exists (select uo from UserOrg as uo where uo.user = u and uo.org = :org) order by lower(u.display)",
@@ -290,6 +468,11 @@ class TaskService {
         validResponsibleUsers
     }
 
+    /**
+     * Gets a list of all organisations for dropdown output
+     * @param contextOrg the institution whose accessible organisations should be retrieved
+     * @return a list of organisation
+     */
     private Set<Map> getOrgsDropdown(Org contextOrg) {
         Set validOrgs = [], validOrgsDropdown = []
         if (contextOrg) {
@@ -321,7 +504,12 @@ class TaskService {
         validOrgsDropdown
     }
 
-
+    /**
+     * Gets a list of all subscriptions for dropdown output
+     * @param contextOrg the institution whose subscriptions should be retrieved
+     * @param isWithInstanceOf should member subscriptions being retrieved as well?
+     * @return a list of subscriptions
+     */
     private List<Map> getSubscriptionsDropdown(Org contextOrg, boolean isWithInstanceOf) {
         List validSubscriptionsWithInstanceOf = []
         List validSubscriptionsWithoutInstanceOf = []
@@ -402,6 +590,12 @@ class TaskService {
         validSubscriptionsDropdown
     }
 
+    /**
+     * Gets a list of all licenses for dropdown output
+     * @param contextOrg the institution whose licenses should be retrieved
+     * @param isWithInstanceOf should member licenses being retrieved as well?
+     * @return a list of subscriptions
+     */
     private List<Map> getLicensesDropdown(Org contextOrg, boolean isWithInstanceOf) {
         List<License> validLicensesOhneInstanceOf = []
         List<License> validLicensesMitInstanceOf = []
@@ -472,6 +666,11 @@ class TaskService {
         validLicensesDropdown
     }
 
+    /**
+     * Gets a list of possible responsible users
+     * @param contextOrg the institution whose users should be retrieved
+     * @return a list of possible responsible users
+     */
     Map<String, Object> getPreconditionsWithoutTargets(Org contextOrg) {
         Map<String, Object> result = [:]
         def validResponsibleUsers   = contextOrg ? User.executeQuery(
@@ -482,6 +681,12 @@ class TaskService {
         result
     }
 
+    /**
+     * Adds an order to the task query if not specified
+     * @param tableAlias the joined table name
+     * @param query the base task query
+     * @return the query string with the order clause
+     */
     private String addDefaultOrder(String tableAlias, String query){
         if (query && ( ! query.toLowerCase().contains('order by'))){
             if (tableAlias) {
@@ -493,6 +698,12 @@ class TaskService {
         query
     }
 
+    /**
+     * Adds an order to the task query if not specified
+     * @param tableAlias the joined table name
+     * @param params the sorting parameter map
+     * @return the query string with the order clause
+     */
     private Map addDefaultOrder(String tableAlias, Map params){
         if (params) {
             if (tableAlias){

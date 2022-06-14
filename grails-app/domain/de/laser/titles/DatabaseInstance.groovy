@@ -4,6 +4,9 @@ import de.laser.exceptions.CreationException
 import de.laser.helper.RDStore
 import org.springframework.dao.DuplicateKeyException
 
+/**
+ * Represents a database instance
+ */
 class DatabaseInstance extends TitleInstance{
 
     static mapping = {
@@ -13,6 +16,12 @@ class DatabaseInstance extends TitleInstance{
     static constraints = {
     }
 
+    /**
+     * Creates a new database instance if it not exists with the given parameter map. The key to check against is {@link #gokbId}
+     * @param params the parameter {@link Map}
+     * @return the new database instance if it not exists, the existing one if it does
+     * @throws CreationException
+     */
     static DatabaseInstance construct(Map<String,Object> params) throws CreationException {
         withTransaction {
             DatabaseInstance dbi = new DatabaseInstance(params)
@@ -29,6 +38,10 @@ class DatabaseInstance extends TitleInstance{
         }
     }
 
+    /**
+     * Outputs the title type as string, i.e. for icons
+     * @return the title type {@link de.laser.RefdataValue}
+     */
     String printTitleType() {
         RDStore.TITLE_TYPE_DATABASE.getI10n('value')
     }

@@ -6,6 +6,9 @@ import grails.util.Holders
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.dao.DuplicateKeyException
 
+/**
+ * Represents a(n) (e)book instance, contains fields which apply only for books
+ */
 class BookInstance extends TitleInstance {
 
     Date dateFirstInPrint
@@ -50,6 +53,12 @@ class BookInstance extends TitleInstance {
 
     }
 
+    /**
+     * Creates a new book instance if it not exists with the given parameter map. The key to check against is {@link #gokbId}
+     * @param params the parameter {@link Map}
+     * @return the new book instance if it not exists, the existing one if it does
+     * @throws CreationException
+     */
     static BookInstance construct(Map<String,Object> params) throws CreationException {
         withTransaction {
             BookInstance bi = new BookInstance(params)
@@ -66,10 +75,18 @@ class BookInstance extends TitleInstance {
         }
     }
 
+    /**
+     * Outputs the title type as string, i.e. for icons
+     * @return the title type {@link de.laser.RefdataValue}
+     */
     String printTitleType() {
         RDStore.TITLE_TYPE_EBOOK.getI10n('value')
     }
 
+    /**
+     * Outputs the first author or first editor of an ebook
+     * @return a string showing the first author and / or editor of this ebook
+     */
     String getEbookFirstAutorOrFirstEditor(){
 
         def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')

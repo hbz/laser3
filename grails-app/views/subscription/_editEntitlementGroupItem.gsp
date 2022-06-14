@@ -13,7 +13,7 @@
                     <br />
                     <div class="scrollWrapper">
 
-                            <table class="ui table la-table scrollContent" >
+                            <table class="ui table la-js-responsive-table la-table scrollContent" >
                                 <tr>
                                 <th>${message(code: 'sidewide.number')}</th>
                                 <th>${message(code: 'issueEntitlementGroup.name.label')}</th>

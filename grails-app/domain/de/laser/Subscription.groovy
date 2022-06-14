@@ -4,6 +4,7 @@ import com.k_int.kbplus.PendingChangeService
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.finance.CostItem
+import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
 import de.laser.oap.OrgAccessPoint
@@ -27,6 +28,49 @@ import org.springframework.context.i18n.LocaleContextHolder
 import javax.persistence.Transient
 import java.text.SimpleDateFormat
 
+/**
+ * <p>This is the most central of all the domains and the turning point of everything: the subscription.</p>
+ * <p>A subscription describes the permission of an institution to use electronic resources; that is what the institution actually
+ * purchases from a provider when licensing titles to the institution itself (local subscription, see below) or to a group of institutions
+ * participating in a bulk order. This bulk ordering is called consortial subscription. In the German-speaking area, there are (currently, November 11th, 2021) 18
+ * so called consortial institutions (in short consortia) (Konsortialstellen) which are organising such bulk licensings with the providers
+ * (see <a href="https://laser.hbz-nrw.de/gasco/">the GASCO monitor</a> for the up-to-date list of consortia in the German-speaking area; check the dropdown for
+ * the respective institutions and load the title list to see which products may be purchased via a consortium). An institution (library, research organisation, see
+ * {@link Org} for the definition of institution) may then purchase the license for cheaper when participating in such a consortial subscription.
+ * The licensed resources ((e-)books, (e-)journals, title databases but also films and other audiovisual media, see {@link RDConstants#TITLE_MEDIUM} for the
+ * full list of entitlement types which may be handled) are represented by title instances which are delivered in packages. So, a subscription aims usually a
+ * package of titles, provided on a certain platform. The subscribed titles consist the local holding; they are the so called issue entitlements. Subscriptions do
+ * usually have but not necessarily need to be bound to a time ranging, spanned between {@link #startDate} and {@link #endDate};
+ * it should become standard to organise subscriptions in rings of year, ranging between January 1st and December 31st of a year.
+ * Nonetheless, it is possible to set different dates (of course they should not overlap) or to define a subscription ranging over
+ * several years; they are then called multi-year subscriptions.</p>
+ * <p>It is even possible to omit the dates completely. Test access subscriptions for example have no subscription range defined since
+ * an institution takes a subscription test-wise to see how the titles are being appreciated among the end users.
+ * There are three types of subscriptions:
+ * <ol>
+ *     <li>consortial (parent) subscriptions</li>
+ *     <li>consortial (member) subscriptions</li>
+ *     <li>local subscriptions</li>
+ * </ol>
+ * (above them, there are administrative subscriptions as well, but they are for hbz-internal purposes only and technically consortial subscriptions)</p>
+ * <p>Consortial parent subscriptions can be maintained only by consortia, local subscriptions only by single users. Consortia may add member institutions
+ * to consortial subscriptions; they then get member subscriptions. Basic members and single users may have consortia member subscriptions, but they have
+ * reading rights only. Members may add notes to the subscriptions; single users may add above that own documents, tasks, notes and properties to the
+ * consortial member subscription. Consortia have full writing rights for the parent and the member subscriptions as well. Consortia may also share attributes
+ * with their members; properties may be inherited just as identifiers and documents and cost items may be shared with the consortia subscription members. Shared
+ * items are thus visible on both levels - on parent and on member level. The inheritance may be configured to take effect automatically or only after accepting it -
+ * this is controlled by the {@link #isSlaved} flag. Inheritance means that properties of the consortial parent entity are adopted by the member (= child) instances automatically.</p>
+ * <p>Single users may manage their local subscriptions independently. Subscriptions have a wide range of functionality; costs and statistics may be managed via the
+ * subscription or its holding and reporting is mainly fed by data from and around subscriptions</p>
+ * @see SubscriptionProperty
+ * @see Platform
+ * @see Package
+ * @see SubscriptionPackage
+ * @see TitleInstancePackagePlatform
+ * @see IssueEntitlement
+ * @see CostItem
+ * @see License
+ */
 class Subscription extends AbstractBaseWithCalculatedLastUpdated
         implements Auditable, CalculatedType, Permissions, ShareSupport {
 
@@ -230,12 +274,20 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     def beforeInsert() {
         super.beforeInsertHandler()
     }
+
+    /**
+     * When updating a subscription instance, some changes may be reflected to member objects or issue entitlements as well:
+     * <ul>
+     *     <li>inherited attributes are passed to the member subscriptions</li>
+     *     <li>if the perpetual access flag is being modified, this affects eventual issue entitlements as well</li>
+     * </ul>
+     */
     @Override
     def beforeUpdate() {
         Map<String, Object> changes = super.beforeUpdateHandler()
         log.debug ("beforeUpdate() " + changes.toMapString())
 
-        if ((this._getCalculatedType() in [CalculatedType.TYPE_LOCAL, CalculatedType.TYPE_PARTICIPATION])
+        if ((this._getCalculatedType() in [CalculatedType.TYPE_LOCAL, CalculatedType.TYPE_PARTICIPATION, CalculatedType.TYPE_CONSORTIAL])
                 && changes.oldMap.containsKey('hasPerpetualAccess')
                 && changes.newMap.containsKey('hasPerpetualAccess')
                 && changes.oldMap.hasPerpetualAccess != changes.newMap.hasPerpetualAccess) {
@@ -267,9 +319,14 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         super.beforeDeleteHandler()
     }
 
+    /**
+     * Method to check if the correct shareable is being processed.
+     * Is needed to differentiate OrgRoles
+     * @param sharedObject the object to be shared
+     * @return true if the object is an {@link OrgRole} and the share toggling was successful, false otherwise
+     */
     @Override
     boolean checkSharePreconditions(ShareableTrait sharedObject) {
-        // needed to differentiate OrgRoles
         if (sharedObject instanceof OrgRole) {
             if (showUIShareButton() && sharedObject.roleType.value in ['Provider', 'Agency']) {
                 return true
@@ -283,6 +340,10 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         _getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL]
     }
 
+    /**
+     * Toggles sharing for the given object
+     * @param sharedObject the object whose sharing should be toggled
+     */
     @Override
     void updateShare(ShareableTrait sharedObject) {
         log.debug('updateShare: ' + sharedObject)
@@ -328,6 +389,10 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         }
     }
 
+    /**
+     * Processes each shareable object of this subscription and toggles sharing on each of them
+     * @param targets the member objects on which new objects should be attached
+     */
     @Override
     void syncAllShares(List<ShareSupport> targets) {
         log.debug('synAllShares: ' + targets)
@@ -359,6 +424,18 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         }
     }
 
+    /**
+     * Determines the actual type of this subscription:
+     * <ul>
+     *     <li>if there is an {@link OrgRole} with the type 'Subscription Consortia' and no {@link OrgRole}s with one of the
+     *     types 'Subscriber', 'Subscriber_Consortial' or 'Subscriber_Consortial_Hidden' and no parent subscription ({@link #instanceOf}),
+     *     then it may be administrative or consortial (parent), depending on the {@link #administrative} flag</li>
+     *     <li>if there is an {@link OrgRole} with the type 'Subscription Consortia' and a parent subscription, then it is a consortial member subscription</li>
+     *     <li>if there is an {@link OrgRole} with the type 'Subscriber' and no parent subscription, then it is a local subscription</li>
+     * </ul>
+     * The type controls many of the functions and grants linked to a subscription
+     * @return the subscription type, depending on the specifications described above
+     */
     @Override
     String _getCalculatedType() {
         String result = TYPE_UNKOWN
@@ -379,17 +456,26 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         result
     }
 
+    /**
+     * Retrieves all organisation linked as providers to this subscription
+     * @return a {@link List} of {@link Org}s linked as provider
+     */
     List<Org> getProviders() {
         Org.executeQuery("select og.org from OrgRole og where og.sub =:sub and og.roleType = :provider",
             [sub: this, provider: RDStore.OR_PROVIDER])
     }
 
+    /**
+     * Retrieves all organisation linked as agencies to this subscription
+     * @return a {@link List} of {@link Org}s linked as agency
+     */
     List<Org> getAgencies() {
         Org.executeQuery("select og.org from OrgRole og where og.sub =:sub and og.roleType = :agency",
                 [sub: this, agency: RDStore.OR_AGENCY])
     }
 
     // used for views and dropdowns
+    @Deprecated
     String getNameConcatenated() {
         Org cons = getConsortia()
         List<Org> subscr = getAllSubscribers()
@@ -404,10 +490,19 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         }
     }
 
+    /**
+     * Outputs the {@link #isSlaved} flag as string; isSlaved means whether changes on a consortial parent subscription should be
+     * passed directly to the members or if they need to be accepted before applying them
+     * @return 'Yes' if isSlaved is true, 'No' otherwise
+     */
     String getIsSlavedAsString() {
         isSlaved ? "Yes" : "No"
     }
 
+    /**
+     * Retrieves all linked licenses to this subscription
+     * @return a {@link Set} of {@link License}s linked to this subscription
+     */
     Set<License> getLicenses() {
         Set<License> result = []
         Links.findAllByDestinationSubscriptionAndLinkType(this,RDStore.LINKTYPE_LICENSE).each { l ->
@@ -416,6 +511,13 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         result
     }
 
+    /**
+     * Gets the principal subscriber to this subscription
+     * @return <ul>
+     *     <li>if it is a local or consortial member license, the subscriber</li>
+     *     <li>else if it is a consortial parent license, the consortium</li>
+     * </ul>
+     */
   Org getSubscriber() {
     Org result
     Org cons
@@ -435,6 +537,10 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     result
   }
 
+    /**
+     * Retrieves all subscribers to this subscription
+     * @return a {@link List} of institutions ({@link Org}) subscribing this subscription
+     */
     List<Org> getAllSubscribers() {
         List<Org> result = []
         orgRelations.each { OrgRole or ->
@@ -444,6 +550,10 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         result
     }
 
+    /**
+     * Gets the content provider of this subscription
+     * @return the {@link Org} linked to this subscription as 'Content Provider'; if several orgs are linked that way, the last one is being returned
+     */
     Org getProvider() {
         Org result
         orgRelations.each { OrgRole or ->
@@ -453,36 +563,100 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         result
     }
 
+    /**
+     * Gets the consortium of this subscription
+     * @return the {@link Org} linked as 'Subscription Consortia' to this subscription or null if none exists (this is the case for local subscriptions)
+     */
     Org getConsortia() { // TODO getConsortium()
         Org result = orgRelations.find { OrgRole oo -> oo.roleType == RDStore.OR_SUBSCRIPTION_CONSORTIA }?.org //null check necessary because of single users!
         result
     }
 
+    /**
+     * Gets all members of this consortial subscription
+     * @return a {@link List} of {@link Org}s which are linked to child instances of this subscription by 'Subscriber' or 'Subscriber_Consortial'
+     */
     List<Org> getDerivedSubscribers() {
         List<Subscription> subs = Subscription.findAllByInstanceOf(this)
+        //OR_SUBSCRIBER is legacy; the org role types are distinct!
         subs.isEmpty() ? [] : OrgRole.findAllBySubInListAndRoleTypeInList(subs, [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS], [sort: 'org.name']).collect{it.org}
     }
 
-    Subscription _getCalculatedPrevious() {
-        Links match = Links.findBySourceSubscriptionAndLinkType(this, RDStore.LINKTYPE_FOLLOWS)
-        return match ? match.destinationSubscription : null
+    /**
+     * Gets the subscriptions marked as preceding to this subscription; usually the one of the last year ring
+     * @return the subscriptions linked to this subscription with type 'Follows'
+     */
+    Set<Subscription> _getCalculatedPrevious() {
+        Set<Subscription> matches = Links.executeQuery('select li.destinationSubscription from Links li where li.sourceSubscription = :source and li.linkType = :linkType', [source: this, linkType: RDStore.LINKTYPE_FOLLOWS])
+        return matches ?: []
     }
 
-    Subscription _getCalculatedSuccessor() {
-        Links match = Links.findByDestinationSubscriptionAndLinkType(this,RDStore.LINKTYPE_FOLLOWS)
-        return match ? match.sourceSubscription : null
+    /**
+     * Get the subscription marked as preceding to this subscription; usually the one of the last year ring
+     * @return the subscription linked to this subscription with type 'Follows'
+     */
+    Subscription _getCalculatedPreviousForSurvey() {
+        Set<Subscription> subscriptions = this._getCalculatedPrevious()
+        subscriptions = subscriptions.findAll {it.type.id == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id}
+
+        Subscription subscription = null
+        if(subscriptions.size() == 1){
+            subscription = subscriptions[0]
+        }
+        else if(subscriptions.size() > 1){
+            subscription = null
+        }
+
+        return subscription
     }
 
+    /**
+     * Gets the subscriptions marked as following to this subscription; usually the one of the next year ring
+     * @return the subscriptions linking to this subscription with type 'Follows'
+     */
+    Set<Subscription> _getCalculatedSuccessor() {
+        Set<Subscription> matches = Links.executeQuery('select li.sourceSubscription from Links li where li.destinationSubscription = :destination and li.linkType = :linkType', [destination: this, linkType: RDStore.LINKTYPE_FOLLOWS])
+        return matches ?: []
+    }
+
+    /**
+     * Get the subscription marked as following to this subscription; usually the one of the next year ring
+     * @return the subscription linking to this subscription with type 'Follows'
+     */
+    Subscription _getCalculatedSuccessorForSurvey() {
+        Set<Subscription> subscriptions = this._getCalculatedSuccessor()
+        subscriptions = subscriptions.findAll {it.type.id == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id}
+
+        Subscription subscription = null
+        if(subscriptions.size() == 1){
+            subscription = subscriptions[0]
+        }
+        else if(subscriptions.size() > 1){
+            subscription = null
+        }
+
+        return subscription
+    }
+
+    /**
+     * Checks if the subscription has a running time beyond a year ring
+     * @return true if the running time is beyond 366 days spanning thus more than one year, false otherwise
+     */
     boolean isMultiYearSubscription() {
         return (this.startDate && this.endDate && (this.endDate.minus(this.startDate) > 366))
     }
 
+    @Deprecated
     boolean isCurrentMultiYearSubscription() {
         Date currentDate = new Date(System.currentTimeMillis())
         //println(this.endDate.minus(currentDate))
         return (this.isMultiYearSubscription() && this.endDate && (this.endDate.minus(currentDate) > 366))
     }
 
+    /**
+     * Checks if this subscription is a multi-year subscription and if we are in the time range spanned by the subscription
+     * @return true if we are within the given multi-year range, false otherwise
+     */
     boolean isCurrentMultiYearSubscriptionNew() {
         Date currentDate = new Date(System.currentTimeMillis())
         //println(this.endDate.minus(currentDate))
@@ -493,22 +667,43 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         return (this.isMultiYear && this.endDate && this.instanceOf && (this.endDate.minus(this.instanceOf.startDate) > 366))
     }
 
+    @Deprecated
     boolean islateCommer() {
         return (this.endDate && (this.endDate.minus(this.startDate) > 366 && this.endDate.minus(this.startDate) < 728))
     }
 
+    /**
+     * Checks if the local subscription is configured to be renewed annually
+     * @return true if this subscription is a local subscription and the running time is between 364 and 366 days (to include leap years as well)
+     */
     boolean isAllowToAutomaticRenewAnnually() {
         return (this.type == RDStore.SUBSCRIPTION_TYPE_LOCAL && this.startDate && this.endDate && (this.endDate.minus(this.startDate) > 363) && (this.endDate.minus(this.startDate) < 367))
     }
 
+    /**
+     * Checks if this subscription is editable by the given user
+     * @param user the {@link User} whose grants should be checked
+     * @return true if this subscription is editable, false otherwise
+     */
     boolean isEditableBy(user) {
         hasPerm('edit', user)
     }
 
+    /**
+     * Checks if this subscription is viewable by the given user
+     * @param user the {@link User} whose grants should be checked
+     * @return true if this subscription is viewable, false otherwise
+     */
     boolean isVisibleBy(user) {
         hasPerm('view', user)
     }
 
+    /**
+     * Checks if the given permission has been granted to the given user for this subscription
+     * @param perm the permission string to check the grant of
+     * @param user the {@link User} whose right should be checked
+     * @return true if the given permission has been granted to the given user for this subscription, false otherwise
+     */
     boolean hasPerm(perm, user) {
         Role adm = Role.findByAuthority('ROLE_ADMIN')
         Role yda = Role.findByAuthority('ROLE_YODA')
@@ -542,6 +737,10 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         return false
     }
 
+    /**
+     * Method used by generic call. Propagates changes to a consortial subscription to member objects, i.e. triggers inheritance
+     * @param changeDocument the change map as JSON document which will be passed to the child objects
+     */
     @Transient
     def notifyDependencies(changeDocument) {
         log.debug("notifyDependencies(${changeDocument})")
@@ -597,23 +796,46 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         }
     }
 
+    /**
+     * Retrieves all member objects of this subscription, i.e. subscriptions which are instance of this subscription
+     * @return a {@link List} of member subscriptions
+     */
     List<Subscription> getNonDeletedDerivedSubscriptions() {
 
         Subscription.where { instanceOf == this }.findAll()
     }
 
+    /**
+     * Retrieves the property definition groups defined by the given institution for this subscription
+     * @param contextOrg the institution whose property groups should be retrieved
+     * @return the {@link PropertyDefinitionGroup}s for this subscription, defined by the given institution
+     */
     Map<String, Object> getCalculatedPropDefGroups(Org contextOrg) {
         propertyService.getCalculatedPropDefGroups(this, contextOrg)
     }
 
+    /**
+     * Outputs this subscription's name and core data for labelling
+     * @return the concatenated label of this subscription
+     */
+    String getLabel() {
+        SimpleDateFormat sdf = DateUtils.getSDF_dmy()
+        name + ' (' + (startDate ? sdf.format(startDate) : '') + ' - ' + (endDate ? sdf.format(endDate) : '') + ')'
+    }
+
+    /**
+     * Returns a simple string representation of this subscription
+     * @return if a name exists: the name, otherwise 'Subscription {database id}'
+     */
   String toString() {
       name ? "${name}" : "Subscription ${id}"
   }
 
-  // JSON definition of the subscription object
-  // see http://manbuildswebsite.com/2010/02/15/rendering-json-in-grails-part-3-customise-your-json-with-object-marshallers/
-  // Also http://jwicz.wordpress.com/2011/07/11/grails-custom-xml-marshaller/
-  // Also http://lucy-michael.klenk.ch/index.php/informatik/grails/c/
+  /**
+   * JSON definition of the subscription object
+   * see http://manbuildswebsite.com/2010/02/15/rendering-json-in-grails-part-3-customise-your-json-with-object-marshallers/
+   * Also http://jwicz.wordpress.com/2011/07/11/grails-custom-xml-marshaller/
+   */
   static {
     grails.converters.JSON.registerObjectMarshaller(User) {
       // you can filter here the key-value pairs to output:
@@ -621,12 +843,20 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     }
   }
 
+    /**
+     * Returns the renewal date of this subscription
+     * @return the manual renewal date
+     */
   Date getRenewalDate() {
     manualRenewalDate
   }
+
   /**
-  * OPTIONS: startDate, endDate, hideIdent, inclSubStartDate, hideDeleted, accessibleToUser,inst_shortcode
-  **/
+   * Retrieves a list of subscriptions for dropdown display. The display can be parametrised, possible options are:
+   * startDate, endDate, hideIdent, inclSubStartDate, hideDeleted, accessibleToUser, inst_shortcode
+   * @param the display and filter parameter map
+   * @return a {@link List} of {@link Map}s of structure [id: oid, text: subscription text] with the query results
+   */
   @Transient
   static def refdataFind(GrailsParameterMap params) {
       List<Map<String, Object>> result = []
@@ -683,6 +913,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     result
   }
 
+    @Deprecated
   def setInstitution(Org inst) {
       log.debug("Set institution ${inst}")
 
@@ -693,6 +924,13 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      this.orgRelations.add(or)
   }
 
+    /**
+     * Retrieves a list ISILs of packages linked to this subscription.
+     * Called from issueEntitlement/show and subscription/show, is part of the Nationaler Statistikserver statistics component
+     * @return a {@link List} of ISIL identifier strings
+     * @see SubscriptionPackage
+     * @see Package
+     */
   String getCommaSeperatedPackagesIsilList() {
       List<String> result = []
       packages.each { it ->
@@ -704,6 +942,11 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
       result.join(',')
   }
 
+    /**
+     * Checks if there is a platform linked to this subscription which contains a Nationaler Statistikserver supplier ID
+     * Is part of the Nationaler Statistikserver statistics component
+     * @return true if there is a platform with a NatStat supplier ID linked to this subscription, false otherwise
+     */
   boolean hasPlatformWithUsageSupplierId() {
       boolean hasUsageSupplier = false
       packages.each { it ->
@@ -720,6 +963,13 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
       return hasUsageSupplier
   }
 
+    /**
+     * Retrieves a set of access points linked to this subscription and attached to the given institution and platform
+     * @param org the institution ({@link Org}) who created the access point
+     * @param platform the {@link Platform} to which the access point link is attached to
+     * @return a set (as {@link List} with distinct in query) of access point links
+     * @see OrgAccessPoint
+     */
   def deduplicatedAccessPointsForOrgAndPlatform(org, platform) {
       String hql = """
 select distinct oap from OrgAccessPoint oap 
@@ -735,10 +985,19 @@ select distinct oap from OrgAccessPoint oap
       return OrgAccessPoint.executeQuery(hql, [sub:this, org:org, platform:platform])
   }
 
+    /**
+     * Substitution call for {@link #dropdownNamingConvention(java.lang.Object)} with the context institution
+     * @return this subscription's name according to the dropdown naming convention (<a href="https://github.com/hbz/laser2/wiki/UI:-Naming-Conventions">see here</a>)
+     */
   String dropdownNamingConvention() {
       dropdownNamingConvention(contextService.getOrg())
   }
 
+    /**
+     * Displays this subscription's name according to the dropdown naming convention as specified <a href="https://github.com/hbz/laser2/wiki/UI:-Naming-Conventions">here</a>
+     * @param contextOrg the institution whose perspective should be taken
+     * @return this subscription's name according to the dropdown naming convention
+     */
   String dropdownNamingConvention(contextOrg){
        def messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
@@ -775,10 +1034,12 @@ select distinct oap from OrgAccessPoint oap
        }
   }
 
+    @Deprecated
     String dropdownNamingConventionWithoutOrg() {
         dropdownNamingConventionWithoutOrg(contextService.getOrg())
     }
 
+    @Deprecated
     String dropdownNamingConventionWithoutOrg(Org contextOrg){
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         String period = startDate ? sdf.format(startDate)  : ''
@@ -791,6 +1052,12 @@ select distinct oap from OrgAccessPoint oap
         return name + ' - ' + statusString + ' ' +period
     }
 
+    /**
+     * Gets the subscription which is instance of this subscription (i.e. member subscriptions of this consortial parent subscription)
+     * and where the given institution is the subscriber
+     * @param org the member {@link Org} whose subscription should be retrieved
+     * @return the member subscription of the subscriber
+     */
     Subscription getDerivedSubscriptionBySubscribers(Org org) {
         Subscription result
 
@@ -805,6 +1072,10 @@ select distinct oap from OrgAccessPoint oap
         result
     }
 
+    /**
+     * Retrieves the running time (= allocation term) of this subscription
+     * @return the time of span covered by this subscription; if it is a multi year subscription, the parent subscription is being consulted which covers the whole allocation term
+     */
     def getAllocationTerm() {
         def result = [:]
 
@@ -820,6 +1091,10 @@ select distinct oap from OrgAccessPoint oap
         result
     }
 
+    /**
+     * Retrieves all access points of this subscription's subscriber
+     * @return a {@link Collection} of {@link OrgAccessPoint}s linked to the subscriber {@link Org}
+     */
     Collection<OrgAccessPoint> getOrgAccessPointsOfSubscriber() {
         Collection<OrgAccessPoint> result = []
 

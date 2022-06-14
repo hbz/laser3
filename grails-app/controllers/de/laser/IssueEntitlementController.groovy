@@ -15,6 +15,9 @@ import org.springframework.transaction.TransactionStatus
 
 import java.text.SimpleDateFormat
 
+/**
+ * This controller handles issue entitlement detail calls
+ */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class IssueEntitlementController  {
 
@@ -23,12 +26,18 @@ class IssueEntitlementController  {
 
    static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
+    @Deprecated
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")',wtc = 0)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def index() {
         redirect action: 'list', params: params
     }
 
+    /**
+     * @deprecated all listings of local holdings go over the subscription controller; this method lacks the subscription context.
+     * Use {@link SubscriptionController#index()} instead
+     */
+    @Deprecated
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")',wtc = 0)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def list() {
@@ -36,12 +45,22 @@ class IssueEntitlementController  {
         [issueEntitlementInstanceList: IssueEntitlement.list(params), issueEntitlementInstanceTotal: IssueEntitlement.count()]
     }
 
+    /**
+     * @deprecated The method {@link SubscriptionController#processAddEntitlements()} does the entitlement adding;
+     * use {@link SubscriptionController#addEntitlements()} resp. {@link SubscriptionService#issueEntitlementEnrichment(java.io.InputStream, java.util.Set, de.laser.Subscription, boolean, boolean)}
+     * instead
+     */
+    @Deprecated
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")',wtc = 0)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def create() {
         redirect controller: 'issueEntitlement', action: 'show', params: params
     }
 
+    /**
+     * Shows the given issue entitlement details
+     * @return
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")',wtc = 0)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def show() {

@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'survey.label')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'survey.label')} (${message(code: 'surveyCostItems.label')})</title>
 </head>
 
 <body>
@@ -32,8 +32,9 @@
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
 <semui:xEditable owner="${surveyInfo}" field="name"/>
-<semui:surveyStatusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="surveyCostItems"/>
 </h1>
+<semui:surveyStatusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="surveyCostItems"/>
+
 
 
 
@@ -83,7 +84,7 @@
         </div>--}%
 
         <div class="sixteen wide stretched column">
-            <div class="ui top attached tabular menu">
+            <div class="ui top attached stackable tabular menu">
                 <g:link class="item ${params.tab == 'selectedSubParticipants' ? 'active' : ''}"
                         controller="survey" action="surveyCostItems"
                         id="${surveyConfig.surveyInfo.id}"
@@ -145,7 +146,7 @@
                 <h3 class="ui header"><span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${message(code: 'surveyCostItems.bulkOption.info')}">
                     ${message(code: 'surveyCostItems.bulkOption.label')}
                         <i class="question circle icon"></i>
-                    </span>:</h3>
+                    </span></h3>
 
                 <div class="ui basic segment">
 
@@ -154,14 +155,13 @@
                     <g:if test="${params.tab == 'selectedSubParticipants' }">
                     <div class="ui horizontal divider"><g:message code="search.advancedSearch.option.OR"/></div>
 
-                    <div class="fields">
-                        <fieldset class="sixteen wide field la-modal-fieldset-margin-right la-account-currency">
+                    <div class="fields la-forms-grid">
+                        <fieldset class="sixteen wide field la-account-currency">
                             <div class="field center aligned">
 
                                 <label>${message(code: 'surveyCostItems.bulkOption.percentOnOldPrice')}</label>
                                 <div class="ui right labeled input">
                                 <input type="number"
-                                       style="width:50%"
                                        name="percentOnOldPrice"
                                        id="percentOnOldPrice"
                                        placeholder="${g.message(code: 'surveyCostItems.bulkOption.percentOnOldPrice')}"
@@ -309,7 +309,7 @@
             <br />
             <br />
 
-            <g:form action="surveyCostItemsFinish" method="post" class="ui form"
+            <g:form action="workflowCostItemsFinish" method="post" class="ui form"
                     params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID]">
 
                 <div class="ui right floated compact segment">

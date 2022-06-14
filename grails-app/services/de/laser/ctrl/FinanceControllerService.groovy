@@ -14,6 +14,10 @@ import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
+/**
+ * This class is a service mirror for {@link FinanceController} to capsule the complex data manipulation
+ * methods of the controller
+ */
 @Transactional
 class FinanceControllerService {
 
@@ -28,6 +32,23 @@ class FinanceControllerService {
 
     //--------------------------------------------- helper section -------------------------------------------------
 
+    /**
+     * Sets parameters which are valid for many finance view calls and defines the perspective which is being taken
+     * when displaying data. Many different configurations may be taken. A decision tree determining the perspective is
+     * listed as follows.
+     * We may see this view (the views) from the perspective of:
+     * <ol>
+     *  <li>consortia: parent subscription (show own and consortial tabs) (level 1)</li>
+     *  <li>consortia: child subscription (show consortial tab) (level 2)</li>
+     *  <li>consortia: child subscription preview (show consortial tab) (level 2)</li>
+     *  <li>single user: own subscription (show own tab) (level 1)</li>
+     *  <li>single user: child subscription (show own and subscriber tab) (level 2)</li>
+     *  <li>basic member: child subscription (show subscriber tab) (level 2)</li>
+     * </ol>
+     * @param params the request parameter map
+     * @return the response map with global parameters set
+     * @throws FinancialDataException
+     */
     Map<String,Object> getResultGenerics(GrailsParameterMap params) throws FinancialDataException {
         Map<String,Object> result = [user: contextService.getUser(),
                                      offsets:[consOffset:0, subscrOffset:0, ownOffset:0],
@@ -78,16 +99,7 @@ class FinanceControllerService {
             result.navNextSubscription = navigation.nextLink
             result.navPrevSubscription = navigation.prevLink
         }
-        /*
-            Decision tree
-            We may see this view from the perspective of:
-            1. consortia: parent subscription (show own and consortial tabs) (level 1)
-            2. consortia: child subscription (show consortial tab) (level 2)
-            3. consortia: child subscription preview (show consortial tab) (level 2)
-            4. single user: own subscription (show own tab) (level 1)
-            5. single user: child subscription (show own and subscriber tab) (level 2)
-            6. basic member: child subscription (show subscriber tab) (level 2)
-         */
+        //see the decision tree above
         List<String> dataToDisplay = []
         boolean editable = false
         //Determine own org belonging, then, in which relationship I am to the given subscription instance
@@ -191,6 +203,11 @@ class FinanceControllerService {
         result
     }
 
+    /**
+     * This method completed getResultGenerics(); additional variables are being set here which are generic for all editing fields
+     * @param configMap the map containing the call parameters which are important to determine the perspective taken
+     * @return a {@link Map} containing further general parameters
+     */
     Map<String,Object> getAdditionalGenericEditResults(Map configMap) {
         Locale locale = LocaleContextHolder.getLocale()
         Map<String,Object> result = getEditVars(configMap.institution)
@@ -210,8 +227,8 @@ class FinanceControllerService {
     }
 
     /**
-     * This method replaces the view (!!) _vars.gsp.
-     * @return basic parameters for manipulating cost items
+     * This method replaced the view (!!) _vars.gsp.
+     * @return a {@link Map} containing generic parameters for manipulating cost items
      */
     Map<String,Object> getEditVars(Org org) {
         String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())

@@ -23,7 +23,7 @@
                 </g:form>
             </g:if>
 
-        <table class="ui celled la-table table">
+        <table class="ui celled la-js-responsive-table la-table table">
             <thead>
                 <tr>
                     <th><g:message code="profile.dashboard.changes.eventtype"/></th>
@@ -68,9 +68,11 @@
 
                         <g:if test="${entry.subscription}">
                             <div class="right aligned wide column">
-                                <g:link class="ui button" controller="subscription" action="copyMyElements" params="${[sourceObjectId: genericOIDService.getOID(entry.subscription._getCalculatedPrevious()), targetObjectId: genericOIDService.getOID(entry.subscription)]}">
-                                    <g:message code="myinst.copyMyElements"/>
-                                </g:link>
+                                <g:each in="${entry.subscription._getCalculatedPrevious()}" var="prev">
+                                    <g:link class="ui button" controller="subscription" action="copyMyElements" params="${[sourceObjectId: genericOIDService.getOID(prev), targetObjectId: genericOIDService.getOID(entry.subscription)]}">
+                                        <g:message code="myinst.copyMyElements"/>
+                                    </g:link>
+                                </g:each>
                             </div>
                         </g:if>
                     </td>

@@ -9,11 +9,16 @@ import de.laser.helper.EhcacheWrapper
 import grails.converters.JSON
 import groovy.util.logging.Slf4j
 
+/**
+ * This class retrieves controlled lists with their values
+ */
 @Slf4j
 class ApiCatalogue {
 
     /**
-     * @return JSON
+     * Retrieves all currently existing property definitions with their attributes
+     * @return a {@link JSON} containing the properties
+     * @see #getPropertyCollection(de.laser.Org)
      */
     static JSON getAllProperties(Org context) {
         Collection<Object> result = ApiCatalogue.getPropertyCollection(context)
@@ -22,7 +27,8 @@ class ApiCatalogue {
     }
 
     /**
-     * @return JSON
+     * Retrieves all currently existing reference data values with their attributes
+     * @return a {@link JSON} containing the reference data values
      */
     static JSON getAllRefdatas() {
         Collection<Object> result = ApiCatalogue.getRefdataCollection()
@@ -31,7 +37,8 @@ class ApiCatalogue {
     }
 
     /**
-     * @return []
+     * Dummy call
+     * @return ['dummy']
      */
     static getDummy() {
         def result = ['dummy']
@@ -41,7 +48,9 @@ class ApiCatalogue {
     // ################### MIXED CATALOGUE ###################
 
     /**
-     * @return
+     * Retrieves all property definitions; public ones and those created by the given institution are being returned
+     * @return a {@link List} of property definitions with their attributes
+     * @see PropertyDefinition
      */
     static Collection<Object> getPropertyCollection(Org context){
         def result = []
@@ -79,7 +88,9 @@ class ApiCatalogue {
     // ################### PUBLIC CATALOGUE ###################
 
     /**
-     * @return
+     * Retrieves all currently defined reference data values (i.e. controlled lists and their values)
+     * @return a {@link List} of reference data values with their attributes
+     * @see de.laser.RefdataValue
      */
     static Collection<Object> getRefdataCollection(){
         CacheService cacheService = grails.util.Holders.applicationContext.getBean('cacheService') as CacheService

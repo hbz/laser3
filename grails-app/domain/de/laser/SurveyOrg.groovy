@@ -1,8 +1,13 @@
 package de.laser
 
-
 import de.laser.helper.RDStore
 
+/**
+ * This class represents a participation of an institution at a survey. As every object being surveyed has its own configuration,
+ * the participation is being attached to the configuration (-> {@link SurveyConfig}) and not the general information object (-> {@link SurveyOrg})!
+ * @see Org
+ * @see SurveyConfig
+ */
 class SurveyOrg {
 
     def deletionService
@@ -41,6 +46,13 @@ class SurveyOrg {
         deletionService.deleteDocumentFromIndex(this.getClass().getSimpleName().toLowerCase()+":"+this.id, this.class.simpleName)
     }
 
+    /**
+     * Checks if the participant has for a given subscription survey's subscription a multi-year term running; this is an essential criteria for renewal surveys
+     * @return true if the participant institution has subscribed perennially the subscription being focus of this survey, false otherwise
+     * @see Subscription
+     * @see SurveyConfig
+     * @see Org
+     */
     boolean existsMultiYearTerm() {
         boolean existsMultiYearTerm = false
         Subscription sub = surveyConfig.subscription
@@ -73,6 +85,7 @@ class SurveyOrg {
         return existsMultiYearTerm
     }
 
+    @Deprecated
     boolean hasOrgSubscription() {
         boolean hasOrgSubscription = false
         if (surveyConfig.subscription) {

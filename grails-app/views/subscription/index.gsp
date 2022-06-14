@@ -1,5 +1,5 @@
 <%@ page import="de.laser.titles.JournalInstance; de.laser.titles.BookInstance; de.laser.ApiSource; de.laser.helper.RDStore; de.laser.Subscription; de.laser.Package; de.laser.RefdataCategory; de.laser.helper.RDConstants" %>
-
+<laser:serviceInjection/>
 <%-- r:require module="annotations" --%>
 
 <!doctype html>
@@ -24,6 +24,9 @@
         class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${message(code: 'subscription.details.snapshot', args: [params.asAt])}</h1></g:if>
 
 <h1 class="ui icon header la-noMargin-top"><semui:headerIcon/>
+<g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
+    <g:render template="iconSubscriptionIsChild"/>
+</g:if>
 <semui:xEditable owner="${subscription}" field="name"/>
 </h1>
 <semui:anualRings object="${subscription}" controller="subscription" action="index"
@@ -159,11 +162,11 @@
     </g:if>
 
     <g:if test="${subscription.ieGroups.size() > 0}">
-        <div class="ui top attached tabular menu">
+        <div class="ui top attached stackable tabular menu">
             <g:link controller="subscription" action="index" id="${subscription.id}"
                     class="item ${params.titleGroup ? '' : 'active'}">
                 Alle
-                <span class="ui circular label">
+                <span class="ui blue circular label">
                     ${num_ies_rows}
                 </span>
             </g:link>
@@ -173,7 +176,7 @@
                         params="[titleGroup: titleGroup.id]"
                         class="item ${(params.titleGroup == titleGroup.id.toString()) ? 'active' : ''}">
                     ${titleGroup.name}
-                    <span class="ui circular label">
+                    <span class="ui blue circular label">
                         ${titleGroup.items.size()}
                     </span>
                 </g:link>
@@ -200,12 +203,12 @@
 
             <g:form action="subscriptionBatchUpdate" params="${[id: subscription.id]}" class="ui form">
                 <g:set var="counter" value="${offset + 1}"/>
-                <g:hiddenField name="sort" value="${params.sort}"/>
-                <g:hiddenField name="order" value="${params.order}"/>
-                <g:hiddenField name="offset" value="${params.offset}"/>
-                <g:hiddenField name="max" value="${params.max}"/>
+                <g:hiddenField name="sub" value="${subscription.id}"/>
+                <g:each in="${considerInBatch}" var="key">
+                    <g:hiddenField name="${key}" value="${params[key]}"/>
+                </g:each>
 
-                <table class="ui sortable celled la-table table la-ignore-fixed la-bulk-header">
+                <table class="ui sortable celled la-js-responsive-table la-table table la-ignore-fixed la-bulk-header">
                     <thead>
                     <tr>
                         <th></th>
@@ -261,11 +264,11 @@
                                     <div class="default text">${message(code: 'default.select.choose.label')}</div>
 
                                     <div class="menu">
-                                        <div class="item"
-                                             data-value="edit">${message(code: 'default.edit.label', args: [selected_label])}</div>
-
-                                        <div class="item"
-                                             data-value="remove">${message(code: 'default.remove.label', args: [selected_label])}</div>
+                                        <div class="item" data-value="edit">${message(code: 'default.edit.label', args: [selected_label])}</div>
+                                        <div class="item" data-value="remove">${message(code: 'default.remove.label', args: [selected_label])}</div>
+                                        <g:if test="${institution.getCustomerType() == 'ORG_CONSORTIUM'}">
+                                            <div class="item" data-value="removeWithChildren">${message(code: 'subscription.details.remove.withChildren.label')}</div>
+                                        </g:if>
                                     </div>
                                 </div>
                                 <!--
@@ -309,7 +312,7 @@
                             </th>
                             <g:if test="${subscription.ieGroups.size() > 0}">
                                 <th class="two wide">
-                                    <select class="ui dropdown" name="titleGroup" id="titleGroup">
+                                    <select class="ui dropdown" name="titleGroupInsert" id="titleGroupInsert">
                                         <option value="">${message(code: 'default.select.choose.label')}</option>
                                         <g:each in="${subscription.ieGroups.sort { it.name }}" var="titleGroup">
                                             <option value="${titleGroup.id}">${titleGroup.name}</option>
@@ -438,8 +441,8 @@
                                                 <div class="right aligned wide column">
                                                     <g:link action="editEntitlementGroupItem"
                                                             params="${[cmd: 'edit', ie: ie.id, id: subscription.id]}"
-                                                            class="ui icon button trigger-modal"
-                                                            data-tooltip="${message(code: 'subscription.details.ieGroups.edit')}">
+                                                            class="ui icon button trigger-modal la-popup-tooltip la-delay"
+                                                            data-content="${message(code: 'subscription.details.ieGroups.edit')}">
                                                         <i class="object group icon"></i>
                                                     </g:link>
                                                 </div>
@@ -498,6 +501,8 @@
 <div id="magicArea">
 </div>
 
+<g:render template="export/individuallyExportIEsModal" model="[modalID: 'individuallyExportIEsModal']" />
+
 <semui:modal id="showPackagesModal" message="subscription.packages.label" hideSubmitButton="true">
     <div class="ui ordered list">
         <g:each in="${subscription.packages.sort { it.pkg.name.toLowerCase() }}" var="subPkg">
@@ -530,7 +535,7 @@
         }
 
         JSPC.app.confirmSubmit = function () {
-          if ( $('#bulkOperationSelect').val() === 'remove' ) {
+          if ( $.inArray($('#bulkOperationSelect').val(), ['remove', 'removeWithChildren']) > -1 ) {
             var agree=confirm('${message(code: 'default.continue.confirm')}');
           if (agree)
             return true ;

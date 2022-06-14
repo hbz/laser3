@@ -13,6 +13,11 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat
 
+/**
+ * This controller is responsible for the subscription handling. Many of the controller calls do
+ * also data manipulation; they thus needed to be wrapped in a transactional service for that database
+ * actions are being persisted
+ */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class SubscriptionController {
 
@@ -33,6 +38,10 @@ class SubscriptionController {
 
     //-------------------------------------- general or ungroupable section -------------------------------------------
 
+    /**
+     * Call to show the details of the given subscription
+     * @return the subscription details view
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def show() {
@@ -46,6 +55,10 @@ class SubscriptionController {
         else ctrlResult.result
     }
 
+    /**
+     * Call to list the tasks related to this subscription
+     * @return the task listing for this subscription
+     */
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", ctrlService = 2)
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER") })
     def tasks() {
@@ -65,6 +78,10 @@ class SubscriptionController {
             }
     }
 
+    /**
+     * Call to list the inheritance course for the given subscription
+     * @return a list of audit log events related to this subscription
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def history() {
@@ -78,6 +95,7 @@ class SubscriptionController {
         else ctrlResult.result
     }
 
+    @Deprecated
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def changes() {
@@ -91,6 +109,10 @@ class SubscriptionController {
         else ctrlResult.result
     }
 
+    /**
+     * Call to fetch the usage data for the given subscription
+     * @return the (filtered) usage data view for the given subscription, rendered as HTML or as Excel worksheet
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def stats() {
@@ -132,6 +154,7 @@ class SubscriptionController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
     })*/
+    @Deprecated
     @Secured(['ROLE_ADMIN'])
     def compare() {
         Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
@@ -139,6 +162,10 @@ class SubscriptionController {
         result
     }
 
+    /**
+     * Call to unlink the given subscription from the given license
+     * @return a redirect back to the referer
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def unlinkLicense() {
@@ -155,6 +182,10 @@ class SubscriptionController {
 
     //--------------------------------------------- new subscription creation -----------------------------------------------------------
 
+    /**
+     * Call to create a new subscription
+     * @return the empty subscription form or the list of subscriptions in case of an error
+     */
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", ctrlService = 2)
     @Secured(closure = {ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR")})
     def emptySubscription() {
@@ -168,6 +199,10 @@ class SubscriptionController {
             ctrlResult.result
     }
 
+    /**
+     * Call to process the given input and to create a new subscription instance
+     * @return the new subscription's details view in case of success, the subscription list view otherwise
+     */
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", ctrlService = 2)
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR") })
     def processEmptySubscription() {
@@ -182,6 +217,10 @@ class SubscriptionController {
         }
     }
 
+    /**
+     * Call to delete the given subscription instance. If confirmed, the deletion is executed
+     * @return the result of {@link DeletionService#deleteSubscription(de.laser.Subscription, boolean)}
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def delete() {
@@ -206,6 +245,10 @@ class SubscriptionController {
 
     //--------------------------------------------- document section ----------------------------------------------
 
+    /**
+     * Call to list the notes attached to the given subscription
+     * @return the table view of notes for the given subscription
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def notes() {
@@ -217,6 +260,10 @@ class SubscriptionController {
         else ctrlResult.result
     }
 
+    /**
+     * Call to list the documents attached to the given subscription
+     * @return the table view of documents for the given subscription
+     */
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
@@ -230,6 +277,10 @@ class SubscriptionController {
         else ctrlResult.result
     }
 
+    /**
+     * Call to edit the metadata of the given document
+     * @return opens the document editing modal
+     */
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def editDocument() {
@@ -244,6 +295,10 @@ class SubscriptionController {
         render template: "/templates/documents/modal", model: result
     }
 
+    /**
+     * Call to delete the given document attached to a subscription
+     * @return a redirect, specified in the request parameters
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def deleteDocuments() {
@@ -253,6 +308,11 @@ class SubscriptionController {
 
     //--------------------------------- consortia members section ----------------------------------------------
 
+    /**
+     * Call to list the members of the given consortial subscription. The list may be rendered as direct HTML output
+     * or exported as (configurable) Excel worksheet
+     * @return a (filtered) view of the consortium members, either as HTML output or as Excel worksheet
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def members() {
@@ -322,6 +382,10 @@ class SubscriptionController {
         }
     }
 
+    /**
+     * Call to list potential member institutions to add to this subscription
+     * @return a list view of member institutions
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def addMembers() {
@@ -337,6 +401,10 @@ class SubscriptionController {
         }
     }
 
+    /**
+     * Call to process the given input data and create member subscription instances for the given consortial subscription
+     * @return a redirect to the subscription members view in case of success or details view or to the member adding form otherwise
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def processAddMembers() {
@@ -356,6 +424,10 @@ class SubscriptionController {
         }
     }
 
+    /**
+     * Call to insert a succession link between two member subscriptions
+     * @return the members view
+     */
     @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
@@ -374,14 +446,18 @@ class SubscriptionController {
         }
     }
 
-
+    /**
+     * Call to a bulk operation view on member instances
+     * @return the requested tab view
+     */
     @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
     })
     def membersSubscriptionsManagement() {
         def input_file
-        if(params.tab == 'documents' && params.upload_file) {
+
+        if(params.tab == 'documents' && params.processOption == 'newDoc') {
             input_file = request.getFile("upload_file")
             if (input_file.size == 0) {
                 flash.error = message(code: 'template.emptyDocument.file')
@@ -405,11 +481,14 @@ class SubscriptionController {
             if(ctrlResult.result.tabPlat && !params.tabPlat)
                 params.tabPlat = ctrlResult.result.tabPlat.toString()
 
-            ctrlResult.result
         }
+        ctrlResult.result
     }
 
-
+    /**
+     * Call to unset the given customer identifier
+     * @return the customer identifier tabs view
+     */
     @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
@@ -421,6 +500,10 @@ class SubscriptionController {
 
     //-------------------------------- survey section --------------------------------------
 
+    /**
+     * Call to list surveys linked to a member subscription
+     * @return a table view of surveys from the member's point of view
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def surveys() {
@@ -432,6 +515,10 @@ class SubscriptionController {
         else ctrlResult.result
     }
 
+    /**
+     * Call to list surveys linked to a consortial subscription
+     * @return a table view of surveys from the consortium's point of view
+     */
     @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_USER", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER")
@@ -447,6 +534,11 @@ class SubscriptionController {
 
     //------------------------------------- packages section -------------------------------------------
 
+    /**
+     * Call to list the potential package candidates for linking
+     * @return a list view of the packages in the we:kb ElasticSearch index or a redirect to an title list view
+     * if a package UUID has been submitted with the call
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def linkPackage() {
@@ -481,6 +573,10 @@ class SubscriptionController {
         }
     }
 
+    /**
+     * Call to process the submitted input and to link the given package to the given package(s)
+     * @return a redirect, either to the title selection view or to the issue entitlement holding view
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def processLinkPackage() {
@@ -508,6 +604,10 @@ class SubscriptionController {
         redirect(url: request.getHeader("referer"))
     }
 
+    /**
+     * Call to unlink the given package from the given subscription
+     * @return the list of conflicts, if no confirm has been submitted; the redirect to the subscription details page if confirm has been sent
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def unlinkPackage() {
@@ -536,6 +636,11 @@ class SubscriptionController {
 
     //-------------------------------- issue entitlements holding --------------------------------------
 
+    /**
+     * Call to list the current title holding of the subscription. The list may be displayed as HTML table
+     * or be exported as KBART or Excel worksheet
+     * @return a list of the current subscription stock; either as HTML output or as KBART / Excel table
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def index() {
@@ -556,7 +661,11 @@ class SubscriptionController {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
                 response.contentType = "text/tab-separated-values"
                 ServletOutputStream out = response.outputStream
-                Map<String, List> tableData = exportService.generateTitleExportKBART(ctrlResult.result.entitlementIDs,IssueEntitlement.class.name)
+                Map<String, Object> configMap = [:]
+                configMap.putAll(params)
+                configMap.sub = ctrlResult.result.subscription
+                configMap.pkgIds = ctrlResult.result.subscription.packages?.pkg?.id //GORM sometimes does not initialise the sorted set
+                Map<String, List> tableData = exportService.generateTitleExportKBART(configMap, IssueEntitlement.class.name)
                 out.withWriter { writer ->
                     writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
                 }
@@ -566,7 +675,11 @@ class SubscriptionController {
             else if(params.exportXLSX) {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                Map<String,List> export = exportService.generateTitleExportXLS(ctrlResult.result.entitlementIDs,IssueEntitlement.class.name)
+                Map<String, Object> configMap = [:]
+                configMap.putAll(params)
+                configMap.sub = ctrlResult.result.subscription
+                configMap.pkgIds = ctrlResult.result.subscription.packages?.pkg?.id //GORM sometimes does not initialise the sorted set
+                Map<String,List> export = exportService.generateTitleExportCustom(configMap, IssueEntitlement.class.name) //subscription given, all packages
                 Map sheetData = [:]
                 sheetData[message(code:'menu.my.titles')] = [titleRow:export.titles,columnData:export.rows]
                 SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
@@ -574,6 +687,24 @@ class SubscriptionController {
                 response.outputStream.flush()
                 response.outputStream.close()
                 workbook.dispose()
+            }
+            else if(params.exportClickMeExcel) {
+                if (params.filename) {
+                    filename =params.filename
+                }
+
+                ArrayList<IssueEntitlement> issueEntitlements = ctrlResult.result.entitlementIDs ? IssueEntitlement.findAllByIdInList(ctrlResult.result.entitlementIDs,[sort:'tipp.sortname']) : [:]
+
+                Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+                Map<String, Object> selectedFields = [:]
+                selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+                SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportIssueEntitlements(issueEntitlements, selectedFields)
+                response.setHeader "Content-disposition", "attachment; filename=${filename}.xlsx"
+                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                wb.write(response.outputStream)
+                response.outputStream.flush()
+                response.outputStream.close()
+                wb.dispose()
             }
             else {
                 withFormat {
@@ -596,6 +727,10 @@ class SubscriptionController {
         }
     }
 
+    /**
+     * Call to load the applied or pending changes to the given subscription
+     * @return the called tab with the changes of the given event type
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def entitlementChanges() {
@@ -611,6 +746,12 @@ class SubscriptionController {
         }
     }
 
+    /**
+     * Call to list those titles of the package which have not been added to the subscription yet. The view
+     * may be exportes as KBART or Excel worksheet as well. The view contains also enrichment functionalities
+     * such as preselection of titles based on identifiers or adding locally negotiated prices or coverage statements
+     * @return the list view of entitlements, either as HTML table or KBART / Excel worksheet export
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def addEntitlements() {
@@ -623,11 +764,15 @@ class SubscriptionController {
         }
         else {
             String filename = "${escapeService.escapeString(ctrlResult.result.subscription.dropdownNamingConvention())}_${DateUtils.SDF_NoTimeNoPoint.format(new Date())}"
+            Map<String, Object> configMap = [:]
+            configMap.putAll(params)
+            configMap.remove("subscription")
+            configMap.pkgIds = ctrlResult.result.subscription.packages?.pkg?.id //GORM sometimes does not initialise the sorted set
             if(params.exportKBart) {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
                 response.contentType = "text/tsv"
                 ServletOutputStream out = response.outputStream
-                Map<String,List> tableData = exportService.generateTitleExportKBART(ctrlResult.result.tipps,TitleInstancePackagePlatform.class.name)
+                Map<String,List> tableData = exportService.generateTitleExportKBART(configMap, TitleInstancePackagePlatform.class.name)
                 out.withWriter { writer ->
                     writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.columnData,'\t'))
                 }
@@ -637,7 +782,7 @@ class SubscriptionController {
             else if(params.exportXLSX) {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                Map<String,List> export = exportService.generateTitleExportXLS(ctrlResult.result.tipps,TitleInstancePackagePlatform.class.name)
+                Map<String,List> export = exportService.generateTitleExportCustom(configMap, TitleInstancePackagePlatform.class.name) //subscription given
                 Map sheetData = [:]
                 sheetData[message(code:'menu.my.titles')] = [titleRow:export.titles,columnData:export.rows]
                 SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
@@ -645,6 +790,23 @@ class SubscriptionController {
                 response.outputStream.flush()
                 response.outputStream.close()
                 workbook.dispose()
+            }else if(params.exportClickMeExcel) {
+                if (params.filename) {
+                    filename =params.filename
+                }
+
+                ArrayList<IssueEntitlement> tipps = ctrlResult.result.tipps ? TitleInstancePackagePlatform.findAllByIdInList(ctrlResult.result.tipps,[sort:'tipp.sortname']) : [:]
+
+                Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+                Map<String, Object> selectedFields = [:]
+                selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+                SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportTipps(tipps, selectedFields)
+                response.setHeader "Content-disposition", "attachment; filename=${filename}.xlsx"
+                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                wb.write(response.outputStream)
+                response.outputStream.flush()
+                response.outputStream.close()
+                wb.dispose()
             }
             withFormat {
                 html {
@@ -667,6 +829,10 @@ class SubscriptionController {
         }
     }
 
+    /**
+     * Call to remove the given issue entitlement from the subscription's holding
+     * @return the issue entitlement holding view
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def removeEntitlement() {
@@ -680,6 +846,10 @@ class SubscriptionController {
         redirect action: 'index', id: params.sub
     }
 
+    /**
+     * Call to remove an issue entitlement along with his title group record
+     * @return the issue entitlement holding view
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def removeEntitlementWithIEGroups() {
@@ -693,6 +863,10 @@ class SubscriptionController {
         redirect action: 'index', id: params.sub
     }
 
+    /**
+     * Call to persist the cached data and create the issue entitlement holding based on that data
+     * @return the issue entitlement holding view
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def processAddEntitlements() {
@@ -711,6 +885,10 @@ class SubscriptionController {
         redirect action: 'index', id: ctrlResult.result.subscription.id
     }
 
+    /**
+     * Call to delete the given entitlement record from the given renewal
+     * @return the entitlement renewal view
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def processRemoveEntitlements() {
@@ -721,9 +899,14 @@ class SubscriptionController {
         }
         if(subscriptionService.deleteEntitlement(result.subscription,params.singleTitle))
             log.debug("Deleted tipp ${params.singleTitle} from sub ${result.subscription.id}")
-        redirect action: 'renewEntitlements', model: [targetObjectId: result.subscription.id, packageId: params.packageId]
+        redirect action: 'index', id: result.subscription.id
     }
 
+    /**
+     * Call to pick the given title to the following year's holding. Technically, it adds the title to the
+     * subscription's holding, but it is not fixed as the holding is under negotiation
+     * @return a redirect to the referer
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def processAddIssueEntitlementsSurvey() {
@@ -775,6 +958,10 @@ class SubscriptionController {
 
     }
 
+    /**
+     * Call to remove the given title from the picked titles
+     * @return a redirect to the referer
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def processRemoveIssueEntitlementsSurvey() {
@@ -786,6 +973,10 @@ class SubscriptionController {
         redirect(url: request.getHeader("referer"))
     }
 
+    /**
+     * Call to trigger the revertion of holding status to the end of the subscription's year ring
+     * @return a redirect to the referer
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR")})
     def resetHoldingToSubEnd() {
@@ -795,6 +986,10 @@ class SubscriptionController {
         redirect(url: request.getHeader("referer"))
     }
 
+    /**
+     * Call for a batch update on the given subscription's holding
+     * @return the issue entitlement holding view
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def subscriptionBatchUpdate() {
@@ -806,16 +1001,20 @@ class SubscriptionController {
             }
             else {
                 flash.error = message(code:'default.save.error.general.message')
-                redirect action: 'index', params: [id: ctrlResult.result.subscription.id, sort: params.sort, order: params.order, offset: params.offset, max: params.max]
+                redirect action: 'index', params: [id: ctrlResult.result.subscription.id, sort: params.sort, order: params.order, offset: params.offset, max: params.max, status: params.status]
                 return
             }
         }
         else {
-            redirect action: 'index', params: [id: ctrlResult.result.subscription.id, sort: params.sort, order: params.order, offset: params.offset, max: params.max]
+            redirect action: 'index', params: [id: ctrlResult.result.subscription.id, sort: params.sort, order: params.order, offset: params.offset, max: params.max, status: params.status]
             return
         }
     }
 
+    /**
+     * Call to add a new price item to the issue entitlement
+     * @return the issue entitlement holding view
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def addEmptyPriceItem() {
@@ -826,6 +1025,10 @@ class SubscriptionController {
         redirect action: 'index', id: params.id
     }
 
+    /**
+     * Call to remove a price item from the issue entitlement
+     * @return the issue entitlement holding view
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def removePriceItem() {
@@ -841,6 +1044,10 @@ class SubscriptionController {
         redirect action: 'index', id: params.id
     }
 
+    /**
+     * Call to add a new coverage statement to the issue entitlement
+     * @return the issue entitlement holding view
+     */
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def addCoverage() {
@@ -851,6 +1058,10 @@ class SubscriptionController {
             redirect action: 'index', id: params.id, params: params
     }
 
+    /**
+     * Call to remove a coverage statement from the issue entitlement
+     * @return the issue entitlement holding view
+     */
     @DebugAnnotation(test='hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def removeCoverage() {
@@ -866,6 +1077,10 @@ class SubscriptionController {
         redirect action: 'index', id: params.id, params: params
     }
 
+    /**
+     * Call to list the current title groups of the subscription
+     * @return the list of title groups for the given subscription
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def manageEntitlementGroup() {
@@ -874,6 +1089,10 @@ class SubscriptionController {
         result
     }
 
+    /**
+     * Call to edit the given title group
+     * @return either the edit view or the index view, when form data has been submitted
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def editEntitlementGroupItem() {
@@ -893,6 +1112,10 @@ class SubscriptionController {
         }
     }
 
+    /**
+     * Call to create the given title group for the given subscription
+     * @return the title group view for the given subscription
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def processCreateEntitlementGroup() {
@@ -903,6 +1126,10 @@ class SubscriptionController {
         redirect action: 'manageEntitlementGroup', id: params.id
     }
 
+    /**
+     * Call to remove the given title group from the given subscription
+     * @return the title group view for the given subscription
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def removeEntitlementGroup() {
@@ -928,6 +1155,7 @@ class SubscriptionController {
         result
     }
 
+    @Deprecated
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def processRenewEntitlements() {
@@ -967,7 +1195,7 @@ class SubscriptionController {
             response.setHeader("Content-disposition", "attachment; filename=${result.filename}.tsv")
             response.contentType = "text/tsv"
             ServletOutputStream out = response.outputStream
-            Map<String, List> tableData = exportService.generateTitleExportKBART(result.ieIDs,IssueEntitlement.class.name)
+            Map<String, List> tableData = exportService.generateTitleExportKBART([sub: result.newSub, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: result.newSub.packages?.pkg?.id], IssueEntitlement.class.name)
             out.withWriter { Writer writer ->
                 writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
             }
@@ -977,7 +1205,7 @@ class SubscriptionController {
         else if(params.exportXLS) {
             response.setHeader("Content-disposition", "attachment; filename=${result.filename}.xlsx")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            Map<String,List> export = exportService.generateTitleExportXLS(result.ieIDs,IssueEntitlement.class.name)
+            Map<String,List> export = exportService.generateTitleExportCustom([sub: result.newSub, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: result.newSub.packages?.pkg?.id],IssueEntitlement.class.name)
             Map sheetData = [:]
             sheetData[g.message(code:'subscription.details.renewEntitlements.label')] = [titleRow:export.titles,columnData:export.rows]
             SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
@@ -995,6 +1223,10 @@ class SubscriptionController {
         }
     }
 
+    /**
+     * Call to load the selection list for the title renewal. The list may be exported as a (configurable) Excel table with usage data for each title
+     * @return the title list for selection; either as HTML table or as Excel export, configured with the given parameters
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_USER")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def renewEntitlementsWithSurvey() {
@@ -1023,7 +1255,8 @@ class SubscriptionController {
             List<Long> exportIEIDs
             String filename
             if(params.tab == 'allIEs') {
-                exportIEIDs = subscriptionService.getIssueEntitlementIDsFixed(ctrlResult.result.subscription)
+                if(!params.exportXLS && !params.exportForImport)
+                    exportIEIDs = subscriptionService.getIssueEntitlementIDsFixed(ctrlResult.result.subscription)
                 filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.selectableTitles') + '_' + ctrlResult.result.newSub.dropdownNamingConvention())
             }
             if(params.tab == 'selectedIEs') {
@@ -1036,11 +1269,23 @@ class SubscriptionController {
                 filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.currentEntitlements') + '_' + ctrlResult.result.previousSubscription.dropdownNamingConvention())
             }
 
+            List<Long> toBeSelectedTippIDs = []
+            if(params.tab == 'toBeSelectedIEs') {
+                List<Long> allTippIDs = IssueEntitlement.executeQuery("select ie.tipp.id from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus", [sub: ctrlResult.result.subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
+
+                List<Long> selectedTippIDs =  IssueEntitlement.executeQuery("select ie.tipp.id from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus ", [sub: ctrlResult.result.newSub, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
+                toBeSelectedTippIDs.addAll(allTippIDs - selectedTippIDs)
+                exportIEIDs = IssueEntitlement.executeQuery("select ie.id from IssueEntitlement as ie where ie.tipp.id in (:tippIds) and ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus",
+                        [sub: ctrlResult.result.subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT, tippIds: toBeSelectedTippIDs])
+
+                filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.toBeSelectedIEs') + '_' + ctrlResult.result.newSub.dropdownNamingConvention())
+            }
+
             if (params.exportKBart) {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
                 response.contentType = "text/tsv"
                 ServletOutputStream out = response.outputStream
-                Map<String, List> tableData = exportService.generateTitleExportKBART(exportIEIDs, IssueEntitlement.class.name)
+                Map<String, List> tableData = exportService.generateTitleExportKBART([sub: ctrlResult.result.subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT, tippIds: toBeSelectedTippIDs, pkgIds: ctrlResult.result.subscription.packages?.pkg?.id], IssueEntitlement.class.name)
                 out.withWriter { Writer writer ->
                     writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
                 }
@@ -1052,12 +1297,12 @@ class SubscriptionController {
                 List monthsInRing = []
                 if(ctrlResult.result.showStatisticByParticipant) {
                     Calendar startTime = GregorianCalendar.getInstance(), endTime = GregorianCalendar.getInstance()
-                    if (ctrlResult.result.subscription.startDate && ctrlResult.result.subscription.endDate) {
-                        startTime.setTime(ctrlResult.result.subscription.startDate)
-                        if (ctrlResult.result.subscription.endDate < new Date())
-                            endTime.setTime(ctrlResult.result.subscription.endDate)
-                    } else if (ctrlResult.result.subscription.startDate) {
-                        startTime.setTime(ctrlResult.result.subscription.startDate)
+                    if (ctrlResult.result.newSub.startDate && ctrlResult.result.newSub.endDate) {
+                        startTime.setTime(ctrlResult.result.newSub.startDate)
+                        if (ctrlResult.result.newSub.endDate < new Date())
+                            endTime.setTime(ctrlResult.result.newSub.endDate)
+                    } else if (ctrlResult.result.newSub.startDate) {
+                        startTime.setTime(ctrlResult.result.newSub.startDate)
                         endTime.setTime(new Date())
                     }
                     while (startTime.before(endTime)) {
@@ -1070,7 +1315,7 @@ class SubscriptionController {
 
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                Map<String, List> export = exportService.generateTitleExportXLS(exportIEIDs, IssueEntitlement.class.name, monthsInRing.sort { Date monthA, Date monthB -> monthA <=> monthB }, ctrlResult.result.subscriber, perpetuallyPurchasedTitleURLs)
+                Map<String, List> export = exportService.generateTitleExportCustom([sub: ctrlResult.result.subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT, tippIds: toBeSelectedTippIDs, pkgIds: ctrlResult.result.subscription.packages?.pkg?.id], IssueEntitlement.class.name, monthsInRing.sort { Date monthA, Date monthB -> monthA <=> monthB }, ctrlResult.result.subscriber, perpetuallyPurchasedTitleURLs)
                 export.titles << "Pick"
 
                 Map sheetData = [:]
@@ -1082,9 +1327,11 @@ class SubscriptionController {
                 wb.dispose()
             }
             else if (params.exportXLS) {
+                List<String> perpetuallyPurchasedTitleURLs = TitleInstancePackagePlatform.executeQuery('select tipp.hostPlatformURL from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (select oo.sub from OrgRole oo where oo.org = :org and oo.roleType in (:roleTypes)) and ie.acceptStatus = :acceptStatus and tipp.status = :tippStatus and ie.status = :tippStatus and ie.perpetualAccessBySub is not null',
+                        [org: ctrlResult.result.subscriber, acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED, tippStatus: RDStore.TIPP_STATUS_CURRENT, roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS]])
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.xlsx")
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                Map<String, List> export = exportService.generateTitleExportXLS(exportIEIDs, IssueEntitlement.class.name)
+                Map<String, List> export = exportService.generateTitleExportCustom([sub: ctrlResult.result.subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT, tippIds: toBeSelectedTippIDs, pkgIds: ctrlResult.result.subscription.packages?.pkg?.id], IssueEntitlement.class.name, [], null, perpetuallyPurchasedTitleURLs)
                 Map sheetData = [:]
                 sheetData[g.message(code: 'renewEntitlementsWithSurvey.selectableTitles')] = [titleRow: export.titles, columnData: export.rows]
                 wb = exportService.generateXLSXWorkbook(sheetData)
@@ -1112,6 +1359,10 @@ class SubscriptionController {
         }
     }
 
+    /**
+     * Call to process the title selection with the given input parameters
+     * @return a redirect to the referer
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def processRenewEntitlementsWithSurvey() {
@@ -1129,6 +1380,10 @@ class SubscriptionController {
         redirect(url: request.getHeader("referer"))
     }
 
+    /**
+     * Takes the given configuration map and updates the pending change behavior for the given subscription package
+     * @return the (updated) subscription details view
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")', ctrlService = 2)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def setupPendingChangeConfiguration() {
@@ -1204,6 +1459,10 @@ class SubscriptionController {
 
     //--------------------------------------------- renewal section ---------------------------------------------
 
+    /**
+     * Call for manual renewal of a given subscription, i.e. without performing a renewal survey before
+     * @return the starting page of the subscription renewal process
+     */
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
@@ -1228,6 +1487,11 @@ class SubscriptionController {
         result
     }
 
+    /**
+     * Takes the given base data, creates the successor subscription instance and initialises elements
+     * copying process
+     * @return the first page of the element copy processing
+     */
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
@@ -1243,6 +1507,7 @@ class SubscriptionController {
                 flash.error = ctrlResult.result.error
                 if(ctrlResult.result.newSub)
                     ctrlResult.result.newSub
+                redirect action: 'renewSubscription', params: [id: ctrlResult.result.subscription.id]
             }
         }
         else {
@@ -1255,6 +1520,10 @@ class SubscriptionController {
 
     //------------------------------------------------ copy section ---------------------------------------------
 
+    /**
+     * Call to load the given section of subscription copying procedure
+     * @return the view with the given copy parameters, depending on the tab queried
+     */
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
@@ -1284,6 +1553,16 @@ class SubscriptionController {
                     break
                 case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
                     ctrlResult.result << copyElementsService.copyObjectElements_DocsAnnouncementsTasks(params)
+                    if (ctrlResult.result.isConsortialObjects && accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER")){
+                        params.workFlowPart = CopyElementsService.WORKFLOW_SUBSCRIBER
+                        ctrlResult.result << copyElementsService.loadDataFor_Subscriber(params)
+                    } else {
+                        params.workFlowPart = CopyElementsService.WORKFLOW_PROPERTIES
+                        ctrlResult.result << copyElementsService.loadDataFor_Properties(params)
+                    }
+                    break
+                case CopyElementsService.WORKFLOW_SUBSCRIBER:
+                    ctrlResult.result << copyElementsService.copyObjectElements_Subscriber(params)
                     params.workFlowPart = CopyElementsService.WORKFLOW_PROPERTIES
                     ctrlResult.result << copyElementsService.loadDataFor_Properties(params)
                     break
@@ -1303,6 +1582,11 @@ class SubscriptionController {
         }
     }
 
+    /**
+     * Call to load data for the given step (by browsing in the copySubscription() tabs or by submitting values and eventually
+     * turning to the next page); if data has been submitted, it will be processed
+     * @return the copy parameters for the given (or its following) procedure section
+     */
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
@@ -1397,6 +1681,10 @@ class SubscriptionController {
         }
     }
 
+    /**
+     * Call for a single user to copy private properties from a consortial member subscription into its successor instance
+     * @return the reduced subscription element copy view
+     */
     @DebugAnnotation(perm = "ORG_INST", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_INST", "INST_EDITOR", "ROLE_ADMIN")
@@ -1443,6 +1731,10 @@ class SubscriptionController {
 
     //----------------------------------------- subscription import section -----------------------------------------
 
+    /**
+     * Processes the given subscription candidates and creates subscription instances based on the submitted data
+     * @return the subscription list view in case of success, the import starting page otherwise
+     */
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_EDITOR", specRole="ROLE_ADMIN", ctrlService = 2)
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
@@ -1465,6 +1757,7 @@ class SubscriptionController {
 
     @DebugAnnotation(ctrlService = 2)
     @Secured(['ROLE_ADMIN'])
+    @Deprecated
     def pendingChanges() {
         Map<String,Object> ctrlResult = subscriptionControllerService.pendingChanges(this, params)
         if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
@@ -1479,6 +1772,10 @@ class SubscriptionController {
 
     //--------------------------------------------- reporting -------------------------------------------------
 
+    /**
+     * Call for the reporting view for the given subscription
+     * @return the reporting index for the subscription
+     */
     @DebugAnnotation(perm="ORG_CONSORTIUM,ORG_INST", affil="INST_USER")
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM,ORG_INST", "INST_USER") })
     def reporting() {
@@ -1498,6 +1795,10 @@ class SubscriptionController {
 
     //--------------------------------------------- workflows -------------------------------------------------
 
+    /**
+     * Call for the workflows related to this subscription
+     * @return the workflow landing page for the given subscription
+     */
     @DebugAnnotation(perm="ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER") })
     def workflows() {

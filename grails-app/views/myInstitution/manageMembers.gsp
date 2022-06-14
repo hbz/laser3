@@ -78,7 +78,7 @@
     </semui:filter>
 <div class="la-clear-before">
     <g:if test="${members}">
-        <g:render template="export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal']" />
+        <g:render template="export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal', orgType: 'institution']" />
         <g:form action="manageMembers" controller="myInstitution" method="post" class="ui form la-clear-before">
             <g:render template="/templates/filter/orgFilterTable"
                       model="[orgList: members,

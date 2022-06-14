@@ -14,6 +14,10 @@ import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
 
+/**
+ * This service is a centralised container for dropdown list filling queries.
+ * It is used by views and AJAX queries where dropdown entries may be filtered
+ */
 @Transactional
 class ControlledListService {
 
@@ -24,7 +28,7 @@ class ControlledListService {
 
     /**
      * Retrieves a list of providers and agencies
-     * @param params - eventual request params
+     * @param params eventual request params
      * @return a map containing a sorted list of providers, an empty one if no providers match the filter
      */
     Map getProvidersAgencies(Map params) {
@@ -68,8 +72,8 @@ class ControlledListService {
 
     /**
      * Retrieves a list of organisations
-     * @param params - eventual request params
-     * @return a map containing a sorted list of organisations, an empty one if no orgainsations match the filter
+     * @param params eventual request params
+     * @return a map containing a sorted list of organisations, an empty one if no organisations match the filter
      */
     Map getOrgs(Map params) {
         LinkedHashMap result = [results:[]]
@@ -88,8 +92,8 @@ class ControlledListService {
     }
 
     /**
-     * Retrieves a list of subscriptions owned by the context organisation matching given parameters
-     * @param params - eventual request params
+     * Retrieves a list of subscriptions owned by the context institution matching given parameters
+     * @param params eventual request params
      * @return a map containing a sorted list of subscriptions, an empty one if no subscriptions match the filter
      */
     Map getSubscriptions(Map params) {
@@ -247,14 +251,14 @@ class ControlledListService {
     }
 
     /**
-     * Retrieves a list of issue entitlements owned by the context organisation matching given parameters
-     * @param params - eventual request params
+     * Retrieves a list of issue entitlements owned by the context institution matching given parameters
+     * @param params eventual request params
      * @return a map containing a list of issue entitlements, an empty one if no issue entitlements match the filter
      */
     Map getIssueEntitlements(Map params) {
         Org org = contextService.getOrg()
         LinkedHashMap issueEntitlements = [results:[]]
-        //build up set of subscriptions which are owned by the current organisation or instances of such - or filter for a given subscription
+        //build up set of subscriptions which are owned by the current institution or instances of such - or filter for a given subscription
         String filter = 'in (select distinct o.sub from OrgRole as o where o.org = :org and o.roleType in ( :orgRoles ) and o.sub.status = :current ) '
         LinkedHashMap filterParams = [org:org, orgRoles: [RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER,RDStore.OR_SUBSCRIBER_CONS], current:RDStore.SUBSCRIPTION_CURRENT]
         if(params.sub) {
@@ -278,7 +282,7 @@ class ControlledListService {
             filter += ' and genfunc_filter_matcher(ie.name,:query) = true '
             filterParams.put('query',params.query)
         }
-        List result = IssueEntitlement.executeQuery('select ie from IssueEntitlement as ie where ie.subscription '+filter+' order by ie.name asc, ie.subscription asc, ie.subscription.startDate asc, ie.subscription.endDate asc',filterParams)
+        List result = IssueEntitlement.executeQuery('select ie from IssueEntitlement as ie where ie.subscription '+filter+' and ie.status != :removed order by ie.name asc, ie.subscription asc, ie.subscription.startDate asc, ie.subscription.endDate asc',filterParams+[removed: RDStore.TIPP_STATUS_REMOVED])
         if(result.size() > 0) {
             result.each { res ->
                 Subscription s = (Subscription) res.subscription
@@ -290,14 +294,14 @@ class ControlledListService {
     }
 
     /**
-     * Retrieves a list of issue entitlement groups owned by the context organisation matching given parameters
-     * @param params - eventual request params
+     * Retrieves a list of issue entitlement groups owned by the context institution matching given parameters
+     * @param params eventual request params
      * @return a map containing a list of issue entitlement groups, an empty one if no issue entitlement group match the filter
      */
     Map getTitleGroups(Map params) {
         Org org = contextService.getOrg()
         LinkedHashMap issueEntitlementGroup = [results:[]]
-        //build up set of subscriptions which are owned by the current organisation or instances of such - or filter for a given subscription
+        //build up set of subscriptions which are owned by the current institution or instances of such - or filter for a given subscription
         String filter = 'in (select distinct o.sub from OrgRole as o where o.org = :org and o.roleType in ( :orgRoles ) and o.sub.status = :current ) '
         LinkedHashMap filterParams = [org:org, orgRoles: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS], current:RDStore.SUBSCRIPTION_CURRENT]
         if(params.sub) {
@@ -320,8 +324,8 @@ class ControlledListService {
     }
 
     /**
-     * Retrieves a list of licenses owned by the context organisation matching given parameters
-     * @param params - eventual request params
+     * Retrieves a list of licenses owned by the context institution matching given parameters
+     * @param params eventual request params
      * @return a map containing licenses, an empty one if no licenses match the filter
      */
     Map getLicenses(Map params) {
@@ -364,8 +368,8 @@ class ControlledListService {
     }
 
     /**
-     * Retrieves a list of issue entitlements owned by the context organisation matching given parameters
-     * @param params - eventual request params
+     * Retrieves a list of issue entitlements owned by the context institution matching given parameters
+     * @param params eventual request params
      * @return a map containing a sorted list of issue entitlements, an empty one if no issue entitlements match the filter
      */
     Map getSubscriptionPackages(Map params) {
@@ -398,6 +402,14 @@ class ControlledListService {
                 queryString += " and s.status = :status "
             }
         }
+        else if(filter.ctx) {
+            filter.status = filter.ctx.status
+            queryString += " and s.status = :status "
+        }
+        else if(filter.sub) {
+            filter.status = filter.sub.status
+            queryString += " and s.status = :status "
+        }
         else {
             filter.status = RDStore.SUBSCRIPTION_CURRENT
             queryString += " and s.status = :status "
@@ -412,6 +424,11 @@ class ControlledListService {
         result
     }
 
+    /**
+     * Retrieves a list of budget codes owned by the context institution matching given parameters
+     * @param params eventual request params
+     * @return a map containing a sorted list of budget codes, an empty one if no budget codes match the filter
+     */
     Map getBudgetCodes(Map params) {
         Map result = [results:[]]
         Org org = contextService.getOrg()
@@ -429,6 +446,11 @@ class ControlledListService {
         result
     }
 
+    /**
+     * Retrieves a list of invoice numbers owned by the context institution matching given parameters
+     * @param params eventual request params
+     * @return a map containing a sorted list of invoice numbers, an empty one if no invoice numbers match the filter
+     */
     Map getInvoiceNumbers(Map params) {
         Map result = [results:[]]
         Org org = contextService.getOrg()
@@ -446,6 +468,11 @@ class ControlledListService {
         result
     }
 
+    /**
+     * Retrieves a list of invoice numbers owned by the context institution matching given parameters
+     * @param params eventual request params
+     * @return a map containing a sorted list of invoice numbers, an empty one if no invoice numbers match the filter
+     */
     Map getOrderNumbers(Map params) {
         Map result = [results:[]]
         Org org = contextService.getOrg()
@@ -464,6 +491,11 @@ class ControlledListService {
         result
     }
 
+    /**
+     * Retrieves a list of references owned by the context institution matching given parameters
+     * @param params eventual request params
+     * @return a map containing a sorted list of references, an empty one if no references match the filter
+     */
     Map getReferences(Map params) {
         Map result = [results:[]]
         Org org = contextService.getOrg()
@@ -481,6 +513,13 @@ class ControlledListService {
         result
     }
 
+    /**
+     * Moved from {@link de.laser.ctrl.OrganisationControllerService#getResultGenericsAndCheckAccess(de.laser.OrganisationController, grails.web.servlet.mvc.GrailsParameterMap)}
+     * Retrieves a list of organisations, too, just like {@link #getOrgs(java.util.Map)} does, but used is the context institution, the list is moreover not
+     * filterable and retrieved are the instititutions linked by combo to the given institution or providers and agencies
+     * @return a map containing a sorted list of organisations, an empty one if no results are being obtained
+     * @see Combo
+     */
     List getOrgs() {
         Org org = contextService.getOrg()
         List<Map<String,Object>> result = []
@@ -495,6 +534,12 @@ class ControlledListService {
         result
     }
 
+    /**
+     * This unused method was developed for a generic document assignal. It retrieves the selected kinds of objects
+     * to which the context institution has reading access
+     * @param params eventual request params
+     * @return a map containing a sorted list of objects, sorted by their name; an empty list if no objects match the filter
+     */
     Map getElements(Map params) {
         Map result = [results:[]]
         Org org = contextService.getOrg()
@@ -552,11 +597,21 @@ class ControlledListService {
         result
     }
 
-
+    /**
+     * Retrieves all possible title types
+     * @return a list of title types
+     */
     List getAllPossibleTitleTypes() {
         return TitleInstancePackagePlatform.executeQuery('select distinct(tipp.titleType) from TitleInstancePackagePlatform tipp where tipp.titleType is not null')
     }
 
+    /**
+     * Called from title filter views
+     * Retrieves all possible title types for the given package and the given title status
+     * @param pkg the package whose titles should be inspected
+     * @param forTitles the title status considered
+     * @return a set of possible title types
+     */
     Set<String> getAllPossibleTitleTypesByPackage(Package pkg, String forTitles) {
         Locale locale = LocaleContextHolder.getLocale()
         RefdataValue tippStatus = getTippStatusForRequest(forTitles)
@@ -570,6 +625,12 @@ class ControlledListService {
         titleTypes
     }
 
+    /**
+     * Called from title filter views
+     * Retrieves all possible title types for the given subscription
+     * @param subscription the subscription whose titles should be inspected
+     * @return a set of possible title types
+     */
     Set<String> getAllPossibleTitleTypesBySub(Subscription subscription) {
         Locale locale = LocaleContextHolder.getLocale()
         Set<String> titleTypes = []
@@ -583,6 +644,13 @@ class ControlledListService {
         titleTypes
     }
 
+    /**
+     * Called from title filter views
+     * Retrieves all possible coverage depths for the given package and the given title status
+     * @param pkg the package whose titles should be inspected
+     * @param forTitles the title status considered
+     * @return a set of possible coverage depths
+     */
     Set<RefdataValue> getAllPossibleCoverageDepthsByPackage(Package pkg, String forTitles) {
         Locale locale = LocaleContextHolder.getLocale()
         RefdataValue tippStatus = getTippStatusForRequest(forTitles)
@@ -593,6 +661,12 @@ class ControlledListService {
         coverageDepths
     }
 
+    /**
+     * Called from title filter views
+     * Retrieves all possible coverage depths for the given subscription
+     * @param subscription the subscription whose titles should be inspected
+     * @return a set of possible coverage depths
+     */
     Set<RefdataValue> getAllPossibleCoverageDepthsBySub(Subscription subscription) {
         Locale locale = LocaleContextHolder.getLocale()
         Set<RefdataValue> coverageDepths = []
@@ -604,6 +678,13 @@ class ControlledListService {
         coverageDepths
     }
 
+    /**
+     * Called from title filter views
+     * Retrieves all possible series for the given package and the given title status
+     * @param pkg the package whose titles should be inspected
+     * @param forTitles the title status considered
+     * @return a set of possible series
+     */
     Set<String> getAllPossibleSeriesByPackage(Package pkg, String forTitles) {
         Locale locale = LocaleContextHolder.getLocale()
         RefdataValue tippStatus = getTippStatusForRequest(forTitles)
@@ -617,6 +698,12 @@ class ControlledListService {
         seriesName
     }
 
+    /**
+     * Called from title filter views
+     * Retrieves all possible series for the given subscription
+     * @param subscription the subscription whose titles should be inspected
+     * @return a set of possible series
+     */
     Set<String> getAllPossibleSeriesBySub(Subscription subscription) {
         Locale locale = LocaleContextHolder.getLocale()
         Set<String> seriesName = []
@@ -630,6 +717,13 @@ class ControlledListService {
         seriesName
     }
 
+    /**
+     * Called from title filter views
+     * Retrieves all possible Dewey decimal classification entries for the given package and the given title status
+     * @param pkg the package whose titles should be inspected
+     * @param forTitles the title status considered
+     * @return a set of possible Dewey decimal classification entries
+     */
     Set<RefdataValue> getAllPossibleDdcsByPackage(Package pkg, String forTitles) {
         Locale locale = LocaleContextHolder.getLocale()
         RefdataValue tippStatus = getTippStatusForRequest(forTitles)
@@ -640,6 +734,12 @@ class ControlledListService {
         ddcs
     }
 
+    /**
+     * Called from title filter views
+     * Retrieves all possible Dewey decimal classification entries for the given subscription
+     * @param subscription the subscription whose titles should be inspected
+     * @return a set of possible Dewey decimal classification entries
+     */
     Set<RefdataValue> getAllPossibleDdcsBySub(Subscription subscription) {
         Locale locale = LocaleContextHolder.getLocale()
         Set<RefdataValue> ddcs = []
@@ -650,6 +750,13 @@ class ControlledListService {
         ddcs
     }
 
+    /**
+     * Called from title filter views
+     * Retrieves all possible languages for the given package and the given title status
+     * @param pkg the package whose titles should be inspected
+     * @param forTitles the title status considered
+     * @return a set of possible languages
+     */
     Set<RefdataValue> getAllPossibleLanguagesByPackage(Package pkg, String forTitles) {
         Locale locale = LocaleContextHolder.getLocale()
         RefdataValue tippStatus = getTippStatusForRequest(forTitles)
@@ -660,6 +767,12 @@ class ControlledListService {
         languages
     }
 
+    /**
+     * Called from title filter views
+     * Retrieves all possible language entries for the given subscription
+     * @param subscription the subscription whose titles should be inspected
+     * @return a set of possible language entries
+     */
     Set<RefdataValue> getAllPossibleLanguagesBySub(Subscription subscription) {
         Locale locale = LocaleContextHolder.getLocale()
         Set<RefdataValue> languages = []
@@ -670,6 +783,13 @@ class ControlledListService {
         languages
     }
 
+    /**
+     * Called from title filter views
+     * Retrieves all possible subject references for the given package and the given title status
+     * @param pkg the package whose titles should be inspected
+     * @param forTitles the title status considered
+     * @return a set of subject references
+     */
     Set<String> getAllPossibleSubjectsByPackage(Package pkg, String forTitles) {
         Locale locale = LocaleContextHolder.getLocale()
         RefdataValue tippStatus = getTippStatusForRequest(forTitles)
@@ -682,15 +802,24 @@ class ControlledListService {
         }
         else {
             rawSubjects.each { String rawSubject ->
+                /*
                 rawSubject.tokenize(',;|').each { String rs ->
                     subjects.add(rs.trim())
                 }
+                 */
+                subjects << rawSubject.trim()
             }
         }
 
         subjects
     }
 
+    /**
+     * Called from title filter views
+     * Retrieves all possible subject references for the given subscription
+     * @param subscription the subscription whose titles should be inspected
+     * @return a set of possible subject references
+     */
     Set<String> getAllPossibleSubjectsBySub(Subscription subscription) {
         Locale locale = LocaleContextHolder.getLocale()
         SortedSet<String> subjects = new TreeSet<String>()
@@ -704,15 +833,25 @@ class ControlledListService {
         }
         else {
             rawSubjects.each { String rawSubject ->
+                /*
                 rawSubject.tokenize(',;|').each { String rs ->
-                    subjects.addAll(rs.trim())
+                    subjects.add(rs)
                 }
+                */
+                subjects << rawSubject.trim()
             }
         }
 
         subjects
     }
 
+    /**
+     * Called from title filter views
+     * Retrieves all possible years of first online publication for the given package and the given title status
+     * @param pkg the package whose titles should be inspected
+     * @param forTitles the title status considered
+     * @return a set of years of first online publication
+     */
     Set<String> getAllPossibleDateFirstOnlineYearByPackage(Package pkg, String forTitles) {
         Locale locale = LocaleContextHolder.getLocale()
         RefdataValue tippStatus = getTippStatusForRequest(forTitles)
@@ -727,6 +866,12 @@ class ControlledListService {
         subjects
     }
 
+    /**
+     * Called from title filter views
+     * Retrieves all possible years of first online publication for the given subscription
+     * @param subscription the subscription whose titles should be inspected
+     * @return a set of possible years of first online publication
+     */
     Set<String> getAllPossibleDateFirstOnlineYearBySub(Subscription subscription) {
         Locale locale = LocaleContextHolder.getLocale()
         Set<String> yearsFirstOnline = []
@@ -741,6 +886,13 @@ class ControlledListService {
         yearsFirstOnline
     }
 
+    /**
+    * Called from title filter views
+    * Retrieves all possible publishers for the given package and the given title status
+    * @param pkg the package whose titles should be inspected
+    * @param forTitles the title status considered
+    * @return a set of publishers
+    */
     Set<String> getAllPossiblePublisherByPackage(Package pkg,String forTitles) {
         Locale locale = LocaleContextHolder.getLocale()
         RefdataValue tippStatus = getTippStatusForRequest(forTitles)
@@ -755,6 +907,12 @@ class ControlledListService {
         publishers
     }
 
+    /**
+     * Called from title filter views
+     * Retrieves all possible publishers for the given subscription
+     * @param subscription the subscription whose titles should be inspected
+     * @return a set of possible publishers
+     */
     Set<String> getAllPossiblePublisherBySub(Subscription subscription) {
         Locale locale = LocaleContextHolder.getLocale()
         Set<String> publishers = []
@@ -771,6 +929,11 @@ class ControlledListService {
         publishers
     }
 
+    /**
+     * Gets for the given parameter the title status reference value
+     * @param forTitles which kind of titles should be retrieved?
+     * @return the reference data value matching to the parameter
+     */
     RefdataValue getTippStatusForRequest(String forTitles) {
         switch(forTitles) {
             case 'planned': RDStore.TIPP_STATUS_EXPECTED

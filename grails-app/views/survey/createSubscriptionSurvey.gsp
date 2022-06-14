@@ -78,7 +78,7 @@
         <div class="four fields">
 
             <!-- 2-1 + 2-2 -->
-            <g:render template="/templates/properties/genericFilter" model="[propList: propList]"/>
+            <g:render template="/templates/properties/genericFilter" model="[propList: propList, label:message(code: 'subscription.property.search')]"/>
 
             <!-- 2-3 -->
             <div class="field">
@@ -127,7 +127,7 @@
 
 <div class="subscription-results">
         <g:if test="${subscriptions}">
-        <table class="ui celled sortable table table-tworow la-table">
+        <table class="ui celled sortable table table-tworow la-js-responsive-table la-table">
             <thead>
             <tr>
                 <th rowspan="2" class="center aligned">
@@ -159,7 +159,7 @@
                     </a>
                 </th>
 
-                <th rowspan="2" class="two wide"></th>
+                <th rowspan="2" class="two wide">${message(code:'default.actions.label')}</th>
 
             </tr>
 
@@ -233,7 +233,9 @@
                         </td>
                         <td>
                             <g:formatDate formatName="default.date.format.notime" date="${s.startDate}"/><br />
-                            <g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/>
+                            <span class="la-secondHeaderRow" data-label="${message(code: 'default.endDate.label')}:">
+                                <g:formatDate formatName="default.date.format.notime" date="${s.endDate}"/>
+                            </span>
                         </td>
                             <td>
                                 <g:link controller="subscription" action="members" params="${[id: s.id]}">
@@ -250,12 +252,13 @@
 
                         <td class="x">
                             <g:if test="${editable && accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")}">
-                                    <g:link class="ui icon button la-popup-tooltip la-delay"
+                                    <g:link class="ui icon blue la-modern-button button la-popup-tooltip la-delay"
                                             data-content="${message(code: 'survey.toggleSurveySub.add.label', args:[SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransferIsNotNull(s).size(), SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransferIsNull(s).size()])}"
                                             controller="survey" action="addSubtoSubscriptionSurvey"
                                             params="[sub: s.id]">
-                                        <g:message code="createSubscriptionSurvey.selectButton"/>
+                                        <i class="icon pencil"></i>
                                     </g:link>
+
                             </g:if>
                         </td>
                     </tr>

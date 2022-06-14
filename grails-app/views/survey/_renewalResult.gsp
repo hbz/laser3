@@ -1,7 +1,7 @@
 <%@ page import="de.laser.RefdataValue; de.laser.properties.PropertyDefinition;de.laser.helper.RDStore;de.laser.RefdataCategory;de.laser.Org;de.laser.SurveyConfig;de.laser.SurveyOrg" %>
 <laser:serviceInjection/>
 
-<table class="ui celled sortable table la-table">
+<table class="ui celled sortable table la-js-responsive-table la-table">
     <thead>
     <tr>
         <th class="center aligned">${message(code: 'sidewide.number')}</th>
@@ -55,49 +55,47 @@
                 <g:link controller="organisation" action="show"
                         id="${participantResult.participant.id}">(${fieldValue(bean: participantResult.participant, field: "name")})</g:link>
 
-                <div class="ui grid">
-                    <div class="right aligned wide column">
-                        <g:if test="${!surveyConfig.hasOrgSubscription(participantResult.participant)}">
-                            <span data-position="top right" class="la-popup-tooltip la-delay"
-                                  data-content="${message(code: 'surveyResult.newOrg')}">
-                                <i class="star black large  icon"></i>
-                            </span>
-                        </g:if>
 
-                        <g:if test="${surveyConfig.checkResultsEditByOrg(participantResult.participant) == SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
-                            <span data-position="top right" class="la-popup-tooltip la-delay"
-                                  data-content="${message(code: 'surveyResult.processedOrg')}">
-                                <i class="edit green icon"></i>
-                            </span>
-                        </g:if>
-                        <g:else>
-                            <span data-position="top right" class="la-popup-tooltip la-delay"
-                                  data-content="${message(code: 'surveyResult.notprocessedOrg')}">
-                                <i class="edit red icon"></i>
-                            </span>
-                        </g:else>
+                <g:if test="${!surveyConfig.hasOrgSubscription(participantResult.participant)}">
+                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                          data-content="${message(code: 'surveyResult.newOrg')}">
+                        <i class="star black large  icon"></i>
+                    </span>
+                </g:if>
 
-                        <g:if test="${surveyConfig.isResultsSetFinishByOrg(participantResult.participant)}">
-                            <span data-position="top right" class="la-popup-tooltip la-delay"
-                                  data-content="${message(code: 'surveyResult.finishOrg')}">
-                                <i class="check green icon"></i>
-                            </span>
-                        </g:if>
-                        <g:else>
-                            <span data-position="top right" class="la-popup-tooltip la-delay"
-                                  data-content="${message(code: 'surveyResult.notfinishOrg')}">
-                                <i class="x red icon"></i>
-                            </span>
-                        </g:else>
+                <g:if test="${surveyConfig.checkResultsEditByOrg(participantResult.participant) == SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
+                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                          data-content="${message(code: 'surveyResult.processedOrg')}">
+                        <i class="edit green icon"></i>
+                    </span>
+                </g:if>
+                <g:else>
+                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                          data-content="${message(code: 'surveyResult.notprocessedOrg')}">
+                        <i class="edit red icon"></i>
+                    </span>
+                </g:else>
 
-                        <g:if test="${participantResult.participant in propertiesChangedByParticipant}">
-                            <span data-position="top right" class="la-popup-tooltip la-delay"
-                                  data-content="${message(code: 'renewalEvaluation.propertiesChanged')}">
-                                <i class="exclamation triangle yellow large icon"></i>
-                            </span>
-                        </g:if>
-                    </div>
-                </div>
+                <g:if test="${surveyConfig.isResultsSetFinishByOrg(participantResult.participant)}">
+                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                          data-content="${message(code: 'surveyResult.finishOrg')}">
+                        <i class="check green icon"></i>
+                    </span>
+                </g:if>
+                <g:else>
+                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                          data-content="${message(code: 'surveyResult.notfinishOrg')}">
+                        <i class="x red icon"></i>
+                    </span>
+                </g:else>
+
+                <g:if test="${participantResult.participant in propertiesChangedByParticipant}">
+                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                          data-content="${message(code: 'renewalEvaluation.propertiesChanged')}">
+                        <i class="exclamation triangle yellow large icon"></i>
+                    </span>
+                </g:if>
+
             </td>
             <td>
                 ${participantResult.resultOfParticipation.getResult()}

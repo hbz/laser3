@@ -7,18 +7,19 @@
         },
         dataset: {
             source: [
-                ['id', 'name', 'value1', 'value2' ],
-                <% data.each{ it -> print "[${it[0]}, '${it[1].replaceAll("'", BaseQuery.SQM_MASK)}', ${BaseQuery.getDataDetailsByIdAndKey(it[0], 'value1', dataDetails)}, ${BaseQuery.getDataDetailsByIdAndKey(it[0], 'value2', dataDetails)}]," } %>
+                ['id', 'name', 'value1', 'value2', 'value3' ],
+                <% data.reverse().each{ it -> print "[${it[0]}, '${it[1].replaceAll("'", BaseQuery.SQM_MASK)}', ${BaseQuery.getDataDetailsByIdAndKey(it[0], 'value1', dataDetails) * -1}, ${BaseQuery.getDataDetailsByIdAndKey(it[0], 'value2', dataDetails)}, ${BaseQuery.getDataDetailsByIdAndKey(it[0], 'value3', dataDetails)}]," } %>
             ]
         },
         legend: JSPC.app.reporting.helper._pie.legend,
-        toolbox: JSPC.app.reporting.helper.toolbox,
+        toolbox: JSPC.app.reporting.helper._pie.toolbox,
         tooltip: {
             trigger: 'item',
             formatter (params) {
                 var str = params.name
-                str += JSPC.app.reporting.helper.tooltip.getEntry(params.marker, '${labels.chart[0]}', params.value[3])
-                str += JSPC.app.reporting.helper.tooltip.getEntry(params.marker, '${labels.chart[1]}', params.value[2])
+                str += JSPC.app.reporting.helper.tooltip.getEntry(params.marker, '${labels.chart[0]}', Math.abs(params.value[2]))
+                str += JSPC.app.reporting.helper.tooltip.getEntry(null, '${labels.chart[1]}', params.value[3])
+                str += JSPC.app.reporting.helper.tooltip.getEntry(null, '${labels.chart[2]}', params.value[4])
                 return str
            }
         },
@@ -26,8 +27,8 @@
             {
                 name: '${labels.chart[0]}',
                 type: 'pie',
-                radius: '70%',
-                center: ['60%', '45%'],
+                radius: [0, '70%'],
+                center: ['50%', '40%'],
                 minAngle: 1,
                 minShowLabelAngle: 1,
                 encode: {
@@ -49,8 +50,8 @@
         toolbox: JSPC.app.reporting.helper.toolbox,
         dataset: {
             source: [
-                ['id', 'name', 'value1', 'value2'],
-                <% data.reverse().each{ it -> print "[${it[0]}, '${it[1].replaceAll("'", BaseQuery.SQM_MASK)}', ${BaseQuery.getDataDetailsByIdAndKey(it[0], 'value1', dataDetails)}, ${BaseQuery.getDataDetailsByIdAndKey(it[0], 'value2', dataDetails) * -1}]," } %>
+                ['id', 'name', 'value1', 'value2', 'value3'],
+                <% data.reverse().each{ it -> print "[${it[0]}, '${it[1].replaceAll("'", BaseQuery.SQM_MASK)}', ${BaseQuery.getDataDetailsByIdAndKey(it[0], 'value1', dataDetails) * -1}, ${BaseQuery.getDataDetailsByIdAndKey(it[0], 'value2', dataDetails)}, ${BaseQuery.getDataDetailsByIdAndKey(it[0], 'value3', dataDetails)}]," } %>
             ]
         },
         legend: {
@@ -63,14 +64,17 @@
                 var str = params[0].name
                 if (params.length == 1) {
                     if (params[0].seriesName == '${labels.chart[0]}') {
-                        str += JSPC.app.reporting.helper.tooltip.getEntry(params[0].marker, params[0].seriesName, Math.abs(params[0].value[3]))
+                        str += JSPC.app.reporting.helper.tooltip.getEntry(params[0].marker, params[0].seriesName, Math.abs(params[0].value[2]))
                     } else if (params[0].seriesName == '${labels.chart[1]}') {
-                        str += JSPC.app.reporting.helper.tooltip.getEntry(params[0].marker, params[0].seriesName, params[0].value[2])
+                        str += JSPC.app.reporting.helper.tooltip.getEntry(params[0].marker, params[0].seriesName, params[0].value[3])
+                    } else if (params[0].seriesName == '${labels.chart[2]}') {
+                        str += JSPC.app.reporting.helper.tooltip.getEntry(params[0].marker, params[0].seriesName, params[0].value[4])
                     }
                 }
                 else if (params.length > 1) {
-                    str += JSPC.app.reporting.helper.tooltip.getEntry(params[0].marker, params[0].seriesName, Math.abs(params[0].value[3]))
-                    str += JSPC.app.reporting.helper.tooltip.getEntry(params[1].marker, params[1].seriesName, params[1].value[2])
+                    str += JSPC.app.reporting.helper.tooltip.getEntry(params[0].marker, params[0].seriesName, Math.abs(params[0].value[2]))
+                    str += JSPC.app.reporting.helper.tooltip.getEntry(params[1].marker, params[1].seriesName, params[1].value[3])
+                    str += JSPC.app.reporting.helper.tooltip.getEntry(params[2].marker, params[2].seriesName, params[2].value[4])
                 }
                 return str
            }
@@ -103,13 +107,13 @@
                 type: 'bar',
                 stack: 'total',
                 encode: {
-                    x: 'value2',
+                    x: 'value1',
                     y: 'name'
                 },
                 label: {
                     show: true,
                     position: 'left',
-                    formatter (params) { return Math.abs(params.value[3]) }
+                    formatter (params) { return Math.abs(params.value[2]) }
                 }
             },
             {
@@ -117,15 +121,37 @@
                 type: 'bar',
                 stack: 'total',
                  encode: {
-                    x: 'value1',
+                    x: 'value2',
+                    y: 'name'
+                },
+                label: {
+                    show: false,
+                    position: 'right',
+                    formatter (params) { return Math.abs(params.value[3]) }
+                }
+            },
+            {
+                name: '${labels.chart[2]}',
+                type: 'bar',
+                stack: 'total',
+                 encode: {
+                    x: 'value3',
                     y: 'name'
                 },
                 label: {
                     show: true,
                     position: 'right',
-                    formatter (params) { return Math.abs(params.value[2]) }
+                    formatter (params) {
+                        return Math.abs(params.value[3]) + ' / ' + Math.abs(params.value[4])
+                    }
                 }
             }
         ]
     };
 </g:elseif>
+<g:elseif test="${data != null && data.isEmpty()}">
+    JSPC.app.reporting.current.chart.statusCode = 204
+</g:elseif>
+<g:else>
+    JSPC.app.reporting.current.chart.statusCode = 500
+</g:else>

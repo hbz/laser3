@@ -5,6 +5,11 @@ import de.laser.Platform
 import de.laser.RefdataValue
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 
+/**
+ * The class's name is what it does: a property (implicitly general) to a {@link de.laser.Platform}.
+ * The flag whether it is visible by everyone or not is determined by the {@link #isPublic} flag.
+ * This flag is particularly important here because platforms are accessible by everyone.
+ */
 class PlatformProperty extends AbstractPropertyWithCalculatedLastUpdated {
 
     PropertyDefinition type

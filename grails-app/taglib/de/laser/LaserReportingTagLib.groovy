@@ -1,9 +1,11 @@
 package de.laser
 
 import de.laser.annotations.RefdataAnnotation
+import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.helper.RDConstants
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.GenericHelper
+import de.laser.reporting.report.myInstitution.base.BaseDetails
 import org.apache.commons.lang3.RandomStringUtils
 
 import java.lang.reflect.Field
@@ -44,21 +46,31 @@ class LaserReportingTagLib {
     }
 
     def reportFilterField = { attrs, body ->
+        //println '<laser:reportFilterField>   ' + attrs.key + ' ' + attrs.field
+        Map<String, Object> field = GenericHelper.getField(attrs.config, attrs.field)
 
-        String fieldType = GenericHelper.getFieldType(attrs.config, attrs.field) // [ property, refdata ]
-        //boolean fieldIsMultiple = GenericHelper.isFieldMultiple(attrs.config, attrs.field)
-
-        if (fieldType == BaseConfig.FIELD_TYPE_PROPERTY) {
-            out << laser.reportFilterProperty(config: attrs.config, property: attrs.field, key: attrs.key)
+        if (! field) {
+            out << '[[ ' + attrs.field + ' ]]'
+            return
         }
-        if (fieldType == BaseConfig.FIELD_TYPE_REFDATA) {
-            out << laser.reportFilterRefdata(config: attrs.config, refdata: attrs.field, key: attrs.key)
+        else if (field.type == BaseConfig.FIELD_TYPE_PROPERTY) {
+            out << laser.reportFilterProperty(config: attrs.config, key: attrs.key, property: attrs.field)
         }
-        if (fieldType == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
-            out << laser.reportFilterRefdataRelTable(config: attrs.config, refdata: attrs.field, key: attrs.key)
+        else if (field.type == BaseConfig.FIELD_TYPE_REFDATA) {
+            out << laser.reportFilterRefdata(config: attrs.config, key: attrs.key, refdata: attrs.field)
         }
-        if (fieldType == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
-            out << laser.reportFilterCustomImpl(config: attrs.config, field: attrs.field, key: attrs.key)
+        else if (field.type == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
+            out << laser.reportFilterCustomImpl(config: attrs.config, key: attrs.key, refdata: attrs.field)
+        }
+        else if (field.type == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
+            if (field.customImplRdv) {
+                out << laser.reportFilterCustomImpl(config: attrs.config, key: attrs.key, refdata: attrs.field, customImplRdv: field.customImplRdv)
+            } else {
+                out << laser.reportFilterCustomImpl(config: attrs.config, key: attrs.key, refdata: attrs.field)
+            }
+        }
+        else if (field.type == BaseConfig.FIELD_TYPE_ELASTICSEARCH) {
+            out << laser.reportFilterCustomImpl(config: attrs.config, key: attrs.key, refdata: attrs.field)
         }
     }
 
@@ -66,11 +78,12 @@ class LaserReportingTagLib {
 
         Field prop  = attrs.config.meta.class.getDeclaredField(attrs.property)
 
-        String todo = attrs.config.meta.class.simpleName.uncapitalize() // TODO -> check
-
+        String todo           = attrs.config.meta.class.simpleName.uncapitalize() // TODO -> check
         String filterLabel    = message(code: todo + '.' + prop.getName() + '.label', default: prop.getName())
         String filterName     = 'filter:' + (attrs.key ? attrs.key : todo) + '_' + attrs.property
         Integer filterValue   = params.int(filterName)
+
+        // println 'TMP - reportFilterProperty: ' + prop + ' : ' + todo + ' > ' + todo + '.' + prop.getName() + '.label' + ' > ' + filterLabel
 
         if (prop.getType() in [boolean, Boolean]) {
 
@@ -115,12 +128,14 @@ class LaserReportingTagLib {
         String filterName     = "filter:" + (attrs.key ? attrs.key : todo) + '_' + attrs.refdata
         Integer filterValue   = params.int(filterName)
 
+        // println 'TMP - reportFilterRefdata: ' + rdCat + ' : ' + rdI18n + ' > ' + filterLabel
+
         out << '<div class="field">'
         out << '<label for="' + filterName + '">' + filterLabel + '</label>'
 
         out << laser.select([
                 class      : "ui fluid search dropdown",
-                name       : GenericHelper.isFieldVirtual(attrs.refdata) ? filterName + '_virtualFF' : filterName,
+                name       : GenericHelper.isFieldVirtual(attrs.config, attrs.refdata) ? filterName + '_virtualFF' : filterName,
                 id         : getUniqueId(filterName),
                 from       : RefdataCategory.getAllRefdataValues(rdCat),
                 optionKey  : "id",
@@ -129,15 +144,27 @@ class LaserReportingTagLib {
                 noSelection: ['': message(code: 'default.select.choose.label')]
         ])
 
-        if ( GenericHelper.isFieldVirtual(attrs.refdata) ) {
+        if ( GenericHelper.isFieldVirtual(attrs.config, attrs.refdata) ) {
             out << '<input type="hidden" name="' + filterName + '" value="' + (filterValue ?: '') + '" />'
         }
         out << '</div>'
     }
 
-    def reportFilterRefdataRelTable = { attrs, body ->
+    def reportFilterCustomImpl = { attrs, body ->
+        //println '<laser:reportFilterCustomImpl>   ' + attrs.key + ' ' + attrs.refdata + ' ' + attrs.customImplRdv
 
-        Map<String, Object> customRdv = BaseConfig.getCustomImplRefdata(attrs.refdata, attrs.config.meta.class) // propertyKey, propertyValue
+        // TODO
+        Map<String, Object> customRdv
+        if (attrs.customImplRdv) {
+            customRdv = BaseConfig.getCustomImplRefdata(attrs.customImplRdv, attrs.config.meta.class)
+        } else {
+            customRdv = BaseConfig.getCustomImplRefdata(attrs.refdata, attrs.config.meta.class)
+        }
+        if (! customRdv) {
+            customRdv = BaseConfig.getElasticSearchRefdata(attrs.refdata) // TODO !!!!!!!!!!!!!
+        }
+
+        //println '||->' + attrs.config.meta.class + ' :: ' + attrs.config.meta.cfgKey + ' / ' + attrs.refdata
 
         String todo     = attrs.config.meta.class.simpleName.uncapitalize() // TODO -> check
 
@@ -156,9 +183,9 @@ class LaserReportingTagLib {
             optionValue: 'value',
             noSelection: ['': message(code: 'default.select.choose.label')]
         ]
-        if ( GenericHelper.isFieldMultiple(attrs.refdata) ) {  // TODO - other tags
+        if ( GenericHelper.isFieldMultiple(attrs.config, attrs.refdata) ) {
             map.put('multiple', true)
-            map.put('value', params.list(filterName).collect { Integer.parseInt(it) })
+            map.put('value', params.list(filterName).collect { Long.parseLong(it) })
         }
         else {
             map.put('value', params.int(filterName))
@@ -167,10 +194,94 @@ class LaserReportingTagLib {
         out << '</div>'
     }
 
-    def reportFilterCustomImpl = { attrs, body ->
+    def reportObjectProperties = { attrs, body ->
 
-        //println '> reportFilterCustomImpl: ' + attrs.field
-        out << laser.reportFilterRefdataRelTable(config: attrs.config, refdata: attrs.field, key: attrs.key)
+        Long pdId = attrs.propDefId as Long
+        Org tenant = attrs.tenant as Org
+        List<AbstractPropertyWithCalculatedLastUpdated> properties = BaseDetails.getPropertiesGeneric(attrs.owner, pdId, tenant) as List<AbstractPropertyWithCalculatedLastUpdated>
+
+        List<String> props = properties.collect { prop ->
+            String result = ''
+            Map<String, List> tmp = [ tooltips:[], icons:[] ]
+            if (prop.getType().isRefdataValueType()) {
+                result += (prop.getRefValue() ? prop.getRefValue().getI10n('value') : '')
+            } else {
+                result += (prop.getValue() ?: '')
+            }
+
+            if (prop.type.tenant?.id == tenant.id) {
+                tmp.tooltips.add( message(code: 'reporting.details.property.own') as String )
+                tmp.icons.add( '<i class="icon shield alternate la-light-grey"></i>' )
+            }
+            if (!prop.isPublic && (prop.tenant && prop.tenant.id == tenant.id)) {
+                tmp.tooltips.add( message(code: 'reporting.details.property.private') as String )
+                tmp.icons.add( '<i class="icon eye slash alternate yellow"></i>' )
+            }
+            if (tmp.icons) {
+                result = result + '&nbsp;&nbsp;&nbsp;'
+                result = result + '<span class="la-popup-tooltip la-delay" data-content="' + tmp.tooltips.join(' / ') + '" data-position="top right">'
+                result = result + tmp.icons.join('')
+                result = result + '</span>'
+            }
+            result
+        }.sort().findAll() // removing empty and null values
+
+        out << props.join(' ,<br/>')
+    }
+
+    def reportDetailsTableTD = { attrs, body ->
+        //println '<laser:reportDetailsTableTD> ' + attrs
+        Map<String, Boolean> config = attrs.config as Map
+
+        if ( config.get( attrs.field )?.containsKey('dtc') ) {
+            String markup = '<td data-column="dtc:' + attrs.field + '"'
+
+            if (! config.get( attrs.field ).dtc) {
+                markup = markup + ' class="hidden"'
+            }
+            out << markup + '>'
+            out << body()
+            out << '</td>'
+        }
+        else {
+            out << '### ' + attrs.field + ' ###'
+        }
+    }
+
+    def reportDetailsTableEsValue = { attrs, body ->
+
+        // TMP
+        // TMP
+
+        String key = attrs.key
+        Long id = attrs.id as Long
+        String field = attrs.field
+
+        Map<String, Object> esRecords = attrs.records as Map
+        Map<String, Map> esdConfig  = BaseConfig.getCurrentConfigElasticsearchData(key).get( key + '-' + field )
+
+        Map<String, Object> record = esRecords.getAt(id as String) as Map
+        if (record) {
+            String value = record.get( field )
+            // workaround - nested values
+            if (esdConfig.mapping) {
+                def tmp = record
+                esdConfig.mapping.split('\\.').each{ m ->
+                    if (tmp) { tmp = tmp.get(m) }
+                }
+                value = tmp
+            }
+            //String value = record.get( record.mapping ?: field )
+            if (value) {
+                RefdataValue rdv = RefdataValue.getByValueAndCategory(value, esdConfig.rdc as String)
+                if (rdv) {
+                    out << rdv.getI10n('value')
+                }
+                else {
+                    out << GenericHelper.flagUnmatched( value )
+                }
+            }
+        }
     }
 
     static String getUniqueId(String id) {

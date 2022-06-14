@@ -11,6 +11,18 @@ import org.apache.commons.logging.LogFactory
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.grails.web.json.JSONElement
 
+/**
+ * A class to retain identifiers for objects. Identifiers may be for example ISBNs for books ISSNs for journals, ISILs for packages, VIAF or other normed tokens for organisations.
+ * An identifier belongs to a namespace; the namespace is typised. See {@link IdentifierNamespace} resp. {@link BootStrapService#setIdentifierNamespace()}. Moreover, an identifier may be unique or not; this depends upon the
+ * namespace configuration. An identifier may also be inherited from parent subscriptions or licenses to member objects. The inheritance is - like with {@link de.laser.base.AbstractPropertyWithCalculatedLastUpdated}
+ * implementations - only possible with {@link Subscription}s or {@link License}s as all other objects are global (i.e. not bound to a certain institution ({@link Org})
+ * @see IdentifierNamespace
+ * @see Subscription#ids
+ * @see License#ids
+ * @see Org#ids
+ * @see TitleInstancePackagePlatform#ids
+ * @see Package#ids
+ */
 class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
 
     def cascadingUpdateService
@@ -73,7 +85,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         pkg   column:'id_pkg_fk', index: 'id_pkg_idx'
         sub   column:'id_sub_fk', index: 'id_sub_idx'
         tipp  column:'id_tipp_fk', index: 'id_tipp_idx'
-        instanceOf column: 'id_instance_of_fk'
+        instanceOf column: 'id_instance_of_fk', index: 'id_instanceof_idx'
 
         dateCreated column: 'id_date_created'
         lastUpdated column: 'id_last_updated'
@@ -89,6 +101,18 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         [ 'version', 'lastUpdated', 'lastUpdatedCascading' ]
     }
 
+    /**
+     * The comparator implementation for identifiers - compares this identifier to the given other instance
+     * It will be compared against:
+     * <ol>
+     *     <li>German namespace name</li>
+     *     <li>namespace key</li>
+     *     <li>namespace type (class name of namespce type)</li>
+     *     <li>identifier value (lexicographically)</li>
+     * </ol>
+     * @param o the identifier to compare with
+     * @return the comparison result (-1, 0 or 1)
+     */
     @Override
     int compareTo(Object o) {
         String aVal = ns.name_de ?: ns.ns
@@ -105,10 +129,24 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         result
     }
 
+    /**
+     * Constructor call, hands the configuration map to {@link #constructWithFactoryResult(java.util.Map)}
+     * @param map the parameter map of the identifier
+     * @return the new or updated identifier object
+     */
     static Identifier construct(Map<String, Object> map) {
         return constructWithFactoryResult(map).result
     }
 
+    /**
+     * Factory method to construct new identifier instances. The method constructs not only the identifier itself but checks
+     * whether the identifier is already given for the namespace and prevents constructing multiple instances iff the namespace is configured to unique. A warning is being raised if the identifier
+     * (historically) exists already or even multiple instances exist at a place where only one identifier is supposed to exist.
+     * Moreover, the namespace is created, too, if it does not exist
+     * @param map the parameter map of the identifier
+     * @return the new or updated identifier object
+     * @see IdentifierNamespace
+     */
     static FactoryResult constructWithFactoryResult(Map<String, Object> map) {
 
         withTransaction {
@@ -199,6 +237,17 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         } // withTransaction
     }
 
+    /**
+     * Links the identifier to its owner object
+     * @param owner the object whose identifier should be linked. May be one of:
+     * <ul>
+     *     <li>{@link License}</li>
+     *     <li>{@link Org}</li>
+     *     <li>{@link Package}</li>
+     *     <li>{@link Subscription}</li>
+     *     <li>{@link TitleInstancePackagePlatform}</li>
+     * </ul>
+     */
     void setReference(def owner) {
         lic  = owner instanceof License ? owner : lic
         org  = owner instanceof Org ? owner : org
@@ -208,6 +257,10 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         //ti   = owner instanceof TitleInstance ? owner : ti
     }
 
+    /**
+     * Gets the owner of this identifier; if multiple references exist, a warning is being raised
+     * @return the reference object iff exactly one reference is set, null otherwise
+     */
     Object getReference() {
         int refCount = 0
         def ref
@@ -227,6 +280,11 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         return null
     }
 
+    /**
+     * Gets the field name of the reference object
+     * @param object the owner object whose field name should be retrieved
+     * @return the field name where the reference is set
+     */
     static String getAttributeName(def object) {
         String name
 
@@ -240,6 +298,10 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         name
     }
 
+    /**
+     * Builds for the given identifier a valid URL iff its namespace has an URL prefix defined
+     * @return the value as an URL, prefixed by {@link IdentifierNamespace#urlPrefix}
+     */
     String getURL() {
         if (ns.urlPrefix && value && value != IdentifierNamespace.UNKNOWN) {
             if (ns.urlPrefix.endsWith('=')) {
@@ -255,6 +317,9 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         null
     }
 
+    /**
+     * Triggers after the insertion of the identifier; prefixes a shortened ISIL by DE if it does start by a number
+     */
     def afterInsert() {
         static_logger.debug("afterInsert")
 
@@ -292,6 +357,10 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         (lastUpdatedCascading > lastUpdated) ? lastUpdatedCascading : lastUpdated
     }
 
+    /**
+     * Triggers before the database update of the identifier; prefixes WIB IDs and ISILs if they start by a number
+     * @return
+     */
     def beforeUpdate() {
         static_logger.debug("beforeUpdate")
         value = value?.trim()
@@ -321,6 +390,10 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         auditService.beforeUpdateHandler(this, changes.oldMap, changes.newMap)
     }
 
+    /**
+     * Triggered by generic method; triggers itself update of all inheriting objects
+     * @param changeDocument the map of changes to be passed onto inheriting identifiers; processed by {@link PendingChange} object
+     */
     void notifyDependencies(changeDocument) {
         log.debug("notifyDependencies(${changeDocument})")
         if (changeDocument.event.equalsIgnoreCase('Identifier.updated')) {
@@ -461,6 +534,11 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
       }
   }
 
+    /**
+     * Retrieves a list of identifiers for a dropdown menu
+     * @param params the search request params for filtering among the values
+     * @return a {@link List} of {@link Map}s for dropdown display
+     */
     static def refdataFind(GrailsParameterMap params) {
         List<Map<String, Object>> result = []
         List<Identifier> ql = []
@@ -493,6 +571,12 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         return null;
     }
 
+    /**
+     * Gets a list of objects matching to the given identifier value
+     * @param object an empty object instance to determine the identifier owner's class
+     * @param identifierString the value to search for
+     * @return a {@link List} of objects matching to the given identifier value
+     */
     static List lookupObjectsByIdentifierString(def object, String identifierString) {
         List result = []
 
@@ -517,6 +601,16 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
 
         result
     }
+
+    /**
+     * Gets the Leitweg-ID parts (an identifier mandatory for North-Rhine Westphalia billing system) for an org. A Leitweg-ID is composed by:
+     * <ol>
+     *     <li>coarse addressing (numeric, 2-12 digits)</li>
+     *     <li>fine addressing (alphanumeric, up to 30 digits)</li>
+     *     <li>check digit (numeric, 2 digits)</li>
+     * </ol>
+     * @return the {@link Map} reflecting the three parts of the Leitweg-ID
+     */
     Map getLeitID(){
         String leitID1
         String leitID2

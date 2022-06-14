@@ -2,10 +2,13 @@
 <laser:serviceInjection/>
 <g:set var="exportClickMeService" bean="exportClickMeService"/>
 <!-- _individuallyExportModal.gsp -->
-<g:set var="formFields" value="${exportClickMeService.getExportOrgFieldsForUI()}"/>
-<g:if test="${actionName in ['listInstitution']}">
-    <g:set var="exportFileName" value="${message(code: 'menu.institutions')}"/>
+<g:set var="formFields" value="${exportClickMeService.getExportOrgFieldsForUI(orgType)}"/>
+<g:if test="${actionName in ['currentProviders','listProvider']}">
+    <g:set var="exportFileName" value="${message(code: 'default.ProviderAgency.export.label')}"/>
 </g:if>
+<g:elseif test="${actionName in ['listInstitution']}">
+    <g:set var="exportFileName" value="${message(code: 'menu.institutions')}"/>
+</g:elseif>
 <g:else>
     <g:set var="exportFileName" value="${message(code: 'subscription.details.consortiaMembers.label')}"/>
 </g:else>

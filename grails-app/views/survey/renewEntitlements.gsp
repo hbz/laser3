@@ -73,7 +73,7 @@
     <g:set var="choosenOrg" value="${Org.findById(participant.id)}"/>
     <g:set var="choosenOrgCPAs" value="${choosenOrg.getGeneralContactPersons(false)}"/>
 
-    <table class="ui table la-table compact">
+    <table class="ui table la-js-responsive-table la-table compact">
         <tbody>
         <tr>
             <td>
@@ -125,7 +125,7 @@
 
             <g:form action="completeIssueEntitlementsSurveyforParticipant"
                     params="[id: surveyConfig.id, participant: participant.id]" class="ui form">
-                <table class="ui sortable celled la-table table la-ignore-fixed la-bulk-header">
+                <table class="ui sortable celled la-js-responsive-table la-table table la-ignore-fixed la-bulk-header">
                     <thead>
                     <tr>
                         <th>
@@ -223,6 +223,7 @@
                         </div>
 
                     </div>
+
 
                     <div class="ui two fields">
                         <div class="field">

@@ -9,6 +9,9 @@ import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
+/**
+ * This service manages access point manipulations and exports
+ */
 @Transactional
 class AccessPointService {
 
@@ -16,10 +19,18 @@ class AccessPointService {
     EscapeService escapeService
     MessageSource messageSource
 
+    /**
+     * Deletes the given IP range
+     * @param accessPointData the IP range to delete
+     */
     void deleteIpRange(AccessPointData accessPointData) {
         accessPointData.delete()
     }
 
+    /**
+     * Links the given platform to the given access point if no link exists between them
+     * @return an empty {@link Map} in case of success; an error message otherwise
+     */
     Map<String,Object> linkPlatform(GrailsParameterMap params) {
         Map<String,Object> result = [:]
         OrgAccessPoint accessPoint = OrgAccessPoint.get(params.accessPointId)
@@ -27,8 +38,9 @@ class AccessPointService {
         oapl.active = true
         oapl.oap = accessPoint
         if (params.platforms) {
-            oapl.platform = Platform.get(params.platforms)
-            String hql = "select oap from OrgAccessPoint oap join oap.oapp as oapl where oapl.active = true and oapl.platform.id =${accessPoint.id} and oapl.oap=:oap and oapl.subPkg is null order by LOWER(oap.name)"
+            Platform platform = Platform.get(params.platforms)
+            oapl.platform = platform
+            String hql = "select oap from OrgAccessPoint oap join oap.oapp as oapl where oapl.active = true and oapl.platform.id =${platform.id} and oapl.oap=:oap and oapl.subPkg is null"
             Set<OrgAccessPoint> existingActiveAP = OrgAccessPoint.executeQuery(hql, ['oap' : accessPoint])
             if (! existingActiveAP.isEmpty()){
                 result.error = "Existing active AccessPoint for platform"
@@ -40,16 +52,26 @@ class AccessPointService {
         result
     }
 
+    /**
+     * Deactivates the given access point link
+     * @result error if a such occurs
+     */
     Map<String,Object> unlinkPlatform(OrgAccessPointLink aoplInstance) {
         Map<String,Object> result = [:]
-        aoplInstance.active = false
-        if (! aoplInstance.save()) {
-            log.debug(aoplInstance.errors.toString())
-            result.error = "Error updating AccessPoint for platform"
-        }
+        aoplInstance.delete()
         result
     }
 
+    /**
+     * Retrieves a list of access points for the given institution with the platform and subscription link counts for each of the access point
+     * @param org the institution whose data should be retrieved
+     * @return a map of structure
+     * [
+     *      oap: the access point
+     *      platformLinkCount: link counts to platforms
+     *      subscriptionLinkCount: link counts to subscriptions
+     * ]
+     */
     List<Map> getOapListWithLinkCounts(Org org) {
         List<Map> oapListWithLinkCounts = []
         List oapList = OrgAccessPoint.findAllByOrg(org, [sort: ["name": 'asc', "accessMethod": 'asc']])
@@ -63,6 +85,12 @@ class AccessPointService {
         return oapListWithLinkCounts
     }
 
+    /**
+     * Exports the given list of access points as an Excel worksheet
+     * @param accessPoints the access points to export
+     * @param contextOrg unused
+     * @return an Excel worksheet containing the access point methods and properties
+     */
     def exportAccessPoints(List accessPoints, Org contextOrg) {
         List titles = []
 
@@ -134,6 +162,13 @@ class AccessPointService {
         }
         return exportService.generateXLSXWorkbook(sheetData)
     }
+
+    /**
+     * Exports the IP ranges of the given institutions
+     * @param orgs the institutions whose data should be exported
+     * @param onlyMap output the raw map or an Excel worksheet?
+     * @return a map containing the results if onlyMap is true, an Excel worksheet with the IP ranges otherwise
+     */
     def exportIPsOfOrgs(List<Org> orgs, boolean onlyMap = false) {
 
         List titles = []
@@ -195,6 +230,12 @@ class AccessPointService {
         }
     }
 
+    /**
+     * Exports the proxy configurations of the given institutions
+     * @param orgs the institutions whose data should be exported
+     * @param onlyMap output the raw map or an Excel worksheet?
+     * @return a map containing the results if onlyMap is true, an Excel worksheet with the proxy configurations otherwise
+     */
     def exportProxysOfOrgs(List<Org> orgs, boolean onlyMap = false) {
 
         List titles = []
@@ -254,6 +295,13 @@ class AccessPointService {
             return exportService.generateXLSXWorkbook(["${messageSource.getMessage('subscriptionDetails.members.exportProxys.fileName',null, locale)}": [titleRow: titles, columnData: accessPointData]])
         }
     }
+
+    /**
+     * Exports the EZProxy configurations of the given institutions
+     * @param orgs the institutions whose data should be exported
+     * @param onlyMap output the raw map or an Excel worksheet?
+     * @return a map containing the results if onlyMap is true, an Excel worksheet with the EZProxy ranges otherwise
+     */
     def exportEZProxysOfOrgs(List<Org> orgs, boolean onlyMap = false) {
 
         List titles = []
@@ -317,6 +365,13 @@ class AccessPointService {
             return exportService.generateXLSXWorkbook(["${messageSource.getMessage('subscriptionDetails.members.exportEZProxys.fileName',null, locale)}": [titleRow: titles, columnData: accessPointData]])
         }
     }
+
+    /**
+     * Exports the Shibboleth settings of the given institutions
+     * @param orgs the institutions whose data should be exported
+     * @param onlyMap output the raw map or an Excel worksheet?
+     * @return a map containing the results if onlyMap is true, an Excel worksheet with the Shibboleth settings otherwise
+     */
     def exportShibbolethsOfOrgs(List<Org> orgs, boolean onlyMap = false) {
 
         List titles = []
@@ -363,6 +418,8 @@ class AccessPointService {
     /**
      * Check for existing name in all supported locales and return available suggestions for IP Access Method
      * A simpler solution would be nice
+     * @param org the institution whose data should be queried
+     * @return a list of available access options
      */
     List availableOptions(Org org) {
 
@@ -393,6 +450,14 @@ class AccessPointService {
         return resultList
     }
 
+    /**
+     * Retrieves the platforms to the given access point
+     * @param params the parameter map containing sorting parameters of the result list
+     * @param orgAccessPoint the access point to which linked platforms should be retrieved
+     * @return a list of platforms linked to the access point
+     * @see Platform
+     * @see OrgAccessPoint
+     */
     List getLinkedPlatforms(GrailsParameterMap params, OrgAccessPoint orgAccessPoint) {
         String sort = params.sort ?: "LOWER(p.name)"
         String order = params.order ?: "ASC"

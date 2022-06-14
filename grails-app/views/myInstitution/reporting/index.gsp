@@ -1,4 +1,4 @@
-<%@page import="de.laser.ReportingFilter; de.laser.reporting.export.GlobalExportHelper;de.laser.helper.DateUtils;de.laser.reporting.report.myInstitution.base.BaseConfig;de.laser.ReportingGlobalService;de.laser.Org;de.laser.Subscription;de.laser.reporting.report.ReportingCache;de.laser.properties.PropertyDefinition" %>
+<%@page import="de.laser.reporting.report.ElasticSearchHelper; de.laser.reporting.report.GenericHelper; de.laser.ReportingFilter; de.laser.reporting.export.GlobalExportHelper;de.laser.helper.DateUtils;de.laser.reporting.report.myInstitution.base.BaseConfig;de.laser.ReportingGlobalService;de.laser.Org;de.laser.Subscription;de.laser.reporting.report.ReportingCache;de.laser.properties.PropertyDefinition" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -18,13 +18,15 @@
             <g:message code="myinst.reporting"/>
         </h1>
 
-        <div style="margin: 0 0.5em">
+        <g:render template="/templates/reporting/helper" />%{--js--}%
+
+        <div style="margin-right:0.5em">
             <div id="bookmark-toggle" class="ui icon button right floated disabled la-long-tooltip la-popup-tooltip la-delay"
-                    data-content="${message(code:'reporting.filter.bookmarks')}" data-position="top right">
+                    data-content="${message(code:'reporting.ui.global.bookmarks')}" data-position="top right">
                     <i class="icon bookmark"></i>
             </div>
             <div id="history-toggle" class="ui icon button right floated disabled la-long-tooltip la-popup-tooltip la-delay"
-                    data-content="${message(code:'reporting.filter.history')}" data-position="top right">
+                    data-content="${message(code:'reporting.ui.global.history')}" data-position="top right">
                     <i class="icon history"></i>
             </div>
             <div id="info-toggle" class="ui icon button right floated">
@@ -34,40 +36,86 @@
 
         <div id="hab-wrapper"></div>
 
-        <div id="info-content" class="ui message info hidden">
-            <p>
-                <strong>${message(code:'reporting.macro.step1')}</strong> <br />
-                ${message(code:'reporting.macro.info1')}
-            </p>
-            <p>
-                <strong>${message(code:'reporting.macro.step2')}</strong> <br />
-                ${message(code:'reporting.macro.info2')}
-            </p>
-            <p>
-                <strong>${message(code:'reporting.macro.step3')}</strong> <br />
-                ${message(code:'reporting.macro.info3')}
-            </p>
-            <p>
-                <i class="icon history"></i><strong>${message(code:'reporting.filter.history')}</strong> <br />
-                ${message(code:'reporting.macro.infoHistory')}
-            </p>
-            <p>
-                <i class="icon bookmark"></i><strong>${message(code:'reporting.filter.bookmarks')}</strong> <br />
-                ${message(code:'reporting.macro.infoBookmarks')}
-            </p>
+        <div id="info-content" class="hidden">
+
+            <div class="ui segment">
+                <span class="ui top attached label" style="text-align:center;">
+                    <i class="icon question large"></i>${message(code:'reporting.ui.global.help')}
+                </span>
+                <div style="margin: 3.5em 2em 0.5em !important">
+                    <p>
+                        <strong>${message(code:'reporting.ui.global.step1')}</strong> <br />
+                        ${message(code:'reporting.ui.global.info1')}
+                    </p>
+                    <p>
+                        <strong>${message(code:'reporting.ui.global.step2')}</strong> <br />
+                        ${message(code:'reporting.ui.global.info2')}
+                    </p>
+                    <p>
+                        <strong>${message(code:'reporting.ui.global.step3')}</strong> <br />
+                        ${message(code:'reporting.ui.global.info3')}
+                    </p>
+                    <p>
+                        <i class="icon history blue"></i><strong>${message(code:'reporting.ui.global.history')}</strong> <br />
+                        ${message(code:'reporting.ui.global.infoHistory')}
+                    </p>
+                    <p>
+                        <i class="icon bookmark teal"></i><strong>${message(code:'reporting.ui.global.bookmarks')}</strong> <br />
+                        ${message(code:'reporting.ui.global.infoBookmarks')}
+                    </p>
+                    <p>
+                        <i class="icon question blue"></i><strong>${message(code:'reporting.ui.global.help')}</strong> <br />
+                        ${message(code:'reporting.ui.global.infoHelp')}
+                    </p>
+                    <p>
+                        <strong>we:kb</strong> <br />
+                        ${message(code:'reporting.ui.global.infoWekb')}
+                    </p>
+                    <p>
+                        <strong>${GenericHelper.flagUnmatched('text')}</strong> <br />
+                        ${message(code:'reporting.ui.global.infoUnmatched')}
+                    </p>
+                    <sec:ifAnyGranted roles="ROLE_YODA">
+                        <br />
+                        <div class="ui divider"></div>
+
+                        <div class="ui relaxed horizontal list" style="text-align:center; width:100%;">
+                            <div class="item">
+                                <div class="content middle aligned">
+                                    <div class="header">Elasticsearch Index</div>
+                                    <g:if test="${grailsApplication.config.reporting.elasticSearch}">
+                                        <a href="${grailsApplication.config.reporting.elasticSearch.url + '/_cat/indices?v'}" target="_blank">${grailsApplication.config.reporting.elasticSearch.url}</a>
+                                    </g:if>
+                                    <g:else>--</g:else>
+                                </div>
+                            </div>
+                            <div class="item">
+                                <div class="content middle aligned">
+                                    <div class="header">We:kb</div>
+                                    <g:set var="eshApiSource" value="${ElasticSearchHelper.getCurrentApiSource()}" />
+                                    <g:if test="${eshApiSource}">
+                                        <a href="${eshApiSource.baseUrl}" target="_blank">${eshApiSource.baseUrl}</a>
+                                    </g:if>
+                                    <g:else>--</g:else>
+                                </div>
+                            </div>
+                        </div>
+                    </sec:ifAnyGranted>
+                </div>
+            </div>
         </div>
 
-        <h3 class="ui header">${message(code:'reporting.macro.step1')}</h3>
+        <h3 class="ui header">${message(code:'reporting.ui.global.step1')}</h3>
 
-        <g:if test="${!filter}">
+        <g:if test="${! filter}">
             <div class="ui segment form">
                 <div class="fields two">
                     <div class="field">
-                        <label for="filter-chooser">${message(code:'reporting.filter.base')}</label>
+                        <label for="filter-chooser">${message(code:'reporting.ui.global.filter.base')}</label>
                         <g:select name="filter-chooser"
                                   from="${cfgFilterList}"
                                   optionKey="${{it}}"
-                                  optionValue="${{BaseConfig.getMessage('base.filter.' + it)}}"
+                                  optionValue="${{BaseConfig.getFilterLabel(it)}}"
                                   class="ui selection dropdown la-not-clearable"
                                   noSelection="${['': message(code: 'default.select.choose.label')]}" />
                     </div>
@@ -75,36 +123,23 @@
             </div>
         </g:if>
 
-        <g:each in="${BaseConfig.FILTER}" var="filterItem">
-
-            <g:if test="${!filter || filter == filterItem}">
-                <div id="filter-${filterItem}" class="filter-form-wrapper ${filter ? '' : 'hidden'}">
-                    <g:form action="reporting" method="POST" class="ui form">
-                        <g:render template="/myInstitution/reporting/filter/${filterItem}" />
-
-                        <div class="field">
-                            %{-- <g:link action="reporting" class="ui button">${message(code:'reporting.filter.save')}</g:link> --}%
-                            <g:link action="reporting" class="ui button primary">${message(code:'default.button.reset.label')}</g:link>
-                            <input type="submit" class="ui button secondary" value="${message(code:'default.button.search.label')}" />
-                            <input type="hidden" name="filter" value="${filterItem}" />
-                            <input type="hidden" name="token" value="${token}" />
-                        </div>
-                    </g:form>
-                </div>
+        <div id="filter-wrapper">
+            <g:if test="${filter}">
+                <g:render template="/myInstitution/reporting/filter/form" />
             </g:if>
-        </g:each>
-
-        <g:render template="/templates/reporting/helper" />
+        </div>
 
         <g:if test="${filterResult}">
 
             %{-- <sec:ifAnyGranted roles="ROLE_YODA">
-                <g:link controller="yoda" action="cacheInfo" params="${[key: ReportingCache.CTX_GLOBAL + token]}" target="_blank" class="ui button small"><i class="icon bug"></i> YODA only CACHE</g:link>
+                <g:link controller="yoda" action="cacheInfo" params="${[key: ReportingCache.CTX_GLOBAL + token]}" target="_blank" class="ui button small right floated"><i class="icon bug"></i> YODA only CACHE</g:link>
             </sec:ifAnyGranted> --}%
 
-            <h3 class="ui header">${message(code:'reporting.macro.step2')}</h3>
+            <h3 class="ui header">${message(code:'reporting.ui.global.step2')}</h3>
 
             <g:render template="/myInstitution/reporting/query/${filter}" />
+
+            <div id="reporting-chart-nodata" class="ui message negative">${message(code:'reporting.modal.nodata')}</div>
 
             <div id="chart-wrapper"></div>
             <div id="chart-details"></div>
@@ -115,22 +150,28 @@
             #history-content table .description ,
             #bookmark-content table .description { margin: 0.3em 0; }
             #last-added-bookmark { margin-left: 1em; }
-            #chart-wrapper { height: 400px; width: 98%; margin: 2em auto 1em; }
+            #reporting-chart-nodata { display: none; }
+            #chart-wrapper { height: 400px; width: 98%; margin: 3em auto 2em; }
             h3.ui.header { margin-top: 3em !important; }
             .ui.form .fields .field { margin-bottom: 0 !important; }
         </style>
 
         <laser:script file="${this.getGroovyPageFileName()}">
+            /*-- hab --*/
+
             JSPC.app.reporting.updateHabMenu = function (current) {
                 var base = ['info', 'bookmark', 'history']
                 var negative = base.filter( function(c) { return c.indexOf( current ) < 0; } )
 
                 $( negative.map(function(e) { return '#' + e + '-content' }).join(',') ).addClass('hidden');
+                $( negative.map(function(e) { return '#' + e + '-toggle' }).join(',') ).removeClass('blue').removeClass('teal');
                 $( '#' + current + '-content').toggleClass('hidden');
-                $( negative.map(function(e) { return '#' + e + '-toggle' }).join(',') ).removeClass('blue');
-                $( '#' + current + '-toggle').toggleClass('blue');
+                if (current == 'bookmark') {
+                    $( '#' + current + '-toggle').toggleClass('teal');
+                } else {
+                    $( '#' + current + '-toggle').toggleClass('blue');
+                }
             }
-
             $('#info-toggle').on( 'click', function() {
                 JSPC.app.reporting.updateHabMenu('info');
             })
@@ -143,20 +184,37 @@
             })
             $('#hab-wrapper').load( '<g:createLink controller="ajaxHtml" action="reporting" />', function() {});
 
+            /*-- filter --*/
+
             $('#filter-chooser').on( 'change', function(e) {
-                $('.filter-form-wrapper').addClass('hidden')
-                $('#filter-' + $(e.target).dropdown('get value')).removeClass('hidden');
+                $.ajax({
+                    url: '<g:createLink controller="myInstitution" action="reporting" />',
+                    data: { init: true, filter: $(this).val() },
+                    dataType: 'html',
+                    beforeSend: function(xhr) { $('#loadingIndicator').show(); }
+                })
+                .done( function (data) {
+                    $('#filter-wrapper').html(data);
+                    r2d2.initDynamicSemuiStuff('#filter-wrapper');
+                    r2d2.initDynamicXEditableStuff('#filter-wrapper');
+
+                    JSPC.app.reporting.initFilterEvents();
+                    $('#filter-wrapper > div').removeClass('hidden');
+                })
+                .fail( function() { $("#reporting-modal-error").modal('show'); })
+                .always( function() { $('#loadingIndicator').hide(); });
             })
 
+            /*-- charts --*/
+
             $('*[id^=query-chooser').on( 'change', function(e) {
-                var value = $(e.target).dropdown('get value');
+                var value = $(e.target).val();
                 if (value) {
-                    $('*[id^=query-chooser').not($('#' + e.target.id)).dropdown('clear');
+                    $('*[id^=query-chooser').not( $('#' + this.id)).dropdown('clear');
                     JSPC.app.reporting.current.request.query = value;
                     JSPC.app.reporting.requestChartJsonData();
                 }
             })
-
             $('#chart-chooser').on( 'change', function(e) {
                 JSPC.app.reporting.current.request.chart = $(e.target).dropdown('get value');
                 JSPC.app.reporting.requestChartJsonData();
@@ -179,20 +237,29 @@
                     .done( function (data) {
                         $('#chart-wrapper').replaceWith( '<div id="chart-wrapper"></div>' );
                         $('#chart-details').replaceWith( '<div id="chart-details"></div>' );
+                        $('#reporting-chart-nodata').hide();
 
-                        if (! JSPC.app.reporting.current.chart.option) {
-                            $("#reporting-modal-nodata").modal('show');
+                        if (! JSPC.app.reporting.current.chart.option && ! JSPC.app.reporting.current.chart.statusCode) {
+                            $("#reporting-modal-error").modal('show');
+                        }
+                        else if (JSPC.app.reporting.current.chart.statusCode == 500) {
+                            $("#reporting-modal-error").modal('show');
+                        }
+                        else if (JSPC.app.reporting.current.chart.statusCode == 204) {
+                            $('#reporting-chart-nodata').show();
                         }
                         else {
+                            var chartHeight = 400;
                             if (JSPC.app.reporting.current.request.chart == 'bar') {
-                                $('#chart-wrapper').css('height', 150 + (19 * JSPC.app.reporting.current.chart.option.dataset.source.length) + 'px');
+                                chartHeight = 150 + (19 * JSPC.app.reporting.current.chart.option.dataset.source.length);
                             }
                             else if (JSPC.app.reporting.current.request.chart == 'pie') {
-                                $('#chart-wrapper').css('height', 350 + (12 * JSPC.app.reporting.current.chart.option.dataset.source.length) + 'px');
+                                chartHeight = Math.min(1800, 380 + (12 * JSPC.app.reporting.current.chart.option.dataset.source.length));
                             }
                             else if (JSPC.app.reporting.current.request.chart == 'radar') {
-                                $('#chart-wrapper').css('height', 400 + (8 * JSPC.app.reporting.current.chart.option.dataset.source.length) + 'px');
+                                chartHeight = 400 + (8 * JSPC.app.reporting.current.chart.option.dataset.source.length);
                             }
+                            $('#chart-wrapper').css('height', chartHeight + 'px');
 
                             var echart = echarts.init($('#chart-wrapper')[0]);
                             echart.setOption( JSPC.app.reporting.current.chart.option );
@@ -217,14 +284,40 @@
                     .fail( function (data) {
                         $('#chart-wrapper').replaceWith( '<div id="chart-wrapper"></div>' );
                         $('#chart-details').replaceWith( '<div id="chart-details"></div>' );
+                        $('#reporting-chart-nodata').hide();
+                        $("#reporting-modal-error").modal('show');
                     })
-                    .always(function() {
-                        $('#loadingIndicator').hide();
-                    });
+                    .always(function() { $('#loadingIndicator').hide(); });
                 }
             }
 
             $('#chart-chooser').dropdown('set selected', 'bar');
+
+            /* -- helper -- */
+
+            JSPC.app.reporting.initFilterEvents = function() {
+                $("select[name=filter\\:member_country]").on( 'change', function() {
+                    JSPC.app.reporting.countryRegionUpdate( 'filter\\:member' );
+                }).trigger( 'change' );
+
+                $("select[name=filter\\:org_country]").on( 'change', function() {
+                    JSPC.app.reporting.countryRegionUpdate( 'filter\\:org' );
+                }).trigger( 'change' );
+
+                $("select[name=filter\\:member_region_virtualFF]").dropdown(
+                    'setting', 'onChange', function(value, text, $choice) {
+                        $("input[name=filter\\:member_region]").attr('value', value);
+                });
+
+                $("select[name=filter\\:org_region_virtualFF]").dropdown(
+                    'setting', 'onChange', function(value, text, $choice) {
+                        $("input[name=filter\\:org_region]").attr('value', value);
+                });
+
+                $("*[name$='_propertyKey']").on( 'change', function() {
+                    JSPC.app.reporting.propertyUpdate( this );
+                }).trigger( 'change' );
+            }
 
             JSPC.app.reporting.countryRegionUpdate = function( selectorPart ) {
                 var $country     = $('select[name=' + selectorPart + '_country]');
@@ -248,32 +341,14 @@
                 });
             }
 
-            $("select[name=filter\\:member_country]").on( 'change', function() {
-                JSPC.app.reporting.countryRegionUpdate( 'filter\\:member' );
-            }).trigger( 'change' );
-
-            $("select[name=filter\\:org_country]").on( 'change', function() {
-                JSPC.app.reporting.countryRegionUpdate( 'filter\\:org' );
-            }).trigger( 'change' );
-
-            $("select[name=filter\\:member_region_virtualFF]").dropdown(
-                'setting', 'onChange', function(value, text, $choice) {
-                    $("input[name=filter\\:member_region]").attr('value', value);
-            });
-
-            $("select[name=filter\\:org_region_virtualFF]").dropdown(
-                'setting', 'onChange', function(value, text, $choice) {
-                    $("input[name=filter\\:org_region]").attr('value', value);
-            });
-
-            $("*[name$='_propertyKey']").on('change', function(){
+            JSPC.app.reporting.propertyUpdate = function( elem ) {
                 var defaults = {}
                 <%
                     params.findAll{ it.key.startsWith('filter:') && (it.key.endsWith('_propertyKey') || it.key.endsWith('_propertyValue')) }.each{ it ->
                         println "defaults['${it.key}'] = '${it.value}';"
                     }
                 %>
-                var $key = $(this);
+                var $key = $(elem);
                 var $value = $("*[name='" + $key.attr('name').replace('_propertyKey', '_propertyValue') + "']");
                 $value.empty().attr('disabled', 'disabled').parent().addClass('disabled');
 
@@ -301,22 +376,18 @@
                             if (pdv) {
                                 $value.dropdown('set selected', defaults[$value.attr('name')]);
                             }
-                        },
-                        async: false
+                        }
                     });
                 } else {
                     $value.dropdown('restore defaults');
                 }
-            });
-            $("*[name$='_propertyKey']").trigger('change');
+            }
+
+            JSPC.app.reporting.initFilterEvents();
         </laser:script>
 
         <semui:modal id="reporting-modal-error" text="REPORTING" hideSubmitButton="true">
-            <p>${message(code:'reporting.modal.error')}</p>
+            <p><i class="icon exclamation triangle large orange"></i> ${message(code:'reporting.modal.error')}</p>
         </semui:modal>
-        <semui:modal id="reporting-modal-nodata" text="REPORTING" hideSubmitButton="true">
-            <p>${message(code:'reporting.modal.nodata')}</p>
-        </semui:modal>
-
     </body>
 </html>

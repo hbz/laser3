@@ -19,7 +19,10 @@ import de.laser.reporting.export.local.SubscriptionExport as SubscriptionExportL
 import de.laser.reporting.export.GlobalExportHelper
 import de.laser.reporting.export.myInstitution.OrgExport as OrgExportGlobal
 import de.laser.reporting.export.myInstitution.LicenseExport as LicenseExportGlobal
+import de.laser.reporting.export.myInstitution.PackageExport
+import de.laser.reporting.export.myInstitution.PlatformExport
 import de.laser.reporting.export.myInstitution.SubscriptionExport as SubscriptionExportGlobal
+import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import grails.util.Holders
 import org.springframework.context.MessageSource
@@ -29,12 +32,13 @@ import java.time.Year
 
 abstract class BaseDetailsExport {
 
-    static String FIELD_TYPE_PROPERTY           = BaseConfig.FIELD_TYPE_PROPERTY
-    static String FIELD_TYPE_REFDATA            = BaseConfig.FIELD_TYPE_REFDATA
-    static String FIELD_TYPE_REFDATA_JOINTABLE  = BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE
-    static String FIELD_TYPE_CUSTOM_IMPL        = BaseConfig.FIELD_TYPE_CUSTOM_IMPL
-
-    static String FIELD_TYPE_CUSTOM_IMPL_QDP    = 'customImplementationQDP' // query depending
+    static String FIELD_TYPE_PROPERTY               = BaseConfig.FIELD_TYPE_PROPERTY
+    static String FIELD_TYPE_REFDATA                = BaseConfig.FIELD_TYPE_REFDATA
+    static String FIELD_TYPE_REFDATA_JOINTABLE      = BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE
+    static String FIELD_TYPE_CUSTOM_IMPL            = BaseConfig.FIELD_TYPE_CUSTOM_IMPL
+    static String FIELD_TYPE_CUSTOM_IMPL_QDP        = 'customImplementationQDP' // query depending
+    static String FIELD_TYPE_COMBINATION            = 'combination' // TODO
+    static String FIELD_TYPE_ELASTICSEARCH          = BaseConfig.FIELD_TYPE_ELASTICSEARCH
 
     static String CSV_VALUE_SEPARATOR   = ';'
     static String CSV_FIELD_SEPARATOR   = ','
@@ -46,58 +50,23 @@ abstract class BaseDetailsExport {
             'x-identifier', '@-org-accessPoint', '@-org-contact', '@-org-readerNumber', '@-entitlement-tippIdentifier'
     ]
 
-    // checked via <X>ExportHelper.getFieldLabel()
-    static List<String> CUSTOM_FIELD_KEYS = [
+    void init(String token, Map<String, Object> fields)  {
+        this.token = token
 
-            'globalUID',
-
-            'x-identifier',                     // dyn.value
-            'x-provider',                       // XYCfg.CONFIG.base.query2.Verteilung
-            'x-property',                       // QDP; dyn.value
-
-            // virtual; without XY.CONFIG.base.x
-
-            '@-subscription-member',
-            '@-subscription-memberCount',
-            '@-subscription-prevNext',
-
-            'x-memberSubscriptionProperty',     // QDP; dyn.value
-
-            '@-license-subscriptionCount',
-            '@-license-memberCount',
-            '@-license-memberSubscriptionCount',
-
-            '@-org-accessPoint',      // dyn.value
-            '@-org-contact',          // dyn.value
-            '@-org-readerNumber',     // dyn.value
-
-            '@-entitlement-priceItem',
-            '@-entitlement-tippName',
-            '@-entitlement-tippDeweyDecimalClassification',
-            '@-entitlement-tippEditionStatement',
-            '@-entitlement-tippFirstAuthor',
-            '@-entitlement-tippFirstEditor',
-            '@-entitlement-tippHostPlatformURL',
-            '@-entitlement-tippIdentifier',            // dyn.value
-            '@-entitlement-tippLanguage',
-            '@-entitlement-tippOpenAccessX',
-            '@-entitlement-tippPackage',
-            '@-entitlement-tippPlatform',
-            '@-entitlement-tippProvider',
-            '@-entitlement-tippPublisherName',
-            '@-entitlement-tippSeriesName',
-            '@-entitlement-tippSubjectReference',
-            '@-entitlement-tippTitleType',
-
-            '@-cost-entitlement',
-            '@-cost-entitlementGroup',
-            '@-cost-invoice',
-            '@-cost-member',
-            '@-cost-order',
-            '@-cost-package',
-            '@-cost-subscription',
-            '@-cost-taxKey'
-    ]
+        // keeping order ..
+        getAllFields().keySet().each { k ->
+            if (k in fields.keySet() ) {
+                if (k.contains('+')) {
+                    String[] parts = k.split('\\+')
+                    parts.eachWithIndex { p,i -> if (i>0) { selectedExportFields.put((parts[0] ? parts[0] + '+' : '') + p, 'on') } }
+                }
+                else {
+                    selectedExportFields.put(k, fields.get(k))
+                }
+            }
+        }
+        normalizeSelectedMultipleFields( this )
+    }
 
     Map<String, Object> selectedExportFields = [:]
 
@@ -109,52 +78,48 @@ abstract class BaseDetailsExport {
 
     Map<String, Object> getCurrentConfig(String key) {
 
-        if (key == LicenseExportGlobal.KEY) {
-
+        if (key == CostItemExportLocal.KEY) {
+            if (ctxConsortium()) {
+                CostItemExportLocal.CONFIG_ORG_CONSORTIUM
+            }
+        }
+        else if (key == IssueEntitlementExportLocal.KEY) {
+            IssueEntitlementExportLocal.CONFIG_X
+        }
+        else if (key == LicenseExportGlobal.KEY) {
             if (ctxConsortium()) {
                 LicenseExportGlobal.CONFIG_ORG_CONSORTIUM
-            }
-            else if (ctxInst()) {
+            } else if (ctxInst()) {
                 LicenseExportGlobal.CONFIG_ORG_INST
             }
         }
         else if (key in [OrgExportLocal.KEY, OrgExportGlobal.KEY]) {
-
             if (isGlobal(this)) {
                 OrgExportGlobal.CONFIG_X
-            }
-            else if (isLocal(this)) {
+            } else if (isLocal(this)) {
                 OrgExportLocal.CONFIG_X
             }
         }
+        else if (key == PackageExport.KEY) {
+            PackageExport.CONFIG_X
+        }
+        else if (key == PlatformExport.KEY) {
+            PlatformExport.CONFIG_X
+        }
         else if (key in [SubscriptionExportLocal.KEY, SubscriptionExportGlobal.KEY]) {
             if (isGlobal(this)) {
-
                 if (ctxConsortium()) {
                     SubscriptionExportGlobal.CONFIG_ORG_CONSORTIUM
-                }
-                else if (ctxInst()) {
+                } else if (ctxInst()) {
                     SubscriptionExportGlobal.CONFIG_ORG_INST
                 }
             }
             else if (isLocal(this)) {
-
                 if (ctxConsortium()) {
                     SubscriptionExportLocal.CONFIG_ORG_CONSORTIUM
-                }
-                else if (ctxInst()) {
+                } else if (ctxInst()) {
                     SubscriptionExportLocal.CONFIG_ORG_INST
                 }
-            }
-        }
-        else if (key == IssueEntitlementExportLocal.KEY) {
-
-            IssueEntitlementExportLocal.CONFIG_X
-        }
-        else if (key == CostItemExportLocal.KEY) {
-
-            if (ctxConsortium()) {
-                CostItemExportLocal.CONFIG_ORG_CONSORTIUM
             }
         }
     }
@@ -169,16 +134,22 @@ abstract class BaseDetailsExport {
         }
         else if (isLocal(this)) {
             cfg   = LocalExportHelper.getCachedConfigStrategy( token )
-            field = LocalExportHelper.getCachedFieldStrategy( token )
+            field = LocalExportHelper.getCachedFieldsStrategy( token )
         }
 
         Map<String, Object> base = getCurrentConfig( KEY ).base as Map
+
+//        println '----------- BaseDetailsExport.getAllFields() ' + KEY
+//        println '- base      ' + base
+//        println '- cfg       ' + cfg
+//        println '- field     ' + field
+//        println '- keySet    ' + base.fields.keySet()
 
         if (! base.fields.keySet().contains(cfg)) {
             cfg = 'default'
         }
         base.fields.get(cfg).findAll {
-            (it.value != FIELD_TYPE_CUSTOM_IMPL_QDP) || (it.key == field)
+            (it.value.type != FIELD_TYPE_CUSTOM_IMPL_QDP) || (it.key == field)
         }
     }
 
@@ -288,7 +259,7 @@ abstract class BaseDetailsExport {
         }
 
         idnsList.collect{ it ->
-            [ it.id, it.getI10n('name') ?: it.ns + ' *' ]
+            [ it.id, it.getI10n('name') ?: GenericHelper.flagUnmatched( it.ns )]
         }.sort { a,b -> a[1] <=> b[1] }
     }
 
@@ -325,11 +296,17 @@ abstract class BaseDetailsExport {
 
     // -----
 
-    static String getMessage(String token) {
-        MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
-        Locale locale = LocaleContextHolder.getLocale()
+    static String getExportLabel(String token) {
+        String msg = '[reporting.export.custom.' + token + ']'
+        try {
+            MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource')
+            Locale locale = LocaleContextHolder.getLocale()
+            msg = messageSource.getMessage('reporting.export.custom.' + token, null, locale)
+        }
+        catch (Exception e) {
+            println e.getMessage()
+        }
 
-        // println ' ---> ' + 'reporting.export.base.custom.' + token
-        messageSource.getMessage('reporting.export.base.custom.' + token, null, locale)
+        msg
     }
 }

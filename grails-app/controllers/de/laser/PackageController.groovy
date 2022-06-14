@@ -2,7 +2,6 @@ package de.laser
 
 import com.k_int.kbplus.ExecutorWrapperService
 import de.laser.auth.User
-import de.laser.exceptions.CreationException
 import de.laser.helper.DateUtils
 import de.laser.annotations.DebugAnnotation
 import de.laser.helper.RDConstants
@@ -12,7 +11,6 @@ import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
-import groovy.util.slurpersupport.GPathResult
 import org.apache.poi.hssf.usermodel.HSSFRow
 import org.apache.poi.hssf.usermodel.HSSFSheet
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
@@ -23,7 +21,12 @@ import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat
+import java.util.concurrent.ExecutorService
 
+/**
+ * This controller manages display calls to packages
+ * @see Package
+ */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class PackageController {
 
@@ -34,7 +37,7 @@ class PackageController {
     ExecutorWrapperService executorWrapperService
     def accessService
     def contextService
-    def taskService
+    ExecutorService executorService
     def addressbookService
     def docstoreService
     def gokbService
@@ -42,10 +45,14 @@ class PackageController {
     EscapeService escapeService
     MessageSource messageSource
     SubscriptionService subscriptionService
+    ExportClickMeService exportClickMeService
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
-    //Data from GOKB ES
+    /**
+     * Lists current packages in the we:kb ElasticSearch index.
+     * @return Data from we:kb ES
+     */
     @Secured(['ROLE_USER'])
     def index() {
 
@@ -111,6 +118,9 @@ class PackageController {
         result
     }
 
+    /**
+     * Is a fallback to list packages which are in the local LAS:eR database
+     */
     @Secured(['ROLE_USER'])
     def list() {
         Map<String, Object> result = [:]
@@ -191,6 +201,9 @@ class PackageController {
         }
     }
 
+    /**
+     * Compares two packages based on their holdings
+     */
     @DebugAnnotation(perm = "ORG_INST,ORG_CONSORTIUM", affil = "INST_USER")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
@@ -300,10 +313,24 @@ class PackageController {
 
     }
 
+    /**
+     * Formats the given date with the given formatter
+     * @param formatter the formatter to use
+     * @param date the date to format
+     * @return the formatted date string or an empty string
+     */
     private def formatDateOrNull(formatter, date) {
         return (date ? formatter.format(date) : '')
     }
 
+    /**
+     * Builds a comparison list for the given package
+     * @param pkg the package whose data should be prepared
+     * @param dateStr the date from when the holding should be considered
+     * @param params eventual filter data
+     * @param result the result map to fill
+     * @return a filtered list of titles contained in the package
+     */
     private def createCompareList(pkg, dateStr, params, result) {
 
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
@@ -335,6 +362,10 @@ class PackageController {
         return list
     }
 
+    /**
+     * Shows the details of the package. Consider that an active connection to a we:kb ElasticSearch index has to exist
+     * because some data will not be mirrored to the app
+     */
     @Secured(['ROLE_USER'])
     def show() {
         Map<String, Object> result = [:]
@@ -415,6 +446,12 @@ class PackageController {
         result
     }
 
+    /**
+     * Call to show all current titles in the package. The entitlement holding may be shown directly as HTML
+     * or exported as KBART (<a href="https://www.niso.org/standards-committees/kbart">Knowledge Base and related tools</a>) file, CSV file or Excel worksheet
+     * @return a HTML table showing the holding or the holding rendered as KBART or Excel worksheet
+     * @see TitleInstancePackagePlatform
+     */
     @Secured(['ROLE_USER'])
     def current() {
         log.debug("current ${params}");
@@ -451,11 +488,16 @@ class PackageController {
 
         String filename = "${escapeService.escapeString(packageInstance.name + '_' + message(code: 'package.show.nav.current'))}_${DateUtils.SDF_NoTimeNoPoint.format(new Date())}"
 
+        result.filename = filename
+
         if (params.exportKBart) {
             response.setHeader( "Content-Disposition", "attachment; filename=${filename}.tsv")
             response.contentType = "text/tsv"
             ServletOutputStream out = response.outputStream
-            Map<String, List> tableData = titlesList ? exportService.generateTitleExportKBART(titlesList, TitleInstancePackagePlatform.class.name) : []
+            Map<String, Object> configMap = [:]
+            configMap.putAll(params)
+            configMap.pkgIds = [params.id]
+            Map<String, List> tableData = titlesList ? exportService.generateTitleExportKBART(configMap, TitleInstancePackagePlatform.class.name) : []
             out.withWriter { writer ->
                 writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
             }
@@ -464,7 +506,10 @@ class PackageController {
         } else if (params.exportXLSX) {
             response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            Map<String, List> export = titlesList ? exportService.generateTitleExportXLS(titlesList,TitleInstancePackagePlatform.class.name) : []
+            Map<String, Object> configMap = [:]
+            configMap.putAll(params)
+            configMap.pkgIds = [params.id]
+            Map<String, List> export = titlesList ? exportService.generateTitleExportCustom(configMap, TitleInstancePackagePlatform.class.name) : [] //no subscription needed
             Map sheetData = [:]
             sheetData[message(code: 'title.plural')] = [titleRow: export.titles, columnData: export.rows]
             SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
@@ -472,6 +517,23 @@ class PackageController {
             response.outputStream.flush()
             response.outputStream.close()
             workbook.dispose()
+        }else if(params.exportClickMeExcel) {
+            if (params.filename) {
+                filename =params.filename
+            }
+
+            ArrayList<TitleInstancePackagePlatform> tipps = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList,[sort:'tipp.sortname']) : [:]
+
+            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+            Map<String, Object> selectedFields = [:]
+            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportTipps(tipps, selectedFields)
+            response.setHeader "Content-disposition", "attachment; filename=${filename}.xlsx"
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
         }
         withFormat {
             html {
@@ -527,21 +589,41 @@ class PackageController {
         result
     }
 
+    /**
+     * Call to see planned titles of the package
+     * @return {@link #planned_expired_deleted(java.lang.Object, java.lang.Object)}
+     */
     @Secured(['ROLE_USER'])
     def planned() {
         planned_expired_deleted(params, "planned")
     }
 
+    /**
+     * Call to see expired titles of the package
+     * @return {@link #planned_expired_deleted(java.lang.Object, java.lang.Object)}
+     */
     @Secured(['ROLE_USER'])
     def expired() {
         planned_expired_deleted(params, "expired")
     }
 
+    /**
+     * Call to see deleted titles of the package
+     * @return {@link #planned_expired_deleted(java.lang.Object, java.lang.Object)}
+     */
     @Secured(['ROLE_USER'])
     def deleted() {
         planned_expired_deleted(params, "deleted")
     }
 
+    /**
+     * Call to show all titles matching the given status in the package. The entitlement holding may be shown directly as HTML
+     * or exported as KBART (<a href="https://www.niso.org/standards-committees/kbart">Knowledge Base and related tools</a>) file, CSV file or Excel worksheet
+     * @param params filter parameters
+     * @param func the status key to filter
+     * @return a HTML table showing the holding or the holding rendered as KBART or Excel worksheet
+     * @see TitleInstancePackagePlatform
+     */
     @Secured(['ROLE_USER'])
     def planned_expired_deleted(params, func) {
         log.debug("planned_expired_deleted ${params}");
@@ -585,12 +667,16 @@ class PackageController {
         //println(query)
 
         List<TitleInstancePackagePlatform> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
+        result.filename = filename
 
         if (params.exportKBart) {
             response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
             response.contentType = "text/tsv"
             ServletOutputStream out = response.outputStream
-            Map<String, List> tableData = exportService.generateTitleExportKBART(titlesList,TitleInstancePackagePlatform.class.name)
+            Map<String, Object> configMap = [:]
+            configMap.putAll(params)
+            configMap.pkgIds = [params.id]
+            Map<String, List> tableData = exportService.generateTitleExportKBART(configMap,TitleInstancePackagePlatform.class.name)
             out.withWriter { writer ->
                 writer.write(exportService.generateSeparatorTableString(tableData.titleRow, tableData.columnData, '\t'))
             }
@@ -599,7 +685,10 @@ class PackageController {
         } else if (params.exportXLSX) {
             response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            Map<String, List> export = exportService.generateTitleExportXLS(titlesList,TitleInstancePackagePlatform.class.name)
+            Map<String, Object> configMap = [:]
+            configMap.putAll(params)
+            configMap.pkgIds = [params.id]
+            Map<String, List> export = exportService.generateTitleExportCustom(params, TitleInstancePackagePlatform.class.name) //no subscription needed
             Map sheetData = [:]
             sheetData[message(code: 'title.plural')] = [titleRow: export.titles, columnData: export.rows]
             SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(sheetData)
@@ -607,6 +696,23 @@ class PackageController {
             response.outputStream.flush()
             response.outputStream.close()
             workbook.dispose()
+        }else if(params.exportClickMeExcel) {
+            if (params.filename) {
+                filename =params.filename
+            }
+
+            ArrayList<TitleInstancePackagePlatform> tipps = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList,[sort:'tipp.sortname']) : [:]
+
+            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+            Map<String, Object> selectedFields = [:]
+            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportTipps(tipps, selectedFields)
+            response.setHeader "Content-disposition", "attachment; filename=${filename}.xlsx"
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
         }
         withFormat {
             html {
@@ -632,6 +738,10 @@ class PackageController {
         }
     }
 
+    /**
+     * Shows the title changes done in the package
+     * @see PendingChange
+     */
     @Secured(['ROLE_USER'])
     def tippChanges() {
         Map<String, Object> result = [:]
@@ -681,6 +791,7 @@ class PackageController {
         result
     }
 
+    @Deprecated
     @Secured(['ROLE_ADMIN'])
     def uploadTitles() {
         Package pkg = Package.get(params.id)
@@ -697,6 +808,7 @@ class PackageController {
         redirect action: 'show', id: params.id
     }
 
+    @Deprecated
     private def attemptXLSLoad(pkg, stream) {
         log.debug("attemptXLSLoad");
         HSSFWorkbook wb = new HSSFWorkbook(stream);
@@ -705,11 +817,13 @@ class PackageController {
         attemptv1XLSLoad(pkg, hssfSheet);
     }
 
+    @Deprecated
     private def attemptCSVLoad(pkg, stream) {
         log.debug("attemptCSVLoad");
         attemptv1CSVLoad(pkg, stream);
     }
 
+    @Deprecated
     private def attemptv1XLSLoad(pkg, hssfSheet) {
 
         log.debug("attemptv1XLSLoad");
@@ -758,12 +872,14 @@ class PackageController {
         processExractedData(pkg, extracted);
     }
 
+    @Deprecated
     private def attemptv1CSVLoad(pkg, stream) {
         log.debug("attemptv1CSVLoad");
         def extracted = [:]
         processExractedData(pkg, extracted);
     }
 
+    @Deprecated
     private def processExractedData(pkg, extracted_data) {
         log.debug("processExractedData...");
         List old_title_list = [[title: [id: 667]], [title: [id: 553]], [title: [id: 19]]]
@@ -772,6 +888,7 @@ class PackageController {
         reconcile(old_title_list, new_title_list);
     }
 
+    @Deprecated
     private def reconcile(old_title_list, new_title_list) {
         def title_list_comparator = new com.k_int.kbplus.utils.TitleComparator()
         Collections.sort(old_title_list, title_list_comparator)
@@ -817,10 +934,17 @@ class PackageController {
         }
     }
 
+    @Deprecated
     def isEditable() {
         SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN, ROLE_PACKAGE_EDITOR')
     }
 
+    /**
+     * Links the given package to the given subscription and creates issue entitlements
+     * of the current package holding. If the package was not available in the app,
+     * the we:kb data will be fetched and data mirrored prior to linking the package
+     * to the subscription
+     */
     @DebugAnnotation(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def processLinkToSub() {
@@ -832,23 +956,30 @@ class PackageController {
             Locale locale = LocaleContextHolder.getLocale()
             Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
             Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
+            boolean bulkProcessRunning = false
             threadArray.each { Thread thread ->
                 if (thread.name == 'PackageSync_' + result.subscription.id && !SubscriptionPackage.findBySubscriptionAndPkg(result.subscription, result.pkg)) {
                     result.message = messageSource.getMessage('subscription.details.linkPackage.thread.running', null, locale)
+                    bulkProcessRunning = true
                 }
             }
             //to be deployed in parallel thread
             if (result.pkg) {
-                String addType = params.addType
-                log.debug("Add package ${addType} entitlements to subscription ${result.subscription}")
-                if (addType == 'With') {
-                    subscriptionService.addToSubscription(result.subscription, result.pkg, true)
-                } else if (addType == 'Without') {
-                    subscriptionService.addToSubscription(result.subscription, result.pkg, false)
-                }
+                if(!bulkProcessRunning) {
+                    executorService.execute({
+                        Thread.currentThread().setName('PackageSync_' + result.subscription.id)
+                        String addType = params.addType
+                        log.debug("Add package ${addType} entitlements to subscription ${result.subscription}")
+                        if (addType == 'With') {
+                            subscriptionService.addToSubscription(result.subscription, result.pkg, true)
+                        } else if (addType == 'Without') {
+                            subscriptionService.addToSubscription(result.subscription, result.pkg, false)
+                        }
 
-                if (addType != null && addType != '') {
-                    subscriptionService.addPendingChangeConfiguration(result.subscription, result.pkg, params.clone())
+                        if (addType != null && addType != '') {
+                            subscriptionService.addPendingChangeConfiguration(result.subscription, result.pkg, params.clone())
+                        }
+                    })
                 }
             }
             switch (params.addType) {
@@ -870,7 +1001,7 @@ class PackageController {
         redirect(url: request.getHeader("referer"))
     }
 
-
+    @Deprecated
     @Secured(['ROLE_ADMIN'])
     def notes() {
         Map<String, Object> result = [:]
@@ -908,6 +1039,7 @@ class PackageController {
     }
     */
 
+    @Deprecated
     @Secured(['ROLE_ADMIN'])
     @Transactional
     def history() {
@@ -1009,12 +1141,18 @@ class PackageController {
         result
     }
 
-    //for that no accidental call may occur ... ROLE_YODA is correct!
+    /**
+     * For that no accidental call may occur ... ROLE_YODA is correct!
+     * Lists duplicates package in the database
+     */
     @Secured(['ROLE_YODA'])
     Map getDuplicatePackages() {
         yodaService.listDuplicatePackages()
     }
 
+    /**
+     * Executes package deduplication and merges duplicate issue entitlements
+     */
     @Secured(['ROLE_YODA'])
     def purgeDuplicatePackages() {
         List<Long> toDelete = (List<Long>) JSON.parse(params.toDelete)

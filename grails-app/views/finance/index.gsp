@@ -85,7 +85,7 @@
         %>
 
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'subscription.details.financials.label')}<semui:totalNumber total="${total.join(' / ')}"/></h1>
-        <g:render template="result" model="[own:own,cons:cons,subscr:subscr,showView:showView,filterPresets:filterPresets]" />
+        <g:render template="result" model="[own:own,cons:cons,subscr:subscr,showView:showView,filterPresets:filterPresets,ciTitles:ciTitles]" />
 
         <g:render template="export/individuallyExportModal" model="[modalID: 'individuallyExportModal']" />
     </body>

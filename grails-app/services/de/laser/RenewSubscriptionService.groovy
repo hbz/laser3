@@ -17,15 +17,24 @@ import org.codehaus.groovy.runtime.InvokerHelper
 import java.nio.file.Files
 import java.nio.file.Path
 
+/**
+ * This service handles the automatic renewal of subscriptions
+ */
 @Transactional
 class RenewSubscriptionService extends AbstractLockableService {
 
     def contextService
 
+    /**
+     * Triggered by cronjob
+     * Checks whether there are local subscriptions due to renewal, if there is a successor and if it has been flagged for automatic renewal.
+     * If so, a successor for the next year ring will be automatically generated
+     * @return true if no instance was running and the method could run through, false otherwise
+     */
     boolean subscriptionRenewCheck() {
         if (!running) {
             running = true
-            println "processing all current local subscriptions with annually peroide to renew ..."
+            println "processing all current local subscriptions with annually periode to renew ..."
             Date currentDate = new Date()
 
             List renewSuccessSubIds = []
@@ -76,6 +85,9 @@ class RenewSubscriptionService extends AbstractLockableService {
                                     log.error("Problem linking to previous subscription: ${prevLink.errors}")
                                     fail = true
                                 }
+
+                                subscription.status = RDStore.SUBSCRIPTION_EXPIRED
+                                subscription.save()
 
                                 //link to license
                                 Set<Links> precedingLicenses = Links.findAllByDestinationSubscriptionAndLinkType(subscription, RDStore.LINKTYPE_LICENSE)
@@ -165,10 +177,16 @@ class RenewSubscriptionService extends AbstractLockableService {
 
                                         if (newIssueEntitlement.save()) {
                                             ie.coverages.each { IssueEntitlementCoverage coverage ->
-                                                def coverageProperties = coverage.properties
-                                                IssueEntitlementCoverage newIssueEntitlementCoverage = new IssueEntitlementCoverage()
-                                                InvokerHelper.setProperties(newIssueEntitlementCoverage, coverageProperties)
-                                                newIssueEntitlementCoverage.issueEntitlement = newIssueEntitlement
+                                                IssueEntitlementCoverage newIssueEntitlementCoverage = new IssueEntitlementCoverage(issueEntitlement: newIssueEntitlement)
+                                                newIssueEntitlementCoverage.startDate = coverage.startDate
+                                                newIssueEntitlementCoverage.startVolume = coverage.startVolume
+                                                newIssueEntitlementCoverage.startIssue = coverage.startIssue
+                                                newIssueEntitlementCoverage.endDate = coverage.endDate
+                                                newIssueEntitlementCoverage.endVolume = coverage.endVolume
+                                                newIssueEntitlementCoverage.endIssue = coverage.endIssue
+                                                newIssueEntitlementCoverage.coverageDepth = coverage.coverageDepth
+                                                newIssueEntitlementCoverage.coverageNote = coverage.coverageNote
+                                                newIssueEntitlementCoverage.embargo = coverage.embargo
 
                                                 if (!newIssueEntitlementCoverage.save()) {
                                                     log.error("Problem saving IssueEntitlementCoverage ${newIssueEntitlementCoverage.errors}")
@@ -177,12 +195,15 @@ class RenewSubscriptionService extends AbstractLockableService {
                                             }
 
                                             ie.priceItems.each { PriceItem priceItem ->
-                                                def priceItemProperties = priceItem.properties
+                                                PriceItem newPriceItem = new PriceItem(issueEntitlement: newIssueEntitlement)
+                                                newPriceItem.startDate = priceItem.startDate
+                                                newPriceItem.endDate = priceItem.endDate
+                                                newPriceItem.listPrice = priceItem.listPrice
+                                                newPriceItem.listCurrency = priceItem.listCurrency
+                                                newPriceItem.localPrice = priceItem.localPrice
+                                                newPriceItem.localCurrency = priceItem.localCurrency
+                                                newPriceItem.setGlobalUID()
 
-                                                PriceItem newPriceItem = new PriceItem()
-                                                InvokerHelper.setProperties(newPriceItem, priceItemProperties)
-                                                newPriceItem.issueEntitlement = newIssueEntitlement
-                                                newPriceItem.globalUID = null
 
                                                 if (!newPriceItem.save()) {
                                                     log.error("Problem saving PriceItem ${newPriceItem.errors}")

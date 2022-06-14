@@ -61,7 +61,7 @@ ${orgInstance.name} - ${message(code: 'menu.institutions.myAddressbook')}
                 </div>
             </div>
 
-            <g:render template="/templates/properties/genericFilter" model="[propList: propList]"/>
+            <g:render template="/templates/properties/genericFilter" model="[propList: propList, label:message(code: 'subscription.property.search')]"/>
         </div>
 
         <div class="two fields">

@@ -4,14 +4,16 @@ package de.laser
 import de.laser.helper.RDConstants
 import grails.gorm.transactions.Transactional
 
+/**
+ * This service handles reference data reordering upon system startup. Customised orderings may be defined in the method below
+ */
 @Transactional
 class RefdataReorderService {
 
-    /*
-        This bootstrapped method should capsulate every reordering queries so that no manual database migration scripts needs to be executed
-
-        !!! Be careful when using rdv.order.
-        This overwrites the sorting, so it may be sorted according to German values. Then the display is wrongly sorted in English!!!
+    /**
+     * This bootstrapped method should capsulate every reordering queries so that no manual database migration scripts needs to be executed
+     * !!! Be careful when using rdv.order.
+     * This overwrites the sorting, so it may be sorted according to German values. Then the display is wrongly sorted in English!!!
      */
     void reorderRefdata() {
         //semesters: take the order of insertion and make then the ID ascending
@@ -57,8 +59,14 @@ class RefdataReorderService {
             c.save()
         }
 
-        //ToDo Order of cost.item.elements
+        //dbs: order by key (question number)
+        order = 10
+        RefdataValue.executeQuery('select rdv from RefdataValue rdv join rdv.owner rdc where rdc.desc = :dbs order by rdv.value asc', [dbs: RDConstants.DBS_SUBJECT_GROUP]).eachWithIndex { RefdataValue rdv, int i ->
+            rdv.order = i*order
+            rdv.save()
+        }
 
+        //ToDo Order of cost.item.elements
 
         List list = []
         list.add([owner: 'concurrent.access',       sortToEnd: ['Other', 'Not Specified']])

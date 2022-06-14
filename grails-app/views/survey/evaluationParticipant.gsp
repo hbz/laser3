@@ -7,7 +7,7 @@
 <html>
 <head>
     <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'myinst.currentSubscriptions.label')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'survey.label')} (${message(code: 'surveyResult.label')}-${message(code: 'surveyParticipants.label')})</title>
 </head>
 
 <body>
@@ -19,17 +19,17 @@
         <semui:crumb controller="survey" action="show" id="${surveyInfo.id}"
                      params="[surveyConfigID: surveyConfig.id]" text="${surveyInfo.name}"/>
     </g:if>
-    <semui:crumb message="myinst.currentSubscriptions.label" class="active"/>
+    <semui:crumb message="surveyResult.label" class="active"/>
 </semui:breadcrumbs>
 
 <semui:controlButtons>
-        %{--<semui:exportDropdown>
+        <semui:exportDropdown>
             <semui:exportDropdownItem>
                 <g:link class="item" controller="survey" action="generatePdfForParticipant"
                         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]">PDF-Export
                 </g:link>
             </semui:exportDropdownItem>
-        </semui:exportDropdown>--}%
+        </semui:exportDropdown>
     <semui:actionsDropdown>
         <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT}">
             <semui:actionsDropdownItem action="renewEntitlements" controller="survey"
@@ -83,7 +83,7 @@
     <g:set var="choosenOrg" value="${Org.findById(participant.id)}"/>
     <g:set var="choosenOrgCPAs" value="${choosenOrg?.getGeneralContactPersons(false)}"/>
 
-    <table class="ui table la-table compact">
+    <table class="ui table la-js-responsive-table la-table compact">
         <tbody>
         <tr>
             <td>

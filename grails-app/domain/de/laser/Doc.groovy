@@ -5,6 +5,11 @@ import de.laser.helper.ConfigUtils
 import de.laser.helper.RDConstants
 import de.laser.annotations.RefdataAnnotation
 
+/**
+ * A document object representation. The document may be an uploaded file with annotations or a note without file. As legacy, automatised messages / announcements were stored as docs as well. This type is specified by the
+ * {@link #contentType} (content has to be understood in terms of technical content, not the intellectual content). This latter is specified by {@link #type} controlled list, see the reference data category {@link RDConstants#DOCUMENT_TYPE} for that.
+ * Moreover, a document has an owner {@link Org} which may restrict its visiblity to other {@link Org}s. See {@link DocContext} for the visibility and sharing handling
+ */
 class Doc {
 
     def grailsApplication
@@ -61,6 +66,11 @@ class Doc {
     migrated  (nullable:true, blank:false, maxSize:1)
   }
 
+    /**
+     * Delivers the document for download
+     * @param response the response output stream to flush the document out into
+     * @param filename the name of file to retrieve
+     */
     def render(def response, def filename) {
         // erms-790
         def output

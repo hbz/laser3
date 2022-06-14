@@ -1,66 +1,75 @@
 println("<-- local config found and loaded -->")
 
-laserSystemId = 'LAS:eR - 1.7'
+activateTestJob = false
 
-aggr_es_cluster         = 'laser2'
-aggr_es_hostname        = '127.0.0.1'
-aggr_es_indices = [
-"DocContext": "laser_doc_contexts",
-"IssueEntitlement": "laser_issue_intitlements",
-"License": "laser_licenses",
-"LicenseProperty": "laser_license_propertys",
-"Org": "laser_orgs",
-"Package": "laser_packages",
-"Platform": "laser_platforms",
-"Subscription": "laser_subscriptions",
-"SubscriptionProperty": "laser_subscription_propertys",
-"SurveyConfig": "laser_survey_configs",
-"SurveyOrg": "laser_survey_orgs",
-"Task": "laser_tasks",
-"TitleInstancePackagePlatform": "laser_tipps",
-]
+aggr_es_cluster = 'laser2'
+aggr_es_hostname  = '127.0.0.1'
 
-
-statsApiUrl             = 'https://xy'
-
-dataSource.url          = 'jdbc:postgresql://localhost:5432/laser'
-dataSource.username     = 'laser'
-dataSource.password     = 'laser'
-
-documentStorageLocation = '/tmp/laser' // uploaded documents
-deployBackupLocation    = documentStorageLocation + '/laserDeployBackups' // database backups (before deploys)
-pgDumpPath              = '/usr/bin/pg_dump'
-
-//basicDataPath = ''
-basicDataFileName       = 'basicDataDump.xml'
-orgDumpFileNamePattern  = 'orgDump_'
-orgDumpFileExtension    = '.xml'
-
-systemEmail                 = 'laser@local'
-notifications.email.from    = 'laser@local'
-notifications.email.replyTo = 'laser@local'
-notifications.email.genericTemplate = true // if enabled, no customisation in email ..  else, customised template will be sent
-
-//grails.plugin.wkhtmltopdf.binary      = '/usr/bin/wkhtmltopdf' // pdf generation; server and local
-//grails.plugin.wkhtmltopdf.xvfbRunner  = '/usr/bin/xvfb-run'    // pdf generation; server only
-
-financials.currency = "EUR|GBP|USD|CHF" // priority of order
-
-activateTestJob                     = false
-isUpdateDashboardTableInDatabase    = false
-isSendEmailsForDueDatesOfAllUsers   = false
-feature_finance                     = true
-notificationsJobActive              = false
-showDebugInfo                       = true
-showSystemInfo                      = true
-//globalDataSyncJobActiv
-//StatsSyncJobActiv
-//schemaSpyScriptPath = "pathTo/dbschema.sh" // QA only
-
-quartzHeartbeat                     = 'Never'
 
 appDefaultPrefs {
     globalDatepickerFormat    = 'yyyy-mm-dd'
     globalDateFormat          = 'yyyy-MM-dd'
     globalDateFormatSQL       = '%Y-%m-%d'
 }
+
+basicDataFileName = 'basicDataDump.xml'
+basicDataPath = ''
+
+
+dataSource.url = 'jdbc:postgresql://localhost:5432/laser'
+dataSource.username = 'laser'
+dataSource.password = 'laser'
+dataSource.dbCreate = 'none'
+
+deployBackupLocation = documentStorageLocation + '/laserDeployBackups' // database backups (before deploys)
+documentStorageLocation = '/tmp/laser' // uploaded documents
+
+financials.currency = "EUR|GBP|USD|CHF" // priority of order
+
+globalDataSyncJobActiv = false
+
+grails.mail.disabled = true
+grails.mail.overrideAddress = "laser@local"
+grails.plugin.wkhtmltopdf.binary = '/usr/bin/wkhtmltopdf' // pdf generation; server and local
+grails.plugin.wkhtmltopdf.xvfbRunner = '/usr/bin/xvfb-run'    // pdf generation; server only
+grails.plugin.databasemigration.updateOnStart = true
+grails.serverURL = 'https://laser-qa.hbz-nrw.de'
+
+isSendEmailsForDueDatesOfAllUsers = false
+isUpdateDashboardTableInDatabase = false
+
+laserStatsSyncJobActive = true
+
+laserSystemId = 'LAS:eR - 1.7'
+
+notifications.email.from = 'laser@local'
+notifications.email.genericTemplate = true // if enabled, no customisation in email ..  else, customised template will be sent
+notifications.email.replyTo = 'laser@local'
+
+notificationsJobActive = false
+
+orgDumpFileExtension = '.xml'
+orgDumpFileNamePattern = 'orgDump_'
+
+pgDumpPath = '/usr/bin/pg_dump'
+
+quartzHeartbeat = 'Never'
+
+reporting.elasticSearch.url = 'http://localhost:9200'
+reporting.elasticSearch.indicies.packages = 'wekbpackages'
+reporting.elasticSearch.indicies.platforms = 'wekbplatforms'
+
+schemaSpyScriptPath = "pathTo/dbschema.sh" // QA only
+
+showDebugInfo = true
+showStatsInfo = true
+showSystemInfo = true
+
+statsApiUrl = 'https://xy'
+StatsSyncJobActiv = true
+
+systemEmail = 'laser@local'
+
+
+
+

@@ -5,6 +5,7 @@ import de.laser.IssueEntitlement
 import de.laser.helper.DateUtils
 import de.laser.reporting.export.LocalExportHelper
 import de.laser.reporting.export.base.BaseDetailsExport
+import de.laser.reporting.report.GenericHelper
 import grails.util.Holders
 import org.grails.plugins.web.taglib.ApplicationTagLib
 
@@ -22,42 +23,34 @@ class IssueEntitlementExport extends BaseDetailsExport {
                     ],
                     fields : [
                             default: [
-                                    'globalUID'             : FIELD_TYPE_PROPERTY,
-                                    '@-entitlement-tippName'              : FIELD_TYPE_CUSTOM_IMPL,   // virtual
-                                    '@-entitlement-tippTitleType'         : FIELD_TYPE_CUSTOM_IMPL,   // virtual
-                                    'medium'                : FIELD_TYPE_REFDATA,
-                                    'acceptStatus'          : FIELD_TYPE_REFDATA,
-                                    'status'                : FIELD_TYPE_REFDATA,
-                                    '@-entitlement-tippFirstAuthor'       : FIELD_TYPE_CUSTOM_IMPL,   // virtual
-                                    '@-entitlement-tippEditionStatement'  : FIELD_TYPE_CUSTOM_IMPL,   // virtual
-                                    '@-entitlement-tippPublisherName'     : FIELD_TYPE_CUSTOM_IMPL,   // virtual
-                                    '@-entitlement-tippSeriesName'        : FIELD_TYPE_CUSTOM_IMPL,   // virtual
-                                    '@-entitlement-tippFirstEditor'       : FIELD_TYPE_CUSTOM_IMPL,   // virtual
-                                    '@-entitlement-tippOpenAccessX'       : FIELD_TYPE_CUSTOM_IMPL,   // virtual
-                                    '@-entitlement-tippDeweyDecimalClassification'    : FIELD_TYPE_CUSTOM_IMPL,   // virtual
-                                    '@-entitlement-tippLanguage'          : FIELD_TYPE_CUSTOM_IMPL,   // virtual
-                                    '@-entitlement-tippSubjectReference'  : FIELD_TYPE_CUSTOM_IMPL,   // virtual
-                                    '@-entitlement-tippProvider'          : FIELD_TYPE_CUSTOM_IMPL,   // virtual
-                                    '@-entitlement-tippPackage'           : FIELD_TYPE_CUSTOM_IMPL,   // virtual
-                                    '@-entitlement-tippPlatform'          : FIELD_TYPE_CUSTOM_IMPL,   // virtual
-                                    '@-entitlement-tippHostPlatformURL'   : FIELD_TYPE_CUSTOM_IMPL,   // virtual
-                                    '@-entitlement-tippIdentifier'        : FIELD_TYPE_CUSTOM_IMPL,    // virtual
-                                    '@-entitlement-priceItem'             : FIELD_TYPE_CUSTOM_IMPL,   // virtual,
+                                    'globalUID'                           : [ type: FIELD_TYPE_PROPERTY ],
+                                    '@-entitlement-tippName'              : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-entitlement-tippTitleType'         : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    'medium'                              : [ type: FIELD_TYPE_REFDATA ],
+                                    'acceptStatus'                        : [ type: FIELD_TYPE_REFDATA ],
+                                    'status'                              : [ type: FIELD_TYPE_REFDATA ],
+                                    '@-entitlement-tippFirstAuthor'       : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-entitlement-tippEditionStatement'  : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-entitlement-tippPublisherName'     : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-entitlement-tippSeriesName'        : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-entitlement-tippFirstEditor'       : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-entitlement-tippOpenAccessX'       : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-entitlement-tippDeweyDecimalClassification' : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-entitlement-tippLanguage'          : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-entitlement-tippSubjectReference'  : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-entitlement-tippProvider+sortname+name' : [ type: FIELD_TYPE_COMBINATION ],
+                                    '@-entitlement-tippPackage'           : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-entitlement-tippPlatform'          : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-entitlement-tippHostPlatformURL'   : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-entitlement-tippIdentifier'        : [ type: FIELD_TYPE_CUSTOM_IMPL ],
+                                    '@-entitlement-priceItem'             : [ type: FIELD_TYPE_CUSTOM_IMPL ]
                             ]
                     ]
             ]
     ]
 
     IssueEntitlementExport(String token, Map<String, Object> fields) {
-        this.token = token
-
-        // keeping order ..
-        getAllFields().keySet().each { k ->
-            if (k in fields.keySet() ) {
-                selectedExportFields.put(k, fields.get(k))
-            }
-        }
-        normalizeSelectedMultipleFields( this )
+        init(token, fields)
     }
 
     @Override
@@ -80,13 +73,13 @@ class IssueEntitlementExport extends BaseDetailsExport {
 
         fields.each{ f ->
             String key = f.key
-            String type = getAllFields().get(f.key)
+            String type = getAllFields().get(f.key)?.type
 
             // --> generic properties
             if (type == FIELD_TYPE_PROPERTY) {
 
                 if (key == 'globalUID') {
-                    content.add( g.createLink( controller: 'issueEntitlement', action: 'show', absolute: true ) + '/' + ie.getProperty(key) as String )
+                    content.add( g.createLink( controller: 'issueEntitlement', action: 'show', absolute: true ) + '/' + ie.getProperty(key) + '@' + ie.getProperty(key) )
                 }
                 else {
                     content.add( getPropertyContent(ie, key, IssueEntitlement.getDeclaredField(key).getType()))
@@ -142,7 +135,7 @@ class IssueEntitlementExport extends BaseDetailsExport {
                         ids = Identifier.executeQuery( "select i from Identifier i where i.value != null and i.value != '' and i.tipp = :tipp and i.ns.id in (:idnsList)",
                                 [tipp: ie.tipp, idnsList: f.value] )
                     }
-                    content.add( ids.collect{ (it.ns.getI10n('name') ?: it.ns.ns + ' *') + ':' + it.value }.join( CSV_VALUE_SEPARATOR ))
+                    content.add( ids.collect{ (it.ns.getI10n('name') ?: GenericHelper.flagUnmatched( it.ns.ns )) + ':' + it.value }.join( CSV_VALUE_SEPARATOR ))
                 }
                 else if (key == '@-entitlement-tippSubjectReference') {
                     content.add( ie.tipp.subjectReference ?: '' )
@@ -165,12 +158,12 @@ class IssueEntitlementExport extends BaseDetailsExport {
                 else if (key == '@-entitlement-tippPlatform') {
                     content.add( ie.tipp.platform?.name ?: '' )
                 }
-                else if (key == '@-entitlement-tippProvider') {
-                    List<String> pList = ie.tipp.getPublishers().collect{ p -> // ??? publisher != provider
-                        p.name
-                    }
-                    content.add( pList ? pList.join( CSV_VALUE_SEPARATOR ) : '' )
-                }
+//                else if (key == '@-entitlement-tippProvider') {
+//                    List<String> pList = ie.tipp.getPublishers().collect{ p -> // ??? publisher != provider
+//                        p.name
+//                    }
+//                    content.add( pList ? pList.join( CSV_VALUE_SEPARATOR ) : '' )
+//                }
                 else if (key == '@-entitlement-tippPublisherName') {
                     content.add( ie.tipp.publisherName ?: '' )
                 }
@@ -184,8 +177,16 @@ class IssueEntitlementExport extends BaseDetailsExport {
                     content.add( ie.tipp.titleType ?: '' )
                 }
             }
+            // --> combined properties : TODO
+            else if (key in ['@-entitlement-tippProvider+sortname', '@-entitlement-tippProvider+name']) {
+                String prop = key.split('\\+')[1]
+                List<String> pList = ie.tipp.getPublishers().collect{ p -> // ??? publisher != provider
+                    p.getProperty(prop) as String
+                }
+                content.add( pList ? pList.join( CSV_VALUE_SEPARATOR ) : '' )
+            }
             else {
-                content.add( '- not implemented -' )
+                content.add( '- ' + key + ' not implemented -' )
             }
         }
 

@@ -5,10 +5,22 @@ import de.laser.interfaces.ShareSupport
 import de.laser.titles.TitleInstance
 import grails.gorm.transactions.Transactional
 
+/**
+ * This service handles the sharing of objects from a parent to member objects.
+ * This is insofar different from inheriting as no object copies are generated, only the access is being multiplied
+ * @see DocContext
+ * @see ShareSupport
+ */
 //@CompileStatic
 @Transactional
 class ShareService {
 
+    /**
+     * Adds a share flag to the given document link so that the document may be accessed from member objects as well
+     * @param share the context to be shared
+     * @param target the share flag
+     * @return true if the setting was successful, false otherwise
+     */
     boolean addDocShareForTarget(DocContext share, ShareSupport target) {
 
         if (share.sharedFrom) {
@@ -55,6 +67,12 @@ class ShareService {
         return false
     }
 
+    /**
+     * Removes the given share flag
+     * @param share unused
+     * @param target the share flag to unset
+     * @return true if the flag could be removed successfully, false otherwise
+     */
     boolean deleteDocShareForTarget(DocContext share, ShareSupport target) {
 
         String tp =
@@ -71,6 +89,12 @@ class ShareService {
         return false
     }
 
+    /**
+     * Adds a share flag to the given organisational relation so that the organisation may be accessed from member objects as well
+     * @param share the role to be shared
+     * @param target the share flag
+     * @return true if the setting was successful, false otherwise
+     */
     boolean addOrgRoleShareForTarget(OrgRole share, ShareSupport target) {
 
         if (share.sharedFrom) {
@@ -102,6 +126,12 @@ class ShareService {
         return false
     }
 
+    /**
+     * Removes the given share flag
+     * @param share unused
+     * @param target the share flag to unset
+     * @return true if the flag could be removed successfully, false otherwise
+     */
     boolean deleteOrgRoleShareForTarget(OrgRole share, ShareSupport target) {
 
         String tp =

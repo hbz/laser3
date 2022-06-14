@@ -18,6 +18,9 @@ import grails.gorm.transactions.Transactional
 import java.nio.file.Files
 import java.nio.file.Path
 
+/**
+ * This service should manage institution-related matters
+ */
 @Transactional
 class InstitutionsService {
 
@@ -27,6 +30,18 @@ class InstitutionsService {
     static final CUSTOM_PROPERTIES_COPY_HARD        = 'CUSTOM_PROPERTIES_COPY_HARD'
     static final CUSTOM_PROPERTIES_ONLY_INHERITED   = 'CUSTOM_PROPERTIES_ONLY_INHERITED'
 
+    /**
+     * Creates a copy of the given license. Although the method may suggest it, this is not the
+     * actual license copying workflow. Here, a license is being copied iff
+     * <ul>
+     *     <li>a member license is being generated for a consortial license</li>
+     *     <li><s>a concrete license instance is created based on a license template</s> (unreachable and deprecated)</li>
+     * </ul>
+     * @param base the license which should be copied
+     * @param params parameter map containing an eventual consortium and the license name
+     * @param option how should custom properties being copied?
+     * @return the license copy
+     */
     License copyLicense(License base, params, Object option) {
 
         if (! base) {
@@ -165,8 +180,10 @@ class InstitutionsService {
     }
 
     /**
-     * Rules [insert, delete, update, noChange]
-    **/
+     * Should build a comparison map; is in this state subject of refactoring since it is based on the
+     * outdated central title instance model
+     */
+    @Deprecated
     def generateComparisonMap(unionList, mapA, mapB, offset, toIndex, rules){
       def result = new TreeMap()
       def insert = rules[0]

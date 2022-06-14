@@ -15,11 +15,17 @@ import de.laser.helper.RDStore
 import grails.converters.JSON
 import groovy.util.logging.Slf4j
 
+/**
+ * This class in a special endpoint implementation exclusively for the National Statistics Server (Nationaler Statistikserver)
+ */
 @Slf4j
 class ApiStatistic {
 
     /**
-     * checks implicit NATSTAT_SERVER_ACCESS
+     * Checks implicit NATSTAT_SERVER_ACCESS, i.e. if there are package subscribers gave permission to their data for the Nationaler Statistikserver
+     * harvesters
+     * @param pkg the {@link Package} which should be accessed
+     * @return true if the package belongs to the accessible ones, false otherwise
      */
     static boolean calculateAccess(Package pkg) {
 
@@ -32,7 +38,8 @@ class ApiStatistic {
     }
 
     /**
-     * checks NATSTAT_SERVER_ACCESS
+     * Checks NATSTAT_SERVER_ACCESS; lists the institutions which gave permission to the Nationaler Statistikserver to access their data
+     * @return a {@link List} of institutions ({@link Org}) who opened their data to the Nationaler Statistikserver
      */
     static private List<Org> getAccessibleOrgs() {
 
@@ -48,7 +55,9 @@ class ApiStatistic {
     }
 
     /**
-     * checks implicit NATSTAT_SERVER_ACCESS
+     * Checks implicit NATSTAT_SERVER_ACCESS; lists the packages which are subscribed by institutions who gave permission to the
+     * Nationaler Statistikserver to access their data
+     * @return a {@link List} of {@link Package}s that are subscribed by institutions who opened up their data for Nationaler Statistikserver
      */
     static private List<Package> getAccessiblePackages() {
 
@@ -70,9 +79,11 @@ class ApiStatistic {
     }
 
     /**
-     * checks implicit NATSTAT_SERVER_ACCESS
-     *
+     * Gets a list of package stubs of packages subscribed by NatStat access permitting institutions.
+     * Checks implicit NATSTAT_SERVER_ACCESS; i.e. only those packages are being listed which are subscribed by at least one
+     * subscriber who gave permission to the Nationaler Statistikserver to access its data
      * @return JSON
+     * @see ApiUnsecuredMapReader#getPackageStubMap(de.laser.Package)
      */
     static JSON getAllPackages() {
         Collection<Object> result = []
@@ -85,6 +96,9 @@ class ApiStatistic {
     }
 
     /**
+     * Checks if there is access for the given package, i.e. if there is at least one subscriber to this package
+     * that gave permission to access its data to the Nationaler Statistikserver
+     * @param pkg the {@link Package} to which access is being requested
      * @return JSON | FORBIDDEN
      */
     static requestPackage(Package pkg) {
@@ -108,7 +122,7 @@ class ApiStatistic {
 
             // References
             result.contentProvider  = getPkgOrganisationCollection(pkg.orgs)
-            result.license          = getPkgLicense(pkg.license)
+            //result.license          = getPkgLicense(pkg.license)
             result.identifiers      = ApiCollectionReader.getIdentifierCollection(pkg.ids) // de.laser.Identifier
             //result.platforms        = resolvePkgPlatforms(pkg.nominalPlatform)
             //result.tipps            = resolvePkgTipps(pkg.tipps)
@@ -120,6 +134,13 @@ class ApiStatistic {
         return (hasAccess ? new JSON(result) : Constants.HTTP_FORBIDDEN)
     }
 
+    /**
+     * Retrieves a collection of organisations (i.e. content providers) linked to a package
+     * @param orgRoles the outgoing relation set from the given package
+     * @return a {@link Map} of stubs showing the organisations linked to the given package
+     * @see OrgRole
+     * @see ApiUnsecuredMapReader#getOrganisationStubMap(de.laser.Org)
+     */
     static private Collection<Object> getPkgOrganisationCollection(Set<OrgRole> orgRoles) {
         if (! orgRoles) {
             return null
@@ -139,6 +160,7 @@ class ApiStatistic {
         ApiToolkit.cleanUp(result, true, true)
     }
 
+    @Deprecated
     static private Map<String, Object> getPkgLicense(License lic) {
         if (! lic) {
             return null
@@ -185,6 +207,13 @@ class ApiStatistic {
     }
     */
 
+    /**
+     * Gets all subscriptions with their respective holdings. Shown are those subscriptions whose tenants gave permission to the Nationaler
+     * Statistikserver to access their data and are themselves public for API usage
+     * @param subscriptionPackages the set of subscriptions attached to the package
+     * @param accessibleOrgs the list of institutions open to Nationaler Statistikserver (that includes the check for NATSTAT_SERVER_ACCESS)
+     * @return a {@link List} of {@link Map}s containing subscription stubs with holdings and subscriber stubs
+     */
     static private Collection<Object> getPkgSubscriptionCollection(Set<SubscriptionPackage> subscriptionPackages, List<Org> accessibleOrgs) {
         if (!subscriptionPackages) {
             return null

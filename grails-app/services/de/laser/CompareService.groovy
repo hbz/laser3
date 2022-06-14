@@ -7,6 +7,10 @@ import de.laser.properties.PropertyDefinitionGroupBinding
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 
+/**
+ * A service managing comparison calls for the entity copy functionality.
+ * Not to confound with the {@link ComparisonService}
+ */
 @Transactional
 class CompareService {
 
@@ -17,7 +21,11 @@ class CompareService {
     SubscriptionService subscriptionService
     FilterService filterService
 
-
+    /**
+     * Returns the list of base elements depending on the given object class
+     * @param obj the object whose base attributes should be retrieved
+     * @return a list of base attributes either for {@link Subscription} or {@link License}
+     */
     List compareElements(Object obj) {
         List result = []
         switch (obj.class.simpleName) {
@@ -31,6 +39,11 @@ class CompareService {
         result
     }
 
+    /**
+     * Compares the properties of the given list of objects and groups them by public properties with or without group and private properties
+     * @param objects a list of objects with properties to compare
+     * @return a map containing for each grouped, orphaned and private properties the sets of properties for each object
+     */
     Map compareProperties(List objects) {
         LinkedHashMap result = [groupedProperties: [:], orphanedProperties: [:], privateProperties: [:]]
         Org contextOrg = contextService.getOrg()
@@ -106,7 +119,11 @@ class CompareService {
         result
     }
 
-
+    /**
+     * Retrieves a list of licenses eligible as copy targets. The list may be filtered
+     * @param params a parameter map containing filter settings
+     * @return a (filtered) list of licenses
+     */
     List getMyLicenses(Map params) {
 
         Map<String, Object> result = [:]
@@ -160,6 +177,11 @@ class CompareService {
 
     }
 
+    /**
+     * Retrieves a list of subscriptions eligible as copy targets. The list may be filtered
+     * @param params a parameter map containing filter settings
+     * @return a (filtered) list of subscriptions
+     */
     List getMySubscriptions(Map params) {
 
         Map<String, Object> result = [:]
@@ -200,6 +222,13 @@ class CompareService {
 
     }
 
+    /**
+     * Retrieves a set of issue entitlements for the given subscription (defined in configMap), loading from the given offset
+     * the given maximum count of objects
+     * @param grailsParameterMap the parameter map with query parameters
+     * @param configMap a map containing configuration params to restrict loading
+     * @return a list of issue entitlements
+     */
     Map compareEntitlements(GrailsParameterMap grailsParameterMap, Map<String, Object> configMap) {
         List objects = configMap.objects
         LinkedHashMap result = [ies: [:]]

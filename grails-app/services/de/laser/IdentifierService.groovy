@@ -7,6 +7,9 @@ import grails.gorm.transactions.Transactional
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
+/**
+ * This service manages generic identifier-related calls
+ */
 @Transactional
 class IdentifierService {
 
@@ -16,6 +19,7 @@ class IdentifierService {
     ContextService contextService
     LicenseControllerService licenseControllerService
 
+    @Deprecated
     void checkNullUIDs() {
         List<Person> persons = Person.findAllByGlobalUIDIsNull()
         persons.each { Person person ->
@@ -53,6 +57,12 @@ class IdentifierService {
         }
     }
 
+    /**
+     * Deletes the given identifier from the given owner. If the identifier is
+     * one of the core institution namespaces, it will be unset instead of deleted
+     * @param ownerKey the owner OID from which the identifier should be removed
+     * @param targetKey the identifier OID to remove
+     */
     void deleteIdentifier(String ownerKey, String targetKey) {
         def owner = genericOIDService.resolveOID(ownerKey)
         def target = genericOIDService.resolveOID(targetKey)
@@ -71,6 +81,12 @@ class IdentifierService {
         }
     }
 
+    /**
+     * This is a wrapper method to prepare the display of an object's identifiers in the identifier table
+     * @param object the object whose identifiers should be displayed
+     * @param contextOrg the context institution whose consortial access should be checked
+     * @return a parameter map for the object ID table
+     */
     Map<String, Object> prepareIDsForTable(object, Org contextOrg = contextService.getOrg()) {
         boolean objIsOrgAndInst = object instanceof Org && object.getAllOrgTypeIds().contains(RDStore.OT_INSTITUTION.id)
         Locale locale = LocaleContextHolder.getLocale()

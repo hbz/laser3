@@ -11,7 +11,10 @@
 
 <g:render template="breadcrumb" model="${[params: params]}"/>
 
-<h1 class="ui icon header la-noMargin-top"><semui:headerIcon/>
+<h1 class="ui icon header la-noMargin-top"><semui:headerTitleIcon type="Subscription"/>
+<g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
+    <g:render template="iconSubscriptionIsChild"/>
+</g:if>
 <semui:xEditable owner="${subscription}" field="name"/>
 </h1>
 <semui:anualRings object="${subscription}" controller="subscription" action="entitlementChanges"
@@ -24,11 +27,11 @@
 </g:if>
 
 
-<div class="ui top attached tabular menu">
+<div class="ui top attached stackable tabular menu">
     <g:link controller="subscription" action="entitlementChanges" id="${subscription.id}" params="[tab: 'changes', eventType: params.eventType]"
             class="item ${params.tab == "changes" ? 'active' : ''}">
         <g:message code="myinst.menu.pendingChanges.label"/>
-        <span class="ui circular label">
+        <span class="ui blue circular label">
             ${countPendingChanges}
         </span>
     </g:link>
@@ -37,7 +40,7 @@
             params="[tab: 'acceptedChanges', eventType: params.eventType]"
             class="item ${params.tab == "acceptedChanges" ? 'active' : ''}">
         <g:message code="myinst.menu.acceptedChanges.label"/>
-        <span class="ui circular label">
+        <span class="ui blue circular label">
             ${countAcceptedChanges}
         </span>
     </g:link>
@@ -58,7 +61,7 @@
         </g:form>
     </g:if>
 
-    <div class="ui top attached tabular menu">
+    <div class="ui top attached stackable tabular menu">
         <g:set var="eventTabs" value="${PendingChangeConfiguration.SETTING_KEYS-[PendingChangeConfiguration.PACKAGE_PROP, PendingChangeConfiguration.PACKAGE_DELETED]}"/>
         <g:each in="${eventTabs}" var="event">
             <g:link controller="subscription" action="entitlementChanges" id="${subscription.id}"
@@ -112,7 +115,7 @@
     </div>
     <div class="ui bottom attached tab active segment">
         <g:set var="counter" value="${offset + 1}"/>
-        <table class="ui celled la-table table sortable">
+        <table class="ui celled la-js-responsive-table la-table table sortable">
             <thead>
             <tr>
                 <th>${message(code: 'sidewide.number')}</th>

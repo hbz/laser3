@@ -44,7 +44,7 @@
                 </div>
                 <div class="${active} content">
                     <g:form class="ui form" action="managePrivatePropertyDefinitions" method="post">
-                        <table class="ui celled la-table compact table">
+                        <table class="ui celled la-js-responsive-table la-table compact table">
                             <thead>
                                 <tr>
                                     <th></th>
@@ -53,7 +53,7 @@
                                     <th>${message(code:'propertyDefinition.expl.label')}</th>
                                     <th>${message(code:'default.type.label')}</th>
                                     <th>${message(code:'propertyDefinition.count.label')}</th>
-                                    <g:if test="${editable}">
+                                    <g:if test="${editable || changeProperties}">
                                         <th class="la-action-info">${message(code:'default.actions.label')}</th>
                                     </g:if>
                                 </tr>
@@ -108,44 +108,53 @@
                                             </g:if>
                                         </td>
                                         <td>
-                                            <span class="ui circular label">
+
                                                 <g:if test="${pd.descr == PropertyDefinition.LIC_PROP}">
-                                                    <g:link controller="myInstitution" action="currentLicenses" params="${[filterPropDef:genericOIDService.getOID(pd),filterSubmit:true]}">${pd.countOwnUsages()}</g:link>
+                                                    <g:link controller="myInstitution" action="currentLicenses" params="${[filterPropDef:genericOIDService.getOID(pd),filterSubmit:true]}">
+                                                        <div class="ui blue circular label">
+                                                            ${pd.countOwnUsages()}
+                                                        </div>
+                                                    </g:link>
                                                 </g:if>
                                                 <g:elseif test="${pd.descr == PropertyDefinition.SUB_PROP}">
-                                                    <g:link controller="myInstitution" action="currentSubscriptions" params="${[filterPropDef:genericOIDService.getOID(pd),status:'FETCH_ALL']}">${pd.countOwnUsages()}</g:link>
+                                                    <g:link controller="myInstitution" action="currentSubscriptions" params="${[filterPropDef:genericOIDService.getOID(pd),status:'FETCH_ALL']}">
+                                                        <div class="ui blue circular label">
+                                                            ${pd.countOwnUsages()}
+                                                        </div>
+                                                    </g:link>
                                                 </g:elseif>
                                                 <%-- TODO platforms and orgs do not have property filters yet, they must be built! --%>
                                                 <g:else>
-                                                    ${pd.countOwnUsages()}
+                                                    <div class="ui circular label">
+                                                        ${pd.countOwnUsages()}
+                                                    </div>
                                                 </g:else>
-                                            </span>
+
                                         </td>
-                                        <g:if test="${editable}">
-                                            <td class="x">
+                                        <td class="x">
+                                            <g:if test="${editable}">
                                                 <g:if test="${pd.mandatory}">
-                                                    <g:link action="managePrivatePropertyDefinitions" data-tooltip="${message(code:'propertyDefinition.unsetMandatory.label')}" data-position="left center"
-                                                            params="${[cmd: 'toggleMandatory', pd: genericOIDService.getOID(pd)]}" class="ui icon yellow button">
+                                                    <g:link action="managePrivatePropertyDefinitions" data-content="${message(code:'propertyDefinition.unsetMandatory.label')}" data-position="left center"
+                                                            params="${[cmd: 'toggleMandatory', pd: genericOIDService.getOID(pd)]}" class="ui icon yellow button la-modern-button la-popup-tooltip la-delay">
                                                         <i class="star icon"></i>
                                                     </g:link>
                                                 </g:if>
                                                 <g:else>
-                                                    <g:link action="managePrivatePropertyDefinitions" data-tooltip="${message(code:'propertyDefinition.setMandatory.label')}" data-position="left center"
-                                                            params="${[cmd: 'toggleMandatory', pd: genericOIDService.getOID(pd)]}" class="ui icon button">
-                                                        <i class="star yellow icon"></i>
+                                                    <g:link action="managePrivatePropertyDefinitions" data-content="${message(code:'propertyDefinition.setMandatory.label')}" data-position="left center"
+                                                            params="${[cmd: 'toggleMandatory', pd: genericOIDService.getOID(pd)]}" class="ui icon blue button la-modern-button la-popup-tooltip la-delay">
+                                                        <i class="la-star slash icon"></i>
                                                     </g:link>
                                                 </g:else>
                                                 <g:if test="${!multiplePdList?.contains(pd.id)}">
                                                     <g:if test="${pd.multipleOccurrence}">
-                                                        <g:link action="managePrivatePropertyDefinitions" data-tooltip="${message(code:'propertyDefinition.unsetMultiple.label')}" data-position="left center"
-                                                                params="${[cmd: 'toggleMultipleOccurrence', pd: genericOIDService.getOID(pd)]}" class="ui icon orange button">
+                                                        <g:link action="managePrivatePropertyDefinitions" data-content="${message(code:'propertyDefinition.unsetMultiple.label')}" data-position="left center"
+                                                                params="${[cmd: 'toggleMultipleOccurrence', pd: genericOIDService.getOID(pd)]}" class="ui icon orange button la-modern-button la-popup-tooltip la-delay">
                                                             <i class="redo slash icon"></i>
                                                         </g:link>
                                                     </g:if>
                                                     <g:else>
-                                                        <g:link action="managePrivatePropertyDefinitions" data-tooltip="${message(code:'propertyDefinition.setMultiple.label')}" data-position="left center"
-                                                                params="${[cmd: 'toggleMultipleOccurrence', pd: genericOIDService.getOID(pd)]}" class="ui icon button">
-                                                            <i class="redo orange icon"></i>
+                                                        <g:link action="managePrivatePropertyDefinitions" data-content="${message(code:'propertyDefinition.setMultiple.label')}" data-position="left center" params="${[cmd: 'toggleMultipleOccurrence', pd: genericOIDService.getOID(pd)]}" class="ui icon blue button la-modern-button la-popup-tooltip la-delay">
+                                                            <i class="la-redo slash icon"></i>
                                                         </g:link>
                                                     </g:else>
                                                 </g:if>
@@ -161,13 +170,28 @@
                                                     </g:link>
                                                 </g:if>
                                                 <g:else>
-                                                    <%-- hidden fake button to keep the other button in place --%>
-                                                    <div class="ui icon button la-hidden">
-                                                        <i class="coffe icon"></i>
-                                                    </div>
+                                                    <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'propertyDefinition.exchange.label')}">
+                                                        <button class="ui icon blue button la-modern-button" data-href="#replacePropertyDefinitionModal" data-semui="modal"
+                                                                data-xcg-pd="${pd.class.name}:${pd.id}"
+                                                                data-xcg-type="${pd.type}"
+                                                                data-xcg-rdc="${pd.refdataCategory}"
+                                                                data-xcg-debug="${pd.getI10n('name')}">
+                                                            <i class="exchange icon"></i>
+                                                        </button>
+                                                    </span>
                                                 </g:else>
-                                            </td>
-                                        </g:if>
+                                            </g:if>
+                                            <g:elseif test="${changeProperties && pd.countOwnUsages() > 0}">
+                                                <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'propertyDefinition.exchange.label')}">
+                                                    <button class="ui icon blue button la-modern-button" data-href="#replacePropertyDefinitionModal" data-semui="modal"
+                                                            data-xcg-pd="${pd.class.name}:${pd.id}"
+                                                            data-xcg-type="${pd.type}"
+                                                            data-xcg-rdc="${pd.refdataCategory}"
+                                                            data-xcg-debug="${pd.getI10n('name')}"
+                                                    ><i class="exchange icon"></i></button>
+                                                </span>
+                                            </g:elseif>
+                                        </td>
                                     </tr>
                                 </g:each>
                             </tbody>
@@ -178,6 +202,7 @@
         </div>
      </g:if>
 
+    <g:render template="/myInstitution/replacePropertyDefinition" model="[action: actionName]"/>
 
     <semui:modal id="addPropertyDefinitionModal" message="propertyDefinition.create_new.label">
 

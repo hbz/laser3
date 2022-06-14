@@ -249,6 +249,75 @@ r2d2 = {
                 }
             }
         });
+
+        //Pagination: Custom Input Page Number
+        $(".la-pagination-custom-link").on( "click", function(e) {
+            validateInput(e);
+
+        });
+
+        $('.la-pagination-custom-input input').bind('keypress', function(e) {
+            if(e.keyCode==13){
+                validateInput(e);
+                if (isValid == 1) {
+                    location.href = $('.la-pagination-custom-link').attr('href');
+                    $("html").css("cursor", "wait");
+                }
+            }
+        });
+
+        function validateInput(e){
+            $.fn.form.settings.rules.smallerEqualThanTotal = function (inputValue) {
+                let inputValueNumber = parseInt(inputValue);
+                return inputValueNumber <= Math.round(Math.ceil($('.la-pagination-custom-input').data('total')/10));
+            } ;
+            $.fn.form.settings.rules.biggerThan = function (inputValue, validationValue) {
+                let inputValueNumber = parseInt(inputValue);
+                return inputValueNumber > validationValue;
+            } ;
+            $(".la-pagination-custom-input .ui.form").form({
+                inline: true,
+                fields: {
+                    paginationCustomInput: {
+                        identifier: "paginationCustomInput",
+                        rules: [
+                            {
+                                type: "empty",
+                                prompt: JSPC.dict.get('pagination.keyboardInput.validation.integer', JSPC.currLanguage)
+                            },
+                            {
+                                type: "integer",
+                                prompt: JSPC.dict.get('pagination.keyboardInput.validation.integer', JSPC.currLanguage)
+                            },
+                            {
+                                type: "smallerEqualThanTotal",
+                                prompt: JSPC.dict.get('pagination.keyboardInput.validation.smaller', JSPC.currLanguage)
+                            },
+                            {
+                                type: "biggerThan[0]",
+                                prompt: JSPC.dict.get('pagination.keyboardInput.validation.biggerZero', JSPC.currLanguage)
+                            }
+                        ]
+                    }
+                },
+                onInvalid: function() {
+                    return (isValid = 0);
+                },
+                onValid: function() {
+                    return (isValid = 1);
+                }
+            });
+
+            $(".la-pagination-custom-input .ui.form").form("validate form");
+
+
+            if (isValid == 0) {
+                e.preventDefault();
+            }
+            else {
+                $("html").css("cursor", "wait");
+            }
+        }
     },
 
 
@@ -403,6 +472,7 @@ r2d2 = {
         console.log("r2d2.initDynamicSemuiStuff( " + ctxSel + " )")
 
         if (! ctxSel) { return null }
+        let confirmationModalXeditableFlag = false;
 
         //tooltip
         tooltip.init(ctxSel);
@@ -465,14 +535,23 @@ r2d2 = {
         });
 
         // accordions
-        $(ctxSel + ' .ui.accordion').accordion({
+
+        $(ctxSel + ' .ui.accordion').accordion();
+
+        $(ctxSel + ' .ui.la-metabox.accordion').accordion({
+
             onOpening: function() {
-                $(".table").trigger('reflow')
+                //$(".table").trigger('reflow');
+                $(".la-metabox ").css({'box-shadow':'0 1px 10px 0 rgb(34 36 38 / 40%)','transition' :'box-shadow 0.3s ease-in-out'});
             },
             onOpen: function() {
-                $(".table").trigger('reflow')
+                //$(".table").trigger('reflow')
+            },
+            onClose: function() {
+                $(".la-metabox ").css('box-shadow','none');
             }
         });
+
 
         // tabs
         $(ctxSel + ' .tabular.menu .item').tab();
@@ -507,6 +586,7 @@ r2d2 = {
             selectOnKeydown: false,
             fullTextSearch: 'exact',
             clearable: true,
+            message: {noResults:JSPC.dict.get('select2.noMatchesFound', JSPC.currLanguage)}
         });
 
         // FILTER
@@ -525,11 +605,21 @@ r2d2 = {
             selectOnKeydown: false,
             fullTextSearch: 'exact',
             clearable: true,
+            message: {noResults:JSPC.dict.get('select2.noMatchesFound', JSPC.currLanguage)},
             onChange: function(value, text, $choice){
                 (value !== '') ? _addFilterDropdown(this) : _removeFilterDropdown(this);
             }
         });
-
+        $(ctxSel + ' .la-filter .ui.dropdown.allowAdditions').dropdown({
+            allowAdditions: true,
+            forceSelection: false,
+            hideAdditions: false,
+            clearable: true,
+            message: {addResult:JSPC.dict.get('dropdown.message.addResult', JSPC.currLanguage)},
+            onChange: function(value, text, $choice){
+                (value !== '') ? _addFilterDropdown(this) : _removeFilterDropdown(this);
+            }
+        });
         // dropdowns escape
         $(ctxSel + ' .la-filter .ui.dropdown').on('keydown', function(e) {
             if(['Escape','Backspace','Delete'].includes(event.key)) {
@@ -582,11 +672,8 @@ r2d2 = {
 
         // confirmation modal
         function _buildConfirmationModal(elem) {
+                var ajaxUrl = elem ? elem.getAttribute("data-confirm-messageUrl") : false;
 
-                //var $body = $('body');
-                //var $modal = $('#js-modal');
-                //var focusableElementsString = "a[href], area[href], input:not([type='hidden']):not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), iframe, object, embed, *[tabindex], *[contenteditable]";
-                var ajaxUrl = elem.getAttribute("data-confirm-messageUrl")
                 if (ajaxUrl) {
                     $.ajax({
                         url: ajaxUrl
@@ -602,12 +689,14 @@ r2d2 = {
                         })
                 }
 
-                var tokenMsg = elem.getAttribute("data-confirm-tokenMsg") ? elem.getAttribute("data-confirm-tokenMsg") : false;
+                var tokenMsg = elem ? elem.getAttribute("data-confirm-tokenMsg") : false;
                 tokenMsg ? $('#js-confirmation-term').html(tokenMsg) : $("#js-confirmation-term").remove();
 
-                var dataAttr = elem.getAttribute("data-confirm-id")? elem.getAttribute("data-confirm-id")+'_form':false;
-                var how = elem.getAttribute("data-confirm-term-how") ? elem.getAttribute("data-confirm-term-how"):"delete";
-                var url = elem.getAttribute('href') && (elem.getAttribute('class').indexOf('la-js-remoteLink') == -1) && (elem.getAttribute('class') != 'js-gost') ? elem.getAttribute('href'): false; // use url only if not remote link
+                var dataAttr = elem ? elem.getAttribute("data-confirm-id")+'_form':false;
+                var how = elem ? elem.getAttribute("data-confirm-term-how"):"delete";
+                if (elem) {
+                    var url = elem.getAttribute('href') && (elem.getAttribute('class').indexOf('la-js-remoteLink') == -1) && (elem.getAttribute('class') != 'js-gost') ? elem.getAttribute('href'): false; // use url only if not remote link
+                }
                 var $jscb = $('#js-confirmation-button')
 
                 switch (how) {
@@ -684,6 +773,13 @@ r2d2 = {
                             if (remoteLink) {
                                 bb8.ajax4remoteLink(elem)
                             }
+                            // x-editable
+                            if (confirmationModalXeditableFlag == true) {
+                                $(document).on('click', '#js-confirmation-button', function(event) {
+                                    confirmationModalXeditableFlag = true;
+                                    $('button.editable-submit').click();
+                                });
+                            }
                             $('#js-confirmation-content-term').html('');
                         },
                         onDeny : function() {
@@ -691,6 +787,10 @@ r2d2 = {
                             // delete hidden field
                             if ($('#additionalHiddenField')) {
                                 $('#additionalHiddenField').remove();
+                            }
+                            // x-editable
+                            if (confirmationModalXeditableFlag == true) {
+                                $('button.editable-cancel').click();
                             }
                         }
 
@@ -702,6 +802,23 @@ r2d2 = {
         $(ctxSel + ' .js-open-confirm-modal').click(function(e) {
             e.preventDefault();
             _buildConfirmationModal(this);
+        });
+
+        // x-editable
+        $('.js-open-confirm-modal-xeditable').next('.editable-container.editable-inline').find('.button.editable-submit').click(function(e) {
+            let test = $('.js-open-confirm-modal-xeditable').data('confirm-value');
+
+
+            if ($('.js-open-confirm-modal-xeditable').next('.editable-container.editable-inline').find('select').val() ==  $('.js-open-confirm-modal-xeditable').data('confirm-value')) {
+
+                if (confirmationModalXeditableFlag == false) {
+                    e.preventDefault();
+                    confirmationModalXeditableFlag = true;
+
+                    let x = $('.js-open-confirm-modal-xeditable')[0];
+                    _buildConfirmationModal(x);
+                }
+            }
         });
 
         // for old remote links = ajax calls

@@ -4,16 +4,20 @@
 <g:set var="formService" bean="formService"/>
 
 <semui:form>
-    <g:render template="/templates/copyElements/selectSourceAndTargetObject" model="[
-            sourceObject          : sourceObject,
-            targetObject          : targetObject,
-            allObjects_readRights : allObjects_readRights,
-            allObjects_writeRights: allObjects_writeRights]"/>
-    <g:form action="copyElementsIntoSubscription" controller="subscription"
+
+    <g:if test="${!copyObject}">
+        <g:render template="/templates/copyElements/selectSourceAndTargetObject" model="[
+                sourceObject          : sourceObject,
+                targetObject          : targetObject,
+                allObjects_readRights : allObjects_readRights,
+                allObjects_writeRights: allObjects_writeRights]"/>
+    </g:if>
+
+    <g:form controller="${controllerName}" action="${actionName}"
             params="[workFlowPart: workFlowPart, sourceObjectId: genericOIDService.getOID(sourceObject), targetObjectId: genericOIDService.getOID(targetObject), isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
             method="post" class="ui form newLicence">
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
-        <g:if test="${sourceObject instanceof Subscription && SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransfer(sourceObject, true)}">
+        <g:if test="${targetObject instanceof Subscription && SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransfer(targetObject, true)}">
             <semui:msg class="negative" message="copyElementsIntoObject.surveyExist"/>
         </g:if>
         <g:else>
@@ -22,10 +26,10 @@
                 <tbody>
                 <tr>
                     <td>
-                        <table class="ui celled la-table table" id="firstTable">
+                        <table class="ui celled la-js-responsive-table la-table table" id="firstTable">
                             <thead>
                             <tr>
-                                <th colspan="5">
+                                <th colspan="6">
                                     <g:if test="${sourceObject}"><g:link controller="subscription"
                                                                          action="members"
                                                                          id="${sourceObject.id}">${sourceObject.dropdownNamingConvention()}</g:link></g:if>
@@ -79,10 +83,10 @@
                         </table>
                     </td>
                     <td>
-                        <table class="ui celled la-table table" id="secondTable">
+                        <table class="ui celled la-js-responsive-table la-table table" id="secondTable">
                             <thead>
                             <tr>
-                                <th colspan="4">
+                                <th colspan="6">
                                     <g:if test="${targetObject}"><g:link controller="subscription"
                                                                          action="members"
                                                                          id="${targetObject.id}">${targetObject.dropdownNamingConvention()}</g:link></g:if>
@@ -126,9 +130,9 @@
             </table>
         </g:else>
 
-        <g:set var="submitDisabled" value="${(sourceObject && targetObject) ? '' : 'disabled'}"/>
+        <g:set var="submitDisabled" value="${(sourceObject && targetObject) || processRunning ? '' : 'disabled'}"/>
         <div class="sixteen wide field" style="text-align: right;">
-            <input type="submit" class="ui button js-click-control"
+            <input id="copySubscriber" type="submit" class="ui button js-click-control"
                    value="${message(code: 'copyElementsIntoObject.copySubscriber.button')}" ${submitDisabled}/>
         </div>
         </tbody>
@@ -146,6 +150,10 @@
             var v = $(this).height();
             $("#firstTable .titleCell").eq(k).height(v);
         });
+
+    $("#copySubscriber").submit(function() {
+        $(this).disable();
+    });
 </laser:script>
 
 <style>

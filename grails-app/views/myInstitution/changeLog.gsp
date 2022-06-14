@@ -39,7 +39,7 @@
           </select>
         </g:form>
 
-      <table class="ui celled la-table table">
+      <table class="ui celled la-js-responsive-table la-table table">
         <g:each in="${changes}" var="chg">
           <tr>
             <td><g:formatDate format="yyyy-MM-dd" date="${chg.ts}"/>

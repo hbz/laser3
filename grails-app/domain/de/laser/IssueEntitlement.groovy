@@ -16,18 +16,41 @@ import org.apache.commons.logging.LogFactory
 import javax.persistence.Transient
 import java.text.Normalizer
 
+/**
+ * A title record within a local holding. Technically a {@link TitleInstancePackagePlatform} record entry with a {@link Subscription} foreign key. But there are a few more things to note:
+ * The individually negotiated subscription holding may differ from what a provider offers usually. Those differences must be reflected in the issue entitlement record; that is why there are some
+ * fields in both classes. In detail:
+ * <ul>
+ *     <li>acces start/end may be different</li>
+ *     <li>name</li>
+ *     <li>the subscribing institution may have a perpetual access negotiated to the title; this is of course no global property</li>
+ *     <li>prices may differ from list prices on global level (the {@link PriceItem}s linked to the owning {@link TitleInstancePackagePlatform}; that is why issue entitlements and TIPPs have an individual set of price items)</li>
+ *     <li>coverage entities may differ from global level ({@link IssueEntitlementCoverage} vs {@link TIPPCoverage})</li>
+ * </ul>
+ * Moreover, issue entitlements may be grouped for that the subscribing institution may organise them by certain criteria e.g. subscription phase, title group etc.
+ * @see IssueEntitlementCoverage
+ * @see IssueEntitlementGroup
+ * @see IssueEntitlementGroupItem
+ * @see PriceItem
+ * @see TitleInstancePackagePlatform
+ * @see Subscription
+ */
 class IssueEntitlement extends AbstractBase implements Comparable {
 
     def deletionService
 
+    @Deprecated
     Date coreStatusStart
+    @Deprecated
     Date coreStatusEnd
+
     Date accessStartDate
     Date accessEndDate
 
     String name
     String sortname
 
+    @Deprecated
     String ieReason
 
     Subscription perpetualAccessBySub
@@ -36,9 +59,11 @@ class IssueEntitlement extends AbstractBase implements Comparable {
     @RefdataAnnotation(cat = RDConstants.TIPP_STATUS)
     RefdataValue status
 
+    @Deprecated
     @RefdataAnnotation(cat = RDConstants.CORE_STATUS)
     RefdataValue coreStatus // core Status is really core Medium.. dont ask
 
+    @Deprecated
     @RefdataAnnotation(cat = RDConstants.TITLE_MEDIUM)
     RefdataValue medium // legacy; was distinguished back then; I see no reason why I should still do so. Is legacy.
 
@@ -80,16 +105,16 @@ class IssueEntitlement extends AbstractBase implements Comparable {
            version column:'ie_version'
               name column:'ie_name', type: 'text'
           sortname column:'ie_sortname', type: 'text'
-            status column:'ie_status_rv_fk'
-      subscription column:'ie_subscription_fk', index: 'ie_sub_idx'
-              tipp column:'ie_tipp_fk',         index: 'ie_tipp_idx'
+            status column:'ie_status_rv_fk', index: 'ie_status_idx'
+      subscription column:'ie_subscription_fk', index: 'ie_sub_idx, ie_sub_tipp_idx'
+              tipp column:'ie_tipp_fk',         index: 'ie_tipp_idx, ie_sub_tipp_idx'
           ieReason column:'ie_reason'
         perpetualAccessBySub column:'ie_perpetual_access_by_sub_fk'
-            medium column:'ie_medium_rv_fk'
+            medium column:'ie_medium_rv_fk', index: 'ie_medium_idx'
     accessStartDate column:'ie_access_start_date'
      accessEndDate column:'ie_access_end_date'
          coverages sort: 'startDate', order: 'asc'
-      acceptStatus column:'ie_accept_status_rv_fk'
+      acceptStatus column:'ie_accept_status_rv_fk', index: 'ie_accept_status_idx'
 
     dateCreated column: 'ie_date_created'
     lastUpdated column: 'ie_last_updated'
@@ -116,6 +141,12 @@ class IssueEntitlement extends AbstractBase implements Comparable {
         perpetualAccessBySub (nullable: true)
     }
 
+    /**
+     * Constructs a new issue entitlement record with the given configuration map
+     * @param configMap the parameter map containing the new holding's properties
+     * @return a new or updated issue entitlement
+     * @throws EntitlementCreationException
+     */
   static IssueEntitlement construct(Map<String,Object> configMap) throws EntitlementCreationException {
     if(configMap.subscription instanceof Subscription && configMap.tipp instanceof TitleInstancePackagePlatform) {
         static_logger.debug("creating new issue entitlement for ${configMap.tipp} and ${configMap.subscription}")
@@ -188,6 +219,10 @@ class IssueEntitlement extends AbstractBase implements Comparable {
     deletionService.deleteDocumentFromIndex(this.globalUID, this.class.simpleName)
   }
 
+    /**
+     * Removes stopwords from the title and generates a sortable title string.
+     * @see Normalizer.Form#NFKD
+     */
     void generateSortTitle() {
         if ( name ) {
             sortname = Normalizer.normalize(name, Normalizer.Form.NFKD).trim().toLowerCase()
@@ -255,6 +290,13 @@ class IssueEntitlement extends AbstractBase implements Comparable {
       result
   }
 
+    /**
+     * Currently unused, is subject of refactoring.
+     * Retrieves usage details for the title to which this issue entitlement is linked
+     * @param date the month for which usage should be retrieved
+     * @param subscriber the subscriber institution ({@link Org}) whose report should be retrieved
+     * @return the first available usage report, TODO: extend with metricType and reportType
+     */
     def getCounterReport(Date date, Org subscriber){
         String sort = 'r.reportCount desc'
 

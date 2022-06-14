@@ -50,7 +50,7 @@
 
     </h4>
 
-    <table class="ui celled sortable table la-table">
+    <table class="ui celled sortable table la-js-responsive-table la-table">
         <thead>
         <tr>
             <th class="center aligned">${message(code: 'sidewide.number')}</th>

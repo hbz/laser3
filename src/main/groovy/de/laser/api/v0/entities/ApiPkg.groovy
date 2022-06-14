@@ -10,11 +10,18 @@ import grails.converters.JSON
 import groovy.util.logging.Slf4j
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
+/**
+ * An API representation of a {@link Package}
+ */
 @Slf4j
 class ApiPkg {
 
     /**
-     * @return ApiBox(obj: Package | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND | OBJECT_STATUS_DELETED)
+	 * Locates the given {@link Package} and returns the object (or null if not found) and the request status for further processing
+	 * @param the field to look for the identifier, one of {id, globalUID, gokbId, ns:identifier}
+	 * @param the identifier value
+     * @return {@link ApiBox}(obj: Package | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND | OBJECT_STATUS_DELETED)
+	 * @see ApiBox#validatePrecondition_1()
      */
     static ApiBox findPackageBy(String query, String value) {
 		ApiBox result = ApiBox.get()
@@ -46,6 +53,9 @@ class ApiPkg {
     }
 
     /**
+	 * Retrieves the given {@link Package} for the given institution
+	 * @param pkg the {@link Package} to retrieve
+	 * @param context the institution ({@link Org}) requesting the record
      * @return JSON
      */
     static getPackage(Package pkg, Org context) {
@@ -57,6 +67,10 @@ class ApiPkg {
     }
 
 	/**
+	 * Assembles the given package attributes into a {@link Map}. The schema of the map can be seen in
+	 * schemas.gsp
+	 * @param pkg the {@link Package} which should be output
+	 * @param context the institution ({@link Org}) requesting
 	 * @return Map<String, Object>
 	 */
 	static Map<String, Object> getPackageMap(Package pkg, Org context) {
@@ -67,26 +81,19 @@ class ApiPkg {
 		result.globalUID        	= pkg.globalUID
 		result.gokbId           	= pkg.gokbId
 		result.name             	= pkg.name
-		result.sortName         	= pkg.sortname
+		result.altnames     		= ApiCollectionReader.getAlternativeNameCollection(pkg.altnames)
 
-		result.autoAccept       	= pkg.autoAccept ? 'Yes' : 'No'
-		result.cancellationAllowances = pkg.cancellationAllowances
 		result.dateCreated      	= ApiToolkit.formatInternalDate(pkg.dateCreated)
-		result.endDate          	= ApiToolkit.formatInternalDate(pkg.endDate)
 		result.lastUpdated      	= ApiToolkit.formatInternalDate(pkg._getCalculatedLastUpdated())
-		result.vendorURL        	= pkg.vendorURL
-		result.startDate        	= ApiToolkit.formatInternalDate(pkg.startDate)
-		//result.listVerifiedDate     = ApiToolkit.formatInternalDate(pkg.listVerifiedDate)
 
 		// RefdataValues
 
 		result.contentType      	= pkg.contentType?.value
 		result.scope     			= pkg.scope?.value
 		result.file	 				= pkg.file?.value
-		result.packageStatus    	= pkg.packageStatus?.value
+		result.status				= pkg.packageStatus?.value
 		result.breakable        	= pkg.breakable?.value
 		result.consistent       	= pkg.consistent?.value
-		result.isPublic         	= pkg.isPublic ? 'Yes' : 'No'
 
 		// References
 
@@ -98,12 +105,6 @@ class ApiPkg {
 		//result.subscriptions    = ApiStubReader.retrieveSubscriptionPackageStubCollection(pkg.subscriptions, ApiCollectionReader.IGNORE_PACKAGE, context) // de.laser.SubscriptionPackage
 		result.tipps            = ApiCollectionReader.getTippCollection(pkg.tipps, ApiReader.IGNORE_ALL, context) // de.laser.TitleInstancePackagePlatform
 
-		// Ignored
-		/*
-		result.persons          = exportHelperService.resolvePrsLinks(
-				pkg.prsLinks, exportHelperService.NO_CONSTRAINT, exportHelperService.NO_CONSTRAINT, context
-		) // de.laser.PersonRole
-		*/
 		ApiToolkit.cleanUp(result, true, true)
 	}
 }

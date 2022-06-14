@@ -4,6 +4,15 @@ import de.laser.interfaces.CalculatedLastUpdated
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
+/**
+ * A container class to retain alternative names of an entity; a such entity may be
+ * <ul>
+ *     <li>{@link TitleInstancePackagePlatform}</li>
+ *     <li>{@link Package}</li>
+ *     <li>{@link Platform}</li>
+ *     <li>{@link Org}</li>
+ * </ul>
+ */
 class AlternativeName implements CalculatedLastUpdated, Comparable {
 
     def cascadingUpdateService
@@ -47,6 +56,11 @@ class AlternativeName implements CalculatedLastUpdated, Comparable {
         lastUpdatedCascading  column: 'altname_last_updated_cascading'
     }
 
+    /**
+     * Compares this name to a given alternative name
+     * @param o the alternative name to compare against
+     * @return the name comparison result (-1, 0, 1)
+     */
     @Override
     int compareTo(Object o) {
         AlternativeName altName2 = (AlternativeName) o
@@ -76,6 +90,11 @@ class AlternativeName implements CalculatedLastUpdated, Comparable {
         (lastUpdatedCascading > lastUpdated) ? lastUpdatedCascading : lastUpdated
     }
 
+    /**
+     * Factory constructor method to set up an alternative name for an entity
+     * @param configMap the map containing the new entry's parameters
+     * @return the new alternative name, null if no reference object has been specified
+     */
     static AlternativeName construct(Map<String, Object> configMap) {
         if(configMap.tipp || configMap.pkg || configMap.platform || configMap.org) {
             AlternativeName altName = new AlternativeName(name: configMap.name)

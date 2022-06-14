@@ -18,6 +18,10 @@ import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat
 
+/**
+ * This controller is destined to handle workflows limited to admins in order to perform data managing actions.
+ * Some of them are bulk cleanup actions; handle them with care!
+ */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class DataManagerController  {
 
@@ -27,6 +31,7 @@ class DataManagerController  {
     YodaService yodaService
     ExportService exportService
 
+    @Deprecated
   @Secured(['ROLE_ADMIN'])
   def index() { 
     Map<String, Object> result = [:]
@@ -40,6 +45,7 @@ class DataManagerController  {
         result
     }
 
+    @Deprecated
     @Secured(['ROLE_ADMIN'])
     def changeLog() {
 
@@ -312,6 +318,7 @@ class DataManagerController  {
         }
     }
 
+    @Deprecated
   @Secured(['ROLE_ADMIN'])
   def deletedTitles() {
     Map<String, Object> result = [:]
@@ -335,6 +342,7 @@ class DataManagerController  {
         result
     }
 
+    @Deprecated
     @Secured(['ROLE_ORG_MANAGER', 'ROLE_ADMIN'])
     def deletedOrgs() {
         Map<String, Object> result = [:]
@@ -359,6 +367,9 @@ class DataManagerController  {
         result
     }
 
+    /**
+     * Cleanup method to depollute the database from platform duplicates
+     */
     @Secured(['ROLE_YODA'])
     Map<String,Object> listPlatformDuplicates() {
         log.debug("listPlatformDuplicates ...")
@@ -373,6 +384,9 @@ class DataManagerController  {
         result
     }
 
+    /**
+     * Executes the deduplicating of platforms. Is a very dangerous procedure, please handle it with extreme care!
+     */
     @Secured(['ROLE_YODA'])
     def executePlatformCleanup() {
         log.debug("WARNING: bulk deletion of platforms triggered! Start nuking!")
@@ -387,6 +401,9 @@ class DataManagerController  {
         redirect(controller: 'platform',action: 'list')
     }
 
+    /**
+     * Lists titles which have been marked as deleted; gets result from cache if it is set
+     */
     @Secured(['ROLE_YODA'])
     Map<String,Object> listDeletedTIPPS() {
         log.debug("listDeletedTIPPS ...")
@@ -400,6 +417,11 @@ class DataManagerController  {
         result
     }
 
+    /**
+     * Executes the cleanup among the titles and returns those which need to be reported because a title has
+     * current issue entitlements hanging on false title records and cannot be remapped
+     * @return a CSV table with holdings whose subscribers must be notified
+     */
     @Secured(['ROLE_YODA'])
     def executeTIPPCleanup() {
         log.debug("WARNING: bulk deletion of TIPP entries triggered! Start nuking!")
@@ -429,6 +451,7 @@ class DataManagerController  {
         }
     }
 
+  @Deprecated
   @Secured(['ROLE_ADMIN'])
   def checkPackageTIPPs() {
     Map<String, Object> result = [:]
@@ -466,6 +489,9 @@ class DataManagerController  {
         result
     }
 
+    /**
+     * Lists the current email templates in the app
+     */
   @Secured(['ROLE_ADMIN'])
   def listMailTemplates() {
     Map<String, Object> result = [:]
@@ -473,6 +499,10 @@ class DataManagerController  {
         result
     }
 
+    /**
+     * Creates a new email template with the given parameters
+     * @return the updated list view
+     */
     @Transactional
     @Secured(['ROLE_ADMIN'])
     def createMailTemplate() {
@@ -489,6 +519,10 @@ class DataManagerController  {
         redirect(action: 'listMailTemplates')
     }
 
+    /**
+     * Updates the given email template
+     * @return
+     */
     @Transactional
     @Secured(['ROLE_ADMIN'])
     def editMailTemplate() {

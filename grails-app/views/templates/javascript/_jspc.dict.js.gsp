@@ -34,7 +34,13 @@
             'statusbar.hideButtons.tooltip',
             'statusbar.showButtons.tooltip',
             'xEditable.button.cancel',
-            'xEditable.button.ok'
+            'xEditable.button.ok',
+            'responsive.table.selectElement',
+            'pagination.keyboardInput.validation.integer',
+            'pagination.keyboardInput.validation.smaller',
+            'pagination.keyboardInput.validation.biggerZero',
+            'dropdown.message.addResult',
+            'select2.noMatchesFound'
     ]
 
     println """

@@ -51,7 +51,7 @@
             </div>
             <div class="content">
 
-                <table  class="ui celled la-table table">
+                <table  class="ui celled la-js-responsive-table la-table table">
                     <thead>
                         <tr>
                             <th class="four wide">${message(code: 'accessPoint.name')}</th>
@@ -138,7 +138,7 @@
                                         </g:link>
                                     </g:if>
                                     <g:else>
-                                        <div data-tooltip="${message(code: 'accessPoint.list.deleteDisabledInfo', args: [accessPointItem['platformLinkCount'], accessPointItem['subscriptionLinkCount']])}" data-position="bottom center">
+                                        <div class="la-popup-tooltip la-delay" data-content="${message(code: 'accessPoint.list.deleteDisabledInfo', args: [accessPointItem['platformLinkCount'], accessPointItem['subscriptionLinkCount']])}" data-position="bottom center">
                                             <div class="ui icon button la-modern-button disabled">
                                                 <i class="trash alternate outline icon"></i>
                                             </div>

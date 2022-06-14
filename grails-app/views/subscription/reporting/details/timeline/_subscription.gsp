@@ -15,17 +15,19 @@
 %>
 
 <div class="ui segment">
-    <table class="ui table la-table compact">
+    <table class="ui table la-js-responsive-table la-table compact">
         <thead>
         <tr>
-            <th></th>
-            <th>${message(code:'subscription.label')}</th>
-            <th></th>
-            <th>${message(code:'consortium.subscriber')}</th>
-            <th>${message(code:'org.sortname.label')}</th>
-            <th>${message(code:'default.status.label')}</th>
-            <th>${message(code:'subscription.startDate.label')}</th>
-            <th>${message(code:'subscription.endDate.label')}</th>
+            <th scope="col" class="center aligned">
+                ${message(code:'sidewide.number')}
+            </th>
+            <th scope="col">${message(code:'subscription.label')}</th>
+            <th scope="col"></th>
+            <th scope="col">${message(code:'consortium.subscriber')}</th>
+            <th scope="col">${message(code:'org.sortname.label')}</th>
+            <th scope="col">${message(code:'default.status.label')}</th>
+            <th scope="col">${message(code:'subscription.startDate.label')}</th>
+            <th scope="col">${message(code:'subscription.endDate.label')}</th>
         </tr>
         </thead>
         <tbody>
@@ -33,7 +35,7 @@
                 <g:set var="org" value="${Org.get(orgSub[0])}" />
                 <g:set var="sub" value="${Subscription.get(orgSub[1])}" />
                 <tr>
-                    <td style="text-align: center">${i + 1}.</td>
+                    <td class="center aligned">${i + 1}</td>
                     <td>
                         <g:link controller="subscription" action="show" id="${sub.id}" target="_blank">${sub.name}</g:link>
                     </td>
@@ -69,4 +71,5 @@
     </table>
 </div>
 
+<g:render template="/subscription/reporting/details/loadJavascript"  />
 <g:render template="/subscription/reporting/export/detailsModal" model="[modalID: 'detailsExportModal', token: token]" />

@@ -1,6 +1,6 @@
 
 -> echarts build
--> version 5.1.1
+-> version 5.3.0
 
     chart
         - bar *
@@ -14,6 +14,7 @@
 
     component
         - title *
+        - timeline *
         - legend *
         - tooltip *
         - markpoint *

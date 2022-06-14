@@ -7,15 +7,189 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4062    13.06.2022  rc-2.3  2.3         Andreas Feature     Umstellung der Kostenauflistung auf Anzahl 
+
+4213    09.06.2022  rc-2.3  2.3         Ingrid/Andreas Feature  Kostenfilter nach Titel unterstützt jetzt neben den vorhandenen Werten auch Substrings
+
+4288    07.06.2022  rc-2.3  2.3         Moe     Bug         Umfragen: Kostenvorzeichen automatisch "positiv" bei Konsortialpreis
+
+4289    07.06.2022  rc-2.3  2.3         Moe     Feature     Umfragen: Teilnehmer mit aktiven Lizenzen auswählen
+
+4286    07.06.2022  rc-2.3  2.3         Moe     Feature     Lizenz kopieren: TN mitbedenken
+
+4283    07.06.2022  rc-2.3  2.3         Moe     Feature     Dauerhafte Kauf Flag Umstellung auch bei Elternlizenzen triggern
+
+4287    01.06.2022  rc-2.3  2.3         Andreas Bug         Fehlzugriff bei Mehrfachverknüpfung von Titel zu Titelgruppen behoben
+
+4280    27.05.2022  rc-2.3  2.3         Andreas Bug         diverse Ausbesserungen an der Bestandsverwaltung
+
+4266    24.05.2022  rc-2.3  2.3         Andreas Bug         Vererbung der Merkmale kam zunächst nicht durch
+
+4265    24.05.2022  rc-2.3  2.3         Andreas Bug         Teilnehmerübertrag beschleunigt
+
+4264    24.05.2022  rc-2.3  2.3         Andreas Bug         500er bei Entknüpfung eines Teilnehmerpaketes von einer Lizenz behoben
+
+4254    24.05.2022  rc-2.3  2.3         Andreas Feature     Kundennummern-Sicht bei Anbietern und Lieferanten grundsätzlich abgeklemmt
+
+4215    24.05.2022  rc-2.3  2.3         Andreas Bug         Bugfix und Umstellung des KBART-Exports auf natives SQL
+
+4239    23.05.2022  rc-2.3  2.3         Andreas Feature     alte Steuertypen aus dem System entfernt
+
+4219    23.05.2022  rc-2.3  2.3         Andreas Bug         als entfernt markierte Bestandstitel tauchen nicht mehr auf
+
+4137    23.05.2022  rc-2.3  2.3         Andreas Bug         Fehlertext bei fehlendem Lizenzbeug angepasst
+
+4136    23.05.2022  rc-2.3  2.3         Andreas Bug         Vorbelegung der Elternlizenz wiederhergestellt
+
+3958    23.05.2022  rc-2.3  2.3         Andreas Bug         Neuen Dokumententyp "Kündigung" aufgenommen
+
+3729    23.05.2022  rc-2.3  2.3         Andreas Feature     Nachbesserungen für die neu strukturierte Sicht
+
+4253    23.05.2022  rc-2.3  2.3         Moe     Bug         TN verwalten: Dokument anlegen funktioniert nicht
+
+4220    20.05.2022  rc-2.3  2.3         Moe     Feature     Mehrere Vorgängerlizenzen zur Bildung des Bestands zulassen
+
+4262    20.05.2022  rc-2.3  2.3         Andreas Bug         diverse Fehler bei der Kopie von Titel zwischen Lizenzen behoben
+
+4144    20.05.2022  rc-2.3  2.3         Andreas Feature     Archivplattformen werden nun beim Paket angezeigt
+
+4076    20.05.2022  rc-2.3  2.3         Andreas Bug         Titel wurden bei Kopie einer Lizenz nicht übertragen
+
+4035    20.05.2022  rc-2.3  2.3         Andreas Feature     Optionen bei Aufhebung der Vererbung beim Lizenznamen aufgehoben
+
+2794    20.05.2022  rc-2.3  2.3         Andreas Bug         Sortierung der DBS-Fächergruppen korrigiert
+
+4255    19.05.2022  rc-2.3  2.3         Moe     Bug         Meine Lizenzverwaltung springen zwischen den Reiter erst durch doppelklick
+
+4249    19.05.2022  rc-2.3  2.3         Moe     Bug         Status bei Lizenzverlängerung ändert sich nicht
+
+4258    19.05.2022  rc-2.3  2.3         Andreas Bug         vergessener Titel für View korrigiert
+
+4257    19.05.2022  rc-2.3  2.3         Andreas Bug         Status wurde trotz explizit aufgehobenem Filterwert erwartet
+
+4252    19.05.2022  rc-2.3  2.3         Andreas Feature     Lizenz-Dropdown durchsuchbar gemacht
+
+4251    19.05.2022  rc-2.3  2.3         Andreas Feature     Schrift angepasst, Erklär-Tooltips zu Buttons hinzugefügt 
+
+4250    18.05.2022  rc-2.3  2.3         Moe     Bug         Automatische Lizenzverlängerung: Status der Vorgängerlizenz bleibt auf aktiv
+
+4259    18.05.2022  rc-2.3  2.3         Moe     Feature     Übernahme von Dauerhaften Titel von Vorgänger Lizenzen in Titelumfrage
+
+4231    16.05.2022  rc-2.3  2.3         Moe     Feature     Trennzeichen Kosten Titel-Umfrage
+
+4194    18.05.2022  rc-2.3  2.3         Andreas Feature     Prozessfluss zum Umgang mit fehlerhaften Titel impelementiert
+
+3899    18.05.2022  rc-2.3  2.3         Andreas Feature     Beschleunigen der Paketentknüpfung durch Indizierung
+
+4244    16.05.2022  rc-2.3  2.3         Moe     Feature     we:kb und ygor sollten sich in neuem Tab öffnen
+
+4240    16.05.2022  rc-2.3  2.3         Andreas Feature     Zurückbau der Default-Filtereinstellung "Dauerhafter Zugriff"
+
+--      13.05.2022  rc-2.3  2.3         Andreas Bug         Statistik-Sync matcht jetzt auch gegen Print-Identifier
+
+4245    13.05.2022  rc-2.3  2.3         Andreas Bug         fehlende Bestätigung beim Nationalen Statistikserver nachgereicht
+
+4242    13.05.2022  rc-2.3  2.3         Andreas Bug         fehldende Sicherheitsabfrage bei Löschen von Anmerkungen eingefügt
+
+4214    13.05.2022  rc-2.3  2.3         Andreas Feature     Ausbau des Behelfs beim Titelexport, Umstellung auf natives SQL
+
+4238    11.05.2022  rc-2.3  2.3         Andreas Bug         Zugriffsfehler bei Budgetcodes behoben
+
+4237    11.05.2022  rc-2.3  2.3         Andreas Bug         Liste verfügbarer Namensräume bei Einrichtungen gefiltert
+
+4179    11.05.2022  rc-2.3  2.3         Andreas Feature     Überprüfung und Aktualisierung der Importtemplates
+
+--      11.05.2022  rc-2.3  2.3         Andreas Bug         Plattformreports sorgten bei Titelauswahl für 500er
+
+--      11.05.2022  dev     2.3         Andreas Feature     Markierung der dauerhaft erworbenen Titel jetzt auch im Gesamttitelexport
+
+4234    10.05.2022  dev     2.3         Andreas Bug         Kostenposten ohne Lizenz- und Umfragebezug gingen in der Abfage unter
+
+4228    10.05.2022  dev     2.3         Andreas Bug         Anmerkungen an Merkmalen wurden nicht durchgereicht
+
+4205    10.05.2022  dev     2.3         Andreas Feature     Schaltschrank beim Übertrag von Elementen zwischen zwei Lizenzen angepasst
+
+4147    09.05.2022  dev     2.3         Andreas Feature     Spaltenheader und Icons (+ Funktion) beim Übertrag von Dokumenten von Anmerkungen angepasst
+
+4110    09.05.2022  dev     2.3         Andreas Feature     Rückfrage eingebaut, wenn Kontakt ohne Kontakt- oder Adressdaten eingegeben werden soll
+
+--      09.05.2022  dev     2.3         Andreas Bug         Erläuterungstext ISIL nach Rücksprache angepasst
+
+4227    06.05.2022  dev     2.3         Andreas Feature     Neuer EZB-Endpunkt für Fernleihindikatoren
+
+4225    06.05.2022  dev     2.3         Andreas Bug         Mehrfache Vorgänger / Nachfolger werden alle berücksichtigt
+
+4221    06.05.2022  dev     2.3         Andreas Feature     Neuen Funktionstyp "OA-Kontakt" aufgenommen
+
+4210    06.05.2022  dev     2.3         Andreas Feature     Teilnehmerverträge verwalten umstrukturiert
+
+4153    06.05.2022  dev     2.3         Moe     Bug         Filter "Meine Lizenzverwaltung" kann nicht auf "zentral verwaltet" eingestellt werden
+
+4062    06.05.2022  dev     2.3         Andreas Feature     Umstrukturierung der Budgetvewaltungssicht
+
+4008    06.05.2022  dev     2.3         Moe     Bug         AccessPointService.linkPlatform(): eigenartige Implementierung
+
+4216    04.05.2022  dev     2.3         Andreas Feature     Feld "URL" bei Paketen in "Beschreibungs-URL" geändert
+
+4073    28.04.2022  dev     2.3         Moe     Feature     Kostenausschüttungsfunktion erzeugt zuviele Nachkommerstellen
+
+4209    28.04.2022  dev     2.3         Andreas Bug         Shutdown-Kommandos des executorService entfernt
+
+4206    28.04.2022  dev     2.3         Andreas Feature     Prozessfluss für Metadaten-Kontakt in Sync aufgenommen
+
+4203    27.04.2022  dev     2.3         Andreas Bug         Statistik-Abfrage korrigiert und weitere Ausbesserungen
+
+4201    27.04.2022  dev     2.3         Andreas Bug         Titel hinzufügen läuft korrekt und erheblich schneller
+
+--      27.04.2022  dev     2.3         Andreas Bug         Bei ausgesetztem Statusfilter konnten keine weiteren Parameter mehr gesetzt werden
+
+4204    26.04.2022  dev     2.3         Andreas Bug         korrekte Abfrage der Kosten pro Konsortiallizenz
+
+4200    26.04.2022  dev     2.3         Moe     Feature     Neue Sicht "Auszuwählende Titel"
+
+4198    26.04.2022  dev     2.3         Moe     Feature     PDFs (aus "Dokumente") in neuem Fenster öffnen
+
+2275    26.04.2022  dev     2.3         Moe     Feature     Anbieter und Vertrag bei einer allg. Umfrage verknüpfen
+
+1111    25.04.2022  dev     2.3         Andreas Feature     Aktualisierung und Aufrüstung der API
+
+4049    25.04.2022  dev     2.3         Moe     Feature     Excel Umfrage: Export von Merkmalsänderungen
+
+3882    22.04.2022  dev     2.3         Moe     Feature     Bestandsinformationen anzeigen in Umfragen
+
+4197    22.04.2022  dev     2.3         Moe     Feature     Erweiterung "medium": Encyclopedia
+
+--      21.04.2022  rc-2.2  2.2.14      Andreas Bug         Instandsetzung und Performanzverbesserung bei Laden der Nutzungsdaten
+
 --      20.04.2022  rc-2.2  2.2.13      Andreas Bug         Hotfix für Abruf von Nutzungsdaten für Umfrage
+
+3880    20.04.2022  dev     2.3         Moe     Feature     Reihenfolge (Pflicht)Merkmale in allen Umfragen
+
+4195    19.04.2022  dev     2.3         Moe     Bug         Umfrage erstellen: Bearbeitungsoption für Dokumente
 
 --      14.04.2022  rc-2.2  2.2.13      Andreas Bug         Bugfix für Statistik-Sync
 
 4188    14.04.2022  rc-2.2  2.2.13      Andreas Feature     Bestand auf Ende eines Jahresringes zurücksetzen
 
---      28.03.2022  rc-2.2  2.2.12      Moe     Feature     Export Global UUID und alle Einrichtungen per Click me Excel 
+4021    08.04.2022  dev     2.3         Moe     Feature    ClickMe Excel für Titel-Ebene
+
+4185    08.04.2022  dev     2.3         Moe     Feature     Testfunktion für Mail verschicken
+
+--      01.04.2022  dev     2.3         Andreas Bug         Titel hinzufügen-500er korrigiert
+
+--      01.04.2022  dev     2.3         Andreas Feature     Glattziehen der Referenzwert-Schlüssel
+
+--      28.03.2022  rc-2.2  2.2.12      Moe     Feature     Export Global UUID und alle Einrichtungen per Click me Excel
 
 4171    28.03.2022  rc-2.2  2.2.12      Moe     Bug         Umfragen auch bei abgelaufener Lizenz
+
+4175    25.03.2022  dev     2.3         Andreas Bug         Bereinigungsfunktion für fehlende Vertrag-Teilnehmer-Verknüpfungen erstellt
+
+--      23.03.2022  dev     2.3         Andreas Bug         doppelte Spalte access_type aus KBART-Export entfernt
+
+--      16.03.2022  dev     2.3         Andreas Bug         falscher Umgang mit Fehler bei manueller Lizenzverlängerung
+
+4162    15.03.2022  dev     2.3         Andreas Bug         Brücke bei Umfragemerkmalen eingebaut
 
 --      15.03.2022  rc-2.2  2.2.12      Andreas Bug         Abfragefehler im Lizenzlistenendpunkt behoben
 
@@ -25,13 +199,33 @@
 
 4150    08.03.2022  rc-2.2  2.2.11      Andreas Feature     Neuer API-Endpunkt für EZB
 
+4148    03.03.2022  dev     2.3         David   Feature     Reporting: Archiving Agency
+
+4146    02.03.2022  dev     2.3         Andreas Bug         Admin-Referenzwertliste konnte nicht mehr geladen werden
+
+4133    24.02.2022  dev     2.3         David   Feature     Reporting: x-property überarbeiten
+
+--      24.02.2022  dev     2.3         Andreas Bug         Bezeichner für Organisationsnamensfilterfeld korrigiert
+
 4122    24.02.2022  rc-2.2  2.2.10      Andreas Bug         Statusfilter und Paginierung bei Merkmale in Objekten verwalten eingesetzt
 
 4143    23.02.2022  rc-2.2  2.2.10      Andreas Bug         Identifier und URL wurden bei Anbietern nicht mit synchronisiert
 
+4132    23.02.2022  dev     2.3         David   Feature     Reporting: Multiple Elasticsearch-Abfragen für Einstiegspunkte
+
 4127    23.02.2022  rc-2.2  2.2.10      Andreas Feature     Umgang mit Serveraussetzern implementiert
 
+4099    22.02.2022  dev     2.3         Ingrid  Feature     Datepicker: versteckte Funktion (Jahr ist auswählbar) deutlicher machen
+
+4133    22.02.2022  dev     2.3         David   Feature     Reporting: Custom Impl-Konfiguration überarbeiten
+
 4135    21.02.2022  rc-2.2  2.2.10      Andreas Feature     Anbindung des Statistik-Syncs an LAS:eR-System-Event-Berichterstattung
+
+4116    21.02.2022  dev     2.3         Ingrid  Feature     Kindlizenz: deutlicher machen
+
+3830    18.02.2022  dev     2.3         David   Feature     Reporting: Übersetzungszugriff vereinheitlichen
+
+3833    17.02.2022  dev     2.3         Andreas Feature     Bezeichner im Tooltip umbenannt
 
 4130    17.02.2022  rc-2.2  2.2.10      Andreas Bug         Alle Verträge entknüpfen blieb ohne Wirkung
 
@@ -43,9 +237,15 @@
 
 4118    14.02.2022  rc-2.2  2.2.10      Andreas Feature     Ladezeit des Lizenzdetail-Paketfragments beschleunigt
 
+4117    14.02.2022  rc-2.2  2.3         Andreas Feature     Performance-Beschleunigung bei Titel-Massenoperationen
+
 4112    10.02.2022  rc-2.2  2.2.10      David   Feature     Status-Requester
 
 4114    09.02.2022  rc-2.2  2.2.9       Andreas Bug         Inkonsistente Sortierung und Fehler beim Aufruf des Kosteneingabemodals
+
+4092    08.02.2022  dev     2.3         David   Feature     Reporting: Basissuche - Einstiegspunkte auslagern
+
+4109    08.02.2022  rc.2-2  2.3         Andreas Bug         Dokumente wurden falsch ausgegeben
 
 4107    07.02.2022  rc-2.2  2.2.9       Andreas Feature     Erweiterung des COUNTER 4-Ladeprozesses auf Platform Reports
 
@@ -53,9 +253,15 @@
 
 4103    03.02.2022  rc-2.2  2.2.9       Andreas Bug         Filtercache sorgte für Durcheinander beim Laden der Finanzsicht
 
+4099    02.02.2022  dev     2.3         Ingrid  Feature     Versteckte Funktion im Datepicker deutlicher machen
+
 4098    02.02.2022  rc-2.2  2.2.9       Moe     Bug         Nutzerzahlen bei ClickMeExcel kommen nicht alle mit
 
 4095    02.02.2022  rc-2.2  2.2.9       Andreas Bug         Nachladeroutine für verpasste Titel implementiert
+
+4051    01.02.2022  dev     2.3         Ingrid  Feature     Verbesserung der Nutzbarkeit aller relevanten responsiver Tabellen
+
+4087    01.02.2022  dev     2.3         Ingrid  Feature     Identifikatoren-Box: Aufklappbox ist besser vom Hintergrund abgegrenzt
 
 4093    01.02.2022  rc-2.2  2.2.9       Andreas Bug         Cronjob brach zu früh ab
 
@@ -87,9 +293,17 @@
 
 4071    18.01.2022  rc-2.2  2.2.9       Moe     Bug         Mehrjahreslizenzen werden in Umfrage nicht richtig angezeigt und nicht richtig Übertrag mit Umfrage
 
+4063    17.01.2021  dev     2.3         David   Feature     Reporting: Merkmale - Pakete/Plattformen
+
 4031    10.01.2022  rc-2.2  2.2.9       Moe     Bug         Excel Export Gesamttitelliste: "Verlag" fehlt
 
 4050    03.01.2022  rc-2.2  2.2.9       Moe     Bug         Verlängerung Konsortiallizenzen: Hinweis auf Dashboard der Vollnutzer verschwindet nicht
+
+3903    22.12.2021  dev     2.3         Andreas Feature     Dokumentation des Backend-Codes
+
+4011    20.12.2021  dev     2.3         David   Feature     Reporting: Komfortfunktionen für Export
+
+3994    14.12.2021  dev     2.3         David   Feature     Reporting: Org-Export (Sortiername + Name)
 
 4032    10.12.2021  rc-2.2  2.2.8       Moe     Feature     Titel-Umfrage: Export der Bestandstitel
 
@@ -99,13 +313,25 @@
 
 --      08.12.2021  rc-2.2  2.2.8       Andreas Bug         Darstellungen in der Lizenzstatistik korrigiert
 
+--      08.12.2021  dev     2.3         Andreas Feature     Performanzverbesserungen
+
+4030    07.12.2021  dev     2.3         David   Feature     Reporting: Teilnehmer für Lizenz-Reporting
+
+4025    06.12.2021  dev     2.3         David   Feature     Reporting: Konfigurierbare Detailsansicht
+
 4034    07.12.2021  rc-2.2  2.2.8       Andreas Bug         costItemStatus wurde verworfen, was zu einem Validierungsfehler geführt hat
+
+4030    07.12.2021  dev     2.3         David   Feature     Reporting: Teilnehmer für Lizenz-Reporting
 
 4027    06.12.2021  rc-2.2  2.2.7       Moe     Bug         Manuelle Verlängerung von Konsortiallizenzen: Lizenzname und Vertragsverknüpfungen unsauber
 
 4028    06.12.2021  rc-2.2  2.2.7       Moe     Bug         Titelumfrage: Export Gesamttitellist mit Statistik + Bestandsflag
 
 3914    06.12.2021  rc-2.2  2.2.7       Moe     Bug         500er bei manuellem Übertrag eines Teilnehmers
+
+4025    06.12.2021  dev     2.3         David   Feature     Reporting: Konfigurierbare Detailsansicht
+
+4016    02.12.2021  dev     2.3         David   Feature     Reporting für Pakete erweitern
 
 --      02.12.2021  rc-2.2  2.2.6       Andreas Bug         Fallback für Kostenposten ohne Summe eingesetzt
 
@@ -117,7 +343,17 @@
 
 4012    24.11.2021  rc-2.2  2.2.5       Moe     Feature     Titelumfrage: Titel vorauswählen per Upload
 
+1111    24.11.2021  dev     2.3         Andreas Feature     interne Dokumentation der LAS:eR-API
+
+4006    23.11.2021  dev     2.3         David   Feature     Reporting: Paket-Export
+
+4005    23.11.2021  dev     2.3         David   Feature     Reporting: Plattform-Export
+
+4002    22.11.2021  dev     2.3         David   Feature     Reporting: Merkmale in der Detailansicht
+
 4009    22.11.2021  rc-2.2  2.2.5       Moe     Bug         Titelumfrage: Titel werde nicht übernommen beim Anhacken
+
+3998    19.11.2021  dev     2.3         David   Feature     Reporting: Hilfe überarbeiten
 
 4003    18.11.2021  rc-2.2  2.2.5       Moe     Bug         ClickMeExcel: Rechnungsanschrift bei Teilnehmer einer Lizenz
 
@@ -127,6 +363,8 @@
 
 3997    17.11.2021  rc-2.2  2.2.5       Moe     Bug         500er bei ClickMe Excel: Meine Einrichtungen
 
+3987    17.11.2021  dev     2.3         David   Feature     Reporting: Einstiegspunkt - Plattformen
+
 3986    16.11.2021  rc-2.2  2.2.4       Andreas Feature     Freigabe der Kundennummernbearbeitung an Einrichtungen, Beschränkung der Ausgabe der Kundennummer
 
 3981    16.11.2021  rc-2.2  2.2.4       Andreas Feature     Trennung der Kundennummerneingabe in Reiter
@@ -135,9 +373,17 @@
 
 3983    16.11.2021  rc-2.2  2.2.4       Moe     Bug         Export: Teilnehmer ohne eingetragene Zugangskonfigurationen
 
+3993    16.11.2021  dev     2.3         David   Feature     PlatformProperty.isPublic
+
+3987    16.11.2021  dev     2.3         David   Feature     Reporting: Einstiegspunkt - Plattformen
+
+3964    15.11.2021  dev     2.3         David   Feature     Reporting: Einstiegspunkt - Pakete
+
 --      15.11.2021  rc-2.2  2.2.4       Moe     Bug         Titel-Umfrage Verbesserungen
 
 3988    15.11.2021  rc-2.2  2.2.4       Moe     Bug         ClickMe Excel: Elemente bei Rechnungsanschrift werden nicht exportiert
+
+3980    12.11.2021  dev     2.3         David   Feature     Reporting: ES-Schnittstelle laser
 
 3982    11.11.2021  rc-2.2  2.2.4       Moe     Bug         Hohe Ladezeiten bei Umfragen mit vielen Teilnehmern
 
@@ -193,6 +439,8 @@
 
 3943    26.10.2021  rc-2.2  2.2.2       Moe     Bug         Bugfix: allgemeine Paketinformationen einblenden/ausblenden- Paketinfos werden nicht geladen
 
+3729    22.10.2021  dev     2.3         Andreas Feature     Verbesserungen bei den Anbieter & Lieferanten-Sichten
+
 3937    15.10.2021  rc-2.2  2.2.2       Andreas Bug         NullPointerException beim Vertragsexport behoben
 
 --      15.10.2021  rc-2.2  2.2.2       Andreas Bug         zu viele Daten für Dashboard eingeladen
@@ -215,7 +463,13 @@
 
 3917    08.10.2021  rc-2.2  2.2.1       Moe     Bug         ClickMe Excel gibt zuviele Umfrage-Merkmale aus
 
+3833    08.10.2021  dev     2.3         Andreas Feature     Merkmale können durch andere Merkmale ersetzt werden
+
 3909    07.10.2021  rc-2.2  2.2.1       Andreas Bug         Konsorten hatten unvollständige Auswahl an Nutzerzahleingabemöglichkeiten
+
+3907    07.10.2021  dev     2.3         Andreas Feature     Nutzerzahlen-Referenzgruppe auf Referenzwert umgestellt
+
+3777    06.10.2022  dev     2.3         Ingrid  Feature     Anzeige Paket verknüpfen optimieren
 
 3878    04.10.2021  rc-2.2  2.2.1       Moe     Bug         abgelaufene Lizenz wird nicht verlängert und der Status ändert sich nicht
 

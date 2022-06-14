@@ -78,7 +78,7 @@
         <div class="four fields">
 
             <!-- 2-1 + 2-2 -->
-            <g:render template="/templates/properties/genericFilter" model="[propList: propList]"/>
+            <g:render template="/templates/properties/genericFilter" model="[propList: propList, label:message(code: 'subscription.property.search')]"/>
 
             <!-- 2-3 -->
             <div class="field">
@@ -128,7 +128,7 @@
 
 <div class="subscription-results">
     <g:if test="${subscriptions}">
-        <table class="ui celled sortable table table-tworow la-table">
+        <table class="ui celled sortable table table-tworow la-js-responsive-table la-table">
             <thead>
             <tr>
                 <th rowspan="2" class="center aligned">

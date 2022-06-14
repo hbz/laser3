@@ -20,7 +20,7 @@
         <g:link controller="yoda" action="timelineProfiler" class="item">Seitenaufrufe</g:link>
     </nav>
 
-    <table class="ui celled la-table compact wide table">
+    <table class="ui celled la-js-responsive-table la-table compact wide table">
         <thead>
             <tr class="center aligned">
                 <th>Zeitraum</th>

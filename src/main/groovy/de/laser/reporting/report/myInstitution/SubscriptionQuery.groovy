@@ -21,9 +21,10 @@ class SubscriptionQuery extends BaseQuery {
 
         Map<String, Object> result = getEmptyResult( params.query, params.chart )
 
-        String prefix = params.query.split('-')[0]
-        String suffix = params.query.split('-')[1] // only simply cfg.query
+        def (String prefix, String suffix) = params.query.split('-') // only simply cfg.query
         List<Long> idList = BaseFilter.getCachedFilterIdList(prefix, params)
+
+        //println 'SubscriptionQuery.query() -> ' + params.query + ' : ' + suffix
 
         if (! idList) {
         }
@@ -37,21 +38,9 @@ class SubscriptionQuery extends BaseQuery {
                     result
             )
         }
-        else if ( suffix in ['form']) {
+        else if ( suffix in ['form', 'kind', 'resource', 'status']) {
 
-            _processSimpleRefdataQuery(params.query,'form', idList, result)
-        }
-        else if ( suffix in ['kind']) {
-
-            _processSimpleRefdataQuery(params.query,'kind', idList, result)
-        }
-        else if ( suffix in ['resource']) {
-
-            _processSimpleRefdataQuery(params.query,'resource', idList, result)
-        }
-        else if ( suffix in ['status']) {
-
-            _processSimpleRefdataQuery(params.query,'status', idList, result)
+            _processSimpleRefdataQuery(params.query, suffix, idList, result)
         }
         else if ( suffix in ['manualCancellationDate']) {
 
@@ -104,12 +93,12 @@ class SubscriptionQuery extends BaseQuery {
                 List<Long> nonList = nonMatchingIdList ? Subscription.executeQuery('select s.id from Subscription s where s.id in (:idList)', [idList: nonMatchingIdList]) : []
 
                 if (nonList) {
-                    result.data.add([null, BaseQuery.getMessage(BaseQuery.NO_MATCH_LABEL), nonList.size()])
+                    result.data.add([null, BaseQuery.getChartLabel(BaseQuery.NO_MATCH_LABEL), nonList.size()])
 
                     result.dataDetails.add([
                             query : params.query,
                             id    : null,
-                            label : BaseQuery.getMessage(BaseQuery.NO_MATCH_LABEL),
+                            label : BaseQuery.getChartLabel(BaseQuery.NO_MATCH_LABEL),
                             idList: nonList
                     ])
                 }
@@ -135,9 +124,7 @@ class SubscriptionQuery extends BaseQuery {
                 List<Long> nonMatchingIdList = idList.minus(result.dataDetails.collect { it.idList }.flatten())
                 List<Long> noDataList = nonMatchingIdList ? Subscription.executeQuery('select s.id from Subscription s where s.id in (:idList)', [idList: nonMatchingIdList]) : []
 
-                if (noDataList) {
-                    handleGenericNonMatchingData1Value_TMP(params.query, NO_PROVIDER_LABEL, noDataList, result)
-                }
+                handleGenericNonMatchingData1Value_TMP(params.query, NO_PROVIDER_LABEL, noDataList, result)
             }
             else if (params.query in ['subscription-x-platform']) {
 
@@ -179,9 +166,7 @@ class SubscriptionQuery extends BaseQuery {
                 List<Long> nonMatchingIdList = idList.minus(result.dataDetails.collect { it.idList }.flatten())
                 List<Long> noDataList = nonMatchingIdList ? Subscription.executeQuery('select s.id from Subscription s where s.id in (:idList)', [idList: nonMatchingIdList]) : []
 
-                if (noDataList) {
-                    handleGenericNonMatchingData2Values_TMP(params.query, NO_PLATFORM_LABEL, noDataList, result)
-                }
+                handleGenericNonMatchingData2Values_TMP(params.query, NO_PLATFORM_LABEL, noDataList, result)
             }
             else if (params.query in ['subscription-x-property']) {
 

@@ -2,6 +2,7 @@ package de.laser.api.v0.entities
 
 
 import de.laser.Identifier
+import de.laser.Links
 import de.laser.Org
 import de.laser.OrgRole
 import de.laser.Subscription
@@ -13,11 +14,18 @@ import grails.converters.JSON
 import groovy.util.logging.Slf4j
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
+/**
+ * An API representation of a {@link Subscription}
+ */
 @Slf4j
 class ApiSubscription {
 
     /**
-     * @return ApiBox(obj: Subscription | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND | OBJECT_STATUS_DELETED)
+	 * Locates the given {@link Subscription} and returns the object (or null if not found) and the request status for further processing
+	 * @param the field to look for the identifier, one of {id, globalUID, namespace:id}
+	 * @param the identifier value with namespace, if needed
+     * @return {@link ApiBox}(obj: Subscription | null, status: null | BAD_REQUEST | PRECONDITION_FAILED | NOT_FOUND | OBJECT_STATUS_DELETED)
+	 * @see ApiBox#validatePrecondition_1()
      */
     static ApiBox findSubscriptionBy(String query, String value) {
 		ApiBox result = ApiBox.get()
@@ -46,7 +54,10 @@ class ApiSubscription {
     }
 
     /**
-     * @return boolean
+     * Checks if the requesting institution can access to the given subscription
+	 * @param sub the {@link Subscription} to which access is being requested
+	 * @param context the institution ({@link Org}) requesting access
+	 * @return true if the access is granted, false otherwise
      */
     static boolean calculateAccess(Subscription sub, Org context) {
 
@@ -69,6 +80,10 @@ class ApiSubscription {
     }
 
     /**
+	 * Checks if the given institution can access the given subscription.
+	 * The subscription is returned in case of success
+	 * @param sub the {@link Subscription} whose details should be retrieved
+	 * @param context the institution ({@link Org}) requesting the subscription
      * @return JSON | FORBIDDEN
      */
     static requestSubscription(Subscription sub, Org context, boolean isInvoiceTool){
@@ -83,6 +98,11 @@ class ApiSubscription {
     }
 
     /**
+	 * Retrieves the list of subscriptions the requested institution has. Only those subscriptions appear in the result
+	 * list which have been marked as public for API. This can be enabled for each subscription individually by
+	 * setting the {@link Subscription#isPublicForApi} flag
+	 * @param owner the institution ({@link Org}) whose subscriptions should be requested
+	 * @param context the institution ({@link Org}) requesting
      * @return JSON
      */
     static JSON getSubscriptionList(Org owner, Org context){
@@ -108,6 +128,11 @@ class ApiSubscription {
     }
 
 	/**
+	 * Assembles the given subscription attributes into a {@link Map}. The schema of the map can be seen in schemas.gsp
+	 * @param subscription the {@link Subscription} which should be output
+	 * @param ignoreRelation currently unused
+	 * @param context the institution ({@link Org}) requesting
+	 * @param isInvoiceTool is the hbz invoice tool doing the request?
 	 * @return Map<String, Object>
 	 */
 	static Map<String, Object> getSubscriptionMap(Subscription sub, def ignoreRelation, Org context, boolean isInvoiceTool){
@@ -116,28 +141,25 @@ class ApiSubscription {
 		sub = GrailsHibernateUtil.unwrapIfProxy(sub)
 
 		result.globalUID            	= sub.globalUID
-		result.cancellationAllowances 	= sub.cancellationAllowances
 		result.dateCreated          	= ApiToolkit.formatInternalDate(sub.dateCreated)
 		result.endDate              	= ApiToolkit.formatInternalDate(sub.endDate)
 		result.lastUpdated          	= ApiToolkit.formatInternalDate(sub._getCalculatedLastUpdated())
 		result.manualCancellationDate 	= ApiToolkit.formatInternalDate(sub.manualCancellationDate)
-		result.manualRenewalDate    	= ApiToolkit.formatInternalDate(sub.manualRenewalDate)
 		result.name                 	= sub.name
-		result.noticePeriod         	= sub.noticePeriod
 		result.startDate            	= ApiToolkit.formatInternalDate(sub.startDate)
 		result.calculatedType       	= sub._getCalculatedType()
 
 		// RefdataValues
 
-		result.form         		= sub.form?.value
-		result.isSlaved     		= sub.isSlaved ? 'Yes' : 'No'
-        result.isMultiYear  		= sub.isMultiYear ? 'Yes' : 'No'
-		result.resource     		= sub.resource?.value
-		result.status       		= sub.status?.value
-		result.type         		= sub.type?.value
-		result.kind         		= sub.kind?.value
-		result.isPublicForApi 		= sub.isPublicForApi ? 'Yes' : 'No'
-		result.hasPerpetualAccess 	= sub.hasPerpetualAccess ? 'Yes' : 'No'
+		result.form         			= sub.form?.value
+        result.isMultiYear  			= sub.isMultiYear ? 'Yes' : 'No'
+		result.isAutomaticRenewAnnually = sub.isAutomaticRenewAnnually ? 'Yes' : 'No'
+		result.resource     			= sub.resource?.value
+		result.status       			= sub.status?.value
+		result.kind         			= sub.kind?.value
+		result.isPublicForApi 			= sub.isPublicForApi ? 'Yes' : 'No'
+		result.hasPerpetualAccess 		= sub.hasPerpetualAccess ? 'Yes' : 'No'
+		result.hasPublishComponent 		= sub.hasPublishComponent ? 'Yes' : 'No'
 
 		// References
 
@@ -148,9 +170,22 @@ class ApiSubscription {
 		//result.organisations        = ApiCollectionReader.resolveOrgLinks(sub.orgRelations, ApiCollectionReader.IGNORE_SUBSCRIPTION, context) // de.laser.OrgRole
 		result.orgAccessPoints			= ApiCollectionReader.getOrgAccessPointCollection(sub.getOrgAccessPointsOfSubscriber())
 
-		result.predecessor = ApiStubReader.requestSubscriptionStub(sub._getCalculatedPrevious(), context) // com.k_int.kbplus.Subscription
-		result.successor   = ApiStubReader.requestSubscriptionStub(sub._getCalculatedSuccessor(), context) // com.k_int.kbplus.Subscription
+		result.predecessors = []
+		result.successors   = []
+		sub._getCalculatedPrevious().each { Subscription prev ->
+			result.predecessors.add(ApiStubReader.requestSubscriptionStub(prev, context)) // com.k_int.kbplus.Subscription
+		}
+		sub._getCalculatedSuccessor().each { Subscription succ ->
+			result.successors.add(ApiStubReader.requestSubscriptionStub(succ, context)) // com.k_int.kbplus.Subscription
+		}
 		result.properties  = ApiCollectionReader.getPropertyCollection(sub, context, ApiReader.IGNORE_NONE) // com.k_int.kbplus.(SubscriptionCustomProperty, SubscriptionPrivateProperty)
+
+		result.linkedSubscriptions = []
+
+		List<Links> otherLinks = Links.executeQuery("select li from Links li where (li.sourceSubscription = :subscription or li.destinationSubscription = :subscription) and li.linkType not in (:excludes)", [subscription: sub, excludes: [RDStore.LINKTYPE_FOLLOWS, RDStore.LINKTYPE_LICENSE]])
+		otherLinks.each { Links li ->
+			result.linkedSubscriptions.add([linktype: li.linkType.value, subscription: ApiStubReader.requestSubscriptionStub((Subscription) li.getOther(sub), context)])
+		}
 
 		def allOrgRoles = []
 
@@ -186,12 +221,12 @@ class ApiSubscription {
 		}
 
 		if (isInvoiceTool) {
-			result.costItems = ApiCollectionReader.getCostItemCollection(sub.costItems)
+			result.costItems = ApiCollectionReader.getCostItemCollection(sub.costItems, context)
 		}
 		else {
 			Collection<CostItem> filtered = sub.costItems.findAll{ it.owner == context || it.isVisibleForSubscriber }
 
-			result.costItems = ApiCollectionReader.getCostItemCollection(filtered)
+			result.costItems = ApiCollectionReader.getCostItemCollection(filtered, context)
 		}
 
 		ApiToolkit.cleanUp(result, true, true)

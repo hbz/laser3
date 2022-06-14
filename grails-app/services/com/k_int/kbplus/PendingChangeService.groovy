@@ -3,6 +3,7 @@ package com.k_int.kbplus
 import de.laser.AuditService
 import de.laser.ContextService
 import de.laser.EscapeService
+import de.laser.GlobalService
 import de.laser.Identifier
 import de.laser.IssueEntitlement
 import de.laser.Org
@@ -48,6 +49,9 @@ import java.sql.Array
 import java.text.SimpleDateFormat
 import java.time.Duration
 
+/**
+ * This service handles pending change processing and display
+ */
 @Transactional
 class PendingChangeService extends AbstractLockableService {
 
@@ -353,6 +357,11 @@ class PendingChangeService extends AbstractLockableService {
         }
     }
 
+    /**
+     * Applies a change on an inherited public property
+     * @param pendingChange the change to be applied
+     * @param payload a map containing the change parameters
+     */
     private void processCustomPropertyChange(PendingChange pendingChange, JSONElement payload) {
         def changeDoc = payload.changeDoc
 
@@ -372,7 +381,8 @@ class PendingChangeService extends AbstractLockableService {
                 //def srcProperty = genericOIDService.resolveOID(changeDoc.propertyOID)
                 //def srcObject = genericOIDService.resolveOID(changeDoc.OID)
                 String srcOID = pendingChange.payloadChangeDocOid ?: payload.changeDoc.OID
-                def srcObject = genericOIDService.resolveOID(srcOID.replace('Custom','').replace('Private',''))
+                srcOID = srcOID.replace('Custom','').replace('Private','')
+                def srcObject = genericOIDService.resolveOID(srcOID)
 
                 // A: get existing targetProperty by instanceOf
                 def targetProperty = srcObject.getClass().findByOwnerAndInstanceOf(changeTarget, srcObject)
@@ -441,6 +451,11 @@ class PendingChangeService extends AbstractLockableService {
         }
     }
 
+    /**
+     * Applies a change on an inherited identifier
+     * @param pendingChange the change to process
+     * @param payload a map containing the change details
+     */
     private void processIdentifierChange(PendingChange pendingChange, JSONElement payload) {
         def changeDoc = payload.changeDoc
 
@@ -516,12 +531,17 @@ class PendingChangeService extends AbstractLockableService {
         }
     }
 
+    /**
+     * Gets the recent and pending changes on titles for the given institution. This method has been translated into SQL
+     * queries because the GORM loading slows the query very much down
+     * @param configMap a map containing the configuration parameters such as context institution, user's time setting
+     * @return a map containing title changes and notification
+     */
     Map<String, Object> getChanges(LinkedHashMap<String, Object> configMap) {
         Map<String, Object> result = [:]
         Locale locale = LocaleContextHolder.getLocale()
         Date time = new Date(System.currentTimeMillis() - Duration.ofDays(configMap.periodInDays).toMillis())
-        def dataSource = Holders.grailsApplication.mainContext.getBean('dataSource')
-        Sql sql = new Sql(dataSource)
+        Sql sql = GlobalService.obtainSqlConnection()
         List pending = [], notifications = []
         Map<String, Long> roleTypes = ["consortia": RDStore.OR_SUBSCRIPTION_CONSORTIA.id, "subscriber": RDStore.OR_SUBSCRIBER.id, "member": RDStore.OR_SUBSCRIBER_CONS.id]
         Map<Long, String> status = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS).collectEntries { RefdataValue rdv -> [(rdv.id): rdv.getI10n("value")] }
@@ -531,32 +551,33 @@ class PendingChangeService extends AbstractLockableService {
         sql.withTransaction {
             Array retired = sql.connection.createArrayOf('bigint', retObj)
             //package changes
-            String subscribedPackagesQuery = "select pcc_sp_fk as subPkg, sp_pkg_fk as pkg, sp_date_created, pcc_setting_key_enum as key, case when pcc_setting_value_rv_fk = :prompt then true else false end as prompt, pcc_with_notification as with_notification from pending_change_configuration join subscription_package on pcc_sp_fk = sp_id join subscription on sp_sub_fk = sub_id join org_role on sp_sub_fk = or_sub_fk where not (sub_status_rv_fk = any(:retired)) and or_org_fk = :context and or_roletype_fk = any(:roleTypes)"
+            String subscribedPackagesQuery = "select pcc_sp_fk as subPkg, sp_pkg_fk as pkg, sp_sub_fk as sub, sp_date_created, pcc_setting_key_enum as key, case when pcc_setting_value_rv_fk = :prompt then true else false end as prompt, pcc_with_notification as with_notification from pending_change_configuration join subscription_package on pcc_sp_fk = sp_id join subscription on sp_sub_fk = sub_id join org_role on sp_sub_fk = or_sub_fk where not (sub_status_rv_fk = any(:retired)) and or_org_fk = :context and or_roletype_fk = any(:roleTypes)"
             if(configMap.consortialView)
                 subscribedPackagesQuery += " and (pcc_setting_value_rv_fk = :prompt or pcc_with_notification = true) and sub_parent_sub_fk is null"
             List subscribedPackages = sql.rows(subscribedPackagesQuery, [retired: retired, context: configMap.contextOrg.id, roleTypes: sql.connection.createArrayOf('bigint', [RDStore.OR_SUBSCRIPTION_CONSORTIA.id,RDStore.OR_SUBSCRIBER_CONS.id,RDStore.OR_SUBSCRIBER.id] as Object[]), prompt: RDStore.PENDING_CHANGE_CONFIG_PROMPT.id])
             if(!configMap.consortialView) {
-                subscribedPackages.addAll(sql.rows("select sp_id as subPkg, sp_pkg_fk as pkg, sp_date_created, auc_reference_field as key, true as with_notification, null as prompt from subscription_package join org_role on sp_sub_fk = or_sub_fk join subscription on or_sub_fk = sub_id join audit_config on auc_reference_id = sub_parent_sub_fk where not (sub_status_rv_fk = any(:retired)) and or_org_fk = :context and auc_reference_field = any(:settingKeys) and sp_sub_fk = sub_id", [retired: retired, context: configMap.contextOrg.id, settingKeys: sql.connection.createArrayOf('varchar', PendingChangeConfiguration.SETTING_KEYS.collect { String key -> key+PendingChangeConfiguration.NOTIFICATION_SUFFIX }  as Object[])]))
+                subscribedPackages.addAll(sql.rows("select sp_id as subPkg, sp_pkg_fk as pkg, sp_sub_fk as sub, sp_date_created, auc_reference_field as key, true as with_notification, null as prompt from subscription_package join org_role on sp_sub_fk = or_sub_fk join subscription on or_sub_fk = sub_id join audit_config on auc_reference_id = sub_parent_sub_fk where not (sub_status_rv_fk = any(:retired)) and or_org_fk = :context and auc_reference_field = any(:settingKeys) and sp_sub_fk = sub_id", [retired: retired, context: configMap.contextOrg.id, settingKeys: sql.connection.createArrayOf('varchar', PendingChangeConfiguration.SETTING_KEYS.collect { String key -> key+PendingChangeConfiguration.NOTIFICATION_SUFFIX }  as Object[])]))
             }
             Map<String, Map<List, Set<String>>> packageConfigMap = [notify: [:], prompt: [:]]
             subscribedPackages.each { GroovyRowResult row ->
                 //log.debug(row.toString())
                 Long spId = row.get('subPkg')
                 Long spPkg = row.get('pkg')
+                Long spSub = row.get('sub')
                 Date dateEntry = row.get('sp_date_created')
                 if(row.get('prompt') != null && row.get('prompt') == true) {
-                    Set<String> packageSettings = packageConfigMap.prompt.get([spId, spPkg, dateEntry])
+                    Set<String> packageSettings = packageConfigMap.prompt.get([spId, spPkg, dateEntry, spSub])
                     if(!packageSettings)
                         packageSettings = []
                     packageSettings << row.get('key')
-                    packageConfigMap.prompt.put([spId, spPkg, dateEntry], packageSettings)
+                    packageConfigMap.prompt.put([spId, spPkg, dateEntry, spSub], packageSettings)
                 }
                 if(row.get('with_notification') == true) {
-                    Set<String> packageSettings = packageConfigMap.notify.get([spId, spPkg, dateEntry])
+                    Set<String> packageSettings = packageConfigMap.notify.get([spId, spPkg, dateEntry, spSub])
                     if(!packageSettings)
                         packageSettings = []
                     packageSettings << row.get('key')
-                    packageConfigMap.notify.put([spId, spPkg, dateEntry], packageSettings)
+                    packageConfigMap.notify.put([spId, spPkg, dateEntry, spSub], packageSettings)
                 }
             }
             //log.debug(packageConfigMap.notify.keySet().collect { List pkgSetting -> pkgSetting[0] }.toListString())
@@ -567,21 +588,30 @@ class PendingChangeService extends AbstractLockableService {
                 - get the change counts
              */
             //log.debug("start")
+            //December 8th: observe the queries, it may be that with data, they will err
             Set subNotifyPkgs = packageConfigMap.notify.keySet(), subPromptPkgs = packageConfigMap.prompt.keySet()
             String notificationsQuery1 = "select count(id) as count, pc_pkg_fk as pkg, sp_id, pc_msg_token from pending_change join subscription_package on pc_pkg_fk = sp_pkg_fk where sp_id = any(:sp) and pc_ts >= :date and pc_msg_token is not null group by pc_pkg_fk, sp_id, pc_msg_token"
             List pkgCount = sql.rows(notificationsQuery1, [sp: sql.connection.createArrayOf('bigint', subNotifyPkgs.collect{ List sp -> sp[0] } as Object[]), date: time.toTimestamp()])
             //log.debug(pkgCount.toListString())
-            String notificationsQuery2 = "select count(id) as count, tipp_pkg_fk as pkg, sp_id, pc_msg_token from pending_change join title_instance_package_platform on pc_tipp_fk = tipp_id join subscription_package on tipp_pkg_fk = sp_pkg_fk where sp_id = any(:sp) and pc_oid = concat('${Subscription.class.name}',':',sp_sub_fk) and pc_ts >= :date and pc_msg_token is not null group by tipp_pkg_fk, sp_id, pc_msg_token"
+            String notificationsQuery2 = "select count(id) as count, tipp_pkg_fk as pkg, sp_id, pc_msg_token from pending_change join title_instance_package_platform on pc_tipp_fk = tipp_id join subscription_package on tipp_pkg_fk = sp_pkg_fk where sp_id = any(:sp) and (regexp_split_to_array(pc_oid, '${Subscription.class.name}:'))[2]::bigint = sp_sub_fk and pc_ts >= :date and pc_msg_token is not null group by tipp_pkg_fk, sp_id, pc_msg_token"
             List titleCount = sql.rows(notificationsQuery2, [sp: sql.connection.createArrayOf('bigint', subNotifyPkgs.collect{ List sp -> sp[0] } as Object[]), date: time.toTimestamp()])
             //log.debug(titleCount.toListString())
-            String notificationsQuery3 = "select count(id) as count, tipp_pkg_fk as pkg, sp_id, pc_msg_token from pending_change join tippcoverage on pc_tc_fk = tc_id join title_instance_package_platform on tc_tipp_fk = tipp_id join subscription_package on tipp_pkg_fk = sp_pkg_fk where sp_id = any(:sp) and pc_oid = concat('${Subscription.class.name}',':',sp_sub_fk) and pc_ts >= :date and pc_msg_token is not null group by tipp_pkg_fk, sp_id, pc_msg_token"
+            String notificationsQuery3 = "select count(id) as count, tipp_pkg_fk as pkg, sp_id, pc_msg_token from pending_change join tippcoverage on pc_tc_fk = tc_id join title_instance_package_platform on tc_tipp_fk = tipp_id join subscription_package on tipp_pkg_fk = sp_pkg_fk where sp_id = any(:sp) and (regexp_split_to_array(pc_oid, '${Subscription.class.name}:'))[2]::bigint = sp_sub_fk and pc_ts >= :date and pc_msg_token is not null group by tipp_pkg_fk, sp_id, pc_msg_token"
             List coverageCount = sql.rows(notificationsQuery3, [sp: sql.connection.createArrayOf('bigint', subNotifyPkgs.collect{ List sp -> sp[0] } as Object[]), date: time.toTimestamp()])
             //log.debug(coverageCount.toListString())
-            String pendingQuery1 = "select count(pc.id) as count, tipp_pkg_fk as pkg, sp_id, pc.pc_msg_token from pending_change as pc join title_instance_package_platform on pc.pc_tipp_fk = tipp_id join subscription_package on tipp_pkg_fk = sp_pkg_fk where sp_id = any(:sp) and pc.pc_oid is null and not exists(select done.id from pending_change as done where pc.pc_tipp_fk = done.pc_tipp_fk and done.pc_oid = concat('${Subscription.class.name}',':',sp_sub_fk)) and pc.pc_msg_token is not null and pc.pc_ts > sp_date_created group by tipp_pkg_fk, sp_id, pc_msg_token"
+            String pendingQuery1 = "select count(pc.id) as count, tipp_pkg_fk as pkg, sp_id, pc.pc_msg_token from pending_change as pc join title_instance_package_platform on pc.pc_tipp_fk = tipp_id join subscription_package on tipp_pkg_fk = sp_pkg_fk where sp_id = any(:sp) and pc.pc_oid is null and not exists(select done.id from pending_change as done where pc.pc_tipp_fk = done.pc_tipp_fk and (regexp_split_to_array(done.pc_oid, '${Subscription.class.name}:'))[2]::bigint = sp_sub_fk) and pc.pc_msg_token is not null and pc.pc_ts > sp_date_created group by tipp_pkg_fk, sp_id, pc_msg_token"
             List titlePendingCount = sql.rows(pendingQuery1, [sp: sql.connection.createArrayOf('bigint', subPromptPkgs.collect{ List sp -> sp[0] } as Object[])])
             //log.debug(titlePendingCount.toListString())
-            String pendingQuery2 = "select count(pc.id) as count, tipp_pkg_fk as pkg, sp_id, pc.pc_msg_token from pending_change as pc join tippcoverage on pc.pc_tc_fk = tc_id join title_instance_package_platform on tc_tipp_fk = tipp_id join subscription_package on tipp_pkg_fk = sp_pkg_fk where sp_id = any(:sp) and pc.pc_oid is null and not exists(select done.id from pending_change as done where pc.pc_tc_fk = done.pc_tc_fk and done.pc_oid = concat('${Subscription.class.name}',':',sp_sub_fk)) and pc.pc_msg_token is not null and pc.pc_ts > sp_date_created group by tipp_pkg_fk, sp_id, pc.pc_msg_token"
+            String pendingQuery2 = "select count(pc.id) as count, tipp_pkg_fk as pkg, sp_id, pc.pc_msg_token from pending_change as pc join tippcoverage on pc.pc_tc_fk = tc_id join title_instance_package_platform on tc_tipp_fk = tipp_id join subscription_package on tipp_pkg_fk = sp_pkg_fk where sp_id = any(:sp) and pc.pc_oid is null and not exists(select done.id from pending_change as done where pc.pc_tc_fk = done.pc_tc_fk and regexp_split_to_array(done.pc_oid, ':') @> '{${Subscription.class.name}}' and done.pc_oid = concat('${Subscription.class.name}:',sp_sub_fk)) and pc.pc_msg_token is not null and pc.pc_ts > sp_date_created group by tipp_pkg_fk, sp_id, pc.pc_msg_token"
+            //log.debug("select count(pc.id) as count, tipp_pkg_fk as pkg, sp_id, pc.pc_msg_token from pending_change as pc join tippcoverage on pc.pc_tc_fk = tc_id join title_instance_package_platform on tc_tipp_fk = tipp_id join subscription_package on tipp_pkg_fk = sp_pkg_fk where sp_id = any('{${subPromptPkgs.collect{ List sp -> sp[0] }}}') and pc.pc_oid is null and not exists(select done.id from pending_change as done where pc.pc_tc_fk = done.pc_tc_fk and (regexp_split_to_array(done.pc_oid, '${Subscription.class.name}:'))[2]::bigint = sp_sub_fk) and pc.pc_msg_token is not null and pc.pc_ts > sp_date_created group by tipp_pkg_fk, sp_id, pc.pc_msg_token")
             List coveragePendingCount = sql.rows(pendingQuery2, [sp: sql.connection.createArrayOf('bigint', subPromptPkgs.collect{ List sp -> sp[0] } as Object[])])
+            String consortialFilter = ""
+            if(configMap.consortialView)
+                consortialFilter = "and sub_parent_sub_fk is null"
+            //log.debug("select count(id) as count, tipp_pkg_fk as pkg, sp_id, pc_msg_token from pending_change join title_instance_package_platform on pc_tipp_fk = tipp_id join subscription_package on sp_pkg_fk = tipp_pkg_fk join org_role on or_sub_fk = sp_sub_fk join subscription on sp_sub_fk = sub_id where or_org_fk = :context and or_roletype_fk = any(:roleTypes) and pc_msg_token = :removed ${consortialFilter} group by pc_msg_token, tipp_pkg_fk, sp_id")
+            //log.debug([context: configMap.contextOrg.id, roleTypes: sql.connection.createArrayOf('bigint', roleTypes.values() as Object[]), removed: PendingChangeConfiguration.TITLE_REMOVED].toMapString())
+            String removedTitlesQuery = "select count(id) as count, tipp_pkg_fk as pkg, sp_id, pc_msg_token from pending_change join title_instance_package_platform on pc_tipp_fk = tipp_id join subscription_package on sp_pkg_fk = tipp_pkg_fk join org_role on or_sub_fk = sp_sub_fk join subscription on sp_sub_fk = sub_id where or_org_fk = :context and or_roletype_fk = any(:roleTypes) and pc_msg_token = :removed and exists(select ie_id from issue_entitlement where ie_tipp_fk = pc_tipp_fk and ie_subscription_fk = sp_sub_fk and ie_status_rv_fk != :ieRemoved) ${consortialFilter} group by pc_msg_token, tipp_pkg_fk, sp_id"
+            List removedTitlesCount = sql.rows(removedTitlesQuery, [context: configMap.contextOrg.id, roleTypes: sql.connection.createArrayOf('bigint', roleTypes.values() as Object[]), removed: PendingChangeConfiguration.TITLE_REMOVED, ieRemoved: RDStore.TIPP_STATUS_REMOVED.id])
             //log.debug(coveragePendingCount.toListString())
 
             /*
@@ -594,6 +624,7 @@ class PendingChangeService extends AbstractLockableService {
             notifications.addAll(getEventRows(coverageCount, locale, status, roleTypes, sql, subNotifyPkgs))
             pending.addAll(getEventRows(titlePendingCount, locale, status, roleTypes, sql, subPromptPkgs))
             pending.addAll(getEventRows(coveragePendingCount, locale, status, roleTypes, sql, subPromptPkgs))
+            pending.addAll(getEventRows(removedTitlesCount, locale, status, roleTypes, sql, new HashSet()))
             sql.rows("select id, pc_ci_fk, pc_msg_token, pc_old_value, pc_new_value, pc_sub_fk, pc_status_rdv_fk, pc_ts from pending_change where pc_owner = :contextOrg and pc_status_rdv_fk = any(:status) and (pc_msg_token = :newSubscription or pc_ci_fk is not null)", [contextOrg: configMap.contextOrg.id, status: sql.connection.createArrayOf('bigint', acceptedStatus.keySet() as Object[]), newSubscription: 'pendingChange.message_SU_NEW_01']).each { GroovyRowResult pc ->
                 Map<String,Object> eventRow = [event:pc.get("pc_msg_token")]
                 if(pc.get("pc_ci_fk")) {
@@ -611,8 +642,7 @@ class PendingChangeService extends AbstractLockableService {
                 }
                 else {
                     List prevSub = sql.rows("select l_dest_sub_fk, sub_name, sub_start_date, sub_end_date, sub_status_rv_fk, org_sortname, or_roletype_fk, sub_parent_sub_fk from links join subscription on l_dest_sub_fk = sub_id join org_role on sub_id = or_sub_fk join org on or_org_fk = org_id where l_source_sub_fk = :newSub and l_link_type_rv_fk = :follows", [newSub: pc.get("pc_sub_fk"), follows: RDStore.LINKTYPE_FOLLOWS.id])
-                    if(prevSub) {
-                        GroovyRowResult previous = prevSub[0]
+                    prevSub.each { GroovyRowResult previous ->
                         eventRow.eventString = messageSource.getMessage("${pc.get("pc_msg_token")}.eventString", null, locale)
                         eventRow.changeId = pc.get("id")
                         eventRow.subscription = [source: Subscription.class.name + ':' + previous.get("l_dest_sub_fk"), target: Subscription.class.name + ':' + pc.get("pc_sub_fk"), id: pc.get("pc_sub_fk"), name: subscriptionName(previous, status, locale)]
@@ -635,11 +665,25 @@ class PendingChangeService extends AbstractLockableService {
         result
     }
 
+    /**
+     * Helper method to collect the events in rows containing also the subscription data
+     * @param entries the changes to display
+     * @param locale the locale to use for the message constants
+     * @param status the possible subscription status
+     * @param roleTypes the possible subscriber role types
+     * @param sql the SQL connection
+     * @param subPkgConfigs the map of subscription package pending change configurations
+     * @return a list of maps containing the subscription data, the event string and the change token
+     */
     List<Map<String, Object>> getEventRows(List<GroovyRowResult> entries, Locale locale, Map status, Map roleTypes, Sql sql, Set subPkgConfigs) {
         List result = []
         entries.each { GroovyRowResult row ->
             List spData = subPkgConfigs.find { List spPkgCfg -> spPkgCfg[1] == row.get("pkg") && spPkgCfg[0] == row.get("sp_id") }
-            List subRows = sql.rows("select sub_id, sub_name, sub_start_date, sub_end_date, sub_status_rv_fk, org_sortname, or_roletype_fk, sub_parent_sub_fk from subscription_package join subscription on sp_sub_fk = sub_id join org_role on sub_id = or_sub_fk join org on or_org_fk = org_id where sp_id = :spId and or_roletype_fk = any(:subscriberTypes)", [spId: spData[0], subscriberTypes: sql.connection.createArrayOf('bigint', roleTypes.values() as Object[])])
+            List subRows
+            //subPkgConfigs is set for configurable events
+            if(subPkgConfigs)
+                subRows = sql.rows("select sub_id, sub_name, sub_start_date, sub_end_date, sub_status_rv_fk, org_sortname, or_roletype_fk, sub_parent_sub_fk from subscription_package join subscription on sp_sub_fk = sub_id join org_role on sub_id = or_sub_fk join org on or_org_fk = org_id where sp_id = :spId and or_roletype_fk = any(:subscriberTypes)", [spId: spData[0], subscriberTypes: sql.connection.createArrayOf('bigint', roleTypes.values() as Object[])])
+            else subRows = sql.rows("select sub_id, sub_name, sub_start_date, sub_end_date, sub_status_rv_fk, org_sortname, or_roletype_fk, sub_parent_sub_fk from subscription_package join subscription on sp_sub_fk = sub_id join org_role on sub_id = or_sub_fk join org on or_org_fk = org_id where sp_id = :spId and or_roletype_fk = any(:subscriberTypes)", [spId: row.get('sp_id'), subscriberTypes: sql.connection.createArrayOf('bigint', roleTypes.values() as Object[])])
             if(subRows) {
                 GroovyRowResult entry = subRows[0]
                 result << [packageSubscription: [id: entry.get('sub_id'), name: subscriptionName(subRows[0], status, locale)], eventString: messageSource.getMessage(row.get('pc_msg_token'), [row.get('count')] as Object[], locale), msgToken: row.get('pc_msg_token')]
@@ -648,6 +692,13 @@ class PendingChangeService extends AbstractLockableService {
         result
     }
 
+    /**
+     * Helper to display the subscription name according to the dropdown naming convention
+     * @param entry the subscription data
+     * @param status the possible subscription status
+     * @param locale the locale to use for message constants
+     * @return the subscription name conform to {@link Subscription#dropdownNamingConvention(de.laser.Org)}
+     */
     String subscriptionName(GroovyRowResult entry, Map<Long, String> status, Locale locale) {
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         //log.debug(subRows.toListString())
@@ -662,6 +713,10 @@ class PendingChangeService extends AbstractLockableService {
         "${entry.get('sub_name')} - ${status.get(entry.get('sub_status_rv_fk'))} (${startDate} - ${endDate})${additionalInfo}"
     }
 
+    /**
+     * Kept for reasons of reference
+     */
+    @Deprecated
     Map<String,Object> getChanges_old(LinkedHashMap<String, Object> configMap) {
         SessionCacheWrapper scw = new SessionCacheWrapper()
         String ctx = 'dashboard/changes'
@@ -804,7 +859,7 @@ class PendingChangeService extends AbstractLockableService {
                 else {
                     eventRow.eventString = messageSource.getMessage("${pc.msgToken}.eventString", null, locale)
                     eventRow.changeId = pc.id
-                    eventRow.subscription = [source: genericOIDService.getOID(pc.subscription._getCalculatedPrevious()), target: genericOIDService.getOID(pc.subscription)]
+                    eventRow.subscription = [sources: pc.subscription._getCalculatedPrevious(), target: genericOIDService.getOID(pc.subscription)]
                 }
                 if(pc.status == RDStore.PENDING_CHANGE_PENDING)
                     pending << eventRow
@@ -821,7 +876,7 @@ class PendingChangeService extends AbstractLockableService {
          pending: changesCache.pending.drop(configMap.pendingOffset).take(configMap.max), pendingCount: changesCache.pendingCount, acceptedOffset: configMap.acceptedOffset, pendingOffset: configMap.pendingOffset]
     }
 
-    //called from: dashboard.gsp
+    @Deprecated
     Map<String,Object> printRow(PendingChange change) {
         Locale locale = LocaleContextHolder.getLocale()
         String eventIcon, instanceIcon, eventString
@@ -859,7 +914,8 @@ class PendingChangeService extends AbstractLockableService {
 
     /**
      * Converts the given value according to the field type
-     * @param key - the string value
+     * @param change the change whose property should be output
+     * @param key the string value
      * @return the value as {@link Date} or {@link String}
      */
     def output(PendingChange change,String key) {
@@ -878,6 +934,11 @@ class PendingChangeService extends AbstractLockableService {
         ret
     }
 
+    /**
+     * Determines the concerned entity type and references based on the given change token
+     * @param token the change token
+     * @return a map containing the entity references
+     */
     Map<String, String> getEntityFromToken(String token) {
         switch(token) {
             case PendingChangeConfiguration.NEW_TITLE:
@@ -893,6 +954,11 @@ class PendingChangeService extends AbstractLockableService {
         }
     }
 
+    /**
+     * Retrieves the counts of changes for each of the packages in the given list
+     * @param pkgList the list of packages (as {@link SubscriptionPackage} link objects) whose counts should be retrieved
+     * @return a {@link Map} of counts, grouped by events and application status (pending or accepted)
+     */
     Map<String, Integer> getCountsForPackages(List<SubscriptionPackage> pkgList) {
         Integer newTitlesPending = 0, titlesUpdatedPending = 0, titlesDeletedPending = 0, newCoveragesPending = 0, coveragesUpdatedPending = 0, coveragesDeletedPending = 0
         Integer newTitlesAccepted = 0, titlesUpdatedAccepted = 0, titlesDeletedAccepted = 0, newCoveragesAccepted = 0, coveragesUpdatedAccepted = 0, coveragesDeletedAccepted = 0
@@ -971,6 +1037,13 @@ class PendingChangeService extends AbstractLockableService {
          coveragesDeletedAccepted: coveragesDeletedAccepted]
     }
 
+    /**
+     * Accepts the given change and applies the parameters
+     * @param pc the change to accept
+     * @param subId the subscription on which the change should be applied
+     * @return true if the change could be applied successfully, false otherwise
+     * @throws ChangeAcceptException
+     */
     boolean accept(PendingChange pc, subId = null) throws ChangeAcceptException {
         println("accept: ${pc.msgToken} for ${pc.pkg} or ${pc.tipp} or ${pc.tippCoverage}")
         boolean done = false
@@ -1249,6 +1322,12 @@ class PendingChangeService extends AbstractLockableService {
         done
     }
 
+    /**
+     * Rejects the given change and sets the flag to prevent accidents
+     * @param pc the change to reject
+     * @param subId the subscription which would have been affected
+     * @return true if the rejection was successful, false otherwise
+     */
     boolean reject(PendingChange pc, Long subId = null) {
         if(pc.status != RDStore.PENDING_CHANGE_HISTORY) {
             pc.status = RDStore.PENDING_CHANGE_REJECTED
@@ -1283,6 +1362,12 @@ class PendingChangeService extends AbstractLockableService {
         true
     }
 
+    /**
+     * Auto-applies the given change to the given subscription
+     * @param newChange the change to apply
+     * @param subPkg the subscription package on which the change should be applied
+     * @param contextOrg the subscriber
+     */
     void applyPendingChange(PendingChange newChange,SubscriptionPackage subPkg,Org contextOrg) {
         println("applyPendingChange")
         def target
@@ -1306,6 +1391,12 @@ class PendingChangeService extends AbstractLockableService {
         else log.error("Unable to determine target object! Ignoring change ${newChange}!")
     }
 
+    /**
+     * Auto-applies the given change to derived subscriptions (i.e. inherits the change applied on a consortial subscription)
+     * @param newChange the change to apply
+     * @param subPkg the (consortial) subscription package on which the change should be applied
+     * @param contextOrg the subscription consortium
+     */
     void applyPendingChangeForHolding(PendingChange newChange,SubscriptionPackage subPkg,Org contextOrg) {
         println("applyPendingChangeForHolding")
         def target
@@ -1351,6 +1442,10 @@ class PendingChangeService extends AbstractLockableService {
         else log.error("Unable to determine target object! Ignoring change ${newChange}!")
     }
 
+    /**
+     * Marks a change as acknowledged, i.e. deletes it
+     * @param changeAccepted the change being acknowledged
+     */
     void acknowledgeChange(PendingChange changeAccepted) {
         changeAccepted.delete()
     }

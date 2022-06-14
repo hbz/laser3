@@ -23,7 +23,7 @@
     <g:form action="processRenewSubscription" method="post" params="${params}">
 
         <div>
-            <table class="ui celled la-table table">
+            <table class="ui celled la-js-responsive-table la-table table">
                 <tbody>
 
                 <tr>

@@ -65,14 +65,15 @@ import org.apache.poi.ss.usermodel.Workbook
 
 import javax.servlet.ServletOutputStream
 
+/**
+ * This controller manages HTML fragment rendering calls; object manipulation is done in the AjaxController!
+ * For JSON rendering, see AjaxJsonController.
+ * IMPORTANT: Only template rendering here, no object manipulation!
+ * @see AjaxController
+ * @see AjaxJsonController
+ */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class AjaxHtmlController {
-
-    /**
-     * only template rendering here ..
-     * no object manipulation
-     *
-     */
 
     AddressbookService addressbookService
     CacheService cacheService
@@ -90,6 +91,10 @@ class AjaxHtmlController {
     CustomWkhtmltoxService wkhtmltoxService // custom
     GokbService gokbService
 
+    /**
+     * Test render call
+     * @return a paragraph with sample text
+     */
     @Secured(['ROLE_USER'])
     def test() {
         String result = '<p data-status="ok">OK'
@@ -99,7 +104,11 @@ class AjaxHtmlController {
         result += '</p>'
         render result
     }
-    
+
+    /**
+     * Loads the display configuration fragment for the given entry point and the queried parameters
+     * @return the display configurations fragment
+     */
     @Deprecated
     @Secured(['ROLE_USER'])
     def loadGeneralFilter() {
@@ -109,6 +118,10 @@ class AjaxHtmlController {
 
     //-------------------------------------------------- myInstitution/dashboard ---------------------------------------
 
+    /**
+     * Loads the pending changes for the dashboard. Is still subject of refactoring as the assembly of the relevant data still takes very long
+     * @return the accepted and pending changes tab fragment for the dashboard
+     */
     @Secured(['ROLE_USER'])
     def getChanges() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(null, params)
@@ -123,6 +136,10 @@ class AjaxHtmlController {
         render template: '/myInstitution/changesWrapper', model: changes
     }
 
+    /**
+     * Loads the survey tab for the dashboard, containing current surveys
+     * @return the survey tab fragment for the dashboard
+     */
     @Secured(['ROLE_USER'])
     def getSurveys() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(null, params)
@@ -150,6 +167,10 @@ class AjaxHtmlController {
 
     //-------------------------------------------------- subscription/show ---------------------------------------------
 
+    /**
+     * Gets the subscription and license links for the given subscription or license
+     * @return the fragment listing the links going out from the given object
+     */
     @Secured(['ROLE_USER'])
     def getLinks() {
         Map<String,Object> result = [user:contextService.getUser(),contextOrg:contextService.getOrg(),subscriptionLicenseLink:params.subscriptionLicenseLink]
@@ -173,6 +194,10 @@ class AjaxHtmlController {
         render template: '/templates/links/linksListing', model: result
     }
 
+    /**
+     * Gets the data of the packages linked to the given subscription
+     * @return the package details fragment
+     */
     @Secured(['ROLE_USER'])
     def getPackageData() {
         Map<String,Object> result = [subscription:Subscription.get(params.subscription), curatoryGroups: []], packageMetadata
@@ -186,6 +211,10 @@ class AjaxHtmlController {
         render template: '/subscription/packages', model: result
     }
 
+    /**
+     * Gets the data of the linked packages to the subscription which is target of the given survey
+     * @return the package details fragment for the survey view
+     */
     @Secured(['ROLE_USER'])
     def getGeneralPackageData() {
         Map<String,Object> result = [subscription:Subscription.get(params.subscription)]
@@ -210,6 +239,21 @@ class AjaxHtmlController {
         render template: '/survey/packages', model: result
     }
 
+    /**
+     * Gets the data of the linked packages to the subscription which is target of the given survey
+     * @return the package details fragment for the survey view
+     */
+    @Secured(['ROLE_USER'])
+    def getIeInfos() {
+        Map<String,Object> result = [subscription:Subscription.get(params.subscription)]
+
+        render template: '/survey/ieInfos', model: result
+    }
+
+    /**
+     * Gets the properties to the given subscription or license
+     * @return the properties view for the respective details view
+     */
     @Secured(['ROLE_USER'])
     def getProperties() {
         Org contextOrg = contextService.getOrg()
@@ -231,6 +275,9 @@ class AjaxHtmlController {
         }
     }
 
+    /**
+     * Opens the edit modal for the given note
+     */
     @Secured(['ROLE_USER'])
     def editNote() {
         Map<String, Object> result = [:]
@@ -240,6 +287,9 @@ class AjaxHtmlController {
         render template: "/templates/notes/modal_edit", model: result
     }
 
+    /**
+     * Opens the view modal for the given note
+     */
     @Secured(['ROLE_USER'])
     def readNote() {
         Map<String, Object> result = [:]
@@ -249,6 +299,9 @@ class AjaxHtmlController {
         render template: "/templates/notes/modal_read", model: result
     }
 
+    /**
+     * Opens the task creation modal
+     */
     @Secured(['ROLE_USER'])
     def createTask() {
         long backendStart = System.currentTimeMillis()
@@ -260,6 +313,9 @@ class AjaxHtmlController {
         render template: "/templates/tasks/modal_create", model: result
     }
 
+    /**
+     * Opens the task editing modal
+     */
     @Secured(['ROLE_USER'])
     def editTask() {
         Org contextOrg = contextService.getOrg()
@@ -276,6 +332,9 @@ class AjaxHtmlController {
         }
     }
 
+    /**
+     * Opens the address creation modal and sets the underlying parameters
+     */
     @Secured(['ROLE_USER'])
     def createAddress() {
         Map<String, Object> model = [:]
@@ -313,6 +372,9 @@ class AjaxHtmlController {
         render template: "/templates/cpa/addressFormModal", model: model
     }
 
+    /**
+     * Opens the edit modal for an existing address
+     */
     @Secured(['ROLE_USER'])
     def editAddress() {
         Map<String, Object> model = [:]
@@ -338,6 +400,9 @@ class AjaxHtmlController {
         }
     }
 
+    /**
+     * Opens the contact entity creation modal and sets the underlying parameters
+     */
     @Secured(['ROLE_USER'])
     def createPerson() {
         Map<String, Object> result = [:]
@@ -350,7 +415,7 @@ class AjaxHtmlController {
         result.showAddresses = params.showAddresses == "true" ? true : ''
         result.addAddresses = params.showAddresses == "true" ? true : ''
         result.org = params.org ? Org.get(Long.parseLong(params.org)) : null
-        result.functions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN]
+        result.functions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_OA_CONTACT]
         if(result.contextOrg.getCustomerType() == 'ORG_CONSORTIUM'){
             result.functions << RDStore.PRS_FUNC_GASCO_CONTACT
         }
@@ -402,6 +467,9 @@ class AjaxHtmlController {
         render template: "/templates/cpa/personFormModal", model: result
     }
 
+    /**
+     * Opens the edit modal for an existing contact entity
+     */
     @Secured(['ROLE_USER'])
     def editPerson() {
         Map<String, Object> result = [:]
@@ -410,7 +478,7 @@ class AjaxHtmlController {
 
         if (result.personInstance){
             result.org = result.personInstance.getBelongsToOrg()
-            result.functions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN]
+            result.functions = [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, RDStore.PRS_FUNC_CONTACT_PRS, RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_RESPONSIBLE_ADMIN, RDStore.PRS_FUNC_OA_CONTACT]
             if(contextOrg.getCustomerType() == 'ORG_CONSORTIUM'){
                 result.functions << RDStore.PRS_FUNC_GASCO_CONTACT
             }
@@ -447,16 +515,25 @@ class AjaxHtmlController {
         }
     }
 
+    /**
+     * Retrieves the contact fields for an entity modal
+     */
     @Secured(['ROLE_USER'])
     def contactFields() {
         render template: "/templates/cpa/contactFields"
     }
 
+    /**
+     * Retrieves the address fields for an entity modal
+     */
     @Secured(['ROLE_USER'])
     def addressFields() {
         render template: "/templates/cpa/addressFields", model: [multipleAddresses: params.multipleAddresses]
     }
 
+    /**
+     * Loads for the subscription-license link table the properties table for a license linked to the triggering subscription
+     */
     @Secured(['ROLE_USER'])
     def getLicensePropertiesForSubscription() {
         License loadFor = License.get(params.loadFor)
@@ -468,6 +545,10 @@ class AjaxHtmlController {
 
     // ----- surveyInfos -----
 
+    /**
+     * Checks if the preconditions for a survey submission are given
+     * @return the message depending on the survey's completion status
+     */
     @Secured(['ROLE_USER'])
     def getSurveyFinishMessage() {
         Org contextOrg = contextService.getOrg()
@@ -501,6 +582,10 @@ class AjaxHtmlController {
 
     // ----- reporting -----
 
+    /**
+     * Retrieves the filter history and bookmarks for the given reporting view.
+     * If a command is being submitted, the cache is being updated. The updated view is being rendered afterwards
+     */
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
@@ -528,7 +613,7 @@ class AjaxHtmlController {
                     ReportingFilter rf = ReportingFilter.construct(
                             rc,
                             contextService.getUser(),
-                            BaseConfig.getMessage('base.filter.' + rc.readMeta().filter) + ' - ' + DateUtils.getSDF_NoTime().format(System.currentTimeMillis()),
+                            BaseConfig.getFilterLabel(rc.readMeta().filter.toString()) + ' - ' + DateUtils.getSDF_NoTime().format(System.currentTimeMillis()),
                             rc.readFilterCache().result.replaceAll('<strong>', '').replaceAll('</strong>', '') as String
                     )
                     result.lastAddedBookmarkId = rf.id
@@ -549,6 +634,9 @@ class AjaxHtmlController {
         render template: '/myInstitution/reporting/historyAndBookmarks', model: result
     }
 
+    /**
+     * Retrieves the details for the given charts
+     */
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
@@ -560,7 +648,7 @@ class AjaxHtmlController {
             token:  params.token,
             query:  params.query
         ]
-        result.id = params.id ? params.id as Long : ''
+        result.id = params.id ? params.id != 'null' ? params.id as Long : '' : ''
 
         if (params.context == BaseConfig.KEY_MYINST) {
             reportingGlobalService.doChartDetails( result, params ) // manipulates result
@@ -577,6 +665,15 @@ class AjaxHtmlController {
         render template: result.tmpl, model: result
     }
 
+    /**
+     * Assembles the chart details and outputs the result in the given format.
+     * Currently supported formats are:
+     * <ul>
+     *     <li>CSV</li>
+     *     <li>Excel</li>
+     *     <li>PDF</li>
+     * </ul>
+     */
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
@@ -648,7 +745,9 @@ class AjaxHtmlController {
                         export,
                         detailsCache.idList as List<Long>,
                         'xlsx',
-                        [hideEmptyResults: params.containsKey('hideEmptyResults-xlsx'), insertNewLines: params.containsKey('insertNewLines-xlsx')]
+                        [   hideEmptyResults: params.containsKey('hideEmptyResults-xlsx'),
+                            insertNewLines: params.containsKey('insertNewLines-xlsx'),
+                            useHyperlinks: params.containsKey('useHyperlinks-xlsx') ]
                 )
 
                 ServletOutputStream out = response.outputStream
@@ -657,20 +756,35 @@ class AjaxHtmlController {
             }
             else if (params.fileformat == 'pdf') {
 
+                Map<String, Boolean> options = [
+                        hideEmptyResults: params.containsKey('hideEmptyResults-pdf'),
+                        useHyperlinks: params.containsKey('useHyperlinks-pdf'),
+                        useLineNumbers: params.containsKey('useLineNumbers-pdf'),
+                        useSmallFont: params.containsKey('useSmallFont-pdf'),
+                        pageFormat: params.get('pageFormat-pdf') != 'auto'
+                ]
+
                 List<List<String>> content = DetailsExportManager.exportAsList(
                         export,
                         detailsCache.idList as List<Long>,
                         'pdf',
-                        [hideEmptyResults: params.containsKey('hideEmptyResults-pdf')]
+                        options
                 )
 
-                Map<String, Object> struct = [:]
                 String view = ''
                 Map<String, Object> model = [:]
+                Map<String, Object> struct = [:]
+
+                List<String> pf = BaseExportHelper.PDF_OPTIONS.get(params.get('pageFormat-pdf'))
+                if ( pf[0] != 'auto' ) {
+                    struct.pageSize = pf[0]
+                    struct.orientation = pf[1]
+                }
+                else {
+                    struct = BaseExportHelper.calculatePdfPageStruct(content, 'chartDetailsExport')
+                }
 
                 if (params.context == BaseConfig.KEY_MYINST) {
-
-                    struct  = BaseExportHelper.calculatePdfPageStruct(content, 'chartDetailsExport')
                     view    = '/myInstitution/reporting/export/pdf/generic_details'
                     model   = [
                             filterLabels: GlobalExportHelper.getCachedFilterLabels(params.token),
@@ -679,12 +793,11 @@ class AjaxHtmlController {
                             title       : filename,
                             header      : content.remove(0),
                             content     : content,
-                            struct      : [struct.width, struct.height, struct.pageSize + ' ' + struct.orientation]
+                            // struct      : [struct.width, struct.height, struct.pageSize + ' ' + struct.orientation],
+                            options     : options
                     ]
                 }
                 else if (params.context == BaseConfig.KEY_SUBSCRIPTION) {
-
-                    struct  = BaseExportHelper.calculatePdfPageStruct(content, 'chartDetailsExport')
                     view    = '/subscription/reporting/export/pdf/generic_details'
                     model   = [
                             //filterLabels: LocalExportHelper.getCachedFilterLabels(params.token),
@@ -693,7 +806,8 @@ class AjaxHtmlController {
                             title       : filename,
                             header      : content.remove(0),
                             content     : content,
-                            struct      : [struct.width, struct.height, struct.pageSize + ' ' + struct.orientation]
+                            // struct      : [struct.width, struct.height, struct.pageSize + ' ' + struct.orientation],
+                            options     : options
                     ]
                 }
 
@@ -717,6 +831,15 @@ class AjaxHtmlController {
         }
     }
 
+    /**
+     * Assembles the chart query and outputs the result in the given format.
+     * Currently supported formats are:
+     * <ul>
+     *     <li>CSV</li>
+     *     <li>Excel</li>
+     *     <li>PDF</li>
+     * </ul>
+     */
     @DebugAnnotation(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
@@ -849,6 +972,15 @@ class AjaxHtmlController {
         }
     }
 
+    /**
+     * Opens the modal for creation of one of the workflow components:
+     * <ul>
+     *     <li>workflow</li>
+     *     <li>workflow task</li>
+     *     <li>workflow condition</li>
+     * </ul>
+     * Upon opening, the underlying parameters are being set
+     */
     @Secured(['ROLE_USER'])
     def createWfXModal() {
         Map<String, Object> result = [
@@ -906,6 +1038,9 @@ class AjaxHtmlController {
         render template: '/templates/workflow/forms/modalWrapper', model: result
     }
 
+    /**
+     * Opens a modal to display workflow details
+     */
     @Secured(['ROLE_USER'])
     def useWfXModal() {
         Map<String, Object> result = [
@@ -948,6 +1083,9 @@ class AjaxHtmlController {
         render template: '/templates/workflow/forms/modalWrapper', model: result
     }
 
+    /**
+     * Opens an editing modal for the given workflow
+     */
     @Secured(['ROLE_USER'])
     def editWfXModal() {
         Map<String, Object> result = [
@@ -1077,6 +1215,9 @@ class AjaxHtmlController {
         }
     }
 
+    /**
+     * Retrieves detailed title information to a given entitlement and opens a modal showing those details
+     */
     @Secured(['ROLE_USER'])
     Map<String,Object> showAllTitleInfos() {
         Map<String, Object> result = [:]

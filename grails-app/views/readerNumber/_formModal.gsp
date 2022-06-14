@@ -1,29 +1,27 @@
-<%@ page import="de.laser.helper.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.helper.RDConstants;de.laser.Org;de.laser.I10nTranslation; java.text.SimpleDateFormat;de.laser.ReaderNumber" %>
+<%@ page import="de.laser.helper.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.helper.RDConstants;de.laser.Org;de.laser.I10nTranslation; java.text.SimpleDateFormat; de.laser.helper.RDStore" %>
 <laser:serviceInjection />
 <%
     SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
     Date startOfYear = DateUtils.getSDF_ymd().parse(Calendar.getInstance().get(Calendar.YEAR)+'-01-01')
-    Set<String> preloadGroups
+    Set<RefdataValue> preloadGroups
     switch(formId) {
-        case 'newForUni': preloadGroups = ReaderNumber.CONSTANTS_HIGH_SCHOOL
+        case 'newForUni': preloadGroups = [RDStore.READER_NUMBER_STUDENTS, RDStore.READER_NUMBER_SCIENTIFIC_STAFF, RDStore.READER_NUMBER_FTE]
             break
-        case 'newForPublic': preloadGroups = ReaderNumber.CONSTANTS_PUBLIC_LIBRARY
+        case 'newForPublic': preloadGroups = [RDStore.READER_NUMBER_PEOPLE]
             break
-        case 'newForState': preloadGroups = ReaderNumber.CONSTANTS_STATE_LIBRARY
+        case 'newForState': preloadGroups = [RDStore.READER_NUMBER_USER]
             break
-        case 'newForResearchInstitute': preloadGroups = ReaderNumber.CONSTANTS_RESEARCH_INSTITUTE
+        case 'newForResearchInstitute': preloadGroups = [RDStore.READER_NUMBER_FTE]
             break
-        case 'newForScientificLibrary': preloadGroups = ReaderNumber.CONSTANTS_SCIENTIFIC_LIBRARY
+        case 'newForScientificLibrary': preloadGroups = [RDStore.READER_NUMBER_FTE, RDStore.READER_NUMBER_USER]
             break
     }
     if(formId.contains("newForSemester"))
-        preloadGroups = ReaderNumber.CONSTANTS_HIGH_SCHOOL
+        preloadGroups = [RDStore.READER_NUMBER_STUDENTS, RDStore.READER_NUMBER_SCIENTIFIC_STAFF, RDStore.READER_NUMBER_FTE]
     List<Map<String,Object>> referenceGroups = []
     if(preloadGroups) {
-        preloadGroups.each { String groupConst ->
-            RefdataValue group = RefdataValue.getByValueAndCategory(groupConst,RDConstants.NUMBER_TYPE)
-            if(group)
-                referenceGroups << [id:group.id,value:group.getI10n("value"),expl:group.getI10n("expl")]
+        preloadGroups.each { RefdataValue group ->
+            referenceGroups << [id:group.id,value:group.getI10n("value"),expl:group.getI10n("expl")]
         }
     }
 %>

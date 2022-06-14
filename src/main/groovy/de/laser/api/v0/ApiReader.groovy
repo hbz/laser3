@@ -4,6 +4,9 @@ package de.laser.api.v0
 import de.laser.helper.Constants
 import groovy.util.logging.Slf4j
 
+/**
+ * This class is an enum which formats are supported per endpoints. It contains no methods
+ */
 @Slf4j
 class ApiReader {
 
@@ -13,6 +16,7 @@ class ApiReader {
             'document':                 [Constants.MIME_ALL],
             'ezb/subscription':         [Constants.MIME_TEXT_TSV],
             'ezb/subscription/list':    [Constants.MIME_APPLICATION_JSON],
+            'ezb/license/illIndicators':    [Constants.MIME_APPLICATION_JSON],
             'issueEntitlements':        [Constants.MIME_TEXT_PLAIN, Constants.MIME_APPLICATION_JSON],
             'license':                  [Constants.MIME_APPLICATION_JSON],
             'licenseList':              [Constants.MIME_APPLICATION_JSON],

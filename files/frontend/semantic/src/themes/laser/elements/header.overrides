@@ -160,6 +160,7 @@ body[class*="platform"] .ui.icon.header .circular.icon.la-object:before {
   font-size: @14px;
  }
 .ui.header.la-noMargin-top {
-  margin-top: 0rem;
+  margin-top: 1rem;
   text-align: left;
+  position: relative;
 }

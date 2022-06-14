@@ -7,6 +7,15 @@ import de.laser.interfaces.CalculatedLastUpdated
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
+/**
+ * This is the class to group identifiers by their vocabulary type. The namespace defines moreover the type of object the
+ * identifiers are assigned; above that, the namespace configuration defines uniqueness of the identifier (i.e. only zero or one
+ * identifier of the given namespace may be assigned to the same object). Identifier namespaces may come from external APIs (currently
+ * only the we:kb serves as source for non-LAS:eR namespaces); the flag {@link #isFromLaser} indicates the origin of the namespace (and
+ * usually also the identifiers belonging to this namespace). Alternatively, identifier namespaces may be soft-entered (that via the view
+ * {@link AdminController#manageNamespaces()}) in the database or hard-coded in the method {@link BootStrapService#setIdentifierNamespace()}.
+ * Identifier namespaces belong to the internationalisable classes; the name and description strings may be translated to German
+ */
 class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated {
 
     def cascadingUpdateService
@@ -21,6 +30,7 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
     public static final NS_PACKAGE      = Package.class.name
     public static final NS_TITLE        = TitleInstance.class.name
 
+    //organisation identifier namespaces
     public static final String ISIL        = "ISIL"
     public static final String WIBID       = "wibid"
     public static final String GND_ORG_NR  = "gnd_org_nr"
@@ -46,11 +56,15 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
     public static final String PKG_ID        = 'Anbieter_Produkt_ID'
 
     //subscription identifier namespaces
-    public static final String EZB_ANCHOR = 'EZB anchor'
+    public static final String EZB_ANCHOR = 'ezb_anchor'
     public static final String EZB_COLLECTION_ID = 'ezb_collection_id'
     public static final String ISIL_PAKETSIGEL = 'ISIL_Paketsigel'
     public static final String ISCI = 'ISCI'
 
+    /**
+     * Set of identifiers every institution (!) must have; this does not count for providers and agencies.
+     * They get identifiers, too, but are set to empty value and are never shown
+     */
     final static List<String> CORE_ORG_NS = [
             ISIL,
             WIBID,
@@ -64,6 +78,10 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
             LEIT_KR
     ]
 
+    /**
+     * Set of identifiers which are common to most {@link TitleInstancePackagePlatform}s; they are KBART headers and need all to be processed.
+     * EBooks do not have ZDB IDs, EZB IDs nor ISSNs
+     */
     final static List<String> CORE_TITLE_NS = [
             ZDB, ZDB_PPN, DOI, ISSN, EISSN, PISBN, ISBN, ISIL_PAKETSIGEL, ISCI, EZB_ANCHOR, EZB_COLLECTION_ID
     ]
@@ -157,6 +175,11 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
         (lastUpdatedCascading > lastUpdated) ? lastUpdatedCascading : lastUpdated
     }
 
+    /**
+     * Sets up a new identifier namespace with the given parameter map
+     * @param configMap the parameter {@link Map} defining the new namespace's properties
+     * @return the new or updated identifier namespace
+     */
     static IdentifierNamespace construct(Map<String, Object> configMap) {
         withTransaction {
             IdentifierNamespace idns
@@ -182,6 +205,10 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
         }
     }
 
+    /**
+     * Checks whether this identifier namespace is among the core {@link Org} namespaces
+     * @return is this identifier namespace a core organisation namespace?
+     */
     boolean isCoreOrgNamespace(){
         this.ns in CORE_ORG_NS
     }

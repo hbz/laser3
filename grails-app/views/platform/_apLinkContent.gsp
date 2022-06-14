@@ -40,7 +40,7 @@
         </div>
     </g:form>
 </semui:filter>
-<table class="ui sortable celled la-table table la-ignore-fixed la-bulk-header">
+<table class="ui sortable celled la-js-responsive-table la-table table la-ignore-fixed la-bulk-header">
     <thead>
     <tr>
         <th>${message(code:'platform.link.accessPoint.grid.activeConfiguration')}</th>

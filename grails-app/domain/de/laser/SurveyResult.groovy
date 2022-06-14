@@ -9,6 +9,10 @@ import de.laser.properties.PropertyDefinition
 import org.apache.commons.logging.Log
 import org.apache.commons.logging.LogFactory
 
+/**
+ * This class reflects - as a property like {@link de.laser.properties.SubscriptionProperty} - the survey participant's answer to a survey.
+ * The survey is reflected by the {@link SurveyConfig} class.
+ */
 class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements CalculatedLastUpdated {
 
     static Log static_logger = LogFactory.getLog(SurveyResult)
@@ -96,6 +100,10 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
         isRequired column: 'surre_is_required'
     }
 
+    /**
+     * Checks if the value of this property (= survey question result) has been set
+     * @return true if there is any kind of value (= answer on behalf of the participant), false otherwise
+     */
     boolean isResultProcessed() {
         if (type.isIntegerType()) {
             return intValue ? true : false
@@ -117,10 +125,19 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
         }
     }
 
+    /**
+     * Gets a {@link CostItem} belonging to the participant and the survey ({@link SurveyOrg} retrieved by the {@link SurveyConfig} and the participant {@link Org}) of this property
+     * @return
+     */
     CostItem getCostItem(){
         return CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant), RDStore.COST_ITEM_DELETED)
     }
 
+    /**
+     * Retrieves the value of this property, respective to its value type
+     * @return the stringified value of the property
+     * @see {@link AbstractPropertyWithCalculatedLastUpdated}
+     */
     def getResult() {
         if (type.isIntegerType()) {
             return intValue.toString()
@@ -142,10 +159,17 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
         }
     }
 
+    /**
+     * calls {@link #toString()}
+     */
     String getValue() {
         return toString()
     }
 
+    /**
+     * Same as {@link #getResult()} just with different checks
+     * @return the stringified value
+     */
     @Override
     String toString(){
         if (stringValue)      { return stringValue }
@@ -181,6 +205,10 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
         super.afterDeleteHandler()
     }
 
+    /**
+     * Retrieves the subscription linked to this survey and the participant
+     * @return the {@link Subscription} object
+     */
     Subscription getParticipantSubscription(){
         Subscription subscription
         if (surveyConfig.subscription){

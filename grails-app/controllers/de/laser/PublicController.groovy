@@ -6,6 +6,9 @@ import de.laser.helper.ConfigUtils
 import de.laser.helper.RDStore
 import grails.plugin.springsecurity.annotation.Secured
 
+/**
+ * This controller contains all pages which are accessible without a user account, i.e. public access pages
+ */
 @Secured(['permitAll'])
 class PublicController {
 
@@ -13,12 +16,24 @@ class PublicController {
     def mailService
     EscapeService escapeService
 
+    /**
+     * Displays the WCAG statement
+     */
     @Secured(['permitAll'])
     def wcagStatement() {
     }
+
+    /**
+     * Displays the WCAG feedback form
+     */
     @Secured(['permitAll'])
     def wcagFeedbackForm() {
     }
+
+    /**
+     * Takes the submitted message and sends a barrier-free feedback mail to an address responsible for
+     * disability matters
+     */
     @Secured(['permitAll'])
     def sendFeedbackForm() {
 
@@ -37,15 +52,36 @@ class PublicController {
         }
 //        redirect controller: 'public', action: 'sendFeedbackForm', params: params, id: copyLicense.id
     }
+
+    /**
+     * Displays the site content in easy language
+     */
     @Secured(['permitAll'])
     def wcagEasyLanguage() {
     }
+
+    /**
+     * Displays the landing page
+     */
     @Secured(['permitAll'])
     def index() {
     }
+
+    /**
+     * Test page for check compatibility
+     */
     @Secured(['permitAll'])
     def wcagTest() {
     }
+
+    /**
+     * Displays the GASCO page. GASCO stands for German-Austrian-Swiss Consortia and means the consortium institutions
+     * in the German-speaking area
+     * @return a form to select the consortium to display or if the filter has been submitted, a list of
+     * subscriptions hold by the given consortium and which are enabled by subscription property GASCO display
+     * to appear on the GASCO list
+     * @see SubscriptionProperty
+     */
     @Secured(['permitAll'])
     def gasco() {
         Map<String, Object> result = [:]
@@ -70,7 +106,7 @@ class PublicController {
 
             String query = "from Subscription as s where ("
             query += "      lower(s.status.value) = 'current'"
-            query += "      and lower(s.type.value) != 'local licence'"
+            query += "      and lower(s.type.value) != 'local subscription'"
             query += "      and exists "
             query += "          ( select scp from s.propertySet as scp where "
             query += "               scp.type = :gasco and lower(scp.refValue.value) = 'yes'"
@@ -133,6 +169,9 @@ class PublicController {
         result
     }
 
+    /**
+     * Displays the issue entitlement details of the selected title
+     */
     @Secured(['permitAll'])
     def gascoDetailsIssueEntitlements() {
         Map<String, Object> result = [:]

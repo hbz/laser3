@@ -7,6 +7,9 @@ import de.laser.auth.User
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 
+/**
+ * This service is a mirror of the {@link de.laser.UserController}, containing its data processing methods
+ */
 @Transactional
 class UserControllerService {
 
@@ -19,6 +22,11 @@ class UserControllerService {
 
     //--------------------------------------------- helper section -------------------------------------------------
 
+    /**
+     * Sets common parameters which are used in many controller calls
+     * @param params the request parameter map
+     * @return a map containing the context user and his permissions
+     */
     Map<String, Object> getResultGenerics(GrailsParameterMap params) {
 
         Map<String, Object> result = [orgInstance: contextService.getOrg()]
@@ -35,6 +43,11 @@ class UserControllerService {
         result
     }
 
+    /**
+     * Sets common parameters for a user oid call
+     * @param params the request parameter map
+     * @return a map containing the context user and his permissions
+     */
     Map<String, Object> getResultGenericsERMS3067(GrailsParameterMap params) {
 
         Map<String, Object> result = [orgInstance: contextService.getOrg()]

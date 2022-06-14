@@ -14,6 +14,9 @@
 
         <semui:controlButtons>
             <semui:exportDropdown>
+                <semui:exportDropdownItem>
+                    <a class="item" data-semui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
+                </semui:exportDropdownItem>
                 <g:if test="${filterSet}">
                     <semui:exportDropdownItem>
                         <g:link class="item js-open-confirm-modal"
@@ -62,7 +65,7 @@
                       model="[
                               propList: propList,
                               orgRoles: orgRoles,
-                              tmplConfigShow: [['name', 'role', 'property&value']],
+                              tmplConfigShow: [['name', 'role', 'property&value'], ['privateContacts', '', '', '']],
                               tmplConfigFormFilter: true
                       ]"/>
         </g:form>
@@ -93,6 +96,8 @@
     <semui:debugInfo>
         <g:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
     </semui:debugInfo>
+
+    <g:render template="export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal', orgType: 'provider']" />
 
   </body>
 </html>

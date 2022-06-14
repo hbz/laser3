@@ -6,11 +6,17 @@ import de.laser.helper.ConfigUtils
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
 
+/**
+ * Maybe we should collect bulk operations here??
+ * @deprecated they are usually done with DBM changesets
+ */
+@Deprecated
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class MigrationsController {
 
     static boolean ftupdate_running = false
 
+    @Deprecated
     @Secured(['ROLE_YODA'])
     @Transactional
     def erms2362() {
@@ -136,6 +142,7 @@ class MigrationsController {
         render text: '<!DOCTYPE html><html lang="en"><head><title>' + grailsApplication.config.grails.serverURL + '</title></head><body>' + result + '</body></html>'
     }
 
+    @Deprecated
     private Map<String, Object> calcErms2362(IdentifierNamespace oldNs, IdentifierNamespace newNs) {
 
         Closure href = { reference ->

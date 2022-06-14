@@ -2,6 +2,9 @@ package de.laser.finance
 
 import de.laser.Org
 
+/**
+ * This class represents a grouping unit for cost items. The grouping itself is done in the {@link CostItemGroup} class which links budget codes to {@link CostItem}s
+ */
 class BudgetCode {
 
     Org owner

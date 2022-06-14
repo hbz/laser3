@@ -11,6 +11,25 @@ import org.springframework.context.i18n.LocaleContextHolder
 import javax.persistence.Transient
 import java.text.SimpleDateFormat
 
+/**
+ * A survey is (currently) used by consortia to ask certain subscription-related details among institutions. Those
+ * institutions may but do not need necessarily linked to the consortium; it may also concern newcomers to a consortial subscription.
+ * The main use cases of a survey are to ask for a subscription who wishes to continue the subscription under the given circumstances (which
+ * are specified in {@link SurveyInfo}) and who wishes to join a new consortium.
+ * This class represents a configuration between a survey and the object in focus of a survey. The object may be one of:
+ * <ul>
+ *     <li>entitlement survey</li>
+ *     <li>general survey (also used for the interest of a new subscription in case of requests)</li>
+ *     <li>subscription survey</li>
+ * </ul>
+ * whilst a subscription survey may also control the renewal of a survey. The survey type is represented by the constants listed below,
+ * just as the state of the subscription completion; latter is an indicator for the consortium performing the survey.
+ * The participants of a survey are tracked for each surveyed target individually; that is why the {@link SurveyOrg} connector class points from here
+ * to the participant institution (of {@link Org} type) and not {@link SurveyInfo}
+ * @see SurveyInfo
+ * @see SurveyResult
+ * @see SurveyOrg
+ */
 class SurveyConfig {
 
     def deletionService
@@ -138,6 +157,11 @@ class SurveyConfig {
             'SurveyProperty': ['de': 'Umfrage-Merkmal', 'en': 'Survey-Property']
     ]
 
+    /**
+     * Gets the localised value for a given survey type key
+     * @param key the key to fetch its translation
+     * @return the translation for the given survey type
+     */
     static getLocalizedValue(key) {
         String locale = I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())
 
@@ -149,11 +173,19 @@ class SurveyConfig {
         }
     }
 
+    /**
+     * Lists all documents attached to this survey
+     * @return a {@link Collection} of documents ({@link DocContext}) which have not been marked as deleted and are of type file
+     */
     def getCurrentDocs() {
 
         return documents.findAll { (it.status?.value != 'Deleted' && (it.owner?.contentType == Doc.CONTENT_TYPE_FILE))}
     }
 
+    /**
+     * Returns the name of this survey (duplicate of getSurveyName())
+     * @return the {@link Subscription}'s name if it is a subscription survey, the survey name (in {@link SurveyInfo}) otherwise
+     */
     String getConfigNameShort() {
 
         if (type == 'Subscription') {
@@ -163,6 +195,10 @@ class SurveyConfig {
         }
     }
 
+    /**
+     * Returns the name of this survey (duplicate of getConfigNameShort())
+     * @return the {@link Subscription}'s name if it is a subscription survey, the survey name (in {@link SurveyInfo}) otherwise
+     */
     String getSurveyName() {
 
         if (type == 'Subscription' && surveyInfo.isSubscriptionSurvey) {
@@ -172,6 +208,10 @@ class SurveyConfig {
         }
     }
 
+    /**
+     * Returns the name of this survey; if it is a subscription survey, the {@link Subscription}'s core data (status, running time) is also displayed
+     * @return the {@link Subscription}'s name, status and running time if it is a subscription survey, the survey name (in {@link SurveyInfo}) otherwise
+     */
     String getConfigName() {
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
 
@@ -186,12 +226,19 @@ class SurveyConfig {
         }
     }
 
+    /**
+     * Substitution call for getLocalizedValue(); outputs the survey type as translated/localised string
+     * @return the translated type of this survey
+     */
     def getTypeInLocaleI10n() {
 
         return this.getLocalizedValue(this?.type)
     }
 
-
+    /**
+     * Retrieves the database IDs of the survey participant {@link Org}s; works only when the survey is connected to a {@link Subscription}
+     * @return a {@link Map} of {@link Org} ids; ordered by subscriber institutions and institutions not having a subscription
+     */
     Map<String, Object> getSurveyOrgsIDs() {
         Map<String, Object> result = [:]
 
@@ -202,7 +249,11 @@ class SurveyConfig {
         return result
     }
 
-    //Überprüft nur ob bearbeitet ist oder nicht, aber nicht ob abgeschickt wurde
+    /**
+     * Checks whether the survey has been completed (but not if it is already submitted) by the participant
+     * @param org the participant institution ({@link Org}) whose inputs should be checked
+     * @return one of the constants how much the survey has been completed
+     */
     def checkResultsEditByOrg(Org org) {
 
         if (this.subSurveyUseForTransfer && SurveyOrg.findBySurveyConfigAndOrg(this, org).existsMultiYearTerm()) {
@@ -224,7 +275,7 @@ class SurveyConfig {
                     }
                 }*/
 
-                if (countFinish > 0 && countNotFinish == 0) {
+                if (countFinish >= 0 && countNotFinish == 0) {
                     return ALL_RESULTS_PROCESSED_BY_ORG
                 } else if (countFinish > 0 && countNotFinish > 0) {
                     return ALL_RESULTS_HALF_PROCESSED_BY_ORG
@@ -236,6 +287,16 @@ class SurveyConfig {
 
     }
 
+    /**
+     * Checks if the survey has been submitted by the participant. If the underlying subscription has a multi year running time and if this is a renewal subscription, this method returns true as well (= no renewal has to be sent)
+     * @param org the participant institution ({@link Org}) to check
+     * @return true if:
+     * <ul>
+     *     <li>there is a finish date, i.e. the survey has been submitted</li>
+     *     <li>if the survey is a renewal survey and the participant has a multi-year subscription,</li>
+     * </ul>
+     * false otherwise
+     */
     boolean isResultsSetFinishByOrg(Org org) {
 
         SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(this, org)
@@ -251,6 +312,11 @@ class SurveyConfig {
 
     }
 
+    /**
+     * Checks if the participant is subscribing the subscription which is target of this survey
+     * @param org the participant institution ({@link Org}) whose subscription should be checked
+     * @return true if there is a subscription for this member, false otherwise
+     */
     boolean hasOrgSubscription(Org org) {
         if (this.subscription) {
             Subscription orgSub = Subscription.executeQuery("select sub" +
@@ -269,6 +335,10 @@ class SurveyConfig {
 
     }
 
+    /**
+     * Gets the following survey target to this one
+     * @return the next config if it exists, null otherwise
+     */
     def nextConfig()
     {
         def next
@@ -284,6 +354,10 @@ class SurveyConfig {
         return (next?.id == this?.id) ? null : next
     }
 
+    /**
+     * Gets the previous survey target to this one
+     * @return the previous config if it exists, null otherwise
+     */
     def prevConfig()
     {
         def prev
@@ -301,6 +375,10 @@ class SurveyConfig {
         return (prev?.id == this?.id) ? null : prev
     }
 
+    /**
+     * Builds a navigation among the survey targets
+     * @return a {@link Map} listing the adjacent survey configurations to this one
+     */
     Map<String, Object> getConfigNavigation(){
 
         Map<String, Object> result = [:]
@@ -315,24 +393,49 @@ class SurveyConfig {
         return result
     }
 
+    /**
+     * Returns the string representation of this survey configuration
+     * @return the {@link Subscription}'s name if it is a subscription survey, "Survey Element {database id}" otherwise
+     */
     String toString() {
         subscription ? "${subscription?.name}" : "Survey Element ${id}"
     }
 
-
+    /**
+     * Dummy method for the document listing
+     * @return false
+     */
     boolean showUIShareButton() {
         return false
     }
 
+    /**
+     * Retrieves all cost items linked to the survey participants
+     * @return a {@link List} of {@link CostItem}s connected to this survey via the participants
+     * @see SurveyOrg
+     */
     List<CostItem> getSurveyConfigCostItems(){
 
         return this.orgs ? CostItem.findAllBySurveyOrgInListAndCostItemStatusNotEqual(this.orgs, RDStore.COST_ITEM_DELETED) : []
     }
 
+    /**
+     * Gets the steps already done during the subscription renewal procedure
+     * @return a JSON object containing the steps already done; if nothing has been done, an empty object is being returned
+     */
     JSONElement getTransferWorkflowAsJSON() {
         transferWorkflow ? grails.converters.JSON.parse(transferWorkflow) : grails.converters.JSON.parse('{}')
     }
 
+    /**
+     * Counts the participants in this survey
+     * @return a {@link Map} containing the participants:
+     * <ul>
+     *     <li>how many institutions do participate at the survey in general?</li>
+     *     <li>how many of them have a subscription?</li>
+     *     <li>how many of them have a multi-year subscription?</li>
+     * </ul>
+     */
     Map countParticipants(){
         Map result = [:]
 
@@ -356,6 +459,10 @@ class SurveyConfig {
         result
     }
 
+    /**
+     * Outputs this survey according to the dropdown naming convention defined <a href="https://github.com/hbz/laser2/wiki/UI:-Naming-Conventions">here</a>
+     * @return a concatenated string according to the dropdown naming convention linked above
+     */
     String dropdownNamingConvention() {
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         String period = surveyInfo.startDate ? sdf.format(surveyInfo.startDate)  : ''
@@ -367,6 +474,42 @@ class SurveyConfig {
         String statusString = surveyInfo.status ? surveyInfo.status.getI10n('value') : RDStore.SUBSCRIPTION_NO_STATUS.getI10n('value')
 
         return surveyInfo.name + ' - ' + statusString + ' ' +period + ' ' + surveyInfo.type.getI10n('value')
+    }
+
+    List<SurveyConfigProperties> getSortedSurveyConfigProperties() {
+       List<SurveyConfigProperties> surveyConfigPropertiesList = []
+
+        LinkedHashSet<SurveyConfigProperties> propertiesParticipation = []
+        LinkedHashSet<SurveyConfigProperties> propertiesMandatory = []
+        LinkedHashSet<SurveyConfigProperties> propertiesNoMandatory = []
+
+        this.surveyProperties.each {
+            if(it.surveyProperty == RDStore.SURVEY_PROPERTY_PARTICIPATION){
+                propertiesParticipation << it
+            }
+            else if(it.mandatoryProperty == true && it.surveyProperty != RDStore.SURVEY_PROPERTY_PARTICIPATION){
+                propertiesMandatory << it
+            }
+            else if(it.mandatoryProperty == false && it.surveyProperty != RDStore.SURVEY_PROPERTY_PARTICIPATION){
+                propertiesNoMandatory << it
+            }
+        }
+
+        propertiesParticipation = propertiesParticipation.sort {it.surveyProperty.getI10n('name')}
+
+        propertiesMandatory = propertiesMandatory.sort {it.surveyProperty.getI10n('name')}
+
+        propertiesNoMandatory = propertiesNoMandatory.sort {it.surveyProperty.getI10n('name')}
+
+        surveyConfigPropertiesList = [propertiesParticipation, propertiesMandatory, propertiesNoMandatory]
+
+        return surveyConfigPropertiesList.flatten()
+
+    }
+
+    List<PropertyDefinition> getSortedSurveyProperties() {
+        List<SurveyConfigProperties> surveyConfigPropertiesList = this.getSortedSurveyConfigProperties()
+        return surveyConfigPropertiesList.size() > 0 ? surveyConfigPropertiesList.surveyProperty : []
     }
 
 

@@ -41,7 +41,7 @@
 
 <div data-tab="first" class="ui bottom attached tab segment active" style="border-top: 1px solid #d4d4d5;">
 
-    <table class="ui celled la-table compact table">
+    <table class="ui celled la-js-responsive-table la-table compact table">
         <thead>
             <tr>
                 <th>#</th>
@@ -88,7 +88,7 @@
 </div>
 <div data-tab="second" class="ui bottom attached tab segment" style="border-top: 1px solid #d4d4d5;">
 
-    <table class="ui celled la-table compact table">
+    <table class="ui celled la-js-responsive-table la-table compact table">
         <thead>
             <tr>
                 <th>${laser_german_phonebook}</th>

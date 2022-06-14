@@ -5,7 +5,7 @@
 <html>
 <head>
     <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'survey.label')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'survey.label')} (${message(code: 'surveyConfigDocs.label')})</title>
 </head>
 
 <body>
@@ -27,8 +27,9 @@
 
 <h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
 <semui:xEditable owner="${surveyInfo}" field="name"/>
-<semui:surveyStatusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="surveyConfigDocs"/>
 </h1>
+<semui:surveyStatusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="surveyConfigDocs"/>
+
 
 <g:render template="nav"/>
 
@@ -90,13 +91,14 @@
             <br /><br />
 
 
-            <table class="ui celled la-table table license-documents">
+            <table class="ui celled la-js-responsive-table la-table table license-documents">
                 <thead>
                 <tr>
-                    <th></th>
+                    <th>${message(code:'sidewide.number')}</th>
                     <th>${message(code: 'surveyConfigDocs.docs.table.title')}</th>
                     <th>${message(code: 'surveyConfigDocs.docs.table.fileName')}</th>
                     <th>${message(code: 'surveyConfigDocs.docs.table.type')}</th>
+                    <th>${message(code: 'property.share.tooltip.sharedFrom')}</th>
                     <th>${message(code: 'default.actions.label')}</th>
                 </tr>
                 </thead>
@@ -113,15 +115,16 @@
                         <td>
                             ${docctx.owner?.type?.getI10n('value')}
                         </td>
-
-                        <td class="x">
+                        <td>
                             %{--//Vorerst alle Umfrage Dokumente als geteilt nur Kennzeichen--}%
                             <span class="la-popup-tooltip la-delay" data-content="${message(code: 'property.share.tooltip.on')}">
                                 <i class="green alternate share icon"></i>
                             </span>
+                        </td>
+                        <td class="x">
                             <g:if test="${((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3))}">
 
-                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon button"><i
+                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i
                                         class="download icon"></i></g:link>
                                 <g:if test="${editable && !docctx.sharedFrom}">
                                     <button type="button" class="ui icon blue button la-modern-button la-popup-tooltip la-delay" data-semui="modal"
@@ -130,7 +133,7 @@
                                             aria-label="${message(code: 'ariaLabel.change.universal')}">
                                         <i class="pencil icon"></i></button>
                                     <g:link controller="${controllerName}" action="deleteDocuments"
-                                            class="ui icon negative button js-open-confirm-modal"
+                                            class="ui icon negative button la-modern-button js-open-confirm-modal"
                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
                                             data-confirm-term-how="delete"
                                             params='[surveyConfigID: surveyConfig.id, id: surveyInfo.id, deleteId: "${docctx.id}", redirectAction: "${actionName}"]'

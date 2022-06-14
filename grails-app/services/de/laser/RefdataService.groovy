@@ -4,9 +4,16 @@ import de.laser.annotations.RefdataAnnotation
 import de.laser.helper.AppUtils
 import grails.gorm.transactions.Transactional
 
+/**
+ * This service delivers generic reference data related information
+ */
 @Transactional
 class RefdataService {
 
+    /**
+     * Retrieves the usage data for each reference data category and the values belonging to them
+     * @return a list of reference value usages and where they are used
+     */
     List getUsageDetails() {
         def detailsMap      = [:]
         def usedRdvList     = []
@@ -55,6 +62,12 @@ class RefdataService {
         [usedRdvList.unique().sort(), detailsMap.sort()]
     }
 
+    /**
+     * Replaces a reference value by another
+     * @param rdvFrom the reference value to be replaced
+     * @param rdvTo the substitution value
+     * @return the count of replaces performed
+     */
     int replaceRefdataValues(RefdataValue rdvFrom, RefdataValue rdvTo) {
 
         log.debug("replacing: ${rdvFrom} with: ${rdvTo}")
@@ -96,6 +109,10 @@ class RefdataService {
         count
     }
 
+    /**
+     * Checks the correctness of reference value definitions
+     * @return a map containing for each reference data field defined whether it really belongs to the annotated reference data category
+     */
     Map<String, Object> integrityCheck() {
         Map checkResult = [:]
 
@@ -113,16 +130,17 @@ class RefdataService {
 
                             RefdataAnnotation anno = it.getAnnotation(RefdataAnnotation)
                             if (anno && ! [RefdataAnnotation.GENERIC, RefdataAnnotation.UNKOWN].contains(anno.cat()) ) {
-                                String query = "SELECT DISTINCT dummy.${it.name}, rdc FROM ${dcClassName} dummy JOIN dummy.${it.name}.owner rdc"
+                                String query = "SELECT DISTINCT dummy.${it.name}.id, rdc.id FROM ${dcClassName} dummy JOIN dummy.${it.name}.owner rdc"
                                 List fieldCats = RefdataValue.executeQuery( query )
                                 Map fieldCheck = [:]
 
                                 fieldCats.each { it2 ->
-                                    if (it2[1].id == RefdataCategory.getByDesc(anno.cat())?.id) {
-                                        fieldCheck << ["${it2[0]}": true]
+                                    RefdataValue rdv = RefdataValue.get(it2[0])
+                                    if (it2[1] == RefdataCategory.getByDesc(anno.cat())?.id) {
+                                        fieldCheck << ["${rdv}": true]
                                     }
                                     else {
-                                        fieldCheck << ["${it2[0]}": it2[1]]
+                                        fieldCheck << ["${rdv}": RefdataCategory.get(it2[1])]
                                     }
                                 }
                                 return [field: it.name, cat: anno.cat(), rdc: RefdataCategory.getByDesc(anno.cat()), check: fieldCheck]
@@ -146,10 +164,10 @@ class RefdataService {
     }
 
     /**
-     * Retrieves for a given refdata value key and category description the OID representation of the RefdataValue.
+     * Retrieves for a given reference data value key and category description the OID representation of the RefdataValue.
      * If not found, this method returns null
-     * @param key - the refdata value. May be an English or German string key
-     * @param categoryDescription - the {@link RefdataCategory}
+     * @param key the refdata value. May be an English or German string key
+     * @param categoryDescription the {@link RefdataCategory}
      * @return the OID of the result {@link RefdataValue} or null if no result is found
      */
     String retrieveRefdataValueOID(String key,String categoryDescription) {

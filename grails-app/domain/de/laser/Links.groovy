@@ -2,26 +2,23 @@ package de.laser
 
 import de.laser.annotations.RefdataAnnotation
 import de.laser.exceptions.CreationException
+import de.laser.helper.RDConstants
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
-
+/**
+ * This class represents links between subscriptions and licenses.
+ * It is similar to {@link Combo} but with different functionality. The types of links see {@link RDConstants#LINK_TYPE}
+ */
 class Links {
 
     def genericOIDService
 
     Long id
-    //TEST!
     Subscription sourceSubscription
     Subscription destinationSubscription
     License sourceLicense
     License destinationLicense
-    /*
-    Long source
-    Long destination
-    String sourceType
-    String destinationType
-     */
-    @RefdataAnnotation(cat = 'link.type')
+    @RefdataAnnotation(cat = RDConstants.LINK_TYPE)
     RefdataValue linkType
     Org     owner
     Date    dateCreated
@@ -55,7 +52,7 @@ class Links {
 
     /**
      * Constructor for a Subscription/License linking. Parameters are specified in a {@link Map}.
-     * @param configMap - contains the parameters. The source and destination are expected on source and destination; the determination of object type is done in the setter {@link #setSourceAndDestination setSourceAndDestination()}
+     * @param configMap contains the parameters. The source and destination are expected on source and destination; the determination of object type is done in the setter {@link #setSourceAndDestination setSourceAndDestination()}
      * @return the persisted linking object
      * @throws CreationException
      */
@@ -69,6 +66,12 @@ class Links {
         }
     }
 
+    /**
+     * Sets the two ends of this link. A link points from source to destination; the perspective taken is that from the source towards the destination.
+     * Connectable objects are {@link License} and {@link Subscription}
+     * @param source the starting point; from where we look
+     * @param destination the ending point; to where we look
+     */
     void setSourceAndDestination(source, destination) {
         if(source instanceof Subscription)
             sourceSubscription = source
@@ -80,6 +83,11 @@ class Links {
             destinationLicense = destination
     }
 
+    /**
+     * Determines the pair of the object in this link
+     * @param key the object whose pair should be retrieved - may be a {@link License}, a {@link Subscription} or a license/subscription OID
+     * @return the link pair of the given object
+     */
     def getOther(key) {
         def context
         if(key instanceof Subscription || key instanceof License) {
@@ -104,6 +112,10 @@ class Links {
         else null
     }
 
+    /**
+     * Gets the source of this link
+     * @return the source {@link Subscription} or {@link License}
+     */
     def determineSource() {
         if(sourceSubscription)
             (Subscription) GrailsHibernateUtil.unwrapIfProxy(sourceSubscription)
@@ -111,6 +123,10 @@ class Links {
             (License) GrailsHibernateUtil.unwrapIfProxy(sourceLicense)
     }
 
+    /**
+     * Gets the destination of this link
+     * @return the destination {@link Subscription} or {@link License}
+     */
     def determineDestination() {
         if(destinationSubscription)
             (Subscription) GrailsHibernateUtil.unwrapIfProxy(destinationSubscription)

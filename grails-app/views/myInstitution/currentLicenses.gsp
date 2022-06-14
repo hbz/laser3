@@ -17,7 +17,7 @@
           <g:if test="${filterSet || defaultSet}">
               <semui:exportDropdownItem>
                   <g:link class="item js-open-confirm-modal" data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
-                          data-confirm-term-how="ok" action="currentLicenses" params="${params+[exportPDF:true]}">${message(code:'default.button.exports.pdf')}</g:link>
+                          data-confirm-term-how="ok" action="currentLicenses" target="_blank" params="${params+[exportPDF:true]}">${message(code:'default.button.exports.pdf')}</g:link>
               </semui:exportDropdownItem>
               <semui:exportDropdownItem>
                   <g:link class="item js-open-confirm-modal" data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
@@ -30,7 +30,7 @@
           </g:if>
           <g:else>
               <semui:exportDropdownItem>
-                  <g:link class="item" action="currentLicenses" params="${params+[exportPDF:true]}">${message(code:'default.button.exports.pdf')}</g:link>
+                  <g:link class="item" action="currentLicenses" target="_blank" params="${params+[exportPDF:true]}">${message(code:'default.button.exports.pdf')}</g:link>
               </semui:exportDropdownItem>
               <semui:exportDropdownItem>
                   <g:link class="item" action="currentLicenses" params="${params+[exportXLS:true]}">${message(code:'default.button.exports.xls')}</g:link>
@@ -78,7 +78,7 @@
               <div class="field">
                   <semui:datepicker label="license.valid_on" id="validOn" name="validOn" placeholder="default.date.label" value="${validOn}" />
               </div>
-              <g:render template="/templates/properties/genericFilter" model="[propList: propList]"/>
+              <g:render template="/templates/properties/genericFilter" model="[propList: propList, label:message(code: 'subscription.property.search')]"/>
           </div>
           <div class="three fields">
               <div class="field">
@@ -141,7 +141,7 @@
 
   <div class="license-results la-clear-before">
       <g:if test="${licenses}">
-          <table class="ui sortable celled la-table table">
+          <table class="ui sortable celled la-js-responsive-table la-table table">
               <thead>
                   <tr>
                       <g:if test="${compare}">
@@ -186,7 +186,7 @@
                               </g:link>
                               <g:each in="${allLinkedSubscriptions.get(l)}" var="sub">
                                   <div class="la-flexbox la-minor-object">
-                                      <i class="icon clipboard outline outline la-list-icon"></i>
+                                      <i class="icon clipboard outline la-list-icon"></i>
                                       <g:link controller="subscription" action="show" id="${sub.id}">${sub.name}</g:link><br />
                                   </div>
                               </g:each>
@@ -215,7 +215,11 @@
                           <g:if test="${'licensingConsortium' in licenseFilterTable}">
                               <td>${l.getLicensingConsortium()?.name}</td>
                           </g:if>
-                          <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${l.startDate}"/><br /><g:formatDate format="${message(code:'default.date.format.notime')}" date="${l.endDate}"/></td>
+                          <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${l.startDate}"/><br />
+                              <span class="la-secondHeaderRow" data-label="${message(code:'license.end_date')}:">
+                                <g:formatDate format="${message(code:'default.date.format.notime')}" date="${l.endDate}"/>
+                              </span>
+                          </td>
                           <g:if test="${'action' in licenseFilterTable}">
                               <td class="x">
                               <g:if test="${(contextCustomerType == "ORG_INST" && l._getCalculatedType() == License.TYPE_LOCAL) || (contextCustomerType == "ORG_CONSORTIUM" && l._getCalculatedType() == License.TYPE_CONSORTIAL)}">

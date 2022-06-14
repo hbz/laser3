@@ -12,6 +12,9 @@
         <g:render template="actions" />
     </semui:controlButtons>
     <h1 class="ui icon header la-noMargin-top"><semui:headerIcon />
+        <g:if test="${subscription.instanceOf && (contextOrg.id == subscription.getConsortia()?.id)}">
+            <g:render template="iconSubscriptionIsChild"/>
+        </g:if>
         <semui:xEditable owner="${subscription}" field="name" />
         <semui:totalNumber total="${todoHistoryLinesTotal}"/>
     </h1>
@@ -35,7 +38,7 @@
         </p>
     </div>
 
-    <table class="ui celled la-table table">
+    <table class="ui celled la-js-responsive-table la-table table">
           <thead>
             <tr>
               <th>${message(code:'subscription.details.todo_history.descr')}</th>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.RefdataCategory" %>
+<%@ page import="de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.RefdataCategory; de.laser.RefdataValue" %>
 <!doctype html>
 <html>
   <head>
@@ -27,7 +27,7 @@
                   <p>${message(code:'myinst.financeImport.template')}</p>
               </a>
           </g:else>
-         <table class="ui celled striped table la-table">
+         <table class="ui celled striped table la-js-responsive-table la-table">
            <thead>
              <tr>
                 <%-- <th>tsv column name</th>
@@ -43,14 +43,18 @@
                 <%
                     List args = []
                     switch(mpg) {
-                        case 'status': args.addAll(RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_STATUS).collect { it -> it.getI10n('value') })
+                        case 'status': List<RefdataValue> costItemStatus = RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_STATUS)
+                            costItemStatus.remove(RDStore.COST_ITEM_DELETED)
+                            args.addAll(costItemStatus.collect { it -> it.getI10n('value') })
                             break
                         case 'element': args.addAll(RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_ELEMENT).collect { it -> it.getI10n('value') })
                             break
                         case 'elementSign': args.addAll(RefdataCategory.getAllRefdataValues(RDConstants.COST_CONFIGURATION).collect { it -> it.getI10n('value') })
                             break
                         //as of December 3rd '20, Micha said that no reverse charge should be made possible by tax type in order to avoid confusion with users of the interface
-                        case 'taxType': args.addAll(RefdataCategory.getAllRefdataValues(RDConstants.TAX_TYPE).minus(RDStore.TAX_REVERSE_CHARGE).collect { it -> it.getI10n('value') })
+                        case 'taxType': List<RefdataValue> taxTypes = RefdataCategory.getAllRefdataValues(RDConstants.TAX_TYPE)
+                            taxTypes.remove(RDStore.TAX_REVERSE_CHARGE)
+                            args.addAll(taxTypes.collect { it -> it.getI10n('value') })
                             break
                         case 'taxRate': args.addAll([0,5,7,16,19])
                             break

@@ -139,19 +139,6 @@ body.myInstitution_dashboard .ui.tab .item .header {
     border-bottom: 3px solid #e6eaef;
 }
 
-/* hotfix aside.metaboxContent */
-
-aside.metaboxContent {
-    position: absolute !important;
-    width: inherit;
-    margin: 0 !important;
-}
-aside.metaboxContent + .metaboxContent-spacer {
-    height: 64px;
-    margin: 1rem 0;
-    padding: 1em 0;
-}
-
 /* hotfix - finance */
 
 .ui.form .la-account-currency .field .calc {
@@ -218,23 +205,12 @@ h1 .icon.h1-icon-overwrite {
 .ui.la-table.table tr td.table-td-warning { background-color: rgba(255,255,0, 0.1); }
 .ui.la-table.table tr td.table-td-error   { background-color: rgba(255,0,0, 0.1); }
 
-.ui.label.survey-renewal {
-    background-color: greenyellow  !important;
-}
-
-.ui.label.survey-interest {
-    background-color: deepskyblue  !important;
-}
-
-.ui.label.survey-selection {
-    background-color: #ffdf00  !important;
-}
 
 /* loadingIndicator */
 
 #loadingIndicator {
     position: fixed;
-    bottom: 25px;
+    bottom: 3px;
     left: 3px;
     padding: 10px 15px;
     font-weight: 700;

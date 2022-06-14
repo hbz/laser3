@@ -15,11 +15,13 @@
     </semui:controlButtons>
 
     <h1 class="ui icon header la-noMargin-top"><semui:headerIcon />
+        <g:render template="iconSubscriptionIsChild"/>
         <semui:xEditable owner="${subscription}" field="name" />
     </h1>
     <semui:anualRings object="${subscription}" controller="subscription" action="history" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
     <g:render template="nav" />
+    <g:render template="message"/>
 
     <g:if test="${status == WorkflowService.OP_STATUS_DONE}">
         <g:if test="${cmd == 'delete'}">
@@ -38,7 +40,7 @@
         </g:else>
     </g:elseif>
 
-    <table class="ui celled table la-table">
+    <table class="ui celled table la-js-responsive-table la-table">
         <thead>
             <tr>
                 <th rowspan="2">${message(code:'default.status.label')}</th>
@@ -125,7 +127,7 @@
 
             <div class="ui header center aligned">Detailansicht</div>
 
-            <table class="ui celled table la-table">
+            <table class="ui celled table la-js-responsive-table la-table">
                 <thead>
                     <tr>
                         <th style="width:10%"></th>

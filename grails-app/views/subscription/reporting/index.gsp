@@ -16,26 +16,30 @@
         </semui:controlButtons>
     
         <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
+            <g:render template="iconSubscriptionIsChild"/>
             <semui:xEditable owner="${subscription}" field="name" />
         </h1>
 
         <semui:anualRings object="${subscription}" controller="subscription" action="reporting" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
         <g:render template="nav" />
-
-        %{-- <sec:ifAnyGranted roles="ROLE_YODA">
-            <g:link controller="yoda" action="cacheInfo" params="${[key: ReportingCache.CTX_SUBSCRIPTION]}" target="_blank" class="ui button small"><i class="icon bug"></i> YODA only CACHE</g:link>
-        </sec:ifAnyGranted> --}%
-
+        <g:render template="message"/>
         <g:render template="/templates/reporting/helper" />
 
         <g:render template="/subscription/reporting/query/query" />
+
+        %{-- <sec:ifAnyGranted roles="ROLE_YODA">
+            <g:link controller="yoda" action="cacheInfo" params="${[key: ReportingCache.CTX_SUBSCRIPTION + 'static#' + params.id]}" target="_blank" class="ui button small"><i class="icon bug"></i> YODA only CACHE</g:link>
+        </sec:ifAnyGranted> --}%
+
+        <div id="reporting-chart-nodata" class="ui message negative">${message(code:'reporting.modal.nodata')}</div>
 
         <div id="chart-wrapper"></div>
         <div id="chart-details"></div>
 
         <style>
-            #chart-wrapper { height: 360px; width: 98%; margin: 2em auto 1em; }
+            #reporting-chart-nodata { display: none; }
+            #chart-wrapper { height: 380px; width: 98%; margin: 3em auto 2em; }
         </style>
 
         <laser:script file="${this.getGroovyPageFileName()}">
@@ -63,20 +67,28 @@
                         method: 'post',
                         data: JSPC.app.reporting.current.request,
                         beforeSend: function (xhr) {
+                            $('#loadingIndicator').show();
                             $('#query-export-button, #query-help-button').attr('disabled', 'disabled');
                         }
                     })
                     .done( function (data) {
                         $('#chart-wrapper').replaceWith( '<div id="chart-wrapper"></div>' );
                         $('#chart-details').replaceWith( '<div id="chart-details"></div>' );
+                        $('#reporting-chart-nodata').hide();
 
-                        if (! JSPC.app.reporting.current.chart.option) {
-                            $("#reporting-modal-nodata").modal('show');
+                        if (! JSPC.app.reporting.current.chart.option && ! JSPC.app.reporting.current.chart.statusCode) {
+                            $("#reporting-modal-error").modal('show');
+                        }
+                        else if (JSPC.app.reporting.current.chart.statusCode == 500) {
+                            $("#reporting-modal-error").modal('show');
+                        }
+                        else if (JSPC.app.reporting.current.chart.statusCode == 204) {
+                            $('#reporting-chart-nodata').show();
                         }
                         else {
                             var dsl = JSPC.app.reporting.current.chart.option.dataset.source.length
-                            if (dsl > 11) {
-                                $('#chart-wrapper').css('height', 150 + (19 * JSPC.app.reporting.current.chart.option.dataset.source.length) + 'px');
+                            if (JSPC.app.reporting.current.request.query.split('-')[0] != 'timeline') {
+                                $('#chart-wrapper').css('height', 220 + (20 * JSPC.app.reporting.current.chart.option.dataset.source.length) + 'px');
                             } else {
                                 $('#chart-wrapper').removeAttr('style');
                             }
@@ -107,20 +119,16 @@
                     .fail( function (data) {
                         $('#chart-wrapper').replaceWith( '<div id="chart-wrapper"></div>' );
                         $('#chart-details').replaceWith( '<div id="chart-details"></div>' );
+                        $('#reporting-chart-nodata').hide();
+                        $("#reporting-modal-error").modal('show');
                     })
+                    .always(function() { $('#loadingIndicator').hide(); });
                 }
             }
         </laser:script>
 
         <semui:modal id="reporting-modal-error" text="REPORTING" hideSubmitButton="true">
-            <p>${message(code:'reporting.modal.error')}</p>
+            <p><i class="icon exclamation triangle large orange"></i> ${message(code:'reporting.modal.error')}</p>
         </semui:modal>
-        <semui:modal id="reporting-modal-nodata" text="REPORTING" hideSubmitButton="true">
-            <p>${message(code:'reporting.modal.nodata')}</p>
-        </semui:modal>
-        <semui:modal id="reporting-modal-nodetails" text="REPORTING" hideSubmitButton="true">
-            <p>${message(code:'reporting.modal.nodetails')}</p>
-        </semui:modal>
-
 </body>
 </html>

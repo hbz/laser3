@@ -34,10 +34,10 @@
         </g:if>
         <g:else>
             <g:if test="${delResult.status == DeletionService.RESULT_SUBSTITUTE_NEEDED}">
-                <semui:msg class="warning" header="" message="user.delete.info2" />
+                <semui:msg noClose="true" class="warning" header="" message="user.delete.info2" />
             </g:if>
             <g:else>
-                <semui:msg class="warning" header="" message="user.delete.info" />
+                <semui:msg noClose="true" class="warning" header="" message="user.delete.info" />
             </g:else>
 
             <g:if test="${delResult.status == DeletionService.RESULT_CUSTOM}">
@@ -114,7 +114,7 @@
 
         <%-- --%>
 
-        <table class="ui celled la-table compact table">
+        <table class="ui celled la-js-responsive-table la-table compact table">
             <thead>
             <tr>
                 <th>Objekte, Referenzen</th>

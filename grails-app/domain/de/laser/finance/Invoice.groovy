@@ -7,6 +7,9 @@ import grails.web.servlet.mvc.GrailsParameterMap
 
 import javax.persistence.Transient
 
+/**
+ * Represents an invoice item which may be linked to {@link CostItem}s.
+ */
 class Invoice {
 
   Date      dateOfInvoice
@@ -52,7 +55,10 @@ class Invoice {
       dateCreated (nullable: true)
   }
 
-
+    /**
+     * Use {@link de.laser.ControlledListService#getInvoiceNumbers(java.util.Map)} instead
+     */
+    @Deprecated
     @Transient
     static def refdataFind(GrailsParameterMap params) {
         Org owner = Org.findByShortcode(params.shortcode)

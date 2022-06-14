@@ -11,7 +11,7 @@
                 <% data.each{ it -> print "[${it[0]}, '${it[1].replaceAll("'", BaseQuery.SQM_MASK)}', ${it[2]}]," } %>
             ]
         },
-        toolbox: JSPC.app.reporting.helper.toolbox,
+        toolbox: JSPC.app.reporting.helper._pie.toolbox,
         tooltip: {
             trigger: 'item',
             formatter (params) {
@@ -21,10 +21,9 @@
            }
         },
         legend: {
-            align:  'left',
-            type:   'scroll',
-            orient: 'vertical',
-            left:   'left',
+            bottom: 0,
+            left: 'center',
+            z: 1,
             formatter: function (value) {
                 return value.replace(/\s\(ID:[0-9]*\)/,'')
             }
@@ -32,8 +31,8 @@
         series: [
             {
                 type: 'pie',
-                radius: '70%',
-                center: ['60%', '45%'],
+                radius: [0, '70%'],
+                center: ['50%', '40%'],
                 minAngle: 1,
                 minShowLabelAngle: 1,
                 encode: {
@@ -45,6 +44,19 @@
                 label: {
                     formatter: function (obj) {
                         return obj.name.replace(/\s\(ID:[0-9]*\)/,'')
+                    }
+                },
+                itemStyle: {
+                    color: function(params) {
+                        if (JSPC.helper.contains(['${BaseQuery.getChartLabel(BaseQuery.NO_DATA_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_MATCH_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_PROVIDER_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_PLATFORM_PROVIDER_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_PLATFORM_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_STARTDATE_LABEL)}'], params.name)) {
+                            return JSPC.app.reporting.helper.series._color.redInactiveSolid
+                        }
+                        else if (JSPC.helper.contains(['${BaseQuery.getChartLabel(BaseQuery.NO_ENDDATE_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_COUNTERPART_LABEL)}'], params.name)) {
+                            return JSPC.app.reporting.helper.series._color.ice
+                        }
+                        else {
+                            return JSPC.app.reporting.helper.series._color.palette[params.dataIndex % JSPC.app.reporting.helper.series._color.palette.length];
+                        }
                     }
                 }
             }
@@ -106,10 +118,10 @@
                 },
                 itemStyle: {
                     color: function(params) {
-                        if (JSPC.helper.contains(['${BaseQuery.getMessage(BaseQuery.NO_DATA_LABEL)}', '${BaseQuery.getMessage(BaseQuery.NO_MATCH_LABEL)}', '${BaseQuery.getMessage(BaseQuery.NO_PROVIDER_LABEL)}', '${BaseQuery.getMessage(BaseQuery.NO_STARTDATE_LABEL)}'], params.name)) {
+                        if (JSPC.helper.contains(['${BaseQuery.getChartLabel(BaseQuery.NO_DATA_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_MATCH_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_PROVIDER_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_PLATFORM_PROVIDER_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_PLATFORM_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_STARTDATE_LABEL)}'], params.name)) {
                             return JSPC.app.reporting.helper.series._color.redInactive
                         }
-                        else if (JSPC.helper.contains(['${BaseQuery.getMessage(BaseQuery.NO_ENDDATE_LABEL)}'], params.name)) {
+                        else if (JSPC.helper.contains(['${BaseQuery.getChartLabel(BaseQuery.NO_ENDDATE_LABEL)}', '${BaseQuery.getChartLabel(BaseQuery.NO_COUNTERPART_LABEL)}'], params.name)) {
                             return JSPC.app.reporting.helper.series._color.ice
                         }
                         else {
@@ -121,3 +133,9 @@
         ]
     };
 </g:elseif>
+<g:elseif test="${data != null && data.isEmpty()}">
+    JSPC.app.reporting.current.chart.statusCode = 204
+</g:elseif>
+<g:else>
+    JSPC.app.reporting.current.chart.statusCode = 500
+</g:else>

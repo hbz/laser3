@@ -12,6 +12,9 @@ import grails.gorm.transactions.Transactional
 import org.apache.commons.lang.RandomStringUtils
 import org.springframework.context.i18n.LocaleContextHolder
 
+/**
+ * This service handles specific organisation-related matters
+ */
 @Transactional
 class OrganisationService {
 
@@ -23,6 +26,10 @@ class OrganisationService {
     def userService
     List<String> errors = []
 
+    /**
+     * Initialises mandatory keys for a new organisation
+     * @param org the {@link Org} to be set up
+     */
     void initMandatorySettings(Org org) {
         log.debug("initMandatorySettings for org ${org.id}") //org.id call crashes when called from sync
 
@@ -49,11 +56,11 @@ class OrganisationService {
 
     /**
      * Exports organisation data in the given format. It can be specified if higher education titles should be outputted or not.
-     * Do NOT mix this method with exportOrgs of MyInstitutionController which is for consortia subscription members! That method should be generalised as well!!
-     * @param orgs - the {@link List} of {@link Org}s
-     * @param message - the title of the Excel sheet (not used in csv)
-     * @param addHigherEducationTitles - add columns library type, library network, funder type, federal state, country with respective values
-     * @param format - the format (xls or csv) to generate the output in
+     * Do NOT mix this method with {@link ExportClickMeService#exportOrgs(java.util.List, java.util.Map, java.lang.String)} which is for consortia subscription members!
+     * @param orgs the {@link List} of {@link Org}s
+     * @param message the title of the Excel sheet (not used in csv)
+     * @param addHigherEducationTitles add columns library type, library network, funder type, federal state, country with respective values
+     * @param format the format (xls or csv) to generate the output in
      * @return a String containing the CSV output or the Excel sheet containing the output
      */
     def exportOrg(List orgs, message, boolean addHigherEducationTitles, String format) {
@@ -204,6 +211,10 @@ class OrganisationService {
         out
     }
 
+    /**
+     * Should be used for an empty QA environment only; currently disused as new users should start completely from scratch.
+     * Creates a bunch of (now empty; initially, also a hard-coded test data set was defined as well!) organisations with a set of users assigned to it
+     */
     void createOrgsFromScratch() {
         String currentServer = ServerUtils.getCurrentServer()
         Map<String,Role> customerTypes = [konsorte:Role.findByAuthority('ORG_BASIC_MEMBER'),
@@ -265,6 +276,11 @@ class OrganisationService {
         }
     }
 
+    /**
+     * Creates a new organisation with the given basic parameters and sets the mandatory config settings for it
+     * @param params the parameter {@link Map} containing name, shortname, sortname, type and sector
+     * @return the new {@link Org}
+     */
     Org createOrg(Map params) {
         Org obj = new Org(name: params.name,shortname: params.shortname, sortname: params.sortname, orgType: params.orgType, sector: params.orgSector)
         if(obj.save()) {
@@ -273,19 +289,29 @@ class OrganisationService {
         obj
     }
 
+    /**
+     * Helper method to group reader numbers by their key property which is a temporal unit
+     * @param readerNumbers the {@link List} of {@link ReaderNumber}s to group
+     * @param keyProp may be a dueDate or semester; a temporal unit to group the reader numbers by
+     * @return the {@link Map} with the grouped result entries
+     */
     Map<String,Map<String,ReaderNumber>> groupReaderNumbersByProperty(List<ReaderNumber> readerNumbers,String keyProp) {
         Map<String,Map<String,ReaderNumber>> result = [:]
         readerNumbers.each { ReaderNumber number ->
-            Map<String,ReaderNumber> numberRow = result.get(number[keyProp]) //keyProp may be a dueDate or semester
+            Map<String,ReaderNumber> numberRow = result.get(number[keyProp])
             if(!numberRow) {
                 numberRow = [:]
             }
-            numberRow.put(number.referenceGroup,number)
+            numberRow.put(number.referenceGroup.getI10n("value"),number)
             result.put(number[keyProp],numberRow)
         }
         result
     }
 
+    /**
+     * Gets all platforms where a provider {@link Org} is assigned to, ordered by name, sortname and platform name
+     * @return the ordered {@link List} of {@link Platform}s
+     */
     List<Platform> getAllPlatforms() {
         Platform.executeQuery('select p from Platform p join p.org o where p.org is not null order by o.name, o.sortname, p.name')
     }

@@ -4,6 +4,10 @@ import de.laser.Org
 import de.laser.Platform
 import de.laser.exceptions.CreationException
 
+/**
+ * This keeps track for each customer {@link Org}, {@link Platform} and report ID when the latest fetched report is dating.
+ * It may refer to {@link StatsMissingPeriod}s; those are (currently unused) container objects to mark for which months there is no data available for which customer/platform/report combination.
+ */
 class LaserStatsCursor {
 
     Platform platform
@@ -30,6 +34,9 @@ class LaserStatsCursor {
         reportID(unique: ['platform', 'customer'])
     }
 
+    /**
+     * Was used to set up a cursor for a report ID, customer {@link Org} and {@link Platform}
+     */
     static LaserStatsCursor construct(Map<String, Object> configMap) throws CreationException {
         LaserStatsCursor result = LaserStatsCursor.findByPlatformAndCustomerAndReportID(configMap.platform, configMap.customer, configMap.reportID)
         if(!result)

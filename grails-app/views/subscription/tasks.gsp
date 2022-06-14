@@ -11,6 +11,9 @@
         <g:render template="actions" />
     </semui:controlButtons>
     <h1 class="ui  icon header la-noMargin-top"><semui:headerIcon />
+        <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
+            <g:render template="iconSubscriptionIsChild"/>
+        </g:if>
         <semui:xEditable owner="${subscription}" field="name" />
     </h1>
     <semui:anualRings object="${subscription}" controller="subscription" action="tasks" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>

@@ -11,6 +11,11 @@ import grails.plugins.orm.auditable.Auditable
 import grails.converters.JSON
 import org.grails.web.json.JSONElement
 
+/**
+ * The class's name is what it does: a property (general / custom or private) to a {@link Subscription}.
+ * The flag whether it is visible by everyone or not is determined by the {@link #isPublic} flag.
+ * As its parent object ({@link #owner}), it may be passed through member subscriptions (inheritance / auditable); the parent property is represented by {@link #instanceOf}.
+ */
 class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated implements Auditable {
 
     def genericOIDService
@@ -79,10 +84,19 @@ class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated imp
         owner: Subscription
     ]
 
+    /**
+     * Those are the fields watched by the inheritance
+     * @return the {@link Collection} of watched field names
+     */
     @Override
     Collection<String> getLogIncluded() {
         [ 'stringValue', 'intValue', 'decValue', 'refValue', 'note', 'dateValue' ]
     }
+
+    /**
+     * Those are the fields which are ignored by inheritance
+     * @return the {@link Collection} of unwatched field names
+     */
     @Override
     Collection<String> getLogExcluded() {
         [ 'version', 'lastUpdated', 'lastUpdatedCascading' ]
@@ -119,6 +133,10 @@ class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated imp
         deletionService.deleteDocumentFromIndex(genericOIDService.getOID(this), this.class.simpleName)
     }
 
+    /**
+     * This method is used by generic access method and reflects changes made to a subscription property to inheriting subscription properties.
+     * @param changeDocument the map of changes being passed through to the inheriting properties
+     */
     def notifyDependencies(changeDocument) {
         log.debug("notifyDependencies(${changeDocument})")
 
@@ -162,8 +180,8 @@ class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated imp
                 def msgParams = [
                         definedType,
                         "${scp.type.class.name}:${scp.type.id}",
-                        (changeDocument.prop in ['note'] ? "${changeDocument.oldLabel}" : "${changeDocument.old}"),
-                        (changeDocument.prop in ['note'] ? "${changeDocument.newLabel}" : "${changeDocument.new}"),
+                        (changeDocument.prop == 'note' ? "${changeDocument.oldLabel}" : "${changeDocument.old}"),
+                        (changeDocument.prop == 'note' ? "${changeDocument.newLabel}" : "${changeDocument.new}"),
                         "${description}"
                 ]
 

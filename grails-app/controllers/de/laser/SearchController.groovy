@@ -4,13 +4,23 @@ import de.laser.auth.User
 import de.laser.helper.SwissKnife
 import grails.plugin.springsecurity.annotation.Secured
 
+/**
+ * This controller handles the global search functionality
+ * which is independent from the individual filter fields; those are dealt in the
+ * controller methods individually.
+ * This controller uses moreover the app's ElasticSearch index
+ */
 @Secured(['IS_AUTHENTICATED_FULLY'])
 class SearchController  {
+
     def ESSearchService
     def springSecurityService
     def contextService
 
-
+    /**
+     * Shows the advanced search page
+     * @return the filter with results if a query has been submitted, the filter only otherwise
+     */
     @Secured(['ROLE_USER'])
     def index() {
         log.debug("searchController: index");
@@ -64,6 +74,10 @@ class SearchController  {
         result
     }
 
+    /**
+     * Performs a query with a value submitted in the quick search field
+     * @return the query results as JSON map
+     */
     @Secured(['ROLE_USER'])
     def spotlightSearch() {
         log.debug("searchController: spotlightSearch");

@@ -16,12 +16,12 @@ class CostItemXCfg extends BaseConfig {
                             'consortia-cost'
                     ],
                     fields: [
-                            'type'                          : FIELD_TYPE_REFDATA,
-                            'costItemStatus'                : FIELD_TYPE_REFDATA,
-                            'costItemCategory'              : FIELD_TYPE_REFDATA,
-                            'costItemElement'               : FIELD_TYPE_REFDATA,
-                            'costItemElementConfiguration'  : FIELD_TYPE_REFDATA,
-                            'billingCurrency'               : FIELD_TYPE_REFDATA,
+                            'type'                          : [ type: FIELD_TYPE_REFDATA ],
+                            'costItemStatus'                : [ type: FIELD_TYPE_REFDATA ],
+                            'costItemCategory'              : [ type: FIELD_TYPE_REFDATA ],
+                            'costItemElement'               : [ type: FIELD_TYPE_REFDATA ],
+                            'costItemElementConfiguration'  : [ type: FIELD_TYPE_REFDATA ],
+                            'billingCurrency'               : [ type: FIELD_TYPE_REFDATA ]
                     ],
                     filter : [
                             default: [
@@ -31,14 +31,14 @@ class CostItemXCfg extends BaseConfig {
                     ],
                     query : [
                             default: [
-                                    'costItem' : [
-                                            'costItem-type',
-                                            'costItem-costItemStatus',
-                                            'costItem-costItemCategory',
-                                            'costItem-costItemElement',
-                                            'costItem-costItemElementConfiguration',
-                                            'costItem-billingCurrency',
-                                            'costItem-*'
+                                    costItem : [
+                                            'costItem-type' :                           [ '@' ],
+                                            'costItem-costItemStatus' :                 [ '@' ],
+                                            'costItem-costItemCategory' :               [ '@' ],
+                                            'costItem-costItemElement' :                [ '@' ],
+                                            'costItem-costItemElementConfiguration' :   [ '@' ],
+                                            'costItem-billingCurrency' :                [ '@' ],
+                                            'costItem-*' :                              [ 'generic.all' ]
                                     ]
                             ]
                     ]

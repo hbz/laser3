@@ -11,6 +11,14 @@ import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.i18n.LocaleContextHolder
 
+/**
+ * Properties may be grouped in groups defined by their type ({@link PropertyDefinition}); a group contains may contain n {@link PropertyDefinitionGroupItem}s.
+ * The visibility may be configured in the group directly or overridden in {@link PropertyDefinitionGroupBinding}s which makes the visiblity configurable for each owner object
+ * ({@link de.laser.License}, {@link de.laser.Subscription}, {@link de.laser.Org}); each configuration is reflected by a binding.
+ * The property definition group is created and maintained by the {@link #tenant} organisation; an object which may be accessed by different contexts (orgs) shows the groupings owned by the respective tenant. If a general property
+ * is used in groups by multiple tenants, it shows up in the context organisation's group.
+ * @see de.laser.base.AbstractPropertyWithCalculatedLastUpdated
+ */
 @Slf4j
 class PropertyDefinitionGroup {
 
@@ -59,6 +67,10 @@ class PropertyDefinitionGroup {
         dateCreated (nullable: true)
     }
 
+    /**
+     * Retrieves the {@link PropertyDefinition} (property types) in this group
+     * @return a {@link List} of {@link PropertyDefinition}s
+     */
     List<PropertyDefinition> getPropertyDefinitions() {
 
         PropertyDefinition.executeQuery(
@@ -67,6 +79,11 @@ class PropertyDefinitionGroup {
         )
     }
 
+    /**
+     * Retrieves the currently contained properties ({@link de.laser.base.AbstractPropertyWithCalculatedLastUpdated}) of {@link PropertyDefinition} types contained in this group
+     * @param currentObject the object whose properties should be queried
+     * @return a {@link List} of properties ({@link de.laser.base.AbstractPropertyWithCalculatedLastUpdated}) contained by the given object in this group of {@link PropertyDefinition}s
+     */
     List getCurrentProperties(def currentObject) {
         List result = []
         def givenIds = getPropertyDefinitions().collect{ it.id }
@@ -79,9 +96,15 @@ class PropertyDefinitionGroup {
         result
     }
 
+    /**
+     * Retrieves the currently contained properties ({@link de.laser.base.AbstractPropertyWithCalculatedLastUpdated}) of {@link PropertyDefinition} types contained in this group, owned by a given {@link Org}
+     * @param currentObject the object whose properties should be queried
+     * @param tenant the {@link Org} which owns the property (!)
+     * @return a {@link List} of properties ({@link de.laser.base.AbstractPropertyWithCalculatedLastUpdated}) contained by the given object in this group of {@link PropertyDefinition}s
+     */
     List getCurrentPropertiesOfTenant(def currentObject, Org tenant) {
         List result = []
-        def givenIds = getPropertyDefinitions().collect{ it.id } //continue here: wrong number delivered
+        def givenIds = getPropertyDefinitions().collect{ it.id }
 
         currentObject?.propertySet?.each{ cp ->
             if (cp.type.id in givenIds && cp.tenant.id == tenant.id) {
@@ -91,6 +114,13 @@ class PropertyDefinitionGroup {
         result
     }
 
+    /**
+     * Retrieves a list of available property definition groups of a given property owner type and a given {@link Org} plus global property definition groups (no tenant)
+     * @param tenant the {@link Org} whose property definition groups should be queried
+     * @param ownerType the owner type of the properties in this groups
+     * @return a {@link List} of property definition groups, owned by the given {@link Org}
+     * @see de.laser.base.AbstractPropertyWithCalculatedLastUpdated
+     */
     static List<PropertyDefinitionGroup> getAvailableGroups(Org tenant, String ownerType) {
         List<PropertyDefinitionGroup> result = []
         List<PropertyDefinitionGroup> global  = findAllWhere( tenant: null, ownerType: ownerType)
@@ -102,6 +132,11 @@ class PropertyDefinitionGroup {
         result
     }
 
+    /**
+     * Searches for {@link PropertyDefinition}s and caches the result. Searched is among the {@link PropertyDefinition}s with owner type of a given object
+     * @param params a parameter map containing a search query (q) and a context object (currentObject)
+     * @return a {@link List} of {@link Map}s for the property definition selection dropdown
+     */
     static def refdataFind(GrailsParameterMap params) {
         List<Map<String, Object>> result = []
 

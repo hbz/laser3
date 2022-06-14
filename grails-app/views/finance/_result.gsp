@@ -2,7 +2,7 @@
     <semui:messages data="${flash}" />
     <div id="filterTemplateWrapper" class="wrapper">
         <div id="filterTemplate">
-            <g:render template="filter" model="[filterPresets:filterPresets,fixedSubscription:fixedSubscription,showView:showView]"/>
+            <g:render template="filter" model="[filterPresets:filterPresets,fixedSubscription:fixedSubscription,showView:showView,ciTitles:ciTitles]"/>
             <div id="financeFilterData" class="ui top attached tabular menu" data-current="${showView}">
                 <g:each in="${dataToDisplay}" var="view">
                     <g:if test="${view == 'own'}">
@@ -55,7 +55,7 @@
                                 <div id="bulkCostItems" class="hidden">
                                     <g:render template="costItemInput" />
                                     <div class="ui horizontal divider"><g:message code="search.advancedSearch.option.OR"/></div>
-                                    <div class="fields">
+                                    <div class="fields la-forms-grid">
                                         <fieldset class="sixteen wide field la-modal-fieldset-margin-right la-account-currency">
                                             <div class="field center aligned">
 

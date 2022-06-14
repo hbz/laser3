@@ -1,5 +1,5 @@
 <%@ page import="de.laser.RefdataValue; de.laser.helper.RDStore; de.laser.helper.RDConstants" %>
-<table id="subPkgPlatformTable" class="ui celled la-table table compact">
+<table id="subPkgPlatformTable" class="ui celled la-js-responsive-table la-table table compact">
   <thead>
   <tr>
     <th>${message(code: "accessPoint.subscription.label")}</th>
