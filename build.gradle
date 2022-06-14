@@ -98,7 +98,7 @@ dependencies {
     implementation 'org.grails.plugins:async'
     implementation 'org.grails.plugins:scaffolding'
     implementation 'org.grails.plugins:events'
-    implementation 'org.grails.plugins:hibernate5'
+    implementation 'org.grails.plugins:hibernate5:7.2.2'
     implementation 'org.hibernate:hibernate-core:5.6.9.Final'               // from 5.4.18.Final
     implementation 'org.grails.plugins:gsp'
 

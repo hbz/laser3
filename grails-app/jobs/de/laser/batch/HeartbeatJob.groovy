@@ -15,7 +15,7 @@ class HeartbeatJob extends AbstractJob {
     SystemService systemService
     SimpMessagingTemplate brokerMessagingTemplate
 
-    static final int HEARTBEAT_IN_SECONDS = 5
+    static final int HEARTBEAT_IN_SECONDS = 5 * 60
 
     static triggers = {
     cron name:'heartbeatTrigger', startDelay:10000, cronExpression: "0 0/5 * * * ?"

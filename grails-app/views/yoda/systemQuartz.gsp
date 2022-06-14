@@ -14,8 +14,6 @@
 
 <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.systemQuartz')}</h1>
 
-##
-${ConfigMapper.getQuartzHeartbeat()} ##
 %{--${ConfigMapper.setConfig( ConfigMapper.QUARTZ_HEARTBEAT, new Date())} ##--}%
 %{--${ConfigMapper.getQuartzHeartbeat()} ##--}%
 

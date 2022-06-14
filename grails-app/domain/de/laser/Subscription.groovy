@@ -245,7 +245,6 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     @Override
     def afterDelete() {
         super.afterDeleteHandler()
-
         BeanStore.getDeletionService().deleteDocumentFromIndex(this.globalUID, this.class.simpleName)
     }
     @Override
@@ -255,9 +254,6 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     @Override
     def afterUpdate() {
         super.afterUpdateHandler()
-
-
-
     }
     @Override
     def beforeInsert() {

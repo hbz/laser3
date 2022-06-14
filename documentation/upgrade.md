@@ -57,9 +57,9 @@ Important: The password encoder still accepts legacy passwords, but encrypts the
 *de.laser.base.AbstractJob* offers new **start** and **stop** methods to simplify and unify job implementations. 
 These should be used to wrap the execution logic.
 
-### ReactiveX
+### ~~ReactiveX~~
 
-*io.reactivex:rxjava* and *org.grails.plugins:rxjava* are outdated. Refactoring should take place.
+~~*io.reactivex:rxjava* and *org.grails.plugins:rxjava* are outdated. Refactoring should take place.~~
 
 ### Service usage in domain classes
 
@@ -71,6 +71,9 @@ Use BeanStore for static and non-static access to services and other beans.
     static ContextService getContextService() {
         Holders.grailsApplication.mainContext.getBean('contextService') as ContextService
     }
+### Websockets
+
+Todo: Websocket communication is broken after upgrading from Grails 4 to Grails 5.
 
 ### Remarks &rarr;
 
