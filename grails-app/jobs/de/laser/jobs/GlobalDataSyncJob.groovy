@@ -1,4 +1,4 @@
-package de.laser.batch
+package de.laser.jobs
 
 import de.laser.GlobalSourceSyncService
 import de.laser.helper.ConfigMapper

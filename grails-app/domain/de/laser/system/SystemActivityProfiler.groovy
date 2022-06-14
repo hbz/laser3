@@ -1,8 +1,8 @@
 package de.laser.system
 
 import de.laser.auth.User
-import de.laser.storage.BeanStore
 import de.laser.cache.EhcacheWrapper
+import de.laser.storage.BeanStore
 
 /**
  * This class keeps track of the active users for a given time point.

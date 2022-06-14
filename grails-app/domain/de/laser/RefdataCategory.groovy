@@ -1,10 +1,9 @@
 package de.laser
 
-
 import de.laser.base.AbstractI10n
 import de.laser.helper.LocaleUtils
-import groovy.util.logging.Slf4j
 import grails.web.servlet.mvc.GrailsParameterMap
+import groovy.util.logging.Slf4j
 
 /**
  * A reference data category represents a controlled list which contains one or more reference data values. Like the entries, the list name can be translated itself.

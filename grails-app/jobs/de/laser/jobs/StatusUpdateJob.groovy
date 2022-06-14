@@ -1,8 +1,7 @@
-package de.laser.batch
+package de.laser.jobs
 
 import de.laser.StatusUpdateService
 import de.laser.SubscriptionService
-import de.laser.system.SystemEvent
 import de.laser.base.AbstractJob
 import groovy.util.logging.Slf4j
 

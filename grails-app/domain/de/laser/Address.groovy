@@ -1,8 +1,7 @@
 package de.laser
 
-
-import de.laser.storage.RDConstants
 import de.laser.annotations.RefdataInfo
+import de.laser.storage.RDConstants
 import groovy.util.logging.Slf4j
 
 /**

@@ -5,9 +5,9 @@ import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.finance.CostItem
-import de.laser.storage.RDStore
 import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.properties.PropertyDefinition
+import de.laser.storage.RDStore
 
 /**
  * This class reflects - as a property like {@link de.laser.properties.SubscriptionProperty} - the survey participant's answer to a survey.

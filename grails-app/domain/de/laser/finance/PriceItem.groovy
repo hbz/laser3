@@ -3,9 +3,9 @@ package de.laser.finance
 import de.laser.IssueEntitlement
 import de.laser.RefdataValue
 import de.laser.TitleInstancePackagePlatform
+import de.laser.annotations.RefdataInfo
 import de.laser.base.AbstractBase
 import de.laser.storage.RDConstants
-import de.laser.annotations.RefdataInfo
 
 import javax.persistence.Transient
 

@@ -1,9 +1,8 @@
 package de.laser
 
-
+import de.laser.annotations.RefdataInfo
 import de.laser.exceptions.CreationException
 import de.laser.storage.RDConstants
-import de.laser.annotations.RefdataInfo
 
 /**
  * This class represents a switch cabinet for a subscription package. Each package linked to a subscription contains a

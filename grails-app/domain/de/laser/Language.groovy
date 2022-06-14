@@ -1,9 +1,9 @@
 package de.laser
 
 import de.laser.annotations.RefdataInfo
+import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
-import de.laser.interfaces.CalculatedLastUpdated
 import groovy.util.logging.Slf4j
 
 /**

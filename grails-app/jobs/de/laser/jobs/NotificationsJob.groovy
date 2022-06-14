@@ -1,4 +1,4 @@
-package de.laser.batch
+package de.laser.jobs
 
 import de.laser.ChangeNotificationService
 import de.laser.helper.ConfigMapper

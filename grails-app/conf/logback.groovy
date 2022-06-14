@@ -63,9 +63,7 @@ class ShrinkFilter extends Filter<ILoggingEvent> {
 
 appender('STDOUT', ConsoleAppender) {
     // TODO -- REMOVE --
-    // TODO -- REMOVE --
     filter(ShrinkFilter)
-    // TODO -- REMOVE --
     // TODO -- REMOVE --
     encoder(PatternLayoutEncoder) {
         charset = Charset.forName('UTF-8')

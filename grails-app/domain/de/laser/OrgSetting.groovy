@@ -1,9 +1,8 @@
 package de.laser
 
-
+import de.laser.annotations.RefdataInfo
 import de.laser.auth.Role
 import de.laser.storage.RDConstants
-import de.laser.annotations.RefdataInfo
 
 /**
  * This class represents organisation-wide configuration settings, see the enum {@link OrgSetting.KEYS} for the possible settings.

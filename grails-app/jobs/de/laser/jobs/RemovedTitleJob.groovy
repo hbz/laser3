@@ -1,4 +1,4 @@
-package de.laser.batch
+package de.laser.jobs
 
 import de.laser.base.AbstractJob
 import groovy.util.logging.Slf4j

@@ -1,20 +1,19 @@
 package de.laser
 
-
+import de.laser.annotations.RefdataInfo
 import de.laser.auth.Role
-import de.laser.storage.BeanStore
-import de.laser.properties.LicenseProperty
-import de.laser.properties.PropertyDefinitionGroup
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.helper.DateUtils
-import de.laser.storage.RDConstants
-import de.laser.storage.RDStore
-import de.laser.annotations.RefdataInfo
-import grails.plugins.orm.auditable.Auditable
 import de.laser.interfaces.CalculatedType
 import de.laser.interfaces.Permissions
 import de.laser.interfaces.ShareSupport
+import de.laser.properties.LicenseProperty
+import de.laser.properties.PropertyDefinitionGroup
+import de.laser.storage.BeanStore
+import de.laser.storage.RDConstants
+import de.laser.storage.RDStore
 import de.laser.traits.ShareableTrait
+import grails.plugins.orm.auditable.Auditable
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.springframework.context.i18n.LocaleContextHolder
 

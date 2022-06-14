@@ -1,7 +1,6 @@
 package de.laser
 
 
-import de.laser.oap.OrgAccessPoint
 import de.laser.oap.OrgAccessPointLink
 import de.laser.storage.RDStore
 import grails.web.servlet.mvc.GrailsParameterMap

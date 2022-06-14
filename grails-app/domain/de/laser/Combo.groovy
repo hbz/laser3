@@ -1,8 +1,7 @@
 package de.laser
 
-
-import de.laser.storage.RDConstants
 import de.laser.annotations.RefdataInfo
+import de.laser.storage.RDConstants
 
 /**
  * Represents a connection between two {@link Org}s. The types of combo connections see {@link RDConstants#COMBO_TYPE}

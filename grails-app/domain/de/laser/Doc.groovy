@@ -1,9 +1,8 @@
 package de.laser
 
-
+import de.laser.annotations.RefdataInfo
 import de.laser.helper.ConfigMapper
 import de.laser.storage.RDConstants
-import de.laser.annotations.RefdataInfo
 
 /**
  * A document object representation. The document may be an uploaded file with annotations or a note without file. As legacy, automatised messages / announcements were stored as docs as well. This type is specified by the

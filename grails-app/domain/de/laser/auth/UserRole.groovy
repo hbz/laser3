@@ -2,6 +2,7 @@ package de.laser.auth
 
 import grails.gorm.DetachedCriteria
 import org.codehaus.groovy.util.HashCodeHelper
+
 import javax.persistence.Transient
 
 /**

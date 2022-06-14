@@ -1,17 +1,16 @@
 package de.laser
 
-
-import de.laser.storage.BeanStore
-import de.laser.properties.PlatformProperty
-import de.laser.properties.PropertyDefinitionGroup
+import de.laser.annotations.RefdataInfo
+import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.oap.OrgAccessPoint
 import de.laser.oap.OrgAccessPointLink
-import de.laser.base.AbstractBaseWithCalculatedLastUpdated
+import de.laser.properties.PlatformProperty
+import de.laser.properties.PropertyDefinitionGroup
+import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
-import de.laser.annotations.RefdataInfo
-import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import grails.web.servlet.mvc.GrailsParameterMap
+import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 /**
  * This class represents a platform record. A platform is a portal where providers offer access to titles subscribed via packages.

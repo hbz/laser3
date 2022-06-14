@@ -1,7 +1,7 @@
 package de.laser
 
-import de.laser.storage.RDConstants
 import de.laser.annotations.RefdataInfo
+import de.laser.storage.RDConstants
 
 /**
  * Represents a registered reader count entry for a library. It may be grouped by a reference group and a temporal entity: one of semester or due date.

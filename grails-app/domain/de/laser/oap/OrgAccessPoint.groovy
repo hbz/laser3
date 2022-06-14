@@ -1,14 +1,14 @@
 package de.laser.oap
 
-import de.laser.Org
-import de.laser.Subscription
 import de.laser.AccessPointData
+import de.laser.Org
 import de.laser.RefdataValue
+import de.laser.Subscription
+import de.laser.annotations.RefdataInfo
 import de.laser.base.AbstractBase
 import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
-import de.laser.annotations.RefdataInfo
 import de.uni_freiburg.ub.IpRange
 import de.uni_freiburg.ub.IpRangeCollection
 import groovy.json.JsonSlurper

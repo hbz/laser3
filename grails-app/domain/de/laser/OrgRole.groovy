@@ -1,8 +1,7 @@
 package de.laser
 
-
-import de.laser.storage.RDConstants
 import de.laser.annotations.RefdataInfo
+import de.laser.storage.RDConstants
 import de.laser.traits.ShareableTrait
 import org.grails.datastore.mapping.engine.event.PostUpdateEvent
 

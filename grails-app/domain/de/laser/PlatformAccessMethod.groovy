@@ -1,9 +1,8 @@
 package de.laser
 
-
+import de.laser.annotations.RefdataInfo
 import de.laser.base.AbstractBase
 import de.laser.storage.RDConstants
-import de.laser.annotations.RefdataInfo
 
 /**
  * An access method to a given {@link Platform}; the given access method may be restricted to a certain timespan. The access method itself is one value of the controlled list of access methods

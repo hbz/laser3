@@ -4,8 +4,8 @@ import de.laser.Org
 import de.laser.Platform
 import de.laser.RefdataValue
 import de.laser.TitleInstancePackagePlatform
-import de.laser.storage.RDConstants
 import de.laser.annotations.RefdataInfo
+import de.laser.storage.RDConstants
 
 /**
  * This class represents a statistics entry (usage report) which comes from the national statistics server (Nationaler Statistikserver).

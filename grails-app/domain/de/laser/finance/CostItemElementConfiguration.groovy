@@ -2,9 +2,9 @@ package de.laser.finance
 
 import de.laser.Org
 import de.laser.RefdataValue
+import de.laser.annotations.RefdataInfo
 import de.laser.base.AbstractBase
 import de.laser.storage.RDConstants
-import de.laser.annotations.RefdataInfo
 
 /**
  * An calculation sign configuration class for an {@link Org}: an {@link Org} may specify, to a given cost item element, how the cost items in it should be calculated (add, negative, substract).

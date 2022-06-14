@@ -1,9 +1,8 @@
 package de.laser
 
-
+import de.laser.annotations.RefdataInfo
 import de.laser.auth.User
 import de.laser.storage.RDConstants
-import de.laser.annotations.RefdataInfo
 
 /**
  * This class represents settings for a user; it ensures preferences of the user using the system.

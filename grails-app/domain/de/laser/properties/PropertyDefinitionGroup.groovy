@@ -1,13 +1,13 @@
 package de.laser.properties
 
+import de.laser.CacheService
 import de.laser.GenericOIDService
 import de.laser.Org
-import de.laser.CacheService
+import de.laser.cache.EhcacheWrapper
 import de.laser.helper.LocaleUtils
 import de.laser.storage.BeanStore
-import de.laser.cache.EhcacheWrapper
-import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import grails.web.servlet.mvc.GrailsParameterMap
+import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 /**
  * Properties may be grouped in groups defined by their type ({@link PropertyDefinition}); a group contains may contain n {@link PropertyDefinitionGroupItem}s.

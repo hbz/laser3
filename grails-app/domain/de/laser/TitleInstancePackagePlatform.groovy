@@ -1,11 +1,10 @@
 package de.laser
 
-
+import de.laser.annotations.RefdataInfo
 import de.laser.base.AbstractBase
 import de.laser.finance.PriceItem
 import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
-import de.laser.annotations.RefdataInfo
 import de.laser.storage.RDStore
 import de.laser.titles.TitleHistoryEvent
 import groovy.time.TimeCategory

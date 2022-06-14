@@ -2,8 +2,8 @@ package de.laser.stats
 
 import de.laser.IdentifierNamespace
 import de.laser.RefdataValue
-import de.laser.storage.RDConstants
 import de.laser.annotations.RefdataInfo
+import de.laser.storage.RDConstants
 
 /**
  * This domain is part of the statistics component implemented for the Nationaler Statistikserver data.

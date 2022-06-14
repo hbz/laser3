@@ -1,23 +1,18 @@
 package de.laser
 
-
-import de.laser.auth.Perm
-import de.laser.auth.PermGrant
-import de.laser.auth.Role
-import de.laser.auth.User
-import de.laser.auth.UserOrg
-import de.laser.finance.CostItem
-import de.laser.storage.BeanStore
-import de.laser.properties.OrgProperty
-import de.laser.oap.OrgAccessPoint
+import de.laser.annotations.RefdataInfo
+import de.laser.auth.*
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
+import de.laser.finance.CostItem
+import de.laser.interfaces.DeleteFlag
+import de.laser.oap.OrgAccessPoint
+import de.laser.properties.OrgProperty
+import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
-import de.laser.annotations.RefdataInfo
-import de.laser.interfaces.DeleteFlag
+import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.util.logging.Slf4j
 import org.apache.commons.lang3.StringUtils
-import grails.web.servlet.mvc.GrailsParameterMap
 
 /**
  * An organisation record.

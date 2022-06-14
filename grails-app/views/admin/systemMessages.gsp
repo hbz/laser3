@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.system.SystemMessage; de.laser.batch.HeartbeatJob" %>
+<%@ page import="de.laser.storage.RDStore; de.laser.system.SystemMessage; de.laser.jobs.HeartbeatJob" %>
 <!doctype html>
 <html>
 <head>

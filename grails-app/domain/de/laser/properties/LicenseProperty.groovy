@@ -8,8 +8,8 @@ import de.laser.PendingChange
 import de.laser.RefdataValue
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.storage.BeanStore
-import grails.plugins.orm.auditable.Auditable
 import grails.converters.JSON
+import grails.plugins.orm.auditable.Auditable
 import org.grails.web.json.JSONElement
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
@@ -113,7 +113,6 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
     @Override
     def beforeUpdate(){
         Map<String, Object> changes = super.beforeUpdateHandler()
-
         BeanStore.getAuditService().beforeUpdateHandler(this, changes.oldMap, changes.newMap)
     }
     @Override
@@ -123,13 +122,11 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
     @Override
     def beforeDelete() {
         super.beforeDeleteHandler()
-
         BeanStore.getAuditService().beforeDeleteHandler(this)
     }
     @Override
     def afterDelete() {
         super.afterDeleteHandler()
-
         BeanStore.getDeletionService().deleteDocumentFromIndex(BeanStore.getGenericOIDService().getOID(this), this.class.simpleName)
     }
 

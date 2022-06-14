@@ -1,14 +1,13 @@
 package de.laser
 
-
-import de.laser.storage.BeanStore
-import de.laser.titles.TitleInstance
 import de.laser.helper.FactoryResult
 import de.laser.interfaces.CalculatedLastUpdated
+import de.laser.storage.BeanStore
+import de.laser.titles.TitleInstance
 import grails.converters.JSON
 import grails.plugins.orm.auditable.Auditable
-import groovy.util.logging.Slf4j
 import grails.web.servlet.mvc.GrailsParameterMap
+import groovy.util.logging.Slf4j
 import org.grails.web.json.JSONElement
 import org.springframework.context.i18n.LocaleContextHolder
 

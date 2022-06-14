@@ -3,10 +3,10 @@ package de.laser.survey
 import de.laser.License
 import de.laser.Org
 import de.laser.RefdataValue
+import de.laser.annotations.RefdataInfo
 import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
-import de.laser.annotations.RefdataInfo
 
 /**
  * This domain defines the general attributes of a survey and completes the {@link SurveyConfig} definition which in turn connects the survey to its target.

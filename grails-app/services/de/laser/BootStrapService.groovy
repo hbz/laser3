@@ -327,7 +327,7 @@ class BootStrapService {
         updateOrgRolePerms(orgConsortiumRole,           ['ORG_CONSORTIUM'])
     }
 
-    def setupSystemSettings() {
+    void setupSystemSettings() {
 
         SystemSetting mailSent = SystemSetting.findByName('MailSentDisabled')
         if (mailSent) {
@@ -345,9 +345,9 @@ class BootStrapService {
      * @param objType the object type reference; this is needed to read the definitions in the columns correctly and is one of RefdataCategory, RefdataValue or PropertyDefinition
      * @return the {@link List} of rows (each row parsed as {@link Map}) retrieved from the source file
      */
-    List getParsedCsvData(String filePath, String objType) {
+    List<Map> getParsedCsvData(String filePath, String objType) {
 
-        List result = []
+        List<Map> result = []
         File csvFile = grailsApplication.mainContext.getResource(filePath).file
 
         if (! ['RefdataCategory', 'RefdataValue', 'PropertyDefinition'].contains(objType)) {

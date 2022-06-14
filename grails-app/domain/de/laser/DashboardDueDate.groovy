@@ -1,8 +1,7 @@
 package de.laser
 
-
-import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.auth.User
+import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.helper.SqlDateUtils
 import de.laser.survey.SurveyInfo
 
@@ -10,7 +9,7 @@ import de.laser.survey.SurveyInfo
  * Represents a dashboard reminder for a user's dashboard. They are initialised every day per cronjob; the object's parameters to remind about are stored in {@link DueDateObject}
  * @see DueDateObject
  * @see DashboardDueDatesService
- * @see de.laser.batch.DashboardDueDatesJob
+ * @see de.laser.jobs.DashboardDueDatesJob
  */
 class DashboardDueDate {
 
