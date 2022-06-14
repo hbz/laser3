@@ -28,7 +28,7 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
 %>
 
 <div class="ui tablet stackable steps la-clear-before">
-    <div class="${workFlowPart == CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS ? 'active' : (workFlowPart in [CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS , CopyElementsService.WORKFLOW_PROPERTIES, CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS] ? 'completed' : '')} step">
+    <div class="${workFlowPart == CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS ? 'active' : (workFlowPart in [CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS , CopyElementsService.WORKFLOW_PROPERTIES, CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS, CopyElementsService.WORKFLOW_SUBSCRIBER] ? 'completed' : '')} step">
         <i class=" icon"></i>
             <div class="content" >
                 <div class="title">
@@ -52,7 +52,8 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
                 </div>
         </div>
     </div>
-    <div class="${workFlowPart == CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS ? 'active' : (workFlowPart in [CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS, CopyElementsService.WORKFLOW_PROPERTIES] ? 'completed' : '')} step">
+    <div class="${workFlowPart == CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS ? 'active' : (workFlowPart in [CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS, CopyElementsService.WORKFLOW_PROPERTIES, CopyElementsService.WORKFLOW_SUBSCRIBER] ? 'completed' : '')} step">
+        <i class=" icon"></i>
         <div class="content" >
             <div class="title">${message(code: 'copyElementsIntoObject.inventory.label')}</div>
             <div class="description">
@@ -63,7 +64,7 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
             </div>
         </div>
     </div>
-    <div class="${workFlowPart == CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS ? 'active' : (workFlowPart in [CopyElementsService.WORKFLOW_PROPERTIES] ? 'completed' : '')} step">
+    <div class="${workFlowPart == CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS ? 'active' : (workFlowPart in [CopyElementsService.WORKFLOW_PROPERTIES, CopyElementsService.WORKFLOW_SUBSCRIBER] ? 'completed' : '')} step">
         <i class=" icon"></i>
         <div class="content">
             <div class="title">
@@ -76,7 +77,21 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
             </div>
         </div>
     </div>
+    <g:if test="${isConsortialObjects && accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER")}">
+        <div class="${workFlowPart == CopyElementsService.WORKFLOW_SUBSCRIBER ? 'active' : (workFlowPart in [CopyElementsService.WORKFLOW_PROPERTIES] ? 'completed' : '')} step">
+            <i class=" icon"></i>
+            <div class="content">
+                <div class="title">
+                        ${message(code: 'consortium.subscriber')}
+                </div>
+                <div class="description">
+                    <i class="university icon"></i>${message(code: 'consortium.subscriber')}
+                </div>
+            </div>
+        </div>
+    </g:if>
     <div class="${workFlowPart == CopyElementsService.WORKFLOW_PROPERTIES ? 'active' : ''} step">
+        <i class=" icon"></i>
         <div class="content">
             <div class="title">
                     ${message(code: 'properties')}
@@ -96,6 +111,9 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
 </g:elseif>
 <g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS}">
     <laser:render template="/templates/copyElements/copyPackagesAndIEs" />
+</g:elseif>
+<g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_SUBSCRIBER && isConsortialObjects && accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")}">
+    <g:render template="/templates/copyElements/copySubscriber" />
 </g:elseif>
 <g:else>
     <laser:render template="/templates/copyElements/copyElements" />

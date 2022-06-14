@@ -53,40 +53,12 @@
                         <semui:xEditable owner="${bcode}" field="descr" />
                     </td>
                     <td>
-                        <div class="ui list">
-                            <g:each in="${costItemGroups.get(bcode)}" var="cig">
-
-                                <div class="item">
-                                    <g:if test="${cig.costItem.sub}">
-                                        ${cig.costItem.sub.name}
-                                    </g:if>
-
-                                    <g:if test="${cig.costItem.costTitle}">
-                                        - ${cig.costItem.costTitle}
-                                    </g:if>
-                                    <g:elseif test="${cig.costItem.costTitle}">
-                                        - ${cig.costItem.globalUID}
-                                    </g:elseif>
-
-                                    <g:if test="${cig.costItem.costDescription}">
-                                        (${cig.costItem.costDescription})
-                                    </g:if>
-
-                                    <g:if test="${cig.costItem.sub}">
-                                        <g:link mapping="subfinance" class="ui button icon blue la-modern-button"
-                                                params="[sub:cig.costItem.sub.id, filterCIBudgetCode: bcode.id, submit: message(code:'default.filter.label')]">
-                                            <i class="share icon"></i>
-                                        </g:link>
-                                    </g:if>
-                                    <g:else>
-                                        <g:link controller="finance" action="index" class="ui button icon blue la-modern-button"
-                                                params="[filterCIBudgetCode: bcode.id, submit: message(code:'default.filter.label')]">
-                                            <i class="share icon"></i>
-                                        </g:link>
-                                    </g:else>
-                                </div>
-                            </g:each>
-                        </div>
+                        <g:link controller="finance" action="index"
+                                params="[filterCIBudgetCode: bcode.id, submit: message(code:'default.filter.label')]">
+                            <div class="ui blue circular label">
+                                ${costItemGroups.get(bcode) ?: 0}
+                            </div>
+                        </g:link>
                     </td>
                     <g:if test="${editable}">
                         <td class="x">

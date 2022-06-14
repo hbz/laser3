@@ -4,12 +4,16 @@
 <g:set var="formService" bean="formService"/>
 
 <semui:form>
-    <laser:render template="/templates/copyElements/selectSourceAndTargetObject" model="[
-            sourceObject          : sourceObject,
-            targetObject          : targetObject,
-            allObjects_readRights : allObjects_readRights,
-            allObjects_writeRights: allObjects_writeRights]"/>
-    <g:form action="copyElementsIntoSubscription" controller="subscription"
+
+    <g:if test="${!copyObject}">
+        <laser:render template="/templates/copyElements/selectSourceAndTargetObject" model="[
+                sourceObject          : sourceObject,
+                targetObject          : targetObject,
+                allObjects_readRights : allObjects_readRights,
+                allObjects_writeRights: allObjects_writeRights]"/>
+    </g:if>
+
+    <g:form controller="${controllerName}" action="${actionName}"
             params="[workFlowPart: workFlowPart, sourceObjectId: genericOIDService.getOID(sourceObject), targetObjectId: genericOIDService.getOID(targetObject), isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
             method="post" class="ui form newLicence">
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>

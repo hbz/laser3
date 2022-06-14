@@ -587,6 +587,7 @@ r2d2 = {
             selectOnKeydown: false,
             fullTextSearch: 'exact',
             clearable: true,
+            message: {noResults:JSPC.dict.get('select2.noMatchesFound', JSPC.currLanguage)}
         });
 
         // FILTER
@@ -605,11 +606,21 @@ r2d2 = {
             selectOnKeydown: false,
             fullTextSearch: 'exact',
             clearable: true,
+            message: {noResults:JSPC.dict.get('select2.noMatchesFound', JSPC.currLanguage)},
             onChange: function(value, text, $choice){
                 (value !== '') ? _addFilterDropdown(this) : _removeFilterDropdown(this);
             }
         });
-
+        $(ctxSel + ' .la-filter .ui.dropdown.allowAdditions').dropdown({
+            allowAdditions: true,
+            forceSelection: false,
+            hideAdditions: false,
+            clearable: true,
+            message: {addResult:JSPC.dict.get('dropdown.message.addResult', JSPC.currLanguage)},
+            onChange: function(value, text, $choice){
+                (value !== '') ? _addFilterDropdown(this) : _removeFilterDropdown(this);
+            }
+        });
         // dropdowns escape
         $(ctxSel + ' .la-filter .ui.dropdown').on('keydown', function(e) {
             if(['Escape','Backspace','Delete'].includes(event.key)) {

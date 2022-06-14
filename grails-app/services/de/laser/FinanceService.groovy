@@ -556,6 +556,7 @@ class FinanceService {
             Map<String,Object> filterQuery = processFilterParams(params)
             Map<String,Object> result = [filterPresets:filterQuery.filterData]
             SortedSet<String> costTitles = new TreeSet<String>()
+            costTitles.addAll(CostItem.executeQuery('select ci.costTitle from CostItem ci where (ci.owner = :ctx or ci.isVisibleForSubscriber = true) and ci.costTitle != null and (ci.sub = :sub or ci.sub.instanceOf = :sub) order by ci.costTitle asc', [ctx: org, sub: sub]))
             result.filterSet = filterQuery.subFilter || filterQuery.ciFilter
             configMap.dataToDisplay.each { String dataToDisplay ->
                 switch(dataToDisplay) {
@@ -574,7 +575,6 @@ class FinanceService {
                         result.own = [count:ownCostItems.size()]
                         if(ownCostItems){
                             result.own.costItems = CostItem.findAllByIdInList(ownCostItems,[max:configMap.max,offset:configMap.offsets.ownOffset, sort: configMap.sortConfig.ownSort, order: configMap.sortConfig.ownOrder])
-                            costTitles.addAll(CostItem.executeQuery('select ci.costTitle from CostItem ci where ci.id in (:list) and ci.costTitle != null order by ci.costTitle', [list: ownCostItems]))
                             result.own.sums = calculateResults(ownCostItems)
                         }
                         break
@@ -588,8 +588,7 @@ class FinanceService {
                         result.cons = [count:consCostRows.size()]
                         if(consCostRows) {
                             Set<Long> consCostItems = consCostRows
-                            result.cons.costItems = CostItem.executeQuery('select ci from CostItem ci right join ci.sub sub join sub.orgRelations oo left join ci.costItemElement cie where ci.id in (:ids) and oo.roleType in (:roleTypes) order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder+', cie.value_'+ LocaleUtils.getCurrentLang() +' asc nulls first',[ids:consCostItems,roleTypes:[RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]],[max:configMap.max, offset:configMap.offsets.consOffset])
-                            costTitles.addAll(CostItem.executeQuery('select ci.costTitle from CostItem ci where ci.id in (:list) and ci.costTitle != null order by ci.costTitle', [list: consCostRows]))
+                            result.cons.costItems = CostItem.executeQuery('select ci from CostItem ci right join ci.sub sub join sub.orgRelations oo left join ci.costItemElement cie where ci.id in (:ids) and oo.roleType in (:roleTypes) order by '+configMap.sortConfig.consSort+' '+configMap.sortConfig.consOrder+', cie.value_'+ LocaleUtils.getCurrentLang() +' asc nulls first',[ids:consCostItems,roleTypes:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]],[max:configMap.max,offset:configMap.offsets.consOffset])
                             result.cons.sums = calculateResults(consCostItems)
                         }
                         break
@@ -602,7 +601,6 @@ class FinanceService {
                         result.cons = [count:consCostItems.size()]
                         if(consCostItems) {
                             result.cons.costItems = CostItem.findAllByIdInList(consCostItems,[max:configMap.max,offset:configMap.offsets.consOffset, sort: configMap.sortConfig.consSort, order: configMap.sortConfig.consOrder])
-                            costTitles.addAll(CostItem.executeQuery('select ci.costTitle from CostItem ci where ci.id in (:list) and ci.costTitle != null order by ci.costTitle', [list: consCostItems]))
                             result.cons.sums = calculateResults(consCostItems)
                         }
                         break
@@ -616,7 +614,6 @@ class FinanceService {
                         result.subscr = [count:subscrCostItems.size()]
                         if(subscrCostItems) {
                             result.subscr.costItems = CostItem.findAllByIdInList(subscrCostItems,[max:configMap.max,offset:configMap.offsets.subscrOffset, sort: configMap.sortConfig.subscrSort, order: configMap.sortConfig.subscrOrder])
-                            costTitles.addAll(CostItem.executeQuery('select ci.costTitle from CostItem ci where ci.id in (:list) and ci.costTitle != null order by ci.costTitle', [list: subscrCostItems]))
                             result.subscr.sums = calculateResults(subscrCostItems)
                         }
                         break
@@ -645,7 +642,7 @@ class FinanceService {
         result.filterSet = filterQuery.subFilter || filterQuery.ciFilter
         Org org = (Org) configMap.institution
         SortedSet<String> ciTitles = new TreeSet<String>()
-        ciTitles.addAll(CostItem.executeQuery('select ci.costTitle from CostItem ci where ci.owner = :ctx and ci.costTitle != null order by ci.costTitle asc', [ctx: org]))
+        ciTitles.addAll(CostItem.executeQuery('select ci.costTitle from CostItem ci where (ci.owner = :ctx or (exists(select oo from OrgRole oo where oo.sub = ci.sub and oo.org = :ctx and oo.roleType = :subscrType and ci.isVisibleForSubscriber = true))) and ci.costTitle != null order by ci.costTitle asc', [ctx: org, subscrType: RDStore.OR_SUBSCRIBER_CONS]))
         result.ciTitles = ciTitles
         pu.setBenchmark("load cost data for tabs")
         configMap.dataToDisplay.each { String dataToDisplay ->

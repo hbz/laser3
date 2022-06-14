@@ -94,6 +94,7 @@
                                 clearable: true,
                                 forceSelection: false,
                                 selectOnKeydown: false,
+                                message: {noResults:JSPC.dict.get('select2.noMatchesFound', JSPC.currLanguage)},
                                 onChange: function (value, text, $selectedItem) {
                                     value !== '' ? $(this).addClass("la-filter-selected") : $(this).removeClass("la-filter-selected");
                                 }
@@ -206,6 +207,7 @@
                         clearable: true,
                         forceSelection: false,
                         selectOnKeydown: false,
+                        message: {noResults:JSPC.dict.get('select2.noMatchesFound', JSPC.currLanguage)},
                         onChange: function (value, text, $selectedItem) {
                             value !== '' ? $(this).addClass("la-filter-selected") : $(this).removeClass("la-filter-selected");
                             if ((typeof $selectedItem != 'undefined')){
