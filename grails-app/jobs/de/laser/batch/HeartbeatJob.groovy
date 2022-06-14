@@ -1,12 +1,21 @@
 package de.laser.batch
 
+import de.laser.SystemService
+import de.laser.custom.CustomWebSocketConfig
 import de.laser.helper.ConfigMapper
 import de.laser.system.SystemActivityProfiler
 import de.laser.base.AbstractJob
+import grails.converters.JSON
 import groovy.util.logging.Slf4j
+import org.springframework.messaging.simp.SimpMessagingTemplate
 
 @Slf4j
 class HeartbeatJob extends AbstractJob {
+
+    SystemService systemService
+    SimpMessagingTemplate brokerMessagingTemplate
+
+    static final int HEARTBEAT_IN_SECONDS = 5
 
     static triggers = {
     cron name:'heartbeatTrigger', startDelay:10000, cronExpression: "0 0/5 * * * ?"
@@ -40,6 +49,17 @@ class HeartbeatJob extends AbstractJob {
 
             ConfigMapper.setConfig( ConfigMapper.QUARTZ_HEARTBEAT, new Date() )
             SystemActivityProfiler.update()
+
+            // org.springframework.messaging.simp.SimpMessageSendingOperations extends org.springframework.messaging.core.MessageSendingOperations
+            // +-- org.springframework.messaging.simp.SimpMessagingTemplate
+            //     +-- org.springframework.messaging.core.AbstractMessageSendingTemplate
+            //             -> convertAndSend(D destination, Object payload, @Nullable Map<String, Object> headers, @Nullable MessagePostProcessor postProcessor);
+            //                  -> doConvert(Object payload, @Nullable Map<String, Object> headers, @Nullable MessagePostProcessor postProcessor);
+            //		            -> send(D destination, Message<?> message);
+            //                         ^ org.springframework.messaging.simp.SimpMessagingTemplate
+
+            String status = new JSON(systemService.getStatusMessage()).toString(false)
+            brokerMessagingTemplate.convertAndSend( CustomWebSocketConfig.WS_TOPIC_STATUS, status )
 
         } catch (Exception e) {
             log.error e.getMessage()

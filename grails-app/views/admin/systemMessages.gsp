@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.system.SystemMessage; de.laser.sse.SSEController" %>
+<%@ page import="de.laser.storage.RDStore; de.laser.system.SystemMessage; de.laser.batch.HeartbeatJob" %>
 <!doctype html>
 <html>
 <head>
@@ -22,7 +22,7 @@
 <br />
 
 <div class="ui info message">
-    <i class="ui icon hand point right"></i> ${message(code: 'admin.systemMessage.info', args: [SSEController.HEARTBEAT_IN_SECONDS])}
+    <i class="ui icon hand point right"></i> ${message(code: 'admin.systemMessage.info', args: [HeartbeatJob.HEARTBEAT_IN_SECONDS])}
 </div>
 
 <semui:messages data="${flash}" />

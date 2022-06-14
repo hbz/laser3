@@ -12,8 +12,9 @@ JSPC = {
             openProfiler: "<g:createLink controller='ajaxOpen' action='profiler'/>",
             openJsonLookup: "<g:createLink controller='ajaxJson' action='lookup'/>"
         },
-        sse: {
-            status: "${de.laser.sse.SSEController.STATUS_ES}"
+        ws: {
+            stompUrl: "${createLink(uri: de.laser.custom.CustomWebSocketConfig.WS_STOMP)}",
+            topicStatusUrl: "${de.laser.custom.CustomWebSocketConfig.WS_TOPIC_STATUS}",
         }
     },
 

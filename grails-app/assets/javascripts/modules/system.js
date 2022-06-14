@@ -12,46 +12,29 @@ system = {
     },
 
     status: function () {
-        let eventSource
-
-        window.addEventListener('beforeunload', function(event) {
-            if (eventSource) {
-                eventSource.close()
-            }
-        })
-        eventSource = new EventSource( JSPC.vars.sse.status )
-
-        eventSource.onmessage = function(event) {
-            if (event.data) {
-                var data = JSON.parse(event.data)
-                console.log( data )
-                if (data && data.status && data.status === 'ok') {
-                    if (data.maintenance) {
+        var socket = new SockJS(JSPC.vars.ws.stompUrl)
+        var client = webstomp.over(socket, { debug: true })
+        var subscription = function(frame) {
+            console.log( frame )
+            client.subscribe(JSPC.vars.ws.topicStatusUrl, function(message) {
+                console.log( message )
+                var body = JSON.parse(message.body)
+                console.log( body )
+                if (body && body.status && body.status === 'ok') {
+                    if (body.maintenance) {
                         $('#maintenance').removeClass('hidden')
                     } else {
                         $('#maintenance').addClass('hidden')
                     }
-                    if (data.messages) {
+                    if (body.messages) {
                         $('#systemMessages').load( JSPC.vars.ajax.openMessages, function() { $('#systemMessages').removeClass('hidden') })
                     } else {
                         $('#systemMessages').addClass('hidden').empty()
                     }
                 }
-            }
+            });
         }
-        eventSource.onopen = function(event) {
-            console.log( 'EventSource open: ' )
-            console.log( event )
-        }
-        eventSource.onclose = function(event) {
-            console.log( 'EventSource close: ' )
-            console.log( event )
-        }
-        eventSource.onerror = function(event) {
-            console.log( 'EventSource error: ' )
-            console.log( event )
-            eventSource.close()
-        }
+        client.connect({}, subscription )
     },
 
     profiler: function (uri) {
