@@ -16,7 +16,7 @@ buildscript {
     }
 }
 
-version '2.3-RC'
+version '2.3'
 group 'laser2'
 
 apply plugin:'eclipse'
