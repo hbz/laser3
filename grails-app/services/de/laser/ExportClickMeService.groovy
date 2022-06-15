@@ -1730,6 +1730,9 @@ class ExportClickMeService {
 
         switch(config) {
             case 'institution':
+                sheetTitle = messageSource.getMessage('default.institution', null, locale)
+                break
+            case 'member':
                 sheetTitle = messageSource.getMessage('subscription.details.consortiaMembers.label', null, locale)
                 break
             case 'provider':

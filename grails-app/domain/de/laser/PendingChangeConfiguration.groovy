@@ -40,6 +40,7 @@ class PendingChangeConfiguration {
     static final String LOCAL_SUM_UPDATED = "pendingChange.message_CI02"
     static final String NOTIFICATION_SUFFIX = "_N"
     static final Set<String> SETTING_KEYS = [NEW_TITLE, TITLE_UPDATED, TITLE_DELETED, NEW_COVERAGE, COVERAGE_UPDATED, COVERAGE_DELETED, PACKAGE_PROP, PACKAGE_DELETED]
+    static final Set<String> GENERIC_EXCLUDES = [PendingChangeConfiguration.PACKAGE_PROP, PendingChangeConfiguration.PACKAGE_DELETED, PendingChangeConfiguration.TITLE_REMOVED]
 
     String settingKey
     @RefdataAnnotation(cat = RDConstants.PENDING_CHANGE_CONFIG_SETTING)

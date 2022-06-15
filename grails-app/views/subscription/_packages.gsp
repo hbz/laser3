@@ -122,8 +122,7 @@
                                             </g:if>
                                         </tr>
                                         </thead>
-                                    <g:set var="excludes" value="${[PendingChangeConfiguration.PACKAGE_PROP,
-                                                                    PendingChangeConfiguration.PACKAGE_DELETED]}"/>
+                                    <g:set var="excludes" value="${PendingChangeConfiguration.GENERIC_EXCLUDES}"/>
                                     <g:each in="${PendingChangeConfiguration.SETTING_KEYS}" var="settingKey">
                                         <%
                                             PendingChangeConfiguration pcc = sp.getPendingChangeConfig(settingKey)
