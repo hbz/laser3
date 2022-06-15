@@ -1,6 +1,6 @@
 package de.laser
 
-import com.opencsv.CSVReader
+import liquibase.repackaged.com.opencsv.*
 import de.laser.auth.*
 import de.laser.helper.AppUtils
 import de.laser.helper.ConfigMapper
@@ -358,7 +358,9 @@ class BootStrapService {
         }
         else {
             csvFile.withReader { reader ->
-                CSVReader csvr = new CSVReader(reader, (char) ',', (char) '"', (char) '\\', (int) 1)
+                //CSVReader csvrDepr = new CSVReader(reader, (char) ',', (char) '"', (char) '\\', (int) 1)
+                ICSVParser csvp = new CSVParser() // csvp.DEFAULT_SEPARATOR, csvp.DEFAULT_QUOTE_CHARACTER, csvp.DEFAULT_ESCAPE_CHARACTER
+                CSVReader csvr = new CSVReaderBuilder( reader ).withCSVParser( csvp ).withSkipLines( 1 ).build()
                 String[] line
 
                 while (line = csvr.readNext()) {
@@ -416,7 +418,6 @@ class BootStrapService {
                 }
             }
         }
-
         result
     }
 

@@ -12,7 +12,7 @@ Use the Gradle task **devtools.triggerRestart** to update this file and force a 
 
 ### Apache Commons Lang
 
-Two different versions are currently used simultaneously. New code should always use *org.apache.commons.lang3*, not the previous version *org.apache.commons.lang*.
+Two different versions are currently used simultaneously. New code should always use *org.apache.commons.lang3*, not the previous version *org.apache.commons.lang*
 
 ### Configuration
 
@@ -26,6 +26,10 @@ A new naming scheme should be used. See [database-migration.md](./database-migra
 
 *Date.parse()* is **deprecated**, *Date.format()* has been **removed** in Java 11. New code should use e.g. SimpleDateFormat to format dates.
 To avoid confusion, the difference between localized and fixed usage in *de.laser.helder.Dateutils* is now reflected in a new naming scheme.
+
+### ExecutorGrailsPlugin
+
+*org.grails.plugins:grails-executor* is deprecated. Replacement should take place.
 
 ### Fallbacks
 
@@ -46,6 +50,10 @@ Localization dependent logic should be managed by *de.laser.helper.LocaleUtils* 
 ### Logging
 
 *Static_logger* has been removed. New code should use **@Slf4j** as class annotation to enable logging in static contexts.
+
+### Opencsv
+
+*com.opencsv.** has been removed. New code should use *liquibase.repackaged.com.opencsv.**
 
 ### Passwords
 
@@ -75,27 +83,21 @@ Use BeanStore for static and non-static access to services and other beans.
 
 Todo: Websocket communication is broken after upgrading from Grails 4 to Grails 5.
 
-### Remarks &rarr;
+***  
 
-#### Apache Commons IO
+### Remarks
 
-*org.apache.commons.io* is only used in one file.
+* #### Apache Commons IO
 
-#### ~~CSV~~
+    *org.apache.commons.io* is only used in one file.
 
-~~*Opencsv* has been removed. New code should use *liquibase.util.csv*.~~
+* #### GPars
 
-#### ExecutorGrailsPlugin !
+    *org.codehaus.gpars:gpars* is only used in one file.
 
-*org.grails.plugins:grails-executor* is deprecated. Replacement should take place.
+* #### Juniversalchardet
 
-#### GPars
-
-*org.codehaus.gpars:gpars* is only used in one file.
-
-#### Juniversalchardet
-
-*com.github.albfernandez:juniversalchardet* is only used in one file.
+    *com.github.albfernandez:juniversalchardet* is only used in one file.
 
 
 
