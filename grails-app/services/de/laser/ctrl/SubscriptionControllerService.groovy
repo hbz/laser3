@@ -1719,7 +1719,15 @@ class SubscriptionControllerService {
         result.package = Package.get(params.package)
         Locale locale = LocaleContextHolder.getLocale()
         if(params.confirmed) {
-            if(packageService.unlinkFromSubscription(result.package, result.subscription, result.institution, true)){
+            Set<Subscription> childSubs = Subscription.findAllByInstanceOf(result.subscription)
+            boolean unlinkErrorChild = false
+            childSubs.each { Subscription child ->
+                if(!packageService.unlinkFromSubscription(result.package, child, result.institution, true)) {
+                    unlinkErrorChild = true
+                    return
+                }
+            }
+            if(!unlinkErrorChild && packageService.unlinkFromSubscription(result.package, result.subscription, result.institution, true)){
                 result.message = messageSource.getMessage('subscription.details.unlink.successfully',null,locale)
                 [result:result,status:STATUS_OK]
             }else {
@@ -1738,12 +1746,12 @@ class SubscriptionControllerService {
             if(result.subscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE]){
                 List<Subscription> childSubs = Subscription.findAllByInstanceOf(result.subscription)
                 if (childSubs) {
-                    String queryChildSubs = "select ie.id from IssueEntitlement ie, Package pkg where ie.subscription in (:sub) and pkg.id =:pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
-                    Map<String,Object> queryParamChildSubs = [sub: childSubs, pkg_id: result.package.id]
+                    String queryChildSubs = "select ie.id from IssueEntitlement ie, Package pkg where ie.subscription in (:sub) and pkg.id =:pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) and ie.status != :removed"
+                    Map<String,Object> queryParamChildSubs = [sub: childSubs, pkg_id: result.package.id, removed: RDStore.TIPP_STATUS_REMOVED]
                     List childSubsPackages = SubscriptionPackage.findAllBySubscriptionInListAndPkg(childSubs, result.package)
                     int numOfPCsChildSubs = packageService.removePackagePendingChanges(result.package, childSubs.id, false)
                     int numOfIEsChildSubs = IssueEntitlement.executeQuery(queryChildSubs, queryParamChildSubs).size()
-                    int numOfCIsChildSubs = childSubsPackages ? CostItem.findAllBySubPkgInList(childSubsPackages).size() : 0
+                    int numOfCIsChildSubs = childSubsPackages ? CostItem.executeQuery('select count(ci.id) from CostItem ci where ci.subPkg in (:childSubsPackages) and ci.owner != :ctx and ci.costItemStatus != :deleted', [childSubsPackages: childSubsPackages, deleted: RDStore.COST_ITEM_DELETED, ctx: result.institution])[0] : 0
                     if(numOfPCsChildSubs > 0 || numOfIEsChildSubs > 0 || numOfCIsChildSubs > 0) {
                         conflictsList.addAll(packageService.listConflicts(result.package, childSubs, numOfPCsChildSubs, numOfIEsChildSubs, numOfCIsChildSubs))
                     }
