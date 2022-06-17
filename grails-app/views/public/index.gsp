@@ -1,6 +1,6 @@
-<%@ page import="de.laser.system.SystemMessage" %>
+<%@ page import="de.laser.system.SystemMessage; de.laser.helper.ServerUtils" %>
 <!doctype html>
-<g:set var="currentServer" scope="page" />
+<g:set var="currentServer" scope="page" value="${ServerUtils.getCurrentServer()}"/>
 <html>
 <head>
     <meta name="layout" content="public"/>
