@@ -27,5 +27,4 @@ class Constants {
     public static final String VALID_REQUEST               = "VALID_REQUEST"
     public static final String OBJECT_NOT_FOUND            = "OBJECT_NOT_FOUND"           // -> new for ApiBox
     public static final String OBJECT_STATUS_DELETED       = "OBJECT_STATUS_DELETED"      // -> new for ApiBox
-
 }

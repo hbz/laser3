@@ -691,11 +691,8 @@ class SubscriptionService {
             def date_filter
             if (params.asAt && params?.asAt?.length() > 0) {
                 date_filter = sdf.parse(params.asAt)
-                /*result.as_at_date = date_filter
-                result.editable = false;*/
             } else {
                 date_filter = new Date()
-               /* result.as_at_date = date_filter*/
             }
             // We dont want this filter to reach SQL query as it will break it.
             def core_status_filter = params.sort == 'core_status'

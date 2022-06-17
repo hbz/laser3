@@ -1,4 +1,4 @@
-<%@ page import="de.laser.titles.BookInstance; de.laser.storage.RDStore; de.laser.ApiSource" %>
+<%@ page import="de.laser.titles.BookInstance; de.laser.storage.RDStore; de.laser.remote.ApiSource" %>
 <div class="sixteen wide column">
     <g:set var="counter" value="${offset + 1}"/>
     <g:set var="sumlistPrice" value="${0}"/>

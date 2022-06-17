@@ -52,13 +52,6 @@ class UsageController  {
             hql += " where " + whereConditions.join(' and ')
         }
         hql += groupCondition
-        /* needed if we remove the criteria
-        if ((params.sort != null) && (params.sort.length() > 0)) {
-           //numFact has to be addressed seperatly (todo)
-            hql += " order by stc.${params.sort} ${params.order}"
-        } else {
-            hql += " order by stc.supplierId asc"
-        }*/
         ArrayList totalResultIds = StatsTripleCursor.executeQuery(hql, queryParams)
 
         List<HashMap> results = StatsTripleCursor.createCriteria().list(max: result.max, offset: result.offset) {

@@ -4,7 +4,7 @@ import de.laser.GenericOIDService
 import de.laser.PendingChangeService
 import de.laser.AccessService
 import de.laser.AddressbookService
-import de.laser.ApiSource
+import de.laser.remote.ApiSource
 import de.laser.CacheService
 import de.laser.ContextService
 import de.laser.GokbService

@@ -6,6 +6,7 @@ import de.laser.helper.DatabaseUtils
 import de.laser.helper.LocaleUtils
 import de.laser.cache.EhcacheWrapper
 import de.laser.helper.SwissKnife
+import de.laser.remote.FTControl
 import de.laser.titles.BookInstance
 import de.laser.titles.TitleInstance
 import de.laser.auth.Role
@@ -446,14 +447,6 @@ class AdminController  {
                 return false
             }
         }
-        /* -- removed UserOrg.status --
-        else {
-          if (affil.status != existing_affil_check.status) {
-            existing_affil_check.status = affil.status
-            existing_affil_check.save()
-          }
-          log.debug("Affiliation already present - skipping ${existing_affil_check}")
-        } */
       }
     }
     log.debug("copyUserRoles returning true");

@@ -1,6 +1,7 @@
 package de.laser
 
 import de.laser.helper.AppUtils
+import de.laser.remote.FTControl
 import de.laser.storage.RDConstants
 import de.laser.properties.LicenseProperty
 import de.laser.properties.SubscriptionProperty

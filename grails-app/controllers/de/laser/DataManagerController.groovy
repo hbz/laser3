@@ -2,6 +2,7 @@ package de.laser
 
 
 import de.laser.helper.SwissKnife
+import de.laser.remote.ApiSource
 import de.laser.titles.TitleInstance
 import de.laser.auth.Role
 import de.laser.auth.User
@@ -459,7 +460,7 @@ class DataManagerController  {
 
         def gokbRecords = []
 
-        ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true).each { api ->
+      ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true).each { api ->
             gokbRecords << gokbService.getPackagesMap(api, params.q, false).records
         }
 

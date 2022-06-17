@@ -14,6 +14,8 @@ import de.laser.properties.OrgProperty
 import de.laser.properties.PlatformProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
+import de.laser.remote.ApiSource
+import de.laser.remote.GlobalRecordSource
 import de.laser.reporting.report.local.SubscriptionReport
 import de.laser.stats.Counter4ApiSource
 import de.laser.stats.Counter5ApiSource

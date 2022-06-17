@@ -1,4 +1,4 @@
-package de.laser
+package de.laser.remote
 
 /**
  * This is a record for a domain class which should be indexed in the local ElasticSearch index.

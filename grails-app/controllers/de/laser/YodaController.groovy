@@ -12,6 +12,9 @@ import de.laser.properties.OrgProperty
 import de.laser.properties.PersonProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
+import de.laser.remote.ElasticsearchSource
+import de.laser.remote.FTControl
+import de.laser.remote.GlobalRecordSource
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5Report
 import de.laser.stats.LaserStatsCursor
@@ -711,7 +714,7 @@ class YodaController {
     /**
      * Very dangerous method. This calls the global records update, i.e. triggers data update
      * from all registered we:kb sources and updates the app's mirrored data
-     * @see GlobalRecordSource
+     * @see de.laser.remote.GlobalRecordSource
      */
     @Secured(['ROLE_YODA'])
     def globalSync() {
@@ -746,7 +749,7 @@ class YodaController {
     /**
      * Call to reload all title instance data from the specified we:kb instance.
      * Beware that no local holdigs will be triggered, only the global level is going to be updated!
-     * @see GlobalRecordSource
+     * @see de.laser.remote.GlobalRecordSource
      */
     @Secured(['ROLE_YODA'])
     def reloadPackages() {
@@ -779,7 +782,7 @@ class YodaController {
 
     /**
      * Call to list all global record sources in the system
-     * @see GlobalRecordSource
+     * @see de.laser.remote.GlobalRecordSource
      */
     @Secured(['ROLE_YODA'])
     def manageGlobalSources() {

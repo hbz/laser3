@@ -1,6 +1,8 @@
 package de.laser
 
 import de.laser.helper.ConfigMapper
+import de.laser.remote.ApiSource
+import de.laser.remote.GlobalRecordSource
 import de.laser.system.SystemMessage
 import de.laser.system.SystemSetting
 import grails.gorm.transactions.Transactional

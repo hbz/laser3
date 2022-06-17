@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Identifier; de.laser.Subscription; de.laser.License; de.laser.Org; de.laser.ApiSource; de.laser.storage.RDStore; de.laser.IdentifierNamespace; de.laser.Package; de.laser.TitleInstancePackagePlatform; de.laser.IssueEntitlement; de.laser.I10nTranslation; de.laser.Platform; de.laser.AuditConfig; de.laser.FormService" %>
+<%@ page import="de.laser.remote.ApiSource; de.laser.Identifier; de.laser.Subscription; de.laser.License; de.laser.Org; de.laser.ApiSource; de.laser.storage.RDStore; de.laser.IdentifierNamespace; de.laser.Package; de.laser.TitleInstancePackagePlatform; de.laser.IssueEntitlement; de.laser.I10nTranslation; de.laser.Platform; de.laser.AuditConfig; de.laser.FormService" %>
 <laser:serviceInjection />
 <g:set var="wekbAPI" value="${ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"/>
 

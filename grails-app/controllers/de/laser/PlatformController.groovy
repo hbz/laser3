@@ -3,13 +3,12 @@ package de.laser
 import de.laser.auth.User
 import de.laser.ctrl.PlatformControllerService
 import de.laser.annotations.DebugInfo
+import de.laser.remote.ApiSource
 import de.laser.storage.RDStore
 import de.laser.helper.SwissKnife
 import de.laser.oap.OrgAccessPoint
 import de.laser.oap.OrgAccessPointLink
-import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
-import org.springframework.dao.DataIntegrityViolationException
 
 /**
  * This controller manages calls to platforms.

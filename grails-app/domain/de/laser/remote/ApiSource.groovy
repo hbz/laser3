@@ -1,4 +1,4 @@
-package de.laser
+package de.laser.remote
 
 /**
  * Represents an external Elasticsearch-API-Source. Currently in use to retain we:kb API connections which are not used for bulk operations;

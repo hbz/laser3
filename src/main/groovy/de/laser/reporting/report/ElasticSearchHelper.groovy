@@ -1,7 +1,7 @@
 package de.laser.reporting.report
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import de.laser.ApiSource
+import de.laser.remote.ApiSource
 import de.laser.Package
 import de.laser.Platform
 import de.laser.RefdataValue

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyConfigProperties; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig; de.laser.DocContext; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.Subscription; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.ApiSource; de.laser.SubscriptionPackage; de.laser.helper.DateUtils;" %>
+<%@ page import="de.laser.remote.ApiSource; de.laser.survey.SurveyConfigProperties; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig; de.laser.DocContext; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.Subscription; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.ApiSource; de.laser.SubscriptionPackage; de.laser.helper.DateUtils;" %>
 <g:set bean="genericOIDService" var="genericOIDService"/>
 <g:set bean="gokbService" var="gokbService"/>
 <g:set var="surveyOrg"

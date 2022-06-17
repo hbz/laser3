@@ -223,11 +223,6 @@ class SubscriptionsQueryService {
             }
         }
 
-        /* if(dateBeforeFilter ){
-            base_qry += dateBeforeFilter
-            qry_params.put('date_before', dateBeforeFilterVal)
-        } */
-
         def subTypes = []
         if (params.containsKey('subTypes')) {
             if (params instanceof GrailsParameterMap) {

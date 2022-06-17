@@ -168,10 +168,6 @@ class FilterService {
              queryParams << [orgNameContains2 : "${params.orgNameContains}"]
              queryParams << [orgNameContains3 : "${params.orgNameContains}"]
         }
-       /* if (params.orgType?.length() > 0) {
-            query << "o.orgType.id = ?"
-             queryParams << [Long.parseLong(params.orgType)
-        }*/
         if (params.orgType?.length() > 0) {
             query << " exists (select roletype from o.orgType as roletype where roletype.id = :orgType )"
              queryParams << [orgType : Long.parseLong(params.orgType)]

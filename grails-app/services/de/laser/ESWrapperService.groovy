@@ -2,6 +2,7 @@ package de.laser
 
 
 import de.laser.helper.ConfigMapper
+import de.laser.remote.FTControl
 import de.laser.system.SystemEvent
 import grails.gorm.transactions.Transactional
 import groovy.json.JsonOutput

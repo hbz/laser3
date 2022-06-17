@@ -1,6 +1,6 @@
 package de.laser.reporting.export.myInstitution
 
-import de.laser.ApiSource
+import de.laser.remote.ApiSource
 import de.laser.ContextService
 import de.laser.IdentifierNamespace
 import de.laser.Org

@@ -1,12 +1,13 @@
 package de.laser
 
+import de.laser.remote.ApiSource
 import grails.gorm.transactions.Transactional
 import groovyx.net.http.HTTPBuilder
 import groovyx.net.http.Method
 
 /**
  * Is actually a we:kb service. It contains methods to communicate with the we:kb ElasticSearch index
- * @see ApiSource
+ * @see de.laser.remote.ApiSource
  */
 @Transactional
 class GokbService {

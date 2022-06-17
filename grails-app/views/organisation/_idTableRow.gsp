@@ -1,4 +1,4 @@
-<%@page import="de.laser.ApiSource; de.laser.IdentifierNamespace"%>
+<%@page import="de.laser.remote.ApiSource; de.laser.IdentifierNamespace"%>
 <tr>
     <td>${tableRowNr}</td>
     <td>
