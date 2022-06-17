@@ -3361,7 +3361,7 @@ class SubscriptionControllerService {
                         [sub: result.subscription.instanceOf,
                          org: result.subscription.getSubscriber(),
                          invalidStatuses: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY]]).size()
-                List subscrCostCounts = CostItem.executeQuery('select count(ci.id) from CostItem ci where ci.sub.instanceOf = :sub and ci.owner = :ctx and ci.costItemStatus != :deleted', [sub: result.subscription, ctx: result.institution, deleted: RDStore.COST_ITEM_DELETED])
+                List subscrCostCounts = CostItem.executeQuery('select count(ci.id) from CostItem ci where ci.sub = :sub and ci.isVisibleForSubscriber = true and ci.costItemStatus != :deleted', [sub: result.subscription, deleted: RDStore.COST_ITEM_DELETED])
                 int subscrCount = subscrCostCounts ? subscrCostCounts[0] : 0
                 if(result.contextCustomerType == "ORG_INST") {
                     List ownCostCounts = CostItem.executeQuery('select count(ci.id) from CostItem ci where ci.sub = :sub and ci.owner = :ctx and ci.costItemStatus != :deleted', [sub: result.subscription, ctx: result.institution, deleted: RDStore.COST_ITEM_DELETED])
