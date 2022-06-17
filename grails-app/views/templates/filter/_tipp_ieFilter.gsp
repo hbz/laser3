@@ -15,6 +15,8 @@
            value="${packageInstance ? controlledListService.getAllPossiblePublisherByPackage(packageInstance,actionName) : []}"/>
     <g:set var="titleTypes"
            value="${packageInstance ? controlledListService.getAllPossibleTitleTypesByPackage(packageInstance,actionName) : []}"/>
+    <g:set var="mediumTypes"
+           value="${packageInstance ? controlledListService.getAllPossibleMediumTypesByPackage(packageInstance,actionName) : []}"/>
     <g:set var="coverageDepths"
            value="${packageInstance ? controlledListService.getAllPossibleCoverageDepthsByPackage(packageInstance,actionName) : []}"/>
 </g:if>
@@ -34,6 +36,8 @@
            value="${subscription ? controlledListService.getAllPossiblePublisherBySub(subscription) : []}"/>
     <g:set var="titleTypes"
            value="${subscription ? controlledListService.getAllPossibleTitleTypesBySub(subscription) : []}"/>
+    <g:set var="mediumTypes"
+           value="${subscription ? controlledListService.getAllPossibleMediumTypesBySub(subscription) : []}"/>
     <g:set var="coverageDepths"
            value="${subscription ? controlledListService.getAllPossibleCoverageDepthsBySub(subscription) : []}"/>
 </g:if>
@@ -49,7 +53,7 @@
         <g:hiddenField name="tab" value="${params.tab}"/>
         <g:hiddenField name="tabStat" value="${params.tabStat}"/>
 
-        <div class="three fields">
+        <div class="four fields">
             <div class="field">
                 <label for="filter">${message(code: 'default.search.text')}
                     <span data-position="right center" data-variation="tiny" class="la-popup-tooltip la-delay"
@@ -58,6 +62,15 @@
                     </span>
                 </label>
                 <input name="filter" id="filter" value="${params.filter}"/>
+            </div>
+            <div class="field">
+                <label for="identifier">${message(code: 'default.search.identifier')}
+                    <span data-position="right center" class="la-popup-tooltip la-delay"
+                          data-content="${message(code: 'default.search.tooltip.identifier')}">
+                        <i class="question circle icon"></i>
+                    </span>
+                </label>
+                <input name="identifier" id="identifier" value="${params.identifier}"/>
             </div>
 
             <g:if test="${controllerName == 'subscription'}">
@@ -196,13 +209,18 @@
             </div>
 
             <div class="field">
-                <label for="identifier">${message(code: 'default.search.identifier')}
-                    <span data-position="right center" class="la-popup-tooltip la-delay"
-                          data-content="${message(code: 'default.search.tooltip.identifier')}">
-                        <i class="question circle icon"></i>
-                    </span>
+                <label for="medium">
+                    ${message(code: 'default.search.medium')}
                 </label>
-                <input name="identifier" id="identifier" value="${params.identifier}"/>
+                <select name="medium" id="medium" multiple="" class="ui search selection dropdown">
+                    <option value="">${message(code: 'default.select.choose.label')}</option>
+                    <g:each in="${mediumTypes}" var="mediumType">
+                        <option <%=(params.list('medium')?.contains(mediumType.id.toString())) ? 'selected="selected"' : ''%>
+                                value="${mediumType.id}">
+                            ${mediumType.getI10n("value")}
+                        </option>
+                    </g:each>
+                </select>
             </div>
 
             <div class="field">

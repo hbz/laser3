@@ -500,7 +500,11 @@ class ManagementService {
             Locale locale = LocaleContextHolder.getLocale()
             FlashScope flash = getCurrentFlashScope()
             PropertyDefinition propertiesFilterPropDef = params.propertiesFilterPropDef ? genericOIDService.resolveOID(params.propertiesFilterPropDef.replace(" ", "")) : null
-            List selectedSubs = params.list("selectedSubs")
+            List selectedSubs = []
+            if(params.containsKey('selectedSubs'))
+                selectedSubs.addAll(params.list('selectedSubs'))
+            else if(params.processOption == 'deleteAllProperties')
+                selectedSubs.addAll(Subscription.findAllByInstanceOf(result.subscription))
             if (selectedSubs.size() > 0 && params.processOption && propertiesFilterPropDef) {
                 int newProperties = 0
                 int changeProperties = 0
@@ -594,10 +598,10 @@ class ManagementService {
                 if (selectedSubs.size() < 1) {
                     flash.error = messageSource.getMessage('subscriptionsManagement.noSelectedSubscriptions', null, locale)
                 }
-                if (!propertiesFilterPropDef) {
+                else if (!propertiesFilterPropDef) {
                     flash.error = messageSource.getMessage('subscriptionsManagement.noPropertySelected',null, locale)
                 }
-                if (!params.filterPropValue) {
+                else if (!params.filterPropValue) {
                     flash.error = messageSource.getMessage('subscriptionsManagement.noPropertyValue', null, locale)
                 }
             }

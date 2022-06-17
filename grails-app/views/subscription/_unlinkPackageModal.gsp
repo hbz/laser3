@@ -45,7 +45,7 @@
             <input type="hidden" name="subscription" value="${subscription.id}"/>
             <input type="hidden" name="confirmed" value="Y"/>
         </g:form>
-        <a href="#" class="ui button unlinkPackageModal" onclick="$('#unlinkPackageModal').modal('hide')"><g:message code="default.button.close.label"/></a>
+        <a href="#" class="ui button unlinkPackageModal"><g:message code="default.button.close.label"/></a>
         <input type="submit" class="ui button negative" name="save" value="${message(code: 'default.button.confirm_delete.label')}" onclick="event.preventDefault(); $('#unlinkPackageModal').find('form').submit()"/>
     </div>
 </div>

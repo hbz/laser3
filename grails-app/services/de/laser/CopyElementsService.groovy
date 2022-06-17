@@ -342,15 +342,15 @@ class CopyElementsService {
                     Org org = contextService.getOrg()
                     //customProperties of ContextOrg && privateProperties of ContextOrg
                     subMember.propertySet.each {subProp ->
-                        if((subProp.type.tenant == null && (subProp.tenant?.id == org.id || subProp.tenant == null)) || subProp.type.tenant?.id == org.id)
+                        if(((subProp.type.tenant == null && (subProp.tenant?.id == org.id || subProp.tenant == null)) || subProp.type.tenant?.id == org.id) && !(subProp.hasProperty('instanceOf') && subProp.instanceOf && AuditConfig.getConfig(subProp.instanceOf)))
                         {
                             SubscriptionProperty copiedProp = new SubscriptionProperty(type: subProp.type, owner: newSubscription, isPublic: subProp.isPublic, tenant: subProp.tenant)
                             copiedProp = subProp.copyInto(copiedProp)
                             copiedProp.save()
                         }
                     }
-
-                    /* for (prop in subMember.propertySet) {
+                    /*
+                    for (prop in subMember.propertySet) {
                         SubscriptionProperty copiedProp = new SubscriptionProperty(type: prop.type, owner: newSubscription, isPublic: prop.isPublic, tenant: prop.tenant)
                         copiedProp = prop.copyInto(copiedProp)
                         copiedProp.save()
