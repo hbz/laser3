@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore; org.springframework.context.i18n.LocaleContextHolder; de.laser.Subscription; de.laser.IssueEntitlement; de.laser.stats.Counter4ApiSource; de.laser.stats.Counter4Report; de.laser.stats.Counter5Report" %>
+<%@ page import="de.laser.helper.DateUtils; de.laser.storage.RDStore; org.springframework.context.i18n.LocaleContextHolder; de.laser.Subscription; de.laser.IssueEntitlement; de.laser.stats.Counter4ApiSource; de.laser.stats.Counter4Report; de.laser.stats.Counter5Report" %>
 <laser:serviceInjection />
 <g:set var="subjects" value="${controlledListService.getAllPossibleSubjectsBySub(subscription)}"/>
 <g:set var="ddcs" value="${controlledListService.getAllPossibleDdcsBySub(subscription)}"/>
@@ -225,7 +225,7 @@
             <semui:tabs class="la-overflowX-auto">
                 <semui:tabsItem controller="subscription" action="stats" params="${params + [tab: 'total']}" text="${message(code: 'default.usage.allUsageGrid.header')}" tab="total"/>
                 <g:each in="${monthsInRing}" var="month">
-                    <semui:tabsItem controller="subscription" action="stats" params="${params + [tab: month.format("yyyy-MM")]}" text="${month.format("yyyy-MM")}" tab="${month.format("yyyy-MM")}"/>
+                    <semui:tabsItem controller="subscription" action="stats" params="${params + [tab: DateUtils.getSDF_yyyyMM().format(month)]}" text="${DateUtils.getSDF_yyyyMM().format(month)}" tab="${DateUtils.getSDF_yyyyMM().format(month)}"/>
                 </g:each>
             </semui:tabs>
             <div class="ui bottom attached tab active segment">
@@ -242,7 +242,7 @@
                                 <tr>
                                     <td><g:formatDate date="${row.reportMonth}" format="yyyy-MM"/></td>
                                     <g:set var="reportType" value="${row.reportType in Counter4ApiSource.COUNTER_4_REPORTS ? row.reportType : row.reportType.toLowerCase()}"/>
-                                    <td><g:link action="stats" params="${params + [tab: row.reportMonth.format("yyyy-MM"), reportType: reportType, metricType: row.metricType]}">${row.reportCount}</g:link></td>
+                                    <td><g:link action="stats" params="${params + [tab: DateUtils.getSDF_yyyyMM().format(row.reportMonth), reportType: reportType, metricType: row.metricType]}">${row.reportCount}</g:link></td>
                                 </tr>
                             </g:each>
                         </tbody>

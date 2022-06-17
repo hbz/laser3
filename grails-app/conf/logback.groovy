@@ -77,7 +77,7 @@ appender('STDOUT', ConsoleAppender) {
 }
 
 String targetDir = "${BuildSettings.BASE_DIR}/logs"
-String date = "${DateUtils.getFixedSDF_yyyyMMdd().format(new Date())}"
+String date = "${DateUtils.getSDF_yyyyMMdd().format(new Date())}"
 
 if (Environment.isDevelopmentMode() && targetDir != null) {
 

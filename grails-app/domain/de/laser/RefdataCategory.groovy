@@ -53,9 +53,9 @@ class RefdataCategory extends AbstractI10n {
      */
     static RefdataCategory construct(Map<String, Object> map) {
         withTransaction {
-            String token = map.get('token')
-            boolean hardData = new Boolean(map.get('hardData'))
-            Map i10n = map.get('i10n')
+            String token        = map.get('token')
+            boolean hardData    = Boolean.parseBoolean(map.get('hardData') as String)
+            Map i10n            = map.get('i10n') as Map
 
             RefdataCategory rdc = RefdataCategory.findByDescIlike(token) // todo: case sensitive token
 

@@ -117,7 +117,7 @@ class BaseExportHelper {
 
     static String getFileName(List<String> labels = ['Reporting']) {
 
-        SimpleDateFormat sdf = DateUtils.getFixedSDF_forFilename()
+        SimpleDateFormat sdf = DateUtils.getSDF_forFilename()
 
         String filename = sdf.format(new Date()) + '_' + labels.collect{
             it.replaceAll('[→/]', '-')

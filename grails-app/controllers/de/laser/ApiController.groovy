@@ -191,7 +191,7 @@ class ApiController {
                             format = 'you_shall_not_pass'
                             break
                     }
-                    Date changedDate = changedFrom ? DateUtils.getFixedSDF_yyyyMMdd().parse(changedFrom) : null
+                    Date changedDate = changedFrom ? DateUtils.getSDF_yyyyMMdd().parse(changedFrom) : null
                     result = ApiManager.read(
                             (String) obj,
                             (String) query,

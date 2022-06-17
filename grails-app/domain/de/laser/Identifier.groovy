@@ -357,9 +357,6 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
     def beforeUpdate() {
         log.debug("beforeUpdate")
         value = value?.trim()
-      // TODO [ticket=1789]
-      //boolean forOrg = IdentifierOccurrence.findByIdentifier(this)
-      //if(forOrg) {
       if (org != null) {
           if(this.ns?.ns == 'wibid') {
               if(!(this.value =~ /^WIB/) && this.value != '') {

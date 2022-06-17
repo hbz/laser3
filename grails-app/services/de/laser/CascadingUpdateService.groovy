@@ -16,7 +16,7 @@ class CascadingUpdateService {
      * @param luc the timestamp of update
      */
     void update(IdentifierNamespace obj, Date luc) {
-        log(obj, luc)
+        _log(obj, luc)
 
         IdentifierNamespace.executeUpdate("update IdentifierNamespace ns set ns.lastUpdatedCascading = :luc where ns = :obj", [
                 luc: luc, obj: obj
@@ -31,7 +31,7 @@ class CascadingUpdateService {
      * @param luc the timestamp of update
      */
     void update(Identifier obj, Date luc) {
-        log(obj, luc)
+        _log(obj, luc)
 
         Identifier.executeUpdate("update Identifier i set i.lastUpdatedCascading = :luc where i = :obj", [
                 luc: luc, obj: obj
@@ -52,7 +52,7 @@ class CascadingUpdateService {
      * @param luc the timestamp of update
      */
     void update(DeweyDecimalClassification obj, Date luc) {
-        log(obj, luc)
+        _log(obj, luc)
 
         DeweyDecimalClassification.executeUpdate("update DeweyDecimalClassification ddc set ddc.lastUpdatedCascading = :luc where ddc = :obj", [
                 luc: luc, obj: obj
@@ -70,7 +70,7 @@ class CascadingUpdateService {
      * @param luc the timestamp of update
      */
     void update(Language obj, Date luc) {
-        log(obj, luc)
+        _log(obj, luc)
 
         Language.executeUpdate("update Language lang set lang.lastUpdatedCascading = :luc where lang = :obj", [
                 luc: luc, obj: obj
@@ -88,7 +88,7 @@ class CascadingUpdateService {
      * @param luc the timestamp of update
      */
     void update(AlternativeName obj, Date luc) {
-        log(obj, luc)
+        _log(obj, luc)
 
         AlternativeName.executeUpdate("update AlternativeName altName set altName.lastUpdatedCascading = :luc where altName = :obj", [
                 luc: luc, obj: obj
@@ -106,7 +106,7 @@ class CascadingUpdateService {
      * @param luc the timestamp of update
      */
     void update(AbstractPropertyWithCalculatedLastUpdated obj, Date luc) {
-        log(obj, luc)
+        _log(obj, luc)
 
         obj.class.executeUpdate("update " + obj.class.simpleName + " prop set prop.lastUpdatedCascading = :luc where prop = :obj", [
                 luc: luc, obj: obj
@@ -121,7 +121,7 @@ class CascadingUpdateService {
      * @param luc the timestamp of update
      */
     void update(License obj, Date luc) {
-        log(obj, luc)
+        _log(obj, luc)
 
         License.executeUpdate("update License lic set lic.lastUpdatedCascading = :luc where lic = :obj", [
                 luc: luc, obj: obj
@@ -134,7 +134,7 @@ class CascadingUpdateService {
      * @param luc the timestamp of update
      */
     void update(Org obj, Date luc) {
-        log(obj, luc)
+        _log(obj, luc)
 
         Org.executeUpdate("update Org o set o.lastUpdatedCascading = :luc where o = :obj", [
                 luc: luc, obj: obj
@@ -147,7 +147,7 @@ class CascadingUpdateService {
      * @param luc the timestamp of update
      */
     void update(Package obj, Date luc) {
-        log(obj, luc)
+        _log(obj, luc)
 
         Package.executeUpdate("update Package pkg set pkg.lastUpdatedCascading = :luc where pkg = :obj", [
                 luc: luc, obj: obj
@@ -160,7 +160,7 @@ class CascadingUpdateService {
      * @param luc the timestamp of update
      */
     void update(Person obj, Date luc) {
-        log(obj, luc)
+        _log(obj, luc)
 
         Person.executeUpdate("update Person p set p.lastUpdatedCascading = :luc where p = :obj", [
                 luc: luc, obj: obj
@@ -173,7 +173,7 @@ class CascadingUpdateService {
      * @param luc the timestamp of update
      */
     void update(Platform obj, Date luc) {
-        log(obj, luc)
+        _log(obj, luc)
 
         Platform.executeUpdate("update Platform p set p.lastUpdatedCascading = :luc where p = :obj", [
                 luc: luc, obj: obj
@@ -186,7 +186,7 @@ class CascadingUpdateService {
      * @param luc the timestamp of update
      */
     void update(Subscription obj, Date luc) {
-        log(obj, luc)
+        _log(obj, luc)
 
         Subscription.executeUpdate("update Subscription sub set sub.lastUpdatedCascading = :luc where sub = :obj", [
                 luc: luc, obj: obj
@@ -199,7 +199,7 @@ class CascadingUpdateService {
      * @param luc the timestamp of update
      */
     void update(SurveyResult obj, Date luc) {
-        log(obj, luc)
+        _log(obj, luc)
 
         SurveyResult.executeUpdate("update SurveyResult sr set sr.lastUpdatedCascading = :luc where sr = :obj", [
                 luc: luc, obj: obj
@@ -218,7 +218,7 @@ class CascadingUpdateService {
      * @param obj the object which has been updated
      * @param luc the timestamp of update
      */
-    private void log(Object obj, Date luc) {
+    private void _log(Object obj, Date luc) {
         log.debug ('cascading update for ' + obj.class.simpleName + ':' + obj.id + ' -> [' + obj.lastUpdatedCascading + '] set to [' + luc + ']')
     }
 }

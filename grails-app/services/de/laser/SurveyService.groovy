@@ -52,7 +52,7 @@ class SurveyService {
 
     String replyTo
 
-    SimpleDateFormat formatter = DateUtils.getFixedSDF_ddMMyyyy()
+    SimpleDateFormat formatter = DateUtils.getSDF_ddMMyyyy()
     String from
 
     /**
@@ -370,7 +370,7 @@ class SurveyService {
 
                 row.add([field: surveyConfig.surveyInfo.owner.name ?: '', style: null])
                 row.add([field: surveyConfig.comment ?: '', style: null])
-                row.add([field: surveyConfig.surveyInfo.endDate ? Date.parse('yyyy-MM-dd hh:mm:SS.S', surveyConfig.surveyInfo.endDate.toString()).format("dd.MM.yyy") : '', style: null])
+                row.add([field: surveyConfig.surveyInfo.endDate ? DateUtils.getSDF_ddMMyyy().format( Date.parse('yyyy-MM-dd hh:mm:SS.S', surveyConfig.surveyInfo.endDate.toString()) ) : '', style: null])
 
                 if (surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]) {
                     row.add([field: surveyConfig.url ?: '', style: null])
@@ -404,8 +404,8 @@ class SurveyService {
                     if (surveyConfig.subSurveyUseForTransfer) {
                         CostItem surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, contextOrg), RDStore.COST_ITEM_DELETED)
 
-                        row.add([field: surveyConfig.scheduledStartDate ? Date.parse('yyyy-MM-dd hh:mm:SS.S', surveyConfig.scheduledStartDate.toString()).format("dd.MM.yyy"): '', style: null])
-                        row.add([field: surveyConfig.scheduledEndDate ? Date.parse('yyyy-MM-dd hh:mm:SS.S', surveyConfig.scheduledEndDate.toString()).format("dd.MM.yyy"): '', style: null])
+                        row.add([field: surveyConfig.scheduledStartDate ? DateUtils.getSDF_ddMMyyy().format( Date.parse('yyyy-MM-dd hh:mm:SS.S', surveyConfig.scheduledStartDate.toString()) ): '', style: null])
+                        row.add([field: surveyConfig.scheduledEndDate ? DateUtils.getSDF_ddMMyyy().format( Date.parse('yyyy-MM-dd hh:mm:SS.S', surveyConfig.scheduledEndDate.toString()) ): '', style: null])
                         row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ?: '', style: null])
                         row.add([field: surveyCostItem?.billingCurrency?.value ?: '', style: null])
                         row.add([field: surveyCostItem?.costDescription ?: '', style: null])
@@ -1505,7 +1505,7 @@ class SurveyService {
             dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
             if (params.tabStat != 'total') {
                 Calendar filterTime = GregorianCalendar.getInstance()
-                Date filterDate = DateUtils.getFixedSDF_yyyyMM().parse(params.tabStat)
+                Date filterDate = DateUtils.getSDF_yyyyMM().parse(params.tabStat)
                 filterTime.setTime(filterDate)
                 queryParams.startDate = filterDate
                 filterTime.set(Calendar.DATE, filterTime.getActualMaximum(Calendar.DAY_OF_MONTH))

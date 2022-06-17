@@ -823,7 +823,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      * @return the concatenated label of this subscription
      */
     String getLabel() {
-        SimpleDateFormat sdf = DateUtils.getFixedSDF_ddMMyyyy()
+        SimpleDateFormat sdf = DateUtils.getSDF_ddMMyyyy()
         name + ' (' + (startDate ? sdf.format(startDate) : '') + ' - ' + (endDate ? sdf.format(endDate) : '') + ')'
     }
 

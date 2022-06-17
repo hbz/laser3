@@ -225,7 +225,7 @@ class ESSearchService{
         }else{
 
           if(DateUtils.isDate(params.q)){
-            params.q = DateUtils.getFixedSDF_yyyyMMdd().format( DateUtils.parseDateGeneric(params.q) )
+            params.q = DateUtils.getSDF_yyyyMMdd().format( DateUtils.parseDateGeneric(params.q) )
           }
 
           params.q = params.q.replaceAll('\\"', '')

@@ -1,6 +1,5 @@
 package de.laser.auth
 
-import grails.gorm.DetachedCriteria
 import org.codehaus.groovy.util.HashCodeHelper
 
 import javax.persistence.Transient
@@ -12,9 +11,6 @@ class UserRole implements Serializable, Comparable {
 
 	private static final long serialVersionUID = 1
 
-    //User user
-    //Role role
-
 	Date dateCreated
 	Date lastUpdated
 
@@ -24,7 +20,7 @@ class UserRole implements Serializable, Comparable {
 		user nullable: false
 		role nullable: false, validator: { Role r, UserRole ur ->
 			if (ur.user?.id) {
-				if (UserRole.exists(ur.user.id, r.id)) {
+				if (exists(ur.user.id, r.id)) {
 					return ['userRole.exists']
 				}
 			}
@@ -74,22 +70,16 @@ class UserRole implements Serializable, Comparable {
 		hashCode
 	}
 
-	@Deprecated
-	static UserRole get(long userId, long roleId) {
-		criteriaFor(userId, roleId).get()
-	}
-
-	@Deprecated
 	static boolean exists(long userId, long roleId) {
-		criteriaFor(userId, roleId).count()
+		UserRole.get(userId, roleId) != null
 	}
 
-	@Deprecated
-	private static DetachedCriteria criteriaFor(long userId, long roleId) {
-		UserRole.where {
-			user == User.load(userId) &&
-			role == Role.load(roleId)
-		}
+	static UserRole get(long userId, long roleId) {
+		UserRole.get(User.load(userId), Role.load(roleId))
+	}
+
+	static UserRole get(User user, Role role) {
+		UserRole.find('from UserRole ur where ur.user=:user and ur.role=:role', [ user: user, role: role ])
 	}
 
 	/**
@@ -112,10 +102,12 @@ class UserRole implements Serializable, Comparable {
 	 * @param r the {@link Role} to be revoked
 	 * @return was the removal successful?
 	 */
-	static boolean remove(User u, Role r) {
+	static int remove(User u, Role r) {
+		int status = 0
 		if (u != null && r != null) {
-			UserRole.where { user == u && role == r }.deleteAll()
+			status = UserRole.where { user == u && role == r }.deleteAll() as int
 		}
+		status
 	}
 
 	/**

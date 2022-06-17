@@ -138,7 +138,7 @@ class SubscriptionController {
         else {
             if(params.exportXLS) {
                 if(wb) {
-                    response.setHeader "Content-disposition", "attachment; filename=report_${DateUtils.getFixedSDF_yyyyMMdd().format(ctrlResult.result.dateRun)}.xlsx"
+                    response.setHeader "Content-disposition", "attachment; filename=report_${DateUtils.getSDF_yyyyMMdd().format(ctrlResult.result.dateRun)}.xlsx"
                     response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                     wb.write(response.outputStream)
                     response.outputStream.flush()
@@ -326,7 +326,7 @@ class SubscriptionController {
             return
         }
         else {
-            SimpleDateFormat sdf = DateUtils.getFixedSDF_yyyyMMdd()
+            SimpleDateFormat sdf = DateUtils.getSDF_yyyyMMdd()
             String datetoday = sdf.format(new Date())
             String filename = escapeService.escapeString(ctrlResult.result.subscription.name) + "_" + message(code:'subscriptionDetails.members.members') + "_" + datetoday
             if(params.exportXLS || params.exportShibboleths || params.exportEZProxys || params.exportProxys || params.exportIPs || params.exportClickMeExcel) {
@@ -1345,7 +1345,7 @@ class SubscriptionController {
                 wb.dispose()
             } else if (params.exportXLSStats) {
                     if(wb) {
-                        response.setHeader "Content-disposition", "attachment; filename=report_${DateUtils.getFixedSDF_yyyyMMdd().format(ctrlResult.result.dateRun)}.xlsx"
+                        response.setHeader "Content-disposition", "attachment; filename=report_${DateUtils.getSDF_yyyyMMdd().format(ctrlResult.result.dateRun)}.xlsx"
                         response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                         wb.write(response.outputStream)
                         response.outputStream.flush()
@@ -1475,7 +1475,7 @@ class SubscriptionController {
         Map<String,Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         Subscription subscription = Subscription.get(params.baseSubscription ?: params.id)
         result.subscription = subscription
-        SimpleDateFormat sdf = DateUtils.getFixedSDF_ddMMyyyy()
+        SimpleDateFormat sdf = DateUtils.getSDF_ddMMyyyy()
         Date newStartDate
         Date newEndDate
         use(TimeCategory) {

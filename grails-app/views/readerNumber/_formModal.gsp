@@ -2,7 +2,7 @@
 <laser:serviceInjection />
 <%
     SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
-    Date startOfYear = DateUtils.getFixedSDF_yyyyMMdd().parse(Calendar.getInstance().get(Calendar.YEAR)+'-01-01')
+    Date startOfYear = DateUtils.getSDF_yyyyMMdd().parse(Calendar.getInstance().get(Calendar.YEAR)+'-01-01')
     Set<RefdataValue> preloadGroups
     switch(formId) {
         case 'newForUni': preloadGroups = [RDStore.READER_NUMBER_STUDENTS, RDStore.READER_NUMBER_SCIENTIFIC_STAFF, RDStore.READER_NUMBER_FTE]

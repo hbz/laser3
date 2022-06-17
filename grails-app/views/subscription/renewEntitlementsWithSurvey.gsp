@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Platform; de.laser.titles.BookInstance; de.laser.ApiSource; de.laser.Org;" %>
+<%@ page import="de.laser.helper.DateUtils; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Platform; de.laser.titles.BookInstance; de.laser.ApiSource; de.laser.Org;" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>
@@ -347,8 +347,8 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
                         text="${message(code: 'default.usage.allUsageGrid.header')}" tab="total" subTab="tabStat"/>
         <g:each in="${monthsInRing}" var="month">
             <semui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
-                            params="${params + [tabStat: month.format("yyyy-MM")]}" text="${month.format("yyyy-MM")}"
-                            tab="${month.format("yyyy-MM")}" subTab="tabStat"/>
+                            params="${params + [tabStat: DateUtils.getSDF_yyyyMM().format(month)]}" text="${DateUtils.getSDF_yyyyMM().format(month)}"
+                            tab="${DateUtils.getSDF_yyyyMM().format(month)}" subTab="tabStat"/>
         </g:each>
     </semui:tabs>
 </g:if>

@@ -201,7 +201,7 @@ class SystemEvent {
     /**
      * This method is actually a getter. It gets the internationalised message by the system event token
      */
-    private void setInfo() {
+    private void _setInfo() {
         if (!i18n) {
             i18n = BeanStore.getMessageSource().getMessage('se.' + (token ?: 'UNKNOWN'), null, LocaleContextHolder.locale)
         }
@@ -212,8 +212,8 @@ class SystemEvent {
      * @param index the index of the message string (array, split by '|') to be retrieved
      * @return the message part or an empty string if not found
      */
-    private String getInfoPart(def index) {
-        setInfo()
+    private String _getInfoPart(def index) {
+        _setInfo()
         List parts = i18n.split('\\|')
 
         if (parts.size() > index) {
@@ -229,7 +229,7 @@ class SystemEvent {
      * @return the source part of the internationalised message string
      */
     String getSource() {
-        getInfoPart(0)
+        _getInfoPart(0)
     }
 
     /**
@@ -237,7 +237,7 @@ class SystemEvent {
      * @return the event part of the internationalised message string
      */
     String getEvent() {
-        getInfoPart(1)
+        _getInfoPart(1)
     }
 
     /**
@@ -245,6 +245,6 @@ class SystemEvent {
      * @return the description part of the internationalised message string
      */
     String getDescr() {
-        getInfoPart(2)
+        _getInfoPart(2)
     }
 }

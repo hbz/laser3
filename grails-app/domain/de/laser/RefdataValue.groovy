@@ -94,8 +94,8 @@ class RefdataValue extends AbstractI10n implements Comparable<RefdataValue> {
             String token    = map.get('token')
             String rdc      = map.get('rdc')
 
-            boolean hardData = new Boolean(map.get('hardData'))
-            Map i10n = map.get('i10n')
+            boolean hardData    = Boolean.parseBoolean(map.get('hardData') as String)
+            Map i10n            = map.get('i10n') as Map
 
             RefdataCategory cat = RefdataCategory.findByDescIlike(rdc)
             if (!cat) {

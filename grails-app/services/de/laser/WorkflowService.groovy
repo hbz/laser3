@@ -181,6 +181,7 @@ class WorkflowService {
                 }
                 catch (Exception e) {
                     result.status = OP_STATUS_ERROR
+                    log.error e.getMessage()
                 }
             }
         }
@@ -213,6 +214,7 @@ class WorkflowService {
                 }
                 catch (Exception e) {
                     result.status = OP_STATUS_ERROR
+                    log.error e.getMessage()
                 }
             }
         }
@@ -249,6 +251,7 @@ class WorkflowService {
                 }
                 catch (Exception e) {
                     result.status = OP_STATUS_ERROR
+                    log.error e.getMessage()
                 }
             }
         }

@@ -120,39 +120,6 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
     }
 
     /**
-     * Gets a person with the following parameters:
-     * @param firstName first name of the person
-     * @param lastName last name of the person or name of the collective
-     * @param tenant the institution ({@link Org}) who created the person
-     * @param isPublic the flag whether the contact point is public (= visible to everyone)
-     * @param contactType the distinction between a real person and a collective contact point; one of Functional Contact or Personal Contact
-     * @param org the organisation to which the contact is attached to
-     * @param functionType the type of function the person has, one of the {@link RDConstants#PERSON_FUNCTION} reference values
-     * @return a {@link List} of persons/contact points matching the given arguments, an empty list if nothing is found
-     */
-    static Person lookup(String firstName, String lastName, Org tenant, boolean isPublic, RefdataValue contactType, Org org, RefdataValue functionType) {
-
-        Person person
-        List<Person> prsList = []
-
-        Person.findAllWhere(
-                first_name: firstName,
-                last_name: lastName,
-                contactType: contactType,
-                isPublic: isPublic,
-                tenant: tenant
-        ).each{ Person p ->
-            if (PersonRole.findWhere(prs: p, functionType: functionType, org: org)) {
-                prsList << p
-            }
-        }
-        if ( prsList.size() > 0 ) {
-            person = prsList.get(0)
-        }
-        person
-    }
-
-    /**
      * Retrieves all public persons attached to the given organisation and of the given function type
      * @param org the organisation whose contacts should be retrieved
      * @param func the function type string to get

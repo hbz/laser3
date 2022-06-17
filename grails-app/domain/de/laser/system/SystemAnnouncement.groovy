@@ -7,6 +7,7 @@ import de.laser.helper.AppUtils
 import de.laser.helper.ConfigMapper
 import de.laser.helper.DateUtils
 import de.laser.storage.BeanStore
+import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import net.sf.json.JSON
 import org.springframework.context.MessageSource
@@ -127,7 +128,7 @@ class SystemAnnouncement {
 
             reps.each { u ->
                 try {
-                    sendMail(u)
+                    _sendMail(u)
                     validUserIds << u.id
                 }
                 catch (Exception e) {
@@ -161,10 +162,10 @@ class SystemAnnouncement {
      * @param user the {@link User} to be notified
      * @throws Exception
      */
-    private void sendMail(User user) throws Exception {
+    private void _sendMail(User user) throws Exception {
 
         MessageSource messageSource = BeanStore.getMessageSource()
-        Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', de.laser.storage.RDConstants.LANGUAGE)).value.toString())
+        Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', RDConstants.LANGUAGE)).value.toString())
 
         String currentServer = AppUtils.getCurrentServer()
         String subjectSystemPraefix = (currentServer == AppUtils.PROD) ? "LAS:eR - " : (ConfigMapper.getLaserSystemId() + " - ")

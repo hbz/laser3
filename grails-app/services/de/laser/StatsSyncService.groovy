@@ -59,7 +59,7 @@ class StatsSyncService {
     List errors = []
     Map<String,List> availableReportCache = [:]
 
-    SimpleDateFormat yyyyMMdd = DateUtils.getFixedSDF_yyyyMMdd()
+    SimpleDateFormat yyyyMMdd = DateUtils.getSDF_yyyyMMdd()
 
     static int submitCount=0
     static int completedCount=0
@@ -550,7 +550,7 @@ class StatsSyncService {
             x.Envelope {
                 x.Header {}
                 x.Body {
-                    cou.ReportRequest(Created: now.format("yyyy-MM-dd'T'HH:mm:ss"), ID: '?') {
+                    cou.ReportRequest(Created: DateUtils.getSDF_yyyyMMddTHHmmss().format(now), ID: '?') {
                         sus.Requestor {
                             sus.ID(keyPair.requestorKey)
                             sus.Name('?')
@@ -1262,10 +1262,10 @@ class StatsSyncService {
             if (! isNoUsageAvailableException(xml)) {
                 List notProcessedMonths = getNotProcessedMonths(xml)
                 if (! notProcessedMonths.empty) {
-                    List followingRanges = actualRangePlusFollowingNoUsageRanges(options, notProcessedMonths, DateUtils.getFixedSDF_yyyyMM().format( csr.availFrom ))
+                    List followingRanges = actualRangePlusFollowingNoUsageRanges(options, notProcessedMonths, DateUtils.getSDF_yyyyMM().format( csr.availFrom ))
                     followingRanges.each {
                         if (it == followingRanges.first()){
-                            csr.availTo = DateUtils.getFixedSDF_yyyyMMdd().parse(getDateForLastDayOfMonth(it['end']))
+                            csr.availTo = DateUtils.getSDF_yyyyMMdd().parse(getDateForLastDayOfMonth(it['end']))
                             csr.save()
                         } else {
                             writeNewCsr(0, it['begin'],it['end'],options)
@@ -1324,7 +1324,7 @@ class StatsSyncService {
                         csr = writeNewCsr(factCount, it['begin'], it['end'], options)
                     } else {
                         // There is no gap, just update csr with new availTo value
-                        csr.availTo = DateUtils.getFixedSDF_yyyyMMdd().parse(getDateForLastDayOfMonth(it.end))
+                        csr.availTo = DateUtils.getSDF_yyyyMMdd().parse(getDateForLastDayOfMonth(it.end))
                         csr.numFacts = csr.numFacts + factCount
                         csr.save()
                     }

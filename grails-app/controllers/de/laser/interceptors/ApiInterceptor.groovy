@@ -10,6 +10,7 @@ import org.apache.commons.io.IOUtils
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 import javax.servlet.http.HttpServletResponse
+import java.nio.charset.Charset
 import java.security.SignatureException
 
 class ApiInterceptor implements grails.artefact.Interceptor {
@@ -32,7 +33,7 @@ class ApiInterceptor implements grails.artefact.Interceptor {
                 String method = request.getMethod()
                 String path = request.getServletPath()
                 String query = request.getQueryString()
-                def body = IOUtils.toString(request.getInputStream())
+                String body = IOUtils.toString(request.getInputStream(), Charset.defaultCharset())
 
                 String authorization = request.getHeader('X-Authorization')
                 boolean debugMode    = request.getHeader('X-Debug') == 'true'

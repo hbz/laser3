@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.helper.DateUtils
 import liquibase.repackaged.com.opencsv.*
 import de.laser.auth.*
 import de.laser.helper.AppUtils
@@ -129,7 +130,7 @@ class BootStrapService {
         log.debug("setJSONFormatDate ..")
 
         JSON.registerObjectMarshaller(Date) {
-            return it ? (new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")).format( it ) : null
+            return it ? DateUtils.getSDF_yyyyMMddTHHmmssZ().format( it ) : null
             //return it?.format("yyyy-MM-dd'T'HH:mm:ss'Z'")
         }
 

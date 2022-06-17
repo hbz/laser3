@@ -57,7 +57,7 @@ class ExportService {
 	ContextService contextService
 	MessageSource messageSource
 
-	SimpleDateFormat formatter = DateUtils.getFixedSDF_yyyyMMdd()
+	SimpleDateFormat formatter = DateUtils.getSDF_yyyyMMdd()
 	FilterService filterService
 
 	/**
@@ -588,15 +588,15 @@ class ExportService {
 				cell.setCellValue('Period covered by Report:')
 				headerRow = sheet.createRow(4)
 				cell = headerRow.createCell(0)
-				cell.setCellValue("${DateUtils.getFixedSDF_yyyyMMdd().format(data.startDate)} to ${DateUtils.getFixedSDF_yyyyMMdd().format(data.endDate)}")
+				cell.setCellValue("${DateUtils.getSDF_yyyyMMdd().format(data.startDate)} to ${DateUtils.getSDF_yyyyMMdd().format(data.endDate)}")
 				headerRow = sheet.createRow(5)
 				cell = headerRow.createCell(0)
 				cell.setCellValue("Date run:")
 				headerRow = sheet.createRow(6)
 				cell = headerRow.createCell(0)
-				cell.setCellValue(DateUtils.getFixedSDF_yyyyMMdd().format(data.dateRun))
+				cell.setCellValue(DateUtils.getSDF_yyyyMMdd().format(data.dateRun))
 				columnHeaders.addAll(Counter4Report.COLUMN_HEADERS.valueOf(reportType).headers)
-				columnHeaders.addAll(data.monthsInRing.collect { Date month -> DateUtils.getFixedSDF_yyyyMM().format(month) })
+				columnHeaders.addAll(data.monthsInRing.collect { Date month -> DateUtils.getSDF_yyyyMM().format(month) })
 				if(showPriceDate) {
 					columnHeaders.addAll(["List Price EUR", "List Price GBP", "List Price USD"])
 				}
@@ -819,12 +819,12 @@ class ExportService {
 				cell = headerRow.createCell(0)
 				cell.setCellValue("Reporting_Period")
 				cell = headerRow.createCell(1)
-				cell.setCellValue("Begin_Date:${DateUtils.getFixedSDF_yyyyMMdd().format(data.startDate)}; End_Date=${DateUtils.getFixedSDF_yyyyMMdd().format(data.endDate)}")
+				cell.setCellValue("Begin_Date:${DateUtils.getSDF_yyyyMMdd().format(data.startDate)}; End_Date=${DateUtils.getSDF_yyyyMMdd().format(data.endDate)}")
 				headerRow = sheet.createRow(10)
 				cell = headerRow.createCell(0)
 				cell.setCellValue("Created")
 				cell = headerRow.createCell(1)
-				cell.setCellValue(data.dateRun.format("yyyy-MM-dd'T'HH:mm:ss'Z'"))
+				cell.setCellValue(DateUtils.getSDF_yyyyMMddTHHmmssZ().format(data.dateRun))
 				headerRow = sheet.createRow(11)
 				cell = headerRow.createCell(0)
 				cell.setCellValue("Created_By")
@@ -833,7 +833,7 @@ class ExportService {
 				headerRow = sheet.createRow(12) //the 13th row is mandatory empty
 				cell = headerRow.createCell(0)
 				cell.setCellValue("")
-				columnHeaders.addAll(data.monthsInRing.collect { Date month -> month.format('MMM-yyyy') })
+				columnHeaders.addAll(data.monthsInRing.collect { Date month -> DateUtils.getSDF_MMMyyyy().format(month) })
 				if(showPriceDate) {
 					columnHeaders.addAll(["List Price EUR", "List Price GBP", "List Price USD"])
 				}
@@ -861,7 +861,7 @@ class ExportService {
 						metricRow.put('Metric_Type', r.metricType)
 						periodTotal += r.reportCount
 						metricRow.put('Reporting_Period_Total', periodTotal)
-						metricRow.put(r.reportFrom.format('MMM-yyyy'), r.reportCount)
+						metricRow.put(DateUtils.getSDF_MMMyyyy().format(r.reportFrom), r.reportCount)
 						metricRows.put(r.metricType, metricRow)
 					}
 					metricRows.eachWithIndex{ String metricType, Map metricRow, int i ->
@@ -932,7 +932,7 @@ class ExportService {
 					if(reportType in [Counter4ApiSource.JOURNAL_REPORT_5, Counter4ApiSource.BOOK_REPORT_5])
 						titleRow.put("User activity", report.metricType == 'search_reg' ? "Regular Searches" : "Searches: federated and automated")
 					titleRow.put("Reporting Period Total", periodTotal)
-					titleRow.put(DateUtils.getFixedSDF_yyyyMM().format(report.reportFrom), report.reportCount)
+					titleRow.put(DateUtils.getSDF_yyyyMM().format(report.reportFrom), report.reportCount)
 
 					if (showPriceDate && report.title.priceItems) {
 						//listprice_eur
@@ -944,8 +944,8 @@ class ExportService {
 					}
 
 					if (showOtherData) {
-						titleRow.put("Year First Online", report.title.dateFirstOnline ? DateUtils.getFixedSDF_yyyy().format(report.title.dateFirstOnline): ' ')
-						titleRow.put("Date First Online", report.title.dateFirstOnline ? DateUtils.getFixedSDF_yyyyMMdd().format(report.title.dateFirstOnline): ' ')
+						titleRow.put("Year First Online", report.title.dateFirstOnline ? DateUtils.getSDF_yyyy().format(report.title.dateFirstOnline): ' ')
+						titleRow.put("Date First Online", report.title.dateFirstOnline ? DateUtils.getSDF_yyyyMMdd().format(report.title.dateFirstOnline): ' ')
 					}
 				}
 				else if(report instanceof Counter5Report) {
@@ -1009,7 +1009,7 @@ class ExportService {
 							break
 					}
 					titleRow.put("Reporting_Period_Total", periodTotal)
-					titleRow.put(report.reportFrom.format("MMM-yyyy"), report.reportCount)
+					titleRow.put(DateUtils.getSDF_MMMyyyy().format(report.reportFrom), report.reportCount)
 					if (showPriceDate && report.title.priceItems) {
 						//listprice_eur
 						titleRow.put("List Price EUR", report.title.priceItems.find { it.listCurrency == RDStore.CURRENCY_EUR }?.listPrice ?: ' ')
@@ -1020,8 +1020,8 @@ class ExportService {
 					}
 
 					if (showOtherData) {
-						titleRow.put("Year First Online", report.title.dateFirstOnline ? DateUtils.getFixedSDF_yyyy().format( report.title.dateFirstOnline ): ' ')
-						titleRow.put("Date First Online", report.title.dateFirstOnline ? DateUtils.getFixedSDF_yyyyMMdd().format( report.title.dateFirstOnline ): ' ')
+						titleRow.put("Year First Online", report.title.dateFirstOnline ? DateUtils.getSDF_yyyy().format( report.title.dateFirstOnline ): ' ')
+						titleRow.put("Date First Online", report.title.dateFirstOnline ? DateUtils.getSDF_yyyyMMdd().format( report.title.dateFirstOnline ): ' ')
 					}
 
 				}
@@ -2120,7 +2120,7 @@ class ExportService {
 		titleHeaders.addAll(data.coreTitleIdentifierNamespaces.collect { GroovyRowResult row -> row['idns_ns']})
 		titleHeaders.addAll(data.otherTitleIdentifierNamespaces.collect { GroovyRowResult row -> row['idns_ns']})
 		if(showStatsInMonthRings){
-			titleHeaders.addAll(showStatsInMonthRings.collect { Date month -> DateUtils.getFixedSDF_yyyyMM().format(month) })
+			titleHeaders.addAll(showStatsInMonthRings.collect { Date month -> DateUtils.getSDF_yyyyMM().format(month) })
 		}
 		List rows = []
 		Map<String,List> export = [titles:titleHeaders]

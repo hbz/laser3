@@ -228,7 +228,6 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
 
   @Override
   boolean equals (Object o) {
-    //def obj = ClassUtils.deproxy(o)
     def obj = GrailsHibernateUtil.unwrapIfProxy(o)
     if (obj != null) {
       if ( obj instanceof Platform ) {

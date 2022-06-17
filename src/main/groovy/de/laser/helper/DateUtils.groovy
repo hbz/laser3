@@ -34,12 +34,12 @@ class DateUtils {
         return null
     }
 
-    static SimpleDateFormat getLocalizedSDF_noTimeNoPoint(){
-        getLocalizedSDF_byToken(DATE_FORMAT_NOTIME_NOPOINT)
-    }
-
     static SimpleDateFormat getLocalizedSDF_noTime(){
         getLocalizedSDF_byToken(DATE_FORMAT_NOTIME)
+    }
+
+    static SimpleDateFormat getLocalizedSDF_noTimeNoPoint(){
+        getLocalizedSDF_byToken(DATE_FORMAT_NOTIME_NOPOINT)
     }
 
     static SimpleDateFormat getLocalizedSDF_noZ(){
@@ -52,34 +52,50 @@ class DateUtils {
 
     // -- fixed: no localization
 
-    static SimpleDateFormat getFixedSDF_yyyyMMdd(){
-        return new SimpleDateFormat('yyyy-MM-dd')
+    static SimpleDateFormat getSDF_ddMMyyy(){
+        return new SimpleDateFormat('dd.MM.yyy')
     }
 
-    static SimpleDateFormat getFixedSDF_ddMMyyyy(){
+    static SimpleDateFormat getSDF_ddMMyyyy(){
         return new SimpleDateFormat('dd.MM.yyyy')
     }
 
-    static SimpleDateFormat getFixedSDF_forFilename(){
+    static SimpleDateFormat getSDF_forFilename(){
         return new SimpleDateFormat('yyyyMMdd-HHmm')
     }
 
-    static SimpleDateFormat getFixedSDF_yyyyMM(){
-        return new SimpleDateFormat('yyyy-MM')
+    static SimpleDateFormat getSDF_MMMyyyy(){
+        return new SimpleDateFormat('MMM-yyyy')
     }
 
-    static SimpleDateFormat getFixedSDF_yyyy(){
+    static SimpleDateFormat getSDF_yyyy(){
         return new SimpleDateFormat('yyyy')
     }
 
-    static SimpleDateFormat getFixedSDF_YYYY(){
+    static SimpleDateFormat getSDF_YYYY(){
         return new SimpleDateFormat('YYYY')
+    }
+
+    static SimpleDateFormat getSDF_yyyyMM(){
+        return new SimpleDateFormat('yyyy-MM')
+    }
+
+    static SimpleDateFormat getSDF_yyyyMMdd(){
+        return new SimpleDateFormat('yyyy-MM-dd')
+    }
+
+    static SimpleDateFormat getSDF_yyyyMMddTHHmmss(){
+        return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+    }
+
+    static SimpleDateFormat getSDF_yyyyMMddTHHmmssZ(){
+        return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z")
     }
 
     // --
 
     static int getYearAsInteger(Date date) {
-        date ? getFixedSDF_yyyy().format(date).toInteger() : null
+        date ? getSDF_yyyy().format(date).toInteger() : null
     }
 
     // --

@@ -288,7 +288,7 @@ class ApiEZB {
      * @see IdentifierNamespace
      */
     static List buildRow(Sql sql, GroovyRowResult row, List<GroovyRowResult> packageIDs, String titleNS, List<GroovyRowResult> otherTitleIdentifierNamespaces, Map<Long, Map<RefdataValue, GroovyRowResult>> allPriceItems) {
-        SimpleDateFormat formatter = DateUtils.getFixedSDF_yyyyMMdd()
+        SimpleDateFormat formatter = DateUtils.getSDF_yyyyMMdd()
         List<GroovyRowResult> identifiers = sql.rows('select id_value, idns_ns from identifier join identifier_namespace on id_ns_fk = idns_id where id_tipp_fk = :tipp', [tipp: row['tipp_id']])
         Map<RefdataValue, GroovyRowResult> priceItems = allPriceItems.get(row['ie_id'])
         List outRow = []

@@ -192,10 +192,15 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
             String type     = map.get('type')
             String rdc      = map.get('rdc') // refdataCategory
 
-            boolean hardData    = new Boolean(map.get('hardData'))
-            boolean mandatory   = new Boolean(map.get('mandatory'))
-            boolean multiple    = new Boolean(map.get('multiple'))
-            boolean logic       = new Boolean(map.get('logic'))
+            boolean hardData    = Boolean.parseBoolean(map.get('hardData') as String)
+            boolean mandatory   = Boolean.parseBoolean(map.get('mandatory') as String)
+            boolean multiple    = Boolean.parseBoolean(map.get('multiple') as String)
+            boolean logic       = Boolean.parseBoolean(map.get('logic') as String)
+
+            if (! validTypes.containsKey( type )) {
+                log.error("Provided prop type ${type} is not valid. Allowed types are ${validTypes}")
+                throw new UnexpectedTypeException()
+            }
 
             Org tenant          = map.get('tenant') ? Org.findByGlobalUID(map.get('tenant')) : null
             Map i10n = map.get('i10n') ?: [
@@ -206,9 +211,6 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
                     expl_de: null,
                     expl_en: null
             ]
-
-            PropertyDefinition.typeIsValid(type)
-
             if (map.tenant && !tenant) {
                 log.debug('WARNING: tenant not found: ' + map.tenant + ', property "' + token + '" is handled as public')
             }
@@ -319,15 +321,6 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
 
     static List<PropertyDefinition> getAllByDescrAndMandatoryAndTenant(String descr, boolean mandatory, Org tenant) {
         PropertyDefinition.findAllByDescrAndMandatoryAndTenant(descr, mandatory, tenant)
-    }
-
-    private static def typeIsValid(String key) {
-        if (validTypes.containsKey(key)) {
-            return true;
-        } else {
-            log.error("Provided prop type ${key} is not valid. Allowed types are ${validTypes}")
-            throw new UnexpectedTypeException()
-        }
     }
 
     /**

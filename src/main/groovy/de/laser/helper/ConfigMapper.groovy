@@ -86,11 +86,11 @@ class ConfigMapper {
     static void checkCurrentConfig() {
         log.info('ConfigMapper - checkCurrentConfig')
 
-        println ": --------------------------------------------->"
+        println ": ------------------------------------------------------------------------------------------>"
         CONTROLLED_CONFIGURATION_LIST.each { cc ->
             readConfig(cc, PRINTLN)
         }
-        println ": --------------------------------------------->"
+        println ": ------------------------------------------------------------------------------------------>"
     }
 
     // -- basic getter/setter --
