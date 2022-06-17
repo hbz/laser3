@@ -646,6 +646,39 @@ class ControlledListService {
 
     /**
      * Called from title filter views
+     * Retrieves all possible medium types for the given package and the given title status
+     * @param pkg the package whose titles should be inspected
+     * @param forTitles the title status considered
+     * @return a set of possible title types
+     */
+    Set<String> getAllPossibleMediumTypesByPackage(Package pkg, String forTitles) {
+        Locale locale = LocaleContextHolder.getLocale()
+        RefdataValue tippStatus = getTippStatusForRequest(forTitles)
+        Set<String> mediumTypes = []
+
+        mediumTypes.addAll(TitleInstancePackagePlatform.executeQuery("select tipp.medium from TitleInstancePackagePlatform tipp where tipp.medium is not null and tipp.pkg = :pkg and tipp.status = :status ", [pkg: pkg, status: tippStatus]))
+
+        mediumTypes
+    }
+
+    /**
+     * Called from title filter views
+     * Retrieves all possible medium types for the given subscription
+     * @param subscription the subscription whose titles should be inspected
+     * @return a set of possible title types
+     */
+    Set<String> getAllPossibleMediumTypesBySub(Subscription subscription) {
+        Locale locale = LocaleContextHolder.getLocale()
+        Set<String> mediumTypes = []
+
+        if(subscription.packages){
+            mediumTypes.addAll(TitleInstancePackagePlatform.executeQuery("select tipp.medium from TitleInstancePackagePlatform tipp where tipp.medium is not null and tipp.pkg in (:pkg) ", [pkg: subscription.packages.pkg]))
+        }
+        mediumTypes
+    }
+
+    /**
+     * Called from title filter views
      * Retrieves all possible coverage depths for the given package and the given title status
      * @param pkg the package whose titles should be inspected
      * @param forTitles the title status considered

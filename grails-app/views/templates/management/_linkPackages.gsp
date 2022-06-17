@@ -308,14 +308,14 @@
 
     var req_url = "${createLink(controller: 'subscription', action: 'unlinkPackage')}?subscription="+subscriptionID+"&package="+pkg_id
 
-        $.ajax({url: req_url,
-          done: function(result){
-            $("#unlinkPackageModal").remove();
-            $('#magicArea').html(result);
-            $("#unlinkPackageModal").modal("show");
-          }
-        });
-      }
+        $.ajax({
+            url: req_url
+        }).done(function(result){
+                $("#unlinkPackageModal").remove();
+                $('#magicArea').html(result);
+                $("#unlinkPackageModal").modal("show");
+            });
+     }
 
     $('.packagesForm').form({
         on: 'blur',
