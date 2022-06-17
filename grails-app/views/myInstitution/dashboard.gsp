@@ -76,7 +76,7 @@
             ${message(code:'myinst.dash.due_dates.label')}
         </a>
 
-        <g:if test="${editable}">
+        <g:if test="${editable && institution.getCustomerType() in ['ORG_INST', 'ORG_CONSORTIUM']}">
             <a class="${us_dashboard_tab.getValue().value == 'PendingChanges' || us_dashboard_tab.getValue() == 'PendingChanges' ? 'active item':'item'}" data-tab="pendingchanges">
                 <i class="history icon large"></i>
                 <span id="pendingCount">${message(code:'myinst.pendingChanges.label', args: [message(code:'myinst.loadPending')])}</span>
