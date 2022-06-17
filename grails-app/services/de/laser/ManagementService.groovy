@@ -576,19 +576,22 @@ class ManagementService {
                             }
                             else {
                                 //custom Property
-                                existingProp = subChild.propertySet.find { SubscriptionProperty sp ->
+                                Set<SubscriptionProperty> existingProps = subChild.propertySet.findAll { SubscriptionProperty sp ->
                                     sp.type.id == propertiesFilterPropDef.id && sp.owner.id == subChild.id && sp.tenant.id == result.institution.id
                                 }
-                                if (existingProp && !(existingProp.hasProperty('instanceOf') && existingProp.instanceOf && AuditConfig.getConfig(existingProp.instanceOf))){
-                                    try {
-                                        subChild.propertySet.remove(existingProp)
-                                        existingProp.delete()
-                                        deletedProperties++
-                                    }
-                                    catch (Exception e){
-                                        log.error( e.toString() )
+                                existingProps.each { SubscriptionProperty ep ->
+                                    if (ep && !(ep.hasProperty('instanceOf') && ep.instanceOf && AuditConfig.getConfig(ep.instanceOf))){
+                                        try {
+                                            subChild.propertySet.remove(ep)
+                                            ep.delete()
+                                            deletedProperties++
+                                        }
+                                        catch (Exception e){
+                                            log.error( e.toString() )
+                                        }
                                     }
                                 }
+
                             }
                         }
                         args = [deletedProperties]

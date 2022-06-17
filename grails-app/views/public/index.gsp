@@ -1,5 +1,6 @@
 <%@ page import="de.laser.system.SystemMessage" %>
 <!doctype html>
+<g:set var="currentServer" scope="page" />
 <html>
 <head>
     <meta name="layout" content="public"/>
@@ -15,7 +16,7 @@
             <div class="ui container">
                 <img class="logo" alt="Logo Laser" src="${resource(dir: 'images', file: 'laser.svg')}"/>
                 <a tabindex='-1'  href="https://wiki1.hbz-nrw.de/display/LAS/Projekthintergrund" class="item" target="_blank">${message(code: 'landingpage.menu.about')}</a>
-                <a  tabindex='-1'  class="item" href="https://wiki1.hbz-nrw.de/display/LAS/Startseite" target="_blank">Wiki</a>
+                <a tabindex='-1'  class="item" href="https://wiki1.hbz-nrw.de/display/LAS/Startseite" target="_blank">Wiki</a>
 
                 <div class="right item">
                     <g:link controller="home" tabindex='-1'  action="index" class="ui button blue">
@@ -33,6 +34,7 @@
                 <img class="logo" alt="Logo Laser" src="${resource(dir: 'images', file: 'laser.svg')}"/>
                 <a href="https://www.hbz-nrw.de/produkte/digitale-inhalte/las-er" class="item" target="_blank">${message(code: 'landingpage.menu.about')}</a>
                 <a class="item" href="https://wiki1.hbz-nrw.de/display/LAS/Startseite" target="_blank">Wiki</a>
+                <a class="item" href="${message(code:'url.wekb.' + currentServer)}" target="_blank"><i class="ui icon la-gokb"></i> we:kb</a>
                 <g:link class="item" controller="gasco">${message(code:'menu.public.gasco_monitor')}</g:link>
                 <div class="right item">
                     <g:link controller="home" action="index" class="ui button blue">
