@@ -24,6 +24,7 @@ class CostItemElementConfiguration extends AbstractBase {
 
     static mapping = {
         id                  column: 'ciec_id'
+        version             column: 'ciec_version'
         globalUID           column: 'ciec_guid'
         costItemElement     column: 'ciec_cie_rv_fk'
         elementSign         column: 'ciec_cc_rv_fk'

@@ -11,6 +11,8 @@ class ChangeNotificationQueueItem {
   Date lastUpdated
 
   static mapping = {
+                id column:'cnqi_id'
+           version column:'cnqi_version'
                oid column:'cnqi_oid'
     changeDocument column:'cnqi_change_document', type:'text'
                 ts column:'cnqi_ts'

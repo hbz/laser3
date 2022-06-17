@@ -12,6 +12,7 @@ class ContentItem {
 
   static mapping = {
          id column:'ci_id'
+    version column:'ci_version'
         key column:'ci_key'
      locale column:'ci_locale'
     content column:'ci_content', type:'text'

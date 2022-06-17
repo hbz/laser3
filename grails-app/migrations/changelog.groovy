@@ -29,4 +29,5 @@ databaseChangeLog = {
 	include file: 'changelogs/2022-05-23.groovy'
 	include file: 'changelogs/2022-06-10.groovy' //has to be executed before June 7th because of new reference data used in rdstore
 	include file: 'changelogs/2022-06-07.groovy'
+    include file: 'changelogs/2022-06-17.groovy'
 }

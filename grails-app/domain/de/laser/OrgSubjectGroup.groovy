@@ -21,6 +21,7 @@ class OrgSubjectGroup implements Comparable {
 
     static mapping = {
         id           column: 'osg_id'
+        version      column: 'osg_version'
         org          column: 'osg_org'
         subjectGroup column: 'osg_subject_group'
         dateCreated  column: 'osg_date_created'

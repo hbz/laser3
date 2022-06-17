@@ -48,6 +48,8 @@ class PendingChangeConfiguration {
     static belongsTo = [subscriptionPackage: SubscriptionPackage]
 
     static mapping = {
+        id                      column: 'pcc_id'
+        version                 column: 'pcc_version'
         subscriptionPackage     column: 'pcc_sp_fk', index: 'pcc_sp_idx'
         settingKey              column: 'pcc_setting_key_enum'
         settingValue            column: 'pcc_setting_value_rv_fk'

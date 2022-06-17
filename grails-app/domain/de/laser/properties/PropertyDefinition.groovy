@@ -145,6 +145,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     static mapping = {
                     cache  true
                       id column: 'pd_id'
+                 version column: 'pd_version'
                    descr column: 'pd_description', index: 'td_new_idx', type: 'text'
                     name column: 'pd_name',        index: 'td_new_idx'
                  name_de column: 'pd_name_de'

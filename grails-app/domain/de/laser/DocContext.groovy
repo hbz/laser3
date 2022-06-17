@@ -47,6 +47,7 @@ class DocContext implements ShareableTrait, Comparable {
           version column:'dc_version'
             owner column:'dc_doc_fk', sort:'title', order:'asc', index:'doc_owner_idx'
           doctype column:'dc_rv_doctype_fk'
+           domain column:'dc_domain'
           license column:'dc_lic_fk', index:'doc_lic_idx'
      subscription column:'dc_sub_fk', index:'doc_sub_idx'
               pkg column:'dc_pkg_fk'

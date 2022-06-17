@@ -18,6 +18,8 @@ class TitleHistoryEvent {
   static belongsTo = [ tipp: TitleInstancePackagePlatform ]
 
   static mapping = {
+    id          column: 'the_id'
+    version     column: 'the_version'
     //participants  batchSize: 10
     eventDate   column: 'the_event_date'
     from        column: 'the_from', type: 'text'

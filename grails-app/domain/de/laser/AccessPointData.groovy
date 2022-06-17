@@ -25,6 +25,9 @@ class AccessPointData extends AbstractBase {
     ]
     
     static mapping = {
+        id              column:'apd_id'
+        version         column:'apd_version'
+
         globalUID       column:'apd_guid'
         orgAccessPoint  column:'apd_org_access_point_fk'
         datatype        column:'apd_datatype'

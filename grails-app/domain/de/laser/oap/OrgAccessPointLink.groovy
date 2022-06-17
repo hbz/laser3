@@ -30,6 +30,13 @@ class OrgAccessPointLink extends AbstractBase {
         subPkg  (nullable:true) //intentional, null used in program logic
     }
 
+    static mapping = {
+        id              column:'oapl_id'
+        version         column:'oapl_version'
+        dateCreated     column:'oapl_date_created'
+        lastUpdated     column:'oapl_last_updated'
+    }
+
     @Override
     def beforeInsert() {
         super.beforeInsertHandler()

@@ -17,6 +17,7 @@ class SystemSetting {
 
     static mapping = {
              id column:'set_id'
+        version column:'set_version'
            name column:'set_name'
              tp column:'set_type'
           value column:'set_value'

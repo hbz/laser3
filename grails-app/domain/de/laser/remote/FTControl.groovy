@@ -26,4 +26,11 @@ class FTControl {
         lastUpdated (nullable: true)
         dateCreated (nullable: true)
     }
+
+    static mapping = {
+        id          column: 'ftc_id'
+        version     column: 'ftc_version'
+        active      column: 'ftc_active'
+        activity    column: 'ftc_activity'
+    }
 }

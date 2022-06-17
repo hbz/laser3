@@ -36,9 +36,12 @@ class Doc {
               uuid column:'doc_docstore_uuid', index:'doc_uuid_idx'
              title column:'doc_title'
           filename column:'doc_filename'
+          migrated column:'doc_migrated'
            content column:'doc_content', type:'text'
           mimeType column:'doc_mime_type'
              owner column:'doc_owner_fk'
+       dateCreated column:'doc_date_created'
+       lastUpdated column:'doc_last_updated'
   }
 
   static constraints = {

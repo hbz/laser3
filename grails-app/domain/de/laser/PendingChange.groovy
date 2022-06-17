@@ -80,6 +80,8 @@ class PendingChange {
     // mark read-only accessor methods
 
     static mapping = {
+        id          column: 'pc_id'
+        version     column: 'pc_version'
         subscription column: 'pc_sub_fk', index: 'pending_change_sub_idx'
         license column: 'pc_lic_fk', index: 'pending_change_lic_idx'
         pkg column: 'pc_pkg_fk', index: 'pending_change_pkg_idx'

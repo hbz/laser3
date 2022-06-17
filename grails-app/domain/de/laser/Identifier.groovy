@@ -69,6 +69,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
 
     static mapping = {
         id    column:'id_id'
+        version column: 'id_version'
         value column:'id_value', index:'id_value_idx'
         ns    column:'id_ns_fk', index:'id_value_idx'
         note  column:'id_note',  type: 'text'

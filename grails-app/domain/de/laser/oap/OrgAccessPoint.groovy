@@ -40,10 +40,13 @@ class OrgAccessPoint extends AbstractBase {
     static transients = ['notLinkedPlatforms', 'notLinkedSubscriptions', 'accessPointIpRanges'] // mark read-only accessor methods
     
     static mapping = {
-        globalUID       column:'oar_guid'
+        id              column:'oar_id'
+        version         column:'oar_version'
         name            column:'oar_name'
         org             column:'oar_org_fk'
         accessMethod    column:'oar_access_method_rv_fk'
+        dateCreated     column:'oar_date_created'
+        lastUpdated     column:'oar_last_updated'
     }
     
     static constraints = {

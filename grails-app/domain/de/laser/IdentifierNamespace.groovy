@@ -114,6 +114,7 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
 
     static mapping = {
         id              column:'idns_id'
+        version         column:'idns_version'
 
         ns              column:'idns_ns'
         nsType          column:'idns_type'
