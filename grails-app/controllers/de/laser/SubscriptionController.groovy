@@ -623,13 +623,13 @@ class SubscriptionController {
             }
             else {
                 flash.error = ctrlResult.result.error
-                redirect(action:'show', id: params.subscription)
+                redirect(url: request.getHeader('referer'))
             }
         }
         else {
             if (params.confirmed) {
                 flash.message = ctrlResult.result.message
-                redirect(action:'show', id: params.subscription)
+                redirect(url: request.getHeader('referer'))
             }
             else {
 

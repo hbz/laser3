@@ -37,8 +37,10 @@ class PendingChangeConfiguration {
     static final String PACKAGE_TIPP_COUNT_CHANGED = "pendingChange.message_PK03"
     static final String BILLING_SUM_UPDATED = "pendingChange.message_CI01"
     static final String LOCAL_SUM_UPDATED = "pendingChange.message_CI02"
+    static final String COST_ITEM_PACKAGE_UNLINKED = "pendingChange.message_CI03"
     static final String NOTIFICATION_SUFFIX = "_N"
     static final Set<String> SETTING_KEYS = [NEW_TITLE, TITLE_UPDATED, TITLE_DELETED, NEW_COVERAGE, COVERAGE_UPDATED, COVERAGE_DELETED, PACKAGE_PROP, PACKAGE_DELETED]
+    static final Set<String> GENERIC_EXCLUDES = [PendingChangeConfiguration.PACKAGE_PROP, PendingChangeConfiguration.PACKAGE_DELETED, PendingChangeConfiguration.TITLE_REMOVED]
 
     String settingKey
     @RefdataInfo(cat = RDConstants.PENDING_CHANGE_CONFIG_SETTING)

@@ -480,11 +480,11 @@
 
             $.ajax({url: req_url,
               success: function(result){
-                 $("#unlinkPackageModal").remove();
-                 $('#magicArea').html(result);
+                 //$("#unlinkPackageModal").clear();
+                 //$('#magicArea').html(result);
               },
               complete: function(){
-                $("#unlinkPackageModal").modal("show");
+                $("#unlinkPackageModal").show();
               }
             });
           }

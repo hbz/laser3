@@ -50,6 +50,7 @@
 <div class="ui bottom attached tab active segment">
     <g:if test="${packages && params.tab != 'acceptedChanges' && changes}">
         <g:form controller="pendingChange" action="processAll">
+            <g:hiddenField name="eventType" value="${params.eventType}"/>
             <g:select from="${packages}" noSelection="${['': message(code: 'default.select.choose.label')]}"
                       name="acceptChangesForPackages" class="ui select search multiple dropdown"
                       optionKey="${{ it.id }}"
@@ -62,7 +63,11 @@
     </g:if>
 
     <div class="ui top attached stackable tabular menu">
-        <g:set var="eventTabs" value="${PendingChangeConfiguration.SETTING_KEYS-[PendingChangeConfiguration.PACKAGE_PROP, PendingChangeConfiguration.PACKAGE_DELETED]}"/>
+        <%
+            Set<String> eventTabs = PendingChangeConfiguration.SETTING_KEYS
+            eventTabs.removeAll([PendingChangeConfiguration.PACKAGE_PROP, PendingChangeConfiguration.PACKAGE_DELETED])
+            eventTabs << PendingChangeConfiguration.TITLE_REMOVED
+        %>
         <g:each in="${eventTabs}" var="event">
             <g:link controller="subscription" action="entitlementChanges" id="${subscription.id}"
                     params="[eventType: event, tab: params.tab]"
@@ -98,6 +103,9 @@
                         </g:elseif>
                         <g:elseif test="${event == PendingChangeConfiguration.TITLE_DELETED}">
                             ${titlesDeletedPending}
+                        </g:elseif>
+                        <g:elseif test="${event == PendingChangeConfiguration.TITLE_REMOVED}">
+                            ${titlesRemovedPending}
                         </g:elseif>
                         <g:elseif test="${event == PendingChangeConfiguration.NEW_COVERAGE}">
                             ${newCoveragesPending}

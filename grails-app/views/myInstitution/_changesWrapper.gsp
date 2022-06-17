@@ -25,7 +25,7 @@
             </div>
             <g:each in="${pending}" var="entry">
                 <div class="row">
-                    <%--${entry}--%>
+                    <%--${notification}--%>
                     <div class="six wide column">
                         <g:if test="${entry.packageSubscription}">
                             <g:link controller="subscription" action="index" id="${entry.packageSubscription.id}">${entry.packageSubscription.name}</g:link>
@@ -43,12 +43,7 @@
                     </div><!-- .column -->
                     <div class="ten wide column">
                         <g:if test="${entry.packageSubscription}">
-                            <g:if test="${entry.msgToken == de.laser.PendingChangeConfiguration.TITLE_REMOVED}">
-                                <g:link controller="subscription" action="index" id="${entry.packageSubscription.id}" params="[status: RDStore.TIPP_STATUS_REMOVED.id]">${raw(entry.eventString)}</g:link>
-                            </g:if>
-                            <g:else>
-                                <g:link controller="subscription" action="entitlementChanges" id="${entry.packageSubscription.id}" params="[tab: 'changes', eventType: entry.msgToken]">${raw(entry.eventString)}</g:link>
-                            </g:else>
+                            <g:link controller="subscription" action="entitlementChanges" id="${entry.packageSubscription.id}" params="[tab: 'changes', eventType: entry.msgToken]">${raw(entry.eventString)}</g:link>
                         </g:if>
                         <g:else>
                             ${raw(entry.eventString)}
@@ -104,35 +99,35 @@
                 <g:message code="profile.dashboard.changes.event"/>
             </div><!-- .column -->
         </div>
-        <g:each in="${notifications}" var="entry">
+        <g:each in="${notifications}" var="notification">
             <div class="row">
-                <%--${entry}--%>
+                <%--${notification}--%>
                 <div class="six wide column">
-                    <g:if test="${entry.packageSubscription}">
-                        <g:link controller="subscription" action="index" id="${entry.packageSubscription.id}">${entry.packageSubscription.name}</g:link>
+                    <g:if test="${notification.packageSubscription}">
+                        <g:link controller="subscription" action="index" id="${notification.packageSubscription.id}">${notification.packageSubscription.name}</g:link>
                     </g:if>
-                    <g:elseif test="${entry.costItemSubscription}">
-                        <g:link controller="subscription" action="index" mapping="subfinance" params="${[sub:entry.costItemSubscription.id]}">${entry.costItemSubscription.name}</g:link>
+                    <g:elseif test="${notification.costItemSubscription}">
+                        <g:link controller="subscription" action="index" mapping="subfinance" params="${[sub:notification.costItemSubscription.id]}">${notification.costItemSubscription.name}</g:link>
                     </g:elseif>
-                    <g:elseif test="${entry.subscription}">
+                    <g:elseif test="${notification.subscription}">
                         <div class="right aligned wide column">
-                            <g:link controller="subscription" action="show" id="${entry.subscription.id}">
-                                ${entry.subscription.name}
+                            <g:link controller="subscription" action="show" id="${notification.subscription.id}">
+                                ${notification.subscription.name}
                             </g:link>
                         </div>
                     </g:elseif>
                 </div><!-- .column -->
                 <div class="ten wide column">
-                    <g:if test="${entry.packageSubscription}">
-                        <g:link controller="subscription" action="entitlementChanges" id="${entry.packageSubscription.id}" params="[tab: 'acceptedChanges', eventType: entry.msgToken]">${raw(entry.eventString)}</g:link>
+                    <g:if test="${notification.packageSubscription}">
+                        <g:link controller="subscription" action="entitlementChanges" id="${notification.packageSubscription.id}" params="[tab: 'acceptedChanges', eventType: notification.msgToken]">${raw(notification.eventString)}</g:link>
                     </g:if>
                     <g:else>
-                        ${raw(entry.eventString)}
+                        ${raw(notification.eventString)}
                     </g:else>
 
-                    <g:if test="${entry.subscription}">
+                    <g:if test="${notification.subscription}">
                         <div class="right aligned wide column">
-                            <g:link class="ui button" controller="subscription" action="copyMyElements" params="${[sourceObjectId: entry.subscription.source, targetObjectId: entry.subscription.target]}">
+                            <g:link class="ui button" controller="subscription" action="copyMyElements" params="${[sourceObjectId: notification.subscription.source, targetObjectId: notification.subscription.target]}">
                                 <g:message code="myinst.copyMyElements"/>
                             </g:link>
                         </div>

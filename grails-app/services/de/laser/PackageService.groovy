@@ -138,9 +138,12 @@ class PackageService {
                 String updateQuery = "update IssueEntitlement ie set ie.status.id = ${RDStore.TIPP_STATUS_REMOVED.id} where ie.subscription.id in (:sub) and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
                 IssueEntitlement.executeUpdate(updateQuery, queryParams)
                 removePackagePendingChanges(pkg, subList, true)
-
+                //continue here: test with package unlinking! Fix also the error 500 when unlinking from /memberSubscriptionsManagement
                 SubscriptionPackage.executeQuery('select sp from SubscriptionPackage sp where sp.pkg = :pkg and sp.subscription.id in (:subList)',[subList:subList,pkg:pkg]).each { SubscriptionPackage delPkg ->
                     OrgAccessPointLink.executeUpdate("delete from OrgAccessPointLink oapl where oapl.subPkg = :subPkg", [subPkg:delPkg])
+                    CostItem.executeQuery('select ci from CostItem ci where ci.costItemStatus != :deleted and ci.subPkg = :delPkg and ci.owner != :ctx', [delPkg: delPkg, deleted: RDStore.COST_ITEM_DELETED, ctx: contextOrg]).each { CostItem ci ->
+                        PendingChange.construct([target:ci,owner:ci.owner,oldValue:ci.subPkg.getPackageName(),newValue:null,msgToken:PendingChangeConfiguration.COST_ITEM_PACKAGE_UNLINKED,status:RDStore.PENDING_CHANGE_PENDING])
+                    }
                     CostItem.executeUpdate('update CostItem ci set ci.costItemStatus = :deleted, ci.subPkg = null, ci.sub = :sub where ci.subPkg = :delPkg',[delPkg: delPkg, sub:delPkg.subscription, deleted: RDStore.COST_ITEM_DELETED])
                     PendingChangeConfiguration.executeUpdate("delete from PendingChangeConfiguration pcc where pcc.subscriptionPackage=:sp",[sp:delPkg])
                 }
@@ -187,7 +190,7 @@ class PackageService {
         List<Long> tippIDs = TitleInstancePackagePlatform.executeQuery('select tipp.id from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg', [pkg: pkg])
         if(confirmed) {
             count = PendingChange.executeUpdate('delete from PendingChange pc where (pc.tipp in (select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkgId) and pc.oid in (:subOIDs) and pc.payload is null))', [pkgId: pkg.id, subOIDs: subIds.collect { subId -> Subscription.class.name+':'+subId }])
-            List oldStylePCs = PendingChange.executeQuery('select pc.id, pc.payload from PendingChange pc where pc.subscription.id in (:subIds)', [subIds: subIds])
+            List oldStylePCs = PendingChange.executeQuery('select pc.id, pc.payload from PendingChange pc where pc.subscription.id in (:subIds) and pc.payload != null', [subIds: subIds])
             List<Long> pcsToDelete = []
             oldStylePCs.eachWithIndex { pc, int i ->
                 def payload = JSON.parse(pc[1])
@@ -212,8 +215,8 @@ class PackageService {
         else {
             if(subIds) {
                 count = PendingChange.executeQuery('select count(pc.id) from PendingChange pc where (pc.tipp in (select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkgId) and pc.oid in (:subOIDs) and pc.payload is null))', [pkgId: pkg.id, subOIDs: subIds.collect { subId -> Subscription.class.name+':'+subId }])[0]
-                List oldStylePCs = PendingChange.executeQuery('select pc.payload from PendingChange pc where pc.subscription.id in (:subIds)', [subIds: subIds])
-                oldStylePCs.each { String pc
+                List oldStylePCs = PendingChange.executeQuery('select pc.payload from PendingChange pc where pc.subscription.id in (:subIds) and pc.payload != null', [subIds: subIds])
+                oldStylePCs.each { String pc ->
                     def payload = JSON.parse(pc)
                     if (payload.tippID) {
                         count++

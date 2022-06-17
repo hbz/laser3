@@ -1719,7 +1719,15 @@ class SubscriptionControllerService {
         result.package = Package.get(params.package)
         Locale locale = LocaleContextHolder.getLocale()
         if(params.confirmed) {
-            if(packageService.unlinkFromSubscription(result.package, result.subscription, result.institution, true)){
+            Set<Subscription> childSubs = Subscription.findAllByInstanceOf(result.subscription)
+            boolean unlinkErrorChild = false
+            childSubs.each { Subscription child ->
+                if(!packageService.unlinkFromSubscription(result.package, child, result.institution, true)) {
+                    unlinkErrorChild = true
+                    return
+                }
+            }
+            if(!unlinkErrorChild && packageService.unlinkFromSubscription(result.package, result.subscription, result.institution, true)){
                 result.message = messageSource.getMessage('subscription.details.unlink.successfully',null,locale)
                 [result:result,status:STATUS_OK]
             }else {
@@ -1738,12 +1746,12 @@ class SubscriptionControllerService {
             if(result.subscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE]){
                 List<Subscription> childSubs = Subscription.findAllByInstanceOf(result.subscription)
                 if (childSubs) {
-                    String queryChildSubs = "select ie.id from IssueEntitlement ie, Package pkg where ie.subscription in (:sub) and pkg.id =:pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) "
-                    Map<String,Object> queryParamChildSubs = [sub: childSubs, pkg_id: result.package.id]
+                    String queryChildSubs = "select ie.id from IssueEntitlement ie, Package pkg where ie.subscription in (:sub) and pkg.id =:pkg_id and ie.tipp in ( select tipp from TitleInstancePackagePlatform tipp where tipp.pkg.id = :pkg_id ) and ie.status != :removed"
+                    Map<String,Object> queryParamChildSubs = [sub: childSubs, pkg_id: result.package.id, removed: RDStore.TIPP_STATUS_REMOVED]
                     List childSubsPackages = SubscriptionPackage.findAllBySubscriptionInListAndPkg(childSubs, result.package)
                     int numOfPCsChildSubs = packageService.removePackagePendingChanges(result.package, childSubs.id, false)
                     int numOfIEsChildSubs = IssueEntitlement.executeQuery(queryChildSubs, queryParamChildSubs).size()
-                    int numOfCIsChildSubs = childSubsPackages ? CostItem.findAllBySubPkgInList(childSubsPackages).size() : 0
+                    int numOfCIsChildSubs = childSubsPackages ? CostItem.executeQuery('select count(ci.id) from CostItem ci where ci.subPkg in (:childSubsPackages) and ci.owner != :ctx and ci.costItemStatus != :deleted', [childSubsPackages: childSubsPackages, deleted: RDStore.COST_ITEM_DELETED, ctx: result.institution])[0] : 0
                     if(numOfPCsChildSubs > 0 || numOfIEsChildSubs > 0 || numOfCIsChildSubs > 0) {
                         conflictsList.addAll(packageService.listConflicts(result.package, childSubs, numOfPCsChildSubs, numOfIEsChildSubs, numOfCIsChildSubs))
                     }
@@ -1857,8 +1865,10 @@ class SubscriptionControllerService {
             Set<String> pendingOrWithNotification = []
             Set subscriptionHistory = []
             Set<PendingChange> changesOfPage = []
+            Set<String> excludes = PendingChangeConfiguration.GENERIC_EXCLUDES
+            excludes.remove(PendingChangeConfiguration.TITLE_REMOVED)
             result.subscription.packages.each { SubscriptionPackage sp ->
-                List<String> keysWithPendingOrNotification = sp.pendingChangeConfig.findAll { PendingChangeConfiguration pcc -> pcc.settingValue == RDStore.PENDING_CHANGE_CONFIG_PROMPT || pcc.withNotification }.collect{ PendingChangeConfiguration pcc -> pcc.settingKey }
+                List<String> keysWithPendingOrNotification = sp.pendingChangeConfig.findAll { PendingChangeConfiguration pcc -> !(pcc.settingKey in excludes) && (pcc.settingValue == RDStore.PENDING_CHANGE_CONFIG_PROMPT || pcc.withNotification) }.collect{ PendingChangeConfiguration pcc -> pcc.settingKey }
                 if(keysWithPendingOrNotification) {
                     pkgList << sp
                     pendingOrWithNotification.addAll(keysWithPendingOrNotification)
@@ -1896,18 +1906,20 @@ class SubscriptionControllerService {
                     String query1a = 'select pc.id from PendingChange pc join pc.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and pc.oid = :subOid and pc.status in (:pendingStatus)',
                            query2a = 'select pc.id from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and pc.oid = :subOid and pc.status in (:pendingStatus)'
                     //query3a = 'select pc.id,pc.priceItem from PendingChange pc join pc.priceItem.tipp.pkg pkg where pkg = :package and pc.oid = (:subOid) and pc.status in (:pendingStatus)',
-                    String query1b
+                    String query1b, query1c
                     if(params.eventType in [PendingChangeConfiguration.NEW_TITLE, PendingChangeConfiguration.TITLE_DELETED])
                         query1b = 'select pc.id from PendingChange pc join pc.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and not exists (select pca.id from PendingChange pca join pca.tipp tippA where tippA = pc.tipp and pca.oid = :subOid and pca.status in (:pendingStatus)) and pc.status = :packageHistory'
                     else if(params.eventType == PendingChangeConfiguration.TITLE_UPDATED)
                         query1b = 'select pc.id from PendingChange pc join pc.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and not exists (select pca.id from PendingChange pca join pca.tipp tippA where tippA = pc.tipp and pca.oid = :subOid and pca.newValue = pc.newValue and pca.status in (:pendingStatus)) and pc.status = :packageHistory'
+                    else if(params.eventType == PendingChangeConfiguration.TITLE_REMOVED)
+                        query1c = 'select pc.id from PendingChange pc join pc.tipp.pkg pkg where pkg = :package and pc.msgToken = :eventType and exists(select ie from IssueEntitlement ie where ie.tipp = pc.tipp and ie.subscription = :subscription and ie.status != :removed)'
                     String query2b
                     if(params.eventType in [PendingChangeConfiguration.NEW_COVERAGE, PendingChangeConfiguration.COVERAGE_DELETED])
                         query2b = 'select pc.id from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and not exists (select pca.id from PendingChange pca join pca.tippCoverage tcA where tcA = pc.tippCoverage and pca.oid = :subOid and pc.status in (:pendingStatus)) and pc.status = :packageHistory'
                     else if(params.eventType == PendingChangeConfiguration.COVERAGE_UPDATED)
                         query2b = 'select pc.id from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and not exists (select pca.id from PendingChange pca join pca.tippCoverage tcA where tcA = pc.tippCoverage and pca.oid = :subOid and pca.newValue = pc.newValue and pca.status in (:pendingStatus)) and pc.status = :packageHistory'
                     //query3b = 'select pc.id,pc.priceItem from PendingChange pc join pc.priceItem.tipp.pkg pkg where pkg = :package and pc.oid = (:subOid) and pc.status not in (:pendingStatus)',
-                    String query1c = 'select pc.id from PendingChange pc where pc.subscription = :subscription and pc.msgToken = :eventType and pc.status not in (:pendingStatus)'
+                    String query1d = 'select pc.id from PendingChange pc where pc.subscription = :subscription and pc.msgToken = :eventType and pc.status not in (:pendingStatus)'
                     if(params.eventType in [PendingChangeConfiguration.NEW_TITLE, PendingChangeConfiguration.TITLE_UPDATED, PendingChangeConfiguration.TITLE_DELETED])
                         subscriptionHistory.addAll(PendingChange.executeQuery(query1a+order,[package: pkg, entryDate: entryDate, eventType: params.eventType, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription)]))
                     else if(params.eventType in [PendingChangeConfiguration.NEW_COVERAGE, PendingChangeConfiguration.COVERAGE_UPDATED, PendingChangeConfiguration.COVERAGE_DELETED])
@@ -1917,8 +1929,10 @@ class SubscriptionControllerService {
                         changesOfPage.addAll(PendingChange.executeQuery(query1b+order,[package: pkg, entryDate: entryDate, eventType: params.eventType, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription), packageHistory: RDStore.PENDING_CHANGE_HISTORY]))
                     else if(params.eventType in [PendingChangeConfiguration.NEW_COVERAGE, PendingChangeConfiguration.COVERAGE_UPDATED, PendingChangeConfiguration.COVERAGE_DELETED])
                         changesOfPage.addAll(PendingChange.executeQuery(query2b+order,[package: pkg, entryDate: entryDate, eventType: params.eventType, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription), packageHistory: RDStore.PENDING_CHANGE_HISTORY]))
+                    else if(params.eventType == PendingChangeConfiguration.TITLE_REMOVED)
+                        changesOfPage.addAll(PendingChange.executeQuery(query1c+order,[package: pkg, eventType: params.eventType, subscription: sp.subscription, removed: RDStore.TIPP_STATUS_REMOVED]))
                     //changesOfPage.addAll(PendingChange.executeQuery(query3b,[packages: pkgList, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_HISTORY, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription)]))
-                    changesOfPage.addAll(PendingChange.executeQuery(query1c+order,[pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], eventType: params.eventType, subscription: result.subscription]))
+                    changesOfPage.addAll(PendingChange.executeQuery(query1d+order,[pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], eventType: params.eventType, subscription: result.subscription]))
                 }
             }
 
@@ -2327,7 +2341,7 @@ class SubscriptionControllerService {
      */
     Map<String,Object> removeEntitlement(GrailsParameterMap params) {
         IssueEntitlement ie = IssueEntitlement.get(params.ieid)
-        ie.status = RDStore.TIPP_STATUS_DELETED
+        ie.status = RDStore.TIPP_STATUS_REMOVED
         if(ie.save())
             [result:null,status:STATUS_OK]
         else [result:null,status:STATUS_ERROR]
@@ -2341,7 +2355,7 @@ class SubscriptionControllerService {
     Map<String,Object> removeEntitlementWithIEGroups(GrailsParameterMap params) {
         IssueEntitlement ie = IssueEntitlement.get(params.ieid)
         RefdataValue oldStatus = ie.status
-        ie.status = RDStore.TIPP_STATUS_DELETED
+        ie.status = RDStore.TIPP_STATUS_REMOVED
         if(ie.save()){
             if(IssueEntitlementGroupItem.findByIe(ie)) {
                 if (IssueEntitlementGroupItem.executeUpdate("delete from IssueEntitlementGroupItem iegi where iegi.ie = :ie", [ie: ie])) {
@@ -3328,12 +3342,19 @@ class SubscriptionControllerService {
 
             if(result.contextCustomerType == "ORG_CONSORTIUM") {
                 if(result.subscription.instanceOf){
+                    List subscrCostCounts = CostItem.executeQuery('select count(ci.id) from CostItem ci where ci.sub = :sub and ci.owner = :ctx and ci.costItemStatus != :deleted', [sub: result.subscription, ctx: result.institution, deleted: RDStore.COST_ITEM_DELETED])
+                    result.currentCostItemCounts = subscrCostCounts ? subscrCostCounts[0] : 0
                     result.currentSurveysCounts = SurveyConfig.executeQuery("from SurveyConfig as surConfig where surConfig.subscription = :sub and surConfig.surveyInfo.status not in (:invalidStatuses) and (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org))",
                             [sub: result.subscription.instanceOf,
                              org: result.subscription.getSubscriber(),
                              invalidStatuses: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY]]).size()
                 }else{
                     result.currentSurveysCounts = SurveyConfig.findAllBySubscription(result.subscription).size()
+                    List subscrCostCounts = CostItem.executeQuery('select count(ci.id) from CostItem ci where ci.sub.instanceOf = :sub and ci.owner = :ctx and ci.costItemStatus != :deleted', [sub: result.subscription, ctx: result.institution, deleted: RDStore.COST_ITEM_DELETED]),
+                    ownCostCounts = CostItem.executeQuery('select count(ci.id) from CostItem ci where ci.sub = :sub and ci.owner = :ctx and ci.costItemStatus != :deleted', [sub: result.subscription, ctx: result.institution, deleted: RDStore.COST_ITEM_DELETED])
+                    int subscrCount = subscrCostCounts ? subscrCostCounts[0] : 0
+                    int ownCount = ownCostCounts ? ownCostCounts[0] : 0
+                    result.currentCostItemCounts = "${ownCount}/${subscrCount}"
                 }
                 result.currentMembersCounts =  Subscription.executeQuery('select count(s) from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes',[parent: result.subscription, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])[0]
             }else{
@@ -3341,6 +3362,19 @@ class SubscriptionControllerService {
                         [sub: result.subscription.instanceOf,
                          org: result.subscription.getSubscriber(),
                          invalidStatuses: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY]]).size()
+                List subscrCostCounts = CostItem.executeQuery('select count(ci.id) from CostItem ci where ci.sub = :sub and ci.isVisibleForSubscriber = true and ci.costItemStatus != :deleted', [sub: result.subscription, deleted: RDStore.COST_ITEM_DELETED])
+                int subscrCount = subscrCostCounts ? subscrCostCounts[0] : 0
+                if(result.contextCustomerType == "ORG_INST") {
+                    List ownCostCounts = CostItem.executeQuery('select count(ci.id) from CostItem ci where ci.sub = :sub and ci.owner = :ctx and ci.costItemStatus != :deleted', [sub: result.subscription, ctx: result.institution, deleted: RDStore.COST_ITEM_DELETED])
+                    int ownCount = ownCostCounts ? ownCostCounts[0] : 0
+                    if(result.subscription.instanceOf)
+                        result.currentCostItemCounts = "${ownCount}/${subscrCount}"
+                    else
+                        result.currentCostItemCounts = ownCount
+                }
+                else {
+                    result.currentCostItemCounts = "${subscrCount}"
+                }
             }
             result.showConsortiaFunctions = subscriptionService.showConsortiaFunctions(result.contextOrg, result.subscription)
 

@@ -21,7 +21,7 @@
 
     %{--Custom URL mapping for re-use of index--}%
     <g:link class="item${controllerName == 'finance' ? ' active':''}" mapping="subfinance" controller="finance" action="index" params="${[sub:params.id]}">
-        ${message(code:'subscription.details.financials.label')}
+        ${message(code:'subscription.details.financials.label')}<div class="ui floating blue circular label">${currentCostItemCounts}</div>
     </g:link>
 
     <g:if test="${showConsortiaFunctions && !subscription.instanceOf}">

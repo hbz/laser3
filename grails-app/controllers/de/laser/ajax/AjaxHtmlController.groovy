@@ -203,6 +203,8 @@ class AjaxHtmlController {
         Map<String,Object> result = [subscription:Subscription.get(params.subscription), curatoryGroups: []], packageMetadata
         Org contextOrg = contextService.getOrg()
         result.contextCustomerType = contextOrg.getCustomerType()
+        result.institution = contextOrg
+        result.showConsortiaFunctions = result.contextCustomerType == 'ORG_CONSORTIUM'
         result.roleLinks = result.subscription.orgRelations.findAll { OrgRole oo -> !(oo.roleType in [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA]) }
         result.roleObject = result.subscription
         result.roleRespValue = 'Specific subscription editor'

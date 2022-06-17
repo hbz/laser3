@@ -35,7 +35,7 @@ class PendingChangeController  {
             Map<String, Object> changesCache = scw.get(ctx) as Map<String, Object>
             if(changesCache)
                 scw.remove(ctx)
-            if(pc.status == RDStore.PENDING_CHANGE_HISTORY) {
+            if(pc.status == RDStore.PENDING_CHANGE_HISTORY && pc.msgToken != PendingChangeConfiguration.TITLE_REMOVED) {
                 Org contextOrg = contextService.getOrg()
                 Package targetPkg
                 if(pc.tipp) {
@@ -55,7 +55,7 @@ class PendingChangeController  {
                 }
             }
             else {
-                pendingChangeService.accept(pc)
+                pendingChangeService.accept(pc, params.subId)
             }
         }
         redirect(url: request.getHeader('referer'))
@@ -98,9 +98,29 @@ class PendingChangeController  {
             concernedPackage.each { String spID ->
                 if(spID) {
                     SubscriptionPackage sp = SubscriptionPackage.get(Long.parseLong(spID))
-                    Set<PendingChange> pendingChanges = []
-                    pendingChanges.addAll(PendingChange.executeQuery("select pc from PendingChange pc join pc.tipp tipp where tipp.pkg = :pkg and pc.ts >= :creationDate and pc.status = :history and not exists (select pca.id from PendingChange pca where pca.targetProperty = pc.targetProperty and pca.tipp = pc.tipp and (pc.newValue = pca.newValue or (pc.newValue = null and pca.newValue = null)) and pca.oid = concat('"+Subscription.class.name+"',':',:subId) and pca.status = :accepted)",[pkg: sp.pkg, creationDate: sp.dateCreated, history: RDStore.PENDING_CHANGE_HISTORY, subId: sp.subscription.id, accepted: RDStore.PENDING_CHANGE_ACCEPTED]))
-                    pendingChanges.addAll(PendingChange.executeQuery("select pc from PendingChange pc join pc.tippCoverage tc join tc.tipp tipp where tipp.pkg = :pkg and pc.ts >= :creationDate and pc.status = :history and not exists (select pca.id from PendingChange pca where pca.targetProperty = pc.targetProperty and pca.tippCoverage = pc.tippCoverage and (pc.newValue = pca.newValue or (pc.newValue = null and pca.newValue = null)) and pca.oid = concat('"+Subscription.class.name+"',':',:subId) and pca.status = :accepted)",[pkg: sp.pkg, creationDate: sp.dateCreated, history: RDStore.PENDING_CHANGE_HISTORY, subId: sp.subscription.id, accepted: RDStore.PENDING_CHANGE_ACCEPTED]))
+                    String query = ''
+                    Map<String, Object> queryParams = [:]
+                    if(params.eventType in [PendingChangeConfiguration.NEW_TITLE, PendingChangeConfiguration.TITLE_DELETED]) {
+                        query = 'select pc from PendingChange pc join pc.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and not exists (select pca.id from PendingChange pca join pca.tipp tippA where tippA = pc.tipp and pca.oid = :subOid and pca.status in (:pendingStatus)) and pc.status = :packageHistory'
+                        queryParams = [package: sp.pkg, entryDate: sp.dateCreated, eventType: params.eventType, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(sp.subscription), packageHistory: RDStore.PENDING_CHANGE_HISTORY]
+                    }
+                    else if(params.eventType == PendingChangeConfiguration.TITLE_UPDATED) {
+                        query = 'select pc from PendingChange pc join pc.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and not exists (select pca.id from PendingChange pca join pca.tipp tippA where tippA = pc.tipp and pca.oid = :subOid and pca.newValue = pc.newValue and pca.status in (:pendingStatus)) and pc.status = :packageHistory'
+                        queryParams = [package: sp.pkg, entryDate: sp.dateCreated, eventType: params.eventType, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(sp.subscription), packageHistory: RDStore.PENDING_CHANGE_HISTORY]
+                    }
+                    else if(params.eventType == PendingChangeConfiguration.TITLE_REMOVED) {
+                        query = 'select pc from PendingChange pc join pc.tipp.pkg pkg where pkg = :package and pc.msgToken = :eventType and exists(select ie from IssueEntitlement ie where ie.tipp = pc.tipp and ie.subscription = :subscription and ie.status != :removed)'
+                        queryParams = [package: sp.pkg, eventType: params.eventType, subscription: sp.subscription, removed: RDStore.TIPP_STATUS_REMOVED]
+                    }
+                    else if(params.eventType in [PendingChangeConfiguration.NEW_COVERAGE, PendingChangeConfiguration.COVERAGE_DELETED]) {
+                        query = 'select pc from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and not exists (select pca.id from PendingChange pca join pca.tippCoverage tcA where tcA = pc.tippCoverage and pca.oid = :subOid and pc.status in (:pendingStatus)) and pc.status = :packageHistory'
+                        queryParams = [package: sp.pkg, entryDate: sp.dateCreated, eventType: params.eventType, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(sp.subscription), packageHistory: RDStore.PENDING_CHANGE_HISTORY]
+                    }
+                    else if(params.eventType == PendingChangeConfiguration.COVERAGE_UPDATED) {
+                        query = 'select pc from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and not exists (select pca.id from PendingChange pca join pca.tippCoverage tcA where tcA = pc.tippCoverage and pca.oid = :subOid and pca.newValue = pc.newValue and pca.status in (:pendingStatus)) and pc.status = :packageHistory'
+                        queryParams = [package: sp.pkg, entryDate: sp.dateCreated, eventType: params.eventType, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(sp.subscription), packageHistory: RDStore.PENDING_CHANGE_HISTORY]
+                    }
+                    Set<PendingChange> pendingChanges = PendingChange.executeQuery(query, queryParams)
 
                     pendingChanges.each { PendingChange pc ->
                         log.info("processing change ${pc}")
