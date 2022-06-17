@@ -9,6 +9,8 @@
 
 4304    17.06.2022  rc-2.3  2.3.1       Andreas Feature     Medium in Titelfilter ergänzt
 
+4299    17.06.2022  rc-2.3  2.3.1       Andreas Feature     Umbenennung des Reiters "Kostenübersicht" in "Kosten" und Anzeige der Kostenposten
+
 4297    17.06.2022  rc-2.3  2.3.1       Andreas Bug         verschiedene Umstellungen und Fehlerbehebungen beim Entknüpfen von Paketen
 
 4301    15.06.2022  rc-2.3  2.3.1       Andreas Bug         Methodenaufruf beim Export aller Einrichtungen korrigiert
