@@ -51656,8 +51656,8 @@ legend {
 @media only screen and (max-width: 767.98px) {
   .ui.page.grid {
     width: auto;
-    padding-left: 0em;
-    padding-right: 0em;
+    padding-left: 0;
+    padding-right: 0;
     margin-left: 0;
     margin-right: 0;
   }
@@ -51666,8 +51666,8 @@ legend {
 @media only screen and (min-width: 768px) and (max-width: 991.98px) {
   .ui.page.grid {
     width: auto;
-    margin-left: 0em;
-    margin-right: 0em;
+    margin-left: 0;
+    margin-right: 0;
     padding-left: 2em;
     padding-right: 2em;
   }
@@ -51676,8 +51676,8 @@ legend {
 @media only screen and (min-width: 992px) and (max-width: 1199.98px) {
   .ui.page.grid {
     width: auto;
-    margin-left: 0em;
-    margin-right: 0em;
+    margin-left: 0;
+    margin-right: 0;
     padding-left: 3%;
     padding-right: 3%;
   }
@@ -51686,8 +51686,8 @@ legend {
 @media only screen and (min-width: 1200px) and (max-width: 1919.98px) {
   .ui.page.grid {
     width: auto;
-    margin-left: 0em;
-    margin-right: 0em;
+    margin-left: 0;
+    margin-right: 0;
     padding-left: 15%;
     padding-right: 15%;
   }
@@ -51696,8 +51696,8 @@ legend {
 @media only screen and (min-width: 1920px) {
   .ui.page.grid {
     width: auto;
-    margin-left: 0em;
-    margin-right: 0em;
+    margin-left: 0;
+    margin-right: 0;
     padding-left: 23%;
     padding-right: 23%;
   }
@@ -52665,8 +52665,8 @@ legend {
 
 .ui.divided.grid:not([class*="vertically divided"]) > .column:not(.row),
 .ui.divided.grid:not([class*="vertically divided"]) > .row > .column {
-  -webkit-box-shadow: -1px 0px 0px 0px rgba(34, 36, 38, 0.15);
-  box-shadow: -1px 0px 0px 0px rgba(34, 36, 38, 0.15);
+  -webkit-box-shadow: -1px 0 0 0 rgba(34, 36, 38, 0.15);
+  box-shadow: -1px 0 0 0 rgba(34, 36, 38, 0.15);
 }
 
 /* Swap from padding to margin on columns to have dividers align */
@@ -52701,8 +52701,8 @@ legend {
 /* Divided Row */
 
 .ui.grid > .divided.row > .column {
-  -webkit-box-shadow: -1px 0px 0px 0px rgba(34, 36, 38, 0.15);
-  box-shadow: -1px 0px 0px 0px rgba(34, 36, 38, 0.15);
+  -webkit-box-shadow: -1px 0 0 0 rgba(34, 36, 38, 0.15);
+  box-shadow: -1px 0 0 0 rgba(34, 36, 38, 0.15);
 }
 
 .ui.grid > .divided.row > .column:first-child {
@@ -52724,8 +52724,8 @@ legend {
   width: calc(100% - 2rem);
   height: 1px;
   margin: 0 1rem;
-  -webkit-box-shadow: 0px -1px 0px 0px rgba(34, 36, 38, 0.15);
-  box-shadow: 0px -1px 0px 0px rgba(34, 36, 38, 0.15);
+  -webkit-box-shadow: 0 -1px 0 0 rgba(34, 36, 38, 0.15);
+  box-shadow: 0 -1px 0 0 rgba(34, 36, 38, 0.15);
 }
 
 /* Padded Horizontally Divided */
@@ -52746,8 +52746,8 @@ legend {
 
 .ui.inverted.divided.grid:not([class*="vertically divided"]) > .column:not(.row),
 .ui.inverted.divided.grid:not([class*="vertically divided"]) > .row > .column {
-  -webkit-box-shadow: -1px 0px 0px 0px rgba(255, 255, 255, 0.1);
-  box-shadow: -1px 0px 0px 0px rgba(255, 255, 255, 0.1);
+  -webkit-box-shadow: -1px 0 0 0 rgba(255, 255, 255, 0.1);
+  box-shadow: -1px 0 0 0 rgba(255, 255, 255, 0.1);
 }
 
 .ui.inverted.divided.grid:not([class*="vertically divided"]) > .column:not(.row):first-child,
@@ -52757,8 +52757,8 @@ legend {
 }
 
 .ui.inverted[class*="vertically divided"].grid > .row:before {
-  -webkit-box-shadow: 0px -1px 0px 0px rgba(255, 255, 255, 0.1);
-  box-shadow: 0px -1px 0px 0px rgba(255, 255, 255, 0.1);
+  -webkit-box-shadow: 0 -1px 0 0 rgba(255, 255, 255, 0.1);
+  box-shadow: 0 -1px 0 0 rgba(255, 255, 255, 0.1);
 }
 
 /* Relaxed */
@@ -52781,23 +52781,23 @@ legend {
 
 .ui.celled.grid {
   width: 100%;
-  margin: 1em 0em;
-  -webkit-box-shadow: 0px 0px 0px 1px #D4D4D5;
-  box-shadow: 0px 0px 0px 1px #D4D4D5;
+  margin: 1em 0;
+  -webkit-box-shadow: 0 0 0 1px #D4D4D5;
+  box-shadow: 0 0 0 1px #D4D4D5;
 }
 
 .ui.celled.grid > .row {
   width: 100% !important;
   margin: 0;
   padding: 0;
-  -webkit-box-shadow: 0px -1px 0px 0px #D4D4D5;
-  box-shadow: 0px -1px 0px 0px #D4D4D5;
+  -webkit-box-shadow: 0 -1px 0 0 #D4D4D5;
+  box-shadow: 0 -1px 0 0 #D4D4D5;
 }
 
 .ui.celled.grid > .column:not(.row),
 .ui.celled.grid > .row > .column {
-  -webkit-box-shadow: -1px 0px 0px 0px #D4D4D5;
-  box-shadow: -1px 0px 0px 0px #D4D4D5;
+  -webkit-box-shadow: -1px 0 0 0 #D4D4D5;
+  box-shadow: -1px 0 0 0 #D4D4D5;
 }
 
 .ui.celled.grid > .column:first-child,
@@ -53136,8 +53136,8 @@ legend {
 
   .ui[class*="mobile reversed"].divided.grid:not([class*="vertically divided"]) > .column:first-child,
   .ui[class*="mobile reversed"].divided.grid:not([class*="vertically divided"]) > .row > .column:first-child {
-    -webkit-box-shadow: -1px 0px 0px 0px rgba(34, 36, 38, 0.15);
-    box-shadow: -1px 0px 0px 0px rgba(34, 36, 38, 0.15);
+    -webkit-box-shadow: -1px 0 0 0 rgba(34, 36, 38, 0.15);
+    box-shadow: -1px 0 0 0 rgba(34, 36, 38, 0.15);
   }
 
   .ui[class*="mobile reversed"].divided.grid:not([class*="vertically divided"]) > .column:last-child,
@@ -53149,8 +53149,8 @@ legend {
   /* Vertically Divided Reversed */
 
   .ui.grid[class*="vertically divided"][class*="mobile vertically reversed"] > .row:first-child:before {
-    -webkit-box-shadow: 0px -1px 0px 0px rgba(34, 36, 38, 0.15);
-    box-shadow: 0px -1px 0px 0px rgba(34, 36, 38, 0.15);
+    -webkit-box-shadow: 0 -1px 0 0 rgba(34, 36, 38, 0.15);
+    box-shadow: 0 -1px 0 0 rgba(34, 36, 38, 0.15);
   }
 
   .ui.grid[class*="vertically divided"][class*="mobile vertically reversed"] > .row:last-child:before {
@@ -53161,8 +53161,8 @@ legend {
   /* Celled Reversed */
 
   .ui[class*="mobile reversed"].celled.grid > .row > .column:first-child {
-    -webkit-box-shadow: -1px 0px 0px 0px #D4D4D5;
-    box-shadow: -1px 0px 0px 0px #D4D4D5;
+    -webkit-box-shadow: -1px 0 0 0 #D4D4D5;
+    box-shadow: -1px 0 0 0 #D4D4D5;
   }
 
   .ui[class*="mobile reversed"].celled.grid > .row > .column:last-child {
@@ -53194,8 +53194,8 @@ legend {
 
   .ui[class*="tablet reversed"].divided.grid:not([class*="vertically divided"]) > .column:first-child,
   .ui[class*="tablet reversed"].divided.grid:not([class*="vertically divided"]) > .row > .column:first-child {
-    -webkit-box-shadow: -1px 0px 0px 0px rgba(34, 36, 38, 0.15);
-    box-shadow: -1px 0px 0px 0px rgba(34, 36, 38, 0.15);
+    -webkit-box-shadow: -1px 0 0 0 rgba(34, 36, 38, 0.15);
+    box-shadow: -1px 0 0 0 rgba(34, 36, 38, 0.15);
   }
 
   .ui[class*="tablet reversed"].divided.grid:not([class*="vertically divided"]) > .column:last-child,
@@ -53207,8 +53207,8 @@ legend {
   /* Vertically Divided Reversed */
 
   .ui.grid[class*="vertically divided"][class*="tablet vertically reversed"] > .row:first-child:before {
-    -webkit-box-shadow: 0px -1px 0px 0px rgba(34, 36, 38, 0.15);
-    box-shadow: 0px -1px 0px 0px rgba(34, 36, 38, 0.15);
+    -webkit-box-shadow: 0 -1px 0 0 rgba(34, 36, 38, 0.15);
+    box-shadow: 0 -1px 0 0 rgba(34, 36, 38, 0.15);
   }
 
   .ui.grid[class*="vertically divided"][class*="tablet vertically reversed"] > .row:last-child:before {
@@ -53219,8 +53219,8 @@ legend {
   /* Celled Reversed */
 
   .ui[class*="tablet reversed"].celled.grid > .row > .column:first-child {
-    -webkit-box-shadow: -1px 0px 0px 0px #D4D4D5;
-    box-shadow: -1px 0px 0px 0px #D4D4D5;
+    -webkit-box-shadow: -1px 0 0 0 #D4D4D5;
+    box-shadow: -1px 0 0 0 #D4D4D5;
   }
 
   .ui[class*="tablet reversed"].celled.grid > .row > .column:last-child {
@@ -53252,8 +53252,8 @@ legend {
 
   .ui[class*="computer reversed"].divided.grid:not([class*="vertically divided"]) > .column:first-child,
   .ui[class*="computer reversed"].divided.grid:not([class*="vertically divided"]) > .row > .column:first-child {
-    -webkit-box-shadow: -1px 0px 0px 0px rgba(34, 36, 38, 0.15);
-    box-shadow: -1px 0px 0px 0px rgba(34, 36, 38, 0.15);
+    -webkit-box-shadow: -1px 0 0 0 rgba(34, 36, 38, 0.15);
+    box-shadow: -1px 0 0 0 rgba(34, 36, 38, 0.15);
   }
 
   .ui[class*="computer reversed"].divided.grid:not([class*="vertically divided"]) > .column:last-child,
@@ -53265,8 +53265,8 @@ legend {
   /* Vertically Divided Reversed */
 
   .ui.grid[class*="vertically divided"][class*="computer vertically reversed"] > .row:first-child:before {
-    -webkit-box-shadow: 0px -1px 0px 0px rgba(34, 36, 38, 0.15);
-    box-shadow: 0px -1px 0px 0px rgba(34, 36, 38, 0.15);
+    -webkit-box-shadow: 0 -1px 0 0 rgba(34, 36, 38, 0.15);
+    box-shadow: 0 -1px 0 0 rgba(34, 36, 38, 0.15);
   }
 
   .ui.grid[class*="vertically divided"][class*="computer vertically reversed"] > .row:last-child:before {
@@ -53277,8 +53277,8 @@ legend {
   /* Celled Reversed */
 
   .ui[class*="computer reversed"].celled.grid > .row > .column:first-child {
-    -webkit-box-shadow: -1px 0px 0px 0px #D4D4D5;
-    box-shadow: -1px 0px 0px 0px #D4D4D5;
+    -webkit-box-shadow: -1px 0 0 0 #D4D4D5;
+    box-shadow: -1px 0 0 0 #D4D4D5;
   }
 
   .ui[class*="computer reversed"].celled.grid > .row > .column:last-child {
@@ -54019,11 +54019,11 @@ legend {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  margin: 0em 0em 1rem;
+  margin: 1rem 0;
   font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
   background: #FFFFFF;
   font-weight: normal;
-  border: none;
+  border: 1px solid rgba(34, 36, 38, 0.15);
   -webkit-box-shadow: 0 1px 2px 0 rgba(34, 36, 38, 0.15);
   box-shadow: 0 1px 2px 0 rgba(34, 36, 38, 0.15);
   border-radius: 0.28571429rem;
@@ -54089,7 +54089,7 @@ legend {
   background: none;
   padding: 0.92857143em 1.14285714em;
   text-transform: none;
-  color: #004678;
+  color: #1B1C1D;
   font-weight: normal;
   -webkit-transition: background 0.1s ease, color 0.1s ease, -webkit-box-shadow 0.1s ease;
   transition: background 0.1s ease, color 0.1s ease, -webkit-box-shadow 0.1s ease;
@@ -54142,7 +54142,7 @@ legend {
 .ui.menu .item > i.icon {
   opacity: 0.9;
   float: none;
-  margin: 0em 0.35714286em 0em 0em;
+  margin: 0 0.35714286em 0 0;
 }
 
 /*--------------
@@ -54151,8 +54151,8 @@ legend {
 
 .ui.menu:not(.vertical) .item > .button {
   position: relative;
-  top: 0em;
-  margin: -0.5em 0em;
+  top: 0;
+  margin: -0.5em 0;
   padding-bottom: 0.78571429em;
   padding-top: 0.78571429em;
   font-size: 1em;
@@ -54186,7 +54186,7 @@ legend {
 
 .ui.menu:not(.vertical) .item > .input {
   position: relative;
-  top: 0em;
+  top: 0;
   margin: -0.5em 0;
 }
 
@@ -54209,7 +54209,7 @@ legend {
 }
 
 .ui.vertical.menu .item > .header:not(.ui) {
-  margin: 0em 0em 0.5em;
+  margin: 0 0 0.5em;
   font-size: 1em;
   font-weight: bold;
 }
@@ -54232,9 +54232,9 @@ legend {
   min-width: calc(100% - 1px);
   border-radius: 0 0 0.28571429rem 0.28571429rem;
   background: #FFFFFF;
-  margin: 0em 0 0;
-  -webkit-box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.08);
-  box-shadow: 0px 1px 3px 0px rgba(0, 0, 0, 0.08);
+  margin: 0 0 0;
+  -webkit-box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.08);
 }
 
 .ui.menu .dropdown.item:not(.column) .menu {
@@ -54286,7 +54286,7 @@ legend {
   display: inline-block;
   font-size: 1em !important;
   float: none;
-  margin: 0em 0.75em 0em 0em !important;
+  margin: 0 0.75em 0 0 !important;
 }
 
 /* Secondary */
@@ -54325,9 +54325,9 @@ legend {
   min-width: -webkit-max-content;
   min-width: -moz-max-content;
   min-width: max-content;
-  margin: 0 0 0 0em;
-  -webkit-box-shadow: 0 1px 3px 0px rgba(0, 0, 0, 0.08);
-  box-shadow: 0 1px 3px 0px rgba(0, 0, 0, 0.08);
+  margin: 0 0 0 0;
+  -webkit-box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.08);
   border-radius: 0 0.28571429rem 0.28571429rem 0.28571429rem;
 }
 
@@ -54391,7 +54391,7 @@ legend {
 .ui.menu .item > img:not(.ui) {
   display: inline-block;
   vertical-align: middle;
-  margin: -0.3em 0em;
+  margin: -0.3em 0;
   width: 2.5em;
 }
 
@@ -54622,12 +54622,12 @@ Floated Menu / Item
 .ui.vertical.menu .item > i.icons {
   width: 1.18em;
   float: right;
-  margin: 0em 0em 0em 0.5em;
+  margin: 0 0 0 0.5em;
 }
 
 .ui.vertical.menu .item > .label + i.icon {
   float: none;
-  margin: 0em 0.5em 0em 0em;
+  margin: 0 0.5em 0 0;
 }
 
 /*--- Border ---*/
@@ -54649,7 +54649,7 @@ Floated Menu / Item
 /*--- Sub Menu ---*/
 
 .ui.vertical.menu .item > .menu {
-  margin: 0.5em -1.14285714em 0em;
+  margin: 0.5em -1.14285714em 0;
 }
 
 .ui.vertical.menu .menu .item {
@@ -54713,7 +54713,7 @@ Floated Menu / Item
 }
 
 .ui.tabular.fluid.menu {
-  width: calc(100% +  2px ) !important;
+  width: calc(100% + 2px) !important;
 }
 
 .ui.tabular.menu .item {
@@ -54723,7 +54723,7 @@ Floated Menu / Item
   border-right: 1px solid transparent;
   border-top: 2px solid transparent;
   padding: 0.92857143em 1.42857143em;
-  color: #004678;
+  color: #1B1C1D;
 }
 
 .ui.tabular.menu .item:before {
@@ -54764,7 +54764,7 @@ Floated Menu / Item
 
 .top.attached.segment + .ui.bottom.tabular.menu {
   position: relative;
-  width: calc(100% +  2px );
+  width: calc(100% + 2px);
   left: -1px;
 }
 
@@ -54927,7 +54927,7 @@ Floated Menu / Item
   box-shadow: none;
   border: none;
   padding: 0.78571429em 0.92857143em;
-  margin: 0em 0.35714286em;
+  margin: 0 0.35714286em;
   background: none;
   -webkit-transition: color 0.1s ease;
   transition: color 0.1s ease;
@@ -55024,17 +55024,17 @@ Floated Menu / Item
 /* Sub Menu */
 
 .ui.vertical.secondary.menu .item:not(.dropdown) > .menu {
-  margin: 0em -0.92857143em;
+  margin: 0 -0.92857143em;
 }
 
 .ui.vertical.secondary.menu .item:not(.dropdown) > .menu > .item {
-  margin: 0em;
+  margin: 0;
   padding: 0.5em 1.33333333em;
 }
 
 .ui.secondary.vertical.menu > .item {
   border: none;
-  margin: 0em 0em 0.35714286em;
+  margin: 0 0 0.35714286em;
   border-radius: 0.28571429rem !important;
 }
 
@@ -55130,7 +55130,7 @@ Floated Menu / Item
   background-color: transparent;
   -webkit-box-shadow: none;
   box-shadow: none;
-  border-color: #1B1C1D;
+  border-color: currentColor;
   font-weight: bold;
   color: rgba(0, 0, 0, 0.95);
 }
@@ -55138,7 +55138,7 @@ Floated Menu / Item
 /* Active Hover */
 
 .ui.secondary.pointing.menu .active.item:hover {
-  border-color: #1B1C1D;
+  border-color: currentColor;
   color: rgba(0, 0, 0, 0.95);
 }
 
@@ -55162,14 +55162,14 @@ Floated Menu / Item
   border-right-style: solid;
   border-right-color: transparent;
   border-radius: 0 !important;
-  margin: 0em -2px 0em 0em;
+  margin: 0 -2px 0 0;
   border-right-width: 2px;
 }
 
 /* Vertical Active */
 
 .ui.secondary.vertical.pointing.menu .active.item {
-  border-color: #1B1C1D;
+  border-color: currentColor;
 }
 
 /* Inverted */
@@ -55190,7 +55190,7 @@ Floated Menu / Item
 
 .ui.secondary.inverted.pointing.menu .link.item:hover,
 .ui.secondary.inverted.pointing.menu a.item:hover {
-  color: rgba(0, 0, 0, 0.95);
+  color: #ffffff;
 }
 
 /* Active */
@@ -55220,7 +55220,7 @@ Floated Menu / Item
   box-shadow: none;
   -ms-flex-item-align: center;
   align-self: center;
-  margin: 0em 0em;
+  margin: 0 0;
   padding: 0.35714286em 0.5em;
   font-weight: normal;
   color: rgba(0, 0, 0, 0.6);
@@ -55261,7 +55261,7 @@ Floated Menu / Item
 /*--- vertical text ---*/
 
 .ui.vertical.text.menu {
-  margin: 1em 0em;
+  margin: 1em 0;
 }
 
 .ui.vertical.text.menu:first-child {
@@ -55273,29 +55273,29 @@ Floated Menu / Item
 }
 
 .ui.vertical.text.menu .item {
-  margin: 0.57142857em 0em;
+  margin: 0.57142857em 0;
   padding-left: 0;
   padding-right: 0;
 }
 
 .ui.vertical.text.menu .item > i.icon {
   float: none;
-  margin: 0em 0.35714286em 0em 0em;
+  margin: 0 0.35714286em 0 0;
 }
 
 .ui.vertical.text.menu .header.item {
-  margin: 0.57142857em 0em 0.71428571em;
+  margin: 0.57142857em 0 0.71428571em;
 }
 
 /* Vertical Sub Menu */
 
 .ui.vertical.text.menu .item:not(.dropdown) > .menu {
-  margin: 0em;
+  margin: 0;
 }
 
 .ui.vertical.text.menu .item:not(.dropdown) > .menu > .item {
-  margin: 0em;
-  padding: 0.5em 0em;
+  margin: 0;
+  padding: 0.5em 0;
 }
 
 /*--- hover ---*/
@@ -55503,98 +55503,84 @@ Floated Menu / Item
 .ui.ui.ui.menu .primary.active.item,
 .ui.ui.primary.menu .active.item:hover,
 .ui.ui.primary.menu .active.item {
-  border-color: #004678;
   color: #004678;
 }
 
 .ui.ui.ui.menu .red.active.item,
 .ui.ui.red.menu .active.item:hover,
 .ui.ui.red.menu .active.item {
-  border-color: #BB1600;
   color: #BB1600;
 }
 
 .ui.ui.ui.menu .orange.active.item,
 .ui.ui.orange.menu .active.item:hover,
 .ui.ui.orange.menu .active.item {
-  border-color: #fa820a;
   color: #fa820a;
 }
 
 .ui.ui.ui.menu .yellow.active.item,
 .ui.ui.yellow.menu .active.item:hover,
 .ui.ui.yellow.menu .active.item {
-  border-color: #FBBD08;
   color: #FBBD08;
 }
 
 .ui.ui.ui.menu .olive.active.item,
 .ui.ui.olive.menu .active.item:hover,
 .ui.ui.olive.menu .active.item {
-  border-color: #B5CC18;
   color: #B5CC18;
 }
 
 .ui.ui.ui.menu .green.active.item,
 .ui.ui.green.menu .active.item:hover,
 .ui.ui.green.menu .active.item {
-  border-color: #98B500;
   color: #98B500;
 }
 
 .ui.ui.ui.menu .teal.active.item,
 .ui.ui.teal.menu .active.item:hover,
 .ui.ui.teal.menu .active.item {
-  border-color: #00B5AD;
   color: #00B5AD;
 }
 
 .ui.ui.ui.menu .blue.active.item,
 .ui.ui.blue.menu .active.item:hover,
 .ui.ui.blue.menu .active.item {
-  border-color: #004678;
   color: #004678;
 }
 
 .ui.ui.ui.menu .violet.active.item,
 .ui.ui.violet.menu .active.item:hover,
 .ui.ui.violet.menu .active.item {
-  border-color: #76007A;
   color: #76007A;
 }
 
 .ui.ui.ui.menu .purple.active.item,
 .ui.ui.purple.menu .active.item:hover,
 .ui.ui.purple.menu .active.item {
-  border-color: #2185d0;
   color: #2185d0;
 }
 
 .ui.ui.ui.menu .pink.active.item,
 .ui.ui.pink.menu .active.item:hover,
 .ui.ui.pink.menu .active.item {
-  border-color: #E03997;
   color: #E03997;
 }
 
 .ui.ui.ui.menu .brown.active.item,
 .ui.ui.brown.menu .active.item:hover,
 .ui.ui.brown.menu .active.item {
-  border-color: #6b1d1d;
   color: #6b1d1d;
 }
 
 .ui.ui.ui.menu .grey.active.item,
 .ui.ui.grey.menu .active.item:hover,
 .ui.ui.grey.menu .active.item {
-  border-color: #767676;
   color: #767676;
 }
 
 .ui.ui.ui.menu .black.active.item,
 .ui.ui.black.menu .active.item:hover,
 .ui.ui.black.menu .active.item {
-  border-color: #1B1C1D;
   color: #1B1C1D;
 }
 
@@ -55603,7 +55589,7 @@ Floated Menu / Item
   ---------------*/
 
 .ui.inverted.menu {
-  border: 0px solid transparent;
+  border: 0 solid transparent;
   background: #1B1C1D;
   -webkit-box-shadow: none;
   box-shadow: none;
@@ -55680,7 +55666,7 @@ Floated Menu / Item
 /*--- Active ---*/
 
 .ui.inverted.menu .active.item {
-  background: rgba(255, 255, 255, 0.15);
+  background: #3D3E3F;
   color: #ffffff !important;
 }
 
@@ -55700,7 +55686,7 @@ Floated Menu / Item
 /*--- Active Hover ---*/
 
 .ui.inverted.menu .active.item:hover {
-  background: rgba(255, 255, 255, 0.15);
+  background: #3D3E3F;
   color: #FFFFFF !important;
 }
 
@@ -56067,7 +56053,7 @@ Floated Menu / Item
 }
 
 .ui.attached.item.menu:not(.tabular) {
-  margin: 0 0 !important;
+  margin: 0 -1px !important;
 }
 
 .ui.item.menu .item:last-child:before {
@@ -56345,9 +56331,9 @@ Floated Menu / Item
   top: 0;
   bottom: 0;
   border-radius: 0;
-  margin: 0 0;
-  width: calc(100% - (0 * 2));
-  max-width: calc(100% - (0 * 2));
+  margin: 0 -1px;
+  width: calc(100% + 2px);
+  max-width: calc(100% + 2px);
   -webkit-box-shadow: none;
   box-shadow: none;
 }
@@ -56361,7 +56347,7 @@ Floated Menu / Item
 .ui[class*="top attached"].menu {
   bottom: 0;
   margin-bottom: 0;
-  top: 0px;
+  top: 0;
   margin-top: 1rem;
   border-radius: 0.28571429rem 0.28571429rem 0 0;
 }
@@ -56375,7 +56361,7 @@ Floated Menu / Item
 .ui[class*="bottom attached"].menu {
   bottom: 0;
   margin-top: 0;
-  top: 0px;
+  top: 0;
   margin-bottom: 1rem;
   -webkit-box-shadow: 0 1px 2px 0 rgba(34, 36, 38, 0.15), none;
   box-shadow: 0 1px 2px 0 rgba(34, 36, 38, 0.15), none;
@@ -56399,7 +56385,7 @@ Floated Menu / Item
 /* Tabular Attached */
 
 .ui.attached.menu:not(.tabular) {
-  border: 0 solid #D4D4D5;
+  border: 1px solid #D4D4D5;
 }
 
 .ui.attached.inverted.menu {
@@ -56467,21 +56453,21 @@ Floated Menu / Item
 .ui.big.menu,
 .ui.big.menu .dropdown,
 .ui.big.menu .dropdown .menu > .item {
-  font-size: 1.21428571rem;
+  font-size: 1.14285714rem;
 }
 
 .ui.big.vertical.menu:not(.icon) {
-  width: 22rem;
+  width: 20rem;
 }
 
 .ui.huge.menu,
 .ui.huge.menu .dropdown,
 .ui.huge.menu .dropdown .menu > .item {
-  font-size: 1.14285714rem;
+  font-size: 1.21428571rem;
 }
 
 .ui.huge.vertical.menu:not(.icon) {
-  width: 20rem;
+  width: 22rem;
 }
 
 .ui.massive.menu,

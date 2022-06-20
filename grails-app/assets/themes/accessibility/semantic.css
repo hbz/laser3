@@ -51863,8 +51863,8 @@ legend {
 @media only screen and (max-width: 767.98px) {
   .ui.page.grid {
     width: auto;
-    padding-left: 0em;
-    padding-right: 0em;
+    padding-left: 0;
+    padding-right: 0;
     margin-left: 0;
     margin-right: 0;
   }
@@ -51873,8 +51873,8 @@ legend {
 @media only screen and (min-width: 768px) and (max-width: 991.98px) {
   .ui.page.grid {
     width: auto;
-    margin-left: 0em;
-    margin-right: 0em;
+    margin-left: 0;
+    margin-right: 0;
     padding-left: 2em;
     padding-right: 2em;
   }
@@ -51883,8 +51883,8 @@ legend {
 @media only screen and (min-width: 992px) and (max-width: 1199.98px) {
   .ui.page.grid {
     width: auto;
-    margin-left: 0em;
-    margin-right: 0em;
+    margin-left: 0;
+    margin-right: 0;
     padding-left: 3%;
     padding-right: 3%;
   }
@@ -51893,8 +51893,8 @@ legend {
 @media only screen and (min-width: 1200px) and (max-width: 1919.98px) {
   .ui.page.grid {
     width: auto;
-    margin-left: 0em;
-    margin-right: 0em;
+    margin-left: 0;
+    margin-right: 0;
     padding-left: 15%;
     padding-right: 15%;
   }
@@ -51903,8 +51903,8 @@ legend {
 @media only screen and (min-width: 1920px) {
   .ui.page.grid {
     width: auto;
-    margin-left: 0em;
-    margin-right: 0em;
+    margin-left: 0;
+    margin-right: 0;
     padding-left: 23%;
     padding-right: 23%;
   }
@@ -52872,8 +52872,8 @@ legend {
 
 .ui.divided.grid:not([class*="vertically divided"]) > .column:not(.row),
 .ui.divided.grid:not([class*="vertically divided"]) > .row > .column {
-  -webkit-box-shadow: -1px 0px 0px 0px rgba(34, 36, 38, 0.15);
-  box-shadow: -1px 0px 0px 0px rgba(34, 36, 38, 0.15);
+  -webkit-box-shadow: -1px 0 0 0 rgba(34, 36, 38, 0.15);
+  box-shadow: -1px 0 0 0 rgba(34, 36, 38, 0.15);
 }
 
 /* Swap from padding to margin on columns to have dividers align */
@@ -52908,8 +52908,8 @@ legend {
 /* Divided Row */
 
 .ui.grid > .divided.row > .column {
-  -webkit-box-shadow: -1px 0px 0px 0px rgba(34, 36, 38, 0.15);
-  box-shadow: -1px 0px 0px 0px rgba(34, 36, 38, 0.15);
+  -webkit-box-shadow: -1px 0 0 0 rgba(34, 36, 38, 0.15);
+  box-shadow: -1px 0 0 0 rgba(34, 36, 38, 0.15);
 }
 
 .ui.grid > .divided.row > .column:first-child {
@@ -52931,8 +52931,8 @@ legend {
   width: calc(100% - 2rem);
   height: 1px;
   margin: 0 1rem;
-  -webkit-box-shadow: 0px -1px 0px 0px rgba(34, 36, 38, 0.15);
-  box-shadow: 0px -1px 0px 0px rgba(34, 36, 38, 0.15);
+  -webkit-box-shadow: 0 -1px 0 0 rgba(34, 36, 38, 0.15);
+  box-shadow: 0 -1px 0 0 rgba(34, 36, 38, 0.15);
 }
 
 /* Padded Horizontally Divided */
@@ -52953,8 +52953,8 @@ legend {
 
 .ui.inverted.divided.grid:not([class*="vertically divided"]) > .column:not(.row),
 .ui.inverted.divided.grid:not([class*="vertically divided"]) > .row > .column {
-  -webkit-box-shadow: -1px 0px 0px 0px rgba(255, 255, 255, 0.1);
-  box-shadow: -1px 0px 0px 0px rgba(255, 255, 255, 0.1);
+  -webkit-box-shadow: -1px 0 0 0 rgba(255, 255, 255, 0.1);
+  box-shadow: -1px 0 0 0 rgba(255, 255, 255, 0.1);
 }
 
 .ui.inverted.divided.grid:not([class*="vertically divided"]) > .column:not(.row):first-child,
@@ -52964,8 +52964,8 @@ legend {
 }
 
 .ui.inverted[class*="vertically divided"].grid > .row:before {
-  -webkit-box-shadow: 0px -1px 0px 0px rgba(255, 255, 255, 0.1);
-  box-shadow: 0px -1px 0px 0px rgba(255, 255, 255, 0.1);
+  -webkit-box-shadow: 0 -1px 0 0 rgba(255, 255, 255, 0.1);
+  box-shadow: 0 -1px 0 0 rgba(255, 255, 255, 0.1);
 }
 
 /* Relaxed */
@@ -52988,23 +52988,23 @@ legend {
 
 .ui.celled.grid {
   width: 100%;
-  margin: 1em 0em;
-  -webkit-box-shadow: 0px 0px 0px 1px #D4D4D5;
-  box-shadow: 0px 0px 0px 1px #D4D4D5;
+  margin: 1em 0;
+  -webkit-box-shadow: 0 0 0 1px #D4D4D5;
+  box-shadow: 0 0 0 1px #D4D4D5;
 }
 
 .ui.celled.grid > .row {
   width: 100% !important;
   margin: 0;
   padding: 0;
-  -webkit-box-shadow: 0px -1px 0px 0px #D4D4D5;
-  box-shadow: 0px -1px 0px 0px #D4D4D5;
+  -webkit-box-shadow: 0 -1px 0 0 #D4D4D5;
+  box-shadow: 0 -1px 0 0 #D4D4D5;
 }
 
 .ui.celled.grid > .column:not(.row),
 .ui.celled.grid > .row > .column {
-  -webkit-box-shadow: -1px 0px 0px 0px #D4D4D5;
-  box-shadow: -1px 0px 0px 0px #D4D4D5;
+  -webkit-box-shadow: -1px 0 0 0 #D4D4D5;
+  box-shadow: -1px 0 0 0 #D4D4D5;
 }
 
 .ui.celled.grid > .column:first-child,
@@ -53343,8 +53343,8 @@ legend {
 
   .ui[class*="mobile reversed"].divided.grid:not([class*="vertically divided"]) > .column:first-child,
   .ui[class*="mobile reversed"].divided.grid:not([class*="vertically divided"]) > .row > .column:first-child {
-    -webkit-box-shadow: -1px 0px 0px 0px rgba(34, 36, 38, 0.15);
-    box-shadow: -1px 0px 0px 0px rgba(34, 36, 38, 0.15);
+    -webkit-box-shadow: -1px 0 0 0 rgba(34, 36, 38, 0.15);
+    box-shadow: -1px 0 0 0 rgba(34, 36, 38, 0.15);
   }
 
   .ui[class*="mobile reversed"].divided.grid:not([class*="vertically divided"]) > .column:last-child,
@@ -53356,8 +53356,8 @@ legend {
   /* Vertically Divided Reversed */
 
   .ui.grid[class*="vertically divided"][class*="mobile vertically reversed"] > .row:first-child:before {
-    -webkit-box-shadow: 0px -1px 0px 0px rgba(34, 36, 38, 0.15);
-    box-shadow: 0px -1px 0px 0px rgba(34, 36, 38, 0.15);
+    -webkit-box-shadow: 0 -1px 0 0 rgba(34, 36, 38, 0.15);
+    box-shadow: 0 -1px 0 0 rgba(34, 36, 38, 0.15);
   }
 
   .ui.grid[class*="vertically divided"][class*="mobile vertically reversed"] > .row:last-child:before {
@@ -53368,8 +53368,8 @@ legend {
   /* Celled Reversed */
 
   .ui[class*="mobile reversed"].celled.grid > .row > .column:first-child {
-    -webkit-box-shadow: -1px 0px 0px 0px #D4D4D5;
-    box-shadow: -1px 0px 0px 0px #D4D4D5;
+    -webkit-box-shadow: -1px 0 0 0 #D4D4D5;
+    box-shadow: -1px 0 0 0 #D4D4D5;
   }
 
   .ui[class*="mobile reversed"].celled.grid > .row > .column:last-child {
@@ -53401,8 +53401,8 @@ legend {
 
   .ui[class*="tablet reversed"].divided.grid:not([class*="vertically divided"]) > .column:first-child,
   .ui[class*="tablet reversed"].divided.grid:not([class*="vertically divided"]) > .row > .column:first-child {
-    -webkit-box-shadow: -1px 0px 0px 0px rgba(34, 36, 38, 0.15);
-    box-shadow: -1px 0px 0px 0px rgba(34, 36, 38, 0.15);
+    -webkit-box-shadow: -1px 0 0 0 rgba(34, 36, 38, 0.15);
+    box-shadow: -1px 0 0 0 rgba(34, 36, 38, 0.15);
   }
 
   .ui[class*="tablet reversed"].divided.grid:not([class*="vertically divided"]) > .column:last-child,
@@ -53414,8 +53414,8 @@ legend {
   /* Vertically Divided Reversed */
 
   .ui.grid[class*="vertically divided"][class*="tablet vertically reversed"] > .row:first-child:before {
-    -webkit-box-shadow: 0px -1px 0px 0px rgba(34, 36, 38, 0.15);
-    box-shadow: 0px -1px 0px 0px rgba(34, 36, 38, 0.15);
+    -webkit-box-shadow: 0 -1px 0 0 rgba(34, 36, 38, 0.15);
+    box-shadow: 0 -1px 0 0 rgba(34, 36, 38, 0.15);
   }
 
   .ui.grid[class*="vertically divided"][class*="tablet vertically reversed"] > .row:last-child:before {
@@ -53426,8 +53426,8 @@ legend {
   /* Celled Reversed */
 
   .ui[class*="tablet reversed"].celled.grid > .row > .column:first-child {
-    -webkit-box-shadow: -1px 0px 0px 0px #D4D4D5;
-    box-shadow: -1px 0px 0px 0px #D4D4D5;
+    -webkit-box-shadow: -1px 0 0 0 #D4D4D5;
+    box-shadow: -1px 0 0 0 #D4D4D5;
   }
 
   .ui[class*="tablet reversed"].celled.grid > .row > .column:last-child {
@@ -53459,8 +53459,8 @@ legend {
 
   .ui[class*="computer reversed"].divided.grid:not([class*="vertically divided"]) > .column:first-child,
   .ui[class*="computer reversed"].divided.grid:not([class*="vertically divided"]) > .row > .column:first-child {
-    -webkit-box-shadow: -1px 0px 0px 0px rgba(34, 36, 38, 0.15);
-    box-shadow: -1px 0px 0px 0px rgba(34, 36, 38, 0.15);
+    -webkit-box-shadow: -1px 0 0 0 rgba(34, 36, 38, 0.15);
+    box-shadow: -1px 0 0 0 rgba(34, 36, 38, 0.15);
   }
 
   .ui[class*="computer reversed"].divided.grid:not([class*="vertically divided"]) > .column:last-child,
@@ -53472,8 +53472,8 @@ legend {
   /* Vertically Divided Reversed */
 
   .ui.grid[class*="vertically divided"][class*="computer vertically reversed"] > .row:first-child:before {
-    -webkit-box-shadow: 0px -1px 0px 0px rgba(34, 36, 38, 0.15);
-    box-shadow: 0px -1px 0px 0px rgba(34, 36, 38, 0.15);
+    -webkit-box-shadow: 0 -1px 0 0 rgba(34, 36, 38, 0.15);
+    box-shadow: 0 -1px 0 0 rgba(34, 36, 38, 0.15);
   }
 
   .ui.grid[class*="vertically divided"][class*="computer vertically reversed"] > .row:last-child:before {
@@ -53484,8 +53484,8 @@ legend {
   /* Celled Reversed */
 
   .ui[class*="computer reversed"].celled.grid > .row > .column:first-child {
-    -webkit-box-shadow: -1px 0px 0px 0px #D4D4D5;
-    box-shadow: -1px 0px 0px 0px #D4D4D5;
+    -webkit-box-shadow: -1px 0 0 0 #D4D4D5;
+    box-shadow: -1px 0 0 0 #D4D4D5;
   }
 
   .ui[class*="computer reversed"].celled.grid > .row > .column:last-child {
