@@ -500,7 +500,11 @@ class ManagementService {
             Locale locale = LocaleContextHolder.getLocale()
             FlashScope flash = getCurrentFlashScope()
             PropertyDefinition propertiesFilterPropDef = params.propertiesFilterPropDef ? genericOIDService.resolveOID(params.propertiesFilterPropDef.replace(" ", "")) : null
-            List selectedSubs = params.list("selectedSubs")
+            List selectedSubs = []
+            if(params.containsKey('selectedSubs'))
+                selectedSubs.addAll(params.list('selectedSubs'))
+            else if(params.processOption == 'deleteAllProperties')
+                selectedSubs.addAll(Subscription.findAllByInstanceOf(result.subscription))
             if (selectedSubs.size() > 0 && params.processOption && propertiesFilterPropDef) {
                 int newProperties = 0
                 int changeProperties = 0
@@ -572,19 +576,22 @@ class ManagementService {
                             }
                             else {
                                 //custom Property
-                                existingProp = subChild.propertySet.find { SubscriptionProperty sp ->
+                                Set<SubscriptionProperty> existingProps = subChild.propertySet.findAll { SubscriptionProperty sp ->
                                     sp.type.id == propertiesFilterPropDef.id && sp.owner.id == subChild.id && sp.tenant.id == result.institution.id
                                 }
-                                if (existingProp && !(existingProp.hasProperty('instanceOf') && existingProp.instanceOf && AuditConfig.getConfig(existingProp.instanceOf))){
-                                    try {
-                                        subChild.propertySet.remove(existingProp)
-                                        existingProp.delete()
-                                        deletedProperties++
-                                    }
-                                    catch (Exception e){
-                                        log.error( e.toString() )
+                                existingProps.each { SubscriptionProperty ep ->
+                                    if (ep && !(ep.hasProperty('instanceOf') && ep.instanceOf && AuditConfig.getConfig(ep.instanceOf))){
+                                        try {
+                                            subChild.propertySet.remove(ep)
+                                            ep.delete()
+                                            deletedProperties++
+                                        }
+                                        catch (Exception e){
+                                            log.error( e.toString() )
+                                        }
                                     }
                                 }
+
                             }
                         }
                         args = [deletedProperties]
@@ -594,10 +601,10 @@ class ManagementService {
                 if (selectedSubs.size() < 1) {
                     flash.error = messageSource.getMessage('subscriptionsManagement.noSelectedSubscriptions', null, locale)
                 }
-                if (!propertiesFilterPropDef) {
+                else if (!propertiesFilterPropDef) {
                     flash.error = messageSource.getMessage('subscriptionsManagement.noPropertySelected',null, locale)
                 }
-                if (!params.filterPropValue) {
+                else if (!params.filterPropValue) {
                     flash.error = messageSource.getMessage('subscriptionsManagement.noPropertyValue', null, locale)
                 }
             }

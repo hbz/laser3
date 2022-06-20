@@ -7,6 +7,30 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      17.06.2022  rc-2.3  2.3.1       Andreas Feature     we:kb-Sprunglink in Landingpage eingebaut, Sprunglinks mit Icons verziert
+
+4304    17.06.2022  rc-2.3  2.3.1       Andreas Feature     Medium in Titelfilter ergänzt
+
+4299    17.06.2022  rc-2.3  2.3.1       Andreas Feature     Umbenennung des Reiters "Kostenübersicht" in "Kosten" und Anzeige der Kostenposten
+
+4297    17.06.2022  rc-2.3  2.3.1       Andreas Bug         verschiedene Umstellungen und Fehlerbehebungen beim Entknüpfen von Paketen
+
+4301    15.06.2022  rc-2.3  2.3.1       Andreas Bug         Methodenaufruf beim Export aller Einrichtungen korrigiert
+
+4300    15.06.2022  rc-2.3  2.3.1       Andreas Bug         Löschungsanweisung nicht korrekt durchgereicht
+
+4298    15.06.2022  rc-2.3  2.3.1       Andreas Bug         doppelten Übertrag der Merkmale entfernt
+
+4296    15.06.2022  rc-2.3  2.3.1       Andreas Bug         AJAX-Call-Error-Meldung behoben beim Entknüpfen von Paketen
+
+4294    15.06.2022  rc-2.3  2.3.1       Andreas Feature     verschiedene Umstellungen in der Titeländerungsverwaltung
+
+4293    14.06.2022  rc-2.3  2.3.1       Andreas Bug         ausstehende Änderungen für Konsorten ausgeblendet
+
+4292    14.06.2022  rc-2.3  2.3.1       Andreas Feature     Darstellung der API-Zugriffsrechte angepasst
+
+#### day of release 2.3
+
 4062    13.06.2022  rc-2.3  2.3         Andreas Feature     Umstellung der Kostenauflistung auf Anzahl 
 
 4213    09.06.2022  rc-2.3  2.3         Ingrid/Andreas Feature  Kostenfilter nach Titel unterstützt jetzt neben den vorhandenen Werten auch Substrings
