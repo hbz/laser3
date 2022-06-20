@@ -41,9 +41,6 @@ class HeartbeatJob extends AbstractJob {
 
     @UnderDevelopment
     def execute() {
-        //
-        //  to reduce effort, simple logging is sufficient here
-        //
         if (! start()) {
             return false
         }
