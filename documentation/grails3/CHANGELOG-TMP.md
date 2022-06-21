@@ -7,6 +7,16 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4308    21.06.2022  rc-2.3  2.3.1       Moe     Feature     Laufzeit-Ende lässt sich bei automatischer Verlängerung bearbeiten
+
+4307    21.06.2022  rc-2.3  2.3.1       Moe     Bug         Bei "Automatisch um ein Jahr verlängern" Prüfung in meine Lizenzverwaltung einbauen
+
+4306    21.06.2022  rc-2.3  2.3.1       Andreas Bug         Datenbankabfragefehler beim Anlegen von Abdeckungs- und Preisangaben
+
+4180    20.06.2022  rc-2.3  2.3.1       Andreas Feature     neues Verfahrensverzeichnis eingehängt
+
+--      17.06.2022  rc-2.3  2.3.1       Andreas Feature     we:kb-Sprunglink in Landingpage eingebaut, Sprunglinks mit Icons verziert
+
 4304    17.06.2022  rc-2.3  2.3.1       Andreas Feature     Medium in Titelfilter ergänzt
 
 4299    17.06.2022  rc-2.3  2.3.1       Andreas Feature     Umbenennung des Reiters "Kostenübersicht" in "Kosten" und Anzeige der Kostenposten

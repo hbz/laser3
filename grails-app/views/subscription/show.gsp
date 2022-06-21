@@ -68,7 +68,7 @@
                         <dl>
                             <dt class="control-label">${message(code: 'subscription.endDate.label')}</dt>
                             <dd><semui:xEditable owner="${subscription}" field="endDate" type="date"
-                                                 validation="datesCheck"/></dd>
+                                                 validation="datesCheck" overwriteEditable="${editable && !subscription.isAutomaticRenewAnnually}"/></dd>
                             <g:if test="${editable}">
                                 <dd class="la-js-editmode-container"><semui:auditButton
                                         auditable="[subscription, 'endDate']" auditConfigs="${auditConfigs}"/></dd>
