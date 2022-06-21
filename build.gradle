@@ -27,7 +27,7 @@ apply plugin:'com.gorylenko.gradle-git-properties'
 
 // --- config
 
-version '2.3'
+version '2.3.1'
 group 'laser2'
 
 repositories {
