@@ -5,7 +5,7 @@ import de.laser.Org
 /**
  * This class represents a grouping unit for cost items. The grouping itself is done in the {@link CostItemGroup} class which links budget codes to {@link CostItem}s
  */
-class BudgetCode {
+class BudgetCode implements Comparable {
 
     Org owner
     String value
@@ -31,5 +31,10 @@ class BudgetCode {
         // Nullable is true, because values are already in the database
         lastUpdated (nullable: true)
         dateCreated (nullable: true)
+    }
+
+    @Override
+    int compareTo(Object o) {
+        return value.compareTo(o.value)
     }
 }
