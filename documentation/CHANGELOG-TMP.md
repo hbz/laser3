@@ -7,6 +7,11 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+
+4307    21.06.2022  rc-2.3  2.3.1       Moe     Bug         Bei "Automatisch um ein Jahr verlängern" Prüfung in meine Lizenzverwaltung einbauen
+
+4306    21.06.2022  rc-2.3  2.3.1       Andreas Bug         Datenbankabfragefehler beim Anlegen von Abdeckungs- und Preisangaben
+
 4180    20.06.2022  rc-2.3  2.3.1       Andreas Feature     neues Verfahrensverzeichnis eingehängt
 
 --      17.06.2022  rc-2.3  2.3.1       Andreas Feature     we:kb-Sprunglink in Landingpage eingebaut, Sprunglinks mit Icons verziert
