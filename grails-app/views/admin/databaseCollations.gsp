@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.DatabaseUtils; groovy.sql.GroovyRowResult; de.laser.RefdataValue; de.laser.storage.BeanStore" %>
+<%@ page import="de.laser.helper.DatabaseInfo; groovy.sql.GroovyRowResult; de.laser.RefdataValue; de.laser.storage.BeanStore" %>
 <!doctype html>
 <html>
 <head>
@@ -63,10 +63,10 @@
                     <g:else>
                         <td class="x">
                             <span class="ui image label">
-                            <g:if test="${row.collation_name == DatabaseUtils.DE_U_CO_PHONEBK_X_ICU}">
+                            <g:if test="${row.collation_name == DatabaseInfo.DE_U_CO_PHONEBK_X_ICU}">
                                 <img class="ui mini" src="${resource(dir:'images', file:'flags/de.svg', absolute:true)}" alt="[DE]" /> ${row.collation_name}
                             </g:if>
-                            <g:elseif test="${row.collation_name == DatabaseUtils.EN_US_U_VA_POSIX_X_ICU}">
+                            <g:elseif test="${row.collation_name == DatabaseInfo.EN_US_U_VA_POSIX_X_ICU}">
                                 <img class="ui mini" src="${resource(dir:'images', file:'flags/us.svg', absolute:true)}" alt="[EN]" /> ${row.collation_name}
                             </g:elseif>
                             <g:else>
@@ -96,14 +96,14 @@
             <th></th>
             <th style="text-transform: none !important;">DEFAULT: ${collate_de}</th>
             <th>Aktive Sortierung</th>
-            <th>${DatabaseUtils.DE_U_CO_PHONEBK_X_ICU}</th>
+            <th>${DatabaseInfo.DE_U_CO_PHONEBK_X_ICU}</th>
         </tr>
     </thead>
         <tbody>
             <g:each in="${examples.keySet()}" var="cat">
                 <g:each in="${examples[cat].get(collate_de)}" var="e" status="i">
                     <tr class="${cat}">
-                        <g:set var="phbk_de" value="${examples[cat].get(DatabaseUtils.DE_U_CO_PHONEBK_X_ICU) ? examples[cat].get(DatabaseUtils.DE_U_CO_PHONEBK_X_ICU)[i] : ''}" />
+                        <g:set var="phbk_de" value="${examples[cat].get(DatabaseInfo.DE_U_CO_PHONEBK_X_ICU) ? examples[cat].get(DatabaseInfo.DE_U_CO_PHONEBK_X_ICU)[i] : ''}" />
 
                         <td>${i+1}</td>
                         <td <% if (examples[cat].get(collate_de)[i] == phbk_de){ print 'class="table-td-yoda-green"'} else { print 'class="table-td-yoda-red"'} %>>
@@ -137,14 +137,14 @@
             <th></th>
             <th style="text-transform: none !important;">DEFAULT: ${collate_en}</th>
             <th>Aktive Sortierung</th>
-            <th>${DatabaseUtils.EN_US_U_VA_POSIX_X_ICU}</th>
+            <th>${DatabaseInfo.EN_US_U_VA_POSIX_X_ICU}</th>
         </tr>
         </thead>
         <tbody>
             <g:each in="${examples.keySet()}" var="cat">
                 <g:each in="${examples[cat].get(collate_en)}" var="e" status="i">
                     <tr class="${cat}">
-                        <g:set var="phbk_en" value="${examples[cat].get(DatabaseUtils.EN_US_U_VA_POSIX_X_ICU) ? examples[cat].get(DatabaseUtils.EN_US_U_VA_POSIX_X_ICU)[i] : ''}" />
+                        <g:set var="phbk_en" value="${examples[cat].get(DatabaseInfo.EN_US_U_VA_POSIX_X_ICU) ? examples[cat].get(DatabaseInfo.EN_US_U_VA_POSIX_X_ICU)[i] : ''}" />
 
                         <td>${i+1}</td>
                         <td <% if (examples[cat].get(collate_en)[i] == phbk_en){ print 'class="table-td-yoda-green"'} else { print 'class="table-td-yoda-red"'} %>>

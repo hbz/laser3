@@ -3,7 +3,7 @@ package de.laser.custom
 import de.laser.ContextService
 import de.laser.UserService
 import de.laser.auth.User
-import de.laser.helper.ProfilerUtils
+import de.laser.helper.Profiler
 import de.laser.cache.SessionCacheWrapper
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -31,7 +31,7 @@ class CustomAuthSuccessHandler extends CustomAjaxAwareAuthenticationSuccessHandl
         }
 
         SessionCacheWrapper cache = contextService.getSessionCache()
-        cache.put(ProfilerUtils.SESSION_SYSTEMPROFILER, new ProfilerUtils(ProfilerUtils.SESSION_SYSTEMPROFILER))
+        cache.put(Profiler.SESSION_SYSTEMPROFILER, new Profiler(Profiler.SESSION_SYSTEMPROFILER))
 
         super.onAuthenticationSuccess(request, response, authentication)
     }

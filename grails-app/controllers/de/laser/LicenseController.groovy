@@ -13,7 +13,7 @@ import de.laser.properties.PropertyDefinition
  
 import de.laser.utils.DateUtils
 import de.laser.annotations.DebugInfo
-import de.laser.helper.ProfilerUtils
+import de.laser.helper.Profiler
 import de.laser.storage.RDStore
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinitionGroup
@@ -62,7 +62,7 @@ class LicenseController {
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def show() {
 
-        ProfilerUtils pu = new ProfilerUtils()
+        Profiler pu = new Profiler()
         pu.setBenchmark('this-n-that')
 
         log.debug("license: ${params}");

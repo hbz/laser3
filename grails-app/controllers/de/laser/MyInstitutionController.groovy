@@ -175,7 +175,7 @@ class MyInstitutionController  {
     def currentPlatforms() {
 
         Map<String, Object> result = [:]
-		ProfilerUtils pu = new ProfilerUtils()
+		Profiler pu = new Profiler()
 		pu.setBenchmark('init')
 
         result.user = contextService.getUser()
@@ -323,7 +323,7 @@ class MyInstitutionController  {
             else params.remove('resetFilter')
             cache.remove('licenseFilterCache') //has to be executed in any case in order to enable cache updating
         }
-		ProfilerUtils pu = new ProfilerUtils()
+		Profiler pu = new Profiler()
 		pu.setBenchmark('init')
 
         result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
@@ -782,7 +782,7 @@ class MyInstitutionController  {
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def currentProviders() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
-		ProfilerUtils pu = new ProfilerUtils()
+		Profiler pu = new Profiler()
 		pu.setBenchmark('init')
 
         EhcacheWrapper cache = contextService.getSharedOrgCache('MyInstitutionController/currentProviders')
@@ -904,7 +904,7 @@ join sub.orgRelations or_sub where
     def currentSubscriptions() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
-		ProfilerUtils pu = new ProfilerUtils()
+		Profiler pu = new Profiler()
 		//pu.setBenchmark('init')
         result.tableConfig = ['showActions','showLicense']
         result.putAll(subscriptionService.getMySubscriptions(params,result.user,result.institution))
@@ -1266,7 +1266,7 @@ join sub.orgRelations or_sub where
     def currentTitles() {
 
         Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
-		ProfilerUtils pu = new ProfilerUtils()
+		Profiler pu = new Profiler()
 		pu.setBenchmark('init')
 
         Set<RefdataValue> orgRoles = []
@@ -2647,7 +2647,7 @@ join sub.orgRelations or_sub where
     def currentConsortia() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
-        ProfilerUtils pu = new ProfilerUtils()
+        Profiler pu = new Profiler()
         pu.setBenchmark('start')
 
         // new: filter preset
@@ -2762,7 +2762,7 @@ join sub.orgRelations or_sub where
     def manageMembers() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
-        ProfilerUtils pu = new ProfilerUtils()
+        Profiler pu = new Profiler()
         pu.setBenchmark('start')
 
         // new: filter preset
@@ -2890,7 +2890,7 @@ join sub.orgRelations or_sub where
         Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
         result.tableConfig = ['withCostItems']
         result.putAll(subscriptionService.getMySubscriptionsForConsortia(params,result.user,result.institution,result.tableConfig))
-        ProfilerUtils pu = result.pu
+        Profiler pu = result.pu
         pu.setBenchmark("after subscription loading, before providers")
         //LinkedHashMap<Subscription,List<Org>> providers = [:]
         Map<Org,Set<String>> mailAddresses = [:]
@@ -3268,7 +3268,7 @@ join sub.orgRelations or_sub where
     def manageParticipantSurveys() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
-        ProfilerUtils pu = new ProfilerUtils()
+        Profiler pu = new Profiler()
         pu.setBenchmark('filterService')
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)

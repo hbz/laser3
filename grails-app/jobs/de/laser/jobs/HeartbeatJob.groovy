@@ -3,7 +3,7 @@ package de.laser.jobs
 import de.laser.SystemService
 import de.laser.annotations.UnderDevelopment
 import de.laser.custom.CustomWebSocketConfig
-import de.laser.helper.ConfigMapper
+import de.laser.utils.ConfigMapper
 import de.laser.system.SystemActivityProfiler
 import de.laser.base.AbstractJob
 import grails.converters.JSON

@@ -4,7 +4,7 @@ package de.laser
 import de.laser.auth.User
 import de.laser.ctrl.DocstoreControllerService
 import de.laser.utils.AppUtils
-import de.laser.helper.ConfigMapper
+import de.laser.utils.ConfigMapper
 import de.laser.annotations.DebugInfo
 import de.laser.storage.RDConstants
 import de.laser.survey.SurveyConfig

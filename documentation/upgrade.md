@@ -54,7 +54,7 @@ Localization dependent logic should be managed by *de.laser.utils.LocaleUtils* t
 ### Naming Convention
   * **Private methods** in domain classes, controllers, and services should be named with a leading underscore to avoid confusion. 
     In general, some of the currently found constructs should be reconsidered!
-  * **Helper and Utils** - Helper classes can be defined in affected packages and named according to the context. Global utilities should be defined in package *de.laser.utils*
+  * **Helper and Utils** - Helper classes should be defined in affected packages or in *de.laser.helper* but named according to the context. Global utilities should be defined in *de.laser.utils*
 
 ### Opencsv
 

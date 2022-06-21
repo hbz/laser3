@@ -1,13 +1,13 @@
 package changelogs
 
-import de.laser.helper.DatabaseUtils
+import de.laser.helper.DatabaseInfo
 
 databaseChangeLog = {
 
     changeSet(author: "klober (modified)", id: "1649658426259-1") {
         grailsChange {
             change {
-                String collate = DatabaseUtils.DE_U_CO_PHONEBK_X_ICU
+                String collate = DatabaseInfo.DE_U_CO_PHONEBK_X_ICU
                 String locale = collate.replace('-x-icu', '')
                 sql.execute('create collation if not exists public."' + collate + '" (provider = icu, locale = "' + locale + '")')
             }
@@ -17,7 +17,7 @@ databaseChangeLog = {
     changeSet(author: "klober (modified)", id: "1649658426259-2") {
         grailsChange {
             change {
-                String collate = DatabaseUtils.EN_US_U_VA_POSIX_X_ICU
+                String collate = DatabaseInfo.EN_US_U_VA_POSIX_X_ICU
                 String locale = collate.replace('-x-icu', '')
                 sql.execute('create collation if not exists public."' + collate + '" (provider = icu, locale = "' + locale + '")')
             }
@@ -47,13 +47,13 @@ databaseChangeLog = {
                     String type = nfo[2]
                     boolean indexUpdate = nfo[3]
 
-                    sql.execute('alter table ' + table + ' alter column ' + column_de + ' type ' + type + ' collate public."' + DatabaseUtils.DE_U_CO_PHONEBK_X_ICU + '"')
+                    sql.execute('alter table ' + table + ' alter column ' + column_de + ' type ' + type + ' collate public."' + DatabaseInfo.DE_U_CO_PHONEBK_X_ICU + '"')
                     if (indexUpdate) {
                         sql.execute('drop index ' + column_de + '_idx')
                         sql.execute('create index ' + column_de + '_idx on ' + table + '(' + column_de + ')')
                     }
 
-                    sql.execute('alter table ' + table + ' alter column ' + column_en + ' type ' + type + ' collate public."' + DatabaseUtils.EN_US_U_VA_POSIX_X_ICU + '"')
+                    sql.execute('alter table ' + table + ' alter column ' + column_en + ' type ' + type + ' collate public."' + DatabaseInfo.EN_US_U_VA_POSIX_X_ICU + '"')
                     if (indexUpdate) {
                         sql.execute('drop index ' + column_en + '_idx')
                         sql.execute('create index ' + column_en + '_idx on ' + table + '(' + column_en + ')')

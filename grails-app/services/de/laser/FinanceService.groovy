@@ -549,7 +549,7 @@ class FinanceService {
      */
     Map getCostItemsForSubscription(GrailsParameterMap params,Map configMap) throws FinancialDataException {
         if(configMap.subscription) {
-            ProfilerUtils pu = new ProfilerUtils()
+            Profiler pu = new Profiler()
             pu.setBenchmark("init")
             Subscription sub = (Subscription) configMap.subscription
             params.filterKey = sub.id
@@ -639,7 +639,7 @@ class FinanceService {
      * @see CostItem
      */
     Map<String,Object> getCostItems(GrailsParameterMap params, Map configMap) throws FinancialDataException {
-        ProfilerUtils pu = new ProfilerUtils()
+        Profiler pu = new Profiler()
         pu.setBenchmark("load filter params")
         params.filterKey = "global"
         Map<String,Object> filterQuery = processFilterParams(params)

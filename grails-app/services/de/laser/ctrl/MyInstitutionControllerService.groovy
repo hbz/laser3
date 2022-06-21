@@ -3,7 +3,7 @@ package de.laser.ctrl
 import de.laser.*
 import de.laser.auth.User
 import de.laser.utils.DateUtils
-import de.laser.helper.ProfilerUtils
+import de.laser.helper.Profiler
 import de.laser.storage.RDStore
 import de.laser.helper.SwissKnife
 import de.laser.survey.SurveyInfo
@@ -40,7 +40,7 @@ class MyInstitutionControllerService {
      * @return OK if the request was successful, ERROR otherwise
      */
     Map<String, Object> dashboard(MyInstitutionController controller, GrailsParameterMap params) {
-        ProfilerUtils pu = new ProfilerUtils()
+        Profiler pu = new Profiler()
         pu.setBenchmark('init')
         Map<String, Object> result = getResultGenerics(controller, params)
 

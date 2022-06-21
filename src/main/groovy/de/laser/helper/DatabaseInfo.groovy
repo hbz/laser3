@@ -8,7 +8,7 @@ import groovy.util.logging.Slf4j
 import javax.sql.DataSource
 
 @Slf4j
-class DatabaseUtils {
+class DatabaseInfo {
 
     static final String DE_U_CO_PHONEBK_X_ICU   = "de-u-co-phonebk-x-icu"
     static final String EN_US_U_VA_POSIX_X_ICU  = "en-US-u-va-posix-x-icu"

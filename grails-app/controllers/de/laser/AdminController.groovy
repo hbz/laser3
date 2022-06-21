@@ -2,7 +2,7 @@ package de.laser
 
 
 import de.laser.utils.AppUtils
-import de.laser.helper.DatabaseUtils
+import de.laser.helper.DatabaseInfo
 import de.laser.utils.LocaleUtils
 import de.laser.cache.EhcacheWrapper
 import de.laser.helper.SwissKnife
@@ -34,7 +34,7 @@ import org.hibernate.SQLQuery
 import org.hibernate.Session
 import org.hibernate.SessionFactory
 import org.springframework.web.multipart.commons.CommonsMultipartFile
-import de.laser.helper.ConfigMapper
+import de.laser.utils.ConfigMapper
 
 import java.nio.file.Files
 import java.nio.file.Path
@@ -526,9 +526,9 @@ class AdminController  {
 
         Sql sql = GlobalService.obtainSqlConnection()
 
-        result.allTables = DatabaseUtils.getAllTablesWithCollations()
+        result.allTables = DatabaseInfo.getAllTablesWithCollations()
 
-        result.collate_current = DatabaseUtils.getDatabaseCollate()
+        result.collate_current = DatabaseInfo.getDatabaseCollate()
         result.collate_de = 'de_DE.UTF-8'
         result.collate_en = 'en_US.UTF-8'
         result.current_de = 'current_de'
@@ -571,13 +571,13 @@ class AdminController  {
                 ]
         ]
 
-        String de_x_icu = DatabaseUtils.DE_U_CO_PHONEBK_X_ICU
+        String de_x_icu = DatabaseInfo.DE_U_CO_PHONEBK_X_ICU
         result.examples['country'].putAt( de_x_icu, sql.rows( query1de + ' order by rdv.rdv_value_de COLLATE "' + de_x_icu + '" limit ' + limit ).collect{ it.rdv_value_de } )
         result.examples[    'ddc'].putAt( de_x_icu, sql.rows( query2de + ' order by rdv.rdv_value_de COLLATE "' + de_x_icu + '" limit ' + limit ).collect{ it.rdv_value_de } )
         result.examples[    'org'].putAt( de_x_icu, sql.rows( query3 + ' order by org_name COLLATE "' + de_x_icu + '" limit ' + limit ).collect{ it.org_name } )
         result.examples[  'title'].putAt( de_x_icu, sql.rows( query4 + ' order by ti_title COLLATE "' + de_x_icu + '" limit ' + limit ).collect{ it.ti_title } )
 
-        String en_x_icu = DatabaseUtils.EN_US_U_VA_POSIX_X_ICU
+        String en_x_icu = DatabaseInfo.EN_US_U_VA_POSIX_X_ICU
         result.examples['country'].putAt( en_x_icu, sql.rows( query1en + ' order by rdv.rdv_value_en COLLATE "' + en_x_icu + '" limit ' + limit ).collect{ it.rdv_value_en } )
         result.examples[    'ddc'].putAt( en_x_icu, sql.rows( query2en + ' order by rdv.rdv_value_en COLLATE "' + en_x_icu + '" limit ' + limit ).collect{ it.rdv_value_en } )
         result.examples[    'org'].putAt( en_x_icu, sql.rows( query3 + ' order by org_name COLLATE "' + en_x_icu + '" limit ' + limit ).collect{ it.org_name } )
@@ -596,11 +596,11 @@ class AdminController  {
         )).list()
         result.dbmVersion       = dbmQuery.size() > 0 ? dbmQuery.first() : ['unkown', 'unkown', 'unkown']
 
-        result.defaultCollate   = DatabaseUtils.getDatabaseCollate()
-        result.dbSize           = DatabaseUtils.getDatabaseSize()
-        result.dbActivity       = DatabaseUtils.getDatabaseActivity()
-        result.dbUserFunctions  = DatabaseUtils.getDatabaseUserFunctions()
-        result.dbTableUsage     = DatabaseUtils.getAllTablesUsageInfo()
+        result.defaultCollate   = DatabaseInfo.getDatabaseCollate()
+        result.dbSize           = DatabaseInfo.getDatabaseSize()
+        result.dbActivity       = DatabaseInfo.getDatabaseActivity()
+        result.dbUserFunctions  = DatabaseInfo.getDatabaseUserFunctions()
+        result.dbTableUsage     = DatabaseInfo.getAllTablesUsageInfo()
         result
     }
 

@@ -4,7 +4,7 @@ import de.laser.utils.DateUtils
 import liquibase.repackaged.com.opencsv.*
 import de.laser.auth.*
 import de.laser.utils.AppUtils
-import de.laser.helper.ConfigMapper
+import de.laser.utils.ConfigMapper
 import de.laser.utils.PasswordUtils
 import de.laser.storage.RDConstants
 import de.laser.properties.PropertyDefinition

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.helper.DatabaseUtils; de.laser.storage.BeanStore; de.laser.system.SystemSetting; de.laser.helper.AppUtils; grails.util.Metadata; de.laser.reporting.report.ElasticSearchHelper; grails.util.Environment; de.laser.helper.ConfigMapper" %>
+<%@ page import="de.laser.utils.DateUtils; de.laser.helper.DatabaseInfo; de.laser.storage.BeanStore; de.laser.system.SystemSetting; grails.util.Metadata; de.laser.reporting.report.ElasticSearchHelper; grails.util.Environment; de.laser.utils.ConfigMapper" %>
 <!doctype html>
 <html>
 <head>
@@ -29,7 +29,7 @@
             <tr><td>Collations</td><td>
                 <%
                     Set collations = [defaultCollate]
-                    DatabaseUtils.getAllTablesCollationInfo().each { it ->
+                    DatabaseInfo.getAllTablesCollationInfo().each { it ->
                         List c = it.value['collation'].findAll()
                         if (! c.isEmpty()) { collations.addAll(c) }
                     }
@@ -42,7 +42,7 @@
                 </g:each>
             </td></tr>
             <tr><td>Database size</td><td> ${dbSize}</td></tr>
-            <tr><td>Postgresql server</td><td> ${DatabaseUtils.getServerInfo()}</td></tr>
+            <tr><td>Postgresql server</td><td> ${DatabaseInfo.getServerInfo()}</td></tr>
         <tbody>
     </table>
 

@@ -1,6 +1,6 @@
 package de.laser.custom
 
-import de.laser.helper.ConfigMapper
+import de.laser.utils.ConfigMapper
 import grails.core.GrailsApplication
 import groovy.util.logging.Slf4j
 import org.grails.plugins.wkhtmltopdf.PartialView

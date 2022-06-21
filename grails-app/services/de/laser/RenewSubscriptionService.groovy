@@ -2,7 +2,7 @@ package de.laser
 
 import de.laser.finance.CostItem
 import de.laser.finance.PriceItem
-import de.laser.helper.ConfigMapper
+import de.laser.utils.ConfigMapper
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.base.AbstractLockableService

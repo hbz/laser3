@@ -2,7 +2,7 @@ package de.laser.interceptors
 
 import de.laser.ContextService
 import de.laser.custom.CustomWebSocketConfig
-import de.laser.helper.ProfilerUtils
+import de.laser.helper.Profiler
 import de.laser.cache.SessionCacheWrapper
 import de.laser.system.SystemActivityProfiler
 
@@ -18,9 +18,9 @@ class SystemProfilerInterceptor implements grails.artefact.Interceptor {
 
     boolean before() {
         SessionCacheWrapper cache = contextService.getSessionCache()
-        ProfilerUtils debugUtil = (ProfilerUtils) cache.get(ProfilerUtils.SESSION_SYSTEMPROFILER)
+        Profiler debugUtil = (Profiler) cache.get(Profiler.SESSION_SYSTEMPROFILER)
         if (debugUtil) {
-            debugUtil.startSimpleBench( ProfilerUtils.generateKey( getWebRequest() ) )
+            debugUtil.startSimpleBench( Profiler.generateKey( getWebRequest() ) )
         }
 
         true

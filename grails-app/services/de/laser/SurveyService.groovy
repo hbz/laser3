@@ -4,7 +4,6 @@ package de.laser
 import de.laser.auth.User
 import de.laser.auth.UserOrg
 import de.laser.finance.CostItem
-import de.laser.helper.*
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
 import de.laser.stats.Counter4ApiSource
@@ -21,6 +20,7 @@ import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyResult
 import de.laser.system.SystemEvent
 import de.laser.utils.AppUtils
+import de.laser.utils.ConfigMapper
 import de.laser.utils.DateUtils
 import grails.gorm.transactions.Transactional
 import grails.plugins.mail.MailService

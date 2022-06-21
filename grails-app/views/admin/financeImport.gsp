@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.ConfigMapper" %>
+<%@ page import="de.laser.utils.ConfigMapper" %>
 <!doctype html>
 <html>
   <head>

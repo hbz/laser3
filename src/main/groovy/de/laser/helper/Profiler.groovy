@@ -5,21 +5,21 @@ import de.laser.cache.EhcacheWrapper
 import de.laser.storage.BeanStore
 import org.grails.web.servlet.mvc.GrailsWebRequest
 
-class ProfilerUtils {
+class Profiler {
 
     ContextService contextService = BeanStore.getContextService()
     EhcacheWrapper benchCache
 
-    final static String SESSION_SYSTEMPROFILER = 'ProfilerUtils/Session/SystemProfiler'
-    final static String USER_BENCHMARK = 'ProfilerUtils/User/Benchmark'
+    final static String SESSION_SYSTEMPROFILER = 'Profiler/Session/SystemProfiler'
+    final static String USER_BENCHMARK = 'Profiler/User/Benchmark'
 
     // for global interceptors; object stored in session caches
-    ProfilerUtils(String cacheKeyPrefix) {
+    Profiler(String cacheKeyPrefix) {
         benchCache = contextService.getUserCache(cacheKeyPrefix)
     }
 
     // for inner method benches; object not stored
-    ProfilerUtils() {
+    Profiler() {
         String cid = USER_BENCHMARK + EhcacheWrapper.SEPARATOR + UUID.randomUUID().toString()
         benchCache = contextService.getUserCache(cid)
     }

@@ -2,7 +2,7 @@ package de.laser
 
 
 import de.laser.base.AbstractCounterApiSource
-import de.laser.helper.ConfigMapper
+import de.laser.utils.ConfigMapper
 import de.laser.utils.DateUtils
 import de.laser.remote.ApiSource
 import de.laser.stats.Fact

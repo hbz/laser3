@@ -174,7 +174,7 @@ console.log('(http-header) x-authorization: ' + authorization)
             }
 
             var jabba = SwaggerUIBundle({
-                url: "${de.laser.helper.ConfigMapper.getGrailsServerURL()}/api/${apiVersion}/specs.yaml",
+                url: "${de.laser.utils.ConfigMapper.getGrailsServerURL()}/api/${apiVersion}/specs.yaml",
                 dom_id: '#main-container',
                 presets: [
                     SwaggerUIBundle.presets.apis,

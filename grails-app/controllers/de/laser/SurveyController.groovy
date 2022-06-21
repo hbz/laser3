@@ -94,7 +94,7 @@ class SurveyController {
     })
     Map<String, Object> currentSurveysConsortia() {
         Map<String, Object> result = [:]
-        ProfilerUtils pu = new ProfilerUtils()
+        Profiler pu = new Profiler()
         pu.setBenchmark("init")
         result.institution = contextService.getOrg()
         result.user = contextService.getUser()

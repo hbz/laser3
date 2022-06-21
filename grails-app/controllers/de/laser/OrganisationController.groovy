@@ -805,7 +805,7 @@ class OrganisationController  {
     @Secured(['ROLE_USER'])
     def show() {
 
-        ProfilerUtils pu = new ProfilerUtils()
+        Profiler pu = new Profiler()
         pu.setBenchmark('this-n-that')
 
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
@@ -898,7 +898,7 @@ class OrganisationController  {
     @Secured(['ROLE_USER'])
     def ids() {
 
-        ProfilerUtils pu = new ProfilerUtils()
+        Profiler pu = new Profiler()
         pu.setBenchmark('this-n-that')
 
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)

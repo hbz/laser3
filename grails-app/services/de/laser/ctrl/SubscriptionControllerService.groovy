@@ -24,6 +24,7 @@ import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyOrg
+import de.laser.utils.ConfigMapper
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.workflow.WfWorkflow
@@ -100,7 +101,7 @@ class SubscriptionControllerService {
      * @return the given subscription's details
      */
     Map<String,Object> show(GrailsParameterMap params) {
-        ProfilerUtils pu = new ProfilerUtils()
+        Profiler pu = new Profiler()
         pu.setBenchmark('1')
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result)
@@ -961,7 +962,7 @@ class SubscriptionControllerService {
      */
     Map<String,Object> members(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
-        ProfilerUtils pu = new ProfilerUtils()
+        Profiler pu = new Profiler()
         pu.setBenchmark('init')
         if(!result)
             [result:null,status:STATUS_ERROR]

@@ -65,7 +65,7 @@ class SubscriptionService {
         }
         SwissKnife.setPaginationParams(result, params, contextUser)
 
-        ProfilerUtils pu = new ProfilerUtils()
+        Profiler pu = new Profiler()
         pu.setBenchmark('init data fetch')
         pu.setBenchmark('consortia')
         result.availableConsortia = Combo.executeQuery("select c.toOrg from Combo as c where c.fromOrg = :fromOrg", [fromOrg: contextOrg])
@@ -164,7 +164,7 @@ class SubscriptionService {
     Map<String,Object> getMySubscriptionsForConsortia(GrailsParameterMap params,User contextUser, Org contextOrg,List<String> tableConf) {
         Map<String,Object> result = [:]
 
-        ProfilerUtils pu = new ProfilerUtils()
+        Profiler pu = new Profiler()
         pu.setBenchmark('filterService')
 
         SwissKnife.setPaginationParams(result, params, contextUser)

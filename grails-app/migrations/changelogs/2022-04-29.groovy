@@ -1,6 +1,6 @@
 package changelogs
 
-import de.laser.helper.DatabaseUtils
+import de.laser.helper.DatabaseInfo
 
 databaseChangeLog = {
 
@@ -98,7 +98,7 @@ databaseChangeLog = {
                     String table = nfo[0]
                     String column = nfo[1]
 
-                    sql.execute('alter table ' + table + ' alter column ' + column + ' type ' + nfo[2] + ' collate public."' + DatabaseUtils.DE_U_CO_PHONEBK_X_ICU + '"')
+                    sql.execute('alter table ' + table + ' alter column ' + column + ' type ' + nfo[2] + ' collate public."' + DatabaseInfo.DE_U_CO_PHONEBK_X_ICU + '"')
 
                     if (nfo[3]) {
                         sql.execute('drop index ' + column + '_idx')
