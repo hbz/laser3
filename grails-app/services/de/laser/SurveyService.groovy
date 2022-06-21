@@ -20,6 +20,8 @@ import de.laser.survey.SurveyInfo
 import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyResult
 import de.laser.system.SystemEvent
+import de.laser.utils.AppUtils
+import de.laser.utils.DateUtils
 import grails.gorm.transactions.Transactional
 import grails.plugins.mail.MailService
 import grails.web.servlet.mvc.GrailsParameterMap

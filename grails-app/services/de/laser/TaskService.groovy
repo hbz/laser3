@@ -2,7 +2,7 @@ package de.laser
 
 
 import de.laser.auth.User
-import de.laser.helper.DateUtils
+import de.laser.utils.DateUtils
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
 import grails.gorm.transactions.Transactional

@@ -5,7 +5,7 @@ import de.laser.Subscription
 import de.laser.finance.CostItem
 import de.laser.finance.Invoice
 import de.laser.finance.Order
-import de.laser.helper.DateUtils
+import de.laser.utils.DateUtils
 import de.laser.storage.RDStore
 import de.laser.reporting.export.LocalExportHelper
 import de.laser.reporting.export.base.BaseDetailsExport

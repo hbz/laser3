@@ -1,4 +1,4 @@
-package de.laser.helper
+package de.laser.utils
 
 import org.apache.commons.lang.RandomStringUtils
 

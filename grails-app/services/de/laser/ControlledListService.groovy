@@ -5,8 +5,8 @@ import de.laser.finance.BudgetCode
 import de.laser.finance.CostItem
 import de.laser.finance.Invoice
 import de.laser.finance.Order
-import de.laser.helper.DateUtils
-import de.laser.helper.LocaleUtils
+import de.laser.utils.DateUtils
+import de.laser.utils.LocaleUtils
 import de.laser.storage.RDStore
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinition

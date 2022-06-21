@@ -1,7 +1,7 @@
 package de.laser.reporting.report
 
 import de.laser.Subscription
-import de.laser.helper.DateUtils
+import de.laser.utils.DateUtils
 import de.laser.cache.SessionCacheWrapper
 import groovy.util.logging.Slf4j
 

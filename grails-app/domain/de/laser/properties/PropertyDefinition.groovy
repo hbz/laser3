@@ -8,7 +8,7 @@ import de.laser.Subscription
 import de.laser.survey.SurveyResult
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.base.AbstractI10n
-import de.laser.helper.LocaleUtils
+import de.laser.utils.LocaleUtils
 import de.laser.storage.BeanStore
 import de.laser.interfaces.CalculatedType
 import groovy.util.logging.Slf4j

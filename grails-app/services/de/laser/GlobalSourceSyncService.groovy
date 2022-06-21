@@ -6,7 +6,7 @@ import de.laser.remote.GlobalRecordSource
 import de.laser.system.SystemEvent
 import de.laser.base.AbstractCoverage
 import de.laser.exceptions.SyncException
-import de.laser.helper.DateUtils
+import de.laser.utils.DateUtils
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.base.AbstractLockableService

@@ -2,7 +2,7 @@ package de.laser
 
 
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
-import de.laser.helper.DateUtils
+import de.laser.utils.DateUtils
 import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
 import de.laser.survey.SurveyConfig

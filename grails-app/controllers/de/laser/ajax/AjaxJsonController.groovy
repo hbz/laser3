@@ -14,8 +14,8 @@ import de.laser.ReportingGlobalService
 import de.laser.ReportingLocalService
 import de.laser.SubscriptionService
 import de.laser.auth.Role
-import de.laser.helper.DateUtils
-import de.laser.helper.LocaleUtils
+import de.laser.utils.DateUtils
+import de.laser.utils.LocaleUtils
 import de.laser.properties.LicenseProperty
 import de.laser.Org
 import de.laser.properties.OrgProperty
@@ -33,7 +33,7 @@ import de.laser.RefdataCategory
 import de.laser.RefdataValue
 import de.laser.base.AbstractI10n
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
-import de.laser.helper.AppUtils
+import de.laser.utils.AppUtils
 import de.laser.annotations.DebugInfo
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore

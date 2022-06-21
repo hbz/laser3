@@ -5,7 +5,7 @@ import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.ctrl.UserControllerService
 import de.laser.annotations.DebugInfo
-import de.laser.helper.PasswordUtils
+import de.laser.utils.PasswordUtils
 import de.laser.storage.RDStore
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils

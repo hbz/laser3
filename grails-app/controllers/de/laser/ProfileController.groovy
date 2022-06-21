@@ -5,7 +5,7 @@ import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.auth.UserOrg
 import de.laser.UserSetting.KEYS
-import de.laser.helper.PasswordUtils
+import de.laser.utils.PasswordUtils
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition

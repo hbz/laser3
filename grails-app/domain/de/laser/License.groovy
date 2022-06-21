@@ -3,7 +3,7 @@ package de.laser
 import de.laser.annotations.RefdataInfo
 import de.laser.auth.Role
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
-import de.laser.helper.DateUtils
+import de.laser.utils.DateUtils
 import de.laser.interfaces.CalculatedType
 import de.laser.interfaces.Permissions
 import de.laser.interfaces.ShareSupport

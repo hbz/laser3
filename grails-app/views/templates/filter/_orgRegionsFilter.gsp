@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.LocaleUtils; de.laser.RefdataCategory; de.laser.I10nTranslation; de.laser.storage.RDConstants; de.laser.RefdataValue;de.laser.storage.RDStore; org.springframework.context.i18n.LocaleContextHolder;" %>
+<%@ page import="de.laser.utils.LocaleUtils; de.laser.RefdataCategory; de.laser.I10nTranslation; de.laser.storage.RDConstants; de.laser.RefdataValue;de.laser.storage.RDStore; org.springframework.context.i18n.LocaleContextHolder;" %>
 
 <g:set var="languageSuffix" value="${LocaleUtils.getCurrentLang()}"/>
 

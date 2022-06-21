@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.DateUtils; de.laser.workflow.WorkflowHelper; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.workflow.*; de.laser.WorkflowService" %>
+<%@ page import="de.laser.utils.DateUtils; de.laser.workflow.WorkflowHelper; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.workflow.*; de.laser.WorkflowService" %>
 <!doctype html>
 <html>
 <head>

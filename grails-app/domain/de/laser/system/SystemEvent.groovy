@@ -1,6 +1,6 @@
 package de.laser.system
 
-import de.laser.helper.DateUtils
+import de.laser.utils.DateUtils
 import de.laser.storage.BeanStore
 import grails.converters.JSON
 import org.springframework.context.i18n.LocaleContextHolder

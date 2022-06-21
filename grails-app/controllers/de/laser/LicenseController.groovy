@@ -4,14 +4,14 @@ package de.laser
 import de.laser.auth.User
 import de.laser.ctrl.LicenseControllerService
 import de.laser.custom.CustomWkhtmltoxService
-import de.laser.helper.LocaleUtils
+import de.laser.utils.LocaleUtils
 import de.laser.storage.RDConstants
 import de.laser.properties.LicenseProperty
 import de.laser.auth.Role
 import de.laser.auth.UserOrg
 import de.laser.properties.PropertyDefinition
  
-import de.laser.helper.DateUtils
+import de.laser.utils.DateUtils
 import de.laser.annotations.DebugInfo
 import de.laser.helper.ProfilerUtils
 import de.laser.storage.RDStore

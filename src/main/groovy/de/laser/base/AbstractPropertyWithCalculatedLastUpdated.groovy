@@ -2,7 +2,7 @@ package de.laser.base
 
 import de.laser.RefdataValue
 import de.laser.storage.BeanStore
-import de.laser.helper.DateUtils
+import de.laser.utils.DateUtils
 import de.laser.interfaces.CalculatedLastUpdated
 import groovy.util.logging.Slf4j
 

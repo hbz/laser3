@@ -2,7 +2,7 @@ package de.laser
 
 
 import de.laser.helper.ConfigMapper
-import de.laser.helper.DateUtils
+import de.laser.utils.DateUtils
 import de.laser.workflow.*
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap

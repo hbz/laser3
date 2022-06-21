@@ -1,6 +1,6 @@
 package de.laser
 
-import de.laser.helper.LocaleUtils
+import de.laser.utils.LocaleUtils
 
 class LaserTagLib {
 

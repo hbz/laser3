@@ -6,8 +6,8 @@ import de.laser.exceptions.ChangeAcceptException
 import de.laser.finance.CostItem
 import de.laser.cache.SessionCacheWrapper
 import de.laser.properties.PropertyDefinition
-import de.laser.helper.AppUtils
-import de.laser.helper.DateUtils
+import de.laser.utils.AppUtils
+import de.laser.utils.DateUtils
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.base.AbstractLockableService

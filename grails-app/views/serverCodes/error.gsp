@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.AppUtils" %>
+<%@ page import="de.laser.utils.AppUtils" %>
 <laser:serviceInjection />
 <!doctype html>
 <html>

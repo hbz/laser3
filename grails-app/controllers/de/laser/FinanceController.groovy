@@ -7,7 +7,7 @@ import de.laser.finance.CostItem
 import de.laser.finance.CostItemElementConfiguration
 import de.laser.finance.CostItemGroup
 import de.laser.exceptions.FinancialDataException
-import de.laser.helper.DateUtils
+import de.laser.utils.DateUtils
 import de.laser.annotations.DebugInfo
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig

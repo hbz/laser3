@@ -6,7 +6,6 @@ import de.laser.auth.Role
 import de.laser.auth.UserRole
 import de.laser.base.AbstractJob
 import de.laser.finance.CostItem
-import de.laser.helper.*
 import de.laser.properties.LicenseProperty
 import de.laser.properties.OrgProperty
 import de.laser.properties.PersonProperty
@@ -24,6 +23,7 @@ import de.laser.survey.SurveyResult
 import de.laser.system.SystemActivityProfiler
 import de.laser.system.SystemProfiler
 import de.laser.system.SystemSetting
+import de.laser.utils.DateUtils
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import grails.gorm.transactions.Transactional

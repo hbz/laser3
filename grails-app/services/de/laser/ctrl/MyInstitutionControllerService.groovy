@@ -2,7 +2,7 @@ package de.laser.ctrl
 
 import de.laser.*
 import de.laser.auth.User
-import de.laser.helper.DateUtils
+import de.laser.utils.DateUtils
 import de.laser.helper.ProfilerUtils
 import de.laser.storage.RDStore
 import de.laser.helper.SwissKnife

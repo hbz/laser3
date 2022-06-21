@@ -1,7 +1,7 @@
 package de.laser
 
 import de.laser.auth.User
-import de.laser.helper.PasswordUtils
+import de.laser.utils.PasswordUtils
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityService

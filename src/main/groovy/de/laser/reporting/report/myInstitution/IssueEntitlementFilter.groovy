@@ -3,7 +3,7 @@ package de.laser.reporting.report.myInstitution
 import de.laser.*
 import de.laser.annotations.UnderDevelopment
 import de.laser.storage.BeanStore
-import de.laser.helper.DateUtils
+import de.laser.utils.DateUtils
 import de.laser.storage.RDStore
 import de.laser.reporting.report.ElasticSearchHelper
 import de.laser.reporting.report.GenericHelper

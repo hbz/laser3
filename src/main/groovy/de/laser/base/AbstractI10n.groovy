@@ -1,7 +1,7 @@
 package de.laser.base
 
 import de.laser.I10nTranslation
-import de.laser.helper.LocaleUtils
+import de.laser.utils.LocaleUtils
 import org.springframework.context.i18n.LocaleContextHolder
 
 /**

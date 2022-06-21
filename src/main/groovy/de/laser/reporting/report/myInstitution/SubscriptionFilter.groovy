@@ -8,7 +8,7 @@ import de.laser.Subscription
 import de.laser.SubscriptionsQueryService
 import de.laser.auth.Role
 import de.laser.storage.BeanStore
-import de.laser.helper.DateUtils
+import de.laser.utils.DateUtils
 import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
 import de.laser.reporting.report.GenericHelper

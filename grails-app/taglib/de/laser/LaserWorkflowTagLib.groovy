@@ -1,6 +1,6 @@
 package de.laser
 
-import de.laser.helper.DateUtils
+import de.laser.utils.DateUtils
 import de.laser.workflow.WorkflowHelper
 import de.laser.workflow.WfCondition
 import de.laser.workflow.WfTask

@@ -2,7 +2,7 @@ package de.laser
 
 
 import de.laser.ctrl.AccessPointControllerService
-import de.laser.helper.DateUtils
+import de.laser.utils.DateUtils
 import de.laser.annotations.DebugInfo
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore

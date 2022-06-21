@@ -1,7 +1,7 @@
 package de.laser
 
 
-import de.laser.helper.DateUtils
+import de.laser.utils.DateUtils
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException

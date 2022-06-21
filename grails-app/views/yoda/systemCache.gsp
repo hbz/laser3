@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.DateUtils" %>
+<%@ page import="de.laser.utils.DateUtils" %>
 <!doctype html>
 <html>
 <head>

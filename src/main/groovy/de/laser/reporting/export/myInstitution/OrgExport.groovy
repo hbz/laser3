@@ -10,9 +10,9 @@ import de.laser.OrganisationService
 import de.laser.Person
 import de.laser.ReaderNumber
 import de.laser.RefdataValue
-import de.laser.helper.LocaleUtils
+import de.laser.utils.LocaleUtils
 import de.laser.storage.BeanStore
-import de.laser.helper.DateUtils
+import de.laser.utils.DateUtils
 import de.laser.storage.RDStore
 import de.laser.oap.OrgAccessPoint
 import de.laser.oap.OrgAccessPointEzproxy

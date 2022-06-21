@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ApiSource; de.laser.storage.RDConstants; de.laser.Platform; de.laser.RefdataValue; de.laser.helper.DateUtils" %>
+<%@ page import="de.laser.ApiSource; de.laser.storage.RDConstants; de.laser.Platform; de.laser.RefdataValue; de.laser.utils.DateUtils" %>
 <!doctype html>
 <html>
 <head>

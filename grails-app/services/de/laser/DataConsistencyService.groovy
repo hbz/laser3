@@ -1,9 +1,9 @@
 package de.laser
 
 
-import de.laser.helper.AppUtils
+import de.laser.utils.AppUtils
 import de.laser.storage.BeanStore
-import de.laser.helper.DateUtils
+import de.laser.utils.DateUtils
 import de.laser.helper.SwissKnife
 import de.laser.titles.TitleInstance
 import grails.gorm.transactions.Transactional

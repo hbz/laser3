@@ -14,7 +14,7 @@ import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyResult
 import de.laser.TaskService
 import de.laser.auth.User
-import de.laser.helper.LocaleUtils
+import de.laser.utils.LocaleUtils
 import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty

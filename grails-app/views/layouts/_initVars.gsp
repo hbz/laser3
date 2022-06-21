@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.AppUtils; de.laser.UserSetting; de.laser.RefdataValue; de.laser.auth.User; de.laser.auth.UserOrg; de.laser.storage.RDStore; de.laser.storage.RDConstants;" %>
+<%@ page import="de.laser.utils.AppUtils; de.laser.UserSetting; de.laser.RefdataValue; de.laser.auth.User; de.laser.auth.UserOrg; de.laser.storage.RDStore; de.laser.storage.RDConstants;" %>
 <%@ page import="org.grails.web.util.GrailsApplicationAttributes;org.springframework.web.servlet.LocaleResolver;org.springframework.web.servlet.support.RequestContextUtils;" %>
 
 <laser:serviceInjection />

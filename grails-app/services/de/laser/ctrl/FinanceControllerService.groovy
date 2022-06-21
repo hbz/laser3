@@ -5,7 +5,7 @@ import de.laser.auth.User
 import de.laser.exceptions.FinancialDataException
 import de.laser.finance.BudgetCode
 import de.laser.finance.CostItemElementConfiguration
-import de.laser.helper.LocaleUtils
+import de.laser.utils.LocaleUtils
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import grails.gorm.transactions.Transactional

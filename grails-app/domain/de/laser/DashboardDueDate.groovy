@@ -2,7 +2,7 @@ package de.laser
 
 import de.laser.auth.User
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
-import de.laser.helper.SqlDateUtils
+import de.laser.utils.SqlDateUtils
 import de.laser.survey.SurveyInfo
 
 /**

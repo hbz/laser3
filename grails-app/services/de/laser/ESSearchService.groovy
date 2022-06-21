@@ -1,6 +1,6 @@
 package de.laser
 
-import de.laser.helper.DateUtils
+import de.laser.utils.DateUtils
 import grails.gorm.transactions.Transactional
 import org.elasticsearch.action.search.SearchRequest
 import org.elasticsearch.action.search.SearchResponse

@@ -16,7 +16,7 @@ Two different versions are currently used simultaneously. New code should always
 
 ### Configuration
 
-Accessing configuration through dot notation *(config.a.b.c)* has been **deprecated**. The configuration should be accessed via *de.laser.helper.ConfigMapper* so that settings can be validated at any time.
+Accessing configuration through dot notation *(config.a.b.c)* has been **deprecated**. The configuration should be accessed via *de.laser.utils.ConfigMapper* so that settings can be validated at any time.
 
 ### Database Migrations
 
@@ -25,7 +25,7 @@ A new naming scheme should be used. See [database-migration.md](./database-migra
 ### DateUtils
 
 *Date.parse()* is **deprecated**, *Date.format()* has been **removed** in Java 11. New code should use e.g. SimpleDateFormat to format dates.
-To avoid confusion, the difference between localized and fixed usage in *de.laser.helder.Dateutils* is now reflected in a new naming scheme.
+To avoid confusion, the difference between localized and fixed usage in *de.laser.utils.DateUtils* is now reflected in a new naming scheme.
 
 ### ExecutorGrailsPlugin
 
@@ -45,7 +45,7 @@ A migration to *de.laser.http.BasicHttpClient* should take place.
 
 ### Localization
 
-Localization dependent logic should be managed by *de.laser.helper.LocaleUtils* to ensure consistent behavior.
+Localization dependent logic should be managed by *de.laser.utils.LocaleUtils* to ensure consistent behavior.
 
 ### Logging
 
@@ -54,6 +54,7 @@ Localization dependent logic should be managed by *de.laser.helper.LocaleUtils* 
 ### Naming Convention
   * **Private methods** in domain classes, controllers, and services should be named with a leading underscore to avoid confusion. 
     In general, some of the currently found constructs should be reconsidered!
+  * **Helper and Utils** - Helper classes can be defined in affected packages and named according to the context. Global utilities should be defined in package *de.laser.utils*
 
 ### Opencsv
 

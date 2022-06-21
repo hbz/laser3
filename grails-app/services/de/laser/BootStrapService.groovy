@@ -1,11 +1,11 @@
 package de.laser
 
-import de.laser.helper.DateUtils
+import de.laser.utils.DateUtils
 import liquibase.repackaged.com.opencsv.*
 import de.laser.auth.*
-import de.laser.helper.AppUtils
+import de.laser.utils.AppUtils
 import de.laser.helper.ConfigMapper
-import de.laser.helper.PasswordUtils
+import de.laser.utils.PasswordUtils
 import de.laser.storage.RDConstants
 import de.laser.properties.PropertyDefinition
 import de.laser.system.SystemEvent
@@ -20,7 +20,6 @@ import org.hibernate.SessionFactory
 import org.hibernate.type.TextType
 
 import javax.sql.DataSource
-import java.text.SimpleDateFormat
 
 /**
  * This service encapsulates methods called upon system startup; it defines system-wide constants, updates hard-coded translations and sets other globally relevant parameters

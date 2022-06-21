@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.DateUtils; grails.util.Metadata; de.laser.helper.ConfigMapper; de.laser.helper.AppUtils" %>
+<%@ page import="de.laser.utils.DateUtils; grails.util.Metadata; de.laser.helper.ConfigMapper; de.laser.utils.AppUtils" %>
 <!doctype html>
 <html>
 <head>

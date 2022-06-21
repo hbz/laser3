@@ -1,6 +1,6 @@
 package de.laser
 
-import de.laser.helper.AppUtils
+import de.laser.utils.AppUtils
 
 import javax.servlet.http.HttpServletRequest
 

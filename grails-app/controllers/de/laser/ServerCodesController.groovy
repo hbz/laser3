@@ -1,8 +1,8 @@
 package de.laser
 
-import de.laser.helper.AppUtils
+import de.laser.utils.AppUtils
 import de.laser.helper.ConfigMapper
-import de.laser.helper.DateUtils
+import de.laser.utils.DateUtils
 import grails.core.GrailsApplication
 import grails.plugin.springsecurity.annotation.Secured
 import grails.web.Action

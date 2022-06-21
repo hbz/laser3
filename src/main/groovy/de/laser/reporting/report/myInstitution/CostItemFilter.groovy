@@ -6,7 +6,7 @@ import de.laser.RefdataValue
 import de.laser.ctrl.FinanceControllerService
 import de.laser.finance.CostItem
 import de.laser.storage.BeanStore
-import de.laser.helper.DateUtils
+import de.laser.utils.DateUtils
 import de.laser.storage.RDStore
 import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseConfig

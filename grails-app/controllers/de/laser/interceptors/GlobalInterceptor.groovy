@@ -1,6 +1,6 @@
 package de.laser.interceptors
 
-import de.laser.helper.AppUtils
+import de.laser.utils.AppUtils
 import grails.core.GrailsClass
 
 class GlobalInterceptor implements grails.artefact.Interceptor {

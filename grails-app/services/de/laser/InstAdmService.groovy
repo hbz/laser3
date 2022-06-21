@@ -3,7 +3,7 @@ package de.laser
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.auth.UserOrg
-import de.laser.helper.AppUtils
+import de.laser.utils.AppUtils
 import de.laser.helper.ConfigMapper
 import de.laser.storage.RDStore
 import grails.gorm.transactions.Transactional

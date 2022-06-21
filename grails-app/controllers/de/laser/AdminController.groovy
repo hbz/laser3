@@ -1,9 +1,9 @@
 package de.laser
 
 
-import de.laser.helper.AppUtils
+import de.laser.utils.AppUtils
 import de.laser.helper.DatabaseUtils
-import de.laser.helper.LocaleUtils
+import de.laser.utils.LocaleUtils
 import de.laser.cache.EhcacheWrapper
 import de.laser.helper.SwissKnife
 import de.laser.remote.FTControl

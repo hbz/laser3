@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Org; de.laser.Package; de.laser.Platform; java.text.SimpleDateFormat; de.laser.helper.DateUtils;" %>
+<%@ page import="de.laser.utils.DateUtils; de.laser.Org; de.laser.Package; de.laser.Platform; java.text.SimpleDateFormat;" %>
 <!doctype html>
 
 <html>

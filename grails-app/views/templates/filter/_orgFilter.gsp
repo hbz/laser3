@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.LocaleUtils; org.springframework.context.i18n.LocaleContextHolder; de.laser.I10nTranslation; de.laser.*; de.laser.auth.Role; de.laser.storage.RDConstants; de.laser.RefdataValue" %>
+<%@ page import="de.laser.utils.LocaleUtils; org.springframework.context.i18n.LocaleContextHolder; de.laser.I10nTranslation; de.laser.*; de.laser.auth.Role; de.laser.storage.RDConstants; de.laser.RefdataValue" %>
 
 <%
     String locale = LocaleUtils.getCurrentLang()

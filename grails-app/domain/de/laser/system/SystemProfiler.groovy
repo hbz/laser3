@@ -1,7 +1,7 @@
 package de.laser.system
 
 import de.laser.Org
-import de.laser.helper.AppUtils
+import de.laser.utils.AppUtils
 import de.laser.storage.BeanStore
 
 /**

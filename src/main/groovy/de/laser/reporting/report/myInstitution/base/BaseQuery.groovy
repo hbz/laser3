@@ -4,9 +4,9 @@ import de.laser.IdentifierNamespace
 import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.auth.Role
-import de.laser.helper.LocaleUtils
+import de.laser.utils.LocaleUtils
 import de.laser.storage.BeanStore
-import de.laser.helper.DateUtils
+import de.laser.utils.DateUtils
 import de.laser.properties.PropertyDefinition
 import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.local.SubscriptionReport

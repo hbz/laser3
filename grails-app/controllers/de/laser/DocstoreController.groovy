@@ -3,7 +3,7 @@ package de.laser
 
 import de.laser.auth.User
 import de.laser.ctrl.DocstoreControllerService
-import de.laser.helper.AppUtils
+import de.laser.utils.AppUtils
 import de.laser.helper.ConfigMapper
 import de.laser.annotations.DebugInfo
 import de.laser.storage.RDConstants

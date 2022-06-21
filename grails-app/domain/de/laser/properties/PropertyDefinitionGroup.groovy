@@ -4,7 +4,7 @@ import de.laser.CacheService
 import de.laser.GenericOIDService
 import de.laser.Org
 import de.laser.cache.EhcacheWrapper
-import de.laser.helper.LocaleUtils
+import de.laser.utils.LocaleUtils
 import de.laser.storage.BeanStore
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil

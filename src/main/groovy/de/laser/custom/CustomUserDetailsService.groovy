@@ -1,6 +1,6 @@
 package de.laser.custom
 
-import de.laser.helper.AppUtils
+import de.laser.utils.AppUtils
 import grails.core.GrailsApplication
 import grails.core.GrailsClass
 import grails.gorm.transactions.Transactional

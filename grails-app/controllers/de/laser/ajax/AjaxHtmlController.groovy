@@ -39,7 +39,7 @@ import de.laser.auth.User
 import de.laser.ctrl.LicenseControllerService
 import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.custom.CustomWkhtmltoxService
-import de.laser.helper.DateUtils
+import de.laser.utils.DateUtils
 import de.laser.cache.EhcacheWrapper
 import de.laser.cache.SessionCacheWrapper
 import de.laser.helper.SwissKnife

@@ -1,6 +1,6 @@
 package de.laser
 
-import de.laser.helper.AppUtils
+import de.laser.utils.AppUtils
 import grails.gorm.transactions.Transactional
 import org.grails.core.artefact.DomainClassArtefactHandler
 import grails.core.GrailsClass

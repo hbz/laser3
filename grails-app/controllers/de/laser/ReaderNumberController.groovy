@@ -1,6 +1,6 @@
 package de.laser
 
-import de.laser.helper.DateUtils
+import de.laser.utils.DateUtils
 import de.laser.annotations.DebugInfo
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.transaction.TransactionStatus

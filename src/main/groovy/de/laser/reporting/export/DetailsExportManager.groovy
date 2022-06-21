@@ -7,7 +7,7 @@ import de.laser.Platform
 import de.laser.Subscription
 import de.laser.finance.CostItem
 import de.laser.storage.BeanStore
-import de.laser.helper.DateUtils
+import de.laser.utils.DateUtils
 import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.export.base.BaseExportHelper
 import de.laser.reporting.export.local.CostItemExport

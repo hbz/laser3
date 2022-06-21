@@ -1,4 +1,4 @@
-package de.laser.helper
+package de.laser.utils
 
 import de.laser.storage.BeanStore
 import groovy.util.logging.Slf4j

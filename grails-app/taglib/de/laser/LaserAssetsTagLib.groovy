@@ -1,7 +1,7 @@
 package de.laser
 
 import de.laser.http.AjaxHelper
-import de.laser.helper.AppUtils
+import de.laser.utils.AppUtils
 import grails.util.Environment
 import org.grails.io.support.GrailsResourceUtils
 import org.grails.web.servlet.mvc.GrailsWebRequest
