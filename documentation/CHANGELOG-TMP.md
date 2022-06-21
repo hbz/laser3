@@ -7,6 +7,7 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4308    21.06.2022  rc-2.3  2.3.1       Moe     Feature     Laufzeit-Ende lässt sich bei automatischer Verlängerung bearbeiten
 
 4307    21.06.2022  rc-2.3  2.3.1       Moe     Bug         Bei "Automatisch um ein Jahr verlängern" Prüfung in meine Lizenzverwaltung einbauen
 
