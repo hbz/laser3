@@ -737,7 +737,7 @@ class ManagementService {
                                 noChange << messageSource.getMessage('subscription.isMultiYear.label', null, locale)
                             }
 
-                            if (params.process_isAutomaticRenewAnnually && !auditService.getAuditConfig(subscription.instanceOf, 'isAutomaticRenewAnnually')) {
+                            if (params.process_isAutomaticRenewAnnually && !auditService.getAuditConfig(subscription.instanceOf, 'isAutomaticRenewAnnually') && subscription.allowToAutomaticRenewAnnually()) {
                                 subscription.isAutomaticRenewAnnually = RefdataValue.get(params.process_isAutomaticRenewAnnually) == RDStore.YN_YES
                                 change << messageSource.getMessage('subscription.isAutomaticRenewAnnually.label', null, locale)
                             }
