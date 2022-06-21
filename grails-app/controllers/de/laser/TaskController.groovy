@@ -65,12 +65,12 @@ class TaskController  {
 				}
 
 				if (!taskInstance.save()) {
-					flash.error = message(code: 'default.not.created.message', args: [message(code: 'task.label')])
+					flash.error = message(code: 'default.not.created.message', args: [message(code: 'task.label')]) as String
 					redirect(url: request.getHeader('referer'))
 					return
 				}
 
-				flash.message = message(code: 'default.created.message', args: [message(code: 'task.label'), taskInstance.title])
+				flash.message = message(code: 'default.created.message', args: [message(code: 'task.label'), taskInstance.title]) as String
 
 				redirect(url: request.getHeader('referer'))
 		}
@@ -112,13 +112,13 @@ class TaskController  {
 			Task taskInstance = Task.get(params.id)
 
 			if (((!taskInstance.responsibleOrg) && taskInstance.responsibleUser != contextService.getUser()) && (taskInstance.responsibleOrg != contextOrg) && (taskInstance.creator != contextService.getUser())) {
-				flash.error = message(code: 'task.edit.norights', args: [taskInstance.title])
+				flash.error = message(code: 'task.edit.norights', args: [taskInstance.title]) as String
 				redirect(url: request.getHeader('referer'))
 				return
 			}
 
 			if (!taskInstance) {
-				flash.message = message(code: 'default.not.found.message', args: [message(code: 'task.label'), params.id])
+				flash.message = message(code: 'default.not.found.message', args: [message(code: 'task.label'), params.id]) as String
 				redirect controller: 'myInstitution', action: 'dashboard'
 				return
 			}
@@ -152,12 +152,12 @@ class TaskController  {
 
 			if (!taskInstance.save()) {
 				result.taskInstance = taskInstance
-				flash.error = message(code: 'default.not.updated.message', args: [message(code: 'task.label'), taskInstance.title])
+				flash.error = message(code: 'default.not.updated.message', args: [message(code: 'task.label'), taskInstance.title]) as String
 				redirect(url: request.getHeader('referer'))
 				return
 			}
 
-			flash.message = message(code: 'default.updated.message', args: [message(code: 'task.label'), taskInstance.title])
+			flash.message = message(code: 'default.updated.message', args: [message(code: 'task.label'), taskInstance.title]) as String
 			redirect(url: request.getHeader('referer'))
 		}
     }
@@ -188,24 +188,24 @@ class TaskController  {
 			String tasktitel = taskInstance.title
 
 			if (!taskInstance) {
-				flash.message = message(code: 'default.not.found.message', args: [message(code: 'task.label'), params.id])
+				flash.message = message(code: 'default.not.found.message', args: [message(code: 'task.label'), params.id]) as String
 				redirect(url: request.getHeader('referer'))
 				return
 			}
 
 			if (taskInstance.creator != contextService.getUser()) {
-				flash.error = message(code: 'task.delete.norights', args: [tasktitel])
+				flash.error = message(code: 'task.delete.norights', args: [tasktitel]) as String
 				redirect(url: request.getHeader('referer'))
 				return
 			}
 
 			try {
 				taskInstance.delete()
-				flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label'), tasktitel])
+				flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label'), tasktitel]) as String
 				redirect(url: request.getHeader('referer'))
 			}
 			catch (DataIntegrityViolationException e) {
-				flash.error = message(code: 'default.not.deleted.message', args: [message(code: 'task.label'), tasktitel])
+				flash.error = message(code: 'default.not.deleted.message', args: [message(code: 'task.label'), tasktitel]) as String
 				redirect(url: request.getHeader('referer'))
 			}
 		}

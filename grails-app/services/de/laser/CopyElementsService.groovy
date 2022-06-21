@@ -952,7 +952,7 @@ class CopyElementsService {
             Task dTask = Task.get(deleteTaskId)
             if (dTask) {
                 if (dTask.creator.id == userId || isInstAdm) {
-                    delete(dTask, flash)
+                    _delete(dTask, flash)
                 } else {
                     Object[] args = [messageSource.getMessage('task.label', null, locale), deleteTaskId]
                     flash.error += messageSource.getMessage('default.not.deleted.notAutorized.message', args, locale)
@@ -987,7 +987,7 @@ class CopyElementsService {
                     InvokerHelper.setProperties(newTask, task.properties)
                     newTask.systemCreateDate = new Date()
                     newTask."${targetObject.getClass().getSimpleName().toLowerCase()}" = targetObject
-                    save(newTask, flash)
+                    _save(newTask, flash)
                 }
             }
         }
@@ -1007,7 +1007,7 @@ class CopyElementsService {
                 if ((dctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(dctx.domain) && (dctx.status?.value != 'Deleted')) {
                     Doc newDoc = new Doc()
                     InvokerHelper.setProperties(newDoc, dctx.owner.properties)
-                    save(newDoc, flash)
+                    _save(newDoc, flash)
                     DocContext newDocContext = new DocContext()
                     InvokerHelper.setProperties(newDocContext, dctx.properties)
                     if(dctx.id in toShare)
@@ -1015,7 +1015,7 @@ class CopyElementsService {
                     else newDocContext.isShared = false
                     newDocContext."${targetObject.getClass().getSimpleName().toLowerCase()}" = targetObject
                     newDocContext.owner = newDoc
-                    save(newDocContext, flash)
+                    _save(newDocContext, flash)
                 }
             }
         }
@@ -1147,7 +1147,7 @@ class CopyElementsService {
 
                         Doc newDoc = new Doc()
                         InvokerHelper.setProperties(newDoc, dctx.owner.properties)
-                        save(newDoc, flash)
+                        _save(newDoc, flash)
 
                         DocContext newDocContext = new DocContext()
                         InvokerHelper.setProperties(newDocContext, dctx.properties)
@@ -1156,7 +1156,7 @@ class CopyElementsService {
                         else newDocContext.isShared = false
                         newDocContext."${targetObject.getClass().getSimpleName().toLowerCase()}" = targetObject
                         newDocContext.owner = newDoc
-                        save(newDocContext, flash)
+                        _save(newDocContext, flash)
 
                         String fPath = ConfigMapper.getDocumentStorageLocation() ?: '/tmp/laser'
 
@@ -1195,7 +1195,7 @@ class CopyElementsService {
                 targetProp = sourceProp.copyInto(targetProp)
                 targetProp.isPublic = sourceProp.isPublic
                 //provisoric, should be moved into copyInto once migration is complete
-                save(targetProp, flash)
+                _save(targetProp, flash)
                 if (sourceProp.id.toString() in auditProperties) {
                     //copy audit
                     if (!AuditConfig.getConfig(targetProp, AuditConfig.COMPLETE_OBJECT)) {
@@ -1313,7 +1313,7 @@ class CopyElementsService {
         if (sourceObject.getClass() == targetObject.getClass()) {
             if (sourceObject.hasProperty(propertyName)) {
                 targetObject[propertyName] = sourceObject."$propertyName"
-                return save(targetObject, flash)
+                return _save(targetObject, flash)
             }
         }
 
@@ -1328,7 +1328,7 @@ class CopyElementsService {
             } else {
                 targetObject[propertyName] = null
             }
-            return save(targetObject, flash)
+            return _save(targetObject, flash)
         }
 
     }
@@ -1450,7 +1450,7 @@ class CopyElementsService {
                         newOrgRole.lic = targetObject
                     }
                     //this is a bit dangerous ...
-                    if (save(newOrgRole, flash))
+                    if (_save(newOrgRole, flash))
                         targetObject.orgRelations << newOrgRole
                 }
             }
@@ -1482,7 +1482,7 @@ class CopyElementsService {
 
             if ((prRole.org in targetObject.orgRelations.org) && !PersonRole.findWhere(prs: prRole.prs, org: prRole.org, responsibilityType: prRole.responsibilityType, sub: targetObject)) {
                 PersonRole newPrsRole = new PersonRole(prs: prRole.prs, org: prRole.org, sub: targetObject, responsibilityType: prRole.responsibilityType)
-                save(newPrsRole, flash)
+                _save(newPrsRole, flash)
             }
         }
 
@@ -1502,7 +1502,7 @@ class CopyElementsService {
         subscriptionService.getIssueEntitlements(targetObject).each { ie ->
             if (packagesToDelete.find { subPkg -> subPkg?.pkg?.id == ie?.tipp?.pkg?.id }) {
                 ie.status = RDStore.TIPP_STATUS_DELETED
-                save(ie, flash)
+                _save(ie, flash)
             }
         }
 
@@ -1549,7 +1549,7 @@ class CopyElementsService {
                 newSubscriptionPackage.pkg = subscriptionPackage.pkg
                 newSubscriptionPackage.subscription = targetObject
                 newSubscriptionPackage.freezeHolding = subscriptionPackage.freezeHolding //may be subject of setting change
-                if (save(newSubscriptionPackage, flash)) {
+                if (_save(newSubscriptionPackage, flash)) {
                     pkgOapls.each { OrgAccessPointLink oapl ->
 
                         def oaplProperties = oapl.properties
@@ -1637,7 +1637,7 @@ class CopyElementsService {
     boolean deleteEntitlements(List<IssueEntitlement> entitlementsToDelete, Object targetObject, def flash) {
         entitlementsToDelete.each {
             it.status = RDStore.TIPP_STATUS_DELETED
-            save(it, flash)
+            _save(it, flash)
         }
 //        IssueEntitlement.executeUpdate(
 //                "delete from IssueEntitlement ie where ie in (:entitlementsToDelete) and ie.subscription = :sub ",
@@ -1670,7 +1670,7 @@ class CopyElementsService {
                     newIssueEntitlement.ieGroups = null
                     newIssueEntitlement.subscription = targetObject
 
-                    if (save(newIssueEntitlement, flash)) {
+                    if (_save(newIssueEntitlement, flash)) {
                         ieToTake.properties.coverages.each { coverage ->
 
                             def coverageProperties = coverage.properties
@@ -1699,7 +1699,7 @@ class CopyElementsService {
      * @param flash the message container
      * @return true if the saving was successful, false otherwise
      */
-    private boolean save(obj, flash) {
+    private boolean _save(obj, flash) {
         if (obj.save()) {
             log.debug("Save ${obj} ok")
             return true
@@ -1717,7 +1717,7 @@ class CopyElementsService {
      * @param flash the message container
      * @return (actually) true if the deletion was successful
      */
-    private boolean delete(obj, flash) {
+    private boolean _delete(obj, flash) {
         if (obj) {
             obj.delete()
             log.debug("Delete ${obj} ok")

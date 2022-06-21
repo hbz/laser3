@@ -119,7 +119,7 @@ class AuditConfig {
         List<AuditConfig> configs = []
 
         obj.getLogIncluded().each{ prop ->
-            def config = getConfig(obj, prop)
+            AuditConfig config = getConfig(obj, prop)
             if(config){
                 configs << config
             }

@@ -7,8 +7,6 @@ import de.laser.custom.CustomAuthSuccessHandler
 import de.laser.custom.CustomAuditRequestResolver
 import de.laser.custom.CustomWebSocketConfig
 import de.laser.custom.CustomWkhtmltoxService
-//import org.grails.spring.context.support.ReloadableResourceBundleMessageSource
-//import org.grails.spring.context.support.PluginAwareResourceBundleMessageSource
 import org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper
 import org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider
 import org.springframework.security.web.context.SecurityContextPersistenceFilter
@@ -34,7 +32,6 @@ beans = {
         bean.factoryMethod = "createDelegatingPasswordEncoder"
     }
     // .. ]
-
 
     // [ websockets ..
     webSocketConfig( CustomWebSocketConfig )

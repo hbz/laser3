@@ -23,7 +23,7 @@ class ExecutorWrapperService {
 	 */
 	def processClosure(clos,owner){
 		log.debug('processClosure: ' + owner)
-		def newOwner = "${owner?.class?.name}:${owner?.id}"
+		String newOwner = "${owner?.class?.name}:${owner?.id}"
 		//see if we got a process running for owner already
 		def existingFuture = activeFuture.get(newOwner)
 		if(!existingFuture){

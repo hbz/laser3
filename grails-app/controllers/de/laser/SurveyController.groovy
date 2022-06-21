@@ -1611,7 +1611,7 @@ class SurveyController {
             if(result.newSubs?.size() > 0) {
                 result.targetParentSub.syncAllShares(result.newSubs)
             }
-            flash.message = message(code: 'surveyInfo.transfer.info', args: [countNewSubs, result.newSubs?.size() ?: 0])
+            flash.message = message(code: 'surveyInfo.transfer.info', args: [countNewSubs, result.newSubs?.size() ?: 0]) as String
         }
         redirect(action: 'compareMembersOfTwoSubs', id: params.id, params: [surveyConfigID: result.surveyConfig.id, targetSubscriptionId: result.targetParentSub?.id])
     }
@@ -1947,7 +1947,7 @@ class SurveyController {
                 }
             }
 
-            flash.message = message(code: 'completeIssueEntitlementsSurvey.forParticipant.accept', args: [params.list('selectedIEs').size()])
+            flash.message = message(code: 'completeIssueEntitlementsSurvey.forParticipant.accept', args: [params.list('selectedIEs').size()]) as String
         }
 
         if(params.process == "reject" && params.list('selectedIEs')) {
@@ -1958,7 +1958,7 @@ class SurveyController {
 
                 }
             }
-            flash.message = message(code: 'completeIssueEntitlementsSurvey.forParticipant.reject', args: [params.list('selectedIEs').size()])
+            flash.message = message(code: 'completeIssueEntitlementsSurvey.forParticipant.reject', args: [params.list('selectedIEs').size()]) as String
         }
 
         redirect(action: 'renewEntitlements', id: result.surveyInfo.id, params:[surveyConfigID: result.surveyConfig.id, participant: result.participant.id])
@@ -2349,12 +2349,12 @@ class SurveyController {
             if (PropertyDefinition.construct(map)) {
                 //flash.message = message(code: 'surveyProperty.create.successfully', args: [surveyProperty.name])
             } else {
-                flash.error = message(code: 'surveyProperty.create.fail')
+                flash.error = message(code: 'surveyProperty.create.fail') as String
             }
         } else if (surveyProperty) {
-            flash.error = message(code: 'surveyProperty.create.exist')
+            flash.error = message(code: 'surveyProperty.create.exist') as String
         } else {
-            flash.error = message(code: 'surveyProperty.create.fail')
+            flash.error = message(code: 'surveyProperty.create.fail') as String
         }
 
         redirect(url: request.getHeader('referer'))
@@ -2798,13 +2798,13 @@ class SurveyController {
                     surveyInfo.delete()
                 }
 
-                flash.message = message(code: 'surveyInfo.delete.successfully')
+                flash.message = message(code: 'surveyInfo.delete.successfully') as String
 
                 redirect action: 'currentSurveysConsortia'
                 return
             }
             catch (DataIntegrityViolationException e) {
-                flash.error = message(code: 'surveyInfo.delete.fail')
+                flash.error = message(code: 'surveyInfo.delete.fail') as String
 
                 redirect(uri: request.getHeader('referer'))
                 return
@@ -3391,7 +3391,7 @@ class SurveyController {
 
         ArrayList<Links> previousSubscriptions = Links.findAllByDestinationSubscriptionAndLinkType(baseSub, RDStore.LINKTYPE_FOLLOWS)
         if (previousSubscriptions.size() > 0) {
-            flash.error = message(code: 'subscription.renewSubExist')
+            flash.error = message(code: 'subscription.renewSubExist') as String
         } else {
             def sub_startDate = params.subscription.start_date ? DateUtils.parseDateGeneric(params.subscription.start_date) : null
             def sub_endDate = params.subscription.end_date ? DateUtils.parseDateGeneric(params.subscription.end_date) : null
@@ -3549,7 +3549,7 @@ class SurveyController {
             result.error = [] as List
 
             if (!accessService.checkMinUserOrgRole(user, result.institution, "INST_EDITOR")) {
-                result.error = message(code: 'financials.permission.unauthorised', args: [result.institution ? result.institution.name : 'N/A'])
+                result.error = message(code: 'financials.permission.unauthorised', args: [result.institution ? result.institution.name : 'N/A']) as String
                 response.sendError(403)
                 return
             }
@@ -3925,7 +3925,7 @@ class SurveyController {
 
             }
         }
-        flash.message = message(code: 'copySurveyCostItems.copy.success', args: [countNewCostItems])
+        flash.message = message(code: 'copySurveyCostItems.copy.success', args: [countNewCostItems]) as String
         redirect(action: 'copySurveyCostItems', id: params.id, params: [surveyConfigID: result.surveyConfig.id, targetSubscriptionId: result.targetSubscription.id])
 
     }
@@ -4020,7 +4020,7 @@ class SurveyController {
             }
         }
 
-        flash.message = message(code: 'copySurveyCostItems.copy.success', args: [countNewCostItems])
+        flash.message = message(code: 'copySurveyCostItems.copy.success', args: [countNewCostItems]) as String
         redirect(action: 'copySurveyCostItemsToSub', id: params.id, params: [surveyConfigID: result.surveyConfig.id])
 
     }
@@ -4261,7 +4261,7 @@ class SurveyController {
                     }
                 }
             }
-            flash.message = message(code: 'copyProperties.successful', args: [countSuccessfulCopy, message(code: 'copyProperties.' + params.tab) ,params.list('selectedSub').size()])
+            flash.message = message(code: 'copyProperties.successful', args: [countSuccessfulCopy, message(code: 'copyProperties.' + params.tab) ,params.list('selectedSub').size()]) as String
         }
 
         redirect(action: 'copyProperties', id: params.id, params: [surveyConfigID: result.surveyConfig.id, tab: params.tab, selectedProperty: params.selectedProperty, targetSubscriptionId: result.targetSubscription?.id])
@@ -4451,7 +4451,7 @@ class SurveyController {
         if(result.newSubs) {
             result.parentSuccessorSubscription.syncAllShares(result.newSubs)
         }
-        flash.message = message(code: 'surveyInfo.transfer.info', args: [countNewSubs, result.newSubs.size() ?: 0])
+        flash.message = message(code: 'surveyInfo.transfer.info', args: [countNewSubs, result.newSubs.size() ?: 0]) as String
 
 
         redirect(action: 'compareMembersOfTwoSubs', id: params.id, params: [surveyConfigID: result.surveyConfig.id])

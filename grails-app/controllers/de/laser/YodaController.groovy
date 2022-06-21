@@ -3,6 +3,7 @@ package de.laser
 
 import de.laser.annotations.DebugInfo
 import de.laser.auth.Role
+import de.laser.auth.User
 import de.laser.auth.UserRole
 import de.laser.base.AbstractJob
 import de.laser.finance.CostItem
@@ -129,7 +130,7 @@ class YodaController {
                 def triggers = quartzScheduler.getTriggersOfJob(key)
                 List nft = triggers.collect{ it.nextFireTime ?: null }
 
-                def getUsedServices = { clz ->
+                Closure getUsedServices = { clz ->
                     clz.getDeclaredFields().findAll{ it.getName().endsWith('Service')}.collect{ it.getName().capitalize() }
                 }
                 def services = getUsedServices(clazz)
@@ -1000,7 +1001,7 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     @Transactional
     def toggleBoolSetting() {
-        def s = SystemSetting.findByName(params.setting)
+        SystemSetting s = SystemSetting.findByName(params.setting)
         if (s) {
             if (s.tp == SystemSetting.CONTENT_TYPE_BOOLEAN) {
                 if (s.value == 'true')
@@ -1020,8 +1021,6 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     @Transactional
     def toggleMailSent() {
-        Map<String, Object> result = [:]
-
         if (params.mailSent) {
             if (params.mailSent == 'true')
                 grailsApplication.config.grails.mail.disabled = false
@@ -1339,9 +1338,9 @@ class YodaController {
     def cleanUpSurveys() {
         Map<String, Object> result = [:]
 
-        def subSurveys = SurveyConfig.findAllBySubscriptionIsNotNull()
-        def count = 0
-        def resultMap = []
+        List<SurveyConfig> subSurveys = SurveyConfig.findAllBySubscriptionIsNotNull()
+        int count = 0
+        List resultMap = []
         subSurveys.each { surConfig ->
 
 

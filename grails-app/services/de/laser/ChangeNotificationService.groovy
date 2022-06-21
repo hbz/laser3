@@ -86,7 +86,7 @@ class ChangeNotificationService extends AbstractLockableService {
 
         queueItems.each { poidc ->
 
-            def contr = 0
+            int contr = 0
             def contextObject = genericOIDService.resolveOID(poidc);
             log.debug("Got contextObject ${contextObject} for poidc ${poidc}")
 
@@ -251,7 +251,7 @@ class ChangeNotificationService extends AbstractLockableService {
         //IF PENDING Change for PKG exists
         if (prop == PendingChange.PROP_PKG) {
             def payload = changeMap as JSON
-            def changeDocNew = payload.toString()
+            String changeDocNew = payload.toString()
 
             existsPendingChange = PendingChange.findWhere(
                     desc: desc,
@@ -264,7 +264,7 @@ class ChangeNotificationService extends AbstractLockableService {
             )
         }
         if (!existsPendingChange) {
-            def new_pending_change = new PendingChange(
+            PendingChange new_pending_change = new PendingChange(
                     desc: desc,
                     oid: "${target.class.name}:${target.id}",
                     owner: objowner,

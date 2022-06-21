@@ -430,20 +430,20 @@ class SubscriptionService {
         }
 
         if(accessService.checkPerm("ORG_CONSORTIUM")) {
-            tmpQ = getSubscriptionsConsortiaQuery(params)
+            tmpQ = _getSubscriptionsConsortiaQuery(params)
             result.addAll(Subscription.executeQuery(queryStart + tmpQ[0], tmpQ[1]))
 
-            tmpQ = getSubscriptionsConsortialLicenseQuery(params)
+            tmpQ = _getSubscriptionsConsortialLicenseQuery(params)
             result.addAll(Subscription.executeQuery(queryStart + tmpQ[0], tmpQ[1]))
 
-            tmpQ = getSubscriptionsLocalLicenseQuery(params)
+            tmpQ = _getSubscriptionsLocalLicenseQuery(params)
             result.addAll(Subscription.executeQuery(queryStart + tmpQ[0], tmpQ[1]))
 
         } else {
-            tmpQ = getSubscriptionsConsortialLicenseQuery(params)
+            tmpQ = _getSubscriptionsConsortialLicenseQuery(params)
             result.addAll(Subscription.executeQuery(queryStart + tmpQ[0], tmpQ[1]))
 
-            tmpQ = getSubscriptionsLocalLicenseQuery(params)
+            tmpQ = _getSubscriptionsLocalLicenseQuery(params)
             result.addAll(Subscription.executeQuery(queryStart + tmpQ[0], tmpQ[1]))
         }
         result
@@ -459,7 +459,7 @@ class SubscriptionService {
         List tmpQ
 
         if(accessService.checkPerm("ORG_CONSORTIUM")) {
-            tmpQ = getSubscriptionsConsortiaQuery(params)
+            tmpQ = _getSubscriptionsConsortiaQuery(params)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
             if (params.showSubscriber) {
                 List parents = result.clone()
@@ -467,14 +467,14 @@ class SubscriptionService {
                 result.addAll(Subscription.executeQuery('select s from Subscription s join s.orgRelations oo where s.instanceOf in (:parents) and oo.roleType in :subscriberRoleTypes order by oo.org.sortname asc, oo.org.name asc',[parents: parents, subscriberRoleTypes:subscriberRoleTypes]))
             }
 
-            tmpQ = getSubscriptionsConsortialLicenseQuery(params)
+            tmpQ = _getSubscriptionsConsortialLicenseQuery(params)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
 
-            tmpQ = getSubscriptionsLocalLicenseQuery(params)
+            tmpQ = _getSubscriptionsLocalLicenseQuery(params)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
 
         } else {
-            tmpQ = getSubscriptionsLocalLicenseQuery(params)
+            tmpQ = _getSubscriptionsLocalLicenseQuery(params)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
         }
         if (params.showConnectedObjs){
@@ -494,10 +494,10 @@ class SubscriptionService {
 
         if(accessService.checkPerm("ORG_INST")) {
 
-            tmpQ = getSubscriptionsConsortialLicenseQuery(params)
+            tmpQ = _getSubscriptionsConsortialLicenseQuery(params)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
 
-            tmpQ = getSubscriptionsLocalLicenseQuery(params)
+            tmpQ = _getSubscriptionsLocalLicenseQuery(params)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
 
         }
@@ -515,10 +515,10 @@ class SubscriptionService {
 
         if(accessService.checkPerm("ORG_INST")) {
 
-            tmpQ = getSubscriptionsConsortialLicenseQuery(params)
+            tmpQ = _getSubscriptionsConsortialLicenseQuery(params)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
 
-            tmpQ = getSubscriptionsLocalLicenseQuery(params)
+            tmpQ = _getSubscriptionsLocalLicenseQuery(params)
             result.addAll(Subscription.executeQuery("select s " + tmpQ[0], tmpQ[1]))
         }
 
@@ -530,7 +530,7 @@ class SubscriptionService {
      * @param params the filter parameter map
      * @return a list of consortial parent subscriptions matching the given filter
      */
-    private List getSubscriptionsConsortiaQuery(Map params) {
+    private List _getSubscriptionsConsortiaQuery(Map params) {
         Map queryParams = [:]
         if (params?.status) {
             queryParams.status = params.status
@@ -547,7 +547,7 @@ class SubscriptionService {
      * @param params the filter parameter map
      * @return a list of consortial parent subscriptions matching the given filter
      */
-    private List getSubscriptionsConsortialLicenseQuery(Map params) {
+    private List _getSubscriptionsConsortialLicenseQuery(Map params) {
         Map queryParams = [:]
         if (params?.status) {
             queryParams.status = params.status
@@ -563,7 +563,7 @@ class SubscriptionService {
      * @param params the filter parameter map
      * @return a list of licenses matching the given filter
      */
-    private List getSubscriptionsLocalLicenseQuery(Map params) {
+    private List _getSubscriptionsLocalLicenseQuery(Map params) {
         Map queryParams = [:]
         if (params?.status) {
             queryParams.status = params.status

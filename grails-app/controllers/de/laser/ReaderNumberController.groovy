@@ -31,7 +31,7 @@ class ReaderNumberController  {
 			rnData.value = new BigDecimal(params.value)
 			ReaderNumber numbersInstance = new ReaderNumber(rnData)
 			if (! numbersInstance.save()) {
-				flash.error = message(code: 'default.not.created.message', args: [message(code: 'readerNumber.number.label')])
+				flash.error = message(code: 'default.not.created.message', args: [message(code: 'readerNumber.number.label')]) as String
 				log.error(numbersInstance.errors.toString())
 			}
 		}
@@ -49,7 +49,7 @@ class ReaderNumberController  {
 			ReaderNumber numbersInstance = ReaderNumber.get(params.id)
 			Map<String, Object> rnData = params.clone()
 			if (! numbersInstance) {
-				flash.message = message(code: 'default.not.found.message', args: [message(code: 'readerNumber.label'), params.id])
+				flash.message = message(code: 'default.not.found.message', args: [message(code: 'readerNumber.label'), params.id]) as String
 			}
 			SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
 			rnData.referenceGroup = RefdataValue.get(params.referenceGroup)
@@ -58,7 +58,7 @@ class ReaderNumberController  {
 			rnData.value = new BigDecimal(params.value)
 			numbersInstance.properties = rnData
 			if (! numbersInstance.save()) {
-				flash.error = message(code:'default.not.updated.message', args: [message(code: 'readerNumber.label'), numbersInstance.id])
+				flash.error = message(code:'default.not.updated.message', args: [message(code: 'readerNumber.label'), numbersInstance.id]) as String
 				log.error(numbersInstance.errors.toString())
 			}
 		}

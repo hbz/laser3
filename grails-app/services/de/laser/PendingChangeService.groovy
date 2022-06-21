@@ -24,7 +24,6 @@ import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.transaction.TransactionStatus
 
 import java.sql.Array
-import java.sql.Connection
 import java.text.SimpleDateFormat
 import java.time.Duration
 
@@ -127,9 +126,9 @@ class PendingChangeService extends AbstractLockableService {
                                     log.debug("We are dealing with custom properties or identifiers: ${payload}")
                                     //processCustomPropertyChange(payload)
                                     if(payload.changeDoc.OID.contains(Identifier.class.name))
-                                        processIdentifierChange(pendingChange, payload)
+                                        _processIdentifierChange(pendingChange, payload)
                                     else if(payload.changeDoc.OID.contains("Property"))
-                                        processCustomPropertyChange(pendingChange, payload) // TODO [ticket=1894]
+                                        _processCustomPropertyChange(pendingChange, payload) // TODO [ticket=1894]
                                 }
                                 else if ( prop_info.name == 'status' ) {
                                     RefdataValue oldStatus = (RefdataValue) genericOIDService.resolveOID(payload.changeDoc.old)
@@ -325,7 +324,7 @@ class PendingChangeService extends AbstractLockableService {
      * @param pendingChange the change to be applied
      * @param payload a map containing the change parameters
      */
-    private void processCustomPropertyChange(PendingChange pendingChange, JSONElement payload) {
+    private void _processCustomPropertyChange(PendingChange pendingChange, JSONElement payload) {
         def changeDoc = payload.changeDoc
 
         if (pendingChange.payloadChangeTargetOid?.length() > 0 || payload.changeTarget?.length() > 0) {
@@ -415,7 +414,7 @@ class PendingChangeService extends AbstractLockableService {
      * @param pendingChange the change to process
      * @param payload a map containing the change details
      */
-    private void processIdentifierChange(PendingChange pendingChange, JSONElement payload) {
+    private void _processIdentifierChange(PendingChange pendingChange, JSONElement payload) {
         def changeDoc = payload.changeDoc
 
         if (pendingChange.payloadChangeTargetOid?.length() > 0 || payload.changeTarget?.length() > 0) {

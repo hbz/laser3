@@ -119,7 +119,7 @@ class TaskService {
             Map<String, Object> params = [user : user]
             if (queryMap){
                 query += queryMap.query
-                query = addDefaultOrder("t", query)
+                query = _addDefaultOrder("t", query)
                 params << queryMap.queryParams
             }
             tasks = Task.executeQuery(query, params)
@@ -262,7 +262,7 @@ class TaskService {
         List<Task> tasks = []
         if (user) {
             String query  = select_with_join + 'where t.responsibleUser = :user' + queryMap.query
-            query = addDefaultOrder("t", query)
+            query = _addDefaultOrder("t", query)
 
             Map params = [user : user] << queryMap.queryParams
             tasks = Task.executeQuery(query, params)
@@ -280,7 +280,7 @@ class TaskService {
         List<Task> tasks = []
         if (org) {
             String query  = select_with_join + 'where t.responsibleOrg = :org' + queryMap.query
-            query = addDefaultOrder("t", query)
+            query = _addDefaultOrder("t", query)
 
             Map params = [org : org] << queryMap.queryParams
             tasks = Task.executeQuery(query, params)
@@ -300,7 +300,7 @@ class TaskService {
 
         if (user && org) {
             String query = select_with_join + 'where ( ru = :user or t.responsibleOrg = :org ) ' + queryMap.query
-            query = addDefaultOrder("t", query)
+            query = _addDefaultOrder("t", query)
 
             Map<String, Object>  params = [user : user, org: org] << queryMap.queryParams
             tasks = Task.executeQuery(query, params)
@@ -358,7 +358,7 @@ class TaskService {
      */
     List<Task> getTasksByResponsibleAndObject(User user, Object obj,  Map params) {
         List<Task> tasks = []
-        params = addDefaultOrder(null, params)
+        params = _addDefaultOrder(null, params)
         if (user && obj) {
             switch (obj.getClass().getSimpleName()) {
                 case 'License':
@@ -390,7 +390,7 @@ class TaskService {
      */
     List<Task> getTasksByResponsibleAndObject(Org org, Object obj,  Object params) {
         List<Task> tasks = []
-        params = addDefaultOrder(null, params)
+        params = _addDefaultOrder(null, params)
         if (org && obj) {
             switch (obj.getClass().getSimpleName()) {
                 case 'License':
@@ -440,11 +440,11 @@ class TaskService {
 
         result.taskCreator                  = contextService.getUser()
         result.validResponsibleOrgs         = contextOrg ? [contextOrg] : []
-        result.validResponsibleUsers        = getUserDropdown(contextOrg)
-        result.validPackages                = getPackagesDropdown(contextOrg)
-        result.validOrgsDropdown            = getOrgsDropdown(contextOrg)
-        result.validSubscriptionsDropdown   = getSubscriptionsDropdown(contextOrg, false)
-        result.validLicensesDropdown        = getLicensesDropdown(contextOrg, false)
+        result.validResponsibleUsers        = _getUserDropdown(contextOrg)
+        result.validPackages                = _getPackagesDropdown(contextOrg)
+        result.validOrgsDropdown            = _getOrgsDropdown(contextOrg)
+        result.validSubscriptionsDropdown   = _getSubscriptionsDropdown(contextOrg, false)
+        result.validLicensesDropdown        = _getLicensesDropdown(contextOrg, false)
 
         result
     }
@@ -454,7 +454,7 @@ class TaskService {
      * @param contextOrg unused
      * @return a list of packages
      */
-    private List<Package> getPackagesDropdown(Org contextOrg) {
+    private List<Package> _getPackagesDropdown(Org contextOrg) {
         List<Package> validPackages        = Package.findAll("from Package p where p.name != '' and p.name != null order by lower(p.sortname) asc") // TODO
         validPackages
     }
@@ -464,7 +464,7 @@ class TaskService {
      * @param contextOrg the institution whose affiliated users should be retrieved
      * @return a list of users
      */
-    private List<User> getUserDropdown(Org contextOrg) {
+    private List<User> _getUserDropdown(Org contextOrg) {
         List<User> validResponsibleUsers   = contextOrg ? User.executeQuery(
                 "select u from User as u where exists (select uo from UserOrg as uo where uo.user = u and uo.org = :org) order by lower(u.display)",
                 [org: contextOrg]) : []
@@ -477,7 +477,7 @@ class TaskService {
      * @param contextOrg the institution whose accessible organisations should be retrieved
      * @return a list of organisation
      */
-    private Set<Map> getOrgsDropdown(Org contextOrg) {
+    private Set<Map> _getOrgsDropdown(Org contextOrg) {
         Set validOrgs = [], validOrgsDropdown = []
         if (contextOrg) {
             boolean isInstitution = (contextOrg.getCustomerType() in ['ORG_BASIC_MEMBER','ORG_INST'])
@@ -514,7 +514,7 @@ class TaskService {
      * @param isWithInstanceOf should member subscriptions being retrieved as well?
      * @return a list of subscriptions
      */
-    private List<Map> getSubscriptionsDropdown(Org contextOrg, boolean isWithInstanceOf) {
+    private List<Map> _getSubscriptionsDropdown(Org contextOrg, boolean isWithInstanceOf) {
         List validSubscriptionsWithInstanceOf = []
         List validSubscriptionsWithoutInstanceOf = []
         List<Map> validSubscriptionsDropdown = []
@@ -601,7 +601,7 @@ class TaskService {
      * @param isWithInstanceOf should member licenses being retrieved as well?
      * @return a list of subscriptions
      */
-    private List<Map> getLicensesDropdown(Org contextOrg, boolean isWithInstanceOf) {
+    private List<Map> _getLicensesDropdown(Org contextOrg, boolean isWithInstanceOf) {
         List<License> validLicensesOhneInstanceOf = []
         List<License> validLicensesMitInstanceOf = []
         List<Map> validLicensesDropdown = []
@@ -694,7 +694,7 @@ class TaskService {
      * @param query the base task query
      * @return the query string with the order clause
      */
-    private String addDefaultOrder(String tableAlias, String query){
+    private String _addDefaultOrder(String tableAlias, String query){
         if (query && ( ! query.toLowerCase().contains('order by'))){
             if (tableAlias) {
                 query += ' order by '+tableAlias+'.endDate asc'
@@ -711,7 +711,7 @@ class TaskService {
      * @param params the sorting parameter map
      * @return the query string with the order clause
      */
-    private Map addDefaultOrder(String tableAlias, Map params){
+    private Map _addDefaultOrder(String tableAlias, Map params){
         if (params) {
             if (tableAlias){
                 if ( ! params.sort) {

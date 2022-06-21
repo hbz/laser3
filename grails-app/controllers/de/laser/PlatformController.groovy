@@ -112,7 +112,7 @@ class PlatformController  {
         else platformInstance = Platform.findByGlobalUID(params.id)
 
         if (!platformInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'platform.label'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'platform.label'), params.id]) as String
             redirect action: 'list'
             return
         }
@@ -123,7 +123,7 @@ class PlatformController  {
 
         Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/find?uuid=${platformInstance.gokbId}")
         if (queryResult.error && queryResult.error == 404) {
-            flash.error = message(code:'wekb.error.404')
+            flash.error = message(code:'wekb.error.404') as String
         }
         else if (queryResult.warning) {
             List records = queryResult.warning.records
@@ -175,7 +175,7 @@ class PlatformController  {
         Platform platformInstance = Platform.get(params.id)
         if (!platformInstance) {
             flash.message = message(code: 'default.not.found.message',
-                    args: [message(code: 'platform.label'), params.id])
+                    args: [message(code: 'platform.label'), params.id]) as String
             redirect action: 'list'
             return
         }
@@ -198,7 +198,7 @@ class PlatformController  {
         Platform platformInstance = Platform.get(params.id)
         if (!platformInstance) {
             flash.message = message(code: 'default.not.found.message',
-                args: [message(code: 'platform.label'), params.id])
+                args: [message(code: 'platform.label'), params.id]) as String
             redirect action: 'list'
             return
         }
@@ -235,7 +235,7 @@ class PlatformController  {
         Platform platformInstance = Platform.get(params.platform_id)
         if (!platformInstance) {
             flash.message = message(code: 'default.not.found.message',
-                args: [message(code: 'platform.label'), params.platform_id])
+                args: [message(code: 'platform.label'), params.platform_id]) as String
             redirect action: 'list'
             return
         }

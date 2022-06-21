@@ -39,7 +39,7 @@ class TippController  {
 
 
     if (!result.tipp) {
-      flash.message = message(code: 'default.not.found.message', args: [message(code: 'titleInstance.label'), params.id])
+      flash.message = message(code: 'default.not.found.message', args: [message(code: 'titleInstance.label'), params.id]) as String
       redirect action: 'list'
       return
     }

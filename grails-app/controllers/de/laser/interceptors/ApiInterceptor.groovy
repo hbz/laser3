@@ -62,7 +62,7 @@ class ApiInterceptor implements grails.artefact.Interceptor {
 
                             String apiSecret = OrgSetting.get(apiOrg, OrgSetting.KEYS.API_PASSWORD)?.getValue()
 
-                            checksum = hmac(
+                            checksum = _hmac(
                                     method +    // http-method
                                     path +      // uri
                                     timestamp + // timestamp
@@ -115,7 +115,7 @@ class ApiInterceptor implements grails.artefact.Interceptor {
         true
     }
 
-    private String hmac(String data, String secret) throws SignatureException {
+    private String _hmac(String data, String secret) throws SignatureException {
         String result
         try {
             SecretKeySpec signingKey = new SecretKeySpec(secret.getBytes(), "HmacSHA256")

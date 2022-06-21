@@ -343,7 +343,7 @@ select ie from IssueEntitlement as ie JOIN ie.subscription.orgRelations as o
         char[] c = s.toCharArray();
         StringBuffer b = new StringBuffer();
         for (char element : c) {
-            b.append(translate(element));
+            b.append(_translate(element));
         }
         return b.toString();
     }
@@ -352,7 +352,7 @@ select ie from IssueEntitlement as ie JOIN ie.subscription.orgRelations as o
      * Translate the given unicode char in the closest ASCII representation
      * NOTE: this function deals only with latin-1 supplement and latin-1 extended code charts
      */
-    private static char translate(char c) {
+    private static char _translate(char c) {
         switch(c) {
             case '\u00C0':
             case '\u00C1':

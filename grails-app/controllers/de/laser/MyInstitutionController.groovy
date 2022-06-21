@@ -642,7 +642,7 @@ class MyInstitutionController  {
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
-            flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]);
+            flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]) as String
             response.sendError(401)
             return;
         }
@@ -694,7 +694,7 @@ class MyInstitutionController  {
 
 
             if (! accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR')) {
-                flash.error = message(code:'myinst.error.noAdmin', args:[org.name])
+                flash.error = message(code:'myinst.error.noAdmin', args:[org.name]) as String
                 response.sendError(401)
                 // render(status: '401', text:"You do not have permission to access ${org.name}. Please request access on the profile page");
                 return
@@ -704,7 +704,7 @@ class MyInstitutionController  {
             if (baseLicense) {
                 if (!baseLicense?.hasPerm("view", user)) {
                     log.debug("return 401....")
-                    flash.error = message(code: 'myinst.newLicense.error')
+                    flash.error = message(code: 'myinst.newLicense.error') as String
                     response.sendError(401)
                     return
                 }
@@ -720,7 +720,7 @@ class MyInstitutionController  {
                         copyLicense.endDate = DateUtils.parseDateGeneric(params.licenseEndDate)
 
                         if (copyLicense.save()) {
-                            flash.message = message(code: 'license.createdfromTemplate.message')
+                            flash.message = message(code: 'license.createdfromTemplate.message') as String
                         }
 
                         if( params.sub) {
@@ -746,7 +746,7 @@ class MyInstitutionController  {
 
             if (!licenseInstance.save()) {
                 log.error(licenseInstance.errors.toString())
-                flash.error = message(code:'license.create.error')
+                flash.error = message(code:'license.create.error') as String
                 redirect action: 'emptyLicense'
                 return
             }
@@ -1169,10 +1169,10 @@ join sub.orgRelations or_sub where
             //Important
             if(!accessService.checkPerm('ORG_CONSORTIUM')) {
                 if(params.subTypes == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id.toString()){
-                    flash.error = message(code: 'subscriptionsManagement.noPermission.forSubsWithTypeConsortial')
+                    flash.error = message(code: 'subscriptionsManagement.noPermission.forSubsWithTypeConsortial') as String
                 }
                 else if(RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id.toString() in params.list('subTypes')){
-                    flash.error = message(code: 'subscriptionsManagement.noPermission.forSubsWithTypeConsortial')
+                    flash.error = message(code: 'subscriptionsManagement.noPermission.forSubsWithTypeConsortial') as String
                 }
 
                 params.subTypes = [RDStore.SUBSCRIPTION_TYPE_LOCAL.id.toString()]
@@ -1182,7 +1182,7 @@ join sub.orgRelations or_sub where
         if(params.tab == 'documents' && params.processOption == 'newDoc') {
             def input_file = request.getFile("upload_file")
             if (input_file.size == 0) {
-                flash.error = message(code: 'template.emptyDocument.file')
+                flash.error = message(code: 'template.emptyDocument.file') as String
                 redirect(url: request.getHeader('referer'))
                 return
             }
@@ -1789,12 +1789,12 @@ join sub.orgRelations or_sub where
                     render view: 'postProcessingFinanceImport', model: result
                 }
                 else {
-                    flash.error = message(code:'default.import.error.wrongCharset',args:[encoding])
+                    flash.error = message(code:'default.import.error.wrongCharset',args:[encoding]) as String
                     redirect(url: request.getHeader('referer'))
                 }
             }
             else {
-                flash.error = message(code:'default.import.error.noFileProvided')
+                flash.error = message(code:'default.import.error.noFileProvided') as String
                 redirect(url: request.getHeader('referer'))
             }
         }
@@ -1844,12 +1844,12 @@ join sub.orgRelations or_sub where
                     render view: 'postProcessingSubscriptionImport', model: result
                 }
                 else {
-                    flash.error = message(code:'default.import.error.wrongCharset',args:[encoding])
+                    flash.error = message(code:'default.import.error.wrongCharset',args:[encoding]) as String
                     redirect(url: request.getHeader('referer'))
                 }
             }
             else {
-                flash.error = message(code:'default.import.error.noFileProvided')
+                flash.error = message(code:'default.import.error.noFileProvided') as String
                 redirect(url: request.getHeader('referer'))
             }
     }
@@ -2107,13 +2107,13 @@ join sub.orgRelations or_sub where
                 if (surveyOrg && surveyConfig) {
                     surveyOrg.finishDate = new Date()
                     if (!surveyOrg.save()) {
-                        flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess')
+                        flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess') as String
                     } else {
-                        flash.message = message(code: 'renewEntitlementsWithSurvey.submitSuccess')
+                        flash.message = message(code: 'renewEntitlementsWithSurvey.submitSuccess') as String
                         sendMailToSurveyOwner = true
                     }
                 } else {
-                    flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess')
+                    flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess') as String
                 }
                 /*}else {
                     flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccessEmptyIEs')
@@ -2142,23 +2142,23 @@ join sub.orgRelations or_sub where
         }
 
         if(notProcessedMandatoryProperties.size() > 0){
-            flash.error = message(code: "confirm.dialog.concludeBinding.survey.notProcessedMandatoryProperties", args: [notProcessedMandatoryProperties.join(', ')])
+            flash.error = message(code: "confirm.dialog.concludeBinding.survey.notProcessedMandatoryProperties", args: [notProcessedMandatoryProperties.join(', ')]) as String
         }
         else if(noParticipation || allResultHaveValue){
             surveyOrg.finishDate = new Date()
             if (!surveyOrg.save()) {
-                flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess')
+                flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess') as String
             } else {
-                flash.message = message(code: 'renewEntitlementsWithSurvey.submitSuccess')
+                flash.message = message(code: 'renewEntitlementsWithSurvey.submitSuccess') as String
                 sendMailToSurveyOwner = true
             }
         }
         else if(!noParticipation && !allResultHaveValue){
             surveyOrg.finishDate = new Date()
             if (!surveyOrg.save()) {
-                flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess')
+                flash.error = message(code: 'renewEntitlementsWithSurvey.submitNotSuccess') as String
             } else {
-                flash.message = message(code: 'renewEntitlementsWithSurvey.submitSuccess')
+                flash.message = message(code: 'renewEntitlementsWithSurvey.submitSuccess') as String
                 sendMailToSurveyOwner = true
             }
         }
@@ -3684,11 +3684,11 @@ join sub.orgRelations or_sub where
                     if (pdFrom && pdTo) {
                         try {
                             int count = propertyService.replacePropertyDefinitions(pdFrom, pdTo, Boolean.valueOf(params.overwrite), false)
-                            flash.message = message(code: 'menu.institutions.replace_prop.changed', args: [count, oldName, newName])
+                            flash.message = message(code: 'menu.institutions.replace_prop.changed', args: [count, oldName, newName]) as String
                         }
                         catch (Exception e) {
                             e.printStackTrace()
-                            flash.error = message(code: 'menu.institutions.replace_prop.error', args: [oldName, newName])
+                            flash.error = message(code: 'menu.institutions.replace_prop.error', args: [oldName, newName]) as String
                         }
                     }
                 }
@@ -3887,7 +3887,7 @@ join sub.orgRelations or_sub where
             boolean isEditable = license.isEditableBy(result.user)
 
             if (! (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR'))) {
-                flash.error = message(code:'license.permissionInfo.noPerms')
+                flash.error = message(code:'license.permissionInfo.noPerms') as String
                 response.sendError(401)
                 return;
             }
@@ -3896,7 +3896,7 @@ join sub.orgRelations or_sub where
                 redirect controller: 'license', action: 'copyLicense', params: [sourceObjectId: genericOIDService.getOID(license), copyObject: true]
                 return
             }else {
-                flash.error = message(code:'license.permissionInfo.noPerms')
+                flash.error = message(code:'license.permissionInfo.noPerms') as String
                 response.sendError(401)
                 return;
             }

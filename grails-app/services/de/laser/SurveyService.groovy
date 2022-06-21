@@ -155,7 +155,7 @@ class SurveyService {
     }
 
     @Deprecated
-    private boolean save(obj, flash) {
+    private boolean _save(obj, flash) {
         if (obj.save()) {
             log.debug("Save ${obj} ok")
             return true
@@ -984,7 +984,7 @@ class SurveyService {
                             "WHERE surOrg.org IN (:org) " +
                             "AND s.id IN (:survey)", [org: userOrg.org, survey: surveys?.id])
 
-                    sendSurveyEmail(userOrg.user, userOrg.org, orgSurveys, false)
+                    _sendSurveyEmail(userOrg.user, userOrg.org, orgSurveys, false)
                 }
             }
         }
@@ -1006,7 +1006,7 @@ class SurveyService {
             if(userOrg.user.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_FOR_SURVEYS_START) == RDStore.YN_YES &&
                     userOrg.user.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES)
             {
-                sendSurveyEmail(userOrg.user, userOrg.org, [surveyInfo], reminderMail)
+                _sendSurveyEmail(userOrg.user, userOrg.org, [surveyInfo], reminderMail)
             }
         }
     }
@@ -1018,7 +1018,7 @@ class SurveyService {
      * @param surveyEntries the survey information to process
      * @param reminderMail is it a reminder?
      */
-    private void sendSurveyEmail(User user, Org org, List<SurveyInfo> surveyEntries, boolean reminderMail) {
+    private void _sendSurveyEmail(User user, Org org, List<SurveyInfo> surveyEntries, boolean reminderMail) {
 
         if (ConfigMapper.getConfig('grails.mail.disabled', Boolean) == true) {
             println 'SurveyService.sendSurveyEmail() failed due grails.mail.disabled = true'
@@ -1125,15 +1125,15 @@ class SurveyService {
 
         GrailsParameterMap tmpParams = (GrailsParameterMap) parameterMap.clone()
 
-        result = setSurveyConfigCounts(result, 'created', tmpParams, contextOrg)
+        result = _setSurveyConfigCounts(result, 'created', tmpParams, contextOrg)
 
-        result = setSurveyConfigCounts(result, 'active', tmpParams, contextOrg)
+        result = _setSurveyConfigCounts(result, 'active', tmpParams, contextOrg)
 
-        result = setSurveyConfigCounts(result, 'finish', tmpParams, contextOrg)
+        result = _setSurveyConfigCounts(result, 'finish', tmpParams, contextOrg)
 
-        result = setSurveyConfigCounts(result, 'inEvaluation', tmpParams, contextOrg)
+        result = _setSurveyConfigCounts(result, 'inEvaluation', tmpParams, contextOrg)
 
-        result = setSurveyConfigCounts(result, 'completed', tmpParams, contextOrg)
+        result = _setSurveyConfigCounts(result, 'completed', tmpParams, contextOrg)
 
         return result
     }
@@ -1146,7 +1146,7 @@ class SurveyService {
      * @param owner the context consortium
      * @return the map enriched with information
      */
-    private Map setSurveyConfigCounts(Map result, String tab, GrailsParameterMap parameterMap, Org owner){
+    private Map _setSurveyConfigCounts(Map result, String tab, GrailsParameterMap parameterMap, Org owner){
         SimpleDateFormat sdFormat = DateUtils.getLocalizedSDF_noTime()
         Map<String,Object> fsq = [:]
 
@@ -1361,7 +1361,7 @@ class SurveyService {
      * @param parameterMap the request parameter map
      * @return the counts for each tab
      */
-    private def getSurveyParticipantCounts_New(Org participant, GrailsParameterMap parameterMap){
+    private def _getSurveyParticipantCounts_New(Org participant, GrailsParameterMap parameterMap){
         Map<String, Object> result = [:]
 
         Org contextOrg = contextService.getOrg()
@@ -1369,28 +1369,28 @@ class SurveyService {
         GrailsParameterMap tmpParams = (GrailsParameterMap) parameterMap.clone()
         if (contextOrg.getCustomerType()  == 'ORG_CONSORTIUM') {
 
-            result = setSurveyParticipantCounts(result, 'new', tmpParams, participant, contextOrg)
+            result = _setSurveyParticipantCounts(result, 'new', tmpParams, participant, contextOrg)
 
-            result = setSurveyParticipantCounts(result, 'processed', tmpParams, participant, contextOrg)
+            result = _setSurveyParticipantCounts(result, 'processed', tmpParams, participant, contextOrg)
 
-            result = setSurveyParticipantCounts(result, 'finish', tmpParams, participant, contextOrg)
+            result = _setSurveyParticipantCounts(result, 'finish', tmpParams, participant, contextOrg)
 
-            result = setSurveyParticipantCounts(result, 'notFinish', tmpParams, participant, contextOrg)
+            result = _setSurveyParticipantCounts(result, 'notFinish', tmpParams, participant, contextOrg)
 
-            result = setSurveyParticipantCounts(result, 'termination', tmpParams, participant, contextOrg)
+            result = _setSurveyParticipantCounts(result, 'termination', tmpParams, participant, contextOrg)
 
 
         }else {
 
-            result = setSurveyParticipantCounts(result, 'new', tmpParams, participant, null)
+            result = _setSurveyParticipantCounts(result, 'new', tmpParams, participant, null)
 
-            result = setSurveyParticipantCounts(result, 'processed', tmpParams, participant, null)
+            result = _setSurveyParticipantCounts(result, 'processed', tmpParams, participant, null)
 
-            result = setSurveyParticipantCounts(result, 'finish', tmpParams, participant, null)
+            result = _setSurveyParticipantCounts(result, 'finish', tmpParams, participant, null)
 
-            result = setSurveyParticipantCounts(result, 'notFinish', tmpParams, participant, null)
+            result = _setSurveyParticipantCounts(result, 'notFinish', tmpParams, participant, null)
 
-            result = setSurveyParticipantCounts(result, 'termination', tmpParams, participant, null)
+            result = _setSurveyParticipantCounts(result, 'termination', tmpParams, participant, null)
         }
         return result
     }
@@ -1404,7 +1404,7 @@ class SurveyService {
      * @param owner the context consortium
      * @return the map enriched with information
      */
-    private Map setSurveyParticipantCounts(Map result, String tab, GrailsParameterMap parameterMap, Org participant, Org owner = null){
+    private Map _setSurveyParticipantCounts(Map result, String tab, GrailsParameterMap parameterMap, Org participant, Org owner = null){
         SimpleDateFormat sdFormat = DateUtils.getLocalizedSDF_noTime()
         Map fsq = [:]
 
@@ -1425,7 +1425,7 @@ class SurveyService {
     }
 
     @Deprecated
-    private def getSurveyParticipantCounts(Org participant){
+    private def _getSurveyParticipantCounts(Org participant){
         Map<String, Object> result = [:]
 
         result.new = SurveyInfo.executeQuery("from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrg left join surConfig.propertySet surResult where surOrg.org = :participant and (surResult.surveyConfig.surveyInfo.status = :status and surResult.id in (select sr.id from SurveyResult sr where sr.surveyConfig  = surveyConfig and sr.dateCreated = sr.lastUpdated and surOrg.finishDate is null))",

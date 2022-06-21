@@ -108,7 +108,7 @@ class CostConfigurationController {
                 financeService.deleteCostConfiguration(ciec)
         }
         else {
-            flash.error = message(code: 'costConfiguration.delete.noCiec')
+            flash.error = message(code: 'costConfiguration.delete.noCiec') as String
         }
         redirect(url: request.getHeader('referer'))
     }
@@ -129,9 +129,9 @@ class CostConfigurationController {
         def ciec = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(cie,org)
         if(concernedCostItems) {
             CostItem.executeUpdate('UPDATE CostItem ci SET ci.costItemElementConfiguration = :ciec WHERE ci.id IN (:cci)',[ciec:ciec.elementSign,cci:concernedCostItems])
-            flash.message = message(code:'costConfiguration.configureAllCostItems.done')
+            flash.message = message(code:'costConfiguration.configureAllCostItems.done') as String
         }
-        else flash.message = message(code:'costConfiguration.configureAllCostItems.nothingToDo')
+        else flash.message = message(code:'costConfiguration.configureAllCostItems.nothingToDo') as String
         redirect(url: request.getHeader('referer'))
     }
 

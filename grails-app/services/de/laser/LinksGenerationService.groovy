@@ -184,13 +184,13 @@ class LinksGenerationService {
 
     Set getSuccessionChain(startingPoint, String position) {
         Set chain = []
-        Set first = getRecursiveNext([startingPoint].toSet(),position)
+        Set first = _getRecursiveNext([startingPoint].toSet(),position)
         Set next
         while(first.size() > 0) {
             first.each { row ->
                 chain << row
             }
-            next = getRecursiveNext(first,position)
+            next = _getRecursiveNext(first,position)
             first = next
         }
         if(startingPoint instanceof Subscription)
@@ -199,7 +199,7 @@ class LinksGenerationService {
     }
 
 
-    private Set<Subscription> getRecursiveNext(Set points, String position) {
+    private Set<Subscription> _getRecursiveNext(Set points, String position) {
         String pair
         if(position == 'sourceSubscription')
             pair = 'destinationSubscription'

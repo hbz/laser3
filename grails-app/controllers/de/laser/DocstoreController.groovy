@@ -60,7 +60,7 @@ class DocstoreController  {
             //process file
             def input_file = request.getFile("upload_file")
             if (input_file.size == 0) {
-                flash.error = message(code: 'template.emptyDocument.file')
+                flash.error = message(code: 'template.emptyDocument.file') as String
                 redirect(url: request.getHeader('referer'))
                 return
             }
@@ -193,7 +193,7 @@ class DocstoreController  {
     def editDocument() {
         Map<String,Object> ctrlResult = docstoreControllerService.editDocument(params)
         if(ctrlResult.status == DocstoreControllerService.STATUS_ERROR) {
-            flash.error = message(code:'template.documents.edit.error')
+            flash.error = message(code:'template.documents.edit.error') as String
         }
         redirect(url: request.getHeader('referer'))
     }

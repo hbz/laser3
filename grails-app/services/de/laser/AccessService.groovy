@@ -32,53 +32,53 @@ class AccessService {
     // --- checking current user and context org
 
     /**
-     * Substitution call for {@link #checkOrgPerm(java.lang.String[])}
+     * Substitution call for {@link #_checkOrgPerm(java.lang.String[])}
      * @param orgPerms the customer types (= institution permissions) to check
      * @return true if access is granted, false otherwise
      */
     boolean checkPerm(String orgPerms) {
-        checkOrgPerm(orgPerms.split(','))
+        _checkOrgPerm(orgPerms.split(','))
     }
 
     /**
-     * Substitution call for {@link #checkOrgPerm(de.laser.Org, java.lang.String[])}
+     * Substitution call for {@link #_checkOrgPerm(de.laser.Org, java.lang.String[])}
      * @param ctxOrg the context institution whose customer type needs to be checked
      * @param orgPerms the customer types which need to be granted to access
      * @return true if access is granted, false otherwise
      */
     boolean checkPerm(Org ctxOrg, String orgPerms) {
-        checkOrgPerm(ctxOrg, orgPerms.split(','))
+        _checkOrgPerm(ctxOrg, orgPerms.split(','))
     }
 
     /**
-     * Substitution call for {@link #checkOrgPermAndOrgType(java.lang.String[], java.lang.String[])}
+     * Substitution call for {@link #_checkOrgPermAndOrgType(java.lang.String[], java.lang.String[])}
      * @param orgPerms the customer types to check
      * @param orgTypes the organisation types to check
      * @return true if the context organisation passes both checks, false otherwise
      */
     boolean checkPermType(String orgPerms, String orgTypes) {
-        checkOrgPermAndOrgType(orgPerms.split(','), orgTypes.split(','))
+        _checkOrgPermAndOrgType(orgPerms.split(','), orgTypes.split(','))
     }
 
     /**
-     * Substitution call for {@link #checkOrgPermAndUserAffiliation(java.lang.String[], java.lang.String)}
+     * Substitution call for {@link #_checkOrgPermAndUserAffiliation(java.lang.String[], java.lang.String)}
      * @param orgPerms the customer types to check
      * @param userRole the user permissions to check
      * @return true if the user has the permissions granted and his context institution is one of the given customer types, false otherwise
      */
     boolean checkPermAffiliation(String orgPerms, String userRole) {
-        checkOrgPermAndUserAffiliation(orgPerms.split(','), userRole)
+        _checkOrgPermAndUserAffiliation(orgPerms.split(','), userRole)
     }
 
     /**
-     * Substitution call for {@link #checkOrgPermAndOrgTypeAndUserAffiliation(java.lang.String[], java.lang.String[], java.lang.String)}
+     * Substitution call for {@link #_checkOrgPermAndOrgTypeAndUserAffiliation(java.lang.String[], java.lang.String[], java.lang.String)}
      * @param orgPerms the customer types to check
      * @param orgTypes the organisation types to check
      * @param userRole the user permissions to check
      * @return true if the user's context institution has both the given customer and organisation types and the user has the given permissions granted, false otherwise
      */
     boolean checkPermTypeAffiliation(String orgPerms, String orgTypes, String userRole) {
-        checkOrgPermAndOrgTypeAndUserAffiliation(orgPerms.split(','), orgTypes.split(','), userRole)
+        _checkOrgPermAndOrgTypeAndUserAffiliation(orgPerms.split(','), orgTypes.split(','), userRole)
     }
 
     // --- for action closures: shortcuts ---
@@ -94,7 +94,7 @@ class AccessService {
         if (contextService.getUser()?.hasRole(specRoles)) {
             return true
         }
-        checkOrgPerm(orgPerms.split(','))
+        _checkOrgPerm(orgPerms.split(','))
     }
 
     /**
@@ -108,7 +108,7 @@ class AccessService {
         if (contextService.getUser()?.hasRole(specRoles)) {
             return true
         }
-        checkOrgPermAndOrgType(orgPerms.split(','), orgTypes.split(','))
+        _checkOrgPermAndOrgType(orgPerms.split(','), orgTypes.split(','))
     }
 
     /**
@@ -128,7 +128,7 @@ class AccessService {
         if (contextService.getUser()?.hasRole(specRoles)) {
             return true
         }
-        checkOrgPermAndUserAffiliation(orgPerms.split(','), userRole)
+        _checkOrgPermAndUserAffiliation(orgPerms.split(','), userRole)
     }
 
     /**
@@ -149,7 +149,7 @@ class AccessService {
         if (contextService.getUser()?.hasRole(specRoles)) {
             return true
         }
-        checkOrgPermAndOrgTypeAndUserAffiliation(orgPerms.split(','), orgTypes.split(','), userRole)
+        _checkOrgPermAndOrgTypeAndUserAffiliation(orgPerms.split(','), orgTypes.split(','), userRole)
     }
 
     // --- for action closures: shortcuts ---
@@ -180,7 +180,7 @@ class AccessService {
         String userRole         = attributes.comboAffiliation
 
         // combo check
-        boolean check1 = checkOrgPermAndUserAffiliation(orgPerms.split(','), userRole)
+        boolean check1 = _checkOrgPermAndUserAffiliation(orgPerms.split(','), userRole)
         boolean check2 = (ctx.id == currentOrg.id) || Combo.findByToOrgAndFromOrg(ctx, currentOrg)
 
         // currentOrg check
@@ -224,7 +224,7 @@ class AccessService {
      * @param orgPerms the customer types which need to be granted to access
      * @return true if access is granted, false otherwise
      */
-    private boolean checkOrgPerm(Org contextOrg, String[] orgPerms) {
+    private boolean _checkOrgPerm(Org contextOrg, String[] orgPerms) {
         boolean check = false
 
         if (orgPerms) {
@@ -253,16 +253,16 @@ class AccessService {
     }
 
     /**
-     * Substitution call for {@link #checkOrgPerm(de.laser.Org, java.lang.String[])} with {@link ContextService#getOrg()} as default
+     * Substitution call for {@link #_checkOrgPerm(de.laser.Org, java.lang.String[])} with {@link ContextService#getOrg()} as default
      * @param orgPerms the customer types (= institution permissions) to check
      * @return true if access is granted, false otherwise
      */
-    private boolean checkOrgPerm(String[] orgPerms) {
+    private boolean _checkOrgPerm(String[] orgPerms) {
         boolean check = false
 
         if (orgPerms) {
             Org ctx = contextService.getOrg()
-            check = checkOrgPerm(ctx, orgPerms)
+            check = _checkOrgPerm(ctx, orgPerms)
         } else {
             check = true
         }
@@ -275,8 +275,8 @@ class AccessService {
      * @param orgTypes the organisation types to check
      * @return true if the context organisation passes both checks, false otherwise
      */
-    private boolean checkOrgPermAndOrgType(String[] orgPerms, String[] orgTypes) {
-        boolean check1 = checkOrgPerm(orgPerms)
+    private boolean _checkOrgPermAndOrgType(String[] orgPerms, String[] orgTypes) {
+        boolean check1 = _checkOrgPerm(orgPerms)
         boolean check2 = false
 
         if (orgTypes) {
@@ -297,8 +297,8 @@ class AccessService {
      * @param userRole the given institutional permissions to check
      * @return true if the institution has the given customer type and the user the given institutional permissions, false otherwise
      */
-    private boolean checkOrgPermAndUserAffiliation(String[] orgPerms, String userRole) {
-        boolean check1 = checkOrgPerm(orgPerms)
+    private boolean _checkOrgPermAndUserAffiliation(String[] orgPerms, String userRole) {
+        boolean check1 = _checkOrgPerm(orgPerms)
         boolean check2 = userRole ? contextService.getUser()?.hasAffiliation(userRole?.toUpperCase()) : false
 
         check1 && check2
@@ -312,8 +312,8 @@ class AccessService {
      * @param userRole the given institutional permissions to check
      * @return true if the institution has the given customer and organisation type and the user the given institutional permissions, false otherwise
      */
-    private boolean checkOrgPermAndOrgTypeAndUserAffiliation(String[] orgPerms, String[] orgTypes, String userRole) {
-        boolean check1 = checkOrgPermAndOrgType(orgPerms, orgTypes)
+    private boolean _checkOrgPermAndOrgTypeAndUserAffiliation(String[] orgPerms, String[] orgTypes, String userRole) {
+        boolean check1 = _checkOrgPermAndOrgType(orgPerms, orgTypes)
         boolean check2 = userRole ? contextService.getUser()?.hasAffiliation(userRole?.toUpperCase()) : false
 
         check1 && check2

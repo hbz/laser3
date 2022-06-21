@@ -48,7 +48,7 @@ class WorkflowService {
             params.int(cmpKey + key)
         }
         Date getDate(String key) {
-            params.get(cmpKey + key) ? DateUtils.parseDateGeneric(params.get(cmpKey + key)) : null
+            params.get(cmpKey + key) ? DateUtils.parseDateGeneric(params.get(cmpKey + key) as String) : null
         }
         DocContext getDocContext(String key) {
             Long id = getLong(key)

@@ -30,18 +30,14 @@ class AccessMethodController  {
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         if (params.validFrom) {
             params.validFrom = sdf.parse(params.validFrom)
-        } else {
-            //params.validFrom = DateUtils.getFixedSDF_ddMMyyyy().format( sdf.parse(new Date()) );
         }
         if (params.validTo) {
             params.validTo = sdf.parse(params.validTo)
-        } else {
-            //params.validTo = DateUtils.getFixedSDF_ddMMyyyy().format( sdf.parse(new Date()) );
         }
         PlatformAccessMethod accessMethod = new PlatformAccessMethod(params)
 
         if (params.validTo && params.validFrom && params.validTo.before(params.validFrom)) {
-            flash.error = message(code: 'accessMethod.dateValidationError', args: [message(code: 'accessMethod.label'), accessMethod.accessMethod])
+            flash.error = message(code: 'accessMethod.dateValidationError', args: [message(code: 'accessMethod.label'), accessMethod.accessMethod]) as String
         } else {
 
             accessMethod.platf = Platform.get(params.platfId)
@@ -50,7 +46,7 @@ class AccessMethodController  {
             accessMethod.save()
             accessMethod.errors.toString()
 
-            flash.message = message(code: 'accessMethod.create.message', args: [accessMethod.accessMethod.getI10n('value')])
+            flash.message = message(code: 'accessMethod.create.message', args: [accessMethod.accessMethod.getI10n('value')]) as String
         }
 
         if (params.redirect) {
@@ -78,12 +74,12 @@ class AccessMethodController  {
         
         try {
             accessMethod.delete()
-			flash.message = message(code: 'accessMethod.deleted', args: [accessMethod.accessMethod.getI10n('value')])
+			flash.message = message(code: 'accessMethod.deleted', args: [accessMethod.accessMethod.getI10n('value')]) as String
             redirect controller: 'platform', action: 'AccessMethods', id: platformId
             return
         }
         catch (DataIntegrityViolationException e) {
-			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'address.label'), params.id])
+			flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'address.label'), params.id]) as String
             redirect action: 'show', id: params.id
             return
         }
@@ -115,17 +111,13 @@ class AccessMethodController  {
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         if (params.validFrom) {
             params.validFrom = sdf.parse(params.validFrom)
-        } else {
-            //params.validFrom = DateUtils.getFixedSDF_ddMMyyyy().format( sdf.parse(new Date()) );
         }
         if (params.validTo) {
             params.validTo = sdf.parse(params.validTo)
-        } else {
-            //params.validTo = DateUtils.getFixedSDF_ddMMyyyy().format( sdf.parse(new Date()) );
         }
 
         if (params.validTo == "" || params.validTo && params.validFrom && params.validTo.before(params.validFrom)) {
-            flash.error = message(code: 'accessMethod.dateValidationError', args: [message(code: 'accessMethod.label'), accessMethod.accessMethod])
+            flash.error = message(code: 'accessMethod.dateValidationError', args: [message(code: 'accessMethod.label'), accessMethod.accessMethod]) as String
             redirect controller: 'accessMethod', action: 'edit', id: accessMethod.id
             return
         } else {

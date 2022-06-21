@@ -44,7 +44,7 @@ class ContactController  {
 
 					if (RDStore.CCT_EMAIL == contactInstance.contentType) {
 						if (!formService.validateEmailAddress(contactInstance.content)) {
-							flash.error = message(code: 'contact.create.email.error')
+							flash.error = message(code: 'contact.create.email.error') as String
 							redirect(url: request.getHeader('referer'))
 							return
 						}
@@ -59,7 +59,7 @@ class ContactController  {
 						return
 					}
 
-					flash.message = message(code: 'default.created.message', args: [message(code: 'contact.label'), contactInstance.id])
+					flash.message = message(code: 'default.created.message', args: [message(code: 'contact.label'), contactInstance.id]) as String
 					if (params.redirect) {
 						redirect(url: request.getHeader('referer'), params: params)
 						return
@@ -80,7 +80,7 @@ class ContactController  {
     def show() {
 		Contact contactInstance = Contact.get(params.id)
         if (! contactInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'contact.label'), params.id])
+			flash.message = message(code: 'default.not.found.message', args: [message(code: 'contact.label'), params.id]) as String
             redirect action: 'list'
             return
         }
@@ -101,7 +101,7 @@ class ContactController  {
 		Contact.withTransaction {
 			Contact contactInstance = Contact.get(params.id)
 			if (!contactInstance) {
-				flash.message = message(code: 'default.not.found.message', args: [message(code: 'contact.label'), params.id])
+				flash.message = message(code: 'default.not.found.message', args: [message(code: 'contact.label'), params.id]) as String
 				redirect action: 'list'
 				return
 			}
@@ -112,12 +112,12 @@ class ContactController  {
 
 			try {
 				contactInstance.delete()
-				flash.message = message(code: 'default.deleted.message', args: [message(code: 'contact.label'), params.id])
+				flash.message = message(code: 'default.deleted.message', args: [message(code: 'contact.label'), params.id]) as String
 				redirect action: 'list'
 				return
 			}
 			catch (DataIntegrityViolationException e) {
-				flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'contact.label'), params.id])
+				flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'contact.label'), params.id]) as String
 				redirect action: 'show', id: params.id
 				return 
 			}

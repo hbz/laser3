@@ -55,13 +55,13 @@ class AddressController  {
                         addressInstance.properties = params
 
                         if (!addressInstance.save()) {
-                            flash.error = message(code: 'default.save.error.general.message')
+                            flash.error = message(code: 'default.save.error.general.message') as String
                             log.error('Adresse konnte nicht gespeichert werden. ' + addressInstance.errors)
                             redirect(url: request.getHeader('referer'), params: params)
                             return
                         }
 
-                        flash.message = message(code: 'default.created.message', args: [message(code: 'address.label'), addressInstance.name])
+                        flash.message = message(code: 'default.created.message', args: [message(code: 'address.label'), addressInstance.name]) as String
                     }
 
                     redirect(url: request.getHeader('referer'), params: params)
@@ -78,7 +78,7 @@ class AddressController  {
     def show() {
         Address addressInstance = Address.get(params.id)
         if (! addressInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'address.label'), params.id])
+			flash.message = message(code: 'default.not.found.message', args: [message(code: 'address.label'), params.id]) as String
             redirect(url: request.getHeader('referer'))
             return
         }
@@ -124,7 +124,7 @@ class AddressController  {
         Address.withTransaction {
             Address addressInstance = Address.get(params.id)
             if (!addressInstance) {
-                flash.message = message(code: 'default.not.found.message', args: [message(code: 'address.label'), params.id])
+                flash.message = message(code: 'default.not.found.message', args: [message(code: 'address.label'), params.id]) as String
                 redirect(url: request.getHeader('referer'))
                 return
             }
@@ -167,7 +167,7 @@ class AddressController  {
                 return
             }
 
-            flash.message = message(code: 'default.updated.message', args: [message(code: 'address.label'), (addressInstance.name ?: '')])
+            flash.message = message(code: 'default.updated.message', args: [message(code: 'address.label'), (addressInstance.name ?: '')]) as String
             redirect(url: request.getHeader('referer'))
         }
     }
@@ -181,7 +181,7 @@ class AddressController  {
         Address.withTransaction {
             Address addressInstance = Address.get(params.id)
             if (!addressInstance) {
-                flash.message = message(code: 'default.not.found.message', args: [message(code: 'address.label'), params.id])
+                flash.message = message(code: 'default.not.found.message', args: [message(code: 'address.label'), params.id]) as String
                 redirect action: 'list'
                 return
             }
@@ -192,12 +192,12 @@ class AddressController  {
 
             try {
                 addressInstance.delete()
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'address.label'), params.id])
+                flash.message = message(code: 'default.deleted.message', args: [message(code: 'address.label'), params.id]) as String
                 redirect action: 'list'
                 return
             }
             catch (DataIntegrityViolationException e) {
-                flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'address.label'), params.id])
+                flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'address.label'), params.id]) as String
                 redirect action: 'show', id: params.id
                 return
             }

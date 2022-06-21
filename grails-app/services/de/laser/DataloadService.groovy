@@ -874,11 +874,11 @@ class DataloadService {
     RestHighLevelClient esclient = ESWrapperService.getClient()
     def esIndices = ESWrapperService.es_indices
 
-        def count = 0;
-        def total = 0;
+        int count = 0
+        long total = 0
 
-        def highest_timestamp = 0;
-        def highest_id = 0;
+        long highest_timestamp = 0
+        long highest_id = 0
 
         FTControl.withTransaction {
 
@@ -930,7 +930,7 @@ class DataloadService {
                                     continue
                                 }
 
-                                def recid = idx_record['_id'].toString()
+                                String recid = idx_record['_id'].toString()
                                 idx_record.remove('_id');
 
                                 IndexRequest request = new IndexRequest(esIndices.get(domain.simpleName));
@@ -1097,9 +1097,9 @@ class DataloadService {
     }
 
     // Fill out any missing sort keys on titles, packages or licenses
-    def num_rows_updated = 0
-    def sort_str_start_time = System.currentTimeMillis()
-    def rows_updated = true
+    long num_rows_updated = 0
+    long sort_str_start_time = System.currentTimeMillis()
+    boolean rows_updated = true
 
     while ( rows_updated ) {
       rows_updated = false
@@ -1109,7 +1109,7 @@ class DataloadService {
         it.sortTitle = it.generateSortTitle(it.title) ?: 'AAA_Error'
         if ( it.sortTitle != null ) {
           it.save(failOnError:true)
-          num_rows_updated++;
+          num_rows_updated++
           rows_updated = true
         }
       }
@@ -1131,7 +1131,7 @@ class DataloadService {
         it.sortableReference = it.generateSortableReference(it.reference) ?: 'AAA_Error'
         if( it.sortableReference != null ) {
           it.save(failOnError:true)
-          num_rows_updated++;
+          num_rows_updated++
           rows_updated = true
         }
       }

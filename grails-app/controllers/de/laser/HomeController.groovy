@@ -24,7 +24,7 @@ class HomeController {
         if (result.user) {
             log.debug("HomeController::index - ${result.user.id}")
             if (UserSetting.get(result.user, UserSetting.KEYS.DASHBOARD) == UserSetting.SETTING_NOT_FOUND) {
-                flash.message = message(code: 'profile.dash.not_set')
+                flash.message = message(code: 'profile.dash.not_set') as String
                 redirect(controller: 'profile', action: 'index')
                 return
             }

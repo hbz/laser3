@@ -32,7 +32,7 @@ class PropertyService {
      * @param sql the input query
      * @return the reduced query string
      */
-    private List<String> splitQueryFromOrderBy(String sql) {
+    private List<String> _splitQueryFromOrderBy(String sql) {
         String order_by
         int pos = sql.toLowerCase().indexOf("order by")
         if (pos >= 0) {
@@ -52,7 +52,7 @@ class PropertyService {
      */
     Map<String, Object> evalFilterQuery(Map params, String base_qry, String hqlVar, Map base_qry_params) {
         String order_by
-        (base_qry, order_by) = splitQueryFromOrderBy(base_qry)
+        (base_qry, order_by) = _splitQueryFromOrderBy(base_qry)
 
         if (params.filterPropDef) {
             PropertyDefinition pd = (PropertyDefinition) genericOIDService.resolveOID(params.filterPropDef)

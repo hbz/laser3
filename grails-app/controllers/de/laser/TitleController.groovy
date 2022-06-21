@@ -86,7 +86,7 @@ class TitleController  {
 
         result.ti = TitleInstancePackagePlatform.get(params.id)
         if (! result.ti) {
-            flash.error = message(code:'titleInstance.error.notFound.es')
+            flash.error = message(code:'titleInstance.error.notFound.es') as String
             redirect action: 'list'
             return
         }

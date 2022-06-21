@@ -51,6 +51,10 @@ Localization dependent logic should be managed by *de.laser.helper.LocaleUtils* 
 
 *Static_logger* has been removed. New code should use **@Slf4j** as class annotation to enable logging in static contexts.
 
+### Naming Convention
+  * **Private methods** in domain classes, controllers, and services should be named with a leading underscore to avoid confusion. 
+    In general, some of the currently found constructs should be reconsidered!
+
 ### Opencsv
 
 *com.opencsv.** has been removed. New code should use *liquibase.repackaged.com.opencsv.**

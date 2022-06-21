@@ -7,7 +7,6 @@ import de.laser.stats.Fact
 import de.laser.stats.StatsTripleCursor
 import de.laser.storage.RDConstants
 import grails.gorm.transactions.Transactional
-import org.hibernate.criterion.CriteriaSpecification
 
 import java.time.YearMonth
 
@@ -164,7 +163,7 @@ class FactService {
     Map<String, Object> result = [:]
     if (org_id != null &&
         supplier_id != null) {
-      def factList = getTotalUsageFactsForSub(org_id, supplier_id, subscription, title_id, true)
+      def factList = _getTotalUsageFactsForSub(org_id, supplier_id, subscription, title_id, true)
       if (factList.size == 0){
         return result
       }
@@ -193,8 +192,8 @@ class FactService {
       y_axis_labels = y_axis_labels.unique().sort()
 
       def x_axis_labels = (firstSubscriptionYear..lastSubscriptionYear).toList()
-      addFactsForSubscriptionPeriodWithoutUsage(x_axis_labels,factList)
-      result.usage = generateUsageMDList(factList, y_axis_labels, x_axis_labels)
+      _addFactsForSubscriptionPeriodWithoutUsage(x_axis_labels,factList)
+      result.usage = _generateUsageMDList(factList, y_axis_labels, x_axis_labels)
       if (firstSubscriptionMonth > 1) {
         def firstYearIndex = x_axis_labels.indexOf(x_axis_labels.first())
         x_axis_labels[firstYearIndex] = "${firstSubscriptionMonth}-12/${firstSubscriptionYear}"
@@ -219,7 +218,7 @@ class FactService {
    * @param secondAxis the X axis labels
    * @return a two-dimensional array containing usage data in plots
    */
-  private def generateUsageMDList(factList, firstAxis, secondAxis) {
+  private def _generateUsageMDList(factList, firstAxis, secondAxis) {
     def usage = new long[firstAxis.size()][secondAxis.size()]
     factList.each { f ->
       def x_label = f.get('reportingYear').intValue()
@@ -238,7 +237,7 @@ class FactService {
    * @param restrictToSubscriptionPeriod should usage data be fetched only for the period of subscription?
    * @return a list of maps containing the usage data
    */
-  private def getTotalUsageFactsForSub(org_id, supplier_id, sub, title_id=null, restrictToSubscriptionPeriod=false)  {
+  private def _getTotalUsageFactsForSub(org_id, supplier_id, sub, title_id=null, restrictToSubscriptionPeriod=false)  {
     Map params = [:]
     String hql = 'select sum(f.factValue), f.reportingYear, f.reportingMonth, f.factType.value, f.factMetric.value' +
         ' from Fact as f' +
@@ -269,7 +268,7 @@ class FactService {
       params['status'] = 'Deleted'
     }
     def queryResult = Fact.executeQuery(hql, params)
-    transformToListOfMaps(queryResult)
+    _transformToListOfMaps(queryResult)
   }
 
   /**
@@ -284,7 +283,7 @@ class FactService {
    *     factMetric
    * }
    */
-  private def transformToListOfMaps(queryResult) {
+  private def _transformToListOfMaps(queryResult) {
     def list = []
     queryResult.each { li ->
       Map map = [:]
@@ -304,7 +303,7 @@ class FactService {
    * @param factList the base list of usage reports
    * @return the list of usages with substituted values
    */
-  private def addFactsForSubscriptionPeriodWithoutUsage(licenseYears, factList) {
+  private def _addFactsForSubscriptionPeriodWithoutUsage(licenseYears, factList) {
     def usageYears = factList.reportingYear.unique(false).sort()
     def licenseYearsWithoutUsage = licenseYears - usageYears
 
@@ -333,7 +332,7 @@ class FactService {
     if (org_id != null &&
         supplier_id != null) {
 
-      def factList = getTotalUsageFactsForSub(org_id, supplier_id, subscription, title_id)
+      def factList = _getTotalUsageFactsForSub(org_id, supplier_id, subscription, title_id)
       // todo add column metric to table fact + data migration
       def y_axis_labels = []
       factList.each {
@@ -342,7 +341,7 @@ class FactService {
       y_axis_labels = y_axis_labels.unique().sort()
       def x_axis_labels = factList.reportingYear.unique(false).sort()*.intValue()
 
-      result.usage = generateUsageMDList(factList, y_axis_labels, x_axis_labels)
+      result.usage = _generateUsageMDList(factList, y_axis_labels, x_axis_labels)
       result.x_axis_labels = x_axis_labels
       result.y_axis_labels = y_axis_labels
       result.missingMonths = getMissingMonths(supplier_id, org_id)
@@ -359,7 +358,7 @@ class FactService {
    */
   Map<String,List> getMissingMonths(supplier_id, org_id, Subscription subscription = null) {
     Org customerOrg = Org.get(org_id)
-    return getUsageRanges(supplier_id, customerOrg, subscription)
+    return _getUsageRanges(supplier_id, customerOrg, subscription)
   }
 
   /**
@@ -369,7 +368,7 @@ class FactService {
    * @param subscription the subscription upon whose time span the ranges may be restricted
    * @return a map containing the missing usage ranges per title type
    */
-  private Map<String,List> getUsageRanges(supplier_id, Org org, Subscription subscription) {
+  private Map<String,List> _getUsageRanges(supplier_id, Org org, Subscription subscription) {
     String customer = org.getIdentifierByType('wibid')?.value
     String supplierId = PlatformProperty.findByOwnerAndType(Platform.get(supplier_id), PropertyDefinition.getByNameAndDescr('NatStat Supplier ID', PropertyDefinition.PLA_PROP))
     List factTypes = StatsTripleCursor.findAllByCustomerIdAndSupplierId(customer, supplierId).factType.unique()

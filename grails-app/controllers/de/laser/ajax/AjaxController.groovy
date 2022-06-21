@@ -2041,18 +2041,18 @@ class AjaxController {
                 Task dTask = Task.get(params.deleteId)
                 if (dTask && dTask.creator.id == contextService.getUser().id) {
                     try {
-                        flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label'), dTask.title])
+                        flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label'), dTask.title]) as String
                         dTask.delete()
                     }
                     catch (Exception e) {
                         log.error(e)
-                        flash.error = message(code: 'default.not.deleted.message', args: [message(code: 'task.label'), dTask.title])
+                        flash.error = message(code: 'default.not.deleted.message', args: [message(code: 'task.label'), dTask.title]) as String
                     }
                 } else {
                     if (!dTask) {
-                        flash.error = message(code: 'default.not.found.message', args: [message(code: 'task.label'), params.deleteId])
+                        flash.error = message(code: 'default.not.found.message', args: [message(code: 'task.label'), params.deleteId]) as String
                     } else {
-                        flash.error = message(code: 'default.noPermissions')
+                        flash.error = message(code: 'default.noPermissions') as String
                     }
                 }
             }

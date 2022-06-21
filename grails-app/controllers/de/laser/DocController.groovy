@@ -74,7 +74,7 @@ class DocController  {
 				case 'POST':
 					Doc docInstance = Doc.get(params.id)
 					if (!docInstance) {
-						flash.message = message(code: 'default.not.found.message', args: [message(code: 'default.note.label'), params.id])
+						flash.message = message(code: 'default.not.found.message', args: [message(code: 'default.note.label'), params.id]) as String
 						//redirect action: 'list'
 						redirect(url: request.getHeader('referer'))
 						return
@@ -105,7 +105,7 @@ class DocController  {
 						return
 					}
 
-					flash.message = message(code: 'default.updated.message', args: [message(code: 'default.note.label'), docInstance.title])
+					flash.message = message(code: 'default.updated.message', args: [message(code: 'default.note.label'), docInstance.title]) as String
 					//redirect action: 'show', id: docInstance.id
 					redirect(url: request.getHeader('referer'))
 					return
@@ -123,19 +123,19 @@ class DocController  {
 		Doc.withTransaction {
 			Doc docInstance = Doc.get(params.id)
 			if (! docInstance) {
-				flash.message = message(code: 'default.not.found.message', args: [message(code: 'doc.label'), params.id])
+				flash.message = message(code: 'default.not.found.message', args: [message(code: 'doc.label'), params.id]) as String
 				redirect action: 'list'
 				return
 			}
 
 			try {
 				docInstance.delete()
-				flash.message = message(code: 'default.deleted.message', args: [message(code: 'doc.label'), params.id])
+				flash.message = message(code: 'default.deleted.message', args: [message(code: 'doc.label'), params.id]) as String
 				redirect action: 'list'
 				return
 			}
 			catch (DataIntegrityViolationException e) {
-				flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'doc.label'), params.id])
+				flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'doc.label'), params.id]) as String
 				redirect action: 'show', id: params.id
 				return
 			}

@@ -102,7 +102,7 @@ class StatsSyncService {
      * Generates a query for the title instances
      * @return the title instance query
      */
-    private String getTitleInstancesForUsageQuery() {
+    private String _getTitleInstancesForUsageQuery() {
         // Distinct list of titles ids, the platform, subscribing organisation and the zdbid
         //TODO change from string comparison to ID comparison
         String hql =  "select distinct ie.tipp.id, pf.id, orgrel.org.id, titleIdentifier.id from IssueEntitlement as ie " +
@@ -175,10 +175,10 @@ class StatsSyncService {
                 errors.add("Stats API URL not set in config")
                 return
             }
-            String mostRecentClosedPeriod = getMostRecentClosedPeriod()
+            String mostRecentClosedPeriod = _getMostRecentClosedPeriod()
             Long start_time = System.currentTimeMillis()
-            log.debug("STATS Sync Task - Running query ${getTitleInstancesForUsageQuery()}")
-            List titleList = IssueEntitlement.executeQuery(getTitleInstancesForUsageQuery(), queryParams)
+            log.debug("STATS Sync Task - Running query ${_getTitleInstancesForUsageQuery()}")
+            List titleList = IssueEntitlement.executeQuery(_getTitleInstancesForUsageQuery(), queryParams)
             queryTime = System.currentTimeMillis() - start_time
 
             GParsPool.withPool(THREAD_POOL_SIZE) { pool ->
@@ -1213,19 +1213,19 @@ class StatsSyncService {
                     try {
                         sushiClient.query()
                         def xml = sushiClient.getResult()
-                        def authenticationError = getSushiErrorMessage(xml)
+                        def authenticationError = _getSushiErrorMessage(xml)
                         if (authenticationError) {
                             jsonErrors.add(authenticationError)
                             csr.jerror = JsonOutput.toJson(jsonErrors)
                         }
-                        if (responseHasUsageData(xml, options.statsTitleIdentifier)) {
+                        if (_responseHasUsageData(xml, options.statsTitleIdentifier)) {
                             writeUsageRecords(xml, options, csr)
                         }
                     } catch (Exception e) {
                         log.error("Error fetching data")
                         log.error(e.message)
                         jsonErrors.add(e.message)
-                        def jsonError = JsonOutput.toJson(jsonErrors)
+                        String jsonError = JsonOutput.toJson(jsonErrors)
                         if (jsonError) {
                             csr.jerror = jsonError
                         }
@@ -1260,16 +1260,16 @@ class StatsSyncService {
         if (itemPerformances.empty) {
             csr.availTo = new SimpleDateFormat('yyyy-MM-dd').parse(options.mostRecentClosedPeriod)
             // We get a new month with no usage for a single title
-            if (! isNoUsageAvailableException(xml)) {
+            if (! _isNoUsageAvailableException(xml)) {
                 List notProcessedMonths = getNotProcessedMonths(xml)
                 if (! notProcessedMonths.empty) {
-                    List followingRanges = actualRangePlusFollowingNoUsageRanges(options, notProcessedMonths, DateUtils.getSDF_yyyyMM().format( csr.availFrom ))
+                    List followingRanges = _actualRangePlusFollowingNoUsageRanges(options, notProcessedMonths, DateUtils.getSDF_yyyyMM().format( csr.availFrom ))
                     followingRanges.each {
                         if (it == followingRanges.first()){
-                            csr.availTo = DateUtils.getSDF_yyyyMMdd().parse(getDateForLastDayOfMonth(it['end']))
+                            csr.availTo = DateUtils.getSDF_yyyyMMdd().parse(_getDateForLastDayOfMonth(it['end']))
                             csr.save()
                         } else {
-                            writeNewCsr(0, it['begin'],it['end'],options)
+                            _writeNewCsr(0, it['begin'],it['end'],options)
                         }
                     }
                 }
@@ -1287,14 +1287,14 @@ class StatsSyncService {
             // should only happen if there is a range without usage before the first ItemPerformance or
             // if there is a usage range after the last ItemPerformance (zero usage)
             if (itemPerformancesForRange.empty) {
-                csr = writeNewCsr(factCount, it['begin'],it['end'],options)
+                csr = _writeNewCsr(factCount, it['begin'],it['end'],options)
             } else {
-                Map usageMap = getPeriodUsageMap(itemPerformancesForRange)
+                Map usageMap = _getPeriodUsageMap(itemPerformancesForRange)
                 usageMap.each { key, countPerMetric ->
                     Map fact = [:]
                     countPerMetric.each { metric, count ->
                         fact.from = new SimpleDateFormat('yyyy-MM-dd').parse(key)
-                        fact.to = new SimpleDateFormat('yyyy-MM-dd').parse(getDateForLastDayOfMonth(key))
+                        fact.to = new SimpleDateFormat('yyyy-MM-dd').parse(_getDateForLastDayOfMonth(key))
                         cal.setTime(fact.to)
                         fact.reportingYear = cal.get(Calendar.YEAR)
                         fact.reportingMonth = cal.get(Calendar.MONTH) + 1
@@ -1314,7 +1314,7 @@ class StatsSyncService {
                 // First csr -> update
                 if (csr.availTo == null){
                     csr.availFrom = new SimpleDateFormat('yyyy-MM').parse(it['begin'])
-                    csr.availTo = new SimpleDateFormat('yyyy-MM-dd').parse(getDateForLastDayOfMonth(it.end))
+                    csr.availTo = new SimpleDateFormat('yyyy-MM-dd').parse(_getDateForLastDayOfMonth(it.end))
                     csr.numFacts = factCount
                     csr.save()
 
@@ -1322,10 +1322,10 @@ class StatsSyncService {
                     def newFromPeriod = getNextFromPeriod(csr).substring(0,7)
                     if (newFromPeriod != it.begin) { // gap for new range, create new csr
                         log.warn("usage data gap found before ${it.begin}")
-                        csr = writeNewCsr(factCount, it['begin'], it['end'], options)
+                        csr = _writeNewCsr(factCount, it['begin'], it['end'], options)
                     } else {
                         // There is no gap, just update csr with new availTo value
-                        csr.availTo = DateUtils.getSDF_yyyyMMdd().parse(getDateForLastDayOfMonth(it.end))
+                        csr.availTo = DateUtils.getSDF_yyyyMMdd().parse(_getDateForLastDayOfMonth(it.end))
                         csr.numFacts = csr.numFacts + factCount
                         csr.save()
                     }
@@ -1344,10 +1344,10 @@ class StatsSyncService {
      * @param options the options containing the title, platform, identifier and report type to record
      * @return the new stats triple cursor
      */
-    private StatsTripleCursor writeNewCsr(factCount, begin, end, options){
+    private StatsTripleCursor _writeNewCsr(factCount, begin, end, options){
         StatsTripleCursor csr = new StatsTripleCursor()
         csr.availFrom = new SimpleDateFormat('yyyy-MM').parse(begin)
-        csr.availTo = new SimpleDateFormat('yyyy-MM-dd').parse(getDateForLastDayOfMonth(end))
+        csr.availTo = new SimpleDateFormat('yyyy-MM-dd').parse(_getDateForLastDayOfMonth(end))
         csr.customerId = options.customer
         csr.numFacts = factCount
         csr.titleId = options.statsTitleIdentifier
@@ -1478,7 +1478,7 @@ class StatsSyncService {
                 itemPerformanceRangeList.add(performance)
             }
         }
-        List followingRanges = actualRangePlusFollowingNoUsageRanges(options, notProcessedMonths, rangeMap['begin'])
+        List followingRanges = _actualRangePlusFollowingNoUsageRanges(options, notProcessedMonths, rangeMap['begin'])
         return ranges + followingRanges
     }
 
@@ -1490,7 +1490,7 @@ class StatsSyncService {
      * @param begin the start of the range map
      * @return the filled list of month ranges
      */
-    private List<Map> actualRangePlusFollowingNoUsageRanges(StatsSyncServiceOptions options, List<String> notProcessedMonths, String begin)
+    private List<Map> _actualRangePlusFollowingNoUsageRanges(StatsSyncServiceOptions options, List<String> notProcessedMonths, String begin)
     {
         List<Map> ranges = []
         Map rangeMap = [:]
@@ -1503,7 +1503,7 @@ class StatsSyncService {
             ranges.add(rangeMap)
         } else {
             // close old range: range end is notProcessed - 1 Month
-            rangeMap['end'] = minusMonths(notProcessedMonths.first(),1)
+            rangeMap['end'] = _minusMonths(notProcessedMonths.first(),1)
             ranges.add(rangeMap)
             rangeMap = [:]
             if (notProcessedMonths.first() == options.mostRecentClosedPeriod.substring(0, 7)){
@@ -1526,7 +1526,7 @@ class StatsSyncService {
             // get Pairs of Elements, keep the remainder
             List<List<String>> notProcessedMonthPairs = notProcessedMonths.collate(2,1)
             notProcessedMonthPairs.each {
-                rangeMap['begin'] = plusMonths(it[0],1)
+                rangeMap['begin'] = _plusMonths(it[0],1)
                 if (it.size() == 1) {
                     // remainder, last not processed month, but only add a range if the notProcessedMonth
                     // ist not the SUSHI call end month
@@ -1538,7 +1538,7 @@ class StatsSyncService {
                 } else {
                     // do not processed Months directly following one another (would be =)
                     if (rangeMap['begin'] < it[1]) {
-                        rangeMap['end'] = minusMonths(it[1], 1)
+                        rangeMap['end'] = _minusMonths(it[1], 1)
                         ranges.add(rangeMap)
                         rangeMap = [:]
                     }
@@ -1555,7 +1555,7 @@ class StatsSyncService {
      * @param count the count of months to add
      * @return the calculated time point
      */
-    private String plusMonths(CharSequence baseMonth, Long count) {
+    private String _plusMonths(CharSequence baseMonth, Long count) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern('yyyy-MM')
         YearMonth localDate = YearMonth.parse(baseMonth, formatter)
         return localDate.plusMonths(count).toString()
@@ -1568,7 +1568,7 @@ class StatsSyncService {
      * @param count the count of months to subtract
      * @return the calculated time point
      */
-    private String minusMonths(CharSequence baseMonth, Long count) {
+    private String _minusMonths(CharSequence baseMonth, Long count) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern('yyyy-MM')
         YearMonth localDate = YearMonth.parse(baseMonth, formatter)
         return localDate.minusMonths(count).toString()
@@ -1639,7 +1639,7 @@ class StatsSyncService {
      * Calculates the month start two months backwards from now
      * @return the start of the month two months behind now
      */
-    private String getMostRecentClosedPeriod() {
+    private String _getMostRecentClosedPeriod() {
         Calendar cal = Calendar.getInstance()
         cal.setTime(new Date())
         cal.add(Calendar.MONTH, -2)
@@ -1653,7 +1653,7 @@ class StatsSyncService {
      * @param metric the metric to check
      * @return true if the metric is among the supported ones, false otherwise
      */
-    private Boolean isAllowedMetric(metric) {
+    private Boolean _isAllowedMetric(metric) {
         if (metric in ['ft_total', 'search_reg', 'search_fed', 'record_view', 'result_click']) {
             return true
         }
@@ -1666,7 +1666,7 @@ class StatsSyncService {
      * @param itemPerformances the performances to output as map
      * @return a map of structure period=>[metric1=>value,metric2=>value...]
      */
-    private Map<String,Map> getPeriodUsageMap(ArrayList itemPerformances) {
+    private Map<String,Map> _getPeriodUsageMap(ArrayList itemPerformances) {
         Map map = [:]
         // every ItemPerformance can have several Instances (DB/PR Reports up to 2, JR1 up to 3...)
         itemPerformances.each {
@@ -1679,7 +1679,7 @@ class StatsSyncService {
             }
             instances.each {
                 String metric = it.MetricType.text()
-                if (isAllowedMetric(metric)) {
+                if (_isAllowedMetric(metric)) {
                     Integer usage = it.Count.text().toInteger()
                     if (!map[begin][metric]){
                         map[begin][metric] = usage
@@ -1700,7 +1700,7 @@ class StatsSyncService {
      * @param yearMonthString the month to get the last day of
      * @return the full string of the last month of the day
      */
-    private String getDateForLastDayOfMonth(yearMonthString) {
+    private String _getDateForLastDayOfMonth(yearMonthString) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM")
         GregorianCalendar cal = new GregorianCalendar()
         cal.setTime(sdf.parse(yearMonthString))
@@ -1714,7 +1714,7 @@ class StatsSyncService {
      * @param xml
      * @return
      */
-    private getSushiErrorMessage(xml) {
+    private _getSushiErrorMessage(xml) {
         if (xml.Exception.isEmpty() == false) {
             def errorNumber = xml.Exception.Number
             def sushiErrorList = ['2000', '2020', '3000', '3062']
@@ -1731,7 +1731,7 @@ class StatsSyncService {
      * @param xml the XML response body
      * @return true if the Exception element is filled with the code 3030, false otherwise
      */
-    private Boolean isNoUsageAvailableException(xml)
+    private Boolean _isNoUsageAvailableException(xml)
     {
         return (xml.Exception.isEmpty() == false && xml.Exception.Number == '3030')
     }
@@ -1742,7 +1742,7 @@ class StatsSyncService {
      * @param xml the XML response body
      * @return true if the Exception element is empty, false otherwise
      */
-    private Boolean isEmptyReport(xml)
+    private Boolean _isEmptyReport(xml)
     {
         return (xml.Report.Report.isEmpty() == true || xml.Report.isEmpty() == true)
     }
@@ -1753,7 +1753,7 @@ class StatsSyncService {
      * @param xml the XML response body
      * @return true if the Exception element is filled with the code other than 3031, false otherwise
      */
-    private Boolean isOtherExceptionWithoutUsageData(xml)
+    private Boolean _isOtherExceptionWithoutUsageData(xml)
     {
         return (xml.Exception.isEmpty() == false && xml.Exception.Number != '3031')
     }
@@ -1764,7 +1764,7 @@ class StatsSyncService {
      * @param xml the XML response body
      * @return true if there is no customer, false otherwise
      */
-    private Boolean isEmptyReportWithoutCustomer(xml)
+    private Boolean _isEmptyReportWithoutCustomer(xml)
     {
         return (xml.Report.Report.Customer.isEmpty() == true)
     }
@@ -1775,21 +1775,21 @@ class StatsSyncService {
      * @param titleId the title to check
      * @return true if there is a usage for the given title, false otherwise
      */
-    private Boolean responseHasUsageData(xml, titleId) {
+    private Boolean _responseHasUsageData(xml, titleId) {
         // 3030 Exception-> Zero usage
-        if (isNoUsageAvailableException(xml)){
+        if (_isNoUsageAvailableException(xml)){
             return true
         }
         // SUSHI Exceptions which prevent from further processing and storing records in usage tables
-        if (isOtherExceptionWithoutUsageData(xml)) {
+        if (_isOtherExceptionWithoutUsageData(xml)) {
             log.debug('SUSHI Exception Number ' + xml.Exception.Number + ' : ' + xml.Exception.Message)
             return false
-        } else if (isEmptyReport(xml)) {
+        } else if (_isEmptyReport(xml)) {
             // 3031 Exception but no usage data, e.g. all fetched Months are not available, or we call the last month which is
             // not yet available
             log.debug('XML response has 3031 Exception with no usage data')
             return false
-        } else if (isEmptyReportWithoutCustomer(xml)) {
+        } else if (_isEmptyReportWithoutCustomer(xml)) {
             // there are processed months but no usage data. This can happen with queries for single titles. If we had no usage
             // for all titles we would get a 3030 Exception for all titles.
             log.debug('No result found for title with ID ' + titleId)
@@ -1804,7 +1804,7 @@ class StatsSyncService {
      */
     static synchronized void incrementActivityHistogram() {
         SimpleDateFormat sdf = new SimpleDateFormat('yyyy/MM/dd HH:mm')
-        def col_identifier = sdf.format(new Date())
+        String col_identifier = sdf.format(new Date())
 
         completedCount++
 

@@ -61,7 +61,7 @@ class PersonController  {
                         if(params.functionType || params.positionType)  {
                             Person personInstance = new Person(params)
                             if (!personInstance.save()) {
-                                flash.error = message(code: 'default.not.created.message', args: [message(code: 'person.label')])
+                                flash.error = message(code: 'default.not.created.message', args: [message(code: 'person.label')]) as String
                                 log.debug("Person could not be created: " + personInstance.errors)
                                 redirect(url: request.getHeader('referer'))
                                 //render view: 'create', model: [personInstance: personInstance, userMemberships: userMemberships]
@@ -125,7 +125,7 @@ class PersonController  {
                                         RefdataValue contactLang = params['contactLang.id'] ? RefdataValue.get(params['contactLang.id']) : null
                                         if (RDStore.CCT_EMAIL == rdvCT) {
                                             if (!formService.validateEmailAddress(content)) {
-                                                flash.error = message(code: 'contact.create.email.error')
+                                                flash.error = message(code: 'contact.create.email.error') as String
                                                 return
                                             }
                                         }
@@ -160,7 +160,7 @@ class PersonController  {
                                             }
                                         }
                                         if (!addressInstance.save()) {
-                                            flash.error = message(code: 'default.save.error.general.message')
+                                            flash.error = message(code: 'default.save.error.general.message') as String
                                             log.error('Adresse konnte nicht gespeichert werden. ' + addressInstance.errors)
                                             redirect(url: request.getHeader('referer'), params: params)
                                             return
@@ -187,9 +187,9 @@ class PersonController  {
                         }
                     }*/
 
-                            flash.message = message(code: 'default.created.message', args: [message(code: 'person.label'), personInstance.toString()])
+                            flash.message = message(code: 'default.created.message', args: [message(code: 'person.label'), personInstance.toString()]) as String
                         }
-                        else flash.error = message(code: 'person.create.missing_function')
+                        else flash.error = message(code: 'person.create.missing_function') as String
                     }
                     redirect(url: request.getHeader('referer'))
                     break
@@ -206,14 +206,14 @@ class PersonController  {
         Org contextOrg = contextService.getOrg()
 
         if (! personInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label'), params.id])
+			flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label'), params.id]) as String
             //redirect action: 'list'
             redirect(url: request.getHeader('referer'))
             return
         }
         else if(personInstance && ! personInstance.isPublic) {
             if(contextOrg.id != personInstance.tenant?.id && !SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')) {
-                flash.error = message(code: 'default.notAutorized.message')
+                flash.error = message(code: 'default.notAutorized.message') as String
                 redirect(url: request.getHeader('referer'))
                 return
             }
@@ -258,17 +258,17 @@ class PersonController  {
             Person personInstance = Person.get(params.id)
 
             if (!personInstance) {
-                flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label'), params.id])
+                flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label'), params.id]) as String
                 redirect(url: request.getHeader('referer'))
                 return
             }
             if (!addressbookService.isPersonEditable(personInstance, contextService.getUser())) {
-                flash.error = message(code: 'default.notAutorized.message')
+                flash.error = message(code: 'default.notAutorized.message') as String
                 redirect(url: request.getHeader('referer'))
                 return
             }
             if (!params.functionType && !params.positionType) {
-                flash.error = message(code: 'person.create.missing_function')
+                flash.error = message(code: 'person.create.missing_function') as String
                 redirect(url: request.getHeader('referer'))
                 return
             }
@@ -277,7 +277,7 @@ class PersonController  {
 
             if (!personInstance.save()) {
                 log.info(personInstance.errors)
-                flash.error = message(code: 'default.not.updated.message', args: [message(code: 'person.label'), personInstance.toString()])
+                flash.error = message(code: 'default.not.updated.message', args: [message(code: 'person.label'), personInstance.toString()]) as String
                 redirect(url: request.getHeader('referer'))
                 return
             }
@@ -364,7 +364,7 @@ class PersonController  {
                         RefdataValue contactLang = params['contactLang.id'] ? RefdataValue.get(params['contactLang.id']) : null
                         if (RDStore.CCT_EMAIL == rdvCT) {
                             if (!formService.validateEmailAddress(content)) {
-                                flash.error = message(code: 'contact.create.email.error')
+                                flash.error = message(code: 'contact.create.email.error') as String
                                 return
                             }
                         }
@@ -399,7 +399,7 @@ class PersonController  {
                             }
                         }
                         if (!addressInstance.save()) {
-                            flash.error = message(code: 'default.save.error.general.message')
+                            flash.error = message(code: 'default.save.error.general.message') as String
                             log.error('Adresse konnte nicht gespeichert werden. ' + addressInstance.errors)
                             redirect(url: request.getHeader('referer'), params: params)
                             return
@@ -408,7 +408,7 @@ class PersonController  {
                 }
             }
 
-            flash.message = message(code: 'default.updated.message', args: [message(code: 'person.label'), personInstance.toString()])
+            flash.message = message(code: 'default.updated.message', args: [message(code: 'person.label'), personInstance.toString()]) as String
             redirect(url: request.getHeader('referer'))
         }
     }
@@ -423,7 +423,7 @@ class PersonController  {
         Person.withTransaction {
             Person personInstance = Person.get(params.id)
             if (!personInstance) {
-                flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label'), params.id])
+                flash.message = message(code: 'default.not.found.message', args: [message(code: 'person.label'), params.id]) as String
                 String referer = request.getHeader('referer')
                 if (referer.endsWith('person/show/' + params.id)) {
                     if (params.previousReferer && !params.previousReferer.endsWith('person/show/' + params.id)) {
@@ -444,7 +444,7 @@ class PersonController  {
 
             try {
                 personInstance.delete()
-                flash.message = message(code: 'default.deleted.message', args: [message(code: 'person.label'), params.id])
+                flash.message = message(code: 'default.deleted.message', args: [message(code: 'person.label'), params.id]) as String
                 String referer = request.getHeader('referer')
                 if (referer.endsWith('person/show/' + params.id)) {
                     if (params.previousReferer && !params.previousReferer.endsWith('person/show/' + params.id)) {
@@ -460,7 +460,7 @@ class PersonController  {
                 }
             }
             catch (DataIntegrityViolationException e) {
-                flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'person.label'), params.id])
+                flash.message = message(code: 'default.not.deleted.message', args: [message(code: 'person.label'), params.id]) as String
                 redirect action: 'show', id: params.id
                 return
             }

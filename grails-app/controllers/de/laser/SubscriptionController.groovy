@@ -195,7 +195,7 @@ class SubscriptionController {
     def emptySubscription() {
         Map<String,Object> ctrlResult = subscriptionControllerService.emptySubscription(this,params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            flash.error = message(code: ctrlResult.messageToken)
+            flash.error = message(code: ctrlResult.messageToken) as String
             redirect action: 'currentSubscriptions'
             return
         }
@@ -464,7 +464,7 @@ class SubscriptionController {
         if(params.tab == 'documents' && params.processOption == 'newDoc') {
             input_file = request.getFile("upload_file")
             if (input_file.size == 0) {
-                flash.error = message(code: 'template.emptyDocument.file')
+                flash.error = message(code: 'template.emptyDocument.file') as String
                 redirect(url: request.getHeader('referer'))
                 return
             }
@@ -842,10 +842,10 @@ class SubscriptionController {
     def removeEntitlement() {
         Map<String,Object> ctrlResult = subscriptionControllerService.removeEntitlement(params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR)
-            flash.error = message(code:'default.delete.error.general.message')
+            flash.error = message(code:'default.delete.error.general.message') as String
         else {
             Object[] args = [message(code:'issueEntitlement.label'),params.ieid]
-            flash.message = message(code: 'default.deleted.message',args: args)
+            flash.message = message(code: 'default.deleted.message',args: args) as String
         }
         redirect action: 'index', id: params.sub
     }
@@ -859,10 +859,10 @@ class SubscriptionController {
     def removeEntitlementWithIEGroups() {
         Map<String,Object> ctrlResult = subscriptionControllerService.removeEntitlementWithIEGroups(params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR)
-            flash.error = message(code:'default.delete.error.general.message')
+            flash.error = message(code:'default.delete.error.general.message') as String
         else {
             Object[] args = [message(code:'issueEntitlement.label'),params.ieid]
-            flash.message = message(code: 'default.deleted.message',args: args)
+            flash.message = message(code: 'default.deleted.message',args: args) as String
         }
         redirect action: 'index', id: params.sub
     }
@@ -946,7 +946,7 @@ class SubscriptionController {
                         }
 
                         if (subscriptionService.addEntitlement(result.subscription, tipp.gokbId, ie, (ie.priceItems != null), acceptStatus, result.surveyConfig.pickAndChoosePerpetualAccess)) {
-                            flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [tipp.name])
+                            flash.message = message(code: 'subscription.details.addEntitlements.titleAddToSub', args: [tipp.name]) as String
                         }
                     }
                     catch (EntitlementCreationException e) {
@@ -986,7 +986,7 @@ class SubscriptionController {
     def resetHoldingToSubEnd() {
         Map<String, Object> ctrlResult = subscriptionControllerService.resetHoldingToSubEnd(params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR)
-            flash.error = message(code: ctrlResult.result.errMess)
+            flash.error = message(code: ctrlResult.result.errMess) as String
         redirect(url: request.getHeader("referer"))
     }
 
@@ -1004,7 +1004,7 @@ class SubscriptionController {
                 return
             }
             else {
-                flash.error = message(code:'default.save.error.general.message')
+                flash.error = message(code:'default.save.error.general.message') as String
                 redirect action: 'index', params: [id: ctrlResult.result.subscription.id, sort: params.sort, order: params.order, offset: params.offset, max: params.max, status: params.status]
                 return
             }
@@ -1039,11 +1039,11 @@ class SubscriptionController {
         Map<String,Object> ctrlResult = subscriptionControllerService.removePriceItem(params)
         Object[] args = [message(code:'tipp.price'), params.priceItem]
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            flash.error = message(code: 'default.not.found.message', args: args)
+            flash.error = message(code: 'default.not.found.message', args: args) as String
         }
         else
         {
-            flash.message = message(code:'default.deleted.message', args: args)
+            flash.message = message(code:'default.deleted.message', args: args) as String
         }
         redirect action: 'index', id: params.id
     }
@@ -1072,11 +1072,11 @@ class SubscriptionController {
         Map<String,Object> ctrlResult = subscriptionControllerService.removeCoverage(params)
         Object[] args = [message(code:'tipp.coverage'), params.ieCoverage]
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            flash.error = message(code: 'default.not.found.message', args: args)
+            flash.error = message(code: 'default.not.found.message', args: args) as String
         }
         else
         {
-            flash.message = message(code:'default.deleted.message', args: args)
+            flash.message = message(code:'default.deleted.message', args: args) as String
         }
         redirect action: 'index', id: params.id, params: params
     }
@@ -1140,11 +1140,11 @@ class SubscriptionController {
         Map<String, Object> ctrlResult = subscriptionControllerService.removeEntitlementGroup(params)
         Object[] args = [message(code:'issueEntitlementGroup.label'),params.titleGroup]
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            flash.error = message(code: 'default.not.found.message', args)
+            flash.error = message(code: 'default.not.found.message', args) as String
         }
         else
         {
-            flash.message = message(code:'default.deleted.message',args)
+            flash.message = message(code:'default.deleted.message',args) as String
         }
         redirect action: 'manageEntitlementGroup', id: params.sub
     }

@@ -105,30 +105,30 @@ class AdminController  {
                 }
                 else if (params.cmd == 'publish') {
                     if (result.mailDisabled) {
-                        flash.error = message(code: 'system.config.mail.disabled')
+                        flash.error = message(code: 'system.config.mail.disabled') as String
                     }
                     else if (sa.publish()) {
-                        flash.message = message(code: 'announcement.published')
+                        flash.message = message(code: 'announcement.published') as String
                     }
                     else {
-                        flash.error = message(code: 'announcement.published_error')
+                        flash.error = message(code: 'announcement.published_error') as String
                     }
                 }
                 else if (params.cmd == 'undo') {
                     sa.isPublished = false
                     if (sa.save()) {
-                        flash.message = message(code: 'announcement.undo')
+                        flash.message = message(code: 'announcement.undo') as String
                     }
                     else {
-                        flash.error = message(code: 'announcement.undo_error')
+                        flash.error = message(code: 'announcement.undo_error') as String
                     }
                 }
                 else if (params.cmd == 'delete') {
                     if (sa.delete()) {
-                        flash.message = message(code: 'default.success')
+                        flash.message = message(code: 'default.success') as String
                     }
                     else {
-                        flash.error = message(code: 'default.delete.error.general.message')
+                        flash.error = message(code: 'default.delete.error.general.message') as String
                     }
                 }
             }
@@ -191,14 +191,14 @@ class AdminController  {
             sa.isPublished = false
 
             if (sa.save()) {
-                flash.message = isNew ? message(code: 'announcement.created') : message(code: 'announcement.updated')
+                flash.message = isNew ? message(code: 'announcement.created') : message(code: 'announcement.updated') as String
             }
             else {
-                flash.error = message(code: 'default.save.error.message', args: [sa])
+                flash.error = message(code: 'default.save.error.message', args: [sa]) as String
             }
         }
         else {
-            flash.error = message(code: 'default.error')
+            flash.error = message(code: 'default.error') as String
         }
         redirect(action: 'systemAnnouncements')
     }
@@ -211,7 +211,7 @@ class AdminController  {
         Map<String, Object> result = [:]
         result.stats = [:]
 
-        List<String> jobList = [
+        List jobList = [
                 'DocContext',
                 //['GlobalRecordInfo', 'globalRecordInfoStatus'],
                 'IssueEntitlement',
@@ -631,14 +631,14 @@ class AdminController  {
                 log.debug('dataConsistency( merge, ' + params.objType + ', ' + objIds + ' )')
 
                 Org replacement = Org.get(objIds.first())
-                for (def i = 1; i < objIds.size(); i++) {
+                for (int i = 1; i < objIds.size(); i++) {
                     deletionService.deleteOrganisation( Org.get(objIds[i]), replacement, false )
                 }
             }
             if (params.task == 'delete' && params.objType == 'Org') {
                 log.debug('dataConsistency( delete, ' + params.objType + ', ' + objIds + ' )')
 
-                for (def i = 0; i < objIds.size(); i++) {
+                for (int i = 0; i < objIds.size(); i++) {
                     deletionService.deleteOrganisation( Org.get(objIds[i]), null, false )
                 }
             }
@@ -987,13 +987,13 @@ class AdminController  {
                 if (IdentifierNamespace.findByNsIlike(params.ns) || ! idnsInstance.save()) {
 
                     if(IdentifierNamespace.findByNsIlike(params.ns)) {
-                        flash.error = message(code: 'identifier.namespace.exist', args:[params.ns])
+                        flash.error = message(code: 'identifier.namespace.exist', args:[params.ns]) as String
                         break
                     }
                     return
                 }
                 else {
-                    flash.message = message(code: 'default.created.message', args: [message(code: 'identifier.namespace.label'), idnsInstance.ns])
+                    flash.message = message(code: 'default.created.message', args: [message(code: 'identifier.namespace.label'), idnsInstance.ns]) as String
                 }
                 break
         }
@@ -1067,10 +1067,10 @@ SELECT * FROM (
                         if (! pd.isHardData) {
                             try {
                                 pd.delete()
-                                flash.message = message(code:'propertyDefinition.delete.success',[pd.name_de])
+                                flash.message = message(code:'propertyDefinition.delete.success',[pd.name_de]) as String
                             }
                             catch(Exception e) {
-                                flash.error = message(code:'propertyDefinition.delete.failure.default',[pd.name_de])
+                                flash.error = message(code:'propertyDefinition.delete.failure.default',[pd.name_de]) as String
                             }
                         }
                     }
@@ -1084,11 +1084,11 @@ SELECT * FROM (
                         if (pdFrom && pdTo) {
                             try {
                                 int count = propertyService.replacePropertyDefinitions(pdFrom, pdTo, params.overwrite == 'on', true)
-                                flash.message = message(code: 'menu.institutions.replace_prop.changed', args: [count, oldName, newName])
+                                flash.message = message(code: 'menu.institutions.replace_prop.changed', args: [count, oldName, newName]) as String
                             }
                             catch (Exception e) {
                                 e.printStackTrace()
-                                flash.error = message(code: 'menu.institutions.replace_prop.error', args: [oldName, newName])
+                                flash.error = message(code: 'menu.institutions.replace_prop.error', args: [oldName, newName]) as String
                             }
                         }
                     }
@@ -1135,10 +1135,10 @@ SELECT * FROM (
             )
 
             if (surveyProperty.save()) {
-                flash.message = message(code: 'propertyDefinition.copySubPropToSurProp.created.sucess')
+                flash.message = message(code: 'propertyDefinition.copySubPropToSurProp.created.sucess') as String
             }
             else {
-                flash.error = message(code: 'propertyDefinition.copySubPropToSurProp.created.fail')
+                flash.error = message(code: 'propertyDefinition.copySubPropToSurProp.created.fail') as String
             }
         }
 
@@ -1276,7 +1276,7 @@ SELECT * FROM (
 
                 if (check) {
                     try {
-                        def count = refdataService.replaceRefdataValues(rdvFrom, rdvTo)
+                        int count = refdataService.replaceRefdataValues(rdvFrom, rdvTo)
 
                         flash.message = "${count} Vorkommen von ${params.xcgRdvFrom} wurden durch ${params.xcgRdvTo}${params.xcgRdvGlobalTo} ersetzt."
                     }
@@ -1294,7 +1294,7 @@ SELECT * FROM (
 
         def (usedRdvList, attrMap) = refdataService.getUsageDetails()
 
-        def integrityCheckResult = refdataService.integrityCheck()
+        Map integrityCheckResult = refdataService.integrityCheck()
 
         render view: 'manageRefdatas', model: [
                 editable    : true,

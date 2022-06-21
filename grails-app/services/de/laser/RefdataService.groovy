@@ -93,7 +93,7 @@ class RefdataService {
 
             dcFields.each { df ->
                 String hql = "select dummy from ${dcName} as dummy where dummy.${df.name} = :xfrom"
-                def result = RefdataValue.executeQuery(hql, [xfrom: rdvFrom])
+                List result = RefdataValue.executeQuery(hql, [xfrom: rdvFrom])
 
                 //log.debug(hql + " @ " + rdvFrom.id + " -> " + result)
                 result.each { it ->

@@ -140,7 +140,7 @@ class UsageController  {
 
         Fact.executeUpdate('delete from Fact')
         StatsTripleCursor.executeUpdate('delete from StatsTripleCursor ')
-        flash.message = message(code: 'default.usage.delete.success')
+        flash.message = message(code: 'default.usage.delete.success') as String
         redirect(view: "index", model: result)
     }
 
@@ -193,7 +193,7 @@ class UsageController  {
         def deletedFactCount = Fact.executeUpdate('delete from Fact t1 where 1=1' + factAndWhereCondition,
             factParams)
         log.debug("Deleted ${deletedCursorCount} entries from StatsTripleCursor table and ${deletedFactCount} entries from fact table")
-        flash.message = message(code: 'default.usage.delete.success')
+        flash.message = message(code: 'default.usage.delete.success') as String
         redirect(view: "index", model: result)
     }
 

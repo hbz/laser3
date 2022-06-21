@@ -102,7 +102,7 @@ class PackageController {
 
         Map queryCuratoryGroups = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + '/groups')
         if(queryCuratoryGroups.error == 404) {
-            result.error = message(code:'wekb.error.'+queryCuratoryGroups.error)
+            result.error = message(code:'wekb.error.'+queryCuratoryGroups.error) as String
         }
         else {
             if (queryCuratoryGroups.warning) {
@@ -306,7 +306,7 @@ class PackageController {
             params.insrt = "Y"
             params.dlt = "Y"
             params.updt = "Y"
-            flash.message = message(code: 'package.compare.flash')
+            flash.message = message(code: 'package.compare.flash') as String
             result
         }
 
@@ -377,7 +377,7 @@ class PackageController {
             packageInstance = Package.findByGokbId(params.id)
         else packageInstance = Package.findByGlobalUID(params.id)
         if (!packageInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label'), params.id]) as String
             redirect action: 'index'
             return
         }
@@ -435,7 +435,7 @@ class PackageController {
 
         Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/find?uuid=${packageInstance.gokbId}")
         if (queryResult.error && queryResult.error == 404) {
-            flash.error = message(code:'wekb.error.404')
+            flash.error = message(code:'wekb.error.404') as String
         }
         else if (queryResult.warning) {
             List records = queryResult.warning.records
@@ -462,7 +462,7 @@ class PackageController {
 
         Package packageInstance = Package.get(params.id)
         if (!packageInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label'), params.id]) as String
             redirect action: 'index'
             return
         }
@@ -608,7 +608,7 @@ class PackageController {
 
         Package packageInstance = Package.get(params.id)
         if (!packageInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label'), params.id]) as String
             redirect action: 'index'
             return
         }
@@ -721,7 +721,7 @@ class PackageController {
         result.user = contextService.getUser()
         Package packageInstance = Package.get(params.id)
         if (!packageInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label'), params.id]) as String
             redirect action: 'index'
             return
         }
@@ -817,7 +817,7 @@ class PackageController {
                     break
             }
         } else {
-            flash.error = message(code: 'package.show.linkToSub.noSubSelection')
+            flash.error = message(code: 'package.show.linkToSub.noSubSelection') as String
             redirect controller: 'package', action: 'show', params: [id: params.id]
             return
         }

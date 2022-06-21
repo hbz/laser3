@@ -79,7 +79,7 @@ class OrganisationController  {
     def settings() {
         Map<String,Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         if (! result.orgInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id]) as String
             redirect action: 'list'
             return
         }
@@ -407,7 +407,7 @@ class OrganisationController  {
         Org org   = params.id? Org.get(params.id) : null
 
         if (! org) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id]) as String
             redirect(url: request.getHeader('referer'))
             return
         }
@@ -447,7 +447,7 @@ class OrganisationController  {
         Org org = identifier?.org
 
         if (! identifier) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'default.search.identifier'), params.identifier])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'default.search.identifier'), params.identifier]) as String
             redirect(url: request.getHeader('referer'))
             return
         }
@@ -465,18 +465,18 @@ class OrganisationController  {
         log.debug("OrganisationController::processCreateIdentifier ${params}")
         Org org   = params.orgid ? Org.get(params.orgid) : null
         if ( ! (org && params.ns.id)){
-            flash.error = message(code: 'menu.admin.error')
+            flash.error = message(code: 'menu.admin.error') as String
             redirect(url: request.getHeader('referer'))
             return
         }
         IdentifierNamespace namespace   = IdentifierNamespace.get(params.ns.id)
         if (!namespace){
-            flash.error = message(code: 'default.not.found.message', args: [message(code: 'identifier.namespace.label'), params.ns.id])
+            flash.error = message(code: 'default.not.found.message', args: [message(code: 'identifier.namespace.label'), params.ns.id]) as String
             redirect(url: request.getHeader('referer'))
             return
         }
         if ( ! params.value){
-            flash.error = message(code: 'identifier.create.err.missingvalue', args: [namespace.getI10n('name') ?: namespace.ns])
+            flash.error = message(code: 'identifier.create.err.missingvalue', args: [namespace.getI10n('name') ?: namespace.ns]) as String
             redirect(url: request.getHeader('referer'))
             return
         }
@@ -500,21 +500,21 @@ class OrganisationController  {
 
         Org org = params.orgid ? Org.get(params.orgid) : null
         if ( ! (org && params.addCIPlatform)){
-            flash.error = message(code: 'menu.admin.error')
+            flash.error = message(code: 'menu.admin.error') as String
             redirect(url: request.getHeader('referer'))
             return
         }
 
         Platform plt = Platform.get(params.addCIPlatform)
         if (!plt){
-            flash.error = message(code: 'default.not.found.message', args: [message(code: 'default.provider.platform.label'), params.addCIPlatform])
+            flash.error = message(code: 'default.not.found.message', args: [message(code: 'default.provider.platform.label'), params.addCIPlatform]) as String
             redirect(url: request.getHeader('referer'))
             return
         }
 
         if ( ! params.value){
             String p = plt.org.name + (plt.org.sortname ? " (${plt.org.sortname})" : '') + ' : ' + plt.name
-            flash.error = message(code: 'org.customerIdentifier.create.err.missingvalue', args: [p])
+            flash.error = message(code: 'org.customerIdentifier.create.err.missingvalue', args: [p]) as String
             redirect(url: request.getHeader('referer'))
             return
         }
@@ -548,7 +548,7 @@ class OrganisationController  {
         log.debug("OrganisationController::processEditIdentifier ${params}")
         Identifier identifier   = Identifier.get(params.identifierId)
         if ( ! identifier){
-            flash.error = message(code: 'default.not.found.message', args: [message(code: 'default.search.identifier'), params.identifierId])
+            flash.error = message(code: 'default.not.found.message', args: [message(code: 'default.search.identifier'), params.identifierId]) as String
             redirect(url: request.getHeader('referer'))
             return
         }
@@ -561,7 +561,7 @@ class OrganisationController  {
             if(params.leitID1 ==~ /[0-9]{2,12}/) {
                 leitID1 = params.leitID1
             }else{
-                flash.error = message(code: 'identifier.edit.err.leitID', args: [message(code: 'identifier.leitID.leitID1.info')])
+                flash.error = message(code: 'identifier.edit.err.leitID', args: [message(code: 'identifier.leitID.leitID1.info')]) as String
                 redirect(url: request.getHeader('referer'))
                 return
             }
@@ -569,7 +569,7 @@ class OrganisationController  {
             if(params.leitID2 ==~ /[a-zA-Z0-9]{0,30}/) {
                 leitID2 = params.leitID2
             }else{
-                flash.error = message(code: 'identifier.edit.err.leitID', args: [message(code: 'identifier.leitID.leitID2.info')])
+                flash.error = message(code: 'identifier.edit.err.leitID', args: [message(code: 'identifier.leitID.leitID2.info')]) as String
                 redirect(url: request.getHeader('referer'))
                 return
             }
@@ -577,7 +577,7 @@ class OrganisationController  {
             if(params.leitID3 ==~ /[0-9]{2,2}/) {
                 leitID3 = params.leitID3
             }else{
-                flash.error = message(code: 'identifier.edit.err.leitID', args: [message(code: 'identifier.leitID.leitID3.info')])
+                flash.error = message(code: 'identifier.edit.err.leitID', args: [message(code: 'identifier.leitID.leitID3.info')]) as String
                 redirect(url: request.getHeader('referer'))
                 return
             }
@@ -586,7 +586,7 @@ class OrganisationController  {
         }
 
         if ( ! params.value){
-            flash.error = message(code: 'identifier.edit.err.missingvalue', args: [identifier.ns?.getI10n('name') ?: identifier.ns?.ns])
+            flash.error = message(code: 'identifier.edit.err.missingvalue', args: [identifier.ns?.getI10n('name') ?: identifier.ns?.ns]) as String
             redirect(url: request.getHeader('referer'))
             return
         }
@@ -608,14 +608,14 @@ class OrganisationController  {
         log.debug("OrganisationController::processEditIdentifier ${params}")
         CustomerIdentifier customeridentifier   = CustomerIdentifier.get(params.customeridentifier)
         if ( ! customeridentifier){
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'default.search.identifier'), params.identifierId])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'default.search.identifier'), params.identifierId]) as String
             redirect(url: request.getHeader('referer'))
             return
         }
         if ( ! params.value){
             Platform plt = customeridentifier.platform
             String p = plt.org.name + (plt.org.sortname ? " (${plt.org.sortname})" : '') + ' : ' + plt.name
-            flash.error = message(code: 'org.customerIdentifier.edit.err.missingvalue', args: [p])
+            flash.error = message(code: 'org.customerIdentifier.edit.err.missingvalue', args: [p]) as String
             redirect(url: request.getHeader('referer'))
             return
         }
@@ -639,7 +639,7 @@ class OrganisationController  {
         Org org   = Org.get(params.id)
 
         if (! org) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id]) as String
             redirect(url: request.getHeader('referer'))
             return
         }
@@ -659,7 +659,7 @@ class OrganisationController  {
         Org org = customeridentifier?.owner
 
         if (! customeridentifier) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.customerIdentifier'), params.customeridentifier])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.customerIdentifier'), params.customeridentifier]) as String
             redirect(url: request.getHeader('referer'))
             return
         }
@@ -685,7 +685,7 @@ class OrganisationController  {
                     if (orgInstance.save()) {
                         orgInstance.setDefaultCustomerType()
 
-                        flash.message = message(code: 'default.created.message', args: [message(code: 'org.label'), orgInstance.name])
+                        flash.message = message(code: 'default.created.message', args: [message(code: 'org.label'), orgInstance.name]) as String
                         redirect action: 'show', id: orgInstance.id
                         return
                     }
@@ -713,13 +713,13 @@ class OrganisationController  {
                 orgInstance.addToOrgType(RDStore.OT_PROVIDER)
                 orgInstance.save()
 
-                flash.message = message(code: 'default.created.message', args: [message(code: 'org.label'), orgInstance.name])
+                flash.message = message(code: 'default.created.message', args: [message(code: 'org.label'), orgInstance.name]) as String
                 redirect action: 'show', id: orgInstance.id
                 return
             }
             else {
                 log.error("Problem creating org: ${orgInstance.errors}");
-                flash.message = message(code: 'org.error.createProviderError', args: [orgInstance.errors])
+                flash.message = message(code: 'org.error.createProviderError', args: [orgInstance.errors]) as String
                 redirect(action: 'findProviderMatches')
                 return
             }
@@ -813,7 +813,7 @@ class OrganisationController  {
             return
         }
         if (! result.orgInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id]) as String
             redirect action: 'list'
             return
         }
@@ -932,7 +932,7 @@ class OrganisationController  {
         }
 
           if (!result.orgInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id]) as String
             redirect action: 'list'
             return
           }
@@ -1360,7 +1360,7 @@ class OrganisationController  {
         }
 
         if (! result.institution) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id]) as String
             redirect action: 'list'
             return
         }
@@ -1485,7 +1485,7 @@ class OrganisationController  {
         }
 
         if (! result.orgInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id]) as String
             redirect action: 'list'
             return
         }
@@ -1592,18 +1592,18 @@ class OrganisationController  {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
 
         if (!result.orgInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id]) as String
             redirect(url: request.getHeader('referer'))
             return
         }
         RefdataValue newSubjectGroup = RefdataValue.get(params.subjectGroup)
         if (!newSubjectGroup) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.subjectGroup.label'), params.subjectGroup])
+            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.subjectGroup.label'), params.subjectGroup]) as String
             redirect(url: request.getHeader('referer'))
             return
         }
         if (result.orgInstance.getSubjectGroup().find { it.subjectGroupId == newSubjectGroup.id }) {
-            flash.message = message(code: 'default.err.alreadyExist', args: [message(code: 'org.subjectGroup.label')])
+            flash.message = message(code: 'default.err.alreadyExist', args: [message(code: 'org.subjectGroup.label')]) as String
             redirect(url: request.getHeader('referer'))
             return
         }
@@ -1627,7 +1627,7 @@ class OrganisationController  {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
 
         if (!result.orgInstance) {
-            flash.error = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id])
+            flash.error = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id]) as String
             redirect(url: request.getHeader('referer'))
             return
         }

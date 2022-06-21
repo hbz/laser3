@@ -86,7 +86,7 @@ class Contact implements Comparable<Contact>{
      */
     @Override
     int compareTo(Contact contact) {
-        int result = getCompareOrderValueForType(this).compareTo(getCompareOrderValueForType(contact))
+        int result = _getCompareOrderValueForType(this).compareTo(_getCompareOrderValueForType(contact))
         if (result == 0) {
             String a = this.getContent() ?: ''
             String b = contact.getContent() ?: ''
@@ -100,7 +100,7 @@ class Contact implements Comparable<Contact>{
      * @param contact the contact which should be compared
      * @return for REFDATA_EMAIL or REFDATA_MAIL: 1, REFDATA_URL: 2, REFDATA_PHONE: 3, REFDATA_FAX: 4, 5 otherwise
      */
-    private int getCompareOrderValueForType(Contact contact){
+    private int _getCompareOrderValueForType(Contact contact){
         switch (contact?.getContentType()?.getValue()){
             case [ REFDATA_MAIL, REFDATA_EMAIL ]:
                 return 1;

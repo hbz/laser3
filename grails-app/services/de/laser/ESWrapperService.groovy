@@ -97,7 +97,7 @@ class ESWrapperService {
      * @return the parsed ElasticSearch settings
      */
     def getSettings(){
-        parseResource("${File.separator}elasticsearch${File.separator}es_settings.json")
+        _parseResource("${File.separator}elasticsearch${File.separator}es_settings.json")
     }
 
     /**
@@ -105,7 +105,7 @@ class ESWrapperService {
      * @return the parsed ElasticSearch mapping
      */
     def getMapping(){
-        parseResource("${File.separator}elasticsearch${File.separator}es_mapping.json")
+        _parseResource("${File.separator}elasticsearch${File.separator}es_mapping.json")
     }
 
     /**
@@ -113,7 +113,7 @@ class ESWrapperService {
      * @param resourcePath the path where the file is located
      * @return the parsed content of the file
      */
-    private def parseResource(String resourcePath){
+    private def _parseResource(String resourcePath){
         def resource = this.class.classLoader.getResourceAsStream(resourcePath)
         if (resource == null){
             resource = getClass().getResource(resourcePath)

@@ -365,7 +365,7 @@ class PendingChange {
      * @see #getPayloadAsJSON()
      */
     JSONElement getChangeDocAsJSON() {
-        def payload = getPayloadAsJSON()
+        JSONElement payload = getPayloadAsJSON()
 
         payload.changeDoc ?: JSON.parse('{}')
     }

@@ -76,7 +76,7 @@ class DataManagerController  {
       params.creates='Y'
     }
     if(params.startDate > params.endDate){
-      flash.error = message(code:'datamanager.changeLog.error.dates')
+      flash.error = message(code:'datamanager.changeLog.error.dates') as String
       return
     }
     String base_query = "from org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent as e where e.className in (:l) AND e.lastUpdated >= :s AND e.lastUpdated <= :e AND e.eventName in (:t)"
@@ -510,10 +510,10 @@ class DataManagerController  {
         MailTemplate mailTemplate = new MailTemplate(params)
 
         if(mailTemplate.save()) {
-            flash.message = message(code: 'default.created.message', args: [message(code: 'mailTemplate.label'), mailTemplate.name])
+            flash.message = message(code: 'default.created.message', args: [message(code: 'mailTemplate.label'), mailTemplate.name]) as String
         }
         else {
-            flash.error = message(code: 'default.save.error.message', args: [message(code: 'mailTemplate.label')])
+            flash.error = message(code: 'default.save.error.message', args: [message(code: 'mailTemplate.label')]) as String
         }
 
         redirect(action: 'listMailTemplates')
@@ -538,10 +538,10 @@ class DataManagerController  {
         }
 
         if(mailTemplate.save()) {
-            flash.message = message(code: 'default.updated.message', args: [message(code: 'mailTemplate.label'), mailTemplate.name])
+            flash.message = message(code: 'default.updated.message', args: [message(code: 'mailTemplate.label'), mailTemplate.name]) as String
         }
         else{
-            flash.error = message(code: 'default.not.updated.message', args: [message(code: 'mailTemplate.label'), mailTemplate.name])
+            flash.error = message(code: 'default.not.updated.message', args: [message(code: 'mailTemplate.label'), mailTemplate.name]) as String
         }
 
         redirect(action: 'listMailTemplates')

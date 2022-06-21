@@ -266,7 +266,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
             normName = normName.toLowerCase()
             normName = alphanum.matcher(normName).replaceAll("")
             normName = normName.replaceAll("\\s+", " ")
-            normName = asciify(normName)
+            normName = _asciify(normName)
         }
     }
 
@@ -285,7 +285,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
   }
 
     @Deprecated
-    private String stringify(obj) {
+    private String _stringify(obj) {
       String result
     if ( obj != null ) {
       if ( obj instanceof Date ) {
@@ -347,11 +347,11 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
      * @param s the string to decode
      * @return the ASCII-decoded string
      */
-    private static String asciify(String s) {
+    private static String _asciify(String s) {
         char[] c = s.toCharArray()
         StringBuffer b = new StringBuffer()
         for (char element : c) {
-            b.append(translate(element))
+            b.append(_translate(element))
         }
         return b.toString()
     }
@@ -362,7 +362,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
      * @param c the character to translate
      * @return the ASCII representation of the char
      */
-    private static char translate(char c) {
+    private static char _translate(char c) {
         switch(c) {
             case '\u00C0':
             case '\u00C1':

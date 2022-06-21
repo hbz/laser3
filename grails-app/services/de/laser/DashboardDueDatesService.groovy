@@ -80,10 +80,10 @@ class DashboardDueDatesService {
                 SystemEvent.createEvent('DBDD_SERVICE_START_1')
 
                 if (isUpdateDashboardTableInDatabase) {
-                    flash = updateDashboardTableInDatabase(flash)
+                    flash = _updateDashboardTableInDatabase(flash)
                 }
                 if (isSendEmailsForDueDatesOfAllUsers) {
-                    flash = sendEmailsForDueDatesOfAllUsers(flash)
+                    flash = _sendEmailsForDueDatesOfAllUsers(flash)
                 }
                 log.debug("Finished DashboardDueDatesService takeCareOfDueDates")
                 SystemEvent.createEvent('DBDD_SERVICE_COMPLETE_1')
@@ -107,7 +107,7 @@ class DashboardDueDatesService {
      * @param flash the message container
      * @return the message container, filled with the processing output
      */
-    private updateDashboardTableInDatabase(def flash){
+    private _updateDashboardTableInDatabase(def flash){
         SystemEvent.createEvent('DBDD_SERVICE_START_2')
         SystemEvent.createEvent('DBDD_SERVICE_START_COLLECT_DASHBOARD_DATA')
         Date now = new Date();
@@ -179,7 +179,7 @@ class DashboardDueDatesService {
      * @param flash the message collector container
      * @return the message collector container with the processing output
      */
-    private sendEmailsForDueDatesOfAllUsers(def flash) {
+    private _sendEmailsForDueDatesOfAllUsers(def flash) {
         try {
             SystemEvent.createEvent('DBDD_SERVICE_START_3')
 
@@ -190,7 +190,7 @@ class DashboardDueDatesService {
                     List<Org> orgs = Org.executeQuery(QRY_ALL_ORGS_OF_USER, [user: user])
                     orgs.each { org ->
                         List<DashboardDueDate> dashboardEntries = getDashboardDueDates(user, org, false, false)
-                        sendEmail(user, org, dashboardEntries)
+                        _sendEmail(user, org, dashboardEntries)
                     }
                 }
             }
@@ -210,7 +210,7 @@ class DashboardDueDatesService {
      * @param org the context {@link Org} the object is settled in
      * @param dashboardEntries the {@link List} of {@link DashboardDueDate}s to process
      */
-    private void sendEmail(User user, Org org, List<DashboardDueDate> dashboardEntries) {
+    private void _sendEmail(User user, Org org, List<DashboardDueDate> dashboardEntries) {
         String emailReceiver = user.getEmail()
         Locale language = new Locale(user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', RDConstants.LANGUAGE)).value.toString())
         RefdataValue userLang = user.getSetting(UserSetting.KEYS.LANGUAGE_OF_EMAILS, RDStore.LANGUAGE_DE).value as RefdataValue

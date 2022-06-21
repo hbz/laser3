@@ -190,7 +190,7 @@ class GokbService {
 
     @Deprecated
     Map geElasticsearchSuggests(final String apiUrl, final String query, final String type, final String role) {
-        String url = buildUri(apiUrl+'/suggest', query, type, role, null)
+        String url = _buildUri(apiUrl+'/suggest', query, type, role, null)
         queryElasticsearch(url)
     }
 
@@ -205,7 +205,7 @@ class GokbService {
      */
     Map geElasticsearchFindings(final String apiUrl, final String query, final String type,
                                 final String role, final Integer max) {
-        String url = buildUri(apiUrl+'/find', query, type, role, max)
+        String url = _buildUri(apiUrl+'/find', query, type, role, max)
         queryElasticsearch(url)
     }
 
@@ -296,7 +296,7 @@ class GokbService {
      * @param max the maximum count of entries to fetch
      * @return the query URL string
      */
-    private String buildUri(final String stub, final String query, final String type, final String role, final Integer max) {
+    private String _buildUri(final String stub, final String query, final String type, final String role, final Integer max) {
         String url = stub + "?status=Current&"
         if (query) {
             url += "q=" + query + "&"
