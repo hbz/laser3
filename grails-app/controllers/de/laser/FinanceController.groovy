@@ -53,6 +53,7 @@ class FinanceController  {
             Map<String,Object> result = financeControllerService.getResultGenerics(params)
             result.financialData = financeService.getCostItems(params,result)
             result.ciTitles = result.financialData.ciTitles
+            result.budgetCodes = result.financialData.budgetCodes
             result.filterPresets = result.financialData.filterPresets
             result.filterSet = result.financialData.filterSet
             result.benchMark = result.financialData.benchMark
@@ -78,6 +79,7 @@ class FinanceController  {
         log.debug("FinanceController::subFinancialData() ${params}")
         try {
             Map<String,Object> result = financeControllerService.getResultGenerics(params)
+            result.financialData = financeService.getCostItemsForSubscription(params,result)
             result.currentTitlesCounts = IssueEntitlement.executeQuery("select count(ie.id) from IssueEntitlement as ie where ie.subscription = :sub and ie.status = :status and ie.acceptStatus = :acceptStatus ", [sub: result.subscription, status: RDStore.TIPP_STATUS_CURRENT, acceptStatus: RDStore.IE_ACCEPT_STATUS_FIXED])[0]
             if(result.institution.getCustomerType() == "ORG_CONSORTIUM") {
                 if(result.subscription.instanceOf){
@@ -85,8 +87,10 @@ class FinanceController  {
                             [sub: result.subscription.instanceOf,
                              org: result.subscription.getSubscriber(),
                              invalidStatuses: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY]]).size()
+                    result.currentCostItemCounts = result.financialData.cons.count
                 }else{
                     result.currentSurveysCounts = SurveyConfig.findAllBySubscription(result.subscription).size()
+                    result.currentCostItemCounts = "${result.financialData.own.count}/${result.financialData.cons.count}"
                 }
                 result.currentMembersCounts =  Subscription.executeQuery('select count(s) from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes',[parent: result.subscription, subscriberRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])[0]
             }else{
@@ -94,13 +98,22 @@ class FinanceController  {
                         [sub: result.subscription.instanceOf,
                          org: result.subscription.getSubscriber(),
                          invalidStatuses: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY]]).size()
+                if(result.institution.getCustomerType() == "ORG_INST") {
+                    if(result.subscription.instanceOf)
+                        result.currentCostItemCounts = "${result.financialData.own.count}/${result.financialData.subscr.count}"
+                    else
+                        result.currentCostItemCounts = result.financialData.own.count
+                }
+                else {
+                    result.currentCostItemCounts = result.financialData.subscr.count
+                }
             }
             result.workflowCount = WfWorkflow.executeQuery(
                     'select count(wf) from WfWorkflow wf where wf.subscription = :sub and wf.owner = :ctxOrg',
                     [sub: result.subscription, ctxOrg: result.contextOrg]
             )[0]
-            result.financialData = financeService.getCostItemsForSubscription(params,result)
             result.ciTitles = result.financialData.ciTitles
+            result.budgetCodes = result.financialData.budgetCodes
             result.filterPresets = result.financialData.filterPresets
             result.filterSet = result.financialData.filterSet
             result.allCIElements = CostItemElementConfiguration.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :org',[org:result.institution])

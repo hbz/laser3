@@ -1,4 +1,4 @@
-<%@page import="de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.RefdataCategory; de.laser.PendingChangeConfiguration; de.laser.Platform; de.laser.SubscriptionPackage" %>
+<%@page import="de.laser.Subscription; de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.RefdataCategory; de.laser.PendingChangeConfiguration; de.laser.Platform; de.laser.SubscriptionPackage; de.laser.finance.CostItem; de.laser.Org" %>
 <laser:serviceInjection />
 
 <div class="ui card">
@@ -63,18 +63,54 @@
                                 }
                             })
                             </laser:script>
-                            <g:link controller="subscription"
-                                    action="unlinkPackage"
-                                    extaContentFlag="false"
-                                    params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y']}"
-                                    data-confirm-messageUrl="${createLink(controller:'subscription', action:'unlinkPackage', params:[subscription: sp.subscription.id, package: sp.pkg.id])}"
-                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.package", args: [sp.pkg.name])}"
-                                    data-confirm-term-how="delete"
-                                    class="ui icon negative button la-modern-button js-open-confirm-modal la-popup-tooltip la-delay"
-                                    role="button"
-                                    aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
-                                <i aria-hidden="true" class="trash alternate outline icon"></i>
-                            </g:link>
+                            <%
+                                String confirmMsg = message(code: "confirm.dialog.unlink.subscription.package", args: [sp.pkg.name])
+                                String unlinkDisabled = '', unlinkDisabledTooltip = null
+                                Set<Subscription> blockingCostItems = CostItem.executeQuery('select ci.subPkg.subscription from CostItem ci where (ci.subPkg.subscription = :sub or ci.subPkg.subscription.instanceOf = :sub) and ci.subPkg.pkg = :pkg and ci.owner = :context and ci.costItemStatus != :deleted', [pkg: sp.pkg, deleted: RDStore.COST_ITEM_DELETED, sub: sp.subscription, context: institution])
+                                if(showConsortiaFunctions) {
+                                    confirmMsg += ' ' + message(code: "confirm.dialog.unlink.subscription.package.consortia")
+                                    if (blockingCostItems) {
+                                        unlinkDisabled = 'disabled'
+                                        unlinkDisabledTooltip = message(code: "subscriptionsManagement.unlinkInfo.blockingSubscribersConsortia")
+                                    }
+                                }
+                                else {
+                                    if(blockingCostItems) {
+                                        unlinkDisabled = 'disabled'
+                                        unlinkDisabledTooltip = message(code: "subscriptionsManagement.unlinkInfo.blocked")
+                                    }
+                                }
+                            %>
+                            <g:if test="${unlinkDisabled}">
+                                <span class="la-popup-tooltip la-delay" data-content="${unlinkDisabledTooltip}">
+                                    <g:link controller="subscription"
+                                        action="unlinkPackage"
+                                        extaContentFlag="false"
+                                        params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y']}"
+                                        data-confirm-messageUrl="${createLink(controller:'subscription', action:'unlinkPackage', params:[subscription: sp.subscription.id, package: sp.pkg.id])}"
+                                        data-confirm-tokenMsg="${confirmMsg}"
+                                        data-confirm-term-how="delete"
+                                        class="ui icon negative button la-modern-button js-open-confirm-modal ${unlinkDisabled}"
+                                        role="button"
+                                        aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
+                                            <i aria-hidden="true" class="trash alternate outline icon"></i>
+                                    </g:link>
+                                </span>
+                            </g:if>
+                            <g:else>
+                                <g:link controller="subscription"
+                                        action="unlinkPackage"
+                                        extaContentFlag="false"
+                                        params="${[subscription: sp.subscription.id, package: sp.pkg.id, confirmed: 'Y']}"
+                                        data-confirm-messageUrl="${createLink(controller:'subscription', action:'unlinkPackage', params:[subscription: sp.subscription.id, package: sp.pkg.id])}"
+                                        data-confirm-tokenMsg="${confirmMsg}"
+                                        data-confirm-term-how="delete"
+                                        class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                        role="button"
+                                        aria-label="${message(code: "ariaLabel.unlink.subscription.package", args: [sp.pkg.name])}">
+                                    <i aria-hidden="true" class="trash alternate outline icon"></i>
+                                </g:link>
+                            </g:else>
                         </g:if>
                     </td>
                 </tr>
@@ -122,8 +158,7 @@
                                             </g:if>
                                         </tr>
                                         </thead>
-                                    <g:set var="excludes" value="${[PendingChangeConfiguration.PACKAGE_PROP,
-                                                                    PendingChangeConfiguration.PACKAGE_DELETED]}"/>
+                                    <g:set var="excludes" value="${PendingChangeConfiguration.GENERIC_EXCLUDES}"/>
                                     <g:each in="${PendingChangeConfiguration.SETTING_KEYS}" var="settingKey">
                                         <%
                                             PendingChangeConfiguration pcc = sp.getPendingChangeConfig(settingKey)

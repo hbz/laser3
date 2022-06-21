@@ -555,6 +555,8 @@ class FinanceService {
             Map<String,Object> result = [filterPresets:filterQuery.filterData]
             SortedSet<String> costTitles = new TreeSet<String>()
             costTitles.addAll(CostItem.executeQuery('select ci.costTitle from CostItem ci where (ci.owner = :ctx or ci.isVisibleForSubscriber = true) and ci.costTitle != null and (ci.sub = :sub or ci.sub.instanceOf = :sub) order by ci.costTitle asc', [ctx: org, sub: sub]))
+            SortedSet<BudgetCode> budgetCodes = new TreeSet<BudgetCode>()
+            budgetCodes.addAll(BudgetCode.findAllByOwner(org, [sort: 'value']))
             result.filterSet = filterQuery.subFilter || filterQuery.ciFilter
             configMap.dataToDisplay.each { String dataToDisplay ->
                 switch(dataToDisplay) {
@@ -618,6 +620,7 @@ class FinanceService {
                 }
             }
             result.ciTitles = costTitles
+            result.budgetCodes = budgetCodes
             result.benchMark = pu.stopBenchmark()
             result
         }
@@ -642,6 +645,9 @@ class FinanceService {
         SortedSet<String> ciTitles = new TreeSet<String>()
         ciTitles.addAll(CostItem.executeQuery('select ci.costTitle from CostItem ci where (ci.owner = :ctx or (exists(select oo from OrgRole oo where oo.sub = ci.sub and oo.org = :ctx and oo.roleType = :subscrType and ci.isVisibleForSubscriber = true))) and ci.costTitle != null order by ci.costTitle asc', [ctx: org, subscrType: RDStore.OR_SUBSCRIBER_CONS]))
         result.ciTitles = ciTitles
+        SortedSet<BudgetCode> budgetCodes = new TreeSet<BudgetCode>()
+        budgetCodes.addAll(BudgetCode.findAllByOwner(org, [sort: 'value']))
+        result.budgetCodes = budgetCodes
         pu.setBenchmark("load cost data for tabs")
         configMap.dataToDisplay.each { String dataToDisplay ->
             switch(dataToDisplay) {

@@ -39,7 +39,18 @@
                 <th>${message(code: 'org.fullName.label')}</th>
                 <th>${message(code: 'default.type.label')}</th>
                 <th>${message(code:'org.customerType.label')}</th>
-                <th>${message(code:'org.apiLevel.label')}</th>
+                <th>
+                    ${message(code:'org.apiLevel.label')}
+                    <span class="la-popup-tooltip la-delay la-no-uppercase" data-position="right center" data-content="${message(code:'org.apiLevel.tooltip')}" >
+                        <i class="question circle icon popup"></i>
+                    </span>
+                </th>
+                <th>
+                    ${message(code:'org.specialApiPermission.label')}
+                    <span class="la-popup-tooltip la-delay la-no-uppercase" data-position="right center" data-content="${message(code:'org.specialApiPermission.tooltip')}" >
+                        <i class="question circle icon popup"></i>
+                    </span>
+                </th>
                 <th class="la-no-uppercase"><span class="la-popup-tooltip la-delay" data-position="left center"
                           data-content="${message(code:'org.legalInformation.tooltip')}" >
                     <i class="handshake outline icon"></i>
@@ -111,7 +122,10 @@
                             else {
                                 apiLevel = 'Kein Zugriff'
                             }
-
+                        %>
+                    </td>
+                    <td>
+                        <%
                             def accessStatistics = OrgSetting.get(org, OrgSetting.KEYS.NATSTAT_SERVER_ACCESS)
                             if (accessStatistics != OrgSetting.SETTING_NOT_FOUND && accessStatistics.getValue()?.value == 'Yes') {
                                 println '<div><i class="ui icon lock open"></i> Statistikserver</div>'
@@ -120,6 +134,11 @@
                             def accessOA = OrgSetting.get(org, OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS)
                             if (accessOA!= OrgSetting.SETTING_NOT_FOUND && accessOA.getValue()?.value == 'Yes') {
                                 println '<div><i class="ui icon lock open"></i> OAMontior</div>'
+                            }
+
+                            def accessEZB = OrgSetting.get(org, OrgSetting.KEYS.EZB_SERVER_ACCESS)
+                            if (accessEZB!= OrgSetting.SETTING_NOT_FOUND && accessEZB.getValue()?.value == 'Yes') {
+                                println '<div><i class="ui icon lock open"></i> EZB</div>'
                             }
                         %>
                     </td>

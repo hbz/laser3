@@ -1320,6 +1320,12 @@ class FilterService {
             filterSet = true
         }
 
+        if (params.medium && params.medium != "" && listReaderWrapper(params, 'medium')) {
+            base_qry += " and tipp.medium.id in (:medium) "
+            qry_params.medium = listReaderWrapper(params, 'medium').collect { String key -> Long.parseLong(key) }
+            filterSet = true
+        }
+
         if (params.hasPerpetualAccess && !params.hasPerpetualAccessBySubs) {
             if(params.hasPerpetualAccess == RDStore.YN_YES.id.toString()) {
                 base_qry += "and ie.perpetualAccessBySub is not null "
@@ -1515,6 +1521,12 @@ class FilterService {
         if (params.title_types && params.title_types != "" && listReaderWrapper(params, 'title_types')) {
             base_qry += " and lower(tipp.titleType) in (:title_types)"
             qry_params.title_types = listReaderWrapper(params, 'title_types').collect { ""+it.toLowerCase()+"" }
+            filterSet = true
+        }
+
+        if (params.medium && params.medium != "" && listReaderWrapper(params, 'medium')) {
+            base_qry += " and tipp.medium.id in (:medium) "
+            qry_params.medium = listReaderWrapper(params, 'medium').collect { String key -> Long.parseLong(key) }
             filterSet = true
         }
 
@@ -1799,6 +1811,12 @@ class FilterService {
                 titleTypes.addAll(listReaderWrapper(params, 'title_types').collect { it.toLowerCase() })
                 params.titleTypes = connection.createArrayOf('varchar', titleTypes.toArray())
                 where += " and lower(tipp_title_type) = any(:titleTypes)"
+            }
+            if(configMap.medium != null && !configMap.medium.isEmpty()) {
+                List<Object> medium = []
+                medium.addAll(listReaderWrapper(configMap, 'medium').collect{ String key -> Long.parseLong(key) })
+                params.medium = connection.createArrayOf('bigint', medium.toArray())
+                where += " and tipp_medium_rv_fk = any(:medium)"
             }
             if(configMap.filterPvd != null && !configMap.filterPvd.isEmpty()) {
                 List<Object> providers = [], providerRoleTypes = [RDStore.OR_CONTENT_PROVIDER.id, RDStore.OR_PROVIDER.id, RDStore.OR_AGENCY.id, RDStore.OR_PUBLISHER.id]
