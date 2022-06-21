@@ -114,7 +114,7 @@ class OrgAccessPoint extends AbstractBase {
         qry += " and ((tipp.status is null) or (tipp.status != :tippDeleted))"
         qry += " order by p.normname asc"
 
-        def qryParams = [
+        Map<String, Object> qryParams = [
             currentSubIds: currentSubIds,
             pkgDeleted: RDStore.PACKAGE_STATUS_DELETED,
             platformDeleted: RDStore.PLATFORM_STATUS_DELETED,
@@ -122,19 +122,17 @@ class OrgAccessPoint extends AbstractBase {
             orgAccessPoint: this
         ]
 
-        def result = Subscription.executeQuery(qry, qryParams)
-
-        return result
+        Subscription.executeQuery(qry, qryParams)
     }
 
     def getNotLinkedSubscriptions()
     {
-        def notAllowedSubscriptionStatusList  = ['Deleted', 'Expired', 'Terminated', 'No longer usable', 'Rejected']
-        def statusList = []
+        List<String> notAllowedSubscriptionStatusList  = ['Deleted', 'Expired', 'Terminated', 'No longer usable', 'Rejected']
+        List statusList = []
         notAllowedSubscriptionStatusList.each { statusList += RDStore.getRefdataValue(it, RDConstants.SUBSCRIPTION_STATUS)}
         // Get not active subscriptions for the access point org
-        def hql = "select sub from Subscription sub join sub.orgRelations as orgrel where orgrel.org.id = ${org.id} and sub.status not in (:status) and not exists (select 1 from OrgAccessPointLink oapl where oapl.subscription = sub and oapl.active = true) order by sub.name asc"
-        return Subscription.executeQuery(hql, [status: statusList])
+        String hql = "select sub from Subscription sub join sub.orgRelations as orgrel where orgrel.org.id = ${org.id} and sub.status not in (:status) and not exists (select 1 from OrgAccessPointLink oapl where oapl.subscription = sub and oapl.active = true) order by sub.name asc"
+        Subscription.executeQuery(hql, [status: statusList])
     }
 
     boolean hasActiveLink() {
@@ -181,6 +179,5 @@ class OrgAccessPoint extends AbstractBase {
         accessPointIpRanges.ipv6Ranges = accessPointIpRanges.ipv6Ranges.sort{it.ipInput}
 
         accessPointIpRanges
-
     }
 }

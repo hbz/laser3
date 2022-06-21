@@ -26,6 +26,8 @@ class UrlMappings {
         "/api/$version/statistic/$obj/$cmd" (controller: 'api', action: 'dispatch') { section = "statistic" }
         "/api/$version/$obj"                (controller: 'api', action: 'dispatch')
 
+        // --
+
         "/lic/$action?/$id?"                (controller: 'license')
         "/org/$action?/$id?"                (controller: 'organisation')
 

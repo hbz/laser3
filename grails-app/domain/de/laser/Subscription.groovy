@@ -767,7 +767,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
                 definedType = 'date'
             }
 
-            def msgParams = [
+            List<String> msgParams = [
                     definedType,
                     "${changeDocument.prop}",
                     "${changeDocument.old}",
@@ -866,19 +866,19 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
       List<Map<String, Object>> result = []
 
       String hqlString = "select sub from Subscription sub where lower(sub.name) like :name "
-    def hqlParams = [name: ((params.q ? params.q.toLowerCase() : '' ) + "%")]
+        Map<String, Object> hqlParams = [name: ((params.q ? params.q.toLowerCase() : '' ) + "%")]
       SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd")
       RefdataValue cons_role        = RDStore.OR_SUBSCRIPTION_CONSORTIA
       RefdataValue subscr_role      = RDStore.OR_SUBSCRIBER
       RefdataValue subscr_cons_role = RDStore.OR_SUBSCRIBER_CONS
-    def viableRoles = [cons_role, subscr_role, subscr_cons_role]
+        List<RefdataValue> viableRoles = [cons_role, subscr_role, subscr_cons_role]
     
     hqlParams.put('viableRoles', viableRoles)
 
     if(params.hasDate ){
 
-      def startDate = params.startDate.length() > 1 ? sdf.parse(params.startDate) : null
-      def endDate = params.endDate.length() > 1 ? sdf.parse(params.endDate)  : null
+        Date startDate = params.startDate.length() > 1 ? sdf.parse(params.startDate) : null
+        Date endDate = params.endDate.length() > 1 ? sdf.parse(params.endDate)  : null
 
       if(startDate){
           hqlString += " AND sub.startDate >= :startDate "
@@ -896,7 +896,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
     }
 
 
-    def results = Subscription.executeQuery(hqlString,hqlParams)
+    List results = Subscription.executeQuery(hqlString, hqlParams)
 
     if(params.accessibleToUser){
       for(int i=0;i<results.size();i++){
@@ -908,7 +908,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
     results?.each { t ->
       String resultText = t.name
-      def date = t.startDate ? " (${sdf.format(t.startDate)})" : ""
+      String date = t.startDate ? " (${sdf.format(t.startDate)})" : ""
       resultText = params.inclSubStartDate == "true"? resultText + date : resultText
       resultText = params.hideIdent == "true"? resultText : resultText + " (${t.identifier})"
       result.add([id:"${t.class.name}:${t.id}",text:resultText])
@@ -959,7 +959,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
               "join sp.pkg.tipps as tipps "+
               "where sp.id=:sp_id "
               "and exists (select 1 from CustomProperties as cp where cp.owner = tipps.platform.id and cp.type.name = 'NatStat Supplier ID')"
-          def queryResult = OrgRole.executeQuery(hql, ['sp_id':it.id])
+          List queryResult = OrgRole.executeQuery(hql, ['sp_id':it.id])
           if (queryResult[0] > 0){
               hasUsageSupplier = true
           }

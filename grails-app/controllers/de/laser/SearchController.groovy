@@ -84,8 +84,8 @@ class SearchController  {
     def spotlightSearch() {
         log.debug("searchController: spotlightSearch");
         Map<String, Object> result = [:]
-        def filtered
-        def query = "${params.query}"
+        String filtered
+        String query = "${params.query}"
         result.user = contextService.getUser()
         //params.max = result.user.getDefaultPageSize() ?: 15
         params.max = 50
@@ -96,7 +96,7 @@ class SearchController  {
 
         if (springSecurityService.isLoggedIn()) {
             if (query.startsWith("\$") && query.length() > 2 && query.indexOf(" ") != -1) {
-                def filter = query.substring(0, query.indexOf(" "))
+                String filter = query.substring(0, query.indexOf(" "))
                 switch (filter) {
                     case "\$t":
                         params.type = "title"

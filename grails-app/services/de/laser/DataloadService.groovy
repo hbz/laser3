@@ -98,7 +98,7 @@ class DataloadService {
         }
         log.debug("doFTUpdate: Execute IndexUpdateJob starting at ${new Date()}");
 
-        def start_time = System.currentTimeMillis();
+        long start_time = System.currentTimeMillis()
 
         updateES(Org.class) { org ->
             def result = [:]
@@ -853,7 +853,7 @@ class DataloadService {
         */
 
         update_running = false
-        def elapsed = System.currentTimeMillis() - start_time;
+        long elapsed = System.currentTimeMillis() - start_time
         lastIndexUpdate = new Date()
 
         log.debug("IndexUpdateJob completed in ${elapsed}ms at ${new Date()} ")
@@ -872,7 +872,7 @@ class DataloadService {
     def updateES( domain, recgen_closure) {
 
     RestHighLevelClient esclient = ESWrapperService.getClient()
-    def esIndices = ESWrapperService.es_indices
+    Map esIndices = ESWrapperService.es_indices
 
         int count = 0
         long total = 0
@@ -1159,7 +1159,7 @@ class DataloadService {
         if(ESWrapperService.testConnection()) {
 
             if (!(activeFuture) || (activeFuture && activeFuture.cancel(true))) {
-                def esIndices = ESWrapperService.es_indices?.values()
+                Collection esIndices = ESWrapperService.es_indices?.values()
                 esIndices.each { String indexName ->
                     try {
                         boolean isDeletedIndex = ESWrapperService.deleteIndex(indexName)
@@ -1220,7 +1220,7 @@ class DataloadService {
     boolean checkESElementswithDBElements(String domainClassName) {
 
         RestHighLevelClient esclient = ESWrapperService.getClient()
-        def esIndices = ESWrapperService.es_indices
+        Map esIndices = ESWrapperService.es_indices
 
         try {
 
@@ -1284,7 +1284,7 @@ class DataloadService {
         log.debug("Begin to check ES Elements with DB Elements")
 
         RestHighLevelClient esclient = ESWrapperService.getClient()
-        def esIndices = ESWrapperService.es_indices
+        Map esIndices = ESWrapperService.es_indices
 
         try {
 

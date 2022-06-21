@@ -533,7 +533,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
                 definedType = 'date'
             }
 
-            def msgParams = [
+            List<String> msgParams = [
                     definedType,
                     "${changeDocument.prop}",
                     "${changeDocument.old}",

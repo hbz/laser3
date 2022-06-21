@@ -12,25 +12,25 @@ class SushiClient {
     def clientOptions
     def result
 
-    def getBasePath() {
-        def uri = getUri()
-        uri.getPath().endsWith('/') ? uri.getPath() : uri.getPath() + '/'
-    }
-
-    def getUri() {
+    URIBuilder getUri() {
         new URIBuilder(ConfigMapper.getStatsApiUrl())
     }
 
-    def getBaseUrl() {
-        def uri = getUri()
-        uri.getScheme()+"://"+uri.getHost()
+    String getBasePath() {
+        URIBuilder uri = getUri()
+        uri.getPath().endsWith('/') ? uri.getPath() : uri.getPath() + '/'
     }
 
-    def getClient() {
+    String getBaseUrl() {
+        URIBuilder uri = getUri()
+        uri.getScheme() + "://" + uri.getHost()
+    }
+
+    RESTClient getClient() {
         new RESTClient(getBaseUrl())
     }
 
-    def getPath() {
+    String getPath() {
         getBasePath() + 'Sushiservice/GetReport'
     }
 

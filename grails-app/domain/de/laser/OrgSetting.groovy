@@ -121,7 +121,7 @@ class OrgSetting {
     static OrgSetting add(Org org, KEYS key, def value) {
 
         withTransaction {
-            def oss = new OrgSetting(org: org, key: key)
+            OrgSetting oss = new OrgSetting(org: org, key: key)
             oss.setValue(value)
             oss.save()
 

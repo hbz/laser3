@@ -1126,7 +1126,7 @@ class CopyElementsService {
      */
     def deleteDocs(List<Long> toDeleteDocs, Object targetObject, def flash) {
         log.debug("toDeleteDocCtxIds: " + toDeleteDocs)
-        def updated = DocContext.executeUpdate("UPDATE DocContext set status = :del where id in (:ids)",
+        int updated = DocContext.executeUpdate("UPDATE DocContext set status = :del where id in (:ids)",
                 [del: RDStore.DOC_CTX_STATUS_DELETED, ids: toDeleteDocs])
         log.debug("Number of deleted (per Flag) DocCtxs: " + updated)
     }

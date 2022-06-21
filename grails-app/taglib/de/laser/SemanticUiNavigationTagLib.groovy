@@ -82,16 +82,12 @@ class SemanticUiNavigationTagLib {
         MessageSource messageSource = BeanStore.getMessageSource()
         Locale locale = RequestContextUtils.getLocale(request)
 
-        def total = attrs.int('total') ?: 0
         String action = (attrs.action ? attrs.action : (params.action ? params.action : "list"))
 
-        def offset = attrs.int('offset') ?: 0
-        if (! offset) offset = (params.int('offset') ?: 0)
-
-        def max = attrs.int('max')
-        if (! max) max = (params.int('max') ?: 10)
-
-        def maxsteps = (attrs.int('maxsteps') ?: 6)
+        int total    = Integer.valueOf( (attrs.total ?: 0) as String )
+        int offset   = Integer.valueOf( (attrs.offset ?: 0) as String )
+        int max      = Integer.valueOf( (attrs.max ?: 10) as String )
+        int maxsteps = Integer.valueOf( (attrs.maxsteps ?: 6) as String )
 
         if (total <= max) {
             return
@@ -104,7 +100,6 @@ class SemanticUiNavigationTagLib {
 
         linkParams.offset = offset - max
         linkParams.max = max
-
 
         if (params.sort) {
             linkParams.sort = params.sort

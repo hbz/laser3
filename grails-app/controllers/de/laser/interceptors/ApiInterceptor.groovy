@@ -93,7 +93,7 @@ class ApiInterceptor implements grails.artefact.Interceptor {
                     response.setContentType(Constants.MIME_APPLICATION_JSON)
                     response.setHeader("Laser-Api-Version", ApiManager.VERSION.toString())
 
-                    def result = new JSON([
+                    JSON result = new JSON([
                             "message"      : "unauthorized access",
                             "authorization": authorization,
                             "path"         : path,

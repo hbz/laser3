@@ -138,7 +138,7 @@ class UserSetting {
     static UserSetting add(User user, KEYS key, def value) {
 
         withTransaction {
-            def uss = new UserSetting(user: user, key: key)
+            UserSetting uss = new UserSetting(user: user, key: key)
             uss.setValue(value)
             uss.save()
 

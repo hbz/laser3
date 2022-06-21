@@ -192,7 +192,7 @@ class SubscriptionsQueryService {
         // eval property filter
 
         if (params.filterPropDef) {
-            def query = propertyService.evalFilterQuery(params, base_qry, 's', qry_params)
+            Map<String, Object> query = propertyService.evalFilterQuery(params, base_qry, 's', qry_params)
             base_qry = query.query
             qry_params.putAll(query.queryParams)
             filterSet = true

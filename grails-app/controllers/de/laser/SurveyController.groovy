@@ -911,8 +911,8 @@ class SurveyController {
 
         params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
         Map<String,Object> fsq = filterService.getOrgComboQuery(params, result.institution)
-        def tmpQuery = "select o.id " + fsq.query.minus("select o ")
-        def consortiaMemberIds = Org.executeQuery(tmpQuery, fsq.queryParams)
+        String tmpQuery = "select o.id " + fsq.query.minus("select o ")
+        List consortiaMemberIds = Org.executeQuery(tmpQuery, fsq.queryParams)
 
         if (params.filterPropDef && consortiaMemberIds) {
             fsq = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids) order by o.sortname", 'o', [oids: consortiaMemberIds])
@@ -970,8 +970,8 @@ class SurveyController {
 
         params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
         Map<String,Object> fsq = filterService.getOrgComboQuery(params, result.institution)
-        def tmpQuery = "select o.id " + fsq.query.minus("select o ")
-        def consortiaMemberIds = Org.executeQuery(tmpQuery, fsq.queryParams)
+        String tmpQuery = "select o.id " + fsq.query.minus("select o ")
+        List consortiaMemberIds = Org.executeQuery(tmpQuery, fsq.queryParams)
 
         if (params.filterPropDef && consortiaMemberIds) {
             fsq = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids) order by o.sortname", 'o', [oids: consortiaMemberIds])
@@ -3393,10 +3393,10 @@ class SurveyController {
         if (previousSubscriptions.size() > 0) {
             flash.error = message(code: 'subscription.renewSubExist') as String
         } else {
-            def sub_startDate = params.subscription.start_date ? DateUtils.parseDateGeneric(params.subscription.start_date) : null
-            def sub_endDate = params.subscription.end_date ? DateUtils.parseDateGeneric(params.subscription.end_date) : null
+            Date sub_startDate = params.subscription.start_date ? DateUtils.parseDateGeneric(params.subscription.start_date) : null
+            Date sub_endDate = params.subscription.end_date ? DateUtils.parseDateGeneric(params.subscription.end_date) : null
             def sub_status = params.subStatus
-            def sub_type = RDStore.SUBSCRIPTION_TYPE_CONSORTIAL
+            RefdataValue sub_type = RDStore.SUBSCRIPTION_TYPE_CONSORTIAL
             def sub_kind = params.subKind
             def sub_form = params.subForm
             def sub_resource = params.subResource
@@ -4683,7 +4683,7 @@ class SurveyController {
                         try {
                             if (value && value.size() > 0) {
                                 // parse new date
-                                def parsed_date = sdf.parse(value)
+                                Date parsed_date = sdf.parse(value)
                                 property."${field}" = parsed_date
                             } else {
                                 // delete existing date

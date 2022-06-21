@@ -58,7 +58,7 @@ class ESSearchService{
 
    //List client = getClient()
    RestHighLevelClient esclient = ESWrapperService.getClient()
-   def es_indices =  ESWrapperService.es_indices
+   Map es_indices =  ESWrapperService.es_indices
 
     try {
       if(ESWrapperService.testConnection()) {

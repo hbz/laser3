@@ -110,14 +110,13 @@ class ApiKbartConverter {
     }
 
     @Deprecated
-    static getAsDocument(def data) {
-        def todo = new Doc(
+    static Doc getAsDocument(def data) {
+        new Doc(
                 title:          "KBART-EXPORT",
                 content:        data,
                 contentType:    Doc.CONTENT_TYPE_STRING,
                 mimeType:       Constants.MIME_TEXT_PLAIN
         )
-        todo
     }
 
     @Deprecated

@@ -488,7 +488,7 @@ class AjaxJsonController {
         String countQry = "select count(o) from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like :name and (o.status is null or o.status != :status)"
         String rowQry = "select o from Org as o where exists (select roletype from o.orgType as roletype where roletype.value = 'Provider' ) and lower(o.name) like :name and (o.status is null or o.status != :status) order by o.name asc"
 
-        def cq = Org.executeQuery(countQry,query_params)
+        List cq = Org.executeQuery(countQry,query_params)
 
         List<Org> rq = Org.executeQuery(rowQry,
                 query_params,

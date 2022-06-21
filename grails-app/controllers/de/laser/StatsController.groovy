@@ -2,6 +2,8 @@ package de.laser
 
 import grails.plugin.springsecurity.annotation.Secured
 
+import javax.servlet.ServletOutputStream
+
 /**
  * This controller manages global Nationaler Statistikserver management views
  */
@@ -86,7 +88,7 @@ group by o order by o.sortname, o.shortname
       csv {
         response.setHeader("Content-disposition", "attachment; filename=KBPlusStats.csv")
         response.contentType = "text/csv"
-        def out = response.outputStream
+        ServletOutputStream out = response.outputStream
         out.withWriter { writer ->
           writer.write("Institution,Affiliated Users,Total Subscriptions, Current Subscriptions, Total Licenses, Current Licenses\n")
           result.orginfo.each { is ->

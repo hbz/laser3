@@ -192,9 +192,8 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
       SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd")
 
     if(params.hasDate ){
-
-      def startDate = params.startDate.length() > 1 ? sdf.parse(params.startDate) : null
-      def endDate =  params.endDate.length() > 1 ? sdf.parse(params.endDate)  : null
+        Date startDate = params.startDate.length() > 1 ? sdf.parse(params.startDate) : null
+        Date endDate =  params.endDate.length() > 1 ? sdf.parse(params.endDate)  : null
 
       if(startDate) {
         hqlString += " AND pkg.startDate >= ?"
@@ -211,11 +210,11 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
         hqlParams += RDStore.PACKAGE_STATUS_DELETED
     }
 
-    def queryResults = Package.executeQuery(hqlString,hqlParams);
+    List queryResults = Package.executeQuery(hqlString, hqlParams)
 
     queryResults?.each { t ->
       def resultText = t.name
-      def date = t.startDate? " (${sdf.format(t.startDate)})" :""
+      String date = t.startDate? " (${sdf.format(t.startDate)})" :""
       resultText = params.inclPkgStartDate == "true" ? resultText + date : resultText
       resultText = params.hideIdent == "true" ? resultText : resultText+" (${t.identifier})"
       result.add([id:"${t.class.name}:${t.id}",text:resultText])

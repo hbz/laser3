@@ -72,7 +72,7 @@ class LicenseController {
         }
 
         //used for showing/hiding the License Actions menus
-        def admin_role = Role.findAllByAuthority("INST_ADM")
+        List<Role> admin_role = Role.findAllByAuthority("INST_ADM")
         result.canCopyOrgs = UserOrg.executeQuery("select uo.org from UserOrg uo where uo.user=(:user) and uo.formalRole=(:role) ", [user: result.user, role: admin_role])
 
         // ---- pendingChanges : start
@@ -113,7 +113,7 @@ class LicenseController {
 
             // tasks
             result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.institution, result.license)
-            def preCon = taskService.getPreconditionsWithoutTargets(result.institution)
+            Map<String, Object> preCon = taskService.getPreconditionsWithoutTargets(result.institution)
             result << preCon
 
             String i10value = LocaleUtils.getLocalizedAttributeName('value')
@@ -444,7 +444,7 @@ class LicenseController {
         }
         else {
             params.license = params.id
-            def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.getOrg())
+            List tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.getOrg())
             Set<Subscription> subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] )
             if(params.subscription) {
                 result.subscriptions = []
@@ -567,7 +567,7 @@ class LicenseController {
         tmpParams.remove("offset")
         if (accessService.checkPerm("ORG_CONSORTIUM"))
             tmpParams.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
-        def fsq = filterService.getOrgComboQuery(tmpParams, result.institution)
+        Map<String,Object> fsq = filterService.getOrgComboQuery(tmpParams, result.institution)
 
         if (tmpParams.filterPropDef) {
             fsq = propertyService.evalFilterQuery(tmpParams, fsq.query, 'o', fsq.queryParams)
@@ -624,10 +624,10 @@ class LicenseController {
 
         // postgresql migration
         String subQuery = 'select cast(lp.id as string) from LicenseProperty as lp where lp.owner = :owner'
-        def subQueryResult = LicenseProperty.executeQuery(subQuery, [owner: result.license])
+        List subQueryResult = LicenseProperty.executeQuery(subQuery, [owner: result.license])
 
         String base_query = "select e from AuditLogEvent as e where ( (className=:licClass and persistedObjectId = cast(:licId as string))"
-        def query_params = [licClass:result.license.class.name, licId:"${result.license.id}"]
+        Map<String, Object> query_params = [licClass:result.license.class.name, licId:"${result.license.id}"]
 
         // postgresql migration
         if (subQueryResult) {

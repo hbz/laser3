@@ -3,7 +3,6 @@ package de.laser
 
 import de.laser.annotations.DebugInfo
 import de.laser.auth.Role
-import de.laser.auth.User
 import de.laser.auth.UserRole
 import de.laser.base.AbstractJob
 import de.laser.finance.CostItem
@@ -827,7 +826,7 @@ class YodaController {
         RestHighLevelClient esclient = ESWrapperService.getClient()
 
         result.indices = []
-        def esIndices = ESWrapperService.es_indices
+        Map esIndices = ESWrapperService.es_indices
         esIndices.each{ def indice ->
             Map indexInfo = [:]
             indexInfo.name = indice.value
@@ -865,7 +864,7 @@ class YodaController {
      */
     @Secured(['ROLE_YODA'])
     def createESIndices() {
-        def esIndices = ESWrapperService.es_indices?.values()
+        Collection esIndices = ESWrapperService.es_indices?.values()
 
         esIndices.each { String indexName ->
             ESWrapperService.createIndex(indexName)
@@ -892,7 +891,6 @@ class YodaController {
     @Deprecated
     @Secured(['ROLE_YODA'])
     def newESSource() {
-        Map<String, Object> result = [:]
         log.debug("manageGlobalSources ..")
 
         /*result.newSource = ElasticsearchSource.findByIdentifier(params.identifier) ?: new ElasticsearchSource(
@@ -1265,7 +1263,7 @@ class YodaController {
     def dbmFixPrivateProperties() {
         Map<String, Object> result = [:]
 
-        def opp = OrgProperty.executeQuery(
+        List opp = OrgProperty.executeQuery(
                 "SELECT pp FROM OrgProperty pp JOIN pp.type pd WHERE pd.mandatory = true " +
                         "AND pp.isPublic = false " +
                         "AND pp.stringValue IS null AND pp.intValue IS null AND pp.decValue IS null " +
@@ -1273,7 +1271,7 @@ class YodaController {
                         "AND (pp.note IS null OR pp.note = '') "
         )
 
-        def spp = SubscriptionProperty.executeQuery(
+        List spp = SubscriptionProperty.executeQuery(
                 "SELECT pp FROM SubscriptionProperty pp JOIN pp.type pd WHERE pd.mandatory = true " +
                 "AND pp.isPublic = false " +
                 "AND pp.stringValue IS null AND pp.intValue IS null AND pp.decValue IS null " +
@@ -1281,7 +1279,7 @@ class YodaController {
                 "AND (pp.note IS null OR pp.note = '') "
         )
 
-        def lpp = LicenseProperty.executeQuery(
+        List lpp = LicenseProperty.executeQuery(
                 "SELECT pp FROM LicenseProperty pp JOIN pp.type pd WHERE pd.mandatory = true " +
                         "AND pp.isPublic = false " +
                         "AND pp.stringValue IS null AND pp.intValue IS null AND pp.decValue IS null " +
@@ -1290,7 +1288,7 @@ class YodaController {
                         "AND (pp.paragraph IS null OR pp.paragraph = '') "
         )
 
-        def ppp = PersonProperty.executeQuery(
+        List ppp = PersonProperty.executeQuery(
                 "SELECT pp FROM PersonProperty pp JOIN pp.type pd WHERE pd.mandatory = true " +
                         "AND pp.isPublic = false " +
                         "AND pp.stringValue IS null AND pp.intValue IS null AND pp.decValue IS null " +

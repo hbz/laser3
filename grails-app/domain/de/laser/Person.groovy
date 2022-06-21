@@ -196,7 +196,7 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
      */
     static List<Person> getPublicByOrgAndObjectResp(Org org, def obj, String resp) {
         String q = ''
-        def p = org ? ['org': org, 'resp': resp] : ['resp': resp]
+        Map<String, Object> p = org ? ['org': org, 'resp': resp] : ['resp': resp]
 
         if (obj instanceof License) {
             q = ' and pr.lic = :obj '
@@ -249,7 +249,7 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
      */
     static List<Person> getPrivateByOrgAndObjectRespFromAddressbook(Org org, def obj, String resp, Org tenant) {
         String q = ''
-        def p = ['org': org, 'resp': resp, 'tnt': tenant]
+        Map<String, Object> p = ['org': org, 'resp': resp, 'tnt': tenant]
 
         if (obj instanceof License) {
             q = ' and pr.lic = :obj '

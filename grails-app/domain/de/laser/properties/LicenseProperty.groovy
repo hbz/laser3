@@ -200,7 +200,7 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
                     description = '(PARAGRAPH)'
                 }
 
-                def msgParams = [
+                List<String> msgParams = [
                         definedType,
                         "${lcp.type.class.name}:${lcp.type.id}",
                         (changeDocument.prop in ['note', 'paragraph'] ? "${changeDocument.oldLabel}" : "${changeDocument.old}"),

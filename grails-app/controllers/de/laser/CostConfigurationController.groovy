@@ -33,11 +33,11 @@ class CostConfigurationController {
 
         Org org = contextService.getOrg()
         User user = contextService.getUser()
-        def costItemElementConfigurations = []
-        def costItemElements = RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_ELEMENT)
+        List costItemElementConfigurations = []
+        List<RefdataValue> costItemElements = RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_ELEMENT)
 
         costItemElements.each { cie ->
-            def currentSetting = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(RefdataValue.getByValueAndCategory(cie.value, RDConstants.COST_ITEM_ELEMENT),org)
+            CostItemElementConfiguration currentSetting = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(RefdataValue.getByValueAndCategory(cie.value, RDConstants.COST_ITEM_ELEMENT),org)
             if(currentSetting) {
                 costItemElementConfigurations.add(currentSetting)
             }
@@ -126,7 +126,7 @@ class CostConfigurationController {
         def cie = genericOIDService.resolveOID(params.cie)
         Org org = contextService.getOrg()
         def concernedCostItems = CostItem.findAllByOwnerAndCostItemElementAndCostItemElementConfigurationAndCostItemStatusNotEqual(org,cie,null, RDStore.COST_ITEM_DELETED).collect {it.id}
-        def ciec = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(cie,org)
+        CostItemElementConfiguration ciec = CostItemElementConfiguration.findByCostItemElementAndForOrganisation(cie,org)
         if(concernedCostItems) {
             CostItem.executeUpdate('UPDATE CostItem ci SET ci.costItemElementConfiguration = :ciec WHERE ci.id IN (:cci)',[ciec:ciec.elementSign,cci:concernedCostItems])
             flash.message = message(code:'costConfiguration.configureAllCostItems.done') as String

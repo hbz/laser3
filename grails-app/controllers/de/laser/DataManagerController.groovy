@@ -34,8 +34,8 @@ class DataManagerController  {
 
   @Secured(['ROLE_ADMIN'])
   def index() { 
-    Map<String, Object> result = [:]
-    def pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending', RDConstants.PENDING_CHANGE_STATUS)
+      Map<String, Object> result = [:]
+      RefdataValue pending_change_pending_status = RefdataValue.getByValueAndCategory('Pending', RDConstants.PENDING_CHANGE_STATUS)
 
         result.pendingChanges = PendingChange.executeQuery(
                 "select pc from PendingChange as pc where pc.pkg is not null and ( pc.status is null or pc.status = :status ) order by ts desc",
@@ -81,30 +81,30 @@ class DataManagerController  {
     }
     String base_query = "from org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent as e where e.className in (:l) AND e.lastUpdated >= :s AND e.lastUpdated <= :e AND e.eventName in (:t)"
 
-        def types_to_include = []
+        List<String> types_to_include = []
         if ( params.packages=="Y" ) types_to_include.add( Package.class.name )
         if ( params.licenses=="Y" ) types_to_include.add( License.class.name )
         if ( params.titles=="Y" ) types_to_include.add( TitleInstance.class.name )
         if ( params.tipps=="Y" ) types_to_include.add( TitleInstancePackagePlatform.class.name )
-        // de.laser.Subscription                 |
+        // de.laser.Subscription
 
-        def events_to_include=[]
+        List<String> events_to_include = []
         if ( params.creates=="Y" ) events_to_include.add('INSERT');
         if ( params.updates=="Y" ) events_to_include.add('UPDATE');
 
         result.actors = []
-        def actors_dms = []
-        def actors_users = []
+        List actors_dms = []
+        List actors_users = []
 
         List<String> all_types = [ Package.class.name, License.class.name, TitleInstance.class.name, TitleInstancePackagePlatform.class.name ]
 
         // Get a distinct list of actors
-        def auditActors = AuditLogEvent.executeQuery('select distinct(al.actor) from AuditLogEvent as al where al.className in ( :l  )',[l:all_types])
+        List auditActors = AuditLogEvent.executeQuery('select distinct(al.actor) from AuditLogEvent as al where al.className in ( :l  )',[l:all_types])
 
     Role formal_role = Role.findByAuthority('INST_ADM')
      
     // From the list of users, extract and who have the INST_ADM role
-    def rolesMa = []
+    List rolesMa = []
     if ( auditActors )
       rolesMa = UserOrg.executeQuery(
         'select distinct(userorg.user.username) from UserOrg as userorg ' +
@@ -182,7 +182,7 @@ class DataManagerController  {
             result.formattedHistoryLines = []
             result.historyLines.each { hl ->
 
-                def line_to_add = [ lastUpdated: hl.lastUpdated,
+                Map<String, Object> line_to_add = [ lastUpdated: hl.lastUpdated,
                                     actor: User.findByUsername(hl.actor),
                                     propertyName: hl.propertyName,
                                     oldValue: hl.oldValue,
@@ -195,7 +195,7 @@ class DataManagerController  {
             License license_object = License.get(hl.persistedObjectId);
             if (license_object) {
                 String license_name = license_object.reference ?: '**No reference**'
-                line_to_add.link = createLink(controller:'license', action: 'show', id:hl.persistedObjectId)
+                line_to_add.link = createLink(controller:'license', action: 'show', id:hl.persistedObjectId) as String
                 line_to_add.name = license_name
             }
             linetype = 'License'
@@ -207,7 +207,7 @@ class DataManagerController  {
           case Package.class.name :
             Package package_object = Package.get(hl.persistedObjectId);
             if (package_object) {
-                line_to_add.link = createLink(controller:'package', action: 'show', id:hl.persistedObjectId)
+                line_to_add.link = createLink(controller:'package', action: 'show', id:hl.persistedObjectId) as String
                 line_to_add.name = package_object.name
             }
             linetype = 'Package'
@@ -216,7 +216,7 @@ class DataManagerController  {
           case TitleInstancePackagePlatform.class.name :
             TitleInstancePackagePlatform tipp_object = TitleInstancePackagePlatform.get(hl.persistedObjectId);
             if ( tipp_object != null ) {
-                line_to_add.link = createLink(controller:'tipp', action: 'show', id:hl.persistedObjectId)
+                line_to_add.link = createLink(controller:'tipp', action: 'show', id:hl.persistedObjectId) as String
                 line_to_add.name = tipp_object.title?.title + ' / ' + tipp_object.pkg?.name
             }
             linetype = 'TIPP'
@@ -225,7 +225,7 @@ class DataManagerController  {
           case TitleInstance.class.name :
             TitleInstance title_object = TitleInstance.get(hl.persistedObjectId);
             if (title_object) {
-                line_to_add.link = createLink(controller:'title', action: 'show', id:hl.persistedObjectId)
+                line_to_add.link = createLink(controller:'title', action: 'show', id:hl.persistedObjectId) as String
                 line_to_add.name = title_object.title
             }
             linetype = 'Title'
@@ -458,7 +458,7 @@ class DataManagerController  {
     result.user = contextService.getUser()
     params.max =  params.max ?: result.user.getDefaultPageSize()
 
-        def gokbRecords = []
+        List gokbRecords = []
 
       ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true).each { api ->
             gokbRecords << gokbService.getPackagesMap(api, params.q, false).records

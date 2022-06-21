@@ -2611,7 +2611,7 @@ class ExportClickMeService {
                         boolean nextSemester = false
 
                         List<RefdataValue> refdataValueList = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.SEMESTER).reverse()
-                        for(def count = 0; count < refdataValueList.size(); count = count + 1) {
+                        for(int count = 0; count < refdataValueList.size(); count = count + 1) {
                             if (refdataValueList[count] == currentSemester) {
                                 nextSemester = true
                             }

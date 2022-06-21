@@ -90,7 +90,7 @@ class UserRole implements Serializable, Comparable {
 	 */
 	static UserRole create(User user, Role role, boolean flush = false) {
 		UserRole.withTransaction {
-			def instance = new UserRole(user: user, role: role)
+			UserRole instance = new UserRole(user: user, role: role)
 			instance.save()
 			instance
 		}

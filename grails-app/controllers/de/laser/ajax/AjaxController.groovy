@@ -30,6 +30,7 @@ import org.springframework.web.servlet.LocaleResolver
 import org.springframework.web.servlet.support.RequestContextUtils
 import de.laser.exceptions.ChangeAcceptException
 
+import javax.servlet.ServletOutputStream
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.regex.Matcher
@@ -350,7 +351,7 @@ class AjaxController {
                   def objTest = rowobj[config.cols[0]]
                   if (objTest) {
                       def no_ws = objTest.replaceAll(' ', '');
-                      def local_text = message(code: "refdata.${no_ws}", default: "${objTest}");
+                      String local_text = message(code: "refdata.${no_ws}", default: "${objTest}") as String
                       result.add([value: "${rowobj.class.name}:${rowobj.id}", text: "${local_text}"])
                   }
               }
@@ -885,8 +886,8 @@ class AjaxController {
       def error
       def newProp
       def owner = AppUtils.getDomainClass( params.ownerClass )?.getClazz()?.get(params.ownerId)
-      def type = PropertyDefinition.get(params.propIdent.toLong())
-      Org contextOrg = contextService.getOrg()
+        PropertyDefinition type = PropertyDefinition.get(params.propIdent.toLong())
+        Org contextOrg = contextService.getOrg()
       def existingProp = owner.propertySet.find { it.type.name == type.name && it.tenant?.id == contextOrg.id }
 
       if (existingProp == null || type.multipleOccurrence) {
@@ -1315,7 +1316,7 @@ class AjaxController {
     @Secured(['ROLE_USER'])
     @Transactional
     def togglePropertyAuditConfig() {
-        def className = params.propClass.split(" ")[1]
+        String className = params.propClass.split(" ")[1]
         def propClass = Class.forName(className)
         def owner     = AppUtils.getDomainClass( params.ownerClass )?.getClazz()?.get(params.ownerId)
         def property  = propClass.get(params.id)
@@ -1402,7 +1403,7 @@ class AjaxController {
     @Secured(['ROLE_USER'])
     @Transactional
     def deleteCustomProperty() {
-        def className = params.propClass.split(" ")[1]
+        String className = params.propClass.split(" ")[1]
         def propClass = Class.forName(className)
         def owner     = AppUtils.getDomainClass( params.ownerClass )?.getClazz()?.get(params.ownerId)
         def property  = propClass.get(params.id)
@@ -1462,7 +1463,7 @@ class AjaxController {
   @Secured(['ROLE_USER'])
   @Transactional
   def deletePrivateProperty(){
-    def className = params.propClass.split(" ")[1]
+    String className = params.propClass.split(" ")[1]
     def propClass = Class.forName(className)
     def property  = propClass.get(params.id)
     def tenant    = property.type.tenant
@@ -1879,7 +1880,7 @@ class AjaxController {
                         try {
                             if (params.value && params.value.size() > 0) {
                                 // parse new date
-                                def parsed_date = sdf.parse(params.value)
+                                Date parsed_date = sdf.parse(params.value)
                                 target_object."${params.name}" = parsed_date
                             } else {
                                 // delete existing date
@@ -1983,7 +1984,7 @@ class AjaxController {
 
         response.setContentType('text/plain')
 
-        def outs = response.outputStream
+        ServletOutputStream outs = response.outputStream
         outs << result
         outs.flush()
         outs.close()
@@ -1994,8 +1995,8 @@ class AjaxController {
      */
     @Secured(['ROLE_USER'])
     def removeUserRole() {
-        User user = resolveOID2(params.user)
-        Role role = resolveOID2(params.role)
+        User user = resolveOID2(params.user) as User
+        Role role = resolveOID2(params.role) as Role
         if (user && role) {
             UserRole.remove(user, role)
         }
@@ -2004,8 +2005,8 @@ class AjaxController {
 
   @Deprecated
   def renderObjectValue(value) {
-    def result=''
-    def not_set = message(code:'refdata.notSet')
+    String result = ''
+    String not_set = message(code:'refdata.notSet') as String
 
     if ( value ) {
       switch ( value.class ) {
@@ -2018,7 +2019,7 @@ class AjaxController {
           }else{
             value = value.toString()
           }
-          def no_ws = value.replaceAll(' ','')
+          String no_ws = value.replaceAll(' ','')
 
           result = message(code:"refdata.${no_ws}", default:"${value ?: not_set}")
       }

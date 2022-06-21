@@ -126,7 +126,7 @@ class ApiCostItem {
             // TODO
             Timestamp ts= new Timestamp(Long.parseLong(timestamp))
             Date apiDate= new Date(ts.getTime());
-            def today = new Date()
+            Date today = new Date()
             if(isInvoiceTool) {
                 result = CostItem.findAllByOwnerAndLastUpdatedBetween(owner, apiDate, today).globalUID
             }else{

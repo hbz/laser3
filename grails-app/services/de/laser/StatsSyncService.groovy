@@ -1319,7 +1319,7 @@ class StatsSyncService {
                     csr.save()
 
                 } else {
-                    def newFromPeriod = getNextFromPeriod(csr).substring(0,7)
+                    String newFromPeriod = getNextFromPeriod(csr).substring(0,7)
                     if (newFromPeriod != it.begin) { // gap for new range, create new csr
                         log.warn("usage data gap found before ${it.begin}")
                         csr = _writeNewCsr(factCount, it['begin'], it['end'], options)

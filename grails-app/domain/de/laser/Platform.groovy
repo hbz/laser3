@@ -198,7 +198,7 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
     // look for OrgAccessPointLinks for this platform and a given subscriptionPackage, if we can find that "marker",
     // we know the AccessPoints are not derived from the AccessPoints configured for the platform
     String hql = "select oapl from OrgAccessPointLink oapl where oapl.platform=${this.id} and oapl.subPkg = ${subscriptionPackage.id} and oapl.oap is null"
-    def result = OrgAccessPointLink.executeQuery(hql)
+    List<OrgAccessPointLink> result = OrgAccessPointLink.executeQuery(hql)
     (result) ? false : true
   }
 
@@ -208,11 +208,10 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
    * @param contextOrg the context {@link Org} whose configurations should be retrieved
    * @return a {@link List} of {@link OrgAccessPoint}s pointing to this platform and defined by the given institution
    */
-  def getContextOrgAccessPoints(contextOrg) {
+  List<OrgAccessPoint> getContextOrgAccessPoints(contextOrg) {
     String hql = "select oap from OrgAccessPoint oap " +
         "join oap.oapp as oapp where oap.org=:org and oapp.active = true and oapp.platform.id =${this.id} and oapp.subPkg is null order by LOWER(oap.name)"
-    def result = OrgAccessPoint.executeQuery(hql, ['org': contextOrg])
-    return result
+    OrgAccessPoint.executeQuery(hql, ['org': contextOrg])
   }
 
   /**

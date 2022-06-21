@@ -695,7 +695,7 @@ class SubscriptionService {
                 date_filter = new Date()
             }
             // We dont want this filter to reach SQL query as it will break it.
-            def core_status_filter = params.sort == 'core_status'
+            boolean core_status_filter = params.sort == 'core_status'
             if (core_status_filter) params.remove('sort');
 
             if (params.filter) {
@@ -2814,7 +2814,7 @@ class SubscriptionService {
                     try {
                         if (value && value.size() > 0) {
                             // parse new date
-                            def parsed_date = sdf.parse(value)
+                            Date parsed_date = sdf.parse(value)
                             prop."${field}" = parsed_date
                         } else {
                             // delete existing date

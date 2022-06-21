@@ -393,7 +393,7 @@ class MyInstitutionController  {
         // eval property filter
 
         if (params.filterPropDef) {
-            def psq = propertyService.evalFilterQuery(params, base_qry, 'l', qry_params)
+            Map<String, Object> psq = propertyService.evalFilterQuery(params, base_qry, 'l', qry_params)
             base_qry = psq.query
             qry_params = psq.queryParams
         }
@@ -647,7 +647,7 @@ class MyInstitutionController  {
             return;
         }
 
-        def cal = new java.util.GregorianCalendar()
+        GregorianCalendar cal = new GregorianCalendar()
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
 
         cal.setTimeInMillis(System.currentTimeMillis())
@@ -828,7 +828,7 @@ join sub.orgRelations or_sub where
         result.orgListTotal = orgListTotal.size()
         result.orgList = orgListTotal.drop((int) result.offset).take((int) result.max)
 
-        def message = g.message(code: 'export.my.currentProviders')
+        String message = message(code: 'export.my.currentProviders') as String
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         String datetoday = sdf.format(new Date())
         String filename = message+"_${datetoday}"
@@ -1486,7 +1486,7 @@ join sub.orgRelations or_sub where
             }
         }
 
-        def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.getOrg())
+        List tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.getOrg())
         result.filterSet = tmpQ[2]
         currentSubIds = Subscription.executeQuery( "select s.id " + tmpQ[0], tmpQ[1] ) //,[max: result.max, offset: result.offset]
 
@@ -1690,11 +1690,11 @@ join sub.orgRelations or_sub where
             }
             csv {
                 SimpleDateFormat dateFormat = DateUtils.getLocalizedSDF_noTime()
-                def changes = PendingChange.executeQuery("select pc "+base_query+"  order by ts desc", qry_params)
+                List changes = PendingChange.executeQuery("select pc "+base_query+"  order by ts desc", qry_params)
                 response.setHeader("Content-disposition", "attachment; filename=\"${escapeService.escapeString(result.institution.name)}_changes.csv\"")
                 response.contentType = "text/csv"
 
-                def out = response.outputStream
+                ServletOutputStream out = response.outputStream
                 out.withWriter { w ->
                   w.write('Date,ChangeId,Actor, SubscriptionId,LicenseId,Description\n')
                   changes.each { c ->
@@ -2096,7 +2096,7 @@ join sub.orgRelations or_sub where
         IssueEntitlement.withTransaction { TransactionStatus ts ->
             if(surveyConfig && surveyConfig.pickAndChoose){
 
-                def ies = subscriptionService.getIssueEntitlementsUnderConsideration(surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution))
+                List ies = subscriptionService.getIssueEntitlementsUnderConsideration(surveyConfig.subscription?.getDerivedSubscriptionBySubscribers(result.institution))
                 ies.each { ie ->
                     ie.acceptStatus = RDStore.IE_ACCEPT_STATUS_UNDER_NEGOTIATION
                     ie.save()
@@ -2443,7 +2443,7 @@ join sub.orgRelations or_sub where
             params.order = "asc"
         }
         SimpleDateFormat sdFormat = DateUtils.getLocalizedSDF_noTime()
-        def queryForFilter = filterService.getTaskQuery(params, sdFormat)
+        Map<String, Object> queryForFilter = filterService.getTaskQuery(params, sdFormat)
         int offset = params.offset ? Integer.parseInt(params.offset) : 0
         result.taskInstanceList = taskService.getTasksByResponsibles(result.user, result.institution, queryForFilter)
         result.taskInstanceCount = result.taskInstanceList.size()
@@ -2453,7 +2453,7 @@ join sub.orgRelations or_sub where
         result.myTaskInstanceCount = result.myTaskInstanceList.size()
         result.myTaskInstanceList = taskService.chopOffForPageSize(result.myTaskInstanceList, result.user, offset)
 
-        def preCon = taskService.getPreconditions(result.institution)
+        Map<String, Object> preCon = taskService.getPreconditions(result.institution)
         result << preCon
 
         //log.debug(result.taskInstanceList.toString())
@@ -2677,7 +2677,7 @@ join sub.orgRelations or_sub where
 
         queryParams.comboType = result.comboType.value
         queryParams.invertDirection = true
-        def fsq = filterService.getOrgComboQuery(queryParams, result.institution)
+        Map<String, Object> fsq = filterService.getOrgComboQuery(queryParams, result.institution)
         //def tmpQuery = "select o.id " + fsq.query.minus("select o ")
         //def memberIds = Org.executeQuery(tmpQuery, fsq.queryParams)
 
@@ -2799,9 +2799,9 @@ join sub.orgRelations or_sub where
         else result.filterSet    = params.filterSet ? true : false*/
 
         params.comboType = result.comboType.value
-        def fsq = filterService.getOrgComboQuery(params, result.institution)
-        def tmpQuery = "select o.id " + fsq.query.minus("select o ")
-        def memberIds = Org.executeQuery(tmpQuery, fsq.queryParams)
+        Map<String, Object> fsq = filterService.getOrgComboQuery(params, result.institution)
+        String tmpQuery = "select o.id " + fsq.query.minus("select o ")
+        List memberIds = Org.executeQuery(tmpQuery, fsq.queryParams)
 
 		pu.setBenchmark('query')
 
@@ -3290,7 +3290,7 @@ join sub.orgRelations or_sub where
 
         params.consortiaOrg = result.institution
 
-        def fsq = filterService.getParticipantSurveyQuery_New(params, sdFormat, result.participant)
+        Map<String, Object> fsq = filterService.getParticipantSurveyQuery_New(params, sdFormat, result.participant)
 
         result.surveyResults = SurveyResult.executeQuery(fsq.query, fsq.queryParams, params)
 

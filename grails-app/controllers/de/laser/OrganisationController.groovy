@@ -182,7 +182,7 @@ class OrganisationController  {
 
         result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
 
-        def fsq = filterService.getOrgQuery(params)
+        Map<String, Object> fsq = filterService.getOrgQuery(params)
         result.filterSet = params.filterSet ? true : false
 
         List orgListTotal  = Org.findAll(fsq.query, fsq.queryParams)
@@ -191,7 +191,7 @@ class OrganisationController  {
 
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTimeNoPoint()
         String datetoday = sdf.format(new Date())
-        def message = message(code: 'export.all.orgs')
+        String message = message(code: 'export.all.orgs') as String
         // Write the output to a file
         String file = message+"_${datetoday}"
         if ( params.exportXLS ) {
@@ -245,7 +245,7 @@ class OrganisationController  {
         params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id.toString()
         if(!params.sort)
             params.sort = " LOWER(o.sortname)"
-        def fsq = filterService.getOrgQuery(params)
+        Map<String, Object> fsq = filterService.getOrgQuery(params)
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
         List<Org> availableOrgs = Org.executeQuery(fsq.query, fsq.queryParams, [sort:params.sort])
@@ -253,7 +253,7 @@ class OrganisationController  {
         result.consortiaMemberTotal = availableOrgs.size()
 
 
-        def message = g.message(code: 'menu.institutions')
+        String message = message(code: 'menu.institutions') as String
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         String datetoday = sdf.format(new Date(System.currentTimeMillis()))
         String filename = message+"_${datetoday}"
@@ -290,7 +290,7 @@ class OrganisationController  {
         params.customerType   = Role.findByAuthority('ORG_CONSORTIUM').id.toString()
         if(!params.sort)
             params.sort = " LOWER(o.sortname)"
-        def fsq = filterService.getOrgQuery(params)
+        Map<String, Object> fsq = filterService.getOrgQuery(params)
         result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
         result.offset = params.offset ? Integer.parseInt(params.offset) : 0
         List<Org> availableOrgs = Org.executeQuery(fsq.query, fsq.queryParams, [sort:params.sort])
@@ -324,7 +324,7 @@ class OrganisationController  {
         result.filterSet = params.filterSet ? true : false
 
         if (params.filterPropDef) {
-            def orgIdList = Org.executeQuery("select o.id ${fsq.query}", fsq.queryParams)
+            List orgIdList = Org.executeQuery("select o.id ${fsq.query}", fsq.queryParams)
             params.constraint_orgIds = orgIdList
             fsq = filterService.getOrgQuery(params)
             fsq = propertyService.evalFilterQuery(params, fsq.query, 'o', fsq.queryParams)
@@ -335,7 +335,7 @@ class OrganisationController  {
         result.orgListTotal = orgListTotal.size()
         result.orgList      = orgListTotal.drop((int) result.offset).take((int) result.max)
 
-        def message = g.message(code: 'export.all.providers')
+        String message = message(code: 'export.all.providers') as String
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         String datetoday = sdf.format(new Date())
         String filename = message+"_${datetoday}"

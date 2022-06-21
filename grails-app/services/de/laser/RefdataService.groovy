@@ -71,7 +71,7 @@ class RefdataService {
     int replaceRefdataValues(RefdataValue rdvFrom, RefdataValue rdvTo) {
 
         log.debug("replacing: ${rdvFrom} with: ${rdvTo}")
-        def count = 0
+        int count = 0
         Map fortytwo = [:]
 
         AppUtils.getAllDomainClasses().each { dc ->

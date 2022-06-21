@@ -125,16 +125,16 @@ class FactService {
     def costPerUseMetric = preferedMetrics.findAll {
       existingMetrics.contains(it)
     }?.first()
-    def costsQuery = 'select sum(co.costInLocalCurrency) as lccost, sum(co.costInBillingCurrency) as bccost, ' +
+    String costsQuery = 'select sum(co.costInLocalCurrency) as lccost, sum(co.costInBillingCurrency) as bccost, ' +
         'costItemElementConfiguration.value from CostItem co where co.sub=:sub and costItemElementConfiguration.value=:costType ' +
         'group by costItemElementConfiguration.value'
-    def positiveCosts = CostItem.executeQuery(costsQuery, [sub: subscription, costType: 'positive'])
+    List positiveCosts = CostItem.executeQuery(costsQuery, [sub: subscription, costType: 'positive'])
     if (positiveCosts.empty){
       log.debug('No positive CostItems found for this subscription')
       return null
     }
     def totalCosts = positiveCosts.first()[0]
-    def negativeCosts = CostItem.executeQuery(costsQuery, [sub: subscription, costType: 'negative'])
+    List negativeCosts = CostItem.executeQuery(costsQuery, [sub: subscription, costType: 'negative'])
     if (! negativeCosts.empty){
       totalCosts =  totalCosts - negativeCosts.first()[0]
       if (totalCosts < 0){
@@ -267,7 +267,7 @@ class FactService {
     if (! title_id) {
       params['status'] = 'Deleted'
     }
-    def queryResult = Fact.executeQuery(hql, params)
+    List queryResult = Fact.executeQuery(hql, params)
     _transformToListOfMaps(queryResult)
   }
 

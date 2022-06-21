@@ -418,7 +418,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
                     description = '(NOTE)'
                 }
 
-                def msgParams = [
+                List<String> msgParams = [
                         definedType,
                         "${childId.ns.class.name}:${childId.ns.id}",
                         (changeDocument.prop in ['note'] ? "${changeDocument.oldLabel}" : "${changeDocument.old}"),

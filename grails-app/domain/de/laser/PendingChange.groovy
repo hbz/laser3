@@ -397,7 +397,7 @@ class PendingChange {
 
         // find attr translation
 
-        def prefix = ''
+        String prefix = ''
 
         if (msgToken in ['pendingChange.message_LI01']) {
             prefix = 'license.'

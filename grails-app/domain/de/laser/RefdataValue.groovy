@@ -249,8 +249,8 @@ class RefdataValue extends AbstractI10n implements Comparable<RefdataValue> {
      */
     int compareTo(RefdataValue rdv) {
 
-        def a = rdv.order  ?: 0
-        def b = this.order ?: 0
+        long a = rdv.order  ?: 0
+        long b = this.order ?: 0
 
         if (a && b) {
             return a <=> b

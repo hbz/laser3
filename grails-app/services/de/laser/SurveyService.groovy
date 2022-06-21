@@ -978,7 +978,7 @@ class SurveyService {
                         userOrg.user.getSettingsValue(UserSetting.KEYS.IS_NOTIFICATION_BY_EMAIL) == RDStore.YN_YES)
                 {
 
-                    def orgSurveys = SurveyInfo.executeQuery("SELECT s FROM SurveyInfo s " +
+                    List<SurveyInfo> orgSurveys = SurveyInfo.executeQuery("SELECT s FROM SurveyInfo s " +
                             "LEFT JOIN s.surveyConfigs surConf " +
                             "LEFT JOIN surConf.orgs surOrg  " +
                             "WHERE surOrg.org IN (:org) " +

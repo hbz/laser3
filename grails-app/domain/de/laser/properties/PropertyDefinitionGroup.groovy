@@ -81,7 +81,7 @@ class PropertyDefinitionGroup {
      */
     List getCurrentProperties(def currentObject) {
         List result = []
-        def givenIds = getPropertyDefinitions().collect{ it.id }
+        List<Long> givenIds = getPropertyDefinitions().collect{ it.id }
 
         currentObject?.propertySet?.each{ cp ->
             if (cp.type.id in givenIds) {
@@ -99,7 +99,7 @@ class PropertyDefinitionGroup {
      */
     List getCurrentPropertiesOfTenant(def currentObject, Org tenant) {
         List result = []
-        def givenIds = getPropertyDefinitions().collect{ it.id }
+        List<Long> givenIds = getPropertyDefinitions().collect{ it.id }
 
         currentObject?.propertySet?.each{ cp ->
             if (cp.type.id in givenIds && cp.tenant.id == tenant.id) {

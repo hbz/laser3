@@ -69,7 +69,7 @@ class AdminController  {
     @Secured(['ROLE_ADMIN'])
     @Transactional
     def index() {
-        def dbmQuery = (sessionFactory.currentSession.createSQLQuery(
+        List dbmQuery = (sessionFactory.currentSession.createSQLQuery(
                 'SELECT filename, id, dateexecuted from databasechangelog order by orderexecuted desc limit 1'
         )).list()
 
@@ -256,7 +256,7 @@ class AdminController  {
 
     if(params.id){
         Package pkg = Package.get(params.id)
-      def conflicts_list = []
+        List conflicts_list = []
 
       if(pkg.documents){
         def document_map = [:]
@@ -591,7 +591,7 @@ class AdminController  {
         Map<String, Object> result = [:]
 
         Session hibSess = sessionFactory.currentSession
-        def dbmQuery = (hibSess.createSQLQuery(
+        List dbmQuery = (hibSess.createSQLQuery(
                 'SELECT filename, id, dateexecuted from databasechangelog order by orderexecuted desc limit 1'
         )).list()
         result.dbmVersion       = dbmQuery.size() > 0 ? dbmQuery.first() : ['unkown', 'unkown', 'unkown']
@@ -924,7 +924,7 @@ class AdminController  {
             target.save()
         }
 
-        def fsq = filterService.getOrgQuery(params)
+        Map<String, Object> fsq = filterService.getOrgQuery(params)
         result.orgList = Org.executeQuery(fsq.query, fsq.queryParams, params)
         result.orgListTotal = result.orgList.size()
 
@@ -1176,7 +1176,7 @@ SELECT * FROM (
         else if (params.cmd == 'processing') {
             def valid
             def propDefGroup
-            def ownerType = PropertyDefinition.getDescrClass(params.prop_descr)
+            String ownerType = PropertyDefinition.getDescrClass(params.prop_descr)
 
             if (params.oid) {
                 propDefGroup = genericOIDService.resolveOID(params.oid)
@@ -1372,7 +1372,7 @@ SELECT * FROM (
 
                     // TODO [ticket=1789]
                     //def tiObj = TitleInstance.executeQuery('select ti from TitleInstance ti join ti.ids ids where ids in (select io from IdentifierOccurrence io join io.identifier id where id.ns in :namespaces and id.value = :value)',[namespaces:idCandidate.namespaces,value:idCandidate.value])
-                    def tiObj = TitleInstance.executeQuery('select ti from TitleInstance ti join ti.ids ident where ident.ns in :namespaces and ident.value = :value', [namespaces:idCandidate.namespaces, value:idCandidate.value])
+                    List<TitleInstance> tiObj = TitleInstance.executeQuery('select ti from TitleInstance ti join ti.ids ident where ident.ns in :namespaces and ident.value = :value', [namespaces:idCandidate.namespaces, value:idCandidate.value])
                     if(tiObj) {
 
                         tiObj.each { titleInstance ->
@@ -1480,7 +1480,7 @@ SELECT * FROM (
                 ]
         result.esinfos = FTControl.list()
 
-        def dbmQuery = (sessionFactory.currentSession.createSQLQuery(
+        List dbmQuery = (sessionFactory.currentSession.createSQLQuery(
                 'SELECT filename, id, dateexecuted from databasechangelog order by orderexecuted desc limit 1'
         )).list()
         result.dbmVersion = dbmQuery.size() > 0 ? dbmQuery.first() : ['unkown', 'unkown', 'unkown']

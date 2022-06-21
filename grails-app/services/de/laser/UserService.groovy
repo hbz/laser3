@@ -122,7 +122,7 @@ class UserService {
             Role formalRole = Role.get(params.formalRole)
 
             if (org && formalRole) {
-                def existingUserOrgs = UserOrg.findAllByOrgAndFormalRole(org, formalRole).size()
+                int existingUserOrgs = UserOrg.findAllByOrgAndFormalRole(org, formalRole).size()
 
                 instAdmService.createAffiliation(user, org, formalRole, flash)
 

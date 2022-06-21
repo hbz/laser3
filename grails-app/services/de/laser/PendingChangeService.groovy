@@ -94,7 +94,7 @@ class PendingChangeService extends AbstractLockableService {
                         // "changeType":"TIPPDeleted","tippId":"${TitleInstancePackagePlatform.class.name}:6482"}
                         def sub_to_change = pendingChange.subscription
                         def tipp = genericOIDService.resolveOID(payload.tippId)
-                        def ie_to_update = IssueEntitlement.findBySubscriptionAndTipp(sub_to_change,tipp)
+                        IssueEntitlement ie_to_update = IssueEntitlement.findBySubscriptionAndTipp(sub_to_change,tipp)
                         if ( ie_to_update != null ) {
                             ie_to_update.status = RDStore.TIPP_STATUS_DELETED
 

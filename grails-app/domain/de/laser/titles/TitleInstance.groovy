@@ -191,7 +191,7 @@ class TitleInstance extends AbstractBaseWithCalculatedLastUpdated {
       candidate_identifiers.each { i ->
         // TODO [ticket=1789]
         //def id1 = Identifier.executeQuery('Select io from IdentifierOccurrence as io where io.identifier.value = ?',[i.value]);
-        def id1 = Identifier.executeQuery('select ident from Identifier as ident where ident.value = :val', [val: i.value])
+        List<Identifier> id1 = Identifier.executeQuery('select ident from Identifier as ident where ident.value = :val', [val: i.value])
         id1.each {
           if ( it.ti != null ) {
             if ( ! matched.contains(it.ti) ) {
@@ -210,7 +210,7 @@ class TitleInstance extends AbstractBaseWithCalculatedLastUpdated {
       throw new Exception("Identifier set ${candidate_identifiers} matched multiple titles");
     }
 
-    return result;
+    result
   }
 
     /**

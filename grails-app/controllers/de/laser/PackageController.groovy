@@ -182,8 +182,8 @@ class PackageController {
             csv {
                 response.setHeader("Content-disposition", "attachment; filename=\"packages.csv\"")
                 response.contentType = "text/csv"
-                def packages = Subscription.executeQuery("select p " + base_qry, qry_params)
-                def out = response.outputStream
+                List packages = Subscription.executeQuery("select p " + base_qry, qry_params)
+                ServletOutputStream out = response.outputStream
                 log.debug('colheads');
                 out.withWriter { writer ->
                     writer.write('Package Name, Creation Date, Last Modified, Identifier\n');
@@ -235,24 +235,24 @@ class PackageController {
                 return
             }
 
-            def groupedA = listA.groupBy({ it.name })
-            def groupedB = listB.groupBy({ it.name })
+            Map groupedA = listA.groupBy({ it.name })
+            Map groupedB = listB.groupBy({ it.name })
 
-            def mapA = listA.collectEntries { [it.name, it] }
-            def mapB = listB.collectEntries { [it.name, it] }
+            Map mapA = listA.collectEntries { [it.name, it] }
+            Map mapB = listB.collectEntries { [it.name, it] }
 
             result.listACount = [tipps: listA.size(), titles: mapA.size()]
             result.listBCount = [tipps: listB.size(), titles: mapB.size()]
 
             log.debug("mapA: ${mapA.size()}, mapB: ${mapB.size()}")
 
-            def unionList = groupedA.keySet().plus(groupedB.keySet()).toList() // heySet is hashSet
+            List unionList = groupedA.keySet().plus(groupedB.keySet()).toList() // heySet is hashSet
             unionList = unionList.unique()
             unionList.sort()
 
             log.debug("UnionList has ${unionList.size()} entries.")
 
-            def filterRules = [params.insrt ? true : false, params.dlt ? true : false, params.updt ? true : false, params.nochng ? true : false]
+            List<Boolean> filterRules = [params.insrt ? true : false, params.dlt ? true : false, params.updt ? true : false, params.nochng ? true : false]
 
             result.unionListSize = institutionsService.generateComparisonMap(unionList, mapA, mapB, 0, unionList.size(), filterRules).size()
 
@@ -272,7 +272,7 @@ class PackageController {
                         SimpleDateFormat dateFormatter = DateUtils.getLocalizedSDF_noTime()
                         response.setHeader("Content-disposition", "attachment; filename=\"packageComparison.csv\"")
                         response.contentType = "text/csv"
-                        def out = response.outputStream
+                        ServletOutputStream out = response.outputStream
                         out.withWriter { writer ->
                             writer.write("${result.pkgInsts[0].name} on ${params.dateA}, ${result.pkgInsts[1].name} on ${params.dateB}\n")
                             writer.write('Title, pISSN, eISSN, Start Date A, Start Date B, Start Volume A, Start Volume B, Start Issue A, Start Issue B, End Date A, End Date B, End Volume A,End  Volume B,End  Issue A,End  Issue B, Coverage Note A, Coverage Note B, ColorCode\n');
@@ -355,7 +355,7 @@ class PackageController {
 
         def queryParams = [packageInstance]
 
-        def query = filterService.generateBasePackageQuery(params, queryParams, true, date, "Platform")
+        Map<String, Object> query = filterService.generateBasePackageQuery(params, queryParams, true, date, "Platform")
         def list = TitleInstancePackagePlatform.executeQuery("select tipp " + query.base_qry, query.qry_params)
 
         return list
@@ -830,7 +830,7 @@ class PackageController {
     @Transactional
     def history() {
         Map<String, Object> result = [:]
-        def exporting = params.format == 'csv' ? true : false
+        boolean exporting = params.format == 'csv'
 
         if (exporting) {
             result.max = 9999999
@@ -849,7 +849,7 @@ class PackageController {
 
         // postgresql migration
         String subQuery = 'select cast(id as string) from TitleInstancePackagePlatform as tipp where tipp.pkg = cast(:pkgid as int)'
-        def subQueryResult = TitleInstancePackagePlatform.executeQuery(subQuery, [pkgid: params.id])
+        List subQueryResult = TitleInstancePackagePlatform.executeQuery(subQuery, [pkgid: params.id])
 
         //def base_query = 'from org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent as e where ( e.className = :pkgcls and e.persistedObjectId = cast(:pkgid as string)) or ( e.className = :tippcls and e.persistedObjectId in ( select id from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkgid ) )'
         //def query_params = [ pkgcls: Package.class.name, tippcls: TitleInstancePackagePlatform.class.name, pkgid: params.id, subQueryResult: subQueryResult ]
