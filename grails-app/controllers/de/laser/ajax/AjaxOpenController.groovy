@@ -30,10 +30,10 @@ class AjaxOpenController {
     def profiler() {
         Map<String, Object> result = [status: 'failed']
         SessionCacheWrapper cache = contextService.getSessionCache()
-        Profiler pu = (Profiler) cache.get(Profiler.SESSION_SYSTEMPROFILER)
+        Profiler prf = (Profiler) cache.get(Profiler.SESSION_SYSTEMPROFILER)
 
-        if (pu) {
-            long delta = pu.stopSimpleBench(params.uri)
+        if (prf) {
+            long delta = prf.stopSimpleBench(params.uri)
 
             SystemProfiler.update(delta, params.uri)
 

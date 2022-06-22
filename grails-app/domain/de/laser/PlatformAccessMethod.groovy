@@ -25,9 +25,9 @@ class PlatformAccessMethod extends AbstractBase {
     ]
     
     static mapping = {
-        id              column:'plat_id'
-        version         column:'plat_version'
-        globalUID       column:'plat_guid'
+        id              column:'pam_id'
+        version         column:'pam_version'
+        globalUID       column:'pam_guid'
         validFrom       column:'pam_valid_from'
         validTo         column:'pam_valid_to'
         accessMethod    column:'pam_access_method_rv_fk'

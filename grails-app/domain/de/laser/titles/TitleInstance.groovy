@@ -86,8 +86,10 @@ class TitleInstance extends AbstractBaseWithCalculatedLastUpdated {
            status column:'ti_status_rv_fk'
            medium column:'ti_medium_rv_fk'
             //tipps sort:'startDate', order: 'asc', batchSize: 10
+      dateCreated column: 'ti_date_created'
+      lastUpdated column: 'ti_last_updated'
       lastUpdatedCascading column: 'ti_last_updated_cascading'
-      sortTitle column:'sort_title', type:'text'
+      sortTitle column:'ti_sort_title', type:'text'
 
       ids           batchSize: 10
       orgs          batchSize: 10

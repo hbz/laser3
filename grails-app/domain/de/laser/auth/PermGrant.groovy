@@ -10,6 +10,9 @@ class PermGrant {
     static mapping = {
         cache   true
         version false
+        id      column:'pmgr_id'
+        perm    column:'pmgr_perm_fk'
+        role    column:'pmgr_role_fk'
     }
 
     static constraints = {

@@ -19,6 +19,11 @@ class UserOrg implements Comparable {
 
     static mapping = {
         cache           true
+        id              column: 'uo_id'
+        version         column: 'uo_version'
+        formalRole      column: 'uo_formal_role_fk'
+        org             column: 'uo_org_fk'
+        user            column: 'uo_user_fk'
         lastUpdated     column: 'uo_last_updated'
         dateCreated     column: 'uo_date_created'
     }

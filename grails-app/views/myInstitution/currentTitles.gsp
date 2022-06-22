@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.IssueEntitlement;de.laser.Platform; de.laser.ApiSource;" %>
+<%@ page import="de.laser.storage.RDStore; de.laser.IssueEntitlement;de.laser.Platform; de.laser.remote.ApiSource;" %>
 <!doctype html>
 <html>
 <head>

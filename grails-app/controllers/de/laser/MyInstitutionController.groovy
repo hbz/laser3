@@ -175,14 +175,14 @@ class MyInstitutionController  {
     def currentPlatforms() {
 
         Map<String, Object> result = [:]
-		Profiler pu = new Profiler()
-		pu.setBenchmark('init')
+		Profiler prf = new Profiler()
+		prf.setBenchmark('init')
 
         result.user = contextService.getUser()
         result.contextOrg = contextService.getOrg()
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
-        pu.setBenchmark("before loading subscription ids")
+        prf.setBenchmark("before loading subscription ids")
 
         String instanceFilter = ""
         Map<String, Object> subscriptionParams = [contextOrg:result.contextOrg, roleTypes:[RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA], current:RDStore.SUBSCRIPTION_CURRENT, expired:RDStore.SUBSCRIPTION_EXPIRED]
@@ -271,14 +271,14 @@ class MyInstitutionController  {
                 qry3 += " order by ${params.sort} ${params.order}"
             else qry3 += " order by p.normname asc"
 
-            pu.setBenchmark("before loading platforms")
+            prf.setBenchmark("before loading platforms")
             List platformSubscriptionList = []
             if(wekbIds)
                 platformSubscriptionList.addAll(Platform.executeQuery(qry3, qryParams3))
 
             log.debug("found ${platformSubscriptionList.size()} in list ..")
             /*, [max:result.max, offset:result.offset])) */
-            pu.setBenchmark("before platform subscription list loop")
+            prf.setBenchmark("before platform subscription list loop")
             platformSubscriptionList.each { entry ->
                 Platform pl = (Platform) entry[0]
                 Subscription s = (Subscription) entry[1]
@@ -299,7 +299,7 @@ class MyInstitutionController  {
 
         result.cachedContent = true
 
-		List bm = pu.stopBenchmark()
+		List bm = prf.stopBenchmark()
 		result.benchMark = bm
 
         result
@@ -323,8 +323,8 @@ class MyInstitutionController  {
             else params.remove('resetFilter')
             cache.remove('licenseFilterCache') //has to be executed in any case in order to enable cache updating
         }
-		Profiler pu = new Profiler()
-		pu.setBenchmark('init')
+		Profiler prf = new Profiler()
+		prf.setBenchmark('init')
 
         result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
 
@@ -487,11 +487,11 @@ class MyInstitutionController  {
             base_qry += " order by lower(trim(l.reference)) asc"
         }
 
-        pu.setBenchmark('execute query')
+        prf.setBenchmark('execute query')
         log.debug("select l ${base_qry}")
         List<License> totalLicenses = License.executeQuery( "select l " + base_qry, qry_params )
         result.licenseCount = totalLicenses.size()
-        pu.setBenchmark('get subscriptions')
+        prf.setBenchmark('get subscriptions')
 
         result.licenses = totalLicenses.drop((int) result.offset).take((int) result.max)
         if(result.licenses) {
@@ -511,14 +511,14 @@ class MyInstitutionController  {
         orgRoles.each { OrgRole oo ->
             result.orgRoles.put(oo.lic.id,oo.roleType)
         }
-        pu.setBenchmark('get consortia')
+        prf.setBenchmark('get consortia')
         Set<Org> consortia = Org.executeQuery("select os.org from OrgSetting os where os.key = 'CUSTOMER_TYPE' and os.roleValue in (select r from Role r where authority = 'ORG_CONSORTIUM') order by os.org.name asc")
-        pu.setBenchmark('get licensors')
+        prf.setBenchmark('get licensors')
         Set<Org> licensors = orgTypeService.getOrgsForTypeLicensor()
         Map<String,Set<Org>> orgs = [consortia:consortia,licensors:licensors]
         result.orgs = orgs
 
-		List bm = pu.stopBenchmark()
+		List bm = prf.stopBenchmark()
 		result.benchMark = bm
 
         SimpleDateFormat sdfNoPoint = DateUtils.getLocalizedSDF_noTimeNoPoint()
@@ -782,8 +782,8 @@ class MyInstitutionController  {
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def currentProviders() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
-		Profiler pu = new Profiler()
-		pu.setBenchmark('init')
+		Profiler prf = new Profiler()
+		prf.setBenchmark('init')
 
         EhcacheWrapper cache = contextService.getSharedOrgCache('MyInstitutionController/currentProviders')
         List orgIds = []
@@ -837,7 +837,7 @@ join sub.orgRelations or_sub where
 
         result.cachedContent = true
 
-		List bm = pu.stopBenchmark()
+		List bm = prf.stopBenchmark()
 		result.benchMark = bm
 
         if ( params.exportXLS ) {
@@ -904,8 +904,8 @@ join sub.orgRelations or_sub where
     def currentSubscriptions() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
-		Profiler pu = new Profiler()
-		//pu.setBenchmark('init')
+		Profiler prf = new Profiler()
+		//prf.setBenchmark('init')
         result.tableConfig = ['showActions','showLicense']
         result.putAll(subscriptionService.getMySubscriptions(params,result.user,result.institution))
 
@@ -916,7 +916,7 @@ join sub.orgRelations or_sub where
         String datetoday = sdf.format(new Date())
         String filename = "${datetoday}_" + g.message(code: "export.my.currentSubscriptions")
 
-		//List bm = pu.stopBenchmark()
+		//List bm = prf.stopBenchmark()
 		//result.benchMark = bm
 
         if ( params.exportXLS ) {
@@ -1266,8 +1266,8 @@ join sub.orgRelations or_sub where
     def currentTitles() {
 
         Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
-		Profiler pu = new Profiler()
-		pu.setBenchmark('init')
+		Profiler prf = new Profiler()
+		prf.setBenchmark('init')
 
         Set<RefdataValue> orgRoles = []
         String instanceFilter = ""
@@ -1399,7 +1399,7 @@ join sub.orgRelations or_sub where
 
         String filename = "${message(code:'export.my.currentTitles')}_${DateUtils.getLocalizedSDF_noTimeNoPoint().format(new Date())}"
 
-		List bm = pu.stopBenchmark()
+		List bm = prf.stopBenchmark()
 		result.benchMark = bm
 
         if(params.exportKBart) {
@@ -2647,8 +2647,8 @@ join sub.orgRelations or_sub where
     def currentConsortia() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
-        Profiler pu = new Profiler()
-        pu.setBenchmark('start')
+        Profiler prf = new Profiler()
+        prf.setBenchmark('start')
 
         // new: filter preset
         result.comboType = RDStore.COMBO_TYPE_CONSORTIUM
@@ -2683,7 +2683,7 @@ join sub.orgRelations or_sub where
         //def tmpQuery = "select o.id " + fsq.query.minus("select o ")
         //def memberIds = Org.executeQuery(tmpQuery, fsq.queryParams)
 
-		pu.setBenchmark('query')
+		prf.setBenchmark('query')
 
         List totalConsortia      = Org.executeQuery(fsq.query, fsq.queryParams)
         result.totalConsortia    = totalConsortia
@@ -2698,7 +2698,7 @@ join sub.orgRelations or_sub where
         // Write the output to a file
         //String file = "${sdf.format(new Date())}_"+exportHeader
 
-		List bm = pu.stopBenchmark()
+		List bm = prf.stopBenchmark()
 		result.benchMark = bm
 
         result
@@ -2762,8 +2762,8 @@ join sub.orgRelations or_sub where
     def manageMembers() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
-        Profiler pu = new Profiler()
-        pu.setBenchmark('start')
+        Profiler prf = new Profiler()
+        prf.setBenchmark('start')
 
         // new: filter preset
         result.comboType = RDStore.COMBO_TYPE_CONSORTIUM
@@ -2805,7 +2805,7 @@ join sub.orgRelations or_sub where
         String tmpQuery = "select o.id " + fsq.query.minus("select o ")
         List memberIds = Org.executeQuery(tmpQuery, fsq.queryParams)
 
-		pu.setBenchmark('query')
+		prf.setBenchmark('query')
 
         if (params.filterPropDef && memberIds) {
             fsq                      = propertyService.evalFilterQuery(params, "select o FROM Org o WHERE o.id IN (:oids) order by o.sortname asc", 'o', [oids: memberIds])
@@ -2824,7 +2824,7 @@ join sub.orgRelations or_sub where
         // Write the output to a file
         String file = "${sdf.format(new Date())}_"+exportHeader
 
-		List bm = pu.stopBenchmark()
+		List bm = prf.stopBenchmark()
 		result.benchMark = bm
 
         if ( params.exportXLS ) {
@@ -2890,8 +2890,8 @@ join sub.orgRelations or_sub where
         Map<String,Object> result = myInstitutionControllerService.getResultGenerics(this, params)
         result.tableConfig = ['withCostItems']
         result.putAll(subscriptionService.getMySubscriptionsForConsortia(params,result.user,result.institution,result.tableConfig))
-        Profiler pu = result.pu
-        pu.setBenchmark("after subscription loading, before providers")
+        Profiler prf = result.pu
+        prf.setBenchmark("after subscription loading, before providers")
         //LinkedHashMap<Subscription,List<Org>> providers = [:]
         Map<Org,Set<String>> mailAddresses = [:]
         BidiMap subLinks = new DualHashBidiMap()
@@ -2934,7 +2934,7 @@ join sub.orgRelations or_sub where
         }
 
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
-        pu.setBenchmark("before xls")
+        prf.setBenchmark("before xls")
         if(params.exportXLS) {
             XSSFWorkbook wb = new XSSFWorkbook()
             POIXMLProperties xmlProps = wb.getProperties()
@@ -3114,7 +3114,7 @@ join sub.orgRelations or_sub where
             workbook.dispose()
         }
         else {
-            result.benchMark = pu.stopBenchmark()
+            result.benchMark = prf.stopBenchmark()
             withFormat {
                 html {
                     result
@@ -3268,8 +3268,8 @@ join sub.orgRelations or_sub where
     def manageParticipantSurveys() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
 
-        Profiler pu = new Profiler()
-        pu.setBenchmark('filterService')
+        Profiler prf = new Profiler()
+        prf.setBenchmark('filterService')
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 

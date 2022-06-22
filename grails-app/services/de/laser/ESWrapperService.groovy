@@ -33,14 +33,14 @@ import org.elasticsearch.rest.RestStatus
 @Transactional
 class ESWrapperService {
 
-    final static String ES_HOST    = 'localhost'
-    final static String ES_CLUSTER = 'elasticsearch'
+    final static String DEFAULT_ES_HOST = 'localhost'
+    final static String DEFAULT_ES_CLUSTER = 'elasticsearch'
 
     static transactional = false
 
-    String es_cluster_name
-    Map es_indices = [:]
-    String es_host
+    static String ES_Host
+    static String ES_Cluster
+    static Map ES_Indices = [:]
 
     /**
      * Initialises the ElasticSearch connection and mapping parameters
@@ -50,13 +50,13 @@ class ESWrapperService {
     def init() {
         log.info('ESWrapperService - init')
 
-        es_indices      = ConfigMapper.getAggrEsIndices()  ?: [:]
-        es_cluster_name = ConfigMapper.getAggrEsCluster()  ?: ESWrapperService.ES_CLUSTER
-        es_host         = ConfigMapper.getAggrEsHostname() ?: ESWrapperService.ES_HOST
+        ES_Host     = ConfigMapper.getAggrEsHostname() ?: ESWrapperService.DEFAULT_ES_HOST
+        ES_Cluster  = ConfigMapper.getAggrEsCluster()  ?: ESWrapperService.DEFAULT_ES_CLUSTER
+        ES_Indices  = ConfigMapper.getAggrEsIndices()  ?: [:]
 
-        log.debug("| es_cluster = ${es_cluster_name}")
-        log.debug("| es_indices = ${es_indices}")
-        log.debug("| es_host = ${es_host}")
+        log.debug("-> ES_Host = ${ES_Host}")
+        log.debug("-> ES_Cluster = ${ES_Cluster}")
+        log.debug("-> ES_Indices = ${ES_Indices}")
     }
 
     /**
@@ -66,8 +66,8 @@ class ESWrapperService {
     RestHighLevelClient getClient() {
         RestHighLevelClient esclient = new RestHighLevelClient(
                 RestClient.builder(
-                        new HttpHost(es_host, 9200, "http"),
-                        new HttpHost(es_host, 9201, "http")));
+                        new HttpHost(ES_Host, 9200, "http"),
+                        new HttpHost(ES_Host, 9201, "http")));
 
         esclient
     }
@@ -251,7 +251,7 @@ class ESWrapperService {
 
             if (acknowledged) {
                 log.debug("Index ${indexName} successfully created!")
-                String domainClassName = this.es_indices.find {it.value == indexName}.key
+                String domainClassName = this.ES_Indices.find {it.value == indexName}.key
 
                 FTControl.withTransaction {
                     int res = FTControl.executeUpdate("delete FTControl c where c.domainClassName = :deleteFT", [deleteFT: "de.laser.${domainClassName}"])

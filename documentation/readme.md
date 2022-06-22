@@ -11,7 +11,7 @@
 - Groovy 3.0.7
 - Java 11
 
-See [upgrade.md](./upgrade.md) for detailed information.
+See [details.md](./details.md) for detailed information.
 
 ### Setup with SDKMAN
 

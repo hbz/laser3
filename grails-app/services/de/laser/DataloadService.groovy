@@ -82,7 +82,7 @@ class DataloadService {
      * See the aggr_es_indices (taken at ESWrapperService.es_indices) configuration for
      * the domains being indexed and the fields recorded for each index
      * @return true if the update was successful, false otherwise
-     * @see ESWrapperService#es_indices
+     * @see ESWrapperService#ES_Indices
      */
     boolean doFTUpdate() {
 
@@ -867,12 +867,12 @@ class DataloadService {
      * This bulk operation is being flushed at every 100 records
      * @param domain the domain class whose index should be updated
      * @param recgen_closure the closure to be used for record generation
-     * @see ESWrapperService#es_indices
+     * @see ESWrapperService#ES_Indices
      */
     def updateES( domain, recgen_closure) {
 
-    RestHighLevelClient esclient = ESWrapperService.getClient()
-    Map esIndices = ESWrapperService.es_indices
+        RestHighLevelClient esclient = ESWrapperService.getClient()
+        Map es_indices = ESWrapperService.ES_Indices
 
         int count = 0
         long total = 0
@@ -882,7 +882,7 @@ class DataloadService {
 
         FTControl.withTransaction {
 
-            def latest_ft_record = FTControl.findByDomainClassNameAndActivity(domain.name, 'ESIndex')
+            FTControl latest_ft_record = FTControl.findByDomainClassNameAndActivity(domain.name, 'ESIndex')
 
             if (!latest_ft_record) {
                 latest_ft_record = new FTControl(domainClassName: domain.name, activity: 'ESIndex', lastTimestamp: 0, active: true, esElements: 0, dbElements: 0)
@@ -895,7 +895,7 @@ class DataloadService {
 
                 if (latest_ft_record.active) {
 
-                    if (ESWrapperService.testConnection() && esIndices && esIndices.get(domain.simpleName)) {
+                    if (ESWrapperService.testConnection() && es_indices && es_indices.get(domain.simpleName)) {
                         //log.debug("updateES - ${domain.name}")
 
                         //log.debug("result of findByDomain: ${latest_ft_record}")
@@ -933,7 +933,7 @@ class DataloadService {
                                 String recid = idx_record['_id'].toString()
                                 idx_record.remove('_id');
 
-                                IndexRequest request = new IndexRequest(esIndices.get(domain.simpleName));
+                                IndexRequest request = new IndexRequest(es_indices.get(domain.simpleName));
                                 request.id(recid);
                                 String jsonString = idx_record as JSON
                                 //String jsonString = JsonOutput.toJson(idx_record)
@@ -1022,7 +1022,7 @@ class DataloadService {
                         }
                     } else {
                         latest_ft_record.save()
-                        log.debug("updateES ${domain.name}: Fail -> ESWrapperService.testConnection() && esIndices && esIndices.get(domain.simpleName)")
+                        log.debug("updateES ${domain.name}: Fail -> ESWrapperService.testConnection() && es_indices && es_indices.get(domain.simpleName)")
                     }
                 } else {
                     latest_ft_record.save()
@@ -1040,7 +1040,7 @@ class DataloadService {
                 try {
                     if (ESWrapperService.testConnection()) {
                         if (latest_ft_record.active) {
-                            FlushRequest request = new FlushRequest(esIndices.get(domain.simpleName));
+                            FlushRequest request = new FlushRequest(es_indices.get(domain.simpleName));
                             FlushResponse flushResponse = esclient.indices().flush(request, RequestOptions.DEFAULT)
                         }
 
@@ -1159,8 +1159,9 @@ class DataloadService {
         if(ESWrapperService.testConnection()) {
 
             if (!(activeFuture) || (activeFuture && activeFuture.cancel(true))) {
-                Collection esIndices = ESWrapperService.es_indices?.values()
-                esIndices.each { String indexName ->
+                Collection esIndicesNames = ESWrapperService.ES_Indices.values() ?: []
+
+                esIndicesNames.each { String indexName ->
                     try {
                         boolean isDeletedIndex = ESWrapperService.deleteIndex(indexName)
                         if (isDeletedIndex) {
@@ -1220,7 +1221,7 @@ class DataloadService {
     boolean checkESElementswithDBElements(String domainClassName) {
 
         RestHighLevelClient esclient = ESWrapperService.getClient()
-        Map esIndices = ESWrapperService.es_indices
+        Map es_indices = ESWrapperService.ES_Indices
 
         try {
 
@@ -1232,7 +1233,7 @@ class DataloadService {
 
                         Class domainClass = AppUtils.getDomainClass(ftControl.domainClassName).clazz
 
-                        String indexName =  esIndices.get(domainClass.simpleName)
+                        String indexName =  es_indices.get(domainClass.simpleName)
                         Integer countIndex = 0
 
                         GetIndexRequest request = new GetIndexRequest(indexName)
@@ -1284,7 +1285,7 @@ class DataloadService {
         log.debug("Begin to check ES Elements with DB Elements")
 
         RestHighLevelClient esclient = ESWrapperService.getClient()
-        Map esIndices = ESWrapperService.es_indices
+        Map es_indices = ESWrapperService.ES_Indices
 
         try {
 
@@ -1295,7 +1296,7 @@ class DataloadService {
 
                         Class domainClass = AppUtils.getDomainClass(ft.domainClassName).clazz
 
-                        String indexName = esIndices.get(domainClass.simpleName)
+                        String indexName = es_indices.get(domainClass.simpleName)
                         Integer countIndex = 0
 
                         GetIndexRequest request = new GetIndexRequest(indexName)

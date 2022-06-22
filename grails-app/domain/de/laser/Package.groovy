@@ -105,7 +105,9 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
   cancellationAllowances column:'pkg_cancellation_allowances', type:'text'
                      tipps batchSize: 10
             pendingChanges sort:'ts', order: 'asc', batchSize: 10
-
+                  autoAccept column: 'pkg_auto_accept'
+                 dateCreated column: 'pkg_date_created'
+                 lastUpdated column: 'pkg_last_updated'
         lastUpdatedCascading column: 'pkg_last_updated_cascading'
 
             orgs            batchSize: 10

@@ -12,11 +12,12 @@ Use the Gradle task **devtools.triggerRestart** to update this file and force a 
 
 ### Apache Commons Lang
 
-Two different versions are currently used simultaneously. New code should always use *org.apache.commons.lang3*, not the previous version *org.apache.commons.lang*
+Two different versions are currently used. New code should always use *org.apache.commons.lang3*, not the previous version *org.apache.commons.lang*
 
 ### Configuration
 
-Accessing configuration through dot notation *(config.a.b.c)* has been **deprecated**. The configuration should be accessed via *de.laser.utils.ConfigMapper* so that settings can be validated at any time.
+Accessing configuration through dot notation *(config.a.b.c)* has been **deprecated**. 
+The configuration should be accessed via *de.laser.utils.ConfigMapper* so that settings can be maintained and validated at any time.
 
 ### Database Migrations
 
@@ -25,7 +26,7 @@ A new naming scheme should be used. See [database-migration.md](./database-migra
 ### DateUtils
 
 *Date.parse()* is **deprecated**, *Date.format()* has been **removed** in Java 11. New code should use e.g. SimpleDateFormat to format dates.
-To avoid confusion, the difference between localized and fixed usage in *de.laser.utils.DateUtils* is now reflected in a new naming scheme.
+To avoid confusion, the difference between localized and fixed usage in *de.laser.utils.DateUtils* is reflected in a new naming scheme.
 
 ### ExecutorGrailsPlugin
 
@@ -49,7 +50,7 @@ Localization dependent logic should be managed by *de.laser.utils.LocaleUtils* t
 
 ### Logging
 
-*Static_logger* has been removed. New code should use **@Slf4j** as class annotation to enable logging in static contexts.
+*Static_logger* has been removed. New code has to use **@Slf4j** as class annotation to enable logging in static contexts.
 
 ### Naming Convention
   * **Private methods** in domain classes, controllers, and services should be named with a leading underscore to avoid confusion. 
@@ -58,7 +59,7 @@ Localization dependent logic should be managed by *de.laser.utils.LocaleUtils* t
 
 ### Opencsv
 
-*com.opencsv.** has been removed. New code should use *liquibase.repackaged.com.opencsv.**
+*com.opencsv.** has been removed. New code has to use *liquibase.repackaged.com.opencsv.**
 
 ### Passwords
 
@@ -74,7 +75,11 @@ These should be used to wrap the execution logic.
 
 ~~*io.reactivex:rxjava* and *org.grails.plugins:rxjava* are outdated. Refactoring should take place.~~
 
-### Service usage in domain classes
+### Refdata & Constants
+
+Holders of refdata and constants have been moved to *de.laser.storage*
+
+### Service usage in Domain Classes
 
 Autowiring of domain instances has been **disabled** because it represents a performance bottleneck.
 Use BeanStore for static and non-static access to services and other beans.

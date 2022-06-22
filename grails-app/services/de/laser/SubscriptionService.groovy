@@ -65,13 +65,13 @@ class SubscriptionService {
         }
         SwissKnife.setPaginationParams(result, params, contextUser)
 
-        Profiler pu = new Profiler()
-        pu.setBenchmark('init data fetch')
-        pu.setBenchmark('consortia')
+        Profiler prf = new Profiler()
+        prf.setBenchmark('init data fetch')
+        prf.setBenchmark('consortia')
         result.availableConsortia = Combo.executeQuery("select c.toOrg from Combo as c where c.fromOrg = :fromOrg", [fromOrg: contextOrg])
 
         List<Role> consRoles = Role.findAll { authority == 'ORG_CONSORTIUM' }
-        pu.setBenchmark('all consortia')
+        prf.setBenchmark('all consortia')
         result.allConsortia = Org.executeQuery(
                 """select o from Org o, OrgSetting os_ct, OrgSetting os_gs where 
                         os_gs.org = o and os_gs.key = 'GASCO_ENTRY' and os_gs.rdValue.value = 'Yes' and
@@ -118,11 +118,11 @@ class SubscriptionService {
             cache.put('subscriptionFilterCache', params)
         }
 
-        pu.setBenchmark('get base query')
+        prf.setBenchmark('get base query')
         def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextOrg)
         result.filterSet = tmpQ[2]
         List<Subscription> subscriptions
-        pu.setBenchmark('fetch subscription data')
+        prf.setBenchmark('fetch subscription data')
         if(params.sort == "providerAgency") {
             subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] ).collect{ row -> row[0] }
         }
@@ -134,7 +134,7 @@ class SubscriptionService {
             result.num_sub_rows = subscriptions.size()
 
         result.date_restriction = date_restriction
-        pu.setBenchmark('get properties')
+        prf.setBenchmark('get properties')
         result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextOrg)
         /* deactivated as statistics key is submitted nowhere, as of July 16th, '20
         if (OrgSetting.get(contextOrg, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID) instanceof OrgSetting){
@@ -142,13 +142,13 @@ class SubscriptionService {
             result.usageMode = accessService.checkPerm("ORG_CONSORTIUM") ? 'package' : 'institution'
         }
          */
-        pu.setBenchmark('end properties')
+        prf.setBenchmark('end properties')
         result.subscriptions = subscriptions.drop((int) result.offset).take((int) result.max)
-        pu.setBenchmark('fetch licenses')
+        prf.setBenchmark('fetch licenses')
         if(subscriptions)
             result.allLinkedLicenses = Links.findAllByDestinationSubscriptionInListAndSourceLicenseIsNotNullAndLinkType(result.subscriptions,RDStore.LINKTYPE_LICENSE)
-        pu.setBenchmark('after licenses')
-        List bm = pu.stopBenchmark()
+        prf.setBenchmark('after licenses')
+        List bm = prf.stopBenchmark()
         result.benchMark = bm
         result
     }
@@ -164,15 +164,15 @@ class SubscriptionService {
     Map<String,Object> getMySubscriptionsForConsortia(GrailsParameterMap params,User contextUser, Org contextOrg,List<String> tableConf) {
         Map<String,Object> result = [:]
 
-        Profiler pu = new Profiler()
-        pu.setBenchmark('filterService')
+        Profiler prf = new Profiler()
+        prf.setBenchmark('filterService')
 
         SwissKnife.setPaginationParams(result, params, contextUser)
 
         Map<String,Object> fsq = filterService.getOrgComboQuery(params+[comboType:RDStore.COMBO_TYPE_CONSORTIUM.value,sort:'o.sortname'], contextOrg)
         result.filterConsortiaMembers = Org.executeQuery(fsq.query, fsq.queryParams)
 
-        pu.setBenchmark('filterSubTypes & filterPropList')
+        prf.setBenchmark('filterSubTypes & filterPropList')
 
         if(params.filterSet)
             result.filterSet = params.filterSet
@@ -190,7 +190,7 @@ class SubscriptionService {
 
         // CostItem ci
 
-        pu.setBenchmark('filter query')
+        prf.setBenchmark('filter query')
 
         String query
         Long statusId
@@ -349,12 +349,12 @@ class SubscriptionService {
         // log.debug( qarams )
 
         if('withCostItems' in tableConf) {
-            pu.setBenchmark('costs init')
+            prf.setBenchmark('costs init')
 
             List costs = CostItem.executeQuery(
                     query + " " + orderQuery, qarams
             )
-            pu.setBenchmark('read off costs')
+            prf.setBenchmark('read off costs')
             //post filter; HQL cannot filter that parameter out
             result.costs = costs
             result.totalCount = costs.size()
@@ -406,7 +406,7 @@ class SubscriptionService {
         }
         result.linkedLicenses = linkedLicenses
 
-        result.pu = pu
+        result.pu = prf
 
         result
     }

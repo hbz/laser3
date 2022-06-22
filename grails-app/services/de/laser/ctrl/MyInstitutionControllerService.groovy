@@ -40,8 +40,8 @@ class MyInstitutionControllerService {
      * @return OK if the request was successful, ERROR otherwise
      */
     Map<String, Object> dashboard(MyInstitutionController controller, GrailsParameterMap params) {
-        Profiler pu = new Profiler()
-        pu.setBenchmark('init')
+        Profiler prf = new Profiler()
+        prf.setBenchmark('init')
         Map<String, Object> result = getResultGenerics(controller, params)
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
@@ -72,7 +72,7 @@ class MyInstitutionControllerService {
         //result.putAll(pendingChangeService.getChanges(pendingChangeConfigMap))
 
         // systemAnnouncements
-        pu.setBenchmark('system announcements')
+        prf.setBenchmark('system announcements')
         result.systemAnnouncements = SystemAnnouncement.getPublished(periodInDays)
 
         // tasks
@@ -80,7 +80,7 @@ class MyInstitutionControllerService {
         SimpleDateFormat sdFormat    = DateUtils.getLocalizedSDF_noTime()
         params.taskStatus = 'not done'
         def query       = filterService.getTaskQuery(params << [sort: 't.endDate', order: 'asc'], sdFormat)
-        pu.setBenchmark('tasks')
+        prf.setBenchmark('tasks')
         result.tasks    = taskService.getTasksByResponsibles(result.user, result.institution, query)
         result.tasksCount    = result.tasks.size()
         result.enableMyInstFormFields = true // enable special form fields
@@ -89,7 +89,7 @@ class MyInstitutionControllerService {
         /*def announcement_type = RefdataValue.getByValueAndCategory('Announcement', RDConstants.DOCUMENT_TYPE)
         result.recentAnnouncements = Doc.findAllByType(announcement_type, [max: result.max,offset:result.announcementOffset, sort: 'dateCreated', order: 'desc'])
         result.recentAnnouncementsCount = Doc.findAllByType(announcement_type).size()*/
-        pu.setBenchmark('due dates')
+        prf.setBenchmark('due dates')
         result.dueDates = dashboardDueDatesService.getDashboardDueDates( result.user, result.institution, false, false, result.max, result.dashboardDueDatesOffset)
         result.dueDatesCount = dashboardDueDatesService.getDashboardDueDates( result.user, result.institution, false, false).size()
         /* -> to AJAX
@@ -121,7 +121,7 @@ class MyInstitutionControllerService {
         result.surveys = activeSurveyConfigs.groupBy {it?.id}
         result.countSurvey = result.surveys.size()
         */
-        result.benchMark = pu.stopBenchmark()
+        result.benchMark = prf.stopBenchmark()
         [status: STATUS_OK, result: result]
     }
 

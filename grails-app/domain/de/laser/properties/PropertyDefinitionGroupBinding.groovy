@@ -23,16 +23,16 @@ class PropertyDefinitionGroupBinding {
     ]
 
     static mapping = {
-        id              column: 'pgb_id'
-        version         column: 'pgb_version'
-        lic             column: 'pgb_lic_fk'
-        org             column: 'pgb_org_fk'
-        sub             column: 'pgb_sub_fk'
-        propDefGroup    column: 'pgb_property_definition_group_fk'
-        isVisible       column: 'pbg_is_visible'
-        isVisibleForConsortiaMembers column: 'pbg_is_visible_for_cons_member'
-        lastUpdated     column: 'pbg_last_updated'
-        dateCreated     column: 'pbg_date_created'
+        id              column: 'pdgb_id'
+        version         column: 'pdgb_version'
+        lic             column: 'pdgb_lic_fk'
+        org             column: 'pdgb_org_fk'
+        sub             column: 'pdgb_sub_fk'
+        propDefGroup    column: 'pdgb_property_definition_group_fk'
+        isVisible       column: 'pdgb_is_visible'
+        isVisibleForConsortiaMembers column: 'pdgb_is_visible_for_cons_member'
+        lastUpdated     column: 'pdgb_last_updated'
+        dateCreated     column: 'pdgb_date_created'
     }
 
     static constraints = {

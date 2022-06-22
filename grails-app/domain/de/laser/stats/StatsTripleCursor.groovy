@@ -29,6 +29,8 @@ class StatsTripleCursor {
         version     column:'stats_version'
         availFrom   column:'stats_avail_from'
         availTo     column:'stats_avail_to'
+        factType        column:'stats_fact_type_rdv_fk'
+        identifierType  column:'stats_identifier_type_fk'
         jerror      column:'stats_jerror'
         numFacts    column:'stats_num_facts'
         titleId     column:'stats_title_id',    index:'stats_cursor_idx'

@@ -119,6 +119,9 @@ class License extends AbstractBaseWithCalculatedLastUpdated
         licenseCategory column: 'lic_category_rdv_fk'
               startDate column: 'lic_start_date',   index: 'lic_dates_idx'
                 endDate column: 'lic_end_date',     index: 'lic_dates_idx'
+
+           dateCreated     column: 'lic_date_created'
+           lastUpdated     column: 'lic_last_updated'
       lastUpdatedCascading column: 'lic_last_updated_cascading'
 
        propertySet sort:'type', order:'desc', batchSize: 10

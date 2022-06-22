@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Subscription; de.laser.ApiSource; grails.converters.JSON; de.laser.storage.RDStore; de.laser.Platform;de.laser.titles.BookInstance" %>
+<%@ page import="de.laser.Subscription; de.laser.remote.ApiSource; grails.converters.JSON; de.laser.storage.RDStore; de.laser.Platform;de.laser.titles.BookInstance" %>
 <laser:serviceInjection/>
 <!doctype html>
 <html>

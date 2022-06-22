@@ -35,6 +35,8 @@ class UserRole implements Serializable, Comparable {
 		cache           true
 		id 				composite: ['role', 'user']
 		version 		false
+		role      		column: 'ur_role_fk'
+		user            column: 'ur_user_fk'
 		lastUpdated     column: 'ur_last_updated'
 		dateCreated     column: 'ur_date_created'
 	}

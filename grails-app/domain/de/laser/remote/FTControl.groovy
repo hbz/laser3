@@ -28,9 +28,14 @@ class FTControl {
     }
 
     static mapping = {
-        id          column: 'ftc_id'
-        version     column: 'ftc_version'
-        active      column: 'ftc_active'
-        activity    column: 'ftc_activity'
+        id              column: 'ftc_id'
+        version         column: 'ftc_version'
+        active          column: 'ftc_active'
+        activity        column: 'ftc_activity'
+        domainClassName column: 'ftc_domain_class_name'
+        dbElements      column: 'ftc_db_elements'
+        esElements      column: 'ftc_es_elements'
+        dateCreated     column: 'ftc_date_created'
+        lastUpdated     column: 'ftc_last_updated'
     }
 }

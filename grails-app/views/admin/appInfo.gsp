@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.DatabaseInfo; de.laser.utils.AppUtils; de.laser.storage.BeanStore; de.laser.system.SystemSetting; grails.util.Metadata; de.laser.reporting.report.ElasticSearchHelper; grails.util.Environment; de.laser.utils.ConfigMapper" %>
+<%@ page import="de.laser.utils.DateUtils; de.laser.helper.DatabaseInfo; de.laser.utils.AppUtils; de.laser.storage.BeanStore; de.laser.system.SystemSetting; grails.util.Metadata; de.laser.reporting.report.ElasticSearchHelper; grails.util.Environment; de.laser.utils.ConfigMapper" %>
 <!doctype html>
 <html>
 <head>
@@ -73,7 +73,11 @@
         <tbody>
             <tr><td>Currently running</td><td>${dataloadService.update_running}</td></tr>
             <tr><td>Last update run</td><td>${dataloadService.lastIndexUpdate}</td></tr>
-            <tr><td>Current indicies</td><td>${BeanStore.getESWrapperService().es_indices}</td></tr>
+            <tr><td>Configuration</td><td>
+                ${BeanStore.getESWrapperService().ES_Host} / ${BeanStore.getESWrapperService().ES_Cluster}
+                <br />
+                ${BeanStore.getESWrapperService().ES_Indices.values()}
+            </td></tr>
             <g:each in="${esinfos}" var="es">
                 <tr><td>DomainClass: ${es.domainClassName}</td><td>DB Elements: ${es.dbElements}, ES Elements: ${es.esElements}<br /> Last Update: ${new Date(es.lastTimestamp)}</td></tr>
             </g:each>

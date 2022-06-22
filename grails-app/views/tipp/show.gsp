@@ -1,4 +1,4 @@
-<%@ page import="de.laser.remote.ApiSource; de.laser.titles.BookInstance; de.laser.storage.RDStore; de.laser.ApiSource; de.laser.titles.TitleHistoryEventParticipant" %>
+<%@ page import="de.laser.remote.ApiSource; de.laser.titles.BookInstance; de.laser.storage.RDStore; de.laser.titles.TitleHistoryEventParticipant" %>
 <!doctype html>
 <html>
 <head>

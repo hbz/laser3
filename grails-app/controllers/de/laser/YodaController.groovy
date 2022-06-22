@@ -826,8 +826,8 @@ class YodaController {
         RestHighLevelClient esclient = ESWrapperService.getClient()
 
         result.indices = []
-        Map esIndices = ESWrapperService.es_indices
-        esIndices.each{ def indice ->
+        Map es_indices = ESWrapperService.ES_Indices
+        es_indices.each{ def indice ->
             Map indexInfo = [:]
             indexInfo.name = indice.value
             indexInfo.type = indice.key
@@ -860,13 +860,13 @@ class YodaController {
     /**
      * Sets up the ElasticSearch indices for the domain classes
      * @return a redirect to the index status list
-     * @see ESWrapperService#es_indices
+     * @see ESWrapperService#ES_Indices
      */
     @Secured(['ROLE_YODA'])
     def createESIndices() {
-        Collection esIndices = ESWrapperService.es_indices?.values()
+        Collection esIndicesNames = ESWrapperService.ES_Indices.values() ?: []
 
-        esIndices.each { String indexName ->
+        esIndicesNames.each { String indexName ->
             ESWrapperService.createIndex(indexName)
         }
         dataloadService.updateFTIndexes()
@@ -940,7 +940,6 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     @Transactional
     def migrateNatStatSettings() {
-        Map<String, Object> result = [:]
         Org contextOrg = contextService.getOrg()
 
         List<OrgProperty> opList = OrgProperty.executeQuery(

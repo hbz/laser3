@@ -29,6 +29,8 @@ class CostItemElementConfiguration extends AbstractBase {
         costItemElement     column: 'ciec_cie_rv_fk'
         elementSign         column: 'ciec_cc_rv_fk'
         forOrganisation     column: 'ciec_org_fk'
+        dateCreated         column: 'ciec_date_created'
+        lastUpdated         column: 'ciec_last_updated'
         autoTimestamp true
     }
 

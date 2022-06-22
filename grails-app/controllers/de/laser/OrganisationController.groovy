@@ -805,8 +805,8 @@ class OrganisationController  {
     @Secured(['ROLE_USER'])
     def show() {
 
-        Profiler pu = new Profiler()
-        pu.setBenchmark('this-n-that')
+        Profiler prf = new Profiler()
+        prf.setBenchmark('this-n-that')
 
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         if (! result) {
@@ -831,15 +831,15 @@ class OrganisationController  {
                 result.missing.leitID = message(code: 'org.eInvoice.info.missing.leitID')
         }
 
-        pu.setBenchmark('orgRoles & editable')
+        prf.setBenchmark('orgRoles & editable')
 
-        pu.setBenchmark('tasks')
+        prf.setBenchmark('tasks')
 
         result.tasks = taskService.getTasksByResponsiblesAndObject(result.user,result.institution,result.orgInstance)
         Map<String,Object> preCon = taskService.getPreconditionsWithoutTargets(result.institution)
         result << preCon
 
-        pu.setBenchmark('properties')
+        prf.setBenchmark('properties')
 
         result.authorizedOrgs = result.user?.authorizedOrgs
 
@@ -860,13 +860,13 @@ class OrganisationController  {
             }
         }
 
-        pu.setBenchmark('identifier')
+        prf.setBenchmark('identifier')
 
         if(!result.isProviderOrAgency){
             result.orgInstance.createCoreIdentifiersIfNotExist()
         }
 
-        pu.setBenchmark('createdBy and legallyObligedBy')
+        prf.setBenchmark('createdBy and legallyObligedBy')
 
         if (result.orgInstance.createdBy) {
 			result.createdByOrgGeneralContacts = PersonRole.executeQuery(
@@ -882,7 +882,7 @@ class OrganisationController  {
 					[org: result.orgInstance.legallyObligedBy, ft: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS]
 			)
 		}
-        List bm = pu.stopBenchmark()
+        List bm = prf.stopBenchmark()
         result.benchMark = bm
 
         result
@@ -898,8 +898,8 @@ class OrganisationController  {
     @Secured(['ROLE_USER'])
     def ids() {
 
-        Profiler pu = new Profiler()
-        pu.setBenchmark('this-n-that')
+        Profiler prf = new Profiler()
+        prf.setBenchmark('this-n-that')
 
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         if(!result) {
@@ -913,16 +913,16 @@ class OrganisationController  {
         if(!params.tab)
             params.tab = 'identifier'
 
-        pu.setBenchmark('editable_identifier')
+        prf.setBenchmark('editable_identifier')
 
         //IF ORG is a Provider
         if(result.orgInstance.sector == RDStore.O_SECTOR_PUBLISHER || RDStore.OT_PROVIDER.id in result.allOrgTypeIds) {
-            pu.setBenchmark('editable_identifier2')
+            prf.setBenchmark('editable_identifier2')
             result.editable_identifier = accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_EDITOR') ||
                     accessService.checkPermAffiliationX("ORG_INST,ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN,ROLE_ORG_EDITOR")
         }
         else {
-            pu.setBenchmark('editable_identifier2')
+            prf.setBenchmark('editable_identifier2')
             if(accessService.checkPerm("ORG_CONSORTIUM")) {
                 List<Long> consortia = Combo.executeQuery('select c.id from Combo c where c.type = :type and c.fromOrg = :target and c.toOrg = :context',[type:RDStore.COMBO_TYPE_CONSORTIUM,target:result.orgInstance,context:result.institution])
                 if(consortia.size() == 1 && accessService.checkMinUserOrgRole(result.user,result.institution,'INST_EDITOR'))
@@ -938,7 +938,7 @@ class OrganisationController  {
             return
           }
 
-        pu.setBenchmark('create Identifiers if necessary')
+        prf.setBenchmark('create Identifiers if necessary')
 
         // TODO: experimental asynchronous task
         //waitAll(task_orgRoles, task_properties)
@@ -947,7 +947,7 @@ class OrganisationController  {
             result.orgInstance.createCoreIdentifiersIfNotExist()
         }
 
-        pu.setBenchmark('orgsettings')
+        prf.setBenchmark('orgsettings')
         Boolean inContextOrg = result.inContextOrg
         Boolean isComboRelated = Combo.findByFromOrgAndToOrg(result.orgInstance, result.institution)
         result.isComboRelated = isComboRelated
@@ -997,7 +997,7 @@ class OrganisationController  {
             }
 
         }
-        List bm = pu.stopBenchmark()
+        List bm = prf.stopBenchmark()
         result.benchMark = bm
         result
     }

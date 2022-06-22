@@ -1,4 +1,4 @@
-<%@ page import="de.laser.ApiSource; de.laser.Platform; de.laser.titles.BookInstance" %>
+<%@ page import="de.laser.remote.ApiSource; de.laser.Platform; de.laser.titles.BookInstance" %>
 
 <table class="ui sortable celled la-js-responsive-table la-table table ignore-floatThead la-bulk-header">
     <thead>

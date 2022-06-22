@@ -13,6 +13,8 @@ class Perm {
     static mapping = {
         cache   true
         version false
+        id      column:'pm_id'
+        code    column:'pm_code'
     }
 
     static constraints = {

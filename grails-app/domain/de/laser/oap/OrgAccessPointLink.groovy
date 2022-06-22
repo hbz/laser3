@@ -32,7 +32,12 @@ class OrgAccessPointLink extends AbstractBase {
 
     static mapping = {
         id              column:'oapl_id'
+        active          column:'oapl_active'
+        globalUID       column:'oapl_guid'
         version         column:'oapl_version'
+        oap             column:'oapl_oap_fk'
+        platform        column:'oapl_platform_fk'
+        subPkg          column:'oapl_sub_pkg_fk'
         dateCreated     column:'oapl_date_created'
         lastUpdated     column:'oapl_last_updated'
     }

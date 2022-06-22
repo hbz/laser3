@@ -149,6 +149,8 @@ class CostItem extends AbstractBase
         startDate       column: 'ci_start_date',  index:'ci_dates_idx'
         copyBase        column: 'ci_copy_base'
         reference       column: 'ci_reference'
+        dateCreated     column: 'ci_date_created'
+        lastUpdated     column: 'ci_last_updated'
         autoTimestamp true
     }
 

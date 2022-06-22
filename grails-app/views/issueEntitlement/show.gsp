@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.ConfigMapper; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.titles.JournalInstance; de.laser.titles.BookInstance; de.laser.ApiSource; de.laser.IssueEntitlement" %>
+<%@ page import="de.laser.utils.ConfigMapper; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.titles.JournalInstance; de.laser.titles.BookInstance; de.laser.remote.ApiSource; de.laser.IssueEntitlement" %>
 <!doctype html>
 <html>
 <head>

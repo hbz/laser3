@@ -94,8 +94,8 @@ class SurveyController {
     })
     Map<String, Object> currentSurveysConsortia() {
         Map<String, Object> result = [:]
-        Profiler pu = new Profiler()
-        pu.setBenchmark("init")
+        Profiler prf = new Profiler()
+        prf.setBenchmark("init")
         result.institution = contextService.getOrg()
         result.user = contextService.getUser()
 
@@ -106,11 +106,11 @@ class SurveyController {
         params.max = result.max
         params.offset = result.offset
         //params.filterStatus = params.filterStatus ?: ((params.size() > 4) ? "" : [RDStore.SURVEY_SURVEY_STARTED.id.toString(), RDStore.SURVEY_READY.id.toString(), RDStore.SURVEY_IN_PROCESSING.id.toString()])
-        pu.setBenchmark("before properties")
+        prf.setBenchmark("before properties")
         result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SVY_PROP], (Org) result.institution)
-        pu.setBenchmark("after properties")
+        prf.setBenchmark("after properties")
 
-        pu.setBenchmark("before surveyYears")
+        prf.setBenchmark("before surveyYears")
         result.surveyYears = SurveyInfo.executeQuery("select Year(startDate) from SurveyInfo where owner = :org and startDate != null group by YEAR(startDate) order by YEAR(startDate)", [org: result.institution]) ?: []
 
         if (params.validOnYear == null || params.validOnYear == '') {
@@ -123,16 +123,16 @@ class SurveyController {
             params.validOnYear = [newYear]
         }
 
-        pu.setBenchmark("after surveyYears and before current org ids of providers and agencies")
+        prf.setBenchmark("after surveyYears and before current org ids of providers and agencies")
         result.providers = orgTypeService.getCurrentOrgsOfProvidersAndAgencies( (Org) result.institution )
-        pu.setBenchmark("after providers and agencies and before subscriptions")
+        prf.setBenchmark("after providers and agencies and before subscriptions")
         result.subscriptions = Subscription.executeQuery("select DISTINCT s.name from Subscription as s where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
                 " AND s.instanceOf is not null order by s.name asc ", ['roleType': RDStore.OR_SUBSCRIPTION_CONSORTIA, 'activeInst': result.institution])
-        pu.setBenchmark("after subscriptions and before survey config query")
+        prf.setBenchmark("after subscriptions and before survey config query")
         Map<String,Object> fsq = filterService.getSurveyConfigQueryConsortia(params, DateUtils.getLocalizedSDF_noTime(), (Org) result.institution)
-        pu.setBenchmark("after query, before survey config execution")
+        prf.setBenchmark("after query, before survey config execution")
         result.surveys = SurveyInfo.executeQuery(fsq.query, fsq.queryParams, params)
-        pu.setBenchmark("after survey config execute")
+        prf.setBenchmark("after survey config execute")
         if ( params.exportXLSX ) {
 
             SXSSFWorkbook wb
@@ -160,11 +160,11 @@ class SurveyController {
             wb.dispose()
 
         }else {
-            pu.setBenchmark("before surveysCount")
+            prf.setBenchmark("before surveysCount")
             result.surveysCount = SurveyInfo.executeQuery(fsq.query, fsq.queryParams).size()
             result.filterSet = params.filterSet ? true : false
-            pu.setBenchmark("output")
-            result.benchMark = pu.stopBenchmark()
+            prf.setBenchmark("output")
+            result.benchMark = prf.stopBenchmark()
             result
         }
     }

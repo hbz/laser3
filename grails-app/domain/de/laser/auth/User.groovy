@@ -51,6 +51,23 @@ class User {
 	    table           name: '`user`'
 	    password        column: '`password`'
 
+        id              column: 'usr_id'
+        version         column: 'usr_version'
+
+        accountExpired  column: 'usr_account_expired'
+        accountLocked   column: 'usr_account_locked'
+        display         column: 'usr_display'
+        email           column: 'usr_email'
+        enabled         column: 'usr_enabled'
+        image           column: 'usr_image'
+        password        column: 'usr_password'
+        passwordExpired column: 'usr_password_expired'
+        shibbScope      column: 'usr_shibb_scope'
+        username        column: 'usr_username'
+        
+        lastUpdated     column: 'usr_last_updated'
+        dateCreated     column: 'usr_date_created'
+        
         affiliations    batchSize: 10
         roles           batchSize: 10
     }

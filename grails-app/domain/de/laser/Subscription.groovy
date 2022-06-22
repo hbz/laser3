@@ -183,6 +183,9 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         //hasPerpetualAccess column: 'sub_has_perpetual_access_rv_fk'
         hasPublishComponent column: 'sub_has_publish_component', defaultValue: false
         isPublicForApi  column:'sub_is_public_for_api', defaultValue: false
+
+        dateCreated          column: 'sub_date_created'
+        lastUpdated          column: 'sub_last_updated'
         lastUpdatedCascading column: 'sub_last_updated_cascading'
 
         noticePeriod    column:'sub_notice_period'

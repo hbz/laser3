@@ -62,8 +62,8 @@ class LicenseController {
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def show() {
 
-        Profiler pu = new Profiler()
-        pu.setBenchmark('this-n-that')
+        Profiler prf = new Profiler()
+        prf.setBenchmark('this-n-that')
 
         log.debug("license: ${params}");
         Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW)
@@ -77,7 +77,7 @@ class LicenseController {
 
         // ---- pendingChanges : start
 
-        pu.setBenchmark('pending changes')
+        prf.setBenchmark('pending changes')
 
         if (executorWrapperService.hasRunningProcess(result.license)) {
             log.debug("PendingChange processing in progress")
@@ -109,7 +109,7 @@ class LicenseController {
 
         // ---- pendingChanges : end
 
-        pu.setBenchmark('tasks')
+        prf.setBenchmark('tasks')
 
             // tasks
             result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.institution, result.license)
@@ -123,7 +123,7 @@ class LicenseController {
                     [license:result.license,context:result.institution,roleTypes:[RDStore.OR_LICENSEE, RDStore.OR_LICENSEE_CONS]]
             )
 
-        pu.setBenchmark('properties')
+        prf.setBenchmark('properties')
 
             // -- private properties
 
@@ -147,7 +147,7 @@ class LicenseController {
             }
 
             if(result.license._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL) {
-                pu.setBenchmark('non-inherited member properties')
+                prf.setBenchmark('non-inherited member properties')
                 Set<License> childLics = result.license.getDerivedLicenses()
                 if(childLics) {
                     String localizedName = LocaleUtils.getLocalizedAttributeName('name')
@@ -157,7 +157,7 @@ class LicenseController {
                 }
             }
 
-            pu.setBenchmark('links')
+            prf.setBenchmark('links')
 
             if(params.export)
                 result.links = linksGenerationService.getSourcesAndDestinations(result.license, result.user, RefdataCategory.getAllRefdataValues(RDConstants.LINK_TYPE)-RDStore.LINKTYPE_LICENSE)
@@ -185,7 +185,7 @@ class LicenseController {
                 }
             }
 
-        pu.setBenchmark('licensor filter')
+        prf.setBenchmark('licensor filter')
 
 
         //a new query builder service for selection lists has been introduced
@@ -199,7 +199,7 @@ class LicenseController {
                 )*/
         result.existingLicensorIdList = []
 
-        List bm = pu.stopBenchmark()
+        List bm = prf.stopBenchmark()
         result.benchMark = bm
         if(params.export) {
             result.availablePropDefGroups = PropertyDefinitionGroup.getAvailableGroups(result.institution, License.class.name)

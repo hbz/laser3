@@ -101,17 +101,17 @@ class SubscriptionControllerService {
      * @return the given subscription's details
      */
     Map<String,Object> show(GrailsParameterMap params) {
-        Profiler pu = new Profiler()
-        pu.setBenchmark('1')
+        Profiler prf = new Profiler()
+        prf.setBenchmark('1')
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         if(!result)
             [result:null,status:STATUS_ERROR]
         else {
-            pu.setBenchmark('this-n-that')
+            prf.setBenchmark('this-n-that')
             if (result.institution) {
                 result.institutional_usage_identifier = OrgSetting.get(result.institution, OrgSetting.KEYS.NATSTAT_SERVER_REQUESTOR_ID)
             }
-            pu.setBenchmark('packages')
+            prf.setBenchmark('packages')
             // ---- pendingChanges : start
             result.pendingChangeConfigSettings = RefdataCategory.getAllRefdataValues(RDConstants.PENDING_CHANGE_CONFIG_SETTING)
             /*if (executorWrapperService.hasRunningProcess(result.subscription)) {
@@ -142,7 +142,7 @@ class SubscriptionControllerService {
                 }
             }*/
             // ---- pendingChanges : end
-            pu.setBenchmark('tasks')
+            prf.setBenchmark('tasks')
             // TODO: experimental asynchronous task
             //def task_tasks = task {
             // tasks
@@ -155,7 +155,7 @@ class SubscriptionControllerService {
             // restrict visible for templates/links/orgLinksAsList
             result.visibleOrgRelations = result.subscription.orgRelations.findAll { OrgRole oo -> !(oo.roleType.id in excludes) }
             //}
-            pu.setBenchmark('properties')
+            prf.setBenchmark('properties')
             // TODO: experimental asynchronous task
             //def task_properties = task {
             // -- private properties
@@ -189,25 +189,25 @@ class SubscriptionControllerService {
             }
             //}
             if(ConfigMapper.getShowStatsInfo()) {
-                pu.setBenchmark('usage')
+                prf.setBenchmark('usage')
                 // TODO: experimental asynchronous task
                 //def task_usage = task {
                 // usage
-                pu.setBenchmark('before platform query')
+                prf.setBenchmark('before platform query')
                 Set suppliers = Platform.executeQuery('select plat.id from IssueEntitlement ie join ie.tipp tipp join tipp.platform plat where ie.subscription = :sub', [sub: result.subscription])
                 if (suppliers.size() > 1) {
                     log.debug('Found different content platforms for this subscription, cannot show usage')
                 } else {
-                    pu.setBenchmark('before loading platform')
+                    prf.setBenchmark('before loading platform')
                     Long supplier_id = suppliers[0]
                     PlatformProperty platform = PlatformProperty.executeQuery('select pp from PlatformProperty pp join pp.type pd where pp.owner.id = :owner and pd.name = :name and pd.descr = :descr', [owner: supplier_id, name: 'NatStat Supplier ID', descr: PropertyDefinition.PLA_PROP])[0]
                     //        PlatformProperty.findByOwnerAndType(Platform.get(supplier_id), PropertyDefinition.getByNameAndDescr('NatStat Supplier ID', PropertyDefinition.PLA_PROP))
-                    pu.setBenchmark('before institutional usage identifier')
+                    prf.setBenchmark('before institutional usage identifier')
                     result.natStatSupplierId = platform?.stringValue ?: null
                     if (result.institutional_usage_identifier != OrgSetting.SETTING_NOT_FOUND) {
-                        pu.setBenchmark('before usage data')
+                        prf.setBenchmark('before usage data')
                         def fsresult = factService.generateUsageData(result.institution.id, supplier_id, result.subscription)
-                        pu.setBenchmark('before usage data sub period')
+                        prf.setBenchmark('before usage data sub period')
                         def fsLicenseResult = factService.generateUsageDataForSubscriptionPeriod(result.institution.id, supplier_id, result.subscription)
                         Set<RefdataValue> holdingTypes = RefdataValue.executeQuery('select tipp.titleType from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :context', [context: result.subscription])
                         if (!holdingTypes) {
@@ -216,7 +216,7 @@ class SubscriptionControllerService {
                             log.info('Different content type for this license, cannot calculate Cost Per Use.')
                         } else if (!fsLicenseResult.isEmpty() && result.subscription.startDate) {
                             def existingReportMetrics = fsLicenseResult.y_axis_labels*.split(':')*.last()
-                            pu.setBenchmark('before total cost per use')
+                            prf.setBenchmark('before total cost per use')
                             def costPerUseMetricValuePair = factService.getTotalCostPerUse(result.subscription, holdingTypes.first(), existingReportMetrics)
                             if (costPerUseMetricValuePair) {
                                 result.costPerUseMetric = costPerUseMetricValuePair[0]
@@ -233,7 +233,7 @@ class SubscriptionControllerService {
                             result.x_axis_labels = fsresult?.x_axis_labels
                             result.y_axis_labels = fsresult?.y_axis_labels
                             result.lusage = fsLicenseResult?.usage
-                            pu.setBenchmark('before last usage period for report type')
+                            prf.setBenchmark('before last usage period for report type')
                             result.lastUsagePeriodForReportType = factService.getLastUsagePeriodForReportType(result.natStatSupplierId, result.statsWibid)
                             result.l_x_axis_labels = fsLicenseResult?.x_axis_labels
                             result.l_y_axis_labels = fsLicenseResult?.y_axis_labels
@@ -263,7 +263,7 @@ class SubscriptionControllerService {
                 }*/
             }
             //}
-            pu.setBenchmark('costs')
+            prf.setBenchmark('costs')
             //cost items
             params.subDetailsPage = true
             LinkedHashMap costItems = financeService.getCostItemsForSubscription(params, financeControllerService.getResultGenerics(params))
@@ -280,13 +280,13 @@ class SubscriptionControllerService {
             if (costItems.subscr) {
                 result.costItemSums.subscrCosts = costItems.subscr.sums
             }
-            pu.setBenchmark('provider & agency filter')
+            prf.setBenchmark('provider & agency filter')
             // TODO: experimental asynchronous task
             //def task_providerFilter = task {
             //}
             result.publicSubscriptionEditors = Person.getPublicByOrgAndObjectResp(null, result.subscription, 'Specific subscription editor')
             if(result.subscription._getCalculatedType() in [CalculatedType.TYPE_ADMINISTRATIVE,CalculatedType.TYPE_CONSORTIAL]) {
-                pu.setBenchmark('non-inherited member properties')
+                prf.setBenchmark('non-inherited member properties')
                 List<Subscription> childSubs = result.subscription.getNonDeletedDerivedSubscriptions()
                 if(childSubs) {
                     String localizedName = LocaleUtils.getLocalizedAttributeName('name')
@@ -296,7 +296,7 @@ class SubscriptionControllerService {
                     result.memberProperties = memberProperties
                 }
             }
-            List bm = pu.stopBenchmark()
+            List bm = prf.stopBenchmark()
             result.benchMark = bm
 
             [result:result,status:STATUS_OK]
@@ -962,16 +962,16 @@ class SubscriptionControllerService {
      */
     Map<String,Object> members(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
-        Profiler pu = new Profiler()
-        pu.setBenchmark('init')
+        Profiler prf = new Profiler()
+        prf.setBenchmark('init')
         if(!result)
             [result:null,status:STATUS_ERROR]
-        pu.setBenchmark('before org props')
+        prf.setBenchmark('before org props')
         result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(result.institution)
         //result.validSubChilds = Subscription.executeQuery('select s from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes order by oo.org.sortname asc, oo.org.name asc',[parent:result.subscription,subscriberRoleTypes:subscriberRoleTypes])
-        pu.setBenchmark('getting filtered subscribers')
+        prf.setBenchmark('getting filtered subscribers')
         result.filteredSubChilds = getFilteredSubscribers(params,result.subscription)
-        pu.setBenchmark('after sub schildren')
+        prf.setBenchmark('after sub schildren')
         result.filterSet = params.filterSet ? true : false
         Set<Map<String,Object>> orgs = []
         if (params.exportXLS || params.format) {
@@ -1010,7 +1010,7 @@ class SubscriptionControllerService {
             }
             result.orgs = orgs
         }
-        List bm = pu.stopBenchmark()
+        List bm = prf.stopBenchmark()
         result.benchMark = bm
         [result:result,status:STATUS_OK]
     }

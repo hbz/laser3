@@ -67,6 +67,8 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
    serviceProvider column:'plat_servprov_rv_fk'
   softwareProvider column:'plat_softprov_rv_fk'
               org  column: 'plat_org_fk', index: 'plat_org_idx'
+             dateCreated column: 'plat_date_created'
+             lastUpdated column: 'plat_last_updated'
     lastUpdatedCascading column: 'plat_last_updated_cascading'
              tipps batchSize: 10
             oapp batchSize: 10

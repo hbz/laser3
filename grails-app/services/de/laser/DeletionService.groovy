@@ -958,8 +958,9 @@ class DeletionService {
      * @param className the domain class index from which the entry should be removed
      */
     void deleteDocumentFromIndex(id, String className) {
-        String es_index = ESWrapperService.es_indices.get(className)
         RestHighLevelClient esclient = ESWrapperService.getClient()
+        Map es_indices = ESWrapperService.ES_Indices
+        String es_index = es_indices.get(className)
 
         try {
             if(ESWrapperService.testConnection()) {

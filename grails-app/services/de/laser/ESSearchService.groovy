@@ -58,7 +58,7 @@ class ESSearchService{
 
    //List client = getClient()
    RestHighLevelClient esclient = ESWrapperService.getClient()
-   Map es_indices =  ESWrapperService.es_indices
+   Map es_indices = ESWrapperService.ES_Indices
 
     try {
       if(ESWrapperService.testConnection()) {
@@ -197,7 +197,7 @@ class ESSearchService{
    * @param params the search parameter map
    * @param field_map the reverse map containing the mapping of fields in the index
    * @return the prepared query string
-   * @see ESWrapperService#es_indices
+   * @see ESWrapperService#ES_Indices
    */
   String buildQuery(params,field_map) {
     //log.debug("BuildQuery... with params ${params}. ReverseMap: ${field_map}")

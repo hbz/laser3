@@ -22,6 +22,11 @@ class Role extends AbstractI10n {
 	static mapping = {
 		cache 	true
 		version	false
+		id				column:'r_id'
+		authority		column:'r_authority'
+		authority_de	column:'r_authority_de'
+		authority_en	column:'r_authority_en'
+		roleType		column:'r_role_type'
 	}
 
 	static hasMany = [
