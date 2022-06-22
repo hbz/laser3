@@ -2,6 +2,15 @@
 
 Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 1.1
+
+- added request parameter `changedFrom` for __/ezb/subscription/__
+- added new object: `EZBInstitutionList` (for documentation; no change on internal code)
+- added new object: `EZBInstitutionStub` (for documentation; no change on internal code)
+- removal of mandatory consortium permission for member subscriptions
+- schema updated
+- internal refactoring
+
 #### 1.0
 
 - first productive version of API with LAS:eR version 2.3
