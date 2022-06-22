@@ -496,6 +496,7 @@
       parameters:
         - $ref: "#/components/parameters/q"
         - $ref: "#/components/parameters/v"
+        - $ref: "#/components/parameters/changedFrom"
         - $ref: "#/components/parameters/authorization"
 
       responses:
@@ -532,7 +533,7 @@
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/PlaceholderList"
+                $ref: "#/components/schemas/EZBInstitutionList"
         401:
           $ref: "#/components/responses/notAuthorized"
         403:
