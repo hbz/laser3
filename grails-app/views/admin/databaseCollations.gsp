@@ -34,7 +34,7 @@
     </laser:script>
 </div>
 
-<div class="ui secondary stackable pointing tabular menu">
+<div class="ui secondary stackable pointing tabular la-tab-with-js menu">
     <a data-tab="first" class="item active">Übersicht</a>
     <a data-tab="second" class="item">Beispiele</a>
 </div>

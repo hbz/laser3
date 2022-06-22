@@ -84,7 +84,7 @@
         </div>--}%
 
         <div class="sixteen wide stretched column">
-            <div class="ui top attached stackable tabular menu">
+            <div class="ui top attached stackable tabular la-tab-with-js menu">
                 <g:link class="item ${params.tab == 'selectedSubParticipants' ? 'active' : ''}"
                         controller="survey" action="surveyCostItems"
                         id="${surveyConfig.surveyInfo.id}"

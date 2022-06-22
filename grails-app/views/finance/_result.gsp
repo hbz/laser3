@@ -3,7 +3,7 @@
     <div id="filterTemplateWrapper" class="wrapper">
         <div id="filterTemplate">
             <g:render template="filter" model="[filterPresets:filterPresets,fixedSubscription:fixedSubscription,showView:showView,ciTitles:ciTitles]"/>
-            <div id="financeFilterData" class="ui top attached tabular menu" data-current="${showView}">
+            <div id="financeFilterData" class="ui top attached tabular la-tab-with-js menu" data-current="${showView}">
                 <g:each in="${dataToDisplay}" var="view">
                     <g:if test="${view == 'own'}">
                         <div class="item" data-tab="own">

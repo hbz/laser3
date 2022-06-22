@@ -54,7 +54,7 @@
 <g:if test="${surveyConfig}">
     <div class="ui grid">
         <div class="sixteen wide stretched column">
-            <div class="ui top attached stackable tabular menu">
+            <div class="ui top attached stackable tabular la-tab-with-js menu">
 
                 <g:if test="${surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]}">
                     <g:link class="item ${params.tab == 'selectedSubParticipants' ? 'active' : ''}"

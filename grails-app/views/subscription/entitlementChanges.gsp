@@ -27,7 +27,7 @@
 </g:if>
 
 
-<div class="ui top attached stackable tabular menu">
+<div class="ui top attached stackable tabular la-tab-with-js menu">
     <g:link controller="subscription" action="entitlementChanges" id="${subscription.id}" params="[tab: 'changes', eventType: params.eventType]"
             class="item ${params.tab == "changes" ? 'active' : ''}">
         <g:message code="myinst.menu.pendingChanges.label"/>
@@ -62,7 +62,7 @@
         </g:form>
     </g:if>
 
-    <div class="ui top attached stackable tabular menu">
+    <div class="ui top attached stackable tabular la-tab-with-js menu">
         <%
             Set<String> eventTabs = PendingChangeConfiguration.SETTING_KEYS
             eventTabs.removeAll([PendingChangeConfiguration.PACKAGE_PROP, PendingChangeConfiguration.PACKAGE_DELETED])
