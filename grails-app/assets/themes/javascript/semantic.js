@@ -23462,7 +23462,7 @@ $.fn.tab.settings = {
 
   silent          : false,
   debug           : false,
-  verbose         : false,
+  verbose         : true,
   performance     : true,
 
   auto            : false,      // uses pjax style endpoints fetching content from same url with remote-content headers

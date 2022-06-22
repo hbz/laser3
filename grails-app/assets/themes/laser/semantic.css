@@ -1453,7 +1453,7 @@ aside.ui.accordion .title:not(.ui) {
 }
 
 i.icon.la-list-icon {
-  margin: -0.2rem 0.5rem 0 0;
+  margin: 0.1rem 0.5rem 0 0;
 }
 
 i.icon.la-list-icon:before {
@@ -7073,8 +7073,10 @@ i.icon.la-list-icon:before {
          Theme Overrides
 *******************************/
 
+/* Laser Breakpoint */
+
 @media only screen and (min-width: 1290px) {
-  .ui.container {
+  .ui.ui.ui.container:not(.fluid) {
     width: 1220px;
   }
 }
