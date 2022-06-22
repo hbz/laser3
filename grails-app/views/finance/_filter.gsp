@@ -123,18 +123,18 @@
             <div class="three fields">
                 <div class="field">
                     <label>${message(code:'financials.budgetCode')}</label>
-                    <div class="ui search selection multiple dropdown newFilter" id="filterCIBudgetCode">
+                    <%--<div class="ui search selection multiple dropdown newFilter" id="filterCIBudgetCode">
                         <input type="hidden" name="filterCIBudgetCode">
                         <i class="dropdown icon"></i>
                         <input type="text" class="search">
                         <div class="default text"><g:message code="default.select.all.label"/></div>
-                    </div>
-                    <%--<g:select id="filterCIBudgetCode" class="ui dropdown search selection"
+                    </div>--%>
+                    <g:select id="filterCIBudgetCode" class="ui multiple dropdown search selection"
                               name="filterCIBudgetCode"
-                              from=""
+                              from="${budgetCodes}"
                               optionKey="id" optionValue="value"
                               value="${filterPresets?.filterCIBudgetCode}"
-                              noSelection="${['':message(code:'default.select.all.label')]}" /> --%>
+                              noSelection="${['':message(code:'default.select.all.label')]}" />
                 </div>
 
                 <div class="field">
@@ -327,7 +327,6 @@
             "filterSubProviders": "${createLink([controller:"ajaxJson", action:"lookupProvidersAgencies"])}?query={query}&forFinanceView=true",
             "filterCISub": "${createLink([controller:"ajaxJson", action:"lookupSubscriptions"])}?status="+subStatus+"&query={query}",
             "filterCISPkg": "${createLink([controller:"ajaxJson", action:"lookupSubscriptionPackages"])}?status="+subStatus+fixedSubscriptionString+"&query={query}",
-            "filterCIBudgetCode": "${createLink([controller:"ajaxJson", action:"lookupBudgetCodes"])}?query={query}",
             "filterCIInvoiceNumber": "${createLink([controller:"ajaxJson", action:"lookupInvoiceNumbers"])}?query={query}",
             "filterCIOrderNumber": "${createLink([controller:"ajaxJson", action:"lookupOrderNumbers"])}?query={query}",
             "filterCIReference": "${createLink([controller:"ajaxJson", action:"lookupReferences"])}?query={query}"
@@ -343,9 +342,6 @@
                     break;
                 case 'filterSubProviders':
                     values = [<g:each in="${filterPresets?.filterSubProviders}" var="subProvider" status="i">'${genericOIDService.getOID(subProvider)}'<g:if test="${i < filterPresets.filterSubProviders.size()-1}">,</g:if></g:each>];
-                    break;
-                case 'filterCIBudgetCode':
-                    values = [<g:each in="${filterPresets?.filterCIBudgetCode}" var="budgetCode" status="i">'${budgetCode.id}'<g:if test="${i < filterPresets.filterCIBudgetCode.size()-1}">,</g:if></g:each>];
                     break;
                 case 'filterCIInvoiceNumber':
                     values = [<g:each in="${filterPresets?.filterCIInvoiceNumber}" var="invoiceNumber" status="i">'${invoiceNumber}'<g:if test="${i < filterPresets.filterCIInvoiceNumber.size()-1}">,</g:if></g:each>];
