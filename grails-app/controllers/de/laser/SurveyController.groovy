@@ -4895,4 +4895,43 @@ class SurveyController {
         redirect(url: request.getHeader('referer'))
 
     }
+
+    /**
+     * Set link to license or provider
+     * @return a redirect to the referer
+     */
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    Map<String,Object> setSurveyLink() {
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
+        if (!result.editable) {
+            response.sendError(401); return
+        }
+
+        if(params.linkSurvey){
+            SurveyInfo linkSurvey = SurveyInfo.get(params.linkSurvey)
+
+            if(linkSurvey){
+                if(SurveyLinks.findBySourceSurveyAndTargetSurvey(result.surveyInfo, linkSurvey)){
+                    flash.error = g.message(code: 'surveyLinks.link.exists')
+                }else {
+                    SurveyLinks surveyLink = new SurveyLinks(sourceSurvey: result.surveyInfo, targetSurvey: linkSurvey)
+                    if (!surveyLink.save(flush: true)) {
+                        flash.error = g.message(code: 'surveyInfo.link.fail')
+                    }
+                }
+            }
+        }
+
+        if(params.unlinkSurveyLink){
+            SurveyLinks surveyLink = SurveyLinks.get(params.unlinkSurveyLink)
+            surveyLink.delete(flush: true)
+
+        }
+
+        redirect(url: request.getHeader('referer'))
+
+    }
 }

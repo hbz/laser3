@@ -2200,6 +2200,82 @@ join sub.orgRelations or_sub where
         redirect(url: request.getHeader('referer'))
     }
 
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def surveyLinkOpenNewSurvey() {
+        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        SurveyLinks surveyLink = SurveyLinks.get(params.surveyLink)
+        SurveyInfo surveyInfo = surveyLink.targetSurvey
+        SurveyConfig surveyConfig = surveyInfo.surveyConfigs[0]
+        Org org = result.institution
+
+        result.editable = (surveyInfo && surveyInfo.status in [RDStore.SURVEY_SURVEY_STARTED]) ? result.editable : false
+
+        if (surveyLink && result.institution && result.editable) {
+
+            SurveyOrg.withTransaction { TransactionStatus ts ->
+                    boolean existsMultiYearTerm = false
+                    Subscription sub = surveyConfig.subscription
+                    if (sub && !surveyConfig.pickAndChoose && surveyConfig.subSurveyUseForTransfer) {
+                        Subscription subChild = sub.getDerivedSubscriptionBySubscribers(org)
+
+                        if (subChild && subChild.isCurrentMultiYearSubscriptionNew()) {
+                            existsMultiYearTerm = true
+                        }
+
+                    }
+
+                    if (!(SurveyOrg.findAllBySurveyConfigAndOrg(surveyConfig, org)) && !existsMultiYearTerm) {
+                        SurveyOrg surveyOrg = new SurveyOrg(
+                                surveyConfig: surveyConfig,
+                                org: org
+                        )
+
+                        if (!surveyOrg.save()) {
+                            log.debug("Error by add Org to SurveyOrg ${surveyOrg.errors}")
+                            flash.error = message(code: 'surveyLinks.participateToSurvey.fail')
+                        } else {
+                            if(surveyInfo.status in [RDStore.SURVEY_SURVEY_STARTED]){
+                                surveyConfig.surveyProperties.each { SurveyConfigProperties property ->
+                                    if (!SurveyResult.findWhere(owner: surveyInfo.owner, participant: org, type: property.surveyProperty, surveyConfig: surveyConfig)) {
+                                        SurveyResult surveyResult = new SurveyResult(
+                                                owner: surveyInfo.owner,
+                                                participant: org ?: null,
+                                                startDate: surveyInfo.startDate,
+                                                endDate: surveyInfo.endDate ?: null,
+                                                type: property.surveyProperty,
+                                                surveyConfig: surveyConfig
+                                        )
+
+                                        if (surveyResult.save()) {
+                                            log.debug(surveyResult.toString())
+                                        } else {
+                                            log.error("Not create surveyResult: " + surveyResult)
+                                            flash.error = message(code: 'surveyLinks.participateToSurvey.fail')
+                                        }
+                                    }
+                                }
+
+                                surveyService.emailsToSurveyUsersOfOrg(surveyInfo, org, false)
+                                flash.message = message(code: 'surveyLinks.participateToSurvey.success')
+                            }
+                        }
+                    }
+                }
+                surveyConfig.save()
+        }
+
+        redirect(url: request.getHeader('referer'))
+    }
+
     /**
      * Lists the users of the context institution
      * @return a list of users affiliated to the context institution

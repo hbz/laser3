@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4319    24.06.2022  rc-2.3  2.3.2       Moe     Bug         Umfragen miteinander verknüpfen
+
 4313    22.06.2022  rc-2.3  2.3.2       Andreas Bug         diverse Nachbesserungen API (Versionssprung 1.0 auf 1.1)
 
 4311    21.06.2022  rc-2.3  2.3.2       Andreas Bug         ClickMichExcel für Meine Einrichtungen lieferte leere Tabelle aus
