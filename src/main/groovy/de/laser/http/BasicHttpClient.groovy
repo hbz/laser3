@@ -3,7 +3,8 @@ package de.laser.http
 import grails.converters.JSON
 import groovy.json.JsonOutput
 import groovy.util.logging.Slf4j
-import groovy.util.slurpersupport.GPathResult
+import groovy.xml.XmlSlurper
+import groovy.xml.slurpersupport.GPathResult
 import io.micronaut.http.client.HttpClient
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpResponse
@@ -42,6 +43,7 @@ class BasicHttpClient {
     static enum PostType {
         TEXT    ('text/plain'),
         JSON    ('application/json'),
+        SOAP    ('application/soap+xml'),
         URLENC  ('application/x-www-form-urlencoded')
 
         final String mineType
