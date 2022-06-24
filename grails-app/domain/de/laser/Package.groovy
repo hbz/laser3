@@ -14,6 +14,7 @@ import grails.web.servlet.mvc.GrailsParameterMap
 import javax.persistence.Transient
 import java.text.Normalizer
 import java.text.SimpleDateFormat
+import java.util.regex.Pattern
 
 /**
  * This class reflects a title package which may be subscribed as a whole or partially (e.g. pick-and-choose).
@@ -341,11 +342,21 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
   static String generateSortName(String input_title) {
     if (!input_title) return null
     String s1 = Normalizer.normalize(input_title, Normalizer.Form.NFKD).trim().toLowerCase()
+      Pattern punctuation = Pattern.compile('\\p{P}')
+      s1 = s1.replaceAll(punctuation, '')
     s1 = s1.replaceFirst('^copy of ','')
     s1 = s1.replaceFirst('^the ','')
     s1 = s1.replaceFirst('^a ','')
+    s1 = s1.replaceFirst('^an ','')
     s1 = s1.replaceFirst('^der ','')
-
+    s1 = s1.replaceFirst('^die ','')
+    s1 = s1.replaceFirst('^das ','')
+    s1 = s1.replaceFirst('^l\'','')
+    s1 = s1.replaceFirst('^le ','')
+    s1 = s1.replaceFirst('^la ','')
+    s1 = s1.replaceFirst('^les ','')
+    s1 = s1.replaceFirst('^des ','')
+    s1 = s1.replaceAll('°', ' ') //no trailing or leading °, so trim() is not needed
     return s1.trim()
 
   }
