@@ -7,6 +7,7 @@ import grails.util.Environment
 import grails.util.Holders
 import grails.core.GrailsClass
 import groovy.util.logging.Slf4j
+import org.grails.datastore.mapping.model.PersistentEntity
 
 /**
  * Util class for determining domain classes
@@ -128,5 +129,18 @@ class AppUtils {
      */
     static List<GrailsClass> getAllDomainClasses() {
         Holders.grailsApplication.getArtefacts('Domain').toList()
+    }
+
+    // -- persistent entities
+
+    static PersistentEntity getPersistentEntity(String qualifiedName) {
+        // fallback
+        String fallback = qualifiedName.replace('class ', '')
+        PersistentEntity pe = Holders.grailsApplication.mappingContext.getPersistentEntity( fallback )
+
+        if (! pe) {
+            log.warn "Found no result - getPersistentEntity( ${qualifiedName} )"
+        }
+        pe
     }
 }

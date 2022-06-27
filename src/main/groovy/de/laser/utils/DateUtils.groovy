@@ -89,7 +89,7 @@ class DateUtils {
     }
 
     static SimpleDateFormat getSDF_yyyyMMddTHHmmssZ(){
-        return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z")
+        return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
     }
 
     // --

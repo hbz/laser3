@@ -12,12 +12,16 @@ import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.base.AbstractLockableService
 import grails.converters.JSON
+import grails.core.GrailsApplication
 import grails.gorm.transactions.Transactional
 import grails.core.GrailsClass
 import grails.web.databinding.DataBindingUtils
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import net.sf.json.JSONObject
+import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.model.PersistentProperty
+import org.grails.datastore.mapping.model.types.Association
 import org.grails.web.json.JSONElement
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
@@ -36,6 +40,7 @@ class PendingChangeService extends AbstractLockableService {
     AuditService auditService
     ContextService contextService
     EscapeService escapeService
+    GrailsApplication grailsApplication
     GenericOIDService genericOIDService
     MessageSource messageSource
     SubscriptionService subscriptionService
@@ -120,41 +125,51 @@ class PendingChangeService extends AbstractLockableService {
                             if ( target_object ) {
                                 target_object.refresh()
                                 // Work out if parsed_change_info.changeDoc.prop is an association - If so we will need to resolve the OID in the value
-                                GrailsClass domain_class = AppUtils.getDomainClass( target_object.class.name )
-                                def prop_info = domain_class.getPersistentProperty(payload.changeDoc.prop)
-                                if(prop_info == null){
-                                    log.debug("We are dealing with custom properties or identifiers: ${payload}")
-                                    //processCustomPropertyChange(payload)
-                                    if(payload.changeDoc.OID.contains(Identifier.class.name))
-                                        _processIdentifierChange(pendingChange, payload)
-                                    else if(payload.changeDoc.OID.contains("Property"))
-                                        _processCustomPropertyChange(pendingChange, payload) // TODO [ticket=1894]
-                                }
-                                else if ( prop_info.name == 'status' ) {
-                                    RefdataValue oldStatus = (RefdataValue) genericOIDService.resolveOID(payload.changeDoc.old)
-                                    RefdataValue newStatus = (RefdataValue) genericOIDService.resolveOID(payload.changeDoc.new)
-                                    log.debug("Updating status from ${oldStatus.getI10n('value')} to ${newStatus.getI10n('value')}")
-                                    target_object.status = newStatus
-                                }
-                                else if ( prop_info.isAssociation() ) {
-                                    log.debug("Setting association for ${payload.changeDoc.prop} to ${payload.changeDoc.new}");
-                                    target_object[payload.changeDoc.prop] = genericOIDService.resolveOID(payload.changeDoc.new)
-                                }
-                                else if ( prop_info.getType() == java.util.Date ) {
-                                    log.debug("Date processing.... parse \"${payload.changeDoc.new}\"");
-                                    if ( ( payload.changeDoc.new != null ) && ( payload.changeDoc.new.toString() != 'null' ) ) {
-                                        //if ( ( parsed_change_info.changeDoc.new != null ) && ( parsed_change_info.changeDoc.new != 'null' ) ) {
-                                        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"); // yyyy-MM-dd'T'HH:mm:ss.SSSZ 2013-08-31T23:00:00Z
-                                        Date d = df.parse(payload.changeDoc.new)
-                                        target_object[payload.changeDoc.prop] = d
+
+                                // GrailsClass domain_class = AppUtils.getDomainClass( target_object.class.name )
+                                // def prop_info = domain_class.getPersistentProperty(payload.changeDoc.prop)
+                                PersistentEntity pe = grailsApplication.mappingContext.getPersistentEntity( target_object.class.name )
+
+                                if (pe) {
+                                    PersistentProperty prop_info = pe.persistentProperties.find { it.name == payload.changeDoc.prop }
+                                    Association prop_info_association = pe.associations.find { it.name == payload.changeDoc.prop }
+
+                                    if (prop_info) {
+                                        if (prop_info.getName() == 'status') {
+                                            RefdataValue oldStatus = (RefdataValue) genericOIDService.resolveOID(payload.changeDoc.old)
+                                            RefdataValue newStatus = (RefdataValue) genericOIDService.resolveOID(payload.changeDoc.new)
+                                            log.debug("Updating status from ${oldStatus.getI10n('value')} to ${newStatus.getI10n('value')}")
+                                            target_object.status = newStatus
+                                        }
+                                        else if (prop_info.getType() == java.util.Date) {
+                                            log.debug("Date processing.... parse \"${payload.changeDoc.new}\"");
+                                            if ((payload.changeDoc.new != null) && (payload.changeDoc.new.toString() != 'null')) {
+                                                //if ( ( parsed_change_info.changeDoc.new != null ) && ( parsed_change_info.changeDoc.new != 'null' ) ) {
+                                                SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+                                                // yyyy-MM-dd'T'HH:mm:ss.SSSZ 2013-08-31T23:00:00Z
+                                                Date d = df.parse(payload.changeDoc.new)
+                                                target_object[payload.changeDoc.prop] = d
+                                            } else {
+                                                target_object[payload.changeDoc.prop] = null
+                                            }
+                                        }
+                                        else if (prop_info && prop_info_association) {
+                                            log.debug("Setting association for ${payload.changeDoc.prop} to ${payload.changeDoc.new}");
+                                            target_object[payload.changeDoc.prop] = genericOIDService.resolveOID(payload.changeDoc.new)
+                                        }
+                                        else {
+                                            log.debug("Setting value for ${payload.changeDoc.prop} to ${payload.changeDoc.new}");
+                                            target_object[payload.changeDoc.prop] = payload.changeDoc.new
+                                        }
                                     }
                                     else {
-                                        target_object[payload.changeDoc.prop] = null
+                                        log.debug("We are dealing with custom properties or identifiers: ${payload}")
+                                        //processCustomPropertyChange(payload)
+                                        if (payload.changeDoc.OID.contains(Identifier.class.name))
+                                            _processIdentifierChange(pendingChange, payload)
+                                        else if (payload.changeDoc.OID.contains("Property"))
+                                            _processCustomPropertyChange(pendingChange, payload) // TODO [ticket=1894]
                                     }
-                                }
-                                else {
-                                    log.debug("Setting value for ${payload.changeDoc.prop} to ${payload.changeDoc.new}");
-                                    target_object[payload.changeDoc.prop] = payload.changeDoc.new
                                 }
 
                                 if(target_object.save()) {
