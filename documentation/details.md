@@ -1,5 +1,5 @@
 
-## Upgrade from Grails 3.3.11 to Grails 5.1.8
+## Upgrade from Grails 3.3.11 to Grails 5.2.0
 
 ### SpringBootDeveloperTools
 
