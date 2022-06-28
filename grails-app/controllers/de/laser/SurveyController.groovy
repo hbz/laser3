@@ -331,7 +331,6 @@ class SurveyController {
 
         //flash.message = g.message(code: "createGeneralSurvey.create.successfull")
         redirect action: 'show', id: surveyInfo.id
-
     }
 
     /**
@@ -3342,7 +3341,7 @@ class SurveyController {
 
         Subscription subscription = Subscription.get(params.parentSub ?: null)
 
-        SimpleDateFormat sdf = new SimpleDateFormat('dd.MM.yyyy')
+        SimpleDateFormat sdf = DateUtils.getSDF_ddMMyyyy()
 
         result.errors = []
         Date newStartDate

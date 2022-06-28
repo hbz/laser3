@@ -2260,7 +2260,7 @@ class SubscriptionService {
         List errors = []
         Locale locale = LocaleContextHolder.getLocale()
         Org contextOrg = contextService.getOrg()
-        SimpleDateFormat databaseDateFormatParser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+        SimpleDateFormat databaseDateFormatParser = DateUtils.getSDF_yyyyMMddTHHmmssZ()
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         candidates.eachWithIndex{ entry, int s ->
             if(params["take${s}"]) {

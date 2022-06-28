@@ -2,7 +2,7 @@
 <laser:serviceInjection/>
 
 <%
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+    SimpleDateFormat sdf = DateUtils.getSDF_yyyyMMddTHHmmssZ()
     SimpleDateFormat sdfNoTime = DateUtils.getLocalizedSDF_noTime()
     String languageSuffix = LocaleUtils.getCurrentLang()
     String period

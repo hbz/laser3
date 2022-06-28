@@ -1,6 +1,7 @@
 package de.laser
 
 import de.laser.base.AbstractI10n
+import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.util.logging.Slf4j
@@ -222,7 +223,7 @@ class RefdataValue extends AbstractI10n implements Comparable<RefdataValue> {
      */
     static RefdataValue getCurrentSemester() {
         Calendar now = GregorianCalendar.getInstance(), adjacentYear = GregorianCalendar.getInstance()
-        SimpleDateFormat sdf = new SimpleDateFormat('yy')
+        SimpleDateFormat sdf = DateUtils.getSDF_yy()
         //Month is zero-based, April-September is summer term
         String semesterKey
         if(now.get(Calendar.MONTH) < 3) {

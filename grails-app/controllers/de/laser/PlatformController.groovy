@@ -131,24 +131,6 @@ class PlatformController  {
         }
         result.editable = accessService.checkPermAffiliationX('ORG_BASIC_MEMBER,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')
 
-        /*
-        List currentSubIds = orgTypeService.getCurrentSubscriptionIds(result.contextOrg)
-
-        String qry = "select distinct(ap) , spoap.id" +
-                " from " +
-                "    TitleInstancePackagePlatform tipp join tipp.platform platf join tipp.pkg pkg, " +
-                "    SubscriptionPackage subPkg join subPkg.subscriptionPackageOrgAccessPoint spoap join spoap.orgAccessPoint ap " +
-                " where " +
-                "    subPkg.pkg = pkg and "+
-                "    platf.id =  (:platformId) and " +
-                "    subPkg.subscription.id in (:currentSubIds)"
-        Map<String,Object> qryParams = [
-                platformId : platformInstance.id,
-                currentSubIds : currentSubIds
-        ]
-        //List orgAccessPointList = OrgAccessPoint.executeQuery(qry, qryParams)
-        */
-
         String hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as ap " +
                     "where ap.org =:institution and oapl.active=true and oapl.platform.id=${platformInstance.id} " +
                     "and oapl.subPkg is null order by LOWER(ap.name)"

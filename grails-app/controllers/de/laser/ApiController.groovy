@@ -216,19 +216,6 @@ class ApiController {
                     }
                 }
             }
-            /*
-            else if ('POST' == request.method) {
-                def postBody = request.getAttribute("authorizedApiPostBody")
-                def data = (postBody ? new JSON().parse(postBody) : null)
-
-                if (! data) {
-                    result = Constants.HTTP_BAD_REQUEST
-                }
-                else {
-                    result = ApiManager.write((String) obj, data, (User) user, (Org) contextOrg)
-                }
-            }
-            */
             else {
                 result = Constants.HTTP_NOT_IMPLEMENTED
             }

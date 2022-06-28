@@ -29,7 +29,7 @@ class TaskController  {
 	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def create() {
 		Task.withTransaction {
-			def contextOrg  = contextService.getOrg()
+			Org contextOrg = contextService.getOrg()
 			SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
 
 			if (params.endDate) {
@@ -83,8 +83,9 @@ class TaskController  {
 	@DebugInfo(test='hasAffiliation("INST_EDITOR")')
 	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def _modal_create() {
-        def contextOrg  = contextService.getOrg()
-		def result      = taskService.getPreconditions(contextOrg)
+        Org contextOrg = contextService.getOrg()
+		Map result = taskService.getPreconditions(contextOrg)
+
 		result.validSubscriptionsList = new ArrayList()
 		result.validSubscriptions.each{
 			result.validSubscriptionsList.add([it.id, it.dropdownNamingConvention(contextService.getOrg())])
@@ -101,7 +102,7 @@ class TaskController  {
     def edit() {
 		Task.withTransaction {
 			Org contextOrg = contextService.getOrg()
-			def result = taskService.getPreconditionsWithoutTargets(contextOrg)
+			Map result = taskService.getPreconditionsWithoutTargets(contextOrg)
 
 			SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
 
@@ -169,7 +170,7 @@ class TaskController  {
 	@Secured(['permitAll']) // TODO
 	def ajaxEdit() {
 		Org contextOrg = contextService.getOrg()
-		def result     = taskService.getPreconditionsWithoutTargets(contextOrg)
+		Map result = taskService.getPreconditionsWithoutTargets(contextOrg)
 		result.params = params
 		result.taskInstance = Task.get(params.id)
 

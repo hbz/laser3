@@ -22,14 +22,14 @@ class SwissKnife {
         Locale locale = LocaleContextHolder.getLocale()
 
         List<String> result = []
-        result.add(attrs.text ? attrs.text : '') // plain text
+        result.add(attrs.text ? attrs.text as String : '') // plain text
 
         if (attrs.message)
             if (checkMessageKey(attrs.message)) {
                 result.add("${messageSource.getMessage(attrs.message, attrs.args, locale)}") // translation via messages_<lang>.properties
             }
             else {
-                result.add(attrs.message) // plain text; fallback
+                result.add(attrs.message as String) // plain text; fallback
             }
         else {
             result.add('')

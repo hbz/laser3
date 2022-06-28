@@ -87,7 +87,6 @@ class SearchController  {
         String filtered
         String query = "${params.query}"
         result.user = contextService.getUser()
-        //params.max = result.user.getDefaultPageSize() ?: 15
         params.max = 50
 
         if (!query) {
@@ -149,7 +148,6 @@ class SearchController  {
                 result = ESSearchService.search(params)
             }
             result.filtered = filtered
-            // result?.facets?.type?.pop()?.term
         }
         result
     }

@@ -407,7 +407,7 @@ class StatsSyncService {
                                     Map<String, Object> calendarConfig = initCalendarConfig(onlyNewest)
                                     //DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
                                     Calendar startTime = GregorianCalendar.getInstance(), currentYearEnd = GregorianCalendar.getInstance()
-                                    SimpleDateFormat monthFormatter = new SimpleDateFormat("yyyy-MM")
+                                    SimpleDateFormat monthFormatter = DateUtils.getSDF_yyyyMM()
                                     //TitleInstancePackagePlatform.withNewTransaction {
                                     log.debug("${Thread.currentThread().getName()} now processing key pair ${i}, requesting data for ${keyPair.customerName}:${keyPair.value}:${keyPair.requestorKey}")
                                     String params = "?customer_id=${keyPair.value}&requestor_id=${keyPair.requestorKey}&api_key=${keyPair.requestorKey}"
@@ -1175,7 +1175,7 @@ class StatsSyncService {
                 identifierType: options.identifier.ns,
                 supplierId: options.platform,
                 customerId: options.customer,
-                availFrom: new SimpleDateFormat("yyyy-MM-dd").parse(SYNC_STATS_FROM),
+                availFrom: DateUtils.getSDF_yyyyMMdd().parse(SYNC_STATS_FROM),
                 availTo: null,
                 factType: options.factType
             )
@@ -1205,7 +1205,7 @@ class StatsSyncService {
                 // for now use a list of error messages
                 List jsonErrors = []
                 csr = getCursor(options)
-                Date mostRecentClosedDate = new SimpleDateFormat("yyyy-MM-dd").parse(options.mostRecentClosedPeriod)
+                Date mostRecentClosedDate = DateUtils.getSDF_yyyyMMdd().parse(options.mostRecentClosedPeriod)
                 if (options.identifierTypeAllowedForAPICall() &&
                     ((csr.availTo == null) || (csr.availTo < mostRecentClosedDate))) {
                     options.from = getNextFromPeriod(csr)
@@ -1258,7 +1258,7 @@ class StatsSyncService {
         }
         // 3030 Exception or single title query without ItemPerformance, no usage data for fetched report
         if (itemPerformances.empty) {
-            csr.availTo = new SimpleDateFormat('yyyy-MM-dd').parse(options.mostRecentClosedPeriod)
+            csr.availTo = DateUtils.getSDF_yyyyMMdd().parse(options.mostRecentClosedPeriod)
             // We get a new month with no usage for a single title
             if (! _isNoUsageAvailableException(xml)) {
                 List notProcessedMonths = getNotProcessedMonths(xml)
@@ -1293,8 +1293,8 @@ class StatsSyncService {
                 usageMap.each { key, countPerMetric ->
                     Map fact = [:]
                     countPerMetric.each { metric, count ->
-                        fact.from = new SimpleDateFormat('yyyy-MM-dd').parse(key)
-                        fact.to = new SimpleDateFormat('yyyy-MM-dd').parse(_getDateForLastDayOfMonth(key))
+                        fact.from = DateUtils.getSDF_yyyyMMdd().parse(key)
+                        fact.to = DateUtils.getSDF_yyyyMMdd().parse(_getDateForLastDayOfMonth(key))
                         cal.setTime(fact.to)
                         fact.reportingYear = cal.get(Calendar.YEAR)
                         fact.reportingMonth = cal.get(Calendar.MONTH) + 1
@@ -1313,8 +1313,8 @@ class StatsSyncService {
                 }
                 // First csr -> update
                 if (csr.availTo == null){
-                    csr.availFrom = new SimpleDateFormat('yyyy-MM').parse(it['begin'])
-                    csr.availTo = new SimpleDateFormat('yyyy-MM-dd').parse(_getDateForLastDayOfMonth(it.end))
+                    csr.availFrom = DateUtils.getSDF_yyyyMM().parse(it['begin'])
+                    csr.availTo = DateUtils.getSDF_yyyyMMdd().parse(_getDateForLastDayOfMonth(it.end))
                     csr.numFacts = factCount
                     csr.save()
 
@@ -1346,8 +1346,8 @@ class StatsSyncService {
      */
     private StatsTripleCursor _writeNewCsr(factCount, begin, end, options){
         StatsTripleCursor csr = new StatsTripleCursor()
-        csr.availFrom = new SimpleDateFormat('yyyy-MM').parse(begin)
-        csr.availTo = new SimpleDateFormat('yyyy-MM-dd').parse(_getDateForLastDayOfMonth(end))
+        csr.availFrom = DateUtils.getSDF_yyyyMM().parse(begin)
+        csr.availTo = DateUtils.getSDF_yyyyMMdd().parse(_getDateForLastDayOfMonth(end))
         csr.customerId = options.customer
         csr.numFacts = factCount
         csr.titleId = options.statsTitleIdentifier
@@ -1701,7 +1701,7 @@ class StatsSyncService {
      * @return the full string of the last month of the day
      */
     private String _getDateForLastDayOfMonth(yearMonthString) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM")
+        SimpleDateFormat sdf = DateUtils.getSDF_yyyyMM()
         GregorianCalendar cal = new GregorianCalendar()
         cal.setTime(sdf.parse(yearMonthString))
         cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH))

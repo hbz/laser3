@@ -1,7 +1,7 @@
 <%@ page import="de.laser.utils.LocaleUtils; de.laser.utils.DateUtils; de.laser.survey.SurveyConfig; de.laser.I10nTranslation; org.springframework.context.i18n.LocaleContextHolder; de.laser.DocContext; de.laser.RefdataValue; de.laser.storage.RDStore; java.text.SimpleDateFormat" %>
 <%
     List result = []
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+    SimpleDateFormat sdf = DateUtils.getSDF_yyyyMMddTHHmmssZ()
     SimpleDateFormat sdfNoTime = DateUtils.getLocalizedSDF_noTime()
     String languageSuffix = LocaleUtils.getCurrentLang()
 

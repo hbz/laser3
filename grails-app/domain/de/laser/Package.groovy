@@ -4,6 +4,7 @@ import de.laser.annotations.RefdataInfo
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
+import de.laser.utils.DateUtils
 import grails.web.servlet.mvc.GrailsParameterMap
 
 import javax.persistence.Transient
@@ -192,7 +193,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
     String hqlString = "select pkg from Package pkg where lower(pkg.name) like ? "
     def hqlParams = [((params.q ? params.q.toLowerCase() : '' ) + "%")]
-      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd")
+      SimpleDateFormat sdf = DateUtils.getSDF_yyyyMMdd()
 
     if(params.hasDate ){
         Date startDate = params.startDate.length() > 1 ? sdf.parse(params.startDate) : null

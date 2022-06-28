@@ -870,7 +870,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
       String hqlString = "select sub from Subscription sub where lower(sub.name) like :name "
         Map<String, Object> hqlParams = [name: ((params.q ? params.q.toLowerCase() : '' ) + "%")]
-      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd")
+      SimpleDateFormat sdf = DateUtils.getSDF_yyyyMMdd()
       RefdataValue cons_role        = RDStore.OR_SUBSCRIPTION_CONSORTIA
       RefdataValue subscr_role      = RDStore.OR_SUBSCRIBER
       RefdataValue subscr_cons_role = RDStore.OR_SUBSCRIBER_CONS

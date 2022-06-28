@@ -7,6 +7,7 @@ import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.titles.TitleHistoryEvent
+import de.laser.utils.DateUtils
 import groovy.time.TimeCategory
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -289,7 +290,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
       String result
     if ( obj != null ) {
       if ( obj instanceof Date ) {
-          SimpleDateFormat df = new SimpleDateFormat('yyyy-MM-dd');
+          SimpleDateFormat df = DateUtils.getSDF_yyyyMMdd()
         result = df.format(obj);
       }
       else {

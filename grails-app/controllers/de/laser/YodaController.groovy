@@ -893,14 +893,6 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     def newESSource() {
         log.debug("manageGlobalSources ..")
-
-        /*result.newSource = ElasticsearchSource.findByIdentifier(params.identifier) ?: new ElasticsearchSource(
-                identifier:params.identifier,
-                name:params.name,
-                host:params.uri)
-
-        result.newSource.save(flush:true)*/
-
         redirect action:'manageGlobalSources'
     }
 
@@ -908,7 +900,6 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     def deleteGlobalSource() {
         GlobalRecordSource.removeSource(params.long('id'))
-
         redirect(action:'manageGlobalSources')
     }
 

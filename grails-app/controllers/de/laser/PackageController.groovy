@@ -620,10 +620,8 @@ class PackageController {
         result.deletedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_DELETED])[0]
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
-
-        def limits = (!params.format || params.format.equals("html")) ? [max: result.max, offset: result.offset] : [offset: 0]
-
         String filename
+
         if (func == "planned") {
             params.status = RDStore.TIPP_STATUS_EXPECTED.id
             filename = "${escapeService.escapeString(packageInstance.name + '_' + message(code: 'package.show.nav.planned'))}_${DateUtils.getLocalizedSDF_noTimeNoPoint().format(new Date())}"
@@ -874,7 +872,7 @@ class PackageController {
 
         result.historyLines.each { hl ->
 
-            def line_to_add = [:]
+            Map line_to_add = [:]
             def linetype = null
 
             switch (hl.className) {

@@ -203,7 +203,7 @@ class MyInstitutionController  {
             qry3 += " and ((pkg.packageStatus is null) or (pkg.packageStatus != :pkgDeleted))"
             qry3 += " and ((tipp.status is null) or (tipp.status != :tippDeleted))"
 
-            def qryParams3 = [
+            Map qryParams3 = [
                     subIds         : idsCurrentSubscriptions,
                     pkgDeleted     : RDStore.PACKAGE_STATUS_DELETED,
                     tippDeleted    : RDStore.TIPP_STATUS_DELETED
@@ -329,7 +329,7 @@ class MyInstitutionController  {
 
         result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
 
-        def date_restriction = null
+        Date date_restriction = null
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
 
         if (params.validOn == null || params.validOn.trim() == '') {
@@ -702,7 +702,7 @@ class MyInstitutionController  {
                 // render(status: '401', text:"You do not have permission to access ${org.name}. Please request access on the profile page");
                 return
             }
-            def baseLicense = params.baselicense ? License.get(params.baselicense) : null
+            License baseLicense = params.baselicense ? License.get(params.baselicense) : null
             //Nur wenn von Vorlage ist
             if (baseLicense) {
                 if (!baseLicense?.hasPerm("view", user)) {
@@ -1515,7 +1515,7 @@ join sub.orgRelations or_sub where
 
             qry3 += " and ((pkg.packageStatus is null) or (pkg.packageStatus != :pkgDeleted))"
 
-            def qryParams3 = [
+            Map qryParams3 = [
                     currentSubIds  : currentSubIds,
                     pkgDeleted     : RDStore.PACKAGE_STATUS_DELETED
             ]
