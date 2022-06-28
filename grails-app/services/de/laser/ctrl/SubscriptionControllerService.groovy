@@ -1818,7 +1818,7 @@ class SubscriptionControllerService {
             }
             result.num_ies_rows = entitlements.size()
             if(entitlements) {
-                String orderClause = 'order by tipp.sortname asc'
+                String orderClause = 'order by ie.sortname, tipp.sortname'
                 if(params.sort){
                     if(params.sort == 'startDate')
                         orderClause = "order by ic.startDate ${params.order}, lower(ie.sortname) asc "

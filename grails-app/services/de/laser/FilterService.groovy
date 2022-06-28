@@ -1357,7 +1357,7 @@ class FilterService {
                 base_qry += "order by ie.${params.sort} ${params.order} "
         }
         else if(!params.forCount){
-            base_qry += "order by lower(ie.sortname) asc, lower(ie.tipp.sortname) asc"
+            base_qry += "order by ie.sortname, tipp.sortname"
         }
 
 
@@ -1532,7 +1532,7 @@ class FilterService {
                 base_qry += "order by ${params.sort} ${params.order} "
         }
         else {
-            base_qry += "order by lower(tipp.sortname) asc"
+            base_qry += "order by tipp.sortname"
         }
 
         result.query = base_qry
