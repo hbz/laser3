@@ -1,7 +1,7 @@
 package de.laser
 
 import de.laser.annotations.RefdataInfo
-import de.laser.utils.AppUtils
+import de.laser.utils.CodeUtils
 import grails.gorm.transactions.Transactional
 
 /**
@@ -19,7 +19,7 @@ class RefdataService {
         List usedRdvList    = []
         Map allDcs          = [:]
 
-        List classes = AppUtils.getAllDomainClasses().findAll {
+        List classes = CodeUtils.getAllDomainClasses().findAll {
             ! it.clazz.toString().endsWith('CustomProperty') && ! it.clazz.toString().endsWith('PrivateProperty') // tmp
         }
 
@@ -74,7 +74,7 @@ class RefdataService {
         int count = 0
         Map fortytwo = [:]
 
-        AppUtils.getAllDomainClasses().each { dc ->
+        CodeUtils.getAllDomainClasses().each { dc ->
             List dcFields = []
             Class cls = dc.clazz
 
@@ -116,7 +116,7 @@ class RefdataService {
     Map<String, Object> integrityCheck() {
         Map<String, Object> checkResult = [:]
 
-        AppUtils.getAllDomainClasses().each { dc ->
+        CodeUtils.getAllDomainClasses().each { dc ->
             Class cls = dc.clazz
             String dcClassName = cls.simpleName
 

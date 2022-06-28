@@ -1,6 +1,5 @@
 package de.laser
 
-import de.laser.utils.AppUtils
 import de.laser.remote.FTControl
 import de.laser.storage.RDConstants
 import de.laser.properties.LicenseProperty
@@ -12,6 +11,7 @@ import de.laser.storage.RDStore
 import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.interfaces.CalculatedType
 import de.laser.titles.TitleInstance
+import de.laser.utils.CodeUtils
 import grails.converters.JSON
 import grails.core.GrailsApplication
 import org.elasticsearch.action.bulk.BulkItemResponse
@@ -906,7 +906,7 @@ class DataloadService {
 
                         def query
 
-                        Class domainClass = AppUtils.getDomainClass(domain.name).clazz
+                        Class domainClass = CodeUtils.getDomainClass(domain.name).clazz
                         if (org.apache.commons.lang.ClassUtils.getAllInterfaces(domainClass).contains(CalculatedLastUpdated)) {
                             query = domain.executeQuery("select d.id from " + domain.name + " as d where (d.lastUpdatedCascading is not null and d.lastUpdatedCascading > :from) or (d.lastUpdated > :from) or (d.dateCreated > :from and d.lastUpdated is null) order by d.lastUpdated asc, d.id", [from: from], [readonly: true])
                         } else {
@@ -1231,7 +1231,7 @@ class DataloadService {
 
                 if (ftControl && ftControl.active) {
 
-                        Class domainClass = AppUtils.getDomainClass(ftControl.domainClassName).clazz
+                        Class domainClass = CodeUtils.getDomainClass(ftControl.domainClassName).clazz
 
                         String indexName =  es_indices.get(domainClass.simpleName)
                         Integer countIndex = 0
@@ -1294,7 +1294,7 @@ class DataloadService {
 
                     if (ft.active) {
 
-                        Class domainClass = AppUtils.getDomainClass(ft.domainClassName).clazz
+                        Class domainClass = CodeUtils.getDomainClass(ft.domainClassName).clazz
 
                         String indexName = es_indices.get(domainClass.simpleName)
                         Integer countIndex = 0

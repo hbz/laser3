@@ -25,7 +25,7 @@ class LocaleUtils {
      */
     static String decodeLocale(String locale) {
 
-        if(locale?.contains("-")) {
+        if (locale?.contains("-")) {
             return locale.split("-").first().toLowerCase()
         }
         else if(locale?.contains("_")) {

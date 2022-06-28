@@ -1,8 +1,8 @@
 package de.laser.ctrl
 
 import de.laser.*
-import de.laser.utils.AppUtils
 import de.laser.storage.RDConstants
+import de.laser.utils.CodeUtils
 import grails.core.GrailsClass
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -25,7 +25,7 @@ class DocstoreControllerService {
      */
     //TODO [ticket=2393] this is a process which should be deployed onto the DMS
     Map<String,Object> editDocument(GrailsParameterMap params) {
-        GrailsClass domain_class = AppUtils.getDomainClass( params.ownerclass )
+        GrailsClass domain_class = CodeUtils.getDomainClass( params.ownerclass )
         if (domain_class) {
             def instance = domain_class.getClazz().get(params.ownerid)
             if (instance) {

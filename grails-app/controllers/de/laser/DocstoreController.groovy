@@ -3,7 +3,7 @@ package de.laser
 
 import de.laser.auth.User
 import de.laser.ctrl.DocstoreControllerService
-import de.laser.utils.AppUtils
+import de.laser.utils.CodeUtils
 import de.laser.utils.ConfigMapper
 import de.laser.annotations.DebugInfo
 import de.laser.storage.RDConstants
@@ -70,7 +70,7 @@ class DocstoreController  {
 
             //retrieve uploading user and owner class
             User user = contextService.getUser()
-            GrailsClass domain_class = AppUtils.getDomainClass( params.ownerclass )
+            GrailsClass domain_class = CodeUtils.getDomainClass( params.ownerclass )
 
             if (domain_class) {
                 def instance = domain_class.getClazz().get(params.ownerid)

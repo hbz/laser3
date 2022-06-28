@@ -14,6 +14,7 @@ import de.laser.ReportingGlobalService
 import de.laser.ReportingLocalService
 import de.laser.SubscriptionService
 import de.laser.auth.Role
+import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.properties.LicenseProperty
@@ -33,7 +34,6 @@ import de.laser.RefdataCategory
 import de.laser.RefdataValue
 import de.laser.base.AbstractI10n
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
-import de.laser.utils.AppUtils
 import de.laser.annotations.DebugInfo
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
@@ -566,7 +566,7 @@ class AjaxJsonController {
         Map<String, Object> result = [values: []]
         params.max = params.max ?: 40
 
-        GrailsClass domain_class = AppUtils.getDomainClass(params.baseClass)
+        GrailsClass domain_class = CodeUtils.getDomainClass(params.baseClass)
 
         if (domain_class) {
             result.values = domain_class.getClazz().refdataFind(params)

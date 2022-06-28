@@ -19,7 +19,7 @@ import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyResult
-import de.laser.utils.AppUtils
+import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
@@ -791,7 +791,7 @@ class AjaxController {
         def error
         def msg
         def ownerClass = params.ownerClass // we might need this for addCustomPropertyValue
-        def owner      = AppUtils.getDomainClass( ownerClass )?.getClazz()?.get(params.ownerId)
+        def owner      = CodeUtils.getDomainClass( ownerClass )?.getClazz()?.get(params.ownerId)
 
         // TODO ownerClass
         if (PropertyDefinition.findByNameAndDescrAndTenantIsNull(params.cust_prop_name, params.cust_prop_desc)) {
@@ -889,7 +889,7 @@ class AjaxController {
     if(params.propIdent.length() > 0) {
       def error
       def newProp
-      def owner = AppUtils.getDomainClass( params.ownerClass )?.getClazz()?.get(params.ownerId)
+      def owner = CodeUtils.getDomainClass( params.ownerClass )?.getClazz()?.get(params.ownerId)
         PropertyDefinition type = PropertyDefinition.get(params.propIdent.toLong())
         Org contextOrg = contextService.getOrg()
       def existingProp = owner.propertySet.find { it.type.name == type.name && it.tenant?.id == contextOrg.id }
@@ -1028,7 +1028,7 @@ class AjaxController {
         def error
         def newProp
         Org tenant = Org.get(params.tenantId)
-          def owner  = AppUtils.getDomainClass( params.ownerClass )?.getClazz()?.get(params.ownerId)
+          def owner  = CodeUtils.getDomainClass( params.ownerClass )?.getClazz()?.get(params.ownerId)
           PropertyDefinition type   = PropertyDefinition.get(params.propIdent.toLong())
 
         if (! type) { // new property via select2; tmp deactivated
@@ -1213,7 +1213,7 @@ class AjaxController {
     @Secured(['ROLE_USER'])
     @Transactional
     def toggleIdentifierAuditConfig() {
-        def owner = AppUtils.getDomainClass( params.ownerClass )?.getClazz()?.get(params.ownerId)
+        def owner = CodeUtils.getDomainClass( params.ownerClass )?.getClazz()?.get(params.ownerId)
         if(formService.validateToken(params)) {
             Identifier identifier  = Identifier.get(params.id)
 
@@ -1322,7 +1322,7 @@ class AjaxController {
     def togglePropertyAuditConfig() {
         String className = params.propClass.split(" ")[1]
         def propClass = Class.forName(className)
-        def owner     = AppUtils.getDomainClass( params.ownerClass )?.getClazz()?.get(params.ownerId)
+        def owner     = CodeUtils.getDomainClass( params.ownerClass )?.getClazz()?.get(params.ownerId)
         def property  = propClass.get(params.id)
         def prop_desc = property.getType().getDescr()
         Org contextOrg = contextService.getOrg()
@@ -1409,7 +1409,7 @@ class AjaxController {
     def deleteCustomProperty() {
         String className = params.propClass.split(" ")[1]
         def propClass = Class.forName(className)
-        def owner     = AppUtils.getDomainClass( params.ownerClass )?.getClazz()?.get(params.ownerId)
+        def owner     = CodeUtils.getDomainClass( params.ownerClass )?.getClazz()?.get(params.ownerId)
         def property  = propClass.get(params.id)
         def prop_desc = property.getType().getDescr()
         Org contextOrg = contextService.getOrg()
@@ -1471,7 +1471,7 @@ class AjaxController {
     def propClass = Class.forName(className)
     def property  = propClass.get(params.id)
     def tenant    = property.type.tenant
-    def owner     = AppUtils.getDomainClass( params.ownerClass )?.getClazz()?.get(params.ownerId)
+    def owner     = CodeUtils.getDomainClass( params.ownerClass )?.getClazz()?.get(params.ownerId)
     def prop_desc = property.getType().getDescr()
 
     owner.propertySet.remove(property)
@@ -1721,14 +1721,14 @@ class AjaxController {
     log.debug("AjaxController::addToCollection ${params}");
 
     def contextObj = resolveOID2(params.__context)
-    GrailsClass domain_class = AppUtils.getDomainClass( params.__newObjectClass )
+    GrailsClass domain_class = CodeUtils.getDomainClass( params.__newObjectClass )
     if ( domain_class ) {
 
         if ( contextObj ) {
             log.debug("Create a new instance of ${params.__newObjectClass}")
 
             def new_obj = domain_class.getClazz().newInstance();
-            PersistentEntity new_obj_pe = grailsApplication.mappingContext.getPersistentEntity(domain_class.getClazz().name)
+            PersistentEntity new_obj_pe = CodeUtils.getPersistentEntity(domain_class.getClazz().name)
 
             new_obj_pe.persistentProperties.each { p ->
                 if ( params[p.name] ) {
@@ -1825,7 +1825,7 @@ class AjaxController {
     String[] oid_components = oid.split(':')
     def result
 
-    GrailsClass domain_class = AppUtils.getDomainClass(oid_components[0])
+    GrailsClass domain_class = CodeUtils.getDomainClass(oid_components[0])
     if (domain_class) {
       if (oid_components[1] == '__new__') {
         result = domain_class.getClazz().refdataCreate(oid_components)

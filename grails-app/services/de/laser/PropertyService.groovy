@@ -2,7 +2,7 @@ package de.laser
 
 
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
-import de.laser.utils.AppUtils
+import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
@@ -227,7 +227,7 @@ class PropertyService {
         Map<String, Object> detailsMap = [:]
         List<Long> multiplePdList = []
 
-        AppUtils.getAllDomainClasses().each { dc ->
+        CodeUtils.getAllDomainClasses().each { dc ->
 
             if (dc.shortName.endsWith('Property')) {
 

@@ -6,7 +6,7 @@ import de.laser.exceptions.ChangeAcceptException
 import de.laser.finance.CostItem
 import de.laser.cache.SessionCacheWrapper
 import de.laser.properties.PropertyDefinition
-import de.laser.utils.AppUtils
+import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
@@ -126,9 +126,9 @@ class PendingChangeService extends AbstractLockableService {
                                 target_object.refresh()
                                 // Work out if parsed_change_info.changeDoc.prop is an association - If so we will need to resolve the OID in the value
 
-                                // GrailsClass domain_class = AppUtils.getDomainClass( target_object.class.name )
+                                // GrailsClass domain_class = CodeUtils.getDomainClass( target_object.class.name )
                                 // def prop_info = domain_class.getPersistentProperty(payload.changeDoc.prop)
-                                PersistentEntity pe = grailsApplication.mappingContext.getPersistentEntity( target_object.class.name )
+                                PersistentEntity pe = CodeUtils.getPersistentEntity( target_object.class.name )
 
                                 if (pe) {
                                     PersistentProperty prop_info = pe.persistentProperties.find { it.name == payload.changeDoc.prop }
@@ -184,7 +184,7 @@ class PendingChangeService extends AbstractLockableService {
                         break
 
                     case EVENT_OBJECT_NEW :
-                        GrailsClass new_domain_class = AppUtils.getDomainClass( payload.newObjectClass )
+                        GrailsClass new_domain_class = CodeUtils.getDomainClass( payload.newObjectClass )
                         if ( new_domain_class != null ) {
                             def new_instance = new_domain_class.getClazz().newInstance()
                             // like bindData(destination, map), that only exists in controllers

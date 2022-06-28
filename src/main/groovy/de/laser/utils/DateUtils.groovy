@@ -101,7 +101,7 @@ class DateUtils {
     // --
 
     static Date parseDateGeneric(String value) {
-        Date parsed_date
+        Date parsed_date = null
 
         List<SimpleDateFormat> supportedFormats = [
                 new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"),

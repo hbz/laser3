@@ -1,13 +1,14 @@
 package de.laser
 
 import de.laser.utils.AppUtils
+import de.laser.utils.CodeUtils
 import de.laser.utils.ConfigMapper
 import de.laser.utils.DateUtils
 import grails.core.GrailsApplication
+import grails.core.GrailsClass
 import grails.plugin.springsecurity.annotation.Secured
 import grails.web.Action
 import grails.web.mapping.UrlMappingData
-import org.grails.core.DefaultGrailsControllerClass
 import org.grails.exceptions.ExceptionUtils
 import org.grails.web.mapping.DefaultUrlMappingParser
 
@@ -71,7 +72,7 @@ class ServerCodesController {
         Map<String, Object> result = [status: request.getAttribute('javax.servlet.error.status_code')]
 
         UrlMappingData umd = (new DefaultUrlMappingParser()).parse( request.forwardURI )
-        DefaultGrailsControllerClass controller = grailsApplication.controllerClasses.find { it.logicalPropertyName == umd.tokens[0] }
+        GrailsClass controller = CodeUtils.getAllControllerClasses().find { it.logicalPropertyName == umd.tokens[0] }
         if (controller) {
             result.alternatives = controller.clazz.declaredMethods.findAll{
                 it.getAnnotation(Action) && it.name in ['index', 'list', 'show']

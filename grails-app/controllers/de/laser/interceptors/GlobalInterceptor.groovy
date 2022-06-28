@@ -1,6 +1,7 @@
 package de.laser.interceptors
 
 import de.laser.utils.AppUtils
+import de.laser.utils.CodeUtils
 import grails.core.GrailsClass
 
 class GlobalInterceptor implements grails.artefact.Interceptor {
@@ -17,10 +18,10 @@ class GlobalInterceptor implements grails.artefact.Interceptor {
         if (params.id?.contains(':')) {
             try {
                 String objName  = params.id.split(':')[0]
-                GrailsClass obj = grailsApplication.getArtefacts("Domain").find {it.name == objName.capitalize() }
+                GrailsClass obj = CodeUtils.getAllDomainClasses().find {it.name == objName.capitalize() }
                 if (!obj) {
                     // TODO - remove fallback - db cleanup, e.g. issueentitlement -> issueEntitlement
-                    obj = grailsApplication.getArtefacts("Domain").find {it.name.equalsIgnoreCase( objName ) }
+                    obj = CodeUtils.getAllDomainClasses().find {it.name.equalsIgnoreCase( objName ) }
                 }
 
                 if (obj) {

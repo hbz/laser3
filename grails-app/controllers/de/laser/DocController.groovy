@@ -2,10 +2,10 @@ package de.laser
 
 
 import de.laser.auth.User
- 
-import de.laser.utils.AppUtils
+
 import de.laser.annotations.DebugInfo
 import de.laser.storage.RDStore
+import de.laser.utils.CodeUtils
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
 import grails.core.GrailsClass
@@ -30,7 +30,7 @@ class DocController  {
 		log.debug("Create note referer was ${request.getHeader('referer')} or ${request.request.RequestURL}")
 
 		User user = contextService.getUser()
-		GrailsClass domain_class = AppUtils.getDomainClass( params.ownerclass )
+		GrailsClass domain_class = CodeUtils.getDomainClass( params.ownerclass )
 
 		if (domain_class) {
 			def instance = domain_class.getClazz().get(params.ownerid)

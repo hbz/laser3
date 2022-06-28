@@ -1,8 +1,8 @@
 package de.laser
 
 
-import de.laser.utils.AppUtils
 import de.laser.storage.BeanStore
+import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
 import de.laser.utils.SwissKnife
 import de.laser.titles.TitleInstance
@@ -150,7 +150,7 @@ class DataConsistencyService {
         List<String> candidates = []
         List<String> statements = []
 
-        AppUtils.getAllDomainClasses().sort{ it.clazz.simpleName }.each { dc ->
+        CodeUtils.getAllDomainClasses().sort{ it.clazz.simpleName }.each { dc ->
 
             Collection bools = dc.persistentProperties.findAll {it.type in [boolean, java.lang.Boolean]}
 

@@ -23,6 +23,7 @@ import de.laser.survey.SurveyResult
 import de.laser.system.SystemActivityProfiler
 import de.laser.system.SystemProfiler
 import de.laser.system.SystemSetting
+import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
@@ -404,7 +405,7 @@ class YodaController {
                 'getStaticApplicationContext'
         ]
 
-        grailsApplication.controllerClasses.toList().each { controller ->
+        CodeUtils.getAllControllerClasses().each { controller ->
             Class controllerClass = controller.clazz
             if (controllerClass.name.startsWith('de.laser')) {
                 Map<String, Object> mList = [public:[:], others:[:]]
