@@ -3,7 +3,7 @@ package de.laser
 
 import de.laser.annotations.DebugInfo
 import de.laser.storage.RDStore
-import de.laser.helper.SwissKnife
+import de.laser.utils.SwissKnife
 import grails.plugin.springsecurity.annotation.Secured
 
 /**

@@ -31,6 +31,7 @@ import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyResult
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
+import de.laser.utils.SwissKnife
 import de.laser.workflow.WfWorkflow
 import de.laser.workflow.WfWorkflowPrototype
 import grails.gsp.PageRenderer

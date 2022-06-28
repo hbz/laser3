@@ -5,7 +5,7 @@ import de.laser.ctrl.PlatformControllerService
 import de.laser.annotations.DebugInfo
 import de.laser.remote.ApiSource
 import de.laser.storage.RDStore
-import de.laser.helper.SwissKnife
+import de.laser.utils.SwissKnife
 import de.laser.oap.OrgAccessPoint
 import de.laser.oap.OrgAccessPointLink
 import grails.plugin.springsecurity.annotation.Secured

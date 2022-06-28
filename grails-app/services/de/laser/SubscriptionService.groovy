@@ -17,6 +17,7 @@ import de.laser.properties.PropertyDefinitionGroupBinding
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
+import de.laser.utils.SwissKnife
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.sql.BatchingPreparedStatementWrapper

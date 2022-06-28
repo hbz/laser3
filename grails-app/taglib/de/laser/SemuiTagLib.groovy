@@ -3,12 +3,12 @@ package de.laser
 
 import de.laser.auth.User
 import de.laser.cache.SessionCacheWrapper
-import de.laser.helper.*
 import de.laser.remote.ApiSource
 import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
+import de.laser.utils.SwissKnife
 import org.grails.encoder.CodecLookup
 import org.grails.encoder.Encoder
 import org.grails.taglib.TagLibraryLookup

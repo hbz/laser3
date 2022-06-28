@@ -27,6 +27,7 @@ import de.laser.survey.SurveyOrg
 import de.laser.utils.ConfigMapper
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
+import de.laser.utils.SwissKnife
 import de.laser.workflow.WfWorkflow
 import grails.converters.JSON
 import de.laser.stats.Counter4Report

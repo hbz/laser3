@@ -1,4 +1,4 @@
-package de.laser.helper
+package de.laser.utils
 
 import de.laser.AccessService
 import de.laser.ContextService

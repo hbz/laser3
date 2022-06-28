@@ -2,7 +2,7 @@ package de.laser
 
 
 import de.laser.auth.User
-import de.laser.helper.SwissKnife
+import de.laser.utils.SwissKnife
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.annotation.Secured
 

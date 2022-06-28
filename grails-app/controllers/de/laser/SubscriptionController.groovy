@@ -4,12 +4,12 @@ package de.laser
 import de.laser.annotations.DebugInfo
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.exceptions.EntitlementCreationException
-import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyOrg
 import de.laser.utils.DateUtils
+import de.laser.utils.SwissKnife
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.time.TimeCategory

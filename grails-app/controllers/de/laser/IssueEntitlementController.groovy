@@ -3,7 +3,7 @@ package de.laser
 
 import de.laser.auth.User
 import de.laser.utils.ConfigMapper
-import de.laser.helper.SwissKnife
+import de.laser.utils.SwissKnife
 import de.laser.properties.PlatformProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.annotations.DebugInfo

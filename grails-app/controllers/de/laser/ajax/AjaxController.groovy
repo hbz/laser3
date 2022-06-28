@@ -22,6 +22,7 @@ import de.laser.survey.SurveyResult
 import de.laser.utils.AppUtils
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
+import de.laser.utils.SwissKnife
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured

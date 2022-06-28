@@ -1,7 +1,7 @@
 package de.laser
 
 
-import de.laser.helper.SwissKnife
+import de.laser.utils.SwissKnife
 import de.laser.titles.TitleHistoryEvent
 import de.laser.titles.TitleInstance
 import de.laser.auth.User

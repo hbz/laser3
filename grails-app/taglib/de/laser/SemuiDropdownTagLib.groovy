@@ -1,7 +1,7 @@
 package de.laser
 
 
-import de.laser.helper.SwissKnife
+import de.laser.utils.SwissKnife
 
 // Semantic UI
 

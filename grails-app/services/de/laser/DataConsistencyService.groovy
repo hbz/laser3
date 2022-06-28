@@ -4,7 +4,7 @@ package de.laser
 import de.laser.utils.AppUtils
 import de.laser.storage.BeanStore
 import de.laser.utils.DateUtils
-import de.laser.helper.SwissKnife
+import de.laser.utils.SwissKnife
 import de.laser.titles.TitleInstance
 import grails.gorm.transactions.Transactional
 import org.grails.plugins.web.taglib.ApplicationTagLib

@@ -5,7 +5,7 @@ import de.laser.utils.AppUtils
 import de.laser.helper.DatabaseInfo
 import de.laser.utils.LocaleUtils
 import de.laser.cache.EhcacheWrapper
-import de.laser.helper.SwissKnife
+import de.laser.utils.SwissKnife
 import de.laser.remote.FTControl
 import de.laser.titles.BookInstance
 import de.laser.titles.TitleInstance
