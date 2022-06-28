@@ -2036,3 +2036,43 @@
           type: string
           description: Numeric value of locally negotiated price in US Dollar.
           example: 170
+
+    EZBInstitutionList:
+      type: array
+      description: A list of institutions with grant for EZB data sharing.
+      items:
+        $ref: "#/components/schemas/EZBInstitutionStub"
+
+    EZBInstitutionStub:
+      type: object
+      properties:
+        globalUID:
+          type: string
+          description: A global unique identifier to identify the given organisation in LAS:eR.
+          example: "org:e6be24ff-98e4-474d-9ef8-f0eafd843d17"
+        subscriptions:
+          type: array
+          description: List of subscriptions where data sharing has been granted
+          items:
+            $ref: "#/components/schemas/SubscriptionStub"
+        name:
+          type: string
+          description: Name of the institution.
+          example: Hochschulbibliothekszentrum des Landes Nordrhein-Westfalen
+        identifiers: # mapping attr ids
+          type: array
+          description: Further set of identifiers of the institution.
+          items:
+            $ref: "#/components/schemas/Identifier"
+        status:
+          type: string
+          description: Status of the organisation. Maps to the RefdataCategory "${RDConstants.ORG_STATUS}".
+          enum: <% printRefdataEnum(RDConstants.ORG_STATUS, 12) %>
+          example: ${RDStore.ORG_STATUS_CURRENT.value}
+        type:
+          type: array
+          description: Describing the type of the organisation. Maps to the RefdataCategory "${RDConstants.ORG_TYPE}"
+          items:
+            type: string
+          enum: <% printRefdataEnum(RDConstants.ORG_TYPE, 12) %>
+          example: ["Provider", "Agency"]
