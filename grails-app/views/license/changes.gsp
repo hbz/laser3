@@ -47,7 +47,6 @@
                 </g:else>
 
                 <g:if test="${hl.status?.value in ['Accepted', 'Rejected']}">
-                    <%--${message(code:'subscription.details.todo_history.by_on', args:[(hl.user?.display ?: hl.user?.username)])}--%>
                     / <g:formatDate format="${message(code:'default.date.format.notime')}" date="${hl.actionDate}"/>
                 </g:if>
               </td>

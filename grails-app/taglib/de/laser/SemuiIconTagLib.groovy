@@ -4,69 +4,41 @@ import de.laser.titles.BookInstance
 import de.laser.titles.DatabaseInstance
 import de.laser.titles.JournalInstance
 
-class SemanticUiIconTagLib {
+class SemuiIconTagLib {
     static namespace = "semui"
 
     def headerIcon = { attrs, body ->
-
         out << '<i aria-hidden="true" class="circular icon la-object"></i> '
     }
 
     def headerTitleIcon = { attrs, body ->
+        String icon = 'la-object'
 
         switch (attrs.type) {
             case 'Journal':
-                out << '<i aria-hidden="true" class="circular icon la-object-journal"></i> '
+                icon = 'la-object-journal'
                 break
             case 'Database':
-                out << '<i aria-hidden="true" class="circular icon la-object-database"></i> '
+                icon = 'la-object-database'
                 break
             case 'EBook':
-                out << '<i aria-hidden="true" class="circular icon la-object-ebook"></i> '
+                icon = 'la-object-ebook'
                 break
             case 'Survey':
-                out << '<i aria-hidden="true" class="circular icon inverted pink chart pie"></i> '
+                icon = 'inverted pink chart pie'
                 break
             case 'Workflow':
-                out << '<i aria-hidden="true" class="circular icon inverted brown icon tasks"></i> '
+                icon = 'inverted brown tasks'
                 break
             case 'Subscription':
-                out << '<i aria-hidden="true" class="circular icon inverted orange icon clipboard"></i> '
-                break
-            default:
-                out << '<i aria-hidden="true" class="circular icon la-object"></i> '
+                icon = 'inverted orange clipboard'
                 break
         }
+        out << '<i aria-hidden="true" class="circular icon ' + icon + '"></i> '
     }
+
     def childSubscriptionIcon = { attrs, body ->
         out << '<i class="icon circular orange child la-subscriptionIsChild"></i> '
-    }
-
-    def subHeaderTitleIcon = { attrs, body ->
-
-        switch (attrs.type) {
-            case 'Journal':
-                out << '<i aria-hidden="true" class="circular icon la-object-journal"></i> '
-                break
-            case 'Database':
-                out << '<i aria-hidden="true" class="circular icon la-object-database"></i> '
-                break
-            case 'EBook':
-                out << '<i aria-hidden="true" class="circular icon la-object-ebook"></i> '
-                break
-            case 'Survey':
-                out << '<i aria-hidden="true" class="circular icon inverted pink chart pie"></i> '
-                break
-            case 'Workflow':
-                out << '<i aria-hidden="true" class="circular icon inverted brown icon tasks"></i> '
-                break
-            case 'Subscription':
-                out << '<i aria-hidden="true" class="circular icon inverted orange icon clipboard outline"></i> '
-                break
-            default:
-                out << '<i aria-hidden="true" class="circular icon la-object"></i> '
-                break
-        }
     }
 
     def propertyIcon = { attrs, body ->
@@ -134,7 +106,6 @@ class SemanticUiIconTagLib {
             out << '</span>'
         }
     }
-
 
     def listIcon = { attrs, body ->
         boolean hideTooltip = attrs.hideTooltip ? false : true
@@ -205,33 +176,31 @@ class SemanticUiIconTagLib {
 
     def contactIcon = { attrs, body ->
 
+        String msg = message(code: 'contact.icon.label.contactinfo')
+        String icon = 'icon address book la-list-icon'
+
         switch (attrs.type) {
             case [ 'E-Mail', 'Mail' ]: // 'Mail' -> Deprecated
-                out << '<span class="la-popup-tooltip la-delay" data-content="' + message(code: 'contact.icon.label.email') + '" data-position="left center" data-variation="tiny">'
-                out << '    <i aria-hidden="true" class="ui icon envelope outline la-list-icon js-copyTrigger"></i>'
-                out << '</span>'
+                msg = message(code: 'contact.icon.label.email')
+                icon = 'ui icon envelope outline la-list-icon js-copyTrigger'
                 break
             case 'Fax':
-                out << '<span  class="la-popup-tooltip la-delay" data-content="' + message(code: 'contact.icon.label.fax') + '" data-position="left center" data-variation="tiny">'
-                out << '    <i aria-hidden="true" class="ui icon tty la-list-icon"></i>'
-                out << '</span>'
+                msg = message(code: 'contact.icon.label.fax')
+                icon = 'ui icon tty la-list-icon'
                 break
             case 'Phone':
-                out << '<span class="la-popup-tooltip la-delay" data-content="' + message(code: 'contact.icon.label.phone') + '" data-position="left center" data-variation="tiny">'
-                out << '<i aria-hidden="true" class="icon phone la-list-icon"></i>'
-                out << '</span>'
+                msg = message(code: 'contact.icon.label.phone')
+                icon = 'icon phone la-list-icon'
                 break
             case 'Url':
-                out << '<span class="la-popup-tooltip la-delay" data-content="' + message(code: 'contact.icon.label.url') + '" data-position="left center" data-variation="tiny">'
-                out << '<i aria-hidden="true" class="icon globe la-list-icon"></i>'
-                out << '</span>'
-                break
-            default:
-                out << '<span  class="la-popup-tooltip la-delay" data-content="' + message(code: 'contact.icon.label.contactinfo') + '" data-position="left center" data-variation="tiny">'
-                out << '<i aria-hidden="true" class="icon address book la-list-icon"></i>'
-                out << '</span>'
+                msg = message(code: 'contact.icon.label.url')
+                icon = 'icon globe la-list-icon'
                 break
         }
+
+        out << '<span class="la-popup-tooltip la-delay" data-content="' + msg + '" data-position="left center" data-variation="tiny">'
+        out << '<i aria-hidden="true" class="' + icon + '"></i>'
+        out << '</span>'
     }
 
     def linkIcon = { attrs, body ->

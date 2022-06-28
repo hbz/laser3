@@ -3,7 +3,7 @@ package de.laser
 
 import de.laser.helper.SwissKnife
 
-class SemanticUiSubNavTagLib {
+class SemuiSubNavTagLib {
 
     AccessService accessService
     ContextService contextService
@@ -43,6 +43,7 @@ class SemanticUiSubNavTagLib {
             out << body()
         }
     }
+
     def subNavItem = { attrs, body ->
 
         def (text, message) = SwissKnife.getTextAndMessage(attrs)
@@ -76,7 +77,6 @@ class SemanticUiSubNavTagLib {
             out << '<a href="" class="' + aClass + '">' + linkBody + '</a>'
         }
     }
-
 
     // affiliation="INST_EDITOR" affiliationOrg="${orgToShow}"
 

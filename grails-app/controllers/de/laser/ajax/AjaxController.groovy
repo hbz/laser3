@@ -186,8 +186,8 @@ class AjaxController {
     /**
      * This is the call route for processing an xEditable reference data or role change
      * @return the new value for display update in the xEditable field
-     * @see SemanticUiInplaceTagLib#xEditableRole
-     * @see SemanticUiInplaceTagLib#xEditableRefData
+     * @see SemuiInplaceTagLib#xEditableRole
+     * @see SemuiInplaceTagLib#xEditableRefData
      */
     @Secured(['ROLE_USER'])
     @Transactional
@@ -1861,9 +1861,9 @@ class AjaxController {
     /**
      * This is the call route for processing an xEditable change other than reference data or role
      * @return the new value for display update in the xEditable field
-     * @see SemanticUiInplaceTagLib#xEditable
-     * @see SemanticUiInplaceTagLib#xEditableAsIcon
-     * @see SemanticUiInplaceTagLib#xEditableBoolean
+     * @see SemuiInplaceTagLib#xEditable
+     * @see SemuiInplaceTagLib#xEditableAsIcon
+     * @see SemuiInplaceTagLib#xEditableBoolean
      */
     @Secured(['ROLE_USER'])
     @Transactional

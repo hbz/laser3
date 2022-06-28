@@ -5,13 +5,12 @@ import de.laser.storage.BeanStore
 import org.springframework.context.MessageSource
 import org.springframework.web.servlet.support.RequestContextUtils
 
-class SemanticUiNavigationTagLib {
+class SemuiNavigationTagLib {
 
     AccessService accessService
     ContextService contextService
 
     static namespace = "semui"
-
 
     // <semui:breadcrumbs>
     //     <semui:crumb controller="controller" action="action" params="params" text="${text}" message="local.string" />
@@ -282,7 +281,6 @@ class SemanticUiNavigationTagLib {
                 </script>"""
     }
 
-
     // <semui:mainNavItem controller="controller" action="action" params="params" text="${text}" message="local.string" affiliation="INST_EDITOR" />
 
     def mainNavItem = { attrs, body ->
@@ -303,7 +301,6 @@ class SemanticUiNavigationTagLib {
                 role: attrs.role
         )
     }
-
 
     def securedMainNavItem = { attrs, body ->
 

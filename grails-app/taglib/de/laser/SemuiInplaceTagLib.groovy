@@ -9,7 +9,7 @@ import org.springframework.context.i18n.LocaleContextHolder
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 
-class SemanticUiInplaceTagLib {
+class SemuiInplaceTagLib {
 
     GenericOIDService genericOIDService
 
@@ -29,7 +29,7 @@ class SemanticUiInplaceTagLib {
 
         // TODO: data-type="combodate" data-value="1984-05-15" data-format="YYYY-MM-DD" data-viewformat="DD/MM/YYYY" data-template="D / MMM / YYYY"
 
-        boolean editable = isEditable(request.getAttribute('editable'), attrs.overwriteEditable)
+        boolean editable = _isEditable(request.getAttribute('editable'), attrs.overwriteEditable)
 
         if ( editable ) {
 
@@ -161,7 +161,7 @@ class SemanticUiInplaceTagLib {
      */
     def xEditableRefData = { attrs, body ->
         try {
-            boolean editable = isEditable(request.getAttribute('editable'), attrs.overwriteEditable)
+            boolean editable = _isEditable(request.getAttribute('editable'), attrs.overwriteEditable)
 
             if ( editable ) {
 
@@ -223,12 +223,12 @@ class SemanticUiInplaceTagLib {
                 // Here we can register different ways of presenting object references. The most pressing need to be
                 // outputting a a containing an icon for refdata fields.
 
-                out << renderObjectValue(attrs.owner[attrs.field])
+                out << _renderObjectValue(attrs.owner[attrs.field])
 
                 out << "</a></span>"
             }
             else {
-                out << renderObjectValue(attrs.owner[attrs.field])
+                out << _renderObjectValue(attrs.owner[attrs.field])
             }
         }
         catch ( Throwable e ) {
@@ -244,7 +244,7 @@ class SemanticUiInplaceTagLib {
      */
     def xEditableRole = { attrs, body ->
         try {
-            boolean editable = isEditable(request.getAttribute('editable'), attrs.overwriteEditable)
+            boolean editable = _isEditable(request.getAttribute('editable'), attrs.overwriteEditable)
 
             if ( editable ) {
 
@@ -284,11 +284,11 @@ class SemanticUiInplaceTagLib {
                 out << 'data-pk="' + oid + '" data-name="' + attrs.field + '" '
                 out << 'data-source="' + data_link + '" data-url="' + update_link + '" ' + emptyText + '>'
 
-                out << renderObjectValue(attrs.owner[attrs.field])
+                out << _renderObjectValue(attrs.owner[attrs.field])
                 out << '</a></span>'
             }
             else {
-                out << renderObjectValue(attrs.owner[attrs.field])
+                out << _renderObjectValue(attrs.owner[attrs.field])
             }
         }
         catch ( Throwable e ) {
@@ -302,7 +302,7 @@ class SemanticUiInplaceTagLib {
      */
     def xEditableBoolean = { attrs, body ->
         try {
-            boolean editable = isEditable(request.getAttribute('editable'), attrs.overwriteEditable)
+            boolean editable = _isEditable(request.getAttribute('editable'), attrs.overwriteEditable)
 
             if ( editable ) {
 
@@ -382,7 +382,7 @@ class SemanticUiInplaceTagLib {
         }
     }
 
-    private renderObjectValue(value) {
+    private String _renderObjectValue(value) {
         String result = ''
         String not_set = message(code:'refdata.notSet')
 
@@ -405,7 +405,7 @@ class SemanticUiInplaceTagLib {
         result
     }
 
-    private boolean isEditable (editable, overwrite) {
+    private boolean _isEditable(editable, overwrite) {
 
         boolean result = Boolean.valueOf(editable)
 
@@ -436,7 +436,7 @@ class SemanticUiInplaceTagLib {
 
         // TODO: data-type="combodate" data-value="1984-05-15" data-format="YYYY-MM-DD" data-viewformat="DD/MM/YYYY" data-template="D / MMM / YYYY"
 
-        boolean editable = isEditable(request.getAttribute('editable'), attrs.overwriteEditable)
+        boolean editable = _isEditable(request.getAttribute('editable'), attrs.overwriteEditable)
 
         if (editable) {
 

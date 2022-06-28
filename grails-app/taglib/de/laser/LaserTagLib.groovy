@@ -49,7 +49,7 @@ class LaserTagLib {
         if (!attrs.params.packages){
             attrs.params.remove('packages')
         }
-        def cleanLink = g.link(attrs, body)
+        String cleanLink = g.link(attrs, body)
         out << cleanLink.replaceAll("(?<!(http:|https:))[//]+", "/")
     }
 }

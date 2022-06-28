@@ -22,7 +22,7 @@ class LaserAjaxTagLib {
             map
         }
 
-        Map<String, Object> hrefMap = switchEntries(['controller', 'action', 'id', 'params'])
+        Map<String, Object> hrefMap = switchEntries(['controller', 'action', 'id', 'params']) as Map
 
         String href = g.createLink(hrefMap)
 

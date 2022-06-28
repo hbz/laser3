@@ -113,7 +113,7 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
     <laser:render template="/templates/copyElements/copyPackagesAndIEs" />
 </g:elseif>
 <g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_SUBSCRIBER && isConsortialObjects && accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")}">
-    <g:render template="/templates/copyElements/copySubscriber" />
+    <laser:render template="/templates/copyElements/copySubscriber" />
 </g:elseif>
 <g:else>
     <laser:render template="/templates/copyElements/copyElements" />

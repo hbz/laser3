@@ -5,7 +5,7 @@ import de.laser.helper.SwissKnife
 
 // Semantic UI
 
-class SemanticUiDropdownTagLib {
+class SemuiDropdownTagLib {
 
     static namespace = "semui"
 
