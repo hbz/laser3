@@ -34,7 +34,7 @@
                 <td>${us.getDisplayName()}</td>
                 <td>${us.email}</td>
                 <td>
-                    <g:each in="${us.getAuthorizedAffiliations()}" var="affi">
+                    <g:each in="${us.affiliations}" var="affi">
                         <g:if test="${showAllAffiliations}">
                             ${affi.org?.getDesignation()} <span>(${affi.formalRole.authority})</span> <br />
                         </g:if>
@@ -92,7 +92,7 @@
                         <%
                             boolean check2 = false
                             if (controllerName == 'user') {
-                                // check2 = ! instAdmService.isUserLastInstAdminForAnyOrgInList(us, us.getAuthorizedOrgs()); // correct, but expensive
+                                // check2 = ! instAdmService.isUserLastInstAdminForAnyOrgInList(us, us.getAffiliationOrgs()); // correct, but expensive
                                 check2 = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN');
                             }
                             else {

@@ -55,7 +55,7 @@
                             <label for="profile_dashboard">${message(code: 'profile.dash')}</label>
                             <select name="profile_dashboard" id="profile_dashboard" class="ui fluid dropdown">
                                 <option value=""></option>
-                                <g:each in="${user.authorizedOrgs}" var="o">
+                                <g:each in="${user.getAffiliationOrgs()}" var="o">
                                     <option value="${o.class.name}:${o.id}" ${user.getSettingsValue(KEYS.DASHBOARD)?.id == o.id ? 'selected' : ''}>${o.name}</option>
                                 </g:each>
                             </select>

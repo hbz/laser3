@@ -361,7 +361,7 @@ class AdminController  {
                         log.debug("Selected users : ${usrMrg}, ${usrKeep}")
 
                         result.userRoles = usrMrg.getAuthorities()
-                        result.userAffiliations =  usrMrg.getAuthorizedAffiliations()
+                        result.userAffiliations =  usrMrg.affiliations
                         result.userMerge = usrMrg
                         result.userKeep = usrKeep
                     }
@@ -422,9 +422,9 @@ class AdminController  {
     @Transactional
     def copyUserRoles(User usrMrg, User usrKeep){
         Set<Role> mergeRoles = usrMrg.getAuthorities()
-        Set<UserOrg> mergeAffil = usrMrg.getAuthorizedAffiliations()
+        Set<UserOrg> mergeAffil = usrMrg.affiliations
         Set<Role> currentRoles = usrKeep.getAuthorities()
-        Set<UserOrg> currentAffil = usrKeep.getAuthorizedAffiliations()
+        Set<UserOrg> currentAffil = usrKeep.affiliations
 
         mergeRoles.each{ role ->
             if (!currentRoles.contains(role) && role.authority != "ROLE_YODA") {
@@ -1369,9 +1369,6 @@ SELECT * FROM (
                         ((colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol].trim().isEmpty()) || colMap.printIdentifierCol < 0)) {
                 }
                 else {
-
-                    // TODO [ticket=1789]
-                    //def tiObj = TitleInstance.executeQuery('select ti from TitleInstance ti join ti.ids ids where ids in (select io from IdentifierOccurrence io join io.identifier id where id.ns in :namespaces and id.value = :value)',[namespaces:idCandidate.namespaces,value:idCandidate.value])
                     List<TitleInstance> tiObj = TitleInstance.executeQuery('select ti from TitleInstance ti join ti.ids ident where ident.ns in :namespaces and ident.value = :value', [namespaces:idCandidate.namespaces, value:idCandidate.value])
                     if(tiObj) {
 

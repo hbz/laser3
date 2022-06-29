@@ -389,9 +389,9 @@ class License extends AbstractBaseWithCalculatedLastUpdated
       withTransaction {
           DocContext note = DocContext.findByLicenseAndDomain(this, domain)
           if (note) {
-              log.debug("update existing note...");
+              log.debug("update existing note...")
               if (note_content == '') {
-                  log.debug("Delete note doc ctx...");
+                  log.debug("Delete note doc ctx...")
                   note.delete()
                   note.owner.delete()
               } else {
@@ -399,7 +399,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
                   note.owner.save()
               }
           } else {
-              log.debug("Create new note...");
+              log.debug("Create new note...")
               if ((note_content) && (note_content.trim().length() > 0)) {
                   Doc doc = new Doc(content: note_content, lastUpdated: new Date(), dateCreated: new Date())
                   DocContext newctx = new DocContext(license: this, owner: doc, domain: domain)
@@ -448,7 +448,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
             return true
         }
 
-        if (user.getAuthorizedOrgsIds().contains(contextService.getOrg().id)) {
+        if (user.getAffiliationOrgsIdList().contains(contextService.getOrg().id)) {
 
             OrgRole cons = OrgRole.findByLicAndOrgAndRoleType(
                     this, contextService.getOrg(), RDStore.OR_LICENSING_CONSORTIUM

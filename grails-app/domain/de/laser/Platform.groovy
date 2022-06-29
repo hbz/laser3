@@ -129,7 +129,7 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
 
     if ( !platform && params.name && (params.name.trim().length() > 0)  ) {
 
-      String norm_name = params.name.trim().toLowerCase();
+      String norm_name = params.name.trim().toLowerCase()
         //TODO: Dieser Zweig passieert nicht bei we:kb Sync
       if( params.primaryUrl && (params.primaryUrl.length() > 0) ){
 

@@ -116,16 +116,11 @@ class PendingChangeService extends AbstractLockableService {
                         break
 
                     case EVENT_PROPERTY_CHANGE :  // Generic property change
-                        // TODO [ticket=1894]
-                        // if ( ( payload.changeTarget != null ) && ( payload.changeTarget.length() > 0 ) ) {
                         if ( pendingChange.payloadChangeTargetOid?.length() > 0 || payload.changeTarget?.length() > 0) {
                             String targetOID = pendingChange.payloadChangeTargetOid ?: payload.changeTarget
-                            //def target_object = genericOIDService.resolveOID(payload.changeTarget);
                             def target_object = genericOIDService.resolveOID(targetOID.replace('Custom','').replace('Private',''))
                             if ( target_object ) {
                                 target_object.refresh()
-                                // Work out if parsed_change_info.changeDoc.prop is an association - If so we will need to resolve the OID in the value
-
                                 // GrailsClass domain_class = CodeUtils.getDomainClass( target_object.class.name )
                                 // def prop_info = domain_class.getPersistentProperty(payload.changeDoc.prop)
                                 PersistentEntity pe = CodeUtils.getPersistentEntity( target_object.class.name )
@@ -144,7 +139,6 @@ class PendingChangeService extends AbstractLockableService {
                                         else if (prop_info.getType() == java.util.Date) {
                                             log.debug("Date processing.... parse \"${payload.changeDoc.new}\"");
                                             if ((payload.changeDoc.new != null) && (payload.changeDoc.new.toString() != 'null')) {
-                                                //if ( ( parsed_change_info.changeDoc.new != null ) && ( parsed_change_info.changeDoc.new != 'null' ) ) {
                                                 SimpleDateFormat df = DateUtils.getSDF_yyyyMMddTHHmmssZ()
                                                 // yyyy-MM-dd'T'HH:mm:ss.SSSZ 2013-08-31T23:00:00Z
                                                 Date d = df.parse(payload.changeDoc.new)

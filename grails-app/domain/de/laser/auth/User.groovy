@@ -42,7 +42,7 @@ class User {
 
     static transients = [
             'displayName', 'defaultPageSize', 'defaultPageSizeAsInteger',
-            'authorizedAffiliations', 'authorizedOrgs', 'authorizedOrgsIds',
+            'affiliationOrgs', 'affiliationOrgsIdList',
             'admin', 'yoda', 'lastInstAdmin'
     ] // mark read-only accessor methods
 
@@ -82,13 +82,20 @@ class User {
     }
 
     void beforeInsert() {
-        encodePassword()
+        _encodePassword()
     }
 
     void beforeUpdate() {
         if (isDirty('password')) {
-            encodePassword()
+            _encodePassword()
         }
+    }
+
+    /**
+     * Encodes the submitted password
+     */
+    private void _encodePassword() {
+        password = BeanStore.getSpringSecurityService().encodePassword(password)
     }
 
     /**
@@ -153,38 +160,19 @@ class User {
     }
 
     /**
-     * Encodes the submitted password
-     */
-    protected void encodePassword() {
-        password = BeanStore.getSpringSecurityService().encodePassword(password)
-    }
-
-    // TODO -> rename to getAffiliations() -> remove
-    /**
-     * Gets all affiliations the user is authorised to
-     * @return unlike {@link #getAuthorizedOrgs}, this method delivers a {@link List} of {@link UserOrg} entries
-     */
-    List<UserOrg> getAuthorizedAffiliations() {
-        UserOrg.findAllByUser(this)
-    }
-
-    /**
      * Gets a list of all {@link Org}s for which this user has affiliations
      * @return a {@link List} of authorised {@link Org}s
      */
-    // TODO -> rename to getAffiliationOrgs()
-    List<Org> getAuthorizedOrgs() {
-        String qry = "select distinct(o) from Org as o where exists ( select uo from UserOrg as uo where uo.org = o and uo.user = :user ) order by o.name"
-        Org.executeQuery(qry, [user: this])
+    List<Org> getAffiliationOrgs() {
+        this.affiliations.collect{ it.org }.unique()
     }
 
     /**
-     * Same as {@link #getAuthorizedOrgs}, but only the IDs of the {@link Org}s are being collected
+     * Same as {@link #getAffiliationOrgs}, but only the IDs of the {@link Org}s are being collected
      * @return a {@link List} of org IDs
      */
-    // TODO -> rename to getAffiliationOrgIds()
-    List<Long> getAuthorizedOrgsIds() {
-        getAuthorizedOrgs().collect{ it.id }
+    List<Long> getAffiliationOrgsIdList() {
+        getAffiliationOrgs().collect{ it.id }
     }
 
     /**
@@ -192,7 +180,8 @@ class User {
      * @param org the {@link Org} to check the authority
      * @return is the user member of the given org?
      */
-    boolean isAuthorizedInstMember(Org org) {
+    boolean hasInstMemberAffiliation(Org org) {
+        //used in user/global/edit.gsp
         ! Org.executeQuery(
                 "select uo from UserOrg uo where uo.user = :user and uo.org = :org and uo.formalRole.roleType = 'user'",
                 [user: this, org: org]
@@ -204,7 +193,7 @@ class User {
      * @param org the {@link Org} to check against
      * @return is the user INST_ADM of the org by a combo?
      */
-    boolean isAuthorizedComboInstAdmin(Org org) {
+    boolean hasComboInstAdminAffiliation(Org org) {
         //used in _membership_table.gsp
         List<Org> orgList = Org.executeQuery('select c.toOrg from Combo c where c.fromOrg = :org', [org: org])
         orgList.add(org)

@@ -291,7 +291,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
     if ( obj != null ) {
       if ( obj instanceof Date ) {
           SimpleDateFormat df = DateUtils.getSDF_yyyyMMdd()
-        result = df.format(obj);
+          result = df.format(obj)
       }
       else {
         result = obj.toString()

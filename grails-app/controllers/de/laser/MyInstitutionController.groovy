@@ -1977,7 +1977,7 @@ join sub.orgRelations or_sub where
 
         if(result.surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]) {
             result.subscription = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.institution)
-            result.authorizedOrgs = result.user.authorizedOrgs
+            result.authorizedOrgs = result.user.getAffiliationOrgs()
             // restrict visible for templates/links/orgLinksAsList
             result.costItemSums = [:]
             result.visibleOrgRelations = []
@@ -3827,7 +3827,7 @@ join sub.orgRelations or_sub where
         User user = contextService.getUser()
         Org org = (Org) genericOIDService.resolveOID(params.oid)
 
-        if (user && org && org.id in user.getAuthorizedOrgsIds()) {
+        if (user && org && org.id in user.getAffiliationOrgsIdList()) {
             log.debug('switched context to: ' + org)
             contextService.setOrg(org)
         }

@@ -77,7 +77,7 @@ class GlobalRecordSource {
     @Transient
     String getBaseUrl() {
         // For now, assume type=gokb - and trim off the oai/packages
-        uri.replaceAll('oai.*','');
+        uri.replaceAll('oai.*','')
     }
 
     @Deprecated

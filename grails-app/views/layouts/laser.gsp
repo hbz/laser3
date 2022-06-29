@@ -500,7 +500,7 @@
 
                                 <div class="menu" role="menu">
 
-                                    <g:set var="usaf" value="${contextUser.authorizedOrgs}" />
+                                    <g:set var="usaf" value="${contextUser.getAffiliationOrgs()}" />
                                     <g:if test="${usaf && usaf.size() > 0}">
                                         <g:each in="${usaf}" var="org">
                                             <g:if test="${org.id == contextOrg?.id}">

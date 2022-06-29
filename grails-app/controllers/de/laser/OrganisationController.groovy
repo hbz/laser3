@@ -842,7 +842,7 @@ class OrganisationController  {
 
         prf.setBenchmark('properties')
 
-        result.authorizedOrgs = result.user?.authorizedOrgs
+        result.authorizedOrgs = result.user?.getAffiliationOrgs()
 
         // create mandatory OrgPrivateProperties if not existing
 

@@ -1250,8 +1250,6 @@ class FinanceService {
                     if(subscription == null || subPkg == null)
                         mappingErrorBag.entitlementWithoutPackageOrSubscription = true
                     else {
-                        // TODO [ticket=1789]
-                        // List<TitleInstance> titleMatches = TitleInstance.executeQuery("select distinct idOcc.ti from IdentifierOccurrence idOcc join idOcc.identifier id where id.value = :idCandidate and id.ns in :namespaces",[idCandidate: ieIdentifier, namespaces: [namespaces.isbn,namespaces.doi,namespaces.zdb,namespaces.issn,namespaces.eissn]])
                         List<TitleInstancePackagePlatform> titleMatches = TitleInstancePackagePlatform.executeQuery("select distinct id.tipp from Identifier id where id.value = :idCandidate and id.ns in :namespaces", [idCandidate: ieIdentifier, namespaces: [namespaces.isbn,namespaces.doi,namespaces.zdb,namespaces.issn,namespaces.eissn]])
                         if(!titleMatches)
                             mappingErrorBag.noValidTitle = ieIdentifier

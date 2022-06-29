@@ -175,8 +175,6 @@ class TitleInstance extends AbstractBaseWithCalculatedLastUpdated {
   static def findByIdentifier(candidate_identifiers) {
     List matched = []
     candidate_identifiers.each { i ->
-      // TODO [ticket=1789]
-      //List<IdentifierOccurrence> ioList = IdentifierOccurrence.executeQuery('select io from IdentifierOccurrence io join io.identifier id where id.ns = :namespace and id.value = :value',[namespace:i.namespace,value:i.value])
       List<Identifier> identifiers = Identifier.executeQuery('select ident from Identifier ident where ident.ns = :namespace and ident.value = :value', [namespace:i.namespace, value:i.value])
       if(identifiers.size() > 0) {
         Identifier ident = identifiers.get(0)
@@ -191,8 +189,6 @@ class TitleInstance extends AbstractBaseWithCalculatedLastUpdated {
     // Didn't match anything - see if we can match based on identifier without namespace [In case of duff supplier data - or duff code like this legacy shit...]
     if ( matched.size() == 0 ) {
       candidate_identifiers.each { i ->
-        // TODO [ticket=1789]
-        //def id1 = Identifier.executeQuery('Select io from IdentifierOccurrence as io where io.identifier.value = ?',[i.value]);
         List<Identifier> id1 = Identifier.executeQuery('select ident from Identifier as ident where ident.value = :val', [val: i.value])
         id1.each {
           if ( it.ti != null ) {
@@ -251,15 +247,6 @@ select ie from IssueEntitlement as ie JOIN ie.subscription.orgRelations as o
         def earliest = null
         def latest = null
         boolean open = false
-
-        /*
-        TODO: BUG ERMS-1638
-        ies.each { ie ->
-          if ( earliest == null ) { earliest = ie.startDate } else { if ( ie.startDate < earliest ) { earliest = ie.startDate } }
-          if ( latest == null ) { latest = ie.endDate } else { if ( ie.endDate > latest ) { latest = ie.endDate } }
-          if ( ie.endDate == null ) open = true;
-        }
-        */
 
         [
                 earliest:earliest?sdf.format(earliest):'',

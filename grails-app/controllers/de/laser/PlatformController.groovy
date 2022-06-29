@@ -185,7 +185,7 @@ class PlatformController  {
             return
         }
         Org selectedInstitution = contextService.getOrg()
-        List<Org> authorizedOrgs = contextService.getUser().getAuthorizedOrgs()
+        List<Org> authorizedOrgs = contextService.getUser().getAffiliationOrgs()
 
         String hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as ap "
             hql += "where ap.org =:institution and oapl.active=true and oapl.platform.id=${platformInstance.id}"
@@ -221,7 +221,7 @@ class PlatformController  {
             redirect action: 'list'
             return
         }
-        List<Org> authorizedOrgs = contextService.getUser().getAuthorizedOrgs()
+        List<Org> authorizedOrgs = contextService.getUser().getAffiliationOrgs()
         Org selectedInstitution =  contextService.getOrg()
         if (params.institution_id){
             selectedInstitution = Org.get(params.institution_id)

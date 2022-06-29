@@ -169,7 +169,7 @@
         </g:elseif> --}%
 
         <g:if test="${ availableOrgs }">
-            <g:if test="${controllerName == 'user' || (controllerName in ['myInstitution', 'organisation'] && ! user.isAuthorizedInstMember(orgInstance))}">
+            <g:if test="${controllerName == 'user' || (controllerName in ['myInstitution', 'organisation'] && ! user.hasInstMemberAffiliation(orgInstance))}">
                 <div class="ui segment form">
 
                     <g:form controller="${controllerName}" action="addAffiliation" class="ui form" method="get">

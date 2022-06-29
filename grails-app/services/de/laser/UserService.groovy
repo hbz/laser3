@@ -36,7 +36,7 @@ class UserService {
 
         def uss = UserSetting.get(user, UserSetting.KEYS.DASHBOARD)
 
-        List<Long> userOrgMatches = user.getAuthorizedOrgsIds()
+        List<Long> userOrgMatches = user.getAffiliationOrgsIdList()
         if (userOrgMatches.size() > 0) {
             Org firstOrg = Org.findById(userOrgMatches.first()) //we presume that (except my test ladies) no one can be simultaneously member of a consortia and of a single user
             if (uss == UserSetting.SETTING_NOT_FOUND) {
@@ -209,7 +209,7 @@ class UserService {
                 Role role = Role.findByAuthority(rot)
                 if (role) {
                     UserOrg uo = UserOrg.findByUserAndOrgAndFormalRole(user, orgToCheck, role)
-                    check = check || (uo && user.getAuthorizedAffiliations().contains(uo))
+                    check = check || (uo && user.affiliations.contains(uo))
                 }
             }
         }

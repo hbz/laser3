@@ -92,7 +92,7 @@ class SurveyInfo {
      * and participants in the survey, false otherwise
      */
     boolean checkOpenSurvey() {
-        boolean check = this.surveyConfigs.size() > 0 ? true : false
+        boolean check = this.surveyConfigs.size() > 0
 
         this.surveyConfigs.each {
 

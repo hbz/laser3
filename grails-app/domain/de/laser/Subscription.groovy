@@ -166,7 +166,6 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         status      column:'sub_status_rv_fk'
         type        column:'sub_type_rv_fk',        index: 'sub_type_idx'
         kind        column:'sub_kind_rv_fk'
-        //owner       column:'sub_owner_license_fk',  index: 'sub_owner_idx'
         form        column:'sub_form_fk'
         resource    column:'sub_resource_fk'
         name        column:'sub_name'
@@ -208,7 +207,6 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         globalUID(nullable:true, blank:false, unique:true, maxSize:255)
         type        (nullable:true)
         kind        (nullable:true)
-        //owner(nullable:true, blank:false)
         form        (nullable:true)
         resource    (nullable:true)
         startDate(nullable:true, validator: { val, obj ->
@@ -720,7 +718,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         }
 
         Org contextOrg = BeanStore.getContextService().getOrg()
-        if (user.getAuthorizedOrgsIds().contains(contextOrg?.id)) {
+        if (user.getAffiliationOrgsIdList().contains(contextOrg?.id)) {
 
             OrgRole cons = OrgRole.findBySubAndOrgAndRoleType(
                     this, contextOrg, RDStore.OR_SUBSCRIPTION_CONSORTIA

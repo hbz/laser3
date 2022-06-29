@@ -261,7 +261,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     @Override
     def beforeInsert() {
         if ( !shortcode ) {
-            shortcode = generateShortcode(name);
+            shortcode = generateShortcode(name)
         }
 
         //ugliest HOTFIX ever #2
@@ -369,7 +369,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     @Override
     def beforeUpdate() {
         if ( !shortcode ) {
-            shortcode = generateShortcode(name);
+            shortcode = generateShortcode(name)
         }
         super.beforeUpdateHandler()
     }
@@ -384,7 +384,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      * @param name the organisation's name
      * @return the prepared string
      */
-    static String generateShortcodeFunction(name) {
+    static String generateShortcodeFunction(String name) {
         return StringUtils.left(name.trim().replaceAll(" ","_"), 128) // FIX
     }
 
@@ -393,16 +393,16 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      * @param name the name to prepare
      * @return the shortened and, if necessary, postfixed shortcode
      */
-    String generateShortcode(name) {
+    String generateShortcode(String name) {
         String candidate = Org.generateShortcodeFunction(name)
-        return incUntilUnique(candidate);
+        incUntilUnique(candidate)
     }
 
-    String incUntilUnique(name) {
+    String incUntilUnique(String name) {
         String result = name
         if ( Org.findByShortcode(result) ) {
             // There is already a shortcode for that identfier
-            int i = 2;
+            int i = 2
             while ( Org.findByShortcode("${name}_${i}") ) {
                 i++
             }
@@ -661,11 +661,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
         if ( !found && value != '') {
             value = value?.trim()
             ns = ns?.trim()
-            //def namespace = IdentifierNamespace.findByNsIlike(ns) ?: new IdentifierNamespace(ns:ns).save()
-            // TODO [ticket=1789]
             Identifier ident = Identifier.construct([value: value, reference: this, namespace: ns, nsType: Org.class.name])
-            //def id = new Identifier(ns:namespace, value:value).save()
-            //new IdentifierOccurrence(identifier: id, org: this).save()
             log.debug("Create new identifier: ${ident.getId()} ns:${ns} value:${value}")
         }
     }

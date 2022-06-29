@@ -99,9 +99,6 @@ class BootStrapService {
             log.debug("setupSystemUsers ..")
             setupSystemUsers()
 
-            log.debug("setupAdminUsers ..")
-            setupAdminUsers()
-
             log.debug("setupSystemSettings ..")
             setupSystemSettings()
 
@@ -117,16 +114,21 @@ class BootStrapService {
             log.debug("setupOnixPlRefdata .. deprecated")
             setupOnixPlRefdata()
 
-            log.debug("checking database ..")
-            if (!Org.findAll() && !Person.findAll() && !Address.findAll() && !Contact.findAll()) {
-                organisationService.createOrgsFromScratch()
+            if (AppUtils.getCurrentServer() == AppUtils.QA) {
+                log.debug("setupAdminUsers ..")
+                setupAdminUsers()
+
+                if (!Org.findAll() && !Person.findAll() && !Address.findAll() && !Contact.findAll()) {
+                    log.debug("createOrgsFromScratch ..")
+                    organisationService.createOrgsFromScratch()
+                }
             }
 
             log.debug("adjustDatabasePermissions ..")
             adjustDatabasePermissions()
         }
 
-        log.debug("setJSONFormatDate ..")
+        log.debug("JSON.registerObjectMarshaller(Date) ..")
 
         JSON.registerObjectMarshaller(Date) {
             return it ? DateUtils.getSDF_yyyyMMddTHHmmssZ().format( it ) : null
@@ -233,8 +235,6 @@ class BootStrapService {
     void setupAdminUsers() {
 
         if (AppUtils.getCurrentServer() == AppUtils.QA) {
-            log.debug("check if all user accounts are existing on QA ...")
-
             Map<String,Org> modelOrgs = [konsorte: Org.findByName('Musterkonsorte'),
                                          vollnutzer: Org.findByName('Mustereinrichtung'),
                                          konsortium: Org.findByName('Musterkonsortium')]

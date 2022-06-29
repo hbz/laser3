@@ -69,7 +69,7 @@ class InstAdmService {
      * @return true if access is granted, false otherwise
      */
     boolean isUserEditableForInstAdm(User user, User editor) {
-        List<Org> userOrgs = user.getAuthorizedOrgs()
+        List<Org> userOrgs = user.getAffiliationOrgs()
 
         if (! userOrgs.isEmpty()) {
             boolean result = true

@@ -32,7 +32,7 @@
                             boolean check = ! instAdmService.isUserLastInstAdminForOrg(userInstance, aff.org) && (
                                     contextService.getUser().hasRole('ROLE_ADMIN') || (
                                         ( aff.org.id == contextService.getOrg().id || aff.org.id in comboOrgIds ) &&
-                                                contextService.getUser().isAuthorizedComboInstAdmin(aff.org)
+                                                contextService.getUser().hasComboInstAdminAffiliation(aff.org)
                                     )
                             )
                         %>

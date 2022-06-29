@@ -127,7 +127,7 @@ class LicenseController {
 
             // -- private properties
 
-            result.authorizedOrgs = result.user.authorizedOrgs
+            result.authorizedOrgs = result.user.getAffiliationOrgs()
 
             // create mandatory LicensePrivateProperties if not existing
 
@@ -176,7 +176,7 @@ class LicenseController {
                         result.visiblePrsLinks << pl
                     } else {
                         // nasty lazy loading fix
-                        result.user.authorizedOrgs.each { ao ->
+                        result.user.getAffiliationOrgs().each { ao ->
                             if (ao.getId() == pl.prs.tenant.getId()) {
                                 result.visiblePrsLinks << pl
                             }
