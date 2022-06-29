@@ -189,7 +189,7 @@ class PendingChangeService extends AbstractLockableService {
                             def new_instance = new_domain_class.getClazz().newInstance()
                             // like bindData(destination, map), that only exists in controllers
 
-                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S")
+                            SimpleDateFormat sdf = DateUtils.getSDF_yyyyMMdd_HHmmssS()
                             if(payload.changeDoc?.startDate || payload.changeDoc?.endDate)
                             {
                                 payload.changeDoc?.startDate = ((payload.changeDoc?.startDate != null) && (payload.changeDoc?.startDate.length() > 0)) ? sdf.parse(payload.changeDoc?.startDate) : null
@@ -216,7 +216,7 @@ class PendingChangeService extends AbstractLockableService {
                         if ( pendingChange.payloadChangeTargetOid?.length() > 0 ) {
                             def target_object = genericOIDService.resolveOID(pendingChange.payloadChangeTargetOid)
                             if ( target_object ) {
-                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S")
+                                SimpleDateFormat sdf = DateUtils.getSDF_yyyyMMdd_HHmmssS()
                                 if(payload.changeDoc?.startDate || payload.changeDoc?.endDate)
                                 {
                                     payload.changeDoc?.startDate = ((payload.changeDoc?.startDate != null) && (payload.changeDoc?.startDate.length() > 0)) ? sdf.parse(payload.changeDoc?.startDate) : null

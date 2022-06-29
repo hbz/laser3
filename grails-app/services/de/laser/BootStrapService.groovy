@@ -15,8 +15,8 @@ import grails.core.GrailsApplication
 import grails.gorm.transactions.Transactional
 import grails.util.Environment
 import groovy.sql.Sql
-import org.hibernate.SQLQuery
 import org.hibernate.SessionFactory
+import org.hibernate.query.NativeQuery
 import org.hibernate.type.TextType
 
 import javax.sql.DataSource
@@ -443,8 +443,8 @@ class BootStrapService {
                         if (fileSql.take(26).equalsIgnoreCase('CREATE OR REPLACE FUNCTION')) {
 
                             try {
-                                SQLQuery query    = sessionFactory.currentSession.createSQLQuery(fileSql)
-                                SQLQuery validate = sessionFactory.currentSession
+                                NativeQuery query    = sessionFactory.currentSession.createSQLQuery(fileSql)
+                                NativeQuery validate = sessionFactory.currentSession
                                         .createSQLQuery(validateSql)
                                         .addScalar("regexp_matches", new TextType())
 

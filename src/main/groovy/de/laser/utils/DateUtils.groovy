@@ -60,10 +60,6 @@ class DateUtils {
         return new SimpleDateFormat('dd.MM.yyyy')
     }
 
-    static SimpleDateFormat getSDF_forFilename(){
-        return new SimpleDateFormat('yyyyMMdd-HHmm')
-    }
-
     static SimpleDateFormat getSDF_MMMyyyy(){
         return new SimpleDateFormat('MMM-yyyy')
     }
@@ -88,12 +84,30 @@ class DateUtils {
         return new SimpleDateFormat('yyyy-MM-dd')
     }
 
+    static SimpleDateFormat getSDF_yyyyMMdd_hhmmSSS(){
+        return new SimpleDateFormat('yyyy-MM-dd hh:mm:SS.S')
+    }
+
+    static SimpleDateFormat getSDF_yyyyMMdd_HHmmss(){
+        return new SimpleDateFormat('yyyy-MM-dd HH:mm:ss')
+    }
+
+    static SimpleDateFormat getSDF_yyyyMMdd_HHmmssS(){
+        return new SimpleDateFormat('yyyy-MM-dd HH:mm:ss.S')
+    }
+
     static SimpleDateFormat getSDF_yyyyMMddTHHmmss(){
         return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
     }
 
     static SimpleDateFormat getSDF_yyyyMMddTHHmmssZ(){
         return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+    }
+
+    // --
+
+    static SimpleDateFormat getSDF_forFilename(){
+        return new SimpleDateFormat('yyyyMMdd-HHmm')
     }
 
     // --

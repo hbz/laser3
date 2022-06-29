@@ -30,9 +30,9 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import grails.plugins.mail.MailService
 import groovy.sql.Sql
-import org.hibernate.SQLQuery
 import org.hibernate.Session
 import org.hibernate.SessionFactory
+import org.hibernate.query.NativeQuery
 import org.springframework.web.multipart.commons.CommonsMultipartFile
 import de.laser.utils.ConfigMapper
 
@@ -998,7 +998,7 @@ class AdminController  {
                 break
         }
 
-        SQLQuery sqlQuery = (sessionFactory.currentSession).createSQLQuery("""
+        NativeQuery sqlQuery = (sessionFactory.currentSession).createSQLQuery("""
 SELECT * FROM (
       SELECT idns.idns_ns,
              idns.idns_id,

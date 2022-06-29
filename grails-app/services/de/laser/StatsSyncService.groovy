@@ -20,8 +20,8 @@ import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.json.JsonOutput
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
-import groovy.util.slurpersupport.GPathResult
 import groovy.xml.StreamingMarkupBuilder
+import groovy.xml.slurpersupport.GPathResult
 import groovyx.gpars.GParsPool
 import groovyx.net.http.ContentType
 import groovyx.net.http.HTTPBuilder

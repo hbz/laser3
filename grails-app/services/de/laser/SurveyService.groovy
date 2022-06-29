@@ -372,7 +372,7 @@ class SurveyService {
 
                 row.add([field: surveyConfig.surveyInfo.owner.name ?: '', style: null])
                 row.add([field: surveyConfig.comment ?: '', style: null])
-                row.add([field: surveyConfig.surveyInfo.endDate ? DateUtils.getSDF_ddMMyyy().format( Date.parse('yyyy-MM-dd hh:mm:SS.S', surveyConfig.surveyInfo.endDate.toString()) ) : '', style: null])
+                row.add([field: surveyConfig.surveyInfo.endDate ? DateUtils.getSDF_ddMMyyy().format( DateUtils.getSDF_yyyyMMdd_hhmmSSS().parse(surveyConfig.surveyInfo.endDate.toString()) ) : '', style: null])
 
                 if (surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]) {
                     row.add([field: surveyConfig.url ?: '', style: null])
@@ -405,9 +405,8 @@ class SurveyService {
 
                     if (surveyConfig.subSurveyUseForTransfer) {
                         CostItem surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, contextOrg), RDStore.COST_ITEM_DELETED)
-
-                        row.add([field: surveyConfig.scheduledStartDate ? DateUtils.getSDF_ddMMyyy().format( Date.parse('yyyy-MM-dd hh:mm:SS.S', surveyConfig.scheduledStartDate.toString()) ): '', style: null])
-                        row.add([field: surveyConfig.scheduledEndDate ? DateUtils.getSDF_ddMMyyy().format( Date.parse('yyyy-MM-dd hh:mm:SS.S', surveyConfig.scheduledEndDate.toString()) ): '', style: null])
+                        row.add([field: surveyConfig.scheduledStartDate ? DateUtils.getSDF_ddMMyyy().format( DateUtils.getSDF_yyyyMMdd_hhmmSSS().parse(surveyConfig.scheduledStartDate.toString()) ): '', style: null])
+                        row.add([field: surveyConfig.scheduledEndDate ? DateUtils.getSDF_ddMMyyy().format( DateUtils.getSDF_yyyyMMdd_hhmmSSS().parse(surveyConfig.scheduledEndDate.toString()) ): '', style: null])
                         row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ?: '', style: null])
                         row.add([field: surveyCostItem?.billingCurrency?.value ?: '', style: null])
                         row.add([field: surveyCostItem?.costDescription ?: '', style: null])

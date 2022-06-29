@@ -95,7 +95,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 Date oldDate = source.haveUpTo
                 //Date oldDate = DateUtils.getSDF_ymd().parse('2022-01-01') //debug only
                 log.info("getting records from job #${source.id} with uri ${source.uri} since ${oldDate}")
-                SimpleDateFormat sdf = new SimpleDateFormat('yyyy-MM-dd HH:mm:ss')
+                SimpleDateFormat sdf = DateUtils.getSDF_yyyyMMdd_HHmmss()
                 String componentType
                 /*
                     structure:

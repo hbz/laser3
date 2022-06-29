@@ -11,14 +11,15 @@ import java.text.SimpleDateFormat
 @CompileStatic
 class SqlDateUtils {
 
+    static final SimpleDateFormat SDF = new SimpleDateFormat("yyyyMMdd")
+
     /**
      * Is the given date the current day?
      * @param date the {@link Date} to check
      * @return is the difference of days equal to 0 (= do we have the same day)?
      */
     static boolean isToday(date) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd")
-        (simpleDateFormat.format(date).compareTo(simpleDateFormat.format(new Date(System.currentTimeMillis())))) == 0
+        (SDF.format(date).compareTo(SDF.format(new Date(System.currentTimeMillis())))) == 0
     }
 
     /**
@@ -30,8 +31,7 @@ class SqlDateUtils {
         def yesterday = Calendar.getInstance()
         yesterday.add(Calendar.DATE, -1)
         yesterday = new Date(yesterday.getTimeInMillis())
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd")
-        (simpleDateFormat.format(date).compareTo(simpleDateFormat.format(yesterday))) == 0
+        (SDF.format(date).compareTo(SDF.format(yesterday))) == 0
     }
 
     /**
@@ -49,8 +49,7 @@ class SqlDateUtils {
      * @return is the given date in the past?
      */
     static boolean isBeforeToday(date) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd")
-        (simpleDateFormat.format(date).compareTo(simpleDateFormat.format(new Date(System.currentTimeMillis())))) < 0
+        (SDF.format(date).compareTo(SDF.format(new Date(System.currentTimeMillis())))) < 0
     }
 
     /**
@@ -59,8 +58,7 @@ class SqlDateUtils {
      * @return is the given date in the future?
      */
     static boolean isAfterToday(date) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd")
-        (simpleDateFormat.format(date).compareTo(simpleDateFormat.format(new Date(System.currentTimeMillis())))) > 0
+        (SDF.format(date).compareTo(SDF.format(new Date(System.currentTimeMillis())))) > 0
     }
 
     /**
@@ -71,9 +69,8 @@ class SqlDateUtils {
      * @return is the given date in the time span to check?
      */
     static boolean isDateBetween(dateToTest, Date fromDate, Date toDate) {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd")
-        (simpleDateFormat.format(dateToTest).compareTo(simpleDateFormat.format(fromDate))) >= 0 &&
-        (simpleDateFormat.format(toDate).compareTo(simpleDateFormat.format(dateToTest))) >= 0
+        (SDF.format(dateToTest).compareTo(SDF.format(fromDate))) >= 0 &&
+        (SDF.format(toDate).compareTo(SDF.format(dateToTest))) >= 0
     }
 
     /**

@@ -707,7 +707,7 @@
                                     <br />
                                     <strong>${message(code: 'task.endDate.label')}</strong>:
                                         <g:if test="${hit.getSourceAsMap()?.endDate}">
-                                            <g:formatDate format="${message(code:'default.date.format.notime')}" date="${new Date().parse("yyyy-MM-dd'T'HH:mm:ssZ", hit.getSourceAsMap().endDate)}"/>
+                                            <g:formatDate format="${message(code:'default.date.format.notime')}" date="${new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").parse(hit.getSourceAsMap().endDate)}"/>
                                         </g:if>
                                     <br />
                                     <strong>${message(code: 'default.description.label')}</strong>: <article class="la-readmore">${hit.getSourceAsMap()?.description}</article>

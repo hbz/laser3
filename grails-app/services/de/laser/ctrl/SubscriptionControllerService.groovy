@@ -42,11 +42,11 @@ import org.apache.commons.lang.StringEscapeUtils
 import org.apache.commons.lang3.RandomStringUtils
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
-import org.hibernate.SQLQuery
 import org.hibernate.Session
 import org.hibernate.SessionFactory
 import org.grails.orm.hibernate.cfg.GrailsDomainBinder
 import org.grails.orm.hibernate.cfg.PropertyConfig
+import org.hibernate.query.NativeQuery
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.MultipartFile
@@ -445,7 +445,7 @@ class SubscriptionControllerService {
                     c5CheckParams.endDate = queryParams.endDate
                 }
                 Session sess = sessionFactory.getCurrentSession()
-                SQLQuery query = sess.createSQLQuery('select * from counter5report where c5r_report_institution_fk = :customer and c5r_platform_fk in (:platforms) and (c5r_title_fk in (select ie_tipp_fk from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk in (:refSubs) and ie_accept_status_rv_fk = :acceptStatus and ie_status_rv_fk = :current and tipp_status_rv_fk = :current) or c5r_title_fk is null)'+sqlDateRange)
+                NativeQuery query = sess.createSQLQuery('select * from counter5report where c5r_report_institution_fk = :customer and c5r_platform_fk in (:platforms) and (c5r_title_fk in (select ie_tipp_fk from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk in (:refSubs) and ie_accept_status_rv_fk = :acceptStatus and ie_status_rv_fk = :current and tipp_status_rv_fk = :current) or c5r_title_fk is null)'+sqlDateRange)
                 query.setParameter('customer', c5CheckParams.customer.id)
                 query.setParameterList('platforms', c5CheckParams.platforms.collect { Platform plat -> plat.id })
                 query.setParameterList('refSubs', refSubs.collect{ Subscription s -> s.id })

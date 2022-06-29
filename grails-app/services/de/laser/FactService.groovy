@@ -6,6 +6,7 @@ import de.laser.properties.PropertyDefinition
 import de.laser.stats.Fact
 import de.laser.stats.StatsTripleCursor
 import de.laser.storage.RDConstants
+import de.laser.utils.DateUtils
 import grails.gorm.transactions.Transactional
 
 import java.time.YearMonth
@@ -464,7 +465,8 @@ class FactService {
   def totalUsageForSub(sub, factType, metric) {
     Fact.executeQuery(TOTAL_USAGE_FOR_SUB_IN_PERIOD, [
         start: sub.startDate,
-        end  : sub.endDate ?: new Date().parse('yyyy', '9999'), // TODO Fix that hack
+        // end  : sub.endDate ?: new Date().parse('yyyy', '9999'), // TODO Fix that hack
+        end  : sub.endDate ?: DateUtils.getSDF_yyyy().parse('9999'), // TODO Fix that hack
         sub  : sub,
         factType : factType,
         status : 'Deleted',
