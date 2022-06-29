@@ -759,7 +759,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
             log.debug("Send pending change to ${ds.id}")
 
-            Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+            Locale locale = LocaleContextHolder.getLocale()
             String description = BeanStore.getMessageSource().getMessage('default.accept.placeholder',null, locale)
             String definedType = 'text'
 

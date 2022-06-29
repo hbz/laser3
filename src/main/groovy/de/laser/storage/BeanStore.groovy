@@ -55,17 +55,17 @@ class BeanStore {
         MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource') as MessageSource
 
         // in progress
-        if (false) {
-            messageSource.metaClass.getMessage = { String code ->
-                getMessageSource().getMessage(code, null, code, org.springframework.context.i18n.LocaleContextHolder.getLocale())
-            }
-            messageSource.metaClass.getMessage = { String code, Object[] args ->
-                getMessageSource().getMessage(code, args, code, org.springframework.context.i18n.LocaleContextHolder.getLocale())
-            }
-            messageSource.metaClass.getMessage = { MessageSourceResolvable resolvable ->
-                getMessageSource().getMessage(resolvable, org.springframework.context.i18n.LocaleContextHolder.getLocale())
-            }
-        }
+//        if (false) {
+//            messageSource.metaClass.getMessage = { String code ->
+//                getMessageSource().getMessage(code, null, code, org.springframework.context.i18n.LocaleContextHolder.getLocale())
+//            }
+//            messageSource.metaClass.getMessage = { String code, Object[] args ->
+//                getMessageSource().getMessage(code, args, code, org.springframework.context.i18n.LocaleContextHolder.getLocale())
+//            }
+//            messageSource.metaClass.getMessage = { MessageSourceResolvable resolvable ->
+//                getMessageSource().getMessage(resolvable, org.springframework.context.i18n.LocaleContextHolder.getLocale())
+//            }
+//        }
         messageSource
     }
     static SpringSecurityService getSpringSecurityService() {

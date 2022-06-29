@@ -8,6 +8,7 @@ class SemuiSurveyTagLib {
 
     ContextService contextService
     LinksGenerationService linksGenerationService
+
     static namespace = "semui"
 
     def surveyStatus = { attrs, body ->

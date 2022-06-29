@@ -231,15 +231,11 @@ class PropertyService {
 
             if (dc.shortName.endsWith('Property')) {
 
-                //log.debug( dc.shortName )
                 String query = "SELECT DISTINCT type FROM " + dc.name
-                //log.debug(query)
-
                 Set<PropertyDefinition> pds = PropertyDefinition.executeQuery(query)
-                //log.debug(pds)
+
                 detailsMap.putAt( dc.shortName, pds.collect{ PropertyDefinition pd -> "${pd.id}:${pd.type}:${pd.descr}"}.sort() )
 
-                // ids of used property definitions
                 pds.each{ PropertyDefinition pd ->
                     usedPdList << pd.id
                 }

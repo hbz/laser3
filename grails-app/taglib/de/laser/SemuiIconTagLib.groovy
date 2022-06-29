@@ -5,6 +5,7 @@ import de.laser.titles.DatabaseInstance
 import de.laser.titles.JournalInstance
 
 class SemuiIconTagLib {
+
     static namespace = "semui"
 
     def headerIcon = { attrs, body ->

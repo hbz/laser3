@@ -7,8 +7,8 @@
 - Spring Boot 2.7.0
 - Micronaut 3.5.1
 - Gradle 7.4.2
-- Hibernate 5.6.9.Final / GORM 7.2.2
-- Groovy 3.0.7
+- Hibernate 5.6.9.Final / GORM 7.3.2
+- Groovy 3.0.11
 - Java 11
 
 See [details.md](./details.md) for detailed information.
@@ -16,8 +16,8 @@ See [details.md](./details.md) for detailed information.
 ### Setup with SDKMAN
 
     sdk i grails 5.2.0
-    sdk i groovy 3.0.7
-    sdk i java 11.0.12
+    sdk i groovy 3.0.11
+    sdk i java 11.0.12-open
 
 #### Configuration files
 

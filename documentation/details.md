@@ -89,6 +89,7 @@ Use BeanStore for static and non-static access to services and other beans.
     static ContextService getContextService() {
         Holders.grailsApplication.mainContext.getBean('contextService') as ContextService
     }
+
 ### Websockets
 
 Todo: Websocket communication is broken after upgrading from Grails 4 to Grails 5.
@@ -103,7 +104,7 @@ Todo: Websocket communication is broken after upgrading from Grails 4 to Grails 
 
 * #### GPars
 
-    *org.codehaus.gpars:gpars* is only used in one file.
+    *org.codehaus.gpars:gpars* is outdated and only used in one file.
 
 * #### Juniversalchardet
 

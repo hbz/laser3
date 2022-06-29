@@ -28,7 +28,6 @@ class SemuiTagLib {
     ContextService contextService
     GenericOIDService genericOIDService
     GokbService gokbService
-    LinksGenerationService linksGenerationService
     SystemService systemService
     TagLibraryLookup gspTagLibraryLookup
     YodaService yodaService

@@ -11,6 +11,7 @@ import de.laser.storage.RDStore
 import grails.converters.JSON
 import groovy.util.logging.Slf4j
 import org.grails.web.json.JSONElement
+import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
 
@@ -387,7 +388,7 @@ class PendingChange {
      */
     def getParsedParams() {
 
-        Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+        Locale locale = LocaleContextHolder.getLocale()
         JSONElement parsedParams = JSON.parse(msgParams)
 
         // def value type
