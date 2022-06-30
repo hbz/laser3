@@ -389,21 +389,8 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         log.debug("notifyDependencies(${changeDocument})")
         if (changeDocument.event.equalsIgnoreCase('Identifier.updated')) {
 
-            // legacy ++
-
             Locale locale = LocaleContextHolder.getLocale()
-            ContentItem contentItemDesc = ContentItem.findByKeyAndLocale("kbplus.change.subscription."+changeDocument.prop, locale.toString())
             String description = BeanStore.getMessageSource().getMessage('default.accept.placeholder',null, locale)
-            if (contentItemDesc) {
-                description = contentItemDesc.content
-            }
-            else {
-                ContentItem defaultMsg = ContentItem.findByKeyAndLocale("kbplus.change.subscription.default", locale.toString())
-                if( defaultMsg)
-                    description = defaultMsg.content
-            }
-
-            // legacy ++
 
             List<PendingChange> slavedPendingChanges = []
 

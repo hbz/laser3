@@ -1,6 +1,5 @@
 package de.laser.properties
 
-import de.laser.ContentItem
 import de.laser.Org
 import de.laser.PendingChangeService
 import de.laser.Subscription
@@ -134,21 +133,8 @@ class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated imp
 
         if (changeDocument.event.equalsIgnoreCase('SubscriptionProperty.updated')) {
 
-            // legacy ++
-
             Locale locale = LocaleContextHolder.getLocale()
-            ContentItem contentItemDesc = ContentItem.findByKeyAndLocale("kbplus.change.subscription."+changeDocument.prop, locale.toString())
             String description = BeanStore.getMessageSource().getMessage('default.accept.placeholder',null, locale)
-            if (contentItemDesc) {
-                description = contentItemDesc.content
-            }
-            else {
-                ContentItem defaultMsg = ContentItem.findByKeyAndLocale("kbplus.change.subscription.default", locale.toString())
-                if( defaultMsg)
-                    description = defaultMsg.content
-            }
-
-            // legacy ++
 
             List<PendingChange> slavedPendingChanges = []
 

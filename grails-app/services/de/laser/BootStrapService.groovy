@@ -108,9 +108,6 @@ class BootStrapService {
             log.debug("setIdentifierNamespace ..")
             setIdentifierNamespace()
 
-            log.debug("setupContentItems .. deprecated")
-            setupContentItems()
-
             log.debug("setupOnixPlRefdata .. deprecated")
             setupOnixPlRefdata()
 
@@ -605,43 +602,6 @@ class BootStrapService {
         usageStatusList.each { String token ->
             RefdataValue.construct( [token: token, rdc: RDConstants.USAGE_STATUS, hardData: BOOTSTRAP, i10n:[value_de: token, value_en: token]] )
         }
-    }
-
-    @Deprecated
-    void setupContentItems() {
-
-        // The default template for a property change on a title
-        ContentItem.lookupOrCreate ('ChangeNotification.TitleInstance.propertyChange','', '''
-Title change - The <strong>${evt.prop}</strong> field was changed from  "<strong>${evt.oldLabel?:evt.old}</strong>" to "<strong>${evt.newLabel?:evt.new}</strong>".
-''')
-
-        ContentItem.lookupOrCreate ('ChangeNotification.TitleInstance.identifierAdded','', '''
-An identifier was added to title ${OID?.title}.
-''')
-
-        ContentItem.lookupOrCreate ('ChangeNotification.TitleInstance.identifierRemoved','', '''
-An identifier was removed from title ${OID?.title}.
-''')
-
-        ContentItem.lookupOrCreate ('ChangeNotification.TitleInstancePackagePlatform.updated','', '''
-TIPP change for title ${OID?.title?.title} - The <strong>${evt.prop}</strong> field was changed from  "<strong>${evt.oldLabel?:evt.old}</strong>" to "<strong>${evt.newLabel?:evt.new}</strong>".
-''')
-
-        ContentItem.lookupOrCreate ('ChangeNotification.TitleInstancePackagePlatform.added','', '''
-TIPP Added for title ${OID?.title?.title} ${evt.linkedTitle} on platform ${evt.linkedPlatform} .
-''')
-
-        ContentItem.lookupOrCreate ('ChangeNotification.TitleInstancePackagePlatform.deleted','', '''
-TIPP Deleted for title ${OID?.title?.title} ${evt.linkedTitle} on platform ${evt.linkedPlatform} .
-''')
-
-        ContentItem.lookupOrCreate ('ChangeNotification.Package.created','', '''
-New package added with id ${OID.id} - "${OID.name}".
-''')
-
-        ContentItem.lookupOrCreate ('kbplus.noHostPlatformURL','', '''
-No Host Platform URL Content
-''')
     }
 
     /**
