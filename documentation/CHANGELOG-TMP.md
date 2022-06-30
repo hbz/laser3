@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4333    30.06.2022  rc-2.3  2.3.2       Moe     Bug         Fehler bei Export von KBART
+
 4326    30.06.2022  rc-2.3  2.3.2       Moe     Bug         Verlängerungsumfrage: Statusfilter im Teilnehmerreiter entfernen
 
 4318    24.06.2022  rc-2.3  2.3.2       Andreas Bug         Sortierung von Titel an diversen Stellen korrigiert
