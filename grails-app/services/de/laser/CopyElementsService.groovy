@@ -5,6 +5,7 @@ import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.exceptions.CreationException
 import de.laser.finance.CostItem
 import de.laser.finance.PriceItem
+import de.laser.config.ConfigDefaults
 import de.laser.utils.ConfigMapper
 import de.laser.helper.FactoryResult
 import de.laser.storage.RDStore
@@ -1128,7 +1129,7 @@ class CopyElementsService {
                         newDocContext.owner = newDoc
                         _save(newDocContext, flash)
 
-                        String fPath = ConfigMapper.getDocumentStorageLocation() ?: '/tmp/laser'
+                        String fPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
 
                         Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
                         Path target = new File("${fPath}/${newDoc.uuid}").toPath()

@@ -1,6 +1,6 @@
 package de.laser
 
-
+import de.laser.config.ConfigDefaults
 import de.laser.utils.AppUtils
 import de.laser.helper.DatabaseInfo
 import de.laser.utils.LocaleUtils
@@ -75,7 +75,8 @@ class AdminController  {
 
         Map<String, Object> result = [
                 dbmVersion  : dbmQuery.size() > 0 ? dbmQuery.first() : ['unkown', 'unkown', 'unkown'],
-                events      : SystemEvent.list([max: 10, sort: 'created', order: 'desc'])
+                events      : SystemEvent.list([max: 10, sort: 'created', order: 'desc']),
+                docStore    : AppUtils.getDocumentStorageInfo()
         ]
 
         result
@@ -655,7 +656,7 @@ class AdminController  {
     def fileConsistency() {
         Map<String, Object> result = [:]
 
-        result.filePath = ConfigMapper.getDocumentStorageLocation() ?: '/tmp/laser'
+        result.filePath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
 
         Closure fileCheck = { Doc doc ->
 
@@ -751,7 +752,7 @@ class AdminController  {
     def recoveryDoc() {
         Map<String, Object> result = [:]
 
-        result.filePath = ConfigMapper.getDocumentStorageLocation() ?: '/tmp/laser'
+        result.filePath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
 
         Closure fileCheck = { Doc doc ->
 
@@ -795,7 +796,7 @@ class AdminController  {
     def processRecoveryDoc() {
         Map<String, Object> result = [:]
 
-        result.filePath = ConfigMapper.getDocumentStorageLocation() ?: '/tmp/laser'
+        result.filePath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
 
         Closure fileCheck = { Doc doc ->
 
@@ -1442,7 +1443,9 @@ SELECT * FROM (
 
     @Secured(['ROLE_ADMIN'])
     def appInfo() {
-        Map<String, Object> result = [:]
+        Map<String, Object> result = [
+                docStore: AppUtils.getDocumentStorageInfo()
+        ]
 
         result.statsSyncService = [:]
 

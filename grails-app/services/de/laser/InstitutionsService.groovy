@@ -1,6 +1,6 @@
 package de.laser
 
-
+import de.laser.config.ConfigDefaults
 import de.laser.properties.LicenseProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.storage.RDStore
@@ -135,7 +135,7 @@ class InstitutionsService {
                             migrated: dctx.owner.migrated
                     ).save()
 
-                    String fPath = ConfigMapper.getDocumentStorageLocation() ?: '/tmp/laser'
+                    String fPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
 
                     Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
                     Path target = new File("${fPath}/${clonedContents.uuid}").toPath()

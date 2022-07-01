@@ -50,7 +50,7 @@
         </thead>
         <tbody>
             <tr><td>Database</td><td> ${ConfigMapper.getConfig('dataSource.url', String).split('/').last()}</td></tr>
-            <tr><td>DBM version</td><td> ${dbmVersion[0]} @ ${dbmVersion[1]} <br/> ${DateUtils.getLocalizedSDF_noZ().format(dbmVersion[2])}</td></tr>
+            <tr><td>DBM version</td><td> ${dbmVersion[0]} -> ${dbmVersion[1]} <br/> ${DateUtils.getLocalizedSDF_noZ().format(dbmVersion[2])}</td></tr>
             <tr><td>DBM updateOnStart</td><td> ${ConfigMapper.getPluginConfig('databasemigration.updateOnStart', Boolean)}</td></tr>
             <tr><td>Collations</td><td>
                 <%
@@ -81,6 +81,17 @@
             <g:each in="${esinfos}" var="es">
                 <tr><td>DomainClass: ${es.domainClassName}</td><td>DB Elements: ${es.dbElements}, ES Elements: ${es.esElements}<br /> Last Update: ${new Date(es.lastTimestamp)}</td></tr>
             </g:each>
+        </tbody>
+    </table>
+
+    <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
+        <thead>
+        <tr><th class="seven wide">Files</th><th class="nine wide"></th></tr>
+        </thead>
+        <tbody>
+        <tr><td>Document storage</td><td> ${docStore.folderPath}</td></tr>
+        <tr><td>Files count</td><td> ${docStore.filesCount}</td></tr>
+        <tr><td>Storage size</td><td> ${docStore.folderSize} MB</td></tr>
         </tbody>
     </table>
 

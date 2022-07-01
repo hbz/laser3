@@ -2,6 +2,7 @@ package de.laser
 
 import de.laser.finance.CostItem
 import de.laser.finance.PriceItem
+import de.laser.config.ConfigDefaults
 import de.laser.utils.ConfigMapper
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
@@ -267,7 +268,7 @@ class RenewSubscriptionService extends AbstractLockableService {
 
                                         if ((dctx.owner?.contentType == Doc.CONTENT_TYPE_FILE) && (dctx.status?.value != 'Deleted')) {
                                             try {
-                                                String fPath = ConfigMapper.getDocumentStorageLocation() ?: '/tmp/laser'
+                                                String fPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
 
                                                 Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
                                                 Path target = new File("${fPath}/${newDoc.uuid}").toPath()

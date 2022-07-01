@@ -51,6 +51,19 @@
                     <div class="label">Threads</div>
                 </div>
             </div>
+
+            <h3 class="ui header">${docStore.folderPath}</h3>
+
+            <div class="ui horizontal statistics">
+                <div class="statistic">
+                    <div class="value">${docStore.filesCount}</div>
+                    <div class="label">Files</div>
+                </div>
+                <div class="statistic">
+                    <div class="value">${docStore.folderSize}</div>
+                    <div class="label">MB &middot; used</div>
+                </div>
+            </div>
         </div>
 
         <div class="column">

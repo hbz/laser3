@@ -57,7 +57,7 @@ class DatabaseInfo {
         Sql sql = new Sql(dataSource)
 
         Map<String, Map> result = [:]
-        if (! sql.firstRow("select 1 from information_schema.tables where table_catalog = current_database() and table_name = 'pg_stat_statements'").isEmpty()) {
+        if (sql.firstRow("select 1 from information_schema.tables where table_catalog = current_database() and table_schema = 'public' and table_name = 'pg_stat_statements'")) {
             String hql = """
                 select queryid, calls, total_time, min_time, max_time, mean_time, query from pg_stat_statements where queryid is not null 
                 and query not like '%pg_%' and query not in ('BEGIN', 'COMMIT', 'SELECT \$1')

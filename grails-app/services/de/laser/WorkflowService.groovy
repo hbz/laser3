@@ -1,6 +1,6 @@
 package de.laser
 
-
+import de.laser.config.ConfigDefaults
 import de.laser.utils.ConfigMapper
 import de.laser.utils.DateUtils
 import de.laser.workflow.*
@@ -636,7 +636,7 @@ class WorkflowService {
                                     )
                                     doc.save()
 
-                                    String fPath = ConfigMapper.getDocumentStorageLocation() ?: '/tmp/laser'
+                                    String fPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
                                     String fName = doc.uuid
 
                                     File folder = new File("${fPath}")

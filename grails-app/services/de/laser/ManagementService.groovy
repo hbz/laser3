@@ -4,6 +4,7 @@ import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.ctrl.MyInstitutionControllerService
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.finance.CostItem
+import de.laser.config.ConfigDefaults
 import de.laser.utils.ConfigMapper
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
@@ -821,7 +822,7 @@ class ManagementService {
 
                                     File new_File
                                     try {
-                                        String fPath = ConfigMapper.getDocumentStorageLocation() ?: '/tmp/laser'
+                                        String fPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
                                         String fName = doc_content.uuid
 
                                         File folder = new File("${fPath}")

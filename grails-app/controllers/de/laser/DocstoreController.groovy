@@ -3,6 +3,7 @@ package de.laser
 
 import de.laser.auth.User
 import de.laser.ctrl.DocstoreControllerService
+import de.laser.config.ConfigDefaults
 import de.laser.utils.CodeUtils
 import de.laser.utils.ConfigMapper
 import de.laser.annotations.DebugInfo
@@ -97,7 +98,7 @@ class DocstoreController  {
                         //move the uploaded file to its actual destination (= store the file)
                         File new_File
                         try {
-                            String fPath = ConfigMapper.getDocumentStorageLocation() ?: '/tmp/laser'
+                            String fPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
                             String fName = doc_content.uuid
 
                             File folder = new File("${fPath}")
@@ -146,7 +147,7 @@ class DocstoreController  {
 
                                     //store copies of the uploaded document files
                                     try {
-                                        String fPath = ConfigMapper.getDocumentStorageLocation() ?: '/tmp/laser'
+                                        String fPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
                                         String fName = doc_content2.uuid
 
                                         File folder = new File("${fPath}")

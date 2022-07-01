@@ -2,11 +2,14 @@ package de.laser.utils
 
 import de.laser.ContextService
 import de.laser.cache.SessionCacheWrapper
+import de.laser.config.ConfigDefaults
 import de.laser.storage.BeanStore
 import grails.util.Environment
 import grails.util.Holders
-import grails.core.GrailsClass
 import groovy.util.logging.Slf4j
+
+import java.nio.file.Files
+import java.nio.file.Paths
 
 /**
  * Util class for determining domain classes
@@ -54,7 +57,7 @@ class AppUtils {
 
     static boolean isRestartedByDevtools() {
         try {
-            FileReader fr = new FileReader('./grails-app/conf/spring/restart.trigger')
+            FileReader fr = new FileReader( ConfigDefaults.DEVTOOLS_TRIGGER_FILE )
             if (fr) {
                 Long ts = Long.parseLong(fr.readLine())
                 if (30000 > (System.currentTimeMillis() - ts)) {
@@ -83,5 +86,24 @@ class AppUtils {
         else if (status?.toLowerCase() in ['false', 'off']) {
             sessionCache.put( AU_S_DEBUGMODE, 'off' )
         }
+    }
+
+    // --
+
+    static Map<String, Object> getDocumentStorageInfo() {
+        Map<String, Object> info = [
+                folderPath : ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK,
+                folderSize : '?',
+                filesCount : '?'
+        ]
+        try {
+            File folder = new File( info.folderPath as String )
+            if (folder.exists()) {
+                info.folderSize = (folder.directorySize() / 1024 / 1024).round(2)
+                info.filesCount = Files.walk(Paths.get( info.folderPath as String )).filter(Files::isRegularFile).toArray().size()
+            }
+        }
+        catch (Exception e) {}
+        info
     }
 }

@@ -1,6 +1,7 @@
 package de.laser
 
 import de.laser.annotations.RefdataInfo
+import de.laser.config.ConfigDefaults
 import de.laser.utils.ConfigMapper
 import de.laser.storage.RDConstants
 
@@ -67,7 +68,7 @@ class Doc {
         def contentLength
 
         try {
-            String fPath = ConfigMapper.getDocumentStorageLocation() ?: '/tmp/laser'
+            String fPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
             File file = new File("${fPath}/${uuid}")
             output = file.getBytes()
             contentLength = output.length

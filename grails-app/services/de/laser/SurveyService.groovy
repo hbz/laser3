@@ -4,6 +4,7 @@ package de.laser
 import de.laser.auth.User
 import de.laser.auth.UserOrg
 import de.laser.finance.CostItem
+import de.laser.config.ConfigDefaults
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
 import de.laser.stats.Counter4ApiSource
@@ -1291,7 +1292,7 @@ class SurveyService {
                             migrated: dctx.owner.migrated,
                             owner: dctx.owner.owner
                     ).save()
-                    String fPath = ConfigMapper.getDocumentStorageLocation() ?: '/tmp/laser'
+                    String fPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
                     Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
                     Path target = new File("${fPath}/${clonedContents.uuid}").toPath()
                     Files.copy(source, target)

@@ -23,6 +23,7 @@ import de.laser.survey.SurveyResult
 import de.laser.system.SystemActivityProfiler
 import de.laser.system.SystemProfiler
 import de.laser.system.SystemSetting
+import de.laser.utils.AppUtils
 import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
 import grails.converters.JSON
@@ -79,7 +80,10 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     @Transactional
     def index() {
-        Map result = [:]
+        Map<String, Object> result = [
+                docStore: AppUtils.getDocumentStorageInfo()
+        ]
+
         result
     }
 

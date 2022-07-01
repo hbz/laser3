@@ -25,7 +25,6 @@ class ConfigMapper {
 
     static final List FINANCIALS_CURRENCY           = ['financials.currency', String]
 
-
     static final List GLOBAL_DATA_SYNC_JOB_ACTIVE                   = ['globalDataSyncJobActive', Boolean]
     static final List GRAILS_MAIL_DISABLED                          = ['grails.mail.disabled',   Boolean]
     static final List GRAILS_PLUGIN_WKHTMLTOPDF_BINARY              = ['grails.plugin.wkhtmltopdf.binary',     String]

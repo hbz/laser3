@@ -23,7 +23,7 @@
         </thead>
         <tbody>
             <tr><td>Database</td><td> ${ConfigMapper.getConfig('dataSource.url', String).split('/').last()}</td></tr>
-            <tr><td>DBM version</td><td> ${dbmVersion[0]} @ ${dbmVersion[1]} <br/> ${DateUtils.getLocalizedSDF_noZ().format(dbmVersion[2])}</td></tr>
+            <tr><td>DBM version</td><td> ${dbmVersion[0]} -> ${dbmVersion[1]} <br/> ${DateUtils.getLocalizedSDF_noZ().format(dbmVersion[2])}</td></tr>
             <tr><td>DBM updateOnStart</td><td> ${ConfigMapper.getPluginConfig('databasemigration.updateOnStart', Boolean)}</td></tr>
             <tr><td>Config dataSource.dbCreate</td><td> ${ConfigMapper.getConfig('dataSource.dbCreate', String)}</td></tr>
             <tr><td>Collations</td><td>
@@ -94,7 +94,7 @@
                 <tbody>
                 <g:each in="${dbStatistics.calls}" var="dbs">
                     <tr>
-                        <td>${dbs.calls}</td>
+                        <td><strong>${dbs.calls}</strong></td>
                         <td>${(dbs.total_time / 1000).round(2)}</td>
                         <td>${dbs.max_time.round(3)}</td>
                         <td>${dbs.mean_time.round(3)}</td>
@@ -119,7 +119,7 @@
                 <tbody>
                 <g:each in="${dbStatistics.maxTime}" var="dbs">
                     <tr>
-                        <td>${(dbs.max_time / 1000).round(3)}</td>
+                        <td><strong>${(dbs.max_time / 1000).round(3)}</strong></td>
                         <td>${(dbs.mean_time / 1000).round(3)}</td>
                         <td>${dbs.calls}</td>
                         <td>${(dbs.total_time / 1000).round(3)}</td>
