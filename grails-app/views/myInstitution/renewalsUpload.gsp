@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="laser">
-    <title>${message(code:'laser')} ${message(code:'myinst.renewalUpload.label')}</title>
+    <title>${message(code:'laser')} : ${message(code:'myinst.renewalUpload.label')}</title>
   </head>
 
   <body>

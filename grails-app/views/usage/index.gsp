@@ -3,7 +3,7 @@
 <html>
 <head>
     <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} Manage Usage Stats</title>
+    <title>${message(code: 'laser')} : Manage Usage Stats</title>
 </head>
 
 <body>

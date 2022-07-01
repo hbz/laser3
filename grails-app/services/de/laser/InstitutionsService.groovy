@@ -125,7 +125,6 @@ class InstitutionsService {
                 // clone documents
                 base.documents?.each { dctx ->
                     Doc clonedContents = new Doc(
-                            status: dctx.owner.status,
                             type: dctx.owner.type,
                             content: dctx.owner.content,
                             uuid: dctx.owner.uuid,

@@ -225,36 +225,6 @@ class CopyElementsService {
         result
     }
 
-    /*Map loadDataFor_MyProperties(Map params) {
-        LinkedHashMap result = [:]
-        Object sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
-        Object targetObject = null
-        List<Object> objectsToCompare = [sourceObject]
-        if (params.targetObjectId) {
-            targetObject = genericOIDService.resolveOID(params.targetObjectId)
-            objectsToCompare.add(targetObject)
-        }
-
-
-        Org contextOrg = contextService.getOrg()
-        *//*objectsToCompare.each { Object obj ->
-            Map customProperties = result.customProperties
-            customProperties = comparisonService.buildComparisonTree(customProperties, obj, obj.propertySet.findAll { it.type.tenant == null && it.tenant?.id == contextOrg.id }.sort { it.type.getI10n('name') })
-            result.customProperties = customProperties
-            Map privateProperties = result.privateProperties
-            privateProperties = comparisonService.buildComparisonTree(privateProperties, obj, obj.propertySet.findAll { it.type.tenant?.id == contextOrg.id }.sort { it.type.getI10n('name') })
-            result.privateProperties = privateProperties
-        }*//*
-
-        result = regroupObjectProperties(objectsToCompare)
-
-        if (targetObject) {
-            result.targetObject = targetObject.refresh()
-        }
-
-        result
-    }*/
-
     /**
      * Loads the subscription holdings to copy or delete
      * @param params the request parameter map

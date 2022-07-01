@@ -2,7 +2,7 @@
 <html>
     <head>
         <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : >Datenbereinigung: Vertragsverknüpfungen ohne Einrichtungsverknüpfung</title>
+        <title>${message(code:'laser')} : Datenbereinigung - Vertragsverknüpfungen ohne Einrichtungsverknüpfung</title>
     </head>
 
     <body>

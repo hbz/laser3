@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta name="layout" content="laser">
-    <title>${message(code:'laser')} ${message(code:'menu.datamanager.changelog')}</title>
+    <title>${message(code:'laser')} : ${message(code:'menu.datamanager.changelog')}</title>
   </head>
 
   <body>

@@ -7,7 +7,7 @@
 <html>
 <head>
     <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} :  ${message(code: 'survey.label')} (${message(code: 'surveyInfo.transferMembers')})</title>
+    <title>${message(code: 'laser')} : ${message(code: 'survey.label')} (${message(code: 'surveyInfo.transferMembers')})</title>
 
 </head>
 

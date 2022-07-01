@@ -3,7 +3,7 @@
 <html>
 <head>
     <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} ${message(code: 'myinst.renewalSearch.label')}</title>
+    <title>${message(code: 'laser')} : ${message(code: 'myinst.renewalSearch.label')}</title>
 </head>
 
 <body>

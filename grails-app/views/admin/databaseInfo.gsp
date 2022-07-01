@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.helper.DatabaseInfo; de.laser.storage.BeanStore; de.laser.system.SystemSetting; grails.util.Metadata; de.laser.reporting.report.ElasticSearchHelper; grails.util.Environment; de.laser.utils.ConfigMapper" %>
+<%@ page import="de.laser.AdminController; de.laser.utils.DateUtils; de.laser.helper.DatabaseInfo; de.laser.storage.BeanStore; de.laser.system.SystemSetting; grails.util.Metadata; de.laser.reporting.report.ElasticSearchHelper; grails.util.Environment; de.laser.utils.ConfigMapper" %>
 <!doctype html>
 <html>
 <head>
@@ -41,6 +41,7 @@
                     ${uf.function}; Version ${uf.version}<br />
                 </g:each>
             </td></tr>
+            <tr><td>Conflicts</td><td> ${dbConflicts}</td></tr>
             <tr><td>Database size</td><td> ${dbSize}</td></tr>
             <tr><td>Postgresql server</td><td> ${DatabaseInfo.getServerInfo()}</td></tr>
         <tbody>
@@ -70,6 +71,65 @@
         </g:each>
         <tbody>
     </table>
+
+    <g:if test="${dbStatistics}">
+        <h2 class="ui header">Top20 - Datenbankabbfragen</h2>
+
+        <div class="ui secondary stackable pointing tabular menu">
+            <a data-tab="dbStatistics-1" class="item active">HITS</a>
+            <a data-tab="dbStatistics-2" class="item">MAX</a>
+        </div>
+
+        <div data-tab="dbStatistics-1" class="ui bottom attached tab active">
+            <table class="ui celled la-js-responsive-table la-table table la-hover-table compact">
+                <thead>
+                <tr>
+                    <th>Hits</th>
+                    <th>total(s)</th>
+                    <th>max(ms)</th>
+                    <th>avg(ms)</th>
+                    <th>Query</th>
+                </tr>
+                </thead>
+                <tbody>
+                <g:each in="${dbStatistics.calls}" var="dbs">
+                    <tr>
+                        <td>${dbs.calls}</td>
+                        <td>${(dbs.total_time / 1000).round(2)}</td>
+                        <td>${dbs.max_time.round(3)}</td>
+                        <td>${dbs.mean_time.round(3)}</td>
+                        <td>${dbs.query}</td>
+                    </tr>
+                </g:each>
+                <tbody>
+            </table>
+        </div>
+
+        <div data-tab="dbStatistics-2" class="ui bottom attached tab">
+            <table class="ui celled la-js-responsive-table la-table table la-hover-table compact">
+                <thead>
+                <tr>
+                    <th>max(s)</th>
+                    <th>avg(s)</th>
+                    <th>Hits</th>
+                    <th>total(s)</th>
+                    <th>Query</th>
+                </tr>
+                </thead>
+                <tbody>
+                <g:each in="${dbStatistics.maxTime}" var="dbs">
+                    <tr>
+                        <td>${(dbs.max_time / 1000).round(3)}</td>
+                        <td>${(dbs.mean_time / 1000).round(3)}</td>
+                        <td>${dbs.calls}</td>
+                        <td>${(dbs.total_time / 1000).round(3)}</td>
+                        <td>${dbs.query}</td>
+                    </tr>
+                </g:each>
+                <tbody>
+            </table>
+        </div>
+    </g:if>
 
     <h2 class="ui header">Nutzung (schnelle Berechnung)</h2>
 

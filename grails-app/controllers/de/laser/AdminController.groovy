@@ -597,22 +597,12 @@ class AdminController  {
         result.dbmVersion       = dbmQuery.size() > 0 ? dbmQuery.first() : ['unkown', 'unkown', 'unkown']
 
         result.defaultCollate   = DatabaseInfo.getDatabaseCollate()
+        result.dbConflicts      = DatabaseInfo.getDatabaseConflicts()
         result.dbSize           = DatabaseInfo.getDatabaseSize()
+        result.dbStatistics     = DatabaseInfo.getDatabaseStatistics()
         result.dbActivity       = DatabaseInfo.getDatabaseActivity()
         result.dbUserFunctions  = DatabaseInfo.getDatabaseUserFunctions()
         result.dbTableUsage     = DatabaseInfo.getAllTablesUsageInfo()
-        result
-    }
-
-    /**
-     * Delivers the counts of rows in the database tables
-     */
-    @Secured(['ROLE_ADMIN'])
-    def databaseStatistics() {
-        Map<String, Object> result = [:]
-
-        Sql sql = GlobalService.obtainSqlConnection()
-        result.statistic = sql.rows("select * from count_rows_for_all_tables('public')")
 
         result
     }
