@@ -40,7 +40,7 @@ class TitleController  {
             params.rectype = "TitleInstancePackagePlatform" // Tells ESSearchService what to look for
             //params.showAllTitles = true
             result.user = contextService.getUser()
-            params.max = params.max ?: result.user.getDefaultPageSize()
+            params.max = params.max ?: result.user.getPageSizeOrDefault()
 
             if (params.search.equals("yes")) {
                 params.offset = params.offset ? params.int('offset') : 0

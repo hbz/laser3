@@ -455,7 +455,7 @@ class DataManagerController  {
   def checkPackageTIPPs() {
     Map<String, Object> result = [:]
     result.user = contextService.getUser()
-    params.max =  params.max ?: result.user.getDefaultPageSize()
+    params.max =  params.max ?: result.user.getPageSizeOrDefault()
 
         List gokbRecords = []
 

@@ -403,7 +403,7 @@ class AjaxJsonController {
                             break
                         case PropertyDefinition.ORG_PROP: values = OrgProperty.executeQuery('select op from OrgProperty op where op.type = :propDef and ((op.tenant = :tenant and op.isPublic = true) or op.tenant = null)',[propDef:propDef,tenant:contextService.getOrg()])
                             break
-                    /*case PropertyDefinition.PLA_PROP: values = PlatformProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.org,false)
+                    /*case PropertyDefinition.PLA_PROP: values = PlatformProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.getOrg(),false)
                         break
                     case PropertyDefinition.PRS_PROP: values = PersonProperty.findAllByType(propDef)
                         break*/

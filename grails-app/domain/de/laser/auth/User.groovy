@@ -41,9 +41,7 @@ class User {
     }
 
     static transients = [
-            'displayName', 'defaultPageSize', 'defaultPageSizeAsInteger',
-            'affiliationOrgs', 'affiliationOrgsIdList',
-            'admin', 'yoda', 'lastInstAdmin'
+            'displayName', 'pageSizeOrDefault', 'affiliationOrgs', 'affiliationOrgsIdList', 'admin', 'yoda', 'lastInstAdmin'
     ] // mark read-only accessor methods
 
     static mapping = {
@@ -133,21 +131,11 @@ class User {
      * Gets the default count of entries per page for the given user
      * @return the number of entries per page
      */
-    long getDefaultPageSize() {
+    int getPageSizeOrDefault() {
         // create if no setting found
         UserSetting setting = getSetting(UserSetting.KEYS.PAGE_SIZE, 10)
         // if setting exists, but null value - fallback
-        long value = setting.getValue() ?: 10
-        return value
-    }
-
-    /**
-     * Same as {@link #getDefaultPageSize}, but converts the result to an integer. This is needed for certain list operations
-     * @return the number of entries per page as int
-     */
-    int getDefaultPageSizeAsInteger() {
-        long value = getDefaultPageSize()
-        return value.intValue()
+        setting.getValue() ? setting.getValue() as int : 10
     }
 
     /**

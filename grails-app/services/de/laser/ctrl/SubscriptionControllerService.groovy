@@ -1525,7 +1525,7 @@ class SubscriptionControllerService {
             } else {
                 log.debug("Subscription has no linked packages yet")
             }
-            /*result.max = params.max ? params.int('max') : result.user.getDefaultPageSizeAsInteger()
+            /*result.max = params.max ? params.int('max') : result.user.getPageSizeOrDefault()
             List gokbRecords = []
             ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true).each { ApiSource api ->
                 gokbRecords << gokbService.getPackagesMap(api, params.q, false).records

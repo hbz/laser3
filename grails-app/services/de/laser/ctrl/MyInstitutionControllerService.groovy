@@ -115,7 +115,7 @@ class MyInstitutionControllerService {
                     [ctxOrg: result.institution, status: RDStore.WF_WORKFLOW_STATUS_OPEN] )
 
             result.currentWorkflowsCount = workflows.size()
-            result.currentWorkflows = workflows.take(contextService.getUser().getDefaultPageSizeAsInteger())
+            result.currentWorkflows = workflows.take(contextService.getUser().getPageSizeOrDefault())
         }
         /*
         result.surveys = activeSurveyConfigs.groupBy {it?.id}

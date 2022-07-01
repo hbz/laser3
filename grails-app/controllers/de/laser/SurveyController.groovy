@@ -773,7 +773,7 @@ class SurveyController {
                result.sortConfig = [consSort:'oo.org.sortname',consOrder:'asc',
                                     ownSort:'ci.costTitle',ownOrder:'asc']
 
-                result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
+                result.max = params.max ? Integer.parseInt(params.max) : result.user.getPageSizeOrDefault()
                 //cost items
                 //params.forExport = true
                 LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
@@ -2016,7 +2016,7 @@ class SurveyController {
             //result.offsets = [consOffset:0]
             //result.sortConfig = [consSort:'ci.costTitle',consOrder:'asc']
 
-            result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
+            result.max = params.max ? Integer.parseInt(params.max) : result.user.getPageSizeOrDefault()
             //cost items
             //params.forExport = true
             LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
@@ -2112,7 +2112,7 @@ class SurveyController {
                 result.offsets = [subscrOffset:0]
                 result.sortConfig = [subscrSort:'sub.name',subscrOrder:'asc']
 
-                result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
+                result.max = params.max ? Integer.parseInt(params.max) : result.user.getPageSizeOrDefault()
 
                 LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
                 result.costItemSums = [:]

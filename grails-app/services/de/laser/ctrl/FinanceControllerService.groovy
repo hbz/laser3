@@ -78,7 +78,7 @@ class FinanceControllerService {
             result.max = 1000000
         }
         else {
-            result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
+            result.max = params.max ? Integer.parseInt(params.max) : result.user.getPageSizeOrDefault()
         }
         if (!(result.user instanceof User))
             throw new FinancialDataException("Context user not loaded successfully!")

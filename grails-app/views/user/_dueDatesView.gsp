@@ -21,5 +21,5 @@
         <div id="container-table">
             <laser:render template="/user/tableDueDates"/>
         </div>
-        <semui:paginate offset="${dashboardDueDatesOffset ? dashboardDueDatesOffset : '0'}" max="${max ?: contextService.getUser().getDefaultPageSize()}" params="${[view:'dueDatesView']}" total="${dueDatesCount}"/>
+        <semui:paginate offset="${dashboardDueDatesOffset ? dashboardDueDatesOffset : '0'}" max="${max ?: contextService.getUser().getPageSizeOrDefault()}" params="${[view:'dueDatesView']}" total="${dueDatesCount}"/>
     </g:if>

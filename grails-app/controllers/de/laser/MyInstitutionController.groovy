@@ -1994,7 +1994,7 @@ join sub.orgRelations or_sub where
                 result.offsets = [subscrOffset: 0]
                 result.sortConfig = [subscrSort: 'sub.name', subscrOrder: 'asc']
 
-                result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
+                result.max = params.max ? Integer.parseInt(params.max) : result.user.getPageSizeOrDefault()
                 //cost items
                 //params.forExport = true
                 LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
@@ -2553,7 +2553,7 @@ join sub.orgRelations or_sub where
                 }
                 if (! cache.get(pmKey) || params.max || params.offset) {
                     cache.put(pmKey, [
-                            max:    params.max ? params.int('max') : contextService.getUser().getDefaultPageSizeAsInteger(),
+                            max:    params.max ? params.int('max') : contextService.getUser().getPageSizeOrDefault(),
                             offset: params.offset ? params.int('offset') : 0
                     ])
                 }
@@ -2567,7 +2567,7 @@ join sub.orgRelations or_sub where
             }
             else {
                 params.putAll( [
-                        max: contextService.getUser().getDefaultPageSizeAsInteger(),
+                        max: contextService.getUser().getPageSizeOrDefault(),
                         offset: 0
                 ] )
             }
@@ -3487,7 +3487,7 @@ join sub.orgRelations or_sub where
         //result.validSubChilds = validSubChildren
 
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
-        //result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.org)
+        //result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.getOrg())
         Set<PropertyDefinition> propList = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd where pd.descr in (:availableTypes) and (pd.tenant = null or pd.tenant = :ctx) order by pd."+localizedName+" asc",
                 [ctx:result.institution,availableTypes:[PropertyDefinition.SUB_PROP,PropertyDefinition.LIC_PROP,PropertyDefinition.PRS_PROP,PropertyDefinition.PLA_PROP,PropertyDefinition.ORG_PROP]])
         result.propList = propList

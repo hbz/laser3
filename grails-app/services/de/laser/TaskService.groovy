@@ -241,9 +241,9 @@ class TaskService {
      */
     List<Task> chopOffForPageSize(List taskInstanceList, User user, int offset){
         int taskInstanceCount = taskInstanceList.size() ?: 0
-        if (taskInstanceCount > user.getDefaultPageSize()) {
+        if (taskInstanceCount > user.getPageSizeOrDefault()) {
             try {
-                taskInstanceList = taskInstanceList.subList(offset, offset + user.getDefaultPageSizeAsInteger())
+                taskInstanceList = taskInstanceList.subList(offset, offset + user.getPageSizeOrDefault())
             }
             catch (IndexOutOfBoundsException e) {
                 taskInstanceList = taskInstanceList.subList(offset, taskInstanceCount)
