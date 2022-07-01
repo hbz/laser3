@@ -1,10 +1,11 @@
 package de.laser
 
+import de.laser.config.ConfigDefaults
 import de.laser.utils.DateUtils
 import liquibase.repackaged.com.opencsv.*
 import de.laser.auth.*
 import de.laser.utils.AppUtils
-import de.laser.utils.ConfigMapper
+import de.laser.config.ConfigMapper
 import de.laser.utils.PasswordUtils
 import de.laser.storage.RDConstants
 import de.laser.properties.PropertyDefinition
@@ -342,13 +343,13 @@ class BootStrapService {
      * @param objType the object type reference; this is needed to read the definitions in the columns correctly and is one of RefdataCategory, RefdataValue or PropertyDefinition
      * @return the {@link List} of rows (each row parsed as {@link Map}) retrieved from the source file
      */
-    List<Map> getParsedCsvData(String filePath, String objType) {
+    List<Map> getParsedCsvData(String filePath) {
 
         List<Map> result = []
         File csvFile = grailsApplication.mainContext.getResource(filePath).file
 
-        if (! ['RefdataCategory', 'RefdataValue', 'PropertyDefinition'].contains(objType)) {
-            log.warn "getParsedCsvData() - invalid object type ${objType}!"
+        if (! (filePath.contains('RefdataCategory') || filePath.contains('RefdataValue') || filePath.contains('PropertyDefinition')) ) {
+            log.warn "getParsedCsvData() - invalid object type ${filePath}!"
         }
         else if (! csvFile.exists()) {
             log.warn "getParsedCsvData() - ${filePath} not found!"
@@ -362,7 +363,7 @@ class BootStrapService {
 
                 while (line = csvr.readNext()) {
                     if (line[0]) {
-                        if (objType == 'RefdataCategory') {
+                        if (filePath.contains('RefdataCategory')) {
                             // CSV: [token, value_de, value_en]
                             Map<String, Object> map = [
                                     token   : line[0].trim(),
@@ -374,7 +375,7 @@ class BootStrapService {
                             ]
                             result.add(map)
                         }
-                        if (objType == 'RefdataValue') {
+                        if (filePath.contains('RefdataValue')) {
                             // CSV: [rdc, token, value_de, value_en]
                             Map<String, Object> map = [
                                     token   : line[1].trim(),
@@ -389,7 +390,7 @@ class BootStrapService {
                             ]
                             result.add(map)
                         }
-                        if (objType == 'PropertyDefinition') {
+                        if (filePath.contains('PropertyDefinition')) {
                             Map<String, Object> map = [
                                     token       : line[1].trim(),
                                     category    : line[0].trim(),
@@ -528,12 +529,12 @@ class BootStrapService {
      */
     void setupRefdata() {
 
-        List rdcList = getParsedCsvData('setup/RefdataCategory.csv', 'RefdataCategory')
+        List rdcList = getParsedCsvData( ConfigDefaults.SETUP_REFDATA_CATEGORY_CSV )
         rdcList.each { map ->
             RefdataCategory.construct(map)
         }
 
-        List rdvList = getParsedCsvData('setup/RefdataValue.csv', 'RefdataValue')
+        List rdvList = getParsedCsvData( ConfigDefaults.SETUP_REFDATA_VALUE_CSV )
         rdvList.each { map ->
             RefdataValue.construct(map)
         }
@@ -545,7 +546,7 @@ class BootStrapService {
      */
     void setupPropertyDefinitions() {
 
-        List pdList = getParsedCsvData('setup/PropertyDefinition.csv', 'PropertyDefinition')
+        List pdList = getParsedCsvData( ConfigDefaults.SETUP_PROPERTY_DEFINITION_CSV )
         pdList.each { map ->
             PropertyDefinition.construct(map)
         }

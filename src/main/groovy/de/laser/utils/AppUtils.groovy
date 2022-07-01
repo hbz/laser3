@@ -3,6 +3,7 @@ package de.laser.utils
 import de.laser.ContextService
 import de.laser.cache.SessionCacheWrapper
 import de.laser.config.ConfigDefaults
+import de.laser.config.ConfigMapper
 import de.laser.storage.BeanStore
 import grails.util.Environment
 import grails.util.Holders

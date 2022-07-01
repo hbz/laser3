@@ -1,7 +1,7 @@
 package de.laser.jobs
 
 import de.laser.StatsSyncService
-import de.laser.utils.ConfigMapper
+import de.laser.config.ConfigMapper
 import de.laser.base.AbstractJob
 import groovy.util.logging.Slf4j
 

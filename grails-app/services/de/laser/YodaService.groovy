@@ -2,7 +2,7 @@ package de.laser
 
 
 import de.laser.exceptions.SyncException
-import de.laser.utils.ConfigMapper
+import de.laser.config.ConfigMapper
 import de.laser.remote.GlobalRecordSource
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore

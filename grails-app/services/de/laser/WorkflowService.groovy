@@ -1,7 +1,7 @@
 package de.laser
 
 import de.laser.config.ConfigDefaults
-import de.laser.utils.ConfigMapper
+import de.laser.config.ConfigMapper
 import de.laser.utils.DateUtils
 import de.laser.workflow.*
 import grails.gorm.transactions.Transactional

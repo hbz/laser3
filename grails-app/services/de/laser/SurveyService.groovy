@@ -21,7 +21,7 @@ import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyResult
 import de.laser.system.SystemEvent
 import de.laser.utils.AppUtils
-import de.laser.utils.ConfigMapper
+import de.laser.config.ConfigMapper
 import de.laser.utils.DateUtils
 import grails.gorm.transactions.Transactional
 import grails.plugins.mail.MailService

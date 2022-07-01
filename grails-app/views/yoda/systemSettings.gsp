@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.ConfigMapper; de.laser.system.SystemSetting; de.laser.jobs.HeartbeatJob" %>
+<%@ page import="de.laser.config.ConfigMapper; de.laser.system.SystemSetting; de.laser.jobs.HeartbeatJob" %>
 <!doctype html>
 <html>
 <head>

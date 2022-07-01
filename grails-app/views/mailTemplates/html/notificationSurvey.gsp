@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.ConfigMapper; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.config.ConfigMapper; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.storage.RDStore;" %>
 <laser:serviceInjection/>
 <g:set var="grailsApplication" bean="grailsApplication"/>
 <g:set var="surveyUrl"

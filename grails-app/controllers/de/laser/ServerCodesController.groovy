@@ -2,7 +2,7 @@ package de.laser
 
 import de.laser.utils.AppUtils
 import de.laser.utils.CodeUtils
-import de.laser.utils.ConfigMapper
+import de.laser.config.ConfigMapper
 import de.laser.utils.DateUtils
 import grails.core.GrailsApplication
 import grails.core.GrailsClass

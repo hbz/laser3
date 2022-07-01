@@ -2,7 +2,7 @@ package de.laser
 
 import de.laser.annotations.RefdataInfo
 import de.laser.config.ConfigDefaults
-import de.laser.utils.ConfigMapper
+import de.laser.config.ConfigMapper
 import de.laser.storage.RDConstants
 
 /**

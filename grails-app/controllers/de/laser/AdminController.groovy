@@ -34,7 +34,7 @@ import org.hibernate.Session
 import org.hibernate.SessionFactory
 import org.hibernate.query.NativeQuery
 import org.springframework.web.multipart.commons.CommonsMultipartFile
-import de.laser.utils.ConfigMapper
+import de.laser.config.ConfigMapper
 
 import java.nio.file.Files
 import java.nio.file.Path

@@ -5,7 +5,7 @@ import de.laser.auth.User
 import de.laser.ctrl.DocstoreControllerService
 import de.laser.config.ConfigDefaults
 import de.laser.utils.CodeUtils
-import de.laser.utils.ConfigMapper
+import de.laser.config.ConfigMapper
 import de.laser.annotations.DebugInfo
 import de.laser.storage.RDConstants
 import de.laser.survey.SurveyConfig

@@ -4,7 +4,7 @@ import de.laser.config.ConfigDefaults
 import de.laser.properties.LicenseProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.storage.RDStore
-import de.laser.utils.ConfigMapper
+import de.laser.config.ConfigMapper
 
 import grails.gorm.transactions.Transactional
 import java.nio.file.Files

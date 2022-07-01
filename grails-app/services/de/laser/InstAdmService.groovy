@@ -4,7 +4,7 @@ import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.auth.UserOrg
 import de.laser.utils.AppUtils
-import de.laser.utils.ConfigMapper
+import de.laser.config.ConfigMapper
 import de.laser.storage.RDStore
 import grails.gorm.transactions.Transactional
 import grails.plugins.mail.MailService

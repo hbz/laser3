@@ -1,4 +1,4 @@
-package de.laser.utils
+package de.laser.config
 
 import grails.util.Holders
 import groovy.util.logging.Slf4j

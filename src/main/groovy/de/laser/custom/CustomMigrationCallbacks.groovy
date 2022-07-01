@@ -1,6 +1,6 @@
 package de.laser.custom
 
-import de.laser.utils.ConfigMapper
+import de.laser.config.ConfigMapper
 import de.laser.storage.BeanStore
 import grails.core.GrailsApplication
 import liquibase.Liquibase

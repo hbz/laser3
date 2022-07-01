@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.AppUtils; de.laser.utils.ConfigMapper" %>
+<%@ page import="de.laser.utils.AppUtils; de.laser.config.ConfigMapper" %>
 <style>
         /** inline style here with intention:
             flex layout helps footer to stick at bottom when main high not high enough

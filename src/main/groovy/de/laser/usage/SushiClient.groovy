@@ -1,6 +1,6 @@
 package de.laser.usage
 
-import de.laser.utils.ConfigMapper
+import de.laser.config.ConfigMapper
 import groovy.util.logging.Slf4j
 import groovyx.net.http.RESTClient
 import groovyx.net.http.URIBuilder
