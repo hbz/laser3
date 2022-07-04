@@ -805,11 +805,11 @@ class PackageController {
                 }
             }
             switch (params.addType) {
-                case "With": flash.message = message(code: 'subscription.details.link.processingWithEntitlements')
+                case "With": flash.message = message(code: 'subscription.details.link.processingWithEntitlements') as String
                     redirect controller: 'subscription', action: 'index', params: [id: result.subscription.id, gokbId: result.pkg.gokbId]
                     return
                     break
-                case "Without": flash.message = message(code: 'subscription.details.link.processingWithoutEntitlements')
+                case "Without": flash.message = message(code: 'subscription.details.link.processingWithoutEntitlements') as String
                     redirect controller: 'subscription', action: 'addEntitlements', params: [id: result.subscription.id, packageLinkPreselect: result.pkg.gokbId, preselectedName: result.pkg.name]
                     return
                     break

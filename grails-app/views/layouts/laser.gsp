@@ -22,7 +22,7 @@
     <asset:stylesheet src="${currentTheme}.css"/>%{-- dont move --}%
 
     <laser:javascript src="base.js"/>%{-- dont move --}%
-    <script data-type="fix">
+    <script data-type="fixed">
         <g:render template="/templates/javascript/jspc.js" />%{-- g:render; dont move --}%
         <g:render template="/templates/javascript/jspc.dict.js" />%{-- g:render; dont move --}%
     </script>
@@ -746,7 +746,7 @@
 
         %{-- profiler, jstk --}%
 
-        <script data-type="fix">
+        <script data-type="fixed">
             $(document).ready(function() {
                 system.profiler("${ Profiler.generateKey( webRequest )}");
 

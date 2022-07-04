@@ -3,8 +3,10 @@ package de.laser.helper
 import de.laser.ContextService
 import de.laser.cache.EhcacheWrapper
 import de.laser.storage.BeanStore
+import groovy.transform.CompileStatic
 import org.grails.web.servlet.mvc.GrailsWebRequest
 
+@CompileStatic
 class Profiler {
 
     ContextService contextService = BeanStore.getContextService()

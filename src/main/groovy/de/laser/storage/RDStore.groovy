@@ -2,9 +2,11 @@ package de.laser.storage
 
 import de.laser.RefdataValue
 import de.laser.properties.PropertyDefinition
+import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
+@CompileStatic
 @Slf4j
 class RDStore {
 

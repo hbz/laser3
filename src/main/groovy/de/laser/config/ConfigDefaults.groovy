@@ -1,5 +1,8 @@
 package de.laser.config
 
+import groovy.transform.CompileStatic
+
+@CompileStatic
 class ConfigDefaults {
 
     final static String SETUP_REFDATA_CATEGORY_CSV      = 'setup/RefdataCategory.csv'       // -> BootstrapService

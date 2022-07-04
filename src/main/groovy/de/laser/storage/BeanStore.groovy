@@ -28,12 +28,14 @@ import grails.gsp.PageRenderer
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugins.mail.MailService
 import grails.util.Holders
+import groovy.transform.CompileStatic
 import org.grails.plugins.web.taglib.ApplicationTagLib
 import org.springframework.context.MessageSource
 import org.springframework.context.MessageSourceResolvable
 
 import javax.sql.DataSource
 
+@CompileStatic
 class BeanStore {
 
     static def get(String bean) {

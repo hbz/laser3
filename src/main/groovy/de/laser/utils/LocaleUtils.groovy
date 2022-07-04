@@ -1,7 +1,9 @@
 package de.laser.utils
 
+import groovy.transform.CompileStatic
 import org.springframework.context.i18n.LocaleContextHolder
 
+@CompileStatic
 class LocaleUtils {
 
     static String getCurrentLang() {

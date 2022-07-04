@@ -10,6 +10,8 @@ class LaserAssetsTagLib {
 
     static namespace = 'laser'
 
+    static final String NL = "\n"
+
     def javascript = {final attrs ->
         out << asset.javascript(attrs).toString().replace(' type="text/javascript" ', ' data-type="external" ')
     }
@@ -17,10 +19,10 @@ class LaserAssetsTagLib {
     def script = { attrs, body ->
 
         if (AjaxHelper.isXHR(request)) {
-            out << "\n<script data-type=\"xhr\">"
-            out << "\n\$(function() {"
-            out << "\n " + body()
-            out << "\n});</script>"
+            out << NL + '<script data-type="xhr">'
+            out << NL + '$(function() {'
+            out << NL + ' ' + body() + ' '
+            out << NL + '});</script>'
         }
         else {
             Map<String, Object> map = [:]
@@ -45,15 +47,14 @@ class LaserAssetsTagLib {
             return
         }
 
-        out << "\n<script data-type=\"scriptBlock\">"
-        out << "\n\$(function() {"
+        out << NL + '<script data-type="scriptBlock">'
+        out << NL + '$(function() {'
 
-        assetBlocks.each {assetBlock ->
-            out << "\n//-> asset: ${assetBlock.attrs ?: ''}"
-            out << "\n ${assetBlock.body}"
+        assetBlocks.each { assetBlock ->
+            out << NL + '//-> asset: ' + assetBlock.attrs ?: ''
+            out << NL + ' ' + assetBlock.body + ' '
         }
-
-        out << "\n});</script>"
+        out << '});</script>'
     }
 
     // render override for dev environment

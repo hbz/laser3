@@ -37,7 +37,6 @@ To avoid confusion, the difference between localized and fixed usage in *de.lase
 
 The following fallbacks have been set for faster migration. They can be treated later.
 
-    grails.views.gsp.codecs.scriptlet: none
     hibernate.allow_update_outside_transaction: true
 
 ### HTTPBuilder

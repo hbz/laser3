@@ -3,12 +3,14 @@ package de.laser.utils
 
 import grails.core.GrailsClass
 import grails.util.Holders
+import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.grails.datastore.mapping.model.PersistentEntity
 
 /**
  * Util class for determining domain classes
  */
+@CompileStatic
 @Slf4j
 class CodeUtils {
 

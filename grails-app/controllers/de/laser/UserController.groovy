@@ -57,10 +57,10 @@ class UserController  {
             if (params.process && result.editable) {
                 User userReplacement = (User) genericOIDService.resolveOID(params.userReplacement)
 
-                result.delResult = deletionService.deleteUser(result.user, userReplacement, false)
+                result.delResult = deletionService.deleteUser(result.user as User, userReplacement, false)
             }
             else {
-                result.delResult = deletionService.deleteUser(result.user, null, DeletionService.DRY_RUN)
+                result.delResult = deletionService.deleteUser(result.user as User, null, DeletionService.DRY_RUN)
             }
 
             List<Org> orgList = Org.executeQuery('select distinct uo.org from UserOrg uo where uo.user = :self', [self: result.user])
@@ -204,7 +204,7 @@ class UserController  {
         Role formalRole = Role.get(params.formalRole)
 
         if (result.user && org && formalRole) {
-            instAdmService.createAffiliation(result.user, org, formalRole, flash)
+            instAdmService.createAffiliation(result.user as User, org, formalRole, flash)
         }
 
         redirect controller: 'user', action: 'edit', id: params.id

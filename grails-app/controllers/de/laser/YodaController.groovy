@@ -680,10 +680,8 @@ class YodaController {
      */
     @Secured(['ROLE_YODA'])
     def fullReset() {
-
        log.debug("Clear ES")
        dataloadService.clearDownAndInitES()
-
         log.debug("redirecting to home ..")
 
         redirect controller:'home'
@@ -694,10 +692,8 @@ class YodaController {
      */
     @Secured(['ROLE_YODA'])
     def killDataloadService() {
-
         log.debug("kill DataloadService")
         dataloadService.killDataloadService()
-
         log.debug("redirecting to home ..")
 
         redirect controller:'home'
@@ -1069,7 +1065,6 @@ class YodaController {
                     costItem.owner.name = it.name
                     costItem.owner.shortname = it.shortname
                     costItem.owner.sortname = it.sortname
-                    //costItem.owner.ownerType = it.orgType?.value
                     costItem.owner.libraryType = it.libraryType?.value
                 }
 
@@ -1419,9 +1414,6 @@ class YodaController {
             }
 
         }
-        def output = JsonOutput.toJson(resultMap)
-
-        //println(output)
 
         response.setHeader("Content-disposition", "attachment; filename=\"Moe.csv\"")
         response.contentType = "text/csv"

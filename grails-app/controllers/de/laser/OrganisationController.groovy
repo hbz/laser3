@@ -248,8 +248,8 @@ class OrganisationController  {
         if(!params.sort)
             params.sort = " LOWER(o.sortname)"
         Map<String, Object> fsq = filterService.getOrgQuery(params)
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getPageSizeOrDefault()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
+
         List<Org> availableOrgs = Org.executeQuery(fsq.query, fsq.queryParams, [sort:params.sort])
         result.consortiaMemberIds = Combo.executeQuery('select cmb.fromOrg.id from Combo cmb where cmb.toOrg = :toOrg and cmb.type = :type',[toOrg: result.institution, type: RDStore.COMBO_TYPE_CONSORTIUM])
         result.consortiaMemberTotal = availableOrgs.size()
@@ -293,8 +293,8 @@ class OrganisationController  {
         if(!params.sort)
             params.sort = " LOWER(o.sortname)"
         Map<String, Object> fsq = filterService.getOrgQuery(params)
-        result.max = params.max ? Integer.parseInt(params.max) : result.user.getPageSizeOrDefault()
-        result.offset = params.offset ? Integer.parseInt(params.offset) : 0
+        SwissKnife.setPaginationParams(result, params, (User) result.user)
+
         List<Org> availableOrgs = Org.executeQuery(fsq.query, fsq.queryParams, [sort:params.sort])
         availableOrgs.remove(Org.findByName("LAS:eR Backoffice"))
         result.consortiaTotal = availableOrgs.size()
