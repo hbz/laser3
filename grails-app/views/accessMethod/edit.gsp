@@ -10,7 +10,7 @@
 
                 <laser:render template="breadcrumb" model="${[ accessMethod:accessMethod, params:params ]}"/>
 
-                <h1 class="ui header la-noMargin-top"><g:message code="default.edit.label" args="[entityName]" /></h1>
+                <semui:headerWithIcon message="default.edit.label" args="[entityName]" />
 
                 <semui:messages data="${flash}" />
 

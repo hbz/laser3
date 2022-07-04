@@ -15,8 +15,8 @@
         <semui:crumb message="menu.institutions.manage_consortia" controller="myInstitution" action="manageMembers"/>
         <semui:crumb message="menu.institutions.add_consortia_members" class="active" />
     </semui:breadcrumbs>
-    
-    <h1 class="ui left aligned icon header la-clear-before"><semui:headerIcon />${message(code: 'menu.institutions.add_consortia_members')}</h1>
+
+    <semui:headerWithIcon message="menu.institutions.add_consortia_members" />
 
     <semui:messages data="${flash}" />
 

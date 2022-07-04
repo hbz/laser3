@@ -21,9 +21,7 @@
     <semui:crumb message="search.advancedSearch" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui left aligned icon header">
-    <i class="circular icon search"></i> ${message(code: 'search.advancedSearch')}
-</h1>
+<semui:headerWithIcon message="search.advancedSearch" type="Search" />
 
 <%
     def addFacet = { params, facet, val ->

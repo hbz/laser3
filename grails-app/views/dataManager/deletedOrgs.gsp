@@ -12,10 +12,9 @@
       <semui:crumb text="${message(code:'datamanager.deletedOrgManagement.label')}" class="active"/>
     </semui:breadcrumbs>
 
-    <h1 class="ui left floated aligned header la-clear-before">
-      ${message(code:'datamanager.deletedOrgManagement.label')}
+    <semui:headerWithIcon message="datamanager.deletedOrgManagement.label">
       <semui:totalNumber total="${orgTotal}"/>
-    </h1>
+    </semui:headerWithIcon>
 
     <semui:messages data="${flash}" />
 

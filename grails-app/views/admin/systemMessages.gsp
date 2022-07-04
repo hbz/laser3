@@ -12,7 +12,7 @@
     <semui:crumb message="menu.admin.systemMessage" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui left floated aligned header la-clear-before">${message(code: "menu.admin.systemMessage")}</h1>
+<semui:headerWithIcon message="menu.admin.systemMessage" />
 
 <div class="la-float-right">
     <input type="submit" class="ui button" value="${message(code: 'admin.systemMessage.create')}" data-semui="modal" data-href="#modalCreateSystemMessage" />

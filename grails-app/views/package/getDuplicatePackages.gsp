@@ -8,7 +8,8 @@
     <body>
         <g:set var="toDelete" value="${[]}"/>
 
-        <h1 class="ui header la-clear-before la-noMargin-top">Pakete mit gleicher we:kb-ID</h1>
+        <semui:headerWithIcon text="Pakete mit gleicher we:kb-ID" />
+
         <semui:messages data="${flash}" />
 
             <div class="ui grid">

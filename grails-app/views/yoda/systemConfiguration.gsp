@@ -11,7 +11,7 @@
     <semui:crumb message="menu.yoda.systemConfiguration" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui header la-clear-before la-noMargin-top">${message(code:'menu.yoda.systemConfiguration')}</h1>
+<semui:headerWithIcon message="menu.yoda.systemConfiguration" />
 
 <%
     Set<String> dubs = []

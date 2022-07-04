@@ -13,7 +13,7 @@
     <semui:crumb message="menu.admin.fileConsistency" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui header la-noMargin-top">${message(code: "menu.admin.fileConsistency")}</h1>
+<semui:headerWithIcon message="menu.admin.fileConsistency" />
 
 <div class="ui grid">
     <div class="sixtenn wide column">

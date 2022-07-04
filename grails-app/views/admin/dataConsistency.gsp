@@ -12,7 +12,7 @@
     <semui:crumb message="menu.admin.dataConsistency" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui header la-noMargin-top">${message(code: "menu.admin.dataConsistency")}</h1>
+<semui:headerWithIcon message="menu.admin.dataConsistency" />
 
 <h2 class="ui header">${message(code: "admin.duplicateNamesAndTitles")}</h2>
 

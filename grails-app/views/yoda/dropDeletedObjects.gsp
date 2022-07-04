@@ -11,7 +11,7 @@
     <semui:crumb text="Datenbereinigung" class="active"/>
 </semui:breadcrumbs>
 
-    <h1 class="ui header la-clear-before la-noMargin-top">Lizenzen - ${subscriptions.size()}, Verträge - ${licenses.size()}</h1>
+    <semui:headerWithIcon text="Lizenzen - ${subscriptions.size()}, Verträge - ${licenses.size()}" />
 
     <h2 class="ui header">Lizenzen - ${subscriptions.size()}</h2>
 

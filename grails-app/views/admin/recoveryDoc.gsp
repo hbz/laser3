@@ -13,7 +13,7 @@
     <semui:crumb message="menu.admin.recoveryDoc" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui header la-noMargin-top">${message(code: "menu.admin.recoveryDoc")}</h1>
+<semui:headerWithIcon message="menu.admin.recoveryDoc" />
 
 <semui:messages data="${flash}"/>
 

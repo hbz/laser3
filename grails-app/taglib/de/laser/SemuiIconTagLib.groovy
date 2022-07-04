@@ -26,6 +26,9 @@ class SemuiIconTagLib {
             case 'journal':
                 icon = 'la-object-journal'
                 break
+            case 'search':
+                icon = 'search'
+                break
             case 'subscription':
                 icon = 'inverted orange clipboard'
                 break

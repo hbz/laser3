@@ -13,8 +13,7 @@
     <semui:crumb message="menu.yoda.systemSettings" class="active"/>
 </semui:breadcrumbs>
 
-<div>
-    <h1 class="ui header la-clear-before la-noMargin-top">${message(code: 'menu.yoda.systemSettings')}</h1>
+    <semui:headerWithIcon message="menu.yoda.systemSettings" />
 
     <g:set var="mailConfigDisabled" value="${ConfigMapper.getGrailsMailDisabled()}" />
     <g:set var="maintenanceModeEnabled" value="${SystemSetting.findByName('MaintenanceMode').value == 'true'}" />
@@ -95,6 +94,6 @@
         </g:each>
         </tbody>
     </table>
-</div>
+
 </body>
 </html>
