@@ -265,7 +265,6 @@ class PendingChange {
         }
 
         if (configMap.prop) {
-
             if (configMap.prop in PendingChange.DATE_FIELDS) {
                 SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
                 changeParams.newValue = (configMap.newValue && configMap.newValue instanceof Date) ? sdf.format(configMap.newValue) : (configMap.newValue ?: null)
@@ -283,8 +282,6 @@ class PendingChange {
                 changeParams.newValue = configMap.newValue
                 changeParams.oldValue = configMap.oldValue
             }
-
-
 
             changeParams << [prop: configMap.prop]
             if (!configMap.oid) {
@@ -321,7 +318,6 @@ class PendingChange {
                 pc = new PendingChange()
             }
         }
-
         return pc
     }
 

@@ -194,10 +194,6 @@ class ChangeNotificationService extends AbstractLockableService {
     def fireEvent(Map<String, Object> changeDocument) {
         log.debug("fireEvent(${changeDocument})")
 
-        //store changeDoc in cache
-        //EhcacheWrapper cache = cacheService.getTTL1800Cache("/pendingChanges/")
-        //cache.put(changeDocument.OID,changeDocument)
-
         // TODO [ticket=1807] should not be done in extra thread but collected and saved afterwards
         executorService.execute({
             Thread.currentThread().setName("PendingChangeSubmission")
@@ -214,17 +210,6 @@ class ChangeNotificationService extends AbstractLockableService {
         })
     }
 
-    @Deprecated
-    def registerPendingChange(prop, target, desc, objowner, changeMap) {
-
-        def msgToken = null
-        def msgParams = null
-        def legacyDesc = desc
-
-        registerPendingChange(prop, target, objowner, changeMap, msgToken, msgParams, legacyDesc)
-    }
-
-    //def registerPendingChange(prop, target, desc, objowner, changeMap) << legacy
     @Deprecated
     /**
      * This method registers pending changes and is going to be kept because of backwards compatibility.

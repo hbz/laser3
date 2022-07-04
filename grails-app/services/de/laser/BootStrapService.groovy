@@ -404,8 +404,6 @@ class BootStrapService {
                                     i10n        : [
                                             name_de: line[2].trim(),
                                             name_en: line[3].trim(),
-                                            //descr_de: line[0].trim(),
-                                            //descr_en: line[0].trim(),
                                             expl_de: line[9].trim(),
                                             expl_en: line[10].trim()
                                     ]

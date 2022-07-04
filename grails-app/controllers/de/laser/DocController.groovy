@@ -75,7 +75,6 @@ class DocController  {
 					Doc docInstance = Doc.get(params.id)
 					if (!docInstance) {
 						flash.message = message(code: 'default.not.found.message', args: [message(code: 'default.note.label'), params.id]) as String
-						//redirect action: 'list'
 						redirect(url: request.getHeader('referer'))
 						return
 					}
@@ -89,7 +88,6 @@ class DocController  {
 									[message(code: 'default.note.label')] as Object[],
 									'Another user has updated this Doc while you were editing'
 							)
-							//render view: 'edit', model: [docInstance: docInstance]
 							redirect(url: request.getHeader('referer'))
 							return
 						}
@@ -100,13 +98,11 @@ class DocController  {
 						docInstance.owner = contextService.getOrg()
 
 					if (!docInstance.save()) {
-						//render view: 'edit', model: [docInstance: docInstance]
 						redirect(url: request.getHeader('referer'))
 						return
 					}
 
 					flash.message = message(code: 'default.updated.message', args: [message(code: 'default.note.label'), docInstance.title]) as String
-					//redirect action: 'show', id: docInstance.id
 					redirect(url: request.getHeader('referer'))
 					return
 					break

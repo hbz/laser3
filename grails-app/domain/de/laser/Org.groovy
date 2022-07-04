@@ -529,7 +529,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      */
     @Override
     String toString() {
-        //sector ? name + ', ' + sector?.getI10n('value') : "${name}"
         name
     }
 
@@ -539,7 +538,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      * @return a {@link List} of {@link Person}s marked as general contacts of this organisation
      */
     List<Person> getGeneralContactPersons(boolean onlyPublic) {
-
         if (onlyPublic) {
             Person.executeQuery(
                     "select distinct p from Person as p inner join p.roleLinks pr where p.isPublic = true and pr.org = :org and pr.functionType = :gcp",
@@ -574,7 +572,6 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      * @return a {@link List} of {@link Person}s matching to the function type
      */
     List<Person> getContactPersonsByFunctionType(boolean onlyPublic, RefdataValue functionType) {
-
         if (onlyPublic) {
             Person.executeQuery(
                     "select distinct p from Person as p inner join p.roleLinks pr where p.isPublic = true and pr.org = :org and pr.functionType = :functionType",
@@ -760,5 +757,4 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     Identifier getLeitID() {
         return Identifier.findByOrgAndNs(this, IdentifierNamespace.findByNs(IdentifierNamespace.LEIT_ID))
     }
-
 }

@@ -217,7 +217,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     List queryResults = Package.executeQuery(hqlString, hqlParams)
 
     queryResults?.each { t ->
-      def resultText = t.name
+      String resultText = t.name
       String date = t.startDate? " (${sdf.format(t.startDate)})" :""
       resultText = params.inclPkgStartDate == "true" ? resultText + date : resultText
       resultText = params.hideIdent == "true" ? resultText : resultText+" (${t.identifier})"
