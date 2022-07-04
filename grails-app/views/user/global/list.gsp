@@ -18,9 +18,9 @@
             <laser:render template="/user/breadcrumb" model="${[ inContextOrg: inContextOrg, orgInstance: orgInstance, institutionalView: institutionalView, params:params ]}"/>
         </g:if>
 
-        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
-            ${titleMessage} <semui:totalNumber total="${total}"/>
-        </h1>
+        <semui:headerWithIcon text="${titleMessage}">
+            <semui:totalNumber total="${total}"/>
+        </semui:headerWithIcon>
 
         <semui:controlButtons>
             <laser:render template="/user/global/actions" />

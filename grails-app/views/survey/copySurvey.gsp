@@ -21,8 +21,7 @@
     <semui:crumb message="copySurvey.label" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerTitleIcon
-        type="Survey"/>${surveyConfig.getConfigNameShort()}</h1>
+<semui:headerWithIcon text="${surveyConfig.getConfigNameShort()}" type="Survey" />
 
 <h2 class="ui header">
     ${message(code: 'copySurvey.label')}:

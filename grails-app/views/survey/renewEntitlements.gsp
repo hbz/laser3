@@ -52,10 +52,9 @@
 
 </semui:controlButtons>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerTitleIcon type="Survey"/>
-<g:message code="issueEntitlementsSurvey.label"/>: <g:link controller="subscription" action="index"
-                                                           id="${subscriptionParticipant.id}">${surveyConfig.surveyInfo.name}</g:link>
-</h1>
+<semui:headerWithIcon message="issueEntitlementsSurvey.label" type="Survey">
+    : <g:link controller="subscription" action="index" id="${subscriptionParticipant.id}">${surveyConfig.surveyInfo.name}</g:link>
+</semui:headerWithIcon>
 
 <g:if test="${flash}">
     <semui:messages data="${flash}"/>

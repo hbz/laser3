@@ -66,8 +66,7 @@
       </semui:controlButtons>
 
 
-          <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
-
+          <semui:headerWithIcon>
               <g:if test="${editable}"><span id="packageNameEdit"
                         class="xEditableValue"
                         data-type="textarea"
@@ -75,7 +74,7 @@
                         data-name="name"
                         data-url='<g:createLink controller="ajax" action="editableSetValue"/>'>${packageInstance.name}</span></g:if>
               <g:else>${packageInstance.name}</g:else>
-          </h1>
+          </semui:headerWithIcon>
 
   <laser:render template="nav"/>
 

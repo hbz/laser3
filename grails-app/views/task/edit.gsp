@@ -8,7 +8,7 @@
 	</head>
 	<body>
 
-        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="default.edit.label" args="[entityName]" /></h1>
+		<semui:headerWithIcon message="default.edit.label" args="[entityName]" />
 
         <g:if test="${flash.message}">
 			<semui:msg class="warning" text="${flash.message}" />

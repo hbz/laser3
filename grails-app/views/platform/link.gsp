@@ -15,8 +15,7 @@
     <semui:crumb class="active" id="${platformInstance.id}" text="${platformInstance.name}" />
 </semui:breadcrumbs>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
-
+<semui:headerWithIcon>
     <g:if test="${editable}"><span id="platformNameEdit"
                                    class="xEditableValue"
                                    data-type="textarea"
@@ -25,7 +24,7 @@
                                    data-url='<g:createLink controller="ajax" action="editableSetValue"/>'>${platformInstance.name}</span>
     </g:if>
     <g:else>${platformInstance.name}</g:else>
-</h1>
+</semui:headerWithIcon>
 
 <semui:messages data="${flash}" />
 <%--<laser:render template="nav" />--%>

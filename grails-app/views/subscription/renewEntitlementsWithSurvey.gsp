@@ -139,10 +139,9 @@
     </semui:exportDropdown>
 </semui:controlButtons>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>
-${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.name}
-<semui:surveyStatus object="${surveyConfig.surveyInfo}"/>
-</h1>
+<semui:headerWithIcon text="${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.name}">
+    <semui:surveyStatus object="${surveyConfig.surveyInfo}"/>
+</semui:headerWithIcon>
 
 <g:if test="${flash}">
     <semui:messages data="${flash}"/>

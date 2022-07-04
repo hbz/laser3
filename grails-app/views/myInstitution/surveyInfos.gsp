@@ -24,10 +24,9 @@
     </semui:exportDropdown>
 </semui:controlButtons>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerTitleIcon type="Survey"/>
-${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}</h1>
-<semui:surveyStatus object="${surveyInfo}"/>
-
+<semui:headerWithIcon text="${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}" type="Survey">
+    <semui:surveyStatus object="${surveyInfo}"/>
+</semui:headerWithIcon>
 
 <semui:messages data="${flash}"/>
 

@@ -36,7 +36,12 @@ class SemuiTagLib {
 
     def headerWithIcon = { attrs, body ->
         out << '<h1 class="ui icon header la-clear-before la-noMargin-top">'
-        out << semui.headerIcon()
+
+        if (attrs.type) {
+            out << semui.headerTitleIcon([type: attrs.type])
+        } else {
+            out << semui.headerIcon()
+        }
 
         if (attrs.text) {
             out << attrs.text
@@ -44,6 +49,9 @@ class SemuiTagLib {
         if (attrs.message) {
             SwissKnife.checkMessageKey(attrs.message as String)
             out << "${message(code: attrs.message, args: attrs.args)}"
+        }
+        if ( body ) {
+            out << body()
         }
         out << '</h1>'
     }

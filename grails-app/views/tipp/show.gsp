@@ -15,9 +15,7 @@
     <semui:crumb text="${tipp.name} [${message(code: 'title.label')}]" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerTitleIcon type="${tipp.titleType}"/>
-<g:message code="tipp.show.label" args="${[tipp.name, tipp.pkg.name, tipp.platform.name]}"/>
-</h1>
+<semui:headerWithIcon message="tipp.show.label" args="${[tipp.name, tipp.pkg.name, tipp.platform.name]}" type="${tipp.titleType}" />
 
 <laser:render template="/templates/meta/identifier" model="${[object: tipp, editable: editable]}"/>
 

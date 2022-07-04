@@ -14,9 +14,9 @@
         <semui:crumb message="menu.admin.manageOrganisations" class="active" />
     </semui:breadcrumbs>
 
-    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="menu.admin.manageOrganisations" />
+    <semui:headerWithIcon message="menu.admin.manageOrganisations">
         <semui:totalNumber total="${orgListTotal}"/>
-    </h1>
+    </semui:headerWithIcon>
 
     <semui:filter>
         <g:form action="manageOrganisations" method="get" class="ui form">

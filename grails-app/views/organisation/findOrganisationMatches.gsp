@@ -13,7 +13,7 @@
 		<semui:crumb text="${message(code:"default.create.label",args:[entityName])}" class="active"/>
 	</semui:breadcrumbs>
 
-		<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="default.create.label" args="[entityName]" /></h1>
+		<semui:headerWithIcon message="default.create.label" args="[entityName]" />
 
 		<semui:messages data="${flash}" />
 

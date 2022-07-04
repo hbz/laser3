@@ -12,9 +12,9 @@
 
     <semui:messages data="${flash}" />
 
-    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
-        <semui:xEditable owner="${subscription}" field="name" />
-    </h1>
+    <semui:headerWithIcon>
+      <semui:xEditable owner="${subscription}" field="name" />
+    </semui:headerWithIcon>
 
     <laser:render template="nav"  />
 

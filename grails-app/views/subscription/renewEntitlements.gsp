@@ -15,7 +15,8 @@
 <semui:controlButtons>
     <laser:render template="actions"/>
 </semui:controlButtons>
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/> <g:message code="subscription.details.renewEntitlements.label" /></h1>
+
+<semui:headerWithIcon message="subscription.details.renewEntitlements.label" />
 
 <laser:render template="nav"/>
 

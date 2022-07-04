@@ -20,12 +20,8 @@
                  text="${issueEntitlementInstance.name}"/>
 </semui:breadcrumbs>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerTitleIcon
-        type="${issueEntitlementInstance.tipp.titleType}"/>
-
-<g:message code="issueEntitlement.for_title.label"
-           args="[issueEntitlementInstance.name, issueEntitlementInstance.subscription.name]"/>
-</h1>
+<semui:headerWithIcon message="issueEntitlement.for_title.label" args="[issueEntitlementInstance.name, issueEntitlementInstance.subscription.name]"
+                      type="${issueEntitlementInstance.tipp.titleType}" />
 
 <semui:messages data="${flash}"/>
 

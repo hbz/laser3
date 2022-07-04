@@ -84,7 +84,10 @@
             }
         %>
 
-        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'subscription.details.financials.label')}<semui:totalNumber total="${total.join(' / ')}"/></h1>
+        <semui:headerWithIcon message="subscription.details.financials.label">
+            <semui:totalNumber total="${total.join(' / ')}"/>
+        </semui:headerWithIcon>
+
         <laser:render template="result" model="[own:own,cons:cons,subscr:subscr,showView:showView,filterPresets:filterPresets,ciTitles:ciTitles]" />
 
         <laser:render template="export/individuallyExportModal" model="[modalID: 'individuallyExportModal']" />

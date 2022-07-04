@@ -15,7 +15,7 @@
     <semui:crumb message="myinst.renewals" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${message(code: 'myinst.renewals')}: ${subscription.name}</h1>
+<semui:headerWithIcon text="${message(code: 'myinst.renewals')}: ${subscription.name}" />
 
 <semui:messages data="${flash}"/>
 

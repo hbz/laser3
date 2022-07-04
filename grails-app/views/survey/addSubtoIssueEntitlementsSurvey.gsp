@@ -16,7 +16,7 @@
     <semui:crumb message="createIssueEntitlementsSurvey.label" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerTitleIcon type="Survey"/>${message(code: 'createIssueEntitlementsSurvey.label')}</h1>
+<semui:headerWithIcon message="createIssueEntitlementsSurvey.label" type="Survey" />
 
 <semui:messages data="${flash}"/>
 
