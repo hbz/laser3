@@ -11,7 +11,7 @@
 <div id='login' class="container">
     <div class='inner'>
         <div class='header'>
-            <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="springSecurity.login.header"/></h1>
+            <semui:headerWithIcon message="springSecurity.login.header" />
         </div>
     <p>
         <semui:messages data="${flash}" />

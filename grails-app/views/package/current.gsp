@@ -71,7 +71,7 @@
     <laser:render template="actions"/>
 </semui:controlButtons>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${packageInstance.name}</h1>
+<semui:headerWithIcon text="${packageInstance.name}" />
 
 <laser:render template="nav"/>
 

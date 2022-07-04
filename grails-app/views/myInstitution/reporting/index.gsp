@@ -14,9 +14,7 @@
             <semui:crumb text="${message(code:'myinst.reporting')}" class="active" />
         </semui:breadcrumbs>
 
-        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
-            <g:message code="myinst.reporting"/>
-        </h1>
+        <semui:headerWithIcon message="myinst.reporting" />
 
         <laser:render template="/templates/reporting/helper" />%{--js--}%
 

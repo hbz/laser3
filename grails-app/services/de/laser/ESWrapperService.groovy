@@ -160,38 +160,6 @@ class ESWrapperService {
 
     }
 
-    @Deprecated
-    void clusterHealth(){
-
-        RestHighLevelClient esclient = this.getClient()
-
-        ClusterHealthRequest request = new ClusterHealthRequest();
-        ClusterHealthResponse response = esclient.cluster().health(request, RequestOptions.DEFAULT);
-
-        String clusterName = response.getClusterName();
-        //ClusterHealthStatus status = response.getStatus();
-
-        boolean timedOut = response.isTimedOut();
-        RestStatus restStatus = response.status();
-
-        Map<String, ClusterIndexHealth> indices = response.getIndices();
-
-        ClusterIndexHealth index = indices.get("index");
-        ClusterHealthStatus indexStatus = index.getStatus();
-        int numberOfShards = index.getNumberOfShards();
-        int numberOfReplicas = index.getNumberOfReplicas();
-        int activeShards = index.getActiveShards();
-        int activePrimaryShards = index.getActivePrimaryShards();
-        int initializingShards = index.getInitializingShards();
-        int relocatingShards = index.getRelocatingShards();
-        int unassignedShards = index.getUnassignedShards();
-
-        println("ESInfo: clusterName: ${clusterName}, numberOfDataNodes: ${numberOfDataNodes}, numberOfNodes: ${numberOfNodes}")
-        println("ESInfo: index: ${index}, numberOfShards: ${numberOfShards}, numberOfReplicas: ${numberOfReplicas}, indexStatus: ${indexStatus}")
-
-        esclient.close()
-    }
-
     /**
      * Drops the given index
      * @param indexName the index to be deleted

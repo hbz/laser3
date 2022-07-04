@@ -11,7 +11,7 @@
 			<semui:crumb message="menu.admin.manageIdentifierNamespaces" class="active"/>
 		</semui:breadcrumbs>
 
-		<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="menu.admin.manageIdentifierNamespaces"/></h1>
+        <semui:headerWithIcon message="menu.admin.manageIdentifierNamespaces" />
 
 		<semui:messages data="${flash}" />
 

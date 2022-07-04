@@ -17,7 +17,7 @@
 			<semui:crumb message="menu.admin.manageRefdatas" class="active"/>
 		</semui:breadcrumbs>
 
-		<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="menu.admin.manageRefdatas"/></h1>
+        <semui:headerWithIcon message="menu.admin.manageRefdatas" />
 
         <semui:messages data="${flash}" />
 

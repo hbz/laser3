@@ -12,9 +12,7 @@
             <semui:crumb message="announcement.plural" class="active" />
         </semui:breadcrumbs>
 
-        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
-            ${message(code:'announcement.plural')}
-        </h1>
+        <semui:headerWithIcon message="announcement.plural" />
 
         <br />
         <br />

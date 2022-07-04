@@ -13,10 +13,10 @@
         <laser:render template="breadcrumb" model="${[ params:params ]}"/>
 
         <g:if test="${institutionName}">
-            <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.my.comp_sub')}</h1>
+			<semui:headerWithIcon message="menu.my.comp_sub" />
         </g:if>
         <g:else>
-            <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'subscription.compare.label')}</h1>
+			<semui:headerWithIcon message="subscription.compare.label" />
         </g:else>
 
         <semui:messages data="${flash}" />

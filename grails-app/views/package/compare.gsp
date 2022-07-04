@@ -20,8 +20,8 @@
 			</semui:exportDropdownItem>
 		</semui:exportDropdown>
 	</semui:controlButtons>
-
-	<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'package.compare')}</h1>
+ 
+ 	<semui:headerWithIcon message="package.compare" />
 
 	<semui:messages data="${flash}" />
 

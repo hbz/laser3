@@ -11,7 +11,7 @@
     <semui:crumb message="menu.yoda.userRoleMatrix" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.userRoleMatrix')}</h1>
+<semui:headerWithIcon message="menu.yoda.userRoleMatrix" />
 
 <div class="ui accordion">
     <g:each in="${matrix}" var="role">

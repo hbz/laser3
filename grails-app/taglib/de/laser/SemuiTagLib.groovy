@@ -34,6 +34,20 @@ class SemuiTagLib {
 
     static namespace = "semui"
 
+    def headerWithIcon = { attrs, body ->
+        out << '<h1 class="ui icon header la-clear-before la-noMargin-top">'
+        out << semui.headerIcon()
+
+        if (attrs.text) {
+            out << attrs.text
+        }
+        if (attrs.message) {
+            SwissKnife.checkMessageKey(attrs.message as String)
+            out << "${message(code: attrs.message, args: attrs.args)}"
+        }
+        out << '</h1>'
+    }
+
     // <semui:messages data="${flash}" />
 
     def messages = { attrs, body ->
@@ -43,18 +57,14 @@ class SemuiTagLib {
         if (flash && flash.message) {
             out << '<div class="ui success message la-clear-before">'
             out << '<i aria-hidden="true" class="close icon"></i>'
-            out << '<p>'
-            out << flash.message
-            out << '</p>'
+            out << '<p>' + flash.message + '</p>'
             out << '</div>'
         }
 
         if (flash && flash.error) {
             out << '<div class="ui negative message la-clear-before">'
             out << '<i aria-hidden="true" class="close icon"></i>'
-            out << '<p>'
-            out << flash.error
-            out << '</p>'
+            out << '<p>' + flash.error + '</p>'
             out << '</div>'
         }
     }
@@ -80,7 +90,7 @@ class SemuiTagLib {
             out << attrs.text
         }
         if (attrs.message) {
-            SwissKnife.checkMessageKey(attrs.message)
+            SwissKnife.checkMessageKey(attrs.message as String)
 
             out << "${message(code: attrs.message, args: attrs.args)}"
         }

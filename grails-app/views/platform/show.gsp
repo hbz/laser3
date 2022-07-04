@@ -16,9 +16,7 @@
     <semui:crumb class="active" id="${platformInstance.id}" text="${platformInstance.name}"/>
 </semui:breadcrumbs>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>
-    ${platformInstance.name}
-</h1>
+<semui:headerWithIcon text="${platformInstance.name}" />
 
 <laser:render template="/templates/meta/identifier" model="${[object: platformInstance, editable: false]}"/>
 

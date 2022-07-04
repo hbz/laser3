@@ -11,7 +11,7 @@
     <semui:crumb message="menu.institutions.financeImport" class="active"/>
   </semui:breadcrumbs>
 
-    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.institutions.financeImport')}</h1>
+    <semui:headerWithIcon message="menu.institutions.financeImport" />
 
     <semui:messages data="${flash}" />
 

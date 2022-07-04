@@ -11,7 +11,7 @@
     <semui:crumb message="privacyNotice" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'privacyNotice')}</h1>
+<semui:headerWithIcon message="privacyNotice" />
 
 <br />
 <br />

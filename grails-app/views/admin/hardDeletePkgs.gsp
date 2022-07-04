@@ -12,7 +12,7 @@
             <semui:crumb text="Package Delete" class="active"/>
         </semui:breadcrumbs>
 
-        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />Package Delete</h1>
+        <semui:headerWithIcon text="Package Delete" />
 
         <semui:messages data="${flash}" />
 

@@ -26,7 +26,7 @@
             </semui:controlButtons>
         </g:if>
 
-        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${orgInstance.name}</h1>
+        <semui:headerWithIcon text="${orgInstance.name}" />
 
         <laser:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: orgInstance.id == contextService.getOrg().id]}"/>
 

@@ -19,7 +19,7 @@
         <laser:render template="/user/global/breadcrumb" model="${[ inContextOrg: inContextOrg, orgInstance: orgInstance, institutionalView: institutionalView, params:params ]}"/>
     %{--</g:if>--}%
 
-        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'user.create_new.label')}</h1>
+        <semui:headerWithIcon message="user.create_new.label" />
 
         <semui:messages data="${flash}" />
 

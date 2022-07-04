@@ -14,7 +14,7 @@
             <semui:crumb message="myinst.emptySubscription.label" class="active" />
         </semui:breadcrumbs>
 
-        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'myinst.emptySubscription.label')}</h1>
+        <semui:headerWithIcon message="myinst.emptySubscription.label" />
 
         <semui:messages data="${flash}"/>
 

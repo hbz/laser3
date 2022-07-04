@@ -33,11 +33,11 @@ To avoid confusion, the difference between localized and fixed usage in *de.lase
 
 *org.grails.plugins:grails-executor* is deprecated. Replacement should take place.
 
-### Fallbacks
+### ~~Fallbacks~~
 
-The following fallbacks have been set for faster migration. They can be treated later.
+~~The following fallbacks have been set for faster migration. They can be treated later.~~
 
-    hibernate.allow_update_outside_transaction: true
+* ~~hibernate.allow_update_outside_transaction: true~~
 
 ### HTTPBuilder
 

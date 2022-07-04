@@ -13,8 +13,7 @@
     <semui:crumb message="menu.institutions.subscriptionImport" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/><g:message
-        code="menu.institutions.subscriptionImport"/></h1>
+<semui:headerWithIcon message="menu.institutions.subscriptionImport" />
 
 <semui:messages data="${flash}"/>
 

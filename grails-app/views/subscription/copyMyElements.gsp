@@ -11,7 +11,7 @@
 <body>
 <laser:render template="breadcrumb" model="${[params: params]}"/>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${message(code: 'subscription.details.copyMyElements.label')}</h1>
+<semui:headerWithIcon message="subscription.details.copyMyElements.label" />
 
 <semui:messages data="${flash}"/>
 

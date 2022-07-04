@@ -12,7 +12,7 @@
             <semui:crumb message="menu.admin.statistics" class="active"/>
         </semui:breadcrumbs>
 
-        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.admin.statistics')}</h1>
+        <semui:headerWithIcon message="menu.admin.statistics" />
 
         <table class="ui celled la-js-responsive-table la-table table">
             <thead>

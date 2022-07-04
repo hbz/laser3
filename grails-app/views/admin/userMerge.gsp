@@ -12,7 +12,7 @@
         <semui:crumb text="User Merge" class="active"/>
     </semui:breadcrumbs>
 
-    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />User Merge</h1>
+    <semui:headerWithIcon text="User Merge" />
 
     <semui:messages data="${flash}" />
 

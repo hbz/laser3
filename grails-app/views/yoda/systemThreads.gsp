@@ -14,7 +14,7 @@
         <semui:crumb message="menu.yoda.systemThreads" class="active"/>
     </semui:breadcrumbs>
 
-    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.systemThreads')}</h1>
+    <semui:headerWithIcon message="menu.yoda.systemThreads" />
 
     <g:set var="threads" value="${Thread.getAllStackTraces().keySet().sort{ it.id }}" />
     <g:set var="tmxBean" value="${ManagementFactory.getThreadMXBean()}" />

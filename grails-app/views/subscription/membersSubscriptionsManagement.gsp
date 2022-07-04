@@ -19,7 +19,7 @@
                  text="${message(code: 'subscriptionsManagement.subscriptions.members')}"/>
 </semui:breadcrumbs>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${subscription.name}</h1>
+<semui:headerWithIcon text="${subscription.name}" />
 
 <semui:anualRings object="${subscription}" controller="subscription" action="${actionName}"
                   navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
