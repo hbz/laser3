@@ -9,9 +9,8 @@
 
 <body>
 
-<h1 class="ui icon header la-clear-before">
-    ${message(code: 'menu.public.gasco_monitor')}: ${message(code: 'gasco.licenceSearch')}
-</h1>
+<semui:headerWithIcon text="${message(code: 'menu.public.gasco_monitor')}: ${message(code: 'gasco.licenceSearch')}" />
+
     <div class="ui grid">
         <div class="eleven wide column">
             <div class="ui la-search segment">

@@ -14,10 +14,10 @@
         <laser:render template="actions" />
     </semui:controlButtons>
 
-    <h1 class="ui icon header la-noMargin-top"><semui:headerIcon />
+    <semui:headerWithIcon>
         <laser:render template="iconSubscriptionIsChild"/>
         <semui:xEditable owner="${subscription}" field="name" />
-    </h1>
+    </semui:headerWithIcon>
     <semui:anualRings object="${subscription}" controller="subscription" action="history" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
     <laser:render template="nav" />

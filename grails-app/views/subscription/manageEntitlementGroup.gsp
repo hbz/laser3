@@ -19,9 +19,9 @@
     <laser:render template="actions"/>
 </semui:controlButtons>
 
-<h1 class="ui icon header la-noMargin-top"><semui:headerIcon />
-<semui:xEditable owner="${subscription}" field="name" />
-</h1>
+<semui:headerWithIcon>
+    <semui:xEditable owner="${subscription}" field="name" />
+</semui:headerWithIcon>
 <g:if test="${editable}">
     <semui:auditButton auditable="[subscription, 'name']" />
 </g:if>

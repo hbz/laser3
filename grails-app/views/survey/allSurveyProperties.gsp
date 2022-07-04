@@ -22,10 +22,10 @@
     <semui:crumb message="myinst.currentSubscriptions.label" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
+<semui:headerWithIcon type="Survey">
 <semui:xEditable owner="${surveyInfo}" field="name"/>
 <semui:surveyStatus object="${surveyInfo}"/>
-</h1>
+</semui:headerWithIcon>
 
 <laser:render template="nav"/>
 

@@ -13,7 +13,7 @@
     <semui:crumb message="menu.admin.databaseCollations" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top">${message(code: "menu.admin.databaseCollations")}</h1>
+<semui:headerWithIcon message="menu.admin.databaseCollations" />
 
 <div class="ui secondary stackable pointing tabular menu">
     <a data-tab="first" class="item active">Übersicht</a>

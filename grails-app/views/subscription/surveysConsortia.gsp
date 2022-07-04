@@ -16,10 +16,10 @@
     <laser:render template="actions"/>
 </semui:controlButtons>
 
-<h1 class="ui icon header la-noMargin-top"><semui:headerIcon/>
+<semui:headerWithIcon>
 <semui:xEditable owner="${subscription}" field="name"/>
 <semui:totalNumber total="${surveys.size()}"/>
-</h1>
+</semui:headerWithIcon>
 <semui:anualRings object="${subscription}" controller="subscription" action="surveysConsortia"
                   navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 

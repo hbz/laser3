@@ -34,6 +34,10 @@ class SemuiTagLib {
 
     static namespace = "semui"
 
+    // <semui:headerWithIcon text="${text}" message="18n.token" args="[key:value]" type="${headerTitleIconType}">
+    //    content
+    // </semui:headerWithIcon>
+
     def headerWithIcon = { attrs, body ->
         out << '<h1 class="ui icon header la-clear-before la-noMargin-top">'
 

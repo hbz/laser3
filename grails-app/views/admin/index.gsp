@@ -12,10 +12,7 @@
         <semui:crumb message="menu.admin" controller="admin" action="index" class="active"/>
     </semui:breadcrumbs>
 
-    <h1 class="ui icon header la-clear-before la-noMargin-top">
-        <i class="circular icon trophy" style="background-color:#f3a43b; border-color:#f3a43b; color:white;"></i>
-        ${message(code:'menu.admin')}
-    </h1>
+    <semui:headerWithIcon message="menu.admin" type="admin" />
 
     <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
         <thead>

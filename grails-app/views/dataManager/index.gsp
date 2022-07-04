@@ -11,10 +11,7 @@
       <semui:crumb message="menu.datamanager" class="active"/>
     </semui:breadcrumbs>
 
-    <h1 class="ui icon header la-clear-before la-noMargin-top">
-      <i class="circular icon hdd" style="background-color:#b5c334; border-color:#b5c334; color:white;"></i>
-      ${message(code:'menu.datamanager')}
-    </h1>
+  <semui:headerWithIcon message="menu.datamanager" type="datamanager" />
 
   <br />
   <br />

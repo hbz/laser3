@@ -31,10 +31,9 @@
     </semui:actionsDropdown>
 </semui:controlButtons>--}%
 
-<h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
-${surveyInfo.name}
+<semui:headerWithIcon text="${surveyInfo.name}" type="Survey">
 <semui:surveyStatus object="${surveyInfo}"/>
-</h1>
+</semui:headerWithIcon>
 
 <semui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
 

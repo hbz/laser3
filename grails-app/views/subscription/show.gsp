@@ -31,10 +31,10 @@
 <semui:controlButtons>
     <laser:render template="actions"/>
 </semui:controlButtons>
-<h1 class="ui icon header la-noMargin-top"><semui:headerIcon/>
+<semui:headerWithIcon>
 <laser:render template="iconSubscriptionIsChild"/>
 <semui:xEditable owner="${subscription}" field="name"/>
-</h1>
+</semui:headerWithIcon>
 <g:if test="${editable}">
     <semui:auditButton class="la-auditButton-header" auditable="[subscription, 'name']" auditConfigs="${auditConfigs}" withoutOptions="true"/>
 </g:if>

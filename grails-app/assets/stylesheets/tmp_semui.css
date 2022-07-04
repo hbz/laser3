@@ -254,3 +254,15 @@ main.ui.container.main {
     top: 0;
     right: 0;
 }
+
+/* -- new header icons -- */
+
+h1.header.icon > i.dna {
+    background-color:#d12e34; border-color:#d12e34; color:white;
+}
+h1.header.icon > i.hdd {
+    background-color:#b5c334; border-color:#b5c334; color:white;
+}
+h1.header.icon > i.trophy {
+    background-color:#f3a43b; border-color:#f3a43b; color:white;
+}

@@ -15,25 +15,36 @@ class SemuiIconTagLib {
     def headerTitleIcon = { attrs, body ->
         String icon = 'la-object'
 
-        switch (attrs.type) {
-            case 'Journal':
-                icon = 'la-object-journal'
-                break
-            case 'Database':
+        if (attrs.type) {
+        switch (attrs.type.toLowerCase()) {
+            case 'database':
                 icon = 'la-object-database'
                 break
-            case 'EBook':
+            case 'ebook':
                 icon = 'la-object-ebook'
                 break
-            case 'Survey':
-                icon = 'inverted pink chart pie'
+            case 'journal':
+                icon = 'la-object-journal'
                 break
-            case 'Workflow':
-                icon = 'inverted brown tasks'
-                break
-            case 'Subscription':
+            case 'subscription':
                 icon = 'inverted orange clipboard'
                 break
+            case 'survey':
+                icon = 'inverted pink chart pie'
+                break
+            case 'workflow':
+                icon = 'inverted brown tasks'
+                break
+            case 'admin':
+                icon = 'trophy'
+                break
+            case 'datamanager':
+                icon = 'hdd'
+                break
+            case 'yoda':
+                icon = 'dna'
+                break
+        }
         }
         out << '<i aria-hidden="true" class="circular icon ' + icon + '"></i> '
     }

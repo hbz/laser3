@@ -13,7 +13,7 @@
     <semui:crumb message="menu.yoda.profiler" class="active"/>
 </semui:breadcrumbs>
 
-    <h1 class="ui icon header la-clear-before la-noMargin-top">${message(code:'menu.yoda.profiler')}</h1>
+    <semui:headerWithIcon message="menu.yoda.profiler" />
 
     <nav class="ui secondary menu">
         <g:link controller="yoda" action="profilerLoadtime" class="item active">Ladezeiten</g:link>

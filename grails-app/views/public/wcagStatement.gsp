@@ -8,7 +8,7 @@
 </head>
 
 <body>
-            <h1 class="ui icon header"><semui:headerIcon />${message(code:'wcagStatement')}</h1>
+            <semui:headerWithIcon message="wcagStatement" />
 
             <h2 class="ui header">Erklärung zur digitalen Barrierefreiheit</h2>
             <p>

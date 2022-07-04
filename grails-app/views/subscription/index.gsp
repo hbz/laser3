@@ -22,12 +22,12 @@
 <g:if test="${params.asAt}"><h1
         class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${message(code: 'subscription.details.snapshot', args: [params.asAt])}</h1></g:if>
 
-<h1 class="ui icon header la-noMargin-top"><semui:headerIcon/>
+<semui:headerWithIcon>
 <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
     <laser:render template="iconSubscriptionIsChild"/>
 </g:if>
 <semui:xEditable owner="${subscription}" field="name"/>
-</h1>
+</semui:headerWithIcon>
 <semui:anualRings object="${subscription}" controller="subscription" action="index"
                   navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 

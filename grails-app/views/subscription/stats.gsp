@@ -24,11 +24,10 @@
             </semui:exportDropdown>
             <laser:render template="actions" />
         </semui:controlButtons>
-        <h1 class="ui icon header la-noMargin-top">
-            <semui:headerIcon />
+        <semui:headerWithIcon>
             <laser:render template="iconSubscriptionIsChild"/>
             ${subscription.name}
-        </h1>
+        </semui:headerWithIcon>
         <semui:anualRings object="${subscription}" controller="subscription" action="show" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
         <laser:render template="nav" />

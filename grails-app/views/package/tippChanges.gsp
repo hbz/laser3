@@ -14,14 +14,11 @@
     <semui:crumb text="${packageInstance.name}" id="${packageInstance.id}" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui icon header la-noMargin-top"><semui:headerIcon/>
-<semui:xEditable owner="${packageInstance}" field="name"/>
-</h1>
-
+<semui:headerWithIcon>
+    <semui:xEditable owner="${packageInstance}" field="name"/>
+</semui:headerWithIcon>
 
 <laser:render template="nav"/>
-
-
 
 <g:set var="counter" value="${offset + 1}"/>
 <table class="ui celled la-js-responsive-table la-table table sortable">

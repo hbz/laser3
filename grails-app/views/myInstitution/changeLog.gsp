@@ -21,7 +21,7 @@
     <laser:render template="actions"/>
   </semui:controlButtons>
 
-  <h1 class="ui icon header la-clear-before"><semui:headerIcon />${message(code:'menu.institutions.change_log')}</h1>
+  <semui:headerWithIcon message="menu.institutions.change_log" />
 
         <p>
           <strong>

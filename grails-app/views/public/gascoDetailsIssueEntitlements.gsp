@@ -8,13 +8,12 @@
 </head>
 
 <body>
-    <h1 class="ui icon header la-clear-before">
-        ${subscription}
+    <semui:headerWithIcon text="${subscription}">
         <g:if test="${issueEntitlementsCount}">
             &nbsp;&nbsp;
             (${issueEntitlements?.size()} von ${issueEntitlementsCount})
         </g:if>
-    </h1>
+    </semui:headerWithIcon>
 
     <semui:filter>
         <form class="ui form">
