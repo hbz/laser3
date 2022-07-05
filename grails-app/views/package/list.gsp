@@ -16,9 +16,9 @@
       <laser:render template="actions"/>
   </semui:controlButtons>
 
-  <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code:'myinst.packages')}
-    <semui:totalNumber total="${packageInstanceTotal}"/>
-  </h1>
+  <semui:headerWithIcon message="myinst.packages" floated="true">
+      <semui:totalNumber total="${packageInstanceTotal}" />
+  </semui:headerWithIcon>
 
     <semui:messages data="${flash}" />
 

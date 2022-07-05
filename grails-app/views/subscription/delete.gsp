@@ -11,9 +11,7 @@
 <body>
     <laser:render template="breadcrumb" model="${[ subscription:subscription, params:params ]}"/>
 
-    <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />
-        ${subscription.name}
-    </h1>
+    <semui:headerWithIcon text="${subscription.name}" />
 
     <g:if test="${delResult.status != deletionService.RESULT_SUCCESS}">
         <laser:render template="nav" />

@@ -49,9 +49,9 @@
 
             </semui:controlButtons>
 
-        <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon /><g:message code="menu.public.all_orgs" />
+        <semui:headerWithIcon message="menu.public.all_orgs" floated="true">
             <semui:totalNumber total="${orgListTotal}"/>
-        </h1>
+        </semui:headerWithIcon>
 
         <semui:messages data="${flash}" />
 

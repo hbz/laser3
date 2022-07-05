@@ -1940,7 +1940,7 @@ join sub.orgRelations or_sub where
             return
         }else {
             result.surveyResults = result.surveyResults.groupBy {it.id[1]}
-            result.countSurveys = surveyService.getSurveyParticipantCounts_New(result.institution, params)
+            result.countSurveys = surveyService._getSurveyParticipantCounts_New(result.institution, params)
 
             withFormat {
                 html {
@@ -3316,7 +3316,7 @@ join sub.orgRelations or_sub where
             return
         }else {
             result.surveyResults = result.surveyResults.groupBy {it.id[1]}
-            result.countSurveys = surveyService.getSurveyParticipantCounts_New(result.participant, params)
+            result.countSurveys = surveyService._getSurveyParticipantCounts_New(result.participant, params)
 
             result
         }

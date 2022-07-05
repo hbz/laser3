@@ -13,9 +13,9 @@
     <semui:crumb message="package.show.all" class="active"/>
 </semui:breadcrumbs>
 
-<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${message(code: 'package.show.all')}
-<semui:totalNumber total="${recordsCount ?: 0}"/>
-</h1>
+<semui:headerWithIcon message="package.show.all" floated="true">
+    <semui:totalNumber total="${recordsCount}" />
+</semui:headerWithIcon>
 
 <semui:messages data="${flash}"/>
 

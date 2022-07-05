@@ -34,12 +34,16 @@ class SemuiTagLib {
 
     static namespace = "semui"
 
-    // <semui:headerWithIcon text="${text}" message="18n.token" args="[key:value]" type="${headerTitleIconType}">
+    // <semui:headerWithIcon text="${text}" message="18n.token" args="[key:value]" type="${headerTitleIconType}" floated="true">
     //    content
     // </semui:headerWithIcon>
 
     def headerWithIcon = { attrs, body ->
-        out << '<h1 class="ui icon header la-clear-before la-noMargin-top">'
+        if (attrs.floated && attrs.floated != 'false') {
+            out << '<h1 class="ui icon header la-clear-before left floated aligned">'
+        } else {
+            out << '<h1 class="ui icon header la-clear-before la-noMargin-top">'
+        }
 
         if (attrs.type) {
             out << semui.headerTitleIcon([type: attrs.type])
@@ -920,7 +924,7 @@ class SemuiTagLib {
 
     def totalNumber = { attrs, body ->
 
-        def total = attrs.total
+        def total = attrs.total ?: 0
         def newClass = attrs.class ?: ''
 
         out << '<span class="ui circular ' + newClass + ' label">'

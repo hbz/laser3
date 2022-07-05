@@ -27,10 +27,10 @@
             <laser:render template="actions" />
         </g:if>
     </semui:controlButtons>
-    
-    <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code: 'menu.public.all_insts')}
+
+    <semui:headerWithIcon message="menu.public.all_insts" floated="true">
         <semui:totalNumber total="${consortiaMemberTotal}"/>
-    </h1>
+    </semui:headerWithIcon>
 
     <semui:messages data="${flash}" />
 

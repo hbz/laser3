@@ -65,9 +65,9 @@
     </semui:exportDropdown>
 </semui:controlButtons>
 
-<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${message(code: 'myinst.currentTitles.label')}
-<semui:totalNumber total="${num_ti_rows}"/>
-</h1>
+<semui:headerWithIcon message="myinst.currentTitles.label" floated="true">
+    <semui:totalNumber total="${num_ti_rows}"/>
+</semui:headerWithIcon>
 
 <semui:messages data="${flash}"/>
 

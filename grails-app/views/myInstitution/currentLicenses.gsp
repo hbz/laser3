@@ -45,9 +45,9 @@
 
   </semui:controlButtons>
 
-  <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code:'license.current')}
+  <semui:headerWithIcon message="license.current" floated="true">
       <semui:totalNumber total="${licenseCount}"/>
-  </h1>
+  </semui:headerWithIcon>
 
   <semui:messages data="${flash}" />
 

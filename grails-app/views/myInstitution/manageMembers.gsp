@@ -55,9 +55,9 @@
     </g:if>
 </semui:controlButtons>
 
-<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${title}
-<semui:totalNumber total="${membersCount}"/>
-</h1>
+<semui:headerWithIcon text="${title}" floated="true">
+    <semui:totalNumber total="${membersCount}"/>
+</semui:headerWithIcon>
 
 <laser:render template="/templates/filter/javascript" />
 

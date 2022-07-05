@@ -12,9 +12,9 @@
     <semui:crumb message="menu.my.platforms" class="active" />
 </semui:breadcrumbs>
 
-<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${message(code:'menu.my.platforms')}
+<semui:headerWithIcon message="menu.my.platforms" floated="true">
     <semui:totalNumber total="${platformInstanceTotal}"/>
-</h1>
+</semui:headerWithIcon>
 
 <semui:messages data="${flash}" />
 

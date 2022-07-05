@@ -28,10 +28,9 @@
     ${message(code: 'allSubscriptions.info')}
 </div>
 
-
-<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${message(code: 'myinst.currentSubscriptions.label')}
-<semui:totalNumber total="${num_sub_rows}"/>
-</h1>
+<semui:headerWithIcon message="myinst.currentSubscriptions.label" floated="true">
+    <semui:totalNumber total="${num_sub_rows}"/>
+</semui:headerWithIcon>
 
 <laser:render template="/templates/filter/javascript" />
 <semui:filter showFilterButton="true">
