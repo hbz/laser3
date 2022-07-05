@@ -8,7 +8,7 @@
 </head>
 
 <body>
-            <semui:headerWithIcon message="wcagStatement" />
+            <semui:h1HeaderWithIcon message="wcagStatement" />
 
             <h2 class="ui header">Erklärung zur digitalen Barrierefreiheit</h2>
             <p>

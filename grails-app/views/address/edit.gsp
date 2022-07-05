@@ -19,7 +19,7 @@
 		<semui:crumb text="${g.message(code:'default.edit.label', args:[entityName])}" class="active"/>
 	</semui:breadcrumbs>
 
-		<semui:headerWithIcon message="default.edit.label" args="[entityName]" />
+		<semui:h1HeaderWithIcon message="default.edit.label" args="[entityName]" />
 
 		<semui:messages data="${flash}" />
 

@@ -22,9 +22,7 @@
     </semui:exportDropdown>
 </semui:controlButtons>
 
-<semui:headerWithIcon message="manageParticipantSurveys.header" floated="true">
-    <semui:totalNumber total="${countSurveys.values().sum { it }}"/>
-</semui:headerWithIcon>
+<semui:h1HeaderWithIcon message="manageParticipantSurveys.header" total="${countSurveys.values().sum { it }}" floated="true" />
 
 <semui:messages data="${flash}"/>
 

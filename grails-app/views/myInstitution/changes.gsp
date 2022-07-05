@@ -13,7 +13,7 @@
             <semui:crumb message="myinst.pendingChanges.label" class="active" />
         </semui:breadcrumbs>
 
-        <semui:headerWithIcon message="myinst.menu.pendingChanges.label" />
+        <semui:h1HeaderWithIcon message="myinst.menu.pendingChanges.label" />
 
             <g:if test="${packages}">
                 <g:form controller="pendingChange" action="processAll">

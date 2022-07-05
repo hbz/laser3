@@ -14,7 +14,7 @@
     <semui:crumb message="menu.institutions.manage_props" class="active" />
 </semui:breadcrumbs>
 
-<semui:headerWithIcon message="menu.institutions.manage_props" />
+<semui:h1HeaderWithIcon message="menu.institutions.manage_props" />
 
 <laser:render template="nav"/>
 

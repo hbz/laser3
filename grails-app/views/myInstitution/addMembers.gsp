@@ -16,7 +16,7 @@
         <semui:crumb message="menu.institutions.add_consortia_members" class="active" />
     </semui:breadcrumbs>
 
-    <semui:headerWithIcon message="menu.institutions.add_consortia_members" />
+    <semui:h1HeaderWithIcon message="menu.institutions.add_consortia_members" />
 
     <semui:messages data="${flash}" />
 

@@ -13,10 +13,10 @@
     </semui:breadcrumbs>
 
     <g:if test="${currentAnnouncement}">
-        <semui:headerWithIcon message="announcement.update.label" />
+        <semui:h1HeaderWithIcon message="announcement.update.label" />
     </g:if>
     <g:else>
-        <semui:headerWithIcon message="announcement.create.label" />
+        <semui:h1HeaderWithIcon message="announcement.create.label" />
     </g:else>
 
     <semui:messages data="${flash}" />

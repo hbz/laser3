@@ -52,9 +52,7 @@
 
         </semui:controlButtons>
 
-    <semui:headerWithIcon message="menu.my.providers" floated="true">
-        <semui:totalNumber total="${orgListTotal}"/>
-    </semui:headerWithIcon>
+    <semui:h1HeaderWithIcon message="menu.my.providers" total="${orgListTotal}" floated="true" />
 
     <semui:messages data="${flash}" />
 

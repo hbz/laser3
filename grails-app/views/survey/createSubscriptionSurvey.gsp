@@ -18,7 +18,7 @@
     <semui:crumb message="createSubscriptionSurvey.label" class="active"/>
 </semui:breadcrumbs>
 
-<semui:headerWithIcon message="createSubscriptionSurvey.label" type="Survey" />
+<semui:h1HeaderWithIcon message="createSubscriptionSurvey.label" type="Survey" />
 
 <semui:messages data="${flash}"/>
 
@@ -28,9 +28,7 @@
     ${message(code: 'allSubscriptions.info')}
 </div>
 
-<semui:headerWithIcon message="myinst.currentSubscriptions.label" floated="true">
-    <semui:totalNumber total="${num_sub_rows}"/>
-</semui:headerWithIcon>
+<semui:h1HeaderWithIcon message="myinst.currentSubscriptions.label" total="${num_sub_rows}" floated="true" />
 
 <laser:render template="/templates/filter/javascript" />
 <semui:filter showFilterButton="true">

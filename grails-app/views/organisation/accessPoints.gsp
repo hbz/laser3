@@ -35,7 +35,7 @@
         </g:if>
     </semui:breadcrumbs>
 
-    <semui:headerWithIcon text="${orgInstance.name}" />
+    <semui:h1HeaderWithIcon text="${orgInstance.name}" />
 
     <laser:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: orgInstance.id == contextService.getOrg().id]}" />
 

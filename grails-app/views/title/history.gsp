@@ -17,7 +17,7 @@
         <semui:crumbAsBadge message="default.editable" class="orange" />
     </g:if>
 
-    <semui:headerWithIcon text="${titleInstance.title}" />
+    <semui:h1HeaderWithIcon text="${titleInstance.title}" />
 
     <laser:render template="nav" />
 

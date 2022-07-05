@@ -7,10 +7,10 @@
 <body>
     <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
-    <semui:headerWithIcon>
+    <semui:h1HeaderWithIcon>
         <semui:xEditable owner="${license}" field="reference" id="reference"/>
         <semui:totalNumber total="${todoHistoryLinesTotal}"/>
-    </semui:headerWithIcon>
+    </semui:h1HeaderWithIcon>
 
     <semui:anualRings object="${license}" controller="license" action="show" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
 

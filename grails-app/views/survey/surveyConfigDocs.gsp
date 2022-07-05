@@ -25,9 +25,9 @@
     <laser:render template="actions"/>
 </semui:controlButtons>
 
-<semui:headerWithIcon type="Survey">
+<semui:h1HeaderWithIcon type="Survey">
 <semui:xEditable owner="${surveyInfo}" field="name"/>
-</semui:headerWithIcon>
+</semui:h1HeaderWithIcon>
 <semui:surveyStatusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="surveyConfigDocs"/>
 
 

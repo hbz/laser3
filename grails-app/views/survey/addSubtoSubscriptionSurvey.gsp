@@ -16,7 +16,7 @@
     <semui:crumb message="createSubscriptionSurvey.label" class="active"/>
 </semui:breadcrumbs>
 
-<semui:headerWithIcon message="createSubscriptionSurvey.label" type="Survey" />
+<semui:h1HeaderWithIcon message="createSubscriptionSurvey.label" type="Survey" />
 
 <semui:messages data="${flash}"/>
 

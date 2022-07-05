@@ -11,12 +11,12 @@
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
 
-<semui:headerWithIcon type="Subscription">
+<semui:h1HeaderWithIcon type="Subscription">
 <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
     <laser:render template="iconSubscriptionIsChild"/>
 </g:if>
 <semui:xEditable owner="${subscription}" field="name"/>
-</semui:headerWithIcon>
+</semui:h1HeaderWithIcon>
 
 <semui:anualRings object="${subscription}" controller="subscription" action="entitlementChanges"
                   navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>

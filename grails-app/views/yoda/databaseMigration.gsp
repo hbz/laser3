@@ -14,7 +14,7 @@
 
     <semui:messages data="${flash}" />
 
-    <semui:headerWithIcon text="Private Properties (mandatory) without existing values" />
+    <semui:h1HeaderWithIcon text="Private Properties (mandatory) without existing values" />
 
     <g:link controller="yoda" action="dbmFixPrivateProperties" params="[cmd:'doIt']" class="ui button negative">
         <i class="icon trash alternate outline"></i> &nbsp;  Delete all</g:link>

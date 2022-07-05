@@ -13,7 +13,7 @@
         <semui:crumb message="menu.admin.databaseInfo" class="active"/>
     </semui:breadcrumbs>
 
-    <semui:headerWithIcon message="menu.admin.databaseInfo" />
+    <semui:h1HeaderWithIcon message="menu.admin.databaseInfo" />
 
     <h2 class="ui header">Meta</h2>
 

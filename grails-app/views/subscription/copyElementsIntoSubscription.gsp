@@ -36,14 +36,14 @@
         </semui:breadcrumbs>
     </g:else>
 
-    <semui:headerWithIcon>
+    <semui:h1HeaderWithIcon>
     <g:if test="${isRenewSub}">
         ${message(code: 'subscription.details.renewals.renew_sub.label')}: <g:if test="${sourceObject}">${sourceObject.name}</g:if>
     </g:if>
     <g:else>
         ${message(code: 'copyElementsIntoObject.label', args: [message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}
     </g:else>
-    </semui:headerWithIcon>
+    </semui:h1HeaderWithIcon>
 
     <semui:messages data="${flash}"/>
 

@@ -11,7 +11,7 @@
     <semui:crumb message="menu.yoda.appControllers" class="active"/>
 </semui:breadcrumbs>
 
-<semui:headerWithIcon message="menu.yoda.appControllers" />
+<semui:h1HeaderWithIcon message="menu.yoda.appControllers" />
 
 <h2 class="ui header">Roles and Hierarchies</h2>
 

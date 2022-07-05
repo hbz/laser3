@@ -29,9 +29,9 @@
     <laser:render template="actions"/>
 </semui:controlButtons>
 
-<semui:headerWithIcon type="Survey">
+<semui:h1HeaderWithIcon type="Survey">
 <semui:xEditable owner="${surveyInfo}" field="name" overwriteEditable="${surveyInfo.isSubscriptionSurvey ? false : editable}"/>
-</semui:headerWithIcon>
+</semui:h1HeaderWithIcon>
 <semui:surveyStatusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="show"/>
 
 <laser:render template="nav"/>

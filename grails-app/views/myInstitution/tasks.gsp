@@ -16,7 +16,7 @@
             <laser:render template="actions"/>
         </semui:controlButtons>
 
-        <semui:headerWithIcon message="task.plural" floated="true" />
+        <semui:h1HeaderWithIcon message="task.plural" floated="true" />
 
         <%--<g:if test="${editable}">
             <input type="submit" class="ui left floated  button la-clear-before" value="${message(code:'task.create.new')}" data-semui="modal" data-href="#modalCreateTask" />

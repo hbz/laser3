@@ -12,7 +12,7 @@
     <semui:crumb message="menu.institutions.help" class="active"/>
 </semui:breadcrumbs>
 
-<semui:headerWithIcon message="menu.user.help" />
+<semui:h1HeaderWithIcon message="menu.user.help" />
 
 <h2 class="ui icon header la-clear-before la-noMargin-top"><g:message code="help.contentHelp"/></h2>
 

@@ -10,10 +10,10 @@
 
 
         <g:unless test="${validationResult?.success}">
-            <semui:headerWithIcon message="onix.import.license">
+            <semui:h1HeaderWithIcon message="onix.import.license">
                 <g:if test="${license}"> ${message(code:'onix.import.for_license', args:[license.reference])}</g:if>
                 <g:else> ${message(code:'onix.import.unspec')}</g:else>
-            </semui:headerWithIcon>
+            </semui:h1HeaderWithIcon>
             <br />
         </g:unless>
 

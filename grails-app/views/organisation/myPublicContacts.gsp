@@ -20,7 +20,7 @@
     <semui:crumb message="menu.institutions.publicContacts" class="active"/>
 </semui:breadcrumbs>
 
-<semui:headerWithIcon text="${orgInstance.name}" />
+<semui:h1HeaderWithIcon text="${orgInstance.name}" />
 
 <semui:controlButtons>
     <semui:actionsDropdown>

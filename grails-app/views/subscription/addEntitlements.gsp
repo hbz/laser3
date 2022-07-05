@@ -21,12 +21,12 @@
     <laser:render template="actions"/>
 </semui:controlButtons>
 
-<semui:headerWithIcon floated="true">
+<semui:h1HeaderWithIcon floated="true">
 <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
     <laser:render template="iconSubscriptionIsChild"/>
 </g:if>
 <semui:xEditable owner="${subscription}" field="name"/>
-</semui:headerWithIcon>
+</semui:h1HeaderWithIcon>
 
 <h2 class="ui left aligned icon header la-clear-before">${message(code: 'subscription.details.addEntitlements.label')}</h2>
 <%-- <laser:render template="nav"/> --%>

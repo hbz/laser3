@@ -53,9 +53,7 @@
     </semui:actionsDropdown>
 </semui:controlButtons>
 
-<semui:headerWithIcon message="menu.my.consortiaSubscriptions" floated="true">
-    <semui:totalNumber total="${totalCount}"/>
-</semui:headerWithIcon>
+<semui:h1HeaderWithIcon message="menu.my.consortiaSubscriptions" total="${totalCount}" floated="true" />
 
 <semui:messages data="${flash}"/>
 

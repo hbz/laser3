@@ -13,7 +13,7 @@
     <semui:crumb text="Stats" class="active"/>
 </semui:breadcrumbs>
 
-<semui:headerWithIcon message="default.usage.adminPage.mainHeader" />
+<semui:h1HeaderWithIcon message="default.usage.adminPage.mainHeader" />
 
 <semui:messages data="${flash}" />
 

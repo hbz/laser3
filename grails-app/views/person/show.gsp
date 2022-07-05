@@ -18,7 +18,7 @@
 
 <g:set var="personType" value="${!personInstance.contactType || personInstance.contactType?.id == RDStore.PERSON_CONTACT_TYPE_PERSONAL.id}" />
 
-<semui:headerWithIcon text="${personInstance}" />
+<semui:h1HeaderWithIcon text="${personInstance}" />
 
 <semui:messages data="${flash}"/>
 

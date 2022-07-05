@@ -12,7 +12,7 @@
     <semui:crumb message="menu.admin.systemEvents" class="active"/>
 </semui:breadcrumbs>
 
-    <semui:headerWithIcon message="menu.admin.systemEvents" />
+    <semui:h1HeaderWithIcon message="menu.admin.systemEvents" />
 
     <semui:filter>
         <form id="filter" class="ui form">

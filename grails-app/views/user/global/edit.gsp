@@ -13,7 +13,7 @@
             <laser:render template="/user/global/actions" />
         </semui:controlButtons>
 
-        <semui:headerWithIcon message="user.edit.label" />
+        <semui:h1HeaderWithIcon message="user.edit.label" />
         <h2 class="ui header la-noMargin-top">${user.username}</h2>
 
     <semui:messages data="${flash}" />

@@ -8,7 +8,7 @@
 	</head>
 	<body>
 
-		<semui:headerWithIcon message="default.create.label" args="[entityName]" />
+		<semui:h1HeaderWithIcon message="default.create.label" args="[entityName]" />
 
 		<semui:messages data="${flash}" />
 

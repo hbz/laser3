@@ -16,7 +16,7 @@
             </g:if>
         </semui:breadcrumbs>
 
-        <semui:headerWithIcon text="${orgInstance.name}" />
+        <semui:h1HeaderWithIcon text="${orgInstance.name}" />
 
         <semui:objectStatus object="${orgInstance}" status="${orgInstance.status}" />
 

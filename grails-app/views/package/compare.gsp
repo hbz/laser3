@@ -21,7 +21,7 @@
 		</semui:exportDropdown>
 	</semui:controlButtons>
  
- 	<semui:headerWithIcon message="package.compare" />
+ 	<semui:h1HeaderWithIcon message="package.compare" />
 
 	<semui:messages data="${flash}" />
 

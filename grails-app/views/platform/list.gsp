@@ -10,9 +10,7 @@
 		<semui:crumb message="platforms.all_platforms.label" class="active" />
 	</semui:breadcrumbs>
 
-	<semui:headerWithIcon message="platforms.all_platforms.label" floated="true">
-		<semui:totalNumber total="${recordsCount}"/>
-	</semui:headerWithIcon>
+	<semui:h1HeaderWithIcon message="platforms.all_platforms.label" total="${recordsCount}" floated="true" />
 
 			<semui:messages data="${flash}" />
 

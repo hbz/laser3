@@ -28,9 +28,7 @@
         </g:if>
     </semui:controlButtons>
 
-    <semui:headerWithIcon message="menu.public.all_insts" floated="true">
-        <semui:totalNumber total="${consortiaMemberTotal}"/>
-    </semui:headerWithIcon>
+    <semui:h1HeaderWithIcon message="menu.public.all_insts" total="${consortiaMemberTotal}" floated="true" />
 
     <semui:messages data="${flash}" />
 

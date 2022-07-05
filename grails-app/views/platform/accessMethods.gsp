@@ -15,7 +15,7 @@
 
         <semui:modeSwitch controller="platform" action="show" params="${params}" />
 
-        <semui:headerWithIcon>
+        <semui:h1HeaderWithIcon>
             <g:if test="${editable}"><span id="platformNameEdit"
                                            class="xEditableValue"
                                            data-type="textarea"
@@ -24,7 +24,7 @@
                                            data-url='<g:createLink controller="ajax" action="editableSetValue"/>'>${platformInstance.name}</span>
             </g:if>
             <g:else>${platformInstance.name}</g:else>
-        </semui:headerWithIcon>
+        </semui:h1HeaderWithIcon>
 
         <semui:messages data="${flash}" />
         

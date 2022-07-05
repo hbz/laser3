@@ -19,7 +19,7 @@
       </li>
     </semui:breadcrumbs>
 
-      <semui:headerWithIcon message="menu.datamanager.changelog" />
+      <semui:h1HeaderWithIcon message="menu.datamanager.changelog" />
 
       <h2 class="ui header">${message(code:'menu.institutions.change_log')} <span class="la-float-right">${message(code:'datamanager.changeLog.num_changes', args:[num_hl])}</span></h2>
 

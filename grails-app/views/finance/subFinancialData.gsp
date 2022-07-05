@@ -83,11 +83,11 @@
             }
         %>
 
-        <semui:headerWithIcon type="Subscription">
+        <semui:h1HeaderWithIcon type="Subscription">
             <laser:render template="/subscription/iconSubscriptionIsChild"/>
 
             ${message(code:'subscription.details.financials.label')} ${message(code:'default.for')} ${subscription} <semui:totalNumber total="${total.join(' / ')}"/>
-        </semui:headerWithIcon>
+        </semui:h1HeaderWithIcon>
         <semui:anualRings mapping="subfinance" object="${subscription}" controller="finance" action="index" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
         <laser:render template="/subscription/nav" model="${[subscription:subscription, params:(params << [id:subscription.id, showConsortiaFunctions:showConsortiaFunctions])]}"/>

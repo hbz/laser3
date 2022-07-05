@@ -10,7 +10,7 @@
 <body>
     <laser:render template="breadcrumb" model="${[ orgInstance:orgInstance, params:params ]}"/>
 
-    <semui:headerWithIcon text="${orgInstance?.name}" />
+    <semui:h1HeaderWithIcon text="${orgInstance?.name}" />
 
     <g:if test="${delResult.status != deletionService.RESULT_SUCCESS}">
         <laser:render template="nav" />

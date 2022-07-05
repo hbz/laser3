@@ -13,7 +13,7 @@
             <semui:crumb text="List Platform Duplicates" class="active"/>
         </semui:breadcrumbs>
 
-        <semui:headerWithIcon text="Platform Duplicates" />
+        <semui:h1HeaderWithIcon text="Platform Duplicates" />
 
         <semui:messages data="${flash}" />
 

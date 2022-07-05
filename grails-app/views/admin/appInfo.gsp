@@ -13,7 +13,7 @@
         <semui:crumb message="menu.admin.appInfo" class="active"/>
     </semui:breadcrumbs>
 
-    <semui:headerWithIcon message="menu.admin.appInfo" />
+    <semui:h1HeaderWithIcon message="menu.admin.appInfo" />
 
     <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
         <thead>

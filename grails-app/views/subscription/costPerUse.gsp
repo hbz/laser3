@@ -12,9 +12,9 @@
 
     <semui:messages data="${flash}" />
 
-    <semui:headerWithIcon>
+    <semui:h1HeaderWithIcon>
       <semui:xEditable owner="${subscription}" field="name" />
-    </semui:headerWithIcon>
+    </semui:h1HeaderWithIcon>
 
     <laser:render template="nav"  />
 

@@ -21,7 +21,7 @@
     <laser:render template="actions"/>
   </semui:controlButtons>
 
-  <semui:headerWithIcon message="menu.institutions.change_log" />
+  <semui:h1HeaderWithIcon message="menu.institutions.change_log" />
 
         <p>
           <strong>

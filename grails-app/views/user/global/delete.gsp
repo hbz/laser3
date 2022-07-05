@@ -14,7 +14,7 @@
         <laser:render template="/user/global/actions" />
     </semui:controlButtons>
 
-    <semui:headerWithIcon message="user.delete.label" />
+    <semui:h1HeaderWithIcon message="user.delete.label" />
     <h2 class="ui header la-noMargin-top">${user.username} - ${user.displayName ?: 'Nutzer unbekannt'}</h2>
 
     <g:if test="${delResult}">

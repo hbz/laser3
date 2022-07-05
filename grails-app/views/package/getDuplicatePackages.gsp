@@ -8,7 +8,7 @@
     <body>
         <g:set var="toDelete" value="${[]}"/>
 
-        <semui:headerWithIcon text="Pakete mit gleicher we:kb-ID" />
+        <semui:h1HeaderWithIcon text="Pakete mit gleicher we:kb-ID" />
 
         <semui:messages data="${flash}" />
 

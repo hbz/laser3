@@ -13,9 +13,7 @@
     <semui:crumb message="menu.my.workflows" class="active"/>
 </semui:breadcrumbs>
 
-<semui:headerWithIcon message="menu.my.workflows" type="Workflow" floated="true">
-    <semui:totalNumber total="${total}"/>
-</semui:headerWithIcon>
+<semui:h1HeaderWithIcon message="menu.my.workflows" type="Workflow" total="${total}" floated="true" />
 
 <laser:render template="/templates/filter/javascript" />
 <semui:filter showFilterButton="true">

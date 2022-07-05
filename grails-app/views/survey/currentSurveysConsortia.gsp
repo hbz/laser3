@@ -30,9 +30,7 @@
     <laser:render template="actions"/>
 </semui:controlButtons>
 
-<semui:headerWithIcon message="currentSurveys.label" type="Survey" floated="true">
-    <semui:totalNumber total="${surveysCount}"/>
-</semui:headerWithIcon>
+<semui:h1HeaderWithIcon message="currentSurveys.label" type="Survey" total="${surveysCount}" floated="true" />
 
 <semui:messages data="${flash}"/>
 

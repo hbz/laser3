@@ -14,7 +14,7 @@
     <semui:crumb message="menu.yoda.systemCache" class="active"/>
 </semui:breadcrumbs>
 
-<semui:headerWithIcon message="menu.yoda.systemCache" />
+<semui:h1HeaderWithIcon message="menu.yoda.systemCache" />
 
 <g:set var="sessionCache" value="${contextService.getSessionCache()}" />
 <h2 class="ui header">SessionCache <span class="ui label">${sessionCache.getSession().class}</span></h2>

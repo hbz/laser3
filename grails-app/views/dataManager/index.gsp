@@ -11,7 +11,7 @@
       <semui:crumb message="menu.datamanager" class="active"/>
     </semui:breadcrumbs>
 
-  <semui:headerWithIcon message="menu.datamanager" type="datamanager" />
+  <semui:h1HeaderWithIcon message="menu.datamanager" type="datamanager" />
 
   <br />
   <br />

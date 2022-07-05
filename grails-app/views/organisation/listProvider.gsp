@@ -52,9 +52,7 @@
             </g:if>
         </semui:controlButtons>
 
-        <semui:headerWithIcon message="menu.public.all_providers" floated="true">
-            <semui:totalNumber total="${orgListTotal}"/>
-        </semui:headerWithIcon>
+        <semui:h1HeaderWithIcon message="menu.public.all_providers" total="${orgListTotal}" floated="true" />
 
         <semui:messages data="${flash}" />
         <laser:render template="/templates/filter/javascript" />

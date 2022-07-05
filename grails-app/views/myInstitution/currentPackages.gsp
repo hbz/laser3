@@ -12,9 +12,7 @@
     <semui:crumb message="menu.my.packages" class="active" />
 </semui:breadcrumbs>
 
-<semui:headerWithIcon message="menu.my.packages" floated="true">
-    <semui:totalNumber total="${packageListTotal}"/>
-</semui:headerWithIcon>
+<semui:h1HeaderWithIcon message="menu.my.packages" total="${packageListTotal}" floated="true" />
 
 <semui:messages data="${flash}" />
 

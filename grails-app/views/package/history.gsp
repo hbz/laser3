@@ -13,7 +13,7 @@
         <semui:crumb text="${packageInstance.name}" id="${packageInstance.id}" class="active"/>
     </semui:breadcrumbs>
 
-    <semui:headerWithIcon text="${packageInstance?.name}" />
+    <semui:h1HeaderWithIcon text="${packageInstance?.name}" />
 
     <semui:messages data="${flash}" />
 

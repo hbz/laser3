@@ -51,9 +51,7 @@
             </g:if>
         </semui:controlButtons>
 
-    <semui:headerWithIcon message="myinst.currentSubscriptions.label" floated="true">
-        <semui:totalNumber total="${num_sub_rows}"/>
-    </semui:headerWithIcon>
+    <semui:h1HeaderWithIcon message="myinst.currentSubscriptions.label" total="${num_sub_rows}" floated="true" />
 
     <semui:messages data="${flash}"/>
 

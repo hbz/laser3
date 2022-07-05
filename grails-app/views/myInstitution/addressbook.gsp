@@ -42,9 +42,7 @@
 
 <laser:render template="/templates/copyFilteredEmailAddresses" model="[emailAddresses: emailAddresses]"/>
 
-<semui:headerWithIcon message="menu.institutions.myAddressbook" floated="true">
-    <semui:totalNumber total="${num_visiblePersons}"/>
-</semui:headerWithIcon>
+<semui:h1HeaderWithIcon message="menu.institutions.myAddressbook" total="${num_visiblePersons}" floated="true" />
 
 <semui:messages data="${flash}"/>
 

@@ -23,9 +23,9 @@
     <laser:render template="actions"/>
 </semui:controlButtons>
 
-<semui:headerWithIcon floated="true">
+<semui:h1HeaderWithIcon floated="true">
     <semui:xEditable owner="${subscription}" field="name"/>
-</semui:headerWithIcon>
+</semui:h1HeaderWithIcon>
 
 <h2 class="ui left floated aligned icon header la-clear-before">${message(code: 'subscription.details.addMembers.label', args:memberType)}</h2>
 

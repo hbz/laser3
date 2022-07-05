@@ -13,9 +13,7 @@
     <semui:crumb message="package.show.all" class="active"/>
 </semui:breadcrumbs>
 
-<semui:headerWithIcon message="package.show.all" floated="true">
-    <semui:totalNumber total="${recordsCount}" />
-</semui:headerWithIcon>
+<semui:h1HeaderWithIcon message="package.show.all" total="${recordsCount}" floated="true" />
 
 <semui:messages data="${flash}"/>
 

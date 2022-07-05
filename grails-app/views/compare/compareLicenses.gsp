@@ -13,7 +13,7 @@
     <semui:crumb class="active" message="menu.my.comp_lic"/>
 </semui:breadcrumbs>
 
-<semui:headerWithIcon message="menu.my.comp_lic" />
+<semui:h1HeaderWithIcon message="menu.my.comp_lic" />
 
 <semui:form>
     <g:form class="ui form" action="${actionName}" method="post">

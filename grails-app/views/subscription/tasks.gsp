@@ -10,12 +10,12 @@
     <semui:controlButtons>
         <laser:render template="actions" />
     </semui:controlButtons>
-    <semui:headerWithIcon>
+    <semui:h1HeaderWithIcon>
         <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
             <laser:render template="iconSubscriptionIsChild"/>
         </g:if>
         <semui:xEditable owner="${subscription}" field="name" />
-    </semui:headerWithIcon>
+    </semui:h1HeaderWithIcon>
     <semui:anualRings object="${subscription}" controller="subscription" action="tasks" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
     <laser:render template="nav" />

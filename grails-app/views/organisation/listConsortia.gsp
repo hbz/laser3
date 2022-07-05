@@ -23,9 +23,7 @@
         </g:if>
     </semui:controlButtons>
 
-    <semui:headerWithIcon message="menu.public.all_cons" floated="true">
-        <semui:totalNumber total="${consortiaTotal}"/>
-    </semui:headerWithIcon>
+    <semui:h1HeaderWithIcon message="menu.public.all_cons" total="${consortiaTotal}" floated="true" />
 
     <semui:messages data="${flash}" />
 

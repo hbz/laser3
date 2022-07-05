@@ -26,7 +26,7 @@
             </semui:exportDropdown>--%>
         </semui:controlButtons>
 
-        <semui:headerWithIcon message="menu.admin.managePropertyDefinitions" />
+        <semui:h1HeaderWithIcon message="menu.admin.managePropertyDefinitions" />
 
 		<semui:messages data="${flash}" />
 

@@ -30,9 +30,9 @@
     <laser:render template="actions"/>
 </semui:controlButtons>
 
-<semui:headerWithIcon text="${surveyInfo.name}" type="Survey">
+<semui:h1HeaderWithIcon text="${surveyInfo.name}" type="Survey">
 <semui:surveyStatus object="${surveyInfo}"/>
-</semui:headerWithIcon>
+</semui:h1HeaderWithIcon>
 
 <laser:render template="nav"/>
 

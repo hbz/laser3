@@ -15,9 +15,9 @@
         <laser:render template="actions" />
     </semui:controlButtons>
 
-    <semui:headerWithIcon>
+    <semui:h1HeaderWithIcon>
         <semui:xEditable owner="${subscription}" field="name" />
-    </semui:headerWithIcon>
+    </semui:h1HeaderWithIcon>
     <semui:anualRings object="${subscription}" controller="subscription" action="pendingChanges" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
 

@@ -38,7 +38,7 @@
 <laser:render template="/templates/copyFilteredEmailAddresses"
           model="[emailAddresses: emailAddresses]"/>
 
-<semui:headerWithIcon text="${orgInstance.name} - ${message(code: 'menu.institutions.myAddressbook')}" />
+<semui:h1HeaderWithIcon text="${orgInstance.name} - ${message(code: 'menu.institutions.myAddressbook')}" />
 
 <laser:render template="nav" model="${[orgInstance: orgInstance]}"/>
 

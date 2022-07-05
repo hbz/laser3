@@ -8,7 +8,7 @@
 <body>
       <laser:render template="breadcrumb" model="${[ params:params ]}"/>
 
-      <semui:headerWithIcon text="${user.username} : ${user.displayName ?: 'No username'}" />
+      <semui:h1HeaderWithIcon text="${user.username} : ${user.displayName ?: 'No username'}" />
 
       <semui:messages data="${flash}" />
 

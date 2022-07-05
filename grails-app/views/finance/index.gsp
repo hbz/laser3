@@ -84,9 +84,7 @@
             }
         %>
 
-        <semui:headerWithIcon message="subscription.details.financials.label">
-            <semui:totalNumber total="${total.join(' / ')}"/>
-        </semui:headerWithIcon>
+        <semui:h1HeaderWithIcon message="subscription.details.financials.label" total="${total.join(' / ')}" floated="true" />
 
         <laser:render template="result" model="[own:own,cons:cons,subscr:subscr,showView:showView,filterPresets:filterPresets,ciTitles:ciTitles]" />
 

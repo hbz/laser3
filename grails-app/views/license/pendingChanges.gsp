@@ -16,9 +16,9 @@
         <laser:render template="actions" />
     </semui:controlButtons>
 
-    <semui:headerWithIcon>
+    <semui:h1HeaderWithIcon>
         <semui:xEditable owner="${license}" field="reference" id="reference"/>
-    </semui:headerWithIcon>
+    </semui:h1HeaderWithIcon>
 
     <laser:render template="nav" />
 

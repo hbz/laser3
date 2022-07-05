@@ -12,7 +12,7 @@
         <semui:crumb message="menu.admin" controller="admin" action="index" class="active"/>
     </semui:breadcrumbs>
 
-    <semui:headerWithIcon message="menu.admin" type="admin" />
+    <semui:h1HeaderWithIcon message="menu.admin" type="admin" />
 
     <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
         <thead>

@@ -17,10 +17,10 @@
         </g:if>
     </semui:controlButtons>
 
-    <semui:headerWithIcon>
+    <semui:h1HeaderWithIcon>
         <semui:xEditable owner="${license}" field="reference" id="reference"/>
         <semui:totalNumber total="${subscriptions.size() ?: 0}"/>
-    </semui:headerWithIcon>
+    </semui:h1HeaderWithIcon>
 
     <semui:anualRings object="${license}" controller="license" action="show" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
 

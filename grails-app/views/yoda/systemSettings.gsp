@@ -13,7 +13,7 @@
     <semui:crumb message="menu.yoda.systemSettings" class="active"/>
 </semui:breadcrumbs>
 
-    <semui:headerWithIcon message="menu.yoda.systemSettings" />
+    <semui:h1HeaderWithIcon message="menu.yoda.systemSettings" />
 
     <g:set var="mailConfigDisabled" value="${ConfigMapper.getGrailsMailDisabled()}" />
     <g:set var="maintenanceModeEnabled" value="${SystemSetting.findByName('MaintenanceMode').value == 'true'}" />

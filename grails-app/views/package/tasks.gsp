@@ -25,7 +25,7 @@
     </semui:controlButtons>
     <semui:modeSwitch controller="package" action="show" params="${params}"/>
 
-    <semui:headerWithIcon text="${packageInstance?.name}" />
+    <semui:h1HeaderWithIcon text="${packageInstance?.name}" />
 
     <laser:render template="nav"/>
 

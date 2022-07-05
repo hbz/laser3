@@ -23,7 +23,7 @@
         <laser:render template="actions"/>
     </semui:controlButtons>
 
-    <semui:headerWithIcon message="menu.institutions.manage_props" />
+    <semui:h1HeaderWithIcon message="menu.institutions.manage_props" />
 
     <laser:render template="nav" />
 

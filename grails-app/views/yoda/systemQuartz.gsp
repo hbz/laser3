@@ -12,7 +12,7 @@
     <semui:crumb message="menu.yoda.systemQuartz" class="active"/>
 </semui:breadcrumbs>
 
-<semui:headerWithIcon message="menu.yoda.systemQuartz" />
+<semui:h1HeaderWithIcon message="menu.yoda.systemQuartz" />
 
 %{--${ConfigMapper.setConfig( ConfigMapper.QUARTZ_HEARTBEAT, new Date())} ##--}%
 %{--${ConfigMapper.getQuartzHeartbeat()} ##--}%

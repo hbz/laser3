@@ -53,9 +53,7 @@
     </g:if>
 </semui:controlButtons>
 
-<semui:headerWithIcon message="menu.my.consortia" floated="true">
-    <semui:totalNumber total="${consortiaCount}"/>
-</semui:headerWithIcon>
+<semui:h1HeaderWithIcon message="menu.my.consortia" total="${consortiaCount}" floated="true" />
 
 <laser:render template="/templates/filter/javascript" />
 

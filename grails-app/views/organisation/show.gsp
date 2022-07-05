@@ -28,7 +28,7 @@
     <laser:render template="actions" model="${[org: orgInstance, user: user]}"/>
 </semui:controlButtons>
 
-<semui:headerWithIcon text="${orgInstance.name}" />
+<semui:h1HeaderWithIcon text="${orgInstance.name}" />
 
 <g:if test="${missing.size() > 0}">
     <div class="ui icon message warning">

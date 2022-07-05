@@ -13,7 +13,7 @@
             <semui:crumb text="${g.message(code:'default.edit.label', args:[entityName])}" class="active"/>
         </semui:breadcrumbs>
 
-		<semui:headerWithIcon message="default.show.label" args="[entityName]" />
+		<semui:h1HeaderWithIcon message="default.show.label" args="[entityName]" />
 
         <button class="ui button" onclick="window.location.href = document.referrer">
             Zurück

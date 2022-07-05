@@ -21,7 +21,7 @@
     <semui:crumb message="copySurvey.label" class="active"/>
 </semui:breadcrumbs>
 
-<semui:headerWithIcon text="${surveyConfig.getConfigNameShort()}" type="Survey" />
+<semui:h1HeaderWithIcon text="${surveyConfig.getConfigNameShort()}" type="Survey" />
 
 <h2 class="ui header">
     ${message(code: 'copySurvey.label')}:
@@ -305,9 +305,7 @@
         ${message(code: 'copySurvey.subscription.info')}
     </div>
 
-    <semui:headerWithIcon message="myinst.currentSubscriptions.label" floated="true">
-        <semui:totalNumber total="${num_sub_rows}"/>
-    </semui:headerWithIcon>
+    <semui:h1HeaderWithIcon message="myinst.currentSubscriptions.label" total="${num_sub_rows}" floated="true" />
 
     <laser:render template="/templates/filter/javascript"/>
     <semui:filter showFilterButton="true">

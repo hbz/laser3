@@ -13,7 +13,7 @@
         <semui:crumb message="profile.bc.profile" class="active"/>
     </semui:breadcrumbs>
 
-    <semui:headerWithIcon message="profile" />
+    <semui:h1HeaderWithIcon message="profile" />
 
     <semui:messages data="${flash}" />
 

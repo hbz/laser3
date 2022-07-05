@@ -13,7 +13,7 @@
         <semui:crumb message="menu.yoda" class="active"/>
     </semui:breadcrumbs>
 
-    <semui:headerWithIcon message="menu.yoda" type="yoda" />
+    <semui:h1HeaderWithIcon message="menu.yoda" type="yoda" />
 
     <h2 class="ui header">&nbsp;</h2>
 

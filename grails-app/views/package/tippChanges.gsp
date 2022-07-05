@@ -14,9 +14,9 @@
     <semui:crumb text="${packageInstance.name}" id="${packageInstance.id}" class="active"/>
 </semui:breadcrumbs>
 
-<semui:headerWithIcon>
+<semui:h1HeaderWithIcon>
     <semui:xEditable owner="${packageInstance}" field="name"/>
-</semui:headerWithIcon>
+</semui:h1HeaderWithIcon>
 
 <laser:render template="nav"/>
 

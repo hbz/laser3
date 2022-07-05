@@ -16,7 +16,7 @@
     </semui:controlButtons>
     <semui:messages data="${flash}" />
 
-    <semui:headerWithIcon message="menu.my.documents" />
+    <semui:h1HeaderWithIcon message="menu.my.documents" />
 
     <%-- does not work as it is mapped upon a DomainClass attribute <laser:render template="/templates/documents/filter" model="${[availableUsers:availableUsers]}"/>--%>
 

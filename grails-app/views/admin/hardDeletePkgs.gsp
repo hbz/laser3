@@ -12,7 +12,7 @@
             <semui:crumb text="Package Delete" class="active"/>
         </semui:breadcrumbs>
 
-        <semui:headerWithIcon text="Package Delete" />
+        <semui:h1HeaderWithIcon text="Package Delete" />
 
         <semui:messages data="${flash}" />
 

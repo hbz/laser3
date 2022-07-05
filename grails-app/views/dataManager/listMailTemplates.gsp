@@ -19,7 +19,7 @@
     </semui:actionsDropdown>
 </semui:controlButtons>
 
-<semui:headerWithIcon message="mailTemplate.plural.label" />
+<semui:h1HeaderWithIcon message="mailTemplate.plural.label" />
 
 <semui:messages data="${flash}"/>
 <semui:form>

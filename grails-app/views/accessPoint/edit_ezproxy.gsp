@@ -27,7 +27,7 @@
         </semui:controlButtons>
     </g:if>
 
-    <semui:headerWithIcon text="${orgInstance.name}" />
+    <semui:h1HeaderWithIcon text="${orgInstance.name}" />
 
     <laser:render template="/organisation/nav" model="${[orgInstance: accessPoint.org, inContextOrg: inContextOrg, tmplAccessPointsActive: true]}"/>
 

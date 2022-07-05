@@ -12,7 +12,7 @@
             <semui:crumb message="announcement.plural" class="active" />
         </semui:breadcrumbs>
 
-        <semui:headerWithIcon message="announcement.plural" />
+        <semui:h1HeaderWithIcon message="announcement.plural" />
 
         <br />
         <br />

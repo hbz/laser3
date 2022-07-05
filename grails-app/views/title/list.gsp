@@ -11,9 +11,7 @@
       <semui:crumb message="menu.public.all_titles" class="active" />
     </semui:breadcrumbs>
 
-    <semui:headerWithIcon message="menu.public.all_titles" floated="true">
-      <semui:totalNumber total="${resultsTotal >= 10000 ? '10000+' : (resultsTotal > 0 ? resultsTotal : 0)}"/>
-    </semui:headerWithIcon>
+    <semui:h1HeaderWithIcon message="menu.public.all_titles" total="${resultsTotal >= 10000 ? '10000+' : (resultsTotal > 0 ? resultsTotal : 0)}" floated="true" />
 
     <laser:render template="/templates/filter/javascript" />
     <semui:filter showFilterButton="true">

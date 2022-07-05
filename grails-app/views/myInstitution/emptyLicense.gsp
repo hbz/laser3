@@ -18,7 +18,7 @@
         <laser:render template="actions"/>
     </semui:controlButtons>
 
-    <semui:headerWithIcon message="license.new" />
+    <semui:h1HeaderWithIcon message="license.new" />
 
     <semui:messages data="${flash}"/>
 

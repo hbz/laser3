@@ -11,7 +11,7 @@
 <body>
     <laser:render template="breadcrumb" model="${[ subscription:subscription, params:params ]}"/>
 
-    <semui:headerWithIcon text="${subscription.name}" />
+    <semui:h1HeaderWithIcon text="${subscription.name}" />
 
     <g:if test="${delResult.status != deletionService.RESULT_SUCCESS}">
         <laser:render template="nav" />

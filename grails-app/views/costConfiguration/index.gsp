@@ -11,7 +11,7 @@
             <semui:crumb message="menu.institutions.costConfiguration" class="active" />
         </semui:breadcrumbs>
 
-        <semui:headerWithIcon message="menu.institutions.costConfiguration" />
+        <semui:h1HeaderWithIcon message="menu.institutions.costConfiguration" />
 
         <semui:messages data="${flash}"/>
 

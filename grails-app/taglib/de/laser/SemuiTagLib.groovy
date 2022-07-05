@@ -34,11 +34,11 @@ class SemuiTagLib {
 
     static namespace = "semui"
 
-    // <semui:headerWithIcon text="${text}" message="18n.token" args="[key:value]" type="${headerTitleIconType}" floated="true">
+    // <semui:h1HeaderWithIcon text="${text}" message="18n.token" args="[key:value]" type="${headerTitleIconType}" total="${totalNumber}" floated="true">
     //    content
     // </semui:headerWithIcon>
 
-    def headerWithIcon = { attrs, body ->
+    def h1HeaderWithIcon = { attrs, body ->
         if (attrs.floated && attrs.floated != 'false') {
             out << '<h1 class="ui icon header la-clear-before left floated aligned">'
         } else {
@@ -57,6 +57,10 @@ class SemuiTagLib {
         if (attrs.message) {
             SwissKnife.checkMessageKey(attrs.message as String)
             out << "${message(code: attrs.message, args: attrs.args)}"
+        }
+
+        if (attrs.total) {
+            out << semui.totalNumber([total: attrs.total])
         }
         if ( body ) {
             out << body()

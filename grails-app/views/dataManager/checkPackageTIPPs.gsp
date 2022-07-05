@@ -12,7 +12,7 @@
     <semui:crumb text="Package Tipps LAS:eR and we:kb" class="active"/>
 </semui:breadcrumbs>
 
-<semui:headerWithIcon text="Package Tipps LAS:eR and we:kb" />
+<semui:h1HeaderWithIcon text="Package Tipps LAS:eR and we:kb" />
 
 <div class="ui grid">
 

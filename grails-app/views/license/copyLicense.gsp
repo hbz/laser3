@@ -18,7 +18,7 @@
     </g:if>
 </semui:breadcrumbs>
 
-<semui:headerWithIcon text="${message(code: 'myinst.copyLicense')}: ${sourceObject.reference}" />
+<semui:h1HeaderWithIcon text="${message(code: 'myinst.copyLicense')}: ${sourceObject.reference}" />
 
 <semui:messages data="${flash}"/>
 

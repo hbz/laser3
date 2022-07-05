@@ -17,9 +17,7 @@
 <semui:controlButtons>
 </semui:controlButtons>
 
-<semui:headerWithIcon message="menu.my.subscriptionsManagement">
-    <semui:totalNumber total="${num_sub_rows}"/>
-</semui:headerWithIcon>
+<semui:h1HeaderWithIcon message="menu.my.subscriptionsManagement" total="${num_sub_rows}" />
 
 <laser:render template="/templates/management/navSubscriptionManagement" model="${[args: args]}"/>
 

@@ -34,7 +34,7 @@
     </semui:controlButtons>
 </g:if>
 
-<semui:headerWithIcon text="${orgInstance.name}" />
+<semui:h1HeaderWithIcon text="${orgInstance.name}" />
 
 <laser:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg]}"/>
 

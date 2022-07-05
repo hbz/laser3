@@ -23,10 +23,10 @@
 
 <semui:messages data="${flash}"/>
 
-<semui:headerWithIcon>
+<semui:h1HeaderWithIcon>
     <semui:xEditable owner="${license}" field="reference" id="reference"/>
     <semui:totalNumber total="${totalCount}"/>
-</semui:headerWithIcon>
+</semui:h1HeaderWithIcon>
 
 <semui:anualRings object="${license}" controller="license" action="show" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
 

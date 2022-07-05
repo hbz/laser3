@@ -12,7 +12,7 @@
     <semui:crumb message="menu.admin" controller="admin" action="index" />
 </semui:breadcrumbs>
 
-<semui:headerWithIcon text="Title Enrichment of series_name, monograph_parent_collection_title, subject_reference, summary_of_content" />
+<semui:h1HeaderWithIcon text="Title Enrichment of series_name, monograph_parent_collection_title, subject_reference, summary_of_content" />
 
 <semui:messages data="${flash}"/>
 

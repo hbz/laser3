@@ -65,9 +65,7 @@
     </semui:exportDropdown>
 </semui:controlButtons>
 
-<semui:headerWithIcon message="myinst.currentTitles.label" floated="true">
-    <semui:totalNumber total="${num_ti_rows}"/>
-</semui:headerWithIcon>
+<semui:h1HeaderWithIcon message="myinst.currentTitles.label" total="${num_ti_rows}" floated="true" />
 
 <semui:messages data="${flash}"/>
 

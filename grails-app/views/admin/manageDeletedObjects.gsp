@@ -12,7 +12,7 @@
     <semui:crumb message="menu.admin.deletedObjects" class="active"/>
 </semui:breadcrumbs>
 
-<semui:headerWithIcon message="menu.admin.deletedObjects" />
+<semui:h1HeaderWithIcon message="menu.admin.deletedObjects" />
 
 <div class="ui grid">
     <div class="twelve wide column">

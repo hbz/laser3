@@ -21,7 +21,7 @@
     <laser:render template="actions"/>
 </semui:controlButtons>
 
-<semui:headerWithIcon text="${subscription.name}" />
+<semui:h1HeaderWithIcon text="${subscription.name}" />
 <br>
 <br>
 

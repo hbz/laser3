@@ -17,7 +17,7 @@
     </g:if>
 </semui:breadcrumbs>
 
-    <semui:headerWithIcon text="${message(code: 'copyElementsIntoObject.label', args: [message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}" />
+    <semui:h1HeaderWithIcon text="${message(code: 'copyElementsIntoObject.label', args: [message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}" />
 
     <semui:messages data="${flash}"/>
 

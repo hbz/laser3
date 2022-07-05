@@ -12,9 +12,7 @@
     <semui:crumb message="menu.my.platforms" class="active" />
 </semui:breadcrumbs>
 
-<semui:headerWithIcon message="menu.my.platforms" floated="true">
-    <semui:totalNumber total="${platformInstanceTotal}"/>
-</semui:headerWithIcon>
+<semui:h1HeaderWithIcon message="menu.my.platforms" total="${platformInstanceTotal}" floated="true" />
 
 <semui:messages data="${flash}" />
 
@@ -60,9 +58,18 @@
                 </g:if>
             </td>
             <td>
-                <g:each in="${platformInstance.getContextOrgAccessPoints(contextOrg)}" var="oap" >
-                    <g:link controller="accessPoint" action="edit_${oap.accessMethod}" id="${oap.id}">${oap.name} (${oap.accessMethod.getI10n('value')})</g:link> <br />
-                </g:each>
+
+                <%
+                    String hql = "select oap from OrgAccessPoint oap " +
+                            "join oap.oapp as oapp where oap.org=:org and oapp.active = true and oapp.platform.id =${platformInstance.id} and oapp.subPkg is null order by LOWER(oap.name)"
+
+                    println hql
+
+//                    OrgAccessPoint.executeQuery(hql, ['org': contextOrg])
+                %>
+%{--                <g:each in="${platformInstance.getContextOrgAccessPoints(contextOrg)}" var="oap" >--}%
+%{--                    <g:link controller="accessPoint" action="edit_${oap.accessMethod}" id="${oap.id}">${oap.name} (${oap.accessMethod.getI10n('value')})</g:link> <br />--}%
+%{--                </g:each>--}%
             </td>
             <td>
                 <g:each in="${subscriptionMap.get('platform_' + platformInstance.id)}" var="sub">

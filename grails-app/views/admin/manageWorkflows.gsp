@@ -13,7 +13,7 @@
     <semui:crumb text="${message(code:'menu.admin.manageWorkflows')}" class="active"/>
 </semui:breadcrumbs>
 
-<semui:headerWithIcon message="menu.admin.manageWorkflows" type="Workflow"/>
+<semui:h1HeaderWithIcon message="menu.admin.manageWorkflows" type="Workflow"/>
 
 <g:set var="tmplTab" value="${tab ?: 'prototypes'}" />
 

@@ -18,7 +18,7 @@
     <semui:crumb message="accessPoint.new" class="active"/>
   </semui:breadcrumbs>
 
-    <semui:headerWithIcon text="${orgInstance.name}" />
+    <semui:h1HeaderWithIcon text="${orgInstance.name}" />
 
   <laser:render template="/organisation/nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, tmplAccessPointsActive: true]}"/>
 

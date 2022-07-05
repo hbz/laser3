@@ -13,12 +13,12 @@
           <semui:crumb class="active" text="${message(code:'default.title.label')}: ${ti.title}" />
       </semui:breadcrumbs>
 
-        <semui:headerWithIcon type="${ti.printTitleType()}">
+        <semui:h1HeaderWithIcon type="${ti.printTitleType()}">
             ${ti.title}
             <g:if test="${ti.status?.value && ti.status.value != 'Current'}">
                 <span class="badge badge-error" style="vertical-align:middle;">${ti.status.getI10n('value')}</span>
             </g:if>
-        </semui:headerWithIcon>
+        </semui:h1HeaderWithIcon>
 
         <laser:render template="nav" />
 

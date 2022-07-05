@@ -13,7 +13,7 @@
             <semui:crumb message="menu.institutions.manage_prop_groups" class="active"/>
         </semui:breadcrumbs>
 
-        <semui:headerWithIcon message="menu.institutions.manage_prop_groups" />
+        <semui:h1HeaderWithIcon message="menu.institutions.manage_prop_groups" />
 
         <semui:messages data="${flash}" />
 

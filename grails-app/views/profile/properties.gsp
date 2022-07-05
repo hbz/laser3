@@ -12,7 +12,7 @@
     <semui:crumb message="menu.user.properties" class="active"/>
 </semui:breadcrumbs>
 
-<semui:headerWithIcon message="menu.user.properties" />
+<semui:h1HeaderWithIcon message="menu.user.properties" />
 
 <h2 class="la-clear-before">${message(code: 'propertyDefinition.plural')}</h2>
 

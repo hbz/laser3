@@ -18,10 +18,10 @@
     <laser:render template="actions"/>
 </semui:controlButtons>
 
-<semui:headerWithIcon type="Survey">
+<semui:h1HeaderWithIcon type="Survey">
 <semui:xEditable owner="${surveyInfo}" field="name"/>
 <semui:surveyStatus object="${surveyInfo}"/>
-</semui:headerWithIcon>
+</semui:h1HeaderWithIcon>
 
 
 

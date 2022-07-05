@@ -11,7 +11,7 @@
     <semui:crumb message="privacyNotice" class="active"/>
 </semui:breadcrumbs>
 
-<semui:headerWithIcon message="privacyNotice" />
+<semui:h1HeaderWithIcon message="privacyNotice" />
 
 <br />
 <br />

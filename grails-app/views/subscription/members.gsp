@@ -96,10 +96,10 @@
         <laser:render template="actions" />
     </semui:controlButtons>
 
-    <semui:headerWithIcon>
+    <semui:h1HeaderWithIcon>
         <semui:xEditable owner="${subscription}" field="name" />
         <semui:totalNumber total="${filteredSubChilds.size() ?: 0}"/>
-    </semui:headerWithIcon>
+    </semui:h1HeaderWithIcon>
     <semui:anualRings object="${subscription}" controller="subscription" action="members" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
     <laser:render template="nav" />

@@ -18,7 +18,7 @@
     </g:if>
 </semui:breadcrumbs>
 
-<semui:headerWithIcon text="${message(code: 'myinst.copySubscription')}: ${sourceObject.name}" />
+<semui:h1HeaderWithIcon text="${message(code: 'myinst.copySubscription')}: ${sourceObject.name}" />
 
 <semui:messages data="${flash}"/>
 

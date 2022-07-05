@@ -9,7 +9,7 @@
 
 <body>
 
-<semui:headerWithIcon text="${message(code: 'menu.public.gasco_monitor')}: ${message(code: 'gasco.licenceSearch')}" />
+<semui:h1HeaderWithIcon text="${message(code: 'menu.public.gasco_monitor')}: ${message(code: 'gasco.licenceSearch')}" />
 
     <div class="ui grid">
         <div class="eleven wide column">

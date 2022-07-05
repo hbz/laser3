@@ -22,7 +22,7 @@
     </semui:actionsDropdown>
 </semui:controlButtons>
 
-<semui:headerWithIcon message="profile.user" />
+<semui:h1HeaderWithIcon message="profile.user" />
 
 <semui:messages data="${flash}" />
 

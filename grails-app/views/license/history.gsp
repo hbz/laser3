@@ -9,10 +9,10 @@
 
     <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
-    <semui:headerWithIcon>
+    <semui:h1HeaderWithIcon>
         <semui:xEditable owner="${license}" field="reference" id="reference"/>
         <semui:totalNumber total="${historyLinesTotal?:'0'}"/>
-    </semui:headerWithIcon>
+    </semui:h1HeaderWithIcon>
 
     <laser:render template="nav" />
 

@@ -14,7 +14,7 @@
     <semui:crumb class="active" message="menu.my.comp_sub"/>
 </semui:breadcrumbs>
 
-<semui:headerWithIcon message="menu.my.comp_sub" />
+<semui:h1HeaderWithIcon message="menu.my.comp_sub" />
 
 <semui:form>
     <g:form class="ui form" action="${actionName}" method="post">

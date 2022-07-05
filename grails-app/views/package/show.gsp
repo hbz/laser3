@@ -27,7 +27,7 @@
     <laser:render template="actions"/>
 </semui:controlButtons>
 
-<semui:headerWithIcon>
+<semui:h1HeaderWithIcon>
     <g:if test="${editable}"><span id="packageNameEdit"
                                    class="xEditableValue"
                                    data-type="textarea"
@@ -36,7 +36,7 @@
                                    data-url='<g:createLink controller="ajax"
                                                            action="editableSetValue"/>'>${packageInstance.name}</span></g:if>
     <g:else>${packageInstance.name}</g:else>
-</semui:headerWithIcon>
+</semui:h1HeaderWithIcon>
 
 <laser:render template="nav"/>
 

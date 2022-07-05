@@ -27,9 +27,7 @@
     </semui:exportDropdown>
 </semui:controlButtons>
 
-<semui:headerWithIcon text="${institution.name} - ${message(code: 'currentSurveys.label')}" floated="true">
-    <semui:totalNumber total="${countSurveys.values().sum { it }}"/>
-</semui:headerWithIcon>
+<semui:h1HeaderWithIcon text="${institution.name} - ${message(code: 'currentSurveys.label')}" total="${countSurveys.values().sum { it }}" floated="true" />
 
 <semui:messages data="${flash}"/>
 

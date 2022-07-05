@@ -9,7 +9,7 @@
 <body>
     <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
-    <semui:headerWithIcon text="${license.reference}" />
+    <semui:h1HeaderWithIcon text="${license.reference}" />
 
     <g:if test="${delResult.status != deletionService.RESULT_SUCCESS}">
         <laser:render template="nav" />
