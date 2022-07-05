@@ -761,7 +761,7 @@ class FilterService {
 
         if(params.owner) {
             query << "surInfo.owner = :owner"
-            queryParams << [owner: params.owner instanceof Org ?: Org.get(params.owner) ]
+            queryParams << [owner: params.owner instanceof Org ? params.owner : Org.get(params.owner) ]
         }
 
         if (params.mandatory || params.noMandatory) {
