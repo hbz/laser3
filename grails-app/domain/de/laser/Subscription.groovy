@@ -690,7 +690,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      * @param user the {@link User} whose grants should be checked
      * @return true if this subscription is editable, false otherwise
      */
-    boolean isEditableBy(user) {
+    boolean isEditableBy(User user) {
         hasPerm('edit', user)
     }
 
@@ -699,7 +699,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      * @param user the {@link User} whose grants should be checked
      * @return true if this subscription is viewable, false otherwise
      */
-    boolean isVisibleBy(user) {
+    boolean isVisibleBy(User user) {
         hasPerm('view', user)
     }
 
@@ -709,7 +709,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      * @param user the {@link User} whose right should be checked
      * @return true if the given permission has been granted to the given user for this subscription, false otherwise
      */
-    boolean hasPerm(perm, user) {
+    boolean hasPerm(String perm, User user) {
         Role adm = Role.findByAuthority('ROLE_ADMIN')
         Role yda = Role.findByAuthority('ROLE_YODA')
 
@@ -747,7 +747,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      * @param changeDocument the change map as JSON document which will be passed to the child objects
      */
     @Transient
-    def notifyDependencies(changeDocument) {
+    void notifyDependencies(Map changeDocument) {
         log.debug("notifyDependencies(${changeDocument})")
 
         List<PendingChange> slavedPendingChanges = []

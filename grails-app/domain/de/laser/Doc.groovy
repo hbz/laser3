@@ -62,28 +62,23 @@ class Doc {
      * @param response the response output stream to flush the document out into
      * @param filename the name of file to retrieve
      */
-    def render(def response, def filename) {
-        // erms-790
-        def output
-        def contentLength
-
+    def render(def response, String filename) {
+        byte[] output = []
         try {
             String fPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
             File file = new File("${fPath}/${uuid}")
             output = file.getBytes()
-            contentLength = output.length
         } catch(Exception e) {
             log.error(e)
         }
 
         response.setContentType(mimeType)
         response.addHeader("Content-Disposition", "attachment; filename=\"${filename}\"")
-        response.setHeader('Content-Length', "${contentLength}")
+        response.setHeader('Content-Length', "${output.length}")
 
         response.outputStream << output
     }
 
-    // erms-790
     def beforeInsert = {
         if (contentType == CONTENT_TYPE_FILE) {
             uuid = java.util.UUID.randomUUID().toString()

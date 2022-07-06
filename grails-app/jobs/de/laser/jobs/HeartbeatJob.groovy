@@ -41,7 +41,7 @@ class HeartbeatJob extends AbstractJob {
 
     @UnderDevelopment
     def execute() {
-        if (! start()) {
+        if (! start(null, true)) { // suppress logging to shrink file
             return false
         }
         try {
@@ -64,6 +64,6 @@ class HeartbeatJob extends AbstractJob {
             log.error e.getMessage()
         }
 
-        jobIsRunning = false
+        stop(null, true) // suppress logging to shrink file
     }
 }

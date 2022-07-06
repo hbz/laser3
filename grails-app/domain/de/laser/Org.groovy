@@ -483,7 +483,7 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      * @return the new organisation instance
      */
     // called from AjaxController.resolveOID2()
-  static Org refdataCreate(value) {
+  static Org refdataCreate(String value) {
     return new Org(name:value)
   }
 

@@ -167,7 +167,7 @@ class SemuiInplaceTagLib {
 
                 String oid = "${attrs.owner.class.name}:${attrs.owner.id}"
                 String dataController = attrs.dataController ?: 'ajax'
-                String dataAction = attrs.dataAction ?: 'sel2RefdataSearch'
+                String dataAction = attrs.dataAction ?: 'select2RefdataSearch'
 
                 Map<String, Object> params = [id:attrs.config, format:'json', oid:oid]
 
@@ -181,7 +181,7 @@ class SemuiInplaceTagLib {
                         params: params
                 ).encodeAsHTML()
 
-                String update_link = createLink(controller:'ajax', action: 'genericSetRel').encodeAsHTML()
+                String update_link = createLink(controller:'ajax', action: 'genericSetData').encodeAsHTML()
                 String id = attrs.id ?: "${oid}:${attrs.field}"
                 String cssClass = attrs.cssClass
                 String data_confirm_tokenMsg = attrs.data_confirm_tokenMsg
@@ -263,7 +263,7 @@ class SemuiInplaceTagLib {
                         params: params
                 ).encodeAsHTML()
 
-                String update_link = createLink(controller:'ajax', action: 'genericSetRel').encodeAsHTML()
+                String update_link = createLink(controller:'ajax', action: 'genericSetData').encodeAsHTML()
                 String id = attrs.id ?: "${oid}:${attrs.field}"
                 String default_empty = message(code:'default.button.edit.label')
                 String emptyText = attrs.emptytext ? " data-emptytext=\"${attrs.emptytext}\"" : " data-emptytext=\"${default_empty}\""
@@ -365,7 +365,7 @@ class SemuiInplaceTagLib {
             }
         }
         else if (attrs.type == "refdata") {
-            String data_link = createLink(controller: 'ajax', action: 'sel2RefdataSearch', params:[id: attrs.category, format: 'json'])
+            String data_link = createLink(controller: 'ajax', action: 'select2RefdataSearch', params:[id: attrs.category, format: 'json'])
             out << " data-type=\"select\" data-source=\"${data_link}\" "
         }
         else {

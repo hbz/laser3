@@ -146,7 +146,7 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
      * This method is used by generic access method and reflects changes made to a subscription property to inheriting license properties.
      * @param changeDocument the map of changes being passed through to the inheriting properties
      */
-    def notifyDependencies(changeDocument) {
+    void notifyDependencies(Map changeDocument) {
         log.debug("notifyDependencies(${changeDocument})")
         MessageSource messageSource = BeanStore.getMessageSource()
 

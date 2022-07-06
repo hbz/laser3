@@ -31,7 +31,7 @@ class DueDateObject {
      * @param object the object about which reminder should be kept
      * @param isDone is the task done?
      */
-    DueDateObject(attribute_value_de, attribute_value_en, attribute_name, date, object, isDone){
+    DueDateObject(String attribute_value_de, String attribute_value_en, String attribute_name, Date date, def object, boolean isDone){
         this(attribute_value_de, attribute_value_en, attribute_name, date, object, isDone, new Date(), new Date())
     }
 
@@ -46,7 +46,7 @@ class DueDateObject {
      * @param dateCreated time stamp to retain the connection's creation date
      * @param lastUpdated time stamp to retain the connection's last modification date
      */
-    DueDateObject(attribute_value_de, attribute_value_en, attribute_name, date, object, isDone, dateCreated, lastUpdated){
+    DueDateObject(String attribute_value_de, String attribute_value_en, String attribute_name, Date date, def object, boolean isDone, Date dateCreated, Date lastUpdated){
         this.attribute_value_de = attribute_value_de
         this.attribute_value_en = attribute_value_en
         this.attribute_name = attribute_name

@@ -192,7 +192,7 @@ class AjaxController {
      */
     @Secured(['ROLE_USER'])
     @Transactional
-    def genericSetRel() {
+    def genericSetData() {
         String result = ''
 
         try {
@@ -278,12 +278,12 @@ class AjaxController {
             }
 
         } catch (Exception e) {
-            log.error("@ genericSetRel()")
+            log.error("@ genericSetData()")
             log.error(e.toString())
         }
 
         Map resp = [newValue: result]
-        log.debug("genericSetRel() returns ${resp as JSON}")
+        log.debug("genericSetData() returns ${resp as JSON}")
         render resp as JSON
     }
 
@@ -292,9 +292,9 @@ class AjaxController {
      * @return a {@link List} of {@link Map}s of structure [value: oid, text: text] to be used in dropdowns; the list may be returned purely or as JSON
      */
     @Secured(['ROLE_USER'])
-    def sel2RefdataSearch() {
+    def select2RefdataSearch() {
 
-        log.debug("sel2RefdataSearch params: ${params}")
+        log.debug("select2RefdataSearch params: ${params}")
     
         List result = []
         Map<String, Object> config = refdata_config.get(params.id?.toString()) //we call toString in case we got a GString
@@ -1652,9 +1652,9 @@ class AjaxController {
     @Secured(['ROLE_ORG_EDITOR'])
     @Transactional
     def deletePersonRole(){
-        def obj = genericOIDService.resolveOID(params.oid)
-        if (obj) {
-            obj.delete()
+        PersonRole personRole = genericOIDService.resolveOID(params.oid) as PersonRole
+        if (personRole) {
+            personRole.delete()
         }
     }
 

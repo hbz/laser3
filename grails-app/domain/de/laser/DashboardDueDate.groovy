@@ -29,7 +29,7 @@ class DashboardDueDate {
      * @param isDone is the task done?
      * @param isHidden is the reminder hidden?
      */
-    DashboardDueDate(messageSource, obj, User responsibleUser, Org responsibleOrg, boolean isDone, boolean isHidden){
+    DashboardDueDate(messageSource, def obj, User responsibleUser, Org responsibleOrg, boolean isDone, boolean isHidden){
         this(   getAttributeValue(messageSource, obj, responsibleUser, Locale.GERMAN),
                 getAttributeValue(messageSource, obj, responsibleUser, Locale.ENGLISH),
                 getAttributeName(obj, responsibleUser),
@@ -47,7 +47,7 @@ class DashboardDueDate {
      * @param messageSource the {@link org.springframework.context.MessageSource} to load the localised message strings
      * @param obj the object (of type {@link Subscription}, {@link AbstractPropertyWithCalculatedLastUpdated}, {@link Task} or {@link SurveyInfo} for which the reminder is set up
      */
-    void update(messageSource, obj){
+    void update(messageSource, def obj){
         withTransaction {
             Date now = new Date()
             this.version = this.version + 1
@@ -69,7 +69,7 @@ class DashboardDueDate {
      * @return the due date of the object which may be {@link de.laser.properties.SubscriptionProperty#dateValue} (counts as well for {@link de.laser.properties.LicenseProperty#dateValue}, {@link de.laser.properties.OrgProperty#dateValue},
      * {@link de.laser.properties.PlatformProperty#dateValue}, {@link de.laser.properties.PersonProperty#dateValue}), {@link Task#endDate}, {@link SurveyInfo#endDate}, {@link Subscription#manualCancellationDate} or {@link Subscription#endDate}
      */
-    static Date getDate(obj, user){
+    static Date getDate(def obj, User user){
         if (obj instanceof AbstractPropertyWithCalculatedLastUpdated)            return obj.dateValue
         if (obj instanceof Task)                        return obj.endDate
         if (obj instanceof SurveyInfo)                  return obj.endDate
@@ -87,7 +87,7 @@ class DashboardDueDate {
      * @param locale the {@link Locale} to load the string in
      * @return the internationalised name of the property being reminded
      */
-    static String getAttributeValue(messageSource, obj, User user, Locale locale){
+    static String getAttributeValue(messageSource, def obj, User user, Locale locale){
         if (obj instanceof AbstractPropertyWithCalculatedLastUpdated)            return obj.type.getI10n('name', locale)
         if (obj instanceof Task)                        return messageSource.getMessage('dashboardDueDate.task.endDate', null, locale)
         if (obj instanceof SurveyInfo)                  return messageSource.getMessage('dashboardDueDate.surveyInfo.endDate', null, locale)
@@ -103,7 +103,7 @@ class DashboardDueDate {
      * @param user the {@link User} for which the date should be required; needed to compare whether the reminder time is already reached
      * @return the property name
      */
-    static String getAttributeName(obj, user){
+    static String getAttributeName(def obj, User user){
         if (obj instanceof AbstractPropertyWithCalculatedLastUpdated)            return 'type.name'
         if (obj instanceof Task)                        return 'endDate'
         if (obj instanceof SurveyInfo)                  return 'endDate'
@@ -119,7 +119,7 @@ class DashboardDueDate {
      * @param user the {@link User} whose setting and reminder period should be checked
      * @return does the subscription have a manual cancellation date and is this date between today and the reminder period?
      */
-    static isManualCancellationDate(obj, user){
+    static isManualCancellationDate(def obj, User user){
         int reminderPeriodForManualCancellationDate = user.getSetting(UserSetting.KEYS.REMIND_PERIOD_FOR_SUBSCRIPTIONS_NOTICEPERIOD, UserSetting.DEFAULT_REMINDER_PERIOD).value ?: 1
         return (obj.manualCancellationDate && SqlDateUtils.isDateBetweenTodayAndReminderPeriod(obj.manualCancellationDate, reminderPeriodForManualCancellationDate))
     }
@@ -136,7 +136,7 @@ class DashboardDueDate {
      * @param isDone is the task done?
      * @param isHidden is the reminder hidden?
      */
-    private DashboardDueDate(attribute_value_de, attribute_value_en, attribute_name, date, object, responsibleUser, responsibleOrg, isDone, isHidden){
+    private DashboardDueDate(String attribute_value_de, String attribute_value_en, String attribute_name, Date date, def object, User responsibleUser, Org responsibleOrg, boolean isDone, boolean isHidden){
         withTransaction {
             Date now = new Date()
             this.responsibleUser = responsibleUser

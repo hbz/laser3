@@ -2,6 +2,7 @@ package de.laser.auth
 
 import de.laser.Org
 import de.laser.base.AbstractI10n
+import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.util.logging.Slf4j
 
 /**
@@ -49,7 +50,7 @@ class Role extends AbstractI10n {
 	 * @param params the query params passed for lookup
 	 * @return a {@link List} of {@link Map}s[id: text] containing role ids and names
 	 */
-	static def refdataFind(params) {
+	static def refdataFind(GrailsParameterMap params) {
 		//usage: AjaxJsonController.lookup by generic method
 		List result = []
 		String authority = "${params.q}%"

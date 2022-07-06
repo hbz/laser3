@@ -276,7 +276,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
      * @param idtype the {@link IdentifierNamespace} to which the required identifier belongs to
      * @return the {@link Identifier}'s value; if multiple, the last identifier's value is being returned (no comment ...)
      */
-  String getIdentifierValue(idtype) {
+  String getIdentifierValue(String idtype) {
       String result
     ids?.each { ident ->
       if ( ident.ns?.ns?.toLowerCase() == idtype.toLowerCase() )
@@ -286,7 +286,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
   }
 
     @Deprecated
-    private String _stringify(obj) {
+    private String _stringify(def obj) {
       String result
     if ( obj != null ) {
       if ( obj instanceof Date ) {

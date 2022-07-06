@@ -385,7 +385,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
      * Triggered by generic method; triggers itself update of all inheriting objects
      * @param changeDocument the map of changes to be passed onto inheriting identifiers; processed by {@link PendingChange} object
      */
-    void notifyDependencies(changeDocument) {
+    void notifyDependencies(Map changeDocument) {
         log.debug("notifyDependencies(${changeDocument})")
         if (changeDocument.event.equalsIgnoreCase('Identifier.updated')) {
 

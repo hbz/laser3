@@ -1,10 +1,12 @@
 package de.laser.interfaces
 
+import de.laser.auth.User
+
 interface Permissions {
 
-    boolean isEditableBy(user)
+    boolean isEditableBy(User user)
 
-    boolean isVisibleBy(user)
+    boolean isVisibleBy(User user)
 
-    boolean hasPerm(perm, user)
+    boolean hasPerm(String perm, User user)
 }

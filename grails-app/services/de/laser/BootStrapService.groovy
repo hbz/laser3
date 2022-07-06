@@ -51,7 +51,7 @@ class BootStrapService {
             SystemEvent.checkDefinedEvents()
         }
 
-        log.info '--------------------------------------------------------------------------------'
+        log.info('--------------------------------------------------------------------------------')
 
         log.info("SystemId:  ${ConfigMapper.getLaserSystemId()}")
         log.info("Version:   ${AppUtils.getMeta('info.app.version')}")
@@ -66,12 +66,12 @@ class BootStrapService {
             log.info("Cache: ${dsp}")
         }
 
-        log.info '--------------------------------------------------------------------------------'
+        log.info('--------------------------------------------------------------------------------')
         SystemEvent.createEvent('BOOTSTRAP_STARTUP')
 
         if (quickStart) {
-            log.info "Quick start performed - setup operations ignored .. "
-            log.info '--------------------------------------------------------------------------------'
+            log.info("Quick start performed - setup operations ignored .. ")
+            log.info('--------------------------------------------------------------------------------')
         }
         else {
             // Reset harddata flag for given refdata and properties
@@ -349,10 +349,10 @@ class BootStrapService {
         File csvFile = grailsApplication.mainContext.getResource(filePath).file
 
         if (! (filePath.contains('RefdataCategory') || filePath.contains('RefdataValue') || filePath.contains('PropertyDefinition')) ) {
-            log.warn "getParsedCsvData() - invalid object type ${filePath}!"
+            log.warn("getParsedCsvData() - invalid object type ${filePath}!")
         }
         else if (! csvFile.exists()) {
-            log.warn "getParsedCsvData() - ${filePath} not found!"
+            log.warn("getParsedCsvData() - ${filePath} not found!")
         }
         else {
             csvFile.withReader { reader ->

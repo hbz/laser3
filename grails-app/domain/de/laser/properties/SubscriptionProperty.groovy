@@ -128,7 +128,7 @@ class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated imp
      * This method is used by generic access method and reflects changes made to a subscription property to inheriting subscription properties.
      * @param changeDocument the map of changes being passed through to the inheriting properties
      */
-    def notifyDependencies(changeDocument) {
+    void notifyDependencies(Map changeDocument) {
         log.debug("notifyDependencies(${changeDocument})")
 
         if (changeDocument.event.equalsIgnoreCase('SubscriptionProperty.updated')) {
