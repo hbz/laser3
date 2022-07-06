@@ -5,7 +5,7 @@
 
     <div class="sixteen wide column">
 
-        <h2 class="ui header">${message(code: 'task.myTasks.header')} <semui:totalNumber total="${taskInstanceCount}"/></h2>
+        <p class="ui header">${message(code: 'task.myTasks.header')} <semui:totalNumber total="${taskInstanceCount}"/></p>
 
         <table class="ui sortable celled la-js-responsive-table la-table table">
             <thead>

@@ -48,6 +48,7 @@ class BootStrapService {
 
         if (Environment.isDevelopmentMode() && ! quickStart) {
             ConfigMapper.checkCurrentConfig()
+            SystemEvent.checkDefinedEvents()
         }
 
         log.info '--------------------------------------------------------------------------------'
@@ -66,7 +67,6 @@ class BootStrapService {
         }
 
         log.info '--------------------------------------------------------------------------------'
-
         SystemEvent.createEvent('BOOTSTRAP_STARTUP')
 
         if (quickStart) {

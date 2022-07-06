@@ -73,7 +73,7 @@
     </table>
 
     <g:if test="${dbStatistics}">
-        <h2 class="ui header">Top20 - Datenbankabbfragen</h2>
+        <h2 class="ui header">Top ${dbStatistics.calls.size()} - Datenbankabbfragen</h2>
 
         <div class="ui secondary stackable pointing tabular menu">
             <a data-tab="dbStatistics-1" class="item active">HITS</a>

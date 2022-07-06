@@ -66,18 +66,25 @@
         <tbody>
     </table>
 
+    <g:set var="ES_URL" value="${BeanStore.getESWrapperService().getUrl() ?: 'unbekannt'}" />
+
     <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
         <thead>
             <tr><th class="seven wide">ES Index</th><th class="nine wide"></th></tr>
         </thead>
         <tbody>
+            <tr>
+                <td>Url</td>
+                <td><a href="${ES_URL}/_cat/indices?v" target="_blank">${ES_URL}</a> -> ${BeanStore.getESWrapperService().ES_Cluster}</td>
+            </tr>
+            <tr>
+                <td>Indices</td>
+                <td>
+                    ${BeanStore.getESWrapperService().ES_Indices}
+                </td>
+            </tr>
             <tr><td>Currently running</td><td>${dataloadService.update_running}</td></tr>
             <tr><td>Last update run</td><td>${dataloadService.lastIndexUpdate}</td></tr>
-            <tr><td>Configuration</td><td>
-                ${BeanStore.getESWrapperService().ES_Host} / ${BeanStore.getESWrapperService().ES_Cluster}
-                <br />
-                ${BeanStore.getESWrapperService().ES_Indices.values()}
-            </td></tr>
             <g:each in="${esinfos}" var="es">
                 <tr><td>DomainClass: ${es.domainClassName}</td><td>DB Elements: ${es.dbElements}, ES Elements: ${es.esElements}<br /> Last Update: ${new Date(es.lastTimestamp)}</td></tr>
             </g:each>
@@ -115,7 +122,7 @@
                 <td><a href="${ConfigMapper.getConfig('reporting.elasticSearch.url', String) + '/_cat/indices?v'}" target="_blank">${ConfigMapper.getConfig('reporting.elasticSearch.url', String)}</a></td>
             </tr>
             <tr>
-                <td>ElasticSearch indicies</td>
+                <td>ElasticSearch indices</td>
                 <td>
                     <g:if test="${ConfigMapper.getConfig('reporting.elasticSearch.indicies', Map)}">
                         <g:each in="${ConfigMapper.getConfig('reporting.elasticSearch.indicies', Map)}" var="k, v">

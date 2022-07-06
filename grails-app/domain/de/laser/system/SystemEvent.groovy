@@ -2,7 +2,9 @@ package de.laser.system
 
 import de.laser.utils.DateUtils
 import de.laser.storage.BeanStore
+import de.laser.utils.LocaleUtils
 import grails.converters.JSON
+import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
@@ -50,7 +52,6 @@ class SystemEvent {
             'DBDD_SERVICE_START_3'          : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'DBDD_SERVICE_COMPLETE_3'       : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'DBDD_SERVICE_ERROR_3'          : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.ERROR],
-            'DBM_SCRIPT_START'              : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'DBM_SCRIPT_INFO'               : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'DBM_SCRIPT_ERROR'              : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.ERROR],
             'FT_INDEX_UPDATE_START'         : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
@@ -174,6 +175,27 @@ class SystemEvent {
             }
             result
         }
+    }
+
+    static boolean checkDefinedEvents() {
+        MessageSource messageSource = BeanStore.getMessageSource()
+        boolean valid = true
+
+        DEFINED_EVENTS.each { k, v ->
+            try {
+                messageSource.getMessage('se.' + k, null, LocaleUtils.getLocaleDE())
+            } catch(Exception e) {
+                log.warn 'SystemEvent - checkDefinedEvents: locale DE not found for ' + k
+                valid = false
+            }
+            try {
+                messageSource.getMessage('se.' + k, null, LocaleUtils.getLocaleEN())
+            } catch(Exception e) {
+                log.warn 'SystemEvent - checkDefinedEvents: locale EN not found for ' + k
+                valid = false
+            }
+        }
+        valid
     }
 
     /**

@@ -72,6 +72,15 @@ class ESWrapperService {
         esclient
     }
 
+    // TMP
+    String getUrl() {
+        if (ES_Host) {
+            'http://' + ES_Host + ':9200'
+        } else {
+            null
+        }
+    }
+
     /*void closeClient() {
         esclient.close()
     }*/

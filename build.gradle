@@ -12,14 +12,15 @@ buildscript {
     }
     dependencies {
         classpath 'org.grails:grails-gradle-plugin:' + grailsGradlePluginVersion
-        classpath 'org.grails.plugins:hibernate5:7.2.2'                                             // from 7.0.5
+        classpath 'org.grails.plugins:hibernate5:7.3.0'                                             // from 7.0.5
         classpath 'org.grails.plugins:database-migration:4.1.0'                                     // from 3.0.3
         classpath 'com.bertramlabs.plugins:asset-pipeline-gradle:3.4.6'                             // from 3.2.4
         classpath 'com.gorylenko.gradle-git-properties:gradle-git-properties:2.4.1'                 // from 2.2.4
+        classpath 'com.github.ben-manes:gradle-versions-plugin:0.42.0'
 
         // -- dependency resolving issue
 
-        classpath 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
+        classpath 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.2'
         classpath 'org.quartz-scheduler:quartz:2.3.2'
     }
 }
@@ -31,8 +32,9 @@ apply plugin: 'idea'
 apply plugin: 'war'
 apply plugin: 'org.grails.grails-web'
 apply plugin: 'org.grails.grails-gsp'
-apply plugin: 'com.gorylenko.gradle-git-properties'
 apply plugin: 'com.bertramlabs.asset-pipeline'
+apply plugin: 'com.github.ben-manes.versions'
+apply plugin: 'com.gorylenko.gradle-git-properties'
 
 // ---[ plugin: database migration ! before dependencies configuration ]---
 
@@ -93,7 +95,7 @@ dependencies {
     implementation 'org.grails.plugins:async'
     implementation 'org.grails.plugins:scaffolding'
     implementation 'org.grails.plugins:events'
-    implementation 'org.grails.plugins:hibernate5:7.2.2'
+    implementation 'org.grails.plugins:hibernate5:7.3.0'
     implementation 'org.grails.plugins:gsp'
 
     implementation 'io.micronaut:micronaut-http-client'
@@ -104,19 +106,17 @@ dependencies {
 
     runtimeOnly 'org.apache.tomcat:tomcat-jdbc'                             // from runtime
     runtimeOnly 'javax.xml.bind:jaxb-api:2.3.1'                             // from runtime
-//    runtime 'org.glassfish.web:el-impl:2.2.1-b05'                         // -- nn --
-//    runtime 'com.h2database:h2'                                           // -- nn --
 
     // --------------------------------------------------
 
-    implementation 'org.elasticsearch:elasticsearch:7.4.2'
-    implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.4.2'
+    implementation 'org.elasticsearch:elasticsearch:7.14.2'
+    implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.14.2'
 
     implementation 'org.grails.plugins:spring-security-core:5.0.0'          // from 3.2.3
-    implementation 'org.grails.plugins:http-builder-helper:1.1.0'
+    implementation 'org.grails.plugins:http-builder-helper:1.1.0'           // 2017
     implementation 'org.grails.plugins:audit-logging:4.0.3'                 // from 3.0.3
     implementation 'org.grails.plugins:database-migration:4.1.0'            // from 3.0.3
-    implementation 'org.grails.plugins:grails-executor:0.4'                 // DEPRECATED
+    implementation 'org.grails.plugins:grails-executor:0.4'                 // 2016 - DEPRECATED
     implementation 'org.grails.plugins:mail:3.0.0'                          // from 2.0.0
     implementation 'org.grails.plugins:quartz:2.0.13'
     implementation 'org.grails.plugins:grails-spring-websocket:2.5.0.RC1'
@@ -132,14 +132,14 @@ dependencies {
     implementation 'com.github.albfernandez:juniversalchardet:2.4.0'        // from 2.3.0
     implementation 'org.apache.commons:commons-lang3:3.12.0'                // from 3.9
     implementation 'org.apache.poi:poi-ooxml:3.17'                          // from 3.9 : 5.x available
-    implementation 'org.codehaus.gpars:gpars:1.2.1'
+    implementation 'org.codehaus.gpars:gpars:1.2.1'                         // 2014
     implementation 'org.liquibase:liquibase-core:4.11.0'                    // from 3.5.5 : + org.grails.plugins:database-migration
 
-    runtimeOnly 'org.postgresql:postgresql:42.3.3'                          // from 42.3.0
+    runtimeOnly 'org.postgresql:postgresql:42.4.0'                          // from 42.3.0
 
     // -- dependency resolving issue
 
-    implementation 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.1'
+    implementation 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.2'
     implementation 'org.quartz-scheduler:quartz:2.3.2'
 }
 
@@ -191,9 +191,13 @@ buildProperties {
 
 war {
     enabled = true
-    archiveBaseName = 'laser3'          // ?
+    baseName = 'laser3'
     archiveFileName = 'laser3.war'
     duplicatesStrategy = DuplicatesStrategy.WARN
+    rootSpec.exclude(
+            // '**/h2-*.jar',
+            '**/groovy-groovydoc-*.jar'
+    )
 }
 grails {
     pathingJar = true // windows - command line limitation

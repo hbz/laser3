@@ -31,7 +31,7 @@ To avoid confusion, the difference between localized and fixed usage in *de.lase
 
 ### ExecutorGrailsPlugin
 
-*org.grails.plugins:grails-executor* is deprecated. Replacement should take place.
+*org.grails.plugins:grails-executor* is deprecated as Grails already has similar functionality build in. Replacement should take place.
 
 ### ~~Fallbacks~~
 

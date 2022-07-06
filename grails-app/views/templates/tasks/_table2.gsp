@@ -2,7 +2,7 @@
 
     <div class="sixteen wide column">
 
-        <h2 class="ui header">${message(code:'task.tasksCreatedByMe.header')} <semui:totalNumber total="${taskInstanceCount}"/></h2>
+        <p class="ui header">${message(code:'task.tasksCreatedByMe.header')} <semui:totalNumber total="${taskInstanceCount}"/></p>
 
         <table class="ui sortable celled la-js-responsive-table la-table table">
             <thead>
@@ -12,7 +12,6 @@
                 <g:sortableColumn property="t.endDate" title="${message(code: 'task.endDate.label')}"/>
 
                 <g:sortableColumn property="t.status" title="${message(code: 'task.status.label')}"/>
-
 
                 <g:if test="${controllerName == 'myInstitution'}">
                     <th>${message(code: 'task.object.label')}</th>

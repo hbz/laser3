@@ -51,4 +51,11 @@ class LocaleUtils {
         }
         localizedName
     }
+
+    static Locale getLocaleDE() {
+        Locale.forLanguageTag('de-DE')
+    }
+    static Locale getLocaleEN() {
+        Locale.forLanguageTag('en-EN')
+    }
 }
