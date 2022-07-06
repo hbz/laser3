@@ -1477,26 +1477,31 @@ class FilterService {
         if(params.summaryOfContent) {
             base_qry += " and lower(tipp.summaryOfContent) like :summaryOfContent "
             qry_params.summaryOfContent = "%${params.summaryOfContent.trim().toLowerCase()}%"
+            filterSet = true
         }
 
         if(params.ebookFirstAutorOrFirstEditor) {
             base_qry += " and (lower(tipp.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(tipp.firstEditor) like :ebookFirstAutorOrFirstEditor) "
             qry_params.ebookFirstAutorOrFirstEditor = "%${params.ebookFirstAutorOrFirstEditor.trim().toLowerCase()}%"
+            filterSet = true
         }
 
         if(params.dateFirstOnlineFrom) {
             base_qry += " and (tipp.dateFirstOnline is not null AND tipp.dateFirstOnline >= :dateFirstOnlineFrom) "
             qry_params.dateFirstOnlineFrom = sdf.parse(params.dateFirstOnlineFrom)
+            filterSet = true
 
         }
         if(params.dateFirstOnlineTo) {
             base_qry += " and (tipp.dateFirstOnline is not null AND tipp.dateFirstOnline <= :dateFirstOnlineTo) "
             qry_params.dateFirstOnlineTo = sdf.parse(params.dateFirstOnlineTo)
+            filterSet = true
         }
 
         if(params.yearsFirstOnline) {
             base_qry += " and (Year(tipp.dateFirstOnline) in (:yearsFirstOnline)) "
             qry_params.yearsFirstOnline = listReaderWrapper(params, 'yearsFirstOnline').collect { it instanceof String ? Integer.parseInt(it) : it }
+            filterSet = true
         }
 
         if (params.identifier) {
@@ -1603,7 +1608,7 @@ class FilterService {
                 }
                 where += subFilter
                 if(configMap.asAt && configMap.asAt.length() > 0) {
-                    Date dateFilter = DateUtils.getSDF_NoTime().parse(params.asAt)
+                    Date dateFilter = DateUtils.getSDF_NoTime().parse(configMap.asAt)
                     params.asAt = dateFilter.format('yyyy-MM-dd')
                     where += " and ((:startDate >= tipp_access_start_date or tipp_access_start_date is null) and (:endDate <= tipp_access_end_date or tipp_access_end_date is null))"
                 }
@@ -1716,7 +1721,7 @@ class FilterService {
                 }
                 if (configMap.hasPerpetualAccess && configMap.hasPerpetualAccessBySubs) {
                     List<Object> perpetualSubs = []
-                    perpetualSubs.addAll(listReaderWrapper(params, 'hasPerpetualAccessBySubs'))
+                    perpetualSubs.addAll(listReaderWrapper(configMap, 'hasPerpetualAccessBySubs'))
                     params.perpetualSubs = connection.createArrayOf('bigint', perpetualSubs.toArray())
                     if(configMap.hasPerpetualAccess == RDStore.YN_NO.id.toString()) {
                         where += " and tipp_host_platform_url not in (select tipp2.tipp_host_platform_url from issue_entitlement as ie2 join title_instance_package_platform as tipp2 on ie2.ie_tipp_fk = tipp2.tipp_id where ie2.ie_perpetual_access_by_sub_fk = any(:perpetualSubs)) "
@@ -1727,13 +1732,13 @@ class FilterService {
                 }
                 if (configMap.converageDepth != null && !configMap.coverageDepth.isEmpty()) {
                     List<Object> coverageDepths = []
-                    coverageDepths.addAll(listReaderWrapper(params, 'coverageDepth').collect { it.toLowerCase() })
+                    coverageDepths.addAll(listReaderWrapper(configMap, 'coverageDepth').collect { it.toLowerCase() })
                     params.coverageDepth = connection.createArrayOf('varchar', coverageDepths.toArray())
                     where += " and exists (select ic_id from issue_entitlement_coverages where ic_ie_fk = ie_id and lower(ic_coverage_depth) = any(:coverageDepth))"
                 }
                 if(configMap.filterSub != null && !configMap.filterSub.isEmpty()) {
                     List<Object> subscriptions = []
-                    subscriptions.addAll(listReaderWrapper(params, 'filterSub').collect { Long.parseLong(it)} )
+                    subscriptions.addAll(listReaderWrapper(configMap, 'filterSub').collect { Long.parseLong(it)} )
                     params.subscriptions = connection.createArrayOf('bigint', subscriptions.toArray())
                     where += " and sub_id = any(:subscriptions)"
                 }
@@ -1746,7 +1751,7 @@ class FilterService {
             }
             if(configMap.filter != null && !configMap.filter.isEmpty()) {
                 params.stringFilter = configMap.filter
-                where += " and ((genfunc_filter_matcher(name, :stringFilter) = true) or (genfunc_filter_matcher(tipp_first_author, :stringFilter) = true) or (genfunc_filter_matcher(tipp_first_editor, :stringFilter) = true) or exists(select id_id from identifier where id_tipp_fk = tipp_id and genfunc_filter_matcher(id_value, :stringFilter) = true))"
+                where += " and ((genfunc_filter_matcher(tipp_name, :stringFilter) = true) or (genfunc_filter_matcher(tipp_first_author, :stringFilter) = true) or (genfunc_filter_matcher(tipp_first_editor, :stringFilter) = true) or exists(select id_id from identifier where id_tipp_fk = tipp_id and genfunc_filter_matcher(id_value, :stringFilter) = true))"
             }
             if(configMap.ddcs != null && !configMap.ddcs.isEmpty()) {
                 List<Object> ddcs = []
@@ -1781,18 +1786,18 @@ class FilterService {
                 where += " and genfunc_filter_matcher(tipp_first_author, :firstAuthorEditor) = true or genfunc_filter_matcher(tipp_first_editor, :firstAuthorEditor) = true)"
             }
             if(configMap.dateFirstOnlineFrom != null && !configMap.dateFirstOnlineFrom.isEmpty()) {
-                Date dateFirstOnlineFrom = sdf.parse(params.dateFirstOnlineFrom)
+                Date dateFirstOnlineFrom = sdf.parse(configMap.dateFirstOnlineFrom)
                 params.dateFirstOnlineFrom = dateFirstOnlineFrom.format('yyyy-MM-dd')
                 where += " and (tipp_date_first_online is not null AND tipp_date_first_online >= :dateFirstOnlineFrom)"
             }
             if(configMap.dateFirstOnlineTo != null && !configMap.dateFirstOnlineTo.isEmpty()) {
-                Date dateFirstOnlineTo = sdf.parse(params.dateFirstOnlineTo)
+                Date dateFirstOnlineTo = sdf.parse(configMap.dateFirstOnlineTo)
                 params.dateFirstOnlineTo = dateFirstOnlineTo.format('yyyy-MM-dd')
                 where += " and (tipp.date_first_online is not null AND tipp_date_first_online <= :dateFirstOnlineTo)"
             }
             if(configMap.yearsFirstOnline != null && !configMap.yearsFirstOnline.isEmpty()) {
                 List<Object> yearsFirstOnline = []
-                yearsFirstOnline.addAll(listReaderWrapper(params, 'yearsFirstOnline').collect { Integer.parseInt(it) })
+                yearsFirstOnline.addAll(listReaderWrapper(configMap, 'yearsFirstOnline').collect { Integer.parseInt(it) })
                 params.yearsFirstOnline = connection.createArrayOf('int', yearsFirstOnline.toArray())
                 where += " and (date_part('year', tipp_date_first_online) = any(:yearsFirstOnline))"
             }
@@ -1802,13 +1807,13 @@ class FilterService {
             }
             if(configMap.publishers != null && !configMap.publishers.isEmpty()) {
                 List<Object> publishers = []
-                publishers.addAll(listReaderWrapper(params, 'publishers').collect { it.toLowerCase() })
+                publishers.addAll(listReaderWrapper(configMap, 'publishers').collect { it.toLowerCase() })
                 params.publishers = connection.createArrayOf('varchar', publishers.toArray())
                 where += " and lower(tipp_publisher_name) = any(:publishers)"
             }
             if(configMap.title_types != null && !configMap.title_types.isEmpty()) {
                 List<Object> titleTypes = []
-                titleTypes.addAll(listReaderWrapper(params, 'title_types').collect { it.toLowerCase() })
+                titleTypes.addAll(listReaderWrapper(configMap, 'title_types').collect { it.toLowerCase() })
                 params.titleTypes = connection.createArrayOf('varchar', titleTypes.toArray())
                 where += " and lower(tipp_title_type) = any(:titleTypes)"
             }
@@ -1820,14 +1825,14 @@ class FilterService {
             }
             if(configMap.filterPvd != null && !configMap.filterPvd.isEmpty()) {
                 List<Object> providers = [], providerRoleTypes = [RDStore.OR_CONTENT_PROVIDER.id, RDStore.OR_PROVIDER.id, RDStore.OR_AGENCY.id, RDStore.OR_PUBLISHER.id]
-                providers.addAll(listReaderWrapper(params, 'filterPvd').collect { Long.parseLong(it)} )
+                providers.addAll(listReaderWrapper(configMap, 'filterPvd').collect { Long.parseLong(it)} )
                 params.providers = connection.createArrayOf('bigint', providers.toArray())
                 params.providerRoleTypes = connection.createArrayOf('bigint', providerRoleTypes.toArray())
                 where += " and exists(select or_id from org_role where or_tipp_fk = tipp_id and or_org_fk = any(:providers) and or_roletype_fk = any(:providerRoleTypes))"
             }
             if(configMap.filterHostPlat != null && !configMap.filterHostPlat.isEmpty()) {
                 List<Object> hostPlatforms = []
-                hostPlatforms.addAll(listReaderWrapper(params, 'filterHostPlat').collect { Long.parseLong(it) })
+                hostPlatforms.addAll(listReaderWrapper(configMap, 'filterHostPlat').collect { Long.parseLong(it) })
                 params.platforms = connection.createArrayOf('bigint', hostPlatforms.toArray())
                 where += " and tipp_plat_fk = any(:platforms)"
             }

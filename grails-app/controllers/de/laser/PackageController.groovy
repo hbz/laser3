@@ -503,6 +503,7 @@ class PackageController {
             }
             out.flush()
             out.close()
+            return
         } else if (params.exportXLSX) {
             response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -517,6 +518,7 @@ class PackageController {
             response.outputStream.flush()
             response.outputStream.close()
             workbook.dispose()
+            return
         }else if(params.exportClickMeExcel) {
             if (params.filename) {
                 filename =params.filename
@@ -534,6 +536,7 @@ class PackageController {
             response.outputStream.flush()
             response.outputStream.close()
             wb.dispose()
+            return
         }
         withFormat {
             html {
@@ -559,6 +562,7 @@ class PackageController {
                 }
                 out.flush()
                 out.close()
+                return
             }
         }
     }
