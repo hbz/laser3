@@ -1999,6 +1999,7 @@ class SubscriptionControllerService {
             RefdataValue tipp_current = RDStore.TIPP_STATUS_CURRENT
             RefdataValue ie_deleted = RDStore.TIPP_STATUS_DELETED
             RefdataValue ie_current = RDStore.TIPP_STATUS_CURRENT
+            RefdataValue ie_removed = RDStore.TIPP_STATUS_REMOVED
             List<Long> tippIDs = []
             List<TitleInstancePackagePlatform> tipps = []
             List errorList = []
@@ -2010,7 +2011,7 @@ class SubscriptionControllerService {
                 sessionCache.put("/subscription/addEntitlements/${params.id}", [:])
                 checkedCache = sessionCache.get("/subscription/addEntitlements/${params.id}")
             }
-            Set<String> addedTipps = IssueEntitlement.executeQuery('select tipp.gokbId from IssueEntitlement ie join ie.tipp tipp where ie.status != :deleted and ie.subscription = :sub',[deleted:ie_deleted,sub:result.subscription])
+            Set<String> addedTipps = IssueEntitlement.executeQuery('select tipp.gokbId from IssueEntitlement ie join ie.tipp tipp where ie.status not in (:status) and ie.subscription = :sub',[status:[ie_deleted, ie_removed],sub:result.subscription])
             /*result.subscription.issueEntitlements.each { ie ->
                 if(ie instanceof IssueEntitlement && ie.status != ie_deleted)
                     addedTipps[ie.tipp] = ie.tipp.gokbId
