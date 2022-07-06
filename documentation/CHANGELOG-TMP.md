@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4345    06.07.2022  rc-2.3  2.3.2       Moe     Bug         IssueEntitlement werden angewissen Stellen nicht richtig gefiltern
+
 4331    06.07.2022  rc-2.3  2.3.2       Moe     Bug         Fehler beim Hinzufügen von Titeln
 
 4333    30.06.2022  rc-2.3  2.3.2       Moe     Bug         Fehler bei Export von KBART

@@ -2539,7 +2539,7 @@ class SubscriptionControllerService {
                                 println "now restoring deleted coverage ${i}"
                                 Map<String, Object> oldCoverage = JSON.parse(row['pc_old_value'])
                                 //when migrating to dev: change deleted by removed
-                                List<Long> ie = IssueEntitlement.executeQuery("select ie.id from IssueEntitlement ie where ie.tipp.id = :tippId and ie.subscription.id = :subId and ie.status != :deleted", [tippId: Integer.toUnsignedLong(oldCoverage.tipp.id), subId: Long.parseLong(row['sub_fk']), deleted: RDStore.TIPP_STATUS_DELETED])
+                                List<Long> ie = IssueEntitlement.executeQuery("select ie.id from IssueEntitlement ie where ie.tipp.id = :tippId and ie.subscription.id = :subId and ie.status not in (:ieStatus)", [tippId: Integer.toUnsignedLong(oldCoverage.tipp.id), subId: Long.parseLong(row['sub_fk']), ieStatus: [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]])
                                 if(ie) {
                                     Map<String, Object> ieCovMap = [ie: ie[0],
                                                                     dateCreated: new Timestamp(DateUtils.parseDateGeneric(oldCoverage.dateCreated).getTime()),
