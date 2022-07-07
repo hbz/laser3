@@ -812,10 +812,16 @@ class OrganisationController  {
         if(result.error)
             flash.error = result.error //to display we:kb's eventual 404
 
+        println(result.inContextOrg)
+        println(result.institution.eInvoice)
+        println(result.institution.eInvoicePortal)
+        println(result.institution.getLeitID())
         if(result.inContextOrg && result.institution.eInvoice) {
+            Identifier leitID = result.institution.getLeitID()
+
             if(!result.institution.eInvoicePortal)
                 result.missing.eInvoicePortal = message(code: 'org.eInvoice.info.missing.eInvoicePortal')
-            if(!result.institution.getLeitID())
+            if(!leitID || (leitID && (leitID.value != '' || leitID.value != null)))
                 result.missing.leitID = message(code: 'org.eInvoice.info.missing.leitID')
         }
 
