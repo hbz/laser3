@@ -1061,7 +1061,7 @@ class PendingChangeService extends AbstractLockableService {
                     targetTitle = (IssueEntitlement) target
                 }
                 else if(target instanceof Subscription) {
-                    targetTitle = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :target and ie.tipp = :tipp and ie.status != :deleted',[target:target,tipp:pc.tipp,deleted:RDStore.TIPP_STATUS_DELETED])[0]
+                    targetTitle = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :target and ie.tipp = :tipp and ie.status not in (:ieStatus)',[target:target,tipp:pc.tipp,ieStatus:[RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]])[0]
                 }
                 if(targetTitle) {
                     log.debug("set ${targetTitle} ${pc.targetProperty} to ${parsedNewValue}")
@@ -1080,7 +1080,7 @@ class PendingChangeService extends AbstractLockableService {
                     targetTitle = (IssueEntitlement) target
                 }
                 else if(target instanceof Subscription) {
-                    targetTitle = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :target and ie.tipp = :tipp and ie.status != :deleted',[target:target,tipp:pc.tipp,deleted:RDStore.TIPP_STATUS_DELETED])[0]
+                    targetTitle = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :target and ie.tipp = :tipp and ie.status not in (:ieStatus)',[target:target,tipp:pc.tipp,ieStatus:[RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]])[0]
                 }
                 if(targetTitle) {
                     log.debug("deleting ${targetTitle} from holding ...")
@@ -1107,7 +1107,7 @@ class PendingChangeService extends AbstractLockableService {
                     targetCov = (IssueEntitlementCoverage) target
                 }
                 else if(target instanceof Subscription) {
-                    List<IssueEntitlement> ieCheck = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :target and ie.tipp = :tipp and ie.status != :deleted',[target:target,tipp:pc.tippCoverage.tipp,deleted:RDStore.TIPP_STATUS_DELETED])
+                    List<IssueEntitlement> ieCheck = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :target and ie.tipp = :tipp and ie.status not in (:ieStatus)',[target:target,tipp:pc.tippCoverage.tipp,ieStatus:[RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]])
                     if(ieCheck.size() > 0) {
                         IssueEntitlement ie = (IssueEntitlement) ieCheck.get(0)
                         targetCov = (IssueEntitlementCoverage) pc.tippCoverage.findEquivalent(ie.coverages)
@@ -1169,7 +1169,7 @@ class PendingChangeService extends AbstractLockableService {
                 }
                 else if(target instanceof Subscription) {
                     JSONObject oldMap = JSON.parse(pc.oldValue) as JSONObject
-                    ie = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :target and ie.tipp.id = :tipp and ie.status != :deleted',[target:target,tipp:oldMap.tipp.id as Long,deleted:RDStore.TIPP_STATUS_DELETED])[0]
+                    ie = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :target and ie.tipp.id = :tipp and ie.status not in (:ieStatus)',[target:target,tipp:oldMap.tipp.id as Long,ieStatus:[RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]])[0]
                     for (String k : AbstractCoverage.equivalencyProperties) {
                         targetCov = ie.coverages.find { IssueEntitlementCoverage iec -> iec[k] == oldMap[k] }
                         if(targetCov) {
@@ -1383,7 +1383,7 @@ class PendingChangeService extends AbstractLockableService {
         }
         else if(newChange.tippCoverage) {
             target = newChange.tippCoverage
-            childSubscriptions.addAll(Subscription.executeQuery('select s from Subscription s join s.issueEntitlements ie where s.instanceOf = :parent and ie.tipp = :tipp and ie.status != :deleted',[parent:subPkg.subscription,tipp:target.tipp,deleted:RDStore.TIPP_STATUS_DELETED]))
+            childSubscriptions.addAll(Subscription.executeQuery('select s from Subscription s join s.issueEntitlements ie where s.instanceOf = :parent and ie.tipp = :tipp and ie.status not in (:ieStatus)',[parent:subPkg.subscription,tipp:target.tipp,ieStatus:[RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]]))
         }
         /*else if(newChange.priceItem && newChange.priceItem.tipp) {
             target = newChange.priceItem

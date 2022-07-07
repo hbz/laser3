@@ -675,8 +675,8 @@ class SubscriptionService {
      */
     List getIssueEntitlements(Subscription subscription) {
         List<IssueEntitlement> ies = subscription?
-                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status <> :del",
-                        [sub: subscription, del: RDStore.TIPP_STATUS_DELETED])
+                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status not in (:ieStatus)",
+                        [sub: subscription, ieStatus: [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]])
                 : []
         ies.sort {it.sortname}
         ies
@@ -729,8 +729,8 @@ class SubscriptionService {
                 qry_params.current = RDStore.TIPP_STATUS_CURRENT
             }
             else {
-                base_qry += " and ie.status != :deleted "
-                qry_params.deleted = RDStore.TIPP_STATUS_DELETED
+                base_qry += " and ie.status not in (:ieStatus) "
+                qry_params.ieStatus = [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]
             }
 
             if(params.ieAcceptStatusFixed) {
@@ -2465,7 +2465,7 @@ class SubscriptionService {
 
                 List<Long> titleIds = TitleInstancePackagePlatform.executeQuery('select tipp.id from TitleInstancePackagePlatform tipp join tipp.ids ident where ident.ns in :namespaces and ident.value = :value', [namespaces:idCandidate.namespaces, value:idCandidate.value])
                 if (titleIds.size() > 0) {
-                    List<IssueEntitlement> issueEntitlements = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp.id in (:titleIds) and ie.subscription.id = :subId and ie.status != :deleted', [titleIds: titleIds, subId: subscription.id, deleted: RDStore.TIPP_STATUS_DELETED])
+                    List<IssueEntitlement> issueEntitlements = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp.id in (:titleIds) and ie.subscription.id = :subId and ie.status not in (:ieStatus)', [titleIds: titleIds, subId: subscription.id, ieStatus: [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]])
                     if (issueEntitlements.size() > 0) {
                         IssueEntitlement issueEntitlement = issueEntitlements[0]
                         IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage()
@@ -2623,7 +2623,7 @@ class SubscriptionService {
 
                 List<Long> titleIds = TitleInstancePackagePlatform.executeQuery('select tipp.id from TitleInstancePackagePlatform tipp join tipp.ids ident where ident.ns in :namespaces and ident.value = :value', [namespaces:idCandidate.namespaces, value:idCandidate.value])
                 if (titleIds.size() > 0) {
-                    List<IssueEntitlement> issueEntitlements = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp.id in (:titleIds) and ie.subscription.id = :subId and ie.status != :deleted', [titleIds: titleIds, subId: subscription.id, deleted: RDStore.TIPP_STATUS_DELETED])
+                    List<IssueEntitlement> issueEntitlements = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp.id in (:titleIds) and ie.subscription.id = :subId and ie.status not in (:ieStatus)', [titleIds: titleIds, subId: subscription.id, ieStatus: [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]])
                     if (issueEntitlements.size() > 0) {
                         IssueEntitlement issueEntitlement = issueEntitlements[0]
                         count++

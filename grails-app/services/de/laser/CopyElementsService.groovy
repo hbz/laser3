@@ -1625,8 +1625,8 @@ class CopyElementsService {
     boolean copyEntitlements(List<IssueEntitlement> entitlementsToTake, Object targetObject, def flash) {
         Locale locale = LocaleContextHolder.getLocale()
         entitlementsToTake.each { ieToTake ->
-            if (ieToTake.status != RDStore.TIPP_STATUS_DELETED) {
-                def list = subscriptionService.getIssueEntitlements(targetObject).findAll { it.tipp.id == ieToTake.tipp.id && it.status != RDStore.TIPP_STATUS_DELETED }
+            if (!(ieToTake.status in [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED])) {
+                def list = subscriptionService.getIssueEntitlements(targetObject).findAll { it.tipp.id == ieToTake.tipp.id && !(it.status in [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]) }
                 if (list.size() > 0) {
                     // mich gibts schon! Fehlermeldung ausgeben!
                     Object[] args = [ieToTake.name]
@@ -1749,7 +1749,7 @@ class CopyElementsService {
                 if (issueEntitlementGroup.save()) {
 
                     ieGroup.items.each { ieGroupItem ->
-                        IssueEntitlement ie = IssueEntitlement.findBySubscriptionAndTippAndStatusNotEqual(targetObject, ieGroupItem.ie.tipp, RDStore.TIPP_STATUS_DELETED)
+                        IssueEntitlement ie = IssueEntitlement.findBySubscriptionAndTippAndStatusNotInList(targetObject, ieGroupItem.ie.tipp, [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED])
                         if (ie && !IssueEntitlementGroupItem.findByIe(ie)) {
                             IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
                                     ie: ie,

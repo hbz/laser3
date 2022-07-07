@@ -165,7 +165,7 @@ class RenewSubscriptionService extends AbstractLockableService {
 
                                 //IssueEntitlements
                                 subscription.issueEntitlements.each { IssueEntitlement ie ->
-                                    if (ie.status != RDStore.TIPP_STATUS_DELETED) {
+                                    if (!(ie.status in [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED])) {
                                         def ieProperties = ie.properties
 
                                         IssueEntitlement newIssueEntitlement = new IssueEntitlement()
@@ -232,7 +232,7 @@ class RenewSubscriptionService extends AbstractLockableService {
                                     if (newIssueEntitlementGroup.save()) {
 
                                         ieGroup.items.each { IssueEntitlementGroup ieGroupItem ->
-                                            IssueEntitlement ie = IssueEntitlement.findBySubscriptionAndTippAndStatusNotEqual(copySub, ieGroupItem.ie.tipp, RDStore.TIPP_STATUS_DELETED)
+                                            IssueEntitlement ie = IssueEntitlement.findBySubscriptionAndTippAndStatusNotInList(copySub, ieGroupItem.ie.tipp, [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED])
                                             if (ie && !IssueEntitlementGroupItem.findByIe(ie)) {
                                                 IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
                                                         ie: ie,
