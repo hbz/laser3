@@ -1,10 +1,4 @@
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'menu.yoda.systemConfiguration')} </title>
-</head>
-<body>
+<laser:htmlStart message="menu.yoda.systemConfiguration" />
 
 <semui:breadcrumbs>
     <semui:crumb message="menu.yoda" controller="yoda" action="index"/>
@@ -91,5 +85,4 @@
     </tbody>
 </table>
 
-</body>
-</html>
+<laser:htmlEnd />

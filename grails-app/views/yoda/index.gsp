@@ -1,13 +1,6 @@
 <%@ page import="java.lang.management.ManagementFactory" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'menu.yoda')} ${message(code:'default.dashboard')}</title>
-</head>
 
-<body>
-    <laser:serviceInjection />
+<laser:htmlStart text="${message(code:'menu.yoda')} ${message(code:'default.dashboard')}" serviceInjection="true" />
 
     <semui:breadcrumbs>
         <semui:crumb message="menu.yoda" class="active"/>
@@ -173,5 +166,4 @@
     <p>TODO: Cache Memory Information</p>
     --%>
 
-</body>
-</html>
+<laser:htmlEnd />

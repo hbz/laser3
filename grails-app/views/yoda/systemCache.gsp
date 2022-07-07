@@ -1,13 +1,6 @@
 <%@ page import="de.laser.utils.DateUtils" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'menu.yoda.systemCache')}</title>
-</head>
-<body>
 
-<laser:serviceInjection />
+<laser:htmlStart message="menu.yoda.systemCache" serviceInjection="true"/>
 
 <semui:breadcrumbs>
     <semui:crumb message="menu.yoda" controller="yoda" action="index"/>
@@ -140,5 +133,4 @@
 
 <hr />
 
-</body>
-</html>
+<laser:htmlEnd />

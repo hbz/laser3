@@ -1,11 +1,5 @@
 <%@ page import="de.laser.config.ConfigMapper" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'menu.yoda.systemQuartz')}</title>
-</head>
-<body>
+<laser:htmlStart message="menu.yoda.systemQuartz" />
 
 <semui:breadcrumbs>
     <semui:crumb message="menu.yoda" controller="yoda" action="index"/>
@@ -95,5 +89,4 @@
         }, (30 * 1000)); // refresh ~ 30 Seconds
     </laser:script>
 
-</body>
-</html>
+<laser:htmlEnd />

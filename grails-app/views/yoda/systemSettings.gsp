@@ -1,12 +1,5 @@
 <%@ page import="de.laser.config.ConfigMapper; de.laser.system.SystemSetting; de.laser.jobs.HeartbeatJob" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'menu.yoda.systemSettings')}</title>
-</head>
-
-<body>
+<laser:htmlStart message="menu.yoda.systemSettings" />
 
 <semui:breadcrumbs>
     <semui:crumb message="menu.yoda" controller="yoda" action="index"/>
@@ -95,5 +88,4 @@
         </tbody>
     </table>
 
-</body>
-</html>
+<laser:htmlEnd />

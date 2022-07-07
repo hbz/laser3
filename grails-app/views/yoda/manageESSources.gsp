@@ -1,11 +1,4 @@
-<!doctype html>
-<html>
-  <head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : Manage ES Sorces</title>
-  </head>
-
-  <body>
+<laser:htmlStart text="Manage ES Sources" />
 
     <semui:breadcrumbs>
         <semui:crumb message="menu.yoda" controller="yoda" action="index"/>
@@ -117,5 +110,5 @@
 
         </g:form>
     </semui:form>
-  </body>
-</html>
+
+<laser:htmlEnd />

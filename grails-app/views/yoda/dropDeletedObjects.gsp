@@ -1,10 +1,4 @@
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : Datenbereinigung</title>
-</head>
-<body>
+<laser:htmlStart text="Datenbereinigung" />
 
 <semui:breadcrumbs>
     <semui:crumb message="menu.admin" controller="admin" action="index"/>
@@ -61,5 +55,4 @@
     <br />
     <br />
 
-</body>
-</html>
+<laser:htmlEnd />

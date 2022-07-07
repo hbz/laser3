@@ -1,10 +1,4 @@
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'menu.yoda.appControllers')}</title>
-</head>
-<body>
+<laser:htmlStart message="menu.yoda.appControllers" />
 
 <semui:breadcrumbs>
     <semui:crumb message="menu.yoda" controller="yoda" action="index"/>
@@ -311,6 +305,6 @@
     color: #8B4513;
 }
 </style>
-</body>
-</html>
+
+<laser:htmlEnd />
 

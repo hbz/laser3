@@ -1,12 +1,6 @@
 <%@page import="de.laser.GlobalSourceSyncService" %>
-<!doctype html>
-<html>
-  <head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : Manage Global Sorces</title>
-  </head>
 
-  <body>
+<laser:htmlStart text="Manage Global Sources" />
 
     <semui:breadcrumbs>
         <semui:crumb message="menu.yoda" controller="yoda" action="index"/>
@@ -159,5 +153,5 @@
 
         </g:form>
     </semui:form>
-  </body>
-</html>
+
+<laser:htmlEnd />

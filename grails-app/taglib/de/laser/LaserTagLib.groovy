@@ -1,6 +1,7 @@
 package de.laser
 
 import de.laser.utils.LocaleUtils
+import de.laser.utils.SwissKnife
 
 class LaserTagLib {
 
@@ -36,6 +37,33 @@ class LaserTagLib {
         g.set( var:'systemService',             bean:'systemService' )
         g.set( var:'taskService',               bean:'taskService' )
         g.set( var:'yodaService',               bean:'yodaService' )
+    }
+
+    def htmlStart = {attrs, body ->
+
+        String title = message(code: 'laser')
+
+        if (attrs.text) {
+            title = title + ' : ' + attrs.text
+        }
+        if (attrs.message) {
+            SwissKnife.checkMessageKey(attrs.message as String)
+            title = title + ' : ' + message(code: attrs.message, args: attrs.args)
+        }
+
+        if (attrs.serviceInjection) {
+            laser.serviceInjection()
+        }
+        out << '<!doctype html><html><head>'
+        out << '<meta name="layout" content="laser">'
+        out << body()
+        out << '<title>' + title + '</title>'
+        out << '</head>'
+        out << '<body>'
+    }
+
+    def htmlEnd = { attrs, body ->
+        out << '</body></head>'
     }
 
     // <laser:select optionValue="field" />  ==> <laser:select optionValue="field_(de|en|fr)" />

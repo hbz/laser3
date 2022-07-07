@@ -1,12 +1,7 @@
 <%@ page import="de.laser.Org" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'menu.yoda.profilerLoadtime')}</title>
+<laser:htmlStart message="menu.yoda.profilerLoadtime">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
-</head>
-<body>
+</laser:htmlStart>
 
 <semui:breadcrumbs>
     <semui:crumb message="menu.yoda" controller="yoda" action="index"/>
@@ -284,5 +279,4 @@
     }
 </style>
 
-</body>
-</html>
+<laser:htmlEnd />

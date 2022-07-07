@@ -1,11 +1,4 @@
-<!doctype html>
-<html>
-  <head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : Database Migration</title>
-  </head>
-
-  <body>
+<laser:htmlStart text="Database Migration" />
 
     <semui:breadcrumbs>
       <semui:crumb message="menu.yoda" controller="yoda" action="index"/>
@@ -49,5 +42,4 @@
         </tbody>
     </table>
 
-  </body>
-</html>
+<laser:htmlEnd />

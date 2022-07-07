@@ -1,12 +1,7 @@
 <%@ page import="de.laser.storage.RDStore; de.laser.TitleInstancePackagePlatform; grails.converters.JSON" %>
-<laser:serviceInjection/>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : Datenbereinigung: Gelöschte TIPPs</title>
-    </head>
 
-    <body>
+<laser:htmlStart text="Datenbereinigung: Gelöschte TIPPs" serviceInjection="true"/>
+
         <semui:messages data="${flash}"/>
         <table>
             <thead>
@@ -50,5 +45,5 @@
                 </tr>
             </tfoot>
         </table>
-    </body>
-</html>
+
+<laser:htmlEnd />

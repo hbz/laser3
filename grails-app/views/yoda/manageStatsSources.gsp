@@ -1,12 +1,6 @@
 <%@page import="grails.converters.JSON" %>
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : Manage Stats Sources</title>
-    </head>
 
-    <body>
+<laser:htmlStart text="Manage Stats Sources" />
 
         <semui:breadcrumbs>
             <semui:crumb message="menu.yoda" controller="yoda" action="index"/>
@@ -50,5 +44,5 @@
                 </g:each>
             </tbody>
         </table>
-    </body>
-</html>
+
+<laser:htmlEnd />

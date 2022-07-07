@@ -1,11 +1,6 @@
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'menu.yoda.profilerTimeline')}</title>
+<laser:htmlStart message="menu.yoda.profilerTimeline">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
-</head>
-<body>
+</laser:htmlStart>
 
 <semui:breadcrumbs>
     <semui:crumb message="menu.yoda" controller="yoda" action="index"/>
@@ -83,5 +78,5 @@
         height: 150px;
     }
     </style>
-</body>
-</html>
+
+<laser:htmlEnd />

@@ -1,11 +1,5 @@
-<%@ page contentType="text/html;charset=UTF-8" %>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : Datenbereinigung - Vertragsverknüpfungen ohne Einrichtungsverknüpfung</title>
-    </head>
+<laser:htmlStart text="Datenbereinigung - Vertragsverknüpfungen ohne Einrichtungsverknüpfung" />
 
-    <body>
         <semui:messages data="${flash}"/>
         <table class="ui table celled">
             <thead>
@@ -35,5 +29,5 @@
                 </tr>
             </tfoot>
         </table>
-    </body>
-</html>
+
+<laser:htmlEnd />
