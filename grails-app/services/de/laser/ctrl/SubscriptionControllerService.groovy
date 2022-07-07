@@ -1815,7 +1815,7 @@ class SubscriptionControllerService {
             }
             result.num_ies_rows = entitlements.size()
             if(entitlements) {
-                String orderClause = 'order by tipp.sortname asc'
+                String orderClause = 'order by ie.sortname, tipp.sortname'
                 if(params.sort){
                     if(params.sort == 'startDate')
                         orderClause = "order by ic.startDate ${params.order}, lower(ie.sortname) asc "
@@ -1999,6 +1999,7 @@ class SubscriptionControllerService {
             RefdataValue tipp_current = RDStore.TIPP_STATUS_CURRENT
             RefdataValue ie_deleted = RDStore.TIPP_STATUS_DELETED
             RefdataValue ie_current = RDStore.TIPP_STATUS_CURRENT
+            RefdataValue ie_removed = RDStore.TIPP_STATUS_REMOVED
             List<Long> tippIDs = []
             List<TitleInstancePackagePlatform> tipps = []
             List errorList = []
@@ -2010,7 +2011,7 @@ class SubscriptionControllerService {
                 sessionCache.put("/subscription/addEntitlements/${params.id}", [:])
                 checkedCache = sessionCache.get("/subscription/addEntitlements/${params.id}")
             }
-            Set<String> addedTipps = IssueEntitlement.executeQuery('select tipp.gokbId from IssueEntitlement ie join ie.tipp tipp where ie.status != :deleted and ie.subscription = :sub',[deleted:ie_deleted,sub:result.subscription])
+            Set<String> addedTipps = IssueEntitlement.executeQuery('select tipp.gokbId from IssueEntitlement ie join ie.tipp tipp where ie.status not in (:status) and ie.subscription = :sub',[status:[ie_deleted, ie_removed],sub:result.subscription])
             /*result.subscription.issueEntitlements.each { ie ->
                 if(ie instanceof IssueEntitlement && ie.status != ie_deleted)
                     addedTipps[ie.tipp] = ie.tipp.gokbId
@@ -2538,7 +2539,7 @@ class SubscriptionControllerService {
                                 println "now restoring deleted coverage ${i}"
                                 Map<String, Object> oldCoverage = JSON.parse(row['pc_old_value'])
                                 //when migrating to dev: change deleted by removed
-                                List<Long> ie = IssueEntitlement.executeQuery("select ie.id from IssueEntitlement ie where ie.tipp.id = :tippId and ie.subscription.id = :subId and ie.status != :deleted", [tippId: Integer.toUnsignedLong(oldCoverage.tipp.id), subId: Long.parseLong(row['sub_fk']), deleted: RDStore.TIPP_STATUS_DELETED])
+                                List<Long> ie = IssueEntitlement.executeQuery("select ie.id from IssueEntitlement ie where ie.tipp.id = :tippId and ie.subscription.id = :subId and ie.status not in (:ieStatus)", [tippId: Integer.toUnsignedLong(oldCoverage.tipp.id), subId: Long.parseLong(row['sub_fk']), ieStatus: [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]])
                                 if(ie) {
                                     Map<String, Object> ieCovMap = [ie: ie[0],
                                                                     dateCreated: new Timestamp(DateUtils.parseDateGeneric(oldCoverage.dateCreated).getTime()),
