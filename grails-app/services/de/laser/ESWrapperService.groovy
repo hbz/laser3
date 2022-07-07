@@ -1,6 +1,5 @@
 package de.laser
 
-
 import de.laser.config.ConfigMapper
 import de.laser.remote.FTControl
 import de.laser.system.SystemEvent
@@ -15,14 +14,9 @@ import org.elasticsearch.client.indices.CreateIndexResponse
 import org.elasticsearch.client.indices.GetIndexRequest
 import org.elasticsearch.common.xcontent.XContentType
 import org.grails.web.json.parser.JSONParser
-import org.elasticsearch.action.admin.cluster.health.ClusterHealthRequest
-import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse
 import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestClient
 import org.elasticsearch.client.RestHighLevelClient
-import org.elasticsearch.cluster.health.ClusterHealthStatus
-import org.elasticsearch.cluster.health.ClusterIndexHealth
-import org.elasticsearch.rest.RestStatus
 
 /**
  * This service wraps the ElasticSearch connection and configuration methods and
@@ -32,9 +26,6 @@ import org.elasticsearch.rest.RestStatus
  */
 @Transactional
 class ESWrapperService {
-
-    final static String DEFAULT_ES_HOST = 'localhost'
-    final static String DEFAULT_ES_CLUSTER = 'elasticsearch'
 
     static transactional = false
 
@@ -50,8 +41,8 @@ class ESWrapperService {
     def init() {
         log.info('ESWrapperService - init')
 
-        ES_Host     = ConfigMapper.getAggrEsHostname() ?: ESWrapperService.DEFAULT_ES_HOST
-        ES_Cluster  = ConfigMapper.getAggrEsCluster()  ?: ESWrapperService.DEFAULT_ES_CLUSTER
+        ES_Host     = ConfigMapper.getAggrEsHostname() ?: 'localhost'
+        ES_Cluster  = ConfigMapper.getAggrEsCluster()  ?: 'elasticsearch'
         ES_Indices  = ConfigMapper.getAggrEsIndices()  ?: [:]
 
         log.debug("-> ES_Host = ${ES_Host}")
@@ -74,11 +65,7 @@ class ESWrapperService {
 
     // TMP
     String getUrl() {
-        if (ES_Host) {
-            'http://' + ES_Host + ':9200'
-        } else {
-            null
-        }
+        (new HttpHost(ES_Host, 9200, "http")).toString()
     }
 
     /*void closeClient() {

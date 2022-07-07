@@ -124,8 +124,8 @@
             <tr>
                 <td>ElasticSearch indices</td>
                 <td>
-                    <g:if test="${ConfigMapper.getConfig('reporting.elasticSearch.indicies', Map)}">
-                        <g:each in="${ConfigMapper.getConfig('reporting.elasticSearch.indicies', Map)}" var="k, v">
+                    <g:if test="${ConfigMapper.getConfig('reporting.elasticSearch.indices', Map)}">
+                        <g:each in="${ConfigMapper.getConfig('reporting.elasticSearch.indices', Map)}" var="k, v">
                             <a href="${ConfigMapper.getConfig('reporting.elasticSearch.url', String) + '/' + v + '/_search'}" target="_blank">${v} (${k})</a><br />
                         </g:each>
                     </g:if>

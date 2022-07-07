@@ -132,6 +132,8 @@ grails:
 # ---[ plugins ---
 
 grails:
+    mail:
+        poolSize: 20
     plugin:
         auditLog:
             auditDomainClassName: 'org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent'

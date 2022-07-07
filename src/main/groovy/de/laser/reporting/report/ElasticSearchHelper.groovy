@@ -93,7 +93,7 @@ class ElasticSearchHelper {
 
             try {
                 Map rConfig = ConfigMapper.getConfig('reporting', Map) as Map
-                BasicHttpClient client = new BasicHttpClient( rConfig.elasticSearch.url + '/' + rConfig.elasticSearch.indicies.packages + '/_search' )
+                BasicHttpClient client = new BasicHttpClient( rConfig.elasticSearch.url + '/' + rConfig.elasticSearch.indices.packages + '/_search' )
 
                 log.info 'Retrieving ' + pkgList.size() + ' items (chunksize ' + ELASTICSEARCH_CHUNKSIZE + ') from ' + client.url
 
@@ -144,7 +144,7 @@ class ElasticSearchHelper {
 
             try {
                 Map rConfig = ConfigMapper.getConfig('reporting', Map) as Map
-                BasicHttpClient client = new BasicHttpClient( rConfig.elasticSearch.url + '/' + rConfig.elasticSearch.indicies.platforms + '/_search' )
+                BasicHttpClient client = new BasicHttpClient( rConfig.elasticSearch.url + '/' + rConfig.elasticSearch.indices.platforms + '/_search' )
 
                 log.info 'Retrieving ' + pkgList.size() + ' items (chunksize ' + ELASTICSEARCH_CHUNKSIZE + ') from ' + client.url
 

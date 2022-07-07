@@ -2,6 +2,21 @@ println("/\/\ -- local config file found and loaded -- /\/\")
 
 aggr_es_cluster   = 'laser3'
 aggr_es_hostname  = '127.0.0.1'
+aggr_es_indices = [
+    "DocContext" : "laser3_doc_contexts",
+    "IssueEntitlement" : "laser3_issue_entitlements",
+    "License" : "laser3_licenses",
+    "LicenseProperty" : "laser3_license_properties",
+    "Org" : "laser3_orgs",
+    "Package" : "laser3_packages",
+    "Platform" : "laser3_platforms",
+    "Subscription" : "laser3_subscriptions",
+    "SubscriptionProperty" : "laser3_subscription_properties",
+    "SurveyConfig" : "laser3_survey_configs",
+    "SurveyOrg" : "laser3_survey_orgs",
+    "Task" : "laser3_tasks",
+    "TitleInstancePackagePlatform" : "laser3_tipps"
+]
 
 dataSource.url      = 'jdbc:postgresql://localhost:5432/laser'
 dataSource.username = 'laser'
@@ -16,11 +31,12 @@ financials.currency = "EUR|GBP|USD|CHF" // priority of order
 globalDataSyncJobActive = false
 
 grails.mail.disabled        = true
-grails.mail.default.from    = 'laser@local'
-grails.mail.overrideAddress = 'laser@local'
+grails.mail.default.from    = 'laser@localhost'
+grails.mail.overrideAddress = 'laser@localhost'
+grails.mail.port            = 30 // ONLY local
 
 grails.plugin.wkhtmltopdf.binary = '/usr/bin/wkhtmltopdf' // pdf generation; server and local
-grails.plugin.wkhtmltopdf.xvfbRunner = '/usr/bin/xvfb-run' // pdf generation; server only
+grails.plugin.wkhtmltopdf.xvfbRunner = '/usr/bin/xvfb-run' // pdf generation; ONLY server
 grails.plugin.databasemigration.updateOnStart = true
 grails.serverURL = 'http://localhost:8080'
 
@@ -41,8 +57,8 @@ notificationsJobActive = false
 pgDumpPath = '/usr/bin/pg_dump'
 
 reporting.elasticSearch.url                = 'http://localhost:9200'
-reporting.elasticSearch.indicies.packages  = 'wekbpackages'
-reporting.elasticSearch.indicies.platforms = 'wekbplatforms'
+reporting.elasticSearch.indices.packages   = 'wekbpackages'
+reporting.elasticSearch.indices.platforms  = 'wekbplatforms'
 
 showDebugInfo  = true
 showStatsInfo  = true
@@ -50,7 +66,7 @@ showSystemInfo = true
 
 statsApiUrl = 'https://sushi.xy.z'
 
-systemEmail = 'laser@local'
+systemEmail = 'laser@localhost'
 
 testJobActivate = false
 
