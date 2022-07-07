@@ -32,7 +32,7 @@
 
             <g:each in="${ies.sourceIEs}" var="ie">
                 <g:set var="tipp" value="${ie.tipp}"/>
-                <g:set var="isContainedByTarget" value="${ies.targetIEs.find { it.tipp == tipp && it.status != RDStore.TIPP_STATUS_DELETED}}" />
+                <g:set var="isContainedByTarget" value="${ies.targetIEs.find { it.tipp == tipp && !(it.status in [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED])}}" />
                 <g:set var="targetIE" value="${ies.targetIEs.find { it.tipp == tipp}}" />
                 <g:if test="${side == 'source' || (side == 'target' && isContainedByTarget)}">
                     <tr data-gokbId="${tipp.gokbId}" data-ieId="${ie?.id}" data-index="${counter}">
