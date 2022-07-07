@@ -2151,8 +2151,7 @@ class SurveyController {
             }
 
             if(result.surveyConfig.subSurveyUseForTransfer) {
-                result.successorSubscription = result.surveyConfig.subscription._getCalculatedSuccessorSurvey()
-
+                result.successorSubscription = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
                 result.customProperties = result.successorSubscription ? comparisonService.comparePropertiesWithAudit(result.surveyConfig.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))} + result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}, true, true) : null
             }
             result.links = linksGenerationService.getSourcesAndDestinations(result.subscription,result.user)
