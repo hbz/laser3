@@ -800,7 +800,12 @@ class SurveyController {
             if(result.surveyConfig.subSurveyUseForTransfer) {
                 result.successorSubscription = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
 
-                result.customProperties = result.successorSubscription ? comparisonService.comparePropertiesWithAudit(result.surveyConfig.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == contextOrg.id || (it.tenant?.id != contextOrg.id && it.isPublic))} + result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == contextOrg.id || (it.tenant?.id != contextOrg.id && it.isPublic))}, true, true) : null
+                result.customProperties = null
+                if(result.successorSubscription){
+                    def propertiesCurrentSub = result.surveyConfig.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
+                    def propertiesSuccessorSub = result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
+                    result.customProperties = comparisonService.comparePropertiesWithAudit(propertiesCurrentSub+propertiesSuccessorSub, true, true)
+                }
             }
 
 
@@ -2060,9 +2065,14 @@ class SurveyController {
         }
 
             if(result.surveyConfig.subSurveyUseForTransfer) {
-                result.successorSubscription = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
+                result.successorSubscription = result.subscription._getCalculatedSuccessorForSurvey()
 
-                result.customProperties = result.successorSubscription ? comparisonService.comparePropertiesWithAudit(result.surveyConfig.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))} + result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}, true, true) : null
+                result.compareProperties = null
+                if(result.successorSubscription){
+                    def propertiesCurrentSub = result.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
+                    def propertiesSuccessorSub = result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
+                    result.customProperties = comparisonService.compareAllPropertiesOnlyDiff(propertiesCurrentSub+propertiesSuccessorSub, true, true)
+                }
             }
         }
 
@@ -2152,7 +2162,12 @@ class SurveyController {
 
             if(result.surveyConfig.subSurveyUseForTransfer) {
                 result.successorSubscription = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
-                result.customProperties = result.successorSubscription ? comparisonService.comparePropertiesWithAudit(result.surveyConfig.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))} + result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}, true, true) : null
+                result.customProperties = null
+                if(result.successorSubscription){
+                    def propertiesCurrentSub = result.surveyConfig.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
+                    def propertiesSuccessorSub = result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
+                    result.customProperties = comparisonService.comparePropertiesWithAudit(propertiesCurrentSub+propertiesSuccessorSub, true, true)
+                }
             }
             result.links = linksGenerationService.getSourcesAndDestinations(result.subscription,result.user)
         }
