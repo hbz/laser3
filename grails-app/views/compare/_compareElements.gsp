@@ -1,8 +1,6 @@
 <%@ page import="de.laser.Subscription; de.laser.storage.RDStore; de.laser.AuditConfig; de.laser.interfaces.CalculatedType; de.laser.Person; de.laser.License" %>
 <laser:serviceInjection/>
 
-<g:set var="compareService" bean="compareService"/>
-
 <semui:form>
 
     <table class="ui selectable celled table la-js-responsive-table la-table la-ignore-fixed">

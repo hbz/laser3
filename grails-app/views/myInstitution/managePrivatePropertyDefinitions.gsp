@@ -250,9 +250,7 @@
             <div class="fields">
                 <div class="field hide" id="cust_prop_ref_data_name" style="width: 100%">
                     <label class="property-label"><g:message code="refdataCategory.label" /></label>
-
                     <input type="hidden" name="refdatacategory" id="cust_prop_refdatacatsearch"/>
-                    <g:set var="propertyService" bean="propertyService"/>
 
                     <div class="ui grid" style="margin-top:1em">
                         <div class="ten wide column">

@@ -21,9 +21,7 @@ class SemuiDropdownTagLib {
         out << '<div class="ui simple dropdown button la-js-dont-hide-button">'
         out <<   '<i class="download icon"></i>'
         out <<   '<div class="menu">'
-
         out <<       body()
-
         out <<  '</div>'
         out << '</div>'
     }
@@ -42,9 +40,7 @@ class SemuiDropdownTagLib {
         out << '<div class="ui simple dropdown button la-js-dont-hide-button">'
         out <<  '<i class="magic icon"></i>'
         out <<  '<div class="menu" style="left: auto; right: 0">'
-
         out <<          body()
-
         out <<  '</div>'
         out << '</div>'
     }
@@ -149,9 +145,7 @@ class SemuiDropdownTagLib {
         out << textMessage
         out << '<i class="dropdown icon"></i> '
         out <<  '<div class="menu">'
-
         out <<          body()
-
         out << '</div>'
         out << '</div>'
     }

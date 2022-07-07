@@ -1,8 +1,6 @@
 <%@ page import="de.laser.survey.SurveyConfig; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.Person; de.laser.Doc; de.laser.Subscription; de.laser.FormService" %>
 <laser:serviceInjection />
 
-<g:set var="formService" bean="formService"/>
-
 <semui:form>
     <g:set var="isInstAdm" value="${contextService.getUser().hasAffiliation("INST_ADM")}"/>
 

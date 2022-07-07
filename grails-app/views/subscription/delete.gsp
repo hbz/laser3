@@ -1,5 +1,4 @@
-<g:set var="deletionService" bean="deletionService" />
-<g:set var="accessService" bean="accessService" />
+<laser:serviceInjection/>
 
 <!doctype html>
 <html>

@@ -1,8 +1,6 @@
 <%@ page import="de.laser.Subscription; de.laser.Person; de.laser.survey.SurveyConfig; de.laser.SubscriptionsQueryService; java.text.SimpleDateFormat; de.laser.storage.RDStore; de.laser.FormService" %>
 <laser:serviceInjection/>
 
-<g:set var="formService" bean="formService"/>
-
 <semui:form>
     <laser:render template="/templates/copyElements/selectSourceAndTargetObject" model="[
             sourceObject          : sourceObject,

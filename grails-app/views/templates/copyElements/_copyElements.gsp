@@ -2,7 +2,6 @@
 <laser:serviceInjection/>
 
 <g:set var="copyElementsService" bean="copyElementsService"/>
-<g:set var="formService" bean="formService"/>
 
 <semui:form>
 

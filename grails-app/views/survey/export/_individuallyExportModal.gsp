@@ -1,6 +1,6 @@
 <%@ page import="de.laser.ExportClickMeService; de.laser.IdentifierNamespace; de.laser.Org;" %>
 <laser:serviceInjection/>
-<g:set var="exportClickMeService" bean="exportClickMeService"/>
+
 <!-- _individuallyExportModal.gsp -->
 <g:set var="formFields" value="${exportClickMeService.getExportSurveyEvaluationFieldsForUI(surveyConfig)}"/>
 
