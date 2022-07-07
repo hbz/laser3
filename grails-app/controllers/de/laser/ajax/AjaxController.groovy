@@ -535,8 +535,8 @@ class AjaxController {
               if(params.tab == 'currentIEs') {
                   Map query = filterService.getIssueEntitlementQuery(params+[ieAcceptStatusFixed: true], previousSubscription)
                   List<IssueEntitlement> previousTipps = previousSubscription ? IssueEntitlement.executeQuery("select ie.tipp.id " + query.query, query.queryParams) : []
-                  sourceIEs = previousTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatusNotEqual(TitleInstancePackagePlatform.findAllByIdInList(previousTipps), previousSubscription, RDStore.TIPP_STATUS_DELETED) : []
-                  sourceIEs = sourceIEs + (sourceTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatusNotEqual(TitleInstancePackagePlatform.findAllByIdInList(targetIETipps), newSub, RDStore.TIPP_STATUS_DELETED) : [])
+                  sourceIEs = previousTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatusNotInList(TitleInstancePackagePlatform.findAllByIdInList(previousTipps), previousSubscription, [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]) : []
+                  sourceIEs = sourceIEs + (sourceTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatusNotInList(TitleInstancePackagePlatform.findAllByIdInList(targetIETipps), newSub, [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]) : [])
 
               }
 
@@ -551,7 +551,7 @@ class AjaxController {
               if(params.tab == 'selectedIEs') {
                   sourceTipps = selectedIETipps
                   sourceTipps = sourceTipps.minus(targetIETipps)
-                  sourceIEs = sourceTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatusNotEqual(TitleInstancePackagePlatform.findAllByIdInList(sourceTipps), newSub, RDStore.TIPP_STATUS_DELETED) : []
+                  sourceIEs = sourceTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatusNotInList(TitleInstancePackagePlatform.findAllByIdInList(sourceTipps), newSub, [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]) : []
               }
 
               sourceIEs.each { IssueEntitlement ie ->

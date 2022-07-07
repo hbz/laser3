@@ -298,8 +298,8 @@ class ApiOAMonitor {
             List tmp = []
             List<TitleInstancePackagePlatform> tiList = TitleInstance.executeQuery(
                     'select tipp from IssueEntitlement ie join ie.tipp tipp join ie.subscription sub join tipp.pkg pkg ' +
-                            ' where sub = :sub and pkg = :pkg and tipp.status != :statusTipp and ie.status != :statusIe',
-                    [sub: subPkg.subscription, pkg: subPkg.pkg, statusTipp: RDStore.TIPP_STATUS_DELETED, statusIe: RDStore.TIPP_STATUS_DELETED]
+                            ' where sub = :sub and pkg = :pkg and tipp.status != :statusTipp and ie.status not in (:statusIe)',
+                    [sub: subPkg.subscription, pkg: subPkg.pkg, statusTipp: RDStore.TIPP_STATUS_DELETED, statusIe: [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]]
             )
 
             tiList.each{ ti ->
