@@ -269,9 +269,49 @@
             </div>
         </div>
 
-        <g:if test="${surveyConfig.subSurveyUseForTransfer}">
-            <g:render template="/templates/survey/propertiesCompareInfo" model="[customProperties: customProperties]"/>
-        </g:if>
+            <g:if test="${customProperties || groupedProperties?.size() > 0 || orphanedProperties?.size() > 0 || privateProperties?.size() > 0}">
+                    <div class="ui card">
+                        <div class="content">
+                            <div class="ui accordion la-accordion-showMore js-propertiesCompareInfo-accordion">
+                                <div class="item">
+                                    <div class="title">
+                                        <button
+                                                class="ui button icon blue la-modern-button la-popup-tooltip la-delay right floated "
+                                                data-content="<g:message code="survey.subscription.propertiesChange.show"/>">
+                                            <i class="ui angle double down large icon"></i>
+                                        </button>
+                                        <laser:script file="${this.getGroovyPageFileName()}">
+                                            $('.js-propertiesCompareInfo-accordion')
+                                              .accordion({
+                                                onOpen: function() {
+                                                  $(this).siblings('.title').children('.button').attr('data-content','<g:message
+                                                code="survey.subscription.propertiesChange.hide"/> ')
+                                                    },
+                                                    onClose: function() {
+                                                      $(this).siblings('.title').children('.button').attr('data-content','<g:message
+                                                code="survey.subscription.propertiesChange.show"/> ')
+                                                    }
+                                                  })
+                                                ;
+                                        </laser:script>
+                                        <div class="content">
+                                            <h2 class="ui header">
+                                                ${message(code: 'survey.subscription.propertiesChange')}
+                                            </h2>
+                                        </div>
+                                    </div>
+
+                                    <div class="content" id="propertiesCompareInfo">
+                                        <div class="ui stackable grid container">
+                                            <g:render template="/templates/survey/propertiesCompareInfo"
+                                                      model="[customProperties: customProperties]"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            </g:if>
 
 
 

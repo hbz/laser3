@@ -63,6 +63,7 @@ class SurveyController {
     ExportClickMeService exportClickMeService
     CustomWkhtmltoxService wkhtmltoxService
     ExecutorService executorService
+    CompareService compareService
 
     /**
      * Redirects the call to the survey details view
@@ -797,7 +798,6 @@ class SurveyController {
                 }
             }*/
 
-            if(result.surveyConfig.subSurveyUseForTransfer) {
                 result.successorSubscription = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
 
                 result.customProperties = null
@@ -806,7 +806,6 @@ class SurveyController {
                     def propertiesSuccessorSub = result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
                     result.customProperties = comparisonService.comparePropertiesWithAudit(propertiesCurrentSub+propertiesSuccessorSub, true, true)
                 }
-            }
 
 
         }
@@ -2063,15 +2062,20 @@ class SurveyController {
                 }
 
         }
-
-            if(result.surveyConfig.subSurveyUseForTransfer) {
-                result.successorSubscription = result.subscription._getCalculatedSuccessorForSurvey()
-
-                result.compareProperties = null
-                if(result.successorSubscription){
-                    def propertiesCurrentSub = result.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
-                    def propertiesSuccessorSub = result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
-                    result.customProperties = comparisonService.compareAllPropertiesOnlyDiff(propertiesCurrentSub+propertiesSuccessorSub, true, true)
+            if(result.surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION]) {
+                if (!result.subscription) {
+                    result.successorSubscriptionParent = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
+                    result.successorSubscription = result.successorSubscriptionParent ? result.successorSubscriptionParent.getDerivedSubscriptionBySubscribers(result.participant) : null
+                } else {
+                    result.successorSubscription = result.subscription._getCalculatedSuccessorForSurvey()
+                }
+                if (result.successorSubscription) {
+                    List objects = []
+                    if(result.subscription){
+                        objects << result.subscription
+                    }
+                    objects << result.successorSubscription
+                    result = result + compareService.compareProperties(objects)
                 }
             }
         }
@@ -2160,14 +2164,12 @@ class SurveyController {
                 }
             }
 
-            if(result.surveyConfig.subSurveyUseForTransfer) {
-                result.successorSubscription = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
-                result.customProperties = null
-                if(result.successorSubscription){
-                    def propertiesCurrentSub = result.surveyConfig.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
-                    def propertiesSuccessorSub = result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
-                    result.customProperties = comparisonService.comparePropertiesWithAudit(propertiesCurrentSub+propertiesSuccessorSub, true, true)
-                }
+            result.successorSubscription = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
+            result.customProperties = null
+            if (result.successorSubscription) {
+                def propertiesCurrentSub = result.surveyConfig.subscription.propertySet.findAll { it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic)) }
+                def propertiesSuccessorSub = result.successorSubscription.propertySet.findAll { it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic)) }
+                result.customProperties = comparisonService.comparePropertiesWithAudit(propertiesCurrentSub + propertiesSuccessorSub, true, true)
             }
             result.links = linksGenerationService.getSourcesAndDestinations(result.subscription,result.user)
         }

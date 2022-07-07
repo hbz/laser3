@@ -94,6 +94,7 @@ class MyInstitutionController  {
     WorkflowService workflowService
     ManagementService managementService
     CustomWkhtmltoxService wkhtmltoxService
+    CompareService compareService
 
     /**
      * The landing page after login; this is also the call when the home button is clicked
@@ -2029,10 +2030,21 @@ join sub.orgRelations or_sub where
 		        result.links = linksGenerationService.getSourcesAndDestinations(result.subscription,result.user)
             }
 
-            if(result.surveyConfig.subSurveyUseForTransfer) {
-                result.successorSubscription = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
-
-                result.customProperties = result.successorSubscription ? comparisonService.comparePropertiesWithAudit(result.surveyConfig.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))} + result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}, true, true) : null
+            if(result.surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION]) {
+                if (!result.subscription) {
+                    result.successorSubscriptionParent = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
+                    result.successorSubscription = result.successorSubscriptionParent.getDerivedSubscriptionBySubscribers(result.participant)
+                } else {
+                    result.successorSubscription = result.subscription._getCalculatedSuccessorForSurvey()
+                }
+                if (result.successorSubscription) {
+                    List objects = []
+                    if(result.subscription){
+                        objects << result.subscription
+                    }
+                    objects << result.successorSubscription
+                    result = result + compareService.compareProperties(objects)
+                }
             }
 
             if (result.subscription && result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
