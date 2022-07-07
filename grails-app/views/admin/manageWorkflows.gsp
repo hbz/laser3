@@ -1,12 +1,6 @@
 <%@ page import="de.laser.utils.DateUtils; de.laser.workflow.WorkflowHelper; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.workflow.*; de.laser.WorkflowService" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'menu.admin.manageWorkflows')}</title>
-</head>
 
-<body>
+<laser:htmlStart message="menu.admin.manageWorkflows" />
 
 <semui:breadcrumbs>
     <semui:crumb message="menu.admin" controller="admin" action="index"/>
@@ -592,5 +586,4 @@
     });
 </laser:script>
 
-</body>
-</html>
+<laser:htmlEnd />

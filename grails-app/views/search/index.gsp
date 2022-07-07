@@ -1,5 +1,6 @@
 <%@ page import="de.laser.utils.LocaleUtils; de.laser.utils.DateUtils; de.laser.survey.SurveyConfig; de.laser.I10nTranslation; org.springframework.context.i18n.LocaleContextHolder; de.laser.RefdataValue; de.laser.DocContext;de.laser.storage.RDStore; java.text.SimpleDateFormat;" %>
-<laser:serviceInjection/>
+
+<laser:htmlStart message="search.advancedSearch" serviceInjection="true"/>
 
 <%
     SimpleDateFormat sdf = DateUtils.getSDF_yyyyMMddTHHmmssZ()
@@ -7,15 +8,6 @@
     String languageSuffix = LocaleUtils.getCurrentLang()
     String period
 %>
-
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'search.advancedSearch')}</title>
-</head>
-
-<body>
 
 <semui:breadcrumbs>
     <semui:crumb message="search.advancedSearch" class="active"/>
@@ -864,5 +856,4 @@
 
 </g:if>
 
-</body>
-</html>
+<laser:htmlEnd />

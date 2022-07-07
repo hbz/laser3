@@ -1,13 +1,7 @@
 <%@ page import="de.laser.auth.User; de.laser.DeletionService" %>
-<laser:serviceInjection />
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code: 'profile')}</title>
-</head>
 
-<body>
+<laser:htmlStart message="profile" serviceInjection="true" />
+
     <semui:breadcrumbs>
         <semui:crumb message="profile.bc.profile" class="active"/>
     </semui:breadcrumbs>
@@ -138,5 +132,4 @@
 
     </g:if>
 
-</body>
-</html>
+<laser:htmlEnd />

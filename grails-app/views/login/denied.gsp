@@ -1,9 +1,5 @@
-<head>
-<meta name="layout" content="laser">
-<title><g:message code="springSecurity.denied.title" /></title>
-</head>
+<laser:htmlStart message="springSecurity.denied.title" />
 
-<body>
     <semui:messages data="${flash}" />
 
     <div class='body'>
@@ -16,4 +12,5 @@
             </div>
         </div>
     </div>
-</body>
+
+<laser:htmlEnd />

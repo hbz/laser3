@@ -1,11 +1,6 @@
 <%@ page import="de.laser.system.SystemEvent;" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'menu.admin.systemEvents')}</title>
-</head>
-<body>
+
+<laser:htmlStart message="menu.admin.systemEvents" />
 
 <semui:breadcrumbs>
     <semui:crumb message="menu.admin" controller="admin" action="index"/>
@@ -84,7 +79,6 @@
         </laser:script>
     </semui:filter>
 
-<div>
     <table class="ui sortable celled la-js-responsive-table la-table la-hover-table compact table">
         <thead>
         <tr>
@@ -147,6 +141,5 @@
         </g:each>
         </tbody>
     </table>
-</div>
-</body>
-</html>
+
+<laser:htmlEnd />

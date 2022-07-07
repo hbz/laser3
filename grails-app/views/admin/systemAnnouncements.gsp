@@ -1,11 +1,4 @@
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'menu.admin.announcements')}</title>
-    </head>
-
-    <body>
+<laser:htmlStart message="menu.admin.announcements" />
 
     <semui:breadcrumbs>
         <semui:crumb message="menu.admin" controller="admin" action="index"/>
@@ -176,5 +169,4 @@ ${currentAnnouncement?.getCleanContent()}
         </g:each>
     </div>
 
-  </body>
-</html>
+<laser:htmlEnd />

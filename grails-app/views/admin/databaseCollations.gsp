@@ -1,12 +1,6 @@
 <%@ page import="de.laser.helper.DatabaseInfo; groovy.sql.GroovyRowResult; de.laser.RefdataValue; de.laser.storage.BeanStore" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code: "menu.admin.databaseCollations")}</title>
-</head>
 
-<body>
+<laser:htmlStart message="menu.admin.databaseCollations" />
 
 <semui:breadcrumbs>
     <semui:crumb message="menu.admin" controller="admin" action="index"/>
@@ -176,6 +170,4 @@
     }).trigger('change')
 </laser:script>
 
-</body>
-
-</html>
+<laser:htmlEnd />

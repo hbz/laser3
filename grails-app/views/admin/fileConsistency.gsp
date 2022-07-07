@@ -1,12 +1,6 @@
 <%@ page import="de.laser.storage.RDStore; de.laser.DocContext" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code: "menu.admin.fileConsistency")}</title>
-</head>
 
-<body>
+<laser:htmlStart message="menu.admin.fileConsistency" />
 
 <semui:breadcrumbs>
     <semui:crumb message="menu.admin" controller="admin" action="index"/>
@@ -208,6 +202,4 @@
     </div>
 </div>
 
-
-</body>
-</html>
+<laser:htmlEnd />

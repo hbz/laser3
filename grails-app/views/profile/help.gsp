@@ -1,12 +1,5 @@
 <%@ page import="de.laser.RefdataValue;de.laser.auth.Role;de.laser.auth.UserOrg" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code: 'menu.user.help')}</title>
-</head>
-
-<body>
+<laser:htmlStart message="menu.user.help" />
 
 <semui:breadcrumbs>
     <semui:crumb message="menu.institutions.help" class="active"/>
@@ -82,5 +75,4 @@
         </div>
     </div>
 
-</body>
-</html>
+<laser:htmlEnd />

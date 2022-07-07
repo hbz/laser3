@@ -1,12 +1,6 @@
 <%@ page import="de.laser.storage.RDStore" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : Titles Enrichment</title>
-</head>
 
-<body>
+<laser:htmlStart text="Titles Enrichment" />
 
 <semui:breadcrumbs>
     <semui:crumb message="menu.admin" controller="admin" action="index" />
@@ -51,5 +45,4 @@
     });
 </laser:script>
 
-</body>
-</html>
+<laser:htmlEnd />

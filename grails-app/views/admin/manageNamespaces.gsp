@@ -1,10 +1,6 @@
 <%@ page import="de.laser.Identifier; de.laser.IdentifierNamespace; de.laser.I10nTranslation" %>
-<!doctype html>
-<html>
-	<head>
-		<meta name="layout" content="laser">
-		<title>${message(code:'laser')} : ${message(code: 'menu.admin.manageIdentifierNamespaces')}</title>
-	</head>
+
+<laser:htmlStart message="menu.admin.manageIdentifierNamespaces" />
 
 		<semui:breadcrumbs>
 			<semui:crumb message="menu.admin" controller="admin" action="index" />
@@ -284,5 +280,5 @@
                     </tbody>
                 </table>
         </g:else>
-	</body>
-</html>
+
+<laser:htmlEnd />

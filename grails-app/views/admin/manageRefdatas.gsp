@@ -1,13 +1,7 @@
-<%@ page import="de.laser.RefdataCategory; de.laser.I10nTranslation; de.laser.RefdataValue" %>
-<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
-<!doctype html>
-<html>
-	<head>
-		<meta name="layout" content="laser">
-		<title>${message(code:'laser')} : ${message(code: 'menu.admin.manageRefdatas')}</title>
-	</head>
+<%@ page import="de.laser.RefdataCategory; de.laser.I10nTranslation; de.laser.RefdataValue; grails.plugin.springsecurity.SpringSecurityUtils" %>
 
-    <body>
+<laser:htmlStart message="menu.admin.manageRefdatas" />
+
         <semui:debugInfo>
             <laser:render template="/templates/refdata/integrityCheck" model="[result: integrityCheckResult]" />
         </semui:debugInfo>
@@ -237,5 +231,4 @@
             </g:form>
         </semui:modal>
 
-	</body>
-</html>
+<laser:htmlEnd />

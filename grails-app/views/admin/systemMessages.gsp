@@ -1,11 +1,6 @@
 <%@ page import="de.laser.storage.RDStore; de.laser.system.SystemMessage; de.laser.jobs.HeartbeatJob" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code: 'menu.admin.systemMessage')}</title>
-</head>
-<body>
+
+<laser:htmlStart message="menu.admin.systemMessage" />
 
 <semui:breadcrumbs>
     <semui:crumb message="menu.admin" controller="admin" action="index"/>
@@ -102,5 +97,4 @@
     </g:form>
 </semui:modal>
 
-</body>
-</html>
+<laser:htmlEnd />

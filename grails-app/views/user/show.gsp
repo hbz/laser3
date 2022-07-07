@@ -1,11 +1,7 @@
 <%@ page import="de.laser.Org" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${user.display}</title>
-</head>
-<body>
+
+<laser:htmlStart text="${user.display}" />
+
       <laser:render template="breadcrumb" model="${[ params:params ]}"/>
 
       <semui:h1HeaderWithIcon text="${user.username} : ${user.displayName ?: 'No username'}" />
@@ -49,5 +45,5 @@
           </g:each>
         </tbody>
       </table>
-</body>
-</html>
+
+<laser:htmlEnd />

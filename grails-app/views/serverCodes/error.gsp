@@ -1,14 +1,8 @@
 <%@ page import="de.laser.utils.AppUtils" %>
-<laser:serviceInjection />
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} - ${message(code: 'serverCode.error.message1')}</title>
-    <link rel="stylesheet" href="${resource(dir: 'css', file: 'errors.css')}" type="text/css">
-</head>
 
-<body>
+<laser:htmlStart message="serverCode.error.message1" serviceInjection="true">
+    <link rel="stylesheet" href="${resource(dir: 'css', file: 'errors.css')}" type="text/css">
+</laser:htmlStart>
 
 <br />
 
@@ -64,5 +58,4 @@
     <g:renderException exception="${exception}"/>
 </g:elseif>
 
-</body>
-</html>
+<laser:htmlEnd />

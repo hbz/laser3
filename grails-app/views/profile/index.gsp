@@ -1,14 +1,6 @@
-<%@ page import="de.laser.UserSetting; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.auth.Role; de.laser.auth.UserOrg; de.laser.UserSetting.KEYS" %>
-<%@ page import="de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
-<laser:serviceInjection/>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code: 'profile.user')}</title>
-</head>
+<%@ page import="de.laser.UserSetting; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.auth.Role; de.laser.auth.UserOrg; de.laser.UserSetting.KEYS; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
 
-<body>
+<laser:htmlStart message="profile.user" serviceInjection="true" />
 
 <semui:breadcrumbs>
     <semui:crumb message="profile.user" class="active"/>
@@ -643,5 +635,4 @@
 
 </laser:script>
 
-</body>
-</html>
+<laser:htmlEnd />

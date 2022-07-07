@@ -1,11 +1,4 @@
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : Test E-Mail Sending</title>
-    </head>
-
-    <body>
+<laser:htmlStart text="Test E-Mail Sending" />
 
     <semui:breadcrumbs>
         <semui:crumb message="menu.admin" controller="admin" action="index"/>
@@ -41,5 +34,4 @@
         <semui:msg class="warning" header="${message(code:'default.hint.label')}" text="${message(code:'system.config.mail.disabled')}" />
     </g:if>
 
-  </body>
-</html>
+<laser:htmlEnd />

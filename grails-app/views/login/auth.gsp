@@ -1,12 +1,6 @@
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : Login</title>
-</head>
 
-<body>
+<laser:htmlStart text="Login" />
 
 <div id='login' class="container">
     <div class='inner'>
@@ -61,5 +55,5 @@
         }
     });
 </laser:script>
-</body>
-</html>
+
+<laser:htmlEnd />

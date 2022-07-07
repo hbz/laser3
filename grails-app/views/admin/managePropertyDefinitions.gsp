@@ -1,13 +1,7 @@
 <%@ page import="de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.I10nTranslation; grails.plugin.springsecurity.SpringSecurityUtils" %>
-<laser:serviceInjection/>
-<!doctype html>
-<html>
-	<head>
-		<meta name="layout" content="laser">
-		<title>${message(code:'laser')} : ${message(code: 'menu.admin.managePropertyDefinitions')}</title>
-	</head>
 
-    <body>
+<laser:htmlStart message="menu.admin.managePropertyDefinitions" serviceInjection="true"/>
+
 		<semui:breadcrumbs>
 			<semui:crumb message="menu.admin" controller="admin" action="index" />
 			<semui:crumb message="menu.admin.managePropertyDefinitions" class="active"/>
@@ -296,5 +290,4 @@
 
 		</laser:script>
 
-	</body>
-</html>
+<laser:htmlEnd />

@@ -1,11 +1,4 @@
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} - ${message(code: 'serverCode.notFound.message1')}</title>
-</head>
-
-<body>
+<laser:htmlStart message="serverCode.notFound.message1" />
 
     <br />
 
@@ -51,5 +44,4 @@
         </div>
     </div>
 
-</body>
-</html>
+<laser:htmlEnd />

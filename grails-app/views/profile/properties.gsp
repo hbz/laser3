@@ -1,12 +1,5 @@
 <%@ page import="de.laser.RefdataCategory; de.laser.I10nTranslation; de.laser.properties.PropertyDefinition; de.laser.RefdataValue"  %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code: 'menu.user.properties')}</title>
-</head>
-
-<body>
+<laser:htmlStart message="menu.user.properties" />
 
 <semui:breadcrumbs>
     <semui:crumb message="menu.user.properties" class="active"/>
@@ -138,5 +131,4 @@
     </g:each>
 </div>
 
-</body>
-</html>
+<laser:htmlEnd />

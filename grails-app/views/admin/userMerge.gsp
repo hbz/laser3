@@ -1,11 +1,4 @@
-<!doctype html>
-<html>
-  <head>
-    <meta name="layout" content="laser">
-      <title>${message(code:'laser')} : Admin: User Merge</title>
-  </head>
-
-  <body>
+<laser:htmlStart text="Admin: User Merge" />
 
     <semui:breadcrumbs>
         <semui:crumb message="menu.admin" controller="admin" action="index" />
@@ -84,5 +77,5 @@
         $('#user_merge_modal').modal('show');
     </laser:script>
   </g:if>
-  </body>
-</html>
+
+<laser:htmlEnd />

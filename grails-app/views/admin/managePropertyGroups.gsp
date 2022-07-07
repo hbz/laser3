@@ -1,12 +1,6 @@
 <%@ page import="de.laser.properties.PropertyDefinition;de.laser.*"%>
 
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'menu.institutions.manage_prop_groups')}</title>
-    </head>
-    <body>
+<laser:htmlStart message="menu.institutions.manage_prop_groups" />
 
         <semui:breadcrumbs>
             <semui:crumb message="menu.admin" controller="admin" action="index" />
@@ -118,5 +112,4 @@
         })
     </laser:script>
 
-  </body>
-</html>
+<laser:htmlEnd />

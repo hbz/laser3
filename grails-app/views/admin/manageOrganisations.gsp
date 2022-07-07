@@ -1,13 +1,6 @@
 <%@ page import="de.laser.Org; de.laser.OrgSetting; de.laser.RefdataCategory; groovy.json.JsonOutput; de.laser.api.v0.ApiToolkit; de.laser.api.v0.ApiManager; de.laser.auth.Role; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Contact; de.laser.OrgRole; de.laser.RefdataValue" %>
-<laser:serviceInjection />
-<!doctype html>
 
-<html>
-    <head>
-        <meta name="layout" content="laser" />
-        <title>${message(code:'laser')} : ${message(code:'menu.admin.manageOrganisations')}</title>
-    </head>
-    <body>
+<laser:htmlStart message="menu.admin.manageOrganisations" serviceInjection="true"/>
 
     <semui:breadcrumbs>
         <semui:crumb message="menu.admin" controller="admin" action="index" />
@@ -397,5 +390,4 @@
 
     </semui:modal>
 
-    </body>
-</html>
+<laser:htmlEnd />

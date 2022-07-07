@@ -1,11 +1,4 @@
-<!doctype html>
-<html>
-  <head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} Admin::Package Delete</title>
-  </head>
-
-    <body>
+<laser:htmlStart text="Admin::Package Delete" />
 
         <semui:breadcrumbs>
             <semui:crumb message="menu.admin" controller="admin" action="index" />
@@ -71,5 +64,4 @@
         }
         </laser:script>
 
-  </body>
-</html>     
+<laser:htmlEnd />

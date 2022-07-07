@@ -1,11 +1,4 @@
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code: 'privacyNotice')}</title>
-</head>
-
-<body>
+<laser:htmlStart message="privacyNotice" />
 
 <semui:breadcrumbs>
     <semui:crumb message="privacyNotice" class="active"/>
@@ -33,7 +26,5 @@
 
 </semui:form>
 
-
-</body>
-</html>
+<laser:htmlEnd />
 

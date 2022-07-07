@@ -1,12 +1,6 @@
 <%@ page import="de.laser.utils.DateUtils; de.laser.helper.DatabaseInfo; de.laser.utils.AppUtils; de.laser.storage.BeanStore; de.laser.system.SystemSetting; grails.util.Metadata; de.laser.reporting.report.ElasticSearchHelper; grails.util.Environment; de.laser.config.ConfigMapper" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'menu.admin.appInfo')}</title>
-</head>
 
-<body>
+<laser:htmlStart message="menu.admin.appInfo" />
 
     <semui:breadcrumbs>
         <semui:crumb message="menu.admin" controller="admin" action="index"/>
@@ -177,5 +171,5 @@
             </td></tr>
         </tbody>
     </table>
-</body>
-</html>
+
+<laser:htmlEnd />
