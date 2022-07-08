@@ -1,13 +1,6 @@
 <%@ page import="grails.converters.JSON; de.laser.PendingChangeConfiguration; de.laser.TitleInstancePackagePlatform; de.laser.Subscription;de.laser.License;de.laser.finance.CostItem;de.laser.PendingChange; de.laser.IssueEntitlement; de.laser.storage.RDStore; de.laser.RefdataValue;" %>
-<laser:serviceInjection/>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'myinst.menu.pendingChanges.label')}</title>
-</head>
 
-<body>
+<laser:htmlStart message="myinst.menu.pendingChanges.label" serviceInjection="true"/>
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
 
@@ -266,5 +259,4 @@
 
 
 </div>
-</body>
-</html>
+<laser:htmlEnd />

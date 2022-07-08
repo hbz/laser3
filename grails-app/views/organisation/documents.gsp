@@ -1,13 +1,5 @@
 <%@page import="de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.storage.RDStore" %>
-<!doctype html>
-<html>
-  <head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'default.documents.label')}</title>
-  </head>
-
-  <body>
-  <laser:serviceInjection />
+<laser:htmlStart message="default.documents.label" serviceInjection="true" />
 
     <%
       List notAvailable = [ RDStore.DOC_TYPE_ONIXPL, RDStore.DOC_TYPE_NOTE, RDStore.DOC_TYPE_ANNOUNCEMENT ]
@@ -32,5 +24,4 @@
     <semui:messages data="${flash}" />
 
     <laser:render template="/templates/documents/table" model="${[inContextOrg: inContextOrg, instance:orgInstance, context:'documents', redirect:'documents', owntp: 'org']}"/>
-  </body>
-</html>
+<laser:htmlEnd />

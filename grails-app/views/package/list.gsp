@@ -1,12 +1,7 @@
 <%@ page import="de.laser.Package" %>
-<!doctype html>
-<html>
-  <head>
-    <meta name="layout" content="laser">
+<laser:htmlStart message="myinst.packages" />
+
     <g:set var="entityName" value="${message(code: 'package.label')}" />
-    <title>${message(code:'laser')} : ${message(code:'myinst.packages')}</title>
-  </head>
-  <body>
 
   <semui:breadcrumbs>
       <semui:crumb message="myinst.packages" class="active"/>
@@ -82,5 +77,4 @@
 
         <semui:paginate action="list" controller="package" params="${params}" next="Next" prev="Prev" max="${max}" total="${packageInstanceTotal}" />
 
-    </body>
-</html>
+    <laser:htmlEnd />

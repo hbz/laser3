@@ -1,12 +1,6 @@
 <%@ page import="de.laser.*; de.laser.auth.*" %>
-<laser:serviceInjection />
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'menu.institutions.users')}</title>
-</head>
-<body>
+<laser:htmlStart message="menu.institutions.users" serviceInjection="true"/>
+
         <g:if test="${controllerName == 'myInstitution'}">
         %{-- myInstitution has no breadcrumb yet --}%
             <laser:render template="/organisation/breadcrumb" model="${[ inContextOrg: inContextOrg, orgInstance: orgInstance, institutionalView: institutionalView, params:params ]}"/>
@@ -41,5 +35,4 @@
 
         <laser:render template="/templates/user/list" model="${tmplConfig}" />
 
-</body>
-</html>
+<laser:htmlEnd />

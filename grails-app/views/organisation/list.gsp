@@ -1,13 +1,7 @@
- <%@ page import="de.laser.*" %>
- <laser:serviceInjection/>
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
+<%@ page import="de.laser.*" %>
+<laser:htmlStart message="menu.public.all_orgs" serviceInjection="true"/>
+
         <g:set var="entityName" value="${message(code: 'org.label')}" />
-        <title>${message(code:'laser')} : <g:message code="menu.public.all_orgs" /></title>
-    </head>
-    <body>
 
         <semui:breadcrumbs>
             <semui:crumb message="menu.public.all_orgs" class="active" />
@@ -75,5 +69,4 @@
 
         <semui:paginate total="${orgListTotal}" params="${params}" max="${max}" offset="${offset}" />
 
-    </body>
-</html>
+    <laser:htmlEnd />

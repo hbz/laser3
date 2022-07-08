@@ -1,12 +1,5 @@
 <%@ page import="de.laser.storage.RDStore; de.laser.IssueEntitlement;de.laser.Platform; de.laser.remote.ApiSource;" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'myinst.currentTitles.label')}</title>
-</head>
-
-<body>
+<laser:htmlStart message="myinst.currentTitles.label" />
 
 <semui:breadcrumbs>
     <semui:crumb message="myinst.currentTitles.label" class="active"/>
@@ -360,5 +353,4 @@
     <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]"/>
 </semui:debugInfo>
 
-</body>
-</html>
+<laser:htmlEnd />

@@ -1,11 +1,4 @@
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'menu.admin.statistics')}</title>
-    </head>
-
-    <body>
+<laser:htmlStart message="menu.admin.statistics" />
 
         <semui:breadcrumbs>
             <semui:crumb message="menu.admin" controller="admin" action="index"/>
@@ -39,5 +32,4 @@
             </tbody>
         </table>
 
-    </body>
-</html>
+<laser:htmlEnd />

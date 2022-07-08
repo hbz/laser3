@@ -1,12 +1,5 @@
 <%@ page import="de.laser.MailTemplate; de.laser.storage.RDConstants;de.laser.RefdataCategory" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'mailTemplate.plural.label')}</title>
-</head>
-
-<body>
+<laser:htmlStart message="mailTemplate.plural.label" />
 
 <semui:breadcrumbs>
     <semui:crumb controller="dataManager" action="index" text="${message(code:'menu.datamanager')}" />
@@ -171,5 +164,4 @@
     </g:form>
 </semui:modal>
 
-</body>
-</html>
+<laser:htmlEnd />

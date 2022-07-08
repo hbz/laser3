@@ -1,12 +1,5 @@
 <%@ page import="de.laser.properties.PropertyDefinition;de.laser.*"%>
-<laser:serviceInjection />
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'menu.institutions.prop_groups')}</title>
-    </head>
-    <body>
+<laser:htmlStart message="menu.institutions.prop_groups" serviceInjection="true"/>
 
         <semui:breadcrumbs>
             <semui:crumb message="menu.institutions.manage_props" class="active"/>
@@ -135,5 +128,4 @@
         })
     </laser:script>
 
-  </body>
-</html>
+<laser:htmlEnd />

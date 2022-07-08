@@ -1,11 +1,4 @@
-<!doctype html>
-<html>
-  <head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'default.documents.label')}</title>
-  </head>
-
-  <body>
+<laser:htmlStart message="default.documents.label" />
 
     <laser:render template="breadcrumb" model="${[ params:params ]}"/>
     <semui:controlButtons>
@@ -31,5 +24,4 @@
 
     <laser:render template="/templates/documents/table" model="${[instance:subscription, context:'documents', redirect:'documents', owntp: 'subscription']}"/>
 
-  </body>
-</html>
+<laser:htmlEnd />

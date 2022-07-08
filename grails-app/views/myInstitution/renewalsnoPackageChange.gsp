@@ -1,11 +1,4 @@
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'myinst.renewals')}</title>
-</head>
-
-<body>
+<laser:htmlStart message="myinst.renewals" />
 
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
@@ -134,5 +127,4 @@
     <input type="hidden" name="ecount" value="${counter}"/>
 </g:form>
 
-</body>
-</html>
+<laser:htmlEnd />

@@ -1,12 +1,7 @@
 <%@ page import="de.laser.Package" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : Package Tipps LAS:eR and we:kb</title>
-</head>
 
-<body>
+<laser:htmlStart text="Package Tipps LAS:eR and we:kb" />
+
 <semui:breadcrumbs>
     <semui:crumb message="menu.admin" controller="admin" action="index" />
     <semui:crumb text="Package Tipps LAS:eR and we:kb" class="active"/>
@@ -78,5 +73,4 @@
     </div>
 
 </div>
-</body>
-</html>
+<laser:htmlEnd />

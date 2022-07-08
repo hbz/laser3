@@ -1,11 +1,5 @@
 <%@ page import="de.laser.RefdataValue;de.laser.storage.RDConstants" %>
-<!doctype html>
-<html>
-  <head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'menu.public.all_titles')}</title>
-  </head>
-  <body>
+<laser:htmlStart message="menu.public.all_titles" />
 
     <semui:breadcrumbs>
       <semui:crumb message="menu.public.all_titles" class="active" />
@@ -108,5 +102,4 @@
 
         </div><!-- .sixteen -->
       </div><!-- .grid -->
-  </body>
-</html>
+<laser:htmlEnd />

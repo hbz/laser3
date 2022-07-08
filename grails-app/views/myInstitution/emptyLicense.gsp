@@ -1,13 +1,6 @@
 <%@page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDConstants" %>
-<laser:serviceInjection/>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'license.new')}</title>
-</head>
 
-<body>
+<laser:htmlStart message="license.new" serviceInjection="true"/>
 
     <semui:breadcrumbs>
         <semui:crumb controller="myInstitution" action="currentLicenses" message="license.current"/>
@@ -141,5 +134,4 @@
                     });
 </laser:script>
 
-</body>
-</html>
+<laser:htmlEnd />

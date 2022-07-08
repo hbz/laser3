@@ -1,12 +1,5 @@
 <%@ page import="de.laser.Platform; de.laser.storage.RDStore" %>
-
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'menu.my.platforms')}</title>
-</head>
-<body>
+<laser:htmlStart message="menu.my.platforms" />
 
 <semui:breadcrumbs>
     <semui:crumb message="menu.my.platforms" class="active" />
@@ -101,5 +94,4 @@
     <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
 </semui:debugInfo>
 
-</body>
-</html>
+<laser:htmlEnd />

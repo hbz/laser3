@@ -1,14 +1,7 @@
 <%@ page import="de.laser.OrgSetting; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.Org; de.laser.auth.Role; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
-<laser:serviceInjection />
 
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'org.nav.options')}</title>
-    </head>
-    <body>
+<laser:htmlStart message="org.nav.options" serviceInjection="true" />
 
         <semui:breadcrumbs>
             <g:if test="${!inContextOrg}">
@@ -218,5 +211,4 @@
 
         </div><!-- .grid -->
 
-    </body>
-</html>
+<laser:htmlEnd />

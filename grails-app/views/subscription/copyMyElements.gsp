@@ -1,14 +1,6 @@
 <%@ page import="de.laser.Person; de.laser.RefdataValue; de.laser.SubscriptionController; de.laser.CopyElementsService" %>
-<laser:serviceInjection/>
+<laser:htmlStart message="subscription.details.copyMyElements.label" serviceInjection="true" />
 
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'subscription.details.copyMyElements.label')}</title>
-</head>
-
-<body>
 <laser:render template="breadcrumb" model="${[params: params]}"/>
 
 <semui:h1HeaderWithIcon message="subscription.details.copyMyElements.label" />
@@ -65,5 +57,4 @@ if (targetObjectId) params << [targetObjectId: genericOIDService.getOID(targetOb
 </g:elseif>
 <laser:render template="/templates/copyElements/copyElementsJS"/>
 
-</body>
-</html>
+<laser:htmlEnd />

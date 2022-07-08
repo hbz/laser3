@@ -1,10 +1,5 @@
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'license.nav.notes')}</title>
-</head>
-<body>
+<laser:htmlStart message="license.nav.notes" />
+
     <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
     <semui:controlButtons>
@@ -21,5 +16,4 @@
 
     <laser:render template="/templates/notes/table" model="${[instance: license, redirect: 'notes']}"/>
 
-</body>
-</html>
+<laser:htmlEnd />

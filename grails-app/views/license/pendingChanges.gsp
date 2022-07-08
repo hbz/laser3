@@ -1,14 +1,5 @@
-<%@ page import="de.laser.License" %>
-<%@ page import="de.laser.RefdataValue" %>
-<laser:serviceInjection />
-
-<!doctype html>
-<html>
-<head>
-  <meta name="layout" content="laser">
-  <title>${message(code:'laser')} : ${message(code:'pendingChange.plural')}</title>
-</head>
-<body>
+<%@ page import="de.laser.License; de.laser.RefdataValue" %>
+<laser:htmlStart message="pendingChange.plural" serviceInjection="true" />
 
     <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
@@ -30,5 +21,4 @@
         <laser:render template="/templates/pendingChanges" model="${['pendingChanges':pcList, 'flash':flash, 'model':member, 'tmplSimpleView':true]}"/>
     </g:each>
 
-</body>
-</html>
+<laser:htmlEnd />

@@ -1,14 +1,5 @@
 <%@ page import="de.laser.License; de.laser.Person; de.laser.storage.RDStore; de.laser.FormService" %>
-<laser:serviceInjection/>
-
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'subscriptionsManagement.subscriptions.members')}</title>
-</head>
-
-<body>
+<laser:htmlStart message="subscriptionsManagement.subscriptions.members" serviceInjection="true"/>
 
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="currentSubscriptions"
@@ -77,6 +68,5 @@
 </g:elseif>
 
 
-</body>
-</html>
+<laser:htmlEnd />
 

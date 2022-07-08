@@ -1,13 +1,6 @@
-<laser:serviceInjection />
+<laser:htmlStart message="menu.public.all_cons" serviceInjection="true"/>
 
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
         <g:set var="entityName" value="${message(code: 'org.label')}" />
-        <title>${message(code:'laser')} : ${message(code: 'menu.public.all_cons')}</title>
-    </head>
-    <body>
 
     <semui:breadcrumbs>
         <semui:crumb message="menu.public.all_cons" class="active" />
@@ -49,5 +42,4 @@
 
     <semui:paginate action="listConsortia" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" max="${max}" total="${consortiaTotal}" />
 
-  </body>
-</html>
+  <laser:htmlEnd />

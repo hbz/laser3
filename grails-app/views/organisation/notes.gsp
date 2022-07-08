@@ -1,11 +1,5 @@
-<!doctype html>
-<laser:serviceInjection />
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'default.notes.label')}</title>
-    </head>
-    <body>
+<laser:htmlStart message="default.notes.label" serviceInjection="true" />
+
         <semui:breadcrumbs>
             <g:if test="${!inContextOrg}">
                 <semui:crumb text="${orgInstance.getDesignation()}" class="active"/>
@@ -23,5 +17,4 @@
 
         <laser:render template="/templates/notes/table" model="${[instance: orgInstance, redirect: 'notes']}"/>
 
-  </body>
-</html>
+  <laser:htmlEnd />

@@ -1,17 +1,7 @@
 <%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory;" %>
-<laser:serviceInjection/>
-
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'createGeneralSurvey.label')}</title>
-</head>
-
-<body>
+<laser:htmlStart message="createGeneralSurvey.label" serviceInjection="true"/>
 
 <semui:breadcrumbs>
-
     <semui:crumb controller="survey" action="workflowsSurveysConsortia" message="currentSurveys.label"/>
     <semui:crumb message="createGeneralSurvey.label" class="active"/>
 </semui:breadcrumbs>
@@ -57,5 +47,4 @@
     </g:form>
 </semui:form>
 
-</body>
-</html>
+<laser:htmlEnd />

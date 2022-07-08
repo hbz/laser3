@@ -4,13 +4,8 @@
 <g:set var="ddcs" value="${controlledListService.getAllPossibleDdcsBySub(subscription)}"/>
 <g:set var="languages" value="${controlledListService.getAllPossibleLanguagesBySub(subscription)}"/>
 
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'subscription.details.stats.label')}</title>
-    </head>
-    <body>
+<laser:htmlStart message="subscription.details.stats.label" serviceInjection="true" />
+
         <semui:debugInfo>
             <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
         </semui:debugInfo>
@@ -296,5 +291,4 @@
                 });
             });
         </laser:script>
-    </body>
-</html>
+<laser:htmlEnd />

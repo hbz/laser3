@@ -1,12 +1,6 @@
 <%@ page import="de.laser.Subscription" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'myinst.renewalSearch.label')}</title>
-</head>
+<laser:htmlStart message="myinst.renewalSearch.label" />
 
-<body>
     <semui:breadcrumbs>
         <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
         <semui:crumb controller="myInstitution" action="currentSubscriptions" message="myinst.currentSubscriptions.label"/>
@@ -200,5 +194,5 @@
         </div>
     </aside>
 </g:form>
-</body>
-</html>
+
+<laser:htmlEnd />

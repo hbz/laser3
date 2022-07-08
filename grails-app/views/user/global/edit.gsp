@@ -1,12 +1,6 @@
 <%@ page import="de.laser.auth.UserRole;de.laser.Org;de.laser.auth.Role" %>
-<laser:serviceInjection />
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : <g:message code="user.edit.label" /></title>
-</head>
-<body>
+<laser:htmlStart message="user.edit.label" serviceInjection="true"/>
+
         <laser:render template="/user/global/breadcrumb" model="${[ params:params ]}"/>
 
         <semui:controlButtons>
@@ -217,5 +211,4 @@
         </g:if>
     </g:if>
 
-</body>
-</html>
+<laser:htmlEnd />

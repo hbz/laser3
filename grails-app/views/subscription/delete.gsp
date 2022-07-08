@@ -1,13 +1,5 @@
-<laser:serviceInjection/>
+<laser:htmlStart message="default.subscription.label" serviceInjection="true"/>
 
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'default.subscription.label')}</title>
-</head>
-
-<body>
     <laser:render template="breadcrumb" model="${[ subscription:subscription, params:params ]}"/>
 
     <semui:h1HeaderWithIcon text="${subscription.name}" />
@@ -92,5 +84,4 @@
         </table>
     </g:if>
 
-</body>
-</html>
+<laser:htmlEnd />

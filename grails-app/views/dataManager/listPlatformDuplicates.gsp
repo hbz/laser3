@@ -1,12 +1,5 @@
 <%@ page import="de.laser.titles.TitleInstance" %>
-<!doctype html>
-<html>
-  <head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : Admin::Platform duplicates</title>
-  </head>
-
-  <body>
+<laser:htmlStart text="Admin::Platform duplicates" />
 
         <semui:breadcrumbs>
             <semui:crumb message="menu.admin" controller="admin" action="index" />
@@ -93,5 +86,4 @@
             </g:form>
         </semui:form>
 
-  </body>
-</html>
+<laser:htmlEnd />

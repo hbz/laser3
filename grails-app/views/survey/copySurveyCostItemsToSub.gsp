@@ -1,15 +1,5 @@
 <%@ page import="de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg;de.laser.finance.CostItem" %>
-<laser:serviceInjection/>
-
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'surveyInfo.copySurveyCostItems')}</title>
-
-</head>
-
-<body>
+<laser:htmlStart message="surveyInfo.copySurveyCostItems" serviceInjection="true" />
 
 <semui:breadcrumbs>
     <semui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
@@ -242,5 +232,4 @@
         }
     })
 </laser:script>
-</body>
-</html>
+<laser:htmlEnd />

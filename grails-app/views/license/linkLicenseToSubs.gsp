@@ -1,13 +1,5 @@
 <%@ page import="de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
-<laser:serviceInjection />
-<!doctype html>
-
-<html>
-    <head>
-        <meta name="layout" content="laser" />
-        <title>${message(code:'laser')} : ${message(code:'myinst.currentSubscriptions.label')}</title>
-    </head>
-    <body>
+<laser:htmlStart message="myinst.currentSubscriptions.label" serviceInjection="true"/>
 
     <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
@@ -39,5 +31,4 @@
         <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
     </semui:debugInfo>
 
-  </body>
-</html>
+<laser:htmlEnd />

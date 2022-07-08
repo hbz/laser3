@@ -1,12 +1,5 @@
 <%@ page import="de.laser.Subscription" %>
-
-<!doctype html>
-<html>
-  <head>
-      <meta name="layout" content="laser">
-      <title>${message(code:'laser')} : ${message(code:'default.subscription.label')}</title>
-  </head>
-  <body>
+<laser:htmlStart message="default.subscription.label" />
 
     <laser:render template="breadcrumb" model="${[ params:params ]}"/>
 
@@ -58,5 +51,4 @@
         </p>
       </g:else>
 
-  </body>
-</html>
+<laser:htmlEnd />

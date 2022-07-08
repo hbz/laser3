@@ -1,16 +1,5 @@
 <%@ page import="de.laser.Subscription; de.laser.RefdataCategory; de.laser.Doc; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataValue;de.laser.survey.SurveyConfig" %>
-<laser:serviceInjection/>
-<!doctype html>
-
-
-
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'copySurvey.label')}</title>
-</head>
-
-<body>
+<laser:htmlStart message="copySurvey.label" serviceInjection="true" />
 
 <semui:breadcrumbs>
     <semui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
@@ -583,5 +572,4 @@
     </g:form>
 </g:if>
 
-</body>
-</html>
+<laser:htmlEnd />

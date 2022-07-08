@@ -1,14 +1,5 @@
 <%@ page import="de.laser.survey.SurveyConfig; de.laser.Org;de.laser.RefdataCategory;de.laser.survey.SurveyInfo;de.laser.storage.RDStore; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem;de.laser.survey.SurveyResult" %>
-<laser:serviceInjection/>
-
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'manageParticipantSurveys.header')}</title>
-</head>
-
-<body>
+<laser:htmlStart message="manageParticipantSurveys.header" serviceInjection="true"/>
 
 <semui:breadcrumbs>
     <semui:crumb message="manageParticipantSurveys.header" class="active"/>
@@ -261,5 +252,4 @@
     </semui:form>
 </div>
 
-</body>
-</html>
+<laser:htmlEnd />

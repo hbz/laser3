@@ -1,12 +1,6 @@
 <%@ page import="de.laser.IssueEntitlement; de.laser.TitleInstancePackagePlatform; grails.converters.JSON" contentType="text/html;charset=UTF-8" %>
-<laser:serviceInjection/>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title><g:message code="laser" /> : Expunge deleted TIPPs</title>
-    </head>
+<laser:htmlStart text="Expunge deleted TIPPs" serviceInjection="true"/>
 
-    <body>
         <table class="ui table">
             <tbody>
                 <tr>
@@ -94,5 +88,5 @@
                     <g:message code="admin.cleanupTIPP.submit"/>
             </div>
         </g:form>
-    </body>
-</html>
+
+<laser:htmlEnd />

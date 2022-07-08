@@ -1,13 +1,6 @@
 <%@ page import="de.laser.utils.DateUtils; de.laser.Org; de.laser.finance.CostItem; de.laser.Subscription; de.laser.Platform; de.laser.Package; java.text.SimpleDateFormat; de.laser.PendingChangeConfiguration; de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.storage.RDStore;" %>
-<!doctype html>
+<laser:htmlStart message="subscription.details.linkPackage.heading" />
 
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'subscription.details.linkPackage.heading')}</title>
-</head>
-
-<body>
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="currentSubscriptions"
                  text="${message(code: 'myinst.currentSubscriptions.label')}"/>
@@ -422,5 +415,5 @@
             }
         });
 </laser:script>
-</body>
-</html>
+
+<laser:htmlEnd />

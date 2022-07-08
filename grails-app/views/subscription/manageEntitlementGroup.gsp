@@ -1,11 +1,6 @@
 <%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Subscription; de.laser.finance.CostItem" %>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'subscription.details.manageEntitlementGroup.label')}</title>
-</head>
+<laser:htmlStart message="subscription.details.manageEntitlementGroup.label" />
 
-<body>
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="currentSubscriptions"
                  text="${message(code: 'myinst.currentSubscriptions.label')}"/>
@@ -110,5 +105,4 @@
     </g:form>
 </semui:modal>
 
-</body>
-</html>
+<laser:htmlEnd />

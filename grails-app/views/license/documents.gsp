@@ -1,11 +1,4 @@
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'license.nav.docs')}</title>
-</head>
-
-<body>
+<laser:htmlStart message="license.nav.docs" />
 
     <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
@@ -23,5 +16,4 @@
 
     <laser:render template="/templates/documents/table" model="${[instance:license, redirect:'documents',owntp:'license']}"/>
 
-</body>
-</html>
+<laser:htmlEnd />

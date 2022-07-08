@@ -1,13 +1,6 @@
-<laser:serviceInjection />
-
 <%@ page import="de.laser.RefdataCategory;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.Combo;de.laser.RefdataValue;de.laser.Org" %>
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'myinst.emptySubscription.label')}</title>
-        </head>
-    <body>
+
+<laser:htmlStart message="myinst.emptySubscription.label" serviceInjection="true"/>
 
         <semui:breadcrumbs>
             <semui:crumb controller="myInstitution" action="currentSubscriptions" message="myinst.currentSubscriptions.label" />
@@ -121,5 +114,4 @@
                          }
                     });
         </laser:script>
-    </body>
-</html>
+    <laser:htmlEnd />

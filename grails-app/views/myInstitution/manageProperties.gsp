@@ -1,14 +1,5 @@
 <%@ page import="de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.Person; de.laser.storage.RDStore; de.laser.RefdataCategory; grails.plugins.orm.auditable.Auditable; de.laser.AuditConfig" %>
-<laser:serviceInjection/>
-
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'menu.institutions.manage_props')}</title>
-</head>
-
-<body>
+<laser:htmlStart message="menu.institutions.manage_props" serviceInjection="true"/>
 
 <semui:breadcrumbs>
     <semui:crumb message="menu.institutions.manage_props" class="active" />
@@ -613,6 +604,5 @@
     }
 </laser:script>
 
-</body>
-</html>
+<laser:htmlEnd />
 
