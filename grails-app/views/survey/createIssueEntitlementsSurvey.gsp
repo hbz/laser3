@@ -1,16 +1,6 @@
 <%@ page import="de.laser.Subscription; de.laser.RefdataCategory; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.finance.CostItem" %>
-<laser:serviceInjection/>
-<!doctype html>
 
-
-
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'myinst.currentSubscriptions.label')}</title>
-</head>
-
-<body>
+<laser:htmlStart message="myinst.currentSubscriptions.label" serviceInjection="true"/>
 
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg().getDesignation()}"/>
@@ -284,5 +274,4 @@
                     total="${num_sub_rows}"/>
 </g:if>
 
-</body>
-</html>
+<laser:htmlEnd />

@@ -1,14 +1,5 @@
 <%@ page import="de.laser.finance.CostItem; de.laser.Person; de.laser.storage.RDStore; de.laser.interfaces.CalculatedType" %>
-<laser:serviceInjection/>
-
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'subscription.details.surveys.label')}</title>
-</head>
-
-<body>
+<laser:htmlStart message="subscription.details.surveys.label" serviceInjection="true"/>
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
 
@@ -146,6 +137,5 @@
         </h3>
     </semui:form>
 </g:else>
-</body>
-</html>
+<laser:htmlEnd />
 

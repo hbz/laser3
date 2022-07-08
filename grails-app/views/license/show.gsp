@@ -1,13 +1,5 @@
 <%@ page import="de.laser.Subscription;de.laser.License;de.laser.DocContext;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.properties.PropertyDefinition;de.laser.interfaces.CalculatedType" %>
-<!doctype html>
-<laser:serviceInjection />
-<html>
-  <head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'license.details.label')}</title>
-  </head>
-
-    <body>
+<laser:htmlStart message="license.details.label" serviceInjection="true"/>
 
         <semui:debugInfo>
             <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
@@ -199,5 +191,4 @@
                 r2d2.initDynamicSemuiStuff('#links');
             })
     </laser:script>
-  </body>
-</html>
+<laser:htmlEnd />

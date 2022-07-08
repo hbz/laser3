@@ -1,13 +1,5 @@
 <%@ page import="de.laser.utils.DateUtils; de.laser.config.ConfigMapper; de.laser.storage.RDStore; de.laser.storage.RDConstants;de.laser.Package;de.laser.RefdataValue;org.springframework.web.servlet.support.RequestContextUtils; de.laser.Org; de.laser.Package; de.laser.Platform; java.text.SimpleDateFormat;" %>
-<laser:serviceInjection/>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'package.details')}</title>
-</head>
-
-<body>
+<laser:htmlStart message="package.details" serviceInjection="true"/>
 
 <semui:debugInfo>
 %{--<laser:render template="/templates/debug/orgRoles" model="[debug: packageInstance.orgs]" />--}%
@@ -303,5 +295,4 @@
     </div><!-- .grid -->
 </g:if>
 
-</body>
-</html>
+<laser:htmlEnd />

@@ -1,12 +1,5 @@
 <%@ page import="de.laser.Package" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'task.plural')}</title>
-</head>
-
-<body>
+<laser:htmlStart message="task.plural" />
 
     <semui:breadcrumbs>
         <semui:crumb controller="package" action="index" text="${message(code:'package.show.all')}" />
@@ -36,5 +29,4 @@
 
     <laser:render template="/templates/tasks/js_taskedit"/>
 
-</body>
-</html>
+<laser:htmlEnd />

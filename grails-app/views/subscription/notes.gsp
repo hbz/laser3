@@ -1,10 +1,5 @@
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'default.notes.label')}</title>
-    </head>
-    <body>
+<laser:htmlStart message="default.notes.label" />
+
         <laser:render template="breadcrumb" model="${[ params:params ]}"/>
         <semui:controlButtons>
                 <laser:render template="actions" />
@@ -29,5 +24,4 @@
 
         <laser:render template="/templates/notes/table" model="${[instance: subscription, redirect: 'notes']}"/>
 
-  </body>
-</html>
+  <laser:htmlEnd />

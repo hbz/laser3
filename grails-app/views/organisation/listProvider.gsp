@@ -1,12 +1,7 @@
- <%@ page import="de.laser.*" %>
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
+<%@ page import="de.laser.*" %>
+<laser:htmlStart message="menu.public.all_providers" />
+
         <g:set var="entityName" value="${message(code: 'default.provider.label')}" />
-        <title>${message(code:'laser')} : <g:message code="menu.public.all_providers" /></title>
-    </head>
-    <body>
 
     <laser:serviceInjection />
 
@@ -14,7 +9,7 @@
             <semui:crumb message="menu.public.all_providers" class="active" />
         </semui:breadcrumbs>
 
- <semui:controlButtons>
+    <semui:controlButtons>
         <semui:exportDropdown>
             <semui:exportDropdownItem>
                 <a class="item" data-semui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
@@ -50,7 +45,7 @@
             <g:if test="${accessService.checkPermX('ORG_INST,ORG_CONSORTIUM', 'ROLE_ADMIN,ROLE_ORG_EDITOR') || accessService.checkConstraint_ORG_COM_EDITOR()}">
                 <laser:render template="actions" />
             </g:if>
-        </semui:controlButtons>
+    </semui:controlButtons>
 
         <semui:h1HeaderWithIcon message="menu.public.all_providers" total="${orgListTotal}" floated="true" />
 
@@ -86,5 +81,4 @@
 
         <laser:render template="/myInstitution/export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal', orgType: 'provider']" />
 
-    </body>
-</html>
+<laser:htmlEnd />

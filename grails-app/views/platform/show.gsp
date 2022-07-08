@@ -1,13 +1,7 @@
 <%@ page import="de.laser.remote.ApiSource; de.laser.storage.RDConstants; de.laser.Platform; de.laser.RefdataValue; de.laser.utils.DateUtils" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <g:set var="entityName" value="${message(code: 'platform.label')}"/>
-    <title>${message(code: 'laser')} : <g:message code="platform.details"/></title>
-</head>
+<laser:htmlStart message="platform.details" />
 
-<body>
+    <g:set var="entityName" value="${message(code: 'platform.label')}"/>
 
 <semui:modeSwitch controller="platform" action="show" params="${params}"/>
 
@@ -148,5 +142,4 @@
     </div>
 </div>
 
-</body>
-</html>
+<laser:htmlEnd />

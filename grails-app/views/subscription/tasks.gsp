@@ -1,10 +1,4 @@
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'task.plural')}</title>
-</head>
-<body>
+<laser:htmlStart message="task.plural" />
 
     <laser:render template="breadcrumb" model="${[ params:params ]}"/>
     <semui:controlButtons>
@@ -30,6 +24,5 @@
     <laser:render template="/templates/tasks/table2" model="${[taskInstanceList:myTaskInstanceList, taskInstanceCount:myTaskInstanceCount]}"/>
     <laser:render template="/templates/tasks/js_taskedit"/>
 
-</body>
-</html>
+<laser:htmlEnd />
 

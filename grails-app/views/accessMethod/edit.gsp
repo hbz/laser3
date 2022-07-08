@@ -1,12 +1,7 @@
 <%@ page import="de.laser.PlatformAccessMethod" %>
-<!doctype html>
-<html>
-	<head>
-		<meta name="layout" content="laser">
-		<g:set var="entityName" value="${message(code: 'accessMethod.label')}" />
-		<title>${message(code:'laser')} : <g:message code="default.edit.label" args="[entityName]" /></title>
-	</head>
-	<body>
+
+<g:set var="entityName" value="${message(code: 'accessMethod.label')}" />
+<laser:htmlStart text="${message(code:"default.edit.label", args:[entityName])}" />
 
                 <laser:render template="breadcrumb" model="${[ accessMethod:accessMethod, params:params ]}"/>
 
@@ -54,5 +49,4 @@
 
                 </g:form>
 
-	</body>
-</html>
+<laser:htmlEnd />

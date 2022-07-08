@@ -1,14 +1,7 @@
 <%@ page import="de.laser.Org;de.laser.Person;de.laser.PersonRole;de.laser.RefdataValue;de.laser.RefdataCategory;de.laser.storage.RDConstants;de.laser.ReaderNumber;de.laser.utils.DateUtils; de.laser.storage.RDStore" %>
-<laser:serviceInjection />
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <g:set var="entityName" value="${message(code: 'org.label')}"/>
-        <title>${message(code: 'laser')} : ${message(code:'menu.institutions.readerNumbers')}</title>
-    </head>
+<laser:htmlStart message="menu.institutions.readerNumbers" serviceInjection="true"/>
 
-    <body>
+        <g:set var="entityName" value="${message(code: 'org.label')}"/>
 
         <semui:breadcrumbs>
             <g:if test="${institutionalView}">
@@ -165,5 +158,5 @@
         <g:else>
             <g:message code="readerNumber.noNumbersEntered"/>
         </g:else>
-    </body>
-</html>
+
+<laser:htmlEnd />

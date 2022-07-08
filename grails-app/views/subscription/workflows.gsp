@@ -1,12 +1,5 @@
 <%@ page import="de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.workflow.*; de.laser.WorkflowService; de.laser.workflow.WorkflowHelper" %>
-<laser:serviceInjection/>
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'workflow.plural')}</title>
-    </head>
-<body>
+<laser:htmlStart message="workflow.plural" serviceInjection="true" />
 
     <laser:render template="breadcrumb" model="${[ subscription:subscription, params:params ]}"/>
 
@@ -354,5 +347,4 @@
         </g:else>
     </laser:script>
 
-</body>
-</html>
+<laser:htmlEnd />

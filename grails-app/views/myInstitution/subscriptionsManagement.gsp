@@ -1,14 +1,5 @@
 <%@ page import="de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
-<laser:serviceInjection/>
-<!doctype html>
-
-<html>
-<head>
-    <meta name="layout" content="laser"/>
-    <title>${message(code: 'laser')} : ${message(code: 'menu.my.subscriptionsManagement')}</title>
-</head>
-
-<body>
+<laser:htmlStart message="menu.my.subscriptionsManagement" serviceInjection="true"/>
 
 <semui:breadcrumbs>
     <semui:crumb message="menu.my.subscriptionsManagement" class="active"/>
@@ -61,5 +52,4 @@
     </g:if>
 </g:else>
 
-</body>
-</html>
+<laser:htmlEnd />

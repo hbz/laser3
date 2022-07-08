@@ -1,11 +1,6 @@
 <%@ page import="de.laser.Platform; de.laser.Package; de.laser.Org; de.laser.storage.RDStore" %>
-<!doctype html>
-<html>
-	<head>
-		<meta name="layout" content="laser">
-		<title>${message(code: 'laser')} : ${message(code: 'platforms.all_platforms.label')}</title>
-	</head>
-	<body>
+<laser:htmlStart message="platforms.all_platforms.label" />
+
 	<semui:breadcrumbs>
 		<semui:crumb message="platforms.all_platforms.label" class="active" />
 	</semui:breadcrumbs>
@@ -82,6 +77,4 @@
 
     <semui:paginate  action="list" controller="platform" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" max="${max}" total="${recordsCount}" />
 
-
-	</body>
-</html>
+<laser:htmlEnd />

@@ -1,12 +1,5 @@
 <%@ page import="de.laser.remote.ApiSource; de.laser.Package; de.laser.RefdataCategory; de.laser.titles.BookInstance" %>
-
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'title.details')}</title>
-</head>
-  <body>
+<laser:htmlStart message="title.details" />
 
       <semui:breadcrumbs>
           <semui:crumb controller="title" action="list" message="menu.public.all_titles" />
@@ -264,5 +257,4 @@
 
             <br /><br />
 
-  </body>
-</html>
+<laser:htmlEnd />

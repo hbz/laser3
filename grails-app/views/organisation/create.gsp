@@ -1,12 +1,8 @@
 <%@ page import="de.laser.Org" %>
-<!doctype html>
-<html>
-	<head>
-		<meta name="layout" content="laser">
-		<g:set var="entityName" value="${message(code: 'org.label')}" />
-		<title>${message(code:'laser')} : <g:message code="default.create.label" args="[entityName]" /></title>
-	</head>
-	<body>
+
+<g:set var="entityName" value="${message(code: 'org.label')}" />
+<laser:htmlStart text="${message(code:"default.create.label", args:[entityName])}" />
+
 	    <semui:breadcrumbs>
             <semui:crumb message="menu.public.all_orgs" controller="organisation" action="index" />
             <semui:crumb text="${message(code:"default.create.label",args:[entityName])}" class="active"/>
@@ -45,5 +41,4 @@
 
 			</div><!-- .grid -->
 
-	</body>
-</html>
+<laser:htmlEnd />

@@ -1,4 +1,4 @@
-<laser:htmlStart message="default.notes.label" serviceInjection="true" />
+<laser:htmlStart message="default.notes.label" />
 
         <semui:breadcrumbs>
             <g:if test="${!inContextOrg}">

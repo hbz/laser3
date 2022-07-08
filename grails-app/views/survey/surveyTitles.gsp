@@ -1,15 +1,5 @@
 <%@ page import="de.laser.titles.BookInstance; de.laser.remote.ApiSource; de.laser.Subscription; de.laser.Package; de.laser.RefdataCategory; de.laser.storage.RDStore;" %>
-<laser:serviceInjection/>
-
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'surveyShow.label')}</title>
-
-</head>
-
-<body>
+<laser:htmlStart message="surveyShow.label" serviceInjection="true"/>
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
 
@@ -242,12 +232,8 @@
 
 </semui:modal>
 
-
 <laser:script file="${this.getGroovyPageFileName()}">
     $('#finishProcess').progress();
 </laser:script>
 
-
-
-</body>
-</html>
+<laser:htmlEnd />

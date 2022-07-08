@@ -1,13 +1,8 @@
 <%@ page import="de.laser.I10nTranslation; de.laser.properties.PropertyDefinition; de.laser.RefdataValue; de.laser.RefdataCategory" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
+
+<laser:htmlStart message="menu.institutions.prop_defs" />
         <g:set var="entityName" value="${message(code: 'org.label')}" />
-        <title>${message(code:'laser')} : ${message(code: 'menu.institutions.prop_defs')}</title>
-    </head>
-    <body>
 
     <semui:breadcrumbs>
         <semui:crumb message="menu.institutions.manage_props" class="active" />
@@ -103,5 +98,4 @@
 			</g:each>
         </div>
 
-	</body>
-</html>
+<laser:htmlEnd />

@@ -1,12 +1,5 @@
 <%@ page import="de.laser.RefdataCategory;de.laser.storage.RDConstants"%>
-
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'task.plural')}</title>
-    </head>
-    <body>
+<laser:htmlStart message="task.plural" />
 
         <semui:breadcrumbs>
             <semui:crumb message="menu.institutions.tasks" class="active"/>
@@ -66,5 +59,4 @@
 
         <laser:render template="/templates/tasks/js_taskedit"/>
 
-  </body>
-</html>
+<laser:htmlEnd />

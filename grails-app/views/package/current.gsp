@@ -1,12 +1,6 @@
 <%@ page import="de.laser.Package" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'package.show.nav.current')}</title>
-</head>
+<laser:htmlStart message="package.show.nav.current" />
 
-<body>
 <semui:breadcrumbs>
     <semui:crumb controller="package" action="index" text="${message(code: 'package.show.all')}"/>
     <semui:crumb text="${packageInstance.name}" id="${packageInstance.id}" class="active"/>
@@ -132,5 +126,4 @@
       }
 </laser:script>
 
-</body>
-</html>
+<laser:htmlEnd />

@@ -1,13 +1,5 @@
-<laser:serviceInjection />
-
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
+<laser:htmlStart message="menu.public.all_insts" serviceInjection="true"/>
         <g:set var="entityName" value="${message(code: 'org.label')}" />
-        <title>${message(code:'laser')} : ${message(code: 'menu.public.all_insts')}</title>
-    </head>
-    <body>
 
     <semui:breadcrumbs>
         <semui:crumb message="menu.public.all_insts" class="active" />
@@ -55,5 +47,5 @@
     <semui:paginate action="listInstitution" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" max="${max}" total="${consortiaMemberTotal}" />
 
     <laser:render template="/myInstitution/export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal', orgType: 'institution']" />
-  </body>
-</html>
+
+<laser:htmlEnd />

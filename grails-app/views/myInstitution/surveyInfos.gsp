@@ -1,14 +1,5 @@
 <%@ page import="de.laser.survey.SurveyConfig;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.RefdataValue; de.laser.Org" %>
-<laser:serviceInjection/>
-
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${surveyInfo.type.getI10n('value')}</title>
-</head>
-
-<body>
+<laser:htmlStart text="${surveyInfo.type.getI10n('value')}" serviceInjection="true"/>
 
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="currentSurveys" message="currentSurveys.label"/>
@@ -151,5 +142,4 @@
 </g:if>
 <br />
 <br />
-</body>
-</html>
+<laser:htmlEnd />

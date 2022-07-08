@@ -1,15 +1,7 @@
 <%@ page import="de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem;de.laser.FormService" %>
-<laser:serviceInjection />
+<laser:htmlStart message="license.member.plural" serviceInjection="true"/>
 
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
     <g:set var="entityName" value="${message(code: 'org.label')}"/>
-    <title>${message(code: 'laser')} : ${message(code: 'license.member.plural')}</title>
-</head>
-
-<body>
 
 <semui:debugInfo>
     <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
@@ -40,5 +32,4 @@
 </div>
 <laser:render template="/templates/subscription/consortiaSubscriptionTable"/>
 
-</body>
-</html>
+<laser:htmlEnd />

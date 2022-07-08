@@ -1,13 +1,6 @@
 <%@ page import="de.laser.config.ConfigMapper; de.laser.Person; de.laser.PersonRole; de.laser.Subscription; de.laser.Links; java.text.SimpleDateFormat;de.laser.properties.PropertyDefinition; de.laser.OrgRole; de.laser.License;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.interfaces.CalculatedType" %>
-<laser:serviceInjection/>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'subscription.details.label')}</title>
-</head>
+<laser:htmlStart message="subscription.details.label" serviceInjection="true"/>
 
-<body>
 %{-- help sidebar --}%
 <laser:render template="/templates/help/help_subscription_show"/>
 <semui:debugInfo>
@@ -527,5 +520,5 @@
           JSPC.app.loadLicenses();
           JSPC.app.loadPackages();
 </laser:script>
-</body>
-</html>
+
+<laser:htmlEnd />

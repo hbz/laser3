@@ -1,13 +1,6 @@
 <%@ page import="de.laser.titles.BookInstance; de.laser.remote.ApiSource; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Platform; de.laser.Org; de.laser.IssueEntitlementGroup;" %>
-<laser:serviceInjection/>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'subscription.details.renewEntitlements.label')}</title>
-</head>
+<laser:htmlStart message="subscription.details.renewEntitlements.label" serviceInjection="true"/>
 
-<body>
 <semui:breadcrumbs>
     <semui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
 
@@ -257,5 +250,4 @@
 
 </laser:script>
 
-</body>
-</html>
+<laser:htmlEnd />

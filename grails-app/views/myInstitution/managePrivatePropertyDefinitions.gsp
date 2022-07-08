@@ -1,14 +1,8 @@
 <%@ page import="de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.Org; de.laser.I10nTranslation" %>
 
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
+<laser:htmlStart message="menu.institutions.private_props" serviceInjection="true"/>
+
         <g:set var="entityName" value="${message(code: 'org.label')}" />
-        <title>${message(code:'laser')} : ${message(code: 'menu.institutions.private_props')}</title>
-    </head>
-    <body>
-    <laser:serviceInjection />
 
     <semui:breadcrumbs>
         <semui:crumb message="menu.institutions.manage_props" class="active" />
@@ -339,5 +333,4 @@
 
     </laser:script>
 
-  </body>
-</html>
+<laser:htmlEnd />

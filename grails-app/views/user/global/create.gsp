@@ -1,12 +1,6 @@
 <%@ page import="de.laser.*;de.laser.auth.Role" %>
-<laser:serviceInjection />
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'user.create_new.label')}</title>
-</head>
-<body>
+
+<laser:htmlStart message="user.create_new.label" serviceInjection="true" />
 
     %{--<g:if test="${controllerName == 'myInstitution'}">
         // myInstitution has no breadcrumb yet
@@ -155,5 +149,4 @@
         });
 </laser:script>
 
-</body>
-</html>
+<laser:htmlEnd />

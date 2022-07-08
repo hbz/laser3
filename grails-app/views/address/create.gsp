@@ -1,13 +1,8 @@
 <%@ page import="de.laser.Address" %>
 
-<!doctype html>
-<html>
-	<head>
-		<meta name="layout" content="laser">
-		<g:set var="entityName" value="${message(code: 'address.label')}" />
-		<title>${message(code:'laser')} : <g:message code="default.create.label" args="[entityName]" /></title>
-	</head>
-	<body>
+<g:set var="entityName" value="${message(code: 'address.label')}" />
+<laser:htmlStart text="${message(code:"default.create.label", args:[entityName])}" />
+
 		<div>
 		<div>
 			
@@ -56,5 +51,4 @@
 
 		</div>
 		</div>
-	</body>
-</html>
+<laser:htmlEnd />

@@ -1,16 +1,5 @@
 <%@ page import="de.laser.survey.SurveyOrg; de.laser.RefdataCategory; de.laser.survey.SurveyResult; de.laser.storage.RDStore; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
-<laser:serviceInjection/>
-<!doctype html>
-
-
-
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'currentSurveys.label')}</title>
-</head>
-
-<body>
+<laser:htmlStart message="currentSurveys.label" serviceInjection="true" />
 
 <semui:breadcrumbs>
     <semui:crumb message="currentSurveys.label" class="active"/>
@@ -411,5 +400,4 @@
                     total="${surveysCount}"/>
 </g:if>
 
-</body>
-</html>
+<laser:htmlEnd />

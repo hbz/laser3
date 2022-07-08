@@ -1,13 +1,5 @@
 <%@ page import="de.laser.TitleInstancePackagePlatform; de.laser.Subscription;de.laser.License;de.laser.finance.CostItem;de.laser.PendingChange; de.laser.IssueEntitlement; de.laser.storage.RDStore; de.laser.RefdataValue;" %>
-<laser:serviceInjection/>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'myinst.menu.pendingChanges.label')}</title>
-</head>
-
-<body>
+<laser:htmlStart message="myinst.menu.pendingChanges.label" serviceInjection="true" />
 
 <semui:breadcrumbs>
     <semui:crumb controller="package" action="index" text="${message(code: 'package.show.all')}"/>
@@ -111,6 +103,4 @@
 
 <semui:paginate offset="${offset}" max="${max}" total="${num_change_rows}" params="${params}"/>
 
-</div>
-</body>
-</html>
+<laser:htmlEnd />

@@ -1,12 +1,5 @@
 <%@ page import="de.laser.config.ConfigMapper" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : Manage Usage Stats</title>
-</head>
-
-<body>
+<laser:htmlStart text="Manage Usage Stats" />
 
 <semui:breadcrumbs>
     <semui:crumb message="menu.admin" controller="admin" action="index"/>
@@ -204,5 +197,4 @@
       $('.' + $(this).attr('data-target')).toggle()
     })
 </laser:script>
-</body>
-</html>
+<laser:htmlEnd />

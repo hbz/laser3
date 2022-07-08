@@ -1,12 +1,7 @@
 <%@ page import="de.laser.Task" %>
-<!doctype html>
-<html>
-	<head>
-		<meta name="layout" content="laser">
-		<g:set var="entityName" value="${message(code: 'task.label')}" />
-		<title>${message(code:'laser')} : <g:message code="default.create.label" args="[entityName]" /></title>
-	</head>
-	<body>
+
+<g:set var="entityName" value="${message(code: 'task.label')}" />
+<laser:htmlStart text="${message(code:"default.create.label", args:[entityName])}" />
 
 		<div class="ui grid">
 
@@ -61,5 +56,4 @@
 
 		</div><!-- .grid -->
 
-	</body>
-</html>
+<laser:htmlEnd />

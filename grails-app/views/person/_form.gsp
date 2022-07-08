@@ -83,7 +83,7 @@
 	</ul>
     <% /* <input class="ui button" type="button" data-semui="modal" href="#contactFormModal"
 			   value="${message(code: 'default.add.label', args: [message(code: 'contact.label')])}"> */ %>
-    <g:if test="${personInstance.id}">
+    <g:if test="${personInstance?.id}">
         <g:link class="ui button" controller="contact" action="create" params="['prs.id': personInstance?.id]">
             ${message(code: 'default.add.label', args: [message(code: 'contact.label')])}
         </g:link>
@@ -102,7 +102,7 @@
         <% /* <input class="ui button" type="button" data-semui="modal" href="#addressFormModal"
 			   value="${message(code: 'default.add.label', args: [message(code: 'address.label')])}"> */ %>
 	</ul>
-    <g:if test="${personInstance.id}">
+    <g:if test="${personInstance?.id}">
         <g:link class="ui button" controller="address" action="create" params="['prs.id': personInstance?.id]">
             ${message(code: 'default.add.label', args: [message(code: 'address.label')])}
         </g:link>

@@ -1,15 +1,7 @@
 <%@ page import="de.laser.storage.RDStore" %>
-<laser:serviceInjection />
+<laser:htmlStart message="menu.my.consortia" serviceInjection="true"/>
 
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
     <g:set var="entityName" value="${message(code: 'org.label')}"/>
-    <title>${message(code: 'laser')} : ${message(code: 'menu.my.consortia')}</title>
-</head>
-
-<body>
 
 <semui:breadcrumbs>
     <semui:crumb text="${message(code: 'menu.my.consortia')}" class="active"/>
@@ -99,5 +91,4 @@
         <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
     </semui:debugInfo>
 
-</body>
-</html>
+<laser:htmlEnd />

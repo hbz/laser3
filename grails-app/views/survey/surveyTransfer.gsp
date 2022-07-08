@@ -1,14 +1,5 @@
 <%@ page import="de.laser.survey.SurveyConfig;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.RefdataValue; de.laser.storage.RDStore" %>
-<laser:serviceInjection/>
-
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'survey.label')} (${message(code: 'surveyTransfer.label')})</title>
-</head>
-
-<body>
+<laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyTransfer.label')})" serviceInjection="true"/>
 
 <semui:breadcrumbs>
     <semui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
@@ -66,7 +57,4 @@
     </div>
 </g:else>
 
-
-
-</body>
-</html>
+<laser:htmlEnd />

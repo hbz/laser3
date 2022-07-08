@@ -1,14 +1,8 @@
 <%@ page import="de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
 
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <g:set var="entityName" value="${message(code: 'org.label')}"/>
-    <title>${message(code: 'laser')} : ${message(code: 'menu.my.consortiaSubscriptions')}</title>
-</head>
+<laser:htmlStart message="menu.my.consortiaSubscriptions" />
 
-<body>
+    <g:set var="entityName" value="${message(code: 'org.label')}"/>
 
 <semui:debugInfo>
     <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
@@ -63,5 +57,4 @@
 
 <laser:render template="/templates/copyEmailaddresses" model="[orgList: totalMembers]"/>
 
-</body>
-</html>
+<laser:htmlEnd />

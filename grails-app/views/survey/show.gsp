@@ -1,15 +1,5 @@
 <%@ page import="de.laser.survey.SurveyConfig; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.survey.SurveyResult" %>
-<laser:serviceInjection/>
-
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'surveyShow.label')}</title>
-
-</head>
-
-<body>
+<laser:htmlStart message="surveyShow.label" serviceInjection="true"/>
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
 
@@ -247,5 +237,4 @@
     $('#finishProcess2').progress();
 </laser:script>
 
-</body>
-</html>
+<laser:htmlEnd />

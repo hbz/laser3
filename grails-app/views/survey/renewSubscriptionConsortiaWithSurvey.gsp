@@ -1,13 +1,5 @@
 <%@ page import="de.laser.RefdataCategory; de.laser.AuditConfig;de.laser.storage.RDConstants" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'surveyInfo.renewal')}</title>
-
-</head>
-
-<body>
+<laser:htmlStart message="surveyInfo.renewal" />
 
 <semui:breadcrumbs>
     <semui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
@@ -213,5 +205,4 @@
     </div>
 </g:form>
 
-</body>
-</html>
+<laser:htmlEnd />
