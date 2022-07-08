@@ -243,7 +243,7 @@
   </g:if>
 
   </g:form>
-      <semui:paginate action="currentLicenses" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" max="${max}" total="${licenseCount}" />
+      <semui:paginate action="currentLicenses" controller="myInstitution" params="${params}" max="${max}" total="${licenseCount}" />
       <semui:debugInfo>
           <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
       </semui:debugInfo>

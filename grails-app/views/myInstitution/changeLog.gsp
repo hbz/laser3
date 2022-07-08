@@ -50,6 +50,6 @@
         </g:each>
       </table>
 
-        <semui:paginate  action="changeLog" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" max="${max}" total="${num_changes}" />
+        <semui:paginate action="changeLog" controller="myInstitution" params="${params}" max="${max}" total="${num_changes}" />
 
   <laser:htmlEnd />

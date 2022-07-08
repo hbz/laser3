@@ -39,9 +39,9 @@ class LaserTagLib {
         g.set( var:'yodaService',               bean:'yodaService' )
     }
 
-    // DO NOT use for pdf or email generation
+    // DO NOT use for templates, pdf or email generation
 
-    def htmlStart = {attrs, body ->
+    def htmlStart = { attrs, body ->
 
         String title = message(code: 'laser')
 
@@ -58,14 +58,14 @@ class LaserTagLib {
         }
         out << '<!doctype html><html><head>'
         out << '<meta name="layout" content="laser">'
-        out << body()
         out << '<title>' + title + '</title>'
+        out << body()
         out << '</head>'
         out << '<body>'
     }
 
     def htmlEnd = { attrs, body ->
-        out << '</body></head>'
+        out << '</body></html>'
     }
 
     // <laser:select optionValue="field" />  ==> <laser:select optionValue="field_(de|en|fr)" />

@@ -41,7 +41,7 @@
 
                     <div class="ui segment form-actions">
                         <g:link class="ui button" controller="platform" action="accessMethods"  id="${platfId}" >${message(code:'default.button.back')}</g:link>
-                        <input type="Submit" class="ui button" value="${message(code:'accessMethod.button.update')}" onClick="this.form.submit()" />
+                        <input type="submit" class="ui button" value="${message(code:'accessMethod.button.update')}" onClick="this.form.submit()" />
                         <g:link class="ui negative button" action="delete" controller="accessMethod"
                                 id="${accessMethod.id}" onclick="return confirm('${message(code: 'accessMethod.delete.confirm', args: [(accessMethod.accessMethod ?: 'this access method')])}')"
                         >${message(code:'default.button.delete.label')}</g:link>

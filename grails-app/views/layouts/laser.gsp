@@ -63,7 +63,7 @@
                                     <semui:link generateElementId="true"  class="item" role="menuitem" controller="title" action="index">${message(code:'menu.public.all_titles')}</semui:link>
 
                                     <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_EDITOR">
-                                        <semui:mainNavItem generateElementId="true" role="menuitem" controller="organisation" action="index" message="menu.public.all_orgs" />
+                                        <semui:link generateElementId="true" role="menuitem" controller="organisation" action="index">${message(code:'menu.public.all_orgs')}</semui:link>
                                     </sec:ifAnyGranted>
 
                                     <g:if test="${accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_USER','ROLE_ADMIN,ROLE_ORG_EDITOR')}">

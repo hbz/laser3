@@ -50,7 +50,7 @@
       </div>
 
         <g:if test="${historyLines != null}" >
-          <semui:paginate  action="history" controller="title" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" maxsteps="${max}" total="${num_hl}" />
+          <semui:paginate action="history" controller="title" params="${params}" maxsteps="${max}" total="${num_hl}" />
         </g:if>
 
     </g:if>

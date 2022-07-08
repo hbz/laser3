@@ -281,37 +281,12 @@ class SemuiNavigationTagLib {
                 </script>"""
     }
 
-    // <semui:mainNavItem controller="controller" action="action" params="params" text="${text}" message="local.string" affiliation="INST_EDITOR" />
-
-    def mainNavItem = { attrs, body ->
-
-        def (lbText, lbMessage) = SwissKnife.getTextAndMessage(attrs)
-        String linkBody  = (lbText && lbMessage) ? lbText + " - " + lbMessage : lbText + lbMessage
-
-        if (attrs.generateElementId) {
-            attrs.elementId = _generateElementId(attrs)
-        }
-
-        out << g.link(linkBody,
-                controller: attrs.controller,
-                action: attrs.action,
-                params: attrs.params,
-                class: 'item' + (attrs.class ? " ${attrs.class}" : ''),
-                elementId: attrs.elementId,
-                role: attrs.role
-        )
-    }
-
     def securedMainNavItem = { attrs, body ->
 
         def (lbText, lbMessage) = SwissKnife.getTextAndMessage(attrs)
         String linkBody  = (lbText && lbMessage) ? lbText + " - " + lbMessage : lbText + lbMessage
 
         boolean check = SwissKnife.checkAndCacheNavPerms(attrs, request)
-
-        if(attrs.newAffiliationRequests) {
-            linkBody = linkBody + "<div class='ui floating red circular label'>${attrs.newAffiliationRequests}</div>";
-        }
 
         if (attrs.generateElementId) {
             attrs.elementId = _generateElementId(attrs)

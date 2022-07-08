@@ -1,4 +1,4 @@
-<%@ page import="de.laser.IssueEntitlement; de.laser.TitleInstancePackagePlatform; grails.converters.JSON" contentType="text/html;charset=UTF-8" %>
+<%@ page import="de.laser.IssueEntitlement; de.laser.TitleInstancePackagePlatform; grails.converters.JSON" %>
 <laser:htmlStart text="Expunge deleted TIPPs" serviceInjection="true"/>
 
         <table class="ui table">

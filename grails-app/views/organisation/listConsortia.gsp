@@ -40,6 +40,6 @@
                       ]
               ]"/>
 
-    <semui:paginate action="listConsortia" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" max="${max}" total="${consortiaTotal}" />
+    <semui:paginate action="listConsortia" params="${params}" max="${max}" total="${consortiaTotal}" />
 
   <laser:htmlEnd />

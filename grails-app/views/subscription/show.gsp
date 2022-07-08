@@ -276,7 +276,7 @@
                             <dl>
                                 <dt class="control-label">${message(code: 'default.usage.licenseGrid.header')}</dt>
                                 <dd>
-                                    <table class="ui compact celled la-table-inCard  table">
+                                    <table class="ui compact celled la-table-inCard table">
                                         <thead>
                                         <tr>
                                             <th>${message(code: 'default.usage.reportType')}</th>

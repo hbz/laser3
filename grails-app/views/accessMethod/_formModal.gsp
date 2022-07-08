@@ -15,13 +15,13 @@
                                      optionValue="value" />
                 </div>
                 <div class="field wide six">
-                    <semui:datepicker label ="accessMethod.valid_from" id="validFrom" name="validFrom" placeholder ="default.date.label" value ="${params.validFrom}">
+                    <semui:datepicker label="accessMethod.valid_from" id="validFrom" name="validFrom" placeholder="default.date.label" value="${params.validFrom}">
                     </semui:datepicker>
                     
                 </div>
 
                 <div class="field wide six">
-                    <semui:datepicker label ="accessMethod.valid_to" name="validTo" placeholder ="default.date.label" value ="${params.validTo}">
+                    <semui:datepicker label="accessMethod.valid_to" name="validTo" placeholder="default.date.label" value="${params.validTo}">
                     </semui:datepicker>
                 </div>
 

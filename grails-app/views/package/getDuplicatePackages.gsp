@@ -1,4 +1,4 @@
-<%@ page contentType="text/html;charset=UTF-8" import="de.laser.Subscription; de.laser.IssueEntitlement; grails.converters.JSON" %>
+<%@ page import="de.laser.Subscription; de.laser.IssueEntitlement; grails.converters.JSON" %>
 
 <laser:htmlStart text="Paket-Duplikate" serviceInjection="true" />
 

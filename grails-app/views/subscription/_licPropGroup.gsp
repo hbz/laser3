@@ -26,11 +26,6 @@
                             ${prop.type.getI10n('name')}
                         </g:else>
                         <%
-                            /*
-                            if (AuditConfig.getConfig(prop)) {
-                                println '&nbsp; <span data-content="Wert wird vererbt." data-position="top right"><i class="icon thumbtack blue"></i></span>'
-                            }
-                            */
                             if (prop.hasProperty('instanceOf') && prop.instanceOf && AuditConfig.getConfig(prop.instanceOf)) {
                                 if (ownObj.isSlaved) {
                                     println '&nbsp; <span class="la-popup-tooltip la-delay" data-content="Wert wird automatisch geerbt." data-position="top right"><i class="icon grey la-thumbtack-regular"></i></span>'

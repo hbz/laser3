@@ -84,7 +84,7 @@
                         </td>
                         <td>
                             <input type="hidden" name="platfId" value="${platformInstance.id}" />
-                            <input type="Submit" class="ui tiny button" value="${message(code:'accessMethod.button.add')}" onClick="this.form.submit()"/>
+                            <input type="submit" class="ui tiny button" value="${message(code:'accessMethod.button.add')}" onClick="this.form.submit()"/>
                         </td>
                     </tr>
                 </tbody>

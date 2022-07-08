@@ -22,7 +22,7 @@ class SemuiDropdownTagLib {
         out <<   '<i class="download icon"></i>'
         out <<   '<div class="menu">'
         out <<       body()
-        out <<  '</div>'
+        out <<   '</div>'
         out << '</div>'
     }
 
@@ -86,7 +86,7 @@ class SemuiDropdownTagLib {
 
     def actionsDropdownItemDisabled = { attrs, body ->
         def (text, message) = SwissKnife.getTextAndMessage(attrs)
-        def tooltip = attrs.tooltip ?: "Die Funktion \'"+message+"\' ist zur Zeit nicht verfügbar!"
+        String tooltip = attrs.tooltip ?: "Die Funktion '${message}' ist zur Zeit nicht verfügbar!"
 
         out << '<a href="#" class="item disabled"><div class= la-popup-tooltip la-delay" data-content="'+tooltip+'">'+message+'</div></a>'
     }
@@ -183,13 +183,13 @@ class SemuiDropdownTagLib {
             throwTagError("Tag [semui:dropdown] is missing required attribute [from]")
         }
 
-        def name = attrs.name
+        String name = attrs.name
         def id = attrs.id
-        def cssClass = attrs.class
+        String cssClass = attrs.class
         def from = attrs.from
         def optionKey = attrs.optionKey
         def optionValue = attrs.optionValue
-        def iconWhich = attrs.iconWhich
+        String iconWhich = attrs.iconWhich
         def requestParam = attrs.requestParam
         def display = attrs.display
 

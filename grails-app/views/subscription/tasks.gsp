@@ -20,9 +20,13 @@
 
     <semui:messages data="${flash}" />
 
-    <laser:render template="/templates/tasks/table" model="${[taskInstanceList:taskInstanceList, taskInstanceCount:taskInstanceCount]}"/>
-    <laser:render template="/templates/tasks/table2" model="${[taskInstanceList:myTaskInstanceList, taskInstanceCount:myTaskInstanceCount]}"/>
-    <laser:render template="/templates/tasks/js_taskedit"/>
+    <laser:render template="/templates/tasks/tables" model="${[
+            taskInstanceList: taskInstanceList,     taskInstanceCount: taskInstanceCount,
+            myTaskInstanceList: myTaskInstanceList, myTaskInstanceCount: myTaskInstanceCount
+    ]}"/>
+
+%{--    <laser:render template="/templates/tasks/table" model="${[taskInstanceList:taskInstanceList, taskInstanceCount:taskInstanceCount]}"/>--}%
+%{--    <laser:render template="/templates/tasks/table2" model="${[taskInstanceList:myTaskInstanceList, taskInstanceCount:myTaskInstanceCount]}"/>--}%
 
 <laser:htmlEnd />
 

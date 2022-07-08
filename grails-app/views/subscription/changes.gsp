@@ -75,6 +75,6 @@
         </g:if>
       </table>
 
-        <semui:paginate  action="todoHistory" controller="subscription" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" max="${max}" total="${todoHistoryLinesTotal}" />
+        <semui:paginate action="todoHistory" controller="subscription" params="${params}" max="${max}" total="${todoHistoryLinesTotal}" />
 
 <laser:htmlEnd />

@@ -178,8 +178,7 @@
     </tbody>
 </table>
 
-<semui:paginate action="currentWorkflows" controller="myInstitution" total="${total}" max="${params.max}"
-                next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" />
+<semui:paginate action="currentWorkflows" controller="myInstitution" total="${total}" max="${params.max}" />
 
 <div id="wfModal" class="ui modal"></div>
 

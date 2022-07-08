@@ -95,7 +95,7 @@
 </g:else>
 
     <laser:render template="/templates/copyEmailaddresses" model="[orgList: totalMembers]"/>
-    <semui:paginate action="manageMembers" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" max="${max}" total="${membersCount}" />
+    <semui:paginate action="manageMembers" controller="myInstitution" params="${params}" max="${max}" total="${membersCount}" />
 
     <semui:debugInfo>
         <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />

@@ -50,13 +50,6 @@
                 <div class="field">
                     <label for="subStatus"><g:message code="myinst.copySubscription"/></label>
 
-                    %{--ERMS-1155
-                    <div class="ui checkbox">
-                        <input class="hidden" type="checkbox" id="generateSlavedSubs" name="generateSlavedSubs" value="Y" checked="checked"
-                               readonly="readonly">
-                        <label for="generateSlavedSubs">${message(code: 'myinst.separate_subs')}</label>
-                    </div>--}%
-
                     <g:set value="${RefdataCategory.getByDesc(RDConstants.SUBSCRIPTION_STATUS)}" var="rdcSubStatus"/>
 
                     <br />

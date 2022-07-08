@@ -116,7 +116,7 @@
                                 <g:field type="text" name="ip" id="ipv4_ip" value="${ip}"/>
                             </g:else>
                         </div>
-                        <input type="Submit" class="ui button"
+                        <input type="submit" class="ui button"
                                value="${message(code: 'accessPoint.button.add')}" />
                     </div>
                 </g:form>
@@ -190,7 +190,7 @@
                             <g:field type="text" name="ip" id="ipv6_ip" value="${ip}"/>
                         </g:else>
                     </div>
-                    <input type="Submit" class="ui button"
+                    <input type="submit" class="ui button"
                            value="${message(code: 'accessPoint.button.add')}" />
                 </div>
             </g:form>
