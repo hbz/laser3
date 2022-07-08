@@ -1,18 +1,14 @@
 <%@ page import="de.laser.survey.SurveyConfig; de.laser.Person; de.laser.RefdataValue; de.laser.SubscriptionController; de.laser.CopyElementsService;" %>
-<laser:serviceInjection/>
 
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
     <g:if test="${isRenewSub}">
-        <title>${message(code: 'laser')} : ${message(code: 'subscription.details.renewals.renew_sub.label')}</title>
+        <g:set var="pageTitle" value="${message(code: 'subscription.details.renewals.renew_sub.label')}" />
     </g:if>
     <g:else>
-        <title>${message(code: 'laser')} : ${message(code: 'copyElementsIntoObject.label', args: [message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}</title>
+        <g:set var="pageTitle" value="${message(code: 'copyElementsIntoObject.label', args: [message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}" />
     </g:else>
-</head>
-<body>
+
+<laser:htmlStart text="${pageTitle}" serviceInjection="true" />
+
     <g:if test="${fromSurvey}">
         <semui:breadcrumbs>
             <semui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code:'menu.my.surveys')}" />
@@ -240,5 +236,5 @@
         <laser:render template="/templates/copyElements/copyElements" />
     </g:else>
     <laser:render template="/templates/copyElements/copyElementsJS"/>
-</body>
-</html>
+
+<laser:htmlEnd />

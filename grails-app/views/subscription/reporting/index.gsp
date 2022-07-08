@@ -3,7 +3,6 @@
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
 </laser:htmlStart>
 
-    <body>
         <laser:render template="breadcrumb" model="${[ subscription:subscription, params:params ]}"/>
 
         <semui:controlButtons>

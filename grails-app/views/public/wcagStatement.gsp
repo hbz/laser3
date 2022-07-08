@@ -1,13 +1,6 @@
 <%@ page import="de.laser.PersonRole; de.laser.Contact; de.laser.OrgRole; de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition" %>
+<laser:htmlStart text="wcagStatement" />
 
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : wcagStatement</title>
-</head>
-
-<body>
             <semui:h1HeaderWithIcon message="wcagStatement" />
 
             <h2 class="ui header">Erklärung zur digitalen Barrierefreiheit</h2>
@@ -86,5 +79,4 @@ Link zum Kontaktformular:
    - Für NRW nicht gefunden -
             </p>
 
-</body>
-</html>
+<laser:htmlEnd />

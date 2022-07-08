@@ -39,6 +39,8 @@ class LaserTagLib {
         g.set( var:'yodaService',               bean:'yodaService' )
     }
 
+    // DO NOT use for pdf or email generation
+
     def htmlStart = {attrs, body ->
 
         String title = message(code: 'laser')

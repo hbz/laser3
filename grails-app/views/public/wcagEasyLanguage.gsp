@@ -1,13 +1,5 @@
 <%@ page import="de.laser.PersonRole; de.laser.Contact; de.laser.OrgRole; de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition" %>
-
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : wcagStatement</title>
-</head>
-
-<body>
+<laser:htmlStart text="wcagStatement" />
 
     <h1 class="ui header">
         <i class="universal access icon"></i>
@@ -40,5 +32,4 @@
         In LAS:eR ist der Kontakt zwischen Bibliotheken und Konsortial-Stellen einfacher. Ein Konsortial-Stelle kann z.B. Umfragen in LAS:eR an die Bibliotheken verschicken. In solchen Umfragen kann dann z.B. gefragt werden, ob eine Bibliothek gerne ein Produkt von einem Verlag testen möchte oder ob ein Produkt auch für das nächste Jahr wieder gekauft werden soll. So wird der Austausch miteinander in LAS:eR leichter.
     </p>
 
-</body>
-</html>
+<laser:htmlEnd />

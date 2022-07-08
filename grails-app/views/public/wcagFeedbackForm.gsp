@@ -1,13 +1,5 @@
 <%@ page import="de.laser.PersonRole; de.laser.Contact; de.laser.OrgRole; de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition" %>
-
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code:'feedback.title')}</title>
-</head>
-
-<body>
+<laser:htmlStart message="feedback.title" />
 
     <h1 class="ui header">
         <i class="universal access icon"></i>
@@ -63,5 +55,4 @@
         </g:form>
     </div>
 
-</body>
-</html>
+<laser:htmlEnd />

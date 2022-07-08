@@ -1,11 +1,4 @@
 <%@ page import="de.laser.Package" %>
-<!doctype html>
-<html>
-  <head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'package.label')}</title>
-  </head>
-  <body>
 
       <semui:breadcrumbs>
           <semui:crumb controller="package" action="index" text="${message(code:'package.show.all')}" />
@@ -124,5 +117,3 @@
       }
     </laser:script>
 
-  </body>
-</html>

@@ -1,14 +1,6 @@
 <%@ page import="java.sql.Timestamp; org.springframework.context.i18n.LocaleContextHolder; de.laser.Org; de.laser.License; de.laser.Subscription; de.laser.Task; de.laser.storage.RDStore;de.laser.storage.RDConstants" %>
-<laser:serviceInjection />
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : Komponenten zur Überprüfung der Barrierefreiheit</title>
-</head>
+<laser:htmlStart text="Komponenten zur Überprüfung der Barrierefreiheit" serviceInjection="true"/>
 
-<body>
-<laser:serviceInjection/>
     <div id="modalCreateTask">
         <h1 class="ui dividing  header">Komponenten zur Überprüfung der Barrierefreiheit</h1>
 
@@ -46,9 +38,6 @@
             </div>
         </div>--}%
 
-
-
-
         <h2 class="ui dividing header">7. Paginierung</h2>
         <laser:render template="templatesWCAGTest/pagination" />
 
@@ -65,10 +54,6 @@
         <h2 class="ui dividing header">11. Modals</h2>
         <h3 class="ui dividing header">11.1. Confimation Modal</h3>
         <laser:render template="templatesWCAGTest/modal" />
-
-
-
-
     </div>
-</body>
-</html>
+
+<laser:htmlEnd />

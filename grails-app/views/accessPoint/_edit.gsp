@@ -1,14 +1,7 @@
 <%@ page import="de.laser.oap.OrgAccessPoint; de.laser.storage.RDConstants" %>
 <laser:serviceInjection/>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <g:set var="entityName" value="${message(code: 'accessPoint.label')}"/>
-    <title>${message(code:'laser')} : <g:message code="default.edit.label" args="[entityName]"/></title>
-</head>
 
-<body>
+    <g:set var="entityName" value="${message(code: 'accessPoint.label')}"/>
 
 <laser:script file="${this.getGroovyPageFileName()}">
     $('body').attr('class', 'organisation_accessPoint_edit_${accessPoint.accessMethod}');
@@ -72,6 +65,3 @@
 
     <laser:render template="link"
               model="${[accessPoint: accessPoint, params: params, linkedPlatforms: linkedPlatforms, linkedPlatformSubscriptionPackages: linkedPlatformSubscriptionPackages]}"/>
-
-</body>
-</html>
