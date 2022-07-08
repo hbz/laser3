@@ -1,16 +1,6 @@
 <%@ page import="de.laser.survey.SurveyConfig; de.laser.RefdataCategory; de.laser.survey.SurveyResult; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem; de.laser.storage.RDConstants" %>
-<laser:serviceInjection/>
-<!doctype html>
 
-
-
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'currentSurveys.label')}</title>
-</head>
-
-<body>
+<laser:htmlStart message="currentSurveys.label" serviceInjection="true" />
 
 <semui:breadcrumbs>
     <semui:crumb message="currentSurveys.label" class="active"/>
@@ -417,5 +407,4 @@
     <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
 </semui:debugInfo>
 
-</body>
-</html>
+<laser:htmlEnd />

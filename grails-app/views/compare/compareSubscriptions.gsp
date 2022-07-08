@@ -1,13 +1,6 @@
 <%@ page import="de.laser.License; de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.RefdataCategory" %>
-<laser:serviceInjection/>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'menu.my.comp_sub')}</title>
-</head>
+<laser:htmlStart message="menu.my.comp_sub" serviceInjection="true"/>
 
-<body>
 <semui:breadcrumbs>
     <semui:crumb text="${message(code: 'menu.my.subscriptions')}" controller="myInstitution"
                  action="currentSubscriptions"/>
@@ -122,5 +115,4 @@
     JSPC.app.adjustDropdown();
 </laser:script>
 
-</body>
-</html>
+<laser:htmlEnd />

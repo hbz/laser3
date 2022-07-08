@@ -1,12 +1,6 @@
 <%@ page import="de.laser.RefdataValue" %>
-<!doctype html>
 
-<html>
-    <head>
-        <meta name="layout" content="laser" />
-        <title>${message(code:'laser')} : ${message(code:'menu.my.providers')}</title>
-    </head>
-    <body>
+<laser:htmlStart message="menu.my.providers" />
 
         <semui:breadcrumbs>
             <semui:crumb message="menu.my.providers" class="active" />
@@ -97,5 +91,4 @@
 
     <laser:render template="export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal', orgType: 'provider']" />
 
-  </body>
-</html>
+  <laser:htmlEnd />

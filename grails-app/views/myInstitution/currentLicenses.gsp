@@ -1,12 +1,6 @@
 <%@ page import="de.laser.License;de.laser.RefdataCategory;de.laser.interfaces.CalculatedType;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.RefdataValue;de.laser.Links" %>
-<!doctype html>
-<html>
-  <head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'license.current')}</title>
-  </head>
-  <body>
-  <laser:serviceInjection />
+
+<laser:htmlStart message="license.current" serviceInjection="true" />
 
   <semui:breadcrumbs>
       <semui:crumb message="license.current" class="active" />
@@ -253,5 +247,4 @@
       <semui:debugInfo>
           <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
       </semui:debugInfo>
-  </body>
-</html>
+  <laser:htmlEnd />

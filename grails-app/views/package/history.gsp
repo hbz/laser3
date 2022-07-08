@@ -1,12 +1,5 @@
 <%@ page import="de.laser.Package" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'package.show.nav.history')}</title>
-</head>
-
-<body>
+<laser:htmlStart message="package.show.nav.history" />
 
     <semui:breadcrumbs>
         <semui:crumb controller="package" action="index" text="${message(code:'package.show.all')}" />
@@ -60,7 +53,4 @@
       </div>
     </g:else>
 
-
-
-</body>
-</html>
+<laser:htmlEnd />

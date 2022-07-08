@@ -1,13 +1,5 @@
 <%@ page import="de.laser.CopyElementsService;" %>
-<laser:serviceInjection/>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'myinst.copyLicense')}</title>
-</head>
-
-<body>
+<laser:htmlStart message="myinst.copyLicense" serviceInjection="true"/>
 
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="currentLicenses" message="license.current" />
@@ -86,5 +78,4 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
 </g:else>
 <laser:render template="/templates/copyElements/copyElementsJS"/>
 
-</body>
-</html>
+<laser:htmlEnd />

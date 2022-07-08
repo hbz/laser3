@@ -1,14 +1,6 @@
 <%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory;" %>
-<laser:serviceInjection/>
 
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'createIssueEntitlementsSurvey.label')}</title>
-</head>
-
-<body>
+<laser:htmlStart message="createIssueEntitlementsSurvey.label" serviceInjection="true" />
 
 <semui:breadcrumbs>
 
@@ -63,5 +55,4 @@
     </g:form>
 </semui:form>
 
-</body>
-</html>
+<laser:htmlEnd />

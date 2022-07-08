@@ -1,13 +1,6 @@
 <%@ page import="de.laser.License; de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.RefdataCategory" %>
-<laser:serviceInjection/>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'menu.my.comp_lic')}</title>
-</head>
+<laser:htmlStart message="menu.my.comp_lic" serviceInjection="true"/>
 
-<body>
 <semui:breadcrumbs>
     <semui:crumb text="${message(code: 'menu.my.licenses')}" controller="myInstitution" action="currentLicenses"/>
     <semui:crumb class="active" message="menu.my.comp_lic"/>
@@ -112,5 +105,4 @@
 </laser:script>
 
 
-</body>
-</html>
+<laser:htmlEnd />

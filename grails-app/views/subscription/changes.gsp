@@ -1,11 +1,4 @@
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'license.nav.todo_history')}</title>
-</head>
-
-<body>
+<laser:htmlStart message="license.nav.todo_history" />
 
     <laser:render template="breadcrumb" model="${[ subscription: subscription, params:params ]}"/>
     <semui:controlButtons>
@@ -84,5 +77,4 @@
 
         <semui:paginate  action="todoHistory" controller="subscription" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" max="${max}" total="${todoHistoryLinesTotal}" />
 
-</body>
-</html>
+<laser:htmlEnd />

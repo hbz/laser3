@@ -1,13 +1,6 @@
 <%@ page import="de.laser.interfaces.CalculatedType;de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
-<laser:serviceInjection />
-<!doctype html>
 
-<html>
-    <head>
-        <meta name="layout" content="laser" />
-        <title>${message(code:'laser')} : ${message(code:'myinst.currentSubscriptions.label')}</title>
-    </head>
-    <body>
+<laser:htmlStart message="myinst.currentSubscriptions.label" serviceInjection="true" />
 
         <semui:breadcrumbs>
             <semui:crumb message="myinst.currentSubscriptions.label" class="active" />
@@ -65,5 +58,4 @@
 
     <laser:render template="export/individuallyExportModalSubs" model="[modalID: 'individuallyExportModal']" />
 
-  </body>
-</html>
+  <laser:htmlEnd />

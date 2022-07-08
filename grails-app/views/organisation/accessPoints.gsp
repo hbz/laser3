@@ -1,13 +1,8 @@
 <%@ page import="de.laser.Org; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.storage.RDConstants;" %>
-<laser:serviceInjection/>
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
+
+<laser:htmlStart message="org.nav.accessPoints" serviceInjection="true" />
         <g:set var="entityName" value="${message(code: 'org.label')}" />
-        <title>${message(code:'laser')} : ${message(code:'org.nav.accessPoints')}</title>
-    </head>
-    <body>
+
     <semui:controlButtons>
         <g:if test="${editable}">
         <semui:exportDropdown>
@@ -162,5 +157,4 @@
 
 
 
-    </body>
-</html>
+    <laser:htmlEnd />

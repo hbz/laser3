@@ -1,11 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" import="de.laser.Subscription; de.laser.IssueEntitlement; grails.converters.JSON" %>
-<html>
-    <laser:serviceInjection/>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code: 'laser')} : Paket-Duplikate</title>
-    </head>
-    <body>
+
+<laser:htmlStart text="Paket-Duplikate" serviceInjection="true" />
+
         <g:set var="toDelete" value="${[]}"/>
 
         <semui:h1HeaderWithIcon text="Pakete mit gleicher we:kb-ID" />
@@ -134,5 +130,5 @@
                     </div>
                 </div>
             </div>
-    </body>
-</html>
+
+<laser:htmlEnd />

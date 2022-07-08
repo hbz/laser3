@@ -1,13 +1,7 @@
 <%@ page import="de.laser.Subscription; de.laser.remote.ApiSource; grails.converters.JSON; de.laser.storage.RDStore; de.laser.Platform;de.laser.titles.BookInstance" %>
-<laser:serviceInjection/>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'subscription.details.addEntitlements.label')}</title>
-</head>
 
-<body>
+<laser:htmlStart message="subscription.details.addEntitlements.label" serviceInjection="true" />
+
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="currentSubscriptions"
                  text="${message(code: 'myinst.currentSubscriptions.label')}"/>
@@ -363,5 +357,4 @@
 
 </laser:script>
 
-</body>
-</html>
+<laser:htmlEnd />

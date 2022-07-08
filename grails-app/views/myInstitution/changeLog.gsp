@@ -1,11 +1,4 @@
-<!doctype html>
-<html>
-  <head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'menu.institutions.change_log')}</title>
-  </head>
-
-  <body>
+<laser:htmlStart message="menu.institutions.change_log" />
 
   <semui:breadcrumbs>
     <semui:crumb message="menu.institutions.change_log" class="active" />
@@ -59,5 +52,4 @@
 
         <semui:paginate  action="changeLog" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" max="${max}" total="${num_changes}" />
 
-  </body>
-</html>
+  <laser:htmlEnd />

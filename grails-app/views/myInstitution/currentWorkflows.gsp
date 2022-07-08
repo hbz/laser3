@@ -1,13 +1,6 @@
 <%@ page import="de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.workflow.*; de.laser.WorkflowService; de.laser.workflow.WorkflowHelper" %>
-<laser:serviceInjection/>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'menu.my.workflows')}</title>
-</head>
 
-<body>
+<laser:htmlStart message="menu.my.workflows" serviceInjection="true"/>
 
 <semui:breadcrumbs>
     <semui:crumb message="menu.my.workflows" class="active"/>
@@ -209,5 +202,4 @@
 </laser:script>
 
 
-</body>
-</html>
+<laser:htmlEnd />

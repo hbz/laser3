@@ -1,11 +1,4 @@
-<!doctype html>
-<html>
-  <head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'menu.datamanager.changelog')}</title>
-  </head>
-
-  <body>
+<laser:htmlStart message="menu.datamanager.changelog" />
   
     <semui:breadcrumbs>
       <semui:crumb message="menu.datamanager" controller="dataManager" action="index"/>
@@ -122,5 +115,4 @@
       <div class="container alert-warn">
       </div>
     </g:else>
-  </body>
-</html>
+  <laser:htmlEnd />

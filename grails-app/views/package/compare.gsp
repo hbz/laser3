@@ -1,13 +1,7 @@
 <%@ page import="de.laser.Package" %>
-<!doctype html>
-<html>
-  <head>
-    <meta name="layout" content="laser">
-    <g:set var="entityName" value="${message(code: 'package.label')}" />
-    <title>${message(code:'laser')} : <g:message code="package.compare" /></title>
-  </head>
- <body>
+<laser:htmlStart message="package.compare" />
 
+	<g:set var="entityName" value="${message(code: 'package.label')}" />
 	<semui:breadcrumbs>
 		<semui:crumb controller="package" action="index" message="package.show.all" />
 		<semui:crumb class="active" message="package.compare" />
@@ -320,5 +314,4 @@
 
 </laser:script>
 
-  </body>
-</html>
+  <laser:htmlEnd />

@@ -1,13 +1,5 @@
-<laser:serviceInjection/>
+<laser:htmlStart message="org.label" serviceInjection="true"/>
 
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'org.label')}</title>
-</head>
-
-<body>
     <laser:render template="breadcrumb" model="${[ orgInstance:orgInstance, params:params ]}"/>
 
     <semui:h1HeaderWithIcon text="${orgInstance?.name}" />
@@ -114,5 +106,4 @@
         </table>
     </g:if>
 
-</body>
-</html>
+<laser:htmlEnd />

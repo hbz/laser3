@@ -1,13 +1,6 @@
 <%@ page import="de.laser.TitleInstancePackagePlatform; de.laser.OrgRole; de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition" %>
 
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'gasco.title')}</title>
-</head>
-
-<body>
+<laser:htmlStart message="gasco.title" />
 
     <br />
     <br />
@@ -121,5 +114,5 @@
     }
     </style>
 </sec:ifAnyGranted>
-</body>
-</html>
+
+<laser:htmlEnd />

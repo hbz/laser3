@@ -1,12 +1,5 @@
-<laser:serviceInjection/>
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'license.label')}</title>
-</head>
+<laser:htmlStart message="license.label" serviceInjection="true"/>
 
-<body>
     <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
     <semui:h1HeaderWithIcon text="${license.reference}" />
@@ -82,5 +75,4 @@
         </table>
     </g:if>
 
-</body>
-</html>
+<laser:htmlEnd />

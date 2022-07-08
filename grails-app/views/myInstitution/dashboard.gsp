@@ -1,14 +1,6 @@
 <%@ page import="de.laser.utils.DateUtils; de.laser.workflow.WorkflowHelper; de.laser.workflow.WfWorkflow; de.laser.UserSetting; de.laser.system.SystemAnnouncement; de.laser.storage.RDConstants; de.laser.AccessService; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DashboardDueDate" %>
 
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'menu.institutions.dash')}</title>
-    </head>
-    <body>
-
-        <laser:serviceInjection />
+<laser:htmlStart message="menu.institutions.dash" serviceInjection="true"/>
 
         <semui:breadcrumbs>
             <semui:crumb text="${message(code:'menu.institutions.dash')}" class="active" />
@@ -399,5 +391,4 @@
     <semui:debugInfo>
         <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
     </semui:debugInfo>
-    </body>
-</html>
+    <laser:htmlEnd />

@@ -1,14 +1,7 @@
 <%@page import="de.laser.FormService" %>
-<laser:serviceInjection />
 
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
+<laser:htmlStart message="menu.institutions.add_consortia_members" serviceInjection="true" />
         <g:set var="entityName" value="${message(code: 'org.label')}" />
-        <title>${message(code:'laser')} : ${message(code: 'menu.institutions.add_consortia_members')}</title>
-    </head>
-    <body>
 
     <semui:breadcrumbs>
         <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
@@ -53,5 +46,4 @@
         </g:else>
     </g:else>
 
-  </body>
-</html>
+  <laser:htmlEnd />

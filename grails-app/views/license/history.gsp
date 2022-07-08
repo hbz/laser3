@@ -1,11 +1,4 @@
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'license.nav.edit_history')}</title>
-</head>
-
-<body>
+<laser:htmlStart message="license.nav.edit_history" />
 
     <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
@@ -45,5 +38,4 @@
 
         <semui:paginate  action="editHistory" controller="license" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" max="${max}" total="${historyLinesTotal}" />
 
-</body>
-</html>
+<laser:htmlEnd />

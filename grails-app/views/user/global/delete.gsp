@@ -1,12 +1,6 @@
 <%@ page import="de.laser.auth.User; de.laser.DeletionService" %>
-<laser:serviceInjection />
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'user.delete.label')}</title>
-</head>
-<body>
+<laser:htmlStart message="user.delete.label" serviceInjection="true"/>
+
     <laser:render template="/user/global/breadcrumb" model="${[ params:params ]}"/>
 
     <semui:controlButtons>
@@ -182,5 +176,4 @@
 
     </g:if>
 
-</body>
-</html>
+<laser:htmlEnd />

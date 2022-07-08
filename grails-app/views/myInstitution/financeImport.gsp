@@ -1,12 +1,7 @@
 <%@ page import="de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.RefdataValue" %>
-<!doctype html>
-<html>
-  <head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'myinst.financeImport.pageTitle')}</title>
-  </head>
 
-  <body>
+<laser:htmlStart message="myinst.financeImport.pageTitle" />
+
   <semui:breadcrumbs>
     <semui:crumb message="menu.institutions.financeImport" class="active"/>
   </semui:breadcrumbs>
@@ -75,5 +70,4 @@
               <input class="ui button" type="submit" value="${message(code:"myinst.financeImport.upload")}"/>
           </g:uploadForm>
 
-  </body>
-</html>
+  <laser:htmlEnd />

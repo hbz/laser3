@@ -1,15 +1,7 @@
 <%@ page import ="de.laser.Subscription" %>
-<laser:serviceInjection />
+<laser:htmlStart message="subscription.compare.label" serviceInjection="true" />
 
-<!doctype html>
-<html>
-	<head>
-		<meta name="layout" content="laser">
 		<g:set var="entityName" value="${message(code: 'default.subscription.label')}"/>
-		<title>${message(code:'laser')} : ${message(code:'subscription.compare.label')}</title>
-	</head>
-
-    <body>
         <laser:render template="breadcrumb" model="${[ params:params ]}"/>
 
         <g:if test="${institutionName}">
@@ -239,5 +231,4 @@
 				clearable: true
 			});
 		</laser:script>
-	</body>
-</html>
+	<laser:htmlEnd />

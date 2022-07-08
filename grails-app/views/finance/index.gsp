@@ -1,11 +1,5 @@
-<!doctype html>
-<html xmlns="http://www.w3.org/1999/html">
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'subscription.details.financials.label')}</title>
-    </head>
-    <body>
-        <laser:serviceInjection />
+<laser:htmlStart message="subscription.details.financials.label" serviceInjection="true"/>
+
         <g:set var="own" value="${financialData.own}"/>
         <g:set var="cons" value="${financialData.cons}"/>
         <g:set var="subscr" value="${financialData.subscr}"/>
@@ -89,5 +83,4 @@
         <laser:render template="result" model="[own:own,cons:cons,subscr:subscr,showView:showView,filterPresets:filterPresets,ciTitles:ciTitles]" />
 
         <laser:render template="export/individuallyExportModal" model="[modalID: 'individuallyExportModal']" />
-    </body>
-</html>
+<laser:htmlEnd />

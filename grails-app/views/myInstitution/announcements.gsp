@@ -1,11 +1,4 @@
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'announcement.plural')}</title>
-    </head>
-
-    <body>
+<laser:htmlStart message="announcement.plural" />
 
         <semui:breadcrumbs>
             <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
@@ -35,5 +28,4 @@
               </g:each>
             </table>
 
-  </body>
-</html>
+  <laser:htmlEnd />

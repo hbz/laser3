@@ -1,11 +1,5 @@
 <%@ page import="de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue" %>
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code: 'menu.institutions.costConfiguration')}</title>
-    </head>
-    <body>
+<laser:htmlStart message="menu.institutions.costConfiguration" />
 
         <semui:breadcrumbs>
             <semui:crumb message="menu.institutions.costConfiguration" class="active" />
@@ -100,5 +94,5 @@
                 })
             })
         </laser:script>
-    </body>
-</html>
+
+<laser:htmlEnd />

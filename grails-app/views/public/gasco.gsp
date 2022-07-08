@@ -1,13 +1,6 @@
 <%@ page import="de.laser.Org; de.laser.PersonRole; de.laser.OrgRole; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Contact; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.storage.RDConstants;" %>
 
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'gasco.title')}</title>
-</head>
-
-<body>
+<laser:htmlStart message="gasco.title" />
 
 <semui:h1HeaderWithIcon text="${message(code: 'menu.public.gasco_monitor')}: ${message(code: 'gasco.licenceSearch')}" />
 
@@ -230,5 +223,5 @@
         }
     </style>
 </sec:ifAnyGranted>
-</body>
-</html>
+
+<laser:htmlEnd />

@@ -1,14 +1,6 @@
 <%@ page import="de.laser.survey.SurveyConfig; de.laser.RefdataValue; de.laser.RefdataCategory" %>
-<laser:serviceInjection/>
 
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'createSubscriptionSurvey.label')}</title>
-</head>
-
-<body>
+<laser:htmlStart message="createSubscriptionSurvey.label" serviceInjection="true" />
 
 <semui:breadcrumbs>
 
@@ -82,5 +74,4 @@
         })
 </laser:script>
 
-</body>
-</html>
+<laser:htmlEnd />

@@ -1,12 +1,6 @@
 <%@ page import="de.laser.finance.CostItemGroup; de.laser.finance.BudgetCode"%>
 
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'menu.institutions.budgetCodes')}</title>
-    </head>
-    <body>
+<laser:htmlStart message="menu.institutions.budgetCodes" />
 
         <semui:breadcrumbs>
             <semui:crumb message="menu.institutions.budgetCodes" class="active"/>
@@ -100,5 +94,4 @@
         </g:form>
     </semui:modal>
 
-  </body>
-</html>
+  <laser:htmlEnd />

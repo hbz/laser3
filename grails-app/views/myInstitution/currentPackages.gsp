@@ -1,12 +1,5 @@
 <%@ page import="de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Package; de.laser.RefdataValue;" %>
-<laser:serviceInjection/>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'menu.my.packages')}</title>
-</head>
-<body>
+<laser:htmlStart message="menu.my.packages" serviceInjection="true" />
 
 <semui:breadcrumbs>
     <semui:crumb message="menu.my.packages" class="active" />
@@ -129,5 +122,4 @@
 
     <semui:paginate total="${packageListTotal}" params="${params}" max="${max}" offset="${offset}" />
 
-</body>
-</html>
+<laser:htmlEnd />

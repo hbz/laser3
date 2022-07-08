@@ -1,12 +1,5 @@
 <%@ page import="de.laser.titles.TitleInstance" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'title.nav.history')}</title>
-</head>
-
-<body>
+<laser:htmlStart message="title.nav.history" />
 
     <semui:breadcrumbs>
         <semui:crumb controller="title" action="list" message="menu.public.all_titles" />
@@ -66,5 +59,4 @@
     </g:else>
 
 
-</body>
-</html>
+<laser:htmlEnd />

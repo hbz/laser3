@@ -1,13 +1,5 @@
 <%@ page import="de.laser.utils.DateUtils; de.laser.Org; de.laser.Package; de.laser.Platform; java.text.SimpleDateFormat;" %>
-<!doctype html>
-
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'package.show.all')}</title>
-</head>
-
-<body>
+<laser:htmlStart message="package.show.all" />
 
 <semui:breadcrumbs>
     <semui:crumb message="package.show.all" class="active"/>
@@ -182,5 +174,4 @@
     </div>
 </div>
 
-</body>
-</html>
+<laser:htmlEnd />
