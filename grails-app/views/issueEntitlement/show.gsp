@@ -1,13 +1,8 @@
 <%@ page import="de.laser.config.ConfigMapper; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.titles.JournalInstance; de.laser.titles.BookInstance; de.laser.remote.ApiSource; de.laser.IssueEntitlement" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <g:set var="entityName" value="${message(code: 'issueEntitlement.label')}"/>
-    <title>${message(code: 'laser')} : <g:message code="default.show.label" args="[entityName]"/></title>
-</head>
 
-<body>
+<g:set var="entityName" value="${message(code: 'issueEntitlement.label')}"/>
+<laser:htmlStart text="${message(code:"default.show.label", args:[entityName])}" />
+
 <semui:breadcrumbs>
     <g:if test="${issueEntitlementInstance.subscription.subscriber}">
         <semui:crumb controller="myInstitution" action="currentSubscriptions"
@@ -370,5 +365,4 @@
     --%>
 </div>
 
-</body>
-</html>
+<laser:htmlEnd />

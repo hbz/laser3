@@ -1,12 +1,6 @@
 <%@ page import="de.laser.OrgRole; grails.converters.JSON;de.laser.storage.RDStore" contentType="text/html;charset=UTF-8" %>
-<laser:serviceInjection/>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'myinst.financeImport.post.title')}</title>
-    </head>
+<laser:htmlStart message="myinst.financeImport.post.title" serviceInjection="true"/>
 
-    <body>
         <semui:breadcrumbs>
             <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
             <semui:crumb message="menu.institutions.financeImport" class="active"/>
@@ -104,7 +98,7 @@
                 </tfoot>
             </table>
         </g:form>
-    </body>
+
     <laser:script file="${this.getGroovyPageFileName()}">
             $("#takeAll").change(function(){
                 if($(this).is(":checked")) {
@@ -115,4 +109,4 @@
                 }
             });
     </laser:script>
-</html>
+<laser:htmlEnd />

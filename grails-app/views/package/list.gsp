@@ -77,4 +77,4 @@
 
         <semui:paginate action="list" controller="package" params="${params}" next="Next" prev="Prev" max="${max}" total="${packageInstanceTotal}" />
 
-    <laser:htmlEnd />
+<laser:htmlEnd />

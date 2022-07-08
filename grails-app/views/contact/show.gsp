@@ -1,13 +1,8 @@
-
 <%@ page import="de.laser.RefdataCategory; de.laser.Contact; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
-<!doctype html>
-<html>
-	<head>
-		<meta name="layout" content="laser">
-		<g:set var="entityName" value="${message(code: 'contact.label')}" />
-		<title>${message(code:'laser')} : <g:message code="default.show.label" args="[entityName]" /></title>
-	</head>
-	<body>
+
+<g:set var="entityName" value="${message(code: 'contact.label')}" />
+<laser:htmlStart text="${message(code:"default.show.label", args:[entityName])}" />
+
         <semui:breadcrumbs>
             <semui:crumb message="menu.public.all_orgs" controller="organisation" action="index"/>
             <semui:crumb text="${g.message(code:'default.edit.label', args:[entityName])}" class="active"/>
@@ -65,5 +60,4 @@
             </aside><!-- .four -->
 
 		</div><!-- .grid -->
-	</body>
-</html>
+<laser:htmlEnd />

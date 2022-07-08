@@ -1,12 +1,7 @@
 <%@ page import="de.laser.reporting.report.ReportingCache; de.laser.reporting.report.myInstitution.base.BaseConfig" %>
-<laser:serviceInjection/>
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : <g:message code="myinst.reporting"/></title>
-        <laser:javascript src="echarts.js"/>%{-- dont move --}%
-    </head>
+<laser:htmlStart message="myinst.reporting" serviceInjection="true">
+    <laser:javascript src="echarts.js"/>%{-- dont move --}%
+</laser:htmlStart>
 
     <body>
         <laser:render template="breadcrumb" model="${[ subscription:subscription, params:params ]}"/>
@@ -130,5 +125,4 @@
         <semui:modal id="reporting-modal-error" text="REPORTING" hideSubmitButton="true">
             <p><i class="icon exclamation triangle large orange"></i> ${message(code:'reporting.modal.error')}</p>
         </semui:modal>
-</body>
-</html>
+<laser:htmlEnd />

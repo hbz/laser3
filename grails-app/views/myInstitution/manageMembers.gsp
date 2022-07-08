@@ -1,18 +1,10 @@
 <%@ page import="de.laser.storage.RDStore" %>
-<laser:serviceInjection />
 
-<%
-    String title = message(code: 'menu.institutions.manage_consortia'), memberPlural = message(code: 'consortium.member.plural')
-%>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
     <g:set var="entityName" value="${message(code: 'org.label')}"/>
-    <title>${message(code: 'laser')} : ${title}</title>
-</head>
+    <g:set var="title" value="${message(code: 'menu.institutions.manage_consortia')}"/>
+    <g:set var="memberPlural" value="${message(code: 'consortium.member.plural')}"/>
 
-<body>
+<laser:htmlStart text="${title}" serviceInjection="true" />
 
 <semui:breadcrumbs>
     <semui:crumb text="${title}" class="active"/>
@@ -109,5 +101,4 @@
         <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
     </semui:debugInfo>
 
-</body>
-</html>
+<laser:htmlEnd />

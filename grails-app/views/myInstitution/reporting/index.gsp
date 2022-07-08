@@ -1,14 +1,8 @@
 <%@page import="de.laser.config.ConfigMapper; de.laser.reporting.report.ElasticSearchHelper; de.laser.reporting.report.GenericHelper; de.laser.ReportingFilter; de.laser.reporting.export.GlobalExportHelper; de.laser.reporting.report.myInstitution.base.BaseConfig;de.laser.ReportingGlobalService;de.laser.Org;de.laser.Subscription;de.laser.reporting.report.ReportingCache;de.laser.properties.PropertyDefinition" %>
-<laser:serviceInjection/>
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title><g:message code="laser"/> : <g:message code="myinst.reporting"/></title>
-        <laser:javascript src="echarts.js"/>%{-- dont move --}%
-    </head>
+<laser:htmlStart message="myinst.reporting" serviceInjection="true">
+    <laser:javascript src="echarts.js"/>%{-- dont move --}%
+</laser:htmlStart>
 
-    <body>
         <semui:breadcrumbs>
             <semui:crumb controller="myInstitution" action="dashboard" text="${institution.getDesignation()}"/>
             <semui:crumb text="${message(code:'myinst.reporting')}" class="active" />
@@ -387,5 +381,4 @@
         <semui:modal id="reporting-modal-error" text="REPORTING" hideSubmitButton="true">
             <p><i class="icon exclamation triangle large orange"></i> ${message(code:'reporting.modal.error')}</p>
         </semui:modal>
-    </body>
-</html>
+<laser:htmlEnd />

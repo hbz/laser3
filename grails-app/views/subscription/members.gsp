@@ -1,17 +1,6 @@
-<%@ page import="de.laser.finance.CostItem; de.laser.Links; de.laser.Person; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore; de.laser.Subscription" %>
-<laser:serviceInjection />
+<%@ page import="de.laser.storage.BeanStore; de.laser.finance.CostItem; de.laser.Links; de.laser.Person; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore; de.laser.Subscription" %>
 
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} :
-        <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
-            <g:message code="subscription.details.consortiaMembers.label"/>
-        </g:if>
-    </title>
-</head>
-<body>
+<laser:htmlStart text="${BeanStore.getAccessService().checkPerm("ORG_CONSORTIUM") ? message(code:'subscription.details.consortiaMembers.label') : ''}" serviceInjection="true" />
 
     <laser:render template="breadcrumb" model="${[ params:params ]}"/>
 
@@ -344,6 +333,5 @@
                 </g:else>
             </g:else>
 
-        </body>
-        </html>
+<laser:htmlEnd />
 

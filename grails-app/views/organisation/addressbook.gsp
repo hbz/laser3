@@ -1,14 +1,8 @@
 <%@ page import="de.laser.Org; de.laser.Person; de.laser.PersonRole; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants " %>
 
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <g:set var="entityName" value="${message(code: 'org.label')}"/>
-    <title>${message(code: 'laser')} : <g:message code="default.show.label" args="[entityName]"/></title>
-</head>
+<g:set var="entityName" value="${message(code: 'org.label')}"/>
+<laser:htmlStart text="${message(code:"default.show.label", args:[entityName])}" />
 
-<body>
 <g:set var="allOrgTypeIds" value="${orgInstance.getAllOrgTypeIds()}"/>
 <g:set var="isProviderOrAgency"
        value="${RDStore.OT_PROVIDER.id in allOrgTypeIds || RDStore.OT_AGENCY.id in allOrgTypeIds}"/>
@@ -114,8 +108,6 @@
 
 </g:if>
 
-</body>
-
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.app.personCreate = function (contactFor, org) {
         var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor='+contactFor+'&org='+org+'&showAddresses=true&showContacts=true';
@@ -139,4 +131,4 @@
         });
     }
 </laser:script>
-</html>
+<laser:htmlEnd />

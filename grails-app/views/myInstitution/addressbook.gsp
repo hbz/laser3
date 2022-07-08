@@ -1,13 +1,6 @@
 <%@ page import="de.laser.PersonRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Org; de.laser.Person; de.laser.RefdataValue; de.laser.RefdataCategory" %>
-<!doctype html>
 
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'menu.institutions.myAddressbook')}</title>
-</head>
-
-<body>
+<laser:htmlStart message="menu.institutions.myAddressbook" />
 
 <semui:breadcrumbs>
     <semui:crumb message="menu.institutions.myAddressbook" class="active"/>
@@ -141,9 +134,6 @@
                 max="${max}"
                 total="${num_visiblePersons}"/>
 
-</body>
-
-
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.app.personCreate = function (contactFor) {
         var url = '<g:createLink controller="ajaxHtml" action="createPerson"/>?contactFor='+contactFor+'&showAddresses=true&showContacts=true';
@@ -168,4 +158,4 @@
     }
 </laser:script>
 
-</html>
+<laser:htmlEnd />

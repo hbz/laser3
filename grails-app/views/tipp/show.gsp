@@ -1,13 +1,6 @@
 <%@ page import="de.laser.remote.ApiSource; de.laser.titles.BookInstance; de.laser.storage.RDStore; de.laser.titles.TitleHistoryEventParticipant" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title><g:message code="tipp.show.label"
-                      args="${[tipp.name, tipp.pkg.name, tipp.platform.name]}"/></title>
-</head>
 
-<body>
+<laser:htmlStart text="${message(code:"tipp.show.label", args:[tipp.name, tipp.pkg.name, tipp.platform.name])}" />
 
 <semui:breadcrumbs>
     <semui:crumb controller="package" action="show" id="${tipp.pkg.id}"
@@ -311,5 +304,4 @@
             </div>
 </div>
 
-</body>
-</html>
+<laser:htmlEnd />

@@ -1,15 +1,7 @@
 <%@ page import="de.laser.PersonRole; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Org; de.laser.Person; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
-<laser:serviceInjection/>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <g:set var="entityName" value="${message(code: 'person.label')}"/>
-    <title>${message(code:'laser')} : <g:message code="default.show.label" args="[entityName]"/></title>
 
-</head>
-<laser:serviceInjection />
-<body>
+<g:set var="entityName" value="${message(code: 'person.label')}"/>
+<laser:htmlStart text="${message(code:"default.show.label", args:[entityName])}" serviceInjection="true" />
 
 <semui:breadcrumbs>
     <semui:crumb message="menu.public.all_orgs" controller="organisation" action="index" />
@@ -424,8 +416,6 @@
         message:'person.position_new.label',
         presetOrgId: presetOrg?.id]" />
 
-</body>
-</html>
 <laser:script file="${this.getGroovyPageFileName()}">
         %{--function addresscreate_org(orgId, typeId, redirect, modalId, hideType) {--}%
             %{--var url = '<g:createLink controller="ajaxHtml" action="createAddress"/>'+'?orgId='+orgId+'&typeId='+typeId+'&redirect='+redirect+'&modalId='+modalId+'&hideType='+hideType;--}%
@@ -438,3 +428,5 @@
         func();
     }
 </laser:script>
+
+<laser:htmlEnd />

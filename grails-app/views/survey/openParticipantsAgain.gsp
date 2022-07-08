@@ -1,20 +1,8 @@
 <%@ page import="de.laser.survey.SurveyConfig; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.RefdataCategory; de.laser.Org" %>
 
-<laser:serviceInjection/>
+<g:set var="currenMsgCode" value="${params.tab == 'participantsViewAllFinish' ? 'openParticipantsAgain.label' : 'openParticipantsAgain.reminder'}" />
 
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'survey.label')} (<g:if test="${params.tab == 'participantsViewAllFinish'}">
-        ${message(code:"openParticipantsAgain.label")}
-    </g:if>
-    <g:else>
-        ${message(code:"openParticipantsAgain.reminder")}
-    </g:else>)</title>
-</head>
-
-<body>
+<laser:htmlStart text="${message(code: 'survey.label')}  ${message(code: currenMsgCode)}" serviceInjection="true" />
 
 <semui:breadcrumbs>
     <semui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
@@ -22,12 +10,8 @@
         <semui:crumb controller="survey" action="show" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]"
                      text="${surveyConfig.getConfigNameShort()}"/>
     </g:if>
-    <g:if test="${params.tab == 'participantsViewAllFinish'}">
-        <semui:crumb message="openParticipantsAgain.label" class="active"/>
-    </g:if>
-    <g:else>
-        <semui:crumb message="openParticipantsAgain.reminder" class="active"/>
-    </g:else>
+
+    <semui:crumb message="${currenMsgCode}" class="active"/>
 </semui:breadcrumbs>
 
 <semui:controlButtons>
@@ -60,12 +44,7 @@
         ${surveyConfig.getConfigNameShort()}
     </g:else>:
 
-    <g:if test="${params.tab == 'participantsViewAllFinish'}">
-        ${message(code: 'openParticipantsAgain.label')}
-    </g:if>
-    <g:else>
-        ${message(code: 'openParticipantsAgain.reminder')}
-    </g:else>
+        ${message(code: "${currenMsgCode}")}
 </h2>
 <br />
 
@@ -112,5 +91,4 @@
     })
 </laser:script>
 
-</body>
-</html>
+<laser:htmlEnd />

@@ -1,13 +1,8 @@
 <%@ page import="de.laser.storage.RDStore; de.laser.Org; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.FormService" %>
-<laser:serviceInjection/>
-<!doctype html>
-<html>
-	<head>
-		<meta name="layout" content="laser">
-		<g:set var="entityName" value="${message(code: 'default.institution')}" />
-		<title>${message(code:'laser')} : <g:message code="default.create.label" args="[entityName]" /></title>
-	</head>
-	<body>
+
+<g:set var="entityName" value="${message(code: 'default.institution')}" />
+<laser:htmlStart text="${message(code:"default.create.label", args:[entityName])}" serviceInjection="true"/>
+
 	<semui:breadcrumbs>
 		<semui:crumb message="menu.public.all_insts" controller="organisation" action="listInstitution"  />
 		<semui:crumb text="${message(code:"default.create.label",args:[entityName])}" class="active"/>
@@ -119,5 +114,4 @@
 				</g:if>
 
 
-	</body>
-</html>
+<laser:htmlEnd />

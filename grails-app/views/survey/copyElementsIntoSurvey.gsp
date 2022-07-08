@@ -1,13 +1,7 @@
 <%@ page import="de.laser.RefdataValue; de.laser.CopyElementsService;de.laser.storage.RDStore;" %>
-<laser:serviceInjection/>
 
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-        <title>${message(code: 'laser')} : ${message(code: 'copyElementsIntoObject.label', args: [message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}</title>
-</head>
-<body>
+<laser:htmlStart text="${message(code: 'copyElementsIntoObject.label', args: [message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}" serviceInjection="true"/>
+
 <semui:breadcrumbs>
     <semui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code:'menu.my.surveys')}" />
 
@@ -86,5 +80,5 @@
         <laser:render template="/templates/copyElements/copyElements" />
     </g:else>
     <laser:render template="/templates/copyElements/copyElementsJS"/>
-</body>
-</html>
+
+<laser:htmlEnd />

@@ -1,14 +1,6 @@
 <%@ page import="de.laser.*;de.laser.interfaces.CalculatedType;de.laser.storage.RDConstants;de.laser.FormService" %>
-<laser:serviceInjection/>
 
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'subscription.details.addMembers.label', args: memberType)}</title>
-</head>
-
-<body>
+<laser:htmlStart text="${message(code: 'subscription.details.addMembers.label', args: memberType)}" serviceInjection="true"/>
 
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="currentSubscriptions"
@@ -182,5 +174,4 @@
     </g:if>
 </g:if>
 
-</body>
-</html>
+<laser:htmlEnd />

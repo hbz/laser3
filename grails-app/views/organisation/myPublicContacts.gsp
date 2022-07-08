@@ -1,16 +1,7 @@
 <%@ page import="de.laser.storage.RDStore;de.laser.storage.RDConstants;" %>
 <%@ page import="de.laser.Org; de.laser.Person; de.laser.PersonRole; de.laser.RefdataValue; de.laser.RefdataCategory" %>
-<!doctype html>
 
-<laser:serviceInjection/>
-
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'menu.institutions.publicContacts')}</title>
-</head>
-
-<body>
+<laser:htmlStart message="menu.institutions.publicContacts" serviceInjection="true" />
 
 <semui:breadcrumbs>
     <g:if test="${inContextOrg}">
@@ -217,8 +208,6 @@
 </div>
 
 %{--------------------}%
-</body>
-
 
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.app.personCreate = function (contactFor) {
@@ -233,4 +222,4 @@
         func();
     }
 </laser:script>
-</html>
+<laser:htmlEnd />

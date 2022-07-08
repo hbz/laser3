@@ -1,13 +1,5 @@
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <g:set var="entityName" value="${message(code: 'onixplLicense.license.label')}" />
-    <title>${message(code:'laser')} : <g:message code="default.import.label" args="[entityName]" /></title>
-</head>
-<body>
-<div>
-
+<g:set var="entityName" value="${message(code: 'onixplLicense.license.label')}" />
+<laser:htmlStart text="${message(code:"default.import.label", args:[entityName])}" />
 
         <g:unless test="${validationResult?.success}">
             <semui:h1HeaderWithIcon message="onix.import.license">
@@ -124,6 +116,4 @@
         </div>
     </g:if>
 
-</div>
-</body>
-</html>
+<laser:htmlEnd />

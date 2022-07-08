@@ -1,12 +1,7 @@
 <%@ page import="de.laser.Platform" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <g:set var="entityName" value="${message(code: 'platform.label')}" />
-    <title>${message(code:'laser')} : <g:message code="default.show.label" args="[entityName]" /></title>
-</head>
-<body>
+
+<g:set var="entityName" value="${message(code: 'platform.label')}" />
+<laser:htmlStart text="${message(code:"default.show.label", args:[entityName])}" />
 
 <semui:modeSwitch controller="platform" action="show" params="${params}" />
 
@@ -31,5 +26,5 @@
 <div id="dynamicUpdate">
   <laser:render template="apLinkContent" model="result" />
 </div>
-</body>
-</html>
+
+<laser:htmlEnd />

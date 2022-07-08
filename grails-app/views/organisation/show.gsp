@@ -1,10 +1,6 @@
 <%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Org; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo" %>
-<laser:serviceInjection/>
 
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
+<laser:htmlStart message="menu.institutions.org_info" serviceInjection="true" />
 
     <g:if test="${isProviderOrAgency}">
         <g:set var="entityName" value="${message(code: 'default.provider.label')}"/>
@@ -15,10 +11,7 @@
     <g:else>
         <g:set var="entityName" value="${message(code: 'org.label')}"/>
     </g:else>
-    <title>${message(code: 'laser')} : ${message(code:'menu.institutions.org_info')}</title>
-</head>
 
-<body>
 
 <laser:render template="breadcrumb"
           model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView]}"/>
@@ -634,8 +627,6 @@
 %{--<laser:render template="/templates/debug/prsRoles" model="[debug: orgInstance.prsLinks]"/>--}%
 </semui:debugInfo>
 
-</body>
-</html>
 <laser:script file="${this.getGroovyPageFileName()}">
     $('#country').on('save', function(e, params) {
         JSPC.app.showRegionsdropdown(params.newValue);
@@ -675,3 +666,5 @@
     }
 </g:if>
 </laser:script>
+
+<laser:htmlEnd />

@@ -1,14 +1,6 @@
 <%@ page import="de.laser.Person; de.laser.RefdataValue; de.laser.SubscriptionController; de.laser.CopyElementsService" %>
-<laser:serviceInjection/>
 
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'copyElementsIntoObject.label', args: [message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}</title>
-</head>
-
-<body>
+<laser:htmlStart text="${message(code: 'copyElementsIntoObject.label', args: [message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}" serviceInjection="true"/>
 
 <semui:breadcrumbs>
     <semui:crumb text="${message(code:'license.current')}" controller="myInstitution" action="currentLicenses" />
@@ -115,5 +107,5 @@ if (targetObjectId) params << [targetObjectId: genericOIDService.getOID(targetOb
     <laser:render template="/templates/copyElements/copyElements"/>
 </g:else>
 <laser:render template="/templates/copyElements/copyElementsJS"/>
-</body>
-</html>
+
+<laser:htmlEnd />

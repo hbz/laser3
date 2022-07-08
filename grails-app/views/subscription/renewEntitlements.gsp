@@ -1,12 +1,6 @@
 <%@ page import="de.laser.storage.RDStore; de.laser.Subscription; de.laser.Platform; de.laser.titles.BookInstance" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'default.subscription.label')}</title>
-</head>
+<laser:htmlStart message="default.subscription.label" />
 
-<body>
 <semui:breadcrumbs>
     <semui:crumb controller="myInstitution" action="currentSubscriptions" text="${message(code: 'myinst.currentSubscriptions.label')}"/>
     <semui:crumb controller="subscription" action="index" id="${subscription.id}" text="${subscription.name}"/>
@@ -43,7 +37,6 @@
     </div>
 </g:form>
 
-</body>
 <laser:script file="${this.getGroovyPageFileName()}">
         JSPC.app.tippsToAdd = [];
         JSPC.app.tippsToDelete = [];
@@ -112,4 +105,4 @@
             $("#tippsToDelete").val(JSPC.app.tippsToDelete.join(','));
         });
 </laser:script>
-</html>
+<laser:htmlEnd />

@@ -1,16 +1,9 @@
 <%@ page import="de.laser.Combo; de.laser.CustomerIdentifier; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Org; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
-<laser:serviceInjection/>
 
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
+<laser:htmlStart message="menu.institutions.org_info" serviceInjection="true" />
+
     <g:set var="isGrantedOrgRoleAdminOrOrgEditor" value="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}" />
-    <title>${message(code: 'laser')} : ${message(code:'menu.institutions.org_info')}</title>
-</head>
-
-<body>
 
 <semui:debugInfo>
     <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]"/>
@@ -179,8 +172,7 @@
             </table>
         </g:if>
     </div>
-</body>
-</html>
+
 <g:if test="${actionName == 'ids'}">
     <laser:script file="${this.getGroovyPageFileName()}">
         JSPC.app.IdContoller =  {
@@ -221,3 +213,5 @@
         }
     </laser:script>
 </g:if>
+
+<laser:htmlEnd />

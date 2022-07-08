@@ -1,12 +1,7 @@
 <%@ page import="de.laser.Platform;de.laser.PlatformAccessMethod;de.laser.storage.RDConstants" %>
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <g:set var="entityName" value="${message(code: 'platform.label')}" />
-        <title>${message(code:'laser')} : <g:message code="default.show.label" args="[entityName]" /></title>
-    </head>
-    <body>
+
+<g:set var="entityName" value="${message(code: 'platform.label')}" />
+<laser:htmlStart text="${message(code:"default.show.label", args:[entityName])}" />
 
         <semui:breadcrumbs>
             <semui:crumb controller="platform" action="index" message="platform.show.all" />
@@ -28,7 +23,7 @@
 
         <semui:messages data="${flash}" />
         
-        <laser:render template="nav" contextPath="." />
+%{--        <laser:render template="nav" contextPath="." />--}%
 
         <g:form class="form" url="[controller: 'accessMethod', action: 'create']" method="POST">
             <table  class="ui celled la-js-responsive-table la-table table">
@@ -96,5 +91,4 @@
             </table>
         </g:form>
 
-    </body>
-</html>
+<laser:htmlEnd />

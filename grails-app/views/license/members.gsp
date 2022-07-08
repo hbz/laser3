@@ -1,13 +1,6 @@
 <%@ page import="de.laser.License; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.storage.RDConstants; de.laser.Person; de.laser.Subscription" %>
-<laser:serviceInjection />
 
-<!doctype html>
-<html>
-<head>
-  <meta name="layout" content="laser">
-  <title>${message(code:'laser')} : ${message(code:'license.details.incoming.childs',args:[message(code:'consortium.subscriber')])}</title>
-</head>
-<body>
+<laser:htmlStart text="${message(code:'license.details.incoming.childs',args:[message(code:'consortium.subscriber')])}" serviceInjection="true" />
 
     <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
@@ -144,5 +137,4 @@
     </tbody>
 </table>
 
-</body>
-</html>
+<laser:htmlEnd />

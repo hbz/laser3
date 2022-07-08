@@ -1,13 +1,6 @@
 <%@ page import="de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Platform; de.laser.titles.BookInstance; de.laser.remote.ApiSource; de.laser.Org;" %>
-<laser:serviceInjection/>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'subscription.details.renewEntitlements.label')}</title>
-</head>
+<laser:htmlStart message="subscription.details.renewEntitlements.label" serviceInjection="true"/>
 
-<body>
 <semui:breadcrumbs>
     <g:if test="${contextOrg.id == surveyConfig.surveyInfo.owner.id}">
         <semui:crumb controller="survey" action="currentSurveysConsortia" message="currentSurveys.label"/>
@@ -426,7 +419,6 @@
                     total="${num_ies_rows}"/>
 </g:if>
 
-</body>
 <laser:script file="${this.getGroovyPageFileName()}">
 
 
@@ -484,4 +476,4 @@
     });
 
 </laser:script>
-</html>
+<laser:htmlEnd />

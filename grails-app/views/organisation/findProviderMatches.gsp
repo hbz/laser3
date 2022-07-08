@@ -1,12 +1,8 @@
 <%@ page import="de.laser.Org" %>
-<!doctype html>
-<html>
-	<head>
-		<meta name="layout" content="laser">
-		<g:set var="entityName" value="${message(code: 'default.provider.label')}" />
-		<title>${message(code:'laser')} : <g:message code="default.create.label" args="[entityName]" /></title>
-	</head>
-	<body>
+
+<g:set var="entityName" value="${message(code: 'default.provider.label')}" />
+<laser:htmlStart text="${message(code:"default.create.label", args:[entityName])}" />
+
 	<semui:breadcrumbs>
 		<semui:crumb message="menu.public.all_providers" controller="organisation" action="listProvider"  />
 		<semui:crumb text="${message(code:"default.create.label",args:[entityName])}" class="active"/>
@@ -31,7 +27,6 @@
 				<g:link controller="organisation" action="listProvider" class="ui button">${message(code:'default.button.cancel.label')}</g:link>
 			</div>
 		</semui:searchSegment>
-
 
 
 				<g:if test="${providerMatches != null}">
@@ -72,5 +67,4 @@
 				</g:if>
 
 
-	</body>
-</html>
+<laser:htmlEnd />
