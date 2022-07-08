@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4081    06.07.2022  rc-2.3  2.3.2       Moe     Bug         Hinweis auf fehlende Leitweg-ID bei elektronischer Rechnungsstellung fehl!
+
 4327    06.07.2022  rc-2.3  2.3.2       Moe     Feature     Lizenzumfrage: Anzeige aktuelle/zukünftige Lizenzbedingungen konfigurierbar machen
 
 4345    06.07.2022  rc-2.3  2.3.2       Moe     Bug         IssueEntitlement werden angewissen Stellen nicht richtig gefiltern
