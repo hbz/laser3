@@ -45,7 +45,7 @@
                     fakeList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.LICENSE_STATUS))
                     fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', RDConstants.LICENSE_STATUS))
                 %>
-                <laser:select name="status" from="${fakeList}" optionKey="id" optionValue="value"
+                <ui:select name="status" from="${fakeList}" optionKey="id" optionValue="value"
                               noSelection="${['' : '']}"
                               value="${['':'']}"/>
             </div>

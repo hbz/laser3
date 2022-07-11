@@ -31,7 +31,7 @@
 </ui:controlButtons>--}%
 
 <ui:h1HeaderWithIcon text="${surveyInfo.name}" type="Survey" />
-<ui:surveyStatus object="${surveyInfo}"/>
+<survey:status object="${surveyInfo}"/>
 
 
 <g:if test="${surveyConfig.subSurveyUseForTransfer}">

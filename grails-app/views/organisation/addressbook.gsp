@@ -59,7 +59,7 @@
         <div class="two fields">
             <div class="field">
                 <label><g:message code="person.function.label"/></label>
-                <laser:select class="ui dropdown search"
+                <ui:select class="ui dropdown search"
                               name="function"
                               from="${PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION)}"
                               multiple=""
@@ -71,7 +71,7 @@
 
             <div class="field">
                 <label><g:message code="person.position.label"/></label>
-                <laser:select class="ui dropdown search"
+                <ui:select class="ui dropdown search"
                               name="position"
                               from="${PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION)}"
                               multiple=""

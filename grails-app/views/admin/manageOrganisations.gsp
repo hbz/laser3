@@ -230,7 +230,7 @@
 
             <div class="field">
                 <label for="gascoEntry">${message(code:'org.gascoEntry.label')}</label>
-                <laser:select id="gascoEntry" name="gascoEntry"
+                <ui:select id="gascoEntry" name="gascoEntry"
                               from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                               optionKey="${{ RefdataValue.class.name + ':' + it.id }}"
                               optionValue="value"
@@ -322,7 +322,7 @@
 
             <div class="field">
                 <label for="customerType">${message(code:'org.customerType.label')}</label>
-                <laser:select id="customerType" name="customerType"
+                <ui:select id="customerType" name="customerType"
                           from="${[Role.findByAuthority('FAKE')] + Role.findAllByRoleType('org')}"
                           optionKey="id"
                           optionValue="authority"

@@ -63,7 +63,7 @@
 
                     <tr>
                         <td>
-                            <laser:select class="ui dropdown values" id="accessMethod"
+                            <ui:select class="ui dropdown values" id="accessMethod"
                                           name="accessMethod"
                                           from="${PlatformAccessMethod.getAllRefdataValues(RDConstants.ACCESS_METHOD)}"
                                           optionKey="id"

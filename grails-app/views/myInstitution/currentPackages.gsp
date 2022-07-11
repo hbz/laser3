@@ -28,7 +28,7 @@
 
             <div class="field">
                 <label>${message(code: 'myinst.currentPackages.filter.subStatus.label')}</label>
-                <laser:select class="ui dropdown" name="status"
+                <ui:select class="ui dropdown" name="status"
                               from="${ RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS) }"
                               optionKey="id"
                               optionValue="value"

@@ -297,7 +297,7 @@
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('finishedDate')}">
                         <td>
-                            <ui:surveyFinishDate participant="${participant}"
+                            <survey:finishDate participant="${participant}"
                                                     surveyConfig="${surveyConfig}"/>
                         </td>
                     </g:if>
@@ -492,7 +492,7 @@
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('finishedDate')}">
                         <td>
-                            <ui:surveyFinishDate participant="${participant}"
+                            <survey:finishDate participant="${participant}"
                                                     surveyConfig="${surveyConfig}"/>
                         </td>
                     </g:if>
@@ -522,7 +522,7 @@
                 <div class="ui field">
                      <div class="field">
                         <label>${message(code: 'filter.status')}</label>
-                        <laser:select class="ui dropdown" name="status" id="status"
+                        <ui:select class="ui dropdown" name="status" id="status"
                                       from="${ RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS) }"
                                       optionKey="id"
                                       optionValue="value"

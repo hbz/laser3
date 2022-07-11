@@ -38,7 +38,7 @@
         <g:message code="person.gender.label" />
 
     </label>
-    <laser:select class="ui dropdown" id="gender" name="gender"
+    <ui:select class="ui dropdown" id="gender" name="gender"
                   from="${Person.getAllRefdataValues(RDConstants.GENDER)}"
                   optionKey="id"
                   optionValue="value"
@@ -51,7 +51,7 @@
 		${RefdataCategory.getByDesc(RDConstants.PERSON_POSITION).getI10n('desc')}
 
     </label>
-    <laser:select class="ui dropdown" id="roleType" name="roleType"
+    <ui:select class="ui dropdown" id="roleType" name="roleType"
                   from="${Person.getAllRefdataValues(RDConstants.PERSON_POSITION)}"
                   optionKey="id"
                   optionValue="value"
@@ -64,7 +64,7 @@
 		${RefdataCategory.getByDesc(RDConstants.PERSON_CONTACT_TYPE).getI10n('desc')}
 
     </label>
-    <laser:select class="ui dropdown" id="contactType" name="contactType"
+    <ui:select class="ui dropdown" id="contactType" name="contactType"
                   from="${Person.getAllRefdataValues(RDConstants.PERSON_CONTACT_TYPE)}"
                   optionKey="id"
                   optionValue="value"
@@ -114,7 +114,7 @@
     <label for="isPublic">
         <g:message code="person.isPublic.label" />
     </label>
-    <laser:select class="ui dropdown" id="isPublic" name="isPublic"
+    <ui:select class="ui dropdown" id="isPublic" name="isPublic"
                   from="${Person.getAllRefdataValues(RDConstants.Y_N)}"
                   optionKey="id"
                   optionValue="value"
@@ -137,7 +137,7 @@
 		<div class="field">
 			<div class="two fields">
 				<div class="field wide ten">
-					<laser:select class="ui dropdown"
+					<ui:select class="ui dropdown"
 								  name="ignore-functionType-selector"
 								  from="${PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION)}"
 								  optionKey="id"
@@ -169,7 +169,7 @@
 		<div class="field">
 			<div class="two fields">
 				<div class="field wide ten">
-					<laser:select class="ui dropdown"
+					<ui:select class="ui dropdown"
 								  name="ignore-responsibilityType-selector"
 								  from="${PersonRole.getAllRefdataValues(RDConstants.PERSON_RESPONSIBILITY)}"
 								  optionKey="id"

@@ -170,7 +170,7 @@
                                             <td>
                                                 <g:if test="${!(settingKey in excludes)}">
                                                     <g:if test="${editmode}">
-                                                        <laser:select class="ui dropdown"
+                                                        <ui:select class="ui dropdown"
                                                                       name="${settingKey}!§!setting" from="${RefdataCategory.getAllRefdataValues(RDConstants.PENDING_CHANGE_CONFIG_SETTING)}"
                                                                       optionKey="id" optionValue="value"
                                                                       value="${(pcc && pcc.settingValue) ? pcc.settingValue.id : RDStore.PENDING_CHANGE_CONFIG_PROMPT.id}"

@@ -13,7 +13,7 @@
                 <label><g:message code="person.function.label" /></label>
             </div>
             <div>
-                <laser:select class="ui dropdown search"
+                <ui:select class="ui dropdown search"
                               name="prsFunctionMultiSelect"
                               multiple=""
                               from="${rdvAllPersonFunctions}"
@@ -27,7 +27,7 @@
                 <label><g:message code="person.position.label" /></label>
             </div>
             <div>
-                <laser:select class="ui dropdown search"
+                <ui:select class="ui dropdown search"
                               name="prsPositionMultiSelect"
                               multiple=""
                               from="${rdvAllPersonPositions}"

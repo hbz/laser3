@@ -59,7 +59,7 @@
                     fakeList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS))
                     fakeList.add(RefdataValue.getByValueAndCategory('subscription.status.no.status.set.but.null', 'filter.fake.values'))
                 %>
-                <laser:select class="ui dropdown" name="status"
+                <ui:select class="ui dropdown" name="status"
                               from="${ fakeList }"
                               optionKey="id"
                               optionValue="value"
@@ -71,7 +71,7 @@
             <laser:render template="/templates/properties/genericFilter" model="[propList: filterPropList, label:message(code: 'subscription.property.search')]"/>
             <div class="field">
                 <label>${message(code:'subscription.form.label')}</label>
-                <laser:select class="ui dropdown" name="form"
+                <ui:select class="ui dropdown" name="form"
                               from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM)}"
                               optionKey="id"
                               optionValue="value"
@@ -80,7 +80,7 @@
             </div>
             <div class="field">
                 <label>${message(code:'subscription.resource.label')}</label>
-                <laser:select class="ui dropdown" name="resource"
+                <ui:select class="ui dropdown" name="resource"
                               from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)}"
                               optionKey="id"
                               optionValue="value"
@@ -104,7 +104,7 @@
             </div>
             <div class="field">
                 <label>${message(code:'subscription.isPublicForApi.label')}</label>
-                <laser:select class="ui fluid dropdown" name="isPublicForApi"
+                <ui:select class="ui fluid dropdown" name="isPublicForApi"
                               from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                               optionKey="id"
                               optionValue="value"
@@ -113,7 +113,7 @@
             </div>
             <div class="field">
                 <label>${message(code:'subscription.hasPerpetualAccess.label')}</label>
-                <laser:select class="ui fluid dropdown" name="hasPerpetualAccess"
+                <ui:select class="ui fluid dropdown" name="hasPerpetualAccess"
                               from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                               optionKey="id"
                               optionValue="value"
@@ -122,7 +122,7 @@
             </div>
             <div class="field">
                 <label>${message(code:'subscription.hasPublishComponent.label')}</label>
-                <laser:select class="ui fluid dropdown" name="hasPublishComponent"
+                <ui:select class="ui fluid dropdown" name="hasPublishComponent"
                               from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                               optionKey="id"
                               optionValue="value"

@@ -191,7 +191,7 @@
 
             <div class="content">
                 <span class="la-float-right">
-                    <laser:statsLink class="ui basic negative"
+                    <ui:statsLink class="ui basic negative"
                                      base="${ConfigMapper.getStatsApiUrl()}"
                                      module="statistics"
                                      controller="default"
@@ -204,7 +204,7 @@
                                      ]"
                                      title="Springe zu Statistik im Nationalen Statistikserver">
                         <i class="chart bar outline icon"></i>
-                    </laser:statsLink>
+                    </ui:statsLink>
                 </span>
 
 
@@ -248,7 +248,7 @@
                             <td>${reportMetric}</td>
                             <g:each in="${v}" status="i" var="v2">
                                 <td>
-                                    <laser:statsLink
+                                    <ui:statsLink
                                             base="${ConfigMapper.getStatsApiUrl()}"
                                             module="statistics"
                                             controller="default"
@@ -263,7 +263,7 @@
                                             ]"
                                             title="Springe zu Statistik im Nationalen Statistikserver">
                                         ${v2}
-                                    </laser:statsLink>
+                                    </ui:statsLink>
                                 </td>
                             </g:each>
                         </tr>

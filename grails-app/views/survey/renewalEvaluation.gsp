@@ -21,7 +21,7 @@
 </ui:controlButtons>
 
 <ui:h1HeaderWithIcon text="${surveyInfo.name}" type="Survey">
-<ui:surveyStatus object="${surveyInfo}"/>
+<survey:status object="${surveyInfo}"/>
 </ui:h1HeaderWithIcon>
 
 <laser:render template="nav"/>

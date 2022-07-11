@@ -30,7 +30,7 @@
                 <g:if test="${sourceObject instanceof Subscription}">
                     <div class="field">
                         <label>${message(code: 'filter.status')}</label>
-                        <laser:select class="ui dropdown" name="status" id="status"
+                        <ui:select class="ui dropdown" name="status" id="status"
                                       from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}"
                                       optionKey="id"
                                       optionValue="value"
@@ -58,7 +58,7 @@
                 <g:if test="${sourceObject instanceof License}">
                     <div class="field">
                         <label>${message(code: 'filter.status')}</label>
-                        <laser:select class="ui dropdown" name="status" id="status"
+                        <ui:select class="ui dropdown" name="status" id="status"
                                       from="${RefdataCategory.getAllRefdataValues(RDConstants.LICENSE_STATUS)}"
                                       optionKey="id"
                                       optionValue="value"

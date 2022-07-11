@@ -1,15 +1,16 @@
-package de.laser
+package de.laser.spec
 
+import de.laser.DocContext
 import de.laser.utils.DateUtils
 import de.laser.workflow.WorkflowHelper
 import de.laser.workflow.WfCondition
 import de.laser.workflow.WfTask
 
-class LaserWorkflowTagLib {
+class WorkflowTagLib {
 
-    static namespace = "laser"
+    static namespace = 'workflow'
 
-    def workflowTask = { attrs, body ->
+    def task = { attrs, body ->
 
         WfTask task = attrs.task as WfTask
 
@@ -68,7 +69,7 @@ class LaserWorkflowTagLib {
         out << '</span>'
     }
 
-    def workflowTaskConditionField = { attrs, body ->
+    def taskConditionField = { attrs, body ->
 
         String field = attrs.field
         WfCondition condition = attrs.condition as WfCondition
@@ -115,7 +116,7 @@ class LaserWorkflowTagLib {
             }
         }
         else {
-            out << '[laser:conditionField]'
+            out << '[workflow:conditionField]'
         }
     }
 }

@@ -299,7 +299,7 @@
                                     </g:if>
                                 </g:if>
                                 <%--<g:if test="${statsWibid && (s.getCommaSeperatedPackagesIsilList()?.trim()) && s.hasPlatformWithUsageSupplierId()}">
-                                    <laser:statsLink class="ui icon button la-modern-button"
+                                    <ui:statsLink class="ui icon button la-modern-button"
                                                      base="${ConfigMapper.getStatsApiUrl()}"
                                                      module="statistics"
                                                      controller="default"
@@ -311,7 +311,7 @@
                                                      ]"
                                                      title="Springe zu Statistik im Nationalen Statistikserver"> <!-- TODO message -->
                                         <i class="chart bar outline icon"></i>
-                                    </laser:statsLink>
+                                    </ui:statsLink>
                                 </g:if>--%>
                             </g:if>
                             <g:if test="${'showLinking' in tableConfig}">

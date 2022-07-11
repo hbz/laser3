@@ -16,7 +16,7 @@
 <ui:h1HeaderWithIcon type="Survey">
 <ui:xEditable owner="${surveyInfo}" field="name"/>
 </ui:h1HeaderWithIcon>
-<ui:surveyStatusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="surveyParticipants"/>
+<survey:statusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="surveyParticipants"/>
 
 
 <laser:render template="nav"/>

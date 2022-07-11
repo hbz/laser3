@@ -82,7 +82,7 @@
                         <!-- 2-1 -->
                         <div class="field disabled">
                             <label>${message(code: 'myinst.currentSubscriptions.filter.consortium.label')}</label>
-                            <laser:select name="status" class="ui dropdown"
+                            <ui:select name="status" class="ui dropdown"
                                           from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}"
                                           optionKey="id"
                                           optionValue="value"
@@ -93,7 +93,7 @@
                         <!-- 2-2 -->
                         <div class="field disabled">
                             <label>${message(code: 'default.status.label')}</label>
-                            <laser:select name="status" class="ui dropdown"
+                            <ui:select name="status" class="ui dropdown"
                                           from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}"
                                           optionKey="id"
                                           optionValue="value"
@@ -152,7 +152,7 @@
             <% /* 3-2 */ %>
             <div class="field">
                 <label>${message(code:'subscription.isPublicForApi.label')}</label>
-                <laser:select class="ui fluid dropdown" name="isPublicForApi"
+                <ui:select class="ui fluid dropdown" name="isPublicForApi"
                               from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                               optionKey="id"
                               optionValue="value"
@@ -162,7 +162,7 @@
             <% /* 3-3 */ %>
             <div class="field">
                 <label>${message(code:'subscription.hasPerpetualAccess.label')}</label>
-                <laser:select class="ui fluid dropdown" name="hasPerpetualAccess"
+                <ui:select class="ui fluid dropdown" name="hasPerpetualAccess"
                               from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                               optionKey="id"
                               optionValue="value"
@@ -172,7 +172,7 @@
             <% /* 3-4 */ %>
             <div class="field">
                 <label>${message(code:'subscription.hasPublishComponent.label')}</label>
-                <laser:select class="ui fluid dropdown" name="hasPublishComponent"
+                <ui:select class="ui fluid dropdown" name="hasPublishComponent"
                               from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                               optionKey="id"
                               optionValue="value"

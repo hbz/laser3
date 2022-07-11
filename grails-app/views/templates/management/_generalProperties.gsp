@@ -103,14 +103,14 @@
                         fakeList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS))
                         fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', RDConstants.SUBSCRIPTION_STATUS))
                     %>
-                    <laser:select name="process_status" from="${fakeList}" optionKey="id" optionValue="value"
+                    <ui:select name="process_status" from="${fakeList}" optionKey="id" optionValue="value"
                                   noSelection="${['': '']}"
                                   value="${['': '']}"/>
                 </div>
 
                 <div class="field">
                     <label>${message(code: 'subscription.kind.label')}</label>
-                    <laser:select name="process_kind"
+                    <ui:select name="process_kind"
                                   from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND)}"
                                   optionKey="id" optionValue="value" noSelection="${['': '']}"
                                   value="${['': '']}"/>
@@ -118,7 +118,7 @@
 
                 <div class="field">
                     <label>${message(code: 'subscription.form.label')}</label>
-                    <laser:select name="process_form"
+                    <ui:select name="process_form"
                                   from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM)}"
                                   optionKey="id" optionValue="value" noSelection="${['': '']}"
                                   value="${['': '']}"/>
@@ -126,7 +126,7 @@
 
                 <div class="field">
                     <label>${message(code: 'subscription.resource.label')}</label>
-                    <laser:select name="process_resource"
+                    <ui:select name="process_resource"
                                   from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)}"
                                   optionKey="id" optionValue="value" noSelection="${['': '']}"
                                   value="${['': '']}"/>
@@ -137,7 +137,7 @@
 
                 <div class="field">
                     <label>${message(code: 'subscription.isPublicForApi.label')}</label>
-                    <laser:select name="process_isPublicForApi"
+                    <ui:select name="process_isPublicForApi"
                                   from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                   optionKey="id" optionValue="value" noSelection="${['': '']}"
                                   value="${['': '']}"/>
@@ -145,7 +145,7 @@
 
                 <div class="field">
                     <label>${message(code: 'subscription.hasPerpetualAccess.label')}</label>
-                    <laser:select name="process_hasPerpetualAccess"
+                    <ui:select name="process_hasPerpetualAccess"
                                   from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                   optionKey="id" optionValue="value" noSelection="${['': '']}"
                                   value="${['': '']}"/>
@@ -153,7 +153,7 @@
 
                 <div class="field">
                     <label>${message(code: 'subscription.hasPublishComponent.label')}</label>
-                    <laser:select name="process_hasPublishComponent"
+                    <ui:select name="process_hasPublishComponent"
                                   from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                   optionKey="id" optionValue="value" noSelection="${['': '']}"
                                   value="${['': '']}"/>
@@ -162,7 +162,7 @@
                 <g:if test="${accessService.checkPerm('ORG_INST')}">
                     <div class="field">
                         <label>${message(code: 'subscription.isAutomaticRenewAnnually.label')}</label>
-                        <laser:select name="process_isAutomaticRenewAnnually"
+                        <ui:select name="process_isAutomaticRenewAnnually"
                                       from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                       optionKey="id" optionValue="value" noSelection="${['': '']}"
                                       value="${['': '']}"/>

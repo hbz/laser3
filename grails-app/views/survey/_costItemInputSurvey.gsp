@@ -29,7 +29,7 @@
             <div class="field">
                 <label><g:message code="financials.costItemElement"/></label>
                 <g:if test="${costItemElements}">
-                    <laser:select name="newCostItemElement" id="newCostItemElement_${idSuffix}" class="ui fluid dropdown"
+                    <ui:select name="newCostItemElement" id="newCostItemElement_${idSuffix}" class="ui fluid dropdown"
                                   from="${costItemElements.collect { ciec -> ciec.costItemElement }}"
                                   optionKey="id"
                                   optionValue="value"
@@ -42,7 +42,7 @@
             </div><!-- .field -->
             <div class="field">
                 <label><g:message code="financials.costItemConfiguration"/></label>
-                <laser:select name="ciec" id="ciec_${idSuffix}" class="ui fluid  dropdown"
+                <ui:select name="ciec" id="ciec_${idSuffix}" class="ui fluid  dropdown"
                               from="${costItemSigns}"
                               optionKey="id"
                               optionValue="value"
@@ -53,7 +53,7 @@
 
         <div class="field">
             <label>${message(code: 'default.status.label')}</label>
-            <laser:select name="newCostItemStatus" id="newCostItemStatus_${idSuffix}" title="${g.message(code: 'financials.addNew.costState')}"
+            <ui:select name="newCostItemStatus" id="newCostItemStatus_${idSuffix}" title="${g.message(code: 'financials.addNew.costState')}"
                           class="ui dropdown"
                           from="${costItemStatus}"
                           optionKey="id"

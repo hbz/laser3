@@ -2,7 +2,7 @@
 <g:set var="esdConfig" value="${BaseConfig.getCurrentConfigElasticsearchData(cfgKey)}" />
 
 <div class="ui segment form">
-    <div class="fields <laser:numberToString number="${cfgQueryList.size()}" min="2"/>">
+    <div class="fields <reporting:numberToString number="${cfgQueryList.size()}" min="2"/>">
         <g:each in="${cfgQueryList}" var="cfgQuery" status="qi">
             <g:each in="${cfgQuery}" var="field">
                 <div class="field">
@@ -20,7 +20,7 @@
         </g:each>
     </div>
 
-    <div class="fields <laser:numberToString number="${2 + cfgDistributionList.size()}"/>">
+    <div class="fields <reporting:numberToString number="${2 + cfgDistributionList.size()}"/>">
         <g:each in="${cfgDistributionList}" var="cfgDistribution" status="di">
             <g:each in="${cfgDistribution}" var="field">
                 <div class="field">

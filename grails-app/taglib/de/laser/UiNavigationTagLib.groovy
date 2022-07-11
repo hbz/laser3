@@ -12,9 +12,9 @@ class UiNavigationTagLib {
 
     static namespace = 'ui'
 
-    // <semui:breadcrumbs>
-    //     <semui:crumb controller="controller" action="action" params="params" text="${text}" message="local.string" />
-    // <semui:breadcrumbs>
+    // <ui:breadcrumbs>
+    //     <ui:crumb controller="controller" action="action" params="params" text="${text}" message="local.string" />
+    // <ui:breadcrumbs>
 
     def breadcrumbs = { attrs, body ->
 
@@ -61,7 +61,7 @@ class UiNavigationTagLib {
 
     }
 
-    // <semui:crumbAsBadge message="default.editable" class="orange" />
+    // <ui:crumbAsBadge message="default.editable" class="orange" />
 
     def crumbAsBadge = { attrs, body ->
 
@@ -69,7 +69,7 @@ class UiNavigationTagLib {
         out << '<div class="ui horizontal label ' + attrs.class + '">' + lbMessage + '</div>'
     }
 
-    //<semui:paginate .. />
+    //<ui:paginate .. />
     // copied from twitter.bootstrap.scaffolding.PaginationTagLib
 
     def paginate = { attrs ->

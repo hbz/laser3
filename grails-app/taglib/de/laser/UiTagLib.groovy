@@ -8,6 +8,7 @@ import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
+import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
 import org.grails.encoder.CodecLookup
 import org.grails.encoder.Encoder
@@ -34,9 +35,9 @@ class UiTagLib {
 
     static namespace = 'ui'
 
-    // <semui:h1HeaderWithIcon text="${text}" message="18n.token" args="[key:value]" type="${headerTitleIconType}" total="${totalNumber}" floated="true">
+    // <ui:h1HeaderWithIcon text="${text}" message="18n.token" args="[key:value]" type="${headerTitleIconType}" total="${totalNumber}" floated="true">
     //    content
-    // </semui:headerWithIcon>
+    // </ui:headerWithIcon>
 
     def h1HeaderWithIcon = { attrs, body ->
         if (attrs.floated && attrs.floated != 'false') {
@@ -68,7 +69,7 @@ class UiTagLib {
         out << '</h1>'
     }
 
-    // <semui:messages data="${flash}" />
+    // <ui:messages data="${flash}" />
 
     def messages = { attrs, body ->
 
@@ -89,7 +90,7 @@ class UiTagLib {
         }
     }
 
-    // <semui:msg class="negative|positive|warning|.." header="${text}" text="${text}" message="18n.token" />
+    // <ui:msg class="negative|positive|warning|.." header="${text}" text="${text}" message="18n.token" />
 
     def msg = { attrs, body ->
 
@@ -123,7 +124,7 @@ class UiTagLib {
         out << '</div>'
     }
 
-    // <semui:errors bean="${instanceOfObject}" />
+    // <ui:errors bean="${instanceOfObject}" />
 
     def errors = { attrs, body ->
 
@@ -144,7 +145,7 @@ class UiTagLib {
         }
     }
 
-    // <semui:objectStatus object="${obj}" status="${status}"/>
+    // <ui:objectStatus object="${obj}" status="${status}"/>
 
     def objectStatus = { attrs, body ->
 
@@ -156,9 +157,9 @@ class UiTagLib {
         }
     }
 
-    // <semui:card text="${text}" message="local.string" class="some_css_class">
+    // <ui:card text="${text}" message="local.string" class="some_css_class">
     //
-    // <semui:card>
+    // <ui:card>
 
     def card = { attrs, body ->
         def (text, message) = SwissKnife.getTextAndMessage(attrs)
@@ -382,7 +383,7 @@ class UiTagLib {
         }
     }
 
-    // <semui:modeSwitch controller="controller" action="action" params="params" />
+    // <ui:modeSwitch controller="controller" action="action" params="params" />
 
     def modeSwitch = { attrs, body ->
 
@@ -398,7 +399,7 @@ class UiTagLib {
         }
     }
 
-    //<semui:filter showFilterButton="true|false" extended="true|false"> CONTENT <semui:filter>
+    //<ui:filter showFilterButton="true|false" extended="true|false"> CONTENT <ui:filter>
 
     def filter = { attrs, body ->
 
@@ -480,7 +481,7 @@ class UiTagLib {
         out << '</div>'
     }
 
-    //<semui:form> CONTENT <semui:form>
+    //<ui:form> CONTENT <ui:form>
 
     def form = { attrs, body ->
 
@@ -489,9 +490,9 @@ class UiTagLib {
         out << '</div>'
     }
 
-    //<semui:modal id="myModalDialog" text="${text}" message="local.string" hideSubmitButton="true" modalSize="large/small/tiny/mini" >
+    //<ui:modal id="myModalDialog" text="${text}" message="local.string" hideSubmitButton="true" modalSize="large/small/tiny/mini" >
     // CONTENT
-    // <semui:modal>
+    // <ui:modal>
 
     def modal = { attrs, body ->
 
@@ -539,7 +540,7 @@ class UiTagLib {
         out << '</div>'
     }
 
-    //  <semui:infoModal> ${content} <semui:infoModal />
+    //  <ui:infoModal> ${content} <ui:infoModal />
 
     def infoModal = { attrs, body ->
 
@@ -562,7 +563,7 @@ class UiTagLib {
         out << '</div>'
     }
 
-    //  <semui:confirmationModal  />
+    //  <ui:confirmationModal  />
     // global included at semanticUI.gsp
     // called by the specific delete button
     //  - to send a form oridden
@@ -591,7 +592,7 @@ class UiTagLib {
         out << '</div>'
     }
 
-    //<semui:datepicker class="grid stuff here" label="" bean="${objInstance}" name="fieldname" value="" required="" modifiers="" />
+    //<ui:datepicker class="grid stuff here" label="" bean="${objInstance}" name="fieldname" value="" required="" modifiers="" />
 
     def datepicker = { attrs, body ->
 
@@ -1097,4 +1098,22 @@ class UiTagLib {
         }
     }
 
+    // <ui:select optionValue="field" />  ==> <ui:select optionValue="field_(de|en|fr)" />
+
+    def select = { attrs, body ->
+        attrs.optionValue = attrs.optionValue + "_" + LocaleUtils.getCurrentLang()
+        out << g.select(attrs)
+    }
+
+    def statsLink = {attrs, body ->
+        if (attrs.module) {
+            attrs.base = attrs.base ? attrs.base+"/${attrs.module}" : "/${attrs.module}"
+            attrs.remove('module')
+        }
+        if (!attrs.params.packages){
+            attrs.params.remove('packages')
+        }
+        String cleanLink = g.link(attrs, body)
+        out << cleanLink.replaceAll("(?<!(http:|https:))[//]+", "/")
+    }
 }

@@ -19,7 +19,7 @@
 
         <div class="field">
             <label for="newPrsRoleType_${tmplId}">${tmplRoleType}</label>
-            <laser:select class="ui dropdown search"
+            <ui:select class="ui dropdown search"
                           id="newPrsRoleType_${tmplId}" name="newPrsRoleType"
                           from="${roleTypeValues}"
                           optionKey="id"

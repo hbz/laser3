@@ -22,7 +22,8 @@ Fallbacks and default values should be stored in *de.laser.config.ConfigDefaults
 
 ### Custom Tags
 
-Default namespace for custom tags has been changed from **semui** to **ui**. System related namespace is still **laser**.
+Default namespace for custom tags has been changed from **semui** to **ui**. System related namespace is still **laser**. 
+Domain specific namespaces have been added.
 
 ### Database Migrations
 

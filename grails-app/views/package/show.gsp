@@ -265,7 +265,7 @@
                             <dl>
                                 <dt><g:message code="package.show.usage"/></dt>
                                 <dd>
-                                    <laser:statsLink class="ui basic negative"
+                                    <ui:statsLink class="ui basic negative"
                                                      base="${ConfigMapper.getStatsApiUrl()}"
                                                      module="statistics"
                                                      controller="default"
@@ -277,7 +277,7 @@
                                                      ]"
                                                      title="${message(code: 'default.jumpToNatStat')}">
                                         <i class="chart bar outline icon"></i>
-                                    </laser:statsLink>
+                                    </ui:statsLink>
                                 </dd>
                             </dl>
                         </g:if>

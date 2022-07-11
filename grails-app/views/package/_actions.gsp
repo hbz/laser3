@@ -32,7 +32,7 @@
 
             <div class="field">
                 <label>${message(code: 'filter.status')}</label>
-                <laser:select class="ui dropdown" name="status" id="status"
+                <ui:select class="ui dropdown" name="status" id="status"
                               from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}"
                               optionKey="id"
                               optionValue="value"
@@ -103,7 +103,7 @@
                             <td>
                                 <g:if test="${!(settingKey in excludes)}">
                                     <g:if test="${true}">
-                                        <laser:select class="ui dropdown"
+                                        <ui:select class="ui dropdown"
                                                       name="${settingKey}!§!setting"
                                                       from="${RefdataCategory.getAllRefdataValues(RDConstants.PENDING_CHANGE_CONFIG_SETTING)}"
                                                       optionKey="id" optionValue="value"

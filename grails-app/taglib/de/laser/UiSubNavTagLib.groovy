@@ -10,9 +10,9 @@ class UiSubNavTagLib {
 
     static namespace = 'ui'
 
-    // <semui:subNav actionName="${actionName}">
-    //     <semui:subNavItem controller="controller" action="action" params="params" text="${text}" message="local.string" />
-    // </semui:subNav>
+    // <ui:subNav actionName="${actionName}">
+    //     <ui:subNavItem controller="controller" action="action" params="params" text="${text}" message="local.string" />
+    // </ui:subNav>
 
     def subNav = { attrs, body ->
 

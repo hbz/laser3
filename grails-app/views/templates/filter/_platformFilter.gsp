@@ -20,7 +20,7 @@
 
             <div class="field">
                 <label>${message(code: 'default.status.label')}</label>
-                <laser:select class="ui dropdown" name="status"
+                <ui:select class="ui dropdown" name="status"
                               from="${ RefdataCategory.getAllRefdataValues(RDConstants.PLATFORM_STATUS) }"
                               optionKey="id"
                               optionValue="value"

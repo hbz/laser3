@@ -30,7 +30,7 @@
 
         <div class="field required">
             <label for="${prefix}_status">Status</label>
-            <laser:select class="ui dropdown la-not-clearable" id="${prefix}_status" name="${prefix}_status"
+            <ui:select class="ui dropdown la-not-clearable" id="${prefix}_status" name="${prefix}_status"
                           noSelection="${['' : message(code:'default.select.choose.label')]}"
                           required="required"
                           from="${RefdataCategory.getAllRefdataValues( RDConstants.WF_WORKFLOW_STATUS )}"

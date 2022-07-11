@@ -16,7 +16,7 @@
 </ui:controlButtons>
 
 <ui:h1HeaderWithIcon text="${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}" type="Survey">
-    <ui:surveyStatus object="${surveyInfo}"/>
+    <survey:status object="${surveyInfo}"/>
 </ui:h1HeaderWithIcon>
 
 <ui:messages data="${flash}"/>

@@ -52,7 +52,7 @@
                         <div class="field">
                             <label><g:message code="financials.isVisibleForSubscriber"/></label>
                             <g:set var="newIsVisibleForSubscriberValue" value="${costItem?.isVisibleForSubscriber ? RDStore.YN_YES.id : RDStore.YN_NO.id}" />
-                            <laser:select name="newIsVisibleForSubscriber" class="ui dropdown"
+                            <ui:select name="newIsVisibleForSubscriber" class="ui dropdown"
                                       id="newIsVisibleForSubscriber"
                                       from="${yn}"
                                       optionKey="id"
@@ -92,7 +92,7 @@
                     <div class="field">
                         <label><g:message code="financials.costItemElement"/></label>
                         <g:if test="${costItemElements}">
-                            <laser:select name="newCostItemElement" class="ui dropdown"
+                            <ui:select name="newCostItemElement" class="ui dropdown"
                                           from="${costItemElements.collect{ ciec -> ciec.costItemElement }}"
                                           optionKey="id"
                                           optionValue="value"
@@ -105,7 +105,7 @@
                     </div><!-- .field -->
                     <div class="field">
                         <label><g:message code="financials.costItemConfiguration"/></label>
-                        <laser:select name="ciec" class="ui dropdown"
+                        <ui:select name="ciec" class="ui dropdown"
                                       from="${costItemSigns}"
                                       optionKey="id"
                                       optionValue="value"
@@ -115,7 +115,7 @@
                 </div>
                 <div class="field">
                     <label>${message(code:'default.status.label')}</label>
-                    <laser:select name="newCostItemStatus" title="${g.message(code: 'financials.addNew.costState')}" class="ui dropdown"
+                    <ui:select name="newCostItemStatus" title="${g.message(code: 'financials.addNew.costState')}" class="ui dropdown"
                                   id="newCostItemStatus"
                                   from="${costItemStatus}"
                                   optionKey="id"

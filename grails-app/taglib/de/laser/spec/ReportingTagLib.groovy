@@ -1,5 +1,8 @@
-package de.laser
+package de.laser.spec
 
+import de.laser.Org
+import de.laser.RefdataCategory
+import de.laser.RefdataValue
 import de.laser.annotations.RefdataInfo
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.storage.RDConstants
@@ -10,9 +13,9 @@ import org.apache.commons.lang3.RandomStringUtils
 
 import java.lang.reflect.Field
 
-class LaserReportingTagLib {
+class ReportingTagLib {
 
-    static namespace = "laser"
+    static namespace = 'reporting'
 
     def numberToString = { attrs, body ->
         Map <String, String> map = [
@@ -45,8 +48,8 @@ class LaserReportingTagLib {
         }
     }
 
-    def reportFilterField = { attrs, body ->
-        //println '<laser:reportFilterField>   ' + attrs.key + ' ' + attrs.field
+    def filterField = { attrs, body ->
+        //println '<reporting:filterField>   ' + attrs.key + ' ' + attrs.field
         Map<String, Object> field = GenericHelper.getField(attrs.config, attrs.field)
 
         if (! field) {
@@ -54,27 +57,27 @@ class LaserReportingTagLib {
             return
         }
         else if (field.type == BaseConfig.FIELD_TYPE_PROPERTY) {
-            out << laser.reportFilterProperty(config: attrs.config, key: attrs.key, property: attrs.field)
+            out << reporting.filterProperty(config: attrs.config, key: attrs.key, property: attrs.field)
         }
         else if (field.type == BaseConfig.FIELD_TYPE_REFDATA) {
-            out << laser.reportFilterRefdata(config: attrs.config, key: attrs.key, refdata: attrs.field)
+            out << reporting.filterRefdata(config: attrs.config, key: attrs.key, refdata: attrs.field)
         }
         else if (field.type == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
-            out << laser.reportFilterCustomImpl(config: attrs.config, key: attrs.key, refdata: attrs.field)
+            out << reporting.filterCustomImpl(config: attrs.config, key: attrs.key, refdata: attrs.field)
         }
         else if (field.type == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
             if (field.customImplRdv) {
-                out << laser.reportFilterCustomImpl(config: attrs.config, key: attrs.key, refdata: attrs.field, customImplRdv: field.customImplRdv)
+                out << reporting.filterCustomImpl(config: attrs.config, key: attrs.key, refdata: attrs.field, customImplRdv: field.customImplRdv)
             } else {
-                out << laser.reportFilterCustomImpl(config: attrs.config, key: attrs.key, refdata: attrs.field)
+                out << reporting.filterCustomImpl(config: attrs.config, key: attrs.key, refdata: attrs.field)
             }
         }
         else if (field.type == BaseConfig.FIELD_TYPE_ELASTICSEARCH) {
-            out << laser.reportFilterCustomImpl(config: attrs.config, key: attrs.key, refdata: attrs.field)
+            out << reporting.filterCustomImpl(config: attrs.config, key: attrs.key, refdata: attrs.field)
         }
     }
 
-    def reportFilterProperty = { attrs, body ->
+    def filterProperty = { attrs, body ->
 
         Field prop  = attrs.config.meta.class.getDeclaredField(attrs.property)
 
@@ -83,14 +86,14 @@ class LaserReportingTagLib {
         String filterName     = 'filter:' + (attrs.key ? attrs.key : todo) + '_' + attrs.property
         Integer filterValue   = params.int(filterName)
 
-        // println 'TMP - reportFilterProperty: ' + prop + ' : ' + todo + ' > ' + todo + '.' + prop.getName() + '.label' + ' > ' + filterLabel
+        // println 'TMP - filterProperty: ' + prop + ' : ' + todo + ' > ' + todo + '.' + prop.getName() + '.label' + ' > ' + filterLabel
 
         if (prop.getType() in [boolean, Boolean]) {
 
             out << '<div class="field">'
             out << '<label for="' + filterName + '">' + filterLabel + '</label>'
 
-            out << laser.select([
+            out << ui.select([
                     class      : "ui fluid search dropdown",
                     name       : filterName,
                     id         : getUniqueId(filterName),
@@ -115,7 +118,7 @@ class LaserReportingTagLib {
         }
     }
 
-    def reportFilterRefdata = { attrs, body ->
+    def filterRefdata = { attrs, body ->
 
         Field refdata   = attrs.config.meta.class.getDeclaredField(attrs.refdata)
         def anno        = refdata.getAnnotationsByType(RefdataInfo).head()
@@ -128,12 +131,12 @@ class LaserReportingTagLib {
         String filterName     = "filter:" + (attrs.key ? attrs.key : todo) + '_' + attrs.refdata
         Integer filterValue   = params.int(filterName)
 
-        // println 'TMP - reportFilterRefdata: ' + rdCat + ' : ' + rdI18n + ' > ' + filterLabel
+        // println 'TMP - filterRefdata: ' + rdCat + ' : ' + rdI18n + ' > ' + filterLabel
 
         out << '<div class="field">'
         out << '<label for="' + filterName + '">' + filterLabel + '</label>'
 
-        out << laser.select([
+        out << ui.select([
                 class      : "ui fluid search dropdown",
                 name       : GenericHelper.isFieldVirtual(attrs.config, attrs.refdata) ? filterName + '_virtualFF' : filterName,
                 id         : getUniqueId(filterName),
@@ -150,8 +153,8 @@ class LaserReportingTagLib {
         out << '</div>'
     }
 
-    def reportFilterCustomImpl = { attrs, body ->
-        //println '<laser:reportFilterCustomImpl>   ' + attrs.key + ' ' + attrs.refdata + ' ' + attrs.customImplRdv
+    def filterCustomImpl = { attrs, body ->
+        //println '<reporting:filterCustomImpl>   ' + attrs.key + ' ' + attrs.refdata + ' ' + attrs.customImplRdv
 
         // TODO
         Map<String, Object> customRdv
@@ -190,11 +193,11 @@ class LaserReportingTagLib {
         else {
             map.put('value', params.int(filterName))
         }
-        out << laser.select( map )
+        out << ui.select( map )
         out << '</div>'
     }
 
-    def reportObjectProperties = { attrs, body ->
+    def objectProperties = { attrs, body ->
 
         Long pdId = attrs.propDefId as Long
         Org tenant = attrs.tenant as Org
@@ -229,8 +232,8 @@ class LaserReportingTagLib {
         out << props.join(' ,<br/>')
     }
 
-    def reportDetailsTableTD = { attrs, body ->
-        //println '<laser:reportDetailsTableTD> ' + attrs
+    def detailsTableTD = { attrs, body ->
+        //println '<reporting:detailsTableTD> ' + attrs
         Map<String, Boolean> config = attrs.config as Map
 
         if ( config.get( attrs.field )?.containsKey('dtc') ) {
@@ -248,7 +251,7 @@ class LaserReportingTagLib {
         }
     }
 
-    def reportDetailsTableEsValue = { attrs, body ->
+    def detailsTableEsValue = { attrs, body ->
 
         // TMP
         // TMP

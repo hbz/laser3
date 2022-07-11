@@ -29,7 +29,7 @@
                     <label for="contactType">
                         ${RefdataCategory.getByDesc(RDConstants.PERSON_CONTACT_TYPE).getI10n('desc')}
                     </label>
-                    <laser:select class="ui dropdown" id="contactType" name="contactType"
+                    <ui:select class="ui dropdown" id="contactType" name="contactType"
                                   from="${Person.getAllRefdataValues(RDConstants.PERSON_CONTACT_TYPE)}"
                                   optionKey="id"
                                   optionValue="value"
@@ -84,7 +84,7 @@
                     <label for="gender">
                         <g:message code="person.gender.label" />
                     </label>
-                    <laser:select class="ui dropdown" id="gender" name="gender"
+                    <ui:select class="ui dropdown" id="gender" name="gender"
                                   from="${Person.getAllRefdataValues(RDConstants.GENDER)}"
                                   optionKey="id"
                                   optionValue="value"
@@ -153,17 +153,17 @@
                             ${RefdataCategory.getByDesc(RDConstants.CONTACT_TYPE).getI10n('desc')}
                         </label>
                         <g:set var="allContactTypes" value="${Contact.getAllRefdataValues(RDConstants.CONTACT_TYPE)}" />
-                        <laser:select class="ui dropdown" name="contact1_type"
+                        <ui:select class="ui dropdown" name="contact1_type"
                                       from="${allContactTypes}"
                                       optionKey="id"
                                       optionValue="value" />
 
-                        <laser:select class="ui dropdown" name="contact2_type"
+                        <ui:select class="ui dropdown" name="contact2_type"
                                       from="${allContactTypes}"
                                       optionKey="id"
                                       optionValue="value" />
 
-                        <laser:select class="ui dropdown" name="contact3_type"
+                        <ui:select class="ui dropdown" name="contact3_type"
                                       from="${allContactTypes}"
                                       optionKey="id"
                                       optionValue="value" />
@@ -198,7 +198,7 @@
                                     <label for="functionType">
                                         <g:message code="person.function.label" />
                                     </label>
-                                    <laser:select class="ui dropdown values"
+                                    <ui:select class="ui dropdown values"
                                                   name="functionType"
                                                   from="${PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION)}"
                                                   optionKey="id"
@@ -239,7 +239,7 @@
                                 <label for="positionOrg">
                                     <g:message code="person.position.label" />
                                 </label>
-                                <laser:select class="ui dropdown values"
+                                <ui:select class="ui dropdown values"
                                               name="positionType"
                                               from="${PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION)}"
                                               optionKey="id"

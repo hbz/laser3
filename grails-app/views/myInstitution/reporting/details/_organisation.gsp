@@ -34,7 +34,7 @@
                     </td>
                     <g:if test="${query == 'org-x-property'}">
                         <td>
-                            <laser:reportObjectProperties owner="${org}" tenant="${contextService.getOrg()}" propDefId="${id}" />
+                            <reporting:objectProperties owner="${org}" tenant="${contextService.getOrg()}" propDefId="${id}" />
                         </td>
                     </g:if>
                     <g:elseif test="${query == 'org-x-identifier'}">

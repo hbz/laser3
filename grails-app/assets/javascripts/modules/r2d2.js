@@ -360,7 +360,7 @@ r2d2 = {
                         return "Ungültiges Format";
                     }
                 }
-                // custom validate functions via semui:xEditable validation="xy"
+                // custom validate functions via ui:xEditable validation="xy"
                 var dVal = $(this).attr('data-validation')
                 if (dVal) {
                     if (dVal.includes('notEmpty')) {
@@ -482,7 +482,7 @@ r2d2 = {
             $( ".button" ).blur();
         });
 
-        // close semui:messages alerts
+        // close ui:messages alerts
         $(ctxSel + ' .close.icon').click(function() {
             $(this).parent().hide();
         });

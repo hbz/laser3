@@ -24,7 +24,7 @@
                             <label><g:message code="financials.isVisibleForSubscriber"/></label>
                             <g:set var="newIsVisibleForSubscriberValue" value="${costItem?.isVisibleForSubscriber ? RDStore.YN_YES.id : RDStore.YN_NO.id}" />
                             <g:if test="${idSuffix == 'bulk'}">
-                                <laser:select name="newIsVisibleForSubscriber" id="newIsVisibleForSubscriber_${idSuffix}" class="ui dropdown"
+                                <ui:select name="newIsVisibleForSubscriber" id="newIsVisibleForSubscriber_${idSuffix}" class="ui dropdown"
                                               from="${yn}"
                                               optionKey="id"
                                               optionValue="value"
@@ -32,7 +32,7 @@
                                               value="" />
                             </g:if>
                             <g:else>
-                                <laser:select name="newIsVisibleForSubscriber" id="newIsVisibleForSubscriber_${idSuffix}" class="ui dropdown"
+                                <ui:select name="newIsVisibleForSubscriber" id="newIsVisibleForSubscriber_${idSuffix}" class="ui dropdown"
                                               from="${yn}"
                                               optionKey="id"
                                               optionValue="value"
@@ -73,7 +73,7 @@
                     <div class="field">
                         <label><g:message code="financials.costItemElement"/></label>
                         <g:if test="${costItemElements}">
-                            <laser:select name="newCostItemElement" id="newCostItemElement_${idSuffix}" class="ui dropdown"
+                            <ui:select name="newCostItemElement" id="newCostItemElement_${idSuffix}" class="ui dropdown"
                                           from="${costItemElements.collect{ ciec -> ciec.costItemElement }}"
                                           optionKey="id"
                                           optionValue="value"
@@ -86,7 +86,7 @@
                     </div><!-- .field -->
                     <div class="field">
                         <label><g:message code="financials.costItemConfiguration"/></label>
-                        <laser:select name="ciec" id="ciec_${idSuffix}" class="ui dropdown"
+                        <ui:select name="ciec" id="ciec_${idSuffix}" class="ui dropdown"
                                       from="${costItemSigns}"
                                       optionKey="id"
                                       optionValue="value"
@@ -96,7 +96,7 @@
                 </div>
                 <div class="field">
                     <label>${message(code:'default.status.label')}</label>
-                    <laser:select name="newCostItemStatus" id="newCostItemStatus_${idSuffix}" title="${g.message(code: 'financials.addNew.costState')}" class="ui dropdown"
+                    <ui:select name="newCostItemStatus" id="newCostItemStatus_${idSuffix}" title="${g.message(code: 'financials.addNew.costState')}" class="ui dropdown"
                                   from="${costItemStatus}"
                                   optionKey="id"
                                   optionValue="value"

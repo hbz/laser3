@@ -13,7 +13,7 @@
 
 
 <ui:h1HeaderWithIcon text="${surveyInfo.name}" type="Survey">
-<ui:surveyStatus object="${surveyInfo}"/>
+<survey:status object="${surveyInfo}"/>
 </ui:h1HeaderWithIcon>
 
 <laser:render template="nav"/>
@@ -285,7 +285,7 @@
                             <th>
                                 <g:form id="selectedPropertyForm" action="copyProperties" method="post"
                                         params="${[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: params.tab, targetSubscriptionId: targetSubscription?.id]}">
-                                    <laser:select name="selectedProperty"
+                                    <ui:select name="selectedProperty"
                                                   from="${properties}"
                                                   optionKey="id"
                                                   optionValue="name"
@@ -304,7 +304,7 @@
                             </g:else>
                             <g:form action="copyProperties" method="post"
                                     params="${[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: params.tab, targetSubscriptionId: targetSubscription?.id]}">
-                                <laser:select name="selectedProperty"
+                                <ui:select name="selectedProperty"
                                               from="${properties.sort { it.getI10n('name') }}"
                                               optionKey="id"
                                               optionValue="name"

@@ -54,7 +54,7 @@ class GenericHelper {
         Locale locale = LocaleContextHolder.getLocale()
 
         if (type in [BaseConfig.FIELD_TYPE_PROPERTY, BaseDetailsExport.FIELD_TYPE_PROPERTY] ) {
-            // LaserReportingTagLib:reportFilterProperty
+            // ReportingTagLib:filterProperty
 
             Field prop = (fieldName == 'globalUID') ? AbstractBase.getDeclaredField(fieldName) : objConfig.meta.class.getDeclaredField(fieldName)
             String csn = objConfig.meta.class.simpleName.uncapitalize() // TODO -> check
@@ -62,7 +62,7 @@ class GenericHelper {
             label = messageSource.getMessage(csn + '.' + prop.getName() + '.label', null, locale)
         }
         else if (type in [BaseConfig.FIELD_TYPE_REFDATA, BaseDetailsExport.FIELD_TYPE_REFDATA] ) {
-            // LaserReportingTagLib:reportFilterRefdata
+            // ReportingTagLib:filterRefdata
 
             Field refdata   = objConfig.meta.class.getDeclaredField(fieldName)
             def anno        = refdata.getAnnotationsByType(RefdataInfo).head()
@@ -72,7 +72,7 @@ class GenericHelper {
             label = rdI18n != 'n/a' ? messageSource.getMessage(rdI18n, null, locale) : messageSource.getMessage(rdCat + '.label', null, locale) // TODO -> @RefdataInfo
         }
         else if (type in [BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE, BaseDetailsExport.FIELD_TYPE_REFDATA_JOINTABLE] ) {
-            // LaserReportingTagLib:reportFilterRefdataRelTable
+            // ReportingTagLib:filterRefdataRelTable
 
             //println 'GenericHelper.getFieldLabel() BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE, BaseDetailsExport.FIELD_TYPE_REFDATA_JOINTABLE ---> BaseConfig.getCustomImplRefdata()'
 
@@ -80,7 +80,7 @@ class GenericHelper {
             label = customRdv.get('label')
         }
         else if (type in [BaseConfig.FIELD_TYPE_CUSTOM_IMPL, BaseDetailsExport.FIELD_TYPE_CUSTOM_IMPL] ) {
-            // LaserReportingTagLib:reportFilterRefdataRelTable
+            // ReportingTagLib:filterRefdataRelTable
 
             // println 'GenericHelper.getFieldLabel() BaseConfig.FIELD_TYPE_CUSTOM_IMPL ---> BaseConfig.getCustomImplRefdata( ' + fieldName + ') ' + field
             // println objConfig
@@ -92,7 +92,7 @@ class GenericHelper {
             label = rdv.get('label')
         }
         else if (type in [BaseConfig.FIELD_TYPE_ELASTICSEARCH, BaseDetailsExport.FIELD_TYPE_ELASTICSEARCH] ) {
-            // LaserReportingTagLib:reportFilterRefdataRelTable
+            // ReportingTagLib:filterRefdataRelTable
 
             Map<String, Object> rdv = BaseConfig.getElasticSearchRefdata(fieldName)
             if (!rdv) {
@@ -101,7 +101,7 @@ class GenericHelper {
             label = rdv.get('label')
         }
         else if (type in [BaseDetailsExport.FIELD_TYPE_COMBINATION, null] ) { // TODO: null
-            // LaserReportingTagLib:reportFilterRefdataRelTable
+            // ReportingTagLib:filterRefdataRelTable
 
             if (fieldName == '+sortname+name') {
                 label = messageSource.getMessage('default.sortname.label', null, locale) + ', ' + messageSource.getMessage('default.name.label', null, locale)

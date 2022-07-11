@@ -20,7 +20,7 @@
 
 <ui:h1HeaderWithIcon type="Survey">
 <ui:xEditable owner="${surveyInfo}" field="name"/>
-<ui:surveyStatus object="${surveyInfo}"/>
+<survey:status object="${surveyInfo}"/>
 </ui:h1HeaderWithIcon>
 
 

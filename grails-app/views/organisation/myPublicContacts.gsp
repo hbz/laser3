@@ -75,7 +75,7 @@
 
                 <div class="field">
                     <label><g:message code="person.function.label"/></label>
-                    <laser:select class="ui dropdown search"
+                    <ui:select class="ui dropdown search"
                                   name="function"
                                   from="${rdvAllPersonFunctions}"
                                   multiple=""
@@ -86,7 +86,7 @@
 
                 <div class="field">
                     <label><g:message code="person.position.label"/></label>
-                    <laser:select class="ui dropdown search"
+                    <ui:select class="ui dropdown search"
                                   name="position"
                                   from="${rdvAllPersonPositions}"
                                   multiple=""
@@ -139,7 +139,7 @@
 
                 <div class="field">
                     <label><g:message code="person.function.label"/></label>
-                    <laser:select class="ui dropdown search"
+                    <ui:select class="ui dropdown search"
                                   name="function"
                                   from="${rdvAllPersonFunctions}"
                                   multiple=""
@@ -150,7 +150,7 @@
 
                 <div class="field">
                     <label><g:message code="person.position.label"/></label>
-                    <laser:select class="ui dropdown search"
+                    <ui:select class="ui dropdown search"
                                   name="position"
                                   from="${rdvAllPersonPositions}"
                                   multiple=""

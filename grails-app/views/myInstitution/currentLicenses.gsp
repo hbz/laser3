@@ -75,7 +75,7 @@
           <div class="three fields">
               <div class="field">
                   <label for="status">${message(code: 'license.status.label')}</label>
-                  <laser:select class="ui dropdown" name="status"
+                  <ui:select class="ui dropdown" name="status"
                                 from="${ RefdataCategory.getAllRefdataValues(RDConstants.LICENSE_STATUS) }"
                                 optionKey="id"
                                 optionValue="value"
@@ -104,7 +104,7 @@
           <div class="three fields">
               <div class="field">
                   <label for="subStatus">${message(code: 'subscription.status.label')}</label>
-                  <laser:select class="ui dropdown" name="subStatus"
+                  <ui:select class="ui dropdown" name="subStatus"
                                 from="${ RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS) }"
                                 optionKey="id"
                                 optionValue="value"

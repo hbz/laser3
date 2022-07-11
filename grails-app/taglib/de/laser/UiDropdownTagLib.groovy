@@ -26,14 +26,14 @@ class UiDropdownTagLib {
         out << '</div>'
     }
 
-    // <semui:exportDropdownItem> LINK <semui:exportDropdownItem>
+    // <ui:exportDropdownItem> LINK <ui:exportDropdownItem>
 
     def exportDropdownItem = { attrs, body ->
 
         out << body()
     }
 
-    // <semui:actionsDropdown params="${params}"  />
+    // <ui:actionsDropdown params="${params}"  />
 
     def actionsDropdown = { attrs, body ->
 
@@ -93,13 +93,13 @@ class UiDropdownTagLib {
 
     def dropdownWithI18nExplanations = { attrs, body ->
         if (!attrs.name) {
-            throwTagError("Tag [semui:dropdownWithI18nExplanations] is missing required attribute [name]")
+            throwTagError("Tag [ui:dropdownWithI18nExplanations] is missing required attribute [name]")
         }
         if (!attrs.containsKey('from')) {
-            throwTagError("Tag [semui:dropdownWithI18nExplanations] is missing required attribute [from]")
+            throwTagError("Tag [ui:dropdownWithI18nExplanations] is missing required attribute [from]")
         }
         if (!attrs.containsKey('optionExpl')) {
-            throwTagError("Tag [semui:dropdownWithI18nExplanations] is missing required attribute [optionExpl]")
+            throwTagError("Tag [ui:dropdownWithI18nExplanations] is missing required attribute [optionExpl]")
         }
         def optionKey = attrs.remove('optionKey')
         def optionValue = attrs.remove('optionValue')
@@ -177,10 +177,10 @@ class UiDropdownTagLib {
 
     def dropdown = { attrs, body ->
         if (!attrs.name) {
-            throwTagError("Tag [semui:dropdown] is missing required attribute [name]")
+            throwTagError("Tag [ui:dropdown] is missing required attribute [name]")
         }
         if (!attrs.containsKey('from')) {
-            throwTagError("Tag [semui:dropdown] is missing required attribute [from]")
+            throwTagError("Tag [ui:dropdown] is missing required attribute [from]")
         }
 
         String name = attrs.name

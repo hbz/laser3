@@ -68,13 +68,13 @@
                     fakeList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS))
                     fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', RDConstants.SUBSCRIPTION_STATUS))
                 %>
-                <laser:select name="process_status" from="${fakeList}" optionKey="id" optionValue="value"
+                <ui:select name="process_status" from="${fakeList}" optionKey="id" optionValue="value"
                               noSelection="${['': '']}"
                               value="${['': '']}"/>
             </div>
             <div class="field">
                 <label>${message(code: 'subscription.isMultiYear.label')}</label>
-                <laser:select name="process_isMultiYear"
+                <ui:select name="process_isMultiYear"
                               from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                               optionKey="id" optionValue="value" noSelection="${['': '']}"
                               value="${['': '']}"/>

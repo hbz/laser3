@@ -265,7 +265,7 @@
             <g:if test="${controllerName == 'subscription' && !showStatsFilter}">
                 <div class="field">
                     <label>${message(code: 'issueEntitlement.perpetualAccessBySub.label')}</label>
-                    <laser:select class="ui fluid dropdown" name="hasPerpetualAccess"
+                    <ui:select class="ui fluid dropdown" name="hasPerpetualAccess"
                                   from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                   optionKey="id"
                                   optionValue="value"
@@ -275,7 +275,7 @@
                 <g:if test="${actionName =='index' && subscription.ieGroups.size() > 0}">
                     <div class="field">
                         <label>${message(code: 'issueEntitlement.inTitleGroups')}</label>
-                        <laser:select class="ui fluid dropdown" name="inTitleGroups"
+                        <ui:select class="ui fluid dropdown" name="inTitleGroups"
                                       from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                       optionKey="id"
                                       optionValue="value"

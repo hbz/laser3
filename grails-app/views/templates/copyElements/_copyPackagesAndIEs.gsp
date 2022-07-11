@@ -145,7 +145,7 @@
                                                                     <td><g:message code="subscription.packages.${pcc.settingKey}"/></td>
                                                                     <td>
                                                                         <g:if test="${!(pcc.settingKey in excludes)}">
-                                                                            <laser:select class="ui dropdown"
+                                                                            <ui:select class="ui dropdown"
                                                                                           name="subscription.takePackageSettings" from="${RefdataCategory.getAllRefdataValues(RDConstants.PENDING_CHANGE_CONFIG_SETTING)}"
                                                                                           optionKey="${{genericOIDService.getOID(sp)+'§'+pcc.settingKey+'§'+it.id}}" optionValue="value" data-pkgid="${sp.id}"
                                                                                           value="${pcc.settingValue ? genericOIDService.getOID(sp)+'§'+pcc.settingKey+'§'+pcc.settingValue.id : RDStore.PENDING_CHANGE_CONFIG_PROMPT.id}"/>

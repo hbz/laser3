@@ -16,7 +16,7 @@
 
         <div class="field required">
             <label for="${prefix}_type>">State</label>
-            <laser:select class="ui dropdown la-not-clearable" id="${prefix}_state" name="${prefix}_state"
+            <ui:select class="ui dropdown la-not-clearable" id="${prefix}_state" name="${prefix}_state"
                           required="required"
                           noSelection="${['' : message(code:'default.select.choose.label')]}"
                           from="${RefdataCategory.getAllRefdataValues( RDConstants.WF_WORKFLOW_STATE )}"
@@ -45,7 +45,7 @@
 
         <div class="field required">
             <label for="${prefix}_status">${message(code:'default.status.label')}</label>
-            <laser:select class="ui dropdown la-not-clearable" id="${prefix}_status" name="${prefix}_status"
+            <ui:select class="ui dropdown la-not-clearable" id="${prefix}_status" name="${prefix}_status"
                           required="required"
                           noSelection="${['' : message(code:'default.select.choose.label')]}"
                           from="${RefdataCategory.getAllRefdataValues( RDConstants.WF_WORKFLOW_STATUS )}"

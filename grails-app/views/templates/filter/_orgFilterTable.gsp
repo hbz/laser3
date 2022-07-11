@@ -150,7 +150,7 @@
                     <g:set var="costItemElements"
                            value="${RefdataValue.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :org', [org: institution])}"/>
 
-                        <laser:select name="selectedCostItemElement"
+                        <ui:select name="selectedCostItemElement"
                                       from="${costItemElements}"
                                       optionKey="id"
                                       optionValue="value"

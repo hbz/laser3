@@ -1,17 +1,20 @@
-package de.laser
+package de.laser.spec
 
+import de.laser.ContextService
+import de.laser.LinksGenerationService
+import de.laser.RefdataValue
 import de.laser.utils.SwissKnife
 import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyOrg
 
-class UiSurveyTagLib {
+class SurveyTagLib {
 
     ContextService contextService
     LinksGenerationService linksGenerationService
 
-    static namespace = 'ui'
+    static namespace = 'survey'
 
-    def surveyStatus = { attrs, body ->
+    def status = { attrs, body ->
         def object = attrs.object
 
         def statusType = object.status?.owner?.desc
@@ -79,7 +82,7 @@ class UiSurveyTagLib {
         }
     }
 
-    def surveyStatusWithRings = { attrs, body ->
+    def statusWithRings = { attrs, body ->
         def object = attrs.object
         SurveyConfig surveyConfig = attrs.surveyConfig
 
@@ -167,7 +170,7 @@ class UiSurveyTagLib {
         }
     }
 
-    def surveyEditButton = { attrs, body ->
+    def editButton = { attrs, body ->
         def surveyResult = attrs.surveyResult
         def surveyInfo = attrs.surveyInfo
         def surveyConfig = attrs.surveyInfo
@@ -189,7 +192,7 @@ class UiSurveyTagLib {
         out << "</span>"
     }
 
-    def surveyFinishIcon = { attrs, body ->
+    def finishIcon = { attrs, body ->
         def surveyConfig = attrs.surveyConfig
         def participant = attrs.participant
         def surveyOwnerView = attrs.surveyOwnerView
@@ -219,7 +222,7 @@ class UiSurveyTagLib {
             }
     }
 
-    def surveyFinishDate = { attrs, body ->
+    def finishDate = { attrs, body ->
         def surveyConfig = attrs.surveyConfig
         def participant = attrs.participant
 

@@ -1,11 +1,10 @@
 package de.laser
 
-import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
 
 class LaserTagLib {
 
-    static namespace = "laser"
+    static namespace = 'laser'
 
     // <laser:serviceInjection/>
 
@@ -66,24 +65,5 @@ class LaserTagLib {
 
     def htmlEnd = { attrs, body ->
         out << '</body></html>'
-    }
-
-    // <laser:select optionValue="field" />  ==> <laser:select optionValue="field_(de|en|fr)" />
-
-    def select = { attrs, body ->
-        attrs.optionValue = attrs.optionValue + "_" + LocaleUtils.getCurrentLang()
-        out << g.select(attrs)
-    }
-
-    def statsLink = {attrs, body ->
-        if (attrs.module) {
-            attrs.base = attrs.base ? attrs.base+"/${attrs.module}" : "/${attrs.module}"
-            attrs.remove('module')
-        }
-        if (!attrs.params.packages){
-            attrs.params.remove('packages')
-        }
-        String cleanLink = g.link(attrs, body)
-        out << cleanLink.replaceAll("(?<!(http:|https:))[//]+", "/")
     }
 }

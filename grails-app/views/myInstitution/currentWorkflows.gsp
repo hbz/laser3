@@ -23,7 +23,7 @@
             </div>
             <div class="field">
                 <label>${message(code: 'default.priority.label')}</label>
-                <laser:select class="ui dropdown" name="filterPriority"
+                <ui:select class="ui dropdown" name="filterPriority"
                               from="${ RefdataCategory.getAllRefdataValues(RDConstants.WF_TASK_PRIORITY) }"
                               optionKey="id"
                               optionValue="value"
@@ -32,7 +32,7 @@
             </div>
             <div class="field">
                 <label>${message(code: 'default.status.label')}</label>
-                <laser:select class="ui dropdown" name="filterStatus"
+                <ui:select class="ui dropdown" name="filterStatus"
                   from="${ RefdataCategory.getAllRefdataValues(RDConstants.WF_WORKFLOW_STATUS) }"
                   optionKey="id"
                   optionValue="value"
@@ -142,16 +142,16 @@
                         <g:each in="${tasks}" var="task" status="ti">
                             <g:if test="${task.child}">
                                 <div style="width:8px"></div>
-                                <laser:workflowTask task="${task}" params="${[key: 'myInstitution:' + wf.id + ':' + WfTask.KEY + ':' + task.id]}" />
+                                <workflow:task task="${task}" params="${[key: 'myInstitution:' + wf.id + ':' + WfTask.KEY + ':' + task.id]}" />
 
                                 <g:set var="children" value="${task.child.getSequence()}" />
                                 <g:each in="${children}" var="child" status="ci">
-                                    <laser:workflowTask task="${child}" params="${[key: 'myInstitution:' + wf.id + ':' + WfTask.KEY + ':' + child.id]}" />
+                                    <workflow:task task="${child}" params="${[key: 'myInstitution:' + wf.id + ':' + WfTask.KEY + ':' + child.id]}" />
                                 </g:each>
                                 <div style="width:8px"></div>
                             </g:if>
                             <g:else>
-                                <laser:workflowTask task="${task}" params="${[key: 'myInstitution:' + wf.id + ':' + WfTask.KEY + ':' + task.id]}" />
+                                <workflow:task task="${task}" params="${[key: 'myInstitution:' + wf.id + ':' + WfTask.KEY + ':' + task.id]}" />
                             </g:else>
                         </g:each>
                     </div>

@@ -20,7 +20,7 @@
 </ui:controlButtons>--}%
 
 <ui:h1HeaderWithIcon text="${surveyInfo.name}" type="Survey">
-<ui:surveyStatus object="${surveyInfo}"/>
+<survey:status object="${surveyInfo}"/>
 </ui:h1HeaderWithIcon>
 
 <ui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>

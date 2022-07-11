@@ -115,7 +115,7 @@
                                 value = docctx.shareConf?.id
                             }
                         %>
-                        <laser:select from="${availableConfigs}" class="ui dropdown fluid la-not-clearable" name="shareConf"
+                        <ui:select from="${availableConfigs}" class="ui dropdown fluid la-not-clearable" name="shareConf"
                                       optionKey="id" optionValue="value" value="${value}"/>
                     </dd>
                 </dl>

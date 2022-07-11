@@ -342,7 +342,7 @@
                                             </td>
                                             <g:each in="${v}" status="i" var="v2">
                                                 <td>
-                                                    <laser:statsLink
+                                                    <ui:statsLink
                                                             base="${ConfigMapper.getStatsApiUrl()}"
                                                             module="statistics"
                                                             controller="default"
@@ -357,7 +357,7 @@
                                                             ]"
                                                             title="Springe zu Statistik im Nationalen Statistikserver">
                                                         ${v2}
-                                                    </laser:statsLink>
+                                                    </ui:statsLink>
                                                 </td>
                                             </g:each>
                                             <g:set var="missing" value="${missingMonths[reportMetric.split(':')[0]]}"/>

@@ -152,7 +152,7 @@
                         <label for="gender">
                             <g:message code="person.gender.label"/>
                         </label>
-                        <laser:select class="ui dropdown" id="gender" name="gender"
+                        <ui:select class="ui dropdown" id="gender" name="gender"
                                       from="${Person.getAllRefdataValues(RDConstants.GENDER)}"
                                       optionKey="id"
                                       optionValue="value"
@@ -226,7 +226,7 @@
                             </div>
 
                             <div class="field wide four">
-                                <laser:select class="ui search dropdown" name="contactLang${contact.id}"
+                                <ui:select class="ui search dropdown" name="contactLang${contact.id}"
                                               from="${RefdataCategory.getAllRefdataValues(RDConstants.LANGUAGE_ISO)}"
                                               optionKey="id"
                                               optionValue="value"
@@ -261,7 +261,7 @@
                 <div class="three fields" id="contactFields1">
                     <div class="field wide four">
                         <label></label>
-                        <laser:select class="ui dropdown" name="contentType.id"
+                        <ui:select class="ui dropdown" name="contentType.id"
                                       from="${Contact.getAllRefdataValues(RDConstants.CONTACT_CONTENT_TYPE)}"
                                       optionKey="id"
                                       optionValue="value"
@@ -270,7 +270,7 @@
 
                     <div class="field wide four">
                         <label></label>
-                        <laser:select class="ui search dropdown" name="contactLang.id"
+                        <ui:select class="ui search dropdown" name="contactLang.id"
                                       from="${RefdataCategory.getAllRefdataValues(RDConstants.LANGUAGE_ISO)}"
                                       optionKey="id"
                                       optionValue="value"

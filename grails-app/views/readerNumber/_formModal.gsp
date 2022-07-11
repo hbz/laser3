@@ -47,7 +47,7 @@
                 <div class="field four wide">
                     <g:if test="${withSemester}">
                         <label for="semester"><g:message code="readerNumber.semester.label"/></label>
-                        <laser:select class="ui selection dropdown la-full-width" label="readerNumber.semester.label" id="semester" name="semester"
+                        <ui:select class="ui selection dropdown la-full-width" label="readerNumber.semester.label" id="semester" name="semester"
                                       from="${RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.SEMESTER)}"
                                       optionKey="id" optionValue="value" required=""
                                       value="${semester}"/>

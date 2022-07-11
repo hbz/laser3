@@ -77,16 +77,16 @@
                         <g:each in="${tasks}" var="task" status="ti">
                             <g:if test="${task.child}">
                                 <div style="width:8px"></div>
-                                    <laser:workflowTask task="${task}" params="${[key: 'subscription:' + subscription.id + ':' + WfTask.KEY + ':' + task.id]}" />
+                                    <workflow:task task="${task}" params="${[key: 'subscription:' + subscription.id + ':' + WfTask.KEY + ':' + task.id]}" />
 
                                     <g:set var="children" value="${task.child.getSequence()}" />
                                     <g:each in="${children}" var="child" status="ci">
-                                        <laser:workflowTask task="${child}" params="${[key: 'subscription:' + subscription.id + ':' + WfTask.KEY + ':' + child.id]}" />
+                                        <workflow:task task="${child}" params="${[key: 'subscription:' + subscription.id + ':' + WfTask.KEY + ':' + child.id]}" />
                                     </g:each>
                                 <div style="width:8px"></div>
                             </g:if>
                             <g:else>
-                                <laser:workflowTask task="${task}" params="${[key: 'subscription:' + subscription.id + ':' + WfTask.KEY + ':' + task.id]}" />
+                                <workflow:task task="${task}" params="${[key: 'subscription:' + subscription.id + ':' + WfTask.KEY + ':' + task.id]}" />
                             </g:else>
                         </g:each>
                     </div>
@@ -201,7 +201,7 @@
                                             <!-- -->
                                             <g:each in="${task.condition.getFields()}" var="field" status="fi">
                                                 <br/>
-                                                <laser:workflowTaskConditionField condition="${task.condition}" field="${field}" />
+                                                <workflow:taskConditionField condition="${task.condition}" field="${field}" />
                                             </g:each>
                                             <!-- -->
                                             <g:if test="${contextService.getUser().hasAffiliation('INST_ADM') || SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")}"><!-- TODO: reporting-permissions -->
@@ -266,7 +266,7 @@
                                                     <!-- -->
                                                     <g:each in="${child.condition.getFields()}" var="field" status="fi">
                                                         <br/>
-                                                        <laser:workflowTaskConditionField condition="${child.condition}" field="${field}" />
+                                                        <workflow:taskConditionField condition="${child.condition}" field="${field}" />
                                                     </g:each>
                                                     <!-- -->
                                                     <g:if test="${contextService.getUser().hasAffiliation('INST_ADM') || SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")}"><!-- TODO: reporting-permissions -->

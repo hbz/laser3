@@ -8,7 +8,7 @@
                     <label for="accessMethod">
                         <g:message code="default.type.label" />
                     </label>
-                    <laser:select class="values"
+                    <ui:select class="values"
                                      id="accessMethod" name="accessMethod"
                                      from="${PlatformAccessMethod.getAllRefdataValues(RDConstants.ACCESS_METHOD)}"
                                      optionKey="id"
@@ -25,7 +25,7 @@
                     </ui:datepicker>
                 </div>
 
-                <g:hiddenField  id="platf_id_${platfId}" name="platfId" value="${platfId}"/>
+                <g:hiddenField id="platf_id_${platfId}" name="platfId" value="${platfId}"/>
                
             </div>
         </div>

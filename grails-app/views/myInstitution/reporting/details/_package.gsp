@@ -34,26 +34,26 @@
                 <tr>
                     <td>${i + 1}.</td>
 
-                    <laser:reportDetailsTableTD config="${dtConfig}" field="name">
+                    <reporting:detailsTableTD config="${dtConfig}" field="name">
 
                         <g:link controller="package" action="show" id="${pkg.id}" target="_blank">${pkg.name}</g:link>
-                    </laser:reportDetailsTableTD>
+                    </reporting:detailsTableTD>
 
-                    <laser:reportDetailsTableTD config="${dtConfig}" field="sortname">
+                    <reporting:detailsTableTD config="${dtConfig}" field="sortname">
 
                         <g:if test="${pkg.sortname}">
                             <g:link controller="package" action="show" id="${pkg.id}" target="_blank">${pkg.sortname}</g:link>
                         </g:if>
-                    </laser:reportDetailsTableTD>
+                    </reporting:detailsTableTD>
 
-                    <laser:reportDetailsTableTD config="${dtConfig}" field="package-altname">
+                    <reporting:detailsTableTD config="${dtConfig}" field="package-altname">
 
                         <g:if test="${esRecordIds.contains(pkg.id)}">
                             ${esRecords.get(pkg.id as String).altname?.join(', ')}
                         </g:if>
-                    </laser:reportDetailsTableTD>
+                    </reporting:detailsTableTD>
 
-                    <laser:reportDetailsTableTD config="${dtConfig}" field="package-x-id">
+                    <reporting:detailsTableTD config="${dtConfig}" field="package-x-id">
 
                         <g:if test="${esRecordIds.contains(pkg.id)}">
                             <%
@@ -64,38 +64,38 @@
                                 }.join(',<br/>')
                             %>
                         </g:if>
-                    </laser:reportDetailsTableTD>
+                    </reporting:detailsTableTD>
 
-                    <laser:reportDetailsTableTD config="${dtConfig}" field="contentType">
+                    <reporting:detailsTableTD config="${dtConfig}" field="contentType">
 
                         ${pkg.contentType?.getI10n('value')}
-                    </laser:reportDetailsTableTD>
+                    </reporting:detailsTableTD>
 
-                    <laser:reportDetailsTableTD config="${dtConfig}" field="packageStatus">
+                    <reporting:detailsTableTD config="${dtConfig}" field="packageStatus">
 
                         ${pkg.packageStatus?.getI10n('value')}
-                    </laser:reportDetailsTableTD>
+                    </reporting:detailsTableTD>
 
-                    <laser:reportDetailsTableTD config="${dtConfig}" field="orProvider">
+                    <reporting:detailsTableTD config="${dtConfig}" field="orProvider">
 
                         <g:each in="${pkg.orgs.findAll{ it.roleType in [ RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER ]}}" var="ro">
                             <g:link controller="org" action="show" id="${ro.org.id}" target="_blank">${ro.org.sortname ?: ro.org.name}</g:link><br />
                         </g:each>
-                    </laser:reportDetailsTableTD>
+                    </reporting:detailsTableTD>
 
-                    <laser:reportDetailsTableTD config="${dtConfig}" field="nominalPlatform">
+                    <reporting:detailsTableTD config="${dtConfig}" field="nominalPlatform">
 
                         <g:if test="${pkg.nominalPlatform}">
                             <g:link controller="platform" action="show" id="${pkg.nominalPlatform.id}" target="_blank">${pkg.nominalPlatform.name}</g:link>
                         </g:if>
-                    </laser:reportDetailsTableTD>
+                    </reporting:detailsTableTD>
 
-                    <laser:reportDetailsTableTD config="${dtConfig}" field="file">
+                    <reporting:detailsTableTD config="${dtConfig}" field="file">
 
                         ${pkg.file?.getI10n('value')}
-                    </laser:reportDetailsTableTD>
+                    </reporting:detailsTableTD>
 
-                    <laser:reportDetailsTableTD config="${dtConfig}" field="_+_currentTitles">
+                    <reporting:detailsTableTD config="${dtConfig}" field="_+_currentTitles">
 
                         <%
                             List tipps = TitleInstancePackagePlatform.executeQuery(
@@ -104,75 +104,75 @@
                             )
                             println tipps[0] > 0 ? tipps[0] : ''
                         %>
-                    </laser:reportDetailsTableTD>
+                    </reporting:detailsTableTD>
 
-                    <laser:reportDetailsTableTD config="${dtConfig}" field="package-breakable">
+                    <reporting:detailsTableTD config="${dtConfig}" field="package-breakable">
 
-                        <laser:reportDetailsTableEsValue key="${key}" id="${pkg.id}" field="breakable" records="${esRecords}" />
-                    </laser:reportDetailsTableTD>
+                        <reporting:detailsTableEsValue key="${key}" id="${pkg.id}" field="breakable" records="${esRecords}" />
+                    </reporting:detailsTableTD>
 
-                    <laser:reportDetailsTableTD config="${dtConfig}" field="package-paymentType">
+                    <reporting:detailsTableTD config="${dtConfig}" field="package-paymentType">
 
-                        <laser:reportDetailsTableEsValue key="${key}" id="${pkg.id}" field="paymentType" records="${esRecords}" />
-                    </laser:reportDetailsTableTD>
+                        <reporting:detailsTableEsValue key="${key}" id="${pkg.id}" field="paymentType" records="${esRecords}" />
+                    </reporting:detailsTableTD>
 
-                    <laser:reportDetailsTableTD config="${dtConfig}" field="package-openAccess">
+                    <reporting:detailsTableTD config="${dtConfig}" field="package-openAccess">
 
-                        <laser:reportDetailsTableEsValue key="${key}" id="${pkg.id}" field="openAccess" records="${esRecords}" />
-                    </laser:reportDetailsTableTD>
+                        <reporting:detailsTableEsValue key="${key}" id="${pkg.id}" field="openAccess" records="${esRecords}" />
+                    </reporting:detailsTableTD>
 
-                    <laser:reportDetailsTableTD config="${dtConfig}" field="package-consistent">
+                    <reporting:detailsTableTD config="${dtConfig}" field="package-consistent">
 
-                        <laser:reportDetailsTableEsValue key="${key}" id="${pkg.id}" field="consistent" records="${esRecords}" />
-                    </laser:reportDetailsTableTD>
+                        <reporting:detailsTableEsValue key="${key}" id="${pkg.id}" field="consistent" records="${esRecords}" />
+                    </reporting:detailsTableTD>
 
-                    <laser:reportDetailsTableTD config="${dtConfig}" field="package-scope">
+                    <reporting:detailsTableTD config="${dtConfig}" field="package-scope">
 
-                        <laser:reportDetailsTableEsValue key="${key}" id="${pkg.id}" field="scope" records="${esRecords}" />
-                    </laser:reportDetailsTableTD>
+                        <reporting:detailsTableEsValue key="${key}" id="${pkg.id}" field="scope" records="${esRecords}" />
+                    </reporting:detailsTableTD>
 
-                    <laser:reportDetailsTableTD config="${dtConfig}" field="package-x-ddc">
+                    <reporting:detailsTableTD config="${dtConfig}" field="package-x-ddc">
 
                         <g:if test="${esRecordIds.contains(pkg.id)}">
                             <g:each in="${esRecords.get(pkg.id as String).ddcs}" var="ddc">
                                 ${ RefdataValue.getByValueAndCategory(ddc.value as String, RDConstants.DDC)?.getI10n('value') ?: GenericHelper.flagUnmatched( ddc.value_de ) } <br />
                             </g:each>
                         </g:if>
-                    </laser:reportDetailsTableTD>
+                    </reporting:detailsTableTD>
 
-                    <laser:reportDetailsTableTD config="${dtConfig}" field="package-x-nationalRange">
+                    <reporting:detailsTableTD config="${dtConfig}" field="package-x-nationalRange">
 
                         <g:if test="${esRecordIds.contains(pkg.id)}">
                             <g:each in="${esRecords.get(pkg.id as String).nationalRanges}" var="nationalRange">
                                 ${ RefdataValue.getByValueAndCategory(nationalRange.value as String, RDConstants.COUNTRY)?.getI10n('value') ?: GenericHelper.flagUnmatched( nationalRange.value ) } <br />
                             </g:each>
                         </g:if>
-                    </laser:reportDetailsTableTD>
+                    </reporting:detailsTableTD>
 
-                    <laser:reportDetailsTableTD config="${dtConfig}" field="package-x-regionalRange">
+                    <reporting:detailsTableTD config="${dtConfig}" field="package-x-regionalRange">
 
                         <g:if test="${esRecordIds.contains(pkg.id)}">
                             <g:each in="${esRecords.get(pkg.id as String).regionalRanges}" var="regionalRange">
                                 ${ RefdataValue.getByValueAndCategory(regionalRange.value as String, RDConstants.REGIONS_DE)?.getI10n('value') ?: GenericHelper.flagUnmatched( regionalRange.value ) } <br />
                             </g:each>
                         </g:if>
-                    </laser:reportDetailsTableTD>
+                    </reporting:detailsTableTD>
 
-                    <laser:reportDetailsTableTD config="${dtConfig}" field="package-x-language">
+                    <reporting:detailsTableTD config="${dtConfig}" field="package-x-language">
 
                         <g:each in="${pkg.languages}" var="lang">
                             ${lang.language.getI10n('value')} <br />
                         </g:each>
-                    </laser:reportDetailsTableTD>
+                    </reporting:detailsTableTD>
 
-                    <laser:reportDetailsTableTD config="${dtConfig}" field="package-description">
+                    <reporting:detailsTableTD config="${dtConfig}" field="package-description">
 
                         <g:if test="${esRecordIds.contains(pkg.id)}">
                             ${esRecords.get(pkg.id as String).description}
                         </g:if>
-                    </laser:reportDetailsTableTD>
+                    </reporting:detailsTableTD>
 
-                    <laser:reportDetailsTableTD config="${dtConfig}" field="package-descriptionURL">
+                    <reporting:detailsTableTD config="${dtConfig}" field="package-descriptionURL">
 
                         <g:if test="${esRecordIds.contains(pkg.id)}">
                             <g:set var="descriptionURL" value="${esRecords.get(pkg.id as String).descriptionURL}" />
@@ -180,9 +180,9 @@
                                 <a href="${descriptionURL}" target="_blank">${descriptionURL}</a>
                             </g:if>
                         </g:if>
-                    </laser:reportDetailsTableTD>
+                    </reporting:detailsTableTD>
 
-                    <laser:reportDetailsTableTD config="${dtConfig}" field="package-x-curatoryGroup">
+                    <reporting:detailsTableTD config="${dtConfig}" field="package-x-curatoryGroup">
 
                         <g:if test="${esRecordIds.contains(pkg.id)}">
                             <g:each in="${esRecords.get(pkg.id as String).curatoryGroups}" var="curatoryGroup">
@@ -196,18 +196,18 @@
                                 ${curatoryGroup.name} ${cgType}<br />
                             </g:each>
                         </g:if>
-                    </laser:reportDetailsTableTD>
+                    </reporting:detailsTableTD>
 
-                    <laser:reportDetailsTableTD config="${dtConfig}" field="package-x-archivingAgency">
+                    <reporting:detailsTableTD config="${dtConfig}" field="package-x-archivingAgency">
 
                         <g:if test="${esRecordIds.contains(pkg.id)}">
                             <g:each in="${esRecords.get(pkg.id as String).packageArchivingAgencies}" var="archivingAgency">
                                 ${archivingAgency.archivingAgency}<br />
                             </g:each>
                         </g:if>
-                    </laser:reportDetailsTableTD>
+                    </reporting:detailsTableTD>
 
-                    <laser:reportDetailsTableTD config="${dtConfig}" field="_+_lastUpdated">
+                    <reporting:detailsTableTD config="${dtConfig}" field="_+_lastUpdated">
 
                         <g:if test="${esRecordIds.contains(pkg.id)}">
                             <g:formatDate format="${message(code:'default.date.format.notime')}" date="${DateUtils.parseDateGeneric(esRecords.getAt(pkg.id.toString()).lastUpdatedDisplay)}" />
@@ -215,9 +215,9 @@
                         <g:else>
                             <g:formatDate format="${message(code:'default.date.format.notime')}" date="${pkg._getCalculatedLastUpdated()}" />
                         </g:else>
-                    </laser:reportDetailsTableTD>
+                    </reporting:detailsTableTD>
 
-                    <laser:reportDetailsTableTD config="${dtConfig}" field="_+_wekb">
+                    <reporting:detailsTableTD config="${dtConfig}" field="_+_wekb">
 
                         <g:if test="${wekb?.baseUrl && pkg.gokbId}">
                             <g:if test="${esRecordIds.contains(pkg.id)}">
@@ -230,7 +230,7 @@
                                 </span>
                             </g:else>
                         </g:if>
-                    </laser:reportDetailsTableTD>
+                    </reporting:detailsTableTD>
 
                 </tr>
             </g:each>

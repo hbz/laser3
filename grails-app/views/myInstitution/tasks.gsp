@@ -34,7 +34,7 @@
 
                     <div class="field">
                         <label>${message(code: 'default.status.label')}</label>
-                        <laser:select class="ui fluid dropdown"
+                        <ui:select class="ui fluid dropdown"
                                   name="taskStatus"
                                   value="${params.taskStatus}"
                                   from="${RefdataCategory.getAllRefdataValues(RDConstants.TASK_STATUS)}"

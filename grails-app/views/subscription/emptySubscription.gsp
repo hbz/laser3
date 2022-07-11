@@ -26,7 +26,7 @@
 
                 <div class="field required">
                     <label>${message(code:'default.status.label')} <g:message code="messageRequiredField" /></label>
-                    <laser:select name="status" from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}" optionKey="id" optionValue="value"
+                    <ui:select name="status" from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}" optionKey="id" optionValue="value"
                                   noSelection="${['' : '']}"
                                   value="${['':'']}"
                                   class="ui select dropdown"/>
@@ -39,7 +39,7 @@
                     %>
                     <div class="field">
                         <label>${message(code:'myinst.emptySubscription.create_as')}</label>
-                        <laser:select id="asOrgType" name="type" from="${subscriptionTypes}" value="${RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id}" optionKey="id" optionValue="value" class="ui select dropdown" />
+                        <ui:select id="asOrgType" name="type" from="${subscriptionTypes}" value="${RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id}" optionKey="id" optionValue="value" class="ui select dropdown" />
                     </div>
                 </g:if>
                 <g:elseif test="${accessService.checkPerm('ORG_CONSORTIUM')}">

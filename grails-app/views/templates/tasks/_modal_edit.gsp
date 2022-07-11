@@ -41,7 +41,7 @@
                     <label for="status">
                         <g:message code="task.status.label" />
                     </label>
-                    <laser:select id="status" name="status.id" from="${RefdataCategory.getAllRefdataValues(RDConstants.TASK_STATUS)}"
+                    <ui:select id="status" name="status.id" from="${RefdataCategory.getAllRefdataValues(RDConstants.TASK_STATUS)}"
                                   optionValue="value" optionKey="id" required=""
                                   value="${taskInstance?.status?.id ?: RDStore.TASK_STATUS_OPEN.id}"
                                   class="ui dropdown search many-to-one"/>

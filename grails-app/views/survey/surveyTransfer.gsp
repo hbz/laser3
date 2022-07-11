@@ -16,7 +16,7 @@
 
 <ui:h1HeaderWithIcon type="Survey">
 <ui:xEditable owner="${surveyInfo}" field="name"/>
-<ui:surveyStatusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey"
+<survey:statusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey"
                              action="surveyEvaluation"/>
 </ui:h1HeaderWithIcon>
 

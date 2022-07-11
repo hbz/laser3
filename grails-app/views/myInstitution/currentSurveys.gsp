@@ -112,7 +112,7 @@
 
             <div class="field">
                 <label>${message(code: 'surveyInfo.type.label')}</label>
-                <laser:select class="ui dropdown" name="type"
+                <ui:select class="ui dropdown" name="type"
                               from="${RefdataCategory.getAllRefdataValues(de.laser.storage.RDConstants.SURVEY_TYPE)}"
                               optionKey="id"
                               optionValue="value"
@@ -274,12 +274,12 @@
 
                 <td class="center aligned">
 
-                    <ui:surveyFinishIcon participant="${institution}" surveyConfig="${surveyConfig}" surveyOwnerView="${false}"/>
+                    <survey:finishIcon participant="${institution}" surveyConfig="${surveyConfig}" surveyOwnerView="${false}"/>
 
                 </td>
                 <g:if test="${params.tab == 'finish'}">
                     <td class="center aligned">
-                        <ui:surveyFinishDate participant="${institution}" surveyConfig="${surveyConfig}"/>
+                        <survey:finishDate participant="${institution}" surveyConfig="${surveyConfig}"/>
                     </td>
                 </g:if>
 
