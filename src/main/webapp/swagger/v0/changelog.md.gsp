@@ -2,6 +2,10 @@
 
 Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 1.2
+
+- bugfix collection of ies
+
 #### 1.1
 
 - added request parameter `changedFrom` for __/ezb/subscription/__

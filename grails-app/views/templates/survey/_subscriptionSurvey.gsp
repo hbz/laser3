@@ -269,55 +269,53 @@
             </div>
         </div>
 
-
-
         <g:if test="${contextOrg?.id == surveyConfig.surveyInfo.owner.id && controllerName == 'survey' && actionName == 'show'}">
             <div class="ui card ">
 
-            <div class="content">
-                <h3 class="ui header">
-                    ${message(code: 'surveyLinks.label')}
-                </h3>
-            </div>
-
-            <div class="content">
-                <table class="ui three column table">
-                    <g:each in="${SurveyLinks.findAllBySourceSurvey(surveyConfig.surveyInfo)}" var="surveyLink">
-                        <tr>
-                            <td>
-                                <g:link controller="survey" action="show"
-                                        id="${surveyLink.targetSurvey.id}">${surveyLink.targetSurvey.name}</g:link> (<g:if
-                                        test="${surveyInfo.startDate}"><g:formatDate date="${surveyInfo.startDate}"
-                                                                                     format="${message(code: 'default.date.format.notime')}"/></g:if><g:if
-                                        test="${surveyInfo.endDate}">-<g:formatDate date="${surveyInfo.endDate}"
-                                                                                    format="${message(code: 'default.date.format.notime')}"/></g:if>)
-                                <g:message code="default.status.label"/>: ${surveyInfo.status.getI10n('value')}
-                            </td>
-                            <td class="right aligned">
-                                <g:if test="${editable}">
-                                    <span class="la-popup-tooltip la-delay"
-                                          data-content="${message(code: 'default.button.unlink.label')}">
-                                        <g:link class="ui negative icon button la-modern-button  la-selectable-button js-open-confirm-modal"
-                                                data-confirm-tokenMsg="${message(code: "surveyLinks.unlink.confirm.dialog")}"
-                                                data-confirm-term-how="unlink"
-                                                controller="survey" action="setSurveyLink"
-                                                params="${[unlinkSurveyLink: surveyLink.id, surveyConfigID: surveyConfig.id, id: surveyInfo.id]}"
-                                                role="button"
-                                                aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                                            <i class="unlink icon"></i>
-                                        </g:link>
-                                    </span>
-                                </g:if>
-                            </td>
-                        </tr>
-                    </g:each>
-                </table>
-
-                <div class="ui la-vertical buttons">
-                    <g:render template="surveyLinksModal"/>
+                <div class="content">
+                    <h3 class="ui header">
+                        ${message(code: 'surveyLinks.label')}
+                    </h3>
                 </div>
 
-            </div>
+                <div class="content">
+                    <table class="ui three column table">
+                        <g:each in="${SurveyLinks.findAllBySourceSurvey(surveyConfig.surveyInfo)}" var="surveyLink">
+                            <tr>
+                                <td>
+                                    <g:link controller="survey" action="show"
+                                            id="${surveyLink.targetSurvey.id}">${surveyLink.targetSurvey.name}</g:link> (<g:if
+                                            test="${surveyInfo.startDate}"><g:formatDate date="${surveyInfo.startDate}"
+                                                                                         format="${message(code: 'default.date.format.notime')}"/></g:if><g:if
+                                            test="${surveyInfo.endDate}">-<g:formatDate date="${surveyInfo.endDate}"
+                                                                                        format="${message(code: 'default.date.format.notime')}"/></g:if>)
+                                    <g:message code="default.status.label"/>: ${surveyInfo.status.getI10n('value')}
+                                </td>
+                                <td class="right aligned">
+                                    <g:if test="${editable}">
+                                        <span class="la-popup-tooltip la-delay"
+                                              data-content="${message(code: 'default.button.unlink.label')}">
+                                            <g:link class="ui negative icon button la-modern-button  la-selectable-button js-open-confirm-modal"
+                                                    data-confirm-tokenMsg="${message(code: "surveyLinks.unlink.confirm.dialog")}"
+                                                    data-confirm-term-how="unlink"
+                                                    controller="survey" action="setSurveyLink"
+                                                    params="${[unlinkSurveyLink: surveyLink.id, surveyConfigID: surveyConfig.id, id: surveyInfo.id]}"
+                                                    role="button"
+                                                    aria-label="${message(code: 'ariaLabel.unlink.universal')}">
+                                                <i class="unlink icon"></i>
+                                            </g:link>
+                                        </span>
+                                    </g:if>
+                                </td>
+                            </tr>
+                        </g:each>
+                    </table>
+
+                    <div class="ui la-vertical buttons">
+                        <g:render template="surveyLinksModal"/>
+                    </div>
+
+                </div>
             </div>
         </g:if>
         <g:else>
@@ -412,9 +410,49 @@
             </g:if>
         </g:else>
 
-        <g:if test="${surveyConfig.subSurveyUseForTransfer}">
-            <g:render template="/templates/survey/propertiesCompareInfo" model="[customProperties: customProperties]"/>
-        </g:if>
+            <g:if test="${customProperties || groupedProperties?.size() > 0 || orphanedProperties?.size() > 0 || privateProperties?.size() > 0}">
+                    <div class="ui card">
+                        <div class="content">
+                            <div class="ui accordion la-accordion-showMore js-propertiesCompareInfo-accordion">
+                                <div class="item">
+                                    <div class="title">
+                                        <button
+                                                class="ui button icon blue la-modern-button la-popup-tooltip la-delay right floated "
+                                                data-content="<g:message code="survey.subscription.propertiesChange.show"/>">
+                                            <i class="ui angle double down large icon"></i>
+                                        </button>
+                                        <laser:script file="${this.getGroovyPageFileName()}">
+                                            $('.js-propertiesCompareInfo-accordion')
+                                              .accordion({
+                                                onOpen: function() {
+                                                  $(this).siblings('.title').children('.button').attr('data-content','<g:message
+                                                code="survey.subscription.propertiesChange.hide"/> ')
+                                                    },
+                                                    onClose: function() {
+                                                      $(this).siblings('.title').children('.button').attr('data-content','<g:message
+                                                code="survey.subscription.propertiesChange.show"/> ')
+                                                    }
+                                                  })
+                                                ;
+                                        </laser:script>
+                                        <div class="content">
+                                            <h2 class="ui header">
+                                                ${message(code: 'survey.subscription.propertiesChange')}
+                                            </h2>
+                                        </div>
+                                    </div>
+
+                                    <div class="content" id="propertiesCompareInfo">
+                                        <div class="ui stackable grid container">
+                                            <g:render template="/templates/survey/propertiesCompareInfo"
+                                                      model="[customProperties: customProperties]"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+            </g:if>
 
 
 
