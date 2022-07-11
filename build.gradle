@@ -106,6 +106,7 @@ dependencies {
 
     runtimeOnly 'org.apache.tomcat:tomcat-jdbc'                             // from runtime
     runtimeOnly 'javax.xml.bind:jaxb-api:2.3.1'                             // from runtime
+    runtimeOnly 'org.postgresql:postgresql:42.4.0'                          // from 42.3.0
 
     // --------------------------------------------------
 
@@ -134,8 +135,6 @@ dependencies {
     implementation 'org.apache.poi:poi-ooxml:3.17'                          // from 3.9 : 5.x available
     implementation 'org.codehaus.gpars:gpars:1.2.1'                         // 2014
     implementation 'org.liquibase:liquibase-core:4.11.0'                    // from 3.5.5 : + org.grails.plugins:database-migration
-
-    runtimeOnly 'org.postgresql:postgresql:42.4.0'                          // from 42.3.0
 
     // -- dependency resolving issue
 
@@ -225,7 +224,7 @@ assets {
             'laser/**',
             // vendor/*
             'bulma/**',
-            'cryptoJS-v3.1.2/**',
+            'crypto-js-4.1.1/**',
             'echarts/**',
             'select2/**/*.js',
             'select2/**/*.css',
