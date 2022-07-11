@@ -174,6 +174,30 @@ class ComparisonService {
     result
   }
 
+  Map compareAllPropertiesOnlyDiff(Collection<AbstractPropertyWithCalculatedLastUpdated> props, boolean compareValue, boolean compareNote) {
+
+    Map result = [:]
+
+    props.sort{it.type.getI10n('name')}.each { prop ->
+
+
+        List propertyList = result.get(genericOIDService.getOID(prop.type))
+        if (propertyList == null) {
+          propertyList = [prop]
+        } else {
+          propertyList.add(prop)
+        }
+        result.put(genericOIDService.getOID(prop.type), propertyList)
+        if (propertyList.size() == 2){
+          if((compareValue && propertyList[0].getValue() != propertyList[1].getValue()) || (compareNote && propertyList[0].note != propertyList[1].note) ) {
+          }else{
+            result.remove(genericOIDService.getOID(prop.type))
+          }
+        }
+    }
+    result
+  }
+
   /**
    * Builds from a given {@link List} a {@link Map} of {@link TitleInstancePackagePlatform}s to compare the {@link Subscription}s of each {@link IssueEntitlement}
    *

@@ -6,12 +6,6 @@
 <g:if test="${customProperties?.size() > 0}">
     <div class="ui card la-js-responsive-table la-dl-no-table">
         <div class="content">
-            <h3 class="ui header">
-                ${message(code: 'survey.subscription.propertiesChange')}
-            </h3>
-        </div>
-
-        <div class="content">
 
             <table class="ui celled table la-js-responsive-table la-table">
                 <thead>
@@ -35,11 +29,11 @@
                             </g:if>
                         </td>
                         <g:set var="propValues" value="${prop.getValue()}"/>
-                        <g:if test="${(subscription in propValues.owner)}">
+                        <g:if test="${(subscription.id in propValues.owner.id)}">
                             <td class="center aligned">
                                 <div class="ui relaxed divided list">
                                     <g:each var="subProperty" in="${propValues}">
-                                        <g:if test="${subProperty.owner == subscription}">
+                                        <g:if test="${subProperty.owner.id == subscription.id}">
                                             <div class="item">
                                             %{--SOURCE-SUBSCRIPTION--}%
 
@@ -91,7 +85,7 @@
                                 </div>
                             </td>
                         </g:if>
-                        <g:if test="${!(subscription in propValues.owner)}">
+                        <g:if test="${!(subscription.id in propValues.owner.id)}">
                             <td class="center aligned">
                                 <a class="ui circular label la-popup-tooltip la-delay"
                                    data-content="<g:message
@@ -99,12 +93,12 @@
                                 </a>
                             </td>
                         </g:if>
-                        <g:if test="${(successorSubscription in propValues.owner)}">
+                        <g:if test="${(successorSubscription.id in propValues.owner.id)}">
                             <td class="center aligned">
                                 <div class="ui relaxed divided list">
                                     <g:each var="subProperty" in="${propValues}">
                                     %{--TARGET-SUBSCRIPTION--}%
-                                        <g:if test="${subProperty.owner == successorSubscription}">
+                                        <g:if test="${subProperty.owner.id == successorSubscription.id}">
                                             <div class="item">
                                                 <g:if test="${subProperty.type.isIntegerType()}">
                                                     <ui:xEditable owner="${subProperty}" type="text" field="intValue"
@@ -155,7 +149,7 @@
                                 </div>
                             </td>
                         </g:if>
-                        <g:if test="${!(successorSubscription in propValues.owner)}">
+                        <g:if test="${!(successorSubscription.id in propValues.owner.id)}">
                             <td class="center aligned">
                                 <a class="ui circular label la-popup-tooltip la-delay"
                                    data-content="<g:message
@@ -168,5 +162,11 @@
                 </tbody>
             </table>
         </div>
+    </div>
+</g:if>
+
+<g:if test="${groupedProperties?.size() > 0 || orphanedProperties?.size() > 0 || privateProperties?.size() > 0}">
+    <div class="ui card la-js-responsive-table la-dl-no-table">
+        <g:render template="/compare/compareProperties"/>
     </div>
 </g:if>
