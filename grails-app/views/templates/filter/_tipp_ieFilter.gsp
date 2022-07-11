@@ -43,8 +43,7 @@
 </g:if>
 <g:set var="availableStatus" value="${RefdataCategory.getAllRefdataValues(RDConstants.TIPP_STATUS)-RDStore.TIPP_STATUS_REMOVED}"/>
 
-<laser:render template="/templates/filter/javascript"/>
-<ui:filter showFilterButton="true">
+<ui:filter showFilterButton="true" addFilterJs="true">
     <g:form controller="${controllerName}" action="${actionName}" id="${params.id}" method="get" class="ui form">
         <g:hiddenField name="sort" value="${params.sort}"/>
         <g:hiddenField name="order" value="${params.order}"/>

@@ -62,9 +62,7 @@
 
 <ui:messages data="${flash}"/>
 
-<laser:render template="/templates/filter/javascript"/>
-
-<ui:filter showFilterButton="true">
+<ui:filter showFilterButton="true" addFilterJs="true">
     <g:form id="filtering-form" action="currentTitles" controller="myInstitution" method="get" class="ui form">
 
         <g:set var="filterSub" value="${params.filterSub ? params.list('filterSub') : "all"}"/>

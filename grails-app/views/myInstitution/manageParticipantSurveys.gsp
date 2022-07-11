@@ -17,8 +17,7 @@
 
 <ui:messages data="${flash}"/>
 
-<laser:render template="/templates/filter/javascript" />
-<ui:filter showFilterButton="true">
+<ui:filter showFilterButton="true" addFilterJs="true">
     <g:form action="manageParticipantSurveys" controller="myInstitution" method="post" id="${params.id}"
             params="[tab: params.tab]" class="ui small form">
 

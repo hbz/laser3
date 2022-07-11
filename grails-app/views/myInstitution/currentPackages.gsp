@@ -9,8 +9,7 @@
 
 <ui:messages data="${flash}" />
 
-<laser:render template="/templates/filter/javascript" />
-<ui:filter showFilterButton="true">
+<ui:filter showFilterButton="true" addFilterJs="true">
     <g:form action="currentPackages" method="get" class="ui form">
         <div class="two fields">
             <!-- 1-1 -->

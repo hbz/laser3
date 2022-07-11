@@ -21,7 +21,4 @@
             myTaskInstanceList: myTaskInstanceList, myTaskInstanceCount: myTaskInstanceCount
     ]}"/>
 
-%{--    <laser:render template="/templates/tasks/table" model="${[taskInstanceList:taskInstanceList,taskInstanceCount:taskInstanceCount]}"/>--}%
-%{--    <laser:render template="/templates/tasks/table2" model="${[taskInstanceList:myTaskInstanceList,taskInstanceCount:myTaskInstanceCount]}"/>--}%
-
 <laser:htmlEnd />

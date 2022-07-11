@@ -14,9 +14,8 @@
         <%--<g:if test="${editable}">
             <input type="submit" class="ui left floated  button la-clear-before" value="${message(code:'task.create.new')}" data-ui="modal" data-href="#modalCreateTask" />
         </g:if>--%>
-        <laser:render template="/templates/filter/javascript" />
 
-        <ui:filter showFilterButton="true">
+        <ui:filter showFilterButton="true" addFilterJs="true">
             <form class="ui form">
                 <div class="four fields">
                     <div class="field">
@@ -58,8 +57,5 @@
                 taskInstanceList: taskInstanceList,     taskInstanceCount: taskInstanceCount,
                 myTaskInstanceList: myTaskInstanceList, myTaskInstanceCount: myTaskInstanceCount
         ]}"/>
-
-%{--        <laser:render template="/templates/tasks/table" model="${[taskInstanceList:taskInstanceList,taskInstanceCount:taskInstanceCount]}"/>--}%
-%{--        <laser:render template="/templates/tasks/table2" model="${[taskInstanceList:myTaskInstanceList,taskInstanceCount:myTaskInstanceCount]}"/>--}%
 
 <laser:htmlEnd />

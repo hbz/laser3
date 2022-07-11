@@ -1,5 +1,4 @@
 <%@ page import="de.laser.UserSetting" %>
-<g:set var="uri" value="${controllerName}/${actionName}" />
 
 <laser:script file="${this.getGroovyPageFileName()}">
     $('.la-js-filterButton').on('click', function(){
@@ -13,7 +12,7 @@
             data: {
                 key:    "${UserSetting.KEYS.SHOW_EXTENDED_FILTER}",
                 value: !($(this).hasClass('blue')),
-                uri:    "${uri}"
+                uri:    "${filterAjaxUri}"
             }
         });
     });

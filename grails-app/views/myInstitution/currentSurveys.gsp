@@ -23,8 +23,7 @@
 
 <ui:messages data="${flash}"/>
 
-<laser:render template="/templates/filter/javascript" />
-<ui:filter showFilterButton="true">
+<ui:filter showFilterButton="true" addFilterJs="true">
     <g:form action="currentSurveys" controller="myInstitution" method="post" class="ui small form" params="[tab: params.tab ]">
         <div class="three fields">
             <div class="field">

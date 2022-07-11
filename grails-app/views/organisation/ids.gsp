@@ -80,8 +80,7 @@
 
 %{--------------CUSTOMER IDENTIFIERS------------------------}%
         <g:if test="${params.tab == 'customerIdentifiers'}">
-            <laser:render template="/templates/filter/javascript" />
-            <ui:filter showFilterButton="true">
+            <ui:filter showFilterButton="true" addFilterJs="true">
                 <g:form controller="organisation" action="ids" class="ui small form" method="get">
                     <g:hiddenField name="tab" value="customerIdentifiers"/>
                     <g:hiddenField name="id" value="${orgInstance.id}"/>

@@ -40,8 +40,7 @@
 
 <ui:msg class="warning" header="${message(code: 'message.information')}" message="myinst.addressBook.visible"/>
 
-<laser:render template="/templates/filter/javascript"/>
-<ui:filter showFilterButton="true">
+<ui:filter showFilterButton="true" addFilterJs="true">
     <g:form action="addressbook" controller="organisation" method="get" params="[id: orgInstance.id]" class="ui small form">
         <div class="three fields">
             <div class="field">

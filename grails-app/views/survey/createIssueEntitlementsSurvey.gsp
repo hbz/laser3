@@ -23,8 +23,7 @@
 <ui:totalNumber total="${num_sub_rows}"/>
 </h2>
 
-<laser:render template="/templates/filter/javascript" />
-<ui:filter showFilterButton="true">
+<ui:filter showFilterButton="true" addFilterJs="true">
     <g:form action="createIssueEntitlementsSurvey" controller="survey" method="get" class="ui small form">
         <input type="hidden" name="isSiteReloaded" value="yes"/>
         <input type="hidden" name="id" value="${params.id}"/>

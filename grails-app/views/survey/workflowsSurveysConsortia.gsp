@@ -13,8 +13,7 @@
 
 <ui:messages data="${flash}"/>
 
-<laser:render template="/templates/filter/javascript"/>
-<ui:filter showFilterButton="true">
+<ui:filter showFilterButton="true" addFilterJs="true">
     <g:form action="workflowsSurveysConsortia" controller="survey" method="post" class="ui small form"
             params="[tab: params.tab]">
         <div class="four fields">

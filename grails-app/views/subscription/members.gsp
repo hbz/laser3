@@ -92,9 +92,8 @@
     <ui:anualRings object="${subscription}" controller="subscription" action="members" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
     <laser:render template="nav" />
-    <laser:render template="/templates/filter/javascript" />
 
-    <ui:filter showFilterButton="true">
+    <ui:filter showFilterButton="true" addFilterJs="true">
         <g:form action="members" controller="subscription" params="${[id:params.id]}" method="get" class="ui form">
             <laser:render template="/templates/filter/orgFilter"
                   model="[

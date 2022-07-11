@@ -47,15 +47,13 @@
 
 <ui:h1HeaderWithIcon message="menu.my.consortia" total="${consortiaCount}" floated="true" />
 
-<laser:render template="/templates/filter/javascript" />
-
 <ui:messages data="${flash}"/>
     <%
         List configShowFilter = [['name']]
         List configShowTable = ['sortname', 'name', 'mainContact', 'numberOfSubscriptions', 'numberOfSurveys']
     %>
 
-    <ui:filter showFilterButton="true">
+    <ui:filter showFilterButton="true" addFilterJs="true">
         <g:form action="currentConsortia" method="get" class="ui form">
             <laser:render template="/templates/filter/orgFilter"
                       model="[

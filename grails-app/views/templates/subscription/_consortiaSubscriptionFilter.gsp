@@ -1,8 +1,7 @@
 <%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.Org;de.laser.OrgRole;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
 <%--<laser:serviceInjection />--%>
 
-<laser:render template="/templates/filter/javascript" />
-<ui:filter showFilterButton="true">
+<ui:filter showFilterButton="true" addFilterJs="true">
     <g:form action="${actionName}" controller="${controllerName}" method="get" class="ui small form">
         <g:if test="${license}">
             <input type="hidden" name="id" value="${license.id}"/>

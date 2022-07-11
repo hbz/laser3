@@ -78,8 +78,7 @@
             </div>
         </g:if>
         <g:else>
-            <laser:render template="/templates/filter/javascript"/>
-            <ui:filter showFilterButton="true">
+            <ui:filter showFilterButton="true" addFilterJs="true">
                 <g:form action="stats" class="ui form" method="get">
                     <g:hiddenField name="tab" value="${params.tab}"/>
                     <g:hiddenField name="id" value="${subscription.id}"/>

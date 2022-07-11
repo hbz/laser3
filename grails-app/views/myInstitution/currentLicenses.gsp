@@ -43,9 +43,7 @@
 
   <ui:messages data="${flash}" />
 
-  <laser:render template="/templates/filter/javascript" />
-
-  <ui:filter showFilterButton="true" class="license-searches">
+  <ui:filter showFilterButton="true" addFilterJs="true" class="license-searches">
       <form class="ui form">
           <div class="four fields">
               <div class="field">

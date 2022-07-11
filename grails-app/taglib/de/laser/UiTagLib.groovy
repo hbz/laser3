@@ -399,7 +399,7 @@ class UiTagLib {
         }
     }
 
-    //<ui:filter showFilterButton="true|false" extended="true|false"> CONTENT <ui:filter>
+    //<ui:filter showFilterButton="true|false" addFilterJs="true" extended="true|false"> CONTENT <ui:filter>
 
     def filter = { attrs, body ->
 
@@ -466,6 +466,10 @@ class UiTagLib {
             out << body()
             out << '</div>'
         out << '</section>'
+
+        if (attrs.addFilterJs) {
+            out << render(template: '/templates/filter/js', model: [filterAjaxUri: "${controllerName}/${actionName}"])
+        }
     }
 
     def searchSegment = { attrs, body ->

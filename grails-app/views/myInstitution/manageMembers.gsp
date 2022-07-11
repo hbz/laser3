@@ -49,15 +49,13 @@
 
 <ui:h1HeaderWithIcon text="${title}" total="${membersCount}" floated="true" />
 
-<laser:render template="/templates/filter/javascript" />
-
 <ui:messages data="${flash}"/>
     <%
         List configShowFilter = [['name', 'identifier', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value'], ['subStatus', 'subValidOn'], ['subPerpetualAccess']]
         List configShowTable = ['sortname', 'name', 'status', 'mainContact', 'libraryType', 'legalInformation', 'numberOfSubscriptions', 'numberOfSurveys']
     %>
 
-    <ui:filter showFilterButton="true">
+    <ui:filter showFilterButton="true" addFilterJs="true">
         <g:form action="manageMembers" method="get" class="ui form">
             <laser:render template="/templates/filter/orgFilter"
                       model="[

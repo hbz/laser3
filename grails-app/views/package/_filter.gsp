@@ -1,5 +1,4 @@
-<laser:render template="/templates/filter/javascript" />
-<ui:filter showFilterButton="true">
+<ui:filter showFilterButton="true" addFilterJs="true">
     <g:form action="${actionName}" params="${params}" method="get" class="ui form">
         <input type="hidden" name="sort" value="${params.sort}">
         <input type="hidden" name="order" value="${params.order}">

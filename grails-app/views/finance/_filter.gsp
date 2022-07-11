@@ -8,8 +8,7 @@
 %>
 
     <%--normal ui:filter comes along with more functionality which conflicts with ajax dropdown initialisation, see ERMS-1420--%>
-    <laser:render template="/templates/filter/javascript" />
-    <ui:filter showFilterButton="true">
+    <ui:filter showFilterButton="true" addFilterJs="true">
         <%
             Map<String,Object> formUrl = [controller: 'myInstitution', action: 'finance']
             SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()

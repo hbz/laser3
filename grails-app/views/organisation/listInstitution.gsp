@@ -24,8 +24,7 @@
 
     <ui:messages data="${flash}" />
 
-    <laser:render template="/templates/filter/javascript" />
-    <ui:filter showFilterButton="true">
+    <ui:filter showFilterButton="true" addFilterJs="true">
         <g:form action="listInstitution" method="get" class="ui form">
             <laser:render template="/templates/filter/orgFilter"
                       model="[

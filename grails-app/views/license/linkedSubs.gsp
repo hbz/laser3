@@ -19,8 +19,7 @@
 
 <laser:render template="nav" />
 
-    <laser:render template="/templates/filter/javascript" />
-    <ui:filter showFilterButton="true">
+    <ui:filter showFilterButton="true" addFilterJs="true">
         <g:form action="linkedSubs" controller="license" params="${[id:params.id]}" method="get" class="ui form">
             <div class="three fields">
                 <div class="field">
