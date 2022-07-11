@@ -1,5 +1,5 @@
 <!-- A: templates/properties/_private -->
-%{-- To use, add the g:render custom_props inside a div with id=private-property-wrapper-xxx --}%
+%{-- To use, add the laser:render custom_props inside a div with id=private-property-wrapper-xxx --}%
 %{-- on head of container page, and on window load execute  --}%
 %{-- c3po.initProperties("<g:createLink controller='ajax' action='lookup'/>", "#private-property-wrapper-xxx"); --}%
 
