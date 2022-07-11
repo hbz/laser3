@@ -2,59 +2,59 @@
 
 <laser:htmlStart message="myinst.currentSubscriptions.label" serviceInjection="true" />
 
-        <semui:breadcrumbs>
-            <semui:crumb message="myinst.currentSubscriptions.label" class="active" />
-        </semui:breadcrumbs>
+        <ui:breadcrumbs>
+            <ui:crumb message="myinst.currentSubscriptions.label" class="active" />
+        </ui:breadcrumbs>
 
-        <semui:controlButtons>
-            <semui:exportDropdown>
-                <semui:exportDropdownItem>
+        <ui:controlButtons>
+            <ui:exportDropdown>
+                <ui:exportDropdownItem>
                     <a class="item" data-semui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
-                </semui:exportDropdownItem>
+                </ui:exportDropdownItem>
                 <g:if test="${filterSet || defaultSet}">
-                    <semui:exportDropdownItem>
+                    <ui:exportDropdownItem>
                         <g:link class="item js-open-confirm-modal"
                                 data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
                                 data-confirm-term-how="ok" controller="myInstitution" action="currentSubscriptions"
                                 params="${params+[exportXLS:true]}">
                             ${message(code:'default.button.exports.xls')}
                         </g:link>
-                    </semui:exportDropdownItem>
-                    <semui:exportDropdownItem>
+                    </ui:exportDropdownItem>
+                    <ui:exportDropdownItem>
                         <g:link class="item js-open-confirm-modal"
                                 data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
                                 data-confirm-term-how="ok" controller="myInstitution" action="currentSubscriptions"
                                 params="${params+[format:'csv']}">
                             ${message(code:'default.button.exports.csv')}
                         </g:link>
-                    </semui:exportDropdownItem>
+                    </ui:exportDropdownItem>
                 </g:if>
                 <g:else>
-                    <semui:exportDropdownItem>
+                    <ui:exportDropdownItem>
                         <g:link class="item" controller="myInstitution" action="currentSubscriptions" params="${params+[exportXLS:true]}">${message(code:'default.button.exports.xls')}</g:link>
-                    </semui:exportDropdownItem>
-                    <semui:exportDropdownItem>
+                    </ui:exportDropdownItem>
+                    <ui:exportDropdownItem>
                         <g:link class="item" controller="myInstitution" action="currentSubscriptions" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
-                    </semui:exportDropdownItem>
+                    </ui:exportDropdownItem>
                 </g:else>
-            </semui:exportDropdown>
+            </ui:exportDropdown>
 
             <g:if test="${accessService.checkPermX('ORG_INST,ORG_CONSORTIUM', 'ROLE_ADMIN')}">
                 <laser:render template="actions" />
             </g:if>
-        </semui:controlButtons>
+        </ui:controlButtons>
 
-    <semui:h1HeaderWithIcon message="myinst.currentSubscriptions.label" total="${num_sub_rows}" floated="true" />
+    <ui:h1HeaderWithIcon message="myinst.currentSubscriptions.label" total="${num_sub_rows}" floated="true" />
 
-    <semui:messages data="${flash}"/>
+    <ui:messages data="${flash}"/>
 
     <laser:render template="/templates/subscription/subscriptionFilter"/>
 
     <laser:render template="/templates/subscription/subscriptionTable"/>
 
-    <semui:debugInfo>
+    <ui:debugInfo>
         <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
-    </semui:debugInfo>
+    </ui:debugInfo>
 
     <laser:render template="export/individuallyExportModalSubs" model="[modalID: 'individuallyExportModal']" />
 

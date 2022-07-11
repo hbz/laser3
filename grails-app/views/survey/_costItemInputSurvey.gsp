@@ -138,10 +138,10 @@
 
 <div class="field ">
     <div class="two fields la-forms-grid">
-        <semui:datepicker label="financials.dateFrom" id="newStartDate" name="newStartDate" placeholder="default.date.label"
+        <ui:datepicker label="financials.dateFrom" id="newStartDate" name="newStartDate" placeholder="default.date.label"
                           value="${costItem?.startDate}"/>
 
-        <semui:datepicker label="financials.dateTo" id="newEndDate" name="newEndDate" placeholder="default.date.label"
+        <ui:datepicker label="financials.dateTo" id="newEndDate" name="newEndDate" placeholder="default.date.label"
                           value="${costItem?.endDate}"/>
     </div>
 

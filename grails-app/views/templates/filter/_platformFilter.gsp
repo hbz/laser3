@@ -1,6 +1,6 @@
 <%@ page import="de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.storage.RDStore" %>
 <laser:render template="/templates/filter/javascript" />
-<semui:filter showFilterButton="true">
+<ui:filter showFilterButton="true">
     <g:form controller="${controllerName}" action="${actionName}" method="get" class="ui form">
         <div class="three fields">
             <div class="field">
@@ -92,4 +92,4 @@
             </div>
         </div>
     </g:form>
-</semui:filter>
+</ui:filter>

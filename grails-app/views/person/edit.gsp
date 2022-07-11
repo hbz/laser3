@@ -3,11 +3,11 @@
 <g:set var="entityName" value="${message(code: 'person.label')}" />
 <laser:htmlStart text="${message(code:"default.edit.label", args:[entityName])}" />
 
-		<semui:h1HeaderWithIcon message="default.edit.label" args="[entityName]" />
+		<ui:h1HeaderWithIcon message="default.edit.label" args="[entityName]" />
 
-		<semui:messages data="${flash}" />
+		<ui:messages data="${flash}" />
 
-		<semui:errors bean="${personInstance}" />
+		<ui:errors bean="${personInstance}" />
 
 		<div class="ui grid">
 

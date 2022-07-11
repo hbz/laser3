@@ -2,12 +2,12 @@
 
 <laser:htmlStart text="Package Tipps LAS:eR and we:kb" />
 
-<semui:breadcrumbs>
-    <semui:crumb message="menu.admin" controller="admin" action="index" />
-    <semui:crumb text="Package Tipps LAS:eR and we:kb" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb message="menu.admin" controller="admin" action="index" />
+    <ui:crumb text="Package Tipps LAS:eR and we:kb" class="active"/>
+</ui:breadcrumbs>
 
-<semui:h1HeaderWithIcon text="Package Tipps LAS:eR and we:kb" />
+<ui:h1HeaderWithIcon text="Package Tipps LAS:eR and we:kb" />
 
 <div class="ui grid">
 
@@ -63,7 +63,7 @@
                 </table>
             </div>
 
-            <semui:paginate action="${actionName}" controller="${controllerName}" params="${params}"
+            <ui:paginate action="${actionName}" controller="${controllerName}" params="${params}"
                             next="${message(code: 'default.paginate.next')}"
                             prev="${message(code: 'default.paginate.prev')}"
                             max="${max}"

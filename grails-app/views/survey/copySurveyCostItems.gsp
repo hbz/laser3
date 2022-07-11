@@ -1,26 +1,26 @@
 <%@ page import="de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg;de.laser.finance.CostItem" %>
 <laser:htmlStart message="surveyInfo.copySurveyCostItems" serviceInjection="true" />
 
-<semui:breadcrumbs>
-    <semui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
+<ui:breadcrumbs>
+    <ui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
 
     <g:if test="${surveyInfo}">
-        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}"
+        <ui:crumb controller="survey" action="show" id="${surveyInfo.id}"
                      params="[surveyConfigID: surveyConfig.id]" text="${surveyInfo.name}"/>
     </g:if>
-    <semui:crumb message="surveyInfo.transferOverView" class="active"/>
-</semui:breadcrumbs>
+    <ui:crumb message="surveyInfo.transferOverView" class="active"/>
+</ui:breadcrumbs>
 
 
-<semui:h1HeaderWithIcon text="${surveyInfo.name}" type="Survey">
-<semui:surveyStatus object="${surveyInfo}"/>
-</semui:h1HeaderWithIcon>
+<ui:h1HeaderWithIcon text="${surveyInfo.name}" type="Survey">
+<ui:surveyStatus object="${surveyInfo}"/>
+</ui:h1HeaderWithIcon>
 
 <laser:render template="nav"/>
 
-<semui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
+<ui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 <br/>
 
@@ -188,7 +188,7 @@
     </h2>
 
 
-    <semui:form>
+    <ui:form>
         <div class="ui grid">
 
             <div class="row">
@@ -207,7 +207,7 @@
                             <br/>
                             <g:link controller="subscription" action="members"
                                     id="${parentSubscription.id}">${message(code: 'renewalEvaluation.orgsInSub')}</g:link>
-                            <semui:totalNumber total="${parentSubscription.getDerivedSubscribers().size()}"/>
+                            <ui:totalNumber total="${parentSubscription.getDerivedSubscribers().size()}"/>
                         </g:if>
                     </h3>
                 </div>
@@ -226,7 +226,7 @@
                             <br/>
                             <g:link controller="subscription" action="members"
                                     id="${parentSuccessorSubscription.id}">${message(code: 'renewalEvaluation.orgsInSub')}</g:link>
-                            <semui:totalNumber
+                            <ui:totalNumber
                                     total="${parentSuccessorSubscription.getDerivedSubscribers().size()}"/>
 
                         </g:if>
@@ -234,9 +234,9 @@
                 </div>
             </div>
         </div>
-    </semui:form>
+    </ui:form>
 
-    <semui:form>
+    <ui:form>
 
         <g:form action="proccessCopySurveyCostItems" controller="survey" id="${surveyInfo.id}"
                 params="[surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription?.id]"
@@ -492,7 +492,7 @@
                 </div>
             </div>
         </g:form>
-    </semui:form>
+    </ui:form>
     <laser:script file="${this.getGroovyPageFileName()}">
         $('#costItemsToggler').click(function () {
             if ($(this).prop('checked')) {

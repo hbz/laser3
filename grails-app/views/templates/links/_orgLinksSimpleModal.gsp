@@ -3,7 +3,7 @@
     <a role="button" class="ui button" data-semui="modal" href="#${tmplModalID}">${tmplButtonText}</a>
 </g:if>
 
-<semui:modal id="${tmplModalID}" text="${tmplText}" isEditModal="${editmode}">
+<ui:modal id="${tmplModalID}" text="${tmplText}" isEditModal="${editmode}">
     <g:form id="create_org_role_link_${tmplModalID}" class="ui form" url="[controller:'ajax', action:'addOrgRole']" method="post">
         <input type="hidden" name="parent" value="${parent}" />
         <input type="hidden" name="property" value="${property}" />
@@ -31,5 +31,5 @@
                 minCharacters: 1
             });
     </laser:script>
-</semui:modal>
+</ui:modal>
 

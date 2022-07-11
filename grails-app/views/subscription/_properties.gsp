@@ -6,7 +6,7 @@
 
 <%-- modal --%>
 
-<semui:modal id="propDefGroupBindings" message="propertyDefinitionGroup.config.label" hideSubmitButton="hideSubmitButton">
+<ui:modal id="propDefGroupBindings" message="propertyDefinitionGroup.config.label" hideSubmitButton="hideSubmitButton">
 
     <laser:render template="/templates/properties/groupBindings" model="${[
             propDefGroup: propDefGroup,
@@ -15,7 +15,7 @@
             availPropDefGroups: availPropDefGroups
     ]}" />
 
-</semui:modal>
+</ui:modal>
 
 <g:if test="${memberProperties}">%{-- check for content --}%
     <g:if test="${subscription._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL,CalculatedType.TYPE_ADMINISTRATIVE]}">
@@ -93,7 +93,7 @@
 
     <g:if test="${hiddenPropertiesMessages.size() > 0}">
         <div class="content">
-            <semui:msg class="info" header="" text="${hiddenPropertiesMessages.join('<br />')}" />
+            <ui:msg class="info" header="" text="${hiddenPropertiesMessages.join('<br />')}" />
         </div>
     </g:if>
 

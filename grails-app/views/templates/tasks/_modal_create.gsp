@@ -1,6 +1,6 @@
 <%@ page import="java.sql.Timestamp; org.springframework.context.i18n.LocaleContextHolder; de.laser.Org; de.laser.License; de.laser.Subscription; de.laser.Task; de.laser.storage.RDStore;de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.RefdataCategory" %>
 <laser:serviceInjection />
-<semui:modal id="modalCreateTask" message="task.create.new">
+<ui:modal id="modalCreateTask" message="task.create.new">
 
     <g:form class="ui form" id="create_task" url="[controller: 'task', action: 'create']" method="post">
         <g:if test="${controllerName != 'myInstitution' && controllerName != 'ajaxHtml'}">
@@ -142,7 +142,7 @@
                     />
                 </div>
 
-                <semui:datepicker class="wide eight" label="task.endDate.label" id="endDate" name="endDate"
+                <ui:datepicker class="wide eight" label="task.endDate.label" id="endDate" name="endDate"
                                   placeholder="default.date.label" value="${taskInstance?.endDate}" required=""
                                   bean="${taskInstance}"/>
 
@@ -365,4 +365,4 @@
         }
     </laser:script>
 
-</semui:modal>
+</ui:modal>

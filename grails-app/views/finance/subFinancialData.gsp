@@ -4,18 +4,18 @@
         <g:set var="own" value="${financialData.own}"/>
         <g:set var="cons" value="${financialData.cons}"/>
         <g:set var="subscr" value="${financialData.subscr}"/>
-        <semui:debugInfo>
+        <ui:debugInfo>
             <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
-        </semui:debugInfo>
-        <semui:breadcrumbs>
-            <%--<semui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg().getDesignation()}" />--%>
-            <semui:crumb controller="myInstitution" action="currentSubscriptions" text="${message(code:'myinst.currentSubscriptions.label')}" />
-            <semui:crumb class="active"  message="${subscription.name}" />
-        </semui:breadcrumbs>
-        <semui:controlButtons>
-            <semui:exportDropdown>
+        </ui:debugInfo>
+        <ui:breadcrumbs>
+            <%--<ui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg().getDesignation()}" />--%>
+            <ui:crumb controller="myInstitution" action="currentSubscriptions" text="${message(code:'myinst.currentSubscriptions.label')}" />
+            <ui:crumb class="active"  message="${subscription.name}" />
+        </ui:breadcrumbs>
+        <ui:controlButtons>
+            <ui:exportDropdown>
                 <g:if test="${filterSet}">
-                    <semui:exportDropdownItem>
+                    <ui:exportDropdownItem>
                         <g:link  class="item js-open-confirm-modal"
                                  data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
                                  data-confirm-term-how="ok"
@@ -23,11 +23,11 @@
                                  action="financialsExport"
                                  params="${params+[exportXLS:true,sub:subscription.id]}">${message(code:'default.button.exports.xls')}
                         </g:link>
-                    </semui:exportDropdownItem>
-                    <semui:exportDropdownItem>
+                    </ui:exportDropdownItem>
+                    <ui:exportDropdownItem>
                         <a class="item" data-semui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
-                    </semui:exportDropdownItem>
-                    <semui:exportDropdownItem>
+                    </ui:exportDropdownItem>
+                    <ui:exportDropdownItem>
                         <g:link class="item exportCSV js-open-confirm-modal"
                                  data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartialCSV')}"
                                  data-confirm-term-how="ok"
@@ -35,16 +35,16 @@
                                  action="financialsExport"
                                  params="${params+[format:'csv',sub:subscription.id]}">${message(code:'default.button.exports.csv')}
                         </g:link>
-                    </semui:exportDropdownItem>
+                    </ui:exportDropdownItem>
                 </g:if>
                 <g:else>
-                    <semui:exportDropdownItem>
+                    <ui:exportDropdownItem>
                         <g:link class="item" controller="finance" action="financialsExport" params="${params+[exportXLS:true,sub:subscription.id]}">${message(code:'default.button.exports.xls')}</g:link>
-                    </semui:exportDropdownItem>
-                    <semui:exportDropdownItem>
+                    </ui:exportDropdownItem>
+                    <ui:exportDropdownItem>
                         <a class="item" data-semui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
-                    </semui:exportDropdownItem>
-                    <semui:exportDropdownItem>
+                    </ui:exportDropdownItem>
+                    <ui:exportDropdownItem>
                         <g:link class="item exportCSV js-open-confirm-modal"
                                  data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportCSV')}"
                                  data-confirm-term-how="ok"
@@ -52,16 +52,16 @@
                                  action="financialsExport"
                                  params="${params+[format:'csv',sub:subscription.id]}">${message(code:'default.button.exports.csv')}
                         </g:link>
-                    </semui:exportDropdownItem>
+                    </ui:exportDropdownItem>
                 </g:else>
-            </semui:exportDropdown>
+            </ui:exportDropdown>
 
             <g:if test="${editable}">
-                <semui:actionsDropdown>
-                    <semui:actionsDropdownItem id="btnAddNewCostItem" message="financials.addNewCost" />
-                </semui:actionsDropdown>
+                <ui:actionsDropdown>
+                    <ui:actionsDropdownItem id="btnAddNewCostItem" message="financials.addNewCost" />
+                </ui:actionsDropdown>
             </g:if>
-        </semui:controlButtons>
+        </ui:controlButtons>
 
         <%
             List<GString> total = []
@@ -78,12 +78,12 @@
             }
         %>
 
-        <semui:h1HeaderWithIcon type="Subscription">
+        <ui:h1HeaderWithIcon type="Subscription">
             <laser:render template="/subscription/iconSubscriptionIsChild"/>
 
-            ${message(code:'subscription.details.financials.label')} ${message(code:'default.for')} ${subscription} <semui:totalNumber total="${total.join(' / ')}"/>
-        </semui:h1HeaderWithIcon>
-        <semui:anualRings mapping="subfinance" object="${subscription}" controller="finance" action="index" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+            ${message(code:'subscription.details.financials.label')} ${message(code:'default.for')} ${subscription} <ui:totalNumber total="${total.join(' / ')}"/>
+        </ui:h1HeaderWithIcon>
+        <ui:anualRings mapping="subfinance" object="${subscription}" controller="finance" action="index" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
         <laser:render template="/subscription/nav" model="${[subscription:subscription, params:(params << [id:subscription.id, showConsortiaFunctions:showConsortiaFunctions])]}"/>
 

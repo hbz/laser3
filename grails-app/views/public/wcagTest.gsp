@@ -8,9 +8,9 @@
         <laser:render template="templatesWCAGTest/mainNavigation" />
 
         <h2 class="ui dividing header">2. Brotkrumennavigation</h2>
-        <semui:breadcrumbs>
-            <semui:crumb message="myinst.currentSubscriptions.label"  />
-        </semui:breadcrumbs>
+        <ui:breadcrumbs>
+            <ui:crumb message="myinst.currentSubscriptions.label"  />
+        </ui:breadcrumbs>
 
         <h2 class="ui dividing header">3. Buttons</h2>
         <laser:render template="templatesWCAGTest/button" />

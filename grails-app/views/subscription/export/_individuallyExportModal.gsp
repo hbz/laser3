@@ -4,7 +4,7 @@
 <!-- _individuallyExportModal.gsp -->
 <g:set var="formFields" value="${exportClickMeService.getExportSubscriptionMembersFieldsForUI(subscription, institution)}"/>
 
-<semui:modal modalSize="large" id="${modalID}" text="Excel-Export" hideSubmitButton="true">
+<ui:modal modalSize="large" id="${modalID}" text="Excel-Export" hideSubmitButton="true">
 
     <g:form action="members" controller="subscription" params="${params+[id:params.id, exportClickMeExcel: true]}">
 
@@ -12,6 +12,6 @@
 
     </g:form>
 
-</semui:modal>
+</ui:modal>
 <!-- _individuallyExportModal.gsp -->
 

@@ -2,7 +2,7 @@
 
     <laser:render template="breadcrumb" model="${[ subscription:subscription, params:params ]}"/>
 
-    <semui:h1HeaderWithIcon text="${subscription.name}" />
+    <ui:h1HeaderWithIcon text="${subscription.name}" />
 
     <g:if test="${delResult.status != deletionService.RESULT_SUCCESS}">
         <laser:render template="nav" />
@@ -10,20 +10,20 @@
 
     <g:if test="${delResult}">
         <g:if test="${delResult.status == deletionService.RESULT_SUCCESS}">
-            <semui:msg class="positive" header="" message="deletion.success.msg" />
+            <ui:msg class="positive" header="" message="deletion.success.msg" />
             <g:link controller="myInstitution" action="currentSubscriptions" class="ui button">${message(code:'menu.my.subscriptions')}</g:link>
             <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
                 <g:link controller="subscription" action="members" id="${parentId}" class="ui button">${message(code:"subscription.details.consortiaMembers.label")}</g:link>
             </g:if>
         </g:if>
         <g:else>
-            <semui:msg class="info" header="" message="subscription.delete.info" />
+            <ui:msg class="info" header="" message="subscription.delete.info" />
 
             <g:if test="${delResult.status == deletionService.RESULT_BLOCKED}">
-                <semui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="deletion.blocked.msg.subscription" />
+                <ui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="deletion.blocked.msg.subscription" />
             </g:if>
             <g:if test="${delResult.status == deletionService.RESULT_ERROR}">
-                <semui:msg class="negative" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
+                <ui:msg class="negative" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
             </g:if>
 
             <g:link controller="myInstitution" action="currentSubscriptions" class="ui button">${message(code:'menu.my.subscriptions')}</g:link>

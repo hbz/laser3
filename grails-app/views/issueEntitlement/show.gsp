@@ -3,22 +3,22 @@
 <g:set var="entityName" value="${message(code: 'issueEntitlement.label')}"/>
 <laser:htmlStart text="${message(code:"default.show.label", args:[entityName])}" />
 
-<semui:breadcrumbs>
+<ui:breadcrumbs>
     <g:if test="${issueEntitlementInstance.subscription.subscriber}">
-        <semui:crumb controller="myInstitution" action="currentSubscriptions"
+        <ui:crumb controller="myInstitution" action="currentSubscriptions"
                      params="${[shortcode: issueEntitlementInstance.subscription.subscriber.shortcode]}"
                      text="${issueEntitlementInstance.subscription.subscriber.name} - ${message(code: 'subscription.plural')}"/>
     </g:if>
-    <semui:crumb controller="subscription" action="index" id="${issueEntitlementInstance.subscription.id}"
+    <ui:crumb controller="subscription" action="index" id="${issueEntitlementInstance.subscription.id}"
                  text="${issueEntitlementInstance.subscription.name}"/>
-    <semui:crumb class="active" id="${issueEntitlementInstance.id}"
+    <ui:crumb class="active" id="${issueEntitlementInstance.id}"
                  text="${issueEntitlementInstance.name}"/>
-</semui:breadcrumbs>
+</ui:breadcrumbs>
 
-<semui:h1HeaderWithIcon message="issueEntitlement.for_title.label" args="[issueEntitlementInstance.name, issueEntitlementInstance.subscription.name]"
+<ui:h1HeaderWithIcon message="issueEntitlement.for_title.label" args="[issueEntitlementInstance.name, issueEntitlementInstance.subscription.name]"
                         type="${issueEntitlementInstance.tipp.titleType}" />
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 <laser:render template="/templates/meta/identifier" model="${[object: issueEntitlementInstance, editable: false]}"/>
 
@@ -89,7 +89,7 @@
                         <i class="grey calendar icon la-popup-tooltip la-delay"
                            data-content="${message(code: 'subscription.details.access_start')}"></i>
                         <g:if test="${editable}">
-                            <semui:xEditable owner="${issueEntitlementInstance}" type="date"
+                            <ui:xEditable owner="${issueEntitlementInstance}" type="date"
                                              field="accessStartDate"/>
                             <i class="grey question circle icon la-popup-tooltip la-delay"
                                data-content="${message(code: 'subscription.details.access_start.note')}"></i>
@@ -104,7 +104,7 @@
                         <i class="grey calendar icon la-popup-tooltip la-delay"
                            data-content="${message(code: 'subscription.details.access_end')}"></i>
                         <g:if test="${editable}">
-                            <semui:xEditable owner="${issueEntitlementInstance}" type="date" field="accessEndDate"/>
+                            <ui:xEditable owner="${issueEntitlementInstance}" type="date" field="accessEndDate"/>
                             <i class="grey question circle icon la-popup-tooltip la-delay"
                                data-content="${message(code: 'subscription.details.access_end.note')}"></i>
                         </g:if>
@@ -129,20 +129,20 @@
                                         <div class="content">
                                             <div class="la-card-column">
                                                 <g:message code="tipp.price.listPrice"/>:
-                                                <semui:xEditable field="listPrice"
-                                                                 owner="${priceItem}"/> <semui:xEditableRefData
+                                                <ui:xEditable field="listPrice"
+                                                                 owner="${priceItem}"/> <ui:xEditableRefData
                                                         field="listCurrency" owner="${priceItem}" config="Currency"/>
 
                                                 <br/>
-                                                <g:message code="tipp.price.localPrice"/>: <semui:xEditable
+                                                <g:message code="tipp.price.localPrice"/>: <ui:xEditable
                                                         field="localPrice"
-                                                        owner="${priceItem}"/> <semui:xEditableRefData
+                                                        owner="${priceItem}"/> <ui:xEditableRefData
                                                         field="localCurrency" owner="${priceItem}" config="Currency"/>
                                                 <%--<br/>
-                                                (<g:message code="tipp.price.startDate"/> <semui:xEditable field="startDate"
+                                                (<g:message code="tipp.price.startDate"/> <ui:xEditable field="startDate"
                                                                                                           type="date"
                                                                                                           owner="${priceItem}"/>-
-                                                <g:message code="tipp.price.endDate"/> <semui:xEditable field="endDate"
+                                                <g:message code="tipp.price.endDate"/> <ui:xEditable field="endDate"
                                                                                                        type="date"
                                                                                                        owner="${priceItem}"/>)--%>
                                             </div>
@@ -289,7 +289,7 @@
         </div>
 
         <div class="content">
-            <semui:filter>
+            <ui:filter>
                 <g:form action="show" params="${params}" method="get" class="ui form">
                     <input type="hidden" name="sort" value="${params.sort}">
                     <input type="hidden" name="order" value="${params.order}">
@@ -301,13 +301,13 @@
                         </div>
 
                         <div class="field">
-                            <semui:datepicker label="default.startsBefore.label" id="startsBefore"
+                            <ui:datepicker label="default.startsBefore.label" id="startsBefore"
                                               name="startsBefore"
                                               value="${params.startsBefore}"/>
                         </div>
 
                         <div class="field">
-                            <semui:datepicker label="default.endsAfter.label" id="endsAfter" name="endsAfter"
+                            <ui:datepicker label="default.endsAfter.label" id="endsAfter" name="endsAfter"
                                               value="${params.endsAfter}"/>
                         </div>
                     </div>
@@ -318,7 +318,7 @@
                     </div>
 
                 </g:form>
-            </semui:filter>
+            </ui:filter>
 
             <table class="ui celled la-js-responsive-table la-table table">
                 <thead>

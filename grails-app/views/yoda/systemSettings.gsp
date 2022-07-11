@@ -1,12 +1,12 @@
 <%@ page import="de.laser.config.ConfigMapper; de.laser.system.SystemSetting; de.laser.jobs.HeartbeatJob" %>
 <laser:htmlStart message="menu.yoda.systemSettings" />
 
-<semui:breadcrumbs>
-    <semui:crumb message="menu.yoda" controller="yoda" action="index"/>
-    <semui:crumb message="menu.yoda.systemSettings" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb message="menu.yoda" controller="yoda" action="index"/>
+    <ui:crumb message="menu.yoda.systemSettings" class="active"/>
+</ui:breadcrumbs>
 
-    <semui:h1HeaderWithIcon message="menu.yoda.systemSettings" />
+    <ui:h1HeaderWithIcon message="menu.yoda.systemSettings" />
 
     <g:set var="mailConfigDisabled" value="${ConfigMapper.getGrailsMailDisabled()}" />
     <g:set var="maintenanceModeEnabled" value="${SystemSetting.findByName('MaintenanceMode').value == 'true'}" />
@@ -78,7 +78,7 @@
                         <g:link controller="yoda" action="toggleBoolSetting" params="${[setting: s.name]}">${s.value}</g:link>
                     </g:if>
                     <g:else>
-                        <semui:xEditable owner="${s}" field="value" overwriteEditable="${true}"/>
+                        <ui:xEditable owner="${s}" field="value" overwriteEditable="${true}"/>
                     </g:else>
                 </td>
                 <td>

@@ -28,11 +28,11 @@
 			
 			<div class="span9">
 
-				<semui:h1HeaderWithIcon message="default.create.label" args="[entityName]" />
+				<ui:h1HeaderWithIcon message="default.create.label" args="[entityName]" />
 
-				<semui:messages data="${flash}" />
+				<ui:messages data="${flash}" />
 
-				<semui:errors bean="${addressInstance}" />
+				<ui:errors bean="${addressInstance}" />
 
 					<g:form class="ui form" action="create" >
 						<fieldset>

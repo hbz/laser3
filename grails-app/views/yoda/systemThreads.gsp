@@ -1,12 +1,12 @@
 <%@ page import="java.lang.management.ManagementFactory" %>
 <laser:htmlStart message="menu.yoda.systemThreads" serviceInjection="true"/>
 
-    <semui:breadcrumbs>
-        <semui:crumb message="menu.yoda" controller="yoda" action="index"/>
-        <semui:crumb message="menu.yoda.systemThreads" class="active"/>
-    </semui:breadcrumbs>
+    <ui:breadcrumbs>
+        <ui:crumb message="menu.yoda" controller="yoda" action="index"/>
+        <ui:crumb message="menu.yoda.systemThreads" class="active"/>
+    </ui:breadcrumbs>
 
-    <semui:h1HeaderWithIcon message="menu.yoda.systemThreads" />
+    <ui:h1HeaderWithIcon message="menu.yoda.systemThreads" />
 
     <g:set var="threads" value="${Thread.getAllStackTraces().keySet().sort{ it.id }}" />
     <g:set var="tmxBean" value="${ManagementFactory.getThreadMXBean()}" />

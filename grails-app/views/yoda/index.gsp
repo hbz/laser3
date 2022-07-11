@@ -2,11 +2,11 @@
 
 <laser:htmlStart text="${message(code:'menu.yoda')} ${message(code:'default.dashboard')}" serviceInjection="true" />
 
-    <semui:breadcrumbs>
-        <semui:crumb message="menu.yoda" class="active"/>
-    </semui:breadcrumbs>
+    <ui:breadcrumbs>
+        <ui:crumb message="menu.yoda" class="active"/>
+    </ui:breadcrumbs>
 
-    <semui:h1HeaderWithIcon message="menu.yoda" type="yoda" />
+    <ui:h1HeaderWithIcon message="menu.yoda" type="yoda" />
 
     <h2 class="ui header">&nbsp;</h2>
 
@@ -148,7 +148,7 @@
 </div>
 
 
-    <semui:messages data="${flash}" />
+    <ui:messages data="${flash}" />
 
     <%--
     <p>TODO: New Errors</p>

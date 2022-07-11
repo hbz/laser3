@@ -2,20 +2,20 @@
 
 <laser:htmlStart message="license.new" serviceInjection="true"/>
 
-    <semui:breadcrumbs>
-        <semui:crumb controller="myInstitution" action="currentLicenses" message="license.current"/>
-        <semui:crumb message="license.new" class="active"/>
-    </semui:breadcrumbs>
+    <ui:breadcrumbs>
+        <ui:crumb controller="myInstitution" action="currentLicenses" message="license.current"/>
+        <ui:crumb message="license.new" class="active"/>
+    </ui:breadcrumbs>
 
-    <semui:controlButtons>
+    <ui:controlButtons>
         <laser:render template="actions"/>
-    </semui:controlButtons>
+    </ui:controlButtons>
 
-    <semui:h1HeaderWithIcon message="license.new" />
+    <ui:h1HeaderWithIcon message="license.new" />
 
-    <semui:messages data="${flash}"/>
+    <ui:messages data="${flash}"/>
 
-    <semui:form>
+    <ui:form>
         <g:form action="processEmptyLicense" controller="myInstitution" method="post" class="ui form newLicence">
             <g:if test="${subInstance}">
                 <g:hiddenField id="sub_id_${subInstance.id}" name="sub" value="${subInstance.id}"/>
@@ -33,9 +33,9 @@
             </div>
 
             <div class="two fields">
-                <semui:datepicker label="license.startDate.label" id="licenseStartDate" name="licenseStartDate" value="${params.licenseStartDate?:defaultStartYear}" />
+                <ui:datepicker label="license.startDate.label" id="licenseStartDate" name="licenseStartDate" value="${params.licenseStartDate?:defaultStartYear}" />
 
-                <semui:datepicker label="license.endDate.label" id="licenseEndDate" name="licenseEndDate" value="${params.licenseEndDate?:defaultEndYear}"/>
+                <ui:datepicker label="license.endDate.label" id="licenseEndDate" name="licenseEndDate" value="${params.licenseEndDate?:defaultEndYear}"/>
             </div>
 
             <div class="field required">
@@ -68,7 +68,7 @@
             <input type="button" class="ui button js-click-control" onclick="JSPC.helper.goBack();" value="${message(code:'default.button.cancel.label')}" />
 
         </g:form>
-    </semui:form>
+    </ui:form>
 
 <laser:script file="${this.getGroovyPageFileName()}">
     $('.license-results input[type="radio"]').click(function () {

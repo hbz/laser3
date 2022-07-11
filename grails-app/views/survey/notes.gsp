@@ -3,20 +3,20 @@
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
 
-<semui:controlButtons>
+<ui:controlButtons>
     <laser:render template="actions"/>
-</semui:controlButtons>
+</ui:controlButtons>
 
-<semui:h1HeaderWithIcon type="Survey">
-<semui:xEditable owner="${surveyInfo}" field="name"
+<ui:h1HeaderWithIcon type="Survey">
+<ui:xEditable owner="${surveyInfo}" field="name"
                  overwriteEditable="${surveyInfo.isSubscriptionSurvey ? false : editable}"/>
-</semui:h1HeaderWithIcon>
-<semui:surveyStatusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="show"/>
+</ui:h1HeaderWithIcon>
+<ui:surveyStatusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="show"/>
 
 
 <laser:render template="nav"/>
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 
 <br/>

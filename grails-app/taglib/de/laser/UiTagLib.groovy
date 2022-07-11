@@ -21,7 +21,7 @@ import java.text.SimpleDateFormat
 
 // Semantic UI
 
-class SemuiTagLib {
+class UiTagLib {
 
     AuditService auditService
     CodecLookup codecLookup
@@ -32,7 +32,7 @@ class SemuiTagLib {
     TagLibraryLookup gspTagLibraryLookup
     YodaService yodaService
 
-    static namespace = "semui"
+    static namespace = 'ui'
 
     // <semui:h1HeaderWithIcon text="${text}" message="18n.token" args="[key:value]" type="${headerTitleIconType}" total="${totalNumber}" floated="true">
     //    content

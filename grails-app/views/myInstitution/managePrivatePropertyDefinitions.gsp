@@ -4,24 +4,24 @@
 
         <g:set var="entityName" value="${message(code: 'org.label')}" />
 
-    <semui:breadcrumbs>
-        <semui:crumb message="menu.institutions.manage_props" class="active" />
-    </semui:breadcrumbs>
+    <ui:breadcrumbs>
+        <ui:crumb message="menu.institutions.manage_props" class="active" />
+    </ui:breadcrumbs>
 
-    <semui:controlButtons>
-        <semui:exportDropdown>
-            <semui:exportDropdownItem>
+    <ui:controlButtons>
+        <ui:exportDropdown>
+            <ui:exportDropdownItem>
                 <g:link class="item" action="${actionName}" params="[cmd: 'exportXLS']">${message(code: 'default.button.export.xls')}</g:link>
-            </semui:exportDropdownItem>
-        </semui:exportDropdown>
+            </ui:exportDropdownItem>
+        </ui:exportDropdown>
         <laser:render template="actions"/>
-    </semui:controlButtons>
+    </ui:controlButtons>
 
-    <semui:h1HeaderWithIcon message="menu.institutions.manage_props" />
+    <ui:h1HeaderWithIcon message="menu.institutions.manage_props" />
 
     <laser:render template="nav" />
 
-    <semui:messages data="${flash}" />
+    <ui:messages data="${flash}" />
 
     <g:if test="${propertyDefinitions}">
 
@@ -73,10 +73,10 @@
                                             </g:if>
                                         </td>
                                         <td>
-                                            <semui:xEditable owner="${pd}" field="name_${languageSuffix}" />
+                                            <ui:xEditable owner="${pd}" field="name_${languageSuffix}" />
                                         </td>
                                         <td>
-                                            <semui:xEditable owner="${pd}" field="expl_${languageSuffix}" type="textarea" />
+                                            <ui:xEditable owner="${pd}" field="expl_${languageSuffix}" type="textarea" />
                                         </td>
                                         <td>
                                             ${PropertyDefinition.getLocalizedValue(pd.type)}
@@ -189,7 +189,7 @@
 
     <laser:render template="/myInstitution/replacePropertyDefinition" model="[action: actionName]"/>
 
-    <semui:modal id="addPropertyDefinitionModal" message="propertyDefinition.create_new.label">
+    <ui:modal id="addPropertyDefinitionModal" message="propertyDefinition.create_new.label">
 
         <g:form class="ui form" action="managePrivatePropertyDefinitions" >
             <g:field type="hidden" name="cmd" value="add" />
@@ -276,7 +276,7 @@
             </div>
 
         </g:form>
-    </semui:modal>
+    </ui:modal>
 
     <laser:script file="${this.getGroovyPageFileName()}">
 

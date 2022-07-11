@@ -3,18 +3,18 @@
         <g:set var="own" value="${financialData.own}"/>
         <g:set var="cons" value="${financialData.cons}"/>
         <g:set var="subscr" value="${financialData.subscr}"/>
-        <semui:debugInfo>
+        <ui:debugInfo>
             <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
-        </semui:debugInfo>
-        <semui:breadcrumbs>
-            <%--<semui:crumb controller="myInstitution" action="dashboard" text="${institution.name}" />--%>
-            <semui:crumb class="active" text="${message(code:'subscription.details.financials.label')}" />
-        </semui:breadcrumbs>
+        </ui:debugInfo>
+        <ui:breadcrumbs>
+            <%--<ui:crumb controller="myInstitution" action="dashboard" text="${institution.name}" />--%>
+            <ui:crumb class="active" text="${message(code:'subscription.details.financials.label')}" />
+        </ui:breadcrumbs>
 
-        <semui:controlButtons>
-            <semui:exportDropdown>
+        <ui:controlButtons>
+            <ui:exportDropdown>
                 <g:if test="${filterSet}">
-                    <semui:exportDropdownItem>
+                    <ui:exportDropdownItem>
                         <g:link  class="item js-open-confirm-modal"
                                  data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
                                  data-confirm-term-how="ok"
@@ -22,11 +22,11 @@
                                  action="financialsExport"
                                  params="${params+[exportXLS:true]}">${message(code:'default.button.exports.xls')}
                         </g:link>
-                    </semui:exportDropdownItem>
-                    <semui:exportDropdownItem>
+                    </ui:exportDropdownItem>
+                    <ui:exportDropdownItem>
                         <a class="item" data-semui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
-                    </semui:exportDropdownItem>
-                    <semui:exportDropdownItem>
+                    </ui:exportDropdownItem>
+                    <ui:exportDropdownItem>
                         <g:link class="item exportCSV js-open-confirm-modal"
                                  data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartialCSV')}"
                                  data-confirm-term-how="ok"
@@ -34,16 +34,16 @@
                                  action="financialsExport"
                                  params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}
                         </g:link>
-                    </semui:exportDropdownItem>
+                    </ui:exportDropdownItem>
                 </g:if>
                 <g:else>
-                    <semui:exportDropdownItem>
+                    <ui:exportDropdownItem>
                         <g:link class="item" controller="finance" action="financialsExport" params="${params+[exportXLS:true]}">${message(code:'default.button.exports.xls')}</g:link>
-                    </semui:exportDropdownItem>
-                    <semui:exportDropdownItem>
+                    </ui:exportDropdownItem>
+                    <ui:exportDropdownItem>
                         <a class="item" data-semui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
-                    </semui:exportDropdownItem>
-                    <semui:exportDropdownItem>
+                    </ui:exportDropdownItem>
+                    <ui:exportDropdownItem>
                         <g:link class="item exportCSV js-open-confirm-modal"
                                  data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportCSV')}"
                                  data-confirm-term-how="ok"
@@ -51,18 +51,18 @@
                                  action="financialsExport"
                                  params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}
                         </g:link>
-                    </semui:exportDropdownItem>
+                    </ui:exportDropdownItem>
                 </g:else>
-            </semui:exportDropdown>
+            </ui:exportDropdown>
 
             <g:if test="${editable}">
-                <semui:actionsDropdown>
-                    <semui:actionsDropdownItem id="btnAddNewCostItem" message="financials.addNewCost" />
-                <%--<semui:actionsDropdownItemDisabled message="financials.action.financeImport" />--%>
-                    <semui:actionsDropdownItem controller="myInstitution" action="financeImport" message="financials.action.financeImport" />
-                </semui:actionsDropdown>
+                <ui:actionsDropdown>
+                    <ui:actionsDropdownItem id="btnAddNewCostItem" message="financials.addNewCost" />
+                <%--<ui:actionsDropdownItemDisabled message="financials.action.financeImport" />--%>
+                    <ui:actionsDropdownItem controller="myInstitution" action="financeImport" message="financials.action.financeImport" />
+                </ui:actionsDropdown>
             </g:if>
-        </semui:controlButtons>
+        </ui:controlButtons>
 
         <%
             List<GString> total = []
@@ -78,7 +78,7 @@
             }
         %>
 
-        <semui:h1HeaderWithIcon message="subscription.details.financials.label" total="${total.join(' / ')}" floated="true" />
+        <ui:h1HeaderWithIcon message="subscription.details.financials.label" total="${total.join(' / ')}" floated="true" />
 
         <laser:render template="result" model="[own:own,cons:cons,subscr:subscr,showView:showView,filterPresets:filterPresets,ciTitles:ciTitles]" />
 

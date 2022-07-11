@@ -1,11 +1,11 @@
 <%@ page import="de.laser.storage.RDStore" %>
-<semui:breadcrumbs>
+<ui:breadcrumbs>
     <g:if test="${(RDStore.OT_PROVIDER.id in orgInstance.getAllOrgTypeIds())}">
-        <semui:crumb controller="organisation" action="show" id="${orgInstance.id}" text="${orgInstance.name}" />
-        <semui:crumb message="" class="active"/>
+        <ui:crumb controller="organisation" action="show" id="${orgInstance.id}" text="${orgInstance.name}" />
+        <ui:crumb message="" class="active"/>
     </g:if>
     <g:else>
-        <semui:crumb controller="organisation" action="show" id="${orgInstance.id}" text="${orgInstance.name}" />
-        <semui:crumb message="menu.institutions.addressbook" class="active"/>
+        <ui:crumb controller="organisation" action="show" id="${orgInstance.id}" text="${orgInstance.name}" />
+        <ui:crumb message="menu.institutions.addressbook" class="active"/>
     </g:else>
-</semui:breadcrumbs>
+</ui:breadcrumbs>

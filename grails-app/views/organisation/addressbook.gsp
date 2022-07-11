@@ -9,8 +9,8 @@
 
 <laser:render template="breadcrumb" model="${[orgInstance: orgInstance, params: params]}"/>
 
-<semui:controlButtons>
-    <semui:actionsDropdown>
+<ui:controlButtons>
+    <ui:actionsDropdown>
     <g:if test="${editable}">
         <g:if test="${(institution.getCustomerType() == 'ORG_CONSORTIUM') && !isProviderOrAgency}">
             <a href="#createPersonModal" class="item" data-semui="modal"
@@ -24,24 +24,24 @@
         </g:if>
     </g:if>
 
-        <semui:actionsDropdownItem notActive="true" data-semui="modal" href="#copyFilteredEmailAddresses_ajaxModal"
+        <ui:actionsDropdownItem notActive="true" data-semui="modal" href="#copyFilteredEmailAddresses_ajaxModal"
                                    message="menu.institutions.copy_emailaddresses.button"/>
-    </semui:actionsDropdown>
-</semui:controlButtons>
+    </ui:actionsDropdown>
+</ui:controlButtons>
 
 <laser:render template="/templates/copyFilteredEmailAddresses"
           model="[emailAddresses: emailAddresses]"/>
 
-<semui:h1HeaderWithIcon text="${orgInstance.name} - ${message(code: 'menu.institutions.myAddressbook')}" />
+<ui:h1HeaderWithIcon text="${orgInstance.name} - ${message(code: 'menu.institutions.myAddressbook')}" />
 
 <laser:render template="nav" model="${[orgInstance: orgInstance]}"/>
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
-<semui:msg class="warning" header="${message(code: 'message.information')}" message="myinst.addressBook.visible"/>
+<ui:msg class="warning" header="${message(code: 'message.information')}" message="myinst.addressBook.visible"/>
 
 <laser:render template="/templates/filter/javascript"/>
-<semui:filter showFilterButton="true">
+<ui:filter showFilterButton="true">
     <g:form action="addressbook" controller="organisation" method="get" params="[id: orgInstance.id]" class="ui small form">
         <div class="three fields">
             <div class="field">
@@ -89,7 +89,7 @@
             <input type="submit" class="ui secondary button" value="${message(code: 'default.button.filter.label')}">
         </div>
     </g:form>
-</semui:filter>
+</ui:filter>
 
 <g:if test="${visiblePersons}">
     <laser:render template="/templates/cpa/person_table" model="${[
@@ -100,7 +100,7 @@
             tmplConfigShow: ['lineNumber', 'name', 'function', 'position',  'showContacts', 'showAddresses']
     ]}"/>
 
-    <semui:paginate action="addressbook" controller="myInstitution" params="${params}"
+    <ui:paginate action="addressbook" controller="myInstitution" params="${params}"
                     next="${message(code: 'default.paginate.next')}"
                     prev="${message(code: 'default.paginate.prev')}"
                     max="${max}"

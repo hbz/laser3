@@ -1,7 +1,7 @@
 <%@ page import="de.laser.Subscription; de.laser.Person; de.laser.survey.SurveyConfig; de.laser.SubscriptionsQueryService; java.text.SimpleDateFormat; de.laser.storage.RDStore; de.laser.FormService" %>
 <laser:serviceInjection/>
 
-<semui:form>
+<ui:form>
     <laser:render template="/templates/copyElements/selectSourceAndTargetObject" model="[
             sourceObject          : sourceObject,
             targetObject          : targetObject,
@@ -203,7 +203,7 @@
             </tbody>
         </table>
     </g:form>
-</semui:form>
+</ui:form>
 
 <laser:script file="${this.getGroovyPageFileName()}">
         $("#firstTable .titleCell").each(function(k) {

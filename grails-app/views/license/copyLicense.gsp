@@ -1,18 +1,18 @@
 <%@ page import="de.laser.CopyElementsService;" %>
 <laser:htmlStart message="myinst.copyLicense" serviceInjection="true"/>
 
-<semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="currentLicenses" message="license.current" />
+<ui:breadcrumbs>
+    <ui:crumb controller="myInstitution" action="currentLicenses" message="license.current" />
 
     <g:if test="${sourceObject}">
-        <semui:crumb action="show" controller="license" id="${sourceObject.id}" text="${sourceObject.reference}" />
-        <semui:crumb class="active" message="myinst.copyLicense" />
+        <ui:crumb action="show" controller="license" id="${sourceObject.id}" text="${sourceObject.reference}" />
+        <ui:crumb class="active" message="myinst.copyLicense" />
     </g:if>
-</semui:breadcrumbs>
+</ui:breadcrumbs>
 
-<semui:h1HeaderWithIcon text="${message(code: 'myinst.copyLicense')}: ${sourceObject.reference}" />
+<ui:h1HeaderWithIcon text="${message(code: 'myinst.copyLicense')}: ${sourceObject.reference}" />
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 
 <% Map params = [:]

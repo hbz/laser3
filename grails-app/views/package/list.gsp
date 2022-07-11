@@ -3,20 +3,20 @@
 
     <g:set var="entityName" value="${message(code: 'package.label')}" />
 
-  <semui:breadcrumbs>
-      <semui:crumb message="myinst.packages" class="active"/>
-  </semui:breadcrumbs>
+  <ui:breadcrumbs>
+      <ui:crumb message="myinst.packages" class="active"/>
+  </ui:breadcrumbs>
 
-  <semui:controlButtons>
+  <ui:controlButtons>
       <laser:render template="actions"/>
-  </semui:controlButtons>
+  </ui:controlButtons>
 
-    <semui:h1HeaderWithIcon message="myinst.packages" total="${packageInstanceTotal}" floated="true" />
+    <ui:h1HeaderWithIcon message="myinst.packages" total="${packageInstanceTotal}" floated="true" />
 
-    <semui:messages data="${flash}" />
+    <ui:messages data="${flash}" />
 
   <laser:render template="/templates/filter/javascript" />
-  <semui:filter showFilterButton="true">
+  <ui:filter showFilterButton="true">
           <g:form action="list" method="get" class="ui form">
 
               <div class="field">
@@ -25,13 +25,13 @@
               </div>
 
               <div class="four fields">
-                  <semui:datepicker label="package.search.updated_after" id="updateStartDate" name="updateStartDate" value="${params.updateStartDate}" />
+                  <ui:datepicker label="package.search.updated_after" id="updateStartDate" name="updateStartDate" value="${params.updateStartDate}" />
 
-                  <semui:datepicker label="package.search.created_after" id="createStartDate" name="createStartDate" value="${params.createStartDate}" />
+                  <ui:datepicker label="package.search.created_after" id="createStartDate" name="createStartDate" value="${params.createStartDate}" />
 
-                  <semui:datepicker label="package.search.updated_before" id="updateEndDate" name="updateEndDate" value="${params.updateEndDate}" />
+                  <ui:datepicker label="package.search.updated_before" id="updateEndDate" name="updateEndDate" value="${params.updateEndDate}" />
 
-                  <semui:datepicker label="package.search.created_before" id="createEndDate" name="createEndDate" value="${params.createEndDate}" />
+                  <ui:datepicker label="package.search.created_before" id="createEndDate" name="createEndDate" value="${params.createEndDate}" />
               </div>
 
 
@@ -41,7 +41,7 @@
               </div>
 
           </g:form>
-    </semui:filter>
+    </ui:filter>
 
         
         <table class="ui sortable celled la-js-responsive-table la-table table">
@@ -75,6 +75,6 @@
             </tbody>
         </table>
 
-        <semui:paginate action="list" controller="package" params="${params}" next="Next" prev="Prev" max="${max}" total="${packageInstanceTotal}" />
+        <ui:paginate action="list" controller="package" params="${params}" next="Next" prev="Prev" max="${max}" total="${packageInstanceTotal}" />
 
 <laser:htmlEnd />

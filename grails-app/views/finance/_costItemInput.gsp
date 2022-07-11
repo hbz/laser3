@@ -328,21 +328,21 @@
         <div class="three fields">
             <fieldset class="field la-modal-fieldset-no-margin la-forms-grid">
                 <div class="two fields">
-                    <semui:datepicker label="financials.datePaid" name="newDatePaid" id="newDatePaid_${idSuffix}" placeholder="financials.datePaid" value="${costItem?.datePaid}" />
+                    <ui:datepicker label="financials.datePaid" name="newDatePaid" id="newDatePaid_${idSuffix}" placeholder="financials.datePaid" value="${costItem?.datePaid}" />
 
                     <%-- to restrict upon year: https://jsbin.com/ruqakehefa/1/edit?html,js,output , cf. example 8! --%>
-                    <semui:datepicker label="financials.financialYear" name="newFinancialYear" id="newFinancialYear_${idSuffix}" placeholder="financials.financialYear" value="${costItem?.financialYear}" />
+                    <ui:datepicker label="financials.financialYear" name="newFinancialYear" id="newFinancialYear_${idSuffix}" placeholder="financials.financialYear" value="${costItem?.financialYear}" />
                 </div>
                 <div class="two fields">
-                    <semui:datepicker label="financials.dateFrom" name="newStartDate" id="newStartDate_${idSuffix}" placeholder="default.date.label" value="${costItem?.startDate}" />
+                    <ui:datepicker label="financials.dateFrom" name="newStartDate" id="newStartDate_${idSuffix}" placeholder="default.date.label" value="${costItem?.startDate}" />
 
-                    <semui:datepicker label="financials.dateTo" name="newEndDate" id="newEndDate_${idSuffix}" placeholder="default.date.label" value="${costItem?.endDate}" />
+                    <ui:datepicker label="financials.dateTo" name="newEndDate" id="newEndDate_${idSuffix}" placeholder="default.date.label" value="${costItem?.endDate}" />
                 </div>
             </fieldset> <!-- 1/3 field -->
 
             <fieldset class="field la-modal-fieldset-margin la-forms-grid">
                 <div class="field la-more-margin">
-                    <semui:datepicker label="financials.invoiceDate" name="newInvoiceDate" id="newInvoiceDate_${idSuffix}" placeholder="financials.invoiceDate" value="${costItem?.invoiceDate}" />
+                    <ui:datepicker label="financials.invoiceDate" name="newInvoiceDate" id="newInvoiceDate_${idSuffix}" placeholder="financials.invoiceDate" value="${costItem?.invoiceDate}" />
                 </div>
                 <div class="field">
                     <label>${message(code:'default.description.label')}</label>

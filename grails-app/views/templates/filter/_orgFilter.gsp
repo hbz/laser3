@@ -192,7 +192,7 @@
             </g:if>
             <g:if test="${field.equalsIgnoreCase('subValidOn')}">
                 <div class="field">
-                    <semui:datepicker label="default.valid_on.label" id="subValidOn" name="subValidOn" placeholder="filter.placeholder" value="${params.subValidOn}" />
+                    <ui:datepicker label="default.valid_on.label" id="subValidOn" name="subValidOn" placeholder="filter.placeholder" value="${params.subValidOn}" />
                 </div>
             </g:if>
             <g:if test="${field.equalsIgnoreCase('subPerpetualAccess')}">

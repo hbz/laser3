@@ -21,7 +21,7 @@
         <dt>
             ${message(code: 'surveyconfig.scheduledStartDate.label')}
         </dt>
-        <dd><semui:xEditable owner="${surveyConfig}" field="scheduledStartDate" type="date"
+        <dd><ui:xEditable owner="${surveyConfig}" field="scheduledStartDate" type="date"
                              overwriteEditable="${false}"/>
         </dd>
     </dl>
@@ -29,7 +29,7 @@
         <dt>
             ${message(code: 'surveyconfig.scheduledEndDate.label')}
         </dt>
-        <dd><semui:xEditable owner="${surveyConfig}" field="scheduledEndDate" type="date"
+        <dd><ui:xEditable owner="${surveyConfig}" field="scheduledEndDate" type="date"
                              overwriteEditable="${false}"/></dd>
     </dl>
 </g:if>
@@ -775,46 +775,46 @@
                 <g:else>
                     <td>
                         <g:if test="${surveyResult.type.isIntegerType()}">
-                            <semui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="text"
+                            <ui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="text"
                                              field="intValue"/>
                         </g:if>
                         <g:elseif test="${surveyResult.type.isStringType()}">
-                            <semui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="text"
+                            <ui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="text"
                                              field="stringValue"/>
                         </g:elseif>
                         <g:elseif test="${surveyResult.type.isBigDecimalType()}">
-                            <semui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="text"
+                            <ui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="text"
                                              field="decValue"/>
                         </g:elseif>
                         <g:elseif test="${surveyResult.type.isDateType()}">
-                            <semui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="date"
+                            <ui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="date"
                                              field="dateValue"/>
                         </g:elseif>
                         <g:elseif test="${surveyResult.type.isURLType()}">
-                            <semui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="url"
+                            <ui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="url"
                                              field="urlValue"
                                              class="la-overflow la-ellipsis"/>
                             <g:if test="${surveyResult.urlValue}">
-                                <semui:linkIcon href="${surveyResult.urlValue}"/>
+                                <ui:linkIcon href="${surveyResult.urlValue}"/>
                             </g:if>
                         </g:elseif>
                         <g:elseif test="${surveyResult.type.isRefdataValueType()}">
-                            <semui:xEditableRefData overwriteEditable="${false}" owner="${surveyResult}" type="text"
+                            <ui:xEditableRefData overwriteEditable="${false}" owner="${surveyResult}" type="text"
                                                     field="refValue"
                                                     config="${surveyResult.type.refdataCategory}"/>
                         </g:elseif>
                     </td>
                     <td>
-                        <semui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="textarea"
+                        <ui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="textarea"
                                          field="comment"/>
                     </td>
                     <td>
                         <g:if test="${ownerView}">
-                            <semui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="textarea"
+                            <ui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="textarea"
                                              field="ownerComment"/>
                         </g:if>
                         <g:else>
-                            <semui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="textarea"
+                            <ui:xEditable overwriteEditable="${false}" owner="${surveyResult}" type="textarea"
                                              field="participantComment"/>
                         </g:else>
                     </td>

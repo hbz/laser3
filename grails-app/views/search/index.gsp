@@ -9,11 +9,11 @@
     String period
 %>
 
-<semui:breadcrumbs>
-    <semui:crumb message="search.advancedSearch" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb message="search.advancedSearch" class="active"/>
+</ui:breadcrumbs>
 
-<semui:h1HeaderWithIcon message="search.advancedSearch" type="Search" />
+<ui:h1HeaderWithIcon message="search.advancedSearch" type="Search" />
 
 <%
     def addFacet = { params, facet, val ->
@@ -230,7 +230,7 @@
                 </div>
             </div>
             <div class="twelve wide column">
-                <h3 class="ui header">${message(code: 'search.search.filter')} <semui:totalNumber total="${resultsTotal}"/></h3>
+                <h3 class="ui header">${message(code: 'search.search.filter')} <ui:totalNumber total="${resultsTotal}"/></h3>
                 <p>
                     <g:each in="${['rectype', 'endYear', 'startYear', 'consortiaName', 'providerName', 'status']}" var="facet">
                         <g:each in="${params.list(facet)}" var="fv">
@@ -442,7 +442,7 @@
                                     <strong>${message(code: 'platform.primaryURL')}</strong>:
                                         <g:if test="${hit.getSourceAsMap().primaryUrl}">
                                             ${hit.getSourceAsMap().primaryUrl}
-                                            <semui:linkIcon href="${hit.getSourceAsMap().primaryUrl}"/>
+                                            <ui:linkIcon href="${hit.getSourceAsMap().primaryUrl}"/>
                                         </g:if>
                                     <br />
                                     <strong>${message(code: 'platform.provider')}</strong>:
@@ -846,7 +846,7 @@
                     </g:each>
                 </table>
 
-                <semui:paginate action="index" controller="search" params="${params}"
+                <ui:paginate action="index" controller="search" params="${params}"
                                 next="${message(code: 'default.paginate.next')}"
                                 prev="${message(code: 'default.paginate.prev')}" max="${max}"
                                 total="${resultsTotal}"/>

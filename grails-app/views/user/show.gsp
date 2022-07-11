@@ -4,9 +4,9 @@
 
       <laser:render template="breadcrumb" model="${[ params:params ]}"/>
 
-      <semui:h1HeaderWithIcon text="${user.username} : ${user.displayName ?: 'No username'}" />
+      <ui:h1HeaderWithIcon text="${user.username} : ${user.displayName ?: 'No username'}" />
 
-      <semui:messages data="${flash}" />
+      <ui:messages data="${flash}" />
 
       <h2 class="ui header">${message(code:'user.affiliation.plural')}</h2>
 

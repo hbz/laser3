@@ -2,14 +2,14 @@
 
 <laser:htmlStart message="menu.admin.manageOrganisations" serviceInjection="true"/>
 
-    <semui:breadcrumbs>
-        <semui:crumb message="menu.admin" controller="admin" action="index" />
-        <semui:crumb message="menu.admin.manageOrganisations" class="active" />
-    </semui:breadcrumbs>
+    <ui:breadcrumbs>
+        <ui:crumb message="menu.admin" controller="admin" action="index" />
+        <ui:crumb message="menu.admin.manageOrganisations" class="active" />
+    </ui:breadcrumbs>
 
-    <semui:h1HeaderWithIcon message="menu.admin.manageOrganisations" total="${orgListTotal}" />
+    <ui:h1HeaderWithIcon message="menu.admin.manageOrganisations" total="${orgListTotal}" />
 
-    <semui:filter>
+    <ui:filter>
         <g:form action="manageOrganisations" method="get" class="ui form">
             <laser:render template="/templates/filter/orgFilter"
                       model="[
@@ -18,7 +18,7 @@
                               tmplConfigFormFilter: true
                       ]"/>
         </g:form>
-    </semui:filter>
+    </ui:filter>
 
     <table class="ui sortable celled la-js-responsive-table la-table table">
         <g:set var="sqlDateToday" value="${new java.sql.Date(System.currentTimeMillis())}"/>
@@ -217,7 +217,7 @@
 
     <%-- changing gasco entry --%>
 
-    <semui:modal id="gascoEntryModal" message="org.gascoEntry.label" isEditModal="isEditModal">
+    <ui:modal id="gascoEntryModal" message="org.gascoEntry.label" isEditModal="isEditModal">
 
         <g:form class="ui form" url="[controller: 'admin', action: 'manageOrganisations']">
             <input type="hidden" name="cmd" value="changeGascoEntry"/>
@@ -247,11 +247,11 @@
             }
         </laser:script>
 
-    </semui:modal>
+    </ui:modal>
 
     <%-- changing legal information --%>
 
-    <semui:modal id="legalInformationModal" message="org.legalInformation.label" isEditModal="isEditModal">
+    <ui:modal id="legalInformationModal" message="org.legalInformation.label" isEditModal="isEditModal">
 
         <g:form class="ui form" url="[controller: 'admin', action: 'manageOrganisations']">
             <input type="hidden" name="cmd" value="changeLegalInformation"/>
@@ -304,11 +304,11 @@
             }
         </laser:script>
 
-    </semui:modal>
+    </ui:modal>
 
     <%-- changing customer type --%>
 
-    <semui:modal id="customerTypeModal" message="org.customerType.label" isEditModal="isEditModal" formID="customerTypeChangeForm"
+    <ui:modal id="customerTypeModal" message="org.customerType.label" isEditModal="isEditModal" formID="customerTypeChangeForm"
                  showDeleteButton="showDeleteButton" deleteFormID="customerTypeDeleteForm" msgDelete="Kundentyp löschen">
 
         <g:form id="customerTypeChangeForm" class="ui form" url="[controller: 'admin', action: 'manageOrganisations']">
@@ -350,11 +350,11 @@
             }
         </laser:script>
 
-    </semui:modal>
+    </ui:modal>
 
     <%-- changing api access --%>
 
-    <semui:modal id="apiLevelModal" message="org.apiLevel.label" isEditModal="isEditModal">
+    <ui:modal id="apiLevelModal" message="org.apiLevel.label" isEditModal="isEditModal">
 
         <g:form class="ui form" url="[controller: 'admin', action: 'manageOrganisations']">
             <input type="hidden" name="cmd" value="changeApiLevel"/>
@@ -388,6 +388,6 @@
             }
         </laser:script>
 
-    </semui:modal>
+    </ui:modal>
 
 <laser:htmlEnd />

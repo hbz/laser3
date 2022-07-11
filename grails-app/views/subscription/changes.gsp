@@ -1,18 +1,18 @@
 <laser:htmlStart message="license.nav.todo_history" />
 
     <laser:render template="breadcrumb" model="${[ subscription: subscription, params:params ]}"/>
-    <semui:controlButtons>
+    <ui:controlButtons>
         <laser:render template="actions" />
-    </semui:controlButtons>
+    </ui:controlButtons>
 
-    <semui:h1HeaderWithIcon>
+    <ui:h1HeaderWithIcon>
         <g:if test="${subscription.instanceOf && (contextOrg.id == subscription.getConsortia()?.id)}">
             <laser:render template="iconSubscriptionIsChild"/>
         </g:if>
-        <semui:xEditable owner="${subscription}" field="name" />
-        <semui:totalNumber total="${todoHistoryLinesTotal}"/>
-    </semui:h1HeaderWithIcon>
-    <semui:anualRings object="${subscription}" controller="subscription" action="changes" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+        <ui:xEditable owner="${subscription}" field="name" />
+        <ui:totalNumber total="${todoHistoryLinesTotal}"/>
+    </ui:h1HeaderWithIcon>
+    <ui:anualRings object="${subscription}" controller="subscription" action="changes" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
     <laser:render template="nav" />
 
@@ -75,6 +75,6 @@
         </g:if>
       </table>
 
-        <semui:paginate action="todoHistory" controller="subscription" params="${params}" max="${max}" total="${todoHistoryLinesTotal}" />
+        <ui:paginate action="todoHistory" controller="subscription" params="${params}" max="${max}" total="${todoHistoryLinesTotal}" />
 
 <laser:htmlEnd />

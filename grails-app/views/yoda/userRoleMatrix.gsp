@@ -1,11 +1,11 @@
 <laser:htmlStart message="menu.yoda.userRoleMatrix" />
 
-<semui:breadcrumbs>
-    <semui:crumb message="menu.yoda" controller="yoda" action="index"/>
-    <semui:crumb message="menu.yoda.userRoleMatrix" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb message="menu.yoda" controller="yoda" action="index"/>
+    <ui:crumb message="menu.yoda.userRoleMatrix" class="active"/>
+</ui:breadcrumbs>
 
-<semui:h1HeaderWithIcon message="menu.yoda.userRoleMatrix" />
+<ui:h1HeaderWithIcon message="menu.yoda.userRoleMatrix" />
 
 <div class="ui accordion">
     <g:each in="${matrix}" var="role">

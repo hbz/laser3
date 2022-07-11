@@ -1,20 +1,20 @@
 <%@ page import="de.laser.survey.SurveyOrg; de.laser.RefdataCategory; de.laser.survey.SurveyResult; de.laser.storage.RDStore; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
 <laser:htmlStart message="currentSurveys.label" serviceInjection="true" />
 
-<semui:breadcrumbs>
-    <semui:crumb message="currentSurveys.label" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb message="currentSurveys.label" class="active"/>
+</ui:breadcrumbs>
 
-<semui:controlButtons>
+<ui:controlButtons>
     <laser:render template="actions"/>
-</semui:controlButtons>
+</ui:controlButtons>
 
-<semui:h1HeaderWithIcon message="currentSurveys.label" type="Survey" total="${surveysCount}" floated="true" />
+<ui:h1HeaderWithIcon message="currentSurveys.label" type="Survey" total="${surveysCount}" floated="true" />
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 <laser:render template="/templates/filter/javascript"/>
-<semui:filter showFilterButton="true">
+<ui:filter showFilterButton="true">
     <g:form action="workflowsSurveysConsortia" controller="survey" method="post" class="ui small form"
             params="[tab: params.tab]">
         <div class="four fields">
@@ -31,13 +31,13 @@
 
 
             <div class="field">
-                <semui:datepicker label="surveyInfo.startDate.label" id="startDate" name="startDate"
+                <ui:datepicker label="surveyInfo.startDate.label" id="startDate" name="startDate"
                                   placeholder="filter.placeholder" value="${params.startDate}"/>
             </div>
 
 
             <div class="field">
-                <semui:datepicker label="surveyInfo.endDate.label" id="endDate" name="endDate"
+                <ui:datepicker label="surveyInfo.endDate.label" id="endDate" name="endDate"
                                   placeholder="filter.placeholder" value="${params.endDate}"/>
             </div>
 
@@ -171,7 +171,7 @@
 
         </div>
     </g:form>
-</semui:filter>
+</ui:filter>
 
 
 <%
@@ -179,24 +179,24 @@
     tmpParams.remove("tab")
 %>
 
-<semui:tabs actionName="${actionName}">
-    <semui:tabsItem controller="survey" action="workflowsSurveysConsortia"
+<ui:tabs actionName="${actionName}">
+    <ui:tabsItem controller="survey" action="workflowsSurveysConsortia"
                     params="${tmpParams + [tab: 'created']}" text="Erstellt" tab="created"
                     counts="${countSurveyConfigs.created}"/>
-    <semui:tabsItem controller="survey" action="workflowsSurveysConsortia"
+    <ui:tabsItem controller="survey" action="workflowsSurveysConsortia"
                     params="${tmpParams + [tab: 'active']}" text="Aktiv" tab="active"
                     counts="${countSurveyConfigs.active}"/>
-    <semui:tabsItem controller="survey" action="workflowsSurveysConsortia"
+    <ui:tabsItem controller="survey" action="workflowsSurveysConsortia"
                     params="${tmpParams + [tab: 'finish']}" text="Beendet" tab="finish"
                     counts="${countSurveyConfigs.finish}"/>
-    <semui:tabsItem controller="survey" action="workflowsSurveysConsortia"
+    <ui:tabsItem controller="survey" action="workflowsSurveysConsortia"
                     params="${tmpParams + [tab: 'inEvaluation']}" text="In Auswertung" tab="inEvaluation"
                     counts="${countSurveyConfigs.inEvaluation}"/>
 
-    <semui:tabsItem controller="survey" action="workflowsSurveysConsortia"
+    <ui:tabsItem controller="survey" action="workflowsSurveysConsortia"
                     params="${tmpParams + [tab: 'completed']}" text="Abgeschlossen" tab="completed"
                     counts="${countSurveyConfigs.completed}"/>
-</semui:tabs>
+</ui:tabs>
 
 <div class="ui bottom attached tab segment active">
 
@@ -394,7 +394,7 @@
 
 
 <g:if test="${surveysCount}">
-    <semui:paginate action="${actionName}" controller="${controllerName}" params="${params}"
+    <ui:paginate action="${actionName}" controller="${controllerName}" params="${params}"
                     next="${message(code: 'default.paginate.next')}"
                     prev="${message(code: 'default.paginate.prev')}" max="${max}"
                     total="${surveysCount}"/>

@@ -9,11 +9,11 @@ import org.springframework.context.i18n.LocaleContextHolder
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 
-class SemuiInplaceTagLib {
+class UiInplaceTagLib {
 
     GenericOIDService genericOIDService
 
-    static namespace = "semui"
+    static namespace = 'ui'
 
     /**
      *   Attributes:

@@ -1,11 +1,11 @@
 <laser:htmlStart message="menu.yoda.systemConfiguration" />
 
-<semui:breadcrumbs>
-    <semui:crumb message="menu.yoda" controller="yoda" action="index"/>
-    <semui:crumb message="menu.yoda.systemConfiguration" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb message="menu.yoda" controller="yoda" action="index"/>
+    <ui:crumb message="menu.yoda.systemConfiguration" class="active"/>
+</ui:breadcrumbs>
 
-<semui:h1HeaderWithIcon message="menu.yoda.systemConfiguration" />
+<ui:h1HeaderWithIcon message="menu.yoda.systemConfiguration" />
 
 <%
     Set<String> dubs = []

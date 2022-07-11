@@ -4,7 +4,7 @@
 <!-- _individuallyExportModal.gsp -->
 <g:set var="formFields" value="${exportClickMeService.getExportSurveyEvaluationFieldsForUI(surveyConfig)}"/>
 
-<semui:modal id="${modalID}" text="Excel-Export" hideSubmitButton="true">
+<ui:modal id="${modalID}" text="Excel-Export" hideSubmitButton="true">
 
     <g:form controller="survey" action="surveyEvaluation" id="${surveyInfo.id}"
             params="[surveyConfigID: surveyConfig.id, exportClickMeExcel: true]">
@@ -13,6 +13,6 @@
 
     </g:form>
 
-</semui:modal>
+</ui:modal>
 <!-- _individuallyExportModal.gsp -->
 

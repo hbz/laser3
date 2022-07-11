@@ -28,14 +28,14 @@
 			<div class="twelve wide column">
 
 				<div class="page-header">
-					<semui:h1HeaderWithIcon message="default.create.label" args="[entityName]" />
+					<ui:h1HeaderWithIcon message="default.create.label" args="[entityName]" />
 				</div>
 
 				<g:if test="${flash.message}">
-					<semui:msg class="warning" text="${flash.message}" />
+					<ui:msg class="warning" text="${flash.message}" />
 				</g:if>
 
-				<semui:errors bean="${taskInstance}" />
+				<ui:errors bean="${taskInstance}" />
 
 					<g:form class="ui form" action="create" >
 						<fieldset>

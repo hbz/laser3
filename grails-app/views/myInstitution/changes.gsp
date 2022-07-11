@@ -2,11 +2,11 @@
 
 <laser:htmlStart message="myinst.menu.pendingChanges.label" serviceInjection="true" />
 
-        <semui:breadcrumbs>
-            <semui:crumb message="myinst.pendingChanges.label" class="active" />
-        </semui:breadcrumbs>
+        <ui:breadcrumbs>
+            <ui:crumb message="myinst.pendingChanges.label" class="active" />
+        </ui:breadcrumbs>
 
-        <semui:h1HeaderWithIcon message="myinst.menu.pendingChanges.label" />
+        <ui:h1HeaderWithIcon message="myinst.menu.pendingChanges.label" />
 
             <g:if test="${packages}">
                 <g:form controller="pendingChange" action="processAll">
@@ -94,6 +94,6 @@
             </tbody>
         </table>
 
-    <semui:paginate offset="${offset}" max="${max}" total="${pendingCount}"/>
+    <ui:paginate offset="${offset}" max="${max}" total="${pendingCount}"/>
 
 <laser:htmlEnd />

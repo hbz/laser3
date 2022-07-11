@@ -3,17 +3,17 @@
 <laser:htmlStart message="menu.institutions.add_consortia_members" serviceInjection="true" />
         <g:set var="entityName" value="${message(code: 'org.label')}" />
 
-    <semui:breadcrumbs>
-        <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
-        <semui:crumb message="menu.institutions.manage_consortia" controller="myInstitution" action="manageMembers"/>
-        <semui:crumb message="menu.institutions.add_consortia_members" class="active" />
-    </semui:breadcrumbs>
+    <ui:breadcrumbs>
+        <ui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
+        <ui:crumb message="menu.institutions.manage_consortia" controller="myInstitution" action="manageMembers"/>
+        <ui:crumb message="menu.institutions.add_consortia_members" class="active" />
+    </ui:breadcrumbs>
 
-    <semui:h1HeaderWithIcon message="menu.institutions.add_consortia_members" />
+    <ui:h1HeaderWithIcon message="menu.institutions.add_consortia_members" />
 
-    <semui:messages data="${flash}" />
+    <ui:messages data="${flash}" />
 
-    <semui:filter>
+    <ui:filter>
         <g:form action="addMembers" method="get" class="ui form">
             <laser:render template="/templates/filter/orgFilter"
                       model="[
@@ -21,7 +21,7 @@
                               tmplConfigFormFilter: true
                       ]"/>
         </g:form>
-    </semui:filter>
+    </ui:filter>
 
     <g:if test="${availableOrgs}">
     <g:form action="addMembers" controller="myInstitution" method="post" class="ui form">

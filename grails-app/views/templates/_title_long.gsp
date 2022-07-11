@@ -1,6 +1,6 @@
 <%@ page import="de.laser.storage.RDStore;" %>
 <div class="la-icon-list">
-<semui:listIcon type="${tipp.titleType}"/>
+<ui:listIcon type="${tipp.titleType}"/>
 <g:if test="${ie}">
     <g:link controller="issueEntitlement" id="${ie.id}"
             action="show"><strong>${ie.name}</strong>
@@ -13,7 +13,7 @@
 </g:else>
 
 <g:if test="${tipp.hostPlatformURL}">
-    <semui:linkIcon
+    <ui:linkIcon
             href="${tipp.hostPlatformURL.startsWith('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
 </g:if>
 <br/>
@@ -36,7 +36,7 @@
 </g:if>
 
 <div class="item">
-    <semui:listIcon type="${tipp.titleType}"/>
+    <ui:listIcon type="${tipp.titleType}"/>
 
     <div class="content">
         ${showCompact ? '' : message(code: 'tipp.titleType') + ':'} ${tipp.titleType}

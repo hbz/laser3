@@ -3,7 +3,7 @@
 
 %{-- help sidebar --}%
 <laser:render template="/templates/help/help_subscription_show"/>
-<semui:debugInfo>
+<ui:debugInfo>
     <div style="padding: 1em 0;">
         <p>sub.type: ${subscription.type}</p>
 
@@ -19,29 +19,29 @@
     <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]"/>
 %{--<laser:render template="/templates/debug/orgRoles"  model="[debug: subscription.orgRelations]" />--}%
 %{--<laser:render template="/templates/debug/prsRoles"  model="[debug: subscription.prsLinks]" />--}%
-</semui:debugInfo>
+</ui:debugInfo>
 <laser:render template="breadcrumb" model="${[params: params]}"/>
-<semui:controlButtons>
+<ui:controlButtons>
     <laser:render template="actions"/>
-</semui:controlButtons>
-<semui:h1HeaderWithIcon>
+</ui:controlButtons>
+<ui:h1HeaderWithIcon>
 <laser:render template="iconSubscriptionIsChild"/>
-<semui:xEditable owner="${subscription}" field="name"/>
-</semui:h1HeaderWithIcon>
+<ui:xEditable owner="${subscription}" field="name"/>
+</ui:h1HeaderWithIcon>
 <g:if test="${editable}">
-    <semui:auditButton class="la-auditButton-header" auditable="[subscription, 'name']" auditConfigs="${auditConfigs}" withoutOptions="true"/>
+    <ui:auditButton class="la-auditButton-header" auditable="[subscription, 'name']" auditConfigs="${auditConfigs}" withoutOptions="true"/>
 </g:if>
-<semui:anualRings object="${subscription}" controller="subscription" action="show" navNext="${navNextSubscription}"
+<ui:anualRings object="${subscription}" controller="subscription" action="show" navNext="${navNextSubscription}"
                   navPrev="${navPrevSubscription}"/>
 
 <laser:render template="nav"/>
 
-<semui:objectStatus object="${subscription}" status="${subscription.status}"/>
+<ui:objectStatus object="${subscription}" status="${subscription.status}"/>
 <laser:render template="message"/>
 <laser:render template="/templates/meta/identifier" model="${[object: subscription, editable: editable]}"/>
 
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 <div id="collapseableSubDetails" class="ui stackable grid">
     <div class="ten wide column">
@@ -51,29 +51,29 @@
                     <div class="content">
                         <dl>
                             <dt class="control-label">${message(code: 'subscription.startDate.label')}</dt>
-                            <dd><semui:xEditable owner="${subscription}" field="startDate" type="date"
+                            <dd><ui:xEditable owner="${subscription}" field="startDate" type="date"
                                                  validation="datesCheck"/></dd>
                             <g:if test="${editable}">
-                                <dd class="la-js-editmode-container"><semui:auditButton
+                                <dd class="la-js-editmode-container"><ui:auditButton
                                         auditable="[subscription, 'startDate']" auditConfigs="${auditConfigs}"/></dd>
                             </g:if>
                         </dl>
                         <dl>
                             <dt class="control-label">${message(code: 'subscription.endDate.label')}</dt>
-                            <dd><semui:xEditable owner="${subscription}" field="endDate" type="date"
+                            <dd><ui:xEditable owner="${subscription}" field="endDate" type="date"
                                                  validation="datesCheck" overwriteEditable="${editable && !subscription.isAutomaticRenewAnnually}"/></dd>
                             <g:if test="${editable}">
-                                <dd class="la-js-editmode-container"><semui:auditButton
+                                <dd class="la-js-editmode-container"><ui:auditButton
                                         auditable="[subscription, 'endDate']" auditConfigs="${auditConfigs}"/></dd>
                             </g:if>
                         </dl>
 
                         <dl>
                             <dt class="control-label">${message(code: 'subscription.manualCancellationDate.label')}</dt>
-                            <dd><semui:xEditable owner="${subscription}" field="manualCancellationDate"
+                            <dd><ui:xEditable owner="${subscription}" field="manualCancellationDate"
                                                  type="date"/></dd>
                             <g:if test="${editable}">
-                                <dd class="la-js-editmode-container"><semui:auditButton
+                                <dd class="la-js-editmode-container"><ui:auditButton
                                         auditable="[subscription, 'manualCancellationDate']"
                                         auditConfigs="${auditConfigs}"/></dd>
                             </g:if>
@@ -85,7 +85,7 @@
                                         subscription._getCalculatedType() == CalculatedType.TYPE_LOCAL)}">
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.isMultiYear.label')}</dt>
-                                <dd><semui:xEditableBoolean owner="${subscription}" field="isMultiYear"/></dd>
+                                <dd><ui:xEditableBoolean owner="${subscription}" field="isMultiYear"/></dd>
                             </dl>
                         </g:if>
 
@@ -93,7 +93,7 @@
                                 subscription._getCalculatedType() == CalculatedType.TYPE_LOCAL)}">
                             <dl>
                                 <dt class="control-label">${message(code: 'subscription.isAutomaticRenewAnnually.label')}</dt>
-                                <dd><semui:xEditableBoolean owner="${subscription}" field="isAutomaticRenewAnnually"
+                                <dd><ui:xEditableBoolean owner="${subscription}" field="isAutomaticRenewAnnually"
                                                             overwriteEditable="${editable && subscription.isAllowToAutomaticRenewAnnually()}"/></dd>
                             </dl>
                         </g:if>
@@ -105,11 +105,11 @@
                     <div class="content">
                         <dl>
                             <dt class="control-label">${message(code: 'default.status.label')}</dt>
-                            <dd><semui:xEditableRefData owner="${subscription}" field="status"
+                            <dd><ui:xEditableRefData owner="${subscription}" field="status"
                                                         config="${RDConstants.SUBSCRIPTION_STATUS}"
                                                         constraint="removeValue_deleted"/></dd>
                             <g:if test="${editable}">
-                                <dd class="la-js-editmode-container"><semui:auditButton
+                                <dd class="la-js-editmode-container"><ui:auditButton
                                         auditable="[subscription, 'status']" auditConfigs="${auditConfigs}"/></dd>
                             </g:if>
                         </dl>
@@ -117,38 +117,38 @@
                             <dl>
                                 <dt class="control-label">alter Lizenztyp</dt>
                                 <dd>
-                                    <semui:xEditableRefData owner="${subscription}" field="type"
+                                    <ui:xEditableRefData owner="${subscription}" field="type"
                                                             config="${RDConstants.SUBSCRIPTION_TYPE}"
                                                             constraint="removeValue_administrativeSubscription,removeValue_localSubscription"/>
                                 </dd>
-                                <dd class="la-js-editmode-container"><semui:auditButton
+                                <dd class="la-js-editmode-container"><ui:auditButton
                                         auditable="[subscription, 'type']" auditConfigs="${auditConfigs}"/></dd>
                             </dl>
                         </sec:ifAnyGranted>
                         <dl>
                             <dt class="control-label">${message(code: 'subscription.kind.label')}</dt>
-                            <dd><semui:xEditableRefData owner="${subscription}" field="kind"
+                            <dd><ui:xEditableRefData owner="${subscription}" field="kind"
                                                         config="${RDConstants.SUBSCRIPTION_KIND}"/></dd>
                             <g:if test="${editable}">
-                                <dd class="la-js-editmode-container"><semui:auditButton
+                                <dd class="la-js-editmode-container"><ui:auditButton
                                         auditable="[subscription, 'kind']" auditConfigs="${auditConfigs}"/></dd>
                             </g:if>
                         </dl>
                         <dl>
                             <dt class="control-label">${message(code: 'subscription.form.label')}</dt>
-                            <dd><semui:xEditableRefData owner="${subscription}" field="form"
+                            <dd><ui:xEditableRefData owner="${subscription}" field="form"
                                                         config="${RDConstants.SUBSCRIPTION_FORM}"/></dd>
                             <g:if test="${editable}">
-                                <dd class="la-js-editmode-container"><semui:auditButton
+                                <dd class="la-js-editmode-container"><ui:auditButton
                                         auditable="[subscription, 'form']" auditConfigs="${auditConfigs}"/></dd>
                             </g:if>
                         </dl>
                         <dl>
                             <dt class="control-label">${message(code: 'subscription.resource.label')}</dt>
-                            <dd><semui:xEditableRefData owner="${subscription}" field="resource"
+                            <dd><ui:xEditableRefData owner="${subscription}" field="resource"
                                                         config="${RDConstants.SUBSCRIPTION_RESOURCE}"/></dd>
                             <g:if test="${editable}">
-                                <dd class="la-js-editmode-container"><semui:auditButton
+                                <dd class="la-js-editmode-container"><ui:auditButton
                                         auditable="[subscription, 'resource']" auditConfigs="${auditConfigs}"/></dd>
                             </g:if>
                         </dl>
@@ -167,7 +167,7 @@
                                         ${message(code: 'license.details.linktoLicense.pendingChange')}
                                     </dt>
                                     <dd>
-                                        <semui:xEditableBoolean owner="${subscription}" field="isSlaved"/>
+                                        <ui:xEditableBoolean owner="${subscription}" field="isSlaved"/>
                                     </dd>
                                 </dl>
                             </sec:ifAnyGranted>
@@ -175,9 +175,9 @@
 
                         <dl>
                             <dt class="control-label">${message(code: 'subscription.isPublicForApi.label')}</dt>
-                            <dd><semui:xEditableBoolean owner="${subscription}" field="isPublicForApi"/></dd>
+                            <dd><ui:xEditableBoolean owner="${subscription}" field="isPublicForApi"/></dd>
                             <g:if test="${editable}">
-                                <dd class="la-js-editmode-container"><semui:auditButton
+                                <dd class="la-js-editmode-container"><ui:auditButton
                                         auditable="[subscription, 'isPublicForApi']"
                                         auditConfigs="${auditConfigs}"/></dd>
                             </g:if>
@@ -185,10 +185,10 @@
 
                         <dl>
                             <dt class="control-label">${message(code: 'subscription.hasPerpetualAccess.label')}</dt>
-                            <%--<dd><semui:xEditableRefData owner="${subscription}" field="hasPerpetualAccess" config="${RDConstants.Y_N}" /></dd>--%>
-                            <dd><semui:xEditableBoolean owner="${subscription}" field="hasPerpetualAccess"/></dd>
+                            <%--<dd><ui:xEditableRefData owner="${subscription}" field="hasPerpetualAccess" config="${RDConstants.Y_N}" /></dd>--%>
+                            <dd><ui:xEditableBoolean owner="${subscription}" field="hasPerpetualAccess"/></dd>
                             <g:if test="${editable}">
-                                <dd class="la-js-editmode-container"><semui:auditButton
+                                <dd class="la-js-editmode-container"><ui:auditButton
                                         auditable="[subscription, 'hasPerpetualAccess']"
                                         auditConfigs="${auditConfigs}"/></dd>
                             </g:if>
@@ -196,9 +196,9 @@
 
                         <dl>
                             <dt class="control-label">${message(code: 'subscription.hasPublishComponent.label')}</dt>
-                            <dd><semui:xEditableBoolean owner="${subscription}" field="hasPublishComponent"/></dd>
+                            <dd><ui:xEditableBoolean owner="${subscription}" field="hasPublishComponent"/></dd>
                             <g:if test="${editable}">
-                                <dd class="la-js-editmode-container"><semui:auditButton
+                                <dd class="la-js-editmode-container"><ui:auditButton
                                         auditable="[subscription, 'hasPublishComponent']"
                                         auditConfigs="${auditConfigs}"/></dd>
                             </g:if>

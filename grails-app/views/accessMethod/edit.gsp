@@ -5,9 +5,9 @@
 
                 <laser:render template="breadcrumb" model="${[ accessMethod:accessMethod, params:params ]}"/>
 
-                <semui:h1HeaderWithIcon message="default.edit.label" args="[entityName]" />
+                <ui:h1HeaderWithIcon message="default.edit.label" args="[entityName]" />
 
-                <semui:messages data="${flash}" />
+                <ui:messages data="${flash}" />
 
                 <g:form class="ui form" url="[controller: 'accessMethod', action: 'update']" method="POST">
                     <g:hiddenField id="accessMethod_id_${accessMethod.id}" name="id" value="${accessMethod.id}" />
@@ -29,8 +29,8 @@
 
                                     <dt><g:message code="accessMethod.valid_to" /></dt>
                                     <dd>
-                                        <semui:datepicker hideLabel="true" id="validTo" name="validTo" value ="${accessMethod.validTo}">
-                                        </semui:datepicker>
+                                        <ui:datepicker hideLabel="true" id="validTo" name="validTo" value ="${accessMethod.validTo}">
+                                        </ui:datepicker>
                                     </dd>
 
                                 </dl>

@@ -1,7 +1,7 @@
 <%@ page import="de.laser.Subscription; de.laser.storage.RDStore; de.laser.AuditConfig; de.laser.interfaces.CalculatedType; de.laser.Person; de.laser.License" %>
 <laser:serviceInjection/>
 
-<semui:form>
+<ui:form>
 
     <table class="ui selectable celled table la-js-responsive-table la-table la-ignore-fixed">
         <thead>
@@ -22,14 +22,14 @@
             <tr>
                 <td>
                     <strong>
-                        <semui:propertyIcon object="${objects[0]}" propertyName="${objProperty}"
+                        <ui:propertyIcon object="${objects[0]}" propertyName="${objProperty}"
                                             showToolTipp="true"/> ${message(code: "${objects[0].getClass().getSimpleName().toLowerCase()}.${objProperty}.label")}:
                     </strong>
 
                 </td>
                 <g:each in="${objects}" var="object">
                     <td class="center aligned">
-                    <semui:showPropertyValue property="${object."${objProperty}"}"/>
+                    <ui:showPropertyValue property="${object."${objProperty}"}"/>
 
                     <g:if test="${object._getCalculatedType() in [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_PARTICIPATION]}">
                         <div class="right aligned wide column">
@@ -222,7 +222,7 @@
         </tbody>
     </table>
 
-</semui:form>
+</ui:form>
 
 
 

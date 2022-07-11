@@ -1,13 +1,13 @@
 <%@ page import="de.laser.utils.DateUtils; de.laser.Org; de.laser.Package; de.laser.Platform; java.text.SimpleDateFormat;" %>
 <laser:htmlStart message="package.show.all" />
 
-<semui:breadcrumbs>
-    <semui:crumb message="package.show.all" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb message="package.show.all" class="active"/>
+</ui:breadcrumbs>
 
-<semui:h1HeaderWithIcon message="package.show.all" total="${recordsCount}" floated="true" />
+<ui:h1HeaderWithIcon message="package.show.all" total="${recordsCount}" floated="true" />
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 <g:if test="${!error}">
     <laser:render template="/templates/filter/packageGokbFilter"/>
@@ -155,7 +155,7 @@
             </table>
 
 
-            <semui:paginate action="index" controller="package" params="${params}"
+            <ui:paginate action="index" controller="package" params="${params}"
                             next="${message(code: 'default.paginate.next')}"
                             prev="${message(code: 'default.paginate.prev')}" max="${max}"
                             total="${recordsCount}"/>

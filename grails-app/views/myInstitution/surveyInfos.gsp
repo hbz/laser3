@@ -1,25 +1,25 @@
 <%@ page import="de.laser.survey.SurveyConfig;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.RefdataValue; de.laser.Org" %>
 <laser:htmlStart text="${surveyInfo.type.getI10n('value')}" serviceInjection="true"/>
 
-<semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="currentSurveys" message="currentSurveys.label"/>
-    <semui:crumb text="${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb controller="myInstitution" action="currentSurveys" message="currentSurveys.label"/>
+    <ui:crumb text="${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}" class="active"/>
+</ui:breadcrumbs>
 
-<semui:controlButtons>
-    <semui:exportDropdown>
-        <semui:exportDropdownItem>
+<ui:controlButtons>
+    <ui:exportDropdown>
+        <ui:exportDropdownItem>
             <g:link class="item" controller="myInstitution" action="surveyInfos"
                     params="${params + [exportXLSX: true, surveyConfigID: surveyConfig.id]}">${message(code: 'survey.exportSurvey')}</g:link>
-        </semui:exportDropdownItem>
-    </semui:exportDropdown>
-</semui:controlButtons>
+        </ui:exportDropdownItem>
+    </ui:exportDropdown>
+</ui:controlButtons>
 
-<semui:h1HeaderWithIcon text="${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}" type="Survey">
-    <semui:surveyStatus object="${surveyInfo}"/>
-</semui:h1HeaderWithIcon>
+<ui:h1HeaderWithIcon text="${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}" type="Survey">
+    <ui:surveyStatus object="${surveyInfo}"/>
+</ui:h1HeaderWithIcon>
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 <br />
 <g:if test="${surveyConfig.isResultsSetFinishByOrg(institution)}">
@@ -42,7 +42,7 @@
     <g:set var="choosenOrg" value="${Org.findById(ownerId)}"/>
 
 
-    <semui:form>
+    <ui:form>
         <h3 class="ui header"><g:message code="surveyInfo.owner.label"/>:</h3>
 
         <g:if test="${choosenOrg}">
@@ -84,7 +84,7 @@
                 </g:else>
             </div>
         </div>
-    </semui:form>
+    </ui:form>
 </g:if>
 
 <br />

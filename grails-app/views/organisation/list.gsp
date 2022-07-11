@@ -3,52 +3,52 @@
 
         <g:set var="entityName" value="${message(code: 'org.label')}" />
 
-        <semui:breadcrumbs>
-            <semui:crumb message="menu.public.all_orgs" class="active" />
-        </semui:breadcrumbs>
+        <ui:breadcrumbs>
+            <ui:crumb message="menu.public.all_orgs" class="active" />
+        </ui:breadcrumbs>
 
-            <semui:controlButtons>
-                <semui:exportDropdown>
+            <ui:controlButtons>
+                <ui:exportDropdown>
                     <g:if test="${filterSet}">
-                        <semui:exportDropdownItem>
+                        <ui:exportDropdownItem>
                             <g:link class="item js-open-confirm-modal"
                                     data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
                                     data-confirm-term-how="ok" controller="organisations" action="list"
                                     params="${params+[exportXLS:true]}">
                                 ${message(code:'default.button.exports.xls')}
                             </g:link>
-                        </semui:exportDropdownItem>
-                        <semui:exportDropdownItem>
+                        </ui:exportDropdownItem>
+                        <ui:exportDropdownItem>
                             <g:link class="item js-open-confirm-modal"
                                     data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
                                     data-confirm-term-how="ok" controller="organisations" action="list"
                                     params="${params+[format:'csv']}">
                                 ${message(code:'default.button.exports.csv')}
                             </g:link>
-                        </semui:exportDropdownItem>
+                        </ui:exportDropdownItem>
                     </g:if>
                     <g:else>
-                        <semui:exportDropdownItem>
+                        <ui:exportDropdownItem>
                             <g:link class="item" action="list" params="${params+[exportXLS:true]}">${message(code:'default.button.exports.xls')}</g:link>
-                        </semui:exportDropdownItem>
-                        <semui:exportDropdownItem>
+                        </ui:exportDropdownItem>
+                        <ui:exportDropdownItem>
                             <g:link class="item" action="list" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
-                        </semui:exportDropdownItem>
+                        </ui:exportDropdownItem>
                     </g:else>
-                </semui:exportDropdown>
+                </ui:exportDropdown>
 
                 <g:if test="${accessService.checkPermX('ORG_INST,ORG_CONSORTIUM', 'ROLE_ADMIN,ROLE_ORG_EDITOR')}">
                     <laser:render template="actions" />
                 </g:if>
 
-            </semui:controlButtons>
+            </ui:controlButtons>
 
-        <semui:h1HeaderWithIcon message="menu.public.all_orgs" total="${orgListTotal}" floated="true" />
+        <ui:h1HeaderWithIcon message="menu.public.all_orgs" total="${orgListTotal}" floated="true" />
 
-        <semui:messages data="${flash}" />
+        <ui:messages data="${flash}" />
 
         <laser:render template="/templates/filter/javascript" />
-        <semui:filter showFilterButton="true">
+        <ui:filter showFilterButton="true">
             <g:form action="list" method="get" class="ui form">
                 <laser:render template="/templates/filter/orgFilter"
                           model="[
@@ -58,7 +58,7 @@
                                   tmplConfigFormFilter: true
                           ]"/>
             </g:form>
-        </semui:filter>
+        </ui:filter>
 
         <laser:render template="/templates/filter/orgFilterTable"
               model="[orgList: orgList,
@@ -67,6 +67,6 @@
                                        'libraryNetwork', 'libraryType']
               ]"/>
 
-        <semui:paginate total="${orgListTotal}" params="${params}" max="${max}" offset="${offset}" />
+        <ui:paginate total="${orgListTotal}" params="${params}" max="${max}" offset="${offset}" />
 
     <laser:htmlEnd />

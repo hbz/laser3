@@ -2,7 +2,7 @@
 
 <laser:htmlStart message="gasco.title" />
 
-<semui:h1HeaderWithIcon text="${message(code: 'menu.public.gasco_monitor')}: ${message(code: 'gasco.licenceSearch')}" />
+<ui:h1HeaderWithIcon text="${message(code: 'menu.public.gasco_monitor')}: ${message(code: 'gasco.licenceSearch')}" />
 
     <div class="ui grid">
         <div class="eleven wide column">

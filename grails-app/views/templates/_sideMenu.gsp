@@ -1,5 +1,5 @@
 <!-- sideMenu::A -->
-    <semui:card text="${entityName}">
+    <ui:card text="${entityName}">
         <div class="content">
         <ul class="nav nav-list">
             <li>
@@ -16,5 +16,5 @@
             </li>
         </ul>
         </div>
-    </semui:card>
+    </ui:card>
 <!-- sideMenu::O -->

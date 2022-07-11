@@ -2,17 +2,17 @@
 
 <laser:htmlStart text="${message(code:"tipp.show.label", args:[tipp.name, tipp.pkg.name, tipp.platform.name])}" />
 
-<semui:breadcrumbs>
-    <semui:crumb controller="package" action="show" id="${tipp.pkg.id}"
+<ui:breadcrumbs>
+    <ui:crumb controller="package" action="show" id="${tipp.pkg.id}"
                  text="${tipp.pkg.name} [${message(code: 'package.label')}]"/>
-    <semui:crumb text="${tipp.name} [${message(code: 'title.label')}]" class="active"/>
-</semui:breadcrumbs>
+    <ui:crumb text="${tipp.name} [${message(code: 'title.label')}]" class="active"/>
+</ui:breadcrumbs>
 
-<semui:h1HeaderWithIcon message="tipp.show.label" args="${[tipp.name, tipp.pkg.name, tipp.platform.name]}" type="${tipp.titleType}" />
+<ui:h1HeaderWithIcon message="tipp.show.label" args="${[tipp.name, tipp.pkg.name, tipp.platform.name]}" type="${tipp.titleType}" />
 
 <laser:render template="/templates/meta/identifier" model="${[object: tipp, editable: editable]}"/>
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 
 <div class="la-inline-lists">
@@ -83,18 +83,18 @@
                             <div class="ui card">
                                 <div class="content">
                                     <div class="la-card-column">
-                                        <g:message code="tipp.price.listPrice"/>: <semui:xEditable field="listPrice"
+                                        <g:message code="tipp.price.listPrice"/>: <ui:xEditable field="listPrice"
                                                                                              owner="${priceItem}"
-                                                                                             overwriteEditable="false"/> <semui:xEditableRefData
+                                                                                             overwriteEditable="false"/> <ui:xEditableRefData
                                                 field="listCurrency" owner="${priceItem}"
                                                 config="Currency"
                                                 overwriteEditable="false"/>
                                         <br />
-                                        <%--(<g:message code="tipp.price.startDate"/> <semui:xEditable field="startDate"
+                                        <%--(<g:message code="tipp.price.startDate"/> <ui:xEditable field="startDate"
                                                                                                   type="date"
                                                                                                   owner="${priceItem}"
                                                                                                   overwriteEditable="false"/>-
-                                        <g:message code="tipp.price.endDate"/> <semui:xEditable field="endDate"
+                                        <g:message code="tipp.price.endDate"/> <ui:xEditable field="endDate"
                                                                                                type="date"
                                                                                                owner="${priceItem}"
                                                                                                overwriteEditable="false"/>)--%>
@@ -180,7 +180,7 @@
 
                 <g:if test="${tipp.hostPlatformURL}">
                     <br/>
-                    <semui:linkIcon
+                    <ui:linkIcon
                             href="${tipp.hostPlatformURL.startsWith('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
                 </g:if>
             </div>
@@ -243,10 +243,10 @@
                                     id="${org.org.id}">${org.org.name}</g:link></td>
                         <td>${org.roleType.getI10n("value")}</td>
                         <td>
-                            <semui:xEditable owner="${org}" type="date" field="startDate"/>
+                            <ui:xEditable owner="${org}" type="date" field="startDate"/>
                         </td>
                         <td>
-                            <semui:xEditable owner="${org}" type="date" field="endDate"/>
+                            <ui:xEditable owner="${org}" type="date" field="endDate"/>
                         </td>
                     </tr>
                 </g:each>

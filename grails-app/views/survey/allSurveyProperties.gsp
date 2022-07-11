@@ -2,24 +2,24 @@
 
 <laser:htmlStart message="myinst.currentSubscriptions.label" serviceInjection="true"/>
 
-<semui:breadcrumbs>
-    <semui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
+<ui:breadcrumbs>
+    <ui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
 
     <g:if test="${surveyInfo}">
-        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}"
+        <ui:crumb controller="survey" action="show" id="${surveyInfo.id}"
                      params="[surveyConfigID: surveyConfig.id]" text="${surveyInfo.name}"/>
     </g:if>
-    <semui:crumb message="myinst.currentSubscriptions.label" class="active"/>
-</semui:breadcrumbs>
+    <ui:crumb message="myinst.currentSubscriptions.label" class="active"/>
+</ui:breadcrumbs>
 
-<semui:h1HeaderWithIcon type="Survey">
-<semui:xEditable owner="${surveyInfo}" field="name"/>
-<semui:surveyStatus object="${surveyInfo}"/>
-</semui:h1HeaderWithIcon>
+<ui:h1HeaderWithIcon type="Survey">
+<ui:xEditable owner="${surveyInfo}" field="name"/>
+<ui:surveyStatus object="${surveyInfo}"/>
+</ui:h1HeaderWithIcon>
 
 <laser:render template="nav"/>
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 
 <g:if test="${editable}">
@@ -27,7 +27,7 @@
            data-semui="modal" data-href="#createSurveyPropertyModal" type="submit">
 </g:if>
 
-<semui:form>
+<ui:form>
 
     <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'surveyProperty.all.label')}
 
@@ -36,7 +36,7 @@
         <div class="ui popup">
             <i class="shield alternate icon"></i> = ${message(code: 'subscription.properties.my')}
         </div>
-        <semui:totalNumber total="${properties.size()}"/>
+        <ui:totalNumber total="${properties.size()}"/>
 
     </h4>
 
@@ -66,7 +66,7 @@
                 </td>
                 <td>
                     <g:if test="${property?.tenant && property?.tenant.id == institution.id}">
-                        <semui:xEditable owner="${property}" field="name_${SUBSTITUTE}" type="textarea"/>
+                        <ui:xEditable owner="${property}" field="name_${SUBSTITUTE}" type="textarea"/>
                         <i class='shield alternate icon'></i>
                     </g:if>
                     <g:else>
@@ -77,7 +77,7 @@
                 <td>
 
                     <g:if test="${property?.tenant && property?.tenant.id == institution.id}">
-                        <semui:xEditable owner="${property}" field="expl_${SUBSTITUTE}" type="textarea"/>
+                        <ui:xEditable owner="${property}" field="expl_${SUBSTITUTE}" type="textarea"/>
                     </g:if>
                     <g:else>
                         ${property?.getI10n('expl')}
@@ -114,9 +114,9 @@
         </g:each>
     </table>
 
-</semui:form>
+</ui:form>
 
-<semui:modal id="createSurveyPropertyModal" message="surveyProperty.create_new.label">
+<ui:modal id="createSurveyPropertyModal" message="surveyProperty.create_new.label">
     <div class=" content">
 
     <g:form class="ui form" action="createSurveyProperty" method="post" params="[surveyInfo: surveyInfo?.id]">
@@ -200,7 +200,7 @@
         </div>
 
     </g:form>
-</semui:modal>
+</ui:modal>
 
 <laser:script file="${this.getGroovyPageFileName()}">
 

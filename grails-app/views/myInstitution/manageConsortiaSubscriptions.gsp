@@ -4,17 +4,17 @@
 
     <g:set var="entityName" value="${message(code: 'org.label')}"/>
 
-<semui:debugInfo>
+<ui:debugInfo>
     <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
-</semui:debugInfo>
+</ui:debugInfo>
 
-<semui:breadcrumbs>
-    <semui:crumb message="menu.my.consortiaSubscriptions" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb message="menu.my.consortiaSubscriptions" class="active"/>
+</ui:breadcrumbs>
 
-<semui:controlButtons>
-    <semui:exportDropdown>
-        <semui:exportDropdownItem>
+<ui:controlButtons>
+    <ui:exportDropdown>
+        <ui:exportDropdownItem>
             <g:if test="${filterSet || defaultSet}">
                 <g:link class="item js-open-confirm-modal"
                         data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
@@ -26,8 +26,8 @@
             <g:else>
                 <g:link class="item" controller="myInstitution" action="manageConsortiaSubscriptions" params="${params+[exportXLS:true]}">${message(code:'default.button.exports.xls')}</g:link>
             </g:else>
-        </semui:exportDropdownItem>
-        <semui:exportDropdownItem>
+        </ui:exportDropdownItem>
+        <ui:exportDropdownItem>
             <g:if test="${filterSet || defaultSet}">
                 <g:link class="item js-open-confirm-modal"
                         data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
@@ -39,17 +39,17 @@
             <g:else>
                 <g:link class="item" controller="myInstitution" action="manageConsortiaSubscriptions" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
             </g:else>
-        </semui:exportDropdownItem>
+        </ui:exportDropdownItem>
 
-    </semui:exportDropdown>
-    <semui:actionsDropdown>
-        <semui:actionsDropdownItem data-semui="modal" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
-    </semui:actionsDropdown>
-</semui:controlButtons>
+    </ui:exportDropdown>
+    <ui:actionsDropdown>
+        <ui:actionsDropdownItem data-semui="modal" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
+    </ui:actionsDropdown>
+</ui:controlButtons>
 
-<semui:h1HeaderWithIcon message="menu.my.consortiaSubscriptions" total="${totalCount}" floated="true" />
+<ui:h1HeaderWithIcon message="menu.my.consortiaSubscriptions" total="${totalCount}" floated="true" />
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 <laser:render template="/templates/subscription/consortiaSubscriptionFilter"/>
 

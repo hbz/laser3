@@ -1,15 +1,15 @@
 <laser:htmlStart text="Admin::Package Delete" />
 
-        <semui:breadcrumbs>
-            <semui:crumb message="menu.admin" controller="admin" action="index" />
-            <semui:crumb text="Package Delete" class="active"/>
-        </semui:breadcrumbs>
+        <ui:breadcrumbs>
+            <ui:crumb message="menu.admin" controller="admin" action="index" />
+            <ui:crumb text="Package Delete" class="active"/>
+        </ui:breadcrumbs>
 
-        <semui:h1HeaderWithIcon text="Package Delete" />
+        <ui:h1HeaderWithIcon text="Package Delete" />
 
-        <semui:messages data="${flash}" />
+        <ui:messages data="${flash}" />
 
-        <semui:filter>
+        <ui:filter>
             <g:form action="hardDeletePkgs" method="get" params="${params}" class="ui form">
                 <input type="hidden" name="offset" value="${params.offset}"/>
 
@@ -21,7 +21,7 @@
                     <button type="submit" name="search" value="yes" class="ui secondary button">Search</button>
                 </div>
             </g:form>
-        </semui:filter>
+        </ui:filter>
 
         <table class="ui sortable celled la-js-responsive-table la-table table">
           <thead>

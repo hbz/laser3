@@ -3,14 +3,14 @@
 <g:set var="entityName" value="${message(code: 'platform.label')}" />
 <laser:htmlStart text="${message(code:"default.show.label", args:[entityName])}" />
 
-        <semui:breadcrumbs>
-            <semui:crumb controller="platform" action="index" message="platform.show.all" />
-            <semui:crumb class="active" id="${platformInstance.id}" text="${platformInstance.name}" />
-        </semui:breadcrumbs>
+        <ui:breadcrumbs>
+            <ui:crumb controller="platform" action="index" message="platform.show.all" />
+            <ui:crumb class="active" id="${platformInstance.id}" text="${platformInstance.name}" />
+        </ui:breadcrumbs>
 
-        <semui:modeSwitch controller="platform" action="show" params="${params}" />
+        <ui:modeSwitch controller="platform" action="show" params="${params}" />
 
-        <semui:h1HeaderWithIcon>
+        <ui:h1HeaderWithIcon>
             <g:if test="${editable}"><span id="platformNameEdit"
                                            class="xEditableValue"
                                            data-type="textarea"
@@ -19,9 +19,9 @@
                                            data-url='<g:createLink controller="ajax" action="editableSetValue"/>'>${platformInstance.name}</span>
             </g:if>
             <g:else>${platformInstance.name}</g:else>
-        </semui:h1HeaderWithIcon>
+        </ui:h1HeaderWithIcon>
 
-        <semui:messages data="${flash}" />
+        <ui:messages data="${flash}" />
         
 %{--        <laser:render template="nav" contextPath="." />--}%
 
@@ -72,14 +72,14 @@
                         </td>
                         <td>
                             <div class="field wide six">
-                                <semui:datepicker hideLabel="true" id="validFrom" name="validFrom" value ="${params.validFrom}">
-                                </semui:datepicker>
+                                <ui:datepicker hideLabel="true" id="validFrom" name="validFrom" value ="${params.validFrom}">
+                                </ui:datepicker>
                             </div>
                         </td>
                         <td>
                             <div class="field wide six">
-                                <semui:datepicker  hideLabel="true" id="validTo" name="validTo" value ="${params.validTo}">
-                                </semui:datepicker>
+                                <ui:datepicker  hideLabel="true" id="validTo" name="validTo" value ="${params.validTo}">
+                                </ui:datepicker>
                             </div>
                         </td>
                         <td>

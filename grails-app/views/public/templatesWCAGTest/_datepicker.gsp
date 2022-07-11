@@ -2,7 +2,7 @@
 
     <div class="three fields">
         <div class="field">
-            <semui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${validOn}" />
+            <ui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${validOn}" />
         </div>
 
     </div>

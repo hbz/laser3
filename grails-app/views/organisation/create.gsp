@@ -3,16 +3,16 @@
 <g:set var="entityName" value="${message(code: 'org.label')}" />
 <laser:htmlStart text="${message(code:"default.create.label", args:[entityName])}" />
 
-	    <semui:breadcrumbs>
-            <semui:crumb message="menu.public.all_orgs" controller="organisation" action="index" />
-            <semui:crumb text="${message(code:"default.create.label",args:[entityName])}" class="active"/>
-	    </semui:breadcrumbs>
+	    <ui:breadcrumbs>
+            <ui:crumb message="menu.public.all_orgs" controller="organisation" action="index" />
+            <ui:crumb text="${message(code:"default.create.label",args:[entityName])}" class="active"/>
+	    </ui:breadcrumbs>
 
-		<semui:h1HeaderWithIcon message="default.create.label" args="[entityName]" />
+		<ui:h1HeaderWithIcon message="default.create.label" args="[entityName]" />
 
-		<semui:messages data="${flash}" />
+		<ui:messages data="${flash}" />
 
-		<semui:errors bean="${orgInstance}" />
+		<ui:errors bean="${orgInstance}" />
 
 		<div class="ui grid">
 

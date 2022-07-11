@@ -3,25 +3,25 @@
 
 <laser:htmlStart message="menu.institutions.publicContacts" serviceInjection="true" />
 
-<semui:breadcrumbs>
+<ui:breadcrumbs>
     <g:if test="${inContextOrg}">
-        <semui:crumb text="${orgInstance.getDesignation()}" controller="organisation" show="show"
+        <ui:crumb text="${orgInstance.getDesignation()}" controller="organisation" show="show"
                      params="[id: orgInstance.id]"/>
     </g:if>
-    <semui:crumb message="menu.institutions.publicContacts" class="active"/>
-</semui:breadcrumbs>
+    <ui:crumb message="menu.institutions.publicContacts" class="active"/>
+</ui:breadcrumbs>
 
-<semui:h1HeaderWithIcon text="${orgInstance.name}" />
+<ui:h1HeaderWithIcon text="${orgInstance.name}" />
 
-<semui:controlButtons>
-    <semui:actionsDropdown>
+<ui:controlButtons>
+    <ui:actionsDropdown>
         <g:if test="${editable}">
             <a href="#createPersonModal" class="item" data-semui="modal"
                onclick="JSPC.app.personCreate('contactPersonForPublic');"><g:message
                     code="person.create_new.contactPerson.label"/></a>
         </g:if>
         <g:else>
-            <semui:actionsDropdownItemDisabled tooltip="${message(code: 'default.notAutorized.message')}"
+            <ui:actionsDropdownItemDisabled tooltip="${message(code: 'default.notAutorized.message')}"
                                                message="person.create_new.contactPerson.label"/>
         </g:else>
         <g:if test="${editable}">
@@ -29,15 +29,15 @@
                onclick="JSPC.app.addresscreate_org('${orgInstance.id}');"><g:message code="address.add.label"/></a>
         </g:if>
         <g:else>
-            <semui:actionsDropdownItemDisabled tooltip="${message(code: 'default.notAutorized.message')}"
+            <ui:actionsDropdownItemDisabled tooltip="${message(code: 'default.notAutorized.message')}"
                                                message="address.add.label"/>
         </g:else>
-        <semui:actionsDropdownItem notActive="true" data-semui="modal" href="#copyFilteredEmailAddresses_ajaxModal"
+        <ui:actionsDropdownItem notActive="true" data-semui="modal" href="#copyFilteredEmailAddresses_ajaxModal"
                                    message="menu.institutions.copy_emailaddresses.button"/>
-    </semui:actionsDropdown>
-</semui:controlButtons>
+    </ui:actionsDropdown>
+</ui:controlButtons>
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 <laser:render template="/organisation/nav"/>
 
@@ -61,7 +61,7 @@
     <br/>
 
 
-    <semui:filter>
+    <ui:filter>
         <g:form action="${actionName}" controller="organisation" method="get" params="${params}" class="ui small form">
             <div class="three fields">
                 <div class="field">
@@ -105,7 +105,7 @@
                        value="${message(code: 'default.button.filter.label')}">
             </div>
         </g:form>
-    </semui:filter>
+    </ui:filter>
 
     <laser:render template="/templates/cpa/person_table"
               model="${[persons       : visiblePersons,
@@ -113,7 +113,7 @@
                         tmplConfigShow: ['lineNumber', 'name', 'showContacts', 'function', 'position']
               ]}"/>
 
-    <semui:paginate action="myPublicContacts" controller="organisation" params="${params}"
+    <ui:paginate action="myPublicContacts" controller="organisation" params="${params}"
                     next="${message(code: 'default.paginate.next')}"
                     prev="${message(code: 'default.paginate.prev')}"
                     max="${max}"
@@ -125,7 +125,7 @@
 <div class="ui bottom attached tab segment ${params.tab == 'personAddresses' ? 'active' : ''}"
      data-tab="personAddresses">
 
-    <semui:filter>
+    <ui:filter>
         <g:form action="${actionName}" controller="organisation" method="get" params="${params}" class="ui small form">
             <div class="three fields">
                 <div class="field">
@@ -169,7 +169,7 @@
                        value="${message(code: 'default.button.filter.label')}">
             </div>
         </g:form>
-    </semui:filter>
+    </ui:filter>
 
     <laser:render template="/templates/cpa/person_table"
               model="${[persons       : visiblePersons,
@@ -178,7 +178,7 @@
                         tmplConfigShow: ['lineNumber', 'name', 'showAddresses', 'function', 'position']
               ]}"/>
 
-    <semui:paginate action="myPublicContacts" controller="organisation" params="${params}"
+    <ui:paginate action="myPublicContacts" controller="organisation" params="${params}"
                     next="${message(code: 'default.paginate.next')}"
                     prev="${message(code: 'default.paginate.prev')}"
                     max="${max}"

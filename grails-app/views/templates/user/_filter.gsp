@@ -1,7 +1,7 @@
 <%@ page import="de.laser.auth.Role" %>
 <laser:serviceInjection/>
 <laser:render template="/templates/filter/javascript" />
-<semui:filter showFilterButton="true">
+<ui:filter showFilterButton="true">
     <g:form controller="${controllerName}" action="${actionName}" params="${params.id ? [id:params.id] : []}" method="get" class="ui form">
 
         <div class="four fields">
@@ -32,4 +32,4 @@
             </div>
         </div>
     </g:form>
-</semui:filter>
+</ui:filter>

@@ -3,13 +3,13 @@
 
     <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
-    <semui:controlButtons>
+    <ui:controlButtons>
         <laser:render template="actions" />
-    </semui:controlButtons>
+    </ui:controlButtons>
 
-    <semui:h1HeaderWithIcon>
-        <semui:xEditable owner="${license}" field="reference" id="reference"/>
-    </semui:h1HeaderWithIcon>
+    <ui:h1HeaderWithIcon>
+        <ui:xEditable owner="${license}" field="reference" id="reference"/>
+    </ui:h1HeaderWithIcon>
 
     <laser:render template="nav" />
 

@@ -11,22 +11,22 @@
 
     <g:if test="${(accessService.checkPermAffiliation('ORG_BASIC_MEMBER', 'INST_EDITOR') && inContextOrg)
             || (accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR'))}">
-        <semui:controlButtons>
-            <semui:exportDropdown>
-                <semui:exportDropdownItem>
+        <ui:controlButtons>
+            <ui:exportDropdown>
+                <ui:exportDropdownItem>
                     <g:link class="item" action="edit_ip"
                             params="[id: accessPoint.id, exportXLSX: true]">${message(code: 'accessPoint.exportAccessPoint')}</g:link>
-                </semui:exportDropdownItem>
-            </semui:exportDropdown>
-        </semui:controlButtons>
+                </ui:exportDropdownItem>
+            </ui:exportDropdown>
+        </ui:controlButtons>
     </g:if>
 
-    <semui:h1HeaderWithIcon text="${orgInstance.name}" />
+    <ui:h1HeaderWithIcon text="${orgInstance.name}" />
 
     <laser:render template="/organisation/nav" model="${[orgInstance: accessPoint.org, inContextOrg: inContextOrg, tmplAccessPointsActive: true]}"/>
 
     <h2 class="ui header la-noMargin-top"><g:message code="default.edit.label" args="[entityName]"/></h2>
-    <semui:messages data="${flash}"/>
+    <ui:messages data="${flash}"/>
 
 
     <div class="la-inline-lists">
@@ -34,7 +34,7 @@
             <div class="content">
                 <dl>
                     <dt><g:message code="default.name.label" /></dt>
-                    <dd><semui:xEditable owner="${accessPoint}" field="name"/></dd>
+                    <dd><ui:xEditable owner="${accessPoint}" field="name"/></dd>
                 </dl>
                 <dl>
                     <dt><g:message code="accessMethod.label" /></dt>
@@ -48,8 +48,8 @@
     </div>
 
     <div class="ui top attached stackable tabular menu">
-        <a class="${tab == 'IPv4' ? 'active': ''} item" data-tab="IPv4">IPv4 <semui:totalNumber total="${accessPointDataList.ipv4Ranges.size()}"/></a>
-        <a class="${tab == 'IPv6' ? 'active': ''} item" data-tab="IPv6">IPv6 <semui:totalNumber total="${accessPointDataList.ipv6Ranges.size()}"/></a>
+        <a class="${tab == 'IPv4' ? 'active': ''} item" data-tab="IPv4">IPv4 <ui:totalNumber total="${accessPointDataList.ipv4Ranges.size()}"/></a>
+        <a class="${tab == 'IPv6' ? 'active': ''} item" data-tab="IPv6">IPv6 <ui:totalNumber total="${accessPointDataList.ipv6Ranges.size()}"/></a>
     </div>
 
 

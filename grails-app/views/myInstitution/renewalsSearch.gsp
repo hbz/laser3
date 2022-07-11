@@ -1,13 +1,13 @@
 <%@ page import="de.laser.Subscription" %>
 <laser:htmlStart message="myinst.renewalSearch.label" />
 
-    <semui:breadcrumbs>
-        <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
-        <semui:crumb controller="myInstitution" action="currentSubscriptions" message="myinst.currentSubscriptions.label"/>
-        <semui:crumb message="menu.institutions.gen_renewals" class="active"/>
-    </semui:breadcrumbs>
+    <ui:breadcrumbs>
+        <ui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
+        <ui:crumb controller="myInstitution" action="currentSubscriptions" message="myinst.currentSubscriptions.label"/>
+        <ui:crumb message="menu.institutions.gen_renewals" class="active"/>
+    </ui:breadcrumbs>
 
-    <semui:h1HeaderWithIcon message="menu.institutions.gen_renewals" />
+    <ui:h1HeaderWithIcon message="menu.institutions.gen_renewals" />
 
     <g:form class="ui form" action="renewalsSearch" method="get" params="${params}">
         <input type="hidden" name="offset" value="${params.offset}"/>

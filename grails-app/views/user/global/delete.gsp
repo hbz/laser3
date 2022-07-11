@@ -3,16 +3,16 @@
 
     <laser:render template="/user/global/breadcrumb" model="${[ params:params ]}"/>
 
-    <semui:controlButtons>
+    <ui:controlButtons>
         <laser:render template="/user/global/actions" />
-    </semui:controlButtons>
+    </ui:controlButtons>
 
-    <semui:h1HeaderWithIcon message="user.delete.label" />
+    <ui:h1HeaderWithIcon message="user.delete.label" />
     <h2 class="ui header la-noMargin-top">${user.username} - ${user.displayName ?: 'Nutzer unbekannt'}</h2>
 
     <g:if test="${delResult}">
         <g:if test="${delResult.status == DeletionService.RESULT_SUCCESS}">
-            <semui:msg class="positive" header="" message="deletion.success.msg" />
+            <ui:msg class="positive" header="" message="deletion.success.msg" />
 
             <g:if test="${controllerName == 'myInstitution'}">
                 <g:link action="users" class="ui button"><g:message code="org.nav.users"/></g:link>
@@ -27,20 +27,20 @@
         </g:if>
         <g:else>
             <g:if test="${delResult.status == DeletionService.RESULT_SUBSTITUTE_NEEDED}">
-                <semui:msg noClose="true" class="warning" header="" message="user.delete.info2" />
+                <ui:msg noClose="true" class="warning" header="" message="user.delete.info2" />
             </g:if>
             <g:else>
-                <semui:msg noClose="true" class="warning" header="" message="user.delete.info" />
+                <ui:msg noClose="true" class="warning" header="" message="user.delete.info" />
             </g:else>
 
             <g:if test="${delResult.status == DeletionService.RESULT_CUSTOM}">
-                <semui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="deletion.custom.msg.user" />
+                <ui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="deletion.custom.msg.user" />
             </g:if>
             <g:if test="${delResult.status == DeletionService.RESULT_BLOCKED}">
-                <semui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="deletion.blocked.msg.user" />
+                <ui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="deletion.blocked.msg.user" />
             </g:if>
             <g:if test="${delResult.status == DeletionService.RESULT_ERROR}">
-                <semui:msg class="negative" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
+                <ui:msg class="negative" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
             </g:if>
 
             <%
@@ -85,7 +85,7 @@
                             </g:if>
                             <g:else>
                                 <input disabled type="submit" class="ui button red" value="${message(code:'deletion.user')}" />
-                                <semui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="user.delete.substitute.missing" />
+                                <ui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="user.delete.substitute.missing" />
                             </g:else>
                         </g:if>
                         <g:elseif test="${delResult.status != DeletionService.RESULT_ERROR}">

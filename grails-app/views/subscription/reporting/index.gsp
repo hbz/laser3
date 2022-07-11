@@ -5,16 +5,16 @@
 
         <laser:render template="breadcrumb" model="${[ subscription:subscription, params:params ]}"/>
 
-        <semui:controlButtons>
+        <ui:controlButtons>
             <laser:render template="actions" />
-        </semui:controlButtons>
+        </ui:controlButtons>
     
-        <semui:h1HeaderWithIcon>
+        <ui:h1HeaderWithIcon>
             <laser:render template="iconSubscriptionIsChild"/>
-            <semui:xEditable owner="${subscription}" field="name" />
-        </semui:h1HeaderWithIcon>
+            <ui:xEditable owner="${subscription}" field="name" />
+        </ui:h1HeaderWithIcon>
 
-        <semui:anualRings object="${subscription}" controller="subscription" action="reporting" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+        <ui:anualRings object="${subscription}" controller="subscription" action="reporting" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
         <laser:render template="nav" />
         <laser:render template="message"/>
@@ -121,7 +121,7 @@
             }
         </laser:script>
 
-        <semui:modal id="reporting-modal-error" text="REPORTING" hideSubmitButton="true">
+        <ui:modal id="reporting-modal-error" text="REPORTING" hideSubmitButton="true">
             <p><i class="icon exclamation triangle large orange"></i> ${message(code:'reporting.modal.error')}</p>
-        </semui:modal>
+        </ui:modal>
 <laser:htmlEnd />

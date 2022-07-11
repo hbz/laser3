@@ -2,12 +2,12 @@
 
 <laser:htmlStart message="menu.admin.manageWorkflows" />
 
-<semui:breadcrumbs>
-    <semui:crumb message="menu.admin" controller="admin" action="index"/>
-    <semui:crumb text="${message(code:'menu.admin.manageWorkflows')}" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb message="menu.admin" controller="admin" action="index"/>
+    <ui:crumb text="${message(code:'menu.admin.manageWorkflows')}" class="active"/>
+</ui:breadcrumbs>
 
-<semui:h1HeaderWithIcon message="menu.admin.manageWorkflows" type="Workflow"/>
+<ui:h1HeaderWithIcon message="menu.admin.manageWorkflows" type="Workflow"/>
 
 <g:set var="tmplTab" value="${tab ?: 'prototypes'}" />
 
@@ -215,7 +215,7 @@
     </div>
 
     <p class="ui header">
-        ${message(code: 'workflow.object.' + WfWorkflowPrototype.KEY)} <semui:totalNumber total="${WfWorkflowPrototype.findAll().size()}"/>
+        ${message(code: 'workflow.object.' + WfWorkflowPrototype.KEY)} <ui:totalNumber total="${WfWorkflowPrototype.findAll().size()}"/>
     </p>
 
     <g:if test="${key == WfWorkflowPrototype.KEY}">
@@ -277,7 +277,7 @@
     <!-- -->
 
     <p class="ui header">
-        ${message(code: 'workflow.object.' + WfTaskPrototype.KEY)} <semui:totalNumber total="${WfTaskPrototype.findAll().size()}"/>
+        ${message(code: 'workflow.object.' + WfTaskPrototype.KEY)} <ui:totalNumber total="${WfTaskPrototype.findAll().size()}"/>
     </p>
 
     <g:if test="${key == WfTaskPrototype.KEY}">
@@ -390,7 +390,7 @@
     <!-- -->
 
     <p class="ui header">
-        ${message(code: 'workflow.object.' + WfConditionPrototype.KEY)} <semui:totalNumber total="${WfConditionPrototype.findAll().size()}"/>
+        ${message(code: 'workflow.object.' + WfConditionPrototype.KEY)} <ui:totalNumber total="${WfConditionPrototype.findAll().size()}"/>
     </p>
 
     <g:if test="${key == WfConditionPrototype.KEY}">
@@ -455,7 +455,7 @@
     <g:set var="workflowTemplates" value="${WfWorkflowPrototype.executeQuery('select wfwp from WfWorkflowPrototype wfwp order by wfwp.id desc')}" />
 
     <p class="ui header">
-        ${message(code: 'workflow.template.plural')} <semui:totalNumber total="${workflowTemplates.size()}"/>
+        ${message(code: 'workflow.template.plural')} <ui:totalNumber total="${workflowTemplates.size()}"/>
     </p>
 
     <g:each in="${workflowTemplates}" var="wfwp">

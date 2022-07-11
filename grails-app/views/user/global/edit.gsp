@@ -3,14 +3,14 @@
 
         <laser:render template="/user/global/breadcrumb" model="${[ params:params ]}"/>
 
-        <semui:controlButtons>
+        <ui:controlButtons>
             <laser:render template="/user/global/actions" />
-        </semui:controlButtons>
+        </ui:controlButtons>
 
-        <semui:h1HeaderWithIcon message="user.edit.label" />
+        <ui:h1HeaderWithIcon message="user.edit.label" />
         <h2 class="ui header la-noMargin-top">${user.username}</h2>
 
-    <semui:messages data="${flash}" />
+    <ui:messages data="${flash}" />
 
     <div class="ui two column grid">
 
@@ -41,14 +41,14 @@
 
                 <div class="ui field">
                     <label>${message(code:'user.email')}</label>
-                    <semui:xEditable owner="${user}" field="email" validation="email"/>
+                    <ui:xEditable owner="${user}" field="email" validation="email"/>
                 </div>
 
                 <g:if test="${editable}">
 
                     <div class="ui field">
                         <label>${message(code:'user.enabled.label')}</label>
-                        <semui:xEditableBoolean owner="${user}" field="enabled" />
+                        <ui:xEditableBoolean owner="${user}" field="enabled" />
                     </div>
 
                     <g:form controller="user" action="newPassword" params="${[id: user.id]}">

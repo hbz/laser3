@@ -44,33 +44,33 @@
                                             %{--SOURCE-SUBSCRIPTION--}%
 
                                                 <g:if test="${subProperty.type.isIntegerType()}">
-                                                    <semui:xEditable owner="${subProperty}" type="text" field="intValue"
+                                                    <ui:xEditable owner="${subProperty}" type="text" field="intValue"
                                                                      overwriteEditable="${overwriteEditable}"/>
                                                 </g:if>
                                                 <g:elseif test="${subProperty.type.isStringType()}">
-                                                    <semui:xEditable owner="${subProperty}" type="text"
+                                                    <ui:xEditable owner="${subProperty}" type="text"
                                                                      field="stringValue"
                                                                      overwriteEditable="${overwriteEditable}"/>
                                                 </g:elseif>
                                                 <g:elseif test="${subProperty.type.isBigDecimalType()}">
-                                                    <semui:xEditable owner="${subProperty}" type="text" field="decValue"
+                                                    <ui:xEditable owner="${subProperty}" type="text" field="decValue"
                                                                      overwriteEditable="${overwriteEditable}"/>
                                                 </g:elseif>
                                                 <g:elseif test="${subProperty.type.isDateType()}">
-                                                    <semui:xEditable owner="${subProperty}" type="date"
+                                                    <ui:xEditable owner="${subProperty}" type="date"
                                                                      field="dateValue"
                                                                      overwriteEditable="${overwriteEditable}"/>
                                                 </g:elseif>
                                                 <g:elseif test="${subProperty.type.isURLType()}">
-                                                    <semui:xEditable owner="${subProperty}" type="url" field="urlValue"
+                                                    <ui:xEditable owner="${subProperty}" type="url" field="urlValue"
                                                                      overwriteEditable="${overwriteEditable}"
                                                                      class="la-overflow la-ellipsis"/>
                                                     <g:if test="${subProperty.value}">
-                                                        <semui:linkIcon href="${subProperty.value}"/>
+                                                        <ui:linkIcon href="${subProperty.value}"/>
                                                     </g:if>
                                                 </g:elseif>
                                                 <g:elseif test="${subProperty.type.isRefdataValueType()}">
-                                                    <semui:xEditableRefData owner="${subProperty}" type="text"
+                                                    <ui:xEditableRefData owner="${subProperty}" type="text"
                                                                             field="refValue"
                                                                             config="${subProperty.type.refdataCategory}"
                                                                             overwriteEditable="${overwriteEditable}"/>
@@ -107,34 +107,34 @@
                                         <g:if test="${subProperty.owner == successorSubscription}">
                                             <div class="item">
                                                 <g:if test="${subProperty.type.isIntegerType()}">
-                                                    <semui:xEditable owner="${subProperty}" type="text" field="intValue"
+                                                    <ui:xEditable owner="${subProperty}" type="text" field="intValue"
                                                                      overwriteEditable="${overwriteEditable}"/>
                                                 </g:if>
 
                                                 <g:elseif test="${subProperty.type.isStringType()}">
-                                                    <semui:xEditable owner="${subProperty}" type="text"
+                                                    <ui:xEditable owner="${subProperty}" type="text"
                                                                      field="stringValue"
                                                                      overwriteEditable="${overwriteEditable}"/>
                                                 </g:elseif>
                                                 <g:elseif test="${subProperty.type.isBigDecimalType()}">
-                                                    <semui:xEditable owner="${subProperty}" type="text" field="decValue"
+                                                    <ui:xEditable owner="${subProperty}" type="text" field="decValue"
                                                                      overwriteEditable="${overwriteEditable}"/>
                                                 </g:elseif>
                                                 <g:elseif test="${subProperty.type.isDateType()}">
-                                                    <semui:xEditable owner="${subProperty}" type="date"
+                                                    <ui:xEditable owner="${subProperty}" type="date"
                                                                      field="dateValue"
                                                                      overwriteEditable="${overwriteEditable}"/>
                                                 </g:elseif>
                                                 <g:elseif test="${subProperty.type.isURLType()}">
-                                                    <semui:xEditable owner="${subProperty}" type="url" field="urlValue"
+                                                    <ui:xEditable owner="${subProperty}" type="url" field="urlValue"
                                                                      overwriteEditable="${overwriteEditable}"
                                                                      class="la-overflow la-ellipsis"/>
                                                     <g:if test="${subProperty.value}">
-                                                        <semui:linkIcon/>
+                                                        <ui:linkIcon/>
                                                     </g:if>
                                                 </g:elseif>
                                                 <g:elseif test="${subProperty.type.isRefdataValueType()}">
-                                                    <semui:xEditableRefData owner="${subProperty}" type="text"
+                                                    <ui:xEditableRefData owner="${subProperty}" type="text"
                                                                             field="refValue"
                                                                             config="${subProperty.type.refdataCategory}"
                                                                             overwriteEditable="${overwriteEditable}"/>

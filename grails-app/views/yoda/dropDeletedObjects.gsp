@@ -1,11 +1,11 @@
 <laser:htmlStart text="Datenbereinigung" />
 
-<semui:breadcrumbs>
-    <semui:crumb message="menu.admin" controller="admin" action="index"/>
-    <semui:crumb text="Datenbereinigung" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb message="menu.admin" controller="admin" action="index"/>
+    <ui:crumb text="Datenbereinigung" class="active"/>
+</ui:breadcrumbs>
 
-    <semui:h1HeaderWithIcon text="Lizenzen - ${subscriptions.size()}, Verträge - ${licenses.size()}" />
+    <ui:h1HeaderWithIcon text="Lizenzen - ${subscriptions.size()}, Verträge - ${licenses.size()}" />
 
     <h2 class="ui header">Lizenzen - ${subscriptions.size()}</h2>
 

@@ -1,20 +1,20 @@
 <%@ page import="de.laser.utils.DateUtils; de.laser.Org; de.laser.finance.CostItem; de.laser.Subscription; de.laser.Platform; de.laser.Package; java.text.SimpleDateFormat; de.laser.PendingChangeConfiguration; de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.storage.RDStore;" %>
 <laser:htmlStart message="subscription.details.linkPackage.heading" />
 
-<semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="currentSubscriptions"
+<ui:breadcrumbs>
+    <ui:crumb controller="myInstitution" action="currentSubscriptions"
                  text="${message(code: 'myinst.currentSubscriptions.label')}"/>
-    <semui:crumb controller="subscription" action="index" id="${subscription.id}"
+    <ui:crumb controller="subscription" action="index" id="${subscription.id}"
                  text="${subscription.name}"/>
-    <semui:crumb class="active"
+    <ui:crumb class="active"
                  text="${message(code: 'subscription.details.linkPackage.heading')}"/>
-</semui:breadcrumbs>
+</ui:breadcrumbs>
 
-<semui:controlButtons>
+<ui:controlButtons>
     <laser:render template="actions"/>
-</semui:controlButtons>
+</ui:controlButtons>
 
-<semui:h1HeaderWithIcon text="${subscription.name}" />
+<ui:h1HeaderWithIcon text="${subscription.name}" />
 <br>
 <br>
 
@@ -23,7 +23,7 @@
 <br>
 
 <h3 class="ui left floated aligned icon header la-clear-before">${message(code: 'package.plural')}
-<semui:totalNumber total="${recordsCount}"/>
+<ui:totalNumber total="${recordsCount}"/>
 </h3>
 
 
@@ -31,7 +31,7 @@
     <laser:render template="/templates/filter/packageGokbFilter"/>
 </g:if>
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 <div class="ui icon message" id="durationAlert" style="display: none">
     <i class="notched circle loading icon"></i>
@@ -174,7 +174,7 @@
     </table>
 
 
-    <semui:paginate action="linkPackage" controller="subscription" params="${params}"
+    <ui:paginate action="linkPackage" controller="subscription" params="${params}"
                     next="${message(code: 'default.paginate.next')}"
                     prev="${message(code: 'default.paginate.prev')}" max="${max}"
                     total="${recordsCount}"/>
@@ -196,7 +196,7 @@
 
 <div id="magicArea"></div>
 
-<semui:modal contentClass="scrolling" id="linkPackageModal" message="myinst.currentSubscriptions.link_pkg"
+<ui:modal contentClass="scrolling" id="linkPackageModal" message="myinst.currentSubscriptions.link_pkg"
              msgSave="${message(code: 'default.button.link.label')}">
 
     <g:form class="ui form" id="linkPackageForm" url="[controller: 'subscription', action: 'processLinkPackage', id: params.id]">
@@ -372,7 +372,7 @@
                 });
     </laser:script>
 
-</semui:modal>
+</ui:modal>
 
 <laser:script file="${this.getGroovyPageFileName()}">
 %{--    JSPC.app.unlinkPackage = function (pkg_id){

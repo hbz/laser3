@@ -1,6 +1,6 @@
 <!-- _recentlyAddedModal.gsp -->
 
-<semui:modal id="recentlyAdded_modal" text="${message(code:'financials.recentCosts')}" hideSubmitButton="true">
+<ui:modal id="recentlyAdded_modal" text="${message(code:'financials.recentCosts')}" hideSubmitButton="true">
 
     <p>Überblick über die zuletzt hinzugefügten Kosten.</p>
     <p>Von ${from} bis ${to}</p>
@@ -48,6 +48,6 @@
 
     </g:else>
 
-</semui:modal>
+</ui:modal>
 
 <!-- _recentlyAddedModal.gsp -->

@@ -1,5 +1,5 @@
 <%@ page import="de.laser.storage.RDStore" %>
-    <semui:messages data="${flash}" />
+    <ui:messages data="${flash}" />
     <div id="filterTemplateWrapper" class="wrapper">
         <div id="filterTemplate">
             <laser:render template="filter" model="[filterPresets:filterPresets,fixedSubscription:fixedSubscription,showView:showView,ciTitles:ciTitles]"/>

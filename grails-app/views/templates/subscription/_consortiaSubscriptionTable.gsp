@@ -286,4 +286,4 @@
     </g:else>
 </g:else>
 
-<semui:paginate action="${actionName}" controller="${controllerName}" params="${params}" max="${max}" total="${totalCount}" />
+<ui:paginate action="${actionName}" controller="${controllerName}" params="${params}" max="${max}" total="${totalCount}" />

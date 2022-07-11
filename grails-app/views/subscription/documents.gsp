@@ -1,18 +1,18 @@
 <laser:htmlStart message="default.documents.label" />
 
     <laser:render template="breadcrumb" model="${[ params:params ]}"/>
-    <semui:controlButtons>
+    <ui:controlButtons>
       <laser:render template="actions" />
-    </semui:controlButtons>
-    <semui:messages data="${flash}" />
+    </ui:controlButtons>
+    <ui:messages data="${flash}" />
 
-      <semui:h1HeaderWithIcon>
+      <ui:h1HeaderWithIcon>
         <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
           <laser:render template="iconSubscriptionIsChild"/>
         </g:if>
-        <semui:xEditable owner="${subscription}" field="name" />
-      </semui:h1HeaderWithIcon>
-      <semui:anualRings object="${subscription}" controller="subscription" action="documents" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+        <ui:xEditable owner="${subscription}" field="name" />
+      </ui:h1HeaderWithIcon>
+      <ui:anualRings object="${subscription}" controller="subscription" action="documents" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
     <laser:render template="nav" />
 
@@ -20,7 +20,7 @@
       <laser:render template="message" />
     </g:if>
 
-    <semui:messages data="${flash}" />
+    <ui:messages data="${flash}" />
 
     <laser:render template="/templates/documents/table" model="${[instance:subscription, context:'documents', redirect:'documents', owntp: 'subscription']}"/>
 

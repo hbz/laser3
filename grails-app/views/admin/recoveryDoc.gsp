@@ -2,14 +2,14 @@
 
 <laser:htmlStart message="menu.admin.recoveryDoc" />
 
-<semui:breadcrumbs>
-    <semui:crumb message="menu.admin" controller="admin" action="index"/>
-    <semui:crumb message="menu.admin.recoveryDoc" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb message="menu.admin" controller="admin" action="index"/>
+    <ui:crumb message="menu.admin.recoveryDoc" class="active"/>
+</ui:breadcrumbs>
 
-<semui:h1HeaderWithIcon message="menu.admin.recoveryDoc" />
+<ui:h1HeaderWithIcon message="menu.admin.recoveryDoc" />
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 <g:if test="${doc}">
 

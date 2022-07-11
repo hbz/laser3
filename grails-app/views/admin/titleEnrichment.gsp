@@ -2,13 +2,13 @@
 
 <laser:htmlStart text="Titles Enrichment" />
 
-<semui:breadcrumbs>
-    <semui:crumb message="menu.admin" controller="admin" action="index" />
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb message="menu.admin" controller="admin" action="index" />
+</ui:breadcrumbs>
 
-<semui:h1HeaderWithIcon text="Title Enrichment of series_name, monograph_parent_collection_title, subject_reference, summary_of_content" />
+<ui:h1HeaderWithIcon text="Title Enrichment of series_name, monograph_parent_collection_title, subject_reference, summary_of_content" />
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 <g:form class="ui form" controller="admin" action="titleEnrichment" params="" method="post"
         enctype="multipart/form-data">

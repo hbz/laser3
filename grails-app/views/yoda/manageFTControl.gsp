@@ -1,14 +1,14 @@
 <laser:htmlStart text="Manage FTControl" />
 
-    <semui:breadcrumbs>
-        <semui:crumb message="menu.yoda" controller="yoda" action="index"/>
-        <semui:crumb text="FTControl" class="active" />
-    </semui:breadcrumbs>
+    <ui:breadcrumbs>
+        <ui:crumb message="menu.yoda" controller="yoda" action="index"/>
+        <ui:crumb text="FTControl" class="active" />
+    </ui:breadcrumbs>
 
-    <semui:h1HeaderWithIcon text="Currently Running: ${dataloadService.update_running}" />
+    <ui:h1HeaderWithIcon text="Currently Running: ${dataloadService.update_running}" />
     <h2 class="ui header">Last update run: <g:formatDate date="${dataloadService.lastIndexUpdate}" format="${message(code:'default.date.format.noZ')}"/></h2>
 
-    <semui:messages data="${flash}" />
+    <ui:messages data="${flash}" />
 
       <table class="ui celled la-js-responsive-table la-table table">
         <thead>
@@ -36,13 +36,13 @@
                   ${ftControl.dbElements}
               </td>
               <td>
-                  <semui:xEditable owner="${ftControl}" field="lastTimestamp"/>
+                  <ui:xEditable owner="${ftControl}" field="lastTimestamp"/>
               </td>
               <td>
                 <g:formatDate date="${new Date(ftControl.lastTimestamp)}" format="${message(code:'default.date.format.noZ')}"/>
               </td>
               <td>
-                <semui:xEditableBoolean owner="${ftControl}" field="active"/>
+                <ui:xEditableBoolean owner="${ftControl}" field="active"/>
               </td>
             </tr>
           </g:each>

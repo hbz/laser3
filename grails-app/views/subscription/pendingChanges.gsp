@@ -3,14 +3,14 @@
 
     <laser:render template="breadcrumb" model="${[ license:subscription, params:params ]}"/>
 
-    <semui:controlButtons>
+    <ui:controlButtons>
         <laser:render template="actions" />
-    </semui:controlButtons>
+    </ui:controlButtons>
 
-    <semui:h1HeaderWithIcon>
-        <semui:xEditable owner="${subscription}" field="name" />
-    </semui:h1HeaderWithIcon>
-    <semui:anualRings object="${subscription}" controller="subscription" action="pendingChanges" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+    <ui:h1HeaderWithIcon>
+        <ui:xEditable owner="${subscription}" field="name" />
+    </ui:h1HeaderWithIcon>
+    <ui:anualRings object="${subscription}" controller="subscription" action="pendingChanges" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
 
     <laser:render template="nav" />

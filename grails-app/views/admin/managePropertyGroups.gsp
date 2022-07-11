@@ -2,14 +2,14 @@
 
 <laser:htmlStart message="menu.institutions.manage_prop_groups" />
 
-        <semui:breadcrumbs>
-            <semui:crumb message="menu.admin" controller="admin" action="index" />
-            <semui:crumb message="menu.institutions.manage_prop_groups" class="active"/>
-        </semui:breadcrumbs>
+        <ui:breadcrumbs>
+            <ui:crumb message="menu.admin" controller="admin" action="index" />
+            <ui:crumb message="menu.institutions.manage_prop_groups" class="active"/>
+        </ui:breadcrumbs>
 
-        <semui:h1HeaderWithIcon message="menu.institutions.manage_prop_groups" />
+        <ui:h1HeaderWithIcon message="menu.institutions.manage_prop_groups" />
 
-        <semui:messages data="${flash}" />
+        <ui:messages data="${flash}" />
 
         <g:if test="${editable}">
             <div class="content ui form">
@@ -38,10 +38,10 @@
             <g:each in="${propDefGroups}" var="pdGroup">
                 <tr>
                     <td>
-                        <semui:xEditable owner="${pdGroup}" field="name" />
+                        <ui:xEditable owner="${pdGroup}" field="name" />
                     </td>
                     <td>
-                        <semui:xEditable owner="${pdGroup}" field="description" />
+                        <ui:xEditable owner="${pdGroup}" field="description" />
                     </td>
                     <td>
                         ${pdGroup.getPropertyDefinitions().size()}
@@ -60,7 +60,7 @@
                         <%-- TODO: REFACTORING x.class.name with pd.desc --%>
                     </td>
                     <td>
-                        <semui:xEditableBoolean owner="${pdGroup}" field="isVisible" />
+                        <ui:xEditableBoolean owner="${pdGroup}" field="isVisible" />
                     </td>
                     <td class="x">
                         <g:if test="${editable}">

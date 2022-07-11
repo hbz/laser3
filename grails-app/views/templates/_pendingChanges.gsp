@@ -1,6 +1,6 @@
 
 <g:if test="${processingpc}">
-    <semui:msg class="negative"  message="pendingchange.inprogress" />
+    <ui:msg class="negative"  message="pendingchange.inprogress" />
 </g:if>
 
 <g:if test="${editable && pendingChanges?.size() > 0}">

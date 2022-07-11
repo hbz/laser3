@@ -2,16 +2,16 @@
 
 <laser:htmlStart message="myinst.emptySubscription.label" serviceInjection="true"/>
 
-        <semui:breadcrumbs>
-            <semui:crumb controller="myInstitution" action="currentSubscriptions" message="myinst.currentSubscriptions.label" />
-            <semui:crumb message="myinst.emptySubscription.label" class="active" />
-        </semui:breadcrumbs>
+        <ui:breadcrumbs>
+            <ui:crumb controller="myInstitution" action="currentSubscriptions" message="myinst.currentSubscriptions.label" />
+            <ui:crumb message="myinst.emptySubscription.label" class="active" />
+        </ui:breadcrumbs>
 
-        <semui:h1HeaderWithIcon message="myinst.emptySubscription.label" />
+        <ui:h1HeaderWithIcon message="myinst.emptySubscription.label" />
 
-        <semui:messages data="${flash}"/>
+        <ui:messages data="${flash}"/>
 
-        <semui:form>
+        <ui:form>
             <g:form action="processEmptySubscription" method="post" class="ui form newSubscription">
                 <div class="field required">
                     <label>${message(code:'myinst.emptySubscription.name')} <g:message code="messageRequiredField" /></label>
@@ -19,9 +19,9 @@
                  </div>
 
                 <div class="two fields">
-                    <semui:datepicker label="subscription.startDate.label" id="valid_from" name="valid_from" value="${defaultStartYear}" />
+                    <ui:datepicker label="subscription.startDate.label" id="valid_from" name="valid_from" value="${defaultStartYear}" />
 
-                    <semui:datepicker label="subscription.endDate.label" id="valid_to" name="valid_to" value="${defaultEndYear}" />
+                    <ui:datepicker label="subscription.endDate.label" id="valid_to" name="valid_to" value="${defaultEndYear}" />
                 </div>
 
                 <div class="field required">
@@ -58,7 +58,7 @@
                 <input id="submitterFallback" type="submit" class="ui button js-click-control" value="${message(code:'default.button.create.label')}" />
                 <input type="button" class="ui button js-click-control" onclick="JSPC.helper.goBack();" value="${message(code:'default.button.cancel.label')}" />
             </g:form>
-        </semui:form>
+        </ui:form>
 
     <hr />
         <laser:script file="${this.getGroovyPageFileName()}">

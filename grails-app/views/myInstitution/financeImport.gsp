@@ -2,15 +2,15 @@
 
 <laser:htmlStart message="myinst.financeImport.pageTitle" />
 
-  <semui:breadcrumbs>
-    <semui:crumb message="menu.institutions.financeImport" class="active"/>
-  </semui:breadcrumbs>
+  <ui:breadcrumbs>
+    <ui:crumb message="menu.institutions.financeImport" class="active"/>
+  </ui:breadcrumbs>
 
-    <semui:h1HeaderWithIcon message="menu.institutions.financeImport" />
+    <ui:h1HeaderWithIcon message="menu.institutions.financeImport" />
 
-    <semui:messages data="${flash}" />
+    <ui:messages data="${flash}" />
 
-       <semui:msg class="warning" header="${message(code: 'message.information')}" message="myinst.financeImport.headline" />
+       <ui:msg class="warning" header="${message(code: 'message.information')}" message="myinst.financeImport.headline" />
 
           <g:if test="${params.id}">
               <g:link action="generateFinanceImportWorksheet" params="${[id:params.id]}">

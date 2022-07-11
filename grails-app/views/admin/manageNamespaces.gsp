@@ -2,18 +2,18 @@
 
 <laser:htmlStart message="menu.admin.manageIdentifierNamespaces" />
 
-		<semui:breadcrumbs>
-			<semui:crumb message="menu.admin" controller="admin" action="index" />
-			<semui:crumb message="menu.admin.manageIdentifierNamespaces" class="active"/>
-		</semui:breadcrumbs>
+		<ui:breadcrumbs>
+			<ui:crumb message="menu.admin" controller="admin" action="index" />
+			<ui:crumb message="menu.admin.manageIdentifierNamespaces" class="active"/>
+		</ui:breadcrumbs>
 
-        <semui:h1HeaderWithIcon message="menu.admin.manageIdentifierNamespaces" />
+        <ui:h1HeaderWithIcon message="menu.admin.manageIdentifierNamespaces" />
 
-		<semui:messages data="${flash}" />
+		<ui:messages data="${flash}" />
 
-        <semui:errors bean="${identifierNamespaceInstance}" />
+        <ui:errors bean="${identifierNamespaceInstance}" />
 
-        <semui:form message="identifier.namespace.add.label">
+        <ui:form message="identifier.namespace.add.label">
             <g:form class="ui form" action="manageNamespaces">
                 <div class="two fields">
                     <div class="field ${hasErrors(bean: identifierNamespaceInstance, field: 'name_de', 'error')} ">
@@ -83,7 +83,7 @@
                     <g:message code="default.button.create.label"/>
                 </button>
             </g:form>
-        </semui:form>
+        </ui:form>
 
         <g:if test="${cmd == 'details'}">
 
@@ -151,7 +151,7 @@
                                     <td></td>
                                     <td>
                                         <g:if test="${!idNs.isHardData}">
-                                            <semui:xEditable owner="${idNs}" field="name_${currentLang}"/>
+                                            <ui:xEditable owner="${idNs}" field="name_${currentLang}"/>
                                         </g:if>
                                         <g:else>
                                             ${idNs."name_${currentLang}"}
@@ -159,35 +159,35 @@
                                     </td>
                                     <td>
                                         <g:if test="${!idNs.isHardData}">
-                                            <semui:xEditable owner="${idNs}" field="description_${currentLang}"/>
+                                            <ui:xEditable owner="${idNs}" field="description_${currentLang}"/>
                                         </g:if>
                                         <g:else>
                                             ${idNs."description_${currentLang}"}
                                         </g:else>
                                     </td>
                                     <td>
-                                        <semui:xEditable owner="${idNs}" field="family"/>
+                                        <ui:xEditable owner="${idNs}" field="family"/>
                                     </td>
                                     <td>
                                         <g:if test="${!idNs.isHardData}">
-                                            <semui:xEditable owner="${idNs}" field="nsType"/>
+                                            <ui:xEditable owner="${idNs}" field="nsType"/>
                                         </g:if>
                                         <g:else>
                                             ${idNs.nsType}
                                         </g:else>
                                     </td>
                                     <td>
-                                        <semui:xEditable owner="${idNs}" field="validationRegex"/>
+                                        <ui:xEditable owner="${idNs}" field="validationRegex"/>
                                     </td>
                                     <td>
-                                        <semui:xEditable owner="${idNs}" field="urlPrefix" validation="url"/>
+                                        <ui:xEditable owner="${idNs}" field="urlPrefix" validation="url"/>
                                     </td>
                                     <td>
                                         ${idNs.isFromLaser}
                                     </td>
                                     <td>
                                         <g:if test="${!idNs.isHardData}">
-                                            <semui:xEditableBoolean owner="${idNs}" field="isUnique"/>
+                                            <ui:xEditableBoolean owner="${idNs}" field="isUnique"/>
                                         </g:if>
                                         <g:else>
                                             ${idNs.isUnique}
@@ -221,7 +221,7 @@
                                     </td>
                                     <td>
                                         <g:if test="${!idNs.isHardData}">
-                                            <semui:xEditable owner="${idNs}" field="name_${currentLang}"/>
+                                            <ui:xEditable owner="${idNs}" field="name_${currentLang}"/>
                                         </g:if>
                                         <g:else>
                                             ${idNs."name_${currentLang}"}
@@ -229,14 +229,14 @@
                                     </td>
                                     <td>
                                         <g:if test="${!idNs.isHardData}">
-                                            <semui:xEditable owner="${idNs}" field="description_${currentLang}"/>
+                                            <ui:xEditable owner="${idNs}" field="description_${currentLang}"/>
                                         </g:if>
                                         <g:else>
                                             ${idNs."description_${currentLang}"}
                                         </g:else>
                                     </td>
                                     <td>
-                                        <semui:xEditable owner="${idNs}" field="family"/>
+                                        <ui:xEditable owner="${idNs}" field="family"/>
                                     </td>
                                     <td>
                                         ${idNs.nsType}
@@ -245,7 +245,7 @@
                                         ${idNs.validationRegex}
                                     </td>
                                     <td>
-                                        <semui:xEditable owner="${idNs}" field="urlPrefix" validation="url"/>
+                                        <ui:xEditable owner="${idNs}" field="urlPrefix" validation="url"/>
                                     </td>
                                     <td>
                                         ${idNs.isFromLaser}

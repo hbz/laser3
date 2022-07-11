@@ -3,59 +3,59 @@
 
     <g:set var="entityName" value="${message(code: 'org.label')}"/>
 
-<semui:breadcrumbs>
-    <semui:crumb text="${message(code: 'menu.my.consortia')}" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb text="${message(code: 'menu.my.consortia')}" class="active"/>
+</ui:breadcrumbs>
 
-<semui:controlButtons>
+<ui:controlButtons>
     <%-- needs to be done separately if needed at all
-    <semui:exportDropdown>
-        <semui:exportDropdownItem>
+    <ui:exportDropdown>
+        <ui:exportDropdownItem>
             <a class="item" data-semui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
-        </semui:exportDropdownItem>
+        </ui:exportDropdownItem>
         <g:if test="${filterSet}">
-            <semui:exportDropdownItem>
+            <ui:exportDropdownItem>
                 <g:link class="item js-open-confirm-modal"
                         data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
                         data-confirm-term-how="ok" controller="myInstitution" action="manageMembers"
                         params="${params+[exportXLS:true]}">
                     ${message(code:'default.button.exports.xls')}
                 </g:link>
-            </semui:exportDropdownItem>
-            <semui:exportDropdownItem>
+            </ui:exportDropdownItem>
+            <ui:exportDropdownItem>
                 <g:link class="item js-open-confirm-modal"
                         data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
                         data-confirm-term-how="ok" controller="myInstitution" action="manageMembers"
                         params="${params+[format:'csv']}">
                     ${message(code:'default.button.exports.csv')}
                 </g:link>
-            </semui:exportDropdownItem>
+            </ui:exportDropdownItem>
         </g:if>
         <g:else>
-            <semui:exportDropdownItem>
+            <ui:exportDropdownItem>
                 <g:link class="item" action="manageMembers" params="${params+[exportXLS:true]}">${message(code:'default.button.exports.xls')}</g:link>
-            </semui:exportDropdownItem>
-            <semui:exportDropdownItem>
+            </ui:exportDropdownItem>
+            <ui:exportDropdownItem>
                 <g:link class="item" action="manageMembers" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
-            </semui:exportDropdownItem>
+            </ui:exportDropdownItem>
         </g:else>
-    </semui:exportDropdown>--%>
+    </ui:exportDropdown>--%>
     <g:if test="${editable}">
         <laser:render template="actions"/>
     </g:if>
-</semui:controlButtons>
+</ui:controlButtons>
 
-<semui:h1HeaderWithIcon message="menu.my.consortia" total="${consortiaCount}" floated="true" />
+<ui:h1HeaderWithIcon message="menu.my.consortia" total="${consortiaCount}" floated="true" />
 
 <laser:render template="/templates/filter/javascript" />
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
     <%
         List configShowFilter = [['name']]
         List configShowTable = ['sortname', 'name', 'mainContact', 'numberOfSubscriptions', 'numberOfSurveys']
     %>
 
-    <semui:filter showFilterButton="true">
+    <ui:filter showFilterButton="true">
         <g:form action="currentConsortia" method="get" class="ui form">
             <laser:render template="/templates/filter/orgFilter"
                       model="[
@@ -63,7 +63,7 @@
                               tmplConfigFormFilter: true
                       ]"/>
         </g:form>
-    </semui:filter>
+    </ui:filter>
 <div class="la-clear-before">
     <g:if test="${consortia}">
         <laser:render template="export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal', orgType: 'institution']" />
@@ -85,10 +85,10 @@
 </g:else>
 
     <laser:render template="/templates/copyEmailaddresses" model="[orgList: totalConsortia]"/>
-    <semui:paginate action="currentConsortia" controller="myInstitution" params="${params}" max="${max}" total="${consortiaCount}" />
+    <ui:paginate action="currentConsortia" controller="myInstitution" params="${params}" max="${max}" total="${consortiaCount}" />
 
-    <semui:debugInfo>
+    <ui:debugInfo>
         <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
-    </semui:debugInfo>
+    </ui:debugInfo>
 
 <laser:htmlEnd />

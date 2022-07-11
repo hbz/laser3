@@ -20,6 +20,10 @@ Accessing configuration through dot notation *(config.a.b.c)* has been **depreca
 The configuration should be accessed via *de.laser.config.ConfigMapper* so that settings can be maintained and validated at any time.
 Fallbacks and default values should be stored in *de.laser.config.ConfigDefaults*
 
+### Custom Tags
+
+Default namespace for custom tags has been changed from **semui** to **ui**. System related namespace is still **laser**.
+
 ### Database Migrations
 
 A new naming scheme should be used. See [database-migration.md](./database-migration.md) for more information.

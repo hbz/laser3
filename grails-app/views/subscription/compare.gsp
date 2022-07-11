@@ -5,13 +5,13 @@
         <laser:render template="breadcrumb" model="${[ params:params ]}"/>
 
         <g:if test="${institutionName}">
-			<semui:h1HeaderWithIcon message="menu.my.comp_sub" />
+			<ui:h1HeaderWithIcon message="menu.my.comp_sub" />
         </g:if>
         <g:else>
-			<semui:h1HeaderWithIcon message="subscription.compare.label" />
+			<ui:h1HeaderWithIcon message="subscription.compare.label" />
         </g:else>
 
-        <semui:messages data="${flash}" />
+        <ui:messages data="${flash}" />
 
 				<g:form action="compare" controller="subscription" method="GET" class="ui form">
 					<g:set var="subs_message" value="${message(code:'subscription.plural')}" />
@@ -29,9 +29,9 @@
 							<tr>
 								<td> ${message(code:'subscription.compare.name')} </td>
 								<td>${message(code:'default.compare.restrict.after', args:[subs_message] )}
-									<semui:simpleHiddenValue id="startA" name="startA" type="date" value="${params.startA}"/>
+									<ui:simpleHiddenValue id="startA" name="startA" type="date" value="${params.startA}"/>
 									${message(code:'default.compare.restrict.before')}
-									<semui:simpleHiddenValue id="endA" name="endA" type="date" value="${params.endA}"/><br />
+									<ui:simpleHiddenValue id="endA" name="endA" type="date" value="${params.endA}"/><br />
 									<div class="ui search selection dropdown">
 										<input type="hidden" name="subA" id="subSelectA" value="${subA}">
 										<i class="dropdown icon"></i>
@@ -41,9 +41,9 @@
 								</td>
 								<td>
 									${message(code:'default.compare.restrict.after', args:[subs_message] )}
-									<semui:simpleHiddenValue id="startB" name="startB" type="date" value="${params.startB}"/>
+									<ui:simpleHiddenValue id="startB" name="startB" type="date" value="${params.startB}"/>
 									${message(code:'default.compare.restrict.before')}
-									<semui:simpleHiddenValue id="endB" name="endB" type="date" value="${params.endB}"/><br />
+									<ui:simpleHiddenValue id="endB" name="endB" type="date" value="${params.endB}"/><br />
 									<div class="ui search selection dropdown">
 										<input type="hidden" name="subB" id="subSelectB" value="${subB}">
 										<i class="dropdown icon"></i>
@@ -55,12 +55,12 @@
 							<tr>
 								<td> ${message(code:'subscription.compare.snapshot')}</td>
 								<td>
-									<semui:datepicker id="dateA" name="dateA" placeholder ="default.date.label" value="${dateA ? dateA : ''}" >
-									</semui:datepicker>
+									<ui:datepicker id="dateA" name="dateA" placeholder ="default.date.label" value="${dateA ? dateA : ''}" >
+									</ui:datepicker>
 								</td>
 								<td>
-									<semui:datepicker id="dateB" name="dateB" placeholder ="default.date.label" value="${dateB ? dateB : ''}" >
-									</semui:datepicker>
+									<ui:datepicker id="dateB" name="dateB" placeholder ="default.date.label" value="${dateB ? dateB : ''}" >
+									</ui:datepicker>
 								</td>
 							</tr>
 								<tr>
@@ -182,7 +182,7 @@
 							<g:set var="highlight" value="${entry.value[2]}"/>
 							<tr>
 								
-								<td><semui:listIcon type="${currentTitle.titletype}"/>
+								<td><ui:listIcon type="${currentTitle.titletype}"/>
 								<strong><g:link action="show" controller="tipp" id="${currentTitle.id}">${entry.key}</g:link></strong>
 								<i onclick="showMore('${currentTitle.id}')" class="icon-info-sign"></i>
 
@@ -205,7 +205,7 @@
 					</tbody>
 				</table>
 
-		        <semui:paginate  action="compare" controller="subscription" params="${params}" next="Next" prev="Prev" maxsteps="${max}" total="${unionListSize}" />
+		        <ui:paginate  action="compare" controller="subscription" params="${params}" next="Next" prev="Prev" maxsteps="${max}" total="${unionListSize}" />
 
 				</div>
 			</g:if>

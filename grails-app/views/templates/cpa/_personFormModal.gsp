@@ -1,6 +1,6 @@
 <%@ page import="de.laser.properties.PropertyDefinition; de.laser.PersonRole; de.laser.Contact; de.laser.Person; de.laser.FormService; de.laser.storage.RDStore; de.laser.RefdataValue;de.laser.RefdataCategory;de.laser.storage.RDConstants" %>
 <laser:serviceInjection/>
-<semui:modal id="${modalID ?: 'personModal'}" formID="person_form"
+<ui:modal id="${modalID ?: 'personModal'}" formID="person_form"
              text="${modalText ?: message(code: 'person.create_new.label')}"
              contentClass="scrolling "
              msgClose="${message(code: 'default.button.cancel')}"
@@ -521,4 +521,4 @@
 
     </laser:script>
 
-</semui:modal>
+</ui:modal>

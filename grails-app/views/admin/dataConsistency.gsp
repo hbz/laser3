@@ -1,11 +1,11 @@
 <laser:htmlStart message="menu.admin.dataConsistency" />
 
-<semui:breadcrumbs>
-    <semui:crumb message="menu.admin" controller="admin" action="index"/>
-    <semui:crumb message="menu.admin.dataConsistency" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb message="menu.admin" controller="admin" action="index"/>
+    <ui:crumb message="menu.admin.dataConsistency" class="active"/>
+</ui:breadcrumbs>
 
-<semui:h1HeaderWithIcon message="menu.admin.dataConsistency" />
+<ui:h1HeaderWithIcon message="menu.admin.dataConsistency" />
 
 <h2 class="ui header">${message(code: "admin.duplicateNamesAndTitles")}</h2>
 
@@ -62,14 +62,14 @@
 
 </div>
 
-<semui:modal id="modalConsistencyCheck" message="menu.admin.dataConsistency" hideSubmitButton="true">
+<ui:modal id="modalConsistencyCheck" message="menu.admin.dataConsistency" hideSubmitButton="true">
     <form>
         <h4 class="ui header"></h4>
         <br />
         <div class="ui relaxed divided list">
         </div>
     </form>
-</semui:modal>
+</ui:modal>
 
 <laser:script file="${this.getGroovyPageFileName()}">
     $('.x button').on('click', function(){

@@ -2,12 +2,12 @@
 
     <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
-    <semui:h1HeaderWithIcon>
-        <semui:xEditable owner="${license}" field="reference" id="reference"/>
-        <semui:totalNumber total="${todoHistoryLinesTotal}"/>
-    </semui:h1HeaderWithIcon>
+    <ui:h1HeaderWithIcon>
+        <ui:xEditable owner="${license}" field="reference" id="reference"/>
+        <ui:totalNumber total="${todoHistoryLinesTotal}"/>
+    </ui:h1HeaderWithIcon>
 
-    <semui:anualRings object="${license}" controller="license" action="show" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
+    <ui:anualRings object="${license}" controller="license" action="show" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
 
     <laser:render template="nav" />
 
@@ -53,7 +53,7 @@
         </g:if>
       </table>
 
-        <semui:paginate action="todoHistory" controller="license" params="${params}" max="${max}" total="${todoHistoryLinesTotal}" />
+        <ui:paginate action="todoHistory" controller="license" params="${params}" max="${max}" total="${todoHistoryLinesTotal}" />
 
 
 <laser:htmlEnd />

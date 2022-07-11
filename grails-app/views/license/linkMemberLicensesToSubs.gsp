@@ -3,24 +3,24 @@
 
     <g:set var="entityName" value="${message(code: 'org.label')}"/>
 
-<semui:debugInfo>
+<ui:debugInfo>
     <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
-</semui:debugInfo>
+</ui:debugInfo>
 
 <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
-<semui:controlButtons>
+<ui:controlButtons>
     <%-- is as placeholder for breaking header --%>
-</semui:controlButtons>
+</ui:controlButtons>
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
-<semui:h1HeaderWithIcon>
-    <semui:xEditable owner="${license}" field="reference" id="reference"/>
-    <semui:totalNumber total="${totalCount}"/>
-</semui:h1HeaderWithIcon>
+<ui:h1HeaderWithIcon>
+    <ui:xEditable owner="${license}" field="reference" id="reference"/>
+    <ui:totalNumber total="${totalCount}"/>
+</ui:h1HeaderWithIcon>
 
-<semui:anualRings object="${license}" controller="license" action="show" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
+<ui:anualRings object="${license}" controller="license" action="show" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
 
 <laser:render template="nav" />
 

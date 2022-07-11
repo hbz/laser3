@@ -26,7 +26,7 @@
         modalId = "modalCreateDocument"
     }
 %>
-<semui:modal id="${modalId}" text="${modalText}" msgSave="${submitButtonLabel}">
+<ui:modal id="${modalId}" text="${modalText}" msgSave="${submitButtonLabel}">
 
     <g:form class="ui form" url="${formUrl}" method="post" enctype="multipart/form-data">
         <input type="hidden" name="ownerid" value="${ownobj?.id}"/>
@@ -138,4 +138,4 @@
 
     </g:form>
 
-</semui:modal>
+</ui:modal>

@@ -1,22 +1,22 @@
 <%@ page import="de.laser.storage.RDStore; de.laser.Subscription; de.laser.Platform; de.laser.titles.BookInstance" %>
 <laser:htmlStart message="default.subscription.label" />
 
-<semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="currentSubscriptions" text="${message(code: 'myinst.currentSubscriptions.label')}"/>
-    <semui:crumb controller="subscription" action="index" id="${subscription.id}" text="${subscription.name}"/>
-    <semui:crumb class="active" text="${message(code: 'subscription.details.renewEntitlements.label')}"/>
-</semui:breadcrumbs>
-<semui:controlButtons>
+<ui:breadcrumbs>
+    <ui:crumb controller="myInstitution" action="currentSubscriptions" text="${message(code: 'myinst.currentSubscriptions.label')}"/>
+    <ui:crumb controller="subscription" action="index" id="${subscription.id}" text="${subscription.name}"/>
+    <ui:crumb class="active" text="${message(code: 'subscription.details.renewEntitlements.label')}"/>
+</ui:breadcrumbs>
+<ui:controlButtons>
     <laser:render template="actions"/>
-</semui:controlButtons>
+</ui:controlButtons>
 
-<semui:h1HeaderWithIcon message="subscription.details.renewEntitlements.label" />
+<ui:h1HeaderWithIcon message="subscription.details.renewEntitlements.label" />
 
 <laser:render template="nav"/>
 
 
 <g:if test="${flash}">
-    <semui:messages data="${flash}"/>
+    <ui:messages data="${flash}"/>
 </g:if>
 
 <g:form name="renewEntitlements" id="${newSub.id}" action="processRenewEntitlements" class="ui form">

@@ -3,16 +3,16 @@
 <g:set var="entityName" value="${message(code: 'person.label')}"/>
 <laser:htmlStart text="${message(code:"default.show.label", args:[entityName])}" serviceInjection="true" />
 
-<semui:breadcrumbs>
-    <semui:crumb message="menu.public.all_orgs" controller="organisation" action="index" />
+<ui:breadcrumbs>
+    <ui:crumb message="menu.public.all_orgs" controller="organisation" action="index" />
     <g:message code="default.show.label" args="[entityName]" class="active"/>
-</semui:breadcrumbs>
+</ui:breadcrumbs>
 
 <g:set var="personType" value="${!personInstance.contactType || personInstance.contactType?.id == RDStore.PERSON_CONTACT_TYPE_PERSONAL.id}" />
 
-<semui:h1HeaderWithIcon text="${personInstance}" />
+<ui:h1HeaderWithIcon text="${personInstance}" />
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 <div class="ui grid">
     <div class="twelve wide column">
@@ -22,7 +22,7 @@
                 <div class="content">
                     <dl><dt>${RefdataCategory.getByDesc(RDConstants.PERSON_CONTACT_TYPE).getI10n('desc')}</dt>
                         <dd>
-                            <semui:xEditableRefData owner="${personInstance}" field="contactType" config="${RDConstants.PERSON_CONTACT_TYPE}"/>
+                            <ui:xEditableRefData owner="${personInstance}" field="contactType" config="${RDConstants.PERSON_CONTACT_TYPE}"/>
 
                             <laser:script file="${this.getGroovyPageFileName()}">
                                 $('a[data-name=contactType]').on('save', function(e, params) {
@@ -34,7 +34,7 @@
 
                     <g:if test="${personType}">
                         <dl><dt id="person_title"><g:message code="person.title.label" /></dt>
-                            <dd><semui:xEditable owner="${personInstance}" field="title"/></dd>
+                            <dd><ui:xEditable owner="${personInstance}" field="title"/></dd>
                         </dl>
                     </g:if>
 
@@ -47,19 +47,19 @@
                                 <g:message code="person.funktionName.label"/>
                             </g:else>
                         </dt>
-                        <dd><semui:xEditable owner="${personInstance}" field="last_name"/></dd>
+                        <dd><ui:xEditable owner="${personInstance}" field="last_name"/></dd>
                     </dl>
 
                     <g:if test="${personType}">
 
                         <dl><dt><g:message code="person.first_name.label" /></dt>
-                            <dd><semui:xEditable owner="${personInstance}" field="first_name"/></dd></dl>
+                            <dd><ui:xEditable owner="${personInstance}" field="first_name"/></dd></dl>
 
                         <dl><dt><g:message code="person.middle_name.label" /></dt>
-                            <dd><semui:xEditable owner="${personInstance}" field="middle_name"/></dd></dl>
+                            <dd><ui:xEditable owner="${personInstance}" field="middle_name"/></dd></dl>
 
                         <dl><dt><g:message code="person.gender.label" /></dt>
-                            <dd><semui:xEditableRefData owner="${personInstance}" field="gender" config="${RDConstants.GENDER}"/></dd>
+                            <dd><ui:xEditableRefData owner="${personInstance}" field="gender" config="${RDConstants.GENDER}"/></dd>
                         </dl>
                     </g:if>
                 </div>
@@ -351,7 +351,7 @@
                             <dd>
 
                                 <g:if test="${editable /* && personInstance?.tenant?.id == contextService.getOrg().id */ && personInstance?.isPublic}">
-                                    <semui:xEditableRefData owner="${personInstance}" field="tenant"
+                                    <ui:xEditableRefData owner="${personInstance}" field="tenant"
                                                             dataController="person" dataAction="getPossibleTenantsAsJson" />
                                 </g:if>
                                 <g:else>

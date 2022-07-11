@@ -2,7 +2,7 @@
 
     <br />
 
-    <semui:messages data="${flash}"/>
+    <ui:messages data="${flash}"/>
 
     <div class="ui segment piled">
         <div class="content">

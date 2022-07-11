@@ -257,10 +257,10 @@
                         </span>
                     </td>
                     <td>
-                        <semui:xEditable owner="${ci}" type="date" field="startDate" overwriteEditable="${editable}" validation="datesCheck"/>
+                        <ui:xEditable owner="${ci}" type="date" field="startDate" overwriteEditable="${editable}" validation="datesCheck"/>
                         <br />
                         <span class="la-secondHeaderRow" data-label="${message(code:'financials.dateTo')}:">
-                            <semui:xEditable owner="${ci}" type="date" field="endDate" overwriteEditable="${editable}" validation="datesCheck"/>
+                            <ui:xEditable owner="${ci}" type="date" field="endDate" overwriteEditable="${editable}" validation="datesCheck"/>
                         </span>
                     </td>
                     <td>
@@ -401,13 +401,13 @@
 </table>
 <g:if test="${data.costItems}">
     <g:if test="${fixedSubscription}">
-        <semui:paginate mapping="subfinance" params="${params+[showView:showView]}"
+        <ui:paginate mapping="subfinance" params="${params+[showView:showView]}"
                         next="${message(code: 'default.paginate.next')}"
                         prev="${message(code: 'default.paginate.prev')}"
                         max="${max}" offset="${offset}" total="${data.count}"/>
     </g:if>
     <g:else>
-        <semui:paginate action="finance" controller="myInstitution" params="${params+[showView:showView]}"
+        <ui:paginate action="finance" controller="myInstitution" params="${params+[showView:showView]}"
                         next="${message(code: 'default.paginate.next')}"
                         prev="${message(code: 'default.paginate.prev')}"
                         max="${max}" offset="${offset}" total="${data.count}"/>

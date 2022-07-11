@@ -1,13 +1,13 @@
 <laser:htmlStart text="Database Migration" />
 
-    <semui:breadcrumbs>
-      <semui:crumb message="menu.yoda" controller="yoda" action="index"/>
-      <semui:crumb text="Database Migration" class="active"/>
-    </semui:breadcrumbs>
+    <ui:breadcrumbs>
+      <ui:crumb message="menu.yoda" controller="yoda" action="index"/>
+      <ui:crumb text="Database Migration" class="active"/>
+    </ui:breadcrumbs>
 
-    <semui:messages data="${flash}" />
+    <ui:messages data="${flash}" />
 
-    <semui:h1HeaderWithIcon text="Private Properties (mandatory) without existing values" />
+    <ui:h1HeaderWithIcon text="Private Properties (mandatory) without existing values" />
 
     <g:link controller="yoda" action="dbmFixPrivateProperties" params="[cmd:'doIt']" class="ui button negative">
         <i class="icon trash alternate outline"></i> &nbsp;  Delete all</g:link>

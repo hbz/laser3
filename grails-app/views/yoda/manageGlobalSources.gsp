@@ -2,12 +2,12 @@
 
 <laser:htmlStart text="Manage Global Sources" />
 
-    <semui:breadcrumbs>
-        <semui:crumb message="menu.yoda" controller="yoda" action="index"/>
-        <semui:crumb text="Global Sources" class="active" />
-    </semui:breadcrumbs>
+    <ui:breadcrumbs>
+        <ui:crumb message="menu.yoda" controller="yoda" action="index"/>
+        <ui:crumb text="Global Sources" class="active" />
+    </ui:breadcrumbs>
 
-    <semui:messages data="${flash}" />
+    <ui:messages data="${flash}" />
 
       <table class="ui celled la-js-responsive-table la-table table">
         <thead>
@@ -85,7 +85,7 @@
 
       <br />
 
-    <semui:form>
+    <ui:form>
         <g:form action="newGlobalSource" class="ui form">
 
             <div class="fields two">
@@ -152,6 +152,6 @@
             </div>
 
         </g:form>
-    </semui:form>
+    </ui:form>
 
 <laser:htmlEnd />

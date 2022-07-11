@@ -1,11 +1,11 @@
 <laser:htmlStart message="menu.admin.deletedObjects" />
 
-<semui:breadcrumbs>
-    <semui:crumb message="menu.admin" controller="admin" action="index"/>
-    <semui:crumb message="menu.admin.deletedObjects" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb message="menu.admin" controller="admin" action="index"/>
+    <ui:crumb message="menu.admin.deletedObjects" class="active"/>
+</ui:breadcrumbs>
 
-<semui:h1HeaderWithIcon message="menu.admin.deletedObjects" />
+<ui:h1HeaderWithIcon message="menu.admin.deletedObjects" />
 
 <div class="ui grid">
     <div class="twelve wide column">

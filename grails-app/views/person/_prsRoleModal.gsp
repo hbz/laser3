@@ -1,7 +1,7 @@
 <%@ page import="de.laser.Org; de.laser.storage.RDStore; de.laser.RefdataCategory; de.laser.Person; de.laser.PersonRole" %>
 <laser:serviceInjection />
 
-<semui:modal id="${tmplId}" message="${message}">
+<ui:modal id="${tmplId}" message="${message}">
 
     <g:form class="ui form" url="[controller: 'person', action: 'addPersonRole', params: [id: personInstance.id]]" method="POST">
         <input type="hidden" name="redirect" value="true" />
@@ -30,4 +30,4 @@
             <input type="hidden" name="roleType" value="${roleType}" />
         </div>
     </g:form>
-</semui:modal>
+</ui:modal>

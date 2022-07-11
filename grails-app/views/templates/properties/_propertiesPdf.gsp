@@ -182,7 +182,7 @@
 </g:each>
 <g:each in="${hiddenPropertiesMessages}" var="hiddenPropertiesMessage">
     <section>
-        <header><h3><semui:msg class="info" header="" text="${hiddenPropertiesMessage}" /></h3></header>
+        <header><h3><ui:msg class="info" header="" text="${hiddenPropertiesMessage}" /></h3></header>
     </section>
 </g:each>
 <section>

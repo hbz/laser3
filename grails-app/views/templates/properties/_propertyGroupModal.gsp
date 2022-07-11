@@ -2,7 +2,7 @@
 <%@ page import="de.laser.utils.LocaleUtils; de.laser.Subscription; de.laser.License; de.laser.Org; de.laser.RefdataCategory; de.laser.properties.PropertyDefinitionGroupItem; de.laser.properties.PropertyDefinition; de.laser.I10nTranslation; de.laser.FormService; org.springframework.context.i18n.LocaleContextHolder"%>
 <laser:serviceInjection />
 
-<semui:modal id="propDefGroupModal" message="propertyDefinitionGroup.create_new.label" msgSave="${createOrUpdate}">
+<ui:modal id="propDefGroupModal" message="propertyDefinitionGroup.create_new.label" msgSave="${createOrUpdate}">
 
     <g:form class="ui form" url="${formUrl}" method="POST">
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
@@ -119,7 +119,7 @@
 
 
     </g:form>
-</semui:modal>
+</ui:modal>
 
 %{-- <laser:script file="${this.getGroovyPageFileName()}">
 

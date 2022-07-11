@@ -5,12 +5,12 @@ import de.laser.storage.BeanStore
 import org.springframework.context.MessageSource
 import org.springframework.web.servlet.support.RequestContextUtils
 
-class SemuiNavigationTagLib {
+class UiNavigationTagLib {
 
     AccessService accessService
     ContextService contextService
 
-    static namespace = "semui"
+    static namespace = 'ui'
 
     // <semui:breadcrumbs>
     //     <semui:crumb controller="controller" action="action" params="params" text="${text}" message="local.string" />

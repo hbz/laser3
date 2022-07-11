@@ -2,7 +2,7 @@
 <laser:serviceInjection />
 
 <laser:render template="/templates/filter/javascript" />
-<semui:filter showFilterButton="true">
+<ui:filter showFilterButton="true">
     <g:form action="${actionName}" controller="${controllerName}" method="get" class="ui small form clearing">
         <input type="hidden" name="isSiteReloaded" value="yes"/>
         <g:if test="${license}">
@@ -44,17 +44,17 @@
             </div>
             <% /* 1-3 */ %>
             <div class="field">
-                <semui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${validOn}" />
+                <ui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${validOn}" />
             </div>
             <% /*
             <!-- 1-4 -->
             <div class="field disabled">
-                <semui:datepicker label="myinst.currentSubscriptions.filter.renewalDate.label"  id="renewalDate" name="renewalDate"
+                <ui:datepicker label="myinst.currentSubscriptions.filter.renewalDate.label"  id="renewalDate" name="renewalDate"
                                   placeholder="filter.placeholder" value="${params.renewalDate}"/>
             </div>
             <!-- 1-5 -->
             <div class="field disabled">
-                <semui:datepicker label="myinst.currentSubscriptions.filter.durationDateEnd.label"
+                <ui:datepicker label="myinst.currentSubscriptions.filter.durationDateEnd.label"
                                   id="durationDate" name="durationDate" placeholder="filter.placeholder" value="${params.durationDate}"/>
             </div>
             */ %>
@@ -255,4 +255,4 @@
         </div>
 
     </g:form>
-</semui:filter>
+</ui:filter>

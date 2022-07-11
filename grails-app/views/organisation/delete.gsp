@@ -2,7 +2,7 @@
 
     <laser:render template="breadcrumb" model="${[ orgInstance:orgInstance, params:params ]}"/>
 
-    <semui:h1HeaderWithIcon text="${orgInstance?.name}" />
+    <ui:h1HeaderWithIcon text="${orgInstance?.name}" />
 
     <g:if test="${delResult.status != deletionService.RESULT_SUCCESS}">
         <laser:render template="nav" />
@@ -12,22 +12,22 @@
 
     <g:if test="${delResult}">
         <g:if test="${delResult.status == deletionService.RESULT_SUCCESS}">
-            <semui:msg class="positive" header="" message="deletion.success.msg" />
+            <ui:msg class="positive" header="" message="deletion.success.msg" />
             <g:link controller="organisation" action="listInstitution" class="ui button">${message(code:'menu.public.all_insts')}</g:link>
         </g:if>
         <g:else>
             <g:if test="${delResult.status == deletionService.RESULT_SUBSTITUTE_NEEDED}">
-                <semui:msg class="info" header="" message="org.delete.info2" />
+                <ui:msg class="info" header="" message="org.delete.info2" />
             </g:if>
             <g:else>
-                <semui:msg class="info" header="" message="org.delete.info" />
+                <ui:msg class="info" header="" message="org.delete.info" />
             </g:else>
 
             <g:if test="${delResult.status == deletionService.RESULT_BLOCKED}">
-                <semui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="deletion.blocked.msg.org" />
+                <ui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="deletion.blocked.msg.org" />
             </g:if>
             <g:if test="${delResult.status == deletionService.RESULT_ERROR}">
-                <semui:msg class="negative" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
+                <ui:msg class="negative" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
             </g:if>
 
             <g:link controller="organisation" action="listInstitution" class="ui button">${message(code:'menu.public.all_insts')}</g:link>

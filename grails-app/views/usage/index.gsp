@@ -1,17 +1,17 @@
 <%@ page import="de.laser.config.ConfigMapper" %>
 <laser:htmlStart text="Manage Usage Stats" />
 
-<semui:breadcrumbs>
-    <semui:crumb message="menu.admin" controller="admin" action="index"/>
-    <semui:crumb text="Stats" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb message="menu.admin" controller="admin" action="index"/>
+    <ui:crumb text="Stats" class="active"/>
+</ui:breadcrumbs>
 
-<semui:h1HeaderWithIcon message="default.usage.adminPage.mainHeader" />
+<ui:h1HeaderWithIcon message="default.usage.adminPage.mainHeader" />
 
-<semui:messages data="${flash}" />
+<ui:messages data="${flash}" />
 
 <h2 class="ui header">${message(code: 'default.usage.adminPage.formHeader')}</h2>
-<semui:filter>
+<ui:filter>
     <g:form action="index" controller="usage" method="get" class="ui small form">
         <div class="three fields">
             <div class="field">
@@ -51,7 +51,7 @@
                 </g:if>
             </div>
     </g:form>
-</semui:filter>
+</ui:filter>
 <div class="ui mini message">
     <i class="close icon"></i>
     <ul class="list">
@@ -81,7 +81,7 @@
         </td></tr>
 </table>
 
-<semui:filter>
+<ui:filter>
     <g:form action="index" controller="usage" method="get" class="ui small form">
 
         <div class="two fields">
@@ -110,7 +110,7 @@
             </div>
         </div>
     </g:form>
-</semui:filter>
+</ui:filter>
 
 <table class="ui sortable celled la-js-responsive-table la-table table compact">
   <thead>
@@ -160,7 +160,7 @@
   </g:each>
   </tbody>
 </table>
-<semui:paginate action="index" controller="usage" params="${params}" max="${max}" total="${num_stc_rows}" />
+<ui:paginate action="index" controller="usage" params="${params}" max="${max}" total="${num_stc_rows}" />
 
 <h3 class="ui header">${message(code: 'default.usage.adminPage.serviceInfoHeader')}</h3>
 <table class="ui celled la-js-responsive-table la-table table compact">

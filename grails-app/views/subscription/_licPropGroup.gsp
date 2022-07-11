@@ -61,7 +61,7 @@
                             <span class="la-overflow la-ellipsis">
                                 ${prop.urlValue}
                                 <g:if test="${prop.value}">
-                                    <semui:linkIcon href="${prop.value}" />
+                                    <ui:linkIcon href="${prop.value}" />
                                 </g:if>
                             </span>
                         </g:elseif>

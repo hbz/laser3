@@ -1,11 +1,11 @@
 <laser:htmlStart message="announcement.plural" />
 
-        <semui:breadcrumbs>
-            <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
-            <semui:crumb message="announcement.plural" class="active" />
-        </semui:breadcrumbs>
+        <ui:breadcrumbs>
+            <ui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
+            <ui:crumb message="announcement.plural" class="active" />
+        </ui:breadcrumbs>
 
-        <semui:h1HeaderWithIcon message="announcement.plural" />
+        <ui:h1HeaderWithIcon message="announcement.plural" />
 
         <br />
         <br />

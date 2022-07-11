@@ -50,13 +50,13 @@
                                 }
                             %>
                             <g:if test="${editable && binding}">
-                                <semui:xEditableBoolean owner="${binding}" field="isVisible" />
+                                <ui:xEditableBoolean owner="${binding}" field="isVisible" />
                             </g:if>
                         </td>
                         <g:if test="${showConsortiaFunctions == true}">
                             <td>
                                 <g:if test="${editable && binding}">
-                                    <semui:xEditableBoolean owner="${binding}" field="isVisibleForConsortiaMembers" />
+                                    <ui:xEditableBoolean owner="${binding}" field="isVisibleForConsortiaMembers" />
                                 </g:if>
                             </td>
                         </g:if>

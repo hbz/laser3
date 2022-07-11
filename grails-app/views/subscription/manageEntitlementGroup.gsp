@@ -1,37 +1,37 @@
 <%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Subscription; de.laser.finance.CostItem" %>
 <laser:htmlStart message="subscription.details.manageEntitlementGroup.label" />
 
-<semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="currentSubscriptions"
+<ui:breadcrumbs>
+    <ui:crumb controller="myInstitution" action="currentSubscriptions"
                  text="${message(code: 'myinst.currentSubscriptions.label')}"/>
-    <semui:crumb controller="subscription" action="index" id="${subscription.id}"
+    <ui:crumb controller="subscription" action="index" id="${subscription.id}"
                  text="${subscription.name}"/>
-    <semui:crumb class="active"
+    <ui:crumb class="active"
                  text="${message(code: 'subscription.details.manageEntitlementGroup.label')}"/>
-</semui:breadcrumbs>
+</ui:breadcrumbs>
 
-<semui:controlButtons>
+<ui:controlButtons>
     <laser:render template="actions"/>
-</semui:controlButtons>
+</ui:controlButtons>
 
-<semui:h1HeaderWithIcon>
-    <semui:xEditable owner="${subscription}" field="name" />
-</semui:h1HeaderWithIcon>
+<ui:h1HeaderWithIcon>
+    <ui:xEditable owner="${subscription}" field="name" />
+</ui:h1HeaderWithIcon>
 <g:if test="${editable}">
-    <semui:auditButton auditable="[subscription, 'name']" />
+    <ui:auditButton auditable="[subscription, 'name']" />
 </g:if>
 
-<semui:anualRings object="${subscription}" controller="subscription" action="manageEntitlementGroup" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+<ui:anualRings object="${subscription}" controller="subscription" action="manageEntitlementGroup" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
 <h2 class="ui left aligned icon header la-clear-before">${message(code: 'subscription.details.manageEntitlementGroup.label')}</h2>
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 <g:if test="${editable}">
     <input class="ui button" value="${message(code: 'subscription.details.createEntitlementGroup.label')}"
            data-semui="modal" data-href="#createEntitlementGroupModal" type="submit">
 </g:if>
 
-<semui:form>
+<ui:form>
     <table class="ui sortable celled la-js-responsive-table la-table table">
         <thead>
         <tr>
@@ -45,8 +45,8 @@
         <g:each in="${titleGroups.sort{it.name}}" var="titleGroup" status="i">
             <tr>
                 <td>${i + 1}</td>
-                <td><semui:xEditable owner="${titleGroup}" field="name"/></td>
-                <td><semui:xEditable owner="${titleGroup}" field="description"/></td>
+                <td><ui:xEditable owner="${titleGroup}" field="name"/></td>
+                <td><ui:xEditable owner="${titleGroup}" field="description"/></td>
                 <td>
                     <g:link action="index" id="${params.id}" params="[titleGroup: titleGroup.id]">
                     ${titleGroup.items.size()}
@@ -84,10 +84,10 @@
             </tr>
         </g:each>
     </table>
-</semui:form>
+</ui:form>
 
 
-<semui:modal id="createEntitlementGroupModal" message="subscription.details.createEntitlementGroup.label">
+<ui:modal id="createEntitlementGroupModal" message="subscription.details.createEntitlementGroup.label">
 
     <g:form action="processCreateEntitlementGroup" controller="subscription" params="[id: params.id]"
             method="post" class="ui form">
@@ -103,6 +103,6 @@
         </div>
 
     </g:form>
-</semui:modal>
+</ui:modal>
 
 <laser:htmlEnd />

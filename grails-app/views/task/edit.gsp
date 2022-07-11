@@ -3,13 +3,13 @@
 <g:set var="entityName" value="${message(code: 'task.label')}" />
 <laser:htmlStart text="${message(code:"default.edit.label", args:[entityName])}" />
 
-		<semui:h1HeaderWithIcon message="default.edit.label" args="[entityName]" />
+		<ui:h1HeaderWithIcon message="default.edit.label" args="[entityName]" />
 
         <g:if test="${flash.message}">
-			<semui:msg class="warning" text="${flash.message}" />
+			<ui:msg class="warning" text="${flash.message}" />
         </g:if>
 
-        <semui:errors bean="${taskInstance}" />
+        <ui:errors bean="${taskInstance}" />
 
         <div class="ui grid">
 
@@ -39,7 +39,7 @@
 
             <aside class="four wide column">
 
-                <semui:card text="${entityName}">
+                <ui:card text="${entityName}">
 					<div class="content">
                     <ul class="nav nav-list">
                         <li>
@@ -56,7 +56,7 @@
                         </li>
                     </ul>
 					</div>
-                </semui:card>
+                </ui:card>
             </aside><!-- .four -->
 
 		</div><!-- .grid -->

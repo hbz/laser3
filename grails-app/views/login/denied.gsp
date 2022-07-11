@@ -1,6 +1,6 @@
 <laser:htmlStart message="springSecurity.denied.title" />
 
-    <semui:messages data="${flash}" />
+    <ui:messages data="${flash}" />
 
     <div class='body'>
         <div>

@@ -1,13 +1,13 @@
 <%@ page import="de.laser.Platform; de.laser.storage.RDStore" %>
 <laser:htmlStart message="menu.my.platforms" />
 
-<semui:breadcrumbs>
-    <semui:crumb message="menu.my.platforms" class="active" />
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb message="menu.my.platforms" class="active" />
+</ui:breadcrumbs>
 
-<semui:h1HeaderWithIcon message="menu.my.platforms" total="${platformInstanceTotal}" floated="true" />
+<ui:h1HeaderWithIcon message="menu.my.platforms" total="${platformInstanceTotal}" floated="true" />
 
-<semui:messages data="${flash}" />
+<ui:messages data="${flash}" />
 
 <laser:render template="/templates/filter/platformFilter"/>
 
@@ -90,8 +90,8 @@
     </tbody>
 </table>
 
-<semui:debugInfo>
+<ui:debugInfo>
     <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
-</semui:debugInfo>
+</ui:debugInfo>
 
 <laser:htmlEnd />

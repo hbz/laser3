@@ -3,12 +3,12 @@
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
 </laser:htmlStart>
 
-        <semui:breadcrumbs>
-            <semui:crumb controller="myInstitution" action="dashboard" text="${institution.getDesignation()}"/>
-            <semui:crumb text="${message(code:'myinst.reporting')}" class="active" />
-        </semui:breadcrumbs>
+        <ui:breadcrumbs>
+            <ui:crumb controller="myInstitution" action="dashboard" text="${institution.getDesignation()}"/>
+            <ui:crumb text="${message(code:'myinst.reporting')}" class="active" />
+        </ui:breadcrumbs>
 
-        <semui:h1HeaderWithIcon message="myinst.reporting" />
+        <ui:h1HeaderWithIcon message="myinst.reporting" />
 
         <laser:render template="/templates/reporting/helper" />%{--js--}%
 
@@ -378,7 +378,7 @@
             JSPC.app.reporting.initFilterEvents();
         </laser:script>
 
-        <semui:modal id="reporting-modal-error" text="REPORTING" hideSubmitButton="true">
+        <ui:modal id="reporting-modal-error" text="REPORTING" hideSubmitButton="true">
             <p><i class="icon exclamation triangle large orange"></i> ${message(code:'reporting.modal.error')}</p>
-        </semui:modal>
+        </ui:modal>
 <laser:htmlEnd />

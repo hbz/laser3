@@ -2,27 +2,27 @@
 
 <laser:htmlStart message="menu.admin.managePropertyDefinitions" serviceInjection="true"/>
 
-		<semui:breadcrumbs>
-			<semui:crumb message="menu.admin" controller="admin" action="index" />
-			<semui:crumb message="menu.admin.managePropertyDefinitions" class="active"/>
-		</semui:breadcrumbs>
+		<ui:breadcrumbs>
+			<ui:crumb message="menu.admin" controller="admin" action="index" />
+			<ui:crumb message="menu.admin.managePropertyDefinitions" class="active"/>
+		</ui:breadcrumbs>
 
-        <semui:controlButtons>
+        <ui:controlButtons>
             <%--<laser:render template="actions"/>--%>
             <%--
             <button class="ui button" value="" data-href="#addPropertyDefinitionModal" data-semui="modal" >${message(code:'propertyDefinition.create_new.label')}</button>
             --%>
             <%-- included in case someone of the admins wishes this export
-            <semui:exportDropdown>
-                <semui:exportDropdownItem>
+            <ui:exportDropdown>
+                <ui:exportDropdownItem>
                     <g:link class="item" action="managePropertyDefinitions" params="[cmd: 'exportXLS']">${message(code: 'default.button.export.xls')}</g:link>
-                </semui:exportDropdownItem>
-            </semui:exportDropdown>--%>
-        </semui:controlButtons>
+                </ui:exportDropdownItem>
+            </ui:exportDropdown>--%>
+        </ui:controlButtons>
 
-        <semui:h1HeaderWithIcon message="menu.admin.managePropertyDefinitions" />
+        <ui:h1HeaderWithIcon message="menu.admin.managePropertyDefinitions" />
 
-		<semui:messages data="${flash}" />
+		<ui:messages data="${flash}" />
 
 		<div class="ui styled fluid accordion">
 			<g:each in="${propertyDefinitions}" var="entry">
@@ -80,7 +80,7 @@
                                     </td>
                                     <td>
                                         <g:if test="${!pd.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
-                                            <semui:xEditable owner="${pd}" field="name_de" />
+                                            <ui:xEditable owner="${pd}" field="name_de" />
                                         </g:if>
                                         <g:else>
                                             ${pd.getI10n('name', 'de')}
@@ -88,7 +88,7 @@
                                     </td>
                                     <td>
                                         <g:if test="${!pd.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
-                                            <semui:xEditable owner="${pd}" field="name_en" />
+                                            <ui:xEditable owner="${pd}" field="name_en" />
                                         </g:if>
                                         <g:else>
                                             ${pd.getI10n('name', 'en')}
@@ -96,7 +96,7 @@
                                     </td>
                                     <td>
                                         <g:if test="${!pd.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
-                                            <semui:xEditable owner="${pd}" field="expl_de" type="textarea" />
+                                            <ui:xEditable owner="${pd}" field="expl_de" type="textarea" />
                                         </g:if>
                                         <g:else>
                                             ${pd.getI10n('expl', 'de')}
@@ -104,7 +104,7 @@
                                     </td>
                                     <td>
                                         <g:if test="${!pd.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
-                                            <semui:xEditable owner="${pd}" field="expl_en" type="textarea" />
+                                            <ui:xEditable owner="${pd}" field="expl_en" type="textarea" />
                                         </g:if>
                                         <g:else>
                                             ${pd.getI10n('expl', 'en')}
@@ -192,7 +192,7 @@
 
         <laser:render template="/myInstitution/replacePropertyDefinition" model="[action: actionName]"/>
 
-        <semui:modal id="addPropertyDefinitionModal" message="propertyDefinition.create_new.label">
+        <ui:modal id="addPropertyDefinitionModal" message="propertyDefinition.create_new.label">
 
             <g:form class="ui form" id="create_cust_prop" url="[controller: 'ajax', action: 'addCustomPropertyType']" >
                 <input type="hidden" name="reloadReferer" value="/admin/managePropertyDefinitions"/>
@@ -240,7 +240,7 @@
 
             </g:form>
 
-        </semui:modal>
+        </ui:modal>
 
 		<laser:script file="${this.getGroovyPageFileName()}">
 

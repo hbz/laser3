@@ -2,12 +2,12 @@
 
 <laser:htmlStart message="menu.yoda.systemCache" serviceInjection="true"/>
 
-<semui:breadcrumbs>
-    <semui:crumb message="menu.yoda" controller="yoda" action="index"/>
-    <semui:crumb message="menu.yoda.systemCache" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb message="menu.yoda" controller="yoda" action="index"/>
+    <ui:crumb message="menu.yoda.systemCache" class="active"/>
+</ui:breadcrumbs>
 
-<semui:h1HeaderWithIcon message="menu.yoda.systemCache" />
+<ui:h1HeaderWithIcon message="menu.yoda.systemCache" />
 
 <g:set var="sessionCache" value="${contextService.getSessionCache()}" />
 <h2 class="ui header">SessionCache <span class="ui label">${sessionCache.getSession().class}</span></h2>

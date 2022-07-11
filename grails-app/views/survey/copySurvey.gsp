@@ -1,16 +1,16 @@
 <%@ page import="de.laser.Subscription; de.laser.RefdataCategory; de.laser.Doc; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataValue;de.laser.survey.SurveyConfig" %>
 <laser:htmlStart message="copySurvey.label" serviceInjection="true" />
 
-<semui:breadcrumbs>
-    <semui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
+<ui:breadcrumbs>
+    <ui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
     <g:if test="${surveyInfo}">
-        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]"
+        <ui:crumb controller="survey" action="show" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]"
                      text="${surveyConfig.getConfigNameShort()}"/>
     </g:if>
-    <semui:crumb message="copySurvey.label" class="active"/>
-</semui:breadcrumbs>
+    <ui:crumb message="copySurvey.label" class="active"/>
+</ui:breadcrumbs>
 
-<semui:h1HeaderWithIcon text="${surveyConfig.getConfigNameShort()}" type="Survey" />
+<ui:h1HeaderWithIcon text="${surveyConfig.getConfigNameShort()}" type="Survey" />
 
 <h2 class="ui header">
     ${message(code: 'copySurvey.label')}:
@@ -19,12 +19,12 @@
     </g:link>
 </h2>
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 <g:if test="${workFlow == '2'}">
     <g:form action="processCopySurvey" controller="survey" method="post" class="ui form"
             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]">
-        <semui:form>
+        <ui:form>
             <g:if test="${surveyInfo.type.id == RDStore.SURVEY_TYPE_INTEREST.id}">
                 <div class="field required">
                     <label>${message(code: 'surveyInfo.name.label')} <g:message code="messageRequiredField" /></label>
@@ -86,7 +86,7 @@
                     <td>
                         ${surveyConfig.url}
                         <g:if test="${surveyConfig.url}">
-                            <semui:linkIcon href="${surveyConfig.url}"/>
+                            <ui:linkIcon href="${surveyConfig.url}"/>
 
                         </g:if>
                     </td>
@@ -97,7 +97,7 @@
                     <td>
                         ${surveyConfig.url2}
                         <g:if test="${surveyConfig.url2}">
-                            <semui:linkIcon href="${surveyConfig.url2}"/>
+                            <ui:linkIcon href="${surveyConfig.url2}"/>
 
                         </g:if>
                     </td>
@@ -108,7 +108,7 @@
                     <td>
                         ${surveyConfig.url3}
                         <g:if test="${surveyConfig.url3}">
-                            <semui:linkIcon href="${surveyConfig.url3}"/>
+                            <ui:linkIcon href="${surveyConfig.url3}"/>
 
                         </g:if>
                     </td>
@@ -284,7 +284,7 @@
             <input type="submit" class="ui button js-click-control"
                    value="${message(code: 'default.button.copy.label')}"/>
 
-        </semui:form>
+        </ui:form>
     </g:form>
 </g:if>
 
@@ -294,10 +294,10 @@
         ${message(code: 'copySurvey.subscription.info')}
     </div>
 
-    <semui:h1HeaderWithIcon message="myinst.currentSubscriptions.label" total="${num_sub_rows}" floated="true" />
+    <ui:h1HeaderWithIcon message="myinst.currentSubscriptions.label" total="${num_sub_rows}" floated="true" />
 
     <laser:render template="/templates/filter/javascript"/>
-    <semui:filter showFilterButton="true">
+    <ui:filter showFilterButton="true">
         <g:form action="copySurvey" controller="survey" method="get" class="ui small form">
             <input type="hidden" name="isSiteReloaded" value="yes"/>
             <input type="hidden" name="id" value="${params.id}"/>
@@ -321,7 +321,7 @@
                 </div>
                 <!-- 1-2 -->
                 <div class="field">
-                    <semui:datepicker label="default.valid_on.label" id="validOn" name="validOn"
+                    <ui:datepicker label="default.valid_on.label" id="validOn" name="validOn"
                                       placeholder="filter.placeholder" value="${validOn}"/>
                 </div>
 
@@ -383,7 +383,7 @@
                 </div>
             </div>
         </g:form>
-    </semui:filter>
+    </ui:filter>
 
     <g:form action="copySurvey" controller="survey" method="post" class="ui form"
             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, workFlow: '2']">
@@ -563,7 +563,7 @@
         </div>
 
         <g:if test="${num_sub_rows}">
-            <semui:paginate action="copySurvey" controller="survey" params="${params}"
+            <ui:paginate action="copySurvey" controller="survey" params="${params}"
                             next="${message(code: 'default.paginate.next')}"
                             prev="${message(code: 'default.paginate.prev')}" max="${max}"
                             total="${num_sub_rows}"/>

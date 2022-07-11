@@ -3,33 +3,33 @@
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
 
-<semui:controlButtons>
-    <semui:exportDropdown>
-        <semui:exportDropdownItem>
+<ui:controlButtons>
+    <ui:exportDropdown>
+        <ui:exportDropdownItem>
             <g:link class="item" controller="survey" action="show"
                     params="${params + [exportXLSX: true, surveyConfigID: surveyConfig.id]}">${message(code: 'survey.exportSurvey')}</g:link>
-        </semui:exportDropdownItem>
+        </ui:exportDropdownItem>
         <g:if test="${surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
-        <semui:exportDropdownItem>
+        <ui:exportDropdownItem>
             <g:link class="item" controller="survey" action="show"
                     params="${params + [exportXLSX: true, surveyCostItems: true]}">${message(code: 'survey.exportSurveyCostItems')}</g:link>
-        </semui:exportDropdownItem>
+        </ui:exportDropdownItem>
         </g:if>
-    </semui:exportDropdown>
+    </ui:exportDropdown>
     <laser:render template="actions"/>
-</semui:controlButtons>
+</ui:controlButtons>
 
-<semui:h1HeaderWithIcon type="Survey">
-<semui:xEditable owner="${surveyInfo}" field="name" overwriteEditable="${surveyInfo.isSubscriptionSurvey ? false : editable}"/>
-</semui:h1HeaderWithIcon>
-<semui:surveyStatusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="show"/>
+<ui:h1HeaderWithIcon type="Survey">
+<ui:xEditable owner="${surveyInfo}" field="name" overwriteEditable="${surveyInfo.isSubscriptionSurvey ? false : editable}"/>
+</ui:h1HeaderWithIcon>
+<ui:surveyStatusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="show"/>
 
 <laser:render template="nav"/>
 
-<semui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
+<ui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
 
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 
 <div class="ui stackable grid">
@@ -43,9 +43,9 @@
                             <dt class="control-label">${message(code: 'surveyInfo.startDate.label')}</dt>
                             <dd>
                                 <g:if test="${surveyInfo.status.id in [RDStore.SURVEY_IN_PROCESSING.id, RDStore.SURVEY_READY.id]}">
-                                    <semui:xEditable owner="${surveyInfo}" field="startDate" type="date"/>
+                                    <ui:xEditable owner="${surveyInfo}" field="startDate" type="date"/>
                                 </g:if><g:else>
-                                    <semui:xEditable owner="${surveyInfo}" field="startDate" type="date" overwriteEditable="false"/>
+                                    <ui:xEditable owner="${surveyInfo}" field="startDate" type="date" overwriteEditable="false"/>
                                 </g:else>
                             </dd>
 
@@ -54,9 +54,9 @@
                             <dt class="control-label">${message(code: 'surveyInfo.endDate.label')}</dt>
                             <dd>
                                 <g:if test="${surveyInfo.status.id in [RDStore.SURVEY_IN_PROCESSING.id, RDStore.SURVEY_READY.id, RDStore.SURVEY_SURVEY_STARTED.id]}">
-                                    <semui:xEditable owner="${surveyInfo}" field="endDate" type="date"/>
+                                    <ui:xEditable owner="${surveyInfo}" field="endDate" type="date"/>
                                 </g:if><g:else>
-                                    <semui:xEditable owner="${surveyInfo}" field="endDate" type="date" overwriteEditable="false"/>
+                                    <ui:xEditable owner="${surveyInfo}" field="endDate" type="date" overwriteEditable="false"/>
                                 </g:else>
                             </dd>
 
@@ -64,7 +64,7 @@
 
                         <dl>
                             <dt class="control-label">${message(code: 'surveyInfo.comment.label')}</dt>
-                            <dd><semui:xEditable owner="${surveyInfo}" field="comment" type="text"/></dd>
+                            <dd><ui:xEditable owner="${surveyInfo}" field="comment" type="text"/></dd>
 
                         </dl>
 

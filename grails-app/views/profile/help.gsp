@@ -1,11 +1,11 @@
 <%@ page import="de.laser.RefdataValue;de.laser.auth.Role;de.laser.auth.UserOrg" %>
 <laser:htmlStart message="menu.user.help" />
 
-<semui:breadcrumbs>
-    <semui:crumb message="menu.institutions.help" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb message="menu.institutions.help" class="active"/>
+</ui:breadcrumbs>
 
-<semui:h1HeaderWithIcon message="menu.user.help" />
+<ui:h1HeaderWithIcon message="menu.user.help" />
 
 <h2 class="ui icon header la-clear-before la-noMargin-top"><g:message code="help.contentHelp"/></h2>
 

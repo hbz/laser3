@@ -1,7 +1,7 @@
 <%@ page import="de.laser.PersonRole; de.laser.Contact; de.laser.OrgRole; de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition" %>
 <laser:htmlStart text="wcagStatement" />
 
-            <semui:h1HeaderWithIcon message="wcagStatement" />
+            <ui:h1HeaderWithIcon message="wcagStatement" />
 
             <h2 class="ui header">Erklärung zur digitalen Barrierefreiheit</h2>
             <p>

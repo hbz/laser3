@@ -30,39 +30,39 @@
 
                     <td>
                         <g:formatDate formatName="default.date.format.notime" date="${subscription.startDate}"/>
-                        <semui:auditButton auditable="[subscription, 'startDate']"/>
+                        <ui:auditButton auditable="[subscription, 'startDate']"/>
                     </td>
                     <td>
                         <g:formatDate formatName="default.date.format.notime" date="${subscription.endDate}"/>
-                        <semui:auditButton auditable="[subscription, 'endDate']"/>
+                        <ui:auditButton auditable="[subscription, 'endDate']"/>
                     </td>
                     <td>
                         ${subscription.status.getI10n('value')}
-                        <semui:auditButton auditable="[subscription, 'status']"/>
+                        <ui:auditButton auditable="[subscription, 'status']"/>
                     </td>
                     <td>
                         ${subscription.kind?.getI10n('value')}
-                        <semui:auditButton auditable="[subscription, 'kind']"/>
+                        <ui:auditButton auditable="[subscription, 'kind']"/>
                     </td>
                     <td>
                         ${subscription.form?.getI10n('value')}
-                        <semui:auditButton auditable="[subscription, 'form']"/>
+                        <ui:auditButton auditable="[subscription, 'form']"/>
                     </td>
                     <td>
                         ${subscription.resource?.getI10n('value')}
-                        <semui:auditButton auditable="[subscription, 'resource']"/>
+                        <ui:auditButton auditable="[subscription, 'resource']"/>
                     </td>
                     <td>
                         ${subscription.isPublicForApi ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
-                        <semui:auditButton auditable="[subscription, 'isPublicForApi']"/>
+                        <ui:auditButton auditable="[subscription, 'isPublicForApi']"/>
                     </td>
                     <td>
                         ${subscription.hasPerpetualAccess ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
-                        <semui:auditButton auditable="[subscription, 'hasPerpetualAccess']"/>
+                        <ui:auditButton auditable="[subscription, 'hasPerpetualAccess']"/>
                     </td>
                     <td>
                         ${subscription.hasPublishComponent ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
-                        <semui:auditButton auditable="[subscription, 'hasPublishComponent']"/>
+                        <ui:auditButton auditable="[subscription, 'hasPublishComponent']"/>
                     </td>
 
                     <td class="x">
@@ -90,9 +90,9 @@
             <h4 class="ui header">${message(code: 'subscriptionsManagement.info.subscriptionProperty')}</h4>
 
             <div class="two fields">
-                <semui:datepicker label="subscription.startDate.label" id="valid_from" name="valid_from"/>
+                <ui:datepicker label="subscription.startDate.label" id="valid_from" name="valid_from"/>
 
-                <semui:datepicker label="subscription.endDate.label" id="valid_to" name="valid_to"/>
+                <ui:datepicker label="subscription.endDate.label" id="valid_to" name="valid_to"/>
             </div>
 
             <div class="four fields">
@@ -177,10 +177,10 @@
 
             <h3 class="ui header">
                 <g:if test="${controllerName == "subscription"}">
-                    ${message(code: 'subscriptionsManagement.subscriber')} <semui:totalNumber
+                    ${message(code: 'subscriptionsManagement.subscriber')} <ui:totalNumber
                         total="${filteredSubscriptions.size()}"/>
                 </g:if><g:else>
-                    ${message(code: 'subscriptionsManagement.subscriptions')} <semui:totalNumber
+                    ${message(code: 'subscriptionsManagement.subscriptions')} <ui:totalNumber
                             total="${filteredSubscriptions.size()}/${num_sub_rows}"/>
                 </g:else>
             </h3>
@@ -267,61 +267,61 @@
                         </g:if>
 
                         <td>
-                            <semui:xEditable owner="${sub}" field="startDate" type="date"
+                            <ui:xEditable owner="${sub}" field="startDate" type="date"
                                              overwriteEditable="${editableOld}" validation="datesCheck"/>
-                            <semui:auditButton auditable="[sub, 'startDate']"/>
+                            <ui:auditButton auditable="[sub, 'startDate']"/>
                         </td>
-                        <td><semui:xEditable owner="${sub}" field="endDate" type="date"
+                        <td><ui:xEditable owner="${sub}" field="endDate" type="date"
                                              overwriteEditable="${editableOld}" validation="datesCheck"/>
-                        <semui:auditButton auditable="[sub, 'endDate']"/>
+                        <ui:auditButton auditable="[sub, 'endDate']"/>
                         </td>
                         <td>
-                            <semui:xEditableRefData owner="${sub}" field="status"
+                            <ui:xEditableRefData owner="${sub}" field="status"
                                                     config="${RDConstants.SUBSCRIPTION_STATUS}"
                                                     constraint="removeValue_deleted"
                                                     overwriteEditable="${editableOld}"/>
-                            <semui:auditButton auditable="[sub, 'status']"/>
+                            <ui:auditButton auditable="[sub, 'status']"/>
                         </td>
                         <td>
-                            <semui:xEditableRefData owner="${sub}" field="kind"
+                            <ui:xEditableRefData owner="${sub}" field="kind"
                                                     config="${RDConstants.SUBSCRIPTION_KIND}"
                                                     overwriteEditable="${editableOld}"/>
-                            <semui:auditButton auditable="[sub, 'kind']"/>
+                            <ui:auditButton auditable="[sub, 'kind']"/>
                         </td>
                         <td>
-                            <semui:xEditableRefData owner="${sub}" field="form"
+                            <ui:xEditableRefData owner="${sub}" field="form"
                                                     config="${RDConstants.SUBSCRIPTION_FORM}"
                                                     overwriteEditable="${editableOld}"/>
-                            <semui:auditButton auditable="[sub, 'form']"/>
+                            <ui:auditButton auditable="[sub, 'form']"/>
                         </td>
                         <td>
-                            <semui:xEditableRefData owner="${sub}" field="resource"
+                            <ui:xEditableRefData owner="${sub}" field="resource"
                                                     config="${RDConstants.SUBSCRIPTION_RESOURCE}"
                                                     overwriteEditable="${editableOld}"/>
-                            <semui:auditButton auditable="[sub, 'resource']"/>
+                            <ui:auditButton auditable="[sub, 'resource']"/>
                         </td>
                         <td>
-                            <semui:xEditableBoolean owner="${sub}" field="isPublicForApi"
+                            <ui:xEditableBoolean owner="${sub}" field="isPublicForApi"
                                                     overwriteEditable="${editableOld}"/>
-                            <semui:auditButton auditable="[sub, 'isPublicForApi']"/>
+                            <ui:auditButton auditable="[sub, 'isPublicForApi']"/>
                         </td>
                         <td>
-                            <semui:xEditableBoolean owner="${sub}" field="hasPerpetualAccess"
+                            <ui:xEditableBoolean owner="${sub}" field="hasPerpetualAccess"
                                                     overwriteEditable="${editableOld}"/>
-                            <%--<semui:xEditableRefData owner="${sub}" field="hasPerpetualAccess"
+                            <%--<ui:xEditableRefData owner="${sub}" field="hasPerpetualAccess"
                                                     config="${RDConstants.Y_N}"
                                                     overwriteEditable="${editableOld}"/>--%>
-                            <semui:auditButton auditable="[sub, 'hasPerpetualAccess']"/>
+                            <ui:auditButton auditable="[sub, 'hasPerpetualAccess']"/>
                         </td>
                         <td>
-                            <semui:xEditableBoolean owner="${sub}" field="hasPublishComponent"
+                            <ui:xEditableBoolean owner="${sub}" field="hasPublishComponent"
                                                     overwriteEditable="${editableOld}"/>
-                            <semui:auditButton auditable="[sub, 'hasPublishComponent']"/>
+                            <ui:auditButton auditable="[sub, 'hasPublishComponent']"/>
                         </td>
                         <g:if test="${accessService.checkPerm('ORG_INST')}">
                             <td>
                                 <g:if test="${(sub.type == RDStore.SUBSCRIPTION_TYPE_LOCAL && sub._getCalculatedType() == CalculatedType.TYPE_LOCAL)}">
-                                    <semui:xEditableBoolean owner="${sub}" field="isAutomaticRenewAnnually" overwriteEditable="${editable && sub.isAllowToAutomaticRenewAnnually()}"/>
+                                    <ui:xEditableBoolean owner="${sub}" field="isAutomaticRenewAnnually" overwriteEditable="${editable && sub.isAllowToAutomaticRenewAnnually()}"/>
                                 </g:if>
                             </td>
                         </g:if>

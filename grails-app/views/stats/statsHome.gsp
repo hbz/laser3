@@ -1,11 +1,11 @@
 <laser:htmlStart message="menu.admin.statistics" />
 
-        <semui:breadcrumbs>
-            <semui:crumb message="menu.admin" controller="admin" action="index"/>
-            <semui:crumb message="menu.admin.statistics" class="active"/>
-        </semui:breadcrumbs>
+        <ui:breadcrumbs>
+            <ui:crumb message="menu.admin" controller="admin" action="index"/>
+            <ui:crumb message="menu.admin.statistics" class="active"/>
+        </ui:breadcrumbs>
 
-        <semui:h1HeaderWithIcon message="menu.admin.statistics" />
+        <ui:h1HeaderWithIcon message="menu.admin.statistics" />
 
         <table class="ui celled la-js-responsive-table la-table table">
             <thead>

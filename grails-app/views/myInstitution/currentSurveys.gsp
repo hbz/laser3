@@ -2,29 +2,29 @@
 
 <laser:htmlStart message="currentSurveys.label" serviceInjection="true" />
 
-<semui:breadcrumbs>
-    <semui:crumb message="currentSurveys.label" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb message="currentSurveys.label" class="active"/>
+</ui:breadcrumbs>
 
-<semui:controlButtons>
-    <semui:exportDropdown>
-        <semui:exportDropdownItem>
+<ui:controlButtons>
+    <ui:exportDropdown>
+        <ui:exportDropdownItem>
             <g:link class="item" controller="myInstitution" action="currentSurveys"
                     params="${params + [exportXLSX: true]}">${message(code: 'survey.exportSurveys')}</g:link>
-        </semui:exportDropdownItem>
-        <semui:exportDropdownItem>
+        </ui:exportDropdownItem>
+        <ui:exportDropdownItem>
             <g:link class="item" controller="myInstitution" action="currentSurveys"
                     params="${params + [exportXLSX: true, surveyCostItems: true]}">${message(code: 'survey.exportSurveyCostItems')}</g:link>
-        </semui:exportDropdownItem>
-    </semui:exportDropdown>
-</semui:controlButtons>
+        </ui:exportDropdownItem>
+    </ui:exportDropdown>
+</ui:controlButtons>
 
-<semui:h1HeaderWithIcon text="${institution.name} - ${message(code: 'currentSurveys.label')}" total="${countSurveys.values().sum { it }}" floated="true" />
+<ui:h1HeaderWithIcon text="${institution.name} - ${message(code: 'currentSurveys.label')}" total="${countSurveys.values().sum { it }}" floated="true" />
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 <laser:render template="/templates/filter/javascript" />
-<semui:filter showFilterButton="true">
+<ui:filter showFilterButton="true">
     <g:form action="currentSurveys" controller="myInstitution" method="post" class="ui small form" params="[tab: params.tab ]">
         <div class="three fields">
             <div class="field">
@@ -40,7 +40,7 @@
 
 
             <div class="field">
-                <semui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${params.validOn}" />
+                <ui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${params.validOn}" />
             </div>
 
             <div class="field">
@@ -166,34 +166,34 @@
 
         </div>
     </g:form>
-</semui:filter>
+</ui:filter>
 
 
-<semui:form>
+<ui:form>
 
     <%
         def tmpParams = params.clone()
         tmpParams.remove("tab")
     %>
 
-    <semui:tabs actionName="${actionName}">
-        <semui:tabsItem controller="myInstitution" action="currentSurveys"
+    <ui:tabs actionName="${actionName}">
+        <ui:tabsItem controller="myInstitution" action="currentSurveys"
                         params="${tmpParams+[id: params.id, tab: 'new']}" text="${message(code: "surveys.tabs.new")}" tab="new"
                         counts="${countSurveys.new}"/>
-        <semui:tabsItem controller="myInstitution" action="currentSurveys"
+        <ui:tabsItem controller="myInstitution" action="currentSurveys"
                         params="${tmpParams+[id: params.id, tab: 'processed']}" text="${message(code: "surveys.tabs.processed")}" tab="processed"
                         counts="${countSurveys.processed}"/>
-        <semui:tabsItem controller="myInstitution" action="currentSurveys"
+        <ui:tabsItem controller="myInstitution" action="currentSurveys"
                         params="${tmpParams+[id: params.id, tab: 'finish']}" text="${message(code: "surveys.tabs.finish")}" tab="finish"
                         counts="${countSurveys.finish}"/>
-        <semui:tabsItem controller="myInstitution" action="currentSurveys" class="ui red" countsClass="red"
+        <ui:tabsItem controller="myInstitution" action="currentSurveys" class="ui red" countsClass="red"
                         params="${tmpParams+[id: params.id, tab: 'termination']}" text="${message(code: "surveys.tabs.termination")}" tab="termination"
                         counts="${countSurveys.termination}"/>
-        <semui:tabsItem controller="myInstitution" action="currentSurveys" class="ui orange" countsClass="orange"
+        <ui:tabsItem controller="myInstitution" action="currentSurveys" class="ui orange" countsClass="orange"
                         params="${tmpParams+[id: params.id, tab: 'notFinish']}" text="${message(code: "surveys.tabs.notFinish")}" tab="notFinish"
                         counts="${countSurveys.notFinish}"/>
 
-    </semui:tabs>
+    </ui:tabs>
 
     <table class="ui celled sortable table la-js-responsive-table la-table">
         <thead>
@@ -274,12 +274,12 @@
 
                 <td class="center aligned">
 
-                    <semui:surveyFinishIcon participant="${institution}" surveyConfig="${surveyConfig}" surveyOwnerView="${false}"/>
+                    <ui:surveyFinishIcon participant="${institution}" surveyConfig="${surveyConfig}" surveyOwnerView="${false}"/>
 
                 </td>
                 <g:if test="${params.tab == 'finish'}">
                     <td class="center aligned">
-                        <semui:surveyFinishDate participant="${institution}" surveyConfig="${surveyConfig}"/>
+                        <ui:surveyFinishDate participant="${institution}" surveyConfig="${surveyConfig}"/>
                     </td>
                 </g:if>
 
@@ -302,11 +302,11 @@
 
         </g:each>
     </table>
-</semui:form>
+</ui:form>
 
 
 %{--<g:if test="${countSurveys."${params.tab}"}">
-    <semui:paginate action="${actionName}" controller="${controllerName}" params="${params}"
+    <ui:paginate action="${actionName}" controller="${controllerName}" params="${params}"
                     next="${message(code: 'default.paginate.next')}"
                     prev="${message(code: 'default.paginate.prev')}" max="${max}"
                     total="${countSurveys."${params.tab}"}"/>

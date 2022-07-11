@@ -3,27 +3,27 @@
 
         <g:set var="entityName" value="${message(code: 'org.label')}"/>
 
-        <semui:breadcrumbs>
+        <ui:breadcrumbs>
             <g:if test="${institutionalView}">
-                <semui:crumb message="menu.my.insts" controller="myInstitution" action="manageMembers" params="[comboType:RDStore.COMBO_TYPE_CONSORTIUM]"/>
-                <semui:crumb text="${orgInstance.sortname}" class="active"/>
+                <ui:crumb message="menu.my.insts" controller="myInstitution" action="manageMembers" params="[comboType:RDStore.COMBO_TYPE_CONSORTIUM]"/>
+                <ui:crumb text="${orgInstance.sortname}" class="active"/>
             </g:if>
             <g:else>
-                <semui:crumb text="${orgInstance.sortname}" class="active"/>
+                <ui:crumb text="${orgInstance.sortname}" class="active"/>
             </g:else>
-        </semui:breadcrumbs>
+        </ui:breadcrumbs>
 
         <g:if test="${editable}">
-            <semui:controlButtons>
+            <ui:controlButtons>
                 <laser:render template="actions" />
-            </semui:controlButtons>
+            </ui:controlButtons>
         </g:if>
 
-        <semui:h1HeaderWithIcon text="${orgInstance.name}" />
+        <ui:h1HeaderWithIcon text="${orgInstance.name}" />
 
         <laser:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: orgInstance.id == contextService.getOrg().id]}"/>
 
-        <semui:messages data="${flash}"/>
+        <ui:messages data="${flash}"/>
 
         <laser:render template="/readerNumber/formModal" model="[formId: 'newForUni',withSemester: true,title:message(code: 'readerNumber.createForUni.label'), semester: RefdataValue.getCurrentSemester().id]"/>
         <laser:render template="/readerNumber/formModal" model="[formId: 'newForPublic',withDueDate: true,title:message(code: 'readerNumber.createForPublic.label')]"/>
@@ -64,7 +64,7 @@
                                 <td>
                                     <g:set var="number" value="${numbersInstance.getValue().get(column)}"/>
                                     <g:if test="${number}">
-                                        <semui:xEditable owner="${number}" field="value" format="number"/>
+                                        <ui:xEditable owner="${number}" field="value" format="number"/>
                                     </g:if>
                                 </td>
                             </g:each>
@@ -85,7 +85,7 @@
                                 </g:if>
                             </td>
                             <td>
-                                <semui:xEditable type="readerNumber" owner="${numbersInstance.getValue().entrySet()[0].getValue()}" field="dateGroupNote"/>
+                                <ui:xEditable type="readerNumber" owner="${numbersInstance.getValue().entrySet()[0].getValue()}" field="dateGroupNote"/>
                             </td>
                             <td class="x">
                                 <g:if test="${editable}">
@@ -132,12 +132,12 @@
                                     <td>
                                         <g:set var="number" value="${numbersInstance.getValue().get(column)}"/>
                                         <g:if test="${number}">
-                                            <semui:xEditable owner="${number}" field="value" type="number"/>
+                                            <ui:xEditable owner="${number}" field="value" type="number"/>
                                         </g:if>
                                     </td>
                                 </g:each>
                                 <td><g:formatNumber number="${dueDateSums.get(numbersInstance.getKey())}" format="${message(code:'default.decimal.format')}"/></td>
-                                <td><semui:xEditable type="readerNumber" owner="${numbersInstance.getValue().entrySet()[0].getValue()}" field="dateGroupNote"/></td>
+                                <td><ui:xEditable type="readerNumber" owner="${numbersInstance.getValue().entrySet()[0].getValue()}" field="dateGroupNote"/></td>
                                 <td class="x">
                                     <g:if test="${editable}">
                                         <g:link class="ui icon negative button la-modern-button js-open-confirm-modal" controller="readerNumber" action="delete"

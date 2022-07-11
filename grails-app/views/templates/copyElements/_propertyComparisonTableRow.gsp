@@ -116,31 +116,31 @@
                                 <div class="la-copyElements-flex-item">
                                     <g:if test="${propValue.getValue() != "" && propValue.getValue() != null}">
                                         <g:if test="${propValue.type.isIntegerType()}">
-                                            <semui:xEditable owner="${propValue}" type="text" field="intValue"
+                                            <ui:xEditable owner="${propValue}" type="text" field="intValue"
                                                              overwriteEditable="${overwriteEditable}"/>
                                         </g:if>
                                         <g:elseif test="${propValue.type.isStringType()}">
-                                            <semui:xEditable owner="${propValue}" type="text" field="stringValue"
+                                            <ui:xEditable owner="${propValue}" type="text" field="stringValue"
                                                              overwriteEditable="${overwriteEditable}"/>
                                         </g:elseif>
                                         <g:elseif test="${propValue.type.isBigDecimalType()}">
-                                            <semui:xEditable owner="${propValue}" type="text" field="decValue"
+                                            <ui:xEditable owner="${propValue}" type="text" field="decValue"
                                                              overwriteEditable="${overwriteEditable}"/>
                                         </g:elseif>
                                         <g:elseif test="${propValue.type.isDateType()}">
-                                            <semui:xEditable owner="${propValue}" type="date" field="dateValue"
+                                            <ui:xEditable owner="${propValue}" type="date" field="dateValue"
                                                              overwriteEditable="${overwriteEditable}"/>
                                         </g:elseif>
                                         <g:elseif test="${propValue.type.isURLType()}">
-                                            <semui:xEditable owner="${propValue}" type="url" field="urlValue"
+                                            <ui:xEditable owner="${propValue}" type="url" field="urlValue"
                                                              overwriteEditable="${overwriteEditable}"
                                                              class="la-overflow la-ellipsis"/>
                                             <g:if test="${propValue.value}">
-                                                <semui:linkIcon href="${propValue.value}"/>
+                                                <ui:linkIcon href="${propValue.value}"/>
                                             </g:if>
                                         </g:elseif>
                                         <g:elseif test="${propValue.type.isRefdataValueType()}">
-                                            <semui:xEditableRefData owner="${propValue}" type="text" field="refValue"
+                                            <ui:xEditableRefData owner="${propValue}" type="text" field="refValue"
                                                                     config="${propValue.type.refdataCategory}"
                                                                     overwriteEditable="${overwriteEditable}"/>
                                         </g:elseif>
@@ -252,32 +252,32 @@
                                     <div class="la-copyElements-flex-item">
                                         <g:if test="${propValue.getValue() != "" && propValue.getValue() != null}">
                                         <g:if test="${propValue.type.isIntegerType()}">
-                                            <semui:xEditable owner="${propValue}" type="text" field="intValue"
+                                            <ui:xEditable owner="${propValue}" type="text" field="intValue"
                                                              overwriteEditable="${overwriteEditable}"/>
                                         </g:if>
 
                                         <g:elseif test="${propValue.type.isStringType()}">
-                                            <semui:xEditable owner="${propValue}" type="text" field="stringValue"
+                                            <ui:xEditable owner="${propValue}" type="text" field="stringValue"
                                                              overwriteEditable="${overwriteEditable}"/>
                                         </g:elseif>
                                         <g:elseif test="${propValue.type.isBigDecimalType()}">
-                                            <semui:xEditable owner="${propValue}" type="text" field="decValue"
+                                            <ui:xEditable owner="${propValue}" type="text" field="decValue"
                                                              overwriteEditable="${overwriteEditable}"/>
                                         </g:elseif>
                                         <g:elseif test="${propValue.type.isDateType()}">
-                                            <semui:xEditable owner="${propValue}" type="date" field="dateValue"
+                                            <ui:xEditable owner="${propValue}" type="date" field="dateValue"
                                                              overwriteEditable="${overwriteEditable}"/>
                                         </g:elseif>
                                         <g:elseif test="${propValue.type.isURLType()}">
-                                            <semui:xEditable owner="${propValue}" type="url" field="urlValue"
+                                            <ui:xEditable owner="${propValue}" type="url" field="urlValue"
                                                              overwriteEditable="${overwriteEditable}"
                                                              class="la-overflow la-ellipsis"/>
                                             <g:if test="${propValue.value}">
-                                                <semui:linkIcon href="${propValue.value}"/>
+                                                <ui:linkIcon href="${propValue.value}"/>
                                             </g:if>
                                         </g:elseif>
                                         <g:elseif test="${propValue.type.isRefdataValueType()}">
-                                            <semui:xEditableRefData owner="${propValue}" type="text" field="refValue"
+                                            <ui:xEditableRefData owner="${propValue}" type="text" field="refValue"
                                                                     config="${propValue.type.refdataCategory}"
                                                                     overwriteEditable="${overwriteEditable}"/>
                                         </g:elseif>

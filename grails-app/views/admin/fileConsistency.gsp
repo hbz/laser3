@@ -2,12 +2,12 @@
 
 <laser:htmlStart message="menu.admin.fileConsistency" />
 
-<semui:breadcrumbs>
-    <semui:crumb message="menu.admin" controller="admin" action="index"/>
-    <semui:crumb message="menu.admin.fileConsistency" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb message="menu.admin" controller="admin" action="index"/>
+    <ui:crumb message="menu.admin.fileConsistency" class="active"/>
+</ui:breadcrumbs>
 
-<semui:h1HeaderWithIcon message="menu.admin.fileConsistency" />
+<ui:h1HeaderWithIcon message="menu.admin.fileConsistency" />
 
 <div class="ui grid">
     <div class="sixtenn wide column">

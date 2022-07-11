@@ -1,7 +1,7 @@
 <%@ page import="de.laser.survey.SurveyConfig;" %>
 <br />
 %{--<g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION}">
-    <h3 class="ui icon header"><semui:headerIcon/>
+    <h3 class="ui icon header"><ui:headerIcon/>
     <g:link controller="subscription" action="show" id="${surveyConfig.subscription?.id}">
         ${surveyConfig.subscription?.name}
     </g:link>
@@ -26,7 +26,7 @@
 
 <laser:render template="/templates/filter/javascript" />
 
-<semui:filter showFilterButton="true">
+<ui:filter showFilterButton="true">
     <g:form action="surveyParticipants" method="post" class="ui form"
             params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
         <laser:render template="/templates/filter/orgFilter"
@@ -35,7 +35,7 @@
                           tmplConfigFormFilter: true
                   ]"/>
     </g:form>
-</semui:filter>
+</ui:filter>
 
 <br><br>
 <g:form action="deleteSurveyParticipants" data-confirm-id="deleteSurveyParticipants_form" controller="survey" method="post" class="ui form"

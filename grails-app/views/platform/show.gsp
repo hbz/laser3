@@ -3,18 +3,18 @@
 
     <g:set var="entityName" value="${message(code: 'platform.label')}"/>
 
-<semui:modeSwitch controller="platform" action="show" params="${params}"/>
+<ui:modeSwitch controller="platform" action="show" params="${params}"/>
 
-<semui:breadcrumbs>
-    <semui:crumb controller="platform" action="index" message="platform.show.all"/>
-    <semui:crumb class="active" id="${platformInstance.id}" text="${platformInstance.name}"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb controller="platform" action="index" message="platform.show.all"/>
+    <ui:crumb class="active" id="${platformInstance.id}" text="${platformInstance.name}"/>
+</ui:breadcrumbs>
 
-<semui:h1HeaderWithIcon text="${platformInstance.name}" />
+<ui:h1HeaderWithIcon text="${platformInstance.name}" />
 
 <laser:render template="/templates/meta/identifier" model="${[object: platformInstance, editable: false]}"/>
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 <div id="collapseableSubDetails" class="ui stackable grid">
     <div class="sixteen wide column">
@@ -24,7 +24,7 @@
                     <div class="content">
                         <dl>
                             <dt>${message(code: 'platform.name')}</dt>
-                            <dd><semui:xEditable owner="${platformInstance}" field="name"/></dd>
+                            <dd><ui:xEditable owner="${platformInstance}" field="name"/></dd>
                         </dl>
                         <dl>
                             <dt>${message(code: 'default.status.label')}</dt>
@@ -45,7 +45,7 @@
                         <dl>
                             <dt>${message(code: 'platform.primaryURL')}</dt>
                             <dd>
-                                <semui:xEditable owner="${platformInstance}" field="primaryUrl"/>
+                                <ui:xEditable owner="${platformInstance}" field="primaryUrl"/>
                                 <g:if test="${platformInstance.primaryUrl}">
                                     <a role="button" class="ui icon blue button la-modern-button la-js-dont-hide-button la-popup-tooltip la-delay"
                                        data-content="${message(code: 'tipp.tooltip.callUrl')}"

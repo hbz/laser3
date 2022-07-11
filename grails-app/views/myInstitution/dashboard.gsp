@@ -2,11 +2,11 @@
 
 <laser:htmlStart message="menu.institutions.dash" serviceInjection="true"/>
 
-        <semui:breadcrumbs>
-            <semui:crumb text="${message(code:'menu.institutions.dash')}" class="active" />
-        </semui:breadcrumbs>
+        <ui:breadcrumbs>
+            <ui:crumb text="${message(code:'menu.institutions.dash')}" class="active" />
+        </ui:breadcrumbs>
 
-        <semui:h1HeaderWithIcon text="${institution.name}" />
+        <ui:h1HeaderWithIcon text="${institution.name}" />
 
         <div class="ui equal width grid la-clear-before">
             <div class="row">
@@ -30,22 +30,22 @@
                         <div class="item">
                             <g:link controller="org" action="show" id="${institution.id}">${message(code: 'menu.institutions.org_info')}</g:link>
                         </div>
-                        <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="finance" message="menu.institutions.finance" />
-                        <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="reporting" message="myinst.reporting" />
+                        <ui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="finance" message="menu.institutions.finance" />
+                        <ui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="reporting" message="myinst.reporting" />
                     </div>
                 </div>
 
                 <div class="column">
                     <div class="ui divided relaxed list">
-                        <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="myInstitution" action="tasks" message="task.plural" />
-                        <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="myInstitution" action="addressbook" message="menu.institutions.myAddressbook" />
-                        <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="myInstitution" action="managePrivatePropertyDefinitions" message="menu.institutions.manage_props" />
+                        <ui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="myInstitution" action="tasks" message="task.plural" />
+                        <ui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="myInstitution" action="addressbook" message="menu.institutions.myAddressbook" />
+                        <ui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="myInstitution" action="managePrivatePropertyDefinitions" message="menu.institutions.manage_props" />
                     </div>
                 </div>
             </div>
         </div>
 
-        <semui:messages data="${flash}" />
+        <ui:messages data="${flash}" />
         <br />
     <%-- should be made overridable by pagination setting --%>
     <%
@@ -181,7 +181,7 @@
                             <div class="right floated author">
                                 Status:
                                 <span>
-                                <semui:xEditableRefData config="${RDConstants.TASK_STATUS}" owner="${tsk}" field="status" />
+                                <ui:xEditableRefData config="${RDConstants.TASK_STATUS}" owner="${tsk}" field="status" />
                                 </span>
                             </div>
                         </div>
@@ -260,7 +260,7 @@
             <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value == 'Workflows' || us_dashboard_tab.getValue() == 'Workflows' ? 'active':''}" data-tab="workflows">
                 <div>
                     <g:if test="${currentWorkflows.size() != currentWorkflowsCount}">
-                        <semui:msg class="info" text="${message(code:'workflow.dashboard.msg.more', args:[currentWorkflows.size(), currentWorkflowsCount, g.createLink(controller:'myInstitution', action:'currentWorkflows', params:[max:200])])}" />
+                        <ui:msg class="info" text="${message(code:'workflow.dashboard.msg.more', args:[currentWorkflows.size(), currentWorkflowsCount, g.createLink(controller:'myInstitution', action:'currentWorkflows', params:[max:200])])}" />
                     </g:if>
                     <table class="ui celled table la-js-responsive-table la-table">
                         <thead>
@@ -388,7 +388,7 @@
         JSPC.app.loadSurveys();
     </laser:script>
 
-    <semui:debugInfo>
+    <ui:debugInfo>
         <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
-    </semui:debugInfo>
+    </ui:debugInfo>
     <laser:htmlEnd />

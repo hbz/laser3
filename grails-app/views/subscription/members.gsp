@@ -4,9 +4,9 @@
 
     <laser:render template="breadcrumb" model="${[ params:params ]}"/>
 
-    <semui:controlButtons>
-        <semui:exportDropdown>
-            <semui:exportDropdownItem>
+    <ui:controlButtons>
+        <ui:exportDropdown>
+            <ui:exportDropdownItem>
                 <g:if test="${filterSet}">
                     <g:link class="item js-open-confirm-modal"
                             data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
@@ -18,11 +18,11 @@
                 <g:else>
                     <g:link class="item" action="members" params="${params+[exportXLS:true]}">${message(code:'default.button.exports.xls')}</g:link>
                 </g:else>
-            </semui:exportDropdownItem>
-            <semui:exportDropdownItem>
+            </ui:exportDropdownItem>
+            <ui:exportDropdownItem>
                 <a class="item" data-semui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
-            </semui:exportDropdownItem>
-            <semui:exportDropdownItem>
+            </ui:exportDropdownItem>
+            <ui:exportDropdownItem>
                 <g:if test="${filterSet}">
                     <g:link class="item js-open-confirm-modal"
                             data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
@@ -34,8 +34,8 @@
                 <g:else>
                     <g:link class="item" action="members" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
                 </g:else>
-            </semui:exportDropdownItem>
-            <semui:exportDropdownItem>
+            </ui:exportDropdownItem>
+            <ui:exportDropdownItem>
                 <g:if test="${filterSet}">
                     <g:link class="item js-open-confirm-modal"
                             data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
@@ -80,21 +80,21 @@
                 <g:else>
                     <g:link class="item" action="members" params="${params+[exportShibboleths:true]}">${message(code:'subscriptionDetails.members.exportShibboleths')}</g:link>
                 </g:else>
-            </semui:exportDropdownItem>
-        </semui:exportDropdown>
+            </ui:exportDropdownItem>
+        </ui:exportDropdown>
         <laser:render template="actions" />
-    </semui:controlButtons>
+    </ui:controlButtons>
 
-    <semui:h1HeaderWithIcon>
-        <semui:xEditable owner="${subscription}" field="name" />
-        <semui:totalNumber total="${filteredSubChilds.size() ?: 0}"/>
-    </semui:h1HeaderWithIcon>
-    <semui:anualRings object="${subscription}" controller="subscription" action="members" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+    <ui:h1HeaderWithIcon>
+        <ui:xEditable owner="${subscription}" field="name" />
+        <ui:totalNumber total="${filteredSubChilds.size() ?: 0}"/>
+    </ui:h1HeaderWithIcon>
+    <ui:anualRings object="${subscription}" controller="subscription" action="members" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
     <laser:render template="nav" />
     <laser:render template="/templates/filter/javascript" />
 
-    <semui:filter showFilterButton="true">
+    <ui:filter showFilterButton="true">
         <g:form action="members" controller="subscription" params="${[id:params.id]}" method="get" class="ui form">
             <laser:render template="/templates/filter/orgFilter"
                   model="[
@@ -102,13 +102,13 @@
                       tmplConfigFormFilter: true
                   ]"/>
         </g:form>
-    </semui:filter>
+    </ui:filter>
 
-    <semui:messages data="${flash}" />
+    <ui:messages data="${flash}" />
 
-    <semui:debugInfo>
+    <ui:debugInfo>
         <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
-    </semui:debugInfo>
+    </ui:debugInfo>
 
     <g:if test="${filteredSubChilds}">
         <table class="ui celled monitor stackable la-js-responsive-table la-table table">
@@ -315,7 +315,7 @@
                                     </button>
                                 </span>
                             </g:else>
-                        <semui:xEditableAsIcon owner="${sub}" class="ui icon center aligned" iconClass="info circular inverted" field="comment" type="textarea"/>
+                        <ui:xEditableAsIcon owner="${sub}" class="ui icon center aligned" iconClass="info circular inverted" field="comment" type="textarea"/>
                     </td>
                 </tr>
             </g:each>

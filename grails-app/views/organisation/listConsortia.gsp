@@ -2,11 +2,11 @@
 
         <g:set var="entityName" value="${message(code: 'org.label')}" />
 
-    <semui:breadcrumbs>
-        <semui:crumb message="menu.public.all_cons" class="active" />
-    </semui:breadcrumbs>
+    <ui:breadcrumbs>
+        <ui:crumb message="menu.public.all_cons" class="active" />
+    </ui:breadcrumbs>
 
-    <semui:controlButtons>
+    <ui:controlButtons>
 
         <%
             editable = (editable && accessService.checkPerm('ORG_INST')) || contextService.getUser()?.hasRole('ROLE_ADMIN,ROLE_ORG_EDITOR')
@@ -14,14 +14,14 @@
         <g:if test="${editable}">
             <laser:render template="actions" />
         </g:if>
-    </semui:controlButtons>
+    </ui:controlButtons>
 
-    <semui:h1HeaderWithIcon message="menu.public.all_cons" total="${consortiaTotal}" floated="true" />
+    <ui:h1HeaderWithIcon message="menu.public.all_cons" total="${consortiaTotal}" floated="true" />
 
-    <semui:messages data="${flash}" />
+    <ui:messages data="${flash}" />
 
     <laser:render template="/templates/filter/javascript" />
-    <semui:filter showFilterButton="true">
+    <ui:filter showFilterButton="true">
         <g:form action="listConsortia" method="get" class="ui form">
             <laser:render template="/templates/filter/orgFilter"
                       model="[
@@ -29,7 +29,7 @@
                               tmplConfigFormFilter: true
                       ]"/>
         </g:form>
-    </semui:filter>
+    </ui:filter>
 
     <laser:render template="/templates/filter/orgFilterTable"
               model="[orgList: availableOrgs,
@@ -40,6 +40,6 @@
                       ]
               ]"/>
 
-    <semui:paginate action="listConsortia" params="${params}" max="${max}" total="${consortiaTotal}" />
+    <ui:paginate action="listConsortia" params="${params}" max="${max}" total="${consortiaTotal}" />
 
   <laser:htmlEnd />

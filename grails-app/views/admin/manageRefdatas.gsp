@@ -2,18 +2,18 @@
 
 <laser:htmlStart message="menu.admin.manageRefdatas" />
 
-        <semui:debugInfo>
+        <ui:debugInfo>
             <laser:render template="/templates/refdata/integrityCheck" model="[result: integrityCheckResult]" />
-        </semui:debugInfo>
+        </ui:debugInfo>
 
-		<semui:breadcrumbs>
-			<semui:crumb message="menu.admin" controller="admin" action="index" />
-			<semui:crumb message="menu.admin.manageRefdatas" class="active"/>
-		</semui:breadcrumbs>
+		<ui:breadcrumbs>
+			<ui:crumb message="menu.admin" controller="admin" action="index" />
+			<ui:crumb message="menu.admin.manageRefdatas" class="active"/>
+		</ui:breadcrumbs>
 
-        <semui:h1HeaderWithIcon message="menu.admin.manageRefdatas" />
+        <ui:h1HeaderWithIcon message="menu.admin.manageRefdatas" />
 
-        <semui:messages data="${flash}" />
+        <ui:messages data="${flash}" />
 
             <div class="content ui form">
                 <div class="fields">
@@ -53,7 +53,7 @@
                                 <td></td>
                                 <td>
                                     <g:if test="${!rdc.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
-                                        <strong><semui:xEditable owner="${rdc}" field="desc_de" /></strong>
+                                        <strong><ui:xEditable owner="${rdc}" field="desc_de" /></strong>
                                     </g:if>
                                     <g:else>
                                         <strong>${rdc.getI10n('desc', 'de')}</strong>
@@ -61,7 +61,7 @@
                                 </td>
                                 <td>
                                     <g:if test="${!rdc.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
-                                        <strong><semui:xEditable owner="${rdc}" field="desc_en" /></strong>
+                                        <strong><ui:xEditable owner="${rdc}" field="desc_en" /></strong>
                                     </g:if>
                                     <g:else>
                                         <strong>${rdc.getI10n('desc', 'en')}</strong>
@@ -91,7 +91,7 @@
                                     </td>
                                     <td>
                                         <g:if test="${!rdv.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
-                                            <semui:xEditable owner="${rdv}" field="value_de" />
+                                            <ui:xEditable owner="${rdv}" field="value_de" />
                                         </g:if>
                                         <g:else>
                                             ${rdv.getI10n('value', 'de')}
@@ -99,7 +99,7 @@
                                     </td>
                                     <td>
                                         <g:if test="${!rdv.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
-                                            <semui:xEditable owner="${rdv}" field="value_en" />
+                                            <ui:xEditable owner="${rdv}" field="value_en" />
                                         </g:if>
                                         <g:else>
                                             ${rdv.getI10n('value', 'en')}
@@ -136,7 +136,7 @@
             </g:each>
         </div>
 
-        <semui:modal id="replaceRefdataValueModal" message="refdataValue.exchange.label" isEditModal="isEditModal">
+        <ui:modal id="replaceRefdataValueModal" message="refdataValue.exchange.label" isEditModal="isEditModal">
             <g:form class="ui form" url="[controller: 'admin', action: 'manageRefdatas']">
                 <input type="hidden" name="cmd" value="replaceRefdataValue"/>
                 <input type="hidden" name="xcgRdvFrom" value=""/>
@@ -195,9 +195,9 @@
                     })
             </laser:script>
 
-        </semui:modal>
+        </ui:modal>
 
-        <semui:modal id="addRefdataValueModal" message="refdataValue.create_new.label">
+        <ui:modal id="addRefdataValueModal" message="refdataValue.create_new.label">
 
             <g:form class="ui form" url="[controller: 'ajax', action: 'addRefdataValue']">
                 <input type="hidden" name="reloadReferer" value="/admin/manageRefdatas"/>
@@ -216,9 +216,9 @@
                 </div>
 
             </g:form>
-        </semui:modal>
+        </ui:modal>
 
-        <semui:modal id="addRefdataCategoryModal" message="refdataCategory.create_new.label">
+        <ui:modal id="addRefdataCategoryModal" message="refdataCategory.create_new.label">
 
             <g:form class="ui form" url="[controller: 'ajax', action: 'addRefdataCategory']">
                 <input type="hidden" name="reloadReferer" value="/admin/manageRefdatas"/>
@@ -229,6 +229,6 @@
                 </div>
 
             </g:form>
-        </semui:modal>
+        </ui:modal>
 
 <laser:htmlEnd />

@@ -47,7 +47,7 @@
                 </td>
                 <td>
                     <g:if test="${modifyAccountEnability}">
-                        <semui:xEditableBoolean owner="${us}" field="enabled"/>
+                        <ui:xEditableBoolean owner="${us}" field="enabled"/>
                     </g:if>
                     <g:else>
                         <g:if test="${! us.enabled}">

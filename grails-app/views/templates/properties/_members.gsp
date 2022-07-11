@@ -10,7 +10,7 @@
 <g:set var="overwriteEditable" value="${editable || accessService.checkPermAffiliationX('ORG_INST','INST_EDITOR','ROLE_ADMIN')}" />--%>
 
 <g:if test="${newProp}">
-    <semui:errors bean="${newProp}" />
+    <ui:errors bean="${newProp}" />
 </g:if>
 <g:if test="${subscription}">
     <g:set var="memberSubs" value="${Subscription.executeQuery('select s from Subscription s where s.instanceOf = :sub', [sub: subscription])}"/>

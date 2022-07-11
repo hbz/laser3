@@ -2,12 +2,12 @@
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
 </laser:htmlStart>
 
-<semui:breadcrumbs>
-    <semui:crumb message="menu.yoda" controller="yoda" action="index"/>
-    <semui:crumb message="menu.yoda.profiler" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb message="menu.yoda" controller="yoda" action="index"/>
+    <ui:crumb message="menu.yoda.profiler" class="active"/>
+</ui:breadcrumbs>
 
-    <semui:h1HeaderWithIcon message="menu.yoda.profiler" />
+    <ui:h1HeaderWithIcon message="menu.yoda.profiler" />
 
     <nav class="ui secondary menu">
         <g:link controller="yoda" action="profilerLoadtime" class="item">Ladezeiten</g:link>

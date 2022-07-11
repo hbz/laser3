@@ -4,9 +4,9 @@
 
         <g:set var="toDelete" value="${[]}"/>
 
-        <semui:h1HeaderWithIcon text="Pakete mit gleicher we:kb-ID" />
+        <ui:h1HeaderWithIcon text="Pakete mit gleicher we:kb-ID" />
 
-        <semui:messages data="${flash}" />
+        <ui:messages data="${flash}" />
 
             <div class="ui grid">
                 <div class="row">

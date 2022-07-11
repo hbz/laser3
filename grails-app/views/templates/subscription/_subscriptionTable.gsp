@@ -352,7 +352,7 @@
 </g:form>
 
 <g:if test="${subscriptions}">
-    <semui:paginate action="${actionName}" controller="${controllerName}" params="${params}"
+    <ui:paginate action="${actionName}" controller="${controllerName}" params="${params}"
                     next="${message(code: 'default.paginate.next')}"
                     prev="${message(code: 'default.paginate.prev')}" max="${max}"
                     total="${num_sub_rows}"/>

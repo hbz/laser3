@@ -1,15 +1,15 @@
 <%@ page import="de.laser.License; de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.RefdataCategory" %>
 <laser:htmlStart message="menu.my.comp_sub" serviceInjection="true"/>
 
-<semui:breadcrumbs>
-    <semui:crumb text="${message(code: 'menu.my.subscriptions')}" controller="myInstitution"
+<ui:breadcrumbs>
+    <ui:crumb text="${message(code: 'menu.my.subscriptions')}" controller="myInstitution"
                  action="currentSubscriptions"/>
-    <semui:crumb class="active" message="menu.my.comp_sub"/>
-</semui:breadcrumbs>
+    <ui:crumb class="active" message="menu.my.comp_sub"/>
+</ui:breadcrumbs>
 
-<semui:h1HeaderWithIcon message="menu.my.comp_sub" />
+<ui:h1HeaderWithIcon message="menu.my.comp_sub" />
 
-<semui:form>
+<ui:form>
     <g:form class="ui form" action="${actionName}" method="post">
         <div class="ui field">
             <label for="selectedSubscriptions">${message(code: 'default.compare.subscriptions')}</label>
@@ -52,7 +52,7 @@
         </div>
 
     </g:form>
-</semui:form>
+</ui:form>
 
 <g:if test="${objects}">
     <laser:render template="nav"/>

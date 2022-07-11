@@ -55,28 +55,28 @@
                         <div class="la-copyElements-flex-item">
                         <g:if test="${propValue.getValue() != "" && propValue.getValue() != null}">
                             <g:if test="${propValue.type.isIntegerType()}">
-                                <semui:xEditable owner="${propValue}" type="text" field="intValue"
+                                <ui:xEditable owner="${propValue}" type="text" field="intValue"
                                                  overwriteEditable="${false}"/>
                             </g:if>
 
                             <g:elseif test="${propValue.type.isStringType()}">
-                                <semui:xEditable owner="${propValue}" type="text" field="stringValue"
+                                <ui:xEditable owner="${propValue}" type="text" field="stringValue"
                                                  overwriteEditable="${false}"/>
                             </g:elseif>
                             <g:elseif test="${propValue.type.isBigDecimalType()}">
-                                <semui:xEditable owner="${propValue}" type="text" field="decValue"
+                                <ui:xEditable owner="${propValue}" type="text" field="decValue"
                                                  overwriteEditable="${false}"/>
                             </g:elseif>
                             <g:elseif test="${propValue.type.isDateType()}">
-                                <semui:xEditable owner="${propValue}" type="date" field="dateValue"
+                                <ui:xEditable owner="${propValue}" type="date" field="dateValue"
                                                  overwriteEditable="${false}"/>
                             </g:elseif>
                             <g:elseif test="${propValue.type.isURLType()}">
-                                <semui:xEditable owner="${propValue}" type="url" field="urlValue"
+                                <ui:xEditable owner="${propValue}" type="url" field="urlValue"
                                                  overwriteEditable="${false}"
                                                  class="la-overflow la-ellipsis"/>
                                 <g:if test="${propValue.value}">
-                                    <semui:linkIcon href="${propValue.value}"/>
+                                    <ui:linkIcon href="${propValue.value}"/>
                                 </g:if>
                             </g:elseif>
                             <g:elseif test="${propValue.type.isRefdataValueType()}">

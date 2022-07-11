@@ -2,12 +2,12 @@
 
 <laser:htmlStart message="menu.institutions.myAddressbook" />
 
-<semui:breadcrumbs>
-    <semui:crumb message="menu.institutions.myAddressbook" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb message="menu.institutions.myAddressbook" class="active"/>
+</ui:breadcrumbs>
 
-<semui:controlButtons>
-    <semui:actionsDropdown>
+<ui:controlButtons>
+    <ui:actionsDropdown>
         <g:if test="${editable}">
             <g:if test="${institution.getCustomerType() == 'ORG_CONSORTIUM'}">
 
@@ -26,19 +26,19 @@
 
         </g:if>
 
-        <semui:actionsDropdownItem notActive="true" data-semui="modal" href="#copyFilteredEmailAddresses_ajaxModal"
+        <ui:actionsDropdownItem notActive="true" data-semui="modal" href="#copyFilteredEmailAddresses_ajaxModal"
                                    message="menu.institutions.copy_emailaddresses.button"/>
-    </semui:actionsDropdown>
-</semui:controlButtons>
+    </ui:actionsDropdown>
+</ui:controlButtons>
 
 <laser:render template="/templates/copyFilteredEmailAddresses" model="[emailAddresses: emailAddresses]"/>
 
-<semui:h1HeaderWithIcon message="menu.institutions.myAddressbook" total="${num_visiblePersons}" floated="true" />
+<ui:h1HeaderWithIcon message="menu.institutions.myAddressbook" total="${num_visiblePersons}" floated="true" />
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 <laser:render template="/templates/filter/javascript"/>
-<semui:filter showFilterButton="true">
+<ui:filter showFilterButton="true">
     <g:form action="addressbook" controller="myInstitution" method="get" class="ui small form">
         <div class="four fields">
             <div class="field">
@@ -119,7 +119,7 @@
             <input type="submit" class="ui secondary button" value="${message(code: 'default.button.filter.label')}">
         </div>
     </g:form>
-</semui:filter>
+</ui:filter>
 
 <laser:render template="/templates/cpa/person_table" model="${[
         persons       : visiblePersons,
@@ -128,7 +128,7 @@
         tmplConfigShow: ['lineNumber', 'organisation', 'function', 'position', 'name', 'showContacts', 'showAddresses']
 ]}"/>
 
-<semui:paginate action="addressbook" controller="myInstitution" params="${params}"
+<ui:paginate action="addressbook" controller="myInstitution" params="${params}"
                 next="${message(code: 'default.paginate.next')}"
                 prev="${message(code: 'default.paginate.prev')}"
                 max="${max}"

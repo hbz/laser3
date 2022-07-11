@@ -13,9 +13,9 @@
         <laser:render template="/user/global/breadcrumb" model="${[ inContextOrg: inContextOrg, orgInstance: orgInstance, institutionalView: institutionalView, params:params ]}"/>
     %{--</g:if>--}%
 
-        <semui:h1HeaderWithIcon message="user.create_new.label" />
+        <ui:h1HeaderWithIcon message="user.create_new.label" />
 
-        <semui:messages data="${flash}" />
+        <ui:messages data="${flash}" />
 
         <g:if test="${editable}">
             <g:form name="newUser" class="ui form" controller="${controllerName}" action="processCreateUser" method="post">

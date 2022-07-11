@@ -1,15 +1,15 @@
 <laser:htmlStart text="Admin: User Merge" />
 
-    <semui:breadcrumbs>
-        <semui:crumb message="menu.admin" controller="admin" action="index" />
-        <semui:crumb text="User Merge" class="active"/>
-    </semui:breadcrumbs>
+    <ui:breadcrumbs>
+        <ui:crumb message="menu.admin" controller="admin" action="index" />
+        <ui:crumb text="User Merge" class="active"/>
+    </ui:breadcrumbs>
 
-    <semui:h1HeaderWithIcon text="User Merge" />
+    <ui:h1HeaderWithIcon text="User Merge" />
 
-    <semui:messages data="${flash}" />
+    <ui:messages data="${flash}" />
 
-<semui:form>
+<ui:form>
     <g:form action="userMerge" method="GET" class="ui form">
 
         <p>Select the user to keep, and the user whose rights will be transferred. When 'merge' is clicked,
@@ -31,7 +31,7 @@
             </div>
         </div>
     </g:form>
-</semui:form>
+</ui:form>
 
   
   <div id="user_merge_modal" class="modal hide">

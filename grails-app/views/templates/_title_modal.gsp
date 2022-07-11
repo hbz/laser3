@@ -1,5 +1,5 @@
 <%@ page import="de.laser.storage.RDStore;" %>
-<semui:modal id="modalAllTitleInfos" text="${message(code: 'title.details')}"
+<ui:modal id="modalAllTitleInfos" text="${message(code: 'title.details')}"
              hideSubmitButton="true">
 
     <laser:render template="/templates/title_long"
@@ -35,7 +35,7 @@
                 <i class="grey calendar icon la-popup-tooltip la-delay"
                    data-content="${message(code: 'subscription.details.access_start')}"></i>
                 <g:if test="${editable}">
-                    <semui:xEditable owner="${ie}" type="date"
+                    <ui:xEditable owner="${ie}" type="date"
                                      field="accessStartDate"/>
                     <i class="grey question circle icon la-popup-tooltip la-delay"
                        data-content="${message(code: 'subscription.details.access_start.note')}"></i>
@@ -50,7 +50,7 @@
                 <i class="grey calendar icon la-popup-tooltip la-delay"
                    data-content="${message(code: 'subscription.details.access_end')}"></i>
                 <g:if test="${editable}">
-                    <semui:xEditable owner="${ie}" type="date" field="accessEndDate"/>
+                    <ui:xEditable owner="${ie}" type="date" field="accessEndDate"/>
                     <i class="grey question circle icon la-popup-tooltip la-delay"
                        data-content="${message(code: 'subscription.details.access_end.note')}"></i>
                 </g:if>
@@ -74,19 +74,19 @@
                                 <div class="content">
                                     <div class="la-card-column">
                                         <g:message code="tipp.price.listPrice"/>:
-                                        <semui:xEditable field="listPrice"
-                                                         owner="${priceItem}"/> <semui:xEditableRefData
+                                        <ui:xEditable field="listPrice"
+                                                         owner="${priceItem}"/> <ui:xEditableRefData
                                                 field="listCurrency" owner="${priceItem}" config="Currency"/>
 
                                         <br/>
-                                        <g:message code="tipp.price.localPrice"/>: <semui:xEditable field="localPrice"
-                                                                                                    owner="${priceItem}"/> <semui:xEditableRefData
+                                        <g:message code="tipp.price.localPrice"/>: <ui:xEditable field="localPrice"
+                                                                                                    owner="${priceItem}"/> <ui:xEditableRefData
                                                 field="localCurrency" owner="${priceItem}" config="Currency"/>
                                         <%--<br/>
-                                        (<g:message code="tipp.price.startDate"/> <semui:xEditable field="startDate"
+                                        (<g:message code="tipp.price.startDate"/> <ui:xEditable field="startDate"
                                                                                                   type="date"
                                                                                                   owner="${priceItem}"/>-
-                                        <g:message code="tipp.price.endDate"/> <semui:xEditable field="endDate"
+                                        <g:message code="tipp.price.endDate"/> <ui:xEditable field="endDate"
                                                                                                type="date"
                                                                                                owner="${priceItem}"/>)--%>
                                     </div>
@@ -172,18 +172,18 @@
                         <div class="ui card">
                             <div class="content">
                                 <div class="la-card-column">
-                                    <g:message code="tipp.price.listPrice"/>: <semui:xEditable field="listPrice"
+                                    <g:message code="tipp.price.listPrice"/>: <ui:xEditable field="listPrice"
                                                                                                owner="${priceItem}"
-                                                                                               overwriteEditable="false"/> <semui:xEditableRefData
+                                                                                               overwriteEditable="false"/> <ui:xEditableRefData
                                             field="listCurrency" owner="${priceItem}"
                                             config="Currency"
                                             overwriteEditable="false"/>
                                     <br />
-                                    <%--(<g:message code="tipp.price.startDate"/> <semui:xEditable field="startDate"
+                                    <%--(<g:message code="tipp.price.startDate"/> <ui:xEditable field="startDate"
                                                                                               type="date"
                                                                                               owner="${priceItem}"
                                                                                               overwriteEditable="false"/>-
-                                    <g:message code="tipp.price.endDate"/> <semui:xEditable field="endDate"
+                                    <g:message code="tipp.price.endDate"/> <ui:xEditable field="endDate"
                                                                                            type="date"
                                                                                            owner="${priceItem}"
                                                                                            overwriteEditable="false"/>)--%>
@@ -201,4 +201,4 @@
     <br>
     <br>
 
-</semui:modal>
+</ui:modal>

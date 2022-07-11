@@ -1,20 +1,20 @@
 <laser:htmlStart message="menu.institutions.change_log" />
 
-  <semui:breadcrumbs>
-    <semui:crumb message="menu.institutions.change_log" class="active" />
-  </semui:breadcrumbs>
+  <ui:breadcrumbs>
+    <ui:crumb message="menu.institutions.change_log" class="active" />
+  </ui:breadcrumbs>
 
 
-  <semui:controlButtons>
-    <semui:exportDropdown>
-      <semui:exportDropdownItem>
+  <ui:controlButtons>
+    <ui:exportDropdown>
+      <ui:exportDropdownItem>
         <g:link controller="myInstitution" class="item" action="changeLog" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
-      </semui:exportDropdownItem>
-    </semui:exportDropdown>
+      </ui:exportDropdownItem>
+    </ui:exportDropdown>
     <laser:render template="actions"/>
-  </semui:controlButtons>
+  </ui:controlButtons>
 
-  <semui:h1HeaderWithIcon message="menu.institutions.change_log" />
+  <ui:h1HeaderWithIcon message="menu.institutions.change_log" />
 
         <p>
           <strong>
@@ -50,6 +50,6 @@
         </g:each>
       </table>
 
-        <semui:paginate action="changeLog" controller="myInstitution" params="${params}" max="${max}" total="${num_changes}" />
+        <ui:paginate action="changeLog" controller="myInstitution" params="${params}" max="${max}" total="${num_changes}" />
 
   <laser:htmlEnd />

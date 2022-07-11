@@ -1,6 +1,6 @@
 <laser:htmlStart text="Datenbereinigung - Vertragsverknüpfungen ohne Einrichtungsverknüpfung" />
 
-        <semui:messages data="${flash}"/>
+        <ui:messages data="${flash}"/>
         <table class="ui table celled">
             <thead>
                 <tr>

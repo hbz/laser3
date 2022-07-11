@@ -2,28 +2,28 @@
 
 <laser:htmlStart text="${message(code: 'subscription.details.addMembers.label', args: memberType)}" serviceInjection="true"/>
 
-<semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="currentSubscriptions"
+<ui:breadcrumbs>
+    <ui:crumb controller="myInstitution" action="currentSubscriptions"
                  text="${message(code: 'myinst.currentSubscriptions.label')}"/>
-    <semui:crumb controller="subscription" action="show" id="${subscription.id}"
+    <ui:crumb controller="subscription" action="show" id="${subscription.id}"
                  text="${subscription.name}"/>
-    <semui:crumb class="active"
+    <ui:crumb class="active"
                  text="${message(code: 'subscription.details.addMembers.label',args:memberType)}"/>
-</semui:breadcrumbs>
+</ui:breadcrumbs>
 
-<semui:controlButtons>
+<ui:controlButtons>
     <laser:render template="actions"/>
-</semui:controlButtons>
+</ui:controlButtons>
 
-<semui:h1HeaderWithIcon floated="true">
-    <semui:xEditable owner="${subscription}" field="name"/>
-</semui:h1HeaderWithIcon>
+<ui:h1HeaderWithIcon floated="true">
+    <ui:xEditable owner="${subscription}" field="name"/>
+</ui:h1HeaderWithIcon>
 
 <h2 class="ui left floated aligned icon header la-clear-before">${message(code: 'subscription.details.addMembers.label', args:memberType)}</h2>
 
 <g:if test="${consortialView}">
 
-    <semui:filter>
+    <ui:filter>
         <g:form action="addMembers" method="get" params="[id: params.id]" class="ui form">
             <laser:render template="/templates/filter/orgFilter"
                       model="[
@@ -31,7 +31,7 @@
                               tmplConfigFormFilter: true
                       ]"/>
         </g:form>
-    </semui:filter>
+    </ui:filter>
 
     <g:form action="processAddMembers" params="${[id: params.id]}" controller="subscription" method="post" class="ui form">
 
@@ -100,7 +100,7 @@
                         </laser:script>
                     </g:if>
                     <g:else>
-                        <semui:msg class="info" text="${message(code:'myinst.noSubscriptionOwner')}"/>
+                        <ui:msg class="info" text="${message(code:'myinst.noSubscriptionOwner')}"/>
                     </g:else>
                 </div>
             </div>
@@ -128,9 +128,9 @@
                     </div>
                 </div>
                 <div class="field">
-                    <semui:datepicker label="subscription.startDate.label" id="valid_from" name="valid_from" value="" />
+                    <ui:datepicker label="subscription.startDate.label" id="valid_from" name="valid_from" value="" />
 
-                    <semui:datepicker label="subscription.endDate.label" id="valid_to" name="valid_to" value="" />
+                    <ui:datepicker label="subscription.endDate.label" id="valid_to" name="valid_to" value="" />
                 </div>
             </div>
             <div class="two fields">

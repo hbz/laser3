@@ -2,7 +2,7 @@
 
 <laser:htmlStart text="Datenbereinigung: Gelöschte TIPPs" serviceInjection="true"/>
 
-        <semui:messages data="${flash}"/>
+        <ui:messages data="${flash}"/>
         <table>
             <thead>
                 <tr>

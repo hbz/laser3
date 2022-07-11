@@ -1,13 +1,13 @@
 <%@ page import="de.laser.Platform; de.laser.Package; de.laser.Org; de.laser.storage.RDStore" %>
 <laser:htmlStart message="platforms.all_platforms.label" />
 
-	<semui:breadcrumbs>
-		<semui:crumb message="platforms.all_platforms.label" class="active" />
-	</semui:breadcrumbs>
+	<ui:breadcrumbs>
+		<ui:crumb message="platforms.all_platforms.label" class="active" />
+	</ui:breadcrumbs>
 
-	<semui:h1HeaderWithIcon message="platforms.all_platforms.label" total="${recordsCount}" floated="true" />
+	<ui:h1HeaderWithIcon message="platforms.all_platforms.label" total="${recordsCount}" floated="true" />
 
-			<semui:messages data="${flash}" />
+			<ui:messages data="${flash}" />
 
 			<laser:render template="/templates/filter/platformFilter"/>
 
@@ -75,6 +75,6 @@
 				</tbody>
 			</table>
 
-    <semui:paginate action="list" controller="platform" params="${params}" max="${max}" total="${recordsCount}" />
+    <ui:paginate action="list" controller="platform" params="${params}" max="${max}" total="${recordsCount}" />
 
 <laser:htmlEnd />

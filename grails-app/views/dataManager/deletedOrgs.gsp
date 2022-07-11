@@ -1,13 +1,13 @@
 <laser:htmlStart message="datamanager.deletedOrgManagement.label" />
 
-    <semui:breadcrumbs>
-      <semui:crumb controller="dataManager" action="index" text="${message(code:'menu.datamanager')}" />
-      <semui:crumb text="${message(code:'datamanager.deletedOrgManagement.label')}" class="active"/>
-    </semui:breadcrumbs>
+    <ui:breadcrumbs>
+      <ui:crumb controller="dataManager" action="index" text="${message(code:'menu.datamanager')}" />
+      <ui:crumb text="${message(code:'datamanager.deletedOrgManagement.label')}" class="active"/>
+    </ui:breadcrumbs>
 
-    <semui:h1HeaderWithIcon message="datamanager.deletedOrgManagement.label" total="${orgTotal}" />
+    <ui:h1HeaderWithIcon message="datamanager.deletedOrgManagement.label" total="${orgTotal}" />
 
-    <semui:messages data="${flash}" />
+    <ui:messages data="${flash}" />
 
     <table class="ui sortable celled la-js-responsive-table la-table table">
       <thead>
@@ -23,7 +23,7 @@
             <td>${fieldValue(bean: orgInstance, field: "sortname")}</td>
             <td>${fieldValue(bean: orgInstance, field: "name")}</td>
             <td>
-                <semui:xEditableRefData owner="${orgInstance}" field="status" config="${de.laser.storage.RDConstants.ORG_STATUS}"/>
+                <ui:xEditableRefData owner="${orgInstance}" field="status" config="${de.laser.storage.RDConstants.ORG_STATUS}"/>
             </td>
           </tr>
         </g:each>
@@ -31,6 +31,6 @@
     </table>
 
 
-        <semui:paginate action="deletedOrgs" controller="dataManager" params="${params}" max="${max}" total="${titleInstanceTotal}" />
+        <ui:paginate action="deletedOrgs" controller="dataManager" params="${params}" max="${max}" total="${titleInstanceTotal}" />
 
 <laser:htmlEnd />

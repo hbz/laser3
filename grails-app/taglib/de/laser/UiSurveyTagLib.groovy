@@ -4,12 +4,12 @@ import de.laser.utils.SwissKnife
 import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyOrg
 
-class SemuiSurveyTagLib {
+class UiSurveyTagLib {
 
     ContextService contextService
     LinksGenerationService linksGenerationService
 
-    static namespace = "semui"
+    static namespace = 'ui'
 
     def surveyStatus = { attrs, body ->
         def object = attrs.object

@@ -1,4 +1,4 @@
-<semui:modal id="modalPropertiesChanged" text="${message(code: 'renewalEvaluation.propertiesChanged')}"
+<ui:modal id="modalPropertiesChanged" text="${message(code: 'renewalEvaluation.propertiesChanged')}"
              hideSubmitButton="true">
 
     <table class="ui celled la-js-responsive-table la-table table">
@@ -25,37 +25,37 @@
                 <td>
                     <g:if test="${changedProperty.subscriptionProperty.getValue() != "" && changedProperty.subscriptionProperty.getValue() != null}">
                         <g:if test="${changedProperty.subscriptionProperty.type.isIntegerType()}">
-                            <semui:xEditable owner="${changedProperty.subscriptionProperty}"
+                            <ui:xEditable owner="${changedProperty.subscriptionProperty}"
                                              type="text" field="intValue"
                                              overwriteEditable="${false}"/>
                         </g:if>
 
                         <g:elseif
                                 test="${changedProperty.subscriptionProperty.type.isStringType()}">
-                            <semui:xEditable owner="${changedProperty.subscriptionProperty}"
+                            <ui:xEditable owner="${changedProperty.subscriptionProperty}"
                                              type="text" field="stringValue"
                                              overwriteEditable="${false}"/>
                         </g:elseif>
                         <g:elseif
                                 test="${changedProperty.subscriptionProperty.type.isBigDecimalType()}">
-                            <semui:xEditable owner="${changedProperty.subscriptionProperty}"
+                            <ui:xEditable owner="${changedProperty.subscriptionProperty}"
                                              type="text" field="decValue"
                                              overwriteEditable="${false}"/>
                         </g:elseif>
                         <g:elseif
                                 test="${changedProperty.subscriptionProperty.type.isDateType()}">
-                            <semui:xEditable owner="${changedProperty.subscriptionProperty}"
+                            <ui:xEditable owner="${changedProperty.subscriptionProperty}"
                                              type="date" field="dateValue"
                                              overwriteEditable="${false}"/>
                         </g:elseif>
                         <g:elseif
                                 test="${changedProperty.subscriptionProperty.type.isURLType()}">
-                            <semui:xEditable owner="${changedProperty.subscriptionProperty}"
+                            <ui:xEditable owner="${changedProperty.subscriptionProperty}"
                                              type="url" field="urlValue"
                                              overwriteEditable="${false}"
                                              class="la-overflow la-ellipsis"/>
                             <g:if test="${changedProperty.subscriptionProperty.value}">
-                                <semui:linkIcon
+                                <ui:linkIcon
                                         href="${changedProperty.subscriptionProperty.value}"/>
                             </g:if>
                         </g:elseif>
@@ -79,4 +79,4 @@
         </g:each>
         </tbody>
     </table>
-</semui:modal>
+</ui:modal>

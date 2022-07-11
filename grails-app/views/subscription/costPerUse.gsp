@@ -3,11 +3,11 @@
 
     <laser:render template="breadcrumb" model="${[ params:params ]}"/>
 
-    <semui:messages data="${flash}" />
+    <ui:messages data="${flash}" />
 
-    <semui:h1HeaderWithIcon>
-      <semui:xEditable owner="${subscription}" field="name" />
-    </semui:h1HeaderWithIcon>
+    <ui:h1HeaderWithIcon>
+      <ui:xEditable owner="${subscription}" field="name" />
+    </ui:h1HeaderWithIcon>
 
     <laser:render template="nav"  />
 

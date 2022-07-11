@@ -1,22 +1,22 @@
 <%@ page import="de.laser.RefdataCategory;de.laser.storage.RDConstants"%>
 <laser:htmlStart message="task.plural" />
 
-        <semui:breadcrumbs>
-            <semui:crumb message="menu.institutions.tasks" class="active"/>
-        </semui:breadcrumbs>
+        <ui:breadcrumbs>
+            <ui:crumb message="menu.institutions.tasks" class="active"/>
+        </ui:breadcrumbs>
 
-        <semui:controlButtons>
+        <ui:controlButtons>
             <laser:render template="actions"/>
-        </semui:controlButtons>
+        </ui:controlButtons>
 
-        <semui:h1HeaderWithIcon message="task.plural" floated="true" />
+        <ui:h1HeaderWithIcon message="task.plural" floated="true" />
 
         <%--<g:if test="${editable}">
             <input type="submit" class="ui left floated  button la-clear-before" value="${message(code:'task.create.new')}" data-semui="modal" data-href="#modalCreateTask" />
         </g:if>--%>
         <laser:render template="/templates/filter/javascript" />
 
-        <semui:filter showFilterButton="true">
+        <ui:filter showFilterButton="true">
             <form class="ui form">
                 <div class="four fields">
                     <div class="field">
@@ -28,9 +28,9 @@
                         </div>
                     </div>
 
-                    <semui:datepicker label="task.endDate.from.label" id="endDateFrom" name="endDateFrom" placeholder="default.date.label" value="${params.endDateFrom}" />
+                    <ui:datepicker label="task.endDate.from.label" id="endDateFrom" name="endDateFrom" placeholder="default.date.label" value="${params.endDateFrom}" />
 
-                    <semui:datepicker label="task.endDate.to.label" id="endDateTo" name="endDateTo" placeholder="default.date.label" value="${params.endDateTo}" />
+                    <ui:datepicker label="task.endDate.to.label" id="endDateTo" name="endDateTo" placeholder="default.date.label" value="${params.endDateTo}" />
 
                     <div class="field">
                         <label>${message(code: 'default.status.label')}</label>
@@ -48,9 +48,9 @@
                     <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label')}"/>
                 </div>
             </form>
-        </semui:filter>
+        </ui:filter>
 
-        <semui:messages data="${flash}" />
+        <ui:messages data="${flash}" />
 
         <laser:render template="/templates/tasks/modal_create" />
 

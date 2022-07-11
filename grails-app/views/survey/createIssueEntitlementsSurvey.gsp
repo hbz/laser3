@@ -2,15 +2,15 @@
 
 <laser:htmlStart message="myinst.currentSubscriptions.label" serviceInjection="true"/>
 
-<semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg().getDesignation()}"/>
-    <semui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
-    <semui:crumb message="createIssueEntitlementsSurvey.label" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg().getDesignation()}"/>
+    <ui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
+    <ui:crumb message="createIssueEntitlementsSurvey.label" class="active"/>
+</ui:breadcrumbs>
 
-<semui:h1HeaderWithIcon message="createIssueEntitlementsSurvey.label" type="Survey" />
+<ui:h1HeaderWithIcon message="createIssueEntitlementsSurvey.label" type="Survey" />
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 
 <div class="ui icon info message">
@@ -19,12 +19,12 @@
 </div>
 
 
-<h2 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${message(code: 'myinst.currentSubscriptions.label')}
-<semui:totalNumber total="${num_sub_rows}"/>
+<h2 class="ui left floated aligned icon header la-clear-before"><ui:headerIcon/>${message(code: 'myinst.currentSubscriptions.label')}
+<ui:totalNumber total="${num_sub_rows}"/>
 </h2>
 
 <laser:render template="/templates/filter/javascript" />
-<semui:filter showFilterButton="true">
+<ui:filter showFilterButton="true">
     <g:form action="createIssueEntitlementsSurvey" controller="survey" method="get" class="ui small form">
         <input type="hidden" name="isSiteReloaded" value="yes"/>
         <input type="hidden" name="id" value="${params.id}"/>
@@ -48,7 +48,7 @@
             </div>
             <!-- 1-2 -->
             <div class="field">
-                <semui:datepicker label="default.valid_on.label" id="validOn" name="validOn"
+                <ui:datepicker label="default.valid_on.label" id="validOn" name="validOn"
                                   placeholder="filter.placeholder" value="${validOn}"/>
             </div>
 
@@ -112,7 +112,7 @@
             </div>
         </div>
     </g:form>
-</semui:filter>
+</ui:filter>
 
 <div class="subscription-results">
     <g:if test="${subscriptions}">
@@ -268,7 +268,7 @@
 
 
 <g:if test="${true}">
-    <semui:paginate action="createSubscriptionSurvey" controller="survey" params="${params}"
+    <ui:paginate action="createSubscriptionSurvey" controller="survey" params="${params}"
                     next="${message(code: 'default.paginate.next')}"
                     prev="${message(code: 'default.paginate.prev')}" max="${max}"
                     total="${num_sub_rows}"/>

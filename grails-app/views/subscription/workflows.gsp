@@ -3,33 +3,33 @@
 
     <laser:render template="breadcrumb" model="${[ subscription:subscription, params:params ]}"/>
 
-    <semui:controlButtons>
+    <ui:controlButtons>
         <laser:render template="actions" />
-    </semui:controlButtons>
+    </ui:controlButtons>
 
-    <semui:h1HeaderWithIcon>
+    <ui:h1HeaderWithIcon>
         <laser:render template="iconSubscriptionIsChild"/>
-        <semui:xEditable owner="${subscription}" field="name" />
-    </semui:h1HeaderWithIcon>
-    <semui:anualRings object="${subscription}" controller="subscription" action="history" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+        <ui:xEditable owner="${subscription}" field="name" />
+    </ui:h1HeaderWithIcon>
+    <ui:anualRings object="${subscription}" controller="subscription" action="history" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
     <laser:render template="nav" />
     <laser:render template="message"/>
 
     <g:if test="${status == WorkflowService.OP_STATUS_DONE}">
         <g:if test="${cmd == 'delete'}">
-            <semui:msg class="positive" message="workflow.delete.ok" />
+            <ui:msg class="positive" message="workflow.delete.ok" />
         </g:if>
         <g:else>
-            <semui:msg class="positive" message="workflow.edit.ok" />
+            <ui:msg class="positive" message="workflow.edit.ok" />
         </g:else>
     </g:if>
     <g:elseif test="${status == WorkflowService.OP_STATUS_ERROR}">
         <g:if test="${cmd == 'delete'}">
-            <semui:msg class="negative" message="workflow.delete.error" />
+            <ui:msg class="negative" message="workflow.delete.error" />
         </g:if>
         <g:else>
-            <semui:msg class="negative" message="workflow.edit.error" />
+            <ui:msg class="negative" message="workflow.edit.error" />
         </g:else>
     </g:elseif>
 

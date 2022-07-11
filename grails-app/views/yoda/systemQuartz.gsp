@@ -1,12 +1,12 @@
 <%@ page import="de.laser.config.ConfigMapper" %>
 <laser:htmlStart message="menu.yoda.systemQuartz" />
 
-<semui:breadcrumbs>
-    <semui:crumb message="menu.yoda" controller="yoda" action="index"/>
-    <semui:crumb message="menu.yoda.systemQuartz" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb message="menu.yoda" controller="yoda" action="index"/>
+    <ui:crumb message="menu.yoda.systemQuartz" class="active"/>
+</ui:breadcrumbs>
 
-<semui:h1HeaderWithIcon message="menu.yoda.systemQuartz" />
+<ui:h1HeaderWithIcon message="menu.yoda.systemQuartz" />
 
 %{--${ConfigMapper.setConfig( ConfigMapper.QUARTZ_HEARTBEAT, new Date())} ##--}%
 %{--${ConfigMapper.getQuartzHeartbeat()} ##--}%

@@ -1,13 +1,13 @@
 <laser:htmlStart message="datamanager.deletedTitleManagement.label" />
 
-    <semui:breadcrumbs>
-      <semui:crumb controller="dataManager" action="index" text="${message(code:'menu.datamanager')}" />
-      <semui:crumb text="${message(code:'datamanager.deletedTitleManagement.label')}" class="active"/>
-    </semui:breadcrumbs>
+    <ui:breadcrumbs>
+      <ui:crumb controller="dataManager" action="index" text="${message(code:'menu.datamanager')}" />
+      <ui:crumb text="${message(code:'datamanager.deletedTitleManagement.label')}" class="active"/>
+    </ui:breadcrumbs>
 
-    <semui:h1HeaderWithIcon message="datamanager.deletedTitleManagement.label" total="${titleInstanceTotal}" />
+    <ui:h1HeaderWithIcon message="datamanager.deletedTitleManagement.label" total="${titleInstanceTotal}" />
 
-    <semui:messages data="${flash}" />
+    <ui:messages data="${flash}" />
 
       <table class="ui sortable celled la-js-responsive-table la-table table">
         <thead>
@@ -25,6 +25,6 @@
         </tbody>
       </table>
 
-      <semui:paginate action="deletedTitles" controller="dataManager" params="${params}" max="${max}" total="${titleInstanceTotal}" />
+      <ui:paginate action="deletedTitles" controller="dataManager" params="${params}" max="${max}" total="${titleInstanceTotal}" />
 
 <laser:htmlEnd />

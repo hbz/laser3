@@ -4,9 +4,9 @@ import de.laser.titles.BookInstance
 import de.laser.titles.DatabaseInstance
 import de.laser.titles.JournalInstance
 
-class SemuiIconTagLib {
+class UiIconTagLib {
 
-    static namespace = "semui"
+    static namespace = 'ui'
 
     def headerIcon = { attrs, body ->
         out << '<i aria-hidden="true" class="circular icon la-object"></i> '

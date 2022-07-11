@@ -5,12 +5,12 @@
 <div id='login' class="container">
     <div class='inner'>
         <div class='header'>
-            <semui:h1HeaderWithIcon message="springSecurity.login.header" />
+            <ui:h1HeaderWithIcon message="springSecurity.login.header" />
         </div>
     <p>
-        <semui:messages data="${flash}" />
+        <ui:messages data="${flash}" />
     </p>
-    <semui:card >
+    <ui:card >
         <div class="content">
             <form action='${postUrl}' method='POST' id='loginForm' class='ui form cssform' autocomplete='off'>
                 <div class="field">
@@ -39,7 +39,7 @@
                 </div>
             </g:form>
         </div>
-    </semui:card>
+    </ui:card>
     </div>
 </div>
 <laser:script file="${this.getGroovyPageFileName()}">

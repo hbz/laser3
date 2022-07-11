@@ -2,21 +2,21 @@
 
 <laser:htmlStart message="profile.user" serviceInjection="true" />
 
-<semui:breadcrumbs>
-    <semui:crumb message="profile.user" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb message="profile.user" class="active"/>
+</ui:breadcrumbs>
 
-<semui:controlButtons>
-    <semui:actionsDropdown>
+<ui:controlButtons>
+    <ui:actionsDropdown>
         <g:link class="ui item" controller="profile" action="delete">
             ${message(code:'profile.account.delete.button')}
         </g:link>
-    </semui:actionsDropdown>
-</semui:controlButtons>
+    </ui:actionsDropdown>
+</ui:controlButtons>
 
-<semui:h1HeaderWithIcon message="profile.user" />
+<ui:h1HeaderWithIcon message="profile.user" />
 
-<semui:messages data="${flash}" />
+<ui:messages data="${flash}" />
 
 <div class="ui two column grid la-clear-before">
 
@@ -406,52 +406,52 @@
                         <div class="field">
                             <label>${message(code: 'profile.theme')}</label>
                             <g:set var="US_THEME" value="${user.getSetting(KEYS.THEME, RefdataValue.getByValueAndCategory('default', RDConstants.USER_SETTING_THEME))}" />
-                            <semui:xEditableRefData owner="${US_THEME}" field="rdValue" config="${US_THEME.key.rdc}" />
+                            <ui:xEditableRefData owner="${US_THEME}" field="rdValue" config="${US_THEME.key.rdc}" />
                         </div>
                         <div class="field">
                             <label>${message(code: 'profile.dashboardTab')}</label>
                             <g:set var="US_DASHBOARD_TAB" value="${user.getSetting(KEYS.DASHBOARD_TAB, RefdataValue.getByValueAndCategory('Due Dates', RDConstants.USER_SETTING_DASHBOARD_TAB))}" />
-                            <semui:xEditableRefData owner="${US_DASHBOARD_TAB}" field="rdValue" config="${US_DASHBOARD_TAB.key.rdc}" />
+                            <ui:xEditableRefData owner="${US_DASHBOARD_TAB}" field="rdValue" config="${US_DASHBOARD_TAB.key.rdc}" />
                         </div>
                         <div class="field">
                             <label>${message(code: 'profile.language')}</label>
                             <g:set var="US_LANGUAGE" value="${user.getSetting(KEYS.LANGUAGE, RefdataValue.getByValueAndCategory('de', RDConstants.LANGUAGE))}" />
-                            <semui:xEditableRefData owner="${US_LANGUAGE}" field="rdValue" config="${US_LANGUAGE.key.rdc}" />
+                            <ui:xEditableRefData owner="${US_LANGUAGE}" field="rdValue" config="${US_LANGUAGE.key.rdc}" />
                             &nbsp;
                             <g:link controller="profile" action="index" class="ui button icon" style="float:right"><i class="icon sync"></i></g:link>
                         </div>
                         <div class="field">
                             <label>${message(code: 'profile.emailLanguage')}</label>
                             <g:set var="US_EMAIL_LANGUAGE" value="${user.getSetting(KEYS.LANGUAGE_OF_EMAILS, RefdataValue.getByValueAndCategory('de', RDConstants.LANGUAGE))}" />
-                            <semui:xEditableRefData owner="${US_EMAIL_LANGUAGE}" field="rdValue" config="${US_EMAIL_LANGUAGE.key.rdc}" />
+                            <ui:xEditableRefData owner="${US_EMAIL_LANGUAGE}" field="rdValue" config="${US_EMAIL_LANGUAGE.key.rdc}" />
                         </div>
 
                         <div class="field">
                             <label>${message(code: 'profile.editMode')}</label>
                             <g:set var="US_SHOW_EDIT_MODE" value="${user.getSetting(KEYS.SHOW_EDIT_MODE, RDStore.YN_YES)}" />
-                            <semui:xEditableRefData owner="${US_SHOW_EDIT_MODE}" field="rdValue" config="${US_SHOW_EDIT_MODE.key.rdc}" />
+                            <ui:xEditableRefData owner="${US_SHOW_EDIT_MODE}" field="rdValue" config="${US_SHOW_EDIT_MODE.key.rdc}" />
                         </div>
 
                         <div class="field">
                             <label>${message(code: 'profile.simpleViews')}</label>
                             <g:set var="US_SHOW_SIMPLE_VIEWS" value="${user.getSetting(KEYS.SHOW_SIMPLE_VIEWS, null)}" />
-                            <semui:xEditableRefData owner="${US_SHOW_SIMPLE_VIEWS}" field="rdValue" config="${US_SHOW_SIMPLE_VIEWS.key.rdc}" />
+                            <ui:xEditableRefData owner="${US_SHOW_SIMPLE_VIEWS}" field="rdValue" config="${US_SHOW_SIMPLE_VIEWS.key.rdc}" />
                         </div>
 
                         <div class="field">
                             <label>${message(code: 'profile.extendedFilter')}</label>
                             <g:set var="US_SHOW_EXTENDED_FILTER" value="${user.getSetting(KEYS.SHOW_EXTENDED_FILTER, RDStore.YN_YES)}" />
-                            <semui:xEditableRefData owner="${US_SHOW_EXTENDED_FILTER}" field="rdValue" config="${US_SHOW_EXTENDED_FILTER.key.rdc}" />
+                            <ui:xEditableRefData owner="${US_SHOW_EXTENDED_FILTER}" field="rdValue" config="${US_SHOW_EXTENDED_FILTER.key.rdc}" />
                         </div>
 
                         <div class="field">
                             <label>${message(code: 'profile.itemsTimeWindow')}</label>
-                            <semui:xEditable owner="${user.getSetting(KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)}" field="strValue" />
+                            <ui:xEditable owner="${user.getSetting(KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)}" field="strValue" />
                         </div>
 
                         <div class="field">
                             <label>${message(code: 'profile.pagesize')}</label>
-                            <semui:xEditable owner="${user.getSetting(KEYS.PAGE_SIZE, 10)}" field="strValue" />
+                            <ui:xEditable owner="${user.getSetting(KEYS.PAGE_SIZE, 10)}" field="strValue" />
                         </div>
 
                     </div>

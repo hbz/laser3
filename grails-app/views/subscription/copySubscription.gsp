@@ -1,18 +1,18 @@
 <%@ page import="de.laser.Person; de.laser.RefdataValue; de.laser.SubscriptionController; de.laser.CopyElementsService;de.laser.storage.RDStore;de.laser.PendingChangeConfiguration;" %>
 <laser:htmlStart message="myinst.copySubscription" serviceInjection="true" />
 
-<semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="currentSubscriptions" text="${message(code:'myinst.currentSubscriptions.label')}" />
+<ui:breadcrumbs>
+    <ui:crumb controller="myInstitution" action="currentSubscriptions" text="${message(code:'myinst.currentSubscriptions.label')}" />
 
     <g:if test="${sourceObject}">
-        <semui:crumb action="show" controller="subscription" id="${sourceObject.id}" text="${sourceObject.name}" />
-        <semui:crumb class="active" text="${message(code: 'myinst.copySubscription')}" />
+        <ui:crumb action="show" controller="subscription" id="${sourceObject.id}" text="${sourceObject.name}" />
+        <ui:crumb class="active" text="${message(code: 'myinst.copySubscription')}" />
     </g:if>
-</semui:breadcrumbs>
+</ui:breadcrumbs>
 
-<semui:h1HeaderWithIcon text="${message(code: 'myinst.copySubscription')}: ${sourceObject.name}" />
+<ui:h1HeaderWithIcon text="${message(code: 'myinst.copySubscription')}: ${sourceObject.name}" />
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 <% Map params = [:]
 if (sourceObjectId) params << [sourceObjectId: genericOIDService.getOID(sourceObject)]

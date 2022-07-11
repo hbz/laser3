@@ -29,7 +29,7 @@
                 <div class="column">
                     <g:if test="${ident instanceof Identifier}">
                         <g:if test="${!ident.instanceOf}">
-                            <semui:xEditable owner="${ident}" field="value"/>
+                            <ui:xEditable owner="${ident}" field="value"/>
                         </g:if>
                         <g:else>${ident.value}</g:else>
                         <g:if test="${ident.ns.urlPrefix}"><a target="_blank" href="${ident.ns.urlPrefix}${ident.value}"><i title="${ident.ns.getI10n('name')} Link" class="external alternate icon"></i></a></g:if>
@@ -59,7 +59,7 @@
                     <div class="column">
                         <g:if test="${ident instanceof Identifier}">
                             <g:if test="${!ident.instanceOf}">
-                                <semui:xEditable owner="${ident}" field="note"/>
+                                <ui:xEditable owner="${ident}" field="note"/>
                             </g:if>
                             <g:else>
                                 ${ident.note}

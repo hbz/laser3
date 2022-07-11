@@ -1,11 +1,11 @@
 <laser:htmlStart text="Manage ES Sources" />
 
-    <semui:breadcrumbs>
-        <semui:crumb message="menu.yoda" controller="yoda" action="index"/>
-        <semui:crumb text="ES Sources" class="active" />
-    </semui:breadcrumbs>
+    <ui:breadcrumbs>
+        <ui:crumb message="menu.yoda" controller="yoda" action="index"/>
+        <ui:crumb text="ES Sources" class="active" />
+    </ui:breadcrumbs>
 
-    <semui:messages data="${flash}" />
+    <ui:messages data="${flash}" />
 
       <table class="ui celled la-js-responsive-table la-table table">
         <thead>
@@ -26,28 +26,28 @@
             <tr>
               <td>${source.identifier}</td>
               <td>
-                  <semui:xEditable owner="${source}" field="name"/>
+                  <ui:xEditable owner="${source}" field="name"/>
               </td>
               <td>
-                  <semui:xEditable owner="${source}" field="host"/>
+                  <ui:xEditable owner="${source}" field="host"/>
               </td>
               <td>
-                  <semui:xEditableBoolean owner="${source}" field="active" />
+                  <ui:xEditableBoolean owner="${source}" field="active" />
               </td>
               <td>
-                  <semui:xEditable owner="${source}" field="port"/>
+                  <ui:xEditable owner="${source}" field="port"/>
               </td>
               <td>
-                  <semui:xEditable owner="${source}" field="index"/>
+                  <ui:xEditable owner="${source}" field="index"/>
               </td>
               <td>
-                    <semui:xEditable owner="${source}" field="cluster"/>
+                    <ui:xEditable owner="${source}" field="cluster"/>
               </td>
               <td>
-                  <semui:xEditableBoolean owner="${source}" field="laser_es" />
+                  <ui:xEditableBoolean owner="${source}" field="laser_es" />
               </td>
               <td>
-                  <semui:xEditableBoolean owner="${source}" field="gokb_es" />
+                  <ui:xEditableBoolean owner="${source}" field="gokb_es" />
               </td>
             </tr>
           </g:each>
@@ -56,7 +56,7 @@
 
       <br />
 
-    <semui:form>
+    <ui:form>
         <g:form action="newESSource" class="ui form">
 
             <div class="field">
@@ -109,6 +109,6 @@
             </div>
 
         </g:form>
-    </semui:form>
+    </ui:form>
 
 <laser:htmlEnd />

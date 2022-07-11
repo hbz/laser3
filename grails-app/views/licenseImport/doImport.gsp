@@ -2,17 +2,17 @@
 <laser:htmlStart text="${message(code:"default.import.label", args:[entityName])}" />
 
         <g:unless test="${validationResult?.success}">
-            <semui:h1HeaderWithIcon message="onix.import.license">
+            <ui:h1HeaderWithIcon message="onix.import.license">
                 <g:if test="${license}"> ${message(code:'onix.import.for_license', args:[license.reference])}</g:if>
                 <g:else> ${message(code:'onix.import.unspec')}</g:else>
-            </semui:h1HeaderWithIcon>
+            </ui:h1HeaderWithIcon>
             <br />
         </g:unless>
 
 
-    <semui:messages data="${flash}" />
+    <ui:messages data="${flash}" />
 
-    <semui:errors bean="${packageInstance}" />
+    <ui:errors bean="${packageInstance}" />
 
     <%-- Show summary --%>
     <g:if test="${validationResult}">

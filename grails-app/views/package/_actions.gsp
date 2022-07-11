@@ -4,29 +4,29 @@
 <g:set var="user" value="${contextService.getUser()}"/>
 <g:set var="org" value="${contextService.getOrg()}"/>
 
-<semui:actionsDropdown>
+<ui:actionsDropdown>
 %{--    <g:if test="${(editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM','INST_EDITOR')) && ! ['list'].contains(actionName)}">
-        <semui:actionsDropdownItem message="task.create.new" data-semui="modal" href="#modalCreateTask" />
-        <semui:actionsDropdownItem message="template.documents.add" data-semui="modal" href="#modalCreateDocument" />
+        <ui:actionsDropdownItem message="task.create.new" data-semui="modal" href="#modalCreateTask" />
+        <ui:actionsDropdownItem message="template.documents.add" data-semui="modal" href="#modalCreateDocument" />
     </g:if>
     <g:if test="${accessService.checkMinUserOrgRole(user,org,'INST_EDITOR') && ! ['list'].contains(actionName)}">
-        <semui:actionsDropdownItem message="template.addNote" data-semui="modal" href="#modalCreateNote" />
+        <ui:actionsDropdownItem message="template.addNote" data-semui="modal" href="#modalCreateNote" />
     </g:if>
     <g:if test="${(editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM','INST_EDITOR')) && ! ['list'].contains(actionName)}">
         <div class="divider"></div>
     </g:if>--}%
 
     <g:if test="${(editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM', 'INST_EDITOR')) && !['list'].contains(actionName) && packageInstance}">
-        <semui:actionsDropdownItem message="package.show.linkToSub" data-semui="modal" href="#linkToSubModal"/>
+        <ui:actionsDropdownItem message="package.show.linkToSub" data-semui="modal" href="#linkToSubModal"/>
         <div class="divider"></div>
     </g:if>
 
-    <semui:actionsDropdownItemDisabled controller="package" action="compare" message="menu.public.comp_pkg"/>
+    <ui:actionsDropdownItemDisabled controller="package" action="compare" message="menu.public.comp_pkg"/>
 
-</semui:actionsDropdown>
+</ui:actionsDropdown>
 
 <g:if test="${(editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM', 'INST_EDITOR')) && !['list'].contains(actionName) && packageInstance}">
-    <semui:modal id="linkToSubModal" contentClass="scrolling" message="package.show.linkToSub" msgSave="${message(code: 'default.button.link.label')}">
+    <ui:modal id="linkToSubModal" contentClass="scrolling" message="package.show.linkToSub" msgSave="${message(code: 'default.button.link.label')}">
 
         <g:form class="ui form" url="[controller: 'package', action: 'processLinkToSub', id: params.id]">
 
@@ -199,7 +199,7 @@
             JSPC.app.adjustDropdown()
         </laser:script>
 
-    </semui:modal>
+    </ui:modal>
 </g:if>
 
 %{--

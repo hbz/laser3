@@ -3,12 +3,12 @@ package de.laser
 
 import de.laser.utils.SwissKnife
 
-class SemuiSubNavTagLib {
+class UiSubNavTagLib {
 
     AccessService accessService
     ContextService contextService
 
-    static namespace = "semui"
+    static namespace = 'ui'
 
     // <semui:subNav actionName="${actionName}">
     //     <semui:subNavItem controller="controller" action="action" params="params" text="${text}" message="local.string" />

@@ -2,12 +2,12 @@
 
 <laser:htmlStart message="menu.admin.systemMessage" />
 
-<semui:breadcrumbs>
-    <semui:crumb message="menu.admin" controller="admin" action="index"/>
-    <semui:crumb message="menu.admin.systemMessage" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb message="menu.admin" controller="admin" action="index"/>
+    <ui:crumb message="menu.admin.systemMessage" class="active"/>
+</ui:breadcrumbs>
 
-<semui:h1HeaderWithIcon message="menu.admin.systemMessage" />
+<ui:h1HeaderWithIcon message="menu.admin.systemMessage" />
 
 <div class="la-float-right">
     <input type="submit" class="ui button" value="${message(code: 'admin.systemMessage.create')}" data-semui="modal" data-href="#modalCreateSystemMessage" />
@@ -20,7 +20,7 @@
     <i class="ui icon hand point right"></i> ${message(code: 'admin.systemMessage.info', args: [HeartbeatJob.HEARTBEAT_IN_SECONDS])}
 </div>
 
-<semui:messages data="${flash}" />
+<ui:messages data="${flash}" />
 
 <table class="ui celled la-js-responsive-table la-table table">
     <thead>
@@ -38,11 +38,11 @@
             <td>
                 <div class="ui attached segment">
                     <strong>${message(code: 'default.german.label')}</strong><br />
-                    <semui:xEditable owner="${msg}" field="content_de" type="textarea"/>
+                    <ui:xEditable owner="${msg}" field="content_de" type="textarea"/>
                 </div>
                 <div class="ui attached segment">
                     <strong>${message(code: 'default.english.label')}</strong><br />
-                    <semui:xEditable owner="${msg}" field="content_en" type="textarea"/>
+                    <ui:xEditable owner="${msg}" field="content_en" type="textarea"/>
                 </div>
             </td>
             <td>
@@ -54,7 +54,7 @@
                 </g:if>
             </td>
             <td>
-                <semui:xEditableBoolean owner="${msg}" field="isActive"/>
+                <ui:xEditableBoolean owner="${msg}" field="isActive"/>
             </td>
             <td>
                 <g:formatDate date="${msg.lastUpdated}" format="${message(code: 'default.date.format.noZ')}"/>
@@ -71,7 +71,7 @@
     </tbody>
 </table>
 
-<semui:modal id="modalCreateSystemMessage" message="admin.systemMessage.create">
+<ui:modal id="modalCreateSystemMessage" message="admin.systemMessage.create">
     <g:form class="ui form" url="[controller: 'admin', action: 'systemMessages', params: [create: true]]" method="post">
 
         <fieldset>
@@ -95,6 +95,6 @@
             </div>
         </fieldset>
     </g:form>
-</semui:modal>
+</ui:modal>
 
 <laser:htmlEnd />

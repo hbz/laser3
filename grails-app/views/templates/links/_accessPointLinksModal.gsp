@@ -10,7 +10,7 @@
     </a>
 </g:if>
 
-<semui:modal id="${tmplModalID}" text="${tmplText}">
+<ui:modal id="${tmplModalID}" text="${tmplText}">
 
     <g:form action="linkAccessPoint" controller="platform" method="get" class="form-inline ui small form">
         <input type="hidden" name="platform_id" value="${platformInstance.id}">
@@ -41,4 +41,4 @@
         </div>
     </g:form>
 
-</semui:modal>
+</ui:modal>

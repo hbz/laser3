@@ -3,18 +3,18 @@
 <g:set var="entityName" value="${message(code: 'contact.label')}" />
 <laser:htmlStart text="${message(code:"default.show.label", args:[entityName])}" />
 
-        <semui:breadcrumbs>
-            <semui:crumb message="menu.public.all_orgs" controller="organisation" action="index"/>
-            <semui:crumb text="${g.message(code:'default.edit.label', args:[entityName])}" class="active"/>
-        </semui:breadcrumbs>
+        <ui:breadcrumbs>
+            <ui:crumb message="menu.public.all_orgs" controller="organisation" action="index"/>
+            <ui:crumb text="${g.message(code:'default.edit.label', args:[entityName])}" class="active"/>
+        </ui:breadcrumbs>
 
-		<semui:h1HeaderWithIcon message="default.show.label" args="[entityName]" />
+		<ui:h1HeaderWithIcon message="default.show.label" args="[entityName]" />
 
         <button class="ui button" onclick="window.location.href = document.referrer">
             Zurück
         </button>
 
-		<semui:messages data="${flash}" />
+		<ui:messages data="${flash}" />
 
 		<div class="ui grid">
 			<div class="twelve wide column">
@@ -22,15 +22,15 @@
 				<div class="inline-lists">
 					<dl>
                         <dt><g:message code="contact.contentType.label" /></dt>
-                        <dd><semui:xEditableRefData owner="${contactInstance}" field="contentType" config="${RDConstants.CONTACT_CONTENT_TYPE}" /></dd>
+                        <dd><ui:xEditableRefData owner="${contactInstance}" field="contentType" config="${RDConstants.CONTACT_CONTENT_TYPE}" /></dd>
 
                         <dt><g:message code="default.content.label" /></dt>
                         <dd>
-							<semui:xEditable owner="${contactInstance}" field="content" id="js-mailContent"/>
+							<ui:xEditable owner="${contactInstance}" field="content" id="js-mailContent"/>
 						</dd>
 
                         <dt>${RefdataCategory.getByDesc(RDConstants.CONTACT_TYPE).getI10n('desc')}</dt>
-                        <dd><semui:xEditableRefData owner="${contactInstance}" field="type" config="${RDConstants.CONTACT_TYPE}" /></dd>
+                        <dd><ui:xEditableRefData owner="${contactInstance}" field="type" config="${RDConstants.CONTACT_TYPE}" /></dd>
 
                         <g:if test="${contactInstance?.prs}">
                             <dt><g:message code="contact.prs.label" /></dt>

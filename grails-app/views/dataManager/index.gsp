@@ -1,15 +1,15 @@
 <laser:htmlStart text="${message(code:'menu.datamanager')} ${message(code:'default.dashboard')}" />
 
-    <semui:breadcrumbs>
-      <semui:crumb message="menu.datamanager" class="active"/>
-    </semui:breadcrumbs>
+    <ui:breadcrumbs>
+      <ui:crumb message="menu.datamanager" class="active"/>
+    </ui:breadcrumbs>
 
-  <semui:h1HeaderWithIcon message="menu.datamanager" type="datamanager" />
+  <ui:h1HeaderWithIcon message="menu.datamanager" type="datamanager" />
 
   <br />
   <br />
 
-    <semui:messages data="${flash}" />
+    <ui:messages data="${flash}" />
 
     <g:if test="${pendingChanges?.size() > 0}">
         <h2 class="ui icon header la-clear-before la-noMargin-top">${message(code:'datamanager.pending.label')}</h2>

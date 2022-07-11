@@ -4,14 +4,14 @@
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
 
-<semui:h1HeaderWithIcon type="Subscription">
+<ui:h1HeaderWithIcon type="Subscription">
 <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
     <laser:render template="iconSubscriptionIsChild"/>
 </g:if>
-<semui:xEditable owner="${subscription}" field="name"/>
-</semui:h1HeaderWithIcon>
+<ui:xEditable owner="${subscription}" field="name"/>
+</ui:h1HeaderWithIcon>
 
-<semui:anualRings object="${subscription}" controller="subscription" action="entitlementChanges"
+<ui:anualRings object="${subscription}" controller="subscription" action="entitlementChanges"
                   navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
 <laser:render template="nav"/>
@@ -254,7 +254,7 @@
             </tbody>
         </table>
 
-        <semui:paginate offset="${offset}" max="${max}" total="${num_change_rows}" params="${params}"/>
+        <ui:paginate offset="${offset}" max="${max}" total="${num_change_rows}" params="${params}"/>
     </div>
 
 

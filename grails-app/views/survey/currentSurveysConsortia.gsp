@@ -2,30 +2,30 @@
 
 <laser:htmlStart message="currentSurveys.label" serviceInjection="true" />
 
-<semui:breadcrumbs>
-    <semui:crumb message="currentSurveys.label" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb message="currentSurveys.label" class="active"/>
+</ui:breadcrumbs>
 
-<semui:controlButtons>
-    <semui:exportDropdown>
-        <semui:exportDropdownItem>
+<ui:controlButtons>
+    <ui:exportDropdown>
+        <ui:exportDropdownItem>
             <g:link class="item" controller="survey" action="currentSurveysConsortia"
                     params="${params + [exportXLSX: true]}">${message(code: 'survey.exportSurveys')}</g:link>
-        </semui:exportDropdownItem>
-        <semui:exportDropdownItem>
+        </ui:exportDropdownItem>
+        <ui:exportDropdownItem>
             <g:link class="item" controller="survey" action="currentSurveysConsortia"
                     params="${params + [exportXLSX: true, surveyCostItems: true]}">${message(code: 'survey.exportSurveyCostItems')}</g:link>
-        </semui:exportDropdownItem>
-    </semui:exportDropdown>
+        </ui:exportDropdownItem>
+    </ui:exportDropdown>
     <laser:render template="actions"/>
-</semui:controlButtons>
+</ui:controlButtons>
 
-<semui:h1HeaderWithIcon message="currentSurveys.label" type="Survey" total="${surveysCount}" floated="true" />
+<ui:h1HeaderWithIcon message="currentSurveys.label" type="Survey" total="${surveysCount}" floated="true" />
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 <laser:render template="/templates/filter/javascript"/>
-<semui:filter showFilterButton="true">
+<ui:filter showFilterButton="true">
     <g:form action="currentSurveysConsortia" controller="survey" method="post" class="ui small form">
         <div class="four fields">
             <div class="field">
@@ -41,7 +41,7 @@
 
 
             <div class="field">
-                <semui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${validOn}" />
+                <ui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${validOn}" />
             </div>
 
             <div class="field">
@@ -172,9 +172,9 @@
 
         </div>
     </g:form>
-</semui:filter>
+</ui:filter>
 
-<semui:form>
+<ui:form>
 
     <g:if test="${surveys}">
 
@@ -394,17 +394,17 @@
         </g:else>
     </g:else>
 
-</semui:form>
+</ui:form>
 
 <g:if test="${surveysCount}">
-    <semui:paginate action="${actionName}" controller="${controllerName}" params="${params}"
+    <ui:paginate action="${actionName}" controller="${controllerName}" params="${params}"
                     next="${message(code: 'default.paginate.next')}"
                     prev="${message(code: 'default.paginate.prev')}" max="${max}"
                     total="${surveysCount}"/>
 </g:if>
 
-<semui:debugInfo>
+<ui:debugInfo>
     <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
-</semui:debugInfo>
+</ui:debugInfo>
 
 <laser:htmlEnd />

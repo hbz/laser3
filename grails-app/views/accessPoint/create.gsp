@@ -7,18 +7,18 @@
     $('body').attr('class', 'organisation_accessPoint_create');
 </laser:script>
 
-  <semui:breadcrumbs>
-    <semui:crumb controller="organisation" action="show" id="${orgInstance.id}" text="${orgInstance.getDesignation()}"/>
-    <semui:crumb controller="organisation" action="accessPoints" id="${orgInstance.id}" message="org.nav.accessPoints"/>
-    <semui:crumb message="accessPoint.new" class="active"/>
-  </semui:breadcrumbs>
+  <ui:breadcrumbs>
+    <ui:crumb controller="organisation" action="show" id="${orgInstance.id}" text="${orgInstance.getDesignation()}"/>
+    <ui:crumb controller="organisation" action="accessPoints" id="${orgInstance.id}" message="org.nav.accessPoints"/>
+    <ui:crumb message="accessPoint.new" class="active"/>
+  </ui:breadcrumbs>
 
-    <semui:h1HeaderWithIcon text="${orgInstance.name}" />
+    <ui:h1HeaderWithIcon text="${orgInstance.name}" />
 
   <laser:render template="/organisation/nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, tmplAccessPointsActive: true]}"/>
 
   <h2 class="ui header la-noMargin-top"><g:message code="accessPoint.new"/></h2>
-  <semui:messages data="${flash}"/>
+  <ui:messages data="${flash}"/>
 
   <div id="details">
     <laser:render template="createAccessPoint" model="[accessMethod: accessMethod, availableOptions : availableOptions]"/>

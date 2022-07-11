@@ -2,24 +2,24 @@
 <laser:htmlStart message="subscription.details.current_ent" serviceInjection="true"/>
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
-<semui:controlButtons>
+<ui:controlButtons>
     <laser:render template="actions"/>
-</semui:controlButtons>
+</ui:controlButtons>
 
-<semui:modeSwitch controller="subscription" action="index" params="${params}"/>
+<ui:modeSwitch controller="subscription" action="index" params="${params}"/>
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 <g:if test="${params.asAt}"><h1
-        class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${message(code: 'subscription.details.snapshot', args: [params.asAt])}</h1></g:if>
+        class="ui left floated aligned icon header la-clear-before"><ui:headerIcon/>${message(code: 'subscription.details.snapshot', args: [params.asAt])}</h1></g:if>
 
-<semui:h1HeaderWithIcon>
+<ui:h1HeaderWithIcon>
 <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
     <laser:render template="iconSubscriptionIsChild"/>
 </g:if>
-<semui:xEditable owner="${subscription}" field="name"/>
-</semui:h1HeaderWithIcon>
-<semui:anualRings object="${subscription}" controller="subscription" action="index"
+<ui:xEditable owner="${subscription}" field="name"/>
+</ui:h1HeaderWithIcon>
+<ui:anualRings object="${subscription}" controller="subscription" action="index"
                   navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
 <laser:render template="nav"/>
@@ -95,7 +95,7 @@
                 <div class="ui la-filter segment">
                     <h4 class="ui header"><g:message code="subscription.details.issueEntitlementEnrichment.label"/></h4>
 
-                    <semui:msg class="warning" header="${message(code: "message.attention")}"
+                    <ui:msg class="warning" header="${message(code: "message.attention")}"
                                message="subscription.details.addEntitlements.warning"/>
                     <g:form class="ui form" controller="subscription" action="index"
                             params="${[sort: params.sort, order: params.order, filter: params.filter, pkgFilter: params.pkgfilter, startsBefore: params.startsBefore, endsAfter: params.endAfter, id: subscription.id]}"
@@ -270,29 +270,29 @@
                             </th>
                             <%-- legacy??
                             <th>
-                                <semui:simpleHiddenValue id="bulk_medium2" name="bulk_medium2" type="refdata"
+                                <ui:simpleHiddenValue id="bulk_medium2" name="bulk_medium2" type="refdata"
                                                          category="${RDConstants.IE_MEDIUM}"/>
                             </th>--%>
                             <th>
-                                <%--<semui:datepicker hideLabel="true"
+                                <%--<ui:datepicker hideLabel="true"
                                                   placeholder="${message(code: 'default.from')}"
                                                   inputCssClass="la-input-small" id="bulk_start_date"
                                                   name="bulk_start_date"/>
 
 
-                                <semui:datepicker hideLabel="true"
+                                <ui:datepicker hideLabel="true"
                                                   placeholder="${message(code: 'default.to')}"
                                                   inputCssClass="la-input-small" id="bulk_end_date"
                                                   name="bulk_end_date"/>--%>
                             </th>
                             <th>
-                                <semui:datepicker hideLabel="true"
+                                <ui:datepicker hideLabel="true"
                                                   placeholder="${message(code: 'default.from')}"
                                                   inputCssClass="la-input-small" id="bulk_access_start_date"
                                                   name="bulk_access_start_date"/>
 
 
-                                <semui:datepicker hideLabel="true"
+                                <ui:datepicker hideLabel="true"
                                                   placeholder="${message(code: 'default.to')}"
                                                   inputCssClass="la-input-small" id="bulk_access_end_date"
                                                   name="bulk_access_end_date"/>
@@ -359,7 +359,7 @@
                                 <td>
                                 <!-- von --->
                                     <g:if test="${editable}">
-                                        <semui:xEditable owner="${ie}" type="date" field="accessStartDate"/>
+                                        <ui:xEditable owner="${ie}" type="date" field="accessStartDate"/>
                                         <i class="grey question circle icon la-popup-tooltip la-delay"
                                            data-content="${message(code: 'subscription.details.access_start.note')}"></i>
                                     </g:if>
@@ -367,10 +367,10 @@
                                         <g:formatDate format="${message(code: 'default.date.format.notime')}"
                                                       date="${ie.accessStartDate}"/>
                                     </g:else>
-                                    <semui:dateDevider/>
+                                    <ui:dateDevider/>
                                 <!-- bis -->
                                     <g:if test="${editable}">
-                                        <semui:xEditable owner="${ie}" type="date" field="accessEndDate"/>
+                                        <ui:xEditable owner="${ie}" type="date" field="accessEndDate"/>
                                         <i class="grey question circle icon la-popup-tooltip la-delay"
                                            data-content="${message(code: 'subscription.details.access_end.note')}"></i>
                                     </g:if>
@@ -381,17 +381,17 @@
                                 </td>
                                 <td>
                                     <g:each in="${ie.priceItems}" var="priceItem" status="i">
-                                        <g:message code="tipp.price.listPrice"/>: <semui:xEditable field="listPrice"
+                                        <g:message code="tipp.price.listPrice"/>: <ui:xEditable field="listPrice"
                                                                                              owner="${priceItem}"
-                                                                                             format=""/> <semui:xEditableRefData
+                                                                                             format=""/> <ui:xEditableRefData
                                             field="listCurrency" owner="${priceItem}"
                                             config="Currency"/> <%--<g:formatNumber number="${priceItem.listPrice}" type="currency" currencyCode="${priceItem.listCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%><br/>
-                                        <g:message code="tipp.price.localPrice"/>: <semui:xEditable field="localPrice"
-                                                                                              owner="${priceItem}"/> <semui:xEditableRefData
+                                        <g:message code="tipp.price.localPrice"/>: <ui:xEditable field="localPrice"
+                                                                                              owner="${priceItem}"/> <ui:xEditableRefData
                                             field="localCurrency" owner="${priceItem}"
                                             config="Currency"/> <%--<g:formatNumber number="${priceItem.localPrice}" type="currency" currencyCode="${priceItem.localCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%>
-                                    <%--<semui:xEditable field="startDate" type="date"
-                                                     owner="${priceItem}"/><semui:dateDevider/><semui:xEditable
+                                    <%--<ui:xEditable field="startDate" type="date"
+                                                     owner="${priceItem}"/><ui:dateDevider/><ui:xEditable
                                         field="endDate" type="date"
                                         owner="${priceItem}"/>  <g:formatDate format="${message(code:'default.date.format.notime')}" date="${priceItem.startDate}"/>--%>
 
@@ -481,7 +481,7 @@
 </div>
 
 <g:if test="${entitlements}">
-    <semui:paginate action="index" controller="subscription" params="${params}"
+    <ui:paginate action="index" controller="subscription" params="${params}"
                     next="${message(code: 'default.paginate.next')}"
                     prev="${message(code: 'default.paginate.prev')}" max="${max}"
                     total="${num_ies_rows}"/>
@@ -493,7 +493,7 @@
 
 <laser:render template="export/individuallyExportIEsModal" model="[modalID: 'individuallyExportIEsModal']" />
 
-<semui:modal id="showPackagesModal" message="subscription.packages.label" hideSubmitButton="true">
+<ui:modal id="showPackagesModal" message="subscription.packages.label" hideSubmitButton="true">
     <div class="ui ordered list">
         <g:each in="${subscription.packages.sort { it.pkg.name.toLowerCase() }}" var="subPkg">
             <div class="item">
@@ -507,7 +507,7 @@
         </g:each>
     </div>
 
-</semui:modal>
+</ui:modal>
 
 
 <laser:script file="${this.getGroovyPageFileName()}">

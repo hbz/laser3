@@ -2,14 +2,14 @@
 
 <laser:htmlStart message="gasco.title" />
 
-    <semui:h1HeaderWithIcon text="${subscription}">
+    <ui:h1HeaderWithIcon text="${subscription}">
         <g:if test="${issueEntitlementsCount}">
             &nbsp;&nbsp;
             (${issueEntitlements?.size()} von ${issueEntitlementsCount})
         </g:if>
-    </semui:h1HeaderWithIcon>
+    </ui:h1HeaderWithIcon>
 
-    <semui:filter>
+    <ui:filter>
         <form class="ui form">
             <div class="fields">
 
@@ -41,7 +41,7 @@
 
             </div>
         </form>
-    </semui:filter>
+    </ui:filter>
 
     <table class="ui celled la-js-responsive-table la-table table">
         <thead>
@@ -58,12 +58,12 @@
                 <tr>
                     <td>${counter + 1}</td>
                     <td>
-                        <semui:listIcon type="${tipp.medium?.value}"/>
+                        <ui:listIcon type="${tipp.medium?.value}"/>
                         <strong>${tipp.name}</strong>
                         <br />
 
                         <g:if test="${tipp.hostPlatformURL}">
-                            <semui:linkIcon href="${tipp.hostPlatformURL.startsWith('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
+                            <ui:linkIcon href="${tipp.hostPlatformURL.startsWith('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
                         </g:if>
                         <br />
 

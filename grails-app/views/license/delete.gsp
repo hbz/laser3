@@ -2,7 +2,7 @@
 
     <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
-    <semui:h1HeaderWithIcon text="${license.reference}" />
+    <ui:h1HeaderWithIcon text="${license.reference}" />
 
     <g:if test="${delResult.status != deletionService.RESULT_SUCCESS}">
         <laser:render template="nav" />
@@ -10,17 +10,17 @@
 
     <g:if test="${delResult}">
         <g:if test="${delResult.status == deletionService.RESULT_SUCCESS}">
-            <semui:msg class="positive" header="" message="deletion.success.msg" />
+            <ui:msg class="positive" header="" message="deletion.success.msg" />
             <g:link controller="myInstitution" action="currentLicenses" class="ui button">${message(code:'menu.my.licenses')}</g:link>
         </g:if>
         <g:else>
-            <semui:msg class="info" header="" message="license.delete.info" />
+            <ui:msg class="info" header="" message="license.delete.info" />
 
             <g:if test="${delResult.status == deletionService.RESULT_BLOCKED}">
-                <semui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="deletion.blocked.msg.license" />
+                <ui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="deletion.blocked.msg.license" />
             </g:if>
             <g:if test="${delResult.status == deletionService.RESULT_ERROR}">
-                <semui:msg class="negative" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
+                <ui:msg class="negative" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
             </g:if>
 
             <g:link controller="myInstitution" action="currentLicenses" class="ui button">${message(code:'menu.my.licenses')}</g:link>

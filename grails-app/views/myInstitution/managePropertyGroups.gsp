@@ -1,24 +1,24 @@
 <%@ page import="de.laser.properties.PropertyDefinition;de.laser.*"%>
 <laser:htmlStart message="menu.institutions.prop_groups" serviceInjection="true"/>
 
-        <semui:breadcrumbs>
-            <semui:crumb message="menu.institutions.manage_props" class="active"/>
-        </semui:breadcrumbs>
+        <ui:breadcrumbs>
+            <ui:crumb message="menu.institutions.manage_props" class="active"/>
+        </ui:breadcrumbs>
 
-        <semui:controlButtons>
-            <semui:exportDropdown>
-                <semui:exportDropdownItem>
+        <ui:controlButtons>
+            <ui:exportDropdown>
+                <ui:exportDropdownItem>
                     <g:link class="item" action="managePropertyGroups" params="[cmd: 'exportXLS']">${message(code: 'default.button.export.xls')}</g:link>
-                </semui:exportDropdownItem>
-            </semui:exportDropdown>
+                </ui:exportDropdownItem>
+            </ui:exportDropdown>
             <laser:render template="actions"/>
-        </semui:controlButtons>
+        </ui:controlButtons>
 
-        <semui:h1HeaderWithIcon message="menu.institutions.manage_props" />
+        <ui:h1HeaderWithIcon message="menu.institutions.manage_props" />
 
         <laser:render template="nav" />
 
-        <semui:messages data="${flash}" />
+        <ui:messages data="${flash}" />
 
     <div class="ui styled fluid accordion">
         <g:each in="${propDefGroups}" var="typeEntry">
@@ -43,16 +43,16 @@
                     <g:each in="${typeEntry.value}" var="pdGroup">
                         <tr>
                             <td>
-                                <semui:xEditable owner="${pdGroup}" field="name" />
+                                <ui:xEditable owner="${pdGroup}" field="name" />
                             </td>
                             <td>
-                                <semui:xEditable owner="${pdGroup}" field="description" />
+                                <ui:xEditable owner="${pdGroup}" field="description" />
                             </td>
                             <td>
                                 ${pdGroup.getPropertyDefinitions().size()}
                             </td>
                             <td>
-                                <semui:xEditableBoolean owner="${pdGroup}" field="isVisible" />
+                                <ui:xEditableBoolean owner="${pdGroup}" field="isVisible" />
                             </td>
                             <g:if test="${editable}">
                                 <td class="x">

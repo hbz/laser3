@@ -1,16 +1,16 @@
 <%@ page import="de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Package; de.laser.RefdataValue;" %>
 <laser:htmlStart message="menu.my.packages" serviceInjection="true" />
 
-<semui:breadcrumbs>
-    <semui:crumb message="menu.my.packages" class="active" />
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb message="menu.my.packages" class="active" />
+</ui:breadcrumbs>
 
-<semui:h1HeaderWithIcon message="menu.my.packages" total="${packageListTotal}" floated="true" />
+<ui:h1HeaderWithIcon message="menu.my.packages" total="${packageListTotal}" floated="true" />
 
-<semui:messages data="${flash}" />
+<ui:messages data="${flash}" />
 
 <laser:render template="/templates/filter/javascript" />
-<semui:filter showFilterButton="true">
+<ui:filter showFilterButton="true">
     <g:form action="currentPackages" method="get" class="ui form">
         <div class="two fields">
             <!-- 1-1 -->
@@ -59,7 +59,7 @@
             </div>
         </div>
     </g:form>
-</semui:filter>
+</ui:filter>
 
 <table class="ui sortable celled la-js-responsive-table la-table table">
     <thead>
@@ -120,6 +120,6 @@
     </tbody>
 </table>
 
-    <semui:paginate total="${packageListTotal}" params="${params}" max="${max}" offset="${offset}" />
+    <ui:paginate total="${packageListTotal}" params="${params}" max="${max}" offset="${offset}" />
 
 <laser:htmlEnd />

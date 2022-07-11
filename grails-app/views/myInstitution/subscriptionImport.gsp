@@ -1,14 +1,14 @@
 <%@ page import="de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory" %>
 <laser:htmlStart message="myinst.subscriptionImport.pageTitle" serviceInjection="true"/>
 
-<semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="currentSubscriptions" message="myinst.currentSubscriptions.label"/>
-    <semui:crumb message="menu.institutions.subscriptionImport" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb controller="myInstitution" action="currentSubscriptions" message="myinst.currentSubscriptions.label"/>
+    <ui:crumb message="menu.institutions.subscriptionImport" class="active"/>
+</ui:breadcrumbs>
 
-<semui:h1HeaderWithIcon message="menu.institutions.subscriptionImport" />
+<ui:h1HeaderWithIcon message="menu.institutions.subscriptionImport" />
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 <div class="ui grid">
     <div class="sixteen wide column">

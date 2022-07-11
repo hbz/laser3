@@ -1,51 +1,51 @@
 <%@ page import="de.laser.survey.SurveyConfig;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.RefdataValue; de.laser.storage.RDStore" %>
 <laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyResult.label')})" serviceInjection="true"/>
 
-<semui:breadcrumbs>
-    <semui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code:'menu.my.surveys')}" />
+<ui:breadcrumbs>
+    <ui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code:'menu.my.surveys')}" />
     <g:if test="${surveyInfo}">
-        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]" text="${surveyConfig.getConfigNameShort()}" />
+        <ui:crumb controller="survey" action="show" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]" text="${surveyConfig.getConfigNameShort()}" />
     </g:if>
-    <semui:crumb message="surveyResult.label" class="active"/>
-</semui:breadcrumbs>
+    <ui:crumb message="surveyResult.label" class="active"/>
+</ui:breadcrumbs>
 
-<semui:controlButtons>
+<ui:controlButtons>
     <g:if test="${surveyInfo.status != RDStore.SURVEY_IN_PROCESSING}">
-        <semui:exportDropdown>
-            <semui:exportDropdownItem>
+        <ui:exportDropdown>
+            <ui:exportDropdownItem>
                 <a class="item" data-semui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
-            </semui:exportDropdownItem>
+            </ui:exportDropdownItem>
 
-            %{--<semui:exportDropdownItem>
+            %{--<ui:exportDropdownItem>
                 <g:link class="item" action="surveyEvaluation" id="${surveyInfo.id}"
                         params="[surveyConfigID: surveyConfig.id, exportXLSX: true]">${message(code: 'survey.exportSurvey')}</g:link>
-            </semui:exportDropdownItem>
+            </ui:exportDropdownItem>
 
             <g:if test="${surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
-            <semui:exportDropdownItem>
+            <ui:exportDropdownItem>
                 <g:link class="item" action="surveyEvaluation" id="${surveyInfo.id}"
                         params="[surveyConfigID: surveyConfig.id, exportXLSX: true, surveyCostItems: true]">${message(code: 'survey.exportSurveyCostItems')}</g:link>
-            </semui:exportDropdownItem>
+            </ui:exportDropdownItem>
             </g:if>--}%
-        </semui:exportDropdown>
+        </ui:exportDropdown>
     </g:if>
 
     <laser:render template="actions"/>
-</semui:controlButtons>
+</ui:controlButtons>
 
-<semui:h1HeaderWithIcon type="Survey">
-<semui:xEditable owner="${surveyInfo}" field="name"/>
-</semui:h1HeaderWithIcon>
-<semui:surveyStatusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="surveyEvaluation"/>
+<ui:h1HeaderWithIcon type="Survey">
+<ui:xEditable owner="${surveyInfo}" field="name"/>
+</ui:h1HeaderWithIcon>
+<ui:surveyStatusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="surveyEvaluation"/>
 
 
 
 
 <laser:render template="nav"/>
 
-<semui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
+<ui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 <br />
 

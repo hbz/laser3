@@ -2,7 +2,7 @@
 <laser:serviceInjection />
 <!-- _queryModal.gsp -->
 
-    <semui:modal id="${modalID}" message="reporting.modal.export" msgSave="${message(code: 'default.button.export.label')}">
+    <ui:modal id="${modalID}" message="reporting.modal.export" msgSave="${message(code: 'default.button.export.label')}">
 
         <g:form controller="ajaxHtml" action="chartQueryExport" method="POST" target="_blank">
 
@@ -50,7 +50,7 @@
                                           from="${[csv:'CSV', xlsx: 'XLSX']}"
                                 />
                                 %{-- ERMS-3614
-                                <semui:dropdownWithI18nExplanations name="fileformat"
+                                <ui:dropdownWithI18nExplanations name="fileformat"
                                         class="ui dropdown la-not-clearable"
                                         from="[csv: ['CSV', 'Comma-Separated Values'], pdf: ['PDF', 'Portable Document Format'], xlsx: ['XLSX', 'Excel - Office Open XML']]" value="csv"
                                         optionKey="key"
@@ -77,7 +77,7 @@
             --}%
     </g:form>
 
-</semui:modal>
+</ui:modal>
 
 <laser:script file="${this.getGroovyPageFileName()}">
 

@@ -3,7 +3,7 @@
         <g:message code="org.subjectGroup.add.label"/>
     </a>
 
-    <semui:modal id="subjectGroup" message="org.subjectGroup.add.label">
+    <ui:modal id="subjectGroup" message="org.subjectGroup.add.label">
         <g:form class="ui form" url="[controller: 'organisation', action: 'addSubjectGroup',id:org.id]" method="post">
             <div class="field">
             <label><g:message code="org.subjectGroup.label"/>:</label>
@@ -17,5 +17,5 @@
                       value=""/>
             </div>
         </g:form>
-    </semui:modal>
+    </ui:modal>
 </g:if>

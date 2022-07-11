@@ -7,7 +7,7 @@
             <g:each in="${cfgQuery}" var="field">
                 <div class="field">
                     <label for="query-chooser-1-${qi}">${BaseConfig.getConfigLabel(field.key)}</label>
-                    <semui:dropdownWithI18nExplanations name="query-chooser"
+                    <ui:dropdownWithI18nExplanations name="query-chooser"
                                                         id="query-chooser-1-${qi}"
                                                         from="${field.value}"
                                                         optionKey="${{it.key}}"
@@ -25,7 +25,7 @@
             <g:each in="${cfgDistribution}" var="field">
                 <div class="field">
                     <label for="query-chooser-2-${di}">${BaseConfig.getConfigLabel('distribution')}</label>
-                         <semui:dropdownWithI18nExplanations name="query-chooser"
+                         <ui:dropdownWithI18nExplanations name="query-chooser"
                                                              id="query-chooser-2-${di}"
                                                              from="${field.value}"
                                                              optionKey="${{it.key}}"

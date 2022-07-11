@@ -3,7 +3,7 @@
 
 <g:set var="copyElementsService" bean="copyElementsService"/>
 
-<semui:form>
+<ui:form>
 
     <g:if test="${!fromSurvey && !isRenewSub && !copyObject}">
         <laser:render template="/templates/copyElements/selectSourceAndTargetObject" model="[
@@ -70,9 +70,9 @@
                 <tr>
                     <td name="copyObject.take${objProperty}.source">
                         <div>
-                            <strong><semui:propertyIcon object="${sourceObject}" propertyName="${objProperty}"
+                            <strong><ui:propertyIcon object="${sourceObject}" propertyName="${objProperty}"
                                                    showToolTipp="true"/> ${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.${objProperty}.label")}:</strong>
-                            <semui:showPropertyValue property="${sourceObject."${objProperty}"}"/>
+                            <ui:showPropertyValue property="${sourceObject."${objProperty}"}"/>
                         </div>
                     </td>
                     <g:if test="${isConsortialObjects}">
@@ -99,9 +99,9 @@
                         <td name="copyObject.take${objProperty}.target">
                             <g:if test="${targetObject}">
                                 <div>
-                                    <strong><semui:propertyIcon object="${targetObject}" propertyName="${objProperty}"
+                                    <strong><ui:propertyIcon object="${targetObject}" propertyName="${objProperty}"
                                                            showToolTipp="true"/> ${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.${objProperty}.label")}:</strong>
-                                    <semui:showPropertyValue property="${targetObject."${objProperty}"}"/>
+                                    <ui:showPropertyValue property="${targetObject."${objProperty}"}"/>
 
                                     <g:if test="${isConsortialObjects}">
                                         <div class="right aligned wide column">
@@ -729,7 +729,7 @@
             </div>
         </g:else>
     </g:form>
-</semui:form>
+</ui:form>
 
 <g:if test="${!copyObject}">
     <laser:script file="${this.getGroovyPageFileName()}">

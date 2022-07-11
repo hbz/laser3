@@ -1,26 +1,26 @@
 <%@ page import="de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.Org;de.laser.survey.SurveyOrg; de.laser.AuditConfig" %>
 <laser:htmlStart message="surveyInfo.copyProperties" serviceInjection="true" />
 
-<semui:breadcrumbs>
-    <semui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
+<ui:breadcrumbs>
+    <ui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
 
     <g:if test="${surveyInfo}">
-        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}"
+        <ui:crumb controller="survey" action="show" id="${surveyInfo.id}"
                      params="[surveyConfigID: surveyConfig.id]" text="${surveyInfo.name}"/>
     </g:if>
-    <semui:crumb message="surveyInfo.transferOverView" class="active"/>
-</semui:breadcrumbs>
+    <ui:crumb message="surveyInfo.transferOverView" class="active"/>
+</ui:breadcrumbs>
 
 
-<semui:h1HeaderWithIcon text="${surveyInfo.name}" type="Survey">
-<semui:surveyStatus object="${surveyInfo}"/>
-</semui:h1HeaderWithIcon>
+<ui:h1HeaderWithIcon text="${surveyInfo.name}" type="Survey">
+<ui:surveyStatus object="${surveyInfo}"/>
+</ui:h1HeaderWithIcon>
 
 <laser:render template="nav"/>
 
-<semui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
+<ui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 <br/>
 
@@ -184,13 +184,13 @@
 
     </div>
 
-    <semui:messages data="${flash}"/>
+    <ui:messages data="${flash}"/>
 
     <h2 class="ui header">
         ${message(code: 'copyProperties.copyProperties', args: [message(code: 'copyProperties.' + params.tab)])}
     </h2>
 
-    <semui:form>
+    <ui:form>
         <div class="ui grid">
 
             <div class="row">
@@ -209,7 +209,7 @@
                             <br/>
                             <g:link controller="subscription" action="members"
                                     id="${parentSubscription.id}">${message(code: 'renewalEvaluation.orgsInSub')}</g:link>
-                            <semui:totalNumber total="${parentSubscription.getDerivedSubscribers().size()}"/>
+                            <ui:totalNumber total="${parentSubscription.getDerivedSubscribers().size()}"/>
                         </g:if>
                     </h3>
                 </div>
@@ -228,7 +228,7 @@
                             <br/>
                             <g:link controller="subscription" action="members"
                                     id="${parentSuccessorSubscription.id}">${message(code: 'renewalEvaluation.orgsInSub')}</g:link>
-                            <semui:totalNumber
+                            <ui:totalNumber
                                     total="${parentSuccessorSubscription.getDerivedSubscribers().size()}"/>
 
                         </g:if>
@@ -236,7 +236,7 @@
                 </div>
             </div>
         </div>
-    </semui:form>
+    </ui:form>
 
 %{--<div class="ui icon positive message">
     <i class="info icon"></i>
@@ -258,7 +258,7 @@
     </div>
 </div>--}%
 
-    <semui:form>
+    <ui:form>
         <g:if test="${properties}">
 
             <g:form action="proccessCopyProperties" controller="survey" id="${surveyInfo.id}"
@@ -380,39 +380,39 @@
                                     <g:elseif test="${participant.oldSub && participant.oldCustomProperty}">
 
                                         <g:if test="${participant.oldCustomProperty.type.isIntegerType()}">
-                                            <semui:xEditable owner="${participant.oldCustomProperty}" type="number"
+                                            <ui:xEditable owner="${participant.oldCustomProperty}" type="number"
                                                              overwriteEditable="${false}"
                                                              field="intValue"/>
                                         </g:if>
                                         <g:elseif test="${participant.oldCustomProperty.type.isStringType()}">
-                                            <semui:xEditable owner="${participant.oldCustomProperty}" type="text"
+                                            <ui:xEditable owner="${participant.oldCustomProperty}" type="text"
                                                              overwriteEditable="${false}"
                                                              field="stringValue"/>
                                         </g:elseif>
                                         <g:elseif
                                                 test="${participant.oldCustomProperty.type.isBigDecimalType()}">
-                                            <semui:xEditable owner="${participant.oldCustomProperty}" type="text"
+                                            <ui:xEditable owner="${participant.oldCustomProperty}" type="text"
                                                              overwriteEditable="${false}"
                                                              field="decValue"/>
                                         </g:elseif>
                                         <g:elseif test="${participant.oldCustomProperty.type.isDateType()}">
-                                            <semui:xEditable owner="${participant.oldCustomProperty}" type="date"
+                                            <ui:xEditable owner="${participant.oldCustomProperty}" type="date"
                                                              overwriteEditable="${false}"
                                                              field="dateValue"/>
                                         </g:elseif>
                                         <g:elseif test="${participant.oldCustomProperty.type.isURLType()}">
-                                            <semui:xEditable owner="${participant.oldCustomProperty}" type="url"
+                                            <ui:xEditable owner="${participant.oldCustomProperty}" type="url"
                                                              field="urlValue"
                                                              overwriteEditable="${false}"
 
                                                              class="la-overflow la-ellipsis"/>
                                             <g:if test="${participant.oldCustomProperty.value}">
-                                                <semui:linkIcon href="${participant.oldCustomProperty.value}"/>
+                                                <ui:linkIcon href="${participant.oldCustomProperty.value}"/>
                                             </g:if>
                                         </g:elseif>
                                         <g:elseif
                                                 test="${participant.oldCustomProperty.type.isRefdataValueType()}">
-                                            <semui:xEditableRefData owner="${participant.oldCustomProperty}" type="text"
+                                            <ui:xEditableRefData owner="${participant.oldCustomProperty}" type="text"
                                                                     overwriteEditable="${false}"
                                                                     field="refValue"
                                                                     config="${participant.oldCustomProperty.type.refdataCategory}"/>
@@ -447,39 +447,39 @@
                                     <g:elseif test="${participant.oldSub && participant.oldPrivateProperty}">
 
                                         <g:if test="${participant.oldPrivateProperty.type.isIntegerType()}">
-                                            <semui:xEditable owner="${participant.oldPrivateProperty}" type="number"
+                                            <ui:xEditable owner="${participant.oldPrivateProperty}" type="number"
                                                              overwriteEditable="${false}"
                                                              field="intValue"/>
                                         </g:if>
                                         <g:elseif test="${participant.oldPrivateProperty.type.isStringType()}">
-                                            <semui:xEditable owner="${participant.oldPrivateProperty}" type="text"
+                                            <ui:xEditable owner="${participant.oldPrivateProperty}" type="text"
                                                              overwriteEditable="${false}"
                                                              field="stringValue"/>
                                         </g:elseif>
                                         <g:elseif
                                                 test="${participant.oldPrivateProperty.type.isBigDecimalType()}">
-                                            <semui:xEditable owner="${participant.oldPrivateProperty}" type="text"
+                                            <ui:xEditable owner="${participant.oldPrivateProperty}" type="text"
                                                              overwriteEditable="${false}"
                                                              field="decValue"/>
                                         </g:elseif>
                                         <g:elseif test="${participant.oldPrivateProperty.type.isDateType()}">
-                                            <semui:xEditable owner="${participant.oldPrivateProperty}" type="date"
+                                            <ui:xEditable owner="${participant.oldPrivateProperty}" type="date"
                                                              overwriteEditable="${false}"
                                                              field="dateValue"/>
                                         </g:elseif>
                                         <g:elseif test="${participant.oldPrivateProperty.type.isURLType()}">
-                                            <semui:xEditable owner="${participant.oldPrivateProperty}" type="url"
+                                            <ui:xEditable owner="${participant.oldPrivateProperty}" type="url"
                                                              field="urlValue"
                                                              overwriteEditable="${false}"
 
                                                              class="la-overflow la-ellipsis"/>
                                             <g:if test="${participant.oldPrivateProperty.value}">
-                                                <semui:linkIcon href="${participant.oldPrivateProperty.value}"/>
+                                                <ui:linkIcon href="${participant.oldPrivateProperty.value}"/>
                                             </g:if>
                                         </g:elseif>
                                         <g:elseif
                                                 test="${participant.oldPrivateProperty.type.isRefdataValueType()}">
-                                            <semui:xEditableRefData owner="${participant.oldPrivateProperty}"
+                                            <ui:xEditableRefData owner="${participant.oldPrivateProperty}"
                                                                     type="text"
                                                                     overwriteEditable="${false}"
                                                                     field="refValue"
@@ -500,37 +500,37 @@
                                     <g:if test="${participant.surveyProperty}">
 
                                         <g:if test="${participant.surveyProperty.type.isIntegerType()}">
-                                            <semui:xEditable owner="${participant.surveyProperty}" type="number"
+                                            <ui:xEditable owner="${participant.surveyProperty}" type="number"
                                                              overwriteEditable="${false}"
                                                              field="intValue"/>
                                         </g:if>
                                         <g:elseif test="${participant.surveyProperty.type.isStringType()}">
-                                            <semui:xEditable owner="${participant.surveyProperty}" type="text"
+                                            <ui:xEditable owner="${participant.surveyProperty}" type="text"
                                                              overwriteEditable="${false}"
                                                              field="stringValue"/>
                                         </g:elseif>
                                         <g:elseif test="${participant.surveyProperty.type.isBigDecimalType()}">
-                                            <semui:xEditable owner="${participant.surveyProperty}" type="text"
+                                            <ui:xEditable owner="${participant.surveyProperty}" type="text"
                                                              overwriteEditable="${false}"
                                                              field="decValue"/>
                                         </g:elseif>
                                         <g:elseif test="${participant.surveyProperty.type.isDateType()}">
-                                            <semui:xEditable owner="${participant.surveyProperty}" type="date"
+                                            <ui:xEditable owner="${participant.surveyProperty}" type="date"
                                                              overwriteEditable="${false}"
                                                              field="dateValue"/>
                                         </g:elseif>
                                         <g:elseif test="${participant.surveyProperty.type.isURLType()}">
-                                            <semui:xEditable owner="${participant.surveyProperty}" type="url"
+                                            <ui:xEditable owner="${participant.surveyProperty}" type="url"
                                                              field="urlValue"
                                                              overwriteEditable="${false}"
 
                                                              class="la-overflow la-ellipsis"/>
                                             <g:if test="${participant.surveyProperty.value}">
-                                                <semui:linkIcon href="${participant.surveyProperty.value}"/>
+                                                <ui:linkIcon href="${participant.surveyProperty.value}"/>
                                             </g:if>
                                         </g:elseif>
                                         <g:elseif test="${participant.surveyProperty.type.isRefdataValueType()}">
-                                            <semui:xEditableRefData owner="${participant.surveyProperty}" type="text"
+                                            <ui:xEditableRefData owner="${participant.surveyProperty}" type="text"
                                                                     overwriteEditable="${false}"
                                                                     field="refValue"
                                                                     config="${participant.surveyProperty.type.refdataCategory}"/>
@@ -548,39 +548,39 @@
                                     <g:if test="${participant.newCustomProperty}">
 
                                         <g:if test="${participant.newCustomProperty.type.isIntegerType()}">
-                                            <semui:xEditable owner="${participant.newCustomProperty}" type="number"
+                                            <ui:xEditable owner="${participant.newCustomProperty}" type="number"
                                                              overwriteEditable="${false}"
                                                              field="intValue"/>
                                         </g:if>
                                         <g:elseif test="${participant.newCustomProperty.type.isStringType()}">
-                                            <semui:xEditable owner="${participant.newCustomProperty}" type="text"
+                                            <ui:xEditable owner="${participant.newCustomProperty}" type="text"
                                                              overwriteEditable="${false}"
                                                              field="stringValue"/>
                                         </g:elseif>
                                         <g:elseif
                                                 test="${participant.newCustomProperty.type.isBigDecimalType()}">
-                                            <semui:xEditable owner="${participant.newCustomProperty}" type="text"
+                                            <ui:xEditable owner="${participant.newCustomProperty}" type="text"
                                                              overwriteEditable="${false}"
                                                              field="decValue"/>
                                         </g:elseif>
                                         <g:elseif test="${participant.newCustomProperty.type.isDateType()}">
-                                            <semui:xEditable owner="${participant.newCustomProperty}" type="date"
+                                            <ui:xEditable owner="${participant.newCustomProperty}" type="date"
                                                              overwriteEditable="${false}"
                                                              field="dateValue"/>
                                         </g:elseif>
                                         <g:elseif test="${participant.newCustomProperty.type.isURLType()}">
-                                            <semui:xEditable owner="${participant.newCustomProperty}" type="url"
+                                            <ui:xEditable owner="${participant.newCustomProperty}" type="url"
                                                              field="urlValue"
                                                              overwriteEditable="${false}"
 
                                                              class="la-overflow la-ellipsis"/>
                                             <g:if test="${participant.newCustomProperty.value}">
-                                                <semui:linkIcon href="${participant.newCustomProperty.value}"/>
+                                                <ui:linkIcon href="${participant.newCustomProperty.value}"/>
                                             </g:if>
                                         </g:elseif>
                                         <g:elseif
                                                 test="${participant.newCustomProperty.type.isRefdataValueType()}">
-                                            <semui:xEditableRefData owner="${participant.newCustomProperty}" type="text"
+                                            <ui:xEditableRefData owner="${participant.newCustomProperty}" type="text"
                                                                     overwriteEditable="${false}"
                                                                     field="refValue"
                                                                     config="${participant.newCustomProperty.type.refdataCategory}"/>
@@ -612,39 +612,39 @@
                                     <g:if test="${participant.newPrivateProperty}">
 
                                         <g:if test="${participant.newPrivateProperty.type.isIntegerType()}">
-                                            <semui:xEditable owner="${participant.newPrivateProperty}" type="number"
+                                            <ui:xEditable owner="${participant.newPrivateProperty}" type="number"
                                                              overwriteEditable="${false}"
                                                              field="intValue"/>
                                         </g:if>
                                         <g:elseif test="${participant.newPrivateProperty.type.isStringType()}">
-                                            <semui:xEditable owner="${participant.newPrivateProperty}" type="text"
+                                            <ui:xEditable owner="${participant.newPrivateProperty}" type="text"
                                                              overwriteEditable="${false}"
                                                              field="stringValue"/>
                                         </g:elseif>
                                         <g:elseif
                                                 test="${participant.newPrivateProperty.type.isBigDecimalType()}">
-                                            <semui:xEditable owner="${participant.newPrivateProperty}" type="text"
+                                            <ui:xEditable owner="${participant.newPrivateProperty}" type="text"
                                                              overwriteEditable="${false}"
                                                              field="decValue"/>
                                         </g:elseif>
                                         <g:elseif test="${participant.newPrivateProperty.type.isDateType()}">
-                                            <semui:xEditable owner="${participant.newPrivateProperty}" type="date"
+                                            <ui:xEditable owner="${participant.newPrivateProperty}" type="date"
                                                              overwriteEditable="${false}"
                                                              field="dateValue"/>
                                         </g:elseif>
                                         <g:elseif test="${participant.newPrivateProperty.type.isURLType()}">
-                                            <semui:xEditable owner="${participant.newPrivateProperty}" type="url"
+                                            <ui:xEditable owner="${participant.newPrivateProperty}" type="url"
                                                              field="urlValue"
                                                              overwriteEditable="${false}"
 
                                                              class="la-overflow la-ellipsis"/>
                                             <g:if test="${participant.newPrivateProperty.value}">
-                                                <semui:linkIcon href="${participant.newPrivateProperty.value}"/>
+                                                <ui:linkIcon href="${participant.newPrivateProperty.value}"/>
                                             </g:if>
                                         </g:elseif>
                                         <g:elseif
                                                 test="${participant.newPrivateProperty.type.isRefdataValueType()}">
-                                            <semui:xEditableRefData owner="${participant.newPrivateProperty}"
+                                            <ui:xEditableRefData owner="${participant.newPrivateProperty}"
                                                                     type="text"
                                                                     overwriteEditable="${false}"
                                                                     field="refValue"
@@ -686,7 +686,7 @@
         <g:else>
             <g:message code="copyProperties.noCopyProperties" args="[message(code: 'copyProperties.' + params.tab)]"/>
         </g:else>
-    </semui:form>
+    </ui:form>
 
     <div class="sixteen wide field" style="text-align: center;">
         <g:if test="${params.tab != 'privateProperties'}">

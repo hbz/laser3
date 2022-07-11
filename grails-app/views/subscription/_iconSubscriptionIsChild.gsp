@@ -3,7 +3,7 @@
 
 <g:if test="${checkCons}">
 
-    <semui:childSubscriptionIcon/>
+    <ui:childSubscriptionIcon/>
 
     <laser:script file="${this.getGroovyPageFileName()}">
       $(document).ready(function() {

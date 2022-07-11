@@ -2,13 +2,13 @@
 
 <laser:htmlStart message="menu.institutions.budgetCodes" />
 
-        <semui:breadcrumbs>
-            <semui:crumb message="menu.institutions.budgetCodes" class="active"/>
-        </semui:breadcrumbs>
+        <ui:breadcrumbs>
+            <ui:crumb message="menu.institutions.budgetCodes" class="active"/>
+        </ui:breadcrumbs>
 
-        <semui:h1HeaderWithIcon message="menu.institutions.budgetCodes" />
+        <ui:h1HeaderWithIcon message="menu.institutions.budgetCodes" />
 
-        <semui:messages data="${flash}" />
+        <ui:messages data="${flash}" />
 
         <g:if test="${editable}">
             <div class="content ui form ui left floated  la-clear-before">
@@ -41,10 +41,10 @@
             <g:each in="${budgetCodes}" var="bcode">
                 <tr>
                     <td>
-                        <semui:xEditable owner="${bcode}" field="value" />
+                        <ui:xEditable owner="${bcode}" field="value" />
                     </td>
                     <td>
-                        <semui:xEditable owner="${bcode}" field="descr" />
+                        <ui:xEditable owner="${bcode}" field="descr" />
                     </td>
                     <td>
                         <g:link controller="finance" action="index"
@@ -76,7 +76,7 @@
     </table>
 
 
-    <semui:modal id="addBudgetCodeModal" message="budgetCode.create_new.label">
+    <ui:modal id="addBudgetCodeModal" message="budgetCode.create_new.label">
 
         <g:form class="ui form" url="[controller: 'myInstitution', action: 'budgetCodes']" method="POST">
             <input type="hidden" name="cmd" value="newBudgetCode"/>
@@ -92,6 +92,6 @@
             </div>
 
         </g:form>
-    </semui:modal>
+    </ui:modal>
 
   <laser:htmlEnd />

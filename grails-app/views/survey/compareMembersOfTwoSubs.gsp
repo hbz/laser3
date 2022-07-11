@@ -1,46 +1,46 @@
 <%@ page import="de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.properties.PropertyDefinition;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.Org;de.laser.survey.SurveyOrg" %>
 <laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyInfo.transferMembers')})" serviceInjection="true"/>
 
-<semui:breadcrumbs>
-    <semui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
+<ui:breadcrumbs>
+    <ui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
 
     <g:if test="${surveyInfo}">
-        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}"
+        <ui:crumb controller="survey" action="show" id="${surveyInfo.id}"
                      params="[surveyConfigID: surveyConfig.id]" text="${surveyInfo.name}"/>
     </g:if>
-    <semui:crumb message="surveyInfo.transferMembers" class="active"/>
-</semui:breadcrumbs>
+    <ui:crumb message="surveyInfo.transferMembers" class="active"/>
+</ui:breadcrumbs>
 
-%{--<semui:controlButtons>
+%{--<ui:controlButtons>
     <g:if test="${surveyConfig.subSurveyUseForTransfer}">
-        <semui:actionsDropdown>
+        <ui:actionsDropdown>
             <g:if test="${parentSuccessorSubscription}">
 
-                <semui:actionsDropdownItem data-semui="modal" href="#transferParticipantsModal"
+                <ui:actionsDropdownItem data-semui="modal" href="#transferParticipantsModal"
                                            message="surveyInfo.transferParticipants"/>
             </g:if>
-            <semui:actionsDropdownItem controller="survey" action="renewalEvaluation"
+            <ui:actionsDropdownItem controller="survey" action="renewalEvaluation"
                                        params="[id: params.id, surveyConfigID: surveyConfig.id]"
                                        message="surveyInfo.evaluation"/>
 
-        --}%%{--<semui:actionsDropdownItem controller="survey" action="setCompleted"
+        --}%%{--<ui:actionsDropdownItem controller="survey" action="setCompleted"
                                    params="[id: params.id, surveyConfigID: surveyConfig.id]"
                                    message="surveyInfo.completed.action"/>--}%%{--
-        </semui:actionsDropdown>
+        </ui:actionsDropdown>
     </g:if>
-</semui:controlButtons>--}%
+</ui:controlButtons>--}%
 
-<semui:h1HeaderWithIcon text="${surveyInfo.name}" type="Survey" />
-<semui:surveyStatus object="${surveyInfo}"/>
+<ui:h1HeaderWithIcon text="${surveyInfo.name}" type="Survey" />
+<ui:surveyStatus object="${surveyInfo}"/>
 
 
 <g:if test="${surveyConfig.subSurveyUseForTransfer}">
     <laser:render template="nav"/>
 </g:if>
 
-<semui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
+<ui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 <br/>
 
@@ -236,7 +236,7 @@
 
 
 
-        <semui:form>
+        <ui:form>
             <div class="ui grid">
 
                 <div class="row">
@@ -255,7 +255,7 @@
                                 <br/>
                                 <g:link controller="subscription" action="members"
                                         id="${parentSubscription.id}">${message(code: 'renewalEvaluation.orgsInSub')}</g:link>
-                                <semui:totalNumber total="${parentSubscription.getDerivedSubscribers().size()}"/>
+                                <ui:totalNumber total="${parentSubscription.getDerivedSubscribers().size()}"/>
                             </g:if>
                         </h3>
                     </div>
@@ -274,7 +274,7 @@
                                 <br/>
                                 <g:link controller="subscription" action="members"
                                         id="${parentSuccessorSubscription.id}">${message(code: 'renewalEvaluation.orgsInSub')}</g:link>
-                                <semui:totalNumber
+                                <ui:totalNumber
                                         total="${parentSuccessorSubscription.getDerivedSubscribers().size()}"/>
 
                             </g:if>
@@ -292,8 +292,8 @@
                     </div>
                 </div>
             </div>
-        </semui:form>
-        <semui:form>
+        </ui:form>
+        <ui:form>
             <g:set var="count" value="${0}"/>
             <g:set var="count2" value="${0}"/>
             <div class="ui grid">
@@ -441,7 +441,7 @@
                 </div>
             </div>
 
-        </semui:form>
+        </ui:form>
 
         <div class="sixteen wide field" style="text-align: center;">
             <g:link class="ui button" controller="survey" action="copyProperties"

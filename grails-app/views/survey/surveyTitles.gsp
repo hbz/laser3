@@ -3,24 +3,24 @@
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
 
-<semui:controlButtons>
+<ui:controlButtons>
 
     <laser:render template="actions"/>
-</semui:controlButtons>
+</ui:controlButtons>
 
-<semui:h1HeaderWithIcon type="Survey">
-<semui:xEditable owner="${surveyInfo}" field="name"/>
-<semui:surveyStatus object="${surveyInfo}"/>
-</semui:h1HeaderWithIcon>
+<ui:h1HeaderWithIcon type="Survey">
+<ui:xEditable owner="${surveyInfo}" field="name"/>
+<ui:surveyStatus object="${surveyInfo}"/>
+</ui:h1HeaderWithIcon>
 
 
 
 <laser:render template="nav"/>
 
-<semui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
+<ui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
 
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 <br />
 
@@ -150,7 +150,7 @@
                                 </td>
 
                                 <td>
-                                    <semui:xEditableRefData owner="${ie}" field="medium"
+                                    <ui:xEditableRefData owner="${ie}" field="medium"
                                                             config="${de.laser.storage.RDConstants.IE_MEDIUM}"
                                                             overwriteEditable="${false}"/>
                                 </td>
@@ -166,7 +166,7 @@
                                     <g:formatDate format="${message(code: 'default.date.format.notime')}"
                                                   date="${ie.accessStartDate}"/>
 
-                                    <semui:dateDevider/>
+                                    <ui:dateDevider/>
                                     <!-- bis -->
 
                                     <g:formatDate format="${message(code: 'default.date.format.notime')}"
@@ -176,17 +176,17 @@
                                 <td>
                                     <g:if test="${ie.priceItems}">
                                         <g:each in="${ie.priceItems}" var="priceItem" status="i">
-                                            <g:message code="tipp.price.listPrice"/>: <semui:xEditable field="listPrice"
+                                            <g:message code="tipp.price.listPrice"/>: <ui:xEditable field="listPrice"
                                                                                                  owner="${priceItem}"
-                                                                                                 format=""/> <semui:xEditableRefData
+                                                                                                 format=""/> <ui:xEditableRefData
                                                 field="listCurrency" owner="${priceItem}"
                                                 config="Currency"/> <%--<g:formatNumber number="${priceItem.listPrice}" type="currency" currencyCode="${priceItem.listCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%><br/>
-                                            <g:message code="tipp.price.localPrice"/>: <semui:xEditable field="localPrice"
-                                                                                                  owner="${priceItem}"/> <semui:xEditableRefData
+                                            <g:message code="tipp.price.localPrice"/>: <ui:xEditable field="localPrice"
+                                                                                                  owner="${priceItem}"/> <ui:xEditableRefData
                                                 field="localCurrency" owner="${priceItem}"
                                                 config="Currency"/> <%--<g:formatNumber number="${priceItem.localPrice}" type="currency" currencyCode="${priceItem.localCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%>
-                                        <%--<semui:xEditable field="startDate" type="date"
-                                                         owner="${priceItem}"/><semui:dateDevider/><semui:xEditable
+                                        <%--<ui:xEditable field="startDate" type="date"
+                                                         owner="${priceItem}"/><ui:dateDevider/><ui:xEditable
                                             field="endDate" type="date"
                                             owner="${priceItem}"/>  <g:formatDate format="${message(code:'default.date.format.notime')}" date="${priceItem.startDate}"/>--%>
                                             <g:if test="${i < ie.priceItems.size() - 1}"><hr></g:if>
@@ -208,7 +208,7 @@
     </div>
 </div>
 <g:if test="${entitlements}">
-    <semui:paginate action="surveyTitles" controller="survey" params="${params}"
+    <ui:paginate action="surveyTitles" controller="survey" params="${params}"
                     next="${message(code: 'default.paginate.next')}"
                     prev="${message(code: 'default.paginate.prev')}" max="${max}"
                     total="${num_ies_rows}"/>
@@ -216,7 +216,7 @@
 
 <div id="magicArea"></div>
 
-<semui:modal id="showPackagesModal" message="subscription.packages.label" hideSubmitButton="true">
+<ui:modal id="showPackagesModal" message="subscription.packages.label" hideSubmitButton="true">
     <div class="ui ordered list">
         <g:each in="${subscription.packages.sort { it.pkg.name.toLowerCase() }}" var="subPkg">
             <div class="item">
@@ -230,7 +230,7 @@
         </g:each>
     </div>
 
-</semui:modal>
+</ui:modal>
 
 <laser:script file="${this.getGroovyPageFileName()}">
     $('#finishProcess').progress();

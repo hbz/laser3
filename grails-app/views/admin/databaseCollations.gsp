@@ -2,12 +2,12 @@
 
 <laser:htmlStart message="menu.admin.databaseCollations" />
 
-<semui:breadcrumbs>
-    <semui:crumb message="menu.admin" controller="admin" action="index"/>
-    <semui:crumb message="menu.admin.databaseCollations" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb message="menu.admin" controller="admin" action="index"/>
+    <ui:crumb message="menu.admin.databaseCollations" class="active"/>
+</ui:breadcrumbs>
 
-<semui:h1HeaderWithIcon message="menu.admin.databaseCollations" />
+<ui:h1HeaderWithIcon message="menu.admin.databaseCollations" />
 
 <div class="ui secondary stackable pointing tabular menu">
     <a data-tab="first" class="item active">Übersicht</a>

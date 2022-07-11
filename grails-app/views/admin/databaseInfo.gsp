@@ -2,12 +2,12 @@
 
 <laser:htmlStart message="menu.admin.databaseInfo" />
 
-    <semui:breadcrumbs>
-        <semui:crumb message="menu.admin" controller="admin" action="index"/>
-        <semui:crumb message="menu.admin.databaseInfo" class="active"/>
-    </semui:breadcrumbs>
+    <ui:breadcrumbs>
+        <ui:crumb message="menu.admin" controller="admin" action="index"/>
+        <ui:crumb message="menu.admin.databaseInfo" class="active"/>
+    </ui:breadcrumbs>
 
-    <semui:h1HeaderWithIcon message="menu.admin.databaseInfo" />
+    <ui:h1HeaderWithIcon message="menu.admin.databaseInfo" />
 
     <h2 class="ui header">Meta</h2>
 

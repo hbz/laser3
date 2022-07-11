@@ -101,7 +101,7 @@
 
 <laser:render template="/templates/filter/javascript" />
 
-<semui:filter showFilterButton="true">
+<ui:filter showFilterButton="true">
 <g:form action="${actionName}" method="post" class="ui form"
         params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
     <laser:render template="/templates/filter/orgFilter"
@@ -110,7 +110,7 @@
                       tmplConfigFormFilter: true
               ]"/>
 </g:form>
-</semui:filter>
+</ui:filter>
 
 
 
@@ -276,7 +276,7 @@
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('commentOnlyForOwner')}">
                         <td>
-                            <semui:xEditable owner="${surveyOrg}" type="text" field="ownerComment"/>
+                            <ui:xEditable owner="${surveyOrg}" type="text" field="ownerComment"/>
                         </td>
                     </g:if>
 
@@ -297,7 +297,7 @@
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('finishedDate')}">
                         <td>
-                            <semui:surveyFinishDate participant="${participant}"
+                            <ui:surveyFinishDate participant="${participant}"
                                                     surveyConfig="${surveyConfig}"/>
                         </td>
                     </g:if>
@@ -476,7 +476,7 @@
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('commentOnlyForOwner')}">
                         <td>
-                            <semui:xEditable owner="${surveyOrg}" type="text" field="ownerComment"/>
+                            <ui:xEditable owner="${surveyOrg}" type="text" field="ownerComment"/>
                         </td>
                     </g:if>
 
@@ -492,7 +492,7 @@
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('finishedDate')}">
                         <td>
-                            <semui:surveyFinishDate participant="${participant}"
+                            <ui:surveyFinishDate participant="${participant}"
                                                     surveyConfig="${surveyConfig}"/>
                         </td>
                     </g:if>
@@ -515,7 +515,7 @@
     <g:if test="${showTransferFields}">
         <br />
         <br />
-        <semui:form>
+        <ui:form>
         <div class="ui form">
         <h3 class="ui header">${message(code: 'surveyTransfer.info.label')}:</h3>
             <div class="two fields">
@@ -537,14 +537,14 @@
 
                 </div>
                 <div class="field">
-                    <semui:datepicker label="subscription.startDate.label" id="startDate" name="startDate" value=""/>
+                    <ui:datepicker label="subscription.startDate.label" id="startDate" name="startDate" value=""/>
 
-                    <semui:datepicker label="subscription.endDate.label" id="endDate" name="endDate" value=""/>
+                    <ui:datepicker label="subscription.endDate.label" id="endDate" name="endDate" value=""/>
                 </div>
             </div>
 
             <input class="ui button" type="submit" value="${message(code: 'surveyTransfer.button')}">
-        </semui:form>
+        </ui:form>
         </div>
 
     </g:if>

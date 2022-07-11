@@ -1,7 +1,7 @@
 <%@ page import="de.laser.Subscription; de.laser.SubscriptionController; de.laser.CopyElementsService"%>
 <laser:serviceInjection/>
 
-<semui:form>
+<ui:form>
     <g:if test="${!fromSurvey && !isRenewSub}">
         <laser:render template="/templates/copyElements/selectSourceAndTargetObject" model="[
                 sourceObject          : sourceObject,
@@ -50,5 +50,5 @@
         </g:else>
 
     </g:form>
-</semui:form>
+</ui:form>
 

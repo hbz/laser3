@@ -2,14 +2,14 @@
 
 <laser:htmlStart message="menu.admin.systemEvents" />
 
-<semui:breadcrumbs>
-    <semui:crumb message="menu.admin" controller="admin" action="index"/>
-    <semui:crumb message="menu.admin.systemEvents" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb message="menu.admin" controller="admin" action="index"/>
+    <ui:crumb message="menu.admin.systemEvents" class="active"/>
+</ui:breadcrumbs>
 
-    <semui:h1HeaderWithIcon message="menu.admin.systemEvents" />
+    <ui:h1HeaderWithIcon message="menu.admin.systemEvents" />
 
-    <semui:filter>
+    <ui:filter>
         <form id="filter" class="ui form">
             <div class="five fields">
                 <div class="field">
@@ -77,7 +77,7 @@
                 }
             })
         </laser:script>
-    </semui:filter>
+    </ui:filter>
 
     <table class="ui sortable celled la-js-responsive-table la-table la-hover-table compact table">
         <thead>

@@ -713,7 +713,7 @@
                             </g:link>
                         </g:else>
 
-                        <semui:xEditableAsIcon owner="${orgSub}" class="ui icon center aligned" iconClass="info circular inverted" field="comment" type="textarea" overwriteEditable="${false}"/>
+                        <ui:xEditableAsIcon owner="${orgSub}" class="ui icon center aligned" iconClass="info circular inverted" field="comment" type="textarea" overwriteEditable="${false}"/>
 
                     </g:if>
                 </td>
@@ -742,7 +742,7 @@
                             </g:link>
                         </g:else>
 
-                        <semui:xEditableAsIcon owner="${orgSub}" class="ui icon center aligned" iconClass="info circular inverted" field="comment" type="textarea" overwriteEditable="${false}"/>
+                        <ui:xEditableAsIcon owner="${orgSub}" class="ui icon center aligned" iconClass="info circular inverted" field="comment" type="textarea" overwriteEditable="${false}"/>
 
                     </g:if>
                 </td>

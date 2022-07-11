@@ -3,22 +3,22 @@
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
 
-<semui:controlButtons>
+<ui:controlButtons>
     <laser:render template="actions"/>
-</semui:controlButtons>
+</ui:controlButtons>
 
-<semui:h1HeaderWithIcon>
-<semui:xEditable owner="${subscription}" field="name"/>
-<semui:totalNumber total="${surveys.size()}"/>
-</semui:h1HeaderWithIcon>
-<semui:anualRings object="${subscription}" controller="subscription" action="surveysConsortia"
+<ui:h1HeaderWithIcon>
+<ui:xEditable owner="${subscription}" field="name"/>
+<ui:totalNumber total="${surveys.size()}"/>
+</ui:h1HeaderWithIcon>
+<ui:anualRings object="${subscription}" controller="subscription" action="surveysConsortia"
                   navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
 
 <laser:render template="nav"/>
 
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 <g:if test="${surveys}">
     <table class="ui celled sortable table la-js-responsive-table la-table">
@@ -181,11 +181,11 @@
 </g:if>
 <g:else>
 
-    <semui:form>
+    <ui:form>
         <h3 class="ui header">
             <g:message code="survey.notExist.plural"/>
         </h3>
-    </semui:form>
+    </ui:form>
 </g:else>
 <laser:htmlEnd />
 

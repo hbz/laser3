@@ -1,11 +1,11 @@
 <laser:htmlStart message="menu.yoda.appControllers" />
 
-<semui:breadcrumbs>
-    <semui:crumb message="menu.yoda" controller="yoda" action="index"/>
-    <semui:crumb message="menu.yoda.appControllers" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb message="menu.yoda" controller="yoda" action="index"/>
+    <ui:crumb message="menu.yoda.appControllers" class="active"/>
+</ui:breadcrumbs>
 
-<semui:h1HeaderWithIcon message="menu.yoda.appControllers" />
+<ui:h1HeaderWithIcon message="menu.yoda.appControllers" />
 
 <h2 class="ui header">Roles and Hierarchies</h2>
 

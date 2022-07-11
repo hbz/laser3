@@ -2,58 +2,58 @@
 
 <laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyResult.label')}-${message(code: 'surveyParticipants.label')})" serviceInjection="true"/>
 
-<semui:breadcrumbs>
-    <semui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
+<ui:breadcrumbs>
+    <ui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
 
     <g:if test="${surveyInfo}">
-        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}"
+        <ui:crumb controller="survey" action="show" id="${surveyInfo.id}"
                      params="[surveyConfigID: surveyConfig.id]" text="${surveyInfo.name}"/>
     </g:if>
-    <semui:crumb message="surveyResult.label" class="active"/>
-</semui:breadcrumbs>
+    <ui:crumb message="surveyResult.label" class="active"/>
+</ui:breadcrumbs>
 
-<semui:controlButtons>
-        <semui:exportDropdown>
-            <semui:exportDropdownItem>
+<ui:controlButtons>
+        <ui:exportDropdown>
+            <ui:exportDropdownItem>
                 <g:link class="item" controller="survey" action="generatePdfForParticipant"
                         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participant.id]">PDF-Export
                 </g:link>
-            </semui:exportDropdownItem>
-        </semui:exportDropdown>
-    <semui:actionsDropdown>
+            </ui:exportDropdownItem>
+        </ui:exportDropdown>
+    <ui:actionsDropdown>
         <g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT}">
-            <semui:actionsDropdownItem action="renewEntitlements" controller="survey"
+            <ui:actionsDropdownItem action="renewEntitlements" controller="survey"
                                        id="${surveyConfig.id}" params="[surveyConfigID: surveyConfig.id, participant: participant.id]"
                                        message="renewEntitlementsWithSurvey.renewEntitlements"/>
         </g:if>
         <g:if test="${surveyInfo.status.id in [RDStore.SURVEY_SURVEY_STARTED.id, RDStore.SURVEY_SURVEY_COMPLETED.id]}">
 
             <g:if test="${surveyConfig.isResultsSetFinishByOrg(participant)}">
-                <semui:actionsDropdownItem controller="survey" action="openSurveyAgainForParticipant"
+                <ui:actionsDropdownItem controller="survey" action="openSurveyAgainForParticipant"
                                            params="[surveyConfigID: surveyConfig.id, participant: participant.id]"
                                            message="openSurveyAgainForParticipant.button"/>
 
             </g:if>
             <g:if test="${!surveyConfig.isResultsSetFinishByOrg(participant)}">
-                <semui:actionsDropdownItem controller="survey" action="finishSurveyForParticipant"
+                <ui:actionsDropdownItem controller="survey" action="finishSurveyForParticipant"
                                            params="[surveyConfigID: surveyConfig.id, participant: participant.id]"
                                            message="finishSurveyForParticipant.button"/>
 
             </g:if>
         </g:if>
-    </semui:actionsDropdown>
+    </ui:actionsDropdown>
 
-</semui:controlButtons>
+</ui:controlButtons>
 
-<semui:h1HeaderWithIcon text="${surveyInfo.name}" type="Survey">
-<semui:xEditable owner="${surveyInfo}" field="name"/>
-<semui:surveyStatus object="${surveyInfo}"/>
-</semui:h1HeaderWithIcon>
+<ui:h1HeaderWithIcon text="${surveyInfo.name}" type="Survey">
+<ui:xEditable owner="${surveyInfo}" field="name"/>
+<ui:surveyStatus object="${surveyInfo}"/>
+</ui:h1HeaderWithIcon>
 
 <laser:render template="nav"/>
 
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 <g:if test="${surveyConfig.isResultsSetFinishByOrg(participant)}">
     <div class="ui icon positive message">
@@ -69,7 +69,7 @@
 
 <g:if test="${participant}">
 
-    <semui:form>
+    <ui:form>
     <g:set var="choosenOrg" value="${Org.findById(participant.id)}"/>
     <g:set var="choosenOrgCPAs" value="${choosenOrg?.getGeneralContactPersons(false)}"/>
 
@@ -110,7 +110,7 @@
             </div>
         </div>
 
-    </semui:form>
+    </ui:form>
 </g:if>
 
 <div class="ui stackable grid">

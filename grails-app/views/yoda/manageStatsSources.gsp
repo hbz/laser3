@@ -2,12 +2,12 @@
 
 <laser:htmlStart text="Manage Stats Sources" />
 
-        <semui:breadcrumbs>
-            <semui:crumb message="menu.yoda" controller="yoda" action="index"/>
-            <semui:crumb text="Stats Sources" class="active" />
-        </semui:breadcrumbs>
+        <ui:breadcrumbs>
+            <ui:crumb message="menu.yoda" controller="yoda" action="index"/>
+            <ui:crumb text="Stats Sources" class="active" />
+        </ui:breadcrumbs>
 
-        <semui:messages data="${flash}" />
+        <ui:messages data="${flash}" />
 
         <table class="ui celled la-js-responsive-table la-table table">
             <thead>

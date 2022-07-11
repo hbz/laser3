@@ -46,9 +46,9 @@
 %{--    <nav aria-label="${message(code:'wcag.label.mainMenu')}">--}%
         <div id="mainMenue" class="ui fixed inverted  menu la-js-verticalNavi" role="menubar" >
             <div class="ui container" role="none">
-                <semui:link generateElementId="true" role="menuitem" controller="home" aria-label="${message(code:'default.home.label')}" class="header item la-logo-item">
+                <ui:link generateElementId="true" role="menuitem" controller="home" aria-label="${message(code:'default.home.label')}" class="header item la-logo-item">
                     <img alt="Logo Laser" class="logo" src="${resource(dir: 'images', file: 'laser.svg')}"/>
-                </semui:link>
+                </ui:link>
 
                 <sec:ifAnyGranted roles="ROLE_USER">
 
@@ -59,25 +59,25 @@
                             </a>
                             <div class="menu" role="menu">
 
-                                    <semui:link generateElementId="true" class="item" role="menuitem" controller="package" action="index">${message(code:'menu.public.all_pkg')}</semui:link>
-                                    <semui:link generateElementId="true"  class="item" role="menuitem" controller="title" action="index">${message(code:'menu.public.all_titles')}</semui:link>
+                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="package" action="index">${message(code:'menu.public.all_pkg')}</ui:link>
+                                    <ui:link generateElementId="true"  class="item" role="menuitem" controller="title" action="index">${message(code:'menu.public.all_titles')}</ui:link>
 
                                     <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_EDITOR">
-                                        <semui:link generateElementId="true" role="menuitem" controller="organisation" action="index">${message(code:'menu.public.all_orgs')}</semui:link>
+                                        <ui:link generateElementId="true" role="menuitem" controller="organisation" action="index">${message(code:'menu.public.all_orgs')}</ui:link>
                                     </sec:ifAnyGranted>
 
                                     <g:if test="${accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_USER','ROLE_ADMIN,ROLE_ORG_EDITOR')}">
-                                        <semui:link generateElementId="true" role="menuitem" controller="organisation" action="listInstitution">${message(code:'menu.public.all_insts')}</semui:link>
+                                        <ui:link generateElementId="true" role="menuitem" controller="organisation" action="listInstitution">${message(code:'menu.public.all_insts')}</ui:link>
                                     </g:if>
                                     <g:elseif test="${accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_USER')}">
-                                        <semui:link generateElementId="true" role="menuitem" controller="organisation" action="listConsortia">${message(code:'menu.public.all_cons')}</semui:link>
+                                        <ui:link generateElementId="true" role="menuitem" controller="organisation" action="listConsortia">${message(code:'menu.public.all_cons')}</ui:link>
                                     </g:elseif>
 
-                                    <semui:link generateElementId="true" class="item" role="menuitem" controller="organisation" action="listProvider">${message(code:'menu.public.all_providers')}</semui:link>
-                                    <semui:link generateElementId="true" class="item" role="menuitem" controller="platform" action="list">${message(code:'menu.public.all_platforms')}</semui:link>
+                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="organisation" action="listProvider">${message(code:'menu.public.all_providers')}</ui:link>
+                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="platform" action="list">${message(code:'menu.public.all_platforms')}</ui:link>
 
                                     <div class="divider"></div>
-                                    <semui:link generateElementId="true" class="item" role="menuitem" controller="gasco">${message(code:'menu.public.gasco_monitor')}</semui:link>
+                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="gasco">${message(code:'menu.public.gasco_monitor')}</ui:link>
 
                                     <a id="wekb" href="${message(code:'url.wekb.' + currentServer)}" target="_blank" class="item" role="menuitem"><i class="ui icon la-gokb"></i> we:kb</a>
                                     <a id="ygor" href="${message(code:'url.ygor.' + currentServer)}" target="_blank" class="item" role="menuitem">YGOR</a>
@@ -90,46 +90,46 @@
                             </a>
                             <div class="menu" role="menu">
 
-                                <semui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentSubscriptions" message="menu.my.subscriptions" />
-                                <semui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentLicenses" message="menu.my.licenses" />
-                                <semui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentProviders" message="menu.my.providers" />
-                                <semui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentPlatforms" message="menu.my.platforms" />
-                                <semui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentPackages" message="menu.my.packages" />
-                                <semui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentTitles" message="menu.my.titles" />
-                                <semui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="documents" message="menu.my.documents" />
+                                <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentSubscriptions" message="menu.my.subscriptions" />
+                                <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentLicenses" message="menu.my.licenses" />
+                                <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentProviders" message="menu.my.providers" />
+                                <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentPlatforms" message="menu.my.platforms" />
+                                <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentPackages" message="menu.my.packages" />
+                                <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentTitles" message="menu.my.titles" />
+                                <ui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="documents" message="menu.my.documents" />
 
                                 <div class="divider"></div>
-                                <semui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="subscriptionsManagement" message="menu.my.subscriptionsManagement" />
+                                <ui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="subscriptionsManagement" message="menu.my.subscriptionsManagement" />
 
                                 <g:if test="${accessService.checkPerm('ORG_BASIC_MEMBER')}">
                                     <div class="divider"></div>
-                                    <semui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentSurveys" message="menu.my.surveys" />
+                                    <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentSurveys" message="menu.my.surveys" />
                                 </g:if>
 
                                 <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
 
                                     <sec:ifAnyGranted roles="ROLE_ADMIN"><!-- TODO: reporting-permissions -->
                                         <div class="divider"></div>
-                                        <semui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentWorkflows" message="menu.my.workflows" />
+                                        <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentWorkflows" message="menu.my.workflows" />
                                     </sec:ifAnyGranted>
 
                                     <div class="divider"></div>
-                                    <semui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="survey" action="workflowsSurveysConsortia" message="menu.my.surveys" />
+                                    <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="survey" action="workflowsSurveysConsortia" message="menu.my.surveys" />
 
                                     <div class="divider"></div>
-                                    <semui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" specRole="ROLE_ADMIN,ROLE_ORG_EDITOR" action="manageMembers" message="menu.my.insts" />
-                                    <semui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" specRole="ROLE_ADMIN" action="manageConsortiaSubscriptions" message="menu.my.consortiaSubscriptions" />
+                                    <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" specRole="ROLE_ADMIN,ROLE_ORG_EDITOR" action="manageMembers" message="menu.my.insts" />
+                                    <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" specRole="ROLE_ADMIN" action="manageConsortiaSubscriptions" message="menu.my.consortiaSubscriptions" />
                                 </g:if>
                                 <g:elseif test="${accessService.checkPerm('ORG_BASIC_MEMBER')}">
                                     <div class="divider"></div>
-                                    <semui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentConsortia" message="menu.my.consortia" />
+                                    <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentConsortia" message="menu.my.consortia" />
                                 </g:elseif>
 
                                 <div class="divider"></div>
-                                <semui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="compare" action="compareSubscriptions" message="menu.my.comp_sub" />
+                                <ui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="compare" action="compareSubscriptions" message="menu.my.comp_sub" />
 
                                 <div class="divider"></div>
-                                <semui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="compare" action="compareLicenses" message="menu.my.comp_lic" />
+                                <ui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="compare" action="compareLicenses" message="menu.my.comp_lic" />
 
                             </div>
                         </div>
@@ -140,27 +140,27 @@
                             </a>
 
                             <div class="menu" role="menu">
-                                <semui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="dashboard" message="menu.institutions.dash" />
+                                <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="dashboard" message="menu.institutions.dash" />
 
-                                <semui:link generateElementId="true" class="item" role="menuitem" controller="organisation" action="show" params="[id: contextOrg?.id]">${message(code:'menu.institutions.org_info')}</semui:link>
+                                <ui:link generateElementId="true" class="item" role="menuitem" controller="organisation" action="show" params="[id: contextOrg?.id]">${message(code:'menu.institutions.org_info')}</ui:link>
 
-                                <semui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="addressbook" message="menu.institutions.myAddressbook" />
-                                <semui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="tasks" message="task.plural" />
-                                <%--<semui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="changes" message="menu.institutions.changes" />--%>
-                                <semui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="managePrivatePropertyDefinitions" message="menu.institutions.manage_props" />
-                                <semui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="finance" message="menu.institutions.finance" />
-                                <semui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" specRole="ROLE_ADMIN" controller="myInstitution" action="budgetCodes" message="menu.institutions.budgetCodes" />
-                                <semui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" specRole="ROLE_ADMIN" controller="costConfiguration" action="index" message="menu.institutions.costConfiguration" />
-                                <semui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_EDITOR" specRole="ROLE_ADMIN" controller="myInstitution" action="financeImport" message="menu.institutions.financeImport" />
+                                <ui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="addressbook" message="menu.institutions.myAddressbook" />
+                                <ui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="tasks" message="task.plural" />
+                                <%--<ui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="changes" message="menu.institutions.changes" />--%>
+                                <ui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="managePrivatePropertyDefinitions" message="menu.institutions.manage_props" />
+                                <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="finance" message="menu.institutions.finance" />
+                                <ui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" specRole="ROLE_ADMIN" controller="myInstitution" action="budgetCodes" message="menu.institutions.budgetCodes" />
+                                <ui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" specRole="ROLE_ADMIN" controller="costConfiguration" action="index" message="menu.institutions.costConfiguration" />
+                                <ui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_EDITOR" specRole="ROLE_ADMIN" controller="myInstitution" action="financeImport" message="menu.institutions.financeImport" />
 
                                 <div class="divider"></div>
-                                <semui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_ADM" controller="myInstitution" action="users" message="menu.institutions.users" />
+                                <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_ADM" controller="myInstitution" action="users" message="menu.institutions.users" />
 
-                                <semui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="reporting" message="menu.institutions.reporting" />
+                                <ui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="reporting" message="menu.institutions.reporting" />
 
                                 <sec:ifAnyGranted roles="ROLE_YODA">
-                                    <semui:link generateElementId="true" class="item" role="menuitem" controller="myInstitution" action="changeLog">${message(code:'menu.institutions.change_log')}</semui:link>
-                                    <%--<semui:securedMainNavItem generateElementId="true" affiliation="INST_EDITOR" controller="myInstitution" action="changeLog" message="menu.institutions.change_log" />--%>
+                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="myInstitution" action="changeLog">${message(code:'menu.institutions.change_log')}</ui:link>
+                                    <%--<ui:securedMainNavItem generateElementId="true" affiliation="INST_EDITOR" controller="myInstitution" action="changeLog" message="menu.institutions.change_log" />--%>
                                 </sec:ifAnyGranted>
 
                             </div>
@@ -175,44 +175,44 @@
 
                             <div class="menu" role="menu">
                                 <sec:ifAnyGranted roles="ROLE_STATISTICS_EDITOR">
-                                    <semui:link generateElementId="true" class="item" role="menuitem" controller="usage"
-                                            action="index">${message(code: 'menu.datamanager.manage_usage_stats')}</semui:link>
+                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="usage"
+                                            action="index">${message(code: 'menu.datamanager.manage_usage_stats')}</ui:link>
                                 </sec:ifAnyGranted>
 
                                 <sec:ifAnyGranted roles="ROLE_ADMIN">
-                                    <semui:link generateElementId="true" class="item" role="menuitem" controller="dataManager" action="index">${message(code:'default.dashboard')}</semui:link>
-                                    <semui:link generateElementId="true" class="item" role="menuitem" controller="dataManager"
-                                            action="deletedTitles">${message(code: 'datamanager.deletedTitleManagement.label')}</semui:link>
+                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="dataManager" action="index">${message(code:'default.dashboard')}</ui:link>
+                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="dataManager"
+                                            action="deletedTitles">${message(code: 'datamanager.deletedTitleManagement.label')}</ui:link>
                                 </sec:ifAnyGranted>
 
                                 <sec:ifAnyGranted roles="ROLE_ORG_MANAGER,ROLE_ADMIN">
-                                    <semui:link generateElementId="true" class="item" role="menuitem" controller="dataManager"
-                                            action="deletedOrgs">${message(code: 'datamanager.deletedOrgManagement.label')}</semui:link>
+                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="dataManager"
+                                            action="deletedOrgs">${message(code: 'datamanager.deletedOrgManagement.label')}</ui:link>
                                 </sec:ifAnyGranted>
 
                                 <sec:ifAnyGranted roles="ROLE_ADMIN">
                                     <div class="divider"></div>
 
-                                    <semui:link generateElementId="true" class="item" role="menuitem" controller="package" action="list">${message(code:'menu.datamanager.searchPackages')}</semui:link>
-                                    <semui:link generateElementId="true" class="item" role="menuitem" controller="platform" action="list">${message(code:'menu.datamanager.searchPlatforms')}</semui:link>
+                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="package" action="list">${message(code:'menu.datamanager.searchPackages')}</ui:link>
+                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="platform" action="list">${message(code:'menu.datamanager.searchPlatforms')}</ui:link>
 
                                     <div class="divider"></div>
 
-                                    <%--<semui:link generateElementId="true" class="item" role="menuitem" controller="upload" action="reviewPackage">${message(code:'menu.datamanager.uploadPackage')}</semui:link>--%>
-                                    <semui:link generateElementId="true" class="item" role="menuitem" controller="licenseImport" action="doImport">${message(code:'onix.import.license')}</semui:link>
+                                    <%--<ui:link generateElementId="true" class="item" role="menuitem" controller="upload" action="reviewPackage">${message(code:'menu.datamanager.uploadPackage')}</ui:link>--%>
+                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="licenseImport" action="doImport">${message(code:'onix.import.license')}</ui:link>
 
                                     <div class="divider"></div>
 
-                                    <semui:link generateElementId="true" class="item" role="menuitem" controller="subscription" action="compare">${message(code:'menu.datamanager.compareSubscriptions')}</semui:link>
-                                    <semui:link generateElementId="true" class="item" role="menuitem" controller="onixplLicenseCompare" action="index">${message(code:'menu.institutions.comp_onix')}</semui:link>
-                                    <semui:link generateElementId="true" class="item" role="menuitem" controller="dataManager" action="changeLog">${message(code:'menu.datamanager.changelog')}</semui:link>
+                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="subscription" action="compare">${message(code:'menu.datamanager.compareSubscriptions')}</ui:link>
+                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="onixplLicenseCompare" action="index">${message(code:'menu.institutions.comp_onix')}</ui:link>
+                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="dataManager" action="changeLog">${message(code:'menu.datamanager.changelog')}</ui:link>
                                     <div class="divider"></div>
                                 </sec:ifAnyGranted>
 
                                 <sec:ifAnyGranted roles="ROLE_ADMIN">
-                                    <semui:link generateElementId="true" class="item" role="menuitem" controller="dataManager" action="checkPackageTIPPs">Tipps Check of we:kb and LAS:eR</semui:link>
+                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="dataManager" action="checkPackageTIPPs">Tipps Check of we:kb and LAS:eR</ui:link>
                                     <div class="divider"></div>
-                                    <semui:link generateElementId="true" class="item" role="menuitem" controller="dataManager" action="listMailTemplates">Mail Templates</semui:link>
+                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="dataManager" action="listMailTemplates">Mail Templates</ui:link>
                                 </sec:ifAnyGranted>
                             </div>
                         </div>
@@ -225,7 +225,7 @@
                             </a>
 
                             <div class="menu" role="menu">
-                                <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="index">${message(code:'default.dashboard')}</semui:link>
+                                <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="index">${message(code:'default.dashboard')}</ui:link>
 
                                 <div class="item" role="menuitem" aria-haspopup="true">
                                     <div class="title">
@@ -234,15 +234,15 @@
 
                                     <div class="menu" role="menu">
 
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="appInfo">${message(code:'menu.admin.appInfo')}</semui:link>
-                                        <semui:link generateElementId="true" class="item" controller="admin" action="systemEvents">${message(code:'menu.admin.systemEvents')}</semui:link>
-                                        <semui:link generateElementId="true" class="item" controller="admin" action="testMailSending">Test Mail Sending</semui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="appInfo">${message(code:'menu.admin.appInfo')}</ui:link>
+                                        <ui:link generateElementId="true" class="item" controller="admin" action="systemEvents">${message(code:'menu.admin.systemEvents')}</ui:link>
+                                        <ui:link generateElementId="true" class="item" controller="admin" action="testMailSending">Test Mail Sending</ui:link>
 
                                         <div class="divider"></div>
 
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="triggerHousekeeping" onclick="return confirm('${message(code:'confirm.start.HouseKeeping')}')">${message(code:'menu.admin.triggerHousekeeping')}</semui:link>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="initiateCoreMigration" onclick="return confirm('${message(code:'confirm.start.CoreMigration')}')">${message(code:'menu.admin.coreMigration')}</semui:link>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="dataCleanse" onclick="return confirm('${message(code:'confirm.start.DataCleaningNominalPlatforms')}')">Run Data Cleaning (Nominal Platforms)</semui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="triggerHousekeeping" onclick="return confirm('${message(code:'confirm.start.HouseKeeping')}')">${message(code:'menu.admin.triggerHousekeeping')}</ui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="initiateCoreMigration" onclick="return confirm('${message(code:'confirm.start.CoreMigration')}')">${message(code:'menu.admin.coreMigration')}</ui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="dataCleanse" onclick="return confirm('${message(code:'confirm.start.DataCleaningNominalPlatforms')}')">Run Data Cleaning (Nominal Platforms)</ui:link>
                                     </div>
                                 </div>
                                 <div class="item" role="menuitem" aria-haspopup="true">
@@ -251,12 +251,12 @@
                                     </div>
 
                                     <div class="menu" role="menu">
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="dev" action="frontend">Frontend</semui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="dev" action="frontend">Frontend</ui:link>
                                     </div>
                                 </div>
 
-                                <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="systemMessages"><i class="icon exclamation circle"></i>${message(code: 'menu.admin.systemMessage')}</semui:link>
-                                <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="systemAnnouncements"><i class="icon envelope"></i>${message(code:'menu.admin.announcements')}</semui:link>
+                                <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="systemMessages"><i class="icon exclamation circle"></i>${message(code: 'menu.admin.systemMessage')}</ui:link>
+                                <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="systemAnnouncements"><i class="icon envelope"></i>${message(code:'menu.admin.announcements')}</ui:link>
 
                                 <div class="divider"></div>
 
@@ -266,14 +266,14 @@
                                     </div>
 
                                     <div class="menu" role="menu">
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="organisation" action="index">${message(code:'menu.admin.allOrganisations')}</semui:link>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="manageOrganisations">${message(code:'menu.admin.manageOrganisations')}</semui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="organisation" action="index">${message(code:'menu.admin.allOrganisations')}</ui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="manageOrganisations">${message(code:'menu.admin.manageOrganisations')}</ui:link>
                                     </div>
                                 </div>
 
-                                <semui:link generateElementId="true" class="item" role="menuitem" controller="user" action="list">${message(code:'menu.institutions.users')}</semui:link>
-                                <semui:link generateElementId="true" class="item" role="menuitem" controller="usage">${message(code:'menu.admin.manageUsageStats')}</semui:link>
-                                <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="forceSendNotifications">${message(code:'menu.admin.sendNotifications')}</semui:link>
+                                <ui:link generateElementId="true" class="item" role="menuitem" controller="user" action="list">${message(code:'menu.institutions.users')}</ui:link>
+                                <ui:link generateElementId="true" class="item" role="menuitem" controller="usage">${message(code:'menu.admin.manageUsageStats')}</ui:link>
+                                <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="forceSendNotifications">${message(code:'menu.admin.sendNotifications')}</ui:link>
 
                                 <div class="divider"></div>
 
@@ -283,23 +283,23 @@
                                     </div>
 
                                    <div class="menu" role="menu">
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="titleEnrichment">Title Enrichment</semui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="titleEnrichment">Title Enrichment</ui:link>
                                     </div>
                                 </div>
                                 <div class="divider"></div>
 
                                 <sec:ifAnyGranted roles="ROLE_ADMIN"><!-- TODO: reporting-permissions -->
-                                    <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="manageWorkflows">${message(code:'menu.admin.manageWorkflows')}</semui:link>
+                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="manageWorkflows">${message(code:'menu.admin.manageWorkflows')}</ui:link>
                                 </sec:ifAnyGranted>
 
-                                <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="manageNamespaces">${message(code:'menu.admin.manageIdentifierNamespaces')}</semui:link>
-                                <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="managePropertyDefinitions">${message(code:'menu.admin.managePropertyDefinitions')}</semui:link>
-                                <%--<semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="managePropertyGroups">${message(code:'menu.institutions.manage_prop_groups')}</semui:link>--%> <%-- property groups are always private?? --%>
-                                <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="manageRefdatas">${message(code:'menu.admin.manageRefdatas')}</semui:link>
+                                <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="manageNamespaces">${message(code:'menu.admin.manageIdentifierNamespaces')}</ui:link>
+                                <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="managePropertyDefinitions">${message(code:'menu.admin.managePropertyDefinitions')}</ui:link>
+                                <%--<ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="managePropertyGroups">${message(code:'menu.institutions.manage_prop_groups')}</ui:link>--%> <%-- property groups are always private?? --%>
+                                <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="manageRefdatas">${message(code:'menu.admin.manageRefdatas')}</ui:link>
 
                                 <div class="divider"></div>
 
-                                <semui:link generateElementId="true" class="item" role="menuitem" controller="stats" action="statsHome">${message(code:'menu.admin.statistics')}</semui:link>
+                                <ui:link generateElementId="true" class="item" role="menuitem" controller="stats" action="statsHome">${message(code:'menu.admin.statistics')}</ui:link>
                             </div>
                         </div>
                     </sec:ifAnyGranted>
@@ -312,7 +312,7 @@
 
                             <div class="menu" role="menu">
 
-                                <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="index">${message(code:'default.dashboard')}</semui:link>
+                                <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="index">${message(code:'default.dashboard')}</ui:link>
 
                                 <div class="item " role="menuitem" aria-haspopup="true">
                                     <div class="title">
@@ -321,19 +321,19 @@
 
                                     <div class="menu" role="menu">
 
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="systemSettings"><i class="icon toggle on"></i>${message(code:'menu.yoda.systemSettings')}</semui:link>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="systemEvents">${message(code:'menu.admin.systemEvents')}</semui:link>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="systemConfiguration">${message(code:'menu.yoda.systemConfiguration')}</semui:link>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="systemThreads">${message(code:'menu.yoda.systemThreads')}</semui:link>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="systemQuartz">${message(code:'menu.yoda.systemQuartz')}</semui:link>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="systemCache">${message(code:'menu.yoda.systemCache')}</semui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="systemSettings"><i class="icon toggle on"></i>${message(code:'menu.yoda.systemSettings')}</ui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="systemEvents">${message(code:'menu.admin.systemEvents')}</ui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="systemConfiguration">${message(code:'menu.yoda.systemConfiguration')}</ui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="systemThreads">${message(code:'menu.yoda.systemThreads')}</ui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="systemQuartz">${message(code:'menu.yoda.systemQuartz')}</ui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="systemCache">${message(code:'menu.yoda.systemCache')}</ui:link>
 
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="profilerLoadtime"><i class="stopwatch icon"></i>${message(code:'menu.yoda.profilerLoadtime')}</semui:link>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="profilerActivity"><i class="stopwatch icon"></i>${message(code:'menu.yoda.profilerActivity')}</semui:link>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="profilerTimeline"><i class="stopwatch icon"></i>${message(code:'menu.yoda.profilerTimeline')}</semui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="profilerLoadtime"><i class="stopwatch icon"></i>${message(code:'menu.yoda.profilerLoadtime')}</ui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="profilerActivity"><i class="stopwatch icon"></i>${message(code:'menu.yoda.profilerActivity')}</ui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="profilerTimeline"><i class="stopwatch icon"></i>${message(code:'menu.yoda.profilerTimeline')}</ui:link>
 
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="appControllers">${message(code:'menu.yoda.appControllers')}</semui:link>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="userRoleMatrix">${message(code:'menu.yoda.userRoleMatrix')}</semui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="appControllers">${message(code:'menu.yoda.appControllers')}</ui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="userRoleMatrix">${message(code:'menu.yoda.userRoleMatrix')}</ui:link>
 
                                     </div>
                                 </div>
@@ -345,15 +345,15 @@
                                         ${message(code:'myinst.dash.due_dates.label')} <i class="dropdown icon"></i>
                                     </div>
                                     <div class="menu" role="menu">
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="dueDates_updateDashboardDB">${message(code:'menu.admin.updateDashboardTable')}</semui:link>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="dueDates_sendAllEmails">${message(code:'menu.admin.sendEmailsForDueDates')}</semui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="dueDates_updateDashboardDB">${message(code:'menu.admin.updateDashboardTable')}</ui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="dueDates_sendAllEmails">${message(code:'menu.admin.sendEmailsForDueDates')}</ui:link>
                                     </div>
                                 </div>
                                 <div class="divider"></div>
-                                <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="statsSync">${message(code:'menu.admin.stats.sync')}</semui:link>
-                                <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="manageStatsSources">SUSHI-Quellen bearbeiten</semui:link>
-                                <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="fetchStats" params="[(FormService.FORM_SERVICE_TOKEN): formService.getNewToken(), incremental: true]">${message(code:'menu.admin.stats.fetch.incremental')}</semui:link>
-                                <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="fetchStats" params="[(FormService.FORM_SERVICE_TOKEN): formService.getNewToken(), incremental: false]">${message(code:'menu.admin.stats.fetch')}</semui:link>
+                                <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="statsSync">${message(code:'menu.admin.stats.sync')}</ui:link>
+                                <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="manageStatsSources">SUSHI-Quellen bearbeiten</ui:link>
+                                <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="fetchStats" params="[(FormService.FORM_SERVICE_TOKEN): formService.getNewToken(), incremental: true]">${message(code:'menu.admin.stats.fetch.incremental')}</ui:link>
+                                <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="fetchStats" params="[(FormService.FORM_SERVICE_TOKEN): formService.getNewToken(), incremental: false]">${message(code:'menu.admin.stats.fetch')}</ui:link>
                                 <div class="divider"></div>
 
                                 <div class="item" role="menuitem" aria-haspopup="true">
@@ -361,26 +361,26 @@
                                         ${message(code:'menu.admin.syncManagement')} <i class="dropdown icon"></i>
                                     </div>
                                     <div class="menu" role="menu">
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="globalSync" onclick="return confirm('${message(code:'confirm.start.globalDataSync')}')">${message(code:'menu.yoda.globalDataSync')}</semui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="globalSync" onclick="return confirm('${message(code:'confirm.start.globalDataSync')}')">${message(code:'menu.yoda.globalDataSync')}</ui:link>
                                         <div class="item" role="menuitem" aria-haspopup="true">
                                             <div class="title">
                                                 ${message(code:'menu.admin.syncManagement.reload')} <i class="dropdown icon"></i>
                                             </div>
                                             <div class="menu" role="menu">
-                                                <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="updateData" params="[dataToLoad:'identifier']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateIdentifiers')}</semui:link>
-                                                <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="updateData" params="[dataToLoad:'editionStatement']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateEditionStatement')}</semui:link>
-                                                <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="updateData" params="[dataToLoad:'iemedium']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateIEMedium')}</semui:link>
-                                                <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="updateData" params="[dataToLoad:'ddc']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateDDC')}</semui:link>
-                                                <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="updateData" params="[dataToLoad:'language']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateLanguage')}</semui:link>
-                                                <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="updateData" params="[dataToLoad:'accessType']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateAccessType')}</semui:link>
-                                                <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="updateData" params="[dataToLoad:'openAccess']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateOpenAccess')}</semui:link>
-                                                <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="updateData" params="[dataToLoad:'titleNamespace']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateTitleNamespace')}</semui:link>
+                                                <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="updateData" params="[dataToLoad:'identifier']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateIdentifiers')}</ui:link>
+                                                <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="updateData" params="[dataToLoad:'editionStatement']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateEditionStatement')}</ui:link>
+                                                <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="updateData" params="[dataToLoad:'iemedium']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateIEMedium')}</ui:link>
+                                                <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="updateData" params="[dataToLoad:'ddc']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateDDC')}</ui:link>
+                                                <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="updateData" params="[dataToLoad:'language']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateLanguage')}</ui:link>
+                                                <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="updateData" params="[dataToLoad:'accessType']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateAccessType')}</ui:link>
+                                                <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="updateData" params="[dataToLoad:'openAccess']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateOpenAccess')}</ui:link>
+                                                <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="updateData" params="[dataToLoad:'titleNamespace']" onclick="return confirm('${message(code:'confirm.start.reload')}')">${message(code:'menu.yoda.updateTitleNamespace')}</ui:link>
                                             </div>
                                         </div>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="manageGlobalSources">${message(code:'menu.yoda.manageGlobalSources')}</semui:link>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="getTIPPsWithoutGOKBId">${message(code:'menu.yoda.purgeTIPPsWithoutGOKBID')}</semui:link>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="expungeRemovedTIPPs">${message(code:'menu.yoda.expungeRemovedTIPPs')}</semui:link>
-                                        <%--<semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="matchPackageHoldings">${message(code:'menu.admin.bulkOps.matchPackageHoldings')}</semui:link>--%>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="manageGlobalSources">${message(code:'menu.yoda.manageGlobalSources')}</ui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="getTIPPsWithoutGOKBId">${message(code:'menu.yoda.purgeTIPPsWithoutGOKBID')}</ui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="expungeRemovedTIPPs">${message(code:'menu.yoda.expungeRemovedTIPPs')}</ui:link>
+                                        <%--<ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="matchPackageHoldings">${message(code:'menu.admin.bulkOps.matchPackageHoldings')}</ui:link>--%>
                                     </div>
                                 </div>
 
@@ -389,15 +389,15 @@
                                         ${message(code:'elasticsearch.label')} <i class="dropdown icon"></i>
                                     </div>
                                     <div class="menu" role="menu">
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="esIndexUpdate" onclick="return confirm('${message(code:'confirm.start.ESUpdateIndex')}')">${message(code:'menu.yoda.updateESIndex')}</semui:link>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="manageESSources">Manage ES Source</semui:link>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="manageFTControl">Manage FTControl</semui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="esIndexUpdate" onclick="return confirm('${message(code:'confirm.start.ESUpdateIndex')}')">${message(code:'menu.yoda.updateESIndex')}</ui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="manageESSources">Manage ES Source</ui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="manageFTControl">Manage FTControl</ui:link>
                                         <div class="divider"></div>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="fullReset" onclick="return confirm('${message(code:'confirm.start.resetESIndex')}')">${message(code:'menu.yoda.resetESIndex')}</semui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="fullReset" onclick="return confirm('${message(code:'confirm.start.resetESIndex')}')">${message(code:'menu.yoda.resetESIndex')}</ui:link>
                                         <div class="divider"></div>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="killDataloadService">Kill ES Update Index</semui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="killDataloadService">Kill ES Update Index</ui:link>
                                         <div class="divider"></div>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="createESIndices">Create ES Indices</semui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="createESIndices">Create ES Indices</ui:link>
                                     </div>
                                 </div>
 
@@ -409,19 +409,19 @@
                                     </div>
 
                                     <div class="menu" role="menu">
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="dataManager" action="listPlatformDuplicates">List Platform Duplicates</semui:link>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="package" action="getDuplicatePackages">List Package Duplicates</semui:link>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="dataManager" action="listDeletedTIPPS">List TIPP Duplicates and deleted TIPPs</semui:link>
-                                        <%--<semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="userMerge">${message(code:'menu.admin.userMerge')}</semui:link>--%>
-                                        <%--<semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="hardDeletePkgs">${message(code:'menu.admin.hardDeletePkgs')}</semui:link>--%>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="dataManager" action="listPlatformDuplicates">List Platform Duplicates</ui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="package" action="getDuplicatePackages">List Package Duplicates</ui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="dataManager" action="listDeletedTIPPS">List TIPP Duplicates and deleted TIPPs</ui:link>
+                                        <%--<ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="userMerge">${message(code:'menu.admin.userMerge')}</ui:link>--%>
+                                        <%--<ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="hardDeletePkgs">${message(code:'menu.admin.hardDeletePkgs')}</ui:link>--%>
 
                                         <div class="divider"></div>
 
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="databaseInfo">${message(code: "menu.admin.databaseInfo")}</semui:link>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="databaseCollations">${message(code: "menu.admin.databaseCollations")}</semui:link>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="dataConsistency">${message(code: "menu.admin.dataConsistency")}</semui:link>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="fileConsistency">${message(code: "menu.admin.fileConsistency")}</semui:link>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="manageDeletedObjects">${message(code: "menu.admin.deletedObjects")}</semui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="databaseInfo">${message(code: "menu.admin.databaseInfo")}</ui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="databaseCollations">${message(code: "menu.admin.databaseCollations")}</ui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="dataConsistency">${message(code: "menu.admin.dataConsistency")}</ui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="fileConsistency">${message(code: "menu.admin.fileConsistency")}</ui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="manageDeletedObjects">${message(code: "menu.admin.deletedObjects")}</ui:link>
                                     </div>
                                 </div>
 
@@ -430,17 +430,17 @@
                                         ${message(code:'menu.admin.dataMigration')} <i class="dropdown icon"></i>
                                     </div>
                                     <div class="menu" role="menu">
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="checkOrgLicRoles"><g:message code="menu.admin.checkOrgLicRoles"/></semui:link>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="dbmFixPrivateProperties">Fix Private Properties</semui:link>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="surveyCheck">Update Survey Status</semui:link>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="subscriptionCheck">${message(code:'menu.admin.subscriptionsCheck')}</semui:link>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="freezeSubscriptionHoldings">${message(code:'menu.admin.freezeSubscriptionHoldings')}</semui:link>
-                                        <semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="dropDeletedObjects">Drop deleted Objects from Database</semui:link>
-                                        <%--<semui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="correctCostsInLocalCurrency" params="[dryRun: true]">${message(code:'menu.admin.correctCostsInLocalCurrencyDryRun')}</semui:link>
-                                        <semui:link generateElementId="true" class="item role="menuitem" js-open-confirm-modal"
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="checkOrgLicRoles"><g:message code="menu.admin.checkOrgLicRoles"/></ui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="dbmFixPrivateProperties">Fix Private Properties</ui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="surveyCheck">Update Survey Status</ui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="subscriptionCheck">${message(code:'menu.admin.subscriptionsCheck')}</ui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="freezeSubscriptionHoldings">${message(code:'menu.admin.freezeSubscriptionHoldings')}</ui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="dropDeletedObjects">Drop deleted Objects from Database</ui:link>
+                                        <%--<ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="correctCostsInLocalCurrency" params="[dryRun: true]">${message(code:'menu.admin.correctCostsInLocalCurrencyDryRun')}</ui:link>
+                                        <ui:link generateElementId="true" class="item role="menuitem" js-open-confirm-modal"
                                                 data-confirm-tokenMsg = "${message(code: 'confirmation.content.correctCostsInLocalCurrency')}"
                                                 data-confirm-term-how="ok"
-                                                controller="yoda" action="correctCostsInLocalCurrency" params="[dryRun: false]">${message(code:'menu.admin.correctCostsInLocalCurrencyDoIt')}</semui:link>--%>
+                                                controller="yoda" action="correctCostsInLocalCurrency" params="[dryRun: false]">${message(code:'menu.admin.correctCostsInLocalCurrencyDoIt')}</ui:link>--%>
 
                                     </div>
                                 </div>
@@ -458,14 +458,14 @@
                             <div class="results" style="overflow-y:scroll;max-height: 400px;"></div>
                         </div>
 
-                        <semui:link generateElementId="true" controller="search" action="index"
+                        <ui:link generateElementId="true" controller="search" action="index"
                                 class="la-search-advanced la-popup-tooltip la-delay"
                                  data-content="${message(code: 'search.advancedSearch.tooltip')}">
                             <i class="large icons">
                                 <i class="search icon"></i>
                                 <i class="top grey right corner cog icon "></i>
                             </i>
-                        </semui:link>
+                        </ui:link>
 
                         <g:if test="${contextUser}">
                             <div class="ui dropdown item la-noBorder" role="menuitem" aria-haspopup="true">
@@ -479,23 +479,23 @@
                                     <g:if test="${usaf && usaf.size() > 0}">
                                         <g:each in="${usaf}" var="org">
                                             <g:if test="${org.id == contextOrg?.id}">
-                                                <semui:link generateElementId="true" class="item active" role="menuitem" controller="myInstitution" action="switchContext" params="${[oid:"${org.class.name}:${org.id}"]}">${org.name}</semui:link>
+                                                <ui:link generateElementId="true" class="item active" role="menuitem" controller="myInstitution" action="switchContext" params="${[oid:"${org.class.name}:${org.id}"]}">${org.name}</ui:link>
                                             </g:if>
                                             <g:else>
-                                                <semui:link generateElementId="true" class="item" role="menuitem" controller="myInstitution" action="switchContext" params="${[oid:"${org.class.name}:${org.id}"]}">${org.name}</semui:link>
+                                                <ui:link generateElementId="true" class="item" role="menuitem" controller="myInstitution" action="switchContext" params="${[oid:"${org.class.name}:${org.id}"]}">${org.name}</ui:link>
                                             </g:else>
                                         </g:each>
                                     </g:if>
 
                                     <div class="divider"></div>
 
-                                    <semui:link generateElementId="true" class="item" role="menuitem" controller="profile" action="index">${message(code:'profile.user')}</semui:link>
-                                    <semui:link generateElementId="true" class="item" role="menuitem" controller="profile" action="help">${message(code:'menu.user.help')}</semui:link>
-                                    <semui:link generateElementId="true" class="item" role="menuitem" controller="profile" action="dsgvo">${message(code:'privacyNotice')}</semui:link>
+                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="profile" action="index">${message(code:'profile.user')}</ui:link>
+                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="profile" action="help">${message(code:'menu.user.help')}</ui:link>
+                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="profile" action="dsgvo">${message(code:'privacyNotice')}</ui:link>
 
                                     <div class="divider"></div>
 
-                                    <semui:link generateElementId="true" class="item" role="menuitem" controller="logout">${message(code:'menu.user.logout')}</semui:link>
+                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="logout">${message(code:'menu.user.logout')}</ui:link>
                                     <div class="divider"></div>
                                     <div class="header">Version: ${AppUtils.getMeta('info.app.version')} – ${AppUtils.getMeta('info.app.build.date')}</div>
                                     <div class="header">
@@ -510,7 +510,7 @@
 
                 <sec:ifNotGranted roles="ROLE_USER">
                     <sec:ifLoggedIn>
-                        <semui:link generateElementId="true" class="item" controller="logout">${message(code:'menu.user.logout')}</semui:link>
+                        <ui:link generateElementId="true" class="item" controller="logout">${message(code:'menu.user.logout')}</ui:link>
                     </sec:ifLoggedIn>
                 </sec:ifNotGranted>
 
@@ -663,7 +663,7 @@
 
         %{-- global confirmation modal --}%
 
-        <semui:confirmationModal  />
+        <ui:confirmationModal  />
 
         %{-- decksaver --}%
 
@@ -701,7 +701,7 @@
         <% if(! flash.redirectFrom) { flash.clear() } %>
 
         <sec:ifAnyGranted roles="ROLE_ADMIN">
-            <semui:systemInfo />
+            <ui:systemInfo />
 
             <div id="system-profiler" class="ui label hidden">
                 <i class="clock icon"></i>

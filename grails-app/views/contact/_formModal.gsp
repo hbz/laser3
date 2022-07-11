@@ -1,6 +1,6 @@
 <%@ page import="de.laser.Org;de.laser.RefdataCategory; de.laser.Person;de.laser.Contact;de.laser.storage.RDConstants" %>
 
-<semui:modal id="${modalId ?: 'contactFormModal'}"
+<ui:modal id="${modalId ?: 'contactFormModal'}"
              text="${message(code: 'default.add.label', args: [message(code: 'contact.label')])}">
 
     <g:form id="newContact" name="newContact" class="ui form" url="[controller: 'contact', action: 'create']" method="POST">
@@ -71,7 +71,7 @@
         </g:if>
 
     </g:form>
-</semui:modal>
+</ui:modal>
 <laser:script file="${this.getGroovyPageFileName()}">
         $("#newContact").form({
             on: 'blur',

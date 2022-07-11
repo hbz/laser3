@@ -12,11 +12,11 @@
             <laser:render template="/user/breadcrumb" model="${[ inContextOrg: inContextOrg, orgInstance: orgInstance, institutionalView: institutionalView, params:params ]}"/>
         </g:if>
 
-        <semui:h1HeaderWithIcon text="${titleMessage}" total="${total}" />
+        <ui:h1HeaderWithIcon text="${titleMessage}" total="${total}" />
 
-        <semui:controlButtons>
+        <ui:controlButtons>
             <laser:render template="/user/global/actions" />
-        </semui:controlButtons>
+        </ui:controlButtons>
 
         <g:if test="${controllerName == 'myInstitution'}">
             <laser:render template="/organisation/nav" model="${navConfig}"/>
@@ -31,7 +31,7 @@
             <div class="ui info message la-clear-before">${message(code:'user.edit.info')}</div>
         </g:if>
 
-        <semui:messages data="${flash}" />
+        <ui:messages data="${flash}" />
 
         <laser:render template="/templates/user/list" model="${tmplConfig}" />
 

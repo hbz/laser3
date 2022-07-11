@@ -2,25 +2,25 @@
 <laser:htmlStart message="package.compare" />
 
 	<g:set var="entityName" value="${message(code: 'package.label')}" />
-	<semui:breadcrumbs>
-		<semui:crumb controller="package" action="index" message="package.show.all" />
-		<semui:crumb class="active" message="package.compare" />
-	</semui:breadcrumbs>
+	<ui:breadcrumbs>
+		<ui:crumb controller="package" action="index" message="package.show.all" />
+		<ui:crumb class="active" message="package.compare" />
+	</ui:breadcrumbs>
 
-	<semui:controlButtons>
-		<semui:exportDropdown>
-			<semui:exportDropdownItem>
+	<ui:controlButtons>
+		<ui:exportDropdown>
+			<ui:exportDropdownItem>
 				<g:link class="item" action="compare" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
-			</semui:exportDropdownItem>
-		</semui:exportDropdown>
-	</semui:controlButtons>
+			</ui:exportDropdownItem>
+		</ui:exportDropdown>
+	</ui:controlButtons>
  
- 	<semui:h1HeaderWithIcon message="package.compare" />
+ 	<ui:h1HeaderWithIcon message="package.compare" />
 
-	<semui:messages data="${flash}" />
+	<ui:messages data="${flash}" />
 
         <g:if test="${request.message}">
-		    <semui:msg class="negative" text="${request.message}" />
+		    <ui:msg class="negative" text="${request.message}" />
 	    </g:if>
 
 	<g:form action="compare" controller="package" method="GET" class="ui form">
@@ -37,9 +37,9 @@
 					<td>${message(code:'package.show.pkg_name')}</td>
 					<td>
 						${message(code:'package.compare.restrict.after')}
-                        <semui:simpleHiddenValue id="startA" name="startA" type="date" value="${params.startA}"/>
+                        <ui:simpleHiddenValue id="startA" name="startA" type="date" value="${params.startA}"/>
 						${message(code:'package.compare.restrict.before')}
-						<semui:simpleHiddenValue id="endA" name="endA" type="date" value="${params.endA}"/>
+						<ui:simpleHiddenValue id="endA" name="endA" type="date" value="${params.endA}"/>
 						<br />
 						${message(code:'package.compare.select.first')}
 						<br />
@@ -47,9 +47,9 @@
 					</td>
 					<td> 
 					    ${message(code:'package.compare.restrict.after')}
-                        <semui:simpleHiddenValue id="startB" name="startB" type="date" value="${params.startB}"/>
+                        <ui:simpleHiddenValue id="startB" name="startB" type="date" value="${params.startB}"/>
 						${message(code:'package.compare.restrict.before')}
-                        <semui:simpleHiddenValue id="endB" name="endB" type="date" value="${params.endB}"/>
+                        <ui:simpleHiddenValue id="endB" name="endB" type="date" value="${params.endB}"/>
 						<br />
 						${message(code:'package.compare.select.second')}
 						<br />
@@ -59,12 +59,12 @@
 				<tr>
 					<td>${message(code:'package.compare.snapshot')}</td>
 					<td>
-						<semui:datepicker id="dateA" name="dateA" placeholder ="default.date.label" value="${params.dateA}" >
-						</semui:datepicker>
+						<ui:datepicker id="dateA" name="dateA" placeholder ="default.date.label" value="${params.dateA}" >
+						</ui:datepicker>
 					</td>
 					<td>
-						<semui:datepicker id="dateB" name="dateB" placeholder ="default.date.label" value="${params.dateB}" >
-						</semui:datepicker>
+						<ui:datepicker id="dateB" name="dateB" placeholder ="default.date.label" value="${params.dateB}" >
+						</ui:datepicker>
 					</td>
 				</tr>
 				<tr>
@@ -156,7 +156,7 @@
 			</td>
 			<td>
 				${message(code:'package.compare.filter.coverage_startsBefore')}:
-                                <semui:simpleHiddenValue id="startsBefore" name="startsBefore" type="date" value="${params.startsBefore}"/>
+                                <ui:simpleHiddenValue id="startsBefore" name="startsBefore" type="date" value="${params.startsBefore}"/>
 			</td>
 			<td style="padding-left:10px;"> <input type='button' class="ui button" id="resetFilters" value="${message(code:'default.button.clear.label')}"/></td>
 		</tr>
@@ -166,7 +166,7 @@
 		</td>
 		<td>
 			${message(code:'package.compare.filter.coverage_endsAfter')}:
-			<semui:simpleHiddenValue id="endsAfter" name="endsAfter" type="date" value="${params.endsAfter}"/>
+			<ui:simpleHiddenValue id="endsAfter" name="endsAfter" type="date" value="${params.endsAfter}"/>
 		</td>
 
 			<td  style="padding-left:10px;"> <input type="submit" class="ui button" value="${message(code:'package.compare.filter.submit.label')}" /> </td>
@@ -202,7 +202,7 @@
 		<tr>
 			
 			<td>
-				<semui:listIcon type="${currentTitle[0].medium?.value}"/><strong><g:link action="show" controller="title" id="${currentTitle[0].id}">${entry.key}</g:link></strong>
+				<ui:listIcon type="${currentTitle[0].medium?.value}"/><strong><g:link action="show" controller="title" id="${currentTitle[0].id}">${entry.key}</g:link></strong>
                           <i onclick="JSPC.app.showMore('${currentTitle[0].id}')" class="icon-info-sign"></i>
 
                           <g:each in="${currentTitle[0].ids?.sort{it?.ns?.ns}}" var="id">
@@ -236,7 +236,7 @@
 	</tbody>
 </table>
 
- <semui:paginate action="compare" controller="package" params="${params}" first="first" last="Last" max="${max}" total="${unionListSize}" />
+ <ui:paginate action="compare" controller="package" params="${params}" first="first" last="Last" max="${max}" total="${unionListSize}" />
 
 </g:if>
 </div>

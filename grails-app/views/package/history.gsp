@@ -1,14 +1,14 @@
 <%@ page import="de.laser.Package" %>
 <laser:htmlStart message="package.show.nav.history" />
 
-    <semui:breadcrumbs>
-        <semui:crumb controller="package" action="index" text="${message(code:'package.show.all')}" />
-        <semui:crumb text="${packageInstance.name}" id="${packageInstance.id}" class="active"/>
-    </semui:breadcrumbs>
+    <ui:breadcrumbs>
+        <ui:crumb controller="package" action="index" text="${message(code:'package.show.all')}" />
+        <ui:crumb text="${packageInstance.name}" id="${packageInstance.id}" class="active"/>
+    </ui:breadcrumbs>
 
-    <semui:h1HeaderWithIcon text="${packageInstance?.name}" />
+    <ui:h1HeaderWithIcon text="${packageInstance?.name}" />
 
-    <semui:messages data="${flash}" />
+    <ui:messages data="${flash}" />
 
     <laser:render template="nav"/>
 
@@ -44,7 +44,7 @@
         </table>
 
         <g:if test="${historyLines != null}" >
-          <semui:paginate action="history" controller="package" params="${params}" maxsteps="${max}" total="${num_hl}" />
+          <ui:paginate action="history" controller="package" params="${params}" maxsteps="${max}" total="${num_hl}" />
         </g:if>
 
     </g:if>

@@ -37,7 +37,7 @@
                             )
                         %>
                         <g:if test="${check}">
-                            <semui:xEditableRole owner="${aff}" field="formalRole" type="user" />
+                            <ui:xEditableRole owner="${aff}" field="formalRole" type="user" />
                         </g:if>
                         <g:else>
                             <g:message code="cv.roles.${aff.formalRole?.authority}"/>

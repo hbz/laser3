@@ -1,17 +1,17 @@
 <%@ page import="de.laser.AuditConfig;de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.interfaces.CalculatedType; de.laser.storage.RDStore;" %>
 <laser:htmlStart message="myinst.renewals" serviceInjection="true"/>
 
-<semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="currentSubscriptions" message="myinst.currentSubscriptions.label"/>
-    <semui:crumb action="show" controller="subscription" id="${subscription.id}" text="${subscription.name}"/>
-    <semui:crumb message="myinst.renewals" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb controller="myInstitution" action="currentSubscriptions" message="myinst.currentSubscriptions.label"/>
+    <ui:crumb action="show" controller="subscription" id="${subscription.id}" text="${subscription.name}"/>
+    <ui:crumb message="myinst.renewals" class="active"/>
+</ui:breadcrumbs>
 
-<semui:h1HeaderWithIcon text="${message(code: 'myinst.renewals')}: ${subscription.name}" />
+<ui:h1HeaderWithIcon text="${message(code: 'myinst.renewals')}: ${subscription.name}" />
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
-<semui:form>
+<ui:form>
     <g:form action="processRenewSubscription" method="post" params="${params}">
 
         <div>
@@ -44,7 +44,7 @@
                 </tr>
                 <tr>
                     <th>${message(code: 'default.startDate.label')}</th>
-                    <td><semui:datepicker class="wide eight" id="subscription.start_date" name="subscription.start_date"
+                    <td><ui:datepicker class="wide eight" id="subscription.start_date" name="subscription.start_date"
                                           placeholder="default.date.label" value="${permissionInfo?.sub_startDate}"
                                           required=""/></td>
                     <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
@@ -58,7 +58,7 @@
                 </tr>
                 <tr>
                     <th>${message(code: 'default.endDate.label')}</th>
-                    <td><semui:datepicker class="wide eight" id="subscription.end_date" name="subscription.end_date"
+                    <td><ui:datepicker class="wide eight" id="subscription.end_date" name="subscription.end_date"
                                           placeholder="default.date.label" value="${permissionInfo?.sub_endDate}"/></td>
                     <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
                         <td class="center aligned">
@@ -120,6 +120,6 @@
 
         </div>
     </g:form>
-</semui:form>
+</ui:form>
 
 <laser:htmlEnd />

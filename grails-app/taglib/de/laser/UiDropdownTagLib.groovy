@@ -5,9 +5,9 @@ import de.laser.utils.SwissKnife
 
 // Semantic UI
 
-class SemuiDropdownTagLib {
+class UiDropdownTagLib {
 
-    static namespace = "semui"
+    static namespace = 'ui'
 
     def controlButtons = { attrs, body ->
 

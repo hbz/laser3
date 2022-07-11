@@ -69,7 +69,7 @@
                     </g:if>
 
                     <g:if test="${ieInNewSub}">
-                        <semui:ieAcceptStatusIcon status="${ieInNewSub.acceptStatus}"/>
+                        <ui:ieAcceptStatusIcon status="${ieInNewSub.acceptStatus}"/>
                     </g:if>
 
                     <!-- START TEMPLATE -->

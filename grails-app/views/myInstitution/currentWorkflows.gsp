@@ -2,14 +2,14 @@
 
 <laser:htmlStart message="menu.my.workflows" serviceInjection="true"/>
 
-<semui:breadcrumbs>
-    <semui:crumb message="menu.my.workflows" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb message="menu.my.workflows" class="active"/>
+</ui:breadcrumbs>
 
-<semui:h1HeaderWithIcon message="menu.my.workflows" type="Workflow" total="${total}" floated="true" />
+<ui:h1HeaderWithIcon message="menu.my.workflows" type="Workflow" total="${total}" floated="true" />
 
 <laser:render template="/templates/filter/javascript" />
-<semui:filter showFilterButton="true">
+<ui:filter showFilterButton="true">
     <form class="ui form">
         <div class="three fields">
             <div class="field">
@@ -65,22 +65,22 @@
             <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label')}" />
         </div>
     </form>
-</semui:filter>
+</ui:filter>
 
 <g:if test="${status == WorkflowService.OP_STATUS_DONE}">
     <g:if test="${cmd == 'delete'}">
-        <semui:msg class="positive" message="workflow.delete.ok" />
+        <ui:msg class="positive" message="workflow.delete.ok" />
     </g:if>
     <g:else>
-        <semui:msg class="positive" message="workflow.edit.ok" />
+        <ui:msg class="positive" message="workflow.edit.ok" />
     </g:else>
 </g:if>
 <g:elseif test="${status == WorkflowService.OP_STATUS_ERROR}">
     <g:if test="${cmd == 'delete'}">
-        <semui:msg class="negative" message="workflow.delete.error" />
+        <ui:msg class="negative" message="workflow.delete.error" />
     </g:if>
     <g:else>
-        <semui:msg class="negative" message="workflow.edit.error" />
+        <ui:msg class="negative" message="workflow.edit.error" />
     </g:else>
 </g:elseif>
 
@@ -178,7 +178,7 @@
     </tbody>
 </table>
 
-<semui:paginate action="currentWorkflows" controller="myInstitution" total="${total}" max="${params.max}" />
+<ui:paginate action="currentWorkflows" controller="myInstitution" total="${total}" max="${params.max}" />
 
 <div id="wfModal" class="ui modal"></div>
 

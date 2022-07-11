@@ -1,15 +1,15 @@
 <laser:htmlStart message="privacyNotice" />
 
-<semui:breadcrumbs>
-    <semui:crumb message="privacyNotice" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb message="privacyNotice" class="active"/>
+</ui:breadcrumbs>
 
-<semui:h1HeaderWithIcon message="privacyNotice" />
+<ui:h1HeaderWithIcon message="privacyNotice" />
 
 <br />
 <br />
 
-<semui:form>
+<ui:form>
 
 <a href="https://www.hbz-nrw.de/datenschutz"  class="ui button" target="_blank" onclick="$('#modalDsgvo').modal('hide')">
     <i class="share square icon"></i>
@@ -24,7 +24,7 @@
     ${message(code:'vdv')}
 </a>
 
-</semui:form>
+</ui:form>
 
 <laser:htmlEnd />
 

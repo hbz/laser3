@@ -3,7 +3,7 @@
 
 <laser:htmlStart text="Datenbereinigung: TIPPs ohne we:kb ID" serviceInjection="true"/>
 
-        <semui:messages data="${flash}"/>
+        <ui:messages data="${flash}"/>
         <table>
             <thead>
                 <tr>

@@ -1,13 +1,13 @@
 <%@ page import="de.laser.storage.RDStore; de.laser.IssueEntitlement;de.laser.Platform; de.laser.remote.ApiSource;" %>
 <laser:htmlStart message="myinst.currentTitles.label" />
 
-<semui:breadcrumbs>
-    <semui:crumb message="myinst.currentTitles.label" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb message="myinst.currentTitles.label" class="active"/>
+</ui:breadcrumbs>
 
-<semui:controlButtons>
-    <semui:exportDropdown>
-        <semui:exportDropdownItem>
+<ui:controlButtons>
+    <ui:exportDropdown>
+        <ui:exportDropdownItem>
             <g:if test="${filterSet}">
                 <g:link class="item js-open-confirm-modal"
                         data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}"
@@ -19,8 +19,8 @@
             <g:else>
                 <g:link class="item" action="currentTitles" params="${params + [format: 'csv']}">CSV Export</g:link>
             </g:else>
-        </semui:exportDropdownItem>
-        <semui:exportDropdownItem>
+        </ui:exportDropdownItem>
+        <ui:exportDropdownItem>
             <g:if test="${filterSet}">
                 <g:link class="item js-open-confirm-modal"
                         data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}"
@@ -34,8 +34,8 @@
                     <g:message code="default.button.exports.xls"/>
                 </g:link>
             </g:else>
-        </semui:exportDropdownItem>
-        <semui:exportDropdownItem>
+        </ui:exportDropdownItem>
+        <ui:exportDropdownItem>
             <g:if test="${filterSet}">
                 <g:link class="item js-open-confirm-modal"
                         data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}"
@@ -48,23 +48,23 @@
                 <g:link class="item" action="currentTitles"
                         params="${params + [exportKBart: true]}">KBART Export</g:link>
             </g:else>
-        </semui:exportDropdownItem>
-    <%--<semui:exportDropdownItem>
+        </ui:exportDropdownItem>
+    <%--<ui:exportDropdownItem>
         <g:link class="item" action="currentTitles" params="${params + [format:'json']}">JSON Export</g:link>
-    </semui:exportDropdownItem>
-    <semui:exportDropdownItem>
+    </ui:exportDropdownItem>
+    <ui:exportDropdownItem>
         <g:link class="item" action="currentTitles" params="${params + [format:'xml']}">XML Export</g:link>
-    </semui:exportDropdownItem>--%>
-    </semui:exportDropdown>
-</semui:controlButtons>
+    </ui:exportDropdownItem>--%>
+    </ui:exportDropdown>
+</ui:controlButtons>
 
-<semui:h1HeaderWithIcon message="myinst.currentTitles.label" total="${num_ti_rows}" floated="true" />
+<ui:h1HeaderWithIcon message="myinst.currentTitles.label" total="${num_ti_rows}" floated="true" />
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 <laser:render template="/templates/filter/javascript"/>
 
-<semui:filter showFilterButton="true">
+<ui:filter showFilterButton="true">
     <g:form id="filtering-form" action="currentTitles" controller="myInstitution" method="get" class="ui form">
 
         <g:set var="filterSub" value="${params.filterSub ? params.list('filterSub') : "all"}"/>
@@ -81,7 +81,7 @@
                        placeholder="${message(code: 'default.search.ph')}"/>
             </div>
 
-            <semui:datepicker label="myinst.currentTitles.subs_valid_on" id="validOn" name="validOn"
+            <ui:datepicker label="myinst.currentTitles.subs_valid_on" id="validOn" name="validOn"
                               value="${validOn}"/>
 
         </div>
@@ -179,7 +179,7 @@
     </div>--%>
 
     </g:form>
-</semui:filter>
+</ui:filter>
 
 <div class="la-clear-before">
     <div>
@@ -268,7 +268,7 @@
 
                                         <!-- von --->
                                             <g:if test="${editable}">
-                                                <semui:xEditable owner="${ie}" type="date" field="accessStartDate"/>
+                                                <ui:xEditable owner="${ie}" type="date" field="accessStartDate"/>
                                                 <i class="grey question circle icon la-popup-tooltip la-delay"
                                                    data-content="${message(code: 'subscription.details.access_start.note')}"></i>
                                             </g:if>
@@ -276,10 +276,10 @@
                                                 <g:formatDate format="${message(code: 'default.date.format.notime')}"
                                                               date="${ie.accessStartDate}"/>
                                             </g:else>
-                                            <semui:dateDevider/>
+                                            <ui:dateDevider/>
                                         <!-- bis -->
                                             <g:if test="${editable}">
-                                                <semui:xEditable owner="${ie}" type="date" field="accessEndDate"/>
+                                                <ui:xEditable owner="${ie}" type="date" field="accessEndDate"/>
                                                 <i class="grey question circle icon la-popup-tooltip la-delay"
                                                    data-content="${message(code: 'subscription.details.access_end.note')}"></i>
                                             </g:if>
@@ -291,17 +291,17 @@
 
                                         <div class="sixteen wide column">
                                             <g:each in="${ie.priceItems}" var="priceItem" status="i">
-                                                <g:message code="tipp.price.listPrice"/>: <semui:xEditable field="listPrice"
+                                                <g:message code="tipp.price.listPrice"/>: <ui:xEditable field="listPrice"
                                                                                                      owner="${priceItem}"
-                                                                                                     format=""/> <semui:xEditableRefData
+                                                                                                     format=""/> <ui:xEditableRefData
                                                     field="listCurrency" owner="${priceItem}"
                                                     config="Currency"/> <%--<g:formatNumber number="${priceItem.listPrice}" type="currency" currencyCode="${priceItem.listCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%><br/>
-                                                <g:message code="tipp.price.localPrice"/>: <semui:xEditable field="localPrice"
-                                                                                                      owner="${priceItem}"/> <semui:xEditableRefData
+                                                <g:message code="tipp.price.localPrice"/>: <ui:xEditable field="localPrice"
+                                                                                                      owner="${priceItem}"/> <ui:xEditableRefData
                                                     field="localCurrency" owner="${priceItem}"
                                                     config="Currency"/> <%--<g:formatNumber number="${priceItem.localPrice}" type="currency" currencyCode="${priceItem.localCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%>
-                                            <%--<semui:xEditable field="startDate" type="date"
-                                                             owner="${priceItem}"/><semui:dateDevider/><semui:xEditable
+                                            <%--<ui:xEditable field="startDate" type="date"
+                                                             owner="${priceItem}"/><ui:dateDevider/><ui:xEditable
                                                 field="endDate" type="date"
                                                 owner="${priceItem}"/>  <g:formatDate format="${message(code:'default.date.format.notime')}" date="${priceItem.startDate}"/>--%>
                                                 <g:if test="${i < ie.priceItems.size() - 1}"><hr></g:if>
@@ -341,7 +341,7 @@
 
 
     <g:if test="${titles}">
-        <semui:paginate action="currentTitles" controller="myInstitution" params="${params}"
+        <ui:paginate action="currentTitles" controller="myInstitution" params="${params}"
                         next="${message(code: 'default.paginate.next')}"
                         prev="${message(code: 'default.paginate.prev')}" max="${max}"
                         total="${num_ti_rows}"/>
@@ -349,8 +349,8 @@
 
 </div>
 
-<semui:debugInfo>
+<ui:debugInfo>
     <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]"/>
-</semui:debugInfo>
+</ui:debugInfo>
 
 <laser:htmlEnd />

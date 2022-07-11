@@ -2,17 +2,17 @@
 
 <laser:htmlStart message="createIssueEntitlementsSurvey.label" serviceInjection="true" />
 
-<semui:breadcrumbs>
+<ui:breadcrumbs>
 
-    <semui:crumb controller="survey" action="workflowsSurveysConsortia" message="currentSurveys.label"/>
-    <semui:crumb message="createIssueEntitlementsSurvey.label" class="active"/>
-</semui:breadcrumbs>
+    <ui:crumb controller="survey" action="workflowsSurveysConsortia" message="currentSurveys.label"/>
+    <ui:crumb message="createIssueEntitlementsSurvey.label" class="active"/>
+</ui:breadcrumbs>
 
-<semui:h1HeaderWithIcon message="createIssueEntitlementsSurvey.label" type="Survey" />
+<ui:h1HeaderWithIcon message="createIssueEntitlementsSurvey.label" type="Survey" />
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
-<semui:form>
+<ui:form>
     <g:form action="processCreateIssueEntitlementsSurvey" controller="survey" method="post" class="ui form">
         <g:hiddenField id="sub_id_${subscription.id}" name="sub" value="${subscription.id}"/>
 
@@ -22,10 +22,10 @@
         </div>
 
         <div class="two fields ">
-            <semui:datepicker label="surveyInfo.startDate.label" id="startDate" name="startDate"
+            <ui:datepicker label="surveyInfo.startDate.label" id="startDate" name="startDate"
                               value="${params.startDate}" required="" />
 
-            <semui:datepicker label="surveyInfo.endDate.label" id="endDate" name="endDate"
+            <ui:datepicker label="surveyInfo.endDate.label" id="endDate" name="endDate"
                               value="${params.endDate}" />
         </div>
 
@@ -53,6 +53,6 @@
                value="${message(code: 'createIssueEntitlementsSurvey.create')}"/>
 
     </g:form>
-</semui:form>
+</ui:form>
 
 <laser:htmlEnd />

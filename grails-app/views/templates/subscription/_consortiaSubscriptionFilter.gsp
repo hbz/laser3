@@ -2,7 +2,7 @@
 <%--<laser:serviceInjection />--%>
 
 <laser:render template="/templates/filter/javascript" />
-<semui:filter showFilterButton="true">
+<ui:filter showFilterButton="true">
     <g:form action="${actionName}" controller="${controllerName}" method="get" class="ui small form">
         <g:if test="${license}">
             <input type="hidden" name="id" value="${license.id}"/>
@@ -50,7 +50,7 @@
                 </div>
             </div>
             <div class="field">
-                <semui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${validOn}" />
+                <ui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${validOn}" />
             </div>
             <div class="field">
                 <label>${message(code: 'default.status.label')}</label>
@@ -188,7 +188,7 @@
 
         </div>
     </g:form>
-</semui:filter>
+</ui:filter>
 
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.app.subStatus = "FETCH_ALL"

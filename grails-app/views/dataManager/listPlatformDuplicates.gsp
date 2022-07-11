@@ -1,16 +1,16 @@
 <%@ page import="de.laser.titles.TitleInstance" %>
 <laser:htmlStart text="Admin::Platform duplicates" />
 
-        <semui:breadcrumbs>
-            <semui:crumb message="menu.admin" controller="admin" action="index" />
-            <semui:crumb text="List Platform Duplicates" class="active"/>
-        </semui:breadcrumbs>
+        <ui:breadcrumbs>
+            <ui:crumb message="menu.admin" controller="admin" action="index" />
+            <ui:crumb text="List Platform Duplicates" class="active"/>
+        </ui:breadcrumbs>
 
-        <semui:h1HeaderWithIcon text="Platform Duplicates" />
+        <ui:h1HeaderWithIcon text="Platform Duplicates" />
 
-        <semui:messages data="${flash}" />
+        <ui:messages data="${flash}" />
 
-        <semui:form>
+        <ui:form>
             <g:form action="executePlatformCleanup" method="post" class="ui form" data-confirm-id="clearUp_form">
                 <table class="ui table">
                     <tbody>
@@ -84,6 +84,6 @@
                     </tfoot>
                 </table>
             </g:form>
-        </semui:form>
+        </ui:form>
 
 <laser:htmlEnd />

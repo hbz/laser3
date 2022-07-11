@@ -17,7 +17,7 @@
         orgList.sort{it.name.toLowerCase()}
     }
     %>
-<semui:modal id="${modalId}" text="${message(code: (modalId))}">
+<ui:modal id="${modalId}" text="${message(code: (modalId))}">
     <g:form class="ui form" id="create_person" url="[controller: 'person', action: 'create', params: [org_id: org.id]]"
             method="POST">
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
@@ -344,4 +344,4 @@
         JSPC.app.changeForm( ($("#${modalId} #contactType option:selected").text() == JSPC.app.fc), "${modalId}")
     </laser:script>
 
-</semui:modal>
+</ui:modal>

@@ -1,14 +1,14 @@
 <%@ page import="de.laser.TitleInstancePackagePlatform; de.laser.Subscription;de.laser.License;de.laser.finance.CostItem;de.laser.PendingChange; de.laser.IssueEntitlement; de.laser.storage.RDStore; de.laser.RefdataValue;" %>
 <laser:htmlStart message="myinst.menu.pendingChanges.label" serviceInjection="true" />
 
-<semui:breadcrumbs>
-    <semui:crumb controller="package" action="index" text="${message(code: 'package.show.all')}"/>
-    <semui:crumb text="${packageInstance.name}" id="${packageInstance.id}" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb controller="package" action="index" text="${message(code: 'package.show.all')}"/>
+    <ui:crumb text="${packageInstance.name}" id="${packageInstance.id}" class="active"/>
+</ui:breadcrumbs>
 
-<semui:h1HeaderWithIcon>
-    <semui:xEditable owner="${packageInstance}" field="name"/>
-</semui:h1HeaderWithIcon>
+<ui:h1HeaderWithIcon>
+    <ui:xEditable owner="${packageInstance}" field="name"/>
+</ui:h1HeaderWithIcon>
 
 <laser:render template="nav"/>
 
@@ -101,6 +101,6 @@
     </tbody>
 </table>
 
-<semui:paginate offset="${offset}" max="${max}" total="${num_change_rows}" params="${params}"/>
+<ui:paginate offset="${offset}" max="${max}" total="${num_change_rows}" params="${params}"/>
 
 <laser:htmlEnd />

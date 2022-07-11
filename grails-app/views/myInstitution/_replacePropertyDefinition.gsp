@@ -1,4 +1,4 @@
-<semui:modal id="replacePropertyDefinitionModal" message="propertyDefinition.exchange.label" isEditModal="isEditModal">
+<ui:modal id="replacePropertyDefinitionModal" message="propertyDefinition.exchange.label" isEditModal="isEditModal">
     <g:form class="ui form" url="[controller: controllerName, action: action]">
         <input type="hidden" name="cmd" value="replacePropertyDefinition"/>
         <input type="hidden" name="xcgPdFrom" value=""/>
@@ -70,4 +70,4 @@
             })
     </laser:script>
 
-</semui:modal>
+</ui:modal>
