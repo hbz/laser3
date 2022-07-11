@@ -264,21 +264,7 @@ class UiNavigationTagLib {
         out << '</nav>'
         out << '</div><!--.pagination-->'
 
-        out << """<script>
-                      const formObject = \$('.la-pagination-custom-input .ui.form');
-                      const linkObject = \$('.la-pagination-custom-link');
-                      const inputObject = \$('.la-pagination-custom-input input');
-                      let oldHref = linkObject.attr('href');
-                      let validFlag;
-                    \$(function() {
-                      inputObject.on('input', function() {
-                        formObject.form('validate form');
-                        let newOffset = (\$(this).val() - 1) * ${max};
-                        let newHref = oldHref + '&offset=' + newOffset;
-                        linkObject.attr('href', newHref);
-                      });
-                    });
-                </script>"""
+        out << render( template: '/templates/pagination/js', model: [max: max])
     }
 
     def securedMainNavItem = { attrs, body ->
