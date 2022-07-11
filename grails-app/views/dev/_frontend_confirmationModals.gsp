@@ -62,7 +62,7 @@
 <h4 class="ui header">Link (Button), der den AJAX-Contoler aufruft</h4>
 <div class="html ui top attached segment example">
     <div class="ui top attached label"></div>
-    <laser:remoteLink class="ui icon negative button la-modern-button js-open-confirm-modal la-popup-tooltip la-delay"
+    <ui:remoteLink class="ui icon negative button la-modern-button js-open-confirm-modal la-popup-tooltip la-delay"
                       controller="dev"
                       action="frontend"
                       params=""
@@ -73,7 +73,7 @@
                       role="button">
 
         <i aria-hidden="true" class="trash alternate outline icon"></i>
-    </laser:remoteLink>
+    </ui:remoteLink>
 </div>
 
 <%-- Confirmation modal in case of selecting special option in  dropdown--%>

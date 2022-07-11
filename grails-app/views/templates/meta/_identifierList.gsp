@@ -72,7 +72,7 @@
                                 <g:if test="${showConsortiaFunctions}">
                                     <g:if test="${!ident.instanceOf}">
                                         <g:if test="${! AuditConfig.getConfig(ident)}">
-                                            <laser:remoteLink class="ui icon button blue la-modern-button la-popup-tooltip la-delay js-open-confirm-modal"
+                                            <ui:remoteLink class="ui icon button blue la-modern-button la-popup-tooltip la-delay js-open-confirm-modal"
                                                               controller="ajax"
                                                               action="toggleIdentifierAuditConfig"
                                                               params='[ownerId: "${object.id}",
@@ -88,7 +88,7 @@
                                                               role="button"
                                             >
                                                 <i class="icon la-thumbtack slash la-js-editmode-icon"></i>
-                                            </laser:remoteLink>
+                                            </ui:remoteLink>
                                             <g:link controller="ajax" action="deleteIdentifier" class="ui icon negative button la-modern-button js-open-confirm-modal"
                                                     params='${[owner: "${object.class.name}:${object.id}", target: "${ident.class.name}:${ident.id}"]}'
                                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.identifier", args: [ident.ns.ns+": "+ident.value])}"
@@ -98,7 +98,7 @@
                                             </g:link>
                                         </g:if>
                                         <g:else>
-                                            <laser:remoteLink class="ui icon green button la-modern-button la-popup-tooltip la-delay js-open-confirm-modal"
+                                            <ui:remoteLink class="ui icon green button la-modern-button la-popup-tooltip la-delay js-open-confirm-modal"
                                                               controller="ajax" action="toggleIdentifierAuditConfig"
                                                               params='[ownerId: "${object.id}",
                                                                        ownerClass: "${object.class}",
@@ -113,7 +113,7 @@
                                                               role="button"
                                             >
                                                 <i class="thumbtack icon la-js-editmode-icon"></i>
-                                            </laser:remoteLink>
+                                            </ui:remoteLink>
                                         </g:else>
                                     </g:if>
                                     <g:else>

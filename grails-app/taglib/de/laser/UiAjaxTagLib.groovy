@@ -2,9 +2,9 @@ package de.laser
 
 import de.laser.utils.SwissKnife
 
-class LaserAjaxTagLib {
+class UiAjaxTagLib {
 
-    static namespace = 'laser'
+    static namespace = 'ui'
 
     def remoteLink = {attrs, body ->
 

@@ -106,7 +106,7 @@
                                 <g:if test="${! AuditConfig.getConfig(prop)}">
 
                                     <g:if test="${prop.type in memberProperties}">
-                                        <laser:remoteLink class="ui icon button blue la-modern-button la-popup-tooltip la-delay js-open-confirm-modal"
+                                        <ui:remoteLink class="ui icon button blue la-modern-button la-popup-tooltip la-delay js-open-confirm-modal"
                                                           controller="ajax"
                                                           action="togglePropertyAuditConfig"
                                                           params='[propClass: prop.getClass(),
@@ -127,10 +127,10 @@
                                                           role="button"
                                         >
                                             <i class="icon la-thumbtack slash la-js-editmode-icon"></i>
-                                        </laser:remoteLink>
+                                        </ui:remoteLink>
                                     </g:if>
                                     <g:else>
-                                        <laser:remoteLink class="ui icon button blue la-modern-button la-popup-tooltip la-delay js-open-confirm-modal"
+                                        <ui:remoteLink class="ui icon button blue la-modern-button la-popup-tooltip la-delay js-open-confirm-modal"
                                                           controller="ajax"
                                                           action="togglePropertyAuditConfig"
                                                           params='[propClass: prop.getClass(),
@@ -151,11 +151,11 @@
                                                           role="button"
                                         >
                                             <i class="icon la-thumbtack slash la-js-editmode-icon"></i>
-                                        </laser:remoteLink>
+                                        </ui:remoteLink>
                                     </g:else>
                                 </g:if>
                                 <g:else>
-                                    <laser:remoteLink class="ui icon green button la-modern-button la-popup-tooltip la-delay js-open-confirm-modal"
+                                    <ui:remoteLink class="ui icon green button la-modern-button la-popup-tooltip la-delay js-open-confirm-modal"
                                                       controller="ajax"
                                                       action="togglePropertyAuditConfig"
                                                       params='[propClass: prop.getClass(),
@@ -176,13 +176,13 @@
                                                       role="button"
                                     >
                                         <i class="thumbtack icon la-js-editmode-icon"></i>
-                                    </laser:remoteLink>
+                                    </ui:remoteLink>
                                 </g:else>
                             </g:if>
                             <g:if test="${! AuditConfig.getConfig(prop)}">
                                 <g:if test="${(ownobj.instanceOf && !prop.instanceOf) || !ownobj.hasProperty("instanceOf")}">
                                     <g:if test="${prop.isPublic}">
-                                        <laser:remoteLink class="ui orange icon button la-popup-tooltip la-delay" controller="ajax" action="togglePropertyIsPublic" role="button"
+                                        <ui:remoteLink class="ui orange icon button la-popup-tooltip la-delay" controller="ajax" action="togglePropertyIsPublic" role="button"
                                                           params='[oid: genericOIDService.getOID(prop),
                                                                    editable:"${overwriteEditable}",
                                                                    custom_props_div: "${custom_props_div}",
@@ -193,10 +193,10 @@
                                                           data-content="${message(code:'property.visible.active.tooltip')}" data-position="left center"
                                                           data-update="${custom_props_div}">
                                             <i class="icon eye la-js-editmode-icon"></i>
-                                        </laser:remoteLink>
+                                        </ui:remoteLink>
                                     </g:if>
                                     <g:else>
-                                        <laser:remoteLink class="ui icon blue button la-modern-button la-popup-tooltip la-delay" controller="ajax" action="togglePropertyIsPublic" role="button"
+                                        <ui:remoteLink class="ui icon blue button la-modern-button la-popup-tooltip la-delay" controller="ajax" action="togglePropertyIsPublic" role="button"
                                                           params='[oid: genericOIDService.getOID(prop),
                                                                    editable:"${overwriteEditable}",
                                                                    custom_props_div: "${custom_props_div}",
@@ -208,13 +208,13 @@
                                                           data-update="${custom_props_div}"
                                         >
                                             <i class="icon eye slash la-js-editmode-icon"></i>
-                                        </laser:remoteLink>
+                                        </ui:remoteLink>
                                     </g:else>
                                 </g:if>
 
                                 <g:set var="confirmMsg" value="${message(code:'property.delete.confirm', args: [prop.type.name])}" />
 
-                                <laser:remoteLink class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                <ui:remoteLink class="ui icon negative button la-modern-button js-open-confirm-modal"
                                                   controller="ajax"
                                                   action="deleteCustomProperty"
                                                   params='[propClass: prop.getClass(),
@@ -234,7 +234,7 @@
                                                   role="button"
                                                   ariaLabel="${message(code: 'ariaLabel.delete.universal')}">
                                     <i class="trash alternate outline icon"></i>
-                                </laser:remoteLink>
+                                </ui:remoteLink>
                             </g:if>
                             <g:else>
                                 <!-- Hidden Fake Button To hold the other Botton in Place -->
@@ -277,7 +277,7 @@
                 <g:else>
                     <td>
                 </g:else>
-                    <laser:remoteForm url="[controller: 'ajax', action: 'addCustomPropertyValue']"
+                    <ui:remoteForm url="[controller: 'ajax', action: 'addCustomPropertyValue']"
                                   name="cust_prop_add_value_group_${propDefGroup.id}"
                                   class="ui properties form"
                                   data-update="${custom_props_div}"
@@ -293,7 +293,7 @@
                         <input type="hidden" name="custom_props_div" value="${custom_props_div}"/>
 
                         <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button js-wait-wheel"/>
-                    </laser:remoteForm>
+                    </ui:remoteForm>
 
                 </td>
             </tr>

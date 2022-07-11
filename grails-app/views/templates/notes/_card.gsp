@@ -68,7 +68,7 @@
                             <g:if test="${ownobj.respondsTo('showUIShareButton') && ownobj.showUIShareButton()}">
                             <%-- START Second Button --%>
                                 <g:if test="${docctx?.isShared}">
-                                    <laser:remoteLink class="ui icon green button la-modern-button js-no-wait-wheel la-popup-tooltip la-delay"
+                                    <ui:remoteLink class="ui icon green button la-modern-button js-no-wait-wheel la-popup-tooltip la-delay"
                                                       controller="ajax"
                                                       action="toggleShare"
                                                       params='[owner:genericOIDService.getOID(ownobj), sharedObject:genericOIDService.getOID(docctx), tmpl:"notes", ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]'
@@ -78,10 +78,10 @@
                                                       role="button"
                                     >
                                         <i class="icon la-share la-js-editmode-icon"></i>
-                                    </laser:remoteLink>
+                                    </ui:remoteLink>
                                 </g:if>
                                 <g:else>
-                                    <laser:remoteLink class="ui icon blue button la-modern-button js-no-wait-wheel la-popup-tooltip la-delay js-open-confirm-modal"
+                                    <ui:remoteLink class="ui icon blue button la-modern-button js-no-wait-wheel la-popup-tooltip la-delay js-open-confirm-modal"
                                                       controller="ajax"
                                                       action="toggleShare"
                                                       params='[owner:genericOIDService.getOID(ownobj), sharedObject:genericOIDService.getOID(docctx), tmpl:"notes", ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]'
@@ -93,7 +93,7 @@
                                                       role="button"
                                     >
                                         <i class="la-share slash icon la-js-editmode-icon"></i>
-                                    </laser:remoteLink>
+                                    </ui:remoteLink>
                                 </g:else>
 
                             </g:if>

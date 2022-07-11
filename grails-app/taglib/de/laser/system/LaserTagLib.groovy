@@ -1,4 +1,4 @@
-package de.laser
+package de.laser.system
 
 import de.laser.utils.SwissKnife
 

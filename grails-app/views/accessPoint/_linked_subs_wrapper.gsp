@@ -4,7 +4,7 @@
 
             <label for="activeCheckbox">${message(code: "accessPoint.linkedSubscription.statusCheckboxLabel")}</label>
 
-            <% String jsHandler = laser.remoteJsOnChangeHandler(
+            <% String jsHandler = ui.remoteJsOnChangeHandler(
                     controller: "accessPoint",
                     action: "dynamicSubscriptionList",
                     data: "{id:${accessPoint.id},checked:this.checked}",

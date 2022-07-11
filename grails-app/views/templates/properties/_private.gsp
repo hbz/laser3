@@ -99,7 +99,7 @@
                     </td>
                     <td class="x la-js-editmode-container">
                         <g:if test="${overwriteEditable == true}">
-                            <laser:remoteLink class="ui icon negative button la-modern-button js-open-confirm-modal"
+                            <ui:remoteLink class="ui icon negative button la-modern-button js-open-confirm-modal"
                                               controller="ajax"
                                               action="deletePrivateProperty"
                                               params='[propClass: prop.getClass(),ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", editable:"${editable}"]'
@@ -111,7 +111,7 @@
                                               role="button"
                                               ariaLabel="${message(code: 'ariaLabel.delete.universal')}">
                                 <i class="trash alternate outline icon"></i>
-                            </laser:remoteLink>
+                            </ui:remoteLink>
                         </g:if>
                     </td>
                 </tr>
@@ -128,7 +128,7 @@
                 <g:else>
                     <td>
                 </g:else>
-                    <laser:remoteForm url="[controller: 'ajax', action: 'addPrivatePropertyValue']"
+                    <ui:remoteForm url="[controller: 'ajax', action: 'addPrivatePropertyValue']"
                                       name="cust_prop_add_value_private"
                                       class="ui properties form"
                                       data-update="${propertyWrapper}"
@@ -144,7 +144,7 @@
 
                             <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button js-wait-wheel"/>
                         </g:if>
-                    </laser:remoteForm>
+                    </ui:remoteForm>
 
                     </td>
         </tr>

@@ -110,7 +110,7 @@ Mind the convention of data-confirm-id in form element and inner button element
 
 ```
 <div id="${wrapper}">
-    <laser:remoteForm   url="[controller: 'ajax', action: 'somethingWithProperties']"
+    <ui:remoteForm   url="[controller: 'ajax', action: 'somethingWithProperties']"
                         name="demo" 
                         class="ui form"
                         data-update="${wrapper}"
@@ -119,14 +119,14 @@ Mind the convention of data-confirm-id in form element and inner button element
 
                             <input type="hidden" name="blah" value="blubb"/>
                             <input type="submit" value="${message(code:'default.button.add.label')}" class="ui button js-wait-wheel"/>
-    </laser:remoteForm>
+    </ui:remoteForm>
 </div>
 ```
 
 #### Use in Link with AJAX Call
 
 ```
-<laser:remoteLink class="ui icon negative button la-modern-button js-open-confirm-modal"
+<ui:remoteLink class="ui icon negative button la-modern-button js-open-confirm-modal"
                   controller="ajax"
                   action="deletePrivateProperty"
                   params='[propClass: prop.getClass(),ownerId:"${ownobj.id}", ownerClass:"${ownobj.class}", editable:"${editable}"]'
@@ -139,7 +139,7 @@ Mind the convention of data-confirm-id in form element and inner button element
                   ariaLabel="Löschen"
 >
     <i class="trash alternate outline icon"></i>
-</laser:remoteLink>
+</ui:remoteLink>
 
 ```
 

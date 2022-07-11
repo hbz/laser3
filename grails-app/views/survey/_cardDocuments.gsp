@@ -47,7 +47,7 @@
                                 <g:if test="${!(ownobj instanceof Org) && ownobj?.showUIShareButton()}">
                                     <g:if test="${docctx?.isShared}">
 
-                                        <laser:remoteLink class="ui icon button green js-no-wait-wheel la-popup-tooltip la-delay"
+                                        <ui:remoteLink class="ui icon button green js-no-wait-wheel la-popup-tooltip la-delay"
                                                       controller="ajax" action="toggleShare"
                                                       params='[owner: "${ownobj.class.name}:${ownobj.id}", sharedObject: "${docctx.class.name}:${docctx.id}", tmpl: "documents"]'
                                                       onSuccess=""
@@ -57,14 +57,14 @@
                                                       data-content="${message(code: 'property.share.tooltip.on')}"
                                                         role="button">
                                             <i class="la-share icon"></i>
-                                        </laser:remoteLink>
+                                        </ui:remoteLink>
 
                                     </g:if>
                                     <g:else>
                                         <button class="ui icon button js-open-confirm-modal-copycat js-no-wait-wheel">
                                             <i class="la-share slash icon"></i>
                                         </button>
-                                        <laser:remoteLink class="js-gost la-popup-tooltip la-delay"
+                                        <ui:remoteLink class="js-gost la-popup-tooltip la-delay"
                                                       controller="ajax" action="toggleShare"
                                                       params='[owner: "${ownobj.class.name}:${ownobj.id}", sharedObject: "${docctx.class.name}:${docctx.id}", tmpl: "documents"]'
                                                       onSuccess=""
@@ -75,7 +75,7 @@
                                                       data-confirm-tokenMsg="${message(code: "confirm.dialog.share.element.member", args: [docctx.owner.title])}"
                                                       data-confirm-term-how="share"
                                                         role="button">
-                                        </laser:remoteLink>
+                                        </ui:remoteLink>
                                     </g:else>
                                 </g:if>
                             </g:if>
