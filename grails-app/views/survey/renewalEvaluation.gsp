@@ -14,7 +14,7 @@
 
 <ui:controlButtons>
     <ui:exportDropdown>
-        <ui:actionsDropdownItem data-semui="modal" href="#individuallyExportModal"
+        <ui:actionsDropdownItem data-ui="modal" href="#individuallyExportModal"
                                    message="renewalEvaluation.exportRenewal"/>
     </ui:exportDropdown>
     <laser:render template="actions"/>

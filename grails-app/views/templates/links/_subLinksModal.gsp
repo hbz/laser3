@@ -4,7 +4,7 @@
 
         <a role="button"
            class="ui button la-modern-button ${tmplCss}"
-           data-semui="modal" href="#${tmplModalID}"
+           data-ui="modal" href="#${tmplModalID}"
            class="la-popup-tooltip la-delay"
            data-content="${message(code:'license.details.editLink')}">
             <g:if test="${tmplIcon}">

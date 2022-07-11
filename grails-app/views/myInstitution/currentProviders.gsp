@@ -9,7 +9,7 @@
         <ui:controlButtons>
             <ui:exportDropdown>
                 <ui:exportDropdownItem>
-                    <a class="item" data-semui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
+                    <a class="item" data-ui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
                 </ui:exportDropdownItem>
                 <g:if test="${filterSet}">
                     <ui:exportDropdownItem>
@@ -40,7 +40,7 @@
             </ui:exportDropdown>
             <ui:actionsDropdown>
 
-                <ui:actionsDropdownItem data-semui="modal" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
+                <ui:actionsDropdownItem data-ui="modal" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
 
             </ui:actionsDropdown>
 

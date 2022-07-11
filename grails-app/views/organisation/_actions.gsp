@@ -13,10 +13,10 @@
                 <ui:actionsDropdownItem controller="organisation" action="findProviderMatches" message="org.create_new_provider.label"/>
             </g:if>
             <g:if test="${actionName == 'show'}">
-                <ui:actionsDropdownItem data-semui="modal" href="#modalCreateTask" message="task.create.new"/>
-                <ui:actionsDropdownItem data-semui="modal" href="#modalCreateDocument" message="template.documents.add"/>
-                <ui:actionsDropdownItem data-semui="modal" href="#modalCreateNote" message="template.notes.add"/>
-                <ui:actionsDropdownItem data-semui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />
+                <ui:actionsDropdownItem data-ui="modal" href="#modalCreateTask" message="task.create.new"/>
+                <ui:actionsDropdownItem data-ui="modal" href="#modalCreateDocument" message="template.documents.add"/>
+                <ui:actionsDropdownItem data-ui="modal" href="#modalCreateNote" message="template.notes.add"/>
+                <ui:actionsDropdownItem data-ui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />
                 <g:set var="createModal" value="${true}"/>
             </g:if>
             <g:if test="${actionName == 'ids'}">
@@ -40,24 +40,24 @@
             </g:if>
 
             <g:if test="${actionName == 'readerNumber'}">
-                <ui:actionsDropdownItem data-semui="modal" href="#newForUni" message="readerNumber.createForUni.label" />
-                <ui:actionsDropdownItem data-semui="modal" href="#newForPublic" message="readerNumber.createForPublic.label" />
-                <ui:actionsDropdownItem data-semui="modal" href="#newForState" message="readerNumber.createForState.label" />
-                <ui:actionsDropdownItem data-semui="modal" href="#newForResearchInstitute" message="readerNumber.createForResearchInstitute.label" />
-                <ui:actionsDropdownItem data-semui="modal" href="#newForScientificLibrary" message="readerNumber.createForScientificLibrary.label" />
+                <ui:actionsDropdownItem data-ui="modal" href="#newForUni" message="readerNumber.createForUni.label" />
+                <ui:actionsDropdownItem data-ui="modal" href="#newForPublic" message="readerNumber.createForPublic.label" />
+                <ui:actionsDropdownItem data-ui="modal" href="#newForState" message="readerNumber.createForState.label" />
+                <ui:actionsDropdownItem data-ui="modal" href="#newForResearchInstitute" message="readerNumber.createForResearchInstitute.label" />
+                <ui:actionsDropdownItem data-ui="modal" href="#newForScientificLibrary" message="readerNumber.createForScientificLibrary.label" />
             </g:if>
 
         </g:if>
         <g:if test="${actionName == 'tasks'}">
-            <ui:actionsDropdownItem message="task.create.new" data-semui="modal" href="#modalCreateTask"/>
+            <ui:actionsDropdownItem message="task.create.new" data-ui="modal" href="#modalCreateTask"/>
             <g:set var="createModal" value="${true}"/>
         </g:if>
         <g:if test="${actionName == 'documents'}">
-            <ui:actionsDropdownItem message="template.documents.add" data-semui="modal" href="#modalCreateDocument"/>
+            <ui:actionsDropdownItem message="template.documents.add" data-ui="modal" href="#modalCreateDocument"/>
             <g:set var="createModal" value="${true}"/>
         </g:if>
         <g:if test="${actionName == 'notes'}">
-            <ui:actionsDropdownItem message="template.notes.add" data-semui="modal" href="#modalCreateNote"/>
+            <ui:actionsDropdownItem message="template.notes.add" data-ui="modal" href="#modalCreateNote"/>
             <g:set var="createModal" value="${true}"/>
         </g:if>
         <g:if test="${actionName == 'show'}">
@@ -71,7 +71,7 @@
 <g:elseif test="${accessService.checkPermAffiliationX('ORG_BASIC_MEMBER','INST_EDITOR','ROLE_ADMIN,ROLE_ORG_EDITOR')}">
     <g:if test="${actionName in ['show','notes']}">
         <ui:actionsDropdown>
-            <ui:actionsDropdownItem message="template.notes.add" data-semui="modal" href="#modalCreateNote"/>
+            <ui:actionsDropdownItem message="template.notes.add" data-ui="modal" href="#modalCreateNote"/>
             <g:set var="createModal" value="${true}"/>
         </ui:actionsDropdown>
     </g:if>
@@ -101,11 +101,11 @@
 
     <g:if test="${actionName == 'readerNumber'}">
         <ui:actionsDropdown>
-            <ui:actionsDropdownItem data-semui="modal" href="#newForUni" message="readerNumber.createForUni.label" />
-            <ui:actionsDropdownItem data-semui="modal" href="#newForPublic" message="readerNumber.createForPublic.label" />
-            <ui:actionsDropdownItem data-semui="modal" href="#newForState" message="readerNumber.createForState.label" />
-            <ui:actionsDropdownItem data-semui="modal" href="#newForResearchInstitute" message="readerNumber.createForResearchInstitute.label" />
-            <ui:actionsDropdownItem data-semui="modal" href="#newForScientificLibrary" message="readerNumber.createForScientificLibrary.label" />
+            <ui:actionsDropdownItem data-ui="modal" href="#newForUni" message="readerNumber.createForUni.label" />
+            <ui:actionsDropdownItem data-ui="modal" href="#newForPublic" message="readerNumber.createForPublic.label" />
+            <ui:actionsDropdownItem data-ui="modal" href="#newForState" message="readerNumber.createForState.label" />
+            <ui:actionsDropdownItem data-ui="modal" href="#newForResearchInstitute" message="readerNumber.createForResearchInstitute.label" />
+            <ui:actionsDropdownItem data-ui="modal" href="#newForScientificLibrary" message="readerNumber.createForScientificLibrary.label" />
         </ui:actionsDropdown>
     </g:if>
 

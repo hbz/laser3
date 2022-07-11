@@ -2,7 +2,7 @@
     <dl>
         <dt></dt>
         <dd>
-            <a class="ui button" data-semui="modal" href="#orgType">
+            <a class="ui button" data-ui="modal" href="#orgType">
                 <g:message code="org.orgType.add.label" />
             </a>
         </dd>

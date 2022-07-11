@@ -32,7 +32,7 @@
             <g:if test="${entitlements && entitlements.size() > 0}">
 
                 <g:if test="${subscription.packages.size() > 1}">
-                    <a class="ui right floated button" data-href="#showPackagesModal" data-semui="modal"><g:message
+                    <a class="ui right floated button" data-href="#showPackagesModal" data-ui="modal"><g:message
                             code="subscription.details.details.package.label"/></a>
                 </g:if>
 

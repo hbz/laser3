@@ -1,5 +1,5 @@
 <g:if test="${editmode}">
-  <a class="ui basic ${tmplCss}" data-semui="modal" href="#${tmplModalID}">
+  <a class="ui basic ${tmplCss}" data-ui="modal" href="#${tmplModalID}">
 </g:if>
   <g:if test="${tmplIcon}">
     <i class="${tmplIcon} icon"></i>

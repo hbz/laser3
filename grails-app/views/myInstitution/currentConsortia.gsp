@@ -11,7 +11,7 @@
     <%-- needs to be done separately if needed at all
     <ui:exportDropdown>
         <ui:exportDropdownItem>
-            <a class="item" data-semui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
+            <a class="item" data-ui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
         </ui:exportDropdownItem>
         <g:if test="${filterSet}">
             <ui:exportDropdownItem>

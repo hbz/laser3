@@ -60,8 +60,7 @@ class DataManagerController  {
       result.offset = 0
     }
     else {
-        User user = contextService.getUser()
-        SwissKnife.setPaginationParams(result, params, user)
+        SwissKnife.setPaginationParams(result, params, contextService.getUser())
         params.max = result.max
     }
 

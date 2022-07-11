@@ -178,7 +178,7 @@
                                     data-gascoTarget="${Org.class.name}:${org.id}"
                                     data-gascoEntry="${gascoEntry.class.name}:${gascoEntry.id}"
                                     data-orgName="${org.name}"
-                                    data-semui="modal"
+                                    data-ui="modal"
                                     data-href="#gascoEntryModal"
                                     data-content="GASCO-Eintrag ändern" data-position="top left"><i class="globe icon"></i></button>
                         </g:if>
@@ -189,7 +189,7 @@
                                     data-createdBy="${org.createdBy?.id}"
                                     data-legallyObligedBy="${org.legallyObligedBy?.id}"
                                     data-orgName="${org.name}"
-                                    data-semui="modal"
+                                    data-ui="modal"
                                     data-href="#legalInformationModal"
                                     data-content="Rechtl. Informationen ändern" data-position="top left"><i class="handshake outline icon"></i></button>
                         </g:if>
@@ -198,7 +198,7 @@
                                 data-ctTarget="${Org.class.name}:${org.id}"
                                 data-customerType="${customerType}"
                                 data-orgName="${org.name}"
-                                data-semui="modal"
+                                data-ui="modal"
                                 data-href="#customerTypeModal"
                                 data-content="Kundentyp ändern" data-position="top left"><i class="user icon"></i></button>
 
@@ -206,7 +206,7 @@
                                 data-alTarget="${Org.class.name}:${org.id}"
                                 data-apiLevel="${apiLevel}"
                                 data-orgName="${org.name}"
-                                data-semui="modal"
+                                data-ui="modal"
                                 data-href="#apiLevelModal"
                                 data-content="API-Zugriff ändern" data-position="top left"><i class="key icon"></i></button>
                     </td>

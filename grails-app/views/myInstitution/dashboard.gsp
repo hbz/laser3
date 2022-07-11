@@ -359,7 +359,7 @@
             }).done(function(response){
                 $("#pendingChanges").html($(response).filter("#pendingChangesWrapper"));
                 $("#acceptedChanges").html($(response).filter("#acceptedChangesWrapper"));
-                r2d2.initDynamicSemuiStuff('#pendingChanges');
+                r2d2.initDynamicUiStuff('#pendingChanges');
             })
         }
 
@@ -368,7 +368,7 @@
                 url: "<g:createLink controller="ajaxHtml" action="getSurveys" params="${params}"/>"
             }).done(function(response){
                 $("#surveyWrapper").html(response);
-                  r2d2.initDynamicSemuiStuff('#surveyWrapper');
+                  r2d2.initDynamicUiStuff('#surveyWrapper');
             })
         }
 

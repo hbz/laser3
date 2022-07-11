@@ -28,7 +28,7 @@
 
 <g:if test="${editable}">
     <input class="ui button" value="${message(code: 'subscription.details.createEntitlementGroup.label')}"
-           data-semui="modal" data-href="#createEntitlementGroupModal" type="submit">
+           data-ui="modal" data-href="#createEntitlementGroupModal" type="submit">
 </g:if>
 
 <ui:form>

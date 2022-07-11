@@ -77,8 +77,8 @@ class UiDropdownTagLib {
             if (attrs.id) { // e.g. binding js events
                 out << ' id="' + attrs.id + '">'
             }
-            if (attrs.'data-semui') { // e.g. binding modals
-                out << ' data-semui="' + attrs.'data-semui' + '">'
+            if (attrs.'data-ui') { // e.g. binding modals
+                out << ' data-ui="' + attrs.'data-ui' + '">'
             }
             out << linkBody + '</a>'
         }

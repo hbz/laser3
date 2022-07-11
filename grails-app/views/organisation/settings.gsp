@@ -50,7 +50,7 @@
                                     $('body #natstat_server_access').editable('destroy').editable({
                                         tpl: '<select class="ui dropdown"></select>'
                                     }).on('shown', function() {
-                                        r2d2.initDynamicSemuiStuff('body');
+                                        r2d2.initDynamicUiStuff('body');
                                         $(".table").trigger('reflow');
                                         $('.ui.dropdown')
                                                 .dropdown({
@@ -64,7 +64,7 @@
                                     $('body #oamonitor_server_access').editable('destroy').editable({
                                         tpl: '<select class="ui dropdown"></select>'
                                     }).on('shown', function() {
-                                        r2d2.initDynamicSemuiStuff('body');
+                                        r2d2.initDynamicUiStuff('body');
                                         $(".table").trigger('reflow');
                                         $('.ui.dropdown')
                                                 .dropdown({
@@ -78,7 +78,7 @@
                                     $('body #ezb_server_access').editable('destroy').editable({
                                         tpl: '<select class="ui dropdown"></select>'
                                     }).on('shown', function() {
-                                        r2d2.initDynamicSemuiStuff('body');
+                                        r2d2.initDynamicUiStuff('body');
                                         $(".table").trigger('reflow');
                                         $('.ui.dropdown')
                                                 .dropdown({

@@ -140,7 +140,7 @@
                         <button type="button" class="ui icon button la-popup-tooltip la-delay ${disabled}"
                                 data-addUUID="${record.uuid}"
                                 data-packageName="${record.name}"
-                                data-semui="modal"
+                                data-ui="modal"
                                 data-href="#linkPackageModal"
                                 data-content="${message(code: 'subscription.details.linkPackage.button', args: [record.name])}"><g:message
                                 code="subscription.details.linkPackage.label"/></button>

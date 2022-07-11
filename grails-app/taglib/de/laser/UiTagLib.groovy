@@ -47,9 +47,9 @@ class UiTagLib {
         }
 
         if (attrs.type) {
-            out << semui.headerTitleIcon([type: attrs.type])
+            out << ui.headerTitleIcon([type: attrs.type])
         } else {
-            out << semui.headerIcon()
+            out << ui.headerIcon()
         }
 
         if (attrs.text) {
@@ -61,7 +61,7 @@ class UiTagLib {
         }
 
         if (attrs.total) {
-            out << semui.totalNumber([total: attrs.total])
+            out << ui.totalNumber([total: attrs.total])
         }
         if ( body ) {
             out << body()
@@ -176,7 +176,7 @@ class UiTagLib {
             out << '            </div>'
             if (attrs.editable && attrs.href) {
                 out << '        <div class="right aligned four wide column">'
-                out << '            <button type="button" class="ui icon button blue la-modern-button editable-cancel" data-semui="modal" data-href="' + attrs.href + '" ><i aria-hidden="true" class="plus icon"></i></button>'
+                out << '            <button type="button" class="ui icon button blue la-modern-button editable-cancel" data-ui="modal" data-href="' + attrs.href + '" ><i aria-hidden="true" class="plus icon"></i></button>'
                 out << '        </div>'
             }
             out << '        </div>'
@@ -193,7 +193,7 @@ class UiTagLib {
 
         if (yodaService.showDebugInfo()) {
 
-            out << '<a href="#debugInfo" id="showDebugInfo" role="dialog" aria-label="Debug Info" class="ui button icon" data-semui="modal">'
+            out << '<a href="#debugInfo" id="showDebugInfo" role="dialog" aria-label="Debug Info" class="ui button icon" data-ui="modal">'
             out << '<i aria-hidden="true" class="red bug icon"></i>'
             out << '</a>'
 
@@ -216,7 +216,7 @@ class UiTagLib {
 
         if (systemChecks) {
 
-            out << '<a href="#systemInfo" id="showSystemInfo" role="dialog" aria-label="System Info" class="ui button icon" data-semui="modal">'
+            out << '<a href="#systemInfo" id="showSystemInfo" role="dialog" aria-label="System Info" class="ui button icon" data-ui="modal">'
             out << '<i aria-hidden="true" class="red exclamation triangle icon"></i>'
             out << '</a>'
 

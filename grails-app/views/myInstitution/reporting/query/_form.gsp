@@ -49,8 +49,8 @@
 
         <div class="field" style="text-align: right">
             <label for="query-export-button">&nbsp;</label>
-            <button id="query-export-button" class="ui icon button la-modern-button" data-href="#queryExportModal" data-semui="modal" disabled><i class="ui icon download"></i></button>
-            <button id="query-help-button" class="ui icon button la-modern-button" data-href="#queryHelpModal" data-semui="modal" disabled><i class="ui icon question"></i></button>
+            <button id="query-export-button" class="ui icon button la-modern-button" data-href="#queryExportModal" data-ui="modal" disabled><i class="ui icon download"></i></button>
+            <button id="query-help-button" class="ui icon button la-modern-button" data-href="#queryHelpModal" data-ui="modal" disabled><i class="ui icon question"></i></button>
         </div>
     </div>
 </div>

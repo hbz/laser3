@@ -124,7 +124,7 @@
 
 
         <g:if test="${surveyParticipantsHasAccess}">
-            <a data-semui="modal" class="ui icon button right floated"
+            <a data-ui="modal" class="ui icon button right floated"
                data-orgIdList="${(surveyParticipantsHasAccess.org.id)?.join(',')}"
                href="#copyEmailaddresses_static">
                 <g:message code="survey.copyEmailaddresses.participantsHasAccess"/>
@@ -324,7 +324,7 @@
 
 
     <g:if test="${surveyParticipantsHasNotAccess}">
-        <a data-semui="modal" class="ui icon button right floated"
+        <a data-ui="modal" class="ui icon button right floated"
            data-orgIdList="${(surveyParticipantsHasNotAccess.org.id)?.join(',')}"
            href="#copyEmailaddresses_static">
             <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>

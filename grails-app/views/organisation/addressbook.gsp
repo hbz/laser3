@@ -13,18 +13,18 @@
     <ui:actionsDropdown>
     <g:if test="${editable}">
         <g:if test="${(institution.getCustomerType() == 'ORG_CONSORTIUM') && !isProviderOrAgency}">
-            <a href="#createPersonModal" class="item" data-semui="modal"
+            <a href="#createPersonModal" class="item" data-ui="modal"
                onclick="JSPC.app.personCreate('contactPersonForInstitution', ${orgInstance.id});"><g:message
                     code="person.create_new.contactPersonForInstitution.label"/></a>
         </g:if>
         <g:if test="${isProviderOrAgency}">
-            <a href="#createPersonModal" class="item" data-semui="modal"
+            <a href="#createPersonModal" class="item" data-ui="modal"
                onclick="JSPC.app.personCreate('contactPersonForProviderAgency', ${orgInstance.id});"><g:message
                     code="person.create_new.contactPersonForProviderAgency.label"/></a>
         </g:if>
     </g:if>
 
-        <ui:actionsDropdownItem notActive="true" data-semui="modal" href="#copyFilteredEmailAddresses_ajaxModal"
+        <ui:actionsDropdownItem notActive="true" data-ui="modal" href="#copyFilteredEmailAddresses_ajaxModal"
                                    message="menu.institutions.copy_emailaddresses.button"/>
     </ui:actionsDropdown>
 </ui:controlButtons>
@@ -123,7 +123,7 @@
                 $("#dynamicModalContainer").html(result);
                 $("#dynamicModalContainer .ui.modal").modal({
                     onVisible: function () {
-                        r2d2.initDynamicSemuiStuff('#personModal');
+                        r2d2.initDynamicUiStuff('#personModal');
                         r2d2.initDynamicXEditableStuff('#personModal');
                     }
                 }).modal('show');

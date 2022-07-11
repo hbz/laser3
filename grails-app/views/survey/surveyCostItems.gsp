@@ -186,7 +186,7 @@
 
                     <div class="four wide column">
                     <g:if test="${surveyParticipantsHasAccess}">
-                        <a data-semui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
+                        <a data-ui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
                             <g:message code="survey.copyEmailaddresses.participantsHasAccess"/>
                         </a>
                     </g:if>
@@ -210,7 +210,7 @@
 
                     <div class="four wide column">
                     <g:if test="${surveyParticipantsHasNotAccess}">
-                        <a data-semui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasNotAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
+                        <a data-ui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasNotAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
                             <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>
                         </a>
                     </g:if>
@@ -240,7 +240,7 @@
 
                     <div class="four wide column">
                     <g:if test="${surveyParticipantsHasAccess}">
-                        <a data-semui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
+                        <a data-ui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
                             <g:message code="survey.copyEmailaddresses.participantsHasAccess"/>
                         </a>
                     </g:if>
@@ -265,7 +265,7 @@
 
                     <div class="four wide column">
                     <g:if test="${surveyParticipantsHasNotAccess}">
-                        <a data-semui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasNotAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
+                        <a data-ui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasNotAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
                             <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>
                         </a>
                     </g:if>
@@ -346,7 +346,7 @@ JSPC.app.addForAllSurveyCostItem = function(orgsIDs) {
 
                                 $('#dynamicModalContainer .ui.modal').modal({
                                     onVisible: function () {
-                                        r2d2.initDynamicSemuiStuff('#modalSurveyCostItem');
+                                        r2d2.initDynamicUiStuff('#modalSurveyCostItem');
                                         r2d2.initDynamicXEditableStuff('#modalSurveyCostItem');
 
                                     },

@@ -150,7 +150,7 @@
                             $('#dynamicModalContainer').html(data);
                             $('#dynamicModalContainer .ui.modal').modal({
                                 onVisible: function () {
-                                    r2d2.initDynamicSemuiStuff('#costItem_ajaxModal');
+                                    r2d2.initDynamicUiStuff('#costItem_ajaxModal');
                                     r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
                                     JSPC.app['finance'+idSuffix].updateTitleDropdowns();
                                     JSPC.app.setupCalendar();
@@ -188,7 +188,7 @@
 
                         $('#dynamicModalContainer .ui.modal').modal({
                             onVisible: function () {
-                                r2d2.initDynamicSemuiStuff('#costItem_ajaxModal');
+                                r2d2.initDynamicUiStuff('#costItem_ajaxModal');
                                 r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
 
                                 JSPC.app['finance'+idSuffix].updateTitleDropdowns();

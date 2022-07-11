@@ -85,7 +85,7 @@
         $('body #ezb_server_access').editable('destroy').editable({
             tpl: '<select class="ui dropdown"></select>'
         }).on('shown', function() {
-        r2d2.initDynamicSemuiStuff('body');
+        r2d2.initDynamicUiStuff('body');
 
         $('.ui.dropdown')
             .dropdown({
@@ -116,7 +116,7 @@
             .
             .
             }).on('shown', function() {
-            <strong>r2d2.initDynamicSemuiStuff('body');</strong>
+            <strong>r2d2.initDynamicUiStuff('body');</strong>
 
                 $('.ui.dropdown')
                     .dropdown({

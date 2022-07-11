@@ -24,12 +24,12 @@
             </ui:exportDropdownItem>
             <g:if test="${actionName == 'index'}">
                 <ui:exportDropdownItem>
-                    <a class="item" data-semui="modal" href="#individuallyExportIEsModal">Click Me Excel Export</a>
+                    <a class="item" data-ui="modal" href="#individuallyExportIEsModal">Click Me Excel Export</a>
                 </ui:exportDropdownItem>
             </g:if>
             <g:if test="${actionName == 'addEntitlements'}">
                 <ui:exportDropdownItem>
-                    <a class="item" data-semui="modal" href="#individuallyExportTippsModal">Click Me Excel Export</a>
+                    <a class="item" data-ui="modal" href="#individuallyExportTippsModal">Click Me Excel Export</a>
                 </ui:exportDropdownItem>
             </g:if>
             <ui:exportDropdownItem>
@@ -72,15 +72,15 @@
 <g:if test="${accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM','INST_EDITOR')}">
     <ui:actionsDropdown>
         <%--<g:if test="${editable}">--%>
-            <ui:actionsDropdownItem message="task.create.new" data-semui="modal" href="#modalCreateTask" />
-            <ui:actionsDropdownItem message="template.documents.add" data-semui="modal" href="#modalCreateDocument" />
+            <ui:actionsDropdownItem message="task.create.new" data-ui="modal" href="#modalCreateTask" />
+            <ui:actionsDropdownItem message="template.documents.add" data-ui="modal" href="#modalCreateDocument" />
         <%--</g:if>--%>
-        <ui:actionsDropdownItem message="template.addNote" data-semui="modal" href="#modalCreateNote" />
+        <ui:actionsDropdownItem message="template.addNote" data-ui="modal" href="#modalCreateNote" />
         <div class="divider"></div>
         <g:if test="${editable}">
             <sec:ifAnyGranted roles="ROLE_ADMIN"><!-- TODO: reporting-permissions -->
                 <g:if test="${contextCustomerType == "ORG_CONSORTIUM"}">
-                    <ui:actionsDropdownItem message="workflow.instantiate" data-semui="modal" href="#modalInstantiateWorkflow" />
+                    <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalInstantiateWorkflow" />
                     <div class="divider"></div>
                 </g:if>
             </sec:ifAnyGranted>
@@ -177,7 +177,7 @@
             <g:if test="${actionName == 'members'}">
                 <g:if test="${subscriptionService.getValidSubChilds(subscription)}">
                     <div class="divider"></div>
-                    <ui:actionsDropdownItem data-semui="modal" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
+                    <ui:actionsDropdownItem data-ui="modal" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
                 </g:if>
             </g:if>
             <g:if test="${actionName == 'show'}">
@@ -185,7 +185,7 @@
                 <%-- the second clause is to prevent the menu display for consortia at member subscriptions --%>
                 <g:if test="${!(contextOrg.id == subscriptionConsortia?.id && subscription.instanceOf)}">
                     <div class="divider"></div>
-                    <ui:actionsDropdownItem data-semui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />
+                    <ui:actionsDropdownItem data-ui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />
                 </g:if>
 
                 <g:if test="${editable}">

@@ -49,7 +49,7 @@
     <div class="four wide column">
     <g:if test="${surveyParticipantsHasAccess}">
 
-        <a data-semui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
+        <a data-ui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
             <g:message code="survey.copyEmailaddresses.participantsHasAccess"/>
         </a>
 
@@ -74,7 +74,7 @@
 
     <div class="four wide column">
     <g:if test="${surveyParticipantsHasNotAccess}">
-        <a data-semui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasNotAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
+        <a data-ui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasNotAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
             <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>
         </a>
     </g:if>

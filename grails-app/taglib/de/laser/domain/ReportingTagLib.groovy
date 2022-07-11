@@ -1,4 +1,4 @@
-package de.laser.spec
+package de.laser.domain
 
 import de.laser.Org
 import de.laser.RefdataCategory
@@ -9,6 +9,7 @@ import de.laser.storage.RDConstants
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseDetails
+import de.laser.utils.SwissKnife
 import org.apache.commons.lang3.RandomStringUtils
 
 import java.lang.reflect.Field
@@ -18,30 +19,13 @@ class ReportingTagLib {
     static namespace = 'reporting'
 
     def numberToString = { attrs, body ->
-        Map <String, String> map = [
-            '0' : 'zero',
-            '1' : 'one',
-            '2' : 'two',
-            '3' : 'three',
-            '4' : 'four',
-            '5' : 'five',
-            '6' : 'six',
-            '7' : 'seven',
-            '8' : 'eight',
-            '9' : 'nine',
-            '10' : 'ten',
-            '11' : 'eleven',
-            '12' : 'twelve',
-            '13' : 'thirteen',
-            '14' : 'fourteen'
-        ]
         String n = attrs.number
 
         if (attrs.min) {
             n = Integer.max(attrs.min as int, attrs.number as int).toString()
         }
-        if (map.containsKey(n)) {
-            out << map.get(n)
+        if (SwissKnife.NUMBER_AS_STRING.containsKey(n)) {
+            out << SwissKnife.NUMBER_AS_STRING.get(n)
         }
         else {
             out << 'xyz'
@@ -106,7 +90,7 @@ class ReportingTagLib {
             out << '</div>'
         }
         else if (prop.getType() == Date) {
-            out << semui.datepicker([
+            out << ui.datepicker([
                     label      : filterLabel,
                     name       : filterName,
                     id         : getUniqueId(filterName),

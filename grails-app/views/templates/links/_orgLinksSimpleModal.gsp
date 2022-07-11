@@ -1,6 +1,6 @@
 <%@ page import="de.laser.Org" %>
 <g:if test="${editmode}">
-    <a role="button" class="ui button" data-semui="modal" href="#${tmplModalID}">${tmplButtonText}</a>
+    <a role="button" class="ui button" data-ui="modal" href="#${tmplModalID}">${tmplButtonText}</a>
 </g:if>
 
 <ui:modal id="${tmplModalID}" text="${tmplText}" isEditModal="${editmode}">

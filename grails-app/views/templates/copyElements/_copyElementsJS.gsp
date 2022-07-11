@@ -7,7 +7,7 @@
         }
         else if(!$("#copyElementsSubmit").hasClass("js-open-confirm-modal")) {
             $("#copyElementsSubmit").addClass("js-open-confirm-modal");
-            r2d2.initDynamicSemuiStuff('form');
+            r2d2.initDynamicUiStuff('form');
         }
     });
     // FOR ALL THE OTHER TABLES THEN PROPERTIES

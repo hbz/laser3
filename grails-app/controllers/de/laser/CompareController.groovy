@@ -60,7 +60,6 @@ class CompareController  {
         result.institution = result.contextOrg
         params.status = params.status ?: [RDStore.SUBSCRIPTION_CURRENT.id.toString()]
 
-
         result.objects = []
 
         params.tab = params.tab ?: "compareElements"

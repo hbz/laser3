@@ -4,7 +4,7 @@
 
         <a role="button"
            class="ui button la-modern-button"
-           data-semui="modal" href="#${tmplModalID}"
+           data-ui="modal" href="#${tmplModalID}"
            class="la-popup-tooltip la-delay">
             <g:if test="${tmplButtonText}">
                 ${tmplButtonText}

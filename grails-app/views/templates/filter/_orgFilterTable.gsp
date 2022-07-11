@@ -964,7 +964,7 @@
 
                         $('#dynamicModalContainer .ui.modal').modal({
                             onVisible: function () {
-                                r2d2.initDynamicSemuiStuff('#costItem_ajaxModal');
+                                r2d2.initDynamicUiStuff('#costItem_ajaxModal');
                                 r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
 
                                 JSPC.callbacks.dynPostFunc();
@@ -997,7 +997,7 @@
 
                 $('#dynamicModalContainer .ui.modal').modal({
                     onVisible: function () {
-                        r2d2.initDynamicSemuiStuff('#modalSurveyCostItem');
+                        r2d2.initDynamicUiStuff('#modalSurveyCostItem');
                         r2d2.initDynamicXEditableStuff('#modalSurveyCostItem');
                     },
                     detachable: true,

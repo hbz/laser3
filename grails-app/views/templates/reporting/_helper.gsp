@@ -178,7 +178,7 @@ if (! JSPC.app.reporting) {
             })
             .done( function (data) {
                 $('#chart-details').empty().html(data)
-                r2d2.initDynamicSemuiStuff('#chart-details')
+                r2d2.initDynamicUiStuff('#chart-details')
             })
             .fail( function (data) {
                 $("#reporting-modal-error").modal('show')

@@ -1206,7 +1206,7 @@
     $('body #participation').editable('destroy').editable({
         tpl: '<select class="ui dropdown"></select>'
         }).on('shown', function() {
-            r2d2.initDynamicSemuiStuff('body');
+            r2d2.initDynamicUiStuff('body');
             $(".table").trigger('reflow');
             $('.ui.dropdown').dropdown({ clearable: true });
         }).on('hidden', function() {
@@ -1235,7 +1235,7 @@
                       }
                   }).done(function(response){
                       $("#packages").html(response);
-                      r2d2.initDynamicSemuiStuff("#packages");
+                      r2d2.initDynamicUiStuff("#packages");
                   })
               }
 
@@ -1252,7 +1252,7 @@
                       }
                   }).done(function(response){
                       $("#ieInfos").html(response);
-                      r2d2.initDynamicSemuiStuff("#ieInfos");
+                      r2d2.initDynamicUiStuff("#ieInfos");
                   })
               }
 

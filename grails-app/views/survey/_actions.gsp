@@ -63,7 +63,7 @@
 
             <g:if test="${surveyInfo && surveyInfo.status.id in [RDStore.SURVEY_IN_EVALUATION.id, RDStore.SURVEY_SURVEY_COMPLETED.id,RDStore.SURVEY_COMPLETED.id]}">
 
-                <ui:actionsDropdownItem data-semui="modal"
+                <ui:actionsDropdownItem data-ui="modal"
                                            href="#openSurveyAgain"
                                            message="openSurveyAgain.button"/>
                 <div class="ui divider"></div>
@@ -111,7 +111,7 @@
             </g:if>
 
             <g:if test="${surveyConfig.orgs}">
-                <ui:actionsDropdownItem data-semui="modal"
+                <ui:actionsDropdownItem data-ui="modal"
                                            href="#copyEmailaddresses_static"
                                            message="survey.copyEmailaddresses.participants"/>
 
@@ -182,7 +182,7 @@ $('.trigger-modal').on('click', function(e) {
 
                 onVisible: function () {
                     console.log(targetId)
-                    r2d2.initDynamicSemuiStuff('#' + targetId);
+                    r2d2.initDynamicUiStuff('#' + targetId);
                     r2d2.initDynamicXEditableStuff('#' + targetId);
                 }
                 ,

@@ -79,7 +79,7 @@
 
                     $('#dynamicModalContainer .ui.modal').modal({
                         onVisible: function () {
-                            r2d2.initDynamicSemuiStuff('#ciecModal');
+                            r2d2.initDynamicUiStuff('#ciecModal');
                             r2d2.initDynamicXEditableStuff('#ciecModal');
                         },
                         detachable: true,

@@ -807,7 +807,7 @@
                 console.log($('[data-action="delete"]:checked'));
                 if($('[data-action="delete"]:checked').length > 0){
                     $("#copyElementsSubmit").addClass("js-open-confirm-modal");
-                    r2d2.initDynamicSemuiStuff('form');
+                    r2d2.initDynamicUiStuff('form');
                 }
             },
 

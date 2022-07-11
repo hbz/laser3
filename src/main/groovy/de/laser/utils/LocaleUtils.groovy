@@ -26,7 +26,6 @@ class LocaleUtils {
      * @return the decoded locale part to use in queries
      */
     static String decodeLocale(String locale) {
-
         if (locale?.contains("-")) {
             return locale.split("-").first().toLowerCase()
         }

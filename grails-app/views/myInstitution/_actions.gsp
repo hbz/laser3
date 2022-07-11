@@ -34,7 +34,7 @@
                 --%>
             </g:if>
             <g:if test="${actionName in ['manageMembers']}">
-                <ui:actionsDropdownItem data-semui="modal" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
+                <ui:actionsDropdownItem data-ui="modal" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
             </g:if>
         </ui:actionsDropdown>
     </g:if>
@@ -43,7 +43,7 @@
 <g:if test="${actionName in ['documents']}">
     <g:if test="${editable}">
         <ui:actionsDropdown>
-            <ui:actionsDropdownItem message="template.documents.add" data-semui="modal" href="#modalCreateDocument" />
+            <ui:actionsDropdownItem message="template.documents.add" data-ui="modal" href="#modalCreateDocument" />
         </ui:actionsDropdown>
     </g:if>
     <laser:render template="/templates/documents/modal" model="${[ownobj: contextOrg, owntp: 'org', inContextOrg: true]}"/>
@@ -52,7 +52,7 @@
 <g:if test="${actionName == 'tasks'}">
     <g:if test="${editable}">
         <ui:actionsDropdown>
-            <ui:actionsDropdownItem message="task.create.new" data-semui="modal" href="#modalCreateTask" />
+            <ui:actionsDropdownItem message="task.create.new" data-ui="modal" href="#modalCreateTask" />
         </ui:actionsDropdown>
     </g:if>
 </g:if>
@@ -60,7 +60,7 @@
 <g:if test="${actionName == 'managePrivatePropertyDefinitions'}">
     <g:if test="${editable}">
         <ui:actionsDropdown>
-            <ui:actionsDropdownItem message="menu.institutions.manage_props.create_new" data-semui="modal" href="#addPropertyDefinitionModal" />
+            <ui:actionsDropdownItem message="menu.institutions.manage_props.create_new" data-ui="modal" href="#addPropertyDefinitionModal" />
         </ui:actionsDropdown>
     </g:if>
 </g:if>

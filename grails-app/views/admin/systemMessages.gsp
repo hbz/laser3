@@ -10,7 +10,7 @@
 <ui:h1HeaderWithIcon message="menu.admin.systemMessage" />
 
 <div class="la-float-right">
-    <input type="submit" class="ui button" value="${message(code: 'admin.systemMessage.create')}" data-semui="modal" data-href="#modalCreateSystemMessage" />
+    <input type="submit" class="ui button" value="${message(code: 'admin.systemMessage.create')}" data-ui="modal" data-href="#modalCreateSystemMessage" />
 </div>
 
 <br />

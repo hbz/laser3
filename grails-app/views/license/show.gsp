@@ -188,7 +188,7 @@
                 }
             }).done(function(response){
                 $("#links").html(response);
-                r2d2.initDynamicSemuiStuff('#links');
+                r2d2.initDynamicUiStuff('#links');
             })
     </laser:script>
 <laser:htmlEnd />

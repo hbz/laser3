@@ -13,10 +13,10 @@
     <ui:actionsDropdown>
 
         <g:if test="${contextCustomerType in ["ORG_INST","ORG_CONSORTIUM"]}">
-            <ui:actionsDropdownItem message="task.create.new" data-semui="modal" href="#modalCreateTask" />
-            <ui:actionsDropdownItem message="template.documents.add" data-semui="modal" href="#modalCreateDocument" />
+            <ui:actionsDropdownItem message="task.create.new" data-ui="modal" href="#modalCreateTask" />
+            <ui:actionsDropdownItem message="template.documents.add" data-ui="modal" href="#modalCreateDocument" />
         </g:if>
-        <ui:actionsDropdownItem message="template.addNote" data-semui="modal" href="#modalCreateNote" />
+        <ui:actionsDropdownItem message="template.addNote" data-ui="modal" href="#modalCreateNote" />
         <g:if test="${editable}">
             <g:if test="${license.getLicensingConsortium()?.id == institution.id}">
                 <g:if test="${!( license.instanceOf )}">
@@ -47,7 +47,7 @@
             <%-- the second clause is to prevent the menu display for consortia at member subscriptions --%>
             <g:if test="${accessService.checkPermAffiliation('ORG_INST, ORG_CONSORTIUM','INST_EDITOR') && !(institution.id == license.getLicensingConsortium()?.id && license.instanceOf)}">
                 <div class="divider"></div>
-                <ui:actionsDropdownItem data-semui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />
+                <ui:actionsDropdownItem data-ui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />
             </g:if>
 
             <g:if test="${editable}">

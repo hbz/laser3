@@ -16,7 +16,7 @@
 <ui:controlButtons>
     <ui:actionsDropdown>
         <g:if test="${editable}">
-            <a href="#createPersonModal" class="item" data-semui="modal"
+            <a href="#createPersonModal" class="item" data-ui="modal"
                onclick="JSPC.app.personCreate('contactPersonForPublic');"><g:message
                     code="person.create_new.contactPerson.label"/></a>
         </g:if>
@@ -25,14 +25,14 @@
                                                message="person.create_new.contactPerson.label"/>
         </g:else>
         <g:if test="${editable}">
-            <a href="#addressFormModal" class="item" data-semui="modal"
+            <a href="#addressFormModal" class="item" data-ui="modal"
                onclick="JSPC.app.addresscreate_org('${orgInstance.id}');"><g:message code="address.add.label"/></a>
         </g:if>
         <g:else>
             <ui:actionsDropdownItemDisabled tooltip="${message(code: 'default.notAutorized.message')}"
                                                message="address.add.label"/>
         </g:else>
-        <ui:actionsDropdownItem notActive="true" data-semui="modal" href="#copyFilteredEmailAddresses_ajaxModal"
+        <ui:actionsDropdownItem notActive="true" data-ui="modal" href="#copyFilteredEmailAddresses_ajaxModal"
                                    message="menu.institutions.copy_emailaddresses.button"/>
     </ui:actionsDropdown>
 </ui:controlButtons>

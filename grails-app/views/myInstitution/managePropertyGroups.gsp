@@ -94,7 +94,7 @@
 
                 $('#dynamicModalContainer .ui.modal').modal({
                    onShow: function () {
-                        r2d2.initDynamicSemuiStuff('#propDefGroupModal');
+                        r2d2.initDynamicUiStuff('#propDefGroupModal');
                         r2d2.initDynamicXEditableStuff('#propDefGroupModal');
                         $("html").css("cursor", "auto");
                         var prop_descr_selector_controller = {

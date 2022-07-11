@@ -478,14 +478,14 @@
 
                                     <div class="item">
 
-                                        <a href="#createPersonModal" class="ui button" size="35" data-semui="modal"
+                                        <a href="#createPersonModal" class="ui button" size="35" data-ui="modal"
                                            onclick="JSPC.app.personCreate('contactPersonForProviderAgencyPublic', ${orgInstance.id}, '&supportType=${RDStore.PRS_FUNC_TECHNICAL_SUPPORT.id}');"><g:message
                                                 code="personFormModalTechnichalSupport"/></a>
 
                                     </div>
                                     <div class="item">
 
-                                        <a href="#createPersonModal" class="ui button" size="35" data-semui="modal"
+                                        <a href="#createPersonModal" class="ui button" size="35" data-ui="modal"
                                            onclick="JSPC.app.personCreate('contactPersonForProviderAgencyPublic', ${orgInstance.id}, '&supportType=${RDStore.PRS_FUNC_SERVICE_SUPPORT.id}');"><g:message
                                                 code="personFormModalServiceSupport"/></a>
 

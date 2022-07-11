@@ -16,7 +16,7 @@
         <ui:actionsDropdown>
             <g:if test="${parentSuccessorSubscription}">
 
-                <ui:actionsDropdownItem data-semui="modal" href="#transferParticipantsModal"
+                <ui:actionsDropdownItem data-ui="modal" href="#transferParticipantsModal"
                                            message="surveyInfo.transferParticipants"/>
             </g:if>
             <ui:actionsDropdownItem controller="survey" action="renewalEvaluation"
@@ -73,7 +73,7 @@
             </g:link>
         </g:if>
         <g:else>
-                <a class="ui button" data-semui="modal" href="#transferParticipantsModal"><g:message code="surveyInfo.transferParticipants"/></a>
+                <a class="ui button" data-ui="modal" href="#transferParticipantsModal"><g:message code="surveyInfo.transferParticipants"/></a>
         </g:else>
         <br>
         </g:if>

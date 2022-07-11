@@ -6,18 +6,18 @@
 
 <ui:actionsDropdown>
 %{--    <g:if test="${(editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM','INST_EDITOR')) && ! ['list'].contains(actionName)}">
-        <ui:actionsDropdownItem message="task.create.new" data-semui="modal" href="#modalCreateTask" />
-        <ui:actionsDropdownItem message="template.documents.add" data-semui="modal" href="#modalCreateDocument" />
+        <ui:actionsDropdownItem message="task.create.new" data-ui="modal" href="#modalCreateTask" />
+        <ui:actionsDropdownItem message="template.documents.add" data-ui="modal" href="#modalCreateDocument" />
     </g:if>
     <g:if test="${accessService.checkMinUserOrgRole(user,org,'INST_EDITOR') && ! ['list'].contains(actionName)}">
-        <ui:actionsDropdownItem message="template.addNote" data-semui="modal" href="#modalCreateNote" />
+        <ui:actionsDropdownItem message="template.addNote" data-ui="modal" href="#modalCreateNote" />
     </g:if>
     <g:if test="${(editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM','INST_EDITOR')) && ! ['list'].contains(actionName)}">
         <div class="divider"></div>
     </g:if>--}%
 
     <g:if test="${(editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM', 'INST_EDITOR')) && !['list'].contains(actionName) && packageInstance}">
-        <ui:actionsDropdownItem message="package.show.linkToSub" data-semui="modal" href="#linkToSubModal"/>
+        <ui:actionsDropdownItem message="package.show.linkToSub" data-ui="modal" href="#linkToSubModal"/>
         <div class="divider"></div>
     </g:if>
 

@@ -187,7 +187,7 @@
                 })
                 .done( function (data) {
                     $('#filter-wrapper').html(data);
-                    r2d2.initDynamicSemuiStuff('#filter-wrapper');
+                    r2d2.initDynamicUiStuff('#filter-wrapper');
                     r2d2.initDynamicXEditableStuff('#filter-wrapper');
 
                     JSPC.app.reporting.initFilterEvents();

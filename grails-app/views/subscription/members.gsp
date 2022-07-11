@@ -20,7 +20,7 @@
                 </g:else>
             </ui:exportDropdownItem>
             <ui:exportDropdownItem>
-                <a class="item" data-semui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
+                <a class="item" data-ui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
             </ui:exportDropdownItem>
             <ui:exportDropdownItem>
                 <g:if test="${filterSet}">

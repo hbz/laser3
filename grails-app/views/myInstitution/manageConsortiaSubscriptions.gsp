@@ -43,7 +43,7 @@
 
     </ui:exportDropdown>
     <ui:actionsDropdown>
-        <ui:actionsDropdownItem data-semui="modal" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
+        <ui:actionsDropdownItem data-ui="modal" href="#copyEmailaddresses_ajaxModal" message="menu.institutions.copy_emailaddresses.button"/>
     </ui:actionsDropdown>
 </ui:controlButtons>
 

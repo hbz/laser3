@@ -424,7 +424,7 @@
                             $('#addContactElement').attr('class', 'ui icon button disable');
                             $('#addContactElement').attr('disabled', 'disabled');
                         }
-                        r2d2.initDynamicSemuiStuff('#contactElementsContainer');
+                        r2d2.initDynamicUiStuff('#contactElementsContainer');
                     },
                     error: function (j, status, eThrown) {
                         console.log('Error ' + eThrown)
@@ -460,7 +460,7 @@
                             $('#addAddressElement').attr('class', 'ui icon button disable');
                             $('#addAddressElement').attr('disabled', 'disabled');
                         }
-                        r2d2.initDynamicSemuiStuff('#addressElementsContainer');
+                        r2d2.initDynamicUiStuff('#addressElementsContainer');
                     },
                     error: function (j, status, eThrown) {
                         console.log('Error ' + eThrown)

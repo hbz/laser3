@@ -24,7 +24,7 @@
 
 <g:if test="${editable}">
     <input class="ui button" value="${message(code:'surveyProperty.create_new')}"
-           data-semui="modal" data-href="#createSurveyPropertyModal" type="submit">
+           data-ui="modal" data-href="#createSurveyPropertyModal" type="submit">
 </g:if>
 
 <ui:form>

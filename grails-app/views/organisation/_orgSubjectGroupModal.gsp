@@ -1,5 +1,5 @@
 <g:if test="${editable}">
-    <a class="ui button" data-semui="modal" href="#subjectGroup">
+    <a class="ui button" data-ui="modal" href="#subjectGroup">
         <g:message code="org.subjectGroup.add.label"/>
     </a>
 

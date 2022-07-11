@@ -8,7 +8,7 @@
 
 <ui:controlButtons>
     <ui:actionsDropdown>
-        <ui:actionsDropdownItem data-semui="modal" href="#modalCreateMailTemplate" message="mailTemplate.create.button"/>
+        <ui:actionsDropdownItem data-ui="modal" href="#modalCreateMailTemplate" message="mailTemplate.create.button"/>
     </ui:actionsDropdown>
 </ui:controlButtons>
 
@@ -47,7 +47,7 @@
                                 data-mailTemplateText="${template.text}"
                                 data-mailTemplateType="${template.type.id}"
                                 data-mailTemplateLanguage="${template.language.id}"
-                                data-semui="modal"
+                                data-ui="modal"
                                 data-href="#editMailTemplate"
                                 data-content="Mail Template ändern" data-position="top left"><i class="edit icon"></i></button>
                     </td>

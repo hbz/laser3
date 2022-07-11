@@ -72,7 +72,7 @@
             <g:if test="${entitlements && entitlements.size() > 0}">
 
                 <g:if test="${subscription.packages.size() > 1}">
-                    <a class="ui right floated button" data-href="#showPackagesModal" data-semui="modal"><g:message
+                    <a class="ui right floated button" data-href="#showPackagesModal" data-ui="modal"><g:message
                             code="subscription.details.details.package.label"/></a>
                 </g:if>
 
@@ -558,7 +558,7 @@
 
                 $('#dynamicModalContainer .ui.modal').modal({
                     onVisible: function () {
-                        r2d2.initDynamicSemuiStuff('#editEntitlementGroupItemModal');
+                        r2d2.initDynamicUiStuff('#editEntitlementGroupItemModal');
                         r2d2.initDynamicXEditableStuff('#editEntitlementGroupItemModal');
                         $("html").css("cursor", "auto");
                         JSPC.callbacks.dynPostFunc()

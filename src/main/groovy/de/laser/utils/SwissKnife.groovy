@@ -17,6 +17,24 @@ import javax.servlet.http.HttpServletRequest
 @Slf4j
 class SwissKnife {
 
+    final static Map <String, String> NUMBER_AS_STRING = [
+            '0' : 'zero',
+            '1' : 'one',
+            '2' : 'two',
+            '3' : 'three',
+            '4' : 'four',
+            '5' : 'five',
+            '6' : 'six',
+            '7' : 'seven',
+            '8' : 'eight',
+            '9' : 'nine',
+            '10' : 'ten',
+            '11' : 'eleven',
+            '12' : 'twelve',
+            '13' : 'thirteen',
+            '14' : 'fourteen'
+    ]
+
     static List<String> getTextAndMessage(Map<String, Object> attrs) {
         MessageSource messageSource = BeanStore.getMessageSource()
         Locale locale = LocaleContextHolder.getLocale()
@@ -99,7 +117,6 @@ class SwissKnife {
     }
 
     static boolean checkAndCacheNavPerms(GroovyPageAttributes attrs, HttpServletRequest request) {
-
         ContextService contextService = BeanStore.getContextService()
         AccessService accessService   = BeanStore.getAccessService()
 
@@ -148,7 +165,6 @@ class SwissKnife {
             }
             checkMap.put(lsmnic, check)
         }
-        //println lsmnic + ' > ' + check
         check
     }
 }

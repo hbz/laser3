@@ -14,7 +14,7 @@
             <div class="content ui form ui left floated  la-clear-before">
                 <div class="fields">
                     <div class="field">
-                        <button class="ui button" value="" data-href="#addBudgetCodeModal" data-semui="modal">${message(code:'budgetCode.create_new.label')}</button>
+                        <button class="ui button" value="" data-href="#addBudgetCodeModal" data-ui="modal">${message(code:'budgetCode.create_new.label')}</button>
                     </div>
                 </div>
             </div>

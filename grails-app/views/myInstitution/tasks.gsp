@@ -12,7 +12,7 @@
         <ui:h1HeaderWithIcon message="task.plural" floated="true" />
 
         <%--<g:if test="${editable}">
-            <input type="submit" class="ui left floated  button la-clear-before" value="${message(code:'task.create.new')}" data-semui="modal" data-href="#modalCreateTask" />
+            <input type="submit" class="ui left floated  button la-clear-before" value="${message(code:'task.create.new')}" data-ui="modal" data-href="#modalCreateTask" />
         </g:if>--%>
         <laser:render template="/templates/filter/javascript" />
 

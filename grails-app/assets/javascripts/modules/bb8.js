@@ -45,7 +45,7 @@ bb8 = {
                 $(update).empty()
                 $(update).html(data)
 
-                r2d2.initDynamicSemuiStuff(update)
+                r2d2.initDynamicUiStuff(update)
                 r2d2.initDynamicXEditableStuff(update)
 
                 bb8.init(update)
@@ -88,7 +88,7 @@ bb8 = {
                 $(update).empty()
                 $(update).html(data)
 
-                r2d2.initDynamicSemuiStuff(update)
+                r2d2.initDynamicUiStuff(update)
                 r2d2.initDynamicXEditableStuff(update)
 
                 bb8.init(update)
@@ -122,7 +122,7 @@ bb8 = {
                     $("#dynamicModalContainer").html(result);
                     $("#dynamicModalContainer .ui.modal").modal({
                         onVisible: function () {
-                            r2d2.initDynamicSemuiStuff(cssId);
+                            r2d2.initDynamicUiStuff(cssId);
                             r2d2.initDynamicXEditableStuff(cssId);
 
                             if (callDynPostFunc) {

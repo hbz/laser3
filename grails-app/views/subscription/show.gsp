@@ -489,7 +489,7 @@
                   }
               }).done(function(response){
                   $("#links").html(response);
-                  r2d2.initDynamicSemuiStuff('#links');
+                  r2d2.initDynamicUiStuff('#links');
               })
           }
           JSPC.app.loadLicenses = function () {
@@ -501,7 +501,7 @@
                   }
               }).done(function(response){
                   $("#licenses").html(response);
-                  r2d2.initDynamicSemuiStuff("#licenses");
+                  r2d2.initDynamicUiStuff("#licenses");
               })
           }
           JSPC.app.loadPackages = function () {
@@ -512,7 +512,7 @@
                   }
               }).done(function(response){
                   $("#packages").html(response);
-                  r2d2.initDynamicSemuiStuff("#packages");
+                  r2d2.initDynamicUiStuff("#packages");
               })
           }
 

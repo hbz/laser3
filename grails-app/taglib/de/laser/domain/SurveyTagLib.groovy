@@ -1,4 +1,4 @@
-package de.laser.spec
+package de.laser.domain
 
 import de.laser.ContextService
 import de.laser.LinksGenerationService
