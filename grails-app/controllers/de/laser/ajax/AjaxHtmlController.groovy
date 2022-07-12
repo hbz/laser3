@@ -784,7 +784,7 @@ class AjaxHtmlController {
                 }
 
                 if (params.context == BaseConfig.KEY_MYINST) {
-                    view    = '/myInstitution/reporting/export/pdf/generic_details'
+                    view    = '/myInstitution/reporting/export/pdf/pdfTmpl_generic_details'
                     model   = [
                             filterLabels: GlobalExportHelper.getCachedFilterLabels(params.token),
                             filterResult: GlobalExportHelper.getCachedFilterResult(params.token),
@@ -797,7 +797,7 @@ class AjaxHtmlController {
                     ]
                 }
                 else if (params.context == BaseConfig.KEY_SUBSCRIPTION) {
-                    view    = '/subscription/reporting/export/pdf/generic_details'
+                    view    = '/subscription/reporting/export/pdf/pdfTmpl_generic_details'
                     model   = [
                             //filterLabels: LocalExportHelper.getCachedFilterLabels(params.token),
                             filterResult: LocalExportHelper.getCachedFilterResult(params.token),
@@ -951,7 +951,7 @@ class AjaxHtmlController {
             ]
 
             byte[] pdf = wkhtmltoxService.makePdf(
-                    view: '/myInstitution/reporting/export/pdf/generic_query',
+                    view: '/myInstitution/reporting/export/pdf/pdfTmpl_generic_query',
                     model: model,
                     // header: '',
                     // footer: '',
@@ -967,7 +967,7 @@ class AjaxHtmlController {
             response.setContentType('application/pdf')
             response.outputStream.withStream { it << pdf }
 
-//                render view: '/myInstitution/reporting/export/pdf/generic_query', model: model
+//                render view: '/myInstitution/reporting/export/pdf/pdf_generic_query', model: model
         }
     }
 

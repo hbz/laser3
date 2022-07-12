@@ -10,7 +10,7 @@ class ConfigDefaults {
     final static String SETUP_PROPERTY_DEFINITION_CSV   = 'setup/PropertyDefinition.csv'
 
     final static String DOCSTORE_LOCATION_FALLBACK      = System.getProperty('java.io.tmpdir') + '/laser'   // -> ConfigMapper.getDocumentStorageLocation()
-    final static String DEPLOYBACKUP_LOCATION_FALLBACK  = System.getProperty('java.io.tmpdir') + '/laser'   // -> CustomMigrationCallbacks.onStartMigration()
+    final static String DEPLOYBACKUP_LOCATION_FALLBACK  = System.getProperty('java.io.tmpdir')              // -> CustomMigrationCallbacks.onStartMigration()
 
     final static String DEVTOOLS_TRIGGER_FILE           = './grails-app/conf/spring/restart.trigger'        // -> AppUtils.isRestartedByDevtools()
 }
