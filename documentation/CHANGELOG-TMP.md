@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4352    12.07.2022  rc-2.3  2.3.2       Moe     Bug         Titel werden nicht in den Bestand übernommen
+
 4353    12.07.2022  rc-2.3  2.3.2       Moe     Bug         Benutzername nicht in Reset-Mail verschicken
 
 4351    12.07.2022  rc-2.3  2.3.2       Moe     Bug         Lizenzverlängerungsumfrage: Kopierfunktion deaktivieren
