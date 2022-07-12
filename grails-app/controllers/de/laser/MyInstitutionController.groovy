@@ -2033,7 +2033,7 @@ join sub.orgRelations or_sub where
             if(result.surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION]) {
                 if (!result.subscription) {
                     result.successorSubscriptionParent = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
-                    result.successorSubscription = result.successorSubscriptionParent.getDerivedSubscriptionBySubscribers(result.participant)
+                    result.successorSubscription = result.successorSubscriptionParent.getDerivedSubscriptionBySubscribers(result.contextOrg)
                 } else {
                     result.successorSubscription = result.subscription._getCalculatedSuccessorForSurvey()
                 }
