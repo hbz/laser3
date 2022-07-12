@@ -8,6 +8,8 @@ class SurveyLinks {
     Date dateCreated
     Date lastUpdated
 
+    boolean bothDirection = false
+
     static constraints = {
     }
 
@@ -20,5 +22,7 @@ class SurveyLinks {
 
         dateCreated column: 'surlin_date_created'
         lastUpdated column: 'surlin_last_updated'
+
+        bothDirection column: 'surlin_both_direction'
     }
 }

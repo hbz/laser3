@@ -35,4 +35,27 @@ databaseChangeLog = {
     changeSet(author: "djebeniani (generated)", id: "1655994622356-3") {
         addForeignKeyConstraint(baseColumnNames: "surlin_target_survey", baseTableName: "survey_links", constraintName: "FKq7cugthyvakvjmwaqdt60da0t", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "surin_id", referencedTableName: "survey_info")
     }
+
+    changeSet(author: "djebeniani (generated)", id: "1655994622356-4") {
+        addColumn(tableName: "survey_org") {
+            column(name: "org_inserted_itself", type: "boolean")
+        }
+    }
+
+    changeSet(author: "djebeniani (generated)", id: "1655994622356-5") {
+        addColumn(tableName: "survey_links") {
+            column(name: "surlin_both_direction", type: "boolean") {
+            }
+        }
+    }
+
+    changeSet(author: "djebeniani (hand-coded)", id: "1655994622356-6") {
+        grailsChange {
+            change {
+                //normalise all other special characters
+                sql.execute("update survey_org set org_inserted_itself = false where org_inserted_itself is null")
+            }
+            rollback {}
+        }
+    }
 }

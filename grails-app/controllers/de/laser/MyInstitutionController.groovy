@@ -2248,7 +2248,8 @@ join sub.orgRelations or_sub where
                     if (!(SurveyOrg.findAllBySurveyConfigAndOrg(surveyConfig, org)) && !existsMultiYearTerm) {
                         SurveyOrg surveyOrg = new SurveyOrg(
                                 surveyConfig: surveyConfig,
-                                org: org
+                                org: org,
+                                orgInsertedItself: true
                         )
 
                         if (!surveyOrg.save()) {
@@ -2277,7 +2278,7 @@ join sub.orgRelations or_sub where
                                 }
 
                                 surveyService.emailsToSurveyUsersOfOrg(surveyInfo, org, false)
-                                flash.message = message(code: 'surveyLinks.participateToSurvey.success')
+                                //flash.message = message(code: 'surveyLinks.participateToSurvey.success')
                             }
                         }
                     }
