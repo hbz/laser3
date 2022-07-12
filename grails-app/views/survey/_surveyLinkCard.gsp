@@ -149,8 +149,8 @@
             </div>
         </div>
     </div>
-    <g:if test="${editable}">
-        <g:render template="surveyLinksModal"/>
+    <g:if test="${editable && controllerName == 'survey' && actionName == 'show'}">
+        <g:render template="/survey/surveyLinksModal"/>
     </g:if>
 
 </semui:card>
