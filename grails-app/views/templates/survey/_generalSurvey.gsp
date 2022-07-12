@@ -211,6 +211,10 @@
             </div>
         </div>
 
+        <div id="container-surveyLinkCard">
+            <g:render template="/survey/surveyLinkCard"/>
+        </div>
+
         <div class="ui card">
             <g:render template="/survey/linksProviderOrLicense"
                       model="[linkType: 'License', surveyInfo: surveyInfo, editable: editable, surveyConfig  : surveyConfig]"/>
