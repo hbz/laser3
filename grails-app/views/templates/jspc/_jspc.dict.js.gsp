@@ -1,4 +1,4 @@
-// templates/javascript/_jspc.dict.js.gsp
+// templates/jspc/_jspc.dict.js.gsp
 
 <%@ page import="java.util.Locale;java.util.List" %>
 <%

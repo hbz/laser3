@@ -1,4 +1,4 @@
-// templates/javascript/_jspc.js.gsp
+// templates/jspc/_jspc.js.gsp
 
 JSPC = {
     currLanguage : $('html').attr('lang'),

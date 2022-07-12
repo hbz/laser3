@@ -1,7 +1,7 @@
 <br />
 
 <div style="text-align: right">
-    <button id="details-export-button" class="ui icon button" href="#detailsExportModal" data-ui="modal">
+    <button id="details-export-button" class="ui icon button" data-href="#detailsExportModal" data-ui="modal">
         <i class="ui icon download"></i>
     </button>
 </div>

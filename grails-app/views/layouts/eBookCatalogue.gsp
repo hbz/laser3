@@ -104,12 +104,11 @@
 
 <a id="scrollToTop" href="#">&#10148;</a>
 
-<script>
-    $(document).ready( function() {
-        $stt = $("#scrollToTop")
+<laser:script file="${this.getGroovyPageFileName()}">
+        let $stt = $("#scrollToTop")
 
         $(window).scroll( function() {
-            var height = $(window).scrollTop()
+            let height = $(window).scrollTop()
             if (height > 100) { $stt.fadeIn() } else { $stt.fadeOut() }
         });
         $stt.click( function(event) {
@@ -117,8 +116,7 @@
             $("html, body").animate({ scrollTop: 0 }, "slow")
             return false
         });
-    });
-</script>
+</laser:script>
 
 <!--<footer class="footer">
     <div class="content has-text-centered">

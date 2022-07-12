@@ -2,6 +2,7 @@
 <html>
 <head>
     <meta name="layout" content="laser">
+    <title>jse_xhr_full</title>
     <script>
         console.log('[XHR_full] script @ head > 1')
     </script>
@@ -18,6 +19,7 @@
             console.log('[XHR_full] asset:script + $(doc).rdy() @ head > 4')
         })
     </asset:script>
+
 </head>
 <body>
     <script>

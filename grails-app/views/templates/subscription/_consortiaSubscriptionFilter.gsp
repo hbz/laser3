@@ -89,7 +89,7 @@
         </div>
         <div class="four fields">
             <div class="field">
-                <legend >${message(code: 'myinst.currentSubscriptions.subscription_kind')}</legend>
+                <label for="subKinds">${message(code: 'myinst.currentSubscriptions.subscription_kind')}</label>
                 <select id="subKinds" name="subKinds" multiple="" class="ui search selection fluid dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
                     <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND).sort{it.getI10n('value')}}" var="subKind">
@@ -153,7 +153,7 @@
             <g:if test="${institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID}">
                 <div class="field">
                     <fieldset id="subscritionType">
-                        <legend >${message(code: 'myinst.currentSubscriptions.subscription_type')}</legend>
+                        <label>${message(code: 'myinst.currentSubscriptions.subscription_type')}</label>
                         <div class="inline fields la-filter-inline">
                             <%
                                 List subTypes = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE)

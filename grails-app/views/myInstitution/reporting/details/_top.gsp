@@ -2,7 +2,7 @@
 
 <div style="text-align:right; margin-right:0.5em">
     <g:if test="${query.split('-')[0] != 'issueEntitlement'}">
-        <button id="details-export-button" class="ui icon button la-modern-button" href="#detailsExportModal" data-ui="modal">
+        <button id="details-export-button" class="ui icon button la-modern-button" data-href="#detailsExportModal" data-ui="modal">
             <i class="ui icon download"></i>
         </button>
     </g:if>
@@ -14,7 +14,7 @@
     </g:if>
 
     <g:if test="${query.split('-')[0] in ['org', 'member', 'consortium', 'provider', 'licensor']}">
-        <button id="details-copy-email-button" class="ui icon button la-modern-button" href="#detailsCopyEmailModal" data-ui="modal">
+        <button id="details-copy-email-button" class="ui icon button la-modern-button" data-href="#detailsCopyEmailModal" data-ui="modal">
             <i class="icon envelope"></i>
         </button>
     </g:if>

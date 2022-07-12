@@ -5,7 +5,6 @@
 		<g:message code="license.label" />
 	</label>
 	<g:select id="license" name="license.id" from="${validLicenses}" optionKey="id" value="${taskInstance?.license?.id}" class="many-to-one" noSelection="['null': '']"/>
-
 </div>
 
 <div class="field ${hasErrors(bean: taskInstance, field: 'org', 'error')} ">

@@ -61,7 +61,7 @@ ${currentAnnouncement?.getCleanContent()}
     </ui:form>
 
     <br />
-    <h2 class="ui  header la-clear-before">${message(code:'announcement.previous.label')}</h2>
+    <h2 class="ui header la-clear-before">${message(code:'announcement.previous.label')}</h2>
 
 
     <g:if test="${mailDisabled}">

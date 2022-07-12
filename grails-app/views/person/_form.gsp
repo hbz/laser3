@@ -5,7 +5,6 @@
 		<g:message code="person.title.label"/>
 	</label>
 	<g:textField id="title" name="title" value="${personInstance?.title}"/>
-
 </div>
 
 <div class="field ${hasErrors(bean: personInstance, field: 'first_name', 'error')} required">
@@ -13,16 +12,13 @@
 		<g:message code="person.first_name.label" />
 	</label>
 	<g:textField id="first_name" name="first_name" required="" value="${personInstance?.first_name}"/>
-
 </div>
 
 <div class="field ${hasErrors(bean: personInstance, field: 'middle_name', 'error')} ">
 	<label for="middle_name">
 		<g:message code="person.middle_name.label" />
-		
 	</label>
 	<g:textField id="middle_name" name="middle_name" value="${personInstance?.middle_name}"/>
-
 </div>
 
 <div class="field ${hasErrors(bean: personInstance, field: 'last_name', 'error')} required">
@@ -30,7 +26,6 @@
 		<g:message code="person.last_name.label" />
 	</label>
 	<g:textField id="last_name" name="last_name" required="" value="${personInstance?.last_name}"/>
-
 </div>
 
 <div class="field ${hasErrors(bean: personInstance, field: 'gender', 'error')} ">

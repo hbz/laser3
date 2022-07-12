@@ -218,7 +218,7 @@
 <style>
 .secInfoWrapper span {
     font-weight: bolder;
-    padding: 0px 5px;
+    padding: 0 5px;
     color: #FF00FF;
 }
 .secInfoWrapper2 span {
