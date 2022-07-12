@@ -13,7 +13,7 @@ WHERE usr_id NOT IN (
     FROM "user" u
              JOIN user_org uo ON u.usr_id = uo.uo_user_fk
              JOIN org o ON o.org_id = uo.uo_org_fk
-    WHERE o.org_name ILIKE 'hbz%' OR o.org_name ILIKE '%backoffice'
+    WHERE o.org_name ILIKE 'hbz%' OR o.org_name ILIKE '%backoffice' OR u.usr_username = 'anonymous'
 );
 
 UPDATE user_setting SET
@@ -25,7 +25,7 @@ WHERE us_string_value != ''
         FROM "user" u
             JOIN user_org uo ON u.usr_id = uo.uo_user_fk
             JOIN org o ON o.org_id = uo.uo_org_fk
-        WHERE o.org_name ILIKE 'hbz%' OR o.org_name ILIKE '%backoffice'
+        WHERE o.org_name ILIKE 'hbz%' OR o.org_name ILIKE '%backoffice' OR u.usr_username = 'anonymous'
     );
 
 UPDATE cost_item SET

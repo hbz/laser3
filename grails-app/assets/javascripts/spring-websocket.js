@@ -1,5 +1,5 @@
-// FileName: spring-websocket.js
+// assets/javascripts/spring-websocket.js
 //
-//= require /spring-websocket/sockjs.js     //-- vendor
-//= require /spring-websocket/stomp.js      //-- vendor
-//= require /spring-websocket/webstomp.js   //-- vendor
+//= require /spring-websocket/sockjs.js     //--> assets/vendor
+//= require /spring-websocket/stomp.js      //--> assets/vendor
+//= require /spring-websocket/webstomp.js   //--> assets/vendor

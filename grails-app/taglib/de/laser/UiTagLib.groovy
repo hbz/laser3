@@ -158,8 +158,7 @@ class UiTagLib {
     }
 
     // <ui:card text="${text}" message="local.string" class="some_css_class">
-    //
-    // <ui:card>
+    // </ui:card>
 
     def card = { attrs, body ->
         def (text, message) = SwissKnife.getTextAndMessage(attrs)
@@ -262,7 +261,6 @@ class UiTagLib {
                             }
                             else {
                                 out << '<span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt" data-position="top right">'
-                                //out <<   '<button class="ui icon mini green button">'
                                 out << '<i aria-hidden="true" class="icon thumbtack grey"></i>'
                                 out << '</span>'
                             }
@@ -346,7 +344,6 @@ class UiTagLib {
                             }
                             else {
                                 out << '<span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt" data-position="top right">'
-                                //out <<   '<button class="ui icon mini green button">'
                                 out << '<i aria-hidden="true" class="icon thumbtack grey"></i>'
                                 out << '</span>'
                             }
@@ -365,7 +362,6 @@ class UiTagLib {
                             }
                             else {
                                 out << '<span class="la-popup-tooltip la-delay" data-content="Wert wird geerbt" data-position="top right">'
-                                //out <<   '<button class="ui icon mini green button">'
                                 out << '<i aria-hidden="true" class="icon thumbtack grey"></i>'
                                 out << '</span>'
                             }
@@ -460,8 +456,6 @@ class UiTagLib {
                 out << '</button>'
             }
 
-
-            //out << '<div class="ui la-filter segment la-clear-before' + (extended ?'':' style="display: none;"') + '">'
             out << '<div class="ui la-filter segment la-clear-before"' + (extended ?'':' style="display: none;"') + '>'
             out << body()
             out << '</div>'
@@ -496,7 +490,7 @@ class UiTagLib {
 
     //<ui:modal id="myModalDialog" text="${text}" message="local.string" hideSubmitButton="true" modalSize="large/small/tiny/mini" >
     // CONTENT
-    // <ui:modal>
+    // </ui:modal>
 
     def modal = { attrs, body ->
 
@@ -932,7 +926,6 @@ class UiTagLib {
     }
 
     def totalNumber = { attrs, body ->
-
         def total = attrs.total ?: 0
         def newClass = attrs.class ?: ''
 

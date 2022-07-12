@@ -1,5 +1,4 @@
-
-// modules/tooltip.js
+// assets/javascripts/modules/tooltip.js
 
 tooltip = {
 

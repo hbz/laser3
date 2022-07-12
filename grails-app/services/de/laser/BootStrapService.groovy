@@ -153,14 +153,14 @@ class BootStrapService {
     void setupSystemUsers() {
 
         // Create anonymousUser that serves as a replacement when users are deleted
-        User anonymousUser = User.findByUsername('anonymous')
-        if (anonymousUser) {
-            log.debug("${anonymousUser.username} exists .. skipped")
+        User au = User.findByUsername('anonymous')
+        if (au) {
+            log.debug("${au.username} exists .. skipped")
         }
         else {
             log.debug("creating user ..")
 
-            anonymousUser = new User(
+            au = new User(
                     username: 'anonymous',
                     password: PasswordUtils.getRandomUserPassword(),
                     display: 'Anonymous User',
@@ -172,7 +172,7 @@ class BootStrapService {
 
             if (role.roleType != 'user') {
                 log.debug("  -> adding role: ${role}")
-                UserRole.create anonymousUser, role
+                UserRole.create au, role
             }
         }
 

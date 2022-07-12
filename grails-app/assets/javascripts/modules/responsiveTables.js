@@ -1,5 +1,4 @@
-
-// modules/responsiveTables.js
+// assets/javascripts/modules/responsiveTables.js
 
 responsiveTables = {
 

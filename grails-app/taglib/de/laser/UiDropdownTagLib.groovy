@@ -26,7 +26,7 @@ class UiDropdownTagLib {
         out << '</div>'
     }
 
-    // <ui:exportDropdownItem> LINK <ui:exportDropdownItem>
+    // <ui:exportDropdownItem> LINK </ui:exportDropdownItem>
 
     def exportDropdownItem = { attrs, body ->
 

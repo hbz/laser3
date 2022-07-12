@@ -1,5 +1,4 @@
-
-// modules/r2d2.js
+// assets/javascripts/modules/r2d2.js
 
 r2d2 = {
 

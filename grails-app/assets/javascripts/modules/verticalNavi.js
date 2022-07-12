@@ -1,5 +1,4 @@
-
-// modules/verticalNavi.js
+// assets/javascripts/modules/verticalNavi.js
 
 verticalNavi = {
 

@@ -7,7 +7,7 @@
 
         <ui:h1HeaderWithIcon message="menu.admin.statistics" />
 
-        <table class="ui celled la-js-responsive-table la-table table">
+        <table class="ui celled la-js-responsive-table la-table compact table">
             <thead>
                 <tr>
                     <th>Institution</th>
