@@ -2031,20 +2031,13 @@ join sub.orgRelations or_sub where
             }
 
             if(result.surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION]) {
-                if (!result.subscription) {
-                    result.successorSubscriptionParent = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
-                    result.successorSubscription = result.successorSubscriptionParent.getDerivedSubscriptionBySubscribers(result.contextOrg)
-                } else {
-                    result.successorSubscription = result.subscription._getCalculatedSuccessorForSurvey()
+                result.successorSubscription = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
+                Collection<AbstractPropertyWithCalculatedLastUpdated> props
+                props = result.surveyConfig.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
+                if(result.successorSubscription){
+                    props += result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
                 }
-                if (result.successorSubscription) {
-                    List objects = []
-                    if(result.subscription){
-                        objects << result.subscription
-                    }
-                    objects << result.successorSubscription
-                    result = result + compareService.compareProperties(objects)
-                }
+                result.customProperties = result.customProperties = comparisonService.comparePropertiesWithAudit(props, true, true)
             }
 
             if (result.subscription && result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
