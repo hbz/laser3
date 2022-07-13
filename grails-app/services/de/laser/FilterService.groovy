@@ -1615,8 +1615,8 @@ class FilterService {
                 where += subFilter
                 if(configMap.asAt && configMap.asAt.length() > 0) {
                     Date dateFilter = DateUtils.getSDF_NoTime().parse(configMap.asAt)
-                    params.asAt = dateFilter.format('yyyy-MM-dd')
-                    where += " and ((:startDate >= tipp_access_start_date or tipp_access_start_date is null) and (:endDate <= tipp_access_end_date or tipp_access_end_date is null))"
+                    params.asAt = new Timestamp(dateFilter.getTime())
+                    where += " and ((:asAt >= tipp_access_start_date or tipp_access_start_date is null) and (:asAt <= tipp_access_end_date or tipp_access_end_date is null))"
                 }
                 if(configMap.status != null && !configMap.status.isEmpty()) {
                     params.tippStatus = configMap.status //already id
