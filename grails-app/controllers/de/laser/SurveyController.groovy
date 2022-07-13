@@ -743,6 +743,17 @@ class SurveyController {
     def show() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
 
+        result.surveyLinksMessage = []
+
+        if(SurveyLinks.executeQuery("from SurveyLinks where sourceSurvey = :surveyInfo and sourceSurvey.status = :startStatus and targetSurvey.status != sourceSurvey.status", [surveyInfo: result.surveyInfo, startStatus: RDStore.SURVEY_SURVEY_STARTED]).size() > 0){
+            result.surveyLinksMessage  << message(code: 'surveyLinks.surveysNotStartet')
+        }
+
+        if(SurveyLinks.executeQuery("from SurveyLinks where sourceSurvey = :surveyInfo and sourceSurvey.status = :startStatus and targetSurvey.status = sourceSurvey.status and targetSurvey.endDate != sourceSurvey.endDate", [surveyInfo: result.surveyInfo, startStatus: RDStore.SURVEY_SURVEY_STARTED]).size() > 0){
+            result.surveyLinksMessage  << message(code: 'surveyLinks.surveysNotSameEndDate')
+        }
+
+
         if(result.surveyInfo.surveyConfigs.size() >= 1  || params.surveyConfigID) {
 
             result.surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.surveyConfigID) : result.surveyInfo.surveyConfigs[0]

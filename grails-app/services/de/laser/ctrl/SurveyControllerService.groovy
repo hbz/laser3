@@ -12,6 +12,7 @@ import de.laser.SurveyConfig
 import de.laser.SurveyConfigProperties
 import de.laser.SurveyController
 import de.laser.SurveyInfo
+import de.laser.SurveyLinks
 import de.laser.SurveyOrg
 import de.laser.SurveyResult
 import de.laser.Task
