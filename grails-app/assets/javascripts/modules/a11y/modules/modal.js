@@ -1,4 +1,4 @@
-// assets/javascripts/modules/a11y/modules/modal.js
+// module: assets/javascripts/modules/a11y/modules/modal.js
 
 a11yModal = {
 

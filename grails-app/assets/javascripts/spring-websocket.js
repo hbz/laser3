@@ -1,4 +1,4 @@
-// assets/javascripts/spring-websocket.js
+// bundle: assets/javascripts/spring-websocket.js
 //
 //= require /spring-websocket/sockjs.js     //--> assets/vendor
 //= require /spring-websocket/stomp.js      //--> assets/vendor

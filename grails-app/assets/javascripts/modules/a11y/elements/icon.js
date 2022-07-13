@@ -1,4 +1,4 @@
-// assets/javascripts/modules/a11y/elements/icon.js
+// module: assets/javascripts/modules/a11y/elements/icon.js
 
 a11yIcon = {
 

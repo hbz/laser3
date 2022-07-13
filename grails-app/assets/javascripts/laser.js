@@ -1,4 +1,4 @@
-// assets/javascripts/laser.js
+// bundle: assets/javascripts/laser.js
 //
 //= require /javascript/semantic.min.js         //--> assets/themes
 //= require modules/r2d2.js

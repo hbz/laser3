@@ -1,6 +1,6 @@
 /*
- * assets/stylesheets/base.css
+ * bundle: assets/stylesheets/base.css
  *
- *= require jquery-editable.css
- *= require /select2/css/select2-laser.css      //--> assets/vendor
+ *= require libs/jquery-editable.css
+ *= require /select2/css/select2-modified.css      //--> assets/vendor
  */

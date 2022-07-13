@@ -1,4 +1,4 @@
-// assets/javascripts/modules/bb8.js
+// module: assets/javascripts/modules/bb8.js
 
 bb8 = {
 

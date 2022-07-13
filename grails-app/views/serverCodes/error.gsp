@@ -1,7 +1,7 @@
 <%@ page import="de.laser.utils.AppUtils" %>
 
 <laser:htmlStart message="serverCode.error.message1" serviceInjection="true">
-    <link rel="stylesheet" href="${resource(dir: 'css', file: 'errors.css')}" type="text/css">
+    <link rel="stylesheet" href="${resource(dir: 'css', file: 'modules/errors.css')}" type="text/css">
 </laser:htmlStart>
 
 <br />

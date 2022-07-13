@@ -1,4 +1,4 @@
-// assets/javascripts/modules/jstk.js
+// module: assets/javascripts/modules/jstk.js
 
 jstk = {
 

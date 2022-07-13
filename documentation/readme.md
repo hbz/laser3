@@ -10,6 +10,7 @@
 - Hibernate 5.6.9.Final / GORM 7.3.2
 - Groovy 3.0.11
 - Java 11
+- PostgreSQL 12+
 
 See [details.md](./details.md) for detailed information.
 

@@ -1,4 +1,4 @@
-// assets/javascripts/swagger.js
+// bundle: assets/javascripts/swagger.js
 //
 //= require libs/jquery-3.6.0.js
 //= require /swagger-ui/swagger-ui-bundle.js                    //--> assets/vendor

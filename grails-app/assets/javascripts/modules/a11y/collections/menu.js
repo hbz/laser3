@@ -1,4 +1,4 @@
-// assets/javascripts/modules/a11y/collections/menu.js
+// module: assets/javascripts/modules/a11y/collections/menu.js
 
 a11yMenu = {
 

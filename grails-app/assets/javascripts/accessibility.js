@@ -1,4 +1,4 @@
-// assets/javascripts/accessibility.js
+// bundle: assets/javascripts/accessibility.js
 //
 //= require /javascript/semantic.min.js         //--> assets/themes
 //= require modules/r2d2.js
