@@ -6,6 +6,7 @@ import de.laser.License
 import de.laser.Org
 import de.laser.Subscription
 import de.laser.SubscriptionService
+import de.laser.storage.PropertyStore
 import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyConfigProperties
 import de.laser.SurveyController
@@ -99,7 +100,7 @@ class SurveyControllerService {
             result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
 
 
-            result.participationProperty = RDStore.SURVEY_PROPERTY_PARTICIPATION
+            result.participationProperty = PropertyStore.SURVEY_PROPERTY_PARTICIPATION
             if (result.parentSuccessorSubscription) {
                 String query = "select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType"
                 result.memberLicenses = License.executeQuery(query, [subscription: result.parentSuccessorSubscription, linkType: RDStore.LINKTYPE_LICENSE])
@@ -136,12 +137,12 @@ class SurveyControllerService {
             result.multiYearTermThreeSurvey = null
             result.multiYearTermTwoSurvey = null
 
-            if (RDStore.SURVEY_PROPERTY_MULTI_YEAR_3.id in result.properties.id) {
-                result.multiYearTermThreeSurvey = RDStore.SURVEY_PROPERTY_MULTI_YEAR_3
+            if (PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_3.id in result.properties.id) {
+                result.multiYearTermThreeSurvey = PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_3
                 result.properties.remove(result.multiYearTermThreeSurvey)
             }
-            if (RDStore.SURVEY_PROPERTY_MULTI_YEAR_2.id in result.properties.id) {
-                result.multiYearTermTwoSurvey = RDStore.SURVEY_PROPERTY_MULTI_YEAR_2
+            if (PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_2.id in result.properties.id) {
+                result.multiYearTermTwoSurvey = PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_2
                 result.properties.remove(result.multiYearTermTwoSurvey)
 
             }

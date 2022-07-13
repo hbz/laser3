@@ -25,6 +25,7 @@ import de.laser.Person
 import de.laser.PersonRole
 import de.laser.SubscriptionPackage
 import de.laser.SubscriptionService
+import de.laser.storage.PropertyStore
 import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyConfigProperties
 import de.laser.survey.SurveyInfo
@@ -567,7 +568,7 @@ class AjaxHtmlController {
         boolean noParticipation = false
         if(surveyInfo.isMandatory) {
             if(surveyConfig && surveyConfig.subSurveyUseForTransfer){
-                noParticipation = (SurveyResult.findByParticipantAndSurveyConfigAndType(contextOrg, surveyConfig, RDStore.SURVEY_PROPERTY_PARTICIPATION).refValue == RDStore.YN_NO)
+                noParticipation = (SurveyResult.findByParticipantAndSurveyConfigAndType(contextOrg, surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION).refValue == RDStore.YN_NO)
             }
         }
             if(notProcessedMandatoryProperties.size() > 0){

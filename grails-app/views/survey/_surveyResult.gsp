@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.storage.PropertyStore; de.laser.storage.RDStore;" %>
 <g:if test="${surResult.surveyConfig.subSurveyUseForTransfer && surveyOrg.existsMultiYearTerm()}">
 
     <g:message code="surveyOrg.perennialTerm.available"/>
@@ -46,7 +46,7 @@
         </span>
     </g:if>
 
-    <g:if test="${surResult.type.id == RDStore.SURVEY_PROPERTY_PARTICIPATION.id && surResult.getResult() == RDStore.YN_NO.getI10n('value')}">
+    <g:if test="${surResult.type.id == PropertyStore.SURVEY_PROPERTY_PARTICIPATION.id && surResult.getResult() == RDStore.YN_NO.getI10n('value')}">
         <span class="la-long-tooltip la-popup-tooltip la-delay"
               data-position="top right"
               data-variation="tiny"

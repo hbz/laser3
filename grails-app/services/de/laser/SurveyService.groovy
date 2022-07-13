@@ -12,6 +12,7 @@ import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5ApiSource
 import de.laser.stats.Counter5Report
 import de.laser.storage.BeanStore
+import de.laser.storage.PropertyStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
@@ -150,7 +151,7 @@ class SurveyService {
 
     @Deprecated
     boolean isContinueToParticipate(Org org, SurveyConfig surveyConfig) {
-        PropertyDefinition participationProperty = RDStore.SURVEY_PROPERTY_PARTICIPATION
+        PropertyDefinition participationProperty = PropertyStore.SURVEY_PROPERTY_PARTICIPATION
 
         def result = SurveyResult.findBySurveyConfigAndParticipantAndType(surveyConfig, org, participationProperty)?.getResult() == RDStore.YN_YES ? true : false
 

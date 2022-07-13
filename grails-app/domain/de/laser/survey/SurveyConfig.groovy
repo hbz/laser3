@@ -5,6 +5,7 @@ import de.laser.DocContext
 import de.laser.Org
 import de.laser.Subscription
 import de.laser.finance.CostItem
+import de.laser.storage.PropertyStore
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.properties.PropertyDefinition
@@ -485,13 +486,13 @@ class SurveyConfig {
         LinkedHashSet<SurveyConfigProperties> propertiesNoMandatory = []
 
         this.surveyProperties.each {
-            if(it.surveyProperty == RDStore.SURVEY_PROPERTY_PARTICIPATION){
+            if(it.surveyProperty == PropertyStore.SURVEY_PROPERTY_PARTICIPATION){
                 propertiesParticipation << it
             }
-            else if(it.mandatoryProperty == true && it.surveyProperty != RDStore.SURVEY_PROPERTY_PARTICIPATION){
+            else if(it.mandatoryProperty == true && it.surveyProperty != PropertyStore.SURVEY_PROPERTY_PARTICIPATION){
                 propertiesMandatory << it
             }
-            else if(it.mandatoryProperty == false && it.surveyProperty != RDStore.SURVEY_PROPERTY_PARTICIPATION){
+            else if(it.mandatoryProperty == false && it.surveyProperty != PropertyStore.SURVEY_PROPERTY_PARTICIPATION){
                 propertiesNoMandatory << it
             }
         }

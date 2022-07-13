@@ -15,6 +15,7 @@ import de.laser.interfaces.ShareSupport
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
+import de.laser.storage.PropertyStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyOrg
@@ -236,7 +237,7 @@ class AjaxController {
                             SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(target.surveyConfig, target.participant)
 
                             //If Survey Owner set Value then set FinishDate
-                            if (org?.id == target.owner.id && (target.type == RDStore.SURVEY_PROPERTY_PARTICIPATION) && surveyOrg.finishDate == null) {
+                            if (org?.id == target.owner.id && (target.type == PropertyStore.SURVEY_PROPERTY_PARTICIPATION) && surveyOrg.finishDate == null) {
                                 String property = target.type.getImplClassValueProperty()
 
                                 if (target[property] != null) {
@@ -1967,7 +1968,7 @@ class AjaxController {
                     SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(target_object.surveyConfig, target_object.participant)
 
                     //If Survey Owner set Value then set FinishDate
-                    if (org?.id == target_object.owner.id && (target_object.type == RDStore.SURVEY_PROPERTY_PARTICIPATION) && surveyOrg.finishDate == null) {
+                    if (org?.id == target_object.owner.id && (target_object.type == PropertyStore.SURVEY_PROPERTY_PARTICIPATION) && surveyOrg.finishDate == null) {
                         String property = target_object.type.getImplClassValueProperty()
 
                         if (target_object[property] != null) {

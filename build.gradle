@@ -110,8 +110,8 @@ dependencies {
 
     // --------------------------------------------------
 
-    implementation 'org.elasticsearch:elasticsearch:7.14.2'
-    implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.14.2'
+    implementation 'org.elasticsearch:elasticsearch:7.15.2'                                 // from 7.4.2
+    implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.15.2'   // from 7.4.2
 
     implementation 'org.grails.plugins:spring-security-core:5.1.0'          // from 3.2.3
     implementation 'org.grails.plugins:http-builder-helper:1.1.0'           // 2017

@@ -15,6 +15,7 @@ import de.laser.finance.CostItem
 import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinition
+import de.laser.storage.PropertyStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
@@ -635,12 +636,12 @@ class SurveyController {
                 //Wenn es eine Umfrage schon gibt, die als Übertrag dient. Dann ist es auch keine Lizenz Umfrage mit einem Teilnahme-Merkmal abfragt!
                 if (subSurveyUseForTransfer) {
                     SurveyConfigProperties configProperty = new SurveyConfigProperties(
-                            surveyProperty: RDStore.SURVEY_PROPERTY_PARTICIPATION,
+                            surveyProperty: PropertyStore.SURVEY_PROPERTY_PARTICIPATION,
                             surveyConfig: surveyConfig,
                             mandatoryProperty: true)
 
                     SurveyConfigProperties configProperty2 = new SurveyConfigProperties(
-                            surveyProperty: RDStore.SURVEY_PROPERTY_ORDER_NUMBER,
+                            surveyProperty: PropertyStore.SURVEY_PROPERTY_ORDER_NUMBER,
                             surveyConfig: surveyConfig)
 
                     if (configProperty.save() && configProperty2.save()) {
@@ -3817,7 +3818,7 @@ class SurveyController {
         result.participantsList = result.participantsList.sort{it.sortname}
 
 
-        result.participationProperty = RDStore.SURVEY_PROPERTY_PARTICIPATION
+        result.participationProperty = PropertyStore.SURVEY_PROPERTY_PARTICIPATION
         if(result.surveyConfig.subSurveyUseForTransfer && result.parentSuccessorSubscription) {
             String query = "select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType"
             result.memberLicenses = License.executeQuery(query, [subscription: result.parentSuccessorSubscription, linkType: RDStore.LINKTYPE_LICENSE])
@@ -3921,7 +3922,7 @@ class SurveyController {
                         copyCostItem.costInLocalCurrency = costItem.costInBillingCurrency
                     }
                     Org org = participantSub.getSubscriber()
-                    SurveyResult surveyResult = org ? SurveyResult.findBySurveyConfigAndParticipantAndTypeAndStringValueIsNotNull(result.surveyConfig, org, RDStore.SURVEY_PROPERTY_ORDER_NUMBER) : null
+                    SurveyResult surveyResult = org ? SurveyResult.findBySurveyConfigAndParticipantAndTypeAndStringValueIsNotNull(result.surveyConfig, org, PropertyStore.SURVEY_PROPERTY_ORDER_NUMBER) : null
 
                     if(surveyResult){
                         Order order = new Order(orderNumber: surveyResult.getValue(), owner: result.institution)
@@ -4075,9 +4076,9 @@ class SurveyController {
         result.properties
         if(params.tab == 'surveyProperties') {
             result.properties = SurveyConfigProperties.findAllBySurveyConfig(result.surveyConfig).surveyProperty.findAll{it.tenant == null}
-            result.properties -= RDStore.SURVEY_PROPERTY_PARTICIPATION
-            result.properties -= RDStore.SURVEY_PROPERTY_MULTI_YEAR_2
-            result.properties -= RDStore.SURVEY_PROPERTY_MULTI_YEAR_3
+            result.properties -= PropertyStore.SURVEY_PROPERTY_PARTICIPATION
+            result.properties -= PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_2
+            result.properties -= PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_3
         }
 
         if(params.tab == 'customProperties') {
@@ -4304,7 +4305,7 @@ class SurveyController {
         result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessorForSurvey()
         result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
 
-        result.participationProperty = RDStore.SURVEY_PROPERTY_PARTICIPATION
+        result.participationProperty = PropertyStore.SURVEY_PROPERTY_PARTICIPATION
 
         result.properties = []
         result.properties.addAll(SurveyConfigProperties.findAllBySurveyPropertyNotEqualAndSurveyConfig(result.participationProperty, result.surveyConfig)?.surveyProperty)
@@ -4312,12 +4313,12 @@ class SurveyController {
         result.multiYearTermThreeSurvey = null
         result.multiYearTermTwoSurvey = null
 
-        if (RDStore.SURVEY_PROPERTY_MULTI_YEAR_3.id in result.properties.id) {
-            result.multiYearTermThreeSurvey = RDStore.SURVEY_PROPERTY_MULTI_YEAR_3
+        if (PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_3.id in result.properties.id) {
+            result.multiYearTermThreeSurvey = PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_3
             result.properties.remove(result.multiYearTermThreeSurvey)
         }
-        if (RDStore.SURVEY_PROPERTY_MULTI_YEAR_2.id in result.properties.id) {
-            result.multiYearTermTwoSurvey = RDStore.SURVEY_PROPERTY_MULTI_YEAR_2
+        if (PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_2.id in result.properties.id) {
+            result.multiYearTermTwoSurvey = PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_2
             result.properties.remove(result.multiYearTermTwoSurvey)
 
         }
