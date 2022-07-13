@@ -804,7 +804,7 @@ class SurveyController {
                 if(result.successorSubscription){
                     props += result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
                 }
-                result.customProperties = result.customProperties = comparisonService.comparePropertiesWithAudit(props, true, true)
+                result.customProperties = comparisonService.comparePropertiesWithAudit(props, true, true)
 
         }
 
@@ -2168,7 +2168,7 @@ class SurveyController {
             if(result.successorSubscription){
                 props += result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
             }
-            result.customProperties = result.customProperties = comparisonService.comparePropertiesWithAudit(props, true, true)
+            result.customProperties = comparisonService.comparePropertiesWithAudit(props, true, true)
 
             result.links = linksGenerationService.getSourcesAndDestinations(result.subscription,result.user)
         }

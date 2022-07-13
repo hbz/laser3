@@ -2037,7 +2037,7 @@ join sub.orgRelations or_sub where
                 if(result.successorSubscription){
                     props += result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
                 }
-                result.customProperties = result.customProperties = comparisonService.comparePropertiesWithAudit(props, true, true)
+                result.customProperties = comparisonService.comparePropertiesWithAudit(props, true, true)
             }
 
             if (result.subscription && result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
