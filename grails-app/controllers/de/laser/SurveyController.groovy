@@ -781,6 +781,17 @@ class SurveyController {
                     result.costItemSums.consCosts = costItems.cons.sums
                 }
                 result.links = linksGenerationService.getSourcesAndDestinations(result.subscription,result.user)
+
+                if(result.surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION]) {
+                    result.successorSubscription = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
+                    Collection<AbstractPropertyWithCalculatedLastUpdated> props
+                    props = result.surveyConfig.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
+                    if(result.successorSubscription){
+                        props += result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
+                    }
+                    result.customProperties = comparisonService.comparePropertiesWithAudit(props, true, true)
+                }
+
             }
 
             Org contextOrg = contextService.getOrg()
@@ -797,14 +808,6 @@ class SurveyController {
                     result.properties << it
                 }
             }*/
-
-                result.successorSubscription = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
-                Collection<AbstractPropertyWithCalculatedLastUpdated> props
-                props = result.surveyConfig.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
-                if(result.successorSubscription){
-                    props += result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
-                }
-                result.customProperties = comparisonService.comparePropertiesWithAudit(props, true, true)
 
         }
 
@@ -2162,13 +2165,15 @@ class SurveyController {
                 }
             }
 
-            result.successorSubscription = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
-            Collection<AbstractPropertyWithCalculatedLastUpdated> props
-            props = result.surveyConfig.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
-            if(result.successorSubscription){
-                props += result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
+            if(result.surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION]) {
+                result.successorSubscription = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
+                Collection<AbstractPropertyWithCalculatedLastUpdated> props
+                props = result.surveyConfig.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
+                if(result.successorSubscription){
+                    props += result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
+                }
+                result.customProperties = comparisonService.comparePropertiesWithAudit(props, true, true)
             }
-            result.customProperties = comparisonService.comparePropertiesWithAudit(props, true, true)
 
             result.links = linksGenerationService.getSourcesAndDestinations(result.subscription,result.user)
         }
