@@ -808,7 +808,7 @@ class ManagementService {
 
         //Is be to need, because with upload_file the formService.validateToken(params) is not working really
         params.remove('upload_file')
-
+        def input_stream = input_file.inputStream
         if(result.editable && formService.validateToken(params)) {
             Locale locale = LocaleContextHolder.getLocale()
             FlashScope flash = getCurrentFlashScope()
@@ -818,8 +818,6 @@ class ManagementService {
                     if(params.processOption == 'newDoc') {
                         subscriptions.each { Subscription subscription ->
                             if (subscription.isEditableBy(result.user)) {
-
-                                def input_stream = input_file.inputStream
                                 if (input_stream) {
                                     Doc doc_content = new Doc(
                                             contentType: Doc.CONTENT_TYPE_FILE,
