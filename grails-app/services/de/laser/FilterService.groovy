@@ -1392,11 +1392,11 @@ class FilterService {
         }
         if (params.filter) {
             base_qry = "select tipp.id from TitleInstancePackagePlatform as tipp where tipp.pkg in (:pkgs) "
-            if (date_filter) {
+           /* if (date_filter) {
                 base_qry += "and ( ( :startDate >= tipp.accessStartDate or tipp.accessStartDate is null ) and ( :endDate <= tipp.accessEndDate or tipp.accessEndDate is null) ) "
                 qry_params.startDate = date_filter
                 qry_params.endDate = date_filter
-            }
+            }*/
             base_qry += "and ( ( lower(tipp.name) like :title ) or ( exists ( from Identifier ident where ident.tipp.id = tipp.id and ident.value like :identifier ) ) or ((lower(tipp.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(tipp.firstEditor) like :ebookFirstAutorOrFirstEditor)) ) "
             qry_params.title = "%${params.filter.trim().toLowerCase()}%"
             qry_params.identifier = "%${params.filter}%"
@@ -1405,6 +1405,12 @@ class FilterService {
         }
         else {
             base_qry = "select tipp.id from TitleInstancePackagePlatform as tipp where tipp.pkg in (:pkgs) "
+        }
+
+        if (date_filter) {
+            base_qry += "and ( ( tipp.accessStartDate <= :startDate  or tipp.accessStartDate is null ) and ( tipp.accessEndDate >= :endDate or tipp.accessEndDate is null) ) "
+            qry_params.startDate = date_filter
+            qry_params.endDate = date_filter
         }
 
         if(params.addEntitlements && params.subscription && params.issueEntitlementStatus) {
