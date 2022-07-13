@@ -117,6 +117,7 @@
                                                 </td>
                                             </tr>
                                         </g:if>
+                                    </g:if>
                                 </g:if>
                             </g:each>
                         </table>
