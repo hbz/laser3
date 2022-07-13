@@ -273,7 +273,7 @@
             <g:render template="/survey/surveyLinkCard"/>
         </div>
 
-            <g:if test="${customProperties || groupedProperties?.size() > 0 || orphanedProperties?.size() > 0 || privateProperties?.size() > 0}">
+        <g:if test="${customProperties}">
                     <div class="ui card">
                         <div class="content">
                             <div class="ui accordion la-accordion-showMore js-propertiesCompareInfo-accordion">
