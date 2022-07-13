@@ -4889,37 +4889,39 @@ class SurveyController {
             response.sendError(401); return
         }
 
-        if(params.license){
-            License license = genericOIDService.resolveOID(params.license)
-            result.surveyInfo.license = license ?: result.surveyInfo.license
+        SurveyInfo.withTransaction { TransactionStatus ts ->
+            if (params.license) {
+                License license = genericOIDService.resolveOID(params.license)
+                result.surveyInfo.license = license ?: result.surveyInfo.license
 
-            if (!result.surveyInfo.save(flush: true)) {
-                flash.error = g.message(code: 'surveyInfo.link.fail')
+                if (!result.surveyInfo.save()) {
+                    flash.error = g.message(code: 'surveyInfo.link.fail')
+                }
             }
-        }
 
-        if(params.provider){
-            Org provider = genericOIDService.resolveOID(params.provider)
-            result.surveyInfo.provider = provider ?: result.surveyInfo.provider
+            if (params.provider) {
+                Org provider = genericOIDService.resolveOID(params.provider)
+                result.surveyInfo.provider = provider ?: result.surveyInfo.provider
 
-            if (!result.surveyInfo.save(flush: true)) {
-                flash.error = g.message(code: 'surveyInfo.link.fail')
+                if (!result.surveyInfo.save()) {
+                    flash.error = g.message(code: 'surveyInfo.link.fail')
+                }
             }
-        }
 
-        if(params.unlinkLicense){
-            result.surveyInfo.license = null
+            if (params.unlinkLicense) {
+                result.surveyInfo.license = null
 
-            if (!result.surveyInfo.save(flush: true)) {
-                flash.error = g.message(code: 'surveyInfo.unlink.fail')
+                if (!result.surveyInfo.save()) {
+                    flash.error = g.message(code: 'surveyInfo.unlink.fail')
+                }
             }
-        }
 
-        if(params.unlinkProvider){
-            result.surveyInfo.provider = null
+            if (params.unlinkProvider) {
+                result.surveyInfo.provider = null
 
-            if (!result.surveyInfo.save(flush: true)) {
-                flash.error = g.message(code: 'surveyInfo.unlink.fail')
+                if (!result.surveyInfo.save()) {
+                    flash.error = g.message(code: 'surveyInfo.unlink.fail')
+                }
             }
         }
 
@@ -4941,32 +4943,34 @@ class SurveyController {
             response.sendError(401); return
         }
 
-        if(params.linkSurvey){
-            SurveyInfo linkSurvey = SurveyInfo.get(params.linkSurvey)
+        SurveyInfo.withTransaction { TransactionStatus ts ->
+            if (params.linkSurvey) {
+                SurveyInfo linkSurvey = SurveyInfo.get(params.linkSurvey)
 
-            if(linkSurvey){
-                if(SurveyLinks.findBySourceSurveyAndTargetSurvey(result.surveyInfo, linkSurvey)){
-                    flash.error = g.message(code: 'surveyLinks.link.exists')
-                }else {
-                    SurveyLinks surveyLink = new SurveyLinks(sourceSurvey: result.surveyInfo, targetSurvey: linkSurvey, bothDirection: params.bothDirection ? true : false)
-                    if (!surveyLink.save(flush: true)) {
-                        flash.error = g.message(code: 'surveyInfo.link.fail')
-                    }else {
-                        if(params.bothDirection){
-                            SurveyLinks surveyLink2 = new SurveyLinks(sourceSurvey: linkSurvey, targetSurvey: result.surveyInfo, bothDirection: true)
-                            if (!surveyLink2.save(flush: true)) {
-                                flash.error = g.message(code: 'surveyInfo.link.fail')
+                if (linkSurvey) {
+                    if (SurveyLinks.findBySourceSurveyAndTargetSurvey(result.surveyInfo, linkSurvey)) {
+                        flash.error = g.message(code: 'surveyLinks.link.exists')
+                    } else {
+                        SurveyLinks surveyLink = new SurveyLinks(sourceSurvey: result.surveyInfo, targetSurvey: linkSurvey, bothDirection: params.bothDirection ? true : false)
+                        if (!surveyLink.save()) {
+                            flash.error = g.message(code: 'surveyInfo.link.fail')
+                        } else {
+                            if (params.bothDirection) {
+                                SurveyLinks surveyLink2 = new SurveyLinks(sourceSurvey: linkSurvey, targetSurvey: result.surveyInfo, bothDirection: true)
+                                if (!surveyLink2.save()) {
+                                    flash.error = g.message(code: 'surveyInfo.link.fail')
+                                }
                             }
                         }
                     }
                 }
             }
-        }
 
-        if(params.unlinkSurveyLink){
-            SurveyLinks surveyLink = SurveyLinks.get(params.unlinkSurveyLink)
-            surveyLink.delete(flush: true)
+            if (params.unlinkSurveyLink) {
+                SurveyLinks surveyLink = SurveyLinks.get(params.unlinkSurveyLink)
+                surveyLink.delete()
 
+            }
         }
 
         redirect(url: request.getHeader('referer'))

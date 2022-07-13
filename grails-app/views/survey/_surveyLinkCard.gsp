@@ -68,30 +68,7 @@
                                     <th><g:message code="surveyLinks.possible.participation"/></th>
                                 </tr>
                                 <g:if test="${surveyLink.targetSurvey.status != RDStore.SURVEY_IN_PROCESSING}">
-                                    <g:if test="${SurveyOrg.findAllByOrgAndSurveyConfigInList(institution, surveyLink.targetSurvey.surveyConfigs).size() > 0}">
-                                        <tr>
-                                            <td>
-                                                <g:link controller="myInstitution" action="surveyInfos"
-                                                        id="${surveyLink.targetSurvey.id}">${surveyLink.targetSurvey.name}</g:link>
-                                            </td>
-                                            <td>
-                                                ${surveyLink.targetSurvey.type.getI10n('value')}
-                                            </td>
-                                            <td>
-                                                <g:if
-                                                        test="${surveyLink.targetSurvey.startDate}"><g:formatDate
-                                                        date="${surveyLink.targetSurvey.startDate}"
-                                                        format="${message(code: 'default.date.format.notime')}"/></g:if><g:if
-                                                        test="${surveyLink.targetSurvey.endDate}">- <g:formatDate
-                                                            date="${surveyLink.targetSurvey.endDate}"
-                                                            format="${message(code: 'default.date.format.notime')}"/></g:if>
-                                            </td>
-                                            <td>
-                                                <g:message code="surveyLinks.participateToSurvey.exists"/>
-                                            </td>
-                                        </tr>
-                                    </g:if>
-                                    <g:else>
+                                    <g:if test="${SurveyOrg.findAllByOrgAndSurveyConfigInList(institution, surveyLink.targetSurvey.surveyConfigs).size() == 0}">
                                         <%
                                             boolean existsMultiYearTerm = false
                                             SurveyConfig targetSurveyConfig = surveyLink.targetSurvey.surveyConfigs[0]
@@ -140,7 +117,6 @@
                                                 </td>
                                             </tr>
                                         </g:if>
-                                    </g:else>
                                 </g:if>
                             </g:each>
                         </table>
