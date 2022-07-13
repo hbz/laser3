@@ -1736,7 +1736,7 @@ class FilterService {
                         where += " and tipp_host_platform_url in (select tipp2.tipp_host_platform_url from issue_entitlement as ie2 join title_instance_package_platform as tipp2 on ie2.ie_tipp_fk = tipp2.tipp_id where ie2.ie_perpetual_access_by_sub_fk = any(:perpetualSubs)) "
                     }
                 }
-                if (configMap.converageDepth != null && !configMap.coverageDepth.isEmpty()) {
+                if (configMap.coverageDepth != null && !configMap.coverageDepth.isEmpty()) {
                     List<Object> coverageDepths = []
                     coverageDepths.addAll(listReaderWrapper(configMap, 'coverageDepth').collect { it.toLowerCase() })
                     params.coverageDepth = connection.createArrayOf('varchar', coverageDepths.toArray())
