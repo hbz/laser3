@@ -43,7 +43,7 @@
             </div>
 
             <div class="field">
-                <label>${message(code: 'default.valid_onYear.label')}</label>
+                <label for="validOnYear">${message(code: 'default.valid_onYear.label')}</label>
                 <select id="validOnYear" name="validOnYear" multiple="" class="ui search selection fluid dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
                     <option value="all" <%=("all" in params.list('validOnYear')) ? 'selected="selected"' : ''%>>
@@ -74,7 +74,7 @@
             </div>
 
             <div class="field">
-                <label>${message(code: 'menu.my.providers')}</label>
+                <label for="filterPvd">${message(code: 'menu.my.providers')}</label>
                 <select id="filterPvd" name="filterPvd" multiple="" class="ui search selection fluid dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
@@ -89,7 +89,7 @@
             </div>
 
             <div class="field">
-                <label>${message(code: 'menu.my.subscriptions')}</label>
+                <label for="filterSub">${message(code: 'menu.my.subscriptions')}</label>
                 <select id="filterSub" name="filterSub" multiple="" class="ui search selection fluid dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 

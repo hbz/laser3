@@ -268,13 +268,6 @@ class RDStore {
     public static final YNO_OTHER           = getRefdataValue('Other', RDConstants.Y_N_O)
     public static final YNU_UNKNOWN         = getRefdataValue('Unknown', RDConstants.Y_N_U)
 
-    //Properties
-
-    public static final SURVEY_PROPERTY_PARTICIPATION   = getSurveyProperty('Participation')
-    public static final SURVEY_PROPERTY_ORDER_NUMBER    = getSurveyProperty('Order number')
-    public static final SURVEY_PROPERTY_MULTI_YEAR_3    = getSurveyProperty('Multi-year term 3 years')
-    public static final SURVEY_PROPERTY_MULTI_YEAR_2    = getSurveyProperty('Multi-year term 2 years')
-
 
     static RefdataValue getRefdataValue(String value, String category) {
         RefdataValue result = RefdataValue.getByValueAndCategory(value, category)
@@ -285,13 +278,10 @@ class RDStore {
         (RefdataValue) GrailsHibernateUtil.unwrapIfProxy( result)
     }
 
-    static PropertyDefinition getSurveyProperty(String name) {
-        PropertyDefinition result = PropertyDefinition.getByNameAndDescrAndTenant(name, PropertyDefinition.SVY_PROP, null)
+    // Survey Properties
 
-        if (! result) {
-            log.warn "No PropertyDefinition found for name:'${name}', descr:'${PropertyDefinition.SVY_PROP}'"
-        }
-
-        (PropertyDefinition) GrailsHibernateUtil.unwrapIfProxy(result)
-    }
+    public static final SURVEY_PROPERTY_PARTICIPATION   = PropertyStore.getSurveyProperty('Participation')
+    public static final SURVEY_PROPERTY_ORDER_NUMBER    = PropertyStore.getSurveyProperty('Order number')
+    public static final SURVEY_PROPERTY_MULTI_YEAR_3    = PropertyStore.getSurveyProperty('Multi-year term 3 years')
+    public static final SURVEY_PROPERTY_MULTI_YEAR_2    = PropertyStore.getSurveyProperty('Multi-year term 2 years')
 }

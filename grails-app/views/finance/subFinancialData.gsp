@@ -69,8 +69,7 @@
                 switch(view) {
                     case 'own': total << "${own.count} ${message(code:'financials.header.ownCosts')}"
                         break
-                    case 'cons':
-                    case 'consAtSubscr': total << "${cons.count} ${message(code:'financials.header.consortialCosts')}"
+                    case [ 'cons', 'consAtSubscr' ]: total << "${cons.count} ${message(code:'financials.header.consortialCosts')}"
                         break
                     case 'subscr': total << "${subscr.count} ${message(code:'financials.header.subscriptionCosts')}"
                         break

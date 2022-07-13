@@ -289,7 +289,7 @@ class SubscriptionService {
         }
         else if (params.hasPerpetualAccess) {
             query += " and subT.hasPerpetualAccess = :hasPerpetualAccess "
-            qarams.put('hasPerpetualAccess', (params.hasPerpetualAccess == RDStore.YN_YES.id.toString()) ? true : false)
+            qarams.put('hasPerpetualAccess', (params.hasPerpetualAccess == RDStore.YN_YES.id.toString()))
         }
         query += statusQuery
 
@@ -319,12 +319,12 @@ class SubscriptionService {
 
         if (params.isPublicForApi) {
             query += " and subT.isPublicForApi = :isPublicForApi "
-            qarams.put('isPublicForApi', (params.isPublicForApi == RDStore.YN_YES.id.toString()) ? true : false)
+            qarams.put('isPublicForApi', (params.isPublicForApi == RDStore.YN_YES.id.toString()))
         }
 
         if (params.hasPublishComponent) {
             query += " and subT.hasPublishComponent = :hasPublishComponent "
-            qarams.put('hasPublishComponent', (params.hasPublishComponent == RDStore.YN_YES.id.toString()) ? true : false)
+            qarams.put('hasPublishComponent', (params.hasPublishComponent == RDStore.YN_YES.id.toString()))
         }
 
         if (params.subRunTimeMultiYear || params.subRunTime) {
@@ -2189,7 +2189,7 @@ class SubscriptionService {
                 if(hasPerpetualAccessKey) {
                     String yesNo = refdataService.retrieveRefdataValueOID(hasPerpetualAccessKey, RDConstants.Y_N)
                     if(yesNo) {
-                        candidate.hasPerpetualAccess = (yesNo == "${RDStore.YN_YES.class.name}:${RDStore.YN_YES.id}" ? true : false)
+                        candidate.hasPerpetualAccess = (yesNo == "${RDStore.YN_YES.class.name}:${RDStore.YN_YES.id}")
                     }
                     else {
                         mappingErrorBag.noPerpetualAccessType = hasPerpetualAccessKey
@@ -2201,7 +2201,7 @@ class SubscriptionService {
                 if(hasPublishComponentKey) {
                     String yesNo = refdataService.retrieveRefdataValueOID(hasPublishComponentKey, RDConstants.Y_N)
                     if(yesNo) {
-                        candidate.hasPublishComponent = (yesNo == "${RDStore.YN_YES.class.name}:${RDStore.YN_YES.id}" ? true : false)
+                        candidate.hasPublishComponent = (yesNo == "${RDStore.YN_YES.class.name}:${RDStore.YN_YES.id}")
                     }
                     else {
                         mappingErrorBag.noPublishComponent = hasPublishComponentKey
@@ -2213,7 +2213,7 @@ class SubscriptionService {
                 if(isPublicForApiKey) {
                     String yesNo = refdataService.retrieveRefdataValueOID(isPublicForApiKey, RDConstants.Y_N)
                     if(yesNo) {
-                        candidate.isPublicForApi = (yesNo == "${RDStore.YN_YES.class.name}:${RDStore.YN_YES.id}" ? true : false)
+                        candidate.isPublicForApi = (yesNo == "${RDStore.YN_YES.class.name}:${RDStore.YN_YES.id}")
                     }
                     else {
                         mappingErrorBag.noPublicForApi = isPublicForApiKey

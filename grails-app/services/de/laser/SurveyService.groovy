@@ -150,7 +150,7 @@ class SurveyService {
 
     @Deprecated
     boolean isContinueToParticipate(Org org, SurveyConfig surveyConfig) {
-        def participationProperty = RDStore.SURVEY_PROPERTY_PARTICIPATION
+        PropertyDefinition participationProperty = RDStore.SURVEY_PROPERTY_PARTICIPATION
 
         def result = SurveyResult.findBySurveyConfigAndParticipantAndType(surveyConfig, org, participationProperty)?.getResult() == RDStore.YN_YES ? true : false
 

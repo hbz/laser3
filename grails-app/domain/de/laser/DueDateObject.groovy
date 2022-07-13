@@ -6,7 +6,7 @@ package de.laser
  * @see Subscription
  * @see de.laser.base.AbstractPropertyWithCalculatedLastUpdated
  * @see Task
- * @see SurveyInfo
+ * @see de.laser.survey.SurveyInfo
  */
 class DueDateObject {
 
@@ -15,7 +15,7 @@ class DueDateObject {
     String attribute_value_en
     Date date
     /**
-     * {@link Subscription}, {@link de.laser.base.AbstractPropertyWithCalculatedLastUpdated}, {@link Task} or {@link SurveyInfo}
+     * {@link Subscription}, {@link de.laser.base.AbstractPropertyWithCalculatedLastUpdated}, {@link Task} or {@link de.laser.survey.SurveyInfo}
      */
     String oid
     boolean isDone = false

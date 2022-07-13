@@ -224,7 +224,7 @@
             <input type="hidden" name="target" value="" />
 
             <div class="field">
-                <label for="orgName_ct">${message(code:'org.label')}</label>
+                <label for="orgName_gasco">${message(code:'org.label')}</label>
                 <input type="text" id="orgName_gasco" name="orgName" value="" readonly />
             </div>
 

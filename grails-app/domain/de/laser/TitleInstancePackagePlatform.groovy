@@ -352,7 +352,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
         char[] c = s.toCharArray()
         StringBuffer b = new StringBuffer()
         for (char element : c) {
-            b.append(_translate(element))
+            b.append( translateChar(element) )
         }
         return b.toString()
     }
@@ -363,7 +363,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
      * @param c the character to translate
      * @return the ASCII representation of the char
      */
-    private static char _translate(char c) {
+    static char translateChar(char c) {
         switch(c) {
             case '\u00C0':
             case '\u00C1':

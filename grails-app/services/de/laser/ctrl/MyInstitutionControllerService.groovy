@@ -155,19 +155,10 @@ class MyInstitutionControllerService {
         result.contextCustomerType = org.getCustomerType()
         result.showConsortiaFunctions = result.contextCustomerType == "ORG_CONSORTIUM"
         switch (params.action) {
-            case 'processEmptyLicense': //to be moved to LicenseController
-            case 'currentLicenses':
-            case 'currentSurveys':
-            case 'dashboard':
-            case 'getChanges':
-            case 'getSurveys':
-            case 'emptyLicense': //to be moved to LicenseController
-            case 'surveyInfoFinish':
+            case [ 'processEmptyLicense', 'currentLicenses', 'currentSurveys', 'dashboard', 'getChanges', 'getSurveys', 'emptyLicense', 'surveyInfoFinish' ]:
                 result.editable = accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR')
                 break
-            case 'addressbook':
-            case 'budgetCodes':
-            case 'tasks':
+            case [ 'addressbook', 'budgetCodes', 'tasks' ]:
                 result.editable = accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
                 break
             case 'surveyInfos':

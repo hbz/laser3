@@ -52,14 +52,14 @@
                 <div class="field">
                     <div class="ui radio checkbox">
                         <input type="radio" name="addType" id="With" value="With" tabindex="0" class="hidden">
-                        <label>${message(code: 'subscription.details.link.with_ents')}</label>
+                        <label for="With">${message(code: 'subscription.details.link.with_ents')}</label>
                     </div>
                 </div>
 
                 <div class="field">
                     <div class="ui radio checkbox">
                         <input type="radio" name="addType" id="Without" value="Without" tabindex="0" class="hidden">
-                        <label>${message(code: 'subscription.details.link.no_ents')}</label>
+                        <label for="Without">${message(code: 'subscription.details.link.no_ents')}</label>
                     </div>
                 </div>
             </div>

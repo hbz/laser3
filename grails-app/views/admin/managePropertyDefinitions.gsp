@@ -205,7 +205,7 @@
 
                 <div class="fields">
                     <div class="field five wide">
-                        <label class="property-label">Context:</label>
+                        <label for="cust_prop_desc" class="property-label">Context:</label>
                         <select name="cust_prop_desc" id="cust_prop_desc" class="ui dropdown">
                             <g:each in="${PropertyDefinition.AVAILABLE_CUSTOM_DESCR}" var="pd">
                                 <option value="${pd}"><g:message code="propertyDefinition.${pd}.label" /></option>

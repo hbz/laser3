@@ -17,7 +17,7 @@ import de.laser.storage.RDConstants
  * Means: there are three possible settings for each configuration (Accept, Prompt (default), Reject) and each configuration may be inherited.
  * A pending change configuration is mandatory for every package and is thus belonging to the subscription-package link since every subscription may have different settings to the same package
  * @see SubscriptionPackage
- * @see SurveyInfo
+ * @see de.laser.survey.SurveyInfo
  * @see AuditConfig
  */
 class PendingChangeConfiguration {

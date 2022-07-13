@@ -7,8 +7,8 @@ import javax.persistence.Transient
  * A source may have a record type ({@link #rectype}):
  * <ul>
  *     <li>{@link Package}</li>
- *     <li>{@link Org}</li>
- *     <li>{@link TitleInstancePackagePlatform}</li>
+ *     <li>{@link de.laser.Org}</li>
+ *     <li>{@link de.laser.TitleInstancePackagePlatform}</li>
  * </ul>
  * and a source type ({@link #type}):
  * <ul>

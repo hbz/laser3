@@ -86,16 +86,16 @@
                                         <%
                                             String value
                                             switch (propValue.refValue.owner) {
-                                                case RefdataCategory.getByDesc(RDConstants.Y_N):
-                                                case RefdataCategory.getByDesc(RDConstants.Y_N_O):
+                                                case [ RefdataCategory.getByDesc(RDConstants.Y_N), RefdataCategory.getByDesc(RDConstants.Y_N_O) ]:
                                                     switch (propValue.refValue) {
-                                                        case RDStore.YN_YES:
-                                                        case RDStore.YNO_YES: value = raw('<i class="green thumbs up icon large"></i>')
+                                                        case [ RDStore.YN_YES, RDStore.YNO_YES ]:
+                                                            value = raw('<i class="green thumbs up icon large"></i>')
                                                             break
-                                                        case RDStore.YN_NO:
-                                                        case RDStore.YNO_NO: value = raw('<i class="red thumbs down icon large"></i>')
+                                                        case [ RDStore.YN_NO, RDStore.YNO_NO ]:
+                                                            value = raw('<i class="red thumbs down icon large"></i>')
                                                             break
-                                                        case RDStore.YNO_OTHER: value = raw('<i class="yellow dot circle icon large"></i>')
+                                                        case RDStore.YNO_OTHER:
+                                                            value = raw('<i class="yellow dot circle icon large"></i>')
                                                             break
                                                     }
                                                     break
