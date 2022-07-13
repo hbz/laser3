@@ -93,7 +93,7 @@
                                 </a>
                             </td>
                         </g:if>
-                        <g:if test="${(successorSubscription.id in propValues.owner.id)}">
+                        <g:if test="${(successorSubscription && successorSubscription.id in propValues.owner.id)}">
                             <td class="center aligned">
                                 <div class="ui relaxed divided list">
                                     <g:each var="subProperty" in="${propValues}">
@@ -149,7 +149,7 @@
                                 </div>
                             </td>
                         </g:if>
-                        <g:if test="${!(successorSubscription.id in propValues.owner.id)}">
+                        <g:if test="${!(successorSubscription && successorSubscription.id in propValues.owner.id)}">
                             <td class="center aligned">
                                 <a class="ui circular label la-popup-tooltip la-delay"
                                    data-content="<g:message
@@ -162,11 +162,5 @@
                 </tbody>
             </table>
         </div>
-    </div>
-</g:if>
-
-<g:if test="${groupedProperties?.size() > 0 || orphanedProperties?.size() > 0 || privateProperties?.size() > 0}">
-    <div class="ui card la-js-responsive-table la-dl-no-table">
-        <g:render template="/compare/compareProperties"/>
     </div>
 </g:if>

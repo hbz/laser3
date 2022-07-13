@@ -10,7 +10,7 @@
         </g:if>
         <g:else>
 
-            <g:if test="${surveyInfo.type.id != RDStore.SURVEY_TYPE_RENEWAL}">
+            <g:if test="${surveyInfo.type.id != RDStore.SURVEY_TYPE_RENEWAL.id}">
                 <ui:actionsDropdownItem controller="survey" action="copySurvey" params="[id: params.id]"
                                            message="copySurvey.label"/>
 
