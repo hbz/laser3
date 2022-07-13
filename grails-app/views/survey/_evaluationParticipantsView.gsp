@@ -263,6 +263,13 @@
                                 </span>
                             </g:if>
 
+                            <g:if test="${surveyOrg.orgInsertedItself}">
+                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                      data-content="${message(code: 'surveyResult.finishOrg')}">
+                                    <i class="paper plane outline icon"></i>
+                                </span>
+                            </g:if>
+
                         </td>
                     </g:if>
 
@@ -460,6 +467,13 @@
                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                       data-content="${message(code: 'renewalEvaluation.propertiesChanged')}">
                                     <i class="exclamation triangle yellow large icon"></i>
+                                </span>
+                            </g:if>
+
+                            <g:if test="${surveyOrg.orgInsertedItself}">
+                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                      data-content="${message(code: 'surveyResult.finishOrg')}">
+                                    <i class="paper plane outline icon"></i>
                                 </span>
                             </g:if>
 

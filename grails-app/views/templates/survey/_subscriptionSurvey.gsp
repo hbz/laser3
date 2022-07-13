@@ -269,7 +269,11 @@
             </div>
         </div>
 
-            <g:if test="${customProperties}">
+        <div id="container-surveyLinkCard">
+            <g:render template="/survey/surveyLinkCard"/>
+        </div>
+
+        <g:if test="${customProperties}">
                     <div class="ui card">
                         <div class="content">
                             <div class="ui accordion la-accordion-showMore js-propertiesCompareInfo-accordion">

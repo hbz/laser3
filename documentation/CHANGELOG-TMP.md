@@ -25,6 +25,8 @@
 
 4326    30.06.2022  rc-2.3  2.3.2       Moe     Bug         Verlängerungsumfrage: Statusfilter im Teilnehmerreiter entfernen
 
+4319    24.06.2022  rc-2.3  2.3.2       Moe     Bug         Umfragen miteinander verknüpfen
+
 4318    24.06.2022  rc-2.3  2.3.2       Andreas Bug         Sortierung von Titel an diversen Stellen korrigiert
 
 4313    22.06.2022  rc-2.3  2.3.2       Andreas Bug         diverse Nachbesserungen API (Versionssprung 1.0 auf 1.1)
