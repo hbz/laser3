@@ -1392,11 +1392,11 @@ class FilterService {
         }
         if (params.filter) {
             base_qry = "select tipp.id from TitleInstancePackagePlatform as tipp where tipp.pkg in (:pkgs) "
-            if (date_filter) {
+           /* if (date_filter) {
                 base_qry += "and ( ( :startDate >= tipp.accessStartDate or tipp.accessStartDate is null ) and ( :endDate <= tipp.accessEndDate or tipp.accessEndDate is null) ) "
                 qry_params.startDate = date_filter
                 qry_params.endDate = date_filter
-            }
+            }*/
             base_qry += "and ( ( lower(tipp.name) like :title ) or ( exists ( from Identifier ident where ident.tipp.id = tipp.id and ident.value like :identifier ) ) or ((lower(tipp.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(tipp.firstEditor) like :ebookFirstAutorOrFirstEditor)) ) "
             qry_params.title = "%${params.filter.trim().toLowerCase()}%"
             qry_params.identifier = "%${params.filter}%"
@@ -1405,6 +1405,12 @@ class FilterService {
         }
         else {
             base_qry = "select tipp.id from TitleInstancePackagePlatform as tipp where tipp.pkg in (:pkgs) "
+        }
+
+        if (date_filter) {
+            base_qry += "and ( ( :startDate >= tipp.accessStartDate or tipp.accessStartDate is null ) and ( :endDate <= tipp.accessEndDate or tipp.accessEndDate is null) ) "
+            qry_params.startDate = new Timestamp(date_filter.getTime())
+            qry_params.endDate = new Timestamp(date_filter.getTime())
         }
 
         if(params.addEntitlements && params.subscription && params.issueEntitlementStatus) {
@@ -1609,8 +1615,8 @@ class FilterService {
                 where += subFilter
                 if(configMap.asAt && configMap.asAt.length() > 0) {
                     Date dateFilter = DateUtils.getSDF_NoTime().parse(configMap.asAt)
-                    params.asAt = dateFilter.format('yyyy-MM-dd')
-                    where += " and ((:startDate >= tipp_access_start_date or tipp_access_start_date is null) and (:endDate <= tipp_access_end_date or tipp_access_end_date is null))"
+                    params.asAt = new Timestamp(dateFilter.getTime())
+                    where += " and ((:asAt >= tipp_access_start_date or tipp_access_start_date is null) and (:asAt <= tipp_access_end_date or tipp_access_end_date is null))"
                 }
                 if(configMap.status != null && !configMap.status.isEmpty()) {
                     params.tippStatus = configMap.status //already id
