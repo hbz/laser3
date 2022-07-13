@@ -1408,9 +1408,9 @@ class FilterService {
         }
 
         if (date_filter) {
-            base_qry += "and ( ( tipp.accessStartDate <= :startDate  or tipp.accessStartDate is null ) and ( tipp.accessEndDate >= :endDate or tipp.accessEndDate is null) ) "
-            qry_params.startDate = date_filter
-            qry_params.endDate = date_filter
+            base_qry += "and ( ( :startDate >= tipp.accessStartDate or tipp.accessStartDate is null ) and ( :endDate <= tipp.accessEndDate or tipp.accessEndDate is null) ) "
+            qry_params.startDate = new Timestamp(date_filter.getTime())
+            qry_params.endDate = new Timestamp(date_filter.getTime())
         }
 
         if(params.addEntitlements && params.subscription && params.issueEntitlementStatus) {
