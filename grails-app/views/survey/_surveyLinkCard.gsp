@@ -105,7 +105,9 @@
                                                         <span class="la-popup-tooltip la-delay"
                                                               data-content="${message(code: 'surveyLinks.participateToSurvey')}">
                                                             <g:link class="ui button la-modern-button js-open-confirm-modal"
-                                                                    controller="myInstitution"
+                                                                    data-confirm-tokenMsg="${message(code: "surveyLinks.participateToSurvey.confirm.dialog")}"
+                                                                    data-confirm-term-how="ok"
+                                                                    controller="myInstitution" target="_blank"
                                                                     action="surveyLinkOpenNewSurvey"
                                                                     params="${[surveyLink: surveyLink.id]}"
                                                                     role="button"

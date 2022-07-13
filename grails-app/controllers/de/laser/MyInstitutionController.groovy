@@ -2277,9 +2277,11 @@ join sub.orgRelations or_sub where
                     }
                 }
                 surveyConfig.save()
+            redirect(action: 'surveyInfos', id: surveyInfo.id)
+        }else {
+            redirect(url: request.getHeader('referer'))
         }
 
-        redirect(url: request.getHeader('referer'))
     }
 
     /**
