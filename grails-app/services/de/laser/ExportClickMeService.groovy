@@ -1074,6 +1074,7 @@ class ExportClickMeService {
 
         switch(config) {
             case 'institution':
+            case 'member':
                 EXPORT_ORG_CONFIG.keySet().each {
                     EXPORT_ORG_CONFIG.get(it).fields.each {
                         exportFields.put(it.key, it.value)

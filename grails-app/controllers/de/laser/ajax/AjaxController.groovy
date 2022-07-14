@@ -539,8 +539,8 @@ class AjaxController {
               if(params.tab == 'currentIEs') {
                   Map query = filterService.getIssueEntitlementQuery(params+[ieAcceptStatusFixed: true], previousSubscription)
                   List<IssueEntitlement> previousTipps = previousSubscription ? IssueEntitlement.executeQuery("select ie.tipp.id " + query.query, query.queryParams) : []
-                  sourceIEs = previousTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatusNotEqual(TitleInstancePackagePlatform.findAllByIdInList(previousTipps), previousSubscription, RDStore.TIPP_STATUS_DELETED) : []
-                  sourceIEs = sourceIEs + (sourceTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatusNotEqual(TitleInstancePackagePlatform.findAllByIdInList(targetIETipps), newSub, RDStore.TIPP_STATUS_DELETED) : [])
+                  sourceIEs = previousTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatusNotInList(TitleInstancePackagePlatform.findAllByIdInList(previousTipps), previousSubscription, [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]) : []
+                  sourceIEs = sourceIEs + (sourceTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatusNotInList(TitleInstancePackagePlatform.findAllByIdInList(targetIETipps), newSub, [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]) : [])
 
               }
 
@@ -555,7 +555,7 @@ class AjaxController {
               if(params.tab == 'selectedIEs') {
                   sourceTipps = selectedIETipps
                   sourceTipps = sourceTipps.minus(targetIETipps)
-                  sourceIEs = sourceTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatusNotEqual(TitleInstancePackagePlatform.findAllByIdInList(sourceTipps), newSub, RDStore.TIPP_STATUS_DELETED) : []
+                  sourceIEs = sourceTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatusNotInList(TitleInstancePackagePlatform.findAllByIdInList(sourceTipps), newSub, [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]) : []
               }
 
               sourceIEs.each { IssueEntitlement ie ->
@@ -569,8 +569,9 @@ class AjaxController {
                   pkgFilter << Package.get(filterParams.pkgFilter)
               else pkgFilter.addAll(SubscriptionPackage.executeQuery('select sp.pkg from SubscriptionPackage sp where sp.subscription.id = :sub', [sub: params.long("sub")]))
               Map<String, Object> tippFilter = filterService.getTippQuery(filterParams, pkgFilter.toList())
-              String query = tippFilter.query.replace("select tipp.id", "select tipp.gokbId").replace("order by lower(tipp.sortname) asc", "")
-              Set<String> tippUUIDs = TitleInstancePackagePlatform.executeQuery(query+" and not exists (select ie.id from IssueEntitlement ie join ie.tipp tipp2 where ie.subscription.id = :sub and tipp.id = tipp2.id and ie.status = tipp2.status)", tippFilter.queryParams+[sub: params.long("sub")])
+              String query = tippFilter.query.replace("select tipp.id", "select tipp.gokbId")
+              query = query.replace("where ", "where not exists (select ie.id from IssueEntitlement ie join ie.tipp tipp2 where ie.subscription.id = :sub and tipp.id = tipp2.id and ie.status = tipp2.status) and ")
+              Set<String> tippUUIDs = TitleInstancePackagePlatform.executeQuery(query, tippFilter.queryParams+[sub: params.long("sub")])
               tippUUIDs.each { String e ->
                   newChecked[e] = params.checked == 'true' ? 'checked' : null
               }

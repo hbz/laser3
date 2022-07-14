@@ -41,6 +41,16 @@
 
 <semui:messages data="${flash}"/>
 
+<g:if test="${surveyLinksMessage}">
+    <semui:msg class="negative">
+        <div class="ui bulleted list">
+        <g:each in="${surveyLinksMessage}" var="msg">
+            <div class="item">${msg}</div>
+        </g:each>
+        </div>
+    </semui:msg>
+</g:if>
+
 
 <div class="ui stackable grid">
     <div class="sixteen wide column">
