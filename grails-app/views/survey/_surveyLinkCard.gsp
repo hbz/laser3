@@ -104,9 +104,7 @@
                                                     <g:if test="${editable && surveyLink.targetSurvey.status == RDStore.SURVEY_SURVEY_STARTED}">
                                                         <span class="la-popup-tooltip la-delay"
                                                               data-content="${message(code: 'surveyLinks.participateToSurvey')}">
-                                                            <g:link class="ui button la-modern-button js-open-confirm-modal"
-                                                                    data-confirm-tokenMsg="${message(code: "surveyLinks.participateToSurvey.confirm.dialog")}"
-                                                                    data-confirm-term-how="ok"
+                                                            <g:link class="ui button la-modern-button"
                                                                     controller="myInstitution" target="_blank"
                                                                     action="surveyLinkOpenNewSurvey"
                                                                     params="${[surveyLink: surveyLink.id]}"
