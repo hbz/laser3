@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4356    14.07.2022  rc-2.3  2.3.2       Moe     Feature     Teilnehmerverwaltung: Merkmale für einzelene Teilnehmer löschbar machen
+
 4039    13.07.2022  rc-2.3  2.3.2       Moe     Bug         500er bei Meine Lizenzverwaltung / Dokumente anhängen
 
 4352    12.07.2022  rc-2.3  2.3.2       Moe     Bug         Titel werden nicht in den Bestand übernommen
