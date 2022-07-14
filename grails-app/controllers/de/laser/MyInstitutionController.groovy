@@ -2121,7 +2121,7 @@ join sub.orgRelations or_sub where
         }
 
         SurveyInfo surveyInfo = SurveyInfo.get(params.id)
-        SurveyConfig surveyConfig = SurveyConfig.get(params.surveyConfigID)
+        SurveyConfig surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.surveyConfigID) : surveyInfo.surveyConfigs[0]
         boolean sendMailToSurveyOwner = false
 
         SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.institution, surveyConfig)
@@ -2224,7 +2224,11 @@ join sub.orgRelations or_sub where
 
         result.editable = (surveyInfo && surveyInfo.status in [RDStore.SURVEY_SURVEY_STARTED]) ? result.editable : false
 
-        if (surveyLink && result.institution && result.editable) {
+        if(result.institution.id == surveyInfo.owner.id) {
+            org = params.participant ? Org.get(params.participant) : null
+        }
+
+        if (org && surveyLink && result.editable) {
 
             SurveyOrg.withTransaction { TransactionStatus ts ->
                     boolean existsMultiYearTerm = false
@@ -2275,9 +2279,15 @@ join sub.orgRelations or_sub where
                             }
                         }
                     }
-                }
                 surveyConfig.save()
-            redirect(action: 'surveyInfos', id: surveyInfo.id)
+                }
+
+            if(result.institution.id == surveyInfo.owner.id){
+                redirect(controller: 'survey', action: 'evaluationParticipant', id: surveyInfo.id, params: [participant: org.id])
+            } else{
+                redirect(action: 'surveyInfos', id: surveyInfo.id)
+            }
+
         }else {
             redirect(url: request.getHeader('referer'))
         }

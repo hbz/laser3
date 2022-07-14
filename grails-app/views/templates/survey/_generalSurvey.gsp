@@ -211,10 +211,6 @@
             </div>
         </div>
 
-        <div id="container-surveyLinkCard">
-            <g:render template="/survey/surveyLinkCard"/>
-        </div>
-
         <div class="ui card">
             <g:render template="/survey/linksProviderOrLicense"
                       model="[linkType: 'License', surveyInfo: surveyInfo, editable: editable, surveyConfig  : surveyConfig]"/>
@@ -228,6 +224,11 @@
     </div>
     <aside class="six wide column la-sidekick">
         <div class="ui one cards">
+
+            <div id="container-documents">
+                <g:render template="/survey/surveyLinkCard"/>
+            </div>
+
             <g:if test="${controllerName == 'survey' && actionName == 'show'}">
                 <div id="container-tasks">
                     <g:render template="/templates/tasks/card"
