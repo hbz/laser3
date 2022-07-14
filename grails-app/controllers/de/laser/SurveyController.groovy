@@ -1995,7 +1995,7 @@ class SurveyController {
 
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
 
-        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
+        result.surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.surveyConfigID) : result.surveyInfo.surveyConfigs[0]
 
         result.surveyResults = []
 

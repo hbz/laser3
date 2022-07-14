@@ -556,9 +556,9 @@ class ManagementService {
                                 flash.error = messageSource.getMessage('subscriptionsManagement.noPropertyValue', null, locale)
                         }
 
-                    }else if(params.processOption == 'deleteAllProperties'){
-                        List<Subscription> validSubChilds = Subscription.findAllByInstanceOf(result.subscription)
-                        validSubChilds.each { Subscription subChild ->
+                    }else if(params.processOption == 'deleteAllProperties' || params.processOption == 'deleteProperty'){
+                        Set<Subscription> subscriptions = Subscription.findAllByIdInList(selectedSubs)
+                        subscriptions.each { Subscription subChild ->
                             SubscriptionProperty existingProp
                             if (propertiesFilterPropDef.tenant == result.institution) {
                                 //private Property
@@ -597,7 +597,7 @@ class ManagementService {
                             }
                         }
                         args = [deletedProperties]
-                        result.message = messageSource.getMessage('subscriptionsManagement.deletedProperties', args, LocaleContextHolder.getLocale())
+                        flash.message = messageSource.getMessage('subscriptionsManagement.deletedProperties', args, LocaleContextHolder.getLocale())
                     }
             } else {
                 if (selectedSubs.size() < 1) {

@@ -1619,11 +1619,11 @@ class FilterService {
                     where += " and ((:asAt >= tipp_access_start_date or tipp_access_start_date is null) and (:asAt <= tipp_access_end_date or tipp_access_end_date is null))"
                 }
                 if(configMap.status != null && !configMap.status.isEmpty()) {
-                    params.tippStatus = configMap.status //already id
+                    params.tippStatus = configMap.status instanceof String ? Long.parseLong(configMap.status) : configMap.status //already id
                     where += " and tipp_status_rv_fk = :tippStatus"
                 }
                 else if(configMap.notStatus != null && !configMap.notStatus.isEmpty()) {
-                    params.tippStatus = configMap.notStatus //already id
+                    params.tippStatus = configMap.notStatus instanceof String ? Long.parseLong(configMap.notStatus) : configMap.status //already id
                     where += " and tipp_status_rv_fk != :tippStatus"
                 }
                 else {
@@ -1694,11 +1694,11 @@ class FilterService {
                     where += " and ie_status_rv_fk = :ieStatus"
                 }
                 else if(configMap.status != null && !configMap.status.isEmpty()) {
-                    params.ieStatus = configMap.status //already id
+                    params.ieStatus = configMap.status instanceof String ? Long.parseLong(configMap.status) : configMap.status //already id
                     where += " and ie_status_rv_fk = :ieStatus"
                 }
                 else if(configMap.notStatus != null && !configMap.notStatus.isEmpty()) {
-                    params.ieStatus = configMap.notStatus //already id
+                    params.ieStatus = configMap.notStatus instanceof String ? Long.parseLong(configMap.notStatus) : configMap.notStatus //already id
                     where += " and ie_status_rv_fk != :ieStatus"
                 }
                 else {

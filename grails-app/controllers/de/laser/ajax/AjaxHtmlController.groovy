@@ -555,7 +555,7 @@ class AjaxHtmlController {
     def getSurveyFinishMessage() {
         Org contextOrg = contextService.getOrg()
         SurveyInfo surveyInfo = SurveyInfo.get(params.id)
-        SurveyConfig surveyConfig = SurveyConfig.get(params.surveyConfigID)
+        SurveyConfig surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.surveyConfigID) : surveyInfo.surveyConfigs[0]
         SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(contextOrg, surveyConfig)
         List<SurveyResult> surveyResults = SurveyResult.findAllByParticipantAndSurveyConfig(contextOrg, surveyConfig)
         boolean allResultHaveValue = true
