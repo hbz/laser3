@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4356    14.07.2022  rc-2.3  2.3.2       Moe     Feature     Teilnehmerverwaltung: Merkmale für einzelene Teilnehmer löschbar machen
+
+4039    13.07.2022  rc-2.3  2.3.2       Moe     Bug         500er bei Meine Lizenzverwaltung / Dokumente anhängen
+
 4352    12.07.2022  rc-2.3  2.3.2       Moe     Bug         Titel werden nicht in den Bestand übernommen
 
 4353    12.07.2022  rc-2.3  2.3.2       Moe     Bug         Benutzername nicht in Reset-Mail verschicken
@@ -24,6 +28,8 @@
 4333    30.06.2022  rc-2.3  2.3.2       Moe     Bug         Fehler bei Export von KBART
 
 4326    30.06.2022  rc-2.3  2.3.2       Moe     Bug         Verlängerungsumfrage: Statusfilter im Teilnehmerreiter entfernen
+
+4319    24.06.2022  rc-2.3  2.3.2       Moe     Bug         Umfragen miteinander verknüpfen
 
 4318    24.06.2022  rc-2.3  2.3.2       Andreas Bug         Sortierung von Titel an diversen Stellen korrigiert
 
