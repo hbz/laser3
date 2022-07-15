@@ -54,11 +54,11 @@
                              data-confirm-term-how="ok"
                              action="${actionName}"
                              id="${params.id}"
-                             params="${[exportKBart:true, mode: params.mode, filter: params.filter, asAt: params.asAt]}">KBART Export
+                             params="${params + [exportKBart: true]}">KBART Export
                     </g:link>
                 </g:if>
                 <g:else>
-                    <g:link class="item" action="${actionName}" id="${params.id}" params="${[exportKBart:true, mode: params.mode]}">KBART Export</g:link>
+                    <g:link class="item" action="${actionName}" id="${params.id}" params="${params + [exportKBart: true]}">KBART Export</g:link>
                 </g:else>
             </semui:exportDropdownItem>
         <%--<semui:exportDropdownItem>

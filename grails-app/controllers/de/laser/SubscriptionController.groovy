@@ -1136,11 +1136,11 @@ class SubscriptionController {
         Map<String, Object> ctrlResult = subscriptionControllerService.removeEntitlementGroup(params)
         Object[] args = [message(code:'issueEntitlementGroup.label'),params.titleGroup]
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            flash.error = message(code: 'default.not.found.message', args)
+            flash.error = message(code: 'default.not.found.message', args: args)
         }
         else
         {
-            flash.message = message(code:'default.deleted.message',args)
+            flash.message = message(code:'default.deleted.message', args: args)
         }
         redirect action: 'manageEntitlementGroup', id: params.sub
     }

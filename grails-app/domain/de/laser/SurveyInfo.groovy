@@ -138,8 +138,8 @@ class SurveyInfo {
 
         result.sort{it.value}
 
-        print(result)
-        print(count)
+        //print(result)
+        //print(count)
 
 
         result = result?.find{it.value == count} ? result?.find{it.value == count}.key : null

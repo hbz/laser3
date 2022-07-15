@@ -26,6 +26,8 @@ import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.transaction.TransactionStatus
 
 import javax.servlet.http.HttpServletRequest
+import java.nio.file.Files
+import java.nio.file.Path
 import java.text.SimpleDateFormat
 import java.util.concurrent.ExecutorService
 
@@ -554,9 +556,9 @@ class ManagementService {
                                 flash.error = messageSource.getMessage('subscriptionsManagement.noPropertyValue', null, locale)
                         }
 
-                    }else if(params.processOption == 'deleteAllProperties'){
-                        List<Subscription> validSubChilds = Subscription.findAllByInstanceOf(result.subscription)
-                        validSubChilds.each { Subscription subChild ->
+                    }else if(params.processOption == 'deleteAllProperties' || params.processOption == 'deleteProperty'){
+                        Set<Subscription> subscriptions = Subscription.findAllByIdInList(selectedSubs)
+                        subscriptions.each { Subscription subChild ->
                             SubscriptionProperty existingProp
                             if (propertiesFilterPropDef.tenant == result.institution) {
                                 //private Property
@@ -595,7 +597,7 @@ class ManagementService {
                             }
                         }
                         args = [deletedProperties]
-                        result.message = messageSource.getMessage('subscriptionsManagement.deletedProperties', args, LocaleContextHolder.getLocale())
+                        flash.message = messageSource.getMessage('subscriptionsManagement.deletedProperties', args, LocaleContextHolder.getLocale())
                     }
             } else {
                 if (selectedSubs.size() < 1) {
@@ -808,7 +810,8 @@ class ManagementService {
 
         //Is be to need, because with upload_file the formService.validateToken(params) is not working really
         params.remove('upload_file')
-
+        def input_stream = input_file.inputStream
+        File sourceFile
         if(result.editable && formService.validateToken(params)) {
             Locale locale = LocaleContextHolder.getLocale()
             FlashScope flash = getCurrentFlashScope()
@@ -816,10 +819,8 @@ class ManagementService {
             if (selectedSubs) {
                 Set<Subscription> subscriptions = Subscription.findAllByIdInList(selectedSubs)
                     if(params.processOption == 'newDoc') {
-                        subscriptions.each { Subscription subscription ->
+                        subscriptions.eachWithIndex { Subscription subscription, int status ->
                             if (subscription.isEditableBy(result.user)) {
-
-                                def input_stream = input_file.inputStream
                                 if (input_stream) {
                                     Doc doc_content = new Doc(
                                             contentType: Doc.CONTENT_TYPE_FILE,
@@ -832,7 +833,6 @@ class ManagementService {
 
                                     doc_content.save()
 
-                                    File new_File
                                     try {
                                         String fPath = ConfigUtils.getDocumentStorageLocation() ?: '/tmp/laser'
                                         String fName = doc_content.uuid
@@ -841,9 +841,16 @@ class ManagementService {
                                         if (!folder.exists()) {
                                             folder.mkdirs()
                                         }
-                                        new_File = new File("${fPath}/${fName}")
 
-                                        input_file.transferTo(new_File)
+                                        if(status == 0){
+                                            sourceFile = new File("${fPath}/${fName}")
+                                            input_file.transferTo(sourceFile)
+                                        }else {
+                                            Path source = sourceFile.toPath()
+                                            Path target = new File("${fPath}/${fName}").toPath()
+                                            Files.copy(source, target)
+                                        }
+
                                     }
                                     catch (Exception e) {
                                         e.printStackTrace()

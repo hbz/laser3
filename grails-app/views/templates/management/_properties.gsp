@@ -109,7 +109,7 @@
         </div>
 
 
-        <div class="ui segment">
+    %{--    <div class="ui segment">
             <h4 class="ui header">${message(code: 'subscriptionsManagement.deletePropertyInfo')}</h4>
 
             <g:link class="ui button negative js-open-confirm-modal"
@@ -117,7 +117,7 @@
                     data-confirm-term-how="ok" action="${actionName}" id="${params.id}"
                     params="[processOption: 'deleteAllProperties', propertiesFilterPropDef: propertiesFilterPropDef, tab: params.tab]">${message(code: 'subscriptionsManagement.deleteProperty.button', args: [propertiesFilterPropDef.getI10n('name')])}</g:link>
 
-        </div>
+        </div>--}%
 
         <div class="divider"></div>
 
@@ -354,7 +354,7 @@
 
     <div class="ui segment">
         <g:form action="${actionName}" method="post" class="ui form propertiesForm"
-                params="[tab: params.tab, processOption: 'changeCreateProperty']">
+                params="[tab: params.tab]">
             <g:hiddenField id="ppm_id_${params.id}" name="id" value="${params.id}"/>
 
             <div class="field required">
@@ -404,8 +404,24 @@
                 </g:else>
             </div>
 
-            <button class="ui button" ${!editable ? 'disabled="disabled"' : ''}
-                    type="submit">${message(code: 'default.button.save_changes')}</button>
+            <div class="two fields">
+                <div class="eight wide field" style="text-align: left;">
+                    <div class="ui buttons">
+                        <button class="ui positive button" ${!editable ? 'disabled="disabled"' : ''} type="submit"
+                                name="processOption"
+                                value="changeCreateProperty">${message(code: 'default.button.save_changes')}</button>
+                    </div>
+                </div>
+
+                <div class="eight wide field" style="text-align: right;">
+                    <div class="ui buttons">
+                        <button class="ui button negative " ${!editable ? 'disabled="disabled"' : ''} type="submit"
+                                name="processOption"
+                                value="deleteProperty">${message(code: 'subscriptionsManagement.deleteProperty.button', args: [propertiesFilterPropDef.getI10n('name')])}</button>
+                    </div>
+
+                </div>
+            </div>
 
 
             <h3 class="ui header">

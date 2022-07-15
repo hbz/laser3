@@ -1392,11 +1392,11 @@ class FilterService {
         }
         if (params.filter) {
             base_qry = "select tipp.id from TitleInstancePackagePlatform as tipp where tipp.pkg in (:pkgs) "
-            if (date_filter) {
+           /* if (date_filter) {
                 base_qry += "and ( ( :startDate >= tipp.accessStartDate or tipp.accessStartDate is null ) and ( :endDate <= tipp.accessEndDate or tipp.accessEndDate is null) ) "
                 qry_params.startDate = date_filter
                 qry_params.endDate = date_filter
-            }
+            }*/
             base_qry += "and ( ( lower(tipp.name) like :title ) or ( exists ( from Identifier ident where ident.tipp.id = tipp.id and ident.value like :identifier ) ) or ((lower(tipp.firstAuthor) like :ebookFirstAutorOrFirstEditor or lower(tipp.firstEditor) like :ebookFirstAutorOrFirstEditor)) ) "
             qry_params.title = "%${params.filter.trim().toLowerCase()}%"
             qry_params.identifier = "%${params.filter}%"
@@ -1405,6 +1405,12 @@ class FilterService {
         }
         else {
             base_qry = "select tipp.id from TitleInstancePackagePlatform as tipp where tipp.pkg in (:pkgs) "
+        }
+
+        if (date_filter) {
+            base_qry += "and ( ( :startDate >= tipp.accessStartDate or tipp.accessStartDate is null ) and ( :endDate <= tipp.accessEndDate or tipp.accessEndDate is null) ) "
+            qry_params.startDate = new Timestamp(date_filter.getTime())
+            qry_params.endDate = new Timestamp(date_filter.getTime())
         }
 
         if(params.addEntitlements && params.subscription && params.issueEntitlementStatus) {
@@ -1609,15 +1615,15 @@ class FilterService {
                 where += subFilter
                 if(configMap.asAt && configMap.asAt.length() > 0) {
                     Date dateFilter = DateUtils.getSDF_NoTime().parse(configMap.asAt)
-                    params.asAt = dateFilter.format('yyyy-MM-dd')
-                    where += " and ((:startDate >= tipp_access_start_date or tipp_access_start_date is null) and (:endDate <= tipp_access_end_date or tipp_access_end_date is null))"
+                    params.asAt = new Timestamp(dateFilter.getTime())
+                    where += " and ((:asAt >= tipp_access_start_date or tipp_access_start_date is null) and (:asAt <= tipp_access_end_date or tipp_access_end_date is null))"
                 }
                 if(configMap.status != null && !configMap.status.isEmpty()) {
-                    params.tippStatus = configMap.status //already id
+                    params.tippStatus = configMap.status instanceof String ? Long.parseLong(configMap.status) : configMap.status //already id
                     where += " and tipp_status_rv_fk = :tippStatus"
                 }
                 else if(configMap.notStatus != null && !configMap.notStatus.isEmpty()) {
-                    params.tippStatus = configMap.notStatus //already id
+                    params.tippStatus = configMap.notStatus instanceof String ? Long.parseLong(configMap.notStatus) : configMap.status //already id
                     where += " and tipp_status_rv_fk != :tippStatus"
                 }
                 else {
@@ -1688,11 +1694,11 @@ class FilterService {
                     where += " and ie_status_rv_fk = :ieStatus"
                 }
                 else if(configMap.status != null && !configMap.status.isEmpty()) {
-                    params.ieStatus = configMap.status //already id
+                    params.ieStatus = configMap.status instanceof String ? Long.parseLong(configMap.status) : configMap.status //already id
                     where += " and ie_status_rv_fk = :ieStatus"
                 }
                 else if(configMap.notStatus != null && !configMap.notStatus.isEmpty()) {
-                    params.ieStatus = configMap.notStatus //already id
+                    params.ieStatus = configMap.notStatus instanceof String ? Long.parseLong(configMap.notStatus) : configMap.notStatus //already id
                     where += " and ie_status_rv_fk != :ieStatus"
                 }
                 else {
@@ -1730,7 +1736,7 @@ class FilterService {
                         where += " and tipp_host_platform_url in (select tipp2.tipp_host_platform_url from issue_entitlement as ie2 join title_instance_package_platform as tipp2 on ie2.ie_tipp_fk = tipp2.tipp_id where ie2.ie_perpetual_access_by_sub_fk = any(:perpetualSubs)) "
                     }
                 }
-                if (configMap.converageDepth != null && !configMap.coverageDepth.isEmpty()) {
+                if (configMap.coverageDepth != null && !configMap.coverageDepth.isEmpty()) {
                     List<Object> coverageDepths = []
                     coverageDepths.addAll(listReaderWrapper(configMap, 'coverageDepth').collect { it.toLowerCase() })
                     params.coverageDepth = connection.createArrayOf('varchar', coverageDepths.toArray())
