@@ -1,3 +1,5 @@
+package changelogs
+
 databaseChangeLog = {
 
     changeSet(author: "djebeniani (generated)", id: "1655994622356-1") {

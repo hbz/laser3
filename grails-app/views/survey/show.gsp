@@ -32,13 +32,13 @@
 <ui:messages data="${flash}"/>
 
 <g:if test="${surveyLinksMessage}">
-    <semui:msg class="negative">
+    <ui:msg class="negative">
         <div class="ui bulleted list">
         <g:each in="${surveyLinksMessage}" var="msg">
             <div class="item">${msg}</div>
         </g:each>
         </div>
-    </semui:msg>
+    </ui:msg>
 </g:if>
 
 

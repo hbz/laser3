@@ -1,7 +1,7 @@
-<%@ page import="de.laser.SurveyLinks;de.laser.SurveyInfo;de.laser.helper.RDStore;" %>
+<%@ page import="de.laser.survey.SurveyLinks;de.laser.survey.SurveyInfo;de.laser.storage.RDStore;" %>
 <laser:serviceInjection/>
 
-<semui:modal id="surveyLinks" text="${message(code: 'surveyLinks.link.button')}" msgSave="${message(code: 'default.button.link.label')}">
+<ui:modal id="surveyLinks" text="${message(code: 'surveyLinks.link.button')}" msgSave="${message(code: 'default.button.link.label')}">
     <g:form class="ui form" controller="survey" action="setSurveyLink" params="[surveyConfigID: surveyConfig.id, id: surveyInfo.id]" method="post">
         <div class="field">
             <div class="ui grid">
@@ -32,4 +32,4 @@
             </div>
         </div>
     </g:form>
-</semui:modal>
+</ui:modal>

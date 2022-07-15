@@ -26,12 +26,10 @@ class SurveyOrg {
 
     boolean orgInsertedItself = false
 
-
     static constraints = {
         ownerComment(nullable: true, blank: false)
         priceComment(nullable: true, blank: false)
         finishDate  (nullable:true)
-        orgInsertedItself (nullable:true)
     }
 
     static mapping = {
