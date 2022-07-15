@@ -749,6 +749,17 @@ class SurveyController {
     def show() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
 
+        result.surveyLinksMessage = []
+
+        if(SurveyLinks.executeQuery("from SurveyLinks where sourceSurvey = :surveyInfo and sourceSurvey.status = :startStatus and targetSurvey.status != sourceSurvey.status", [surveyInfo: result.surveyInfo, startStatus: RDStore.SURVEY_SURVEY_STARTED]).size() > 0){
+            result.surveyLinksMessage  << message(code: 'surveyLinks.surveysNotStartet')
+        }
+
+        if(SurveyLinks.executeQuery("from SurveyLinks where sourceSurvey = :surveyInfo and sourceSurvey.status = :startStatus and targetSurvey.status = sourceSurvey.status and targetSurvey.endDate != sourceSurvey.endDate", [surveyInfo: result.surveyInfo, startStatus: RDStore.SURVEY_SURVEY_STARTED]).size() > 0){
+            result.surveyLinksMessage  << message(code: 'surveyLinks.surveysNotSameEndDate')
+        }
+
+
         if(result.surveyInfo.surveyConfigs.size() >= 1  || params.surveyConfigID) {
 
             result.surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.surveyConfigID) : result.surveyInfo.surveyConfigs[0]
@@ -787,6 +798,17 @@ class SurveyController {
                     result.costItemSums.consCosts = costItems.cons.sums
                 }
                 result.links = linksGenerationService.getSourcesAndDestinations(result.subscription,result.user)
+
+                if(result.surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION]) {
+                    result.successorSubscription = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
+                    Collection<AbstractPropertyWithCalculatedLastUpdated> props
+                    props = result.surveyConfig.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
+                    if(result.successorSubscription){
+                        props += result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
+                    }
+                    result.customProperties = comparisonService.comparePropertiesWithAudit(props, true, true)
+                }
+
             }
 
             Org contextOrg = contextService.getOrg()
@@ -803,14 +825,6 @@ class SurveyController {
                     result.properties << it
                 }
             }*/
-
-                result.successorSubscription = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
-                Collection<AbstractPropertyWithCalculatedLastUpdated> props
-                props = result.surveyConfig.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
-                if(result.successorSubscription){
-                    props += result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
-                }
-                result.customProperties = comparisonService.comparePropertiesWithAudit(props, true, true)
 
         }
 
@@ -1987,7 +2001,7 @@ class SurveyController {
 
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
 
-        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
+        result.surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.surveyConfigID) : result.surveyInfo.surveyConfigs[0]
 
         result.surveyResults = []
 
@@ -2167,13 +2181,15 @@ class SurveyController {
                 }
             }
 
-            result.successorSubscription = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
-            Collection<AbstractPropertyWithCalculatedLastUpdated> props
-            props = result.surveyConfig.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
-            if(result.successorSubscription){
-                props += result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
+            if(result.surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION]) {
+                result.successorSubscription = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
+                Collection<AbstractPropertyWithCalculatedLastUpdated> props
+                props = result.surveyConfig.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
+                if(result.successorSubscription){
+                    props += result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
+                }
+                result.customProperties = comparisonService.comparePropertiesWithAudit(props, true, true)
             }
-            result.customProperties = comparisonService.comparePropertiesWithAudit(props, true, true)
 
             result.links = linksGenerationService.getSourcesAndDestinations(result.subscription,result.user)
         }
@@ -4876,37 +4892,87 @@ class SurveyController {
             response.sendError(401); return
         }
 
-        if(params.license){
-            License license = genericOIDService.resolveOID(params.license)
-            result.surveyInfo.license = license ?: result.surveyInfo.license
+        SurveyInfo.withTransaction { TransactionStatus ts ->
+            if (params.license) {
+                License license = genericOIDService.resolveOID(params.license)
+                result.surveyInfo.license = license ?: result.surveyInfo.license
 
-            if (!result.surveyInfo.save(flush: true)) {
-                flash.error = g.message(code: 'surveyInfo.link.fail')
+                if (!result.surveyInfo.save()) {
+                    flash.error = g.message(code: 'surveyInfo.link.fail')
+                }
+            }
+
+            if (params.provider) {
+                Org provider = genericOIDService.resolveOID(params.provider)
+                result.surveyInfo.provider = provider ?: result.surveyInfo.provider
+
+                if (!result.surveyInfo.save()) {
+                    flash.error = g.message(code: 'surveyInfo.link.fail')
+                }
+            }
+
+            if (params.unlinkLicense) {
+                result.surveyInfo.license = null
+
+                if (!result.surveyInfo.save()) {
+                    flash.error = g.message(code: 'surveyInfo.unlink.fail')
+                }
+            }
+
+            if (params.unlinkProvider) {
+                result.surveyInfo.provider = null
+
+                if (!result.surveyInfo.save()) {
+                    flash.error = g.message(code: 'surveyInfo.unlink.fail')
+                }
             }
         }
 
-        if(params.provider){
-            Org provider = genericOIDService.resolveOID(params.provider)
-            result.surveyInfo.provider = provider ?: result.surveyInfo.provider
+        redirect(url: request.getHeader('referer'))
 
-            if (!result.surveyInfo.save(flush: true)) {
-                flash.error = g.message(code: 'surveyInfo.link.fail')
-            }
+    }
+
+    /**
+     * Set link to license or provider
+     * @return a redirect to the referer
+     */
+    @DebugAnnotation(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    Map<String,Object> setSurveyLink() {
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
+        if (!result.editable) {
+            response.sendError(401); return
         }
 
-        if(params.unlinkLicense){
-            result.surveyInfo.license = null
+        SurveyInfo.withTransaction { TransactionStatus ts ->
+            if (params.linkSurvey) {
+                SurveyInfo linkSurvey = SurveyInfo.get(params.linkSurvey)
 
-            if (!result.surveyInfo.save(flush: true)) {
-                flash.error = g.message(code: 'surveyInfo.unlink.fail')
+                if (linkSurvey) {
+                    if (SurveyLinks.findBySourceSurveyAndTargetSurvey(result.surveyInfo, linkSurvey)) {
+                        flash.error = g.message(code: 'surveyLinks.link.exists')
+                    } else {
+                        SurveyLinks surveyLink = new SurveyLinks(sourceSurvey: result.surveyInfo, targetSurvey: linkSurvey, bothDirection: params.bothDirection ? true : false)
+                        if (!surveyLink.save()) {
+                            flash.error = g.message(code: 'surveyInfo.link.fail')
+                        } else {
+                            if (params.bothDirection) {
+                                SurveyLinks surveyLink2 = new SurveyLinks(sourceSurvey: linkSurvey, targetSurvey: result.surveyInfo, bothDirection: true)
+                                if (!surveyLink2.save()) {
+                                    flash.error = g.message(code: 'surveyInfo.link.fail')
+                                }
+                            }
+                        }
+                    }
+                }
             }
-        }
 
-        if(params.unlinkProvider){
-            result.surveyInfo.provider = null
+            if (params.unlinkSurveyLink) {
+                SurveyLinks surveyLink = SurveyLinks.get(params.unlinkSurveyLink)
+                surveyLink.delete()
 
-            if (!result.surveyInfo.save(flush: true)) {
-                flash.error = g.message(code: 'surveyInfo.unlink.fail')
             }
         }
 

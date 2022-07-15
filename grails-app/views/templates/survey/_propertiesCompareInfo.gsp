@@ -29,7 +29,7 @@
                             </g:if>
                         </td>
                         <g:set var="propValues" value="${prop.getValue()}"/>
-                        <g:if test="${(subscription.id in propValues.owner.id)}">
+                        <g:if test="${(subscription && subscription.id in propValues.owner.id)}">
                             <td class="center aligned">
                                 <div class="ui relaxed divided list">
                                     <g:each var="subProperty" in="${propValues}">
@@ -85,7 +85,7 @@
                                 </div>
                             </td>
                         </g:if>
-                        <g:if test="${!(subscription.id in propValues.owner.id)}">
+                        <g:if test="${!(subscription && subscription.id in propValues.owner.id)}">
                             <td class="center aligned">
                                 <a class="ui circular label la-popup-tooltip la-delay"
                                    data-content="<g:message

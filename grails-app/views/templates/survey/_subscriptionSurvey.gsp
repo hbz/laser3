@@ -269,7 +269,7 @@
             </div>
         </div>
 
-            <g:if test="${customProperties}">
+        <g:if test="${customProperties}">
                     <div class="ui card">
                         <div class="content">
                             <div class="ui accordion la-accordion-showMore js-propertiesCompareInfo-accordion">
@@ -546,6 +546,10 @@
 
     <aside class="six wide column la-sidekick">
         <div class="ui one cards">
+
+            <div id="container-documents">
+                <g:render template="/survey/surveyLinkCard"/>
+            </div>
 
             <g:if test="${controllerName == 'survey' && actionName == 'show'}">
                 <div id="container-tasks">

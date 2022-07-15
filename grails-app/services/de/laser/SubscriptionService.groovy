@@ -1504,7 +1504,7 @@ class SubscriptionService {
                     println "processing ${wekbId}"
                     List<GroovyRowResult> existingEntitlements = sql.rows('select ie_id from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk = :subId and ie_status_rv_fk = :current and tipp_gokb_id = :key',[subId: sub.id, current: RDStore.TIPP_STATUS_CURRENT.id, key: wekbId])
                     if(existingEntitlements.size() == 0) {
-                        Map<String, Object> configMap = [wekbId: wekbId, subId: sub.id, acceptStatus: acceptStatus], coverageMap = [wekbId: wekbId, subId: sub.id, deleted: RDStore.TIPP_STATUS_DELETED.id], priceMap = [wekbId: wekbId, subId: sub.id, deleted: RDStore.TIPP_STATUS_DELETED.id]
+                        Map<String, Object> configMap = [wekbId: wekbId, subId: sub.id, acceptStatus: acceptStatus], coverageMap = [wekbId: wekbId, subId: sub.id, deleted: RDStore.TIPP_STATUS_DELETED.id, removed: RDStore.TIPP_STATUS_REMOVED.id], priceMap = [wekbId: wekbId, subId: sub.id, deleted: RDStore.TIPP_STATUS_DELETED.id, removed: RDStore.TIPP_STATUS_REMOVED.id]
                         if(pickAndChoosePerpetualAccess || sub.hasPerpetualAccess){
                             configMap.perpetualAccessBySub = sub.id
                         }
@@ -1578,13 +1578,13 @@ class SubscriptionService {
                 else if(configMap.startDate)
                     configMap.startDate = new Timestamp(DateUtils.parseDateGeneric(configMap.endDate).getTime())
                 sql.withBatch("insert into issue_entitlement_coverage (ic_version, ic_start_date, ic_start_issue, ic_start_volume, ic_end_date, ic_end_issue, ic_end_volume, ic_coverage_depth, ic_coverage_note, ic_embargo, ic_ie_fk) " +
-                        "values (0, :startDate, :startIssue, :startVolume, :endDate, :endIssue, :endVolume, :coverageDepth, :coverageNote, :embargo, (select ie_id from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk = :subId and tipp_gokb_id = :wekbId and ie_status_rv_fk != :deleted))") { BatchingStatementWrapper stmt ->
+                        "values (0, :startDate, :startIssue, :startVolume, :endDate, :endIssue, :endVolume, :coverageDepth, :coverageNote, :embargo, (select ie_id from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk = :subId and tipp_gokb_id = :wekbId and ie_status_rv_fk != :deleted and ie_status_rv_fk != :removed))") { BatchingStatementWrapper stmt ->
                     stmt.addBatch(configMap)
                 }
             }
             priceItemOverwriteSet.each { Map<String, Object> configMap ->
                 sql.withBatch("insert into price_item (version, pi_guid, pi_list_price, pi_list_currency_rv_fk, pi_local_price, pi_local_currency_rv_fk, pi_ie_fk) " +
-                        "values (0, concat('priceitem:',gen_random_uuid()), :listPrice, :listCurrency, :localPrice, :localCurrency, (select ie_id from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk = :subId and tipp_gokb_id = :wekbId and ie_status_rv_fk != :deleted))") { BatchingStatementWrapper stmt ->
+                        "values (0, concat('priceitem:',gen_random_uuid()), :listPrice, :listCurrency, :localPrice, :localCurrency, (select ie_id from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk = :subId and tipp_gokb_id = :wekbId and ie_status_rv_fk != :deleted and ie_status_rv_fk != :removed))") { BatchingStatementWrapper stmt ->
                     stmt.addBatch(configMap)
                 }
             }
