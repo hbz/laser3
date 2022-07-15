@@ -102,7 +102,7 @@ class Counter5Report extends AbstractReport {
     String accessMethod
 
     static mapping = {
-        id                  column: 'c5r_id', index: 'c5r_id_idx'
+        id                  column: 'c5r_id'
         version             column: 'c5r_version'
         title               column: 'c5r_title_fk', index: 'c5r_title_idx, c5r_report_when_idx'
         publisher           column: 'c5r_publisher', type: 'text'

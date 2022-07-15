@@ -178,10 +178,10 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         instanceOf              column:'sub_parent_sub_fk', index:'sub_parent_idx'
         administrative          column:'sub_is_administrative'
         isSlaved        column:'sub_is_slaved'
-        hasPerpetualAccess column: 'sub_has_perpetual_access', defaultValue: false
+        hasPerpetualAccess column: 'sub_has_perpetual_access'
         //hasPerpetualAccess column: 'sub_has_perpetual_access_rv_fk'
-        hasPublishComponent column: 'sub_has_publish_component', defaultValue: false
-        isPublicForApi  column:'sub_is_public_for_api', defaultValue: false
+        hasPublishComponent column: 'sub_has_publish_component'
+        isPublicForApi  column:'sub_is_public_for_api'
 
         dateCreated          column: 'sub_date_created'
         lastUpdated          column: 'sub_last_updated'

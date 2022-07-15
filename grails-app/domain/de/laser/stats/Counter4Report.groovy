@@ -66,7 +66,7 @@ class Counter4Report extends AbstractReport {
     String category
 
     static mapping = {
-        id                  column: 'c4r_id', index: 'c4r_id_idx'
+        id                  column: 'c4r_id'
         version             column: 'c4r_version'
         title               column: 'c4r_title_fk', index: 'c4r_title_idx, c4r_report_when_idx'
         publisher           column: 'c4r_publisher', type: 'text'

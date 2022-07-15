@@ -29,7 +29,7 @@ class IssueEntitlementCoverage extends AbstractCoverage {
     }
 
     static mapping = {
-        id column: 'ic_id', index: 'ic_id_idx'
+        id column: 'ic_id'
         version column: 'ic_version'
         startDate column:'ic_start_date',      index: 'ic_dates_idx'
         startVolume column:'ic_start_volume'

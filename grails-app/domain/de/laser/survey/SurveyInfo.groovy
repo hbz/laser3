@@ -54,7 +54,6 @@ class SurveyInfo {
         endDate (nullable:true)
         surveyConfigs (nullable:true, blank:false)
         comment (nullable:true, blank:true)
-        isRenewalSent (nullable:true)
         license (nullable:true)
         provider (nullable:true)
     }
