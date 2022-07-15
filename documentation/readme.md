@@ -1,12 +1,12 @@
 
-## Upgrade to Grails 5.2.0
+## Upgrade to Grails 5.2.1
 
 #### Updated core and dependencies
 
 - Spring Framework 5.3.20
 - Spring Boot 2.7.0
-- Micronaut 3.5.1
-- Gradle 7.4.2
+- Micronaut 3.5.3
+- Gradle 7.5
 - Hibernate 5.6.9.Final / GORM 7.3.2
 - Groovy 3.0.11
 - Java 11
@@ -16,7 +16,7 @@ See [details.md](./details.md) for detailed information.
 
 ### Setup with SDKMAN
 
-    sdk i grails 5.2.0
+    sdk i grails 5.2.1
     sdk i groovy 3.0.11
     sdk i java 11.0.12-open
 
