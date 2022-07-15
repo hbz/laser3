@@ -68,7 +68,7 @@
 </div>
 
 <div class="field ${hasErrors(bean: personInstance, field: 'contacts', 'error')} ">
-	<label for="contacts">
+	<label>
 		<g:message code="person.contacts.label" />
 	</label>
 	<ul class="one-to-many">
@@ -87,7 +87,7 @@
 </div>
 
 <div class="field ${hasErrors(bean: personInstance, field: 'addresses', 'error')} ">
-	<label for="addresses">
+	<label>
 		<g:message code="person.addresses.label" />
 	</label>
 	<ul class="one-to-many">

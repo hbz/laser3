@@ -133,8 +133,6 @@
             <input id="copySubscriber" type="submit" class="ui button js-click-control"
                    value="${message(code: 'copyElementsIntoObject.copySubscriber.button')}" ${submitDisabled}/>
         </div>
-        </tbody>
-    </table>
     </g:form>
 </ui:form>
 

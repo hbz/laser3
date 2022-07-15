@@ -44,6 +44,10 @@ To avoid confusion, the difference between localized and fixed usage in *de.lase
 
 * ~~hibernate.allow_update_outside_transaction: true~~
 
+### Git
+
+The produktive branch has been renamed from *master* to *main*.
+
 ### HTTPBuilder
 
 *org.codehaus.groovy.modules.http-builder:http-builder* is outdated.

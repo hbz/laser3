@@ -80,8 +80,8 @@
                                 aria-label="${message(code: 'ariaLabel.delete.task')}">
                             <i class="trash alternate outline icon"></i>
                         </g:link>
-                </tr>
                     </td>
+                </tr>
             </g:each>
             </tbody>
         </table>

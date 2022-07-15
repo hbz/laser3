@@ -87,7 +87,7 @@
                 <g:message code="renewalEvaluation.newSub"/>
             </g:link>
         </g:else>
-        </br>
+        <br />
         </h3>--}%
 
         <g:set var="countParticipants" value="${surveyConfig.countParticipants()}"/>

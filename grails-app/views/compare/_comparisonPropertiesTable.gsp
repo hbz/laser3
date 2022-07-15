@@ -139,7 +139,7 @@
                         </g:if>
                         <g:else>
                                 <span data-position="top left" class="la-popup-tooltip la-delay"
-                                  data-content="${message(code: "default.compare.propertyValueNotSet")}"/><i
+                                  data-content="${message(code: "default.compare.propertyValueNotSet")}"><i
                                 class="close icon"></i></span>
                         </g:else>
 

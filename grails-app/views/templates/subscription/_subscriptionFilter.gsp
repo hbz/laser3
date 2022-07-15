@@ -65,7 +65,7 @@
 
                     <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}" var="status">
                         <option <%=(params.list('status').contains(status.id.toString())) ? 'selected="selected"' : ''%>
-                        value="${status.id}" ">
+                        value="${status.id}">
                         ${status.getI10n('value')}
                         </option>
                     </g:each>
@@ -109,7 +109,7 @@
 
                     <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM)}" var="form">
                         <option <%=(params.list('form').contains(form.id.toString())) ? 'selected="selected"' : ''%>
-                        value="${form.id}" ">
+                        value="${form.id}">
                         ${form.getI10n('value')}
                         </option>
                     </g:each>
@@ -123,7 +123,7 @@
 
                     <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)}" var="resource">
                         <option <%=(params.list('resource').contains(resource.id.toString())) ? 'selected="selected"' : ''%>
-                        value="${resource.id}" ">
+                        value="${resource.id}">
                         ${resource.getI10n('value')}
                         </option>
                     </g:each>
@@ -141,7 +141,7 @@
 
                     <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_KIND)}" var="subKind">
                         <option <%=(params.list('subKinds').contains(subKind.id.toString())) ? 'selected="selected"' : ''%>
-                        value="${subKind.id}" ">
+                        value="${subKind.id}">
                         ${subKind.getI10n('value')}
                         </option>
                     </g:each>

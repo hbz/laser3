@@ -1,5 +1,5 @@
 <laser:serviceInjection/>
-<g:form id="delete_doc_form" url="[controller:"${controllerName}",action:'deleteDocuments']" method="post">
+<g:form id="delete_doc_form" url="${[controller: controllerName, action: 'deleteDocuments']}" method="post">
 
     <table class="ui celled la-js-responsive-table la-table table license-documents">
         <thead>

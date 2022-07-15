@@ -31,7 +31,7 @@
                             <g:if test="${(docctx.owner.owner?.id == contextService.getOrg().id || docctx.owner.owner == null) && (editable || editable2)}">
                                 <a onclick="JSPC.app.noteedit(${docctx.owner.id});">
                                     <g:if test="${docctx.owner.title}">
-                                        ${docctx.owner.title}</a>
+                                        ${docctx.owner.title}
                                     </g:if>
                                     <g:else>
                                         <g:message code="license.notes.noTitle"/>
@@ -41,7 +41,7 @@
                             <g:else>
                                 <a onclick="JSPC.app.noteread(${docctx.owner.id});">
                                     <g:if test="${docctx.owner.title}">
-                                        ${docctx.owner.title}</a>
+                                        ${docctx.owner.title}
                                     </g:if>
                                     <g:else>
                                         <g:message code="license.notes.noTitle"/>

@@ -172,7 +172,7 @@
                 </thead>
                 <tbody>
                 <g:each in="${basket}" var="itm">
-                    <tr></tr>
+                    <tr>
                     <td><g:if test="${itm.getClass().getName() != Subscription.class.name}">
                         <i class="gift icon"></i>${itm.name}
                     </g:if><g:else>

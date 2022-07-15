@@ -161,7 +161,7 @@
         </div>
     </div>
 </div>
-</br>
+<br />
 
 <g:if test="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, subscriber).finishDate != null}">
     <div class="ui icon positive message">
@@ -301,7 +301,7 @@
     </div>
 </g:if>
 
-</br>
+<br />
 <ui:tabs actionName="${actionName}">
     <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
                     params="[id: newSub.id, surveyConfigID: surveyConfig.id, tab: 'allIEs']"

@@ -214,7 +214,7 @@
         <g:if test="${showContacts}">
             <div class="field">
                 <br />
-                <label for="contacts">
+                <label>
                     <g:message code="person.contacts.label"/>:
                 </label>
 
@@ -295,7 +295,7 @@
         <g:if test="${showAddresses}">
             <div class="field">
                 <br />
-                <label for="addresses">
+                <label>
                     <g:message code="person.addresses.label"/>:
                 </label>
                 <g:if test="${personInstance}">

@@ -80,7 +80,7 @@
 
                     <g:each in="${providers.sort { it.name }}" var="provider">
                         <option <%=(params.list('filterPvd').contains(provider.id.toString())) ? 'selected="selected"' : ''%>
-                        value="${provider.id}" ">
+                        value="${provider.id}">
                         ${provider.name}
                         </option>
                     </g:each>
@@ -95,7 +95,7 @@
 
                     <g:each in="${subscriptions.sort { it }}" var="sub">
                         <option <%=(params.list('filterSub').contains(sub)) ? 'selected="selected"' : ''%>
-                        value="${sub}" ">
+                        value="${sub}">
                         ${sub}
                         </option>
                     </g:each>
