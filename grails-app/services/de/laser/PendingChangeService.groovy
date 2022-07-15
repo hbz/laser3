@@ -186,12 +186,12 @@ class PendingChangeService extends AbstractLockableService {
                             SimpleDateFormat sdf = DateUtils.getSDF_yyyyMMdd_HHmmssS()
                             if(payload.changeDoc?.startDate || payload.changeDoc?.endDate)
                             {
-                                payload.changeDoc?.startDate = ((payload.changeDoc?.startDate != null) && (payload.changeDoc?.startDate.length() > 0)) ? sdf.parse(payload.changeDoc?.startDate) : null
-                                payload.changeDoc?.endDate = ((payload.changeDoc?.endDate != null) && (payload.changeDoc?.endDate.length() > 0)) ? sdf.parse(payload.changeDoc?.endDate) : null
+                                payload.changeDoc?.startDate = ((payload.changeDoc?.startDate != null) && (payload.changeDoc?.startDate?.length() > 0)) ? sdf.parse(payload.changeDoc?.startDate) : null
+                                payload.changeDoc?.endDate = ((payload.changeDoc?.endDate != null) && (payload.changeDoc?.endDate?.length() > 0)) ? sdf.parse(payload.changeDoc?.endDate) : null
                             }
                             if(payload.changeDoc?.accessStartDate || payload.changeDoc?.accessEndDate) {
-                                payload.changeDoc?.accessStartDate = ((payload.changeDoc?.accessStartDate != null) && (payload.changeDoc?.accessStartDate.length() > 0)) ? sdf.parse(payload.changeDoc?.accessStartDate) : null
-                                payload.changeDoc?.accessEndDate = ((payload.changeDoc?.accessEndDate != null) && (payload.changeDoc?.accessEndDate.length() > 0)) ? sdf.parse(payload.changeDoc?.accessEndDate) : null
+                                payload.changeDoc?.accessStartDate = ((payload.changeDoc?.accessStartDate != null) && (payload.changeDoc?.accessStartDate?.length() > 0)) ? sdf.parse(payload.changeDoc?.accessStartDate) : null
+                                payload.changeDoc?.accessEndDate = ((payload.changeDoc?.accessEndDate != null) && (payload.changeDoc?.accessEndDate?.length() > 0)) ? sdf.parse(payload.changeDoc?.accessEndDate) : null
                             }
 
 
@@ -213,12 +213,12 @@ class PendingChangeService extends AbstractLockableService {
                                 SimpleDateFormat sdf = DateUtils.getSDF_yyyyMMdd_HHmmssS()
                                 if(payload.changeDoc?.startDate || payload.changeDoc?.endDate)
                                 {
-                                    payload.changeDoc?.startDate = ((payload.changeDoc?.startDate != null) && (payload.changeDoc?.startDate.length() > 0)) ? sdf.parse(payload.changeDoc?.startDate) : null
-                                    payload.changeDoc?.endDate = ((payload.changeDoc?.endDate != null) && (payload.changeDoc?.endDate.length() > 0)) ? sdf.parse(payload.changeDoc?.endDate) : null
+                                    payload.changeDoc?.startDate = ((payload.changeDoc?.startDate != null) && (payload.changeDoc?.startDate?.length() > 0)) ? sdf.parse(payload.changeDoc?.startDate) : null
+                                    payload.changeDoc?.endDate = ((payload.changeDoc?.endDate != null) && (payload.changeDoc?.endDate?.length() > 0)) ? sdf.parse(payload.changeDoc?.endDate) : null
                                 }
                                 if(payload.changeDoc?.accessStartDate || payload.changeDoc?.accessEndDate) {
-                                    payload.changeDoc?.accessStartDate = ((payload.changeDoc?.accessStartDate != null) && (payload.changeDoc?.accessStartDate.length() > 0)) ? sdf.parse(payload.changeDoc?.accessStartDate) : null
-                                    payload.changeDoc?.accessEndDate = ((payload.changeDoc?.accessEndDate != null) && (payload.changeDoc?.accessEndDate.length() > 0)) ? sdf.parse(payload.changeDoc?.accessEndDate) : null
+                                    payload.changeDoc?.accessStartDate = ((payload.changeDoc?.accessStartDate != null) && (payload.changeDoc?.accessStartDate?.length() > 0)) ? sdf.parse(payload.changeDoc?.accessStartDate) : null
+                                    payload.changeDoc?.accessEndDate = ((payload.changeDoc?.accessEndDate != null) && (payload.changeDoc?.accessEndDate?.length() > 0)) ? sdf.parse(payload.changeDoc?.accessEndDate) : null
                                 }
 
                                 if(payload.changeDoc?.status)

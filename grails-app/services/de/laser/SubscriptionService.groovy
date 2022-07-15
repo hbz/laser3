@@ -946,7 +946,7 @@ class SubscriptionService {
                 visibleOrgRelations << or
             }
         }
-        visibleOrgRelations.sort { it.org?.name.toLowerCase() }
+        visibleOrgRelations.sort { it.org?.name?.toLowerCase() }
     }
 
     /**
@@ -961,7 +961,7 @@ class SubscriptionService {
                 visibleOrgRelations << or
             }
         }
-        visibleOrgRelations.sort { it.org?.name.toLowerCase() }
+        visibleOrgRelations.sort { it.org?.name?.toLowerCase() }
     }
 
     /**
