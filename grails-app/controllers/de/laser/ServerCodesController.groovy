@@ -72,7 +72,7 @@ class ServerCodesController {
         Map<String, Object> result = [status: request.getAttribute('javax.servlet.error.status_code')]
 
         UrlMappingData umd = (new DefaultUrlMappingParser()).parse( request.forwardURI )
-        GrailsClass controller = CodeUtils.getAllControllerClasses().find { it.logicalPropertyName == umd.tokens[0] }
+        GrailsClass controller = CodeUtils.getAllGrailsControllerArtefacts().find { it.logicalPropertyName == umd.tokens[0] }
         if (controller) {
             result.alternatives = controller.clazz.declaredMethods.findAll{
                 it.getAnnotation(Action) && it.name in ['index', 'list', 'show']

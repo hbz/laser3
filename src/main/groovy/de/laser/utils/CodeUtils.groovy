@@ -14,55 +14,25 @@ import org.grails.datastore.mapping.model.PersistentEntity
 @Slf4j
 class CodeUtils {
 
-    /**
-     * Gets the domain class entity for the given class name. The name has to be complete
-     * @param qualifiedName the fully qualified name of the class to retrieve
-     * @return the {@link GrailsClass} instance
-     */
-    static GrailsClass getDomainClass(String qualifiedName) {
-        // fallback
-        String fallback = qualifiedName.replace('class ', '')
-        GrailsClass dc = Holders.grailsApplication.getArtefact('Domain', fallback)
-
-        if (! dc) {
-            log.warn "Found no result - getDomainClass( ${qualifiedName} )"
-        }
-        dc
+    static Class getDomainClass(String qualifiedName) {
+        getDomainArtefact(qualifiedName)?.clazz
     }
 
-    /**
-     * Gets the domain class entity for the given class name. The name can be completed, i.e. does not need to be fully qualified
-     * @param qualifiedName the name of the class to retrieve
-     * @return the {@link GrailsClass} instance
-     */
-    static GrailsClass getDomainClassGeneric(String name) {
-        GrailsClass dc
-        List<String> namespaces = [ 'de.laser' ]
-
-        for (String ns : namespaces) {
-            dc = Holders.grailsApplication.getArtefact('Domain', ns + '.' + name)
-            if (dc) { break }
-        }
-        if (! dc) {
-            log.warn "Found no result - getDomainClassGeneric( ${name} )"
-        }
-        dc
+    static Class getDomainClassFallback(String name) {
+        getDomainArtefactFallback(name)?.clazz
     }
 
-    /**
-     * Returns a complete list of currently registered domain classes
-     * @return a list of {@link GrailsClass} entitles
-     */
-    static List<GrailsClass> getAllDomainClasses() {
-        Holders.grailsApplication.getArtefacts('Domain').toList()
+    static List<Class> getAllDomainClasses() {
+        getAllGrailsDomainArtefacts().collect{ it.clazz }
     }
 
-    static List<GrailsClass> getAllControllerClasses() {
-        Holders.grailsApplication.getArtefacts('Controller').toList()
+    static List<Class> getAllControllerClasses() {
+        getAllGrailsControllerArtefacts().collect{ it.clazz }
     }
+
+    // --
 
     static PersistentEntity getPersistentEntity(String qualifiedName) {
-        // fallback
         String fallback = qualifiedName.replace('class ', '')
         PersistentEntity pe = Holders.grailsApplication.mappingContext.getPersistentEntity( fallback )
 
@@ -71,4 +41,43 @@ class CodeUtils {
         }
         pe
     }
+
+    // --
+
+    static GrailsClass getDomainArtefact(String qualifiedName) {
+        String fallback = qualifiedName.replace('class ', '')
+        GrailsClass dc = Holders.grailsApplication.getArtefact('Domain', fallback)
+
+        if (! dc) {
+            log.warn "Found no result - getDomainArtefact( ${qualifiedName} )"
+        }
+        dc
+    }
+
+    static GrailsClass getDomainArtefactFallback(String name) {
+        GrailsClass dc
+        List<String> namespaces = [ 'de.laser' ]
+
+        for (String ns : namespaces) {
+            dc = Holders.grailsApplication.getArtefact('Domain', ns + '.' + name)
+            if (dc) { break }
+        }
+        if (! dc) {
+            log.warn "Found no result - getDomainArtefactFallback( ${name} )"
+        }
+        dc
+    }
+
+    static List<GrailsClass> getAllGrailsDomainArtefacts() {
+        // it.class = class org.grails.core.DefaultGrailsDomainClass
+        // it.clazz = class de.laser.<XY>
+        Holders.grailsApplication.getArtefacts('Domain').toList().sort{ it.clazz.simpleName }
+    }
+
+    static List<GrailsClass> getAllGrailsControllerArtefacts() {
+        // it.class = class org.grails.core.DefaultGrailsControllerClass
+        // it.clazz = class de.laser.<XY>Controller
+        Holders.grailsApplication.getArtefacts('Controller').toList().sort{ it.clazz.simpleName }
+    }
+
 }

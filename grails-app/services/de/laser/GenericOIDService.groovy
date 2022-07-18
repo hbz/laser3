@@ -3,7 +3,6 @@ package de.laser
 import de.laser.utils.CodeUtils
 import grails.gorm.transactions.Transactional
 import org.grails.core.artefact.DomainClassArtefactHandler
-import grails.core.GrailsClass
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 /**
@@ -31,13 +30,10 @@ class GenericOIDService {
 
     if (oid) {
       String[] parts = oid.toString().split(':')
-      String domainClassString = parts[0].trim()
-      GrailsClass dc = CodeUtils.getDomainClass(domainClassString)
-      if (! dc) {
-        dc = CodeUtils.getDomainClassGeneric(domainClassString)
-      }
-      if (dc)  {
-        result = dc.getClazz().get(parts[1].trim())
+      String domainClass = parts[0].trim()
+      Class cls = CodeUtils.getDomainClass(domainClass) ?: CodeUtils.getDomainClassFallback(domainClass)
+      if (cls)  {
+        result = cls.get(parts[1].trim())
       }
       else {
         log.error("failed to resolveOID() for: ${oid}")

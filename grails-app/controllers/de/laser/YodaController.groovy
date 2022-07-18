@@ -410,11 +410,10 @@ class YodaController {
         ]
 
         CodeUtils.getAllControllerClasses().each { controller ->
-            Class controllerClass = controller.clazz
-            if (controllerClass.name.startsWith('de.laser')) {
+            if (controller.name.startsWith('de.laser')) {
                 Map<String, Object> mList = [public:[:], others:[:]]
 
-                controllerClass.declaredMethods.each { Method method ->
+                controller.declaredMethods.each { Method method ->
                     int mods = method.getModifiers()
                     if ( ! Modifier.isSynthetic(mods) && (
                             (method.getAnnotation(Action) || Modifier.isPrivate(mods)) ||
@@ -479,13 +478,13 @@ class YodaController {
                     }
                 }
 
-                cList.putAt( controllerClass.simpleName, [
-                        'secured': controllerClass.getAnnotation(Secured)?.value(),
+                cList.putAt( controller.simpleName, [
+                        'secured': controller.getAnnotation(Secured)?.value(),
                         'methods': [
                                 public: mList.public.sort{it.key},
                                 others: mList.others.sort{it.key}
                         ],
-                        'deprecated': controllerClass.getAnnotation(Deprecated) ? true : false
+                        'deprecated': controller.getAnnotation(Deprecated) ? true : false
                 ])
             }
         }
