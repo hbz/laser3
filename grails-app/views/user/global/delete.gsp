@@ -12,7 +12,7 @@
 
     <g:if test="${delResult}">
         <g:if test="${delResult.status == DeletionService.RESULT_SUCCESS}">
-            <ui:msg class="positive" header="" message="deletion.success.msg" />
+            <ui:msg class="positive" message="deletion.success.msg" />
 
             <g:if test="${controllerName == 'myInstitution'}">
                 <g:link action="users" class="ui button"><g:message code="org.nav.users"/></g:link>
@@ -27,10 +27,10 @@
         </g:if>
         <g:else>
             <g:if test="${delResult.status == DeletionService.RESULT_SUBSTITUTE_NEEDED}">
-                <ui:msg noClose="true" class="warning" header="" message="user.delete.info2" />
+                <ui:msg noClose="true" class="warning" message="user.delete.info2" />
             </g:if>
             <g:else>
-                <ui:msg noClose="true" class="warning" header="" message="user.delete.info" />
+                <ui:msg noClose="true" class="warning" message="user.delete.info" />
             </g:else>
 
             <g:if test="${delResult.status == DeletionService.RESULT_CUSTOM}">

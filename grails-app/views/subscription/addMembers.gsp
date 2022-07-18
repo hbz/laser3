@@ -100,7 +100,7 @@
                         </laser:script>
                     </g:if>
                     <g:else>
-                        <ui:msg class="info" text="${message(code:'myinst.noSubscriptionOwner')}"/>
+                        <ui:msg class="info" message="myinst.noSubscriptionOwner"/>
                     </g:else>
                 </div>
             </div>

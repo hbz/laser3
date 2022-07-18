@@ -12,15 +12,15 @@
 
     <g:if test="${delResult}">
         <g:if test="${delResult.status == deletionService.RESULT_SUCCESS}">
-            <ui:msg class="positive" header="" message="deletion.success.msg" />
+            <ui:msg class="positive" message="deletion.success.msg" />
             <g:link controller="organisation" action="listInstitution" class="ui button">${message(code:'menu.public.all_insts')}</g:link>
         </g:if>
         <g:else>
             <g:if test="${delResult.status == deletionService.RESULT_SUBSTITUTE_NEEDED}">
-                <ui:msg class="info" header="" message="org.delete.info2" />
+                <ui:msg class="info" message="org.delete.info2" />
             </g:if>
             <g:else>
-                <ui:msg class="info" header="" message="org.delete.info" />
+                <ui:msg class="info" message="org.delete.info" />
             </g:else>
 
             <g:if test="${delResult.status == deletionService.RESULT_BLOCKED}">

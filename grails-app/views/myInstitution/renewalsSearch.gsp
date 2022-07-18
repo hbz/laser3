@@ -29,16 +29,14 @@
         </div>
     </g:form>
 
-    <ui:msg class="info" header="${message(code: 'myinst.renewalSearch.workflowinfo')}" noClose="true">
-        ${message(code: 'myinst.renewalSearch.workflow')}
-    </ui:msg>
+    <ui:msg class="info" header="${message(code: 'myinst.renewalSearch.workflowinfo')}" message="myinst.renewalSearch.workflow" noClose="true" />
+
 <hr />
 
 <g:if test="${basket.size() <= 1}">
 
-    <ui:msg class="info" header="Info" noClose="true">
-        ${message(code: 'myinst.renewalSearch.auswahl')}
-    </ui:msg>
+    <ui:msg class="info" header="Info" message="myinst.renewalSearch.auswahl" noClose="true" />
+
     <hr />
 </g:if>
 

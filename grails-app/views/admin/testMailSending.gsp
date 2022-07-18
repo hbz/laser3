@@ -31,7 +31,7 @@
     </ui:form>
 
     <g:if test="${mailDisabled}">
-        <ui:msg class="warning" header="${message(code:'default.hint.label')}" text="${message(code:'system.config.mail.disabled')}" />
+        <ui:msg class="warning" header="${message(code:'default.hint.label')}" message="system.config.mail.disabled" />
     </g:if>
 
 <laser:htmlEnd />

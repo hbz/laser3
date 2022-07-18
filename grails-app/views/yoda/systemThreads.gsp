@@ -11,8 +11,7 @@
     <g:set var="threads" value="${Thread.getAllStackTraces().keySet().sort{ it.id }}" />
     <g:set var="tmxBean" value="${ManagementFactory.getThreadMXBean()}" />
 
-    <div class="ui message info">
-        <p>
+    <ui:msg class="info" noClose="true">
             <strong>Anzahl gefundener Threads: ${threads.size()}</strong>
             <br />
             <br />
@@ -22,8 +21,7 @@
             </g:if>
             Seit Systemstart wurden <strong>${tmxBean.getTotalStartedThreadCount()}</strong> Threads erzeugt.
             Die Höchstlast lag bei <strong>${tmxBean.getPeakThreadCount()}</strong> Threads.
-        </p>
-    </div>
+    </ui:msg>
 
     <table class="ui celled la-js-responsive-table la-table la-hover-table compact table" id="contextTable">
         <tbody>

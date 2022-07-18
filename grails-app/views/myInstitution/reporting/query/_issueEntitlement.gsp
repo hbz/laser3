@@ -5,22 +5,16 @@
     <g:set var="validFilterResult" value="${filterResult.data.issueEntitlementIdList}" />
 
     <g:if test="${validFilterResult}">
-        <div class="ui message success">
-            <p>
-                <laser:render template="/myInstitution/reporting/query/filterResult" model="${[filter: filter, filterResult: filterResult]}" />
-            </p>
-        </div>
+        <ui:msg class="positive" noClose="true">
+            <laser:render template="/myInstitution/reporting/query/filterResult" model="${[filter: filter, filterResult: filterResult]}" />
+        </ui:msg>
     </g:if>
     <g:else>
-        <div class="ui message negative">
-            <p><g:message code="reporting.filter.result.x.empty" /></p>
-        </div>
+        <ui:msg class="negative" noClose="true" message="reporting.filter.result.x.empty" />
     </g:else>
 
     <g:if test="${filterResult.get(ElasticSearchHelper.ELASTICSEARCH_IS_NOT_REACHABLE)}">
-        <div class="ui message negative">
-            <p><i class="icon large exclamation circle"></i> ${message(code:'reporting.filter.result.x.elasticSearchIsNotReachable')}</p>
-        </div>
+        <ui:msg class="negative" icon="large exclamation circle" message="reporting.filter.result.x.elasticSearchIsNotReachable" noClose="true" />
     </g:if>
 
     <laser:render template="/myInstitution/reporting/query/generic_filterLabels" model="${[filterLabels: filterResult.labels]}" />

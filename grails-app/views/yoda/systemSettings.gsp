@@ -15,11 +15,6 @@
         <i class="ui icon hand point right"></i> ${message(code: 'system.maintenanceMode.info', args: [HeartbeatJob.HEARTBEAT_IN_SECONDS])}
     </ui:msg>
 
-
-
-
-
-
     <table class="ui celled la-js-responsive-table la-table table">
         <thead>
         <tr>

@@ -93,7 +93,7 @@
 
     <g:if test="${hiddenPropertiesMessages.size() > 0}">
         <div class="content">
-            <ui:msg class="info" header="" text="${hiddenPropertiesMessages.join('<br />')}" />
+            <ui:msg class="info" text="${hiddenPropertiesMessages.join('<br />')}" />
         </div>
     </g:if>
 

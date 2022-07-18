@@ -171,7 +171,7 @@
                     </laser:script>
                 </g:if>
                 <g:else>
-                    <ui:msg class="info" text="${message(code:'surveyInfo.transferParticipants.noMemberLicenses')}"/>
+                    <ui:msg class="info" message="surveyInfo.transferParticipants.noMemberLicenses" />
                 </g:else>
             </div>
         </div>

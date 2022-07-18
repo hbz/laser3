@@ -10,14 +10,14 @@
 
     <g:if test="${delResult}">
         <g:if test="${delResult.status == deletionService.RESULT_SUCCESS}">
-            <ui:msg class="positive" header="" message="deletion.success.msg" />
+            <ui:msg class="positive" message="deletion.success.msg" />
             <g:link controller="myInstitution" action="currentSubscriptions" class="ui button">${message(code:'menu.my.subscriptions')}</g:link>
             <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
                 <g:link controller="subscription" action="members" id="${parentId}" class="ui button">${message(code:"subscription.details.consortiaMembers.label")}</g:link>
             </g:if>
         </g:if>
         <g:else>
-            <ui:msg class="info" header="" message="subscription.delete.info" />
+            <ui:msg class="info" message="subscription.delete.info" />
 
             <g:if test="${delResult.status == deletionService.RESULT_BLOCKED}">
                 <ui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="deletion.blocked.msg.subscription" />

@@ -74,7 +74,7 @@
             </g:each>
 
             <g:if test="${hiddenPropertiesMessages.size() > 0}">
-                    <ui:msg class="info" header="" text="${hiddenPropertiesMessages.join('<br />')}" />
+                    <ui:msg class="info" text="${hiddenPropertiesMessages.join('<br />')}" />
             </g:if>
 
         <%-- orphaned properties --%>

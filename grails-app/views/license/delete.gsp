@@ -10,11 +10,11 @@
 
     <g:if test="${delResult}">
         <g:if test="${delResult.status == deletionService.RESULT_SUCCESS}">
-            <ui:msg class="positive" header="" message="deletion.success.msg" />
+            <ui:msg class="positive" message="deletion.success.msg" />
             <g:link controller="myInstitution" action="currentLicenses" class="ui button">${message(code:'menu.my.licenses')}</g:link>
         </g:if>
         <g:else>
-            <ui:msg class="info" header="" message="license.delete.info" />
+            <ui:msg class="info" message="license.delete.info" />
 
             <g:if test="${delResult.status == deletionService.RESULT_BLOCKED}">
                 <ui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="deletion.blocked.msg.license" />
