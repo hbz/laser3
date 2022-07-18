@@ -80,11 +80,3 @@ new:
     cd semantic
     gulp build
 
-
-# Important Informations
-
-## Datepicker
-
-- 'by hand' implemented the semantic-ui datepicker
-- it is not in current semantic-ui version (2.4.2)
-- https://github.com/Semantic-Org/Semantic-UI/pull/3256/files
