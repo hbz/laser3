@@ -23,11 +23,11 @@ class CodeUtils {
     }
 
     static List<Class> getAllDomainClasses() {
-        getAllGrailsDomainArtefacts().collect{ it.clazz }
+        getAllDomainArtefacts().collect{ it.clazz }
     }
 
     static List<Class> getAllControllerClasses() {
-        getAllGrailsControllerArtefacts().collect{ it.clazz }
+        getAllControllerArtefacts().collect{ it.clazz }
     }
 
     // --
@@ -68,13 +68,13 @@ class CodeUtils {
         dc
     }
 
-    static List<GrailsClass> getAllGrailsDomainArtefacts() {
+    static List<GrailsClass> getAllDomainArtefacts() {
         // it.class = class org.grails.core.DefaultGrailsDomainClass
         // it.clazz = class de.laser.<XY>
         Holders.grailsApplication.getArtefacts('Domain').toList().sort{ it.clazz.simpleName }
     }
 
-    static List<GrailsClass> getAllGrailsControllerArtefacts() {
+    static List<GrailsClass> getAllControllerArtefacts() {
         // it.class = class org.grails.core.DefaultGrailsControllerClass
         // it.clazz = class de.laser.<XY>Controller
         Holders.grailsApplication.getArtefacts('Controller').toList().sort{ it.clazz.simpleName }

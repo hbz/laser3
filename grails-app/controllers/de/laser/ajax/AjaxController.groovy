@@ -793,7 +793,7 @@ class AjaxController {
         def error
         def msg
         def ownerClass = params.ownerClass // we might need this for addCustomPropertyValue
-        def owner      = CodeUtils.getDomainClass( ownerClass )?.getClazz()?.get(params.ownerId)
+        def owner      = CodeUtils.getDomainClass( ownerClass )?.get(params.ownerId)
 
         // TODO ownerClass
         if (PropertyDefinition.findByNameAndDescrAndTenantIsNull(params.cust_prop_name, params.cust_prop_desc)) {
@@ -891,7 +891,7 @@ class AjaxController {
     if(params.propIdent.length() > 0) {
       def error
       def newProp
-      def owner = CodeUtils.getDomainClass( params.ownerClass )?.getClazz()?.get(params.ownerId)
+      def owner = CodeUtils.getDomainClass( params.ownerClass )?.get(params.ownerId)
         PropertyDefinition type = PropertyDefinition.get(params.propIdent.toLong())
         Org contextOrg = contextService.getOrg()
       def existingProp = owner.propertySet.find { it.type.name == type.name && it.tenant?.id == contextOrg.id }
@@ -1030,7 +1030,7 @@ class AjaxController {
         def error
         def newProp
         Org tenant = Org.get(params.tenantId)
-          def owner  = CodeUtils.getDomainClass( params.ownerClass )?.getClazz()?.get(params.ownerId)
+          def owner  = CodeUtils.getDomainClass( params.ownerClass )?.get(params.ownerId)
           PropertyDefinition type   = PropertyDefinition.get(params.propIdent.toLong())
 
         if (! type) { // new property via select2; tmp deactivated
@@ -1215,7 +1215,7 @@ class AjaxController {
     @Secured(['ROLE_USER'])
     @Transactional
     def toggleIdentifierAuditConfig() {
-        def owner = CodeUtils.getDomainClass( params.ownerClass )?.getClazz()?.get(params.ownerId)
+        def owner = CodeUtils.getDomainClass( params.ownerClass )?.get(params.ownerId)
         if(formService.validateToken(params)) {
             Identifier identifier  = Identifier.get(params.id)
 
@@ -1324,7 +1324,7 @@ class AjaxController {
     def togglePropertyAuditConfig() {
         String className = params.propClass.split(" ")[1]
         def propClass = Class.forName(className)
-        def owner     = CodeUtils.getDomainClass( params.ownerClass )?.getClazz()?.get(params.ownerId)
+        def owner     = CodeUtils.getDomainClass( params.ownerClass )?.get(params.ownerId)
         def property  = propClass.get(params.id)
         def prop_desc = property.getType().getDescr()
         Org contextOrg = contextService.getOrg()
@@ -1411,7 +1411,7 @@ class AjaxController {
     def deleteCustomProperty() {
         String className = params.propClass.split(" ")[1]
         def propClass = Class.forName(className)
-        def owner     = CodeUtils.getDomainClass( params.ownerClass )?.getClazz()?.get(params.ownerId)
+        def owner     = CodeUtils.getDomainClass( params.ownerClass )?.get(params.ownerId)
         def property  = propClass.get(params.id)
         def prop_desc = property.getType().getDescr()
         Org contextOrg = contextService.getOrg()
@@ -1473,7 +1473,7 @@ class AjaxController {
     def propClass = Class.forName(className)
     def property  = propClass.get(params.id)
     def tenant    = property.type.tenant
-    def owner     = CodeUtils.getDomainClass( params.ownerClass )?.getClazz()?.get(params.ownerId)
+    def owner     = CodeUtils.getDomainClass( params.ownerClass )?.get(params.ownerId)
     def prop_desc = property.getType().getDescr()
 
     owner.propertySet.remove(property)
@@ -1723,14 +1723,14 @@ class AjaxController {
     log.debug("AjaxController::addToCollection ${params}");
 
     def contextObj = resolveOID2(params.__context)
-    GrailsClass domain_class = CodeUtils.getDomainClass( params.__newObjectClass )
-    if ( domain_class ) {
+    Class dc = CodeUtils.getDomainClass( params.__newObjectClass )
+    if ( dc ) {
 
         if ( contextObj ) {
             log.debug("Create a new instance of ${params.__newObjectClass}")
 
-            def new_obj = domain_class.getClazz().newInstance();
-            PersistentEntity new_obj_pe = CodeUtils.getPersistentEntity(domain_class.getClazz().name)
+            def new_obj = dc.newInstance()
+            PersistentEntity new_obj_pe = CodeUtils.getPersistentEntity(dc.name)
 
             new_obj_pe.persistentProperties.each { p ->
                 if ( params[p.name] ) {
@@ -1756,32 +1756,6 @@ class AjaxController {
                     }
                 }
             }
-
-//        domain_class.getPersistentProperties().each { p -> // list of GrailsDomainClassProperty
-//          // log.debug("${p.name} (assoc=${p.isAssociation()}) (oneToMany=${p.isOneToMany()}) (ManyToOne=${p.isManyToOne()}) (OneToOne=${p.isOneToOne()})");
-//          if ( params[p.name] ) {
-//            if ( p.isAssociation() ) {
-//              if ( p.isManyToOne() || p.isOneToOne() ) {
-//                // Set ref property
-//                // log.debug("set assoc ${p.name} to lookup of OID ${params[p.name]}");
-//                // if ( key == __new__ then we need to create a new instance )
-//                def new_assoc = resolveOID2(params[p.name])
-//                if(new_assoc){
-//                  new_obj[p.name] = new_assoc
-//                }
-//              }
-//              else {
-//                // Add to collection
-//                // log.debug("add to collection ${p.name} for OID ${params[p.name]}");
-//                new_obj[p.name].add(resolveOID2(params[p.name]))
-//              }
-//            }
-//            else {
-//              // log.debug("Set simple prop ${p.name} = ${params[p.name]}");
-//              new_obj[p.name] = params[p.name]
-//            }
-//          }
-//        }
 
         if ( params.__recip ) {
           // log.debug("Set reciprocal property ${params.__recip} to ${contextObj}");
@@ -1827,14 +1801,14 @@ class AjaxController {
     String[] oid_components = oid.split(':')
     def result
 
-    GrailsClass domain_class = CodeUtils.getDomainClass(oid_components[0])
-    if (domain_class) {
+    Class dc = CodeUtils.getDomainClass(oid_components[0])
+    if (dc) {
       if (oid_components[1] == '__new__') {
-        result = domain_class.getClazz().refdataCreate(oid_components)
+        result = dc.refdataCreate(oid_components)
         // log.debug("Result of create ${oid} is ${result?.id}");
       }
       else {
-        result = domain_class.getClazz().get(oid_components[1])
+        result = dc.get(oid_components[1])
       }
     }
     else {

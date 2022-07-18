@@ -566,10 +566,9 @@ class AjaxJsonController {
         Map<String, Object> result = [values: []]
         params.max = params.max ?: 40
 
-        GrailsClass domain_class = CodeUtils.getDomainClass(params.baseClass)
-
-        if (domain_class) {
-            result.values = domain_class.getClazz().refdataFind(params)
+        Class dc = CodeUtils.getDomainClass(params.baseClass)
+        if (dc) {
+            result.values = dc.refdataFind(params)
             result.values.sort{ x,y -> x.text.compareToIgnoreCase y.text }
         }
         else {

@@ -71,10 +71,10 @@ class DocstoreController  {
 
             //retrieve uploading user and owner class
             User user = contextService.getUser()
-            GrailsClass domain_class = CodeUtils.getDomainClass( params.ownerclass )
+            Class dc = CodeUtils.getDomainClass( params.ownerclass )
 
-            if (domain_class) {
-                def instance = domain_class.getClazz().get(params.ownerid)
+            if (dc) {
+                def instance = dc.get(params.ownerid)
                 if (instance) {
                     log.debug("Got owner instance ${instance}")
 

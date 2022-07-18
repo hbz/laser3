@@ -19,13 +19,12 @@ class RefdataService {
         List usedRdvList    = []
         Map allDcs          = [:]
 
-        List classes = CodeUtils.getAllDomainClasses().findAll {
-            ! it.clazz.toString().endsWith('CustomProperty') && ! it.clazz.toString().endsWith('PrivateProperty') // tmp
+        List<Class> classes = CodeUtils.getAllDomainClasses().findAll {
+            ! it.simpleName.endsWith('CustomProperty') && ! it.simpleName.endsWith('PrivateProperty') // tmp
         }
 
-        classes.each { dc ->
+        classes.each { cls ->
             List dcFields = []
-            Class cls = dc.clazz
 
             // find all rdv_fk from superclasses
             while (cls != Object.class) {
@@ -35,7 +34,7 @@ class RefdataService {
                 )
                 cls = cls.getSuperclass()
             }
-            allDcs.putAt( dc.clazz.simpleName, dcFields.sort() )
+            allDcs.putAt( cls.simpleName, dcFields.sort() )
         }
 
         // inspect classes and fields
@@ -74,9 +73,8 @@ class RefdataService {
         int count = 0
         Map fortytwo = [:]
 
-        CodeUtils.getAllDomainClasses().each { dc ->
+        CodeUtils.getAllDomainClasses().each { cls ->
             List dcFields = []
-            Class cls = dc.clazz
 
             // find all rdv_fk from superclasses
             while (cls != Object.class) {
@@ -86,7 +84,7 @@ class RefdataService {
                 )
                 cls = cls.getSuperclass()
             }
-            fortytwo.putAt( dc.clazz.simpleName, dcFields.sort() )
+            fortytwo.putAt( cls.simpleName, dcFields.sort() )
         }
 
         fortytwo.each { dcName, dcFields ->
@@ -116,8 +114,7 @@ class RefdataService {
     Map<String, Object> integrityCheck() {
         Map<String, Object> checkResult = [:]
 
-        CodeUtils.getAllDomainClasses().each { dc ->
-            Class cls = dc.clazz
+        CodeUtils.getAllDomainClasses().each { cls ->
             String dcClassName = cls.simpleName
 
             // find all rdv_fk from superclasses

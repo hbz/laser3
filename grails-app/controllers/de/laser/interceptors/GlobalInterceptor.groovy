@@ -18,10 +18,10 @@ class GlobalInterceptor implements grails.artefact.Interceptor {
         if (params.id?.contains(':')) {
             try {
                 String objName  = params.id.split(':')[0]
-                GrailsClass obj = CodeUtils.getAllDomainClasses().find {it.name == objName.capitalize() }
+                GrailsClass obj = CodeUtils.getAllDomainArtefacts().find {it.name == objName.capitalize() }
                 if (!obj) {
                     // TODO - remove fallback - db cleanup, e.g. issueentitlement -> issueEntitlement
-                    obj = CodeUtils.getAllDomainClasses().find {it.name.equalsIgnoreCase( objName ) }
+                    obj = CodeUtils.getAllDomainArtefacts().find {it.name.equalsIgnoreCase( objName ) }
                 }
 
                 if (obj) {

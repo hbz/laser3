@@ -26,7 +26,7 @@ class CustomUserDetailsService implements GrailsUserDetailsService {
 
         ConfigObject conf = SpringSecurityUtils.securityConfig
         String userClassName = conf.userLookup.userDomainClassName
-        GrailsClass dc = CodeUtils.getDomainClass(userClassName)
+        GrailsClass dc = CodeUtils.getDomainArtefact(userClassName)
         if (!dc) {
             throw new IllegalArgumentException("The specified user domain class '$userClassName' is not a domain class")
         }

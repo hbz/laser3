@@ -906,7 +906,7 @@ class DataloadService {
 
                         def query
 
-                        Class domainClass = CodeUtils.getDomainClass(domain.name).clazz
+                        Class domainClass = CodeUtils.getDomainClass(domain.name)
                         if (org.apache.commons.lang.ClassUtils.getAllInterfaces(domainClass).contains(CalculatedLastUpdated)) {
                             query = domain.executeQuery("select d.id from " + domain.name + " as d where (d.lastUpdatedCascading is not null and d.lastUpdatedCascading > :from) or (d.lastUpdated > :from) or (d.dateCreated > :from and d.lastUpdated is null) order by d.lastUpdated asc, d.id", [from: from], [readonly: true])
                         } else {
@@ -1231,7 +1231,7 @@ class DataloadService {
 
                 if (ftControl && ftControl.active) {
 
-                        Class domainClass = CodeUtils.getDomainClass(ftControl.domainClassName).clazz
+                        Class domainClass = CodeUtils.getDomainClass(ftControl.domainClassName)
 
                         String indexName =  es_indices.get(domainClass.simpleName)
                         Integer countIndex = 0
@@ -1294,7 +1294,7 @@ class DataloadService {
 
                     if (ft.active) {
 
-                        Class domainClass = CodeUtils.getDomainClass(ft.domainClassName).clazz
+                        Class domainClass = CodeUtils.getDomainClass(ft.domainClassName)
 
                         String indexName = es_indices.get(domainClass.simpleName)
                         Integer countIndex = 0

@@ -25,9 +25,9 @@ class DocstoreControllerService {
      */
     //TODO [ticket=2393] this is a process which should be deployed onto the DMS
     Map<String,Object> editDocument(GrailsParameterMap params) {
-        GrailsClass domain_class = CodeUtils.getDomainClass( params.ownerclass )
-        if (domain_class) {
-            def instance = domain_class.getClazz().get(params.ownerid)
+        Class dc = CodeUtils.getDomainClass( params.ownerclass )
+        if (dc) {
+            def instance = dc.get(params.ownerid)
             if (instance) {
                 log.debug("Got owner instance ${instance}")
 

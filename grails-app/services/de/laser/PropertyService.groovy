@@ -227,7 +227,7 @@ class PropertyService {
         Map<String, Object> detailsMap = [:]
         List<Long> multiplePdList = []
 
-        CodeUtils.getAllDomainClasses().each { dc ->
+        CodeUtils.getAllDomainArtefacts().each { dc ->
 
             if (dc.shortName.endsWith('Property')) {
 

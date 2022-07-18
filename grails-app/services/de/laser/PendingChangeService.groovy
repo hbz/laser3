@@ -178,9 +178,9 @@ class PendingChangeService extends AbstractLockableService {
                         break
 
                     case EVENT_OBJECT_NEW :
-                        GrailsClass new_domain_class = CodeUtils.getDomainClass( payload.newObjectClass )
-                        if ( new_domain_class != null ) {
-                            def new_instance = new_domain_class.getClazz().newInstance()
+                        Class new_dc = CodeUtils.getDomainClass( payload.newObjectClass )
+                        if ( new_dc != null ) {
+                            def new_instance = new_dc.newInstance()
                             // like bindData(destination, map), that only exists in controllers
 
                             SimpleDateFormat sdf = DateUtils.getSDF_yyyyMMdd_HHmmssS()
