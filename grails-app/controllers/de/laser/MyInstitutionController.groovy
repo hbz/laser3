@@ -94,6 +94,7 @@ class MyInstitutionController  {
     WorkflowService workflowService
     ManagementService managementService
     CustomWkhtmltoxService wkhtmltoxService
+    CompareService compareService
 
     /**
      * The landing page after login; this is also the call when the home button is clicked
@@ -2029,10 +2030,14 @@ join sub.orgRelations or_sub where
 		        result.links = linksGenerationService.getSourcesAndDestinations(result.subscription,result.user)
             }
 
-            if(result.surveyConfig.subSurveyUseForTransfer) {
+            if(result.surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION]) {
                 result.successorSubscription = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
-
-                result.customProperties = result.successorSubscription ? comparisonService.comparePropertiesWithAudit(result.surveyConfig.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))} + result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}, true, true) : null
+                Collection<AbstractPropertyWithCalculatedLastUpdated> props
+                props = result.surveyConfig.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
+                if(result.successorSubscription){
+                    props += result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
+                }
+                result.customProperties = comparisonService.comparePropertiesWithAudit(props, true, true)
             }
 
             if (result.subscription && result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
@@ -2116,7 +2121,7 @@ join sub.orgRelations or_sub where
         }
 
         SurveyInfo surveyInfo = SurveyInfo.get(params.id)
-        SurveyConfig surveyConfig = SurveyConfig.get(params.surveyConfigID)
+        SurveyConfig surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.surveyConfigID) : surveyInfo.surveyConfigs[0]
         boolean sendMailToSurveyOwner = false
 
         SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.institution, surveyConfig)
@@ -2198,6 +2203,95 @@ join sub.orgRelations or_sub where
 
 
         redirect(url: request.getHeader('referer'))
+    }
+
+    @DebugAnnotation(perm="ORG_BASIC_MEMBER", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def surveyLinkOpenNewSurvey() {
+        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        SurveyLinks surveyLink = SurveyLinks.get(params.surveyLink)
+        SurveyInfo surveyInfo = surveyLink.targetSurvey
+        SurveyConfig surveyConfig = surveyInfo.surveyConfigs[0]
+        Org org = result.institution
+
+        result.editable = (surveyInfo && surveyInfo.status in [RDStore.SURVEY_SURVEY_STARTED]) ? result.editable : false
+
+        if(result.institution.id == surveyInfo.owner.id) {
+            org = params.participant ? Org.get(params.participant) : null
+        }
+
+        if (org && surveyLink && result.editable) {
+
+            SurveyOrg.withTransaction { TransactionStatus ts ->
+                    boolean existsMultiYearTerm = false
+                    Subscription sub = surveyConfig.subscription
+                    if (sub && !surveyConfig.pickAndChoose && surveyConfig.subSurveyUseForTransfer) {
+                        Subscription subChild = sub.getDerivedSubscriptionBySubscribers(org)
+
+                        if (subChild && subChild.isCurrentMultiYearSubscriptionNew()) {
+                            existsMultiYearTerm = true
+                        }
+
+                    }
+
+                    if (!(SurveyOrg.findAllBySurveyConfigAndOrg(surveyConfig, org)) && !existsMultiYearTerm) {
+                        SurveyOrg surveyOrg = new SurveyOrg(
+                                surveyConfig: surveyConfig,
+                                org: org,
+                                orgInsertedItself: true
+                        )
+
+                        if (!surveyOrg.save()) {
+                            log.debug("Error by add Org to SurveyOrg ${surveyOrg.errors}")
+                            flash.error = message(code: 'surveyLinks.participateToSurvey.fail')
+                        } else {
+                            if(surveyInfo.status in [RDStore.SURVEY_SURVEY_STARTED]){
+                                surveyConfig.surveyProperties.each { SurveyConfigProperties property ->
+                                    if (!SurveyResult.findWhere(owner: surveyInfo.owner, participant: org, type: property.surveyProperty, surveyConfig: surveyConfig)) {
+                                        SurveyResult surveyResult = new SurveyResult(
+                                                owner: surveyInfo.owner,
+                                                participant: org ?: null,
+                                                startDate: surveyInfo.startDate,
+                                                endDate: surveyInfo.endDate ?: null,
+                                                type: property.surveyProperty,
+                                                surveyConfig: surveyConfig
+                                        )
+
+                                        if (surveyResult.save()) {
+                                            log.debug(surveyResult.toString())
+                                        } else {
+                                            log.error("Not create surveyResult: " + surveyResult)
+                                            flash.error = message(code: 'surveyLinks.participateToSurvey.fail')
+                                        }
+                                    }
+                                }
+
+                                surveyService.emailsToSurveyUsersOfOrg(surveyInfo, org, false)
+                                //flash.message = message(code: 'surveyLinks.participateToSurvey.success')
+                            }
+                        }
+                    }
+                surveyConfig.save()
+                }
+
+            if(result.institution.id == surveyInfo.owner.id){
+                redirect(controller: 'survey', action: 'evaluationParticipant', id: surveyInfo.id, params: [participant: org.id])
+            } else{
+                redirect(action: 'surveyInfos', id: surveyInfo.id)
+            }
+
+        }else {
+            redirect(url: request.getHeader('referer'))
+        }
+
     }
 
     /**
