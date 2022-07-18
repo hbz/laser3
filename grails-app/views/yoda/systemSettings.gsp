@@ -11,9 +11,14 @@
     <g:set var="mailConfigDisabled" value="${ConfigMapper.getGrailsMailDisabled()}" />
     <g:set var="maintenanceModeEnabled" value="${SystemSetting.findByName('MaintenanceMode').value == 'true'}" />
 
-    <div class="ui info message">
+    <ui:msg class="info" noClose="true">
         <i class="ui icon hand point right"></i> ${message(code: 'system.maintenanceMode.info', args: [HeartbeatJob.HEARTBEAT_IN_SECONDS])}
-    </div>
+    </ui:msg>
+
+
+
+
+
 
     <table class="ui celled la-js-responsive-table la-table table">
         <thead>

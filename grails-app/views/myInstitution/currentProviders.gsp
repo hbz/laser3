@@ -90,4 +90,4 @@
 
     <laser:render template="export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal', orgType: 'provider']" />
 
-  <laser:htmlEnd />
+<laser:htmlEnd />

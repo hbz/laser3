@@ -29,16 +29,10 @@
 </g:if>
 
 <g:if test="${enrichmentProcess}">
-    <div class="ui positive message">
-        <i class="close icon"></i>
-
-        <div class="header"><g:message code="subscription.details.issueEntitlementEnrichment.label"/></div>
-
-        <p>
+        <ui:msg class="positive" header="${message(code:'subscription.details.issueEntitlementEnrichment.label')}">
             <g:message code="subscription.details.issueEntitlementEnrichment.enrichmentProcess"
                        args="[enrichmentProcess.issueEntitlements, enrichmentProcess.processCount, enrichmentProcess.processCountChangesCoverageDates, enrichmentProcess.processCountChangesPrice]"/>
-        </p>
-    </div>
+        </ui:msg>
 </g:if>
 
 <g:if test="${deletedSPs}">

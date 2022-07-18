@@ -56,18 +56,18 @@
                                     <tr>
                                         <td>
                                             <g:if test="${pd.isHardData}">
-                                                <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.hardData.tooltip')}">
+                                                <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.hardData.tooltip')}">
                                                     <i class="check circle icon green"></i>
                                                 </span>
                                             </g:if>
                                             <g:if test="${pd.multipleOccurrence}">
-                                                <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
+                                                <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
                                                     <i class="redo icon orange"></i>
                                                 </span>
                                             </g:if>
 
                                             <g:if test="${pd.isUsedForLogic}">
-                                                <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.isUsedForLogic.tooltip')}">
+                                                <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.isUsedForLogic.tooltip')}">
                                                     <i class="ui icon orange cube"></i>
                                                 </span>
                                             </g:if>
@@ -155,7 +155,7 @@
                                                     </g:link>
                                                 </g:if>
                                                 <g:else>
-                                                    <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'propertyDefinition.exchange.label')}">
+                                                    <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'propertyDefinition.exchange.label')}">
                                                         <button class="ui icon blue button la-modern-button" data-href="#replacePropertyDefinitionModal" data-ui="modal"
                                                                 data-xcg-pd="${pd.class.name}:${pd.id}"
                                                                 data-xcg-type="${pd.type}"
@@ -167,7 +167,7 @@
                                                 </g:else>
                                             </g:if>
                                             <g:elseif test="${changeProperties && pd.countOwnUsages() > 0}">
-                                                <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'propertyDefinition.exchange.label')}">
+                                                <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'propertyDefinition.exchange.label')}">
                                                     <button class="ui icon blue button la-modern-button" data-href="#replacePropertyDefinitionModal" data-ui="modal"
                                                             data-xcg-pd="${pd.class.name}:${pd.id}"
                                                             data-xcg-type="${pd.type}"

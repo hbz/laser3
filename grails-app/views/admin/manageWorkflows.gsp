@@ -20,7 +20,7 @@
 
 <div data-tab="workflows" class="ui bottom attached tab <% if (tmplTab == 'workflows') { print 'active' } %>" style="margin-top:2em;">
 
-    <div class="ui info message">
+    <ui:msg class="info" noClose="true">
         <div class="ui list">
             <div class="item">
                 <span>
@@ -45,7 +45,7 @@
                 </span>
             </div>
         </div>
-    </div>
+    </ui:msg>
 
     <g:if test="${key == WfWorkflow.KEY}">
         <laser:render template="/templates/workflow/opResult" model="${[key:key, cmd:cmd, status:status, obj:workflow]}" />
@@ -193,7 +193,7 @@
 %{-- <div data-tab="templates" class="ui bottom attached tab <% if (tmplTab == 'templates') { print 'active' } %>" style="margin-top:2em;"> --}%
 <div data-tab="prototypes" class="ui bottom attached tab <% if (tmplTab == 'prototypes') { print 'active' } %>" style="margin-top:2em;">
 
-    <div class="ui info message">
+    <ui:msg class="info" noClose="true">
         <div class="ui list">
             <div class="item">
                 <span class="ui brown circular label">id</span>
@@ -212,7 +212,7 @@
                 &nbsp; ${message(code: 'workflow.object.' + WfConditionPrototype.KEY)}
             </div>
         </div>
-    </div>
+    </ui:msg>
 
     <p class="ui header">
         ${message(code: 'workflow.object.' + WfWorkflowPrototype.KEY)} <ui:totalNumber total="${WfWorkflowPrototype.findAll().size()}"/>

@@ -256,7 +256,5 @@
 
         <ui:paginate offset="${offset}" max="${max}" total="${num_change_rows}" params="${params}"/>
     </div>
-
-
 </div>
 <laser:htmlEnd />

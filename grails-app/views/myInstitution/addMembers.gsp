@@ -1,7 +1,7 @@
 <%@page import="de.laser.FormService" %>
 
 <laser:htmlStart message="menu.institutions.add_consortia_members" serviceInjection="true" />
-        <g:set var="entityName" value="${message(code: 'org.label')}" />
+    <g:set var="entityName" value="${message(code: 'org.label')}" />
 
     <ui:breadcrumbs>
         <ui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
@@ -46,4 +46,4 @@
         </g:else>
     </g:else>
 
-  <laser:htmlEnd />
+<laser:htmlEnd />

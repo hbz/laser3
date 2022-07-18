@@ -24,4 +24,4 @@
 
         <laser:render template="/templates/notes/table" model="${[instance: subscription, redirect: 'notes']}"/>
 
-  <laser:htmlEnd />
+<laser:htmlEnd />

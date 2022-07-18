@@ -164,18 +164,9 @@
 <br />
 
 <g:if test="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, subscriber).finishDate != null}">
-    <div class="ui icon positive message">
-        <i class="info icon"></i>
-
-        <div class="content">
-            <div class="header"></div>
-
-            <p>
-                <%-- <g:message code="surveyInfo.finishOrSurveyCompleted"/> --%>
-                <g:message code="renewEntitlementsWithSurvey.finish.info"/>.
-            </p>
-        </div>
-    </div>
+    <ui:msg class="positive" icon="info" noClose="true">
+        <g:message code="renewEntitlementsWithSurvey.finish.info"/>.
+    </ui:msg>
 </g:if>
 
 <g:if test="${participant}">
@@ -211,16 +202,10 @@
 </g:if>
 
 <g:if test="${selectProcess}">
-    <div class="ui positive message">
-        <i class="close icon"></i>
-
-        <div class="header"><g:message code="renewEntitlementsWithSurvey.issueEntitlementSelect.label"/></div>
-
-        <p>
+    <ui:msg class="positive" header="${message(code:'renewEntitlementsWithSurvey.issueEntitlementSelect.label')}">
             <g:message code="renewEntitlementsWithSurvey.issueEntitlementSelect.selectProcess"
                        args="[selectProcess.processCount, countAllIEs, selectProcess.countSelectIEs]"/>
-        </p>
-    </div>
+    </ui:msg>
 </g:if>
 
 

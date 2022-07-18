@@ -60,7 +60,7 @@
                             <div class="menu" role="menu">
 
                                     <ui:link generateElementId="true" class="item" role="menuitem" controller="package" action="index">${message(code:'menu.public.all_pkg')}</ui:link>
-                                    <ui:link generateElementId="true"  class="item" role="menuitem" controller="title" action="index">${message(code:'menu.public.all_titles')}</ui:link>
+                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="title" action="index">${message(code:'menu.public.all_titles')}</ui:link>
 
                                     <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_EDITOR">
                                         <ui:link generateElementId="true" role="menuitem" controller="organisation" action="index">${message(code:'menu.public.all_orgs')}</ui:link>

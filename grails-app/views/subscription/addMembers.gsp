@@ -156,14 +156,9 @@
     <g:if test="${accessService.checkPermAffiliation("ORG_CONSORTIUM","INST_EDITOR")}">
         <hr />
 
-        <div class="ui info message">
-            <div class="header">
-                <g:message code="myinst.noMembers.cons.header"/>
-            </div>
-            <p>
+            <ui:msg class="info" header="${message(code: 'myinst.noMembers.cons.header')}" noClose="true">
                 <g:message code="myinst.noMembers.body" args="${[createLink(controller:'myInstitution', action:'manageMembers'),message(code:'consortium.member.plural')]}"/>
-            </p>
-        </div>
+            </ui:msg>
     </g:if>
 </g:if>
 

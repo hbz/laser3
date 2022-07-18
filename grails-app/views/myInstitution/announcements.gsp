@@ -28,4 +28,4 @@
               </g:each>
             </table>
 
-  <laser:htmlEnd />
+<laser:htmlEnd />

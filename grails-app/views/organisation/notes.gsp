@@ -17,4 +17,4 @@
 
         <laser:render template="/templates/notes/table" model="${[instance: orgInstance, redirect: 'notes']}"/>
 
-  <laser:htmlEnd />
+<laser:htmlEnd />

@@ -41,4 +41,4 @@
 
     <ui:paginate action="listConsortia" params="${params}" max="${max}" total="${consortiaTotal}" />
 
-  <laser:htmlEnd />
+<laser:htmlEnd />

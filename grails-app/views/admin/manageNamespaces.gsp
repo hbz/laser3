@@ -139,11 +139,11 @@
                                 <g:if test="${Identifier.countByNs(idNs) == 0}">
                                     <td>
                                         ${idNs.ns}
-                                        <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.dataId.tooltip', args:[idNs.id])}">
+                                        <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.dataId.tooltip', args:[idNs.id])}">
                                             <i class="info circle icon blue"></i>
                                         </span>
                                         <g:if test="${idNs.isHardData}">
-                                            <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.hardData.tooltip')}">
+                                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.hardData.tooltip')}">
                                                 <i class="check circle icon green"></i>
                                             </span>
                                         </g:if>
@@ -207,11 +207,11 @@
                                 <g:else>
                                     <td>
                                         ${idNs.ns}
-                                        <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.dataId.tooltip', args:[idNs.id])}">
+                                        <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.dataId.tooltip', args:[idNs.id])}">
                                             <i class="info circle icon blue"></i>
                                         </span>
                                         <g:if test="${idNs.isHardData}">
-                                            <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.hardData.tooltip')}">
+                                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.hardData.tooltip')}">
                                                 <i class="check circle icon green"></i>
                                             </span>
                                         </g:if>

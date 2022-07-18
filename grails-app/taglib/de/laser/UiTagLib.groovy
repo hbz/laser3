@@ -90,16 +90,18 @@ class UiTagLib {
         }
     }
 
-    // <ui:msg class="negative|positive|warning|.." header="${text}" text="${text}" message="18n.token" />
+    // <ui:msg class="negative|positive|warning|.." icon="${icon}" header="${text}" text="${text}" message="18n.token" noClose="true" />
 
     def msg = { attrs, body ->
 
-        out << '<div class="ui ' + attrs.class + ' message la-clear-before">'
-        if (attrs.noClose) {}
-        else
-            out << '<i aria-hidden="true" class="close icon"></i>'
-        out << '<div class="content">'
+        out << '<div class="ui ' + attrs.class + ' message ' + (attrs.icon ? 'icon ' : '') + 'la-clear-before">'
 
+        if (! attrs.noClose) {
+            out << '<i aria-hidden="true" class="close icon"></i>'
+        }
+        if (attrs.icon) {
+            out << '<i class="icon ' + attrs.icon + '"></i>'
+        }
         if (attrs.header) {
             out << '<div class="header">'
             out << attrs.header
@@ -107,6 +109,7 @@ class UiTagLib {
         }
 
         out << '<p>'
+
         if (attrs.text) {
             out << attrs.text
         }
@@ -118,9 +121,8 @@ class UiTagLib {
         if ( body ) {
             out << body()
         }
-        out << '</p>'
 
-        out << '</div>'
+        out << '</p>'
         out << '</div>'
     }
 

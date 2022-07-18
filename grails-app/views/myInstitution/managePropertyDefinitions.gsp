@@ -44,18 +44,18 @@
                                 <tr>
                                     <td>
                                         <g:if test="${pd.isHardData}">
-                                            <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.hardData.tooltip')}">
+                                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.hardData.tooltip')}">
                                                 <i class="check circle icon green"></i>
                                             </span>
                                         </g:if>
                                         <g:if test="${pd.multipleOccurrence}">
-                                            <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
+                                            <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
                                                 <i class="redo icon orange"></i>
                                             </span>
                                         </g:if>
 
                                         <g:if test="${pd.isUsedForLogic}">
-                                            <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.isUsedForLogic.tooltip')}">
+                                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.isUsedForLogic.tooltip')}">
                                                 <i class="ui icon orange cube"></i>
                                             </span>
                                         </g:if>

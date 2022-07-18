@@ -22,16 +22,13 @@
         <%--<ui:objectStatus object="${license}" status="${license.status}" />--%>
 
         <g:if test="${license.instanceOf && (institution.id == license.getLicensingConsortium()?.id)}">
-            <div class="ui negative message">
-                <div class="header"><g:message code="myinst.message.attention" /></div>
-                <p>
+                <ui:msg class="negative" header="${message(code:'myinst.message.attention')}" noClose="true">
                     <g:message code="myinst.licenseDetails.message.ChildView" />
                     <g:message code="myinst.licenseDetails.message.ConsortialView" />
                     <g:link controller="license" action="show" id="${license.instanceOf.id}">
                         <g:message code="myinst.subscriptionDetails.message.here" />
                     </g:link>.
-                </p>
-            </div>
+                </ui:msg>
         </g:if>
 
         <laser:render template="/templates/meta/identifier" model="${[object: license, editable: editable]}" />

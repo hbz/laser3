@@ -213,7 +213,7 @@
                           <g:if test="${'action' in licenseFilterTable}">
                               <td class="x">
                               <g:if test="${(contextCustomerType == "ORG_INST" && l._getCalculatedType() == License.TYPE_LOCAL) || (contextCustomerType == "ORG_CONSORTIUM" && l._getCalculatedType() == License.TYPE_CONSORTIAL)}">
-                                  <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.copy.tooltip')}">
+                                  <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.copy.tooltip')}">
                                       <g:link controller="license" action="copyLicense" params="${[sourceObjectId: genericOIDService.getOID(l), copyObject: true]}" class="ui icon button blue la-modern-button">
                                           <i class="copy icon"></i>
                                       </g:link>
@@ -245,4 +245,4 @@
       <ui:debugInfo>
           <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
       </ui:debugInfo>
-  <laser:htmlEnd />
+<laser:htmlEnd />

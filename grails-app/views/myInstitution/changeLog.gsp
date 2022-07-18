@@ -52,4 +52,4 @@
 
         <ui:paginate action="changeLog" controller="myInstitution" params="${params}" max="${max}" total="${num_changes}" />
 
-  <laser:htmlEnd />
+<laser:htmlEnd />

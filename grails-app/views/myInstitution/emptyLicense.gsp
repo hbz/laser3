@@ -19,12 +19,16 @@
         <g:form action="processEmptyLicense" controller="myInstitution" method="post" class="ui form newLicence">
             <g:if test="${subInstance}">
                 <g:hiddenField id="sub_id_${subInstance.id}" name="sub" value="${subInstance.id}"/>
-                <div class="ui info message">${message(code: 'myinst.licensewithSub.notice', args: [subInstance.name])}</div>
+                <ui:msg class="info" noClose="true">
+                    ${message(code: 'myinst.licensewithSub.notice', args: [subInstance.name])}
+                </ui:msg>
             </g:if>
 
             <g:if test="${params.baselicense}">
                 <g:hiddenField name="baselicense" value="${params.baselicense}"/>
-                <div class="ui info message">${message(code: 'myinst.copyLicense.notice', args: [params.licenseName])}</div>
+                <ui:msg class="info" noClose="true">
+                    ${message(code: 'myinst.copyLicense.notice', args: [params.licenseName])}
+                </ui:msg>
             </g:if>
 
             <div class="field required">

@@ -28,7 +28,7 @@
         <laser:render template="/templates/user/filter" model="${filterConfig}"/>
 
         <g:if test="${multipleAffiliationsWarning}">
-            <div class="ui info message la-clear-before">${message(code:'user.edit.info')}</div>
+            <ui:msg class="info" noClose="true">${message(code:'user.edit.info')}</ui:msg>
         </g:if>
 
         <ui:messages data="${flash}" />

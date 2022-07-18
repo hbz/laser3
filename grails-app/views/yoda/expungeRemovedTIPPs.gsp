@@ -6,10 +6,10 @@
         <table>
             <thead>
                 <tr>
-                    <td colspan="5">
+                    <th colspan="5">
                         <g:link action="expungeRemovedTIPPs" params="[doIt: true]" class="ui negative button js-open-confirm-modal" data-confirm-tokenMsg = "${message(code: 'confirmation.content.deleteTIPPsWithoutGOKBId')}"
                                 data-confirm-term-how="ok">Daten bereinigen (bitte mit EXTREMER VORSICHT betätigen!!!)</g:link>
-                    </td>
+                    </th>
                 </tr>
                 <tr>
                     <th>TIPP ID + we:kb-ID</th>

@@ -20,16 +20,13 @@
         <laser:render template="message" />
     </g:if>
 
-    <div class="ui info message">
-        <div class="header"></div>
-        <p>
+    <ui:msg class="info" noClose="true">
             Hier sehen Sie:
             <ul>
                 <li>Änderungen am Bestand einer Lizenz</li>
                 <li>Änderung an der Lizenz durch die Konsortialstelle (nur vererbte Änderungen)</li>
             </ul>
-        </p>
-    </div>
+    </ui:msg>
 
     <table class="ui celled la-js-responsive-table la-table table">
           <thead>

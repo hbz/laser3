@@ -63,7 +63,7 @@
                             ${prop.type.getI10n('name')}
                         </g:else>
                         <g:if test="${prop.type.multipleOccurrence}">
-                            <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
+                            <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
                                 <i class="redo icon orange"></i>
                             </span>
                         </g:if>

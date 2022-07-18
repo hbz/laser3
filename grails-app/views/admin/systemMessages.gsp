@@ -16,9 +16,9 @@
 <br />
 <br />
 
-<div class="ui info message">
+<ui:msg class="info" noClose="true">
     <i class="ui icon hand point right"></i> ${message(code: 'admin.systemMessage.info', args: [HeartbeatJob.HEARTBEAT_IN_SECONDS])}
-</div>
+</ui:msg>
 
 <ui:messages data="${flash}" />
 

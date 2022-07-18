@@ -68,4 +68,4 @@
 
         <ui:paginate total="${orgListTotal}" params="${params}" max="${max}" offset="${offset}" />
 
-    <laser:htmlEnd />
+<laser:htmlEnd />

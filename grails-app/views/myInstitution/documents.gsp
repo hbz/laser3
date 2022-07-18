@@ -17,4 +17,4 @@
     <laser:render template="/templates/documents/table" model="${[instance: Org.get(institution.id), inContextOrg: true, context:'documents', redirect:'documents', owntp: 'org']}"/>
 
     <ui:paginate action="documents" params="${params}" total="${totalSize}"/>
-  <laser:htmlEnd />
+<laser:htmlEnd />

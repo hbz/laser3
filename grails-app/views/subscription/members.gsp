@@ -163,7 +163,7 @@
                             <g:link controller="organisation" action="show" id="${subscr.id}">${subscr}</g:link>
 
                             <g:if test="${sub.isSlaved}">
-                                <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.isSlaved.tooltip')}">
+                                <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.isSlaved.tooltip')}">
                                     <i class="grey la-thumbtack-regular icon"></i>
                                 </span>
                             </g:if>
