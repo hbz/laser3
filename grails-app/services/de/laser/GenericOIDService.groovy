@@ -31,7 +31,7 @@ class GenericOIDService {
     if (oid) {
       String[] parts = oid.toString().split(':')
       String domainClass = parts[0].trim()
-      Class cls = CodeUtils.getDomainClass(domainClass) ?: CodeUtils.getDomainClassFallback(domainClass)
+      Class cls = CodeUtils.getDomainClass(domainClass) ?: CodeUtils.getDomainClassBySimpleName(domainClass)
       if (cls)  {
         result = cls.get(parts[1].trim())
       }

@@ -157,11 +157,11 @@ abstract class BaseDetailsExport {
 
     // -----
 
-    static boolean isLocal(Object clazz) {
-        clazz.class.package.toString().endsWith('.local')
+    static boolean isLocal(Object obj) {
+        obj.class.package.toString().endsWith('.local')
     }
-    static boolean isGlobal(Object clazz) {
-        clazz.class.package.toString().endsWith('.myInstitution')
+    static boolean isGlobal(Object obj) {
+        obj.class.package.toString().endsWith('.myInstitution')
     }
     static boolean ctxConsortium() {
         ContextService contextService = BeanStore.getContextService()

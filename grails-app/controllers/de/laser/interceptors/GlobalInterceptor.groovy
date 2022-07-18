@@ -2,8 +2,9 @@ package de.laser.interceptors
 
 import de.laser.utils.AppUtils
 import de.laser.utils.CodeUtils
-import grails.core.GrailsClass
+import groovy.util.logging.Slf4j
 
+@Slf4j
 class GlobalInterceptor implements grails.artefact.Interceptor {
 
     GlobalInterceptor() {
@@ -18,25 +19,23 @@ class GlobalInterceptor implements grails.artefact.Interceptor {
         if (params.id?.contains(':')) {
             try {
                 String objName  = params.id.split(':')[0]
-                GrailsClass obj = CodeUtils.getAllDomainArtefacts().find {it.name == objName.capitalize() }
-                if (!obj) {
-                    // TODO - remove fallback - db cleanup, e.g. issueentitlement -> issueEntitlement
-                    obj = CodeUtils.getAllDomainArtefacts().find {it.name.equalsIgnoreCase( objName ) }
-                }
+                Class dc = CodeUtils.getAllDomainClasses().find {it.simpleName == objName.capitalize() }
 
-                if (obj) {
-                    def objClass = Class.forName( obj.getClazz().getName() )
-                    def match    = objClass.findByGlobalUID(params.id)
+                if (!dc) {
+                    // TODO - remove fallback - db cleanup, e.g. issueentitlement -> issueEntitlement
+                    dc = CodeUtils.getAllDomainClasses().find {it.simpleName.equalsIgnoreCase( objName ) }
+                }
+                if (dc) {
+                    def match = dc.findByGlobalUID(params.id)
 
                     if (match) {
-                        log.debug("requested by globalUID: [ ${params.id} ] > ${objClass} # ${match.id}")
+                        log.debug("requested by globalUID: [ ${params.id} ] > ${dc} # ${match.id}")
                         params.id = match.getId()
                     }
                     else {
                         params.id = 0
                     }
                 }
-
             }
             catch (Exception e) {
                 params.id = 0

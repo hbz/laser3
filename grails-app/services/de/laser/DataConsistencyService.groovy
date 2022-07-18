@@ -166,9 +166,6 @@ class DataConsistencyService {
                     props.putAt( it.name, constraints[ it.name ].isNullable() )
                 }
                 props.each{ k,v ->
-                    // String ctrl = "select count(o) from ${dc.clazz.simpleName} o where o.${k} is null"
-                    // println "   nullable ? ${k} : ${v}, DB contains null values : " + Org.executeQuery(ctrl)
-
                     if (v.equals(true)) {
                         candidates.add( "${cls.simpleName}.${k} -> ${v}" )
 

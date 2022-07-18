@@ -85,7 +85,6 @@ class ApiInterceptor implements grails.artefact.Interceptor {
                 }
 
                 if (isAuthorized) {
-
                     return true
                 }
                 else {
@@ -111,7 +110,6 @@ class ApiInterceptor implements grails.artefact.Interceptor {
     }
 
     boolean after() {
-
         true
     }
 

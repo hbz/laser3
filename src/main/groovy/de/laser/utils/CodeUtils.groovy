@@ -18,8 +18,8 @@ class CodeUtils {
         getDomainArtefact(qualifiedName)?.clazz
     }
 
-    static Class getDomainClassFallback(String name) {
-        getDomainArtefactFallback(name)?.clazz
+    static Class getDomainClassBySimpleName(String simpleName) {
+        getDomainArtefactBySimpleName(simpleName)?.clazz
     }
 
     static List<Class> getAllDomainClasses() {
@@ -54,16 +54,16 @@ class CodeUtils {
         dc
     }
 
-    static GrailsClass getDomainArtefactFallback(String name) {
+    static GrailsClass getDomainArtefactBySimpleName(String simpleName) {
         GrailsClass dc
         List<String> namespaces = [ 'de.laser' ]
 
         for (String ns : namespaces) {
-            dc = Holders.grailsApplication.getArtefact('Domain', ns + '.' + name)
+            dc = Holders.grailsApplication.getArtefact('Domain', ns + '.' + simpleName)
             if (dc) { break }
         }
         if (! dc) {
-            log.warn "Found no result - getDomainArtefactFallback( ${name} )"
+            log.warn "Found no result - getDomainArtefactBySimpleName( ${simpleName} )"
         }
         dc
     }
