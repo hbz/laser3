@@ -21,8 +21,7 @@
         </g:else>
 
         <div class="la-icon-list">
-            <laser:render template="/templates/tipps/coverages"
-                      model="${[ie: ie, tipp: ie.tipp]}"/>
+            <laser:render template="/templates/tipps/coverages" model="${[ie: ie, tipp: ie.tipp]}"/>
         </div>
 
 
@@ -132,8 +131,7 @@
         </g:else>
 
         <div class="la-icon-list">
-            <laser:render template="/templates/tipps/coverages"
-                      model="${[ie: null, tipp: tipp]}"/>
+            <laser:render template="/templates/tipps/coverages" model="${[ie: null, tipp: tipp]}"/>
         </div>
         <br/>
 

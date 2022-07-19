@@ -83,7 +83,6 @@ class YodaController {
         Map<String, Object> result = [
                 docStore: AppUtils.getDocumentStorageInfo()
         ]
-
         result
     }
 
@@ -415,7 +414,8 @@ class YodaController {
 
                 controller.declaredMethods.each { Method method ->
                     int mods = method.getModifiers()
-                    if ( ! Modifier.isSynthetic(mods) && (
+//                  if (! Modifier.isSynthetic(mods) && (   // Access to 'SYNTHETIC' exceeds its access rights
+                    if ( ((mods & 4096) == 0) && (          // isSynthetic(int mod) { (mod & 4096) != 0; }
                             (method.getAnnotation(Action) || Modifier.isPrivate(mods)) ||
                             (Modifier.isStatic(mods) && ! (method.name in blacklist))
                     ) ) {

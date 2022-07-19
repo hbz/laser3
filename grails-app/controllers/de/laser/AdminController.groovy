@@ -1251,29 +1251,29 @@ SELECT * FROM (
                 else if (rdvTo && rdvTo.owner == rdvFrom.owner) {
                     check = true
                 }
-                else if (! rdvTo && params.xcgRdvGlobalTo) {
-
-                    List<String> pParts = params.xcgRdvGlobalTo.split(':')
-                    if (pParts.size() == 2) {
-                        RefdataCategory rdvToCat = RefdataCategory.getByDesc(pParts[0].trim())
-                        RefdataValue rdvToRdv = RefdataValue.getByValueAndCategory(pParts[1].trim(), pParts[0].trim())
-
-                        if (rdvToRdv && rdvToRdv.owner == rdvToCat ) {
-                            rdvTo = rdvToRdv
-                            check = true
-                        }
-                    }
-                }
+//                else if (! rdvTo && params.xcgRdvGlobalTo) {
+//
+//                    List<String> pParts = params.xcgRdvGlobalTo.split(':')
+//                    if (pParts.size() == 2) {
+//                        RefdataCategory rdvToCat = RefdataCategory.getByDesc(pParts[0].trim())
+//                        RefdataValue rdvToRdv = RefdataValue.getByValueAndCategory(pParts[1].trim(), pParts[0].trim())
+//
+//                        if (rdvToRdv && rdvToRdv.owner == rdvToCat ) {
+//                            rdvTo = rdvToRdv
+//                            check = true
+//                        }
+//                    }
+//                }
 
                 if (check) {
                     try {
                         int count = refdataService.replaceRefdataValues(rdvFrom, rdvTo)
 
-                        flash.message = "${count} Vorkommen von ${params.xcgRdvFrom} wurden durch ${params.xcgRdvTo}${params.xcgRdvGlobalTo} ersetzt."
+                        flash.message = "${count} Vorkommen von ${params.xcgRdvFrom} wurden durch ${params.xcgRdvTo} ersetzt."
                     }
                     catch (Exception e) {
                         log.error( e.toString() )
-                        flash.error = "${params.xcgRdvFrom} konnte nicht durch ${params.xcgRdvTo}${params.xcgRdvGlobalTo} ersetzt werden."
+                        flash.error = "${params.xcgRdvFrom} konnte nicht durch ${params.xcgRdvTo} ersetzt werden."
                     }
 
                 }

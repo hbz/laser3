@@ -104,7 +104,6 @@ class UserController  {
                 modifyAccountEnability: SpringSecurityUtils.ifAllGranted('ROLE_YODA')
         ]
 
-
         render view: '/user/global/list', model: result
     }
 

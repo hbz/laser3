@@ -1,4 +1,4 @@
-<!-- sideMenu::A -->
+<!-- sideMenu -->
     <ui:card text="${entityName}">
         <div class="content">
         <ul class="nav nav-list">
@@ -17,4 +17,4 @@
         </ul>
         </div>
     </ui:card>
-<!-- sideMenu::O -->
+<!-- sideMenu -->

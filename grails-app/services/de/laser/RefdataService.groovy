@@ -24,6 +24,7 @@ class RefdataService {
         }
 
         classes.each { cls ->
+            String dcClassName = cls.simpleName
             List dcFields = []
 
             // find all rdv_fk from superclasses
@@ -34,7 +35,7 @@ class RefdataService {
                 )
                 cls = cls.getSuperclass()
             }
-            allDcs.putAt( cls.simpleName, dcFields.sort() )
+            allDcs.putAt( dcClassName, dcFields.sort() )
         }
 
         // inspect classes and fields
@@ -74,6 +75,7 @@ class RefdataService {
         Map fortytwo = [:]
 
         CodeUtils.getAllDomainClasses().each { cls ->
+            String dcClassName = cls.simpleName
             List dcFields = []
 
             // find all rdv_fk from superclasses
@@ -84,7 +86,7 @@ class RefdataService {
                 )
                 cls = cls.getSuperclass()
             }
-            fortytwo.putAt( cls.simpleName, dcFields.sort() )
+            fortytwo.putAt( dcClassName, dcFields.sort() )
         }
 
         fortytwo.each { dcName, dcFields ->

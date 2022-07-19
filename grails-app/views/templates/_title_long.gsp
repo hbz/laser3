@@ -7,14 +7,11 @@
     </g:link>
 </g:if>
 <g:else>
-    <g:link controller="tipp" id="${tipp.id}"
-            action="show"><strong>${tipp.name}</strong>
-    </g:link>
+    <g:link controller="tipp" id="${tipp.id}" action="show"><strong>${tipp.name}</strong></g:link>
 </g:else>
 
 <g:if test="${tipp.hostPlatformURL}">
-    <ui:linkIcon
-            href="${tipp.hostPlatformURL.startsWith('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
+    <ui:linkIcon href="${tipp.hostPlatformURL.startsWith('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
 </g:if>
 <br/>
 

@@ -146,19 +146,19 @@
                 <br />
 
                 <div class="field">
-                    <label for="xcgRdvTo">Innerhalb derselben Kategorie</label>
+                    <label for="xcgRdvTo">Werte derselben Kategorie</label>
                     <select id="xcgRdvTo"></select>
                 </div>
 
-                <p>oder</p>
+%{--                <p>oder</p>--}%
 
-                <div class="field">
-                    <label for="xcgRdvGlobalTo">Kategorieübergreifend</label>
-                    <div class="ui right labeled input">
-                        <input id="xcgRdvGlobalTo" name="xcgRdvGlobalTo" value="RefdataCategory_KEY:RefdataValue_KEY" />
-                        <div class="ui red label">WARNUNG</div>
-                    </div>
-                </div>
+%{--                <div class="field">--}%
+%{--                    <label for="xcgRdvGlobalTo">Kategorieübergreifend</label>--}%
+%{--                    <div class="ui right labeled input">--}%
+%{--                        <input id="xcgRdvGlobalTo" name="xcgRdvGlobalTo" value="RefdataCategory_KEY:RefdataValue_KEY" />--}%
+%{--                        <div class="ui red label">WARNUNG</div>--}%
+%{--                    </div>--}%
+%{--                </div>--}%
 
             </g:form>
 
@@ -207,7 +207,7 @@
                     <input type="text" name="refdata_value"/>
                 </div>
                 <div class="field">
-                    <label class="property-label">Kategorie</label>
+                    <label for="refdata_modal_select" class="property-label">Kategorie</label>
                     <g:select
                         from="${rdCategories}"
                         optionKey="id" optionValue="${{it.getI10n('desc')}}"

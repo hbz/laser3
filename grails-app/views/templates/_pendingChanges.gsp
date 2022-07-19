@@ -7,7 +7,6 @@
 
     <g:if test="${! tmplSimpleView}">
         <div class="ui segment">
-
             <h3 class="ui header">
                 ${message(code:'template.pendingChanges')}
             </h3>
