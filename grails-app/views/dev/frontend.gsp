@@ -56,6 +56,16 @@
 </head>
 
 <body>
+<div class="ui top attached tabular la-tab-with-js menu">
+    <div class="item active">Tab 1</div>
+    <div class="item">Tab 2</div>
+    <div class="item">Tab 3</div>
+</div>
+
+<div class="ui bottom attached tab segment">
+    <p></p>
+    <p></p>
+</div>
 %{-- help sidebar --}%
 <g:render template="/templates/help/help_subscription_show"/>
 <section id="example">

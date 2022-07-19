@@ -194,7 +194,7 @@ ${surveyInfo.name}
 
     <semui:form>
 
-        <div class="ui top attached stackable tabular menu">
+        <div class="ui top attached stackable tabular la-tab-with-js menu">
             <a class="active item" data-tab="orgsContinuetoSubscription">
                 ${message(code: 'renewalEvaluation.continuetoSubscription.label')} <semui:totalNumber
                         total="${orgsContinuetoSubscription.size()}"/>

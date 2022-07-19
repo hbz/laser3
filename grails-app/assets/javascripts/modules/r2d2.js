@@ -554,7 +554,7 @@ r2d2 = {
 
 
         // tabs
-        $(ctxSel + ' .tabular.menu .item').tab();
+        $(ctxSel + ' .la-tab-with-js .item').tab();
 
         // checkboxes
         $(ctxSel + ' .ui.checkbox').not('#la-advanced').checkbox();

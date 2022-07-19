@@ -1,8 +1,11 @@
 /*******************************
          Theme Overrides
 *******************************/
+
+/* Laser Breakpoint */
 @media only screen and (min-width: @laser-breakpoint) {
-  .ui.container {
+  .ui.ui.ui.container:not(.fluid) {
     width: 1220px;
   }
 }
+

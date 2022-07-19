@@ -162,7 +162,7 @@
     </g:if>
 
     <g:if test="${subscription.ieGroups.size() > 0}">
-        <div class="ui top attached stackable tabular menu">
+        <div class="ui top attached stackable tabular la-tab-with-js menu">
             <g:link controller="subscription" action="index" id="${subscription.id}"
                     class="item ${params.titleGroup ? '' : 'active'}">
                 Alle

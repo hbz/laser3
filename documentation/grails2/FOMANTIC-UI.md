@@ -11,38 +11,23 @@
 -  go to terminal and install node.js with nvm:
 
 
-    nvm install 10.0.0
+    nvm install 12.13.0
 
-## install gulp
+## install gulp globaly
 
     npm install -g gulp
 
-## install semantic-ui
+## installing fomantic-ui
 
-    cd [laser]/files/frontend/semantic/
-    npm install semantic-ui --save
-    
-The File semantic.json is automaticly build from your choises in the intallation prozess.
-You have to choose the Folders for the source and the build
-    
+- is not needed
+- we put the all of the fomantic ui files in the repository
+- we needed to change some src files for accessibility reason
+
+   
 
 
-# How to update semantic ui
-!!!!! Do not use the otherwise recommended update function of a node module 
+# How to update fomantic-ui
 
-But:
-
- - install the newest version of semantic ui anywhere else
- - rename the folder
- - put the renamed copy of the semantic folder in your IDE on the same level as the to updated semantic folder
- - and compare the semantic folder in your IDE
- - update the files by hand
- - be carefully and keep the old code here:
-    - /files/frontend/semantic/src/definitions/modules/dropdown.js --> changes for accessibility
-    - /files/frontend/semantic/src/definitions/modules/calendar --> for added UI convenience
-    - /files/frontend/semantic/src/tasks/ --> changed for opportunity of two parallel themes at the same time
-    
-  
 
 
  
@@ -70,11 +55,11 @@ I would like to change the padding between an icon and content in a list
 
     src/themes/default/elements/list.variables
     
-2.) copy THE WHOLE list.variables and past it in the laser theme folder
+2.) create the list.variables in the laser theme folder
 
     src/themes/laser/elements/list.variables
     
-3.) make changes only there
+3.) change the specifig variable only there
 
 4.) Change the theme.config 
 
@@ -95,11 +80,3 @@ new:
     cd semantic
     gulp build
 
-
-# Important Informations
-
-## Datepicker
-
-- 'by hand' implemented the sementic-ui datepicker
-- it is not in current semantic-ui version (2.4.2)
-- https://github.com/Semantic-Org/Semantic-UI/pull/3256/files

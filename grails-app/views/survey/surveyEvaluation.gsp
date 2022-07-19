@@ -78,7 +78,7 @@
     </div>
 </g:if>
 <g:else>
-<div class="ui top attached stackable tabular menu">
+<div class="ui top attached stackable tabular la-tab-with-js menu">
 
     <g:link class="item ${params.tab == 'participantsViewAllFinish' ? 'active' : ''}"
             controller="survey" action="surveyEvaluation"

@@ -4,7 +4,7 @@
 <g:render template="/subscription/reporting/details/timeline/base.part1" />
 
 <g:if test="${neutralCostItems && relevantCostItems}">
-    <div class="ui top attached stackable tabular menu">
+    <div class="ui top attached stackable tabular la-tab-with-js menu">
         <a data-tab="summary" class="item active">Zusammenfassung</a>
         <a data-tab="neutral" class="item">Neutrale Kosten</a>
         <a data-tab="relevant" class="item">Preise</a>

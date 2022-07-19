@@ -12,3 +12,4 @@ Thumbs.db
 build/
 logs/
 out/
+/files/fomantic/node_modules/

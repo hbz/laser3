@@ -19,7 +19,7 @@
 
 <g:set var="tmplTab" value="${tab ?: 'prototypes'}" />
 
-<div class="ui secondary stackable pointing tabular menu">
+<div class="ui secondary stackable pointing tabular la-tab-with-js menu">
     <a data-tab="workflows" class="item <% if (tmplTab == 'workflows') { print 'active' } %>">${message(code:'workflow.plural')}</a>
     %{-- <a data-tab="templates" class="item <% if (tmplTab == 'templates') { print 'active' } %>">Templates</a> --}%
     <a data-tab="prototypes" class="item <% if (tmplTab == 'prototypes') { print 'active' } %>">${message(code:'default.prototype.plural')}</a>

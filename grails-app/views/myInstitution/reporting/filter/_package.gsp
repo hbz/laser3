@@ -1,7 +1,7 @@
 <%@page import="de.laser.reporting.report.myInstitution.base.BaseFilter; de.laser.reporting.report.myInstitution.base.BaseConfig" %>
 <laser:serviceInjection/>
 
-        <div class="menu ui top attached tabular">
+        <div class="menu ui top attached tabular la-tab-with-js">
             <a class="active item" data-tab="package-filter-tab-1">${message(code:'package.plural')}</a>
 %{--            <g:if test="${BaseConfig.getCurrentConfig( BaseConfig.KEY_PACKAGE ).provider}">--}%
 %{--                <a class="item" data-tab="package-filter-tab-2">${message(code:'default.provider.label')}</a>--}%

@@ -33,7 +33,7 @@
         </div>
     </nav>
 
-    <div class="ui secondary stackable pointing tabular menu">
+    <div class="ui secondary stackable pointing tabular la-tab-with-js menu">
         <a data-tab="first" class="item active">Heat</a>
         <a data-tab="second" class="item">Alle</a>
         <a data-tab="third" class="item">URL/Kontext</a>
