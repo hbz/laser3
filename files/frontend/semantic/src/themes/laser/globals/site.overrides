@@ -258,7 +258,7 @@ aside.ui.accordion .title:not(.ui) {
     display:inline-flex;
 }
 i.icon.la-list-icon{
-    margin: -0.2rem 0.5rem 0 0;
+    margin: 0.1rem 0.5rem 0 0;
     &:before{
         display:inline-flex;
         text-decoration: none;

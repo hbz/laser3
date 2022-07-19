@@ -61,7 +61,7 @@
             break
         }
     %>
-    <div class="ui secondary stackable pointing tabular menu">
+    <div class="ui secondary stackable pointing tabular la-tab-with-js menu">
         <a class="${us_dashboard_tab.value == 'Due Dates' ? 'active item':'item'}" data-tab="duedates">
             <i class="checked alarm end icon large"></i>
             ${dueDatesCount} ${message(code:'myinst.dash.due_dates.label')}

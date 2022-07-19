@@ -1,7 +1,7 @@
 <%@page import="de.laser.ReportingGlobalService;de.laser.Org;de.laser.Subscription;de.laser.reporting.report.myInstitution.base.BaseConfig" %>
 <laser:serviceInjection/>
 
-        <div class="menu ui top attached tabular">
+        <div class="menu ui top attached tabular la-tab-with-js">
             <a class="active item" data-tab="org-filter-tab-1">${message(code:'org.plural.label')}</a>
         </div><!-- .menu -->
 

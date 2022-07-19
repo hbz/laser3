@@ -1,7 +1,7 @@
 <%@page import="de.laser.ReportingGlobalService;de.laser.Org;de.laser.License;de.laser.reporting.report.myInstitution.base.BaseConfig" %>
 <laser:serviceInjection/>
 
-        <div class="menu ui top attached tabular">
+        <div class="menu ui top attached tabular la-tab-with-js">
             <a class="active item" data-tab="lic-filter-tab-1">${message(code:'license.plural')}</a>
             %{--<a class="item" data-tab="lic-filter-tab-2">Teilnehmer</a>--}%
             <a class="item" data-tab="lic-filter-tab-3">${message(code:'license.licensor.label')}</a>
