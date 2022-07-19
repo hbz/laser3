@@ -442,7 +442,7 @@
                                     <strong>${message(code: 'platform.primaryURL')}</strong>:
                                         <g:if test="${hit.getSourceAsMap().primaryUrl}">
                                             ${hit.getSourceAsMap().primaryUrl}
-                                            <ui:linkIcon href="${hit.getSourceAsMap().primaryUrl}"/>
+                                            <ui:linkWithIcon href="${hit.getSourceAsMap().primaryUrl}"/>
                                         </g:if>
                                     <br />
                                     <strong>${message(code: 'platform.provider')}</strong>:

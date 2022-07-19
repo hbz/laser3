@@ -63,7 +63,7 @@
                         <br />
 
                         <g:if test="${tipp.hostPlatformURL}">
-                            <ui:linkIcon href="${tipp.hostPlatformURL.startsWith('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
+                            <ui:linkWithIcon href="${tipp.hostPlatformURL.startsWith('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
                         </g:if>
                         <br />
 

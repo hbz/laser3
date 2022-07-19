@@ -182,7 +182,7 @@
                                                                 id="${pkgInfo.packageInstance.nominalPlatform.id}">${pkgInfo.packageInstance.nominalPlatform.name}</g:link>
 
                                                         <g:if test="${pkgInfo.packageInstance.nominalPlatform.primaryUrl}">
-                                                            <ui:linkIcon
+                                                            <ui:linkWithIcon
                                                                     href="${pkgInfo.packageInstance.nominalPlatform.primaryUrl?.startsWith('http') ? pkgInfo.packageInstance.nominalPlatform.primaryUrl : 'http://' + pkgInfo.packageInstance.nominalPlatform.primaryUrl}"/>
                                                         </g:if>
                                                     </g:if>

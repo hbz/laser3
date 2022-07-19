@@ -687,17 +687,17 @@ class UiTagLib {
         def prev = attrs.navPrev
         def next = attrs.navNext
         def status = object.status?.value
-        def color
-        def tooltip
-        def startDate
-        def endDate
-        def dash
+        String color
+        String tooltip
+        String startDate
+        String endDate
+        String dash
 
-        def prevStartDate
-        def prevEndDate
+        String prevStartDate
+        String prevEndDate
 
-        def nextStartDate
-        def nextEndDate
+        String nextStartDate
+        String nextEndDate
 
         if (object.status) {
             tooltip = object.status.getI10n('value')
@@ -944,7 +944,7 @@ class UiTagLib {
 
     def tabs = { attrs, body ->
         def newClass = attrs.class ?: ''
-        out << '<div class="ui top attached tabular  ' + newClass + ' stackable menu">'
+        out << '<div class="ui top attached tabular ' + newClass + ' stackable menu">'
         out << body()
         out << '</div>'
     }

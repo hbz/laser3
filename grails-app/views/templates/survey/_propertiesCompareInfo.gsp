@@ -60,7 +60,7 @@
                                                                      overwriteEditable="${overwriteEditable}"
                                                                      class="la-overflow la-ellipsis"/>
                                                     <g:if test="${subProperty.value}">
-                                                        <ui:linkIcon href="${subProperty.value}"/>
+                                                        <ui:linkWithIcon href="${subProperty.value}"/>
                                                     </g:if>
                                                 </g:elseif>
                                                 <g:elseif test="${subProperty.type.isRefdataValueType()}">
@@ -124,7 +124,7 @@
                                                                      overwriteEditable="${overwriteEditable}"
                                                                      class="la-overflow la-ellipsis"/>
                                                     <g:if test="${subProperty.value}">
-                                                        <ui:linkIcon/>
+                                                        <ui:linkWithIcon/>
                                                     </g:if>
                                                 </g:elseif>
                                                 <g:elseif test="${subProperty.type.isRefdataValueType()}">

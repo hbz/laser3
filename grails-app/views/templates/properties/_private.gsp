@@ -81,7 +81,7 @@
                         <g:elseif test="${prop.type.isURLType()}">
                             <ui:xEditable owner="${prop}" type="url" field="urlValue" overwriteEditable="${overwriteEditable}" class="la-overflow la-ellipsis"/>
                             <g:if test="${prop.value}">
-                                <ui:linkIcon href="${prop.value}" />
+                                <ui:linkWithIcon href="${prop.value}" />
                             </g:if>
                         </g:elseif>
                         <g:elseif test="${prop.type.isRefdataValueType()}">

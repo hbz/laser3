@@ -154,7 +154,7 @@
 
                                                                              class="la-overflow la-ellipsis"/>
                                                             <g:if test="${customProperty.value}">
-                                                                <ui:linkIcon href="${customProperty.value}"/>
+                                                                <ui:linkWithIcon href="${customProperty.value}"/>
                                                             </g:if>
                                                         </g:elseif>
                                                         <g:elseif test="${customProperty.type.isRefdataValueType()}">
@@ -220,7 +220,7 @@
 
                                                                              class="la-overflow la-ellipsis"/>
                                                             <g:if test="${privateProperty.value}">
-                                                                <ui:linkIcon href="${privateProperty.value}"/>
+                                                                <ui:linkWithIcon href="${privateProperty.value}"/>
                                                             </g:if>
                                                         </g:elseif>
                                                         <g:elseif test="${privateProperty.type.isRefdataValueType()}">
@@ -400,7 +400,7 @@
 
                                                                              class="la-overflow la-ellipsis"/>
                                                             <g:if test="${customProperty.value}">
-                                                                <ui:linkIcon href="${customProperty.value}"/>
+                                                                <ui:linkWithIcon href="${customProperty.value}"/>
                                                             </g:if>
                                                         </g:elseif>
                                                         <g:elseif
@@ -465,7 +465,7 @@
                                                                              field="urlValue"
                                                                              class="la-overflow la-ellipsis"/>
                                                             <g:if test="${privateProperty.value}">
-                                                                <ui:linkIcon href="${privateProperty.value}"/>
+                                                                <ui:linkWithIcon href="${privateProperty.value}"/>
                                                             </g:if>
                                                         </g:elseif>
                                                         <g:elseif test="${privateProperty.type.isRefdataValueType()}">

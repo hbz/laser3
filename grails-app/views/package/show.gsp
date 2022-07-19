@@ -197,7 +197,7 @@
                                             id="${packageInstance.nominalPlatform.id}">${packageInstance.nominalPlatform.name}</g:link>
 
                                     <g:if test="${packageInstance.nominalPlatform.primaryUrl}">
-                                        <ui:linkIcon
+                                        <ui:linkWithIcon
                                                 href="${packageInstance.nominalPlatform.primaryUrl?.startsWith('http') ? packageInstance.nominalPlatform.primaryUrl : 'http://' + packageInstance.nominalPlatform.primaryUrl}"/>
                                     </g:if>
                                 </g:if>
@@ -236,7 +236,7 @@
                                 <dt>${message(code: 'default.url.label')}</dt>
                                 <dd>
                                     ${packageInstanceRecord.descriptionURL}
-                                    <ui:linkIcon
+                                    <ui:linkWithIcon
                                             href="${packageInstanceRecord.descriptionURL.startsWith('http') ? packageInstanceRecord.descriptionURL : 'http://' + packageInstanceRecord.descriptionURL}"/>
                                 </dd>
                             </dl>

@@ -86,7 +86,7 @@
                     <td>
                         ${surveyConfig.url}
                         <g:if test="${surveyConfig.url}">
-                            <ui:linkIcon href="${surveyConfig.url}"/>
+                            <ui:linkWithIcon href="${surveyConfig.url}"/>
 
                         </g:if>
                     </td>
@@ -97,7 +97,7 @@
                     <td>
                         ${surveyConfig.url2}
                         <g:if test="${surveyConfig.url2}">
-                            <ui:linkIcon href="${surveyConfig.url2}"/>
+                            <ui:linkWithIcon href="${surveyConfig.url2}"/>
 
                         </g:if>
                     </td>
@@ -108,7 +108,7 @@
                     <td>
                         ${surveyConfig.url3}
                         <g:if test="${surveyConfig.url3}">
-                            <ui:linkIcon href="${surveyConfig.url3}"/>
+                            <ui:linkWithIcon href="${surveyConfig.url3}"/>
 
                         </g:if>
                     </td>

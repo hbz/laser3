@@ -407,7 +407,7 @@
 
                                                              class="la-overflow la-ellipsis"/>
                                             <g:if test="${participant.oldCustomProperty.value}">
-                                                <ui:linkIcon href="${participant.oldCustomProperty.value}"/>
+                                                <ui:linkWithIcon href="${participant.oldCustomProperty.value}"/>
                                             </g:if>
                                         </g:elseif>
                                         <g:elseif
@@ -474,7 +474,7 @@
 
                                                              class="la-overflow la-ellipsis"/>
                                             <g:if test="${participant.oldPrivateProperty.value}">
-                                                <ui:linkIcon href="${participant.oldPrivateProperty.value}"/>
+                                                <ui:linkWithIcon href="${participant.oldPrivateProperty.value}"/>
                                             </g:if>
                                         </g:elseif>
                                         <g:elseif
@@ -526,7 +526,7 @@
 
                                                              class="la-overflow la-ellipsis"/>
                                             <g:if test="${participant.surveyProperty.value}">
-                                                <ui:linkIcon href="${participant.surveyProperty.value}"/>
+                                                <ui:linkWithIcon href="${participant.surveyProperty.value}"/>
                                             </g:if>
                                         </g:elseif>
                                         <g:elseif test="${participant.surveyProperty.type.isRefdataValueType()}">
@@ -575,7 +575,7 @@
 
                                                              class="la-overflow la-ellipsis"/>
                                             <g:if test="${participant.newCustomProperty.value}">
-                                                <ui:linkIcon href="${participant.newCustomProperty.value}"/>
+                                                <ui:linkWithIcon href="${participant.newCustomProperty.value}"/>
                                             </g:if>
                                         </g:elseif>
                                         <g:elseif
@@ -639,7 +639,7 @@
 
                                                              class="la-overflow la-ellipsis"/>
                                             <g:if test="${participant.newPrivateProperty.value}">
-                                                <ui:linkIcon href="${participant.newPrivateProperty.value}"/>
+                                                <ui:linkWithIcon href="${participant.newPrivateProperty.value}"/>
                                             </g:if>
                                         </g:elseif>
                                         <g:elseif

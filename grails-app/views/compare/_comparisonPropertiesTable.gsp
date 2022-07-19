@@ -76,7 +76,7 @@
                                                  overwriteEditable="${false}"
                                                  class="la-overflow la-ellipsis"/>
                                 <g:if test="${propValue.value}">
-                                    <ui:linkIcon href="${propValue.value}"/>
+                                    <ui:linkWithIcon href="${propValue.value}"/>
                                 </g:if>
                             </g:elseif>
                             <g:elseif test="${propValue.type.isRefdataValueType()}">

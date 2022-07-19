@@ -63,6 +63,7 @@ class UiIconTagLib {
         String toolTippContent = attrs.toolTippContent ?: (defaultToolTippContent ?: '')
 
         boolean showToolTipp = attrs.showToolTipp ?: false
+        String icon = ''
 
         if(showToolTipp) {
             out << '<span class="la-popup-tooltip la-delay" data-content="' + toolTippContent + '" data-position="left center" data-variation="tiny">'
@@ -70,52 +71,50 @@ class UiIconTagLib {
 
         switch (attrs.propertyName) {
             case 'status':
-                out << '<i aria-hidden="true" class="'+aClass+ ' icon ellipsis vertical"></i> '
+                icon = 'ellipsis vertical'
                 break
             case 'kind':
-                out << '<i aria-hidden="true" class="'+aClass+ ' icon image outline"></i> '
+                icon = 'image outline'
                 break
             case 'form':
-                out << '<i aria-hidden="true" class="'+aClass+ ' icon dolly"></i> '
+                icon = 'dolly'
                 break
             case 'resource':
-                out << '<i aria-hidden="true" class="'+aClass+ ' icon box"></i> '
+                icon = 'box'
                 break
             case 'isPublicForApi':
-                out << '<i aria-hidden="true" class="'+aClass+ ' icon shipping fast"></i> '
+                icon = 'shipping fast'
                 break
             case 'hasPerpetualAccess':
-                out << '<i aria-hidden="true" class="'+aClass+ ' icon flag outline"></i> '
+                icon = 'flag outline'
                 break
             case 'hasPublishComponent':
-                out << '<i aria-hidden="true" class="'+aClass+ ' icon comment"></i> '
+                icon = 'comment'
                 break
             case 'startDate':
-                out << '<i aria-hidden="true" class="'+aClass+ ' icon calendar alternate outline"></i> '
+                icon = 'calendar alternate outline'
                 break
             case 'endDate':
-                out << '<i aria-hidden="true" class="'+aClass+ ' icon calendar alternate outline"></i> '
+                icon = 'calendar alternate outline'
                 break
             case 'type':
-                out << '<i aria-hidden="true" class="'+aClass+ ' icon image outline"></i> '
+                icon = 'image outline'
                 break
             case 'manualCancellationDate':
-                out << '<i aria-hidden="true" class="'+aClass+ ' icon calendar alternate outline"></i> '
+                icon = 'calendar alternate outline'
                 break
             case 'licenseUrl':
-                out << '<i aria-hidden="true" class="'+aClass+ ' icon cloud"></i> '
+                icon = 'cloud'
                 break
             case 'licenseCategory':
-                out << '<i aria-hidden="true" class="'+aClass+ ' icon clipboard list"></i> '
+                icon = 'clipboard list'
                 break
             case 'openEnded':
-                out << '<i aria-hidden="true" class="'+aClass+ ' icon key"></i> '
-                break
-
-            default:
-                out << '<i aria-hidden="true" class="'+aClass+ ' icon "></i> '
+                icon = 'key'
                 break
         }
+
+        out << '<i aria-hidden="true" class="' + aClass + ' icon ' + icon + '"></i> '
 
         if(showToolTipp) {
             out << '</span>'
@@ -218,7 +217,7 @@ class UiIconTagLib {
         out << '</span>'
     }
 
-    def linkIcon = { attrs, body ->
+    def linkWithIcon = { attrs, body ->
         out << ' <span class="la-popup-tooltip la-delay" style="bottom: -3px" data-position="top right" data-content="Diese URL aufrufen ..">'
         out << '&nbsp;<a href="' + attrs.href + '" aria-label="' + attrs.href + '" target="_blank" class="ui icon blue la-js-dont-hide-button">'
         out << '<i aria-hidden="true" class="share square icon"></i>'

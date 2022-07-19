@@ -53,7 +53,7 @@ class UiSubNavTagLib {
         String tooltip = attrs.tooltip ?: ""
         Integer counts = attrs.counts ? attrs.counts as Integer : null
 
-        if(tooltip != "") {
+        if (tooltip != "") {
             linkBody = '<div class="la-popup-tooltip la-delay" data-content="' + tooltip + '">' + linkBody + '</div>'
         }
 

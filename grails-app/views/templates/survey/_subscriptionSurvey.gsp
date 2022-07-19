@@ -91,7 +91,7 @@
                         <dd>
                             <ui:xEditable owner="${surveyConfig}" field="url" type="text"/>
                             <g:if test="${surveyConfig.url}">
-                                <ui:linkIcon href="${surveyConfig.url}"/>
+                                <ui:linkWithIcon href="${surveyConfig.url}"/>
                             </g:if>
 
                         </dd>
@@ -111,7 +111,7 @@
                         <dd>
                             <ui:xEditable owner="${surveyConfig}" field="url2" type="text"/>
                             <g:if test="${surveyConfig.url2}">
-                                <ui:linkIcon href="${surveyConfig.url2}"/>
+                                <ui:linkWithIcon href="${surveyConfig.url2}"/>
                             </g:if>
                         </dd>
                         <dt class="control-label">
@@ -130,7 +130,7 @@
                         <dd>
                             <ui:xEditable owner="${surveyConfig}" field="url3" type="text"/>
                             <g:if test="${surveyConfig.url3}">
-                                <ui:linkIcon href="${surveyConfig.url3}"/>
+                                <ui:linkWithIcon href="${surveyConfig.url3}"/>
                             </g:if>
                         </dd>
                         <dt class="control-label">
@@ -199,7 +199,7 @@
                                         <i class="info circle icon"></i>
                                     </span>
                                 </g:if>
-                                <ui:linkIcon href="${surveyConfig.url}"/>
+                                <ui:linkWithIcon href="${surveyConfig.url}"/>
                             </dd>
 
                         </dl>
@@ -221,7 +221,7 @@
                                     </span>
                                 </g:if>
 
-                                <ui:linkIcon href="${surveyConfig.url2}"/>
+                                <ui:linkWithIcon href="${surveyConfig.url2}"/>
                             </dd>
 
                         </dl>
@@ -243,7 +243,7 @@
                                     </span>
                                 </g:if>
 
-                                <ui:linkIcon href="${surveyConfig.url3}"/>
+                                <ui:linkWithIcon href="${surveyConfig.url3}"/>
                             </dd>
 
                         </dl>
@@ -1161,7 +1161,7 @@
                                                  overwriteEditable="${overwriteEditable}"
                                                  class="la-overflow la-ellipsis"/>
                                 <g:if test="${surveyResult.urlValue}">
-                                    <ui:linkIcon href="${surveyResult.urlValue}"/>
+                                    <ui:linkWithIcon href="${surveyResult.urlValue}"/>
                                 </g:if>
                             </g:elseif>
                             <g:elseif test="${surveyResult.type.isRefdataValueType()}">

@@ -100,7 +100,7 @@
                         <dd>
                             <ui:xEditable owner="${orgInstance}" type="url" field="url" class="la-overflow la-ellipsis" />
                             <g:if test="${orgInstance.url}">
-                                <ui:linkIcon href="${orgInstance.url}" />
+                                <ui:linkWithIcon href="${orgInstance.url}" />
                             </g:if>
                             <br />&nbsp<br />&nbsp<br />
                         </dd>
@@ -144,7 +144,7 @@
                             <dd>
                                 <ui:xEditable owner="${orgInstance}" type="url" field="urlGov" class="la-overflow la-ellipsis" />
                                 <g:if test="${orgInstance.urlGov}">
-                                    <ui:linkIcon href="${orgInstance.urlGov}" />
+                                    <ui:linkWithIcon href="${orgInstance.urlGov}" />
                                 </g:if>
                             </dd>
                         </dl>

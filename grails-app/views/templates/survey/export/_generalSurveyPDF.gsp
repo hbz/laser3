@@ -184,7 +184,7 @@
                                          field="urlValue"
                                          class="la-overflow la-ellipsis"/>
                         <g:if test="${surveyResult.urlValue}">
-                            <ui:linkIcon href="${surveyResult.urlValue}"/>
+                            <ui:linkWithIcon href="${surveyResult.urlValue}"/>
                         </g:if>
                     </g:elseif>
                     <g:elseif test="${surveyResult.type.isRefdataValueType()}">

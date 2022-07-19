@@ -30,7 +30,7 @@
                          overwriteEditable="${overwriteEditable}"
                          class="la-overflow la-ellipsis"/>
         <g:if test="${surResult.urlValue}">
-            <ui:linkIcon/>
+            <ui:linkWithIcon/>
         </g:if>
     </g:elseif>
     <g:elseif test="${surResult.type.isRefdataValueType()}">
