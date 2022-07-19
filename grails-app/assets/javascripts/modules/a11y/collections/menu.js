@@ -13,6 +13,9 @@ a11yMenu = {
 
         // for Main Menu
         $('#mainMenue .dropdown').dropdown({
+            action: function (text, value, element) {
+                element.click()
+            },
             selectOnKeydown        : false,
             on: 'hover',
             onHide         : function() {
@@ -25,6 +28,9 @@ a11yMenu = {
 
         // for Test Main Menu on dev/index view
         $('#mainMenueTest .dropdown').dropdown({
+            action: function (text, value, element) {
+                element.click()
+            },
             selectOnKeydown        : false,
             on: 'hover',
             onHide         : function() {
