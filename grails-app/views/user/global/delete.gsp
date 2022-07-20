@@ -111,7 +111,7 @@
             <thead>
             <tr>
                 <th>Objekte, Referenzen</th>
-                <th>Anzahl</th>
+                <th>${message(code:'default.count.label')}</th>
                 <th>Objekt-Ids</th>
             </tr>
             </thead>

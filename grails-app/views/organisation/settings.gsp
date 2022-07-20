@@ -40,7 +40,7 @@
                                 <thead>
                                 <tr>
                                     <th>Merkmal</th>
-                                    <th>Wert</th>
+                                    <th>${message(code:'default.value.label')}</th>
                                 </tr>
                                 </thead>
                                 <tbody>

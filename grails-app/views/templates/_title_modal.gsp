@@ -5,8 +5,8 @@
     <laser:render template="/templates/title_long"
               model="${[ie: ie, tipp: tipp,
                         showPackage: showPackage, showPlattform: showPlattform, showCompact: showCompact, showEmptyFields: showEmptyFields]}"/>
-    <br>
-    <br>
+    <br/>
+    <br/>
 
     <g:if test="${ie}">
 
@@ -196,7 +196,7 @@
     </g:if>
 
 
-    <br>
-    <br>
+    <br/>
+    <br/>
 
 </ui:modal>

@@ -26,10 +26,10 @@
     <table class="ui celled sortable table la-js-responsive-table la-table compact">
         <thead>
             <tr>
-                <th>Name</th>
-                <th>Beschreibung</th>
+                <th>${message(code:'default.name.label')}</th>
+                <th>${message(code:'default.description.label')}</th>
                 <th>Merkmale</th>
-                <th>Typ</th>
+                <th>${message(code:'default.type.label')}</th>
                 <th>Anzeigen (Voreinstellung)</th>
                 <th class="la-action-info">${message(code:'default.actions.label')}</th>
             </tr>

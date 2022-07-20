@@ -21,7 +21,7 @@
                     <thead>
                     <tr>
                         <th>Attribut</th>
-                        <th>Wert</th>
+                        <th>${message(code:'default.value.label')}</th>
                         <th>Vorkommen</th>
                         <th class="la-action-info">${message(code:'default.actions.label')}</th>
                     </tr>

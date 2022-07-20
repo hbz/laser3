@@ -15,12 +15,12 @@
 </ui:controlButtons>
 
 <ui:h1HeaderWithIcon text="${subscription.name}" />
-<br>
-<br>
+<br/>
+<br/>
 
 <h2 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'subscription.details.linkPackage.heading')}</h2>
-<br>
-<br>
+<br/>
+<br/>
 
 <h3 class="ui left floated aligned icon header la-clear-before">${message(code: 'package.plural')}
 <ui:totalNumber total="${recordsCount}"/>
@@ -226,8 +226,8 @@
                     </div>
                 </div>
 
-                <br>
-                <br>
+                <br/>
+                <br/>
 
                 <div class="field">
                     <h5 class="ui dividing header">
@@ -305,8 +305,8 @@
                         </div>
                     </div>
 
-                    <br>
-                    <br>
+                    <br/>
+                    <br/>
 
                     <div class="field">
                         <h5 class="ui dividing header">

@@ -11,7 +11,7 @@
     </g:form>
 </ui:filter>
 
-<br><br>
+<br/><br/>
 <g:form action="deleteSurveyParticipants" data-confirm-id="deleteSurveyParticipants_form" controller="survey" method="post" class="ui form"
         params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
 

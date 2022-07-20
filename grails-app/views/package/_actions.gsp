@@ -42,9 +42,9 @@
                               onchange="JSPC.app.adjustDropdown()"/>
             </div>
             <br id="element-vor-target-dropdown"/>
-            <br>
-            <br>
-            <br>
+            <br/>
+            <br/>
+            <br/>
 
             <div class="grouped required fields">
                 <label for="With">${message(code: 'subscription.details.linkPackage.label')}</label>
@@ -64,8 +64,8 @@
                 </div>
             </div>
 
-            <br>
-            <br>
+            <br/>
+            <br/>
 
             <div class="field">
                 <h3 class="ui dividing header">

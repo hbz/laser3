@@ -136,9 +136,7 @@
     <survey:status object="${surveyConfig.surveyInfo}"/>
 </ui:h1HeaderWithIcon>
 
-<g:if test="${flash}">
     <ui:messages data="${flash}"/>
-</g:if>
 
 <div class="sixteen wide column">
     <div class="two fields">

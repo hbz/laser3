@@ -49,9 +49,7 @@
     : <g:link controller="subscription" action="index" id="${subscriptionParticipant.id}">${surveyConfig.surveyInfo.name}</g:link>
 </ui:h1HeaderWithIcon>
 
-<g:if test="${flash}">
     <ui:messages data="${flash}"/>
-</g:if>
 
 <div class="eight wide field" style="text-align: right;">
     <g:link action="evaluationParticipant"

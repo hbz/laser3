@@ -20,8 +20,8 @@
 
                 <div class="content">
                     <g:message code="myinst.subscriptionImport.headline"/>
-                    <br>
-                    <br>
+                    <br/>
+                    <br/>
                     <a href="${resource(dir: 'files', file: 'LizenzImportVollnutzerBeispiel.csv')}"
                        download="template_bulk_load_subscription_records.csv">
                         <p><g:message code="myinst.subscriptionImport.template"/></p>

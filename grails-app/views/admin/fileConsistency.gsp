@@ -17,9 +17,9 @@
         <table class="ui sortable celled la-js-responsive-table la-table compact la-ignore-fixed table">
             <thead>
                 <tr>
-                    <th>Beschreibung</th>
+                    <th>${message(code:'default.description.label')}</th>
                     <th></th>
-                    <th>Anzahl</th>
+                    <th>${message(code:'default.count.label')}</th>
                 </tr>
             </thead>
             <tbody>
@@ -46,9 +46,9 @@
          <table class="ui sortable celled la-js-responsive-table la-table compact la-ignore-fixed table">
             <thead>
                 <tr>
-                    <th>Beschreibung</th>
+                    <th>${message(code:'default.description.label')}</th>
                     <th></th>
-                    <th>Anzahl</th>
+                    <th>${message(code:'default.count.label')}</th>
                 </tr>
             </thead>
             <tbody>
@@ -97,9 +97,9 @@
         <table class="ui sortable celled la-js-responsive-table la-table compact la-ignore-fixed table">
             <thead>
             <tr>
-                <th>Beschreibung</th>
+                <th>${message(code:'default.description.label')}</th>
                 <th>Spec.</th>
-                <th>Anzahl</th>
+                <th>${message(code:'default.count.label')}</th>
             </tr>
             </thead>
             <tbody>

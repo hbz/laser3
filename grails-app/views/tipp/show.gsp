@@ -107,7 +107,7 @@
                 </div>
             </div>
 
-            <br>
+            <br/>
         </div>
     </div>
 
@@ -123,27 +123,27 @@
                 <g:link controller="package" action="show"
                         id="${tipp.pkg?.id}">${tipp.pkg?.name}</g:link>
 
-                <br>
-                <br>
+                <br/>
+                <br/>
                 <g:link controller="package" action="current"
                         id="${tipp.pkg?.id}">
                     <g:message code="package.show.nav.current"/>: <g:message code="package.compare.overview.tipps"/> ${currentTippsCounts}</g:link>
-                <br>
+                <br/>
                 <g:link controller="package" action="planned"
                         id="${tipp.pkg?.id}">
                     <g:message code="package.show.nav.planned"/>: <g:message code="package.compare.overview.tipps"/> ${plannedTippsCounts}</g:link>
-                <br>
+                <br/>
                 <g:link controller="package" action="expired"
                         id="${tipp.pkg?.id}">
                     <g:message code="package.show.nav.expired"/>: <g:message code="package.compare.overview.tipps"/> ${expiredTippsCounts}</g:link>
 
-                <br>
+                <br/>
                 <g:link controller="package" action="deleted"
                         id="${tipp.pkg?.id}">
                     <g:message code="package.show.nav.deleted"/>: <g:message code="package.compare.overview.tipps"/> ${deletedTippsCounts}</g:link>
 
-                <br>
-                <br>
+                <br/>
+                <br/>
                 <g:each in="${ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
                         var="gokbAPI">
                     <g:if test="${tipp.pkg.gokbId}">
@@ -201,7 +201,7 @@
                        target="_blank"><i class="share square icon"></i></a>
                 </g:if>
             </div>
-            <br>
+            <br/>
             <g:each in="${ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
                     var="gokbAPI">
                 <g:if test="${tipp.platform.gokbId}">
@@ -279,7 +279,7 @@
                                         <g:else>
                                             <g:each in="${TitleHistoryEventParticipant.findAllByParticipantNotEqualAndEvent(tipp,tiH)}" var="p">
                                                 <g:if test="${p.participantRole=='to'}">
-                                                    <g:link controller="tipp" action="show" id="${p.participant.id}"><span style="<g:if test="${p.participant.id == tiH.id}">font-weight:bold</g:if>">${p.participant.name} (${p.participant.pkg.name} / ${p.participant.platform.name})</span></g:link><br>
+                                                    <g:link controller="tipp" action="show" id="${p.participant.id}"><span style="<g:if test="${p.participant.id == tiH.id}">font-weight:bold</g:if>">${p.participant.name} (${p.participant.pkg.name} / ${p.participant.platform.name})</span></g:link><br/>
                                                 </g:if>
                                             </g:each>
                                         </g:else>
@@ -291,7 +291,7 @@
                                         <g:else>
                                             <g:each in="${TitleHistoryEventParticipant.findAllByParticipantNotEqualAndEvent(tipp,tiH)}" var="p">
                                                 <g:if test="${p.participantRole=='from'}">
-                                                    <g:link controller="tipp" action="show" id="${p.participant.id}"><span style="<g:if test="${p.participant.id == tiH.id}">font-weight:bold</g:if>">${p.participant.name} (${p.participant.pkg.name} / ${p.participant.platform.name})</span></g:link><br>
+                                                    <g:link controller="tipp" action="show" id="${p.participant.id}"><span style="<g:if test="${p.participant.id == tiH.id}">font-weight:bold</g:if>">${p.participant.name} (${p.participant.pkg.name} / ${p.participant.platform.name})</span></g:link><br/>
                                                 </g:if>
                                             </g:each>
                                         </g:else>

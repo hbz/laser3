@@ -290,7 +290,7 @@
                 <th>${message(code:'workflow.task.label')}</th>
                 <th>${message(code:'workflow.condition.label')} &darr;</th>
                 <th>${message(code:'workflow.label')} &uarr;</th>
-                %{-- <th>Typ</th> --}%
+                %{-- <th>${message(code:'default.type.label')}</th> --}%
                 <th>Nachfolger &rarr;</th>
                 <th>Child &darr;</th>
                 <th>Priorität</th>

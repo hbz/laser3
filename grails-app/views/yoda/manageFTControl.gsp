@@ -55,10 +55,10 @@
       <thead>
       <tr>
         <th>index</th>
-        <th>type</th>
+          <th>${message(code:'default.type.label')}</th>
         <th>countIndex</th>
         <th>countDB</th>
-        <th>Action</th>
+        <th>${message(code:'default.action.label')}</th>
       </tr>
       </thead>
       <tbody>

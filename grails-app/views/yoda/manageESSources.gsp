@@ -10,8 +10,8 @@
       <table class="ui celled la-js-responsive-table la-table table">
         <thead>
           <tr>
-            <th>Identifier</th>
-            <th>Name</th>
+              <th>${message(code:'default.identifier.label')}</th>
+              <th>${message(code:'default.name.label')}</th>
             <th>Host</th>
             <th>Active</th>
             <th>Port</th>

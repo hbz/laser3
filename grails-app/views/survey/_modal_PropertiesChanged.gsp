@@ -9,7 +9,6 @@
             <th>${message(code: 'propertyDefinition.label')}</th>
             <th>${message(code: 'subscription')}-${message(code: 'propertyDefinition.label')}</th>
             <th>${message(code: 'survey.label')}-${message(code: 'propertyDefinition.label')}</th>
-
         </tr>
         </thead>
         <tbody>

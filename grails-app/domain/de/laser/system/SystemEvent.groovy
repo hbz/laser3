@@ -228,7 +228,12 @@ class SystemEvent {
      */
     private void _setInfo() {
         if (!i18n) {
-            i18n = BeanStore.getMessageSource().getMessage('se.' + (token ?: 'UNKNOWN'), null, LocaleContextHolder.locale)
+            try {
+                i18n = BeanStore.getMessageSource().getMessage('se.' + token, null, LocaleContextHolder.locale)
+            } catch (Exception e) {
+                log.warn '- missing locale for token: ' + token
+                i18n = BeanStore.getMessageSource().getMessage('se.UNKNOWN', null, LocaleContextHolder.locale)
+            }
         }
     }
 

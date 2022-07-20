@@ -23,8 +23,7 @@
 
         <div class="three fields">
             <div class="field">
-                <label for="name">${message(code: 'surveyInfo.name.label')}
-                </label>
+                <label for="name">${message(code: 'surveyInfo.name.label')}</label>
 
                 <div class="ui input">
                     <input type="text" id="name" name="name"

@@ -38,7 +38,7 @@
         </g:link>
 
     </g:if>
-<br><br>
+<br/><br/>
 
 
 
@@ -54,8 +54,8 @@
                     params="[surveyConfigID: surveyConfig.id, tab: params.tab, exportXLSX: true]">
                 Export ${message(code: 'renewalEvaluation.propertiesChanged')}
             </g:link>
-            <br>
-            <br>
+            <br/>
+            <br/>
         </g:if>
 
 
@@ -114,7 +114,7 @@
 
 <g:form action="${processAction}" controller="survey" method="post" class="ui form"
         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: params.tab]">
-    <br><br>
+    <br/><br/>
     <h4 class="ui header"><g:message code="surveyParticipants.hasAccess"/></h4>
 
     <g:set var="surveyParticipantsHasAccess"
@@ -129,7 +129,7 @@
             </a>
         </g:if>
 
-<br><br>
+<br/><br/>
 
 
 
@@ -321,7 +321,7 @@
         </g:each>
         </tbody>
     </table>
-    <br><br>
+    <br/><br/>
     <h4 class="ui header"><g:message code="surveyParticipants.hasNotAccess"/></h4>
 
     <g:set var="surveyParticipantsHasNotAccess"

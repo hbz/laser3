@@ -32,28 +32,28 @@
                         <input id="generalradio" type="radio" value="general" name="linkto" tabindex="0" class="hidden" checked="">
                         <label for="generalradio">${message(code: 'task.general')}</label>
                     </div>
-                    &nbsp &nbsp
+                    &nbsp; &nbsp;
                     <div class="ui radio checkbox">
                         <input id="licenseradio" type="radio" value="license" name="linkto" tabindex="0" class="hidden">
                         <label for="licenseradio">
                             <g:message code="license.label" />
                         </label>
                     </div>
-                    &nbsp &nbsp
+                    &nbsp; &nbsp;
                     %{--<div class="ui radio checkbox">
                         <input id="pkgradio" type="radio" value="pkg" name="linkto" tabindex="0" class="hidden">
                         <label for="pkgradio">
                             <g:message code="package.label" />
                         </label>
                     </div>
-                    &nbsp &nbsp--}%
+                    &nbsp; &nbsp;--}%
                     <div class="ui radio checkbox">
                         <input id="subscriptionradio" type="radio" value="subscription" name="linkto" tabindex="0" class="hidden">
                         <label for="subscriptionradio">
                             <g:message code="default.subscription.label" />
                         </label>
                     </div>
-                    &nbsp &nbsp
+                    &nbsp; &nbsp;
                     <div class="ui radio checkbox">
                         <input id="orgradio" type="radio" value="org" name="linkto" tabindex="0" class="hidden">
                         <label for="orgradio">
