@@ -1,6 +1,6 @@
 package de.laser
 
-
+import de.laser.annotations.CheckFor404
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.ctrl.UserControllerService
@@ -142,6 +142,7 @@ class UserController  {
     @Secured(closure = {
         ctx.contextService.getUser()?.hasRole('ROLE_ADMIN') || ctx.contextService.getUser()?.hasAffiliation("INST_ADM")
     })
+    @CheckFor404
     def show() {
         Map<String, Object> result = userControllerService.getResultGenerics(params)
         result

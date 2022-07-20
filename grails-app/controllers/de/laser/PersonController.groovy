@@ -1,6 +1,6 @@
 package de.laser
 
-
+import de.laser.annotations.CheckFor404
 import de.laser.titles.TitleInstance
  
 import de.laser.annotations.DebugInfo
@@ -183,6 +183,7 @@ class PersonController  {
      * Shows the contact details of the given person instance
      */
     @Secured(['ROLE_USER'])
+    @CheckFor404
     Map<String,Object> show() {
         Person personInstance = Person.get(params.id)
         Org contextOrg = contextService.getOrg()

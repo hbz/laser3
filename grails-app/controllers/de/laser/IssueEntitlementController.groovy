@@ -1,6 +1,6 @@
 package de.laser
 
-
+import de.laser.annotations.CheckFor404
 import de.laser.auth.User
 import de.laser.config.ConfigMapper
 import de.laser.utils.SwissKnife
@@ -40,6 +40,7 @@ class IssueEntitlementController  {
      */
     @DebugInfo(test = 'hasAffiliation("INST_USER")', wtc = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @CheckFor404
     def show() {
       Map<String, Object> result = [:]
 

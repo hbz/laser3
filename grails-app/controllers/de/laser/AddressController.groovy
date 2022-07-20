@@ -1,6 +1,7 @@
 package de.laser
  
 import de.laser.annotations.DebugInfo
+import de.laser.annotations.CheckFor404
 import de.laser.storage.RDStore
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException
@@ -75,6 +76,7 @@ class AddressController  {
      * @return a modal containing the address details
      */
     @Secured(['ROLE_USER'])
+    @CheckFor404
     def show() {
         Address addressInstance = Address.get(params.id)
         if (! addressInstance) {

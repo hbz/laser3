@@ -14,6 +14,7 @@ import de.laser.survey.SurveyConfig
 import de.laser.workflow.WfWorkflow
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
+import org.apache.http.HttpStatus
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 
 import javax.servlet.ServletOutputStream
@@ -139,8 +140,8 @@ class FinanceController  {
         log.debug("Financial Export :: ${params}")
         Map<String, Object> result = financeControllerService.getResultGenerics(params+[forExport:true])
         if (!accessService.checkMinUserOrgRole(result.user,result.institution,"INST_USER")) {
-            flash.error=message(code: 'financials.permission.unauthorised', args: [result.institution? result.institution.name : 'N/A'])
-            response.sendError(403)
+            flash.error = message(code: 'financials.permission.unauthorised', args: [result.institution? result.institution.name : 'N/A']) as String
+            response.sendError(HttpStatus.SC_FORBIDDEN)
             return
         }
         Map financialData = result.subscription ? financeService.getCostItemsForSubscription(params,result) : financeService.getCostItems(params,result)

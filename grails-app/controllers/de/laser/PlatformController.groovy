@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.annotations.CheckFor404
 import de.laser.auth.User
 import de.laser.ctrl.PlatformControllerService
 import de.laser.annotations.DebugInfo
@@ -102,6 +103,7 @@ class PlatformController  {
      * @return the details view of the platform
      */
     @Secured(['ROLE_USER'])
+    @CheckFor404
     def show() {
         Map<String, Object> result = platformControllerService.getResultGenerics(params)
         Platform platformInstance

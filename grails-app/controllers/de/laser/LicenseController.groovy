@@ -1,6 +1,6 @@
 package de.laser
 
-
+import de.laser.annotations.CheckFor404
 import de.laser.auth.User
 import de.laser.ctrl.LicenseControllerService
 import de.laser.custom.CustomWkhtmltoxService
@@ -18,6 +18,7 @@ import de.laser.storage.RDStore
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinitionGroup
 import grails.plugin.springsecurity.annotation.Secured
+import org.apache.http.HttpStatus
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
@@ -60,6 +61,7 @@ class LicenseController {
      */
     @DebugInfo(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @CheckFor404
     def show() {
 
         Profiler prf = new Profiler()
@@ -763,7 +765,7 @@ class LicenseController {
         result.editable = result.sourceObject?.isEditableBy(result.user)
 
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.isConsortialObjects = (result.sourceObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL)
@@ -861,7 +863,7 @@ class LicenseController {
         result.editable = result.sourceObject.isEditableBy(result.user)
 
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.isConsortialObjects = (result.sourceObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL && result.targetObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL) ?: false

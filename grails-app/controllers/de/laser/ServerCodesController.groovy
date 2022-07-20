@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.annotations.CheckFor404
 import de.laser.utils.AppUtils
 import de.laser.utils.CodeUtils
 import de.laser.config.ConfigMapper
@@ -70,17 +71,22 @@ class ServerCodesController {
      */
     def notFound() {
         Map<String, Object> result = [status: request.getAttribute('javax.servlet.error.status_code')]
-
         UrlMappingData umd = (new DefaultUrlMappingParser()).parse( request.forwardURI )
-        GrailsClass controller = CodeUtils.getAllControllerArtefacts().find { it.logicalPropertyName == umd.tokens[0] }
-        if (controller) {
-            result.alternatives = controller.clazz.declaredMethods.findAll{
-                it.getAnnotation(Action) && it.name in ['index', 'list', 'show']
-            }.collect{
-                if (it.name == 'show' && umd.tokens.size() == 3 && umd.tokens[2].isNumber()) {
-                    "${g.createLink(controller: controller.logicalPropertyName, action: it.name, params: [id: umd.tokens[2]], absolute: true)}"
-                } else {
-                    "${g.createLink(controller: controller.logicalPropertyName, action: it.name, absolute: true)}"
+
+        if (request.getAttribute('javax.servlet.error.message') == CheckFor404.KEY) {
+            result.alternatives = ["${g.createLink(controller: umd.tokens[0], action: CheckFor404.FALLBACK_ACTION, absolute: true)}"]
+        }
+        else {
+            GrailsClass controller = CodeUtils.getAllControllerArtefacts().find { it.logicalPropertyName == umd.tokens[0] }
+            if (controller) {
+                result.alternatives = controller.clazz.declaredMethods.findAll{
+                    it.getAnnotation(Action) && it.name in ['index', 'list', 'show']
+                }.collect{
+                    if (it.name == 'show' && umd.tokens.size() == 3 && umd.tokens[2].isNumber()) {
+                        "${g.createLink(controller: controller.logicalPropertyName, action: it.name, params: [id: umd.tokens[2]], absolute: true)}"
+                    } else {
+                        "${g.createLink(controller: controller.logicalPropertyName, action: it.name, absolute: true)}"
+                    }
                 }
             }
         }

@@ -1,6 +1,6 @@
 package de.laser
 
-
+import de.laser.annotations.CheckFor404
 import de.laser.auth.User
 import de.laser.utils.DateUtils
 import de.laser.annotations.DebugInfo
@@ -366,6 +366,7 @@ class PackageController {
      * because some data will not be mirrored to the app
      */
     @Secured(['ROLE_USER'])
+    @CheckFor404
     def show() {
         Map<String, Object> result = [:]
 

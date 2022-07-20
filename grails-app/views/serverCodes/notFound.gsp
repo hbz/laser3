@@ -14,8 +14,7 @@
                 ${message(code: 'serverCode.notFound.message1')}
             </h2>
 
-            <g:if test="${!flash.error}">
-                <div>
+            <div>
                     <p>${message(code: 'serverCode.notFound.message2')}</p>
 
                     <g:if test="${alternatives}">
@@ -39,8 +38,8 @@
                     <p>
                         <button class="ui button" onclick="JSPC.helper.goBack()">${message(code: 'default.button.back')}</button>
                     </p>
-                </div>
-            </g:if>
+            </div>
+
         </div>
     </div>
 

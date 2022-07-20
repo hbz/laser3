@@ -7,6 +7,7 @@ import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.core.GrailsApplication
+import org.apache.http.HttpStatus
 import org.springframework.security.access.annotation.Secured
 import org.springframework.security.authentication.AccountExpiredException
 import org.springframework.security.authentication.CredentialsExpiredException
@@ -16,10 +17,6 @@ import org.springframework.security.core.context.SecurityContextHolder as SCH
 import org.springframework.security.web.WebAttributes
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache
 import org.springframework.security.web.savedrequest.SavedRequest
-
-import javax.servlet.http.HttpServletResponse
-
-//import org.springframework.security.web.authentication.AbstractProcessingFilter
 
 /**
  * The controller manages authentication handling
@@ -75,9 +72,9 @@ class LoginController {
    */
   def authAjax = {
     response.setHeader 'Location', SpringSecurityUtils.securityConfig.auth.ajaxLoginFormUrl
-    response.sendError HttpServletResponse.SC_UNAUTHORIZED
+    response.sendError HttpStatus.SC_UNAUTHORIZED
 
-    render status: 401, text: 401
+    render status: HttpStatus.SC_UNAUTHORIZED, text: HttpStatus.SC_UNAUTHORIZED
   }
 
   /**

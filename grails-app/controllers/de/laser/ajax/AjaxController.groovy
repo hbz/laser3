@@ -27,7 +27,7 @@ import de.laser.utils.SwissKnife
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
-import grails.core.GrailsClass
+import org.apache.http.HttpStatus
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.springframework.context.i18n.LocaleContextHolder
@@ -1527,7 +1527,7 @@ class AjaxController {
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = "You do not have permission to access ${contextService.getOrg().name} pages. Please request access on the profile page"
-            response.sendError(401)
+            response.sendError(HttpStatus.SC_FORBIDDEN)
             return
         }
 
@@ -1589,7 +1589,7 @@ class AjaxController {
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = "You do not have permission to access ${contextService.getOrg().name} pages. Please request access on the profile page"
-            response.sendError(401)
+            response.sendError(HttpStatus.SC_FORBIDDEN)
             return
         }
 
@@ -2070,7 +2070,7 @@ class AjaxController {
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = "You do not have permission to access ${contextService.getOrg().name} pages. Please request access on the profile page"
-            response.sendError(401)
+            response.sendError(HttpStatus.SC_FORBIDDEN)
             return
         }
 

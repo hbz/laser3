@@ -1,6 +1,6 @@
 package de.laser
 
-
+import de.laser.annotations.CheckFor404
 import de.laser.annotations.DebugInfo
 import de.laser.ctrl.OrganisationControllerService
 import de.laser.ctrl.UserControllerService
@@ -18,6 +18,7 @@ import de.laser.utils.SwissKnife
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
+import org.apache.http.HttpStatus
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -211,7 +212,7 @@ class OrganisationController  {
             }
             catch (Exception e) {
                 log.error("Problem",e);
-                response.sendError(500)
+                response.sendError(HttpStatus.SC_INTERNAL_SERVER_ERROR)
                 return
             }
         }
@@ -359,7 +360,7 @@ class OrganisationController  {
             }
             catch (Exception e) {
                 log.error("Problem",e);
-                response.sendError(500)
+                response.sendError(HttpStatus.SC_INTERNAL_SERVER_ERROR)
                 return
             }
         }
@@ -804,6 +805,7 @@ class OrganisationController  {
      * @return the details view of the given orgainsation
      */
     @Secured(['ROLE_USER'])
+    @CheckFor404
     def show() {
 
         Profiler prf = new Profiler()

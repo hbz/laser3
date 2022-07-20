@@ -16,8 +16,7 @@
             ${message(code: 'serverCode.error.message1')}
         </h2>
 
-        <g:if test="${! flash.error}">
-            <div>
+        <div>
                 <p>${message(code: 'serverCode.error.message2')}</p>
                 <p><strong>${request.forwardURI}</strong></p>
 
@@ -35,8 +34,8 @@
                 <p>
                     <button class="ui button" onclick="JSPC.helper.goBack()">${message(code: 'default.button.back')}</button>
                 </p>
-            </div>
-        </g:if>
+        </div>
+
     </div>
 </div>
 

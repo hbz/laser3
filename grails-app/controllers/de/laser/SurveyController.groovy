@@ -2,6 +2,7 @@ package de.laser
 
 
 import de.laser.annotations.DebugInfo
+import de.laser.annotations.CheckFor404
 import de.laser.ctrl.FinanceControllerService
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.ctrl.SurveyControllerService
@@ -29,6 +30,7 @@ import de.laser.utils.SwissKnife
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.time.TimeCategory
+import org.apache.http.HttpStatus
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.i18n.LocaleContextHolder
@@ -747,6 +749,7 @@ class SurveyController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
+    @CheckFor404
     def show() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
 
@@ -1034,7 +1037,7 @@ class SurveyController {
     Map<String,Object> processSurveyCostItemsBulk() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.putAll(financeControllerService.getEditVars(result.institution))
@@ -1167,7 +1170,7 @@ class SurveyController {
     Map<String,Object> setSurveyConfigFinish() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.surveyConfig.configFinish = params.configFinish ?: false
@@ -1194,7 +1197,7 @@ class SurveyController {
     Map<String,Object> workflowRenewalSent() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.surveyInfo.isRenewalSent = params.renewalSent ?: false
@@ -1221,7 +1224,7 @@ class SurveyController {
     Map<String,Object> workflowCostItemsFinish() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.surveyConfig.costItemsFinish = params.costItemsFinish ?: false
@@ -1247,7 +1250,7 @@ class SurveyController {
     Map<String,Object> setSurveyPropertyMandatory() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         SurveyConfigProperties surveyConfigProperties = SurveyConfigProperties.get(params.surveyConfigProperties)
@@ -1275,7 +1278,7 @@ class SurveyController {
     Map<String,Object> setSurveyCompleted() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.surveyInfo.status = params.surveyCompleted ? RDStore.SURVEY_COMPLETED : RDStore.SURVEY_IN_EVALUATION
@@ -1301,7 +1304,7 @@ class SurveyController {
     Map<String,Object> setSurveyTransferConfig() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         Map transferWorkflow = result.surveyConfig.transferWorkflow ? JSON.parse(result.surveyConfig.transferWorkflow) : [:]
@@ -1411,7 +1414,7 @@ class SurveyController {
             }
             catch (Exception e) {
                 log.error("Problem", e);
-                response.sendError(500)
+                response.sendError(HttpStatus.SC_INTERNAL_SERVER_ERROR)
                 return
             }
         }
@@ -1543,7 +1546,7 @@ class SurveyController {
      Map<String,Object> processTransferParticipants() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         if(!params.targetSubscriptionId) {
@@ -1995,7 +1998,7 @@ class SurveyController {
      Map<String,Object> evaluationParticipant() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.participant = Org.get(params.participant)
@@ -2112,7 +2115,7 @@ class SurveyController {
     Map<String,Object> generatePdfForParticipant() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
         result.participant = Org.get(params.participant)
 
@@ -2241,7 +2244,7 @@ class SurveyController {
      Map<String,Object> allSurveyProperties() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_USER','ROLE_ADMIN')) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.properties = surveyService.getSurveyProperties(result.institution)
@@ -2263,7 +2266,7 @@ class SurveyController {
      Map<String,Object> addSurveyPropToConfig() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.editable = (result.surveyInfo && result.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
@@ -2522,7 +2525,7 @@ class SurveyController {
      Map<String,Object> processOpenSurvey() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.editable = (result.surveyInfo && result.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
@@ -2573,7 +2576,7 @@ class SurveyController {
      Map<String,Object> processEndSurvey() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         if (result.editable) {
@@ -2604,7 +2607,7 @@ class SurveyController {
      Map<String,Object> processBackInProcessingSurvey() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         if (result.editable) {
@@ -2628,7 +2631,7 @@ class SurveyController {
      Map<String,Object> processOpenSurveyNow() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.editable = (result.surveyInfo && result.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
@@ -2694,7 +2697,7 @@ class SurveyController {
      Map<String,Object> openSurveyAgain() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         if(result.surveyInfo && result.surveyInfo.status.id in [RDStore.SURVEY_IN_EVALUATION.id, RDStore.SURVEY_COMPLETED.id, RDStore.SURVEY_SURVEY_COMPLETED.id ]){
@@ -2731,7 +2734,7 @@ class SurveyController {
      Map<String,Object> deleteSurveyParticipants() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.editable = (result.surveyInfo && result.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
@@ -2787,7 +2790,7 @@ class SurveyController {
      Map<String,Object> deleteSurveyInfo() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.editable = (result.surveyInfo.status in [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY])
@@ -2858,7 +2861,7 @@ class SurveyController {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         result.putAll(financeControllerService.getEditVars(result.institution))
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
         result.costItem = CostItem.findById(params.costItem)
 
@@ -2890,7 +2893,7 @@ class SurveyController {
      Map<String,Object> addForAllSurveyCostItem() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.putAll(financeControllerService.getEditVars(result.institution))
@@ -2927,7 +2930,7 @@ class SurveyController {
      Map<String,Object> setInEvaluation() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.surveyInfo.status = RDStore.SURVEY_IN_EVALUATION
@@ -2953,7 +2956,7 @@ class SurveyController {
      Map<String,Object> setCompleted() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.surveyInfo.status = RDStore.SURVEY_COMPLETED
@@ -2979,7 +2982,7 @@ class SurveyController {
      Map<String,Object> setCompletedSurvey() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         SurveyInfo.withTransaction { TransactionStatus ts ->
@@ -3005,7 +3008,7 @@ class SurveyController {
      Map<String,Object> setSurveyConfigComment() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.surveyConfig.comment = params.comment
@@ -3066,7 +3069,7 @@ class SurveyController {
                 }
                 catch (Exception e) {
                     log.error("Problem", e);
-                    response.sendError(500)
+                    response.sendError(HttpStatus.SC_INTERNAL_SERVER_ERROR)
                     return
                 }
             }
@@ -3087,7 +3090,7 @@ class SurveyController {
     Map<String,Object> showPropertiesChanged() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTimeNoPoint()
@@ -3162,7 +3165,7 @@ class SurveyController {
      Map<String,Object> copySurvey() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
@@ -3254,7 +3257,7 @@ class SurveyController {
      Map<String,Object> addSubMembersToSurvey() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         surveyService.addSubMembers(result.surveyConfig)
@@ -3274,7 +3277,7 @@ class SurveyController {
      Map<String,Object> processCopySurvey() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         SurveyInfo baseSurveyInfo = result.surveyInfo
@@ -3516,7 +3519,7 @@ class SurveyController {
      def exportSurCostItems() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
         //result.putAll(financeControllerService.setEditVars(result.institution))
 
@@ -3584,7 +3587,7 @@ class SurveyController {
 
             if (!accessService.checkMinUserOrgRole(user, result.institution, "INST_EDITOR")) {
                 result.error = message(code: 'financials.permission.unauthorised', args: [result.institution ? result.institution.name : 'N/A']) as String
-                response.sendError(403)
+                response.sendError(HttpStatus.SC_FORBIDDEN)
                 return
             }
 
@@ -3793,7 +3796,7 @@ class SurveyController {
      Map<String,Object> compareMembersOfTwoSubs() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.parentSubscription = result.surveyConfig.subscription
@@ -3856,7 +3859,7 @@ class SurveyController {
      Map<String,Object> copySurveyCostItems() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.parentSubscription = result.surveyConfig.subscription
@@ -3906,7 +3909,7 @@ class SurveyController {
      Map<String,Object> proccessCopySurveyCostItems() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         if(result.surveyConfig.subSurveyUseForTransfer){
@@ -3975,7 +3978,7 @@ class SurveyController {
      Map<String,Object> copySurveyCostItemsToSub() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.parentSubscription = result.surveyConfig.subscription
@@ -4015,7 +4018,7 @@ class SurveyController {
      Map<String,Object> proccessCopySurveyCostItemsToSub() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.parentSubscription = result.surveyConfig.subscription
@@ -4070,7 +4073,7 @@ class SurveyController {
      Map<String,Object> copyProperties() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         params.tab = params.tab ?: 'surveyProperties'
@@ -4176,7 +4179,7 @@ class SurveyController {
      Map<String,Object> proccessCopyProperties() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         if(result.surveyConfig.subSurveyUseForTransfer){
@@ -4314,7 +4317,7 @@ class SurveyController {
      Map<String,Object> processTransferParticipantsByRenewal() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.parentSubscription = result.surveyConfig.subscription
@@ -4793,7 +4796,7 @@ class SurveyController {
         result.editable = result.sourceObject.surveyInfo.isEditable()
 
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.allObjects_readRights = SurveyConfig.executeQuery("select surConfig from SurveyConfig as surConfig join surConfig.surveyInfo as surInfo where surInfo.owner = :contextOrg order by surInfo.name", [contextOrg: result.contextOrg])
@@ -4890,7 +4893,7 @@ class SurveyController {
     Map<String,Object> setProviderOrLicenseLink() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         SurveyInfo.withTransaction { TransactionStatus ts ->
@@ -4944,7 +4947,7 @@ class SurveyController {
     Map<String,Object> setSurveyLink() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         SurveyInfo.withTransaction { TransactionStatus ts ->

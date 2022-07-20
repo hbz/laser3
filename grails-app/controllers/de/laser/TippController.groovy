@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.annotations.CheckFor404
 import de.laser.storage.RDStore
 import de.laser.titles.TitleHistoryEvent
 import grails.plugin.springsecurity.annotation.Secured
@@ -18,6 +19,7 @@ class TippController  {
    * @return the details view of the title
    */
   @Secured(['ROLE_USER'])
+  @CheckFor404
   def show() { 
     Map<String, Object> result = [:]
 

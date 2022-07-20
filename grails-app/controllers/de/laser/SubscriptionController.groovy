@@ -1,6 +1,6 @@
 package de.laser
 
-
+import de.laser.annotations.CheckFor404
 import de.laser.annotations.DebugInfo
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.exceptions.EntitlementCreationException
@@ -49,6 +49,7 @@ class SubscriptionController {
      */
     @DebugInfo(test = 'hasAffiliation("INST_USER")', ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @CheckFor404
     def show() {
         Map<String,Object> ctrlResult = subscriptionControllerService.show(params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {

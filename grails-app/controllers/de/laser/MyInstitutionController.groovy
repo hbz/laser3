@@ -41,6 +41,7 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.commons.collections.BidiMap
 import org.apache.commons.collections.bidimap.DualHashBidiMap
+import org.apache.http.HttpStatus
 import org.apache.poi.POIXMLProperties
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.FillPatternType
@@ -649,7 +650,7 @@ class MyInstitutionController  {
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]) as String
-            response.sendError(401)
+            response.sendError(HttpStatus.SC_FORBIDDEN)
             return;
         }
 
@@ -701,17 +702,17 @@ class MyInstitutionController  {
 
             if (! accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR')) {
                 flash.error = message(code:'myinst.error.noAdmin', args:[org.name]) as String
-                response.sendError(401)
-                // render(status: '401', text:"You do not have permission to access ${org.name}. Please request access on the profile page");
+                response.sendError(HttpStatus.SC_FORBIDDEN)
+                // render(status: '403', text:"You do not have permission to access ${org.name}. Please request access on the profile page");
                 return
             }
             License baseLicense = params.baselicense ? License.get(params.baselicense) : null
             //Nur wenn von Vorlage ist
             if (baseLicense) {
-                if (!baseLicense?.hasPerm("view", user)) {
-                    log.debug("return 401....")
+                if (! baseLicense.hasPerm("view", user)) {
+                    log.debug("return 403....")
                     flash.error = message(code: 'myinst.newLicense.error') as String
-                    response.sendError(401)
+                    response.sendError(HttpStatus.SC_FORBIDDEN)
                     return
                 }
                 else {
@@ -860,7 +861,7 @@ join sub.orgRelations or_sub where
             }
             catch (Exception e) {
                 log.error("Problem",e);
-                response.sendError(500)
+                response.sendError(HttpStatus.SC_INTERNAL_SERVER_ERROR)
                 return
             }
         }
@@ -1599,7 +1600,7 @@ join sub.orgRelations or_sub where
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = "You do not have permission to access ${result.institution.name} pages. Please request access on the profile page";
-            response.sendError(401)
+            response.sendError(HttpStatus.SC_FORBIDDEN)
             return;
         }
 
@@ -3987,7 +3988,7 @@ join sub.orgRelations or_sub where
 
             if (! (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR'))) {
                 flash.error = message(code:'license.permissionInfo.noPerms') as String
-                response.sendError(401)
+                response.sendError(HttpStatus.SC_FORBIDDEN)
                 return;
             }
 
@@ -3996,7 +3997,7 @@ join sub.orgRelations or_sub where
                 return
             }else {
                 flash.error = message(code:'license.permissionInfo.noPerms') as String
-                response.sendError(401)
+                response.sendError(HttpStatus.SC_FORBIDDEN)
                 return;
             }
         }

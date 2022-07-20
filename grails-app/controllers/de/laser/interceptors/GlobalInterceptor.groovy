@@ -1,8 +1,12 @@
 package de.laser.interceptors
 
+import de.laser.annotations.CheckFor404
 import de.laser.utils.AppUtils
 import de.laser.utils.CodeUtils
+import grails.core.GrailsControllerClass
+import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.util.logging.Slf4j
+import org.apache.http.HttpStatus
 
 @Slf4j
 class GlobalInterceptor implements grails.artefact.Interceptor {
@@ -15,6 +19,18 @@ class GlobalInterceptor implements grails.artefact.Interceptor {
         response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate")
         response.setHeader("Pragma", "no-cache")
         response.setHeader("Expires", "0")
+
+        _handleGlobalUID(params)
+        _handleDebugMode(params)
+
+        _handle404(params)
+    }
+
+    boolean after() {
+        true
+    }
+
+    private void _handleGlobalUID(GrailsParameterMap params) {
 
         if (params.id?.contains(':')) {
             try {
@@ -41,14 +57,33 @@ class GlobalInterceptor implements grails.artefact.Interceptor {
                 params.id = 0
             }
         }
+    }
+
+    private void _handleDebugMode(GrailsParameterMap params) {
         if (params.debug) {
             AppUtils.setDebugMode(params.debug)
         }
-
-        true
     }
 
-    boolean after() {
+    private boolean _handle404(GrailsParameterMap params) {
+
+        if (params.containsKey('id')) {
+            GrailsControllerClass controller = getControllerClass()
+
+            if (controller && !controller.name.startsWith('Ajax')) {
+                if (controller.clazz.declaredMethods.find { it.getName() == actionName && it.getAnnotation(CheckFor404) }) {
+                    String clsName = (controller.name == 'Organisation') ? 'Org' : controller.name
+                    Class cls = CodeUtils.getDomainClassBySimpleName(clsName)
+
+                    log.warn 'catch404: ' + controller.name + '.' + actionName + ' #' + params.id + ' --> ' + clsName + ' - ' + cls + ' - ' + cls?.get(params.id)
+
+                    if (cls && ! cls.get(params.id)) {
+                        response.sendError(HttpStatus.SC_NOT_FOUND, CheckFor404.KEY)
+                        return false
+                    }
+                }
+            }
+        }
         true
     }
 }
