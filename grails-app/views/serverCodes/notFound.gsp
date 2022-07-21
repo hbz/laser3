@@ -15,7 +15,7 @@
             </h2>
 
             <div>
-                    <p>${message(code: 'serverCode.notFound.message2')}</p>
+                    <p>${customMessage ?: message(code: 'serverCode.notFound.message2')}</p>
 
                     <g:if test="${alternatives}">
                         <g:if test="${alternatives.size() == 1}">
@@ -36,7 +36,7 @@
                     </g:if>
 
                     <p>
-                        <button class="ui button" onclick="JSPC.helper.goBack()">${message(code: 'default.button.back')}</button>
+                        <button class="ui button la-js-dont-hide-button" onclick="JSPC.helper.goBack()">${message(code: 'default.button.back')}</button>
                     </p>
             </div>
 

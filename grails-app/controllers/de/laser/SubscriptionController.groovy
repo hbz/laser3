@@ -49,7 +49,7 @@ class SubscriptionController {
      */
     @DebugInfo(test = 'hasAffiliation("INST_USER")', ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
-    @CheckFor404
+    @CheckFor404(alternatives = ['myInstitution/currentSubscriptions'])
     def show() {
         Map<String,Object> ctrlResult = subscriptionControllerService.show(params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {

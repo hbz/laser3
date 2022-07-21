@@ -749,7 +749,7 @@ class SurveyController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
-    @CheckFor404
+    @CheckFor404()
     def show() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
 

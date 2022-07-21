@@ -61,7 +61,7 @@ class LicenseController {
      */
     @DebugInfo(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
-    @CheckFor404
+    @CheckFor404(alternatives = ['myInstitution/currentLicenses'])
     def show() {
 
         Profiler prf = new Profiler()

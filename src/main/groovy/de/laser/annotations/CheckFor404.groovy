@@ -10,8 +10,7 @@ import java.lang.annotation.Target
 
 @interface CheckFor404 {
     static final String KEY = 'CheckFor404'
-    static final String FALLBACK_ACTION = 'list' // TODO remove
 
-    String fallback() default 'list'
+    String[] alternatives() default []
     String label() default ''
 }

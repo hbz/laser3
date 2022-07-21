@@ -13,6 +13,9 @@ import grails.web.mapping.UrlMappingData
 import org.grails.exceptions.ExceptionUtils
 import org.grails.web.mapping.DefaultUrlMappingParser
 
+import java.lang.annotation.Annotation
+import java.lang.reflect.Method
+
 /**
  * This controller handles the server code mapping output
  */
@@ -70,26 +73,44 @@ class ServerCodesController {
      * Shows the resource not found page, mapping for code 404
      */
     def notFound() {
-        Map<String, Object> result = [status: request.getAttribute('javax.servlet.error.status_code')]
-        UrlMappingData umd = (new DefaultUrlMappingParser()).parse( request.forwardURI )
+        Map<String, Object> result = [
+                status: request.getAttribute('javax.servlet.error.status_code'),
+                alternatives: []
+        ]
+        GrailsClass controller = getControllerClass()
 
-        if (request.getAttribute('javax.servlet.error.message') == CheckFor404.KEY) {
-            result.alternatives = ["${g.createLink(controller: umd.tokens[0], action: CheckFor404.FALLBACK_ACTION, absolute: true)}"]
-        }
-        else {
-            GrailsClass controller = CodeUtils.getAllControllerArtefacts().find { it.logicalPropertyName == umd.tokens[0] }
-            if (controller) {
-                result.alternatives = controller.clazz.declaredMethods.findAll{
-                    it.getAnnotation(Action) && it.name in ['index', 'list', 'show']
-                }.collect{
-                    if (it.name == 'show' && umd.tokens.size() == 3 && umd.tokens[2].isNumber()) {
-                        "${g.createLink(controller: controller.logicalPropertyName, action: it.name, params: [id: umd.tokens[2]], absolute: true)}"
+        if (controller) {
+            if (request.getAttribute('javax.servlet.error.message') == CheckFor404.KEY) {
+                Method ccm = controller.clazz.declaredMethods.find { it.getAnnotation(Action) && it.name == getActionName() }
+                Annotation cfa = ccm.getAnnotation(CheckFor404)
+
+//            if (aa.label()) {
+//                result.customMessage = message(code: 'default.not.found.message2', args: [message(code: aa.label())]) as String
+//            }
+                cfa.alternatives().each{ fb ->
+                    if (fb.contains('/')) {
+                        result.alternatives << "${g.createLink(uri: (fb.startsWith('/') ? fb : '/' + fb), absolute: true)}"
                     } else {
+                        result.alternatives << "${g.createLink(controller: controller.logicalPropertyName, action: fb, absolute: true)}"
+                    }
+                }
+            }
+            else {
+                UrlMappingData umd = (new DefaultUrlMappingParser()).parse( request.forwardURI )
+
+                result.alternatives = controller.clazz.declaredMethods.findAll {
+                    it.getAnnotation(Action) && it.name in ['show', 'list']
+                }.collect {
+                    if (it.name == 'show' && umd.tokens.size() == 3 && umd.tokens[2].isNumber()) {
+                        "${g.createLink(controller: controller.logicalPropertyName, action: 'show', params: [id: umd.tokens[2]], absolute: true)}"
+                    }
+                    else {
                         "${g.createLink(controller: controller.logicalPropertyName, action: it.name, absolute: true)}"
                     }
                 }
             }
         }
+
         render view:'notFound', model: result
     }
 

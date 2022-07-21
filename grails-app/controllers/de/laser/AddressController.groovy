@@ -76,7 +76,6 @@ class AddressController  {
      * @return a modal containing the address details
      */
     @Secured(['ROLE_USER'])
-    @CheckFor404
     def show() {
         Address addressInstance = Address.get(params.id)
         if (! addressInstance) {

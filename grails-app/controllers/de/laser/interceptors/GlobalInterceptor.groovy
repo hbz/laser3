@@ -23,7 +23,7 @@ class GlobalInterceptor implements grails.artefact.Interceptor {
         _handleGlobalUID(params)
         _handleDebugMode(params)
 
-        _handle404(params)
+        _handle404(params) // true | false
     }
 
     boolean after() {
@@ -71,13 +71,13 @@ class GlobalInterceptor implements grails.artefact.Interceptor {
             GrailsControllerClass controller = getControllerClass()
 
             if (controller && !controller.name.startsWith('Ajax')) {
-                if (controller.clazz.declaredMethods.find { it.getName() == actionName && it.getAnnotation(CheckFor404) }) {
+                if (controller.clazz.declaredMethods.find { it.getName() == getActionName() && it.getAnnotation(CheckFor404) }) {
                     String clsName = (controller.name == 'Organisation') ? 'Org' : controller.name
                     Class cls = CodeUtils.getDomainClassBySimpleName(clsName)
 
-                    log.warn 'catch404: ' + controller.name + '.' + actionName + ' #' + params.id + ' --> ' + clsName + ' - ' + cls + ' - ' + cls?.get(params.id)
-
                     if (cls && ! cls.get(params.id)) {
+                        log.warn 'catch404: ' + controller.name + '.' + getActionName() + ' #' + params.id + ' --> ' + clsName + ' - ' + cls + ' - ' + cls?.get(params.id)
+
                         response.sendError(HttpStatus.SC_NOT_FOUND, CheckFor404.KEY)
                         return false
                     }

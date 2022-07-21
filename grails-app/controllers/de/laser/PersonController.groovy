@@ -183,7 +183,6 @@ class PersonController  {
      * Shows the contact details of the given person instance
      */
     @Secured(['ROLE_USER'])
-    @CheckFor404
     Map<String,Object> show() {
         Person personInstance = Person.get(params.id)
         Org contextOrg = contextService.getOrg()

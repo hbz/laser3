@@ -19,7 +19,7 @@ class TippController  {
    * @return the details view of the title
    */
   @Secured(['ROLE_USER'])
-  @CheckFor404
+  @CheckFor404()
   def show() { 
     Map<String, Object> result = [:]
 
@@ -39,12 +39,11 @@ class TippController  {
     result.expiredTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: result.tipp.pkg, status: RDStore.TIPP_STATUS_RETIRED])[0]
     result.deletedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: result.tipp.pkg, status: RDStore.TIPP_STATUS_DELETED])[0]
 
-
-    if (!result.tipp) {
-      flash.message = message(code: 'default.not.found.message', args: [message(code: 'titleInstance.label'), params.id]) as String
-      redirect action: 'list'
-      return
-    }
+//    if (!result.tipp) {
+//      flash.message = message(code: 'default.not.found.message', args: [message(code: 'titleInstance.label'), params.id]) as String
+//      redirect action: 'list'
+//      return
+//    }
     result.titleHistory = TitleHistoryEvent.executeQuery("select distinct thep.event from TitleHistoryEventParticipant as thep where thep.participant = :participant", [participant: result.tipp] )
 
     result

@@ -142,7 +142,7 @@ class UserController  {
     @Secured(closure = {
         ctx.contextService.getUser()?.hasRole('ROLE_ADMIN') || ctx.contextService.getUser()?.hasAffiliation("INST_ADM")
     })
-    @CheckFor404
+    @CheckFor404(alternatives = ['list'])
     def show() {
         Map<String, Object> result = userControllerService.getResultGenerics(params)
         result

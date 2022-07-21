@@ -103,7 +103,7 @@ class PlatformController  {
      * @return the details view of the platform
      */
     @Secured(['ROLE_USER'])
-    @CheckFor404
+    @CheckFor404(alternatives = ['list'])
     def show() {
         Map<String, Object> result = platformControllerService.getResultGenerics(params)
         Platform platformInstance
@@ -113,11 +113,11 @@ class PlatformController  {
             platformInstance = Platform.findByGokbId(params.id)
         else platformInstance = Platform.findByGlobalUID(params.id)
 
-        if (!platformInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'platform.label'), params.id]) as String
-            redirect action: 'list'
-            return
-        }
+//        if (!platformInstance) {
+//            flash.message = message(code: 'default.not.found.message', args: [message(code: 'platform.label'), params.id]) as String
+//            redirect action: 'list'
+//            return
+//        }
 
         result.platformInstance = platformInstance
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)

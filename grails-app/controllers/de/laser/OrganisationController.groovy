@@ -805,7 +805,7 @@ class OrganisationController  {
      * @return the details view of the given orgainsation
      */
     @Secured(['ROLE_USER'])
-    @CheckFor404
+    @CheckFor404(alternatives = ['list', 'listInstitution', 'listProvider'])
     def show() {
 
         Profiler prf = new Profiler()
@@ -816,11 +816,11 @@ class OrganisationController  {
             response.sendError(401)
             return
         }
-        if (! result.orgInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id]) as String
-            redirect action: 'list'
-            return
-        }
+//        if (! result.orgInstance) {
+//            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id]) as String
+//            redirect action: 'list'
+//            return
+//        }
 
         result.availableOrgTypes = RefdataCategory.getAllRefdataValues(RDConstants.ORG_TYPE)-RDStore.OT_CONSORTIUM
         result.missing = [:]
