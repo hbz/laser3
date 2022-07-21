@@ -53,6 +53,12 @@ The produktive branch has been renamed from *master* to *main*.
 *org.codehaus.groovy.modules.http-builder:http-builder* is outdated.
 A migration to *de.laser.http.BasicHttpClient* should take place.
 
+### HTTP Status Codes
+
+    401 Unauthorized            - authentication/login is required (only)
+    403 Forbidden               - missing permissions   
+    500 Internal Server Error   - processing failed due unexpected conditions
+
 ### Localization
 
 Localization dependent logic should be managed by *de.laser.utils.LocaleUtils* to ensure consistent behavior.

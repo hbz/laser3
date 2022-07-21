@@ -1,7 +1,6 @@
 package de.laser
  
 import de.laser.annotations.DebugInfo
-import de.laser.annotations.CheckFor404
 import de.laser.storage.RDStore
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.dao.DataIntegrityViolationException

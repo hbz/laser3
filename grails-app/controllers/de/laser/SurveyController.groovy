@@ -1,8 +1,7 @@
 package de.laser
 
-
+import de.laser.annotations.Check404
 import de.laser.annotations.DebugInfo
-import de.laser.annotations.CheckFor404
 import de.laser.ctrl.FinanceControllerService
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.ctrl.SurveyControllerService
@@ -74,6 +73,14 @@ class SurveyController {
     SurveyControllerService surveyControllerService
     SurveyService surveyService
     TaskService taskService
+
+    //-----
+
+    final static Map<String, String> CHECK404_ALTERNATIVES = [
+            'myInstitution/currentSurveys' : 'currentSurveys.label'
+    ]
+
+    //-----
 
     /**
      * Redirects the call to the survey details view
@@ -749,7 +756,7 @@ class SurveyController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
-    @CheckFor404()
+    @Check404(domain=SurveyInfo)
     def show() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
 

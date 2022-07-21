@@ -1,6 +1,6 @@
 package de.laser
 
-import de.laser.annotations.CheckFor404
+import de.laser.annotations.Check404
 import de.laser.auth.User
 import de.laser.ctrl.LicenseControllerService
 import de.laser.custom.CustomWkhtmltoxService
@@ -54,6 +54,12 @@ class LicenseController {
     SubscriptionService subscriptionService
     TaskService taskService
 
+    //-----
+
+    final static Map<String, String> CHECK404_ALTERNATIVES = [
+             'myInstitution/currentLicenses' : 'license.current'
+    ]
+
     //----------------------------------------- general or ungroupable section ----------------------------------------
 
     /**
@@ -61,7 +67,7 @@ class LicenseController {
      */
     @DebugInfo(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
-    @CheckFor404(alternatives = ['myInstitution/currentLicenses'])
+    @Check404()
     def show() {
 
         Profiler prf = new Profiler()
@@ -243,6 +249,7 @@ class LicenseController {
      */
     @DebugInfo(test = 'hasAffiliation("INST_USER")', ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @Check404()
     def tasks() {
         Map<String,Object> ctrlResult = licenseControllerService.tasks(this,params)
         if(ctrlResult.error == LicenseControllerService.STATUS_ERROR) {
@@ -468,6 +475,7 @@ class LicenseController {
      */
     @DebugInfo(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @Check404()
     def members() {
         log.debug("license id:${params.id}");
 
@@ -581,14 +589,12 @@ class LicenseController {
     @Deprecated
     @DebugInfo(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @Check404()
     def pendingChanges() {
-        log.debug("license id:${params.id}");
-
         Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
-
         def validMemberLicenses = License.where {
             instanceOf == result.license
         }
@@ -596,7 +602,6 @@ class LicenseController {
         result.pendingChanges = [:]
 
         validMemberLicenses.each{ member ->
-
             if (executorWrapperService.hasRunningProcess(member)) {
                 log.debug("PendingChange processing in progress")
                 result.processingpc = true
@@ -606,7 +611,6 @@ class LicenseController {
                         "select pc from PendingChange as pc where license.id = :licId and ( pc.status is null or pc.status = :status ) order by pc.ts desc",
                         [licId: member.id, status: RDStore.PENDING_CHANGE_PENDING]
                 )
-
                 result.pendingChanges << ["${member.id}": pendingChanges]
             }
         }
@@ -616,9 +620,8 @@ class LicenseController {
     @Deprecated
     @DebugInfo(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @Check404()
     def history() {
-        log.debug("license::history : ${params}");
-
         Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
@@ -663,12 +666,11 @@ class LicenseController {
      */
     @DebugInfo(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @Check404()
     def changes() {
-        log.debug("license::changes : ${params}")
-
         Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW)
         if (!result) {
-            response.sendError(401); return
+            response.sendError( HttpStatus.SC_FORBIDDEN ); return
         }
 
         String baseQuery = "select pc from PendingChange as pc where pc.license = :lic and pc.status.value in (:stats)"
@@ -679,7 +681,6 @@ class LicenseController {
                 baseParams,
                 [max: result.max, offset: result.offset]
         )
-
         result.todoHistoryLinesTotal = PendingChange.executeQuery(
                 baseQuery,
                 baseParams
@@ -696,10 +697,11 @@ class LicenseController {
      */
     @DebugInfo(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @Check404()
     def notes() {
         Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW)
         if (!result) {
-            response.sendError(401); return
+            response.sendError( HttpStatus.SC_FORBIDDEN ); return
         }
         result
     }
@@ -711,13 +713,12 @@ class LicenseController {
      * @see DocContext
      */
     @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
-    })
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER") })
+    @Check404()
     def documents() {
         Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW)
         if (!result) {
-            response.sendError(401); return
+            response.sendError( HttpStatus.SC_FORBIDDEN ); return
         }
         result
     }

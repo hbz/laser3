@@ -25,10 +25,10 @@
                             ${message(code: 'serverCode.notFound.message4')}
                         </g:else>
                         <br/>
-                        <div class="ui bulleted list">
+                        <div class="ui selection list">
                             <g:each in="${alternatives}" var="alt">
                                 <div class="item">
-                                    <a href="${alt}">${alt}</a>
+                                    <a href="${alt.key}">${alt.value ?: alt.key}</a>
                                 </div>
                             </g:each>
                         </div>

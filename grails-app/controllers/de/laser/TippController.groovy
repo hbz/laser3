@@ -1,6 +1,6 @@
 package de.laser
 
-import de.laser.annotations.CheckFor404
+import de.laser.annotations.Check404
 import de.laser.storage.RDStore
 import de.laser.titles.TitleHistoryEvent
 import grails.plugin.springsecurity.annotation.Secured
@@ -14,12 +14,21 @@ class TippController  {
 
   ContextService contextService
 
+  //-----
+
+  final static Map<String, String> CHECK404_ALTERNATIVES = [
+          'title/list': 'menu.public.all_titles',
+          'myInstitution/currentTitles': 'myinst.currentTitles.label'
+  ]
+
+  //-----
+
   /**
    * Shows the given title. The title may be called by database ID, we:kb UUID or globalUID
    * @return the details view of the title
    */
   @Secured(['ROLE_USER'])
-  @CheckFor404()
+  @Check404(domain=TitleInstancePackagePlatform)
   def show() { 
     Map<String, Object> result = [:]
 

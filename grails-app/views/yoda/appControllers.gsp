@@ -139,6 +139,9 @@
                                             <span class="${infoValue}">${infoValue}</span>
                                         </g:each>
                                     </g:elseif>
+                                    <g:elseif test="${info.key == 'check404'}">
+                                        <strong class="warning">[404]</strong>
+                                    </g:elseif>
                                     <g:elseif test="${info.key == 'transactional'}">
                                         <strong class="${info.value}">@${info.value}</strong>
                                     </g:elseif>
@@ -181,6 +184,9 @@
                                                 <g:set var="infoValue" value="${Arrays.toString(ss).replace('[','').replace(']','')}" />
                                                 <span class="${infoValue}">${infoValue}</span>
                                             </g:each>
+                                        </g:elseif>
+                                        <g:elseif test="${info.key == 'check404'}">
+                                            <strong class="warning">[404]</strong>
                                         </g:elseif>
                                         <g:elseif test="${info.key == 'transactional'}">
                                             <strong class="${info.value}">@${info.value}</strong>

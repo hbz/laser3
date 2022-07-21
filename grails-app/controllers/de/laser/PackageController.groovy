@@ -1,6 +1,6 @@
 package de.laser
 
-import de.laser.annotations.CheckFor404
+import de.laser.annotations.Check404
 import de.laser.auth.User
 import de.laser.utils.DateUtils
 import de.laser.annotations.DebugInfo
@@ -46,7 +46,17 @@ class PackageController {
     //TaskService taskService
     YodaService yodaService
 
+    //-----
+
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
+
+    final static Map<String, String> CHECK404_ALTERNATIVES = [
+            'index' : 'package.show.all',
+            'list' : 'myinst.packages',
+            'myInstitution/currentPackages' : 'menu.my.packages'
+    ]
+
+    //-----
 
     /**
      * Lists current packages in the we:kb ElasticSearch index.
@@ -366,7 +376,7 @@ class PackageController {
      * because some data will not be mirrored to the app
      */
     @Secured(['ROLE_USER'])
-    @CheckFor404(alternatives = ['index', 'list'])
+    @Check404()
     def show() {
         Map<String, Object> result = [:]
 
@@ -453,6 +463,7 @@ class PackageController {
      * @see TitleInstancePackagePlatform
      */
     @Secured(['ROLE_USER'])
+    @Check404()
     def current() {
         log.debug("current ${params}");
         Map<String, Object> result = [:]
@@ -462,18 +473,16 @@ class PackageController {
         result.contextCustomerType = result.contextOrg.getCustomerType()
 
         Package packageInstance = Package.get(params.id)
-        if (!packageInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label'), params.id]) as String
-            redirect action: 'index'
-            return
-        }
+//        if (!packageInstance) {
+//            flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label'), params.id]) as String
+//            redirect action: 'index'
+//            return
+//        }
         result.packageInstance = packageInstance
-
 
         if (executorWrapperService.hasRunningProcess(packageInstance)) {
             result.processingpc = true
         }
-
         /*result.pendingChanges = PendingChange.executeQuery(
                 "select pc from PendingChange as pc where pc.pkg = :pkg and ( pc.status is null or pc.status = :status ) order by ts, payload",
                 [pkg: packageInstance, status: RDStore.PENDING_CHANGE_PENDING]
@@ -718,16 +727,17 @@ class PackageController {
      * @see PendingChange
      */
     @Secured(['ROLE_USER'])
+    @Check404()
     def tippChanges() {
         Map<String, Object> result = [:]
 
         result.user = contextService.getUser()
         Package packageInstance = Package.get(params.id)
-        if (!packageInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label'), params.id]) as String
-            redirect action: 'index'
-            return
-        }
+//        if (!packageInstance) {
+//            flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label'), params.id]) as String
+//            redirect action: 'index'
+//            return
+//        }
 
         result.packageInstance = packageInstance
 
@@ -831,6 +841,7 @@ class PackageController {
     @Deprecated
     @Secured(['ROLE_ADMIN'])
     @Transactional
+    @Check404()
     def history() {
         Map<String, Object> result = [:]
         boolean exporting = params.format == 'csv'

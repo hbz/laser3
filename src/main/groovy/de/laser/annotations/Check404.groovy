@@ -8,9 +8,9 @@ import java.lang.annotation.Target
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 
-@interface CheckFor404 {
-    static final String KEY = 'CheckFor404'
+@interface Check404 {
+    static final String KEY = 'Check404'
+    static final String CHECK404_ALTERNATIVES = 'CHECK404_ALTERNATIVES'
 
-    String[] alternatives() default []
-    String label() default ''
+    Class domain() default NullPointerException
 }

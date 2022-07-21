@@ -1,6 +1,6 @@
 package de.laser
 
-
+import de.laser.annotations.Check404
 import de.laser.annotations.DebugInfo
 import de.laser.auth.Role
 import de.laser.auth.UserRole
@@ -443,6 +443,10 @@ class YodaController {
                                     mInfo.refactoring = 'done'
                                 }
                             }
+                        }
+
+                        if (method.getAnnotation(Check404)) {
+                            mInfo.check404 = Check404.KEY
                         }
 
                         if (method.getAnnotation(Secured)) {

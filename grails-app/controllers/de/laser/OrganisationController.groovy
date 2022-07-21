@@ -1,6 +1,6 @@
 package de.laser
 
-import de.laser.annotations.CheckFor404
+import de.laser.annotations.Check404
 import de.laser.annotations.DebugInfo
 import de.laser.ctrl.OrganisationControllerService
 import de.laser.ctrl.UserControllerService
@@ -55,6 +55,16 @@ class OrganisationController  {
     UserControllerService userControllerService
     UserService userService
 
+    //-----
+
+    final static Map<String, String> CHECK404_ALTERNATIVES = [
+            'list' : 'menu.public.all_orgs',
+            'listInstitution' : 'menu.public.all_insts',
+            'listProvider' : 'menu.public.all_providers'
+    ]
+
+    //-----
+
     /**
      * Redirects to {@link #list()}
      * @return the list view of organisations
@@ -79,13 +89,14 @@ class OrganisationController  {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("FAKE,ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_ADM", "ROLE_ADMIN,ROLE_ORG_EDITOR")
     })
+    @Check404(domain=Org)
     def settings() {
         Map<String,Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
-        if (! result.orgInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id]) as String
-            redirect action: 'list'
-            return
-        }
+//        if (! result.orgInstance) {
+//            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id]) as String
+//            redirect action: 'list'
+//            return
+//        }
         if(!params.containsKey("tab"))
             params.tab = "general"
         Boolean isComboRelated = Combo.findByFromOrgAndToOrg(result.orgInstance, result.institution)
@@ -805,7 +816,7 @@ class OrganisationController  {
      * @return the details view of the given orgainsation
      */
     @Secured(['ROLE_USER'])
-    @CheckFor404(alternatives = ['list', 'listInstitution', 'listProvider'])
+    @Check404(domain=Org)
     def show() {
 
         Profiler prf = new Profiler()
@@ -901,8 +912,8 @@ class OrganisationController  {
      * @see CustomerIdentifier
      */
     @Secured(['ROLE_USER'])
+    @Check404(domain=Org)
     def ids() {
-
         Profiler prf = new Profiler()
         prf.setBenchmark('this-n-that')
 
@@ -937,11 +948,11 @@ class OrganisationController  {
                 result.editable_identifier = accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
         }
 
-          if (!result.orgInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id]) as String
-            redirect action: 'list'
-            return
-          }
+//          if (!result.orgInstance) {
+//            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id]) as String
+//            redirect action: 'list'
+//            return
+//          }
 
         prf.setBenchmark('create Identifiers if necessary')
 
@@ -1018,6 +1029,7 @@ class OrganisationController  {
      */
     @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER") })
+    @Check404(domain=Org)
     def tasks() {
         Map<String,Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         if (!result) {
@@ -1040,9 +1052,8 @@ class OrganisationController  {
      * @see DocContext
      */
     @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
-    })
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER") })
+    @Check404(domain=Org)
     def documents() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         if(!result) {
@@ -1099,9 +1110,8 @@ class OrganisationController  {
      * @see DocContext
      */
     @DebugInfo(test='hasAffiliation("INST_USER")')
-    @Secured(closure = {
-        ctx.contextService.getUser()?.hasAffiliation("INST_USER")
-    })
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @Check404(domain=Org)
     def notes() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         if(!result) {
@@ -1145,14 +1155,15 @@ class OrganisationController  {
      */
     @DebugInfo(test = 'hasAffiliation("INST_ADM")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_ADM") })
+    @Check404(domain=Org)
     def users() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
 
-        if (! result.orgInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id]) as String
-            redirect action: 'list'
-            return
-        }
+//        if (! result.orgInstance) {
+//            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id]) as String
+//            redirect action: 'list'
+//            return
+//        }
 
         result.editable = checkIsEditable(result.user, result.orgInstance)
 
@@ -1355,9 +1366,8 @@ class OrganisationController  {
      * @return a table view of public contacts
      */
     @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
-    })
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER") })
+    @Check404(domain=Org)
     def addressbook() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         if(!result) {
@@ -1365,11 +1375,11 @@ class OrganisationController  {
             return
         }
 
-        if (! result.institution) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id]) as String
-            redirect action: 'list'
-            return
-        }
+//        if (! result.institution) {
+//            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id]) as String
+//            redirect action: 'list'
+//            return
+//        }
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
@@ -1402,6 +1412,7 @@ class OrganisationController  {
      */
     @DebugInfo(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_USER") })
+    @Check404(domain=Org)
     def readerNumber() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         if(!result) {
@@ -1483,6 +1494,7 @@ class OrganisationController  {
      */
     @DebugInfo(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_USER") })
+    @Check404(domain=Org)
     def accessPoints() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
         if(!result) {
@@ -1490,11 +1502,11 @@ class OrganisationController  {
             return
         }
 
-        if (! result.orgInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id]) as String
-            redirect action: 'list'
-            return
-        }
+//        if (! result.orgInstance) {
+//            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id]) as String
+//            redirect action: 'list'
+//            return
+//        }
 
         List orgAccessPointList = accessPointService.getOapListWithLinkCounts(result.orgInstance)
         result.orgAccessPointList = orgAccessPointList.groupBy {it.oap.accessMethod.value}.sort {it.key}
@@ -1678,6 +1690,7 @@ class OrganisationController  {
      */
     @DebugInfo(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @Check404(domain=Org)
     def myPublicContacts() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
 

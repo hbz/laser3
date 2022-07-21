@@ -1,12 +1,15 @@
 package de.laser.interceptors
 
-import de.laser.annotations.CheckFor404
+import de.laser.annotations.Check404
 import de.laser.utils.AppUtils
 import de.laser.utils.CodeUtils
 import grails.core.GrailsControllerClass
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.util.logging.Slf4j
 import org.apache.http.HttpStatus
+
+import java.lang.annotation.Annotation
+import java.lang.reflect.Method
 
 @Slf4j
 class GlobalInterceptor implements grails.artefact.Interceptor {
@@ -23,7 +26,7 @@ class GlobalInterceptor implements grails.artefact.Interceptor {
         _handleGlobalUID(params)
         _handleDebugMode(params)
 
-        _handle404(params) // true | false
+        _handleCheck404(params) // true | false
     }
 
     boolean after() {
@@ -65,20 +68,21 @@ class GlobalInterceptor implements grails.artefact.Interceptor {
         }
     }
 
-    private boolean _handle404(GrailsParameterMap params) {
+    private boolean _handleCheck404(GrailsParameterMap params) {
 
         if (params.containsKey('id')) {
             GrailsControllerClass controller = getControllerClass()
 
             if (controller && !controller.name.startsWith('Ajax')) {
-                if (controller.clazz.declaredMethods.find { it.getName() == getActionName() && it.getAnnotation(CheckFor404) }) {
-                    String clsName = (controller.name == 'Organisation') ? 'Org' : controller.name
-                    Class cls = CodeUtils.getDomainClassBySimpleName(clsName)
+                Method cm = controller.clazz.declaredMethods.find { it.getName() == getActionName() && it.getAnnotation(Check404) }
+                if (cm) {
+                    Annotation cfa = cm.getAnnotation(Check404)
+                    Class cls = (cfa.domain() != NullPointerException) ? cfa.domain(): CodeUtils.getDomainClassBySimpleName(controller.name)
 
                     if (cls && ! cls.get(params.id)) {
-                        log.warn 'catch404: ' + controller.name + '.' + getActionName() + ' #' + params.id + ' --> ' + clsName + ' - ' + cls + ' - ' + cls?.get(params.id)
+                        log.warn 'catch404: ' + controller.name + '.' + getActionName() + ' #' + params.id + ' --> ' + cls
 
-                        response.sendError(HttpStatus.SC_NOT_FOUND, CheckFor404.KEY)
+                        response.sendError(HttpStatus.SC_NOT_FOUND, Check404.KEY)
                         return false
                     }
                 }
