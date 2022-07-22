@@ -201,10 +201,6 @@ class LicenseController {
         //result.availableSubs = []
 
         result.availableLicensorList = orgTypeService.getOrgsForTypeLicensor().minus(result.visibleOrgRelations.collect { OrgRole oo -> oo.org })
-                /*OrgRole.executeQuery(
-                        "select o from OrgRole oo join oo.org o where oo.lic.id = :lic and oo.roleType.value = 'Licensor'",
-                        [lic: result.license.id]
-                )*/
         result.existingLicensorIdList = []
 
         List bm = prf.stopBenchmark()
@@ -374,6 +370,7 @@ class LicenseController {
      */
     @DebugInfo(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
+    @Check404()
     Map<String,Object> linkLicenseToSubs() {
         Map<String, Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW_AND_EDIT)
         result.putAll(subscriptionService.getMySubscriptions(params,result.user,result.institution))
@@ -387,6 +384,7 @@ class LicenseController {
      */
     @DebugInfo(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @Check404()
     def linkedSubs() {
         Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW)
         if (!result) {
@@ -529,6 +527,7 @@ class LicenseController {
      */
     @DebugInfo(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
+    @Check404()
     def linkMemberLicensesToSubs() {
         Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW_AND_EDIT)
         result.tableConfig = ['onlyMemberSubs']
@@ -627,14 +626,12 @@ class LicenseController {
             response.sendError(401); return
         }
 
-        // postgresql migration
         String subQuery = 'select cast(lp.id as string) from LicenseProperty as lp where lp.owner = :owner'
         List subQueryResult = LicenseProperty.executeQuery(subQuery, [owner: result.license])
 
         String base_query = "select e from AuditLogEvent as e where ( (className=:licClass and persistedObjectId = cast(:licId as string))"
         Map<String, Object> query_params = [licClass:result.license.class.name, licId:"${result.license.id}"]
 
-        // postgresql migration
         if (subQueryResult) {
             base_query += ' or (className = :prop and persistedObjectId in (:subQueryResult)) ) order by e.dateCreated desc'
             query_params.'prop' = LicenseProperty.class.name

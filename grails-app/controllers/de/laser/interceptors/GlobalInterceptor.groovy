@@ -80,7 +80,7 @@ class GlobalInterceptor implements grails.artefact.Interceptor {
                     Class cls = (cfa.domain() != NullPointerException) ? cfa.domain(): CodeUtils.getDomainClassBySimpleName(controller.name)
 
                     if (cls && ! cls.get(params.id)) {
-                        log.warn 'catch404: ' + controller.name + '.' + getActionName() + ' #' + params.id + ' --> ' + cls
+                        log.warn 'check404: ' + controller.name + '.' + getActionName() + ' #' + params.id + ' --> ' + cls
 
                         response.sendError(HttpStatus.SC_NOT_FOUND, Check404.KEY)
                         return false

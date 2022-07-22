@@ -81,12 +81,6 @@ class IssueEntitlementController {
           }
       }
 
-//      if (!result.issueEntitlementInstance) {
-//        flash.message = message(code: 'default.not.found.message', args: [message(code: 'issueEntitlement.label'), params.id]) as String
-//        redirect action: 'list'
-//        return
-//      }
-
      /* String base_qry = "from TitleInstancePackagePlatform as tipp where tipp = :tipp and tipp.status != :status"
       Map<String,Object> qry_params = [tipp:result.issueEntitlementInstance.tipp,status:RDStore.TIPP_STATUS_DELETED]
 

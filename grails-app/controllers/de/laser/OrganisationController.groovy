@@ -92,11 +92,7 @@ class OrganisationController  {
     @Check404(domain=Org)
     def settings() {
         Map<String,Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
-//        if (! result.orgInstance) {
-//            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id]) as String
-//            redirect action: 'list'
-//            return
-//        }
+
         if(!params.containsKey("tab"))
             params.tab = "general"
         Boolean isComboRelated = Combo.findByFromOrgAndToOrg(result.orgInstance, result.institution)
@@ -827,11 +823,6 @@ class OrganisationController  {
             response.sendError(401)
             return
         }
-//        if (! result.orgInstance) {
-//            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id]) as String
-//            redirect action: 'list'
-//            return
-//        }
 
         result.availableOrgTypes = RefdataCategory.getAllRefdataValues(RDConstants.ORG_TYPE)-RDStore.OT_CONSORTIUM
         result.missing = [:]
@@ -947,12 +938,6 @@ class OrganisationController  {
             else
                 result.editable_identifier = accessService.checkMinUserOrgRole(result.user, result.orgInstance, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
         }
-
-//          if (!result.orgInstance) {
-//            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id]) as String
-//            redirect action: 'list'
-//            return
-//          }
 
         prf.setBenchmark('create Identifiers if necessary')
 
@@ -1158,12 +1143,6 @@ class OrganisationController  {
     @Check404(domain=Org)
     def users() {
         Map<String, Object> result = organisationControllerService.getResultGenericsAndCheckAccess(this, params)
-
-//        if (! result.orgInstance) {
-//            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id]) as String
-//            redirect action: 'list'
-//            return
-//        }
 
         result.editable = checkIsEditable(result.user, result.orgInstance)
 
@@ -1375,12 +1354,6 @@ class OrganisationController  {
             return
         }
 
-//        if (! result.institution) {
-//            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id]) as String
-//            redirect action: 'list'
-//            return
-//        }
-
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         params.org = result.orgInstance
@@ -1501,12 +1474,6 @@ class OrganisationController  {
             response.sendError(401)
             return
         }
-
-//        if (! result.orgInstance) {
-//            flash.message = message(code: 'default.not.found.message', args: [message(code: 'org.label'), params.id]) as String
-//            redirect action: 'list'
-//            return
-//        }
 
         List orgAccessPointList = accessPointService.getOapListWithLinkCounts(result.orgInstance)
         result.orgAccessPointList = orgAccessPointList.groupBy {it.oap.accessMethod.value}.sort {it.key}

@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.annotations.Check404
 import de.laser.auth.User
  
 import de.laser.utils.DateUtils
@@ -19,7 +20,15 @@ class TaskController  {
     ContextService contextService
     TaskService taskService
 
-    static allowedMethods = [create: 'POST', edit: 'POST', delete: 'POST']
+	//-----
+
+	static allowedMethods = [create: 'POST', edit: 'POST', delete: 'POST']
+
+	final static Map<String, String> CHECK404_ALTERNATIVES = [
+			'myInstitution/tasks' : 'menu.institutions.tasks'
+	]
+
+	//-----
 
 	/**
 	 * Processes the submitted input parameters and creates a new task for the given owner object
@@ -99,6 +108,7 @@ class TaskController  {
 	 */
 	@DebugInfo(test='hasAffiliation("INST_USER")', wtc = DebugInfo.WITH_TRANSACTION)
 	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+	@Check404()
     def edit() {
 		Task.withTransaction {
 			Org contextOrg = contextService.getOrg()
@@ -115,12 +125,6 @@ class TaskController  {
 			if (((!taskInstance.responsibleOrg) && taskInstance.responsibleUser != contextService.getUser()) && (taskInstance.responsibleOrg != contextOrg) && (taskInstance.creator != contextService.getUser())) {
 				flash.error = message(code: 'task.edit.norights', args: [taskInstance.title]) as String
 				redirect(url: request.getHeader('referer'))
-				return
-			}
-
-			if (!taskInstance) {
-				flash.message = message(code: 'default.not.found.message', args: [message(code: 'task.label'), params.id]) as String
-				redirect controller: 'myInstitution', action: 'dashboard'
 				return
 			}
 

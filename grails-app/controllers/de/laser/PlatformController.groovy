@@ -122,12 +122,6 @@ class PlatformController  {
             platformInstance = Platform.findByGokbId(params.id)
         else platformInstance = Platform.findByGlobalUID(params.id)
 
-//        if (!platformInstance) {
-//            flash.message = message(code: 'default.not.found.message', args: [message(code: 'platform.label'), params.id]) as String
-//            redirect action: 'list'
-//            return
-//        }
-
         result.platformInstance = platformInstance
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         result.editUrl = apiSource.editUrl.endsWith('/') ? apiSource.editUrl : apiSource.editUrl+'/'
@@ -167,12 +161,6 @@ class PlatformController  {
         // TODO: editable is undefined
         def editable
         Platform platformInstance = Platform.get(params.id)
-//        if (!platformInstance) {
-//            flash.message = message(code: 'default.not.found.message',
-//                    args: [message(code: 'platform.label'), params.id]) as String
-//            redirect action: 'list'
-//            return
-//        }
 
         List<PlatformAccessMethod> platformAccessMethodList = PlatformAccessMethod.findAllByPlatf(platformInstance, [sort: ["accessMethod": 'asc', "validFrom" : 'asc']])
 
@@ -191,12 +179,7 @@ class PlatformController  {
     def link() {
         Map<String, Object> result = [:]
         Platform platformInstance = Platform.get(params.id)
-//        if (!platformInstance) {
-//            flash.message = message(code: 'default.not.found.message',
-//                args: [message(code: 'platform.label'), params.id]) as String
-//            redirect action: 'list'
-//            return
-//        }
+
         Org selectedInstitution = contextService.getOrg()
         List<Org> authorizedOrgs = contextService.getUser().getAffiliationOrgs()
 
