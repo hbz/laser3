@@ -6,11 +6,12 @@
 - Spring Framework 5.3.20
 - Spring Boot 2.7.0
 - Micronaut 3.5.3
-- Gradle 7.5
 - Hibernate 5.6.9.Final / GORM 7.3.2
+- Gradle 7.5
 - Groovy 3.0.11
 - Java 11
 - PostgreSQL 12+
+- Elasticsearch 7.15.2
 
 See [details.md](./details.md) for detailed information.
 

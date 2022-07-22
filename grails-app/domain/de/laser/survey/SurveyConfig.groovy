@@ -92,8 +92,8 @@ class SurveyConfig {
 
         header(nullable: true, blank: false)
         comment(nullable: true, blank: true)
-        documents(nullable: true, blank: false)
-        orgs(nullable: true, blank: false)
+        documents   (nullable: true)
+        orgs        (nullable: true)
         scheduledStartDate  (nullable: true)
         scheduledEndDate    (nullable: true)
         internalComment(nullable: true, blank: true)
@@ -103,7 +103,7 @@ class SurveyConfig {
         urlComment(nullable: true, blank: false)
         urlComment2(nullable: true, blank: false)
         urlComment3(nullable: true, blank: false)
-        propertySet(nullable: true, blank: false)
+        propertySet (nullable: true)
         transferWorkflow (nullable: true, blank: false)
     }
 
