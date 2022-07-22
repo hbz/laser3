@@ -115,8 +115,8 @@ $.fn.dropdown = function(parameters) {
               settings.ignoreDiacritics = false;
               module.error(error.noNormalize, element);
             }
-
-            module.setup.layout();
+            module.create.id();
+            module.setup.layout(id);
 
             if(settings.values) {
               module.set.initialLoad();
@@ -129,7 +129,6 @@ $.fn.dropdown = function(parameters) {
             module.save.defaults();
             module.restore.selected();
 
-            module.create.id();
             module.bind.events();
 
             module.observeChanges();
@@ -277,7 +276,7 @@ $.fn.dropdown = function(parameters) {
               });
             }
           },
-          menu: function() {
+          menu: function(id) {
             $menu = $('<div />')
               .addClass(className.menu)
               .appendTo($module)
@@ -370,11 +369,22 @@ $.fn.dropdown = function(parameters) {
             }
             if( module.is.search() && !module.has.search() ) {
               module.verbose('Adding search input');
-              $search = $('<input />')
+              if($module.prev('label').length) {
+                $search = $('<input />')
                 .addClass(className.search)
-                .prop('autocomplete', module.is.chrome() ? 'fomantic-search' : 'off')
+                .prop('autocomplete', 'off')
+                .attr('aria-labelledby',id+'_formLabel')
                 .insertBefore($text)
-              ;
+                ;
+                $module.prev('label').attr('id', id + '_formLabel');
+              }
+              else {
+                $search = $('<input />')
+                .addClass(className.search)
+                .prop('autocomplete', 'off')
+                .insertBefore($text)
+                ;
+              }
             }
             if( module.is.multiple() && module.is.searchSelection() && !module.has.sizer()) {
               module.create.sizer();
@@ -410,6 +420,7 @@ $.fn.dropdown = function(parameters) {
                 .html( templates.dropdown(selectValues, fields, settings.preserveHTML, settings.className) )
                 .insertBefore($input)
               ;
+
               if($input.hasClass(className.multiple) && $input.prop('multiple') === false) {
                 module.error(error.missingMultiple);
                 $input.prop('multiple', true);
