@@ -224,12 +224,6 @@
                             </g:link>
 
 
-                            <g:if test="${!surveyConfig.hasOrgSubscription(participant)}">
-                                <span data-position="top right" class="la-popup-tooltip la-delay"
-                                      data-content="${message(code: 'surveyResult.newOrg')}">
-                                    <i class="star black large  icon"></i>
-                                </span>
-                            </g:if>
                             <g:if test="${surveyConfig.checkResultsEditByOrg(participant) == SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                       data-content="${message(code: 'surveyResult.processedOrg')}">
@@ -263,10 +257,18 @@
                                 </span>
                             </g:if>
 
+
+                            <g:if test="${!surveyConfig.hasOrgSubscription(participant)}">
+                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                      data-content="${message(code: 'surveyResult.newOrg')}">
+                                    <i class="star black large  icon"></i>
+                                </span>
+                            </g:if>
+
                             <g:if test="${surveyOrg.orgInsertedItself}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay"
-                                      data-content="${message(code: 'surveyResult.finishOrg')}">
-                                    <i class="paper plane outline icon"></i>
+                                      data-content="${message(code: 'surveyLinks.newParticipate')}">
+                                    <i class="paper plane outline large icon"></i>
                                 </span>
                             </g:if>
 
@@ -431,12 +433,6 @@
                             </g:link>
 
 
-                            <g:if test="${!surveyConfig.hasOrgSubscription(participant)}">
-                                <span data-position="top right" class="la-popup-tooltip la-delay"
-                                      data-content="${message(code: 'surveyResult.newOrg')}">
-                                    <i class="star black large  icon"></i>
-                                </span>
-                            </g:if>
                             <g:if test="${surveyConfig.checkResultsEditByOrg(participant) == SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                       data-content="${message(code: 'surveyResult.processedOrg')}">
@@ -470,10 +466,17 @@
                                 </span>
                             </g:if>
 
+                            <g:if test="${!surveyConfig.hasOrgSubscription(participant)}">
+                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                      data-content="${message(code: 'surveyResult.newOrg')}">
+                                    <i class="star black large  icon"></i>
+                                </span>
+                            </g:if>
+
                             <g:if test="${surveyOrg.orgInsertedItself}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay"
-                                      data-content="${message(code: 'surveyResult.finishOrg')}">
-                                    <i class="paper plane outline icon"></i>
+                                      data-content="${message(code: 'surveyLinks.newParticipate')}">
+                                    <i class="paper plane outline large icon"></i>
                                 </span>
                             </g:if>
 

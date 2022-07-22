@@ -2,6 +2,10 @@
 
 Source: ${grailsApplication.config.grails.serverURL} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 1.21
+
+- bugfix collection of ies
+
 #### 1.2
 
 - bugfix collection of ies
