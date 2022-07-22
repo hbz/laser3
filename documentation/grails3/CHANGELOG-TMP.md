@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4366    22.07.2022  rc-2.3  2.3.3       Moe     Bug         Fehlermeldung Leitweg-ID trotz Eintragung
+
+4358    15.07.2022  rc-2.3  2.3.2       Moe     Bug         Umfragen entküpfen: Verknüpfung wird in "Zielumfrage" weiterhin angezeigt
+
 4356    14.07.2022  rc-2.3  2.3.2       Moe     Feature     Teilnehmerverwaltung: Merkmale für einzelene Teilnehmer löschbar machen
 
 4039    13.07.2022  rc-2.3  2.3.2       Moe     Bug         500er bei Meine Lizenzverwaltung / Dokumente anhängen

@@ -4965,13 +4965,15 @@ class SurveyController {
                     if (SurveyLinks.findBySourceSurveyAndTargetSurvey(result.surveyInfo, linkSurvey)) {
                         flash.error = g.message(code: 'surveyLinks.link.exists')
                     } else {
-                        SurveyLinks surveyLink = new SurveyLinks(sourceSurvey: result.surveyInfo, targetSurvey: linkSurvey, bothDirection: params.bothDirection ? true : false)
+                        SurveyLinks surveyLink = new SurveyLinks(sourceSurvey: result.surveyInfo, targetSurvey: linkSurvey)
                         if (!surveyLink.save()) {
                             flash.error = g.message(code: 'surveyInfo.link.fail')
                         } else {
-                            if (params.bothDirection) {
+                            if (params.bothDirection && !SurveyLinks.findBySourceSurveyAndTargetSurvey(linkSurvey, result.surveyInfo)) {
                                 SurveyLinks surveyLink2 = new SurveyLinks(sourceSurvey: linkSurvey, targetSurvey: result.surveyInfo, bothDirection: true)
-                                if (!surveyLink2.save()) {
+                                surveyLink.bothDirection = true
+
+                                if (!surveyLink2.save() && !surveyLink.save()) {
                                     flash.error = g.message(code: 'surveyInfo.link.fail')
                                 }
                             }
@@ -4982,6 +4984,11 @@ class SurveyController {
 
             if (params.unlinkSurveyLink) {
                 SurveyLinks surveyLink = SurveyLinks.get(params.unlinkSurveyLink)
+                if(surveyLink.bothDirection){
+                    SurveyLinks surveyLink2 = SurveyLinks.findBySourceSurveyAndTargetSurvey(surveyLink.targetSurvey, surveyLink.sourceSurvey)
+                    if(surveyLink2)
+                        surveyLink2.delete()
+                }
                 surveyLink.delete()
 
             }
