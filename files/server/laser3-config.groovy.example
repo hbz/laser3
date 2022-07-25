@@ -44,8 +44,6 @@ indexUpdateJobActive = false
 isSendEmailsForDueDatesOfAllUsers = false
 isUpdateDashboardTableInDatabase  = false
 
-laserStatsSyncJobActive = true
-
 laserSystemId = 'LAS:eR - 3.0'
 
 notifications.email.from = 'laser@local'
@@ -65,6 +63,7 @@ showStatsInfo  = true
 showSystemInfo = true
 
 statsApiUrl = 'https://sushi.xy.z'
+statsSyncJobActive = false
 
 systemEmail = 'laser@localhost'
 

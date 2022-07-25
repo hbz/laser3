@@ -35,7 +35,6 @@ class ConfigMapper {
     static final List IS_SEND_EMAILS_FOR_DUE_DATES_OF_ALL_USERS     = ['isSendEmailsForDueDatesOfAllUsers', Boolean]
     static final List IS_UPDATE_DASHBOARD_TABLE_IN_DATABASE         = ['isUpdateDashboardTableInDatabase',  Boolean]
 
-    static final List LASER_STATS_SYNC_JOB_ACTIVE                   = ['laserStatsSyncJobActive', Boolean]
     static final List LASER_SYSTEM_ID                               = ['laserSystemId', String]
 
     static final List NOTIFICATIONS_EMAIL_FROM                = ['notifications.email.from', String]
@@ -51,6 +50,7 @@ class ConfigMapper {
     static final List SHOW_SYSTEM_INFO      = ['showSystemInfo', Boolean]
     static final List SHOW_STATS_INFO       = ['showStatsInfo',  Boolean]
     static final List STATS_API_URL         = ['statsApiUrl', String]
+    static final List STATS_SYNC_JOB_ACTIVE = ['statsSyncJobActive', Boolean]
     static final List SYSTEM_EMAIL          = ['systemEmail', String]
 
     static final List TEST_JOB_ACTIVE       = ['testJobActivate', Boolean]
@@ -62,12 +62,12 @@ class ConfigMapper {
             FINANCIALS_CURRENCY,
             GLOBAL_DATA_SYNC_JOB_ACTIVE, GRAILS_MAIL_DISABLED, GRAILS_PLUGIN_WKHTMLTOPDF_BINARY, GRAILS_PLUGIN_WKHTMLTOPDF_XVFBRUNNER, GRAILS_SERVER_URL,
             INDEX_UPDATE_JOB_ACTIVE, IS_SEND_EMAILS_FOR_DUE_DATES_OF_ALL_USERS, IS_UPDATE_DASHBOARD_TABLE_IN_DATABASE,
-            LASER_STATS_SYNC_JOB_ACTIVE, LASER_SYSTEM_ID,
+            LASER_SYSTEM_ID,
             NOTIFICATIONS_EMAIL_FROM, NOTIFICATIONS_EMAIL_GENERIC_TEMPLATE, NOTIFICATIONS_EMAIL_REPLY_TO, NOTIFICATIONS_JOB_ACTIVE,
             PGDUMP_PATH,
             QUARTZ_HEARTBEAT,
             REPORTING,
-            SHOW_DEBUG_INFO, SHOW_SYSTEM_INFO, SHOW_STATS_INFO, STATS_API_URL, SYSTEM_EMAIL,
+            SHOW_DEBUG_INFO, SHOW_SYSTEM_INFO, SHOW_STATS_INFO, STATS_API_URL, STATS_SYNC_JOB_ACTIVE, SYSTEM_EMAIL,
             TEST_JOB_ACTIVE
 
     ]
@@ -163,9 +163,6 @@ class ConfigMapper {
     static boolean getIsUpdateDashboardTableInDatabase(int output = LOGGER) {
         readConfig( IS_UPDATE_DASHBOARD_TABLE_IN_DATABASE, output )
     }
-    static boolean getLaserStatsSyncJobActive(int output = LOGGER) {
-        readConfig( LASER_STATS_SYNC_JOB_ACTIVE, output )
-    }
     static String getLaserSystemId(int output = LOGGER) {
         readConfig( LASER_SYSTEM_ID, output )
     }
@@ -201,6 +198,9 @@ class ConfigMapper {
     }
     static String getStatsApiUrl(int output = LOGGER) {
         readConfig( STATS_API_URL, output )
+    }
+    static boolean getStatsSyncJobActive(int output = LOGGER) {
+        readConfig( STATS_SYNC_JOB_ACTIVE, output )
     }
     static String getSystemEmail(int output = LOGGER) {
         readConfig( SYSTEM_EMAIL, output )

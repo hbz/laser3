@@ -23,10 +23,10 @@ class StatsSyncJob extends AbstractJob {
         //                  `- Second, 0-59
     }
 
-    static List<List> configurationProperties = [ ConfigMapper.LASER_STATS_SYNC_JOB_ACTIVE ]
+    static List<List> configurationProperties = [ ConfigMapper.STATS_SYNC_JOB_ACTIVE ]
 
     boolean isAvailable() {
-        !jobIsRunning && !statsSyncService.running && ConfigMapper.getLaserStatsSyncJobActive()
+        !jobIsRunning && !statsSyncService.running && ConfigMapper.getStatsSyncJobActive()
     }
     boolean isRunning() {
         jobIsRunning
