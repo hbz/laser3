@@ -43,6 +43,8 @@ spring:
     main:
         lazy-initialization: true # from: false
         banner-mode: "off"
+        allow-bean-definition-overriding: true
+        allow-circular-references: true
     groovy:
         template:
             check-template-location: false
