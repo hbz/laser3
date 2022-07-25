@@ -1,4 +1,4 @@
-println("/\/\ -- local config file found and loaded -- /\/\")
+println(" -- local config file found and loaded -- ")
 
 aggr_es_cluster   = 'laser3'
 aggr_es_hostname  = '127.0.0.1'
