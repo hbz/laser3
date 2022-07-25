@@ -1,6 +1,5 @@
 package de.laser.properties
 
-import de.laser.ContentItem
 import de.laser.License
 import de.laser.Org
 import de.laser.PendingChangeService
@@ -147,24 +146,14 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
      * This method is used by generic access method and reflects changes made to a subscription property to inheriting license properties.
      * @param changeDocument the map of changes being passed through to the inheriting properties
      */
-    def notifyDependencies(changeDocument) {
+    void notifyDependencies(Map changeDocument) {
         log.debug("notifyDependencies(${changeDocument})")
         MessageSource messageSource = BeanStore.getMessageSource()
 
         if (changeDocument.event.equalsIgnoreCase('LicenseProperty.updated')) {
-            // legacy ++
 
             Locale locale = LocaleContextHolder.getLocale()
-            ContentItem contentItemDesc = ContentItem.findByKeyAndLocale("kbplus.change.subscription."+changeDocument.prop, locale.toString())
             String description = messageSource.getMessage('default.accept.placeholder',null, locale)
-            if (contentItemDesc) {
-                description = contentItemDesc.content
-            }
-            else {
-                ContentItem defaultMsg = ContentItem.findByKeyAndLocale("kbplus.change.subscription.default", locale.toString())
-                if( defaultMsg)
-                    description = defaultMsg.content
-            }
 
             def propName
             try {

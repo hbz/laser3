@@ -1,7 +1,7 @@
 package de.laser
 
 
-import de.laser.helper.SwissKnife
+import de.laser.utils.SwissKnife
 import de.laser.remote.ApiSource
 import de.laser.titles.TitleInstance
 import de.laser.auth.Role
@@ -60,8 +60,7 @@ class DataManagerController  {
       result.offset = 0
     }
     else {
-        User user = contextService.getUser()
-        SwissKnife.setPaginationParams(result, params, user)
+        SwissKnife.setPaginationParams(result, params, contextService.getUser())
         params.max = result.max
     }
 
@@ -143,7 +142,7 @@ class DataManagerController  {
         final long hoursInMillis = 60L * 60L * 1000L;
         end_date = new Date(end_date.getTime() + (24L * hoursInMillis - 2000L));
 
-        def query_params = ['l':types_to_include,'s':start_date,'e':end_date, 't':events_to_include]
+        Map query_params = ['l':types_to_include,'s':start_date,'e':end_date, 't':events_to_include]
 
 
         //def filterActors = params.findAll{it.key.startsWith("change_actor_")}
@@ -174,11 +173,10 @@ class DataManagerController  {
 
         if ( types_to_include.size() > 0 ) {
 
-            def limits = (!params.format||params.format.equals("html"))?[max:result.max, offset:result.offset]:[max:result.max,offset:0]
+            Map limits = (!params.format||params.format.equals("html")) ? [max:result.max, offset:result.offset] : [max:result.max,offset:0]
             result.historyLines = AuditLogEvent.executeQuery('select e '+base_query+' order by e.lastUpdated desc',
                     query_params, limits);
-            result.num_hl = AuditLogEvent.executeQuery('select e.id '+base_query,
-                    query_params).size()
+            result.num_hl = AuditLogEvent.executeQuery('select e.id ' + base_query, query_params).size()
             result.formattedHistoryLines = []
             result.historyLines.each { hl ->
 
@@ -456,14 +454,13 @@ class DataManagerController  {
   def checkPackageTIPPs() {
     Map<String, Object> result = [:]
     result.user = contextService.getUser()
-    params.max =  params.max ?: result.user.getDefaultPageSize()
+    params.max =  params.max ?: result.user.getPageSizeOrDefault()
 
         List gokbRecords = []
 
       ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true).each { api ->
             gokbRecords << gokbService.getPackagesMap(api, params.q, false).records
         }
-
 
         params.sort = params.sort ?: 'name'
         params.order = params.order ?: 'asc'

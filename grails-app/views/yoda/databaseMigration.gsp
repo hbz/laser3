@@ -1,20 +1,13 @@
-<!doctype html>
-<html>
-  <head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : Database Migration</title>
-  </head>
+<laser:htmlStart text="Database Migration" />
 
-  <body>
+    <ui:breadcrumbs>
+      <ui:crumb message="menu.yoda" controller="yoda" action="index"/>
+      <ui:crumb text="Database Migration" class="active"/>
+    </ui:breadcrumbs>
 
-    <semui:breadcrumbs>
-      <semui:crumb message="menu.yoda" controller="yoda" action="index"/>
-      <semui:crumb text="Database Migration" class="active"/>
-    </semui:breadcrumbs>
+    <ui:messages data="${flash}" />
 
-    <semui:messages data="${flash}" />
-
-    <h1 class="ui header la-clear-before la-noMargin-top">Private Properties (mandatory) without existing values</h1>
+    <ui:h1HeaderWithIcon text="Private Properties (mandatory) without existing values" />
 
     <g:link controller="yoda" action="dbmFixPrivateProperties" params="[cmd:'doIt']" class="ui button negative">
         <i class="icon trash alternate outline"></i> &nbsp;  Delete all</g:link>
@@ -49,5 +42,4 @@
         </tbody>
     </table>
 
-  </body>
-</html>
+<laser:htmlEnd />

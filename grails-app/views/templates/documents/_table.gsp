@@ -64,8 +64,7 @@
                                 break
                             case RDStore.SHARE_CONF_UPLOADER_AND_TARGET: if(inOwnerOrg || inTargetOrg) visible = true //the owner org and the target org may see the document i.e. the document has been shared with the target org
                                 break
-                            case RDStore.SHARE_CONF_CONSORTIUM:
-                            case RDStore.SHARE_CONF_ALL: visible = true //definition says that everyone with "access" to target org. How are such access roles defined and where?
+                            case [ RDStore.SHARE_CONF_CONSORTIUM, RDStore.SHARE_CONF_ALL ]: visible = true //definition says that everyone with "access" to target org. How are such access roles defined and where?
                                 break
                             default:
                                 //fallback: documents are visible if share configuration is missing or obsolete
@@ -134,7 +133,7 @@
                                     </g:if>
                                     <g:if test="${instance?.showUIShareButton()}">
                                         <g:if test="${docctx.isShared}">
-                                            <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
+                                            <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
                                                 <g:link controller="ajax" action="toggleShare" class="ui icon button green la-modern-button"
                                                         params='[owner:genericOIDService.getOID(instance), sharedObject:genericOIDService.getOID(docctx), reload:true, ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]'>
                                                     <i class="alternate share icon"></i>
@@ -142,7 +141,7 @@
                                             </span>
                                         </g:if>
                                         <g:else>
-                                            <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.off')}">
+                                            <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.off')}">
                                                 <g:link controller="ajax" action="toggleShare" class="ui icon button blue la-modern-button"
                                                         params='[owner:genericOIDService.getOID(instance), sharedObject:genericOIDService.getOID(docctx), reload:true, ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]'>
                                                     <i class="la-share slash icon"></i>
@@ -153,7 +152,7 @@
                                 </g:if>
                                 <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i class="download icon"></i></g:link>
                                 <g:if test="${accessService.checkMinUserOrgRole(user,docctx.owner.owner,"INST_EDITOR") && inOwnerOrg}">
-                                    <button type="button" class="ui icon blue button la-modern-button la-popup-tooltip la-delay" data-semui="modal" href="#modalEditDocument_${docctx.id}" data-content="${message(code:"template.documents.edit")}"><i class="pencil icon"></i></button>
+                                    <button type="button" class="ui icon blue button la-modern-button la-popup-tooltip la-delay" data-ui="modal" data-href="#modalEditDocument_${docctx.id}" data-content="${message(code:"template.documents.edit")}"><i class="pencil icon"></i></button>
                                 </g:if>
                                 <g:if test="${!docctx.sharedFrom && !docctx.isShared && accessService.checkMinUserOrgRole(user,docctx.owner.owner,"INST_EDITOR") && inOwnerOrg}">
                                     <g:link controller="${controllerName}" action="deleteDocuments" class="ui icon negative button la-modern-button js-open-confirm-modal"

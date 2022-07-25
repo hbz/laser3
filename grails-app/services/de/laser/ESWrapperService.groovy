@@ -1,7 +1,6 @@
 package de.laser
 
-
-import de.laser.utils.ConfigMapper
+import de.laser.config.ConfigMapper
 import de.laser.remote.FTControl
 import de.laser.system.SystemEvent
 import grails.gorm.transactions.Transactional
@@ -15,14 +14,9 @@ import org.elasticsearch.client.indices.CreateIndexResponse
 import org.elasticsearch.client.indices.GetIndexRequest
 import org.elasticsearch.common.xcontent.XContentType
 import org.grails.web.json.parser.JSONParser
-import org.elasticsearch.action.admin.cluster.health.ClusterHealthRequest
-import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse
 import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestClient
 import org.elasticsearch.client.RestHighLevelClient
-import org.elasticsearch.cluster.health.ClusterHealthStatus
-import org.elasticsearch.cluster.health.ClusterIndexHealth
-import org.elasticsearch.rest.RestStatus
 
 /**
  * This service wraps the ElasticSearch connection and configuration methods and
@@ -32,9 +26,6 @@ import org.elasticsearch.rest.RestStatus
  */
 @Transactional
 class ESWrapperService {
-
-    final static String DEFAULT_ES_HOST = 'localhost'
-    final static String DEFAULT_ES_CLUSTER = 'elasticsearch'
 
     static transactional = false
 
@@ -50,8 +41,8 @@ class ESWrapperService {
     def init() {
         log.info('ESWrapperService - init')
 
-        ES_Host     = ConfigMapper.getAggrEsHostname() ?: ESWrapperService.DEFAULT_ES_HOST
-        ES_Cluster  = ConfigMapper.getAggrEsCluster()  ?: ESWrapperService.DEFAULT_ES_CLUSTER
+        ES_Host     = ConfigMapper.getAggrEsHostname() ?: 'localhost'
+        ES_Cluster  = ConfigMapper.getAggrEsCluster()  ?: 'elasticsearch'
         ES_Indices  = ConfigMapper.getAggrEsIndices()  ?: [:]
 
         log.debug("-> ES_Host = ${ES_Host}")
@@ -70,6 +61,11 @@ class ESWrapperService {
                         new HttpHost(ES_Host, 9201, "http")));
 
         esclient
+    }
+
+    // TMP
+    String getUrl() {
+        (new HttpHost(ES_Host, 9200, "http")).toString()
     }
 
     /*void closeClient() {
@@ -158,38 +154,6 @@ class ESWrapperService {
             return false
         }
 
-    }
-
-    @Deprecated
-    void clusterHealth(){
-
-        RestHighLevelClient esclient = this.getClient()
-
-        ClusterHealthRequest request = new ClusterHealthRequest();
-        ClusterHealthResponse response = esclient.cluster().health(request, RequestOptions.DEFAULT);
-
-        String clusterName = response.getClusterName();
-        //ClusterHealthStatus status = response.getStatus();
-
-        boolean timedOut = response.isTimedOut();
-        RestStatus restStatus = response.status();
-
-        Map<String, ClusterIndexHealth> indices = response.getIndices();
-
-        ClusterIndexHealth index = indices.get("index");
-        ClusterHealthStatus indexStatus = index.getStatus();
-        int numberOfShards = index.getNumberOfShards();
-        int numberOfReplicas = index.getNumberOfReplicas();
-        int activeShards = index.getActiveShards();
-        int activePrimaryShards = index.getActivePrimaryShards();
-        int initializingShards = index.getInitializingShards();
-        int relocatingShards = index.getRelocatingShards();
-        int unassignedShards = index.getUnassignedShards();
-
-        println("ESInfo: clusterName: ${clusterName}, numberOfDataNodes: ${numberOfDataNodes}, numberOfNodes: ${numberOfNodes}")
-        println("ESInfo: index: ${index}, numberOfShards: ${numberOfShards}, numberOfReplicas: ${numberOfReplicas}, indexStatus: ${indexStatus}")
-
-        esclient.close()
     }
 
     /**

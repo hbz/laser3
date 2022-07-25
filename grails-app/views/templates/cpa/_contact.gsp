@@ -3,9 +3,9 @@
 <g:if test="${contact}">
 	<div class="ui js-copyTriggerParent item contact-details" style="display: flex;">
         <div style="display: flex">
-            <semui:contactIcon type="${contact.contentType?.value}" />
+            <ui:contactIcon type="${contact.contentType?.value}" />
             <div class="content la-space-right">
-                <semui:xEditable class="js-copyTopic" owner="${contact}" field="content" overwriteEditable="${overwriteEditable}" />
+                <ui:xEditable class="js-copyTopic" owner="${contact}" field="content" overwriteEditable="${overwriteEditable}" />
                 <g:if test="${contact.language}">(${contact.language.getI10n("value")})</g:if>
             </div>
         </div>

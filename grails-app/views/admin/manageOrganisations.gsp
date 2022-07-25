@@ -1,24 +1,15 @@
 <%@ page import="de.laser.Org; de.laser.OrgSetting; de.laser.RefdataCategory; groovy.json.JsonOutput; de.laser.api.v0.ApiToolkit; de.laser.api.v0.ApiManager; de.laser.auth.Role; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Contact; de.laser.OrgRole; de.laser.RefdataValue" %>
-<laser:serviceInjection />
-<!doctype html>
 
-<html>
-    <head>
-        <meta name="layout" content="laser" />
-        <title>${message(code:'laser')} : ${message(code:'menu.admin.manageOrganisations')}</title>
-    </head>
-    <body>
+<laser:htmlStart message="menu.admin.manageOrganisations" serviceInjection="true"/>
 
-    <semui:breadcrumbs>
-        <semui:crumb message="menu.admin" controller="admin" action="index" />
-        <semui:crumb message="menu.admin.manageOrganisations" class="active" />
-    </semui:breadcrumbs>
+    <ui:breadcrumbs>
+        <ui:crumb message="menu.admin" controller="admin" action="index" />
+        <ui:crumb message="menu.admin.manageOrganisations" class="active" />
+    </ui:breadcrumbs>
 
-    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="menu.admin.manageOrganisations" />
-        <semui:totalNumber total="${orgListTotal}"/>
-    </h1>
+    <ui:h1HeaderWithIcon message="menu.admin.manageOrganisations" total="${orgListTotal}" />
 
-    <semui:filter>
+    <ui:filter>
         <g:form action="manageOrganisations" method="get" class="ui form">
             <laser:render template="/templates/filter/orgFilter"
                       model="[
@@ -27,7 +18,7 @@
                               tmplConfigFormFilter: true
                       ]"/>
         </g:form>
-    </semui:filter>
+    </ui:filter>
 
     <table class="ui sortable celled la-js-responsive-table la-table table">
         <g:set var="sqlDateToday" value="${new java.sql.Date(System.currentTimeMillis())}"/>
@@ -187,7 +178,7 @@
                                     data-gascoTarget="${Org.class.name}:${org.id}"
                                     data-gascoEntry="${gascoEntry.class.name}:${gascoEntry.id}"
                                     data-orgName="${org.name}"
-                                    data-semui="modal"
+                                    data-ui="modal"
                                     data-href="#gascoEntryModal"
                                     data-content="GASCO-Eintrag ändern" data-position="top left"><i class="globe icon"></i></button>
                         </g:if>
@@ -198,7 +189,7 @@
                                     data-createdBy="${org.createdBy?.id}"
                                     data-legallyObligedBy="${org.legallyObligedBy?.id}"
                                     data-orgName="${org.name}"
-                                    data-semui="modal"
+                                    data-ui="modal"
                                     data-href="#legalInformationModal"
                                     data-content="Rechtl. Informationen ändern" data-position="top left"><i class="handshake outline icon"></i></button>
                         </g:if>
@@ -207,7 +198,7 @@
                                 data-ctTarget="${Org.class.name}:${org.id}"
                                 data-customerType="${customerType}"
                                 data-orgName="${org.name}"
-                                data-semui="modal"
+                                data-ui="modal"
                                 data-href="#customerTypeModal"
                                 data-content="Kundentyp ändern" data-position="top left"><i class="user icon"></i></button>
 
@@ -215,7 +206,7 @@
                                 data-alTarget="${Org.class.name}:${org.id}"
                                 data-apiLevel="${apiLevel}"
                                 data-orgName="${org.name}"
-                                data-semui="modal"
+                                data-ui="modal"
                                 data-href="#apiLevelModal"
                                 data-content="API-Zugriff ändern" data-position="top left"><i class="key icon"></i></button>
                     </td>
@@ -226,20 +217,20 @@
 
     <%-- changing gasco entry --%>
 
-    <semui:modal id="gascoEntryModal" message="org.gascoEntry.label" isEditModal="isEditModal">
+    <ui:modal id="gascoEntryModal" message="org.gascoEntry.label" isEditModal="isEditModal">
 
         <g:form class="ui form" url="[controller: 'admin', action: 'manageOrganisations']">
             <input type="hidden" name="cmd" value="changeGascoEntry"/>
             <input type="hidden" name="target" value="" />
 
             <div class="field">
-                <label for="orgName_ct">${message(code:'org.label')}</label>
+                <label for="orgName_gasco">${message(code:'org.label')}</label>
                 <input type="text" id="orgName_gasco" name="orgName" value="" readonly />
             </div>
 
             <div class="field">
                 <label for="gascoEntry">${message(code:'org.gascoEntry.label')}</label>
-                <laser:select id="gascoEntry" name="gascoEntry"
+                <ui:select id="gascoEntry" name="gascoEntry"
                               from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                               optionKey="${{ RefdataValue.class.name + ':' + it.id }}"
                               optionValue="value"
@@ -256,11 +247,11 @@
             }
         </laser:script>
 
-    </semui:modal>
+    </ui:modal>
 
     <%-- changing legal information --%>
 
-    <semui:modal id="legalInformationModal" message="org.legalInformation.label" isEditModal="isEditModal">
+    <ui:modal id="legalInformationModal" message="org.legalInformation.label" isEditModal="isEditModal">
 
         <g:form class="ui form" url="[controller: 'admin', action: 'manageOrganisations']">
             <input type="hidden" name="cmd" value="changeLegalInformation"/>
@@ -313,11 +304,11 @@
             }
         </laser:script>
 
-    </semui:modal>
+    </ui:modal>
 
     <%-- changing customer type --%>
 
-    <semui:modal id="customerTypeModal" message="org.customerType.label" isEditModal="isEditModal" formID="customerTypeChangeForm"
+    <ui:modal id="customerTypeModal" message="org.customerType.label" isEditModal="isEditModal" formID="customerTypeChangeForm"
                  showDeleteButton="showDeleteButton" deleteFormID="customerTypeDeleteForm" msgDelete="Kundentyp löschen">
 
         <g:form id="customerTypeChangeForm" class="ui form" url="[controller: 'admin', action: 'manageOrganisations']">
@@ -331,7 +322,7 @@
 
             <div class="field">
                 <label for="customerType">${message(code:'org.customerType.label')}</label>
-                <laser:select id="customerType" name="customerType"
+                <ui:select id="customerType" name="customerType"
                           from="${[Role.findByAuthority('FAKE')] + Role.findAllByRoleType('org')}"
                           optionKey="id"
                           optionValue="authority"
@@ -359,11 +350,11 @@
             }
         </laser:script>
 
-    </semui:modal>
+    </ui:modal>
 
     <%-- changing api access --%>
 
-    <semui:modal id="apiLevelModal" message="org.apiLevel.label" isEditModal="isEditModal">
+    <ui:modal id="apiLevelModal" message="org.apiLevel.label" isEditModal="isEditModal">
 
         <g:form class="ui form" url="[controller: 'admin', action: 'manageOrganisations']">
             <input type="hidden" name="cmd" value="changeApiLevel"/>
@@ -397,7 +388,6 @@
             }
         </laser:script>
 
-    </semui:modal>
+    </ui:modal>
 
-    </body>
-</html>
+<laser:htmlEnd />

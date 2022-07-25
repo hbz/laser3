@@ -1,37 +1,34 @@
 <%@page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.storage.RDConstants" %>
-<laser:serviceInjection/>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'license.new')}</title>
-</head>
 
-<body>
+<laser:htmlStart message="license.new" serviceInjection="true"/>
 
-    <semui:breadcrumbs>
-        <semui:crumb controller="myInstitution" action="currentLicenses" message="license.current"/>
-        <semui:crumb message="license.new" class="active"/>
-    </semui:breadcrumbs>
+    <ui:breadcrumbs>
+        <ui:crumb controller="myInstitution" action="currentLicenses" message="license.current"/>
+        <ui:crumb message="license.new" class="active"/>
+    </ui:breadcrumbs>
 
-    <semui:controlButtons>
+    <ui:controlButtons>
         <laser:render template="actions"/>
-    </semui:controlButtons>
+    </ui:controlButtons>
 
-    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'license.new')}</h1>
+    <ui:h1HeaderWithIcon message="license.new" />
 
-    <semui:messages data="${flash}"/>
+    <ui:messages data="${flash}"/>
 
-    <semui:form>
+    <ui:form>
         <g:form action="processEmptyLicense" controller="myInstitution" method="post" class="ui form newLicence">
             <g:if test="${subInstance}">
                 <g:hiddenField id="sub_id_${subInstance.id}" name="sub" value="${subInstance.id}"/>
-                <div class="ui info message">${message(code: 'myinst.licensewithSub.notice', args: [subInstance.name])}</div>
+                <ui:msg class="info" noClose="true">
+                    ${message(code: 'myinst.licensewithSub.notice', args: [subInstance.name])}
+                </ui:msg>
             </g:if>
 
             <g:if test="${params.baselicense}">
                 <g:hiddenField name="baselicense" value="${params.baselicense}"/>
-                <div class="ui info message">${message(code: 'myinst.copyLicense.notice', args: [params.licenseName])}</div>
+                <ui:msg class="info" noClose="true">
+                    ${message(code: 'myinst.copyLicense.notice', args: [params.licenseName])}
+                </ui:msg>
             </g:if>
 
             <div class="field required">
@@ -40,9 +37,9 @@
             </div>
 
             <div class="two fields">
-                <semui:datepicker label="license.startDate.label" id="licenseStartDate" name="licenseStartDate" value="${params.licenseStartDate?:defaultStartYear}" />
+                <ui:datepicker label="license.startDate.label" id="licenseStartDate" name="licenseStartDate" value="${params.licenseStartDate?:defaultStartYear}" />
 
-                <semui:datepicker label="license.endDate.label" id="licenseEndDate" name="licenseEndDate" value="${params.licenseEndDate?:defaultEndYear}"/>
+                <ui:datepicker label="license.endDate.label" id="licenseEndDate" name="licenseEndDate" value="${params.licenseEndDate?:defaultEndYear}"/>
             </div>
 
             <div class="field required">
@@ -52,7 +49,7 @@
                     fakeList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.LICENSE_STATUS))
                     fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', RDConstants.LICENSE_STATUS))
                 %>
-                <laser:select name="status" from="${fakeList}" optionKey="id" optionValue="value"
+                <ui:select name="status" from="${fakeList}" optionKey="id" optionValue="value"
                               noSelection="${['' : '']}"
                               value="${['':'']}"/>
             </div>
@@ -75,7 +72,7 @@
             <input type="button" class="ui button js-click-control" onclick="JSPC.helper.goBack();" value="${message(code:'default.button.cancel.label')}" />
 
         </g:form>
-    </semui:form>
+    </ui:form>
 
 <laser:script file="${this.getGroovyPageFileName()}">
     $('.license-results input[type="radio"]').click(function () {
@@ -141,5 +138,4 @@
                     });
 </laser:script>
 
-</body>
-</html>
+<laser:htmlEnd />

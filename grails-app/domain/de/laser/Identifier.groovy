@@ -70,8 +70,8 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
     static mapping = {
         id    column:'id_id'
         version column: 'id_version'
-        value column:'id_value', index:'id_value_idx'
-        ns    column:'id_ns_fk', index:'id_value_idx'
+        ns    column:'id_ns_fk', index:'id_ns_value_idx'
+        value column:'id_value', index:'id_ns_value_idx'
         note  column:'id_note',  type: 'text'
 
         lic   column:'id_lic_fk', index: 'id_lic_idx'
@@ -385,25 +385,12 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
      * Triggered by generic method; triggers itself update of all inheriting objects
      * @param changeDocument the map of changes to be passed onto inheriting identifiers; processed by {@link PendingChange} object
      */
-    void notifyDependencies(changeDocument) {
+    void notifyDependencies(Map changeDocument) {
         log.debug("notifyDependencies(${changeDocument})")
         if (changeDocument.event.equalsIgnoreCase('Identifier.updated')) {
 
-            // legacy ++
-
             Locale locale = LocaleContextHolder.getLocale()
-            ContentItem contentItemDesc = ContentItem.findByKeyAndLocale("kbplus.change.subscription."+changeDocument.prop, locale.toString())
             String description = BeanStore.getMessageSource().getMessage('default.accept.placeholder',null, locale)
-            if (contentItemDesc) {
-                description = contentItemDesc.content
-            }
-            else {
-                ContentItem defaultMsg = ContentItem.findByKeyAndLocale("kbplus.change.subscription.default", locale.toString())
-                if( defaultMsg)
-                    description = defaultMsg.content
-            }
-
-            // legacy ++
 
             List<PendingChange> slavedPendingChanges = []
 

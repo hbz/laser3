@@ -1,27 +1,18 @@
 <%@ page import="de.laser.remote.ApiSource; de.laser.titles.BookInstance; de.laser.storage.RDStore; de.laser.titles.TitleHistoryEventParticipant" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title><g:message code="tipp.show.label"
-                      args="${[tipp.name, tipp.pkg.name, tipp.platform.name]}"/></title>
-</head>
 
-<body>
+<laser:htmlStart text="${message(code:"tipp.show.label", args:[tipp.name, tipp.pkg.name, tipp.platform.name])}" />
 
-<semui:breadcrumbs>
-    <semui:crumb controller="package" action="show" id="${tipp.pkg.id}"
+<ui:breadcrumbs>
+    <ui:crumb controller="package" action="show" id="${tipp.pkg.id}"
                  text="${tipp.pkg.name} [${message(code: 'package.label')}]"/>
-    <semui:crumb text="${tipp.name} [${message(code: 'title.label')}]" class="active"/>
-</semui:breadcrumbs>
+    <ui:crumb text="${tipp.name} [${message(code: 'title.label')}]" class="active"/>
+</ui:breadcrumbs>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerTitleIcon type="${tipp.titleType}"/>
-<g:message code="tipp.show.label" args="${[tipp.name, tipp.pkg.name, tipp.platform.name]}"/>
-</h1>
+<ui:h1HeaderWithIcon message="tipp.show.label" args="${[tipp.name, tipp.pkg.name, tipp.platform.name]}" type="${tipp.titleType}" />
 
 <laser:render template="/templates/meta/identifier" model="${[object: tipp, editable: editable]}"/>
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 
 <div class="la-inline-lists">
@@ -92,18 +83,18 @@
                             <div class="ui card">
                                 <div class="content">
                                     <div class="la-card-column">
-                                        <g:message code="tipp.price.listPrice"/>: <semui:xEditable field="listPrice"
+                                        <g:message code="tipp.price.listPrice"/>: <ui:xEditable field="listPrice"
                                                                                              owner="${priceItem}"
-                                                                                             overwriteEditable="false"/> <semui:xEditableRefData
+                                                                                             overwriteEditable="false"/> <ui:xEditableRefData
                                                 field="listCurrency" owner="${priceItem}"
                                                 config="Currency"
                                                 overwriteEditable="false"/>
                                         <br />
-                                        <%--(<g:message code="tipp.price.startDate"/> <semui:xEditable field="startDate"
+                                        <%--(<g:message code="tipp.price.startDate"/> <ui:xEditable field="startDate"
                                                                                                   type="date"
                                                                                                   owner="${priceItem}"
                                                                                                   overwriteEditable="false"/>-
-                                        <g:message code="tipp.price.endDate"/> <semui:xEditable field="endDate"
+                                        <g:message code="tipp.price.endDate"/> <ui:xEditable field="endDate"
                                                                                                type="date"
                                                                                                owner="${priceItem}"
                                                                                                overwriteEditable="false"/>)--%>
@@ -116,7 +107,7 @@
                 </div>
             </div>
 
-            <br>
+            <br/>
         </div>
     </div>
 
@@ -132,27 +123,27 @@
                 <g:link controller="package" action="show"
                         id="${tipp.pkg?.id}">${tipp.pkg?.name}</g:link>
 
-                <br>
-                <br>
+                <br/>
+                <br/>
                 <g:link controller="package" action="current"
                         id="${tipp.pkg?.id}">
                     <g:message code="package.show.nav.current"/>: <g:message code="package.compare.overview.tipps"/> ${currentTippsCounts}</g:link>
-                <br>
+                <br/>
                 <g:link controller="package" action="planned"
                         id="${tipp.pkg?.id}">
                     <g:message code="package.show.nav.planned"/>: <g:message code="package.compare.overview.tipps"/> ${plannedTippsCounts}</g:link>
-                <br>
+                <br/>
                 <g:link controller="package" action="expired"
                         id="${tipp.pkg?.id}">
                     <g:message code="package.show.nav.expired"/>: <g:message code="package.compare.overview.tipps"/> ${expiredTippsCounts}</g:link>
 
-                <br>
+                <br/>
                 <g:link controller="package" action="deleted"
                         id="${tipp.pkg?.id}">
                     <g:message code="package.show.nav.deleted"/>: <g:message code="package.compare.overview.tipps"/> ${deletedTippsCounts}</g:link>
 
-                <br>
-                <br>
+                <br/>
+                <br/>
                 <g:each in="${ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
                         var="gokbAPI">
                     <g:if test="${tipp.pkg.gokbId}">
@@ -189,7 +180,7 @@
 
                 <g:if test="${tipp.hostPlatformURL}">
                     <br/>
-                    <semui:linkIcon
+                    <ui:linkWithIcon
                             href="${tipp.hostPlatformURL.startsWith('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
                 </g:if>
             </div>
@@ -210,7 +201,7 @@
                        target="_blank"><i class="share square icon"></i></a>
                 </g:if>
             </div>
-            <br>
+            <br/>
             <g:each in="${ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)}"
                     var="gokbAPI">
                 <g:if test="${tipp.platform.gokbId}">
@@ -252,10 +243,10 @@
                                     id="${org.org.id}">${org.org.name}</g:link></td>
                         <td>${org.roleType.getI10n("value")}</td>
                         <td>
-                            <semui:xEditable owner="${org}" type="date" field="startDate"/>
+                            <ui:xEditable owner="${org}" type="date" field="startDate"/>
                         </td>
                         <td>
-                            <semui:xEditable owner="${org}" type="date" field="endDate"/>
+                            <ui:xEditable owner="${org}" type="date" field="endDate"/>
                         </td>
                     </tr>
                 </g:each>
@@ -288,7 +279,7 @@
                                         <g:else>
                                             <g:each in="${TitleHistoryEventParticipant.findAllByParticipantNotEqualAndEvent(tipp,tiH)}" var="p">
                                                 <g:if test="${p.participantRole=='to'}">
-                                                    <g:link controller="tipp" action="show" id="${p.participant.id}"><span style="<g:if test="${p.participant.id == tiH.id}">font-weight:bold</g:if>">${p.participant.name} (${p.participant.pkg.name} / ${p.participant.platform.name})</span></g:link><br>
+                                                    <g:link controller="tipp" action="show" id="${p.participant.id}"><span style="<g:if test="${p.participant.id == tiH.id}">font-weight:bold</g:if>">${p.participant.name} (${p.participant.pkg.name} / ${p.participant.platform.name})</span></g:link><br/>
                                                 </g:if>
                                             </g:each>
                                         </g:else>
@@ -300,7 +291,7 @@
                                         <g:else>
                                             <g:each in="${TitleHistoryEventParticipant.findAllByParticipantNotEqualAndEvent(tipp,tiH)}" var="p">
                                                 <g:if test="${p.participantRole=='from'}">
-                                                    <g:link controller="tipp" action="show" id="${p.participant.id}"><span style="<g:if test="${p.participant.id == tiH.id}">font-weight:bold</g:if>">${p.participant.name} (${p.participant.pkg.name} / ${p.participant.platform.name})</span></g:link><br>
+                                                    <g:link controller="tipp" action="show" id="${p.participant.id}"><span style="<g:if test="${p.participant.id == tiH.id}">font-weight:bold</g:if>">${p.participant.name} (${p.participant.pkg.name} / ${p.participant.platform.name})</span></g:link><br/>
                                                 </g:if>
                                             </g:each>
                                         </g:else>
@@ -313,5 +304,4 @@
             </div>
 </div>
 
-</body>
-</html>
+<laser:htmlEnd />

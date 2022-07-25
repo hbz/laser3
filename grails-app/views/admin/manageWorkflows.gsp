@@ -1,21 +1,13 @@
 <%@ page import="de.laser.utils.DateUtils; de.laser.workflow.WorkflowHelper; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.workflow.*; de.laser.WorkflowService" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'menu.admin.manageWorkflows')}</title>
-</head>
 
-<body>
+<laser:htmlStart message="menu.admin.manageWorkflows" />
 
-<semui:breadcrumbs>
-    <semui:crumb message="menu.admin" controller="admin" action="index"/>
-    <semui:crumb text="${message(code:'menu.admin.manageWorkflows')}" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb message="menu.admin" controller="admin" action="index"/>
+    <ui:crumb text="${message(code:'menu.admin.manageWorkflows')}" class="active"/>
+</ui:breadcrumbs>
 
-<h1 class="ui icon header la-noMargin-top"><semui:headerTitleIcon type="Workflow"/>
-    ${message(code:'menu.admin.manageWorkflows')}
-</h1>
+<ui:h1HeaderWithIcon message="menu.admin.manageWorkflows" type="Workflow"/>
 
 <g:set var="tmplTab" value="${tab ?: 'prototypes'}" />
 
@@ -28,7 +20,7 @@
 
 <div data-tab="workflows" class="ui bottom attached tab <% if (tmplTab == 'workflows') { print 'active' } %>" style="margin-top:2em;">
 
-    <div class="ui info message">
+    <ui:msg class="info" noClose="true">
         <div class="ui list">
             <div class="item">
                 <span>
@@ -53,7 +45,7 @@
                 </span>
             </div>
         </div>
-    </div>
+    </ui:msg>
 
     <g:if test="${key == WfWorkflow.KEY}">
         <laser:render template="/templates/workflow/opResult" model="${[key:key, cmd:cmd, status:status, obj:workflow]}" />
@@ -201,7 +193,7 @@
 %{-- <div data-tab="templates" class="ui bottom attached tab <% if (tmplTab == 'templates') { print 'active' } %>" style="margin-top:2em;"> --}%
 <div data-tab="prototypes" class="ui bottom attached tab <% if (tmplTab == 'prototypes') { print 'active' } %>" style="margin-top:2em;">
 
-    <div class="ui info message">
+    <ui:msg class="info" noClose="true">
         <div class="ui list">
             <div class="item">
                 <span class="ui brown circular label">id</span>
@@ -220,10 +212,10 @@
                 &nbsp; ${message(code: 'workflow.object.' + WfConditionPrototype.KEY)}
             </div>
         </div>
-    </div>
+    </ui:msg>
 
     <p class="ui header">
-        ${message(code: 'workflow.object.' + WfWorkflowPrototype.KEY)} <semui:totalNumber total="${WfWorkflowPrototype.findAll().size()}"/>
+        ${message(code: 'workflow.object.' + WfWorkflowPrototype.KEY)} <ui:totalNumber total="${WfWorkflowPrototype.findAll().size()}"/>
     </p>
 
     <g:if test="${key == WfWorkflowPrototype.KEY}">
@@ -285,7 +277,7 @@
     <!-- -->
 
     <p class="ui header">
-        ${message(code: 'workflow.object.' + WfTaskPrototype.KEY)} <semui:totalNumber total="${WfTaskPrototype.findAll().size()}"/>
+        ${message(code: 'workflow.object.' + WfTaskPrototype.KEY)} <ui:totalNumber total="${WfTaskPrototype.findAll().size()}"/>
     </p>
 
     <g:if test="${key == WfTaskPrototype.KEY}">
@@ -298,7 +290,7 @@
                 <th>${message(code:'workflow.task.label')}</th>
                 <th>${message(code:'workflow.condition.label')} &darr;</th>
                 <th>${message(code:'workflow.label')} &uarr;</th>
-                %{-- <th>Typ</th> --}%
+                %{-- <th>${message(code:'default.type.label')}</th> --}%
                 <th>Nachfolger &rarr;</th>
                 <th>Child &darr;</th>
                 <th>Priorität</th>
@@ -398,7 +390,7 @@
     <!-- -->
 
     <p class="ui header">
-        ${message(code: 'workflow.object.' + WfConditionPrototype.KEY)} <semui:totalNumber total="${WfConditionPrototype.findAll().size()}"/>
+        ${message(code: 'workflow.object.' + WfConditionPrototype.KEY)} <ui:totalNumber total="${WfConditionPrototype.findAll().size()}"/>
     </p>
 
     <g:if test="${key == WfConditionPrototype.KEY}">
@@ -463,7 +455,7 @@
     <g:set var="workflowTemplates" value="${WfWorkflowPrototype.executeQuery('select wfwp from WfWorkflowPrototype wfwp order by wfwp.id desc')}" />
 
     <p class="ui header">
-        ${message(code: 'workflow.template.plural')} <semui:totalNumber total="${workflowTemplates.size()}"/>
+        ${message(code: 'workflow.template.plural')} <ui:totalNumber total="${workflowTemplates.size()}"/>
     </p>
 
     <g:each in="${workflowTemplates}" var="wfwp">
@@ -594,5 +586,4 @@
     });
 </laser:script>
 
-</body>
-</html>
+<laser:htmlEnd />

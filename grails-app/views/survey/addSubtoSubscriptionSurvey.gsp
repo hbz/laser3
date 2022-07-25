@@ -1,26 +1,18 @@
 <%@ page import="de.laser.survey.SurveyConfig; de.laser.RefdataValue; de.laser.RefdataCategory" %>
-<laser:serviceInjection/>
 
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'createSubscriptionSurvey.label')}</title>
-</head>
+<laser:htmlStart message="createSubscriptionSurvey.label" serviceInjection="true" />
 
-<body>
+<ui:breadcrumbs>
 
-<semui:breadcrumbs>
+    <ui:crumb controller="survey" action="workflowsSurveysConsortia" message="currentSurveys.label"/>
+    <ui:crumb message="createSubscriptionSurvey.label" class="active"/>
+</ui:breadcrumbs>
 
-    <semui:crumb controller="survey" action="workflowsSurveysConsortia" message="currentSurveys.label"/>
-    <semui:crumb message="createSubscriptionSurvey.label" class="active"/>
-</semui:breadcrumbs>
+<ui:h1HeaderWithIcon message="createSubscriptionSurvey.label" type="Survey" />
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerTitleIcon type="Survey"/>${message(code: 'createSubscriptionSurvey.label')}</h1>
+<ui:messages data="${flash}"/>
 
-<semui:messages data="${flash}"/>
-
-<semui:form>
+<ui:form>
     <g:form action="processCreateSubscriptionSurvey" controller="survey" method="post" class="ui form">
         <g:hiddenField id="sub_id_${subscription?.id}" name="sub" value="${subscription?.id}"/>
         <div class="field required ">
@@ -29,10 +21,10 @@
         </div>
 
         <div class="two fields ">
-            <semui:datepicker label="surveyInfo.startDate.label" id="startDate" name="startDate"
+            <ui:datepicker label="surveyInfo.startDate.label" id="startDate" name="startDate"
                               value="${params.startDate}" required="" />
 
-            <semui:datepicker label="surveyInfo.endDate.label" id="endDate" name="endDate"
+            <ui:datepicker label="surveyInfo.endDate.label" id="endDate" name="endDate"
                               value="${params.endDate}" />
         </div>
 
@@ -72,7 +64,7 @@
                value="${message(code: 'createSubscriptionSurvey.create')}"/>
 
     </g:form>
-</semui:form>
+</ui:form>
 
 <laser:script file="${this.getGroovyPageFileName()}">
         $('#subSurveyUseForTransfer').click(function () {
@@ -82,5 +74,4 @@
         })
 </laser:script>
 
-</body>
-</html>
+<laser:htmlEnd />

@@ -2,7 +2,8 @@ package de.laser
 
 import de.laser.finance.CostItem
 import de.laser.finance.PriceItem
-import de.laser.utils.ConfigMapper
+import de.laser.config.ConfigDefaults
+import de.laser.config.ConfigMapper
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.base.AbstractLockableService
@@ -164,7 +165,7 @@ class RenewSubscriptionService extends AbstractLockableService {
 
                                 //IssueEntitlements
                                 subscription.issueEntitlements.each { IssueEntitlement ie ->
-                                    if (ie.status != RDStore.TIPP_STATUS_DELETED) {
+                                    if (!(ie.status in [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED])) {
                                         def ieProperties = ie.properties
 
                                         IssueEntitlement newIssueEntitlement = new IssueEntitlement()
@@ -231,7 +232,7 @@ class RenewSubscriptionService extends AbstractLockableService {
                                     if (newIssueEntitlementGroup.save()) {
 
                                         ieGroup.items.each { IssueEntitlementGroup ieGroupItem ->
-                                            IssueEntitlement ie = IssueEntitlement.findBySubscriptionAndTippAndStatusNotEqual(copySub, ieGroupItem.ie.tipp, RDStore.TIPP_STATUS_DELETED)
+                                            IssueEntitlement ie = IssueEntitlement.findBySubscriptionAndTippAndStatusNotInList(copySub, ieGroupItem.ie.tipp, [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED])
                                             if (ie && !IssueEntitlementGroupItem.findByIe(ie)) {
                                                 IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
                                                         ie: ie,
@@ -267,7 +268,7 @@ class RenewSubscriptionService extends AbstractLockableService {
 
                                         if ((dctx.owner?.contentType == Doc.CONTENT_TYPE_FILE) && (dctx.status?.value != 'Deleted')) {
                                             try {
-                                                String fPath = ConfigMapper.getDocumentStorageLocation() ?: '/tmp/laser'
+                                                String fPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
 
                                                 Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
                                                 Path target = new File("${fPath}/${newDoc.uuid}").toPath()

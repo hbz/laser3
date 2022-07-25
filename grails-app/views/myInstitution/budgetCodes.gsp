@@ -1,26 +1,20 @@
 <%@ page import="de.laser.finance.CostItemGroup; de.laser.finance.BudgetCode"%>
 
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'menu.institutions.budgetCodes')}</title>
-    </head>
-    <body>
+<laser:htmlStart message="menu.institutions.budgetCodes" />
 
-        <semui:breadcrumbs>
-            <semui:crumb message="menu.institutions.budgetCodes" class="active"/>
-        </semui:breadcrumbs>
+        <ui:breadcrumbs>
+            <ui:crumb message="menu.institutions.budgetCodes" class="active"/>
+        </ui:breadcrumbs>
 
-        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.institutions.budgetCodes')}</h1>
+        <ui:h1HeaderWithIcon message="menu.institutions.budgetCodes" />
 
-        <semui:messages data="${flash}" />
+        <ui:messages data="${flash}" />
 
         <g:if test="${editable}">
             <div class="content ui form ui left floated  la-clear-before">
                 <div class="fields">
                     <div class="field">
-                        <button class="ui button" value="" data-href="#addBudgetCodeModal" data-semui="modal">${message(code:'budgetCode.create_new.label')}</button>
+                        <button class="ui button" value="" data-href="#addBudgetCodeModal" data-ui="modal">${message(code:'budgetCode.create_new.label')}</button>
                     </div>
                 </div>
             </div>
@@ -47,10 +41,10 @@
             <g:each in="${budgetCodes}" var="bcode">
                 <tr>
                     <td>
-                        <semui:xEditable owner="${bcode}" field="value" />
+                        <ui:xEditable owner="${bcode}" field="value" />
                     </td>
                     <td>
-                        <semui:xEditable owner="${bcode}" field="descr" />
+                        <ui:xEditable owner="${bcode}" field="descr" />
                     </td>
                     <td>
                         <g:link controller="finance" action="index"
@@ -82,7 +76,7 @@
     </table>
 
 
-    <semui:modal id="addBudgetCodeModal" message="budgetCode.create_new.label">
+    <ui:modal id="addBudgetCodeModal" message="budgetCode.create_new.label">
 
         <g:form class="ui form" url="[controller: 'myInstitution', action: 'budgetCodes']" method="POST">
             <input type="hidden" name="cmd" value="newBudgetCode"/>
@@ -98,7 +92,6 @@
             </div>
 
         </g:form>
-    </semui:modal>
+    </ui:modal>
 
-  </body>
-</html>
+<laser:htmlEnd />

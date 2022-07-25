@@ -29,7 +29,7 @@
         <div class="field">
             <div class="field">
                 <label for="${prefixOverride}_status">${message(code:'default.status.label')}</label>
-                <laser:select class="ui dropdown la-not-clearable" id="${prefixOverride}_status" name="${prefixOverride}_status"
+                <ui:select class="ui dropdown la-not-clearable" id="${prefixOverride}_status" name="${prefixOverride}_status"
                               from="${RefdataCategory.getAllRefdataValues( RDConstants.WF_WORKFLOW_STATUS )}"
                               value="${workflow.status?.id}"
                               optionKey="id"
@@ -79,7 +79,7 @@
                                             <!-- -->
                                             <g:each in="${task.condition.getFields()}" var="field" status="fi">
                                                 <br />
-                                                <laser:workflowTaskConditionField condition="${task.condition}" field="${field}" />
+                                                <workflow:taskConditionField condition="${task.condition}" field="${field}" />
                                             </g:each>
                                             <!-- -->
                                         </div>
@@ -127,7 +127,7 @@
                                                     <!-- -->
                                                     <g:each in="${child.condition.getFields()}" var="field" status="fi">
                                                         <br />
-                                                        <laser:workflowTaskConditionField condition="${child.condition}" field="${field}" />
+                                                        <workflow:taskConditionField condition="${child.condition}" field="${field}" />
                                                     </g:each>
                                                     <!-- -->
                                                 </div>
@@ -174,7 +174,7 @@
 
         <div class="field">
             <label for="${prefixOverride}_status">${message(code:'default.status.label')}</label>
-            <laser:select class="ui dropdown la-not-clearable" id="${prefixOverride}_status" name="${prefixOverride}_status"
+            <ui:select class="ui dropdown la-not-clearable" id="${prefixOverride}_status" name="${prefixOverride}_status"
                           from="${RefdataCategory.getAllRefdataValues( RDConstants.WF_TASK_STATUS )}"
                           value="${task.status?.id}"
                           optionKey="id"

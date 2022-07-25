@@ -1,36 +1,29 @@
 <%@ page import="de.laser.*;de.laser.interfaces.CalculatedType;de.laser.storage.RDConstants;de.laser.FormService" %>
-<laser:serviceInjection/>
 
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'subscription.details.addMembers.label', args: memberType)}</title>
-</head>
+<laser:htmlStart text="${message(code: 'subscription.details.addMembers.label', args: memberType)}" serviceInjection="true"/>
 
-<body>
-
-<semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="currentSubscriptions"
+<ui:breadcrumbs>
+    <ui:crumb controller="myInstitution" action="currentSubscriptions"
                  text="${message(code: 'myinst.currentSubscriptions.label')}"/>
-    <semui:crumb controller="subscription" action="show" id="${subscription.id}"
+    <ui:crumb controller="subscription" action="show" id="${subscription.id}"
                  text="${subscription.name}"/>
-    <semui:crumb class="active"
+    <ui:crumb class="active"
                  text="${message(code: 'subscription.details.addMembers.label',args:memberType)}"/>
-</semui:breadcrumbs>
+</ui:breadcrumbs>
 
-<semui:controlButtons>
+<ui:controlButtons>
     <laser:render template="actions"/>
-</semui:controlButtons>
+</ui:controlButtons>
 
-<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>
-<semui:xEditable owner="${subscription}" field="name"/>
-</h1>
+<ui:h1HeaderWithIcon floated="true">
+    <ui:xEditable owner="${subscription}" field="name"/>
+</ui:h1HeaderWithIcon>
+
 <h2 class="ui left floated aligned icon header la-clear-before">${message(code: 'subscription.details.addMembers.label', args:memberType)}</h2>
 
 <g:if test="${consortialView}">
 
-    <semui:filter>
+    <ui:filter>
         <g:form action="addMembers" method="get" params="[id: params.id]" class="ui form">
             <laser:render template="/templates/filter/orgFilter"
                       model="[
@@ -38,7 +31,7 @@
                               tmplConfigFormFilter: true
                       ]"/>
         </g:form>
-    </semui:filter>
+    </ui:filter>
 
     <g:form action="processAddMembers" params="${[id: params.id]}" controller="subscription" method="post" class="ui form">
 
@@ -56,13 +49,6 @@
             <div class="ui two fields">
                 <div class="field">
                     <label for="subStatus"><g:message code="myinst.copySubscription"/></label>
-
-                    %{--ERMS-1155
-                    <div class="ui checkbox">
-                        <input class="hidden" type="checkbox" id="generateSlavedSubs" name="generateSlavedSubs" value="Y" checked="checked"
-                               readonly="readonly">
-                        <label for="generateSlavedSubs">${message(code: 'myinst.separate_subs')}</label>
-                    </div>--}%
 
                     <g:set value="${RefdataCategory.getByDesc(RDConstants.SUBSCRIPTION_STATUS)}" var="rdcSubStatus"/>
 
@@ -114,7 +100,7 @@
                         </laser:script>
                     </g:if>
                     <g:else>
-                        <semui:msg class="info" text="${message(code:'myinst.noSubscriptionOwner')}"/>
+                        <ui:msg class="info" message="myinst.noSubscriptionOwner"/>
                     </g:else>
                 </div>
             </div>
@@ -142,9 +128,9 @@
                     </div>
                 </div>
                 <div class="field">
-                    <semui:datepicker label="subscription.startDate.label" id="valid_from" name="valid_from" value="" />
+                    <ui:datepicker label="subscription.startDate.label" id="valid_from" name="valid_from" value="" />
 
-                    <semui:datepicker label="subscription.endDate.label" id="valid_to" name="valid_to" value="" />
+                    <ui:datepicker label="subscription.endDate.label" id="valid_to" name="valid_to" value="" />
                 </div>
             </div>
             <div class="two fields">
@@ -170,16 +156,10 @@
     <g:if test="${accessService.checkPermAffiliation("ORG_CONSORTIUM","INST_EDITOR")}">
         <hr />
 
-        <div class="ui info message">
-            <div class="header">
-                <g:message code="myinst.noMembers.cons.header"/>
-            </div>
-            <p>
+            <ui:msg class="info" header="${message(code: 'myinst.noMembers.cons.header')}" noClose="true">
                 <g:message code="myinst.noMembers.body" args="${[createLink(controller:'myInstitution', action:'manageMembers'),message(code:'consortium.member.plural')]}"/>
-            </p>
-        </div>
+            </ui:msg>
     </g:if>
 </g:if>
 
-</body>
-</html>
+<laser:htmlEnd />

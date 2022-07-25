@@ -1,22 +1,18 @@
 <%@ page import="de.laser.Org" %>
-<!doctype html>
-<html>
-	<head>
-		<meta name="layout" content="laser">
-		<g:set var="entityName" value="${message(code: 'org.label')}" />
-		<title>${message(code:'laser')} : <g:message code="default.create.label" args="[entityName]" /></title>
-	</head>
-	<body>
-	    <semui:breadcrumbs>
-            <semui:crumb message="menu.public.all_orgs" controller="organisation" action="index" />
-            <semui:crumb text="${message(code:"default.create.label",args:[entityName])}" class="active"/>
-	    </semui:breadcrumbs>
 
-		<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="default.create.label" args="[entityName]" /></h1>
+<g:set var="entityName" value="${message(code: 'org.label')}" />
+<laser:htmlStart text="${message(code:"default.create.label", args:[entityName])}" />
 
-		<semui:messages data="${flash}" />
+	    <ui:breadcrumbs>
+            <ui:crumb message="menu.public.all_orgs" controller="organisation" action="index" />
+            <ui:crumb text="${message(code:"default.create.label",args:[entityName])}" class="active"/>
+	    </ui:breadcrumbs>
 
-		<semui:errors bean="${orgInstance}" />
+		<ui:h1HeaderWithIcon message="default.create.label" args="[entityName]" />
+
+		<ui:messages data="${flash}" />
+
+		<ui:errors bean="${orgInstance}" />
 
 		<div class="ui grid">
 
@@ -45,5 +41,4 @@
 
 			</div><!-- .grid -->
 
-	</body>
-</html>
+<laser:htmlEnd />

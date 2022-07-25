@@ -141,7 +141,7 @@ class PersonRole implements Comparable<PersonRole>{
      * @param resp the responsibility type (one of the {@link RDConstants#PERSON_RESPONSIBILITY} reference value strings) which exists between the person and the organisation
      * @return a {@link PersonRole} matching the given responsibility type and linking the given person with the organisation
      */
-    static PersonRole getByPersonAndOrgAndRespValue(Person prs, Org org, def resp) {
+    static PersonRole getByPersonAndOrgAndRespValue(Person prs, Org org, String resp) {
         List<PersonRole> result = PersonRole.findAllWhere(
             prs: prs,
             org: org,

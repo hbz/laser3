@@ -1,33 +1,25 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.utils.ConfigMapper; de.laser.storage.RDStore; de.laser.storage.RDConstants;de.laser.Package;de.laser.RefdataValue;org.springframework.web.servlet.support.RequestContextUtils; de.laser.Org; de.laser.Package; de.laser.Platform; java.text.SimpleDateFormat;" %>
-<laser:serviceInjection/>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'package.details')}</title>
-</head>
+<%@ page import="de.laser.utils.DateUtils; de.laser.config.ConfigMapper; de.laser.storage.RDStore; de.laser.storage.RDConstants;de.laser.Package;de.laser.RefdataValue;org.springframework.web.servlet.support.RequestContextUtils; de.laser.Org; de.laser.Package; de.laser.Platform; java.text.SimpleDateFormat;" %>
+<laser:htmlStart message="package.details" serviceInjection="true"/>
 
-<body>
-
-<semui:debugInfo>
+<ui:debugInfo>
 %{--<laser:render template="/templates/debug/orgRoles" model="[debug: packageInstance.orgs]" />--}%
 %{--<laser:render template="/templates/debug/prsRoles" model="[debug: packageInstance.prsLinks]" />--}%
-</semui:debugInfo>
+</ui:debugInfo>
 
 <g:set var="locale" value="${RequestContextUtils.getLocale(request)}"/>
 
-<semui:modeSwitch controller="package" action="show" params="${params}"/>
+<ui:modeSwitch controller="package" action="show" params="${params}"/>
 
-<semui:breadcrumbs>
-    <semui:crumb controller="package" action="index" message="package.show.all"/>
-    <semui:crumb class="active" text="${packageInstance.name}"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb controller="package" action="index" message="package.show.all"/>
+    <ui:crumb class="active" text="${packageInstance.name}"/>
+</ui:breadcrumbs>
 
-<semui:controlButtons>
+<ui:controlButtons>
     <laser:render template="actions"/>
-</semui:controlButtons>
+</ui:controlButtons>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>
+<ui:h1HeaderWithIcon>
     <g:if test="${editable}"><span id="packageNameEdit"
                                    class="xEditableValue"
                                    data-type="textarea"
@@ -36,17 +28,17 @@
                                    data-url='<g:createLink controller="ajax"
                                                            action="editableSetValue"/>'>${packageInstance.name}</span></g:if>
     <g:else>${packageInstance.name}</g:else>
-</h1>
+</ui:h1HeaderWithIcon>
 
 <laser:render template="nav"/>
 
-<semui:objectStatus object="${packageInstance}" status="${packageInstance.packageStatus}"/>
+<ui:objectStatus object="${packageInstance}" status="${packageInstance.packageStatus}"/>
 
 <laser:render template="/templates/meta/identifier" model="${[object: packageInstance, editable: false]}"/>
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
-<semui:errors bean="${packageInstance}"/>
+<ui:errors bean="${packageInstance}"/>
 
 <g:if test="${packageInstanceRecord}">
     <div class="ui grid">
@@ -205,7 +197,7 @@
                                             id="${packageInstance.nominalPlatform.id}">${packageInstance.nominalPlatform.name}</g:link>
 
                                     <g:if test="${packageInstance.nominalPlatform.primaryUrl}">
-                                        <semui:linkIcon
+                                        <ui:linkWithIcon
                                                 href="${packageInstance.nominalPlatform.primaryUrl?.startsWith('http') ? packageInstance.nominalPlatform.primaryUrl : 'http://' + packageInstance.nominalPlatform.primaryUrl}"/>
                                     </g:if>
                                 </g:if>
@@ -244,7 +236,7 @@
                                 <dt>${message(code: 'default.url.label')}</dt>
                                 <dd>
                                     ${packageInstanceRecord.descriptionURL}
-                                    <semui:linkIcon
+                                    <ui:linkWithIcon
                                             href="${packageInstanceRecord.descriptionURL.startsWith('http') ? packageInstanceRecord.descriptionURL : 'http://' + packageInstanceRecord.descriptionURL}"/>
                                 </dd>
                             </dl>
@@ -273,7 +265,7 @@
                             <dl>
                                 <dt><g:message code="package.show.usage"/></dt>
                                 <dd>
-                                    <laser:statsLink class="ui basic negative"
+                                    <ui:statsLink class="ui basic negative"
                                                      base="${ConfigMapper.getStatsApiUrl()}"
                                                      module="statistics"
                                                      controller="default"
@@ -285,7 +277,7 @@
                                                      ]"
                                                      title="${message(code: 'default.jumpToNatStat')}">
                                         <i class="chart bar outline icon"></i>
-                                    </laser:statsLink>
+                                    </ui:statsLink>
                                 </dd>
                             </dl>
                         </g:if>
@@ -303,5 +295,4 @@
     </div><!-- .grid -->
 </g:if>
 
-</body>
-</html>
+<laser:htmlEnd />

@@ -1,4 +1,4 @@
-<semui:modal id="replacePropertyDefinitionModal" message="propertyDefinition.exchange.label" isEditModal="isEditModal">
+<ui:modal id="replacePropertyDefinitionModal" message="propertyDefinition.exchange.label" isEditModal="isEditModal">
     <g:form class="ui form" url="[controller: controllerName, action: action]">
         <input type="hidden" name="cmd" value="replacePropertyDefinition"/>
         <input type="hidden" name="xcgPdFrom" value=""/>
@@ -11,14 +11,11 @@
             </div>
         </div>
 
-        <div class="ui info icon message">
-            <i class="info icon"></i>
-            <div class="content">
-                <div class="header"><g:message code="default.notice" /></div>
-                <p><g:message code="menu.institutions.replace_prop.refdata"/></p>
-                <p><g:message code="menu.institutions.replace_prop.setting"/></p>
-            </div>
-        </div>
+        <ui:msg class="info" icon="info" header="${message(code:'default.notice')}" noClose="true">
+            <g:message code="menu.institutions.replace_prop.refdata"/>
+            <br />
+            <g:message code="menu.institutions.replace_prop.setting"/>
+        </ui:msg>
 
         <div class="field">
             <label for="xcgPdTo">&nbsp;</label>
@@ -70,4 +67,4 @@
             })
     </laser:script>
 
-</semui:modal>
+</ui:modal>

@@ -1,26 +1,18 @@
 <%@ page import="de.laser.CopyElementsService;" %>
-<laser:serviceInjection/>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'myinst.copyLicense')}</title>
-</head>
+<laser:htmlStart message="myinst.copyLicense" serviceInjection="true"/>
 
-<body>
-
-<semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="currentLicenses" message="license.current" />
+<ui:breadcrumbs>
+    <ui:crumb controller="myInstitution" action="currentLicenses" message="license.current" />
 
     <g:if test="${sourceObject}">
-        <semui:crumb action="show" controller="license" id="${sourceObject.id}" text="${sourceObject.reference}" />
-        <semui:crumb class="active" message="myinst.copyLicense" />
+        <ui:crumb action="show" controller="license" id="${sourceObject.id}" text="${sourceObject.reference}" />
+        <ui:crumb class="active" message="myinst.copyLicense" />
     </g:if>
-</semui:breadcrumbs>
+</ui:breadcrumbs>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'myinst.copyLicense')}: ${sourceObject.reference}</h1>
+<ui:h1HeaderWithIcon text="${message(code: 'myinst.copyLicense')}: ${sourceObject.reference}" />
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 
 <% Map params = [:]
@@ -86,5 +78,4 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
 </g:else>
 <laser:render template="/templates/copyElements/copyElementsJS"/>
 
-</body>
-</html>
+<laser:htmlEnd />

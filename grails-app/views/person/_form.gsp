@@ -5,7 +5,6 @@
 		<g:message code="person.title.label"/>
 	</label>
 	<g:textField id="title" name="title" value="${personInstance?.title}"/>
-
 </div>
 
 <div class="field ${hasErrors(bean: personInstance, field: 'first_name', 'error')} required">
@@ -13,16 +12,13 @@
 		<g:message code="person.first_name.label" />
 	</label>
 	<g:textField id="first_name" name="first_name" required="" value="${personInstance?.first_name}"/>
-
 </div>
 
 <div class="field ${hasErrors(bean: personInstance, field: 'middle_name', 'error')} ">
 	<label for="middle_name">
 		<g:message code="person.middle_name.label" />
-		
 	</label>
 	<g:textField id="middle_name" name="middle_name" value="${personInstance?.middle_name}"/>
-
 </div>
 
 <div class="field ${hasErrors(bean: personInstance, field: 'last_name', 'error')} required">
@@ -30,7 +26,6 @@
 		<g:message code="person.last_name.label" />
 	</label>
 	<g:textField id="last_name" name="last_name" required="" value="${personInstance?.last_name}"/>
-
 </div>
 
 <div class="field ${hasErrors(bean: personInstance, field: 'gender', 'error')} ">
@@ -38,7 +33,7 @@
         <g:message code="person.gender.label" />
 
     </label>
-    <laser:select class="ui dropdown" id="gender" name="gender"
+    <ui:select class="ui dropdown" id="gender" name="gender"
                   from="${Person.getAllRefdataValues(RDConstants.GENDER)}"
                   optionKey="id"
                   optionValue="value"
@@ -51,7 +46,7 @@
 		${RefdataCategory.getByDesc(RDConstants.PERSON_POSITION).getI10n('desc')}
 
     </label>
-    <laser:select class="ui dropdown" id="roleType" name="roleType"
+    <ui:select class="ui dropdown" id="roleType" name="roleType"
                   from="${Person.getAllRefdataValues(RDConstants.PERSON_POSITION)}"
                   optionKey="id"
                   optionValue="value"
@@ -64,7 +59,7 @@
 		${RefdataCategory.getByDesc(RDConstants.PERSON_CONTACT_TYPE).getI10n('desc')}
 
     </label>
-    <laser:select class="ui dropdown" id="contactType" name="contactType"
+    <ui:select class="ui dropdown" id="contactType" name="contactType"
                   from="${Person.getAllRefdataValues(RDConstants.PERSON_CONTACT_TYPE)}"
                   optionKey="id"
                   optionValue="value"
@@ -73,7 +68,7 @@
 </div>
 
 <div class="field ${hasErrors(bean: personInstance, field: 'contacts', 'error')} ">
-	<label for="contacts">
+	<label>
 		<g:message code="person.contacts.label" />
 	</label>
 	<ul class="one-to-many">
@@ -81,9 +76,9 @@
 		    <li><g:link controller="contact" action="show" id="${c.id}">${c}</g:link></li>
 		</g:each>
 	</ul>
-    <% /* <input class="ui button" type="button" data-semui="modal" href="#contactFormModal"
+    <% /* <input class="ui button" type="button" data-ui="modal" href="#contactFormModal"
 			   value="${message(code: 'default.add.label', args: [message(code: 'contact.label')])}"> */ %>
-    <g:if test="${personInstance.id}">
+    <g:if test="${personInstance?.id}">
         <g:link class="ui button" controller="contact" action="create" params="['prs.id': personInstance?.id]">
             ${message(code: 'default.add.label', args: [message(code: 'contact.label')])}
         </g:link>
@@ -92,17 +87,17 @@
 </div>
 
 <div class="field ${hasErrors(bean: personInstance, field: 'addresses', 'error')} ">
-	<label for="addresses">
+	<label>
 		<g:message code="person.addresses.label" />
 	</label>
 	<ul class="one-to-many">
 		<g:each in="${personInstance?.addresses?}" var="a">
 		    <li><g:link controller="address" action="show" id="${a.id}">${a}</g:link></li>
 		</g:each>
-        <% /* <input class="ui button" type="button" data-semui="modal" href="#addressFormModal"
+        <% /* <input class="ui button" type="button" data-ui="modal" href="#addressFormModal"
 			   value="${message(code: 'default.add.label', args: [message(code: 'address.label')])}"> */ %>
 	</ul>
-    <g:if test="${personInstance.id}">
+    <g:if test="${personInstance?.id}">
         <g:link class="ui button" controller="address" action="create" params="['prs.id': personInstance?.id]">
             ${message(code: 'default.add.label', args: [message(code: 'address.label')])}
         </g:link>
@@ -114,7 +109,7 @@
     <label for="isPublic">
         <g:message code="person.isPublic.label" />
     </label>
-    <laser:select class="ui dropdown" id="isPublic" name="isPublic"
+    <ui:select class="ui dropdown" id="isPublic" name="isPublic"
                   from="${Person.getAllRefdataValues(RDConstants.Y_N)}"
                   optionKey="id"
                   optionValue="value"
@@ -137,7 +132,7 @@
 		<div class="field">
 			<div class="two fields">
 				<div class="field wide ten">
-					<laser:select class="ui dropdown"
+					<ui:select class="ui dropdown"
 								  name="ignore-functionType-selector"
 								  from="${PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION)}"
 								  optionKey="id"
@@ -169,7 +164,7 @@
 		<div class="field">
 			<div class="two fields">
 				<div class="field wide ten">
-					<laser:select class="ui dropdown"
+					<ui:select class="ui dropdown"
 								  name="ignore-responsibilityType-selector"
 								  from="${PersonRole.getAllRefdataValues(RDConstants.PERSON_RESPONSIBILITY)}"
 								  optionKey="id"

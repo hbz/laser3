@@ -1,17 +1,11 @@
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : Datenbereinigung</title>
-</head>
-<body>
+<laser:htmlStart text="Datenbereinigung" />
 
-<semui:breadcrumbs>
-    <semui:crumb message="menu.admin" controller="admin" action="index"/>
-    <semui:crumb text="Datenbereinigung" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb message="menu.admin" controller="admin" action="index"/>
+    <ui:crumb text="Datenbereinigung" class="active"/>
+</ui:breadcrumbs>
 
-    <h1 class="ui header la-clear-before la-noMargin-top">Lizenzen - ${subscriptions.size()}, Verträge - ${licenses.size()}</h1>
+    <ui:h1HeaderWithIcon text="Lizenzen - ${subscriptions.size()}, Verträge - ${licenses.size()}" />
 
     <h2 class="ui header">Lizenzen - ${subscriptions.size()}</h2>
 
@@ -61,5 +55,4 @@
     <br />
     <br />
 
-</body>
-</html>
+<laser:htmlEnd />

@@ -1,22 +1,12 @@
 <%@ page import="java.lang.management.ManagementFactory" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'menu.yoda')} ${message(code:'default.dashboard')}</title>
-</head>
 
-<body>
-    <laser:serviceInjection />
+<laser:htmlStart text="${message(code:'menu.yoda')} ${message(code:'default.dashboard')}" serviceInjection="true" />
 
-    <semui:breadcrumbs>
-        <semui:crumb message="menu.yoda" class="active"/>
-    </semui:breadcrumbs>
+    <ui:breadcrumbs>
+        <ui:crumb message="menu.yoda" class="active"/>
+    </ui:breadcrumbs>
 
-    <h1 class="ui icon header la-clear-before la-noMargin-top">
-        <i class="circular icon dna" style="background-color:#d12e34; border-color:#d12e34; color:white;"></i>
-        ${message(code:'menu.yoda')}
-    </h1>
+    <ui:h1HeaderWithIcon message="menu.yoda" type="yoda" />
 
     <h2 class="ui header">&nbsp;</h2>
 
@@ -49,6 +39,19 @@
                 <div class="statistic">
                     <div class="value">${Thread.getAllStackTraces().size()}</div>
                     <div class="label">Threads</div>
+                </div>
+            </div>
+
+            <h3 class="ui header">${docStore.folderPath}</h3>
+
+            <div class="ui horizontal statistics">
+                <div class="statistic">
+                    <div class="value">${docStore.filesCount}</div>
+                    <div class="label">Files</div>
+                </div>
+                <div class="statistic">
+                    <div class="value">${docStore.folderSize}</div>
+                    <div class="label">MB &middot; used</div>
                 </div>
             </div>
         </div>
@@ -116,9 +119,6 @@
                     <div class="item">
                         <g:link controller="admin" action="databaseCollations" target="_blank">${message(code: "menu.admin.databaseCollations")}</g:link> <span class="ui mini label">Admin</span>
                     </div>
-                    <%--<div class="item">
-                        <g:link controller="admin" action="databaseStatistics" target="_blank">${message(code: "menu.admin.databaseStatistics")}</g:link> <span class="ui mini label">Admin</span>
-                    </div>--%>
                     <div class="item">
                         <g:link controller="admin" action="dataConsistency" target="_blank">${message(code: "menu.admin.dataConsistency")}</g:link> <span class="ui mini label">Admin</span>
                     </div>
@@ -148,7 +148,7 @@
 </div>
 
 
-    <semui:messages data="${flash}" />
+    <ui:messages data="${flash}" />
 
     <%--
     <p>TODO: New Errors</p>
@@ -166,5 +166,4 @@
     <p>TODO: Cache Memory Information</p>
     --%>
 
-</body>
-</html>
+<laser:htmlEnd />

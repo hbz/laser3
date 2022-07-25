@@ -21,7 +21,7 @@ class LaserStatsCursor {
     }
 
     static mapping = {
-        id                  column: 'lsc_id', index: 'lsc_id_idx'
+        id                  column: 'lsc_id'
         version             column: 'lsc_version'
         platform            column: 'lsc_platform_fk'
         customer            column: 'lsc_customer_fk'

@@ -1,35 +1,25 @@
 <%@ page import="de.laser.survey.SurveyConfig;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.RefdataValue; de.laser.Org" %>
-<laser:serviceInjection/>
+<laser:htmlStart text="${surveyInfo.type.getI10n('value')}" serviceInjection="true"/>
 
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${surveyInfo.type.getI10n('value')}</title>
-</head>
+<ui:breadcrumbs>
+    <ui:crumb controller="myInstitution" action="currentSurveys" message="currentSurveys.label"/>
+    <ui:crumb text="${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}" class="active"/>
+</ui:breadcrumbs>
 
-<body>
-
-<semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="currentSurveys" message="currentSurveys.label"/>
-    <semui:crumb text="${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}" class="active"/>
-</semui:breadcrumbs>
-
-<semui:controlButtons>
-    <semui:exportDropdown>
-        <semui:exportDropdownItem>
+<ui:controlButtons>
+    <ui:exportDropdown>
+        <ui:exportDropdownItem>
             <g:link class="item" controller="myInstitution" action="surveyInfos"
                     params="${params + [exportXLSX: true, surveyConfigID: surveyConfig.id]}">${message(code: 'survey.exportSurvey')}</g:link>
-        </semui:exportDropdownItem>
-    </semui:exportDropdown>
-</semui:controlButtons>
+        </ui:exportDropdownItem>
+    </ui:exportDropdown>
+</ui:controlButtons>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerTitleIcon type="Survey"/>
-${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}</h1>
-<semui:surveyStatus object="${surveyInfo}"/>
+<ui:h1HeaderWithIcon text="${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}" type="Survey">
+    <survey:status object="${surveyInfo}"/>
+</ui:h1HeaderWithIcon>
 
-
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 <br />
 <g:if test="${surveyConfig.isResultsSetFinishByOrg(institution)}">
@@ -52,7 +42,7 @@ ${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}</h1>
     <g:set var="choosenOrg" value="${Org.findById(ownerId)}"/>
 
 
-    <semui:form>
+    <ui:form>
         <h3 class="ui header"><g:message code="surveyInfo.owner.label"/>:</h3>
 
         <g:if test="${choosenOrg}">
@@ -94,7 +84,7 @@ ${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}</h1>
                 </g:else>
             </div>
         </div>
-    </semui:form>
+    </ui:form>
 </g:if>
 
 <br />
@@ -152,5 +142,4 @@ ${surveyInfo.type.getI10n('value')} - ${surveyInfo.name}</h1>
 </g:if>
 <br />
 <br />
-</body>
-</html>
+<laser:htmlEnd />

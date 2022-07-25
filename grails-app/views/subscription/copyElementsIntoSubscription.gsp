@@ -1,49 +1,47 @@
 <%@ page import="de.laser.survey.SurveyConfig; de.laser.Person; de.laser.RefdataValue; de.laser.SubscriptionController; de.laser.CopyElementsService;" %>
-<laser:serviceInjection/>
 
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
     <g:if test="${isRenewSub}">
-        <title>${message(code: 'laser')} : ${message(code: 'subscription.details.renewals.renew_sub.label')}</title>
+        <g:set var="pageTitle" value="${message(code: 'subscription.details.renewals.renew_sub.label')}" />
     </g:if>
     <g:else>
-        <title>${message(code: 'laser')} : ${message(code: 'copyElementsIntoObject.label', args: [message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}</title>
+        <g:set var="pageTitle" value="${message(code: 'copyElementsIntoObject.label', args: [message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}" />
     </g:else>
-</head>
-<body>
+
+<laser:htmlStart text="${pageTitle}" serviceInjection="true" />
+
     <g:if test="${fromSurvey}">
-        <semui:breadcrumbs>
-            <semui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code:'menu.my.surveys')}" />
+        <ui:breadcrumbs>
+            <ui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code:'menu.my.surveys')}" />
 
             <g:if test="${sourceObject}">
                 <g:set var="surveyConfig" value="${SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(sourceObject, true)}"/>
-                <semui:crumb controller="survey" action="renewalEvaluation" id="${surveyConfig.surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]" text="${surveyConfig.surveyInfo.name}" />
+                <ui:crumb controller="survey" action="renewalEvaluation" id="${surveyConfig.surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]" text="${surveyConfig.surveyInfo.name}" />
             </g:if>
 
-            <semui:crumb class="active" message="subscription.details.renewals.renew_sub.label" />
+            <ui:crumb class="active" message="subscription.details.renewals.renew_sub.label" />
 
-        </semui:breadcrumbs>
+        </ui:breadcrumbs>
     </g:if>
     <g:else>
-        <semui:breadcrumbs>
-            <semui:crumb controller="myInstitution" action="currentSubscriptions" text="${message(code:'myinst.currentSubscriptions.label')}" />
+        <ui:breadcrumbs>
+            <ui:crumb controller="myInstitution" action="currentSubscriptions" text="${message(code:'myinst.currentSubscriptions.label')}" />
 
             <g:if test="${sourceObject}">
-                <semui:crumb class="active" controller="subscription" action="show" id="${sourceObject.id}" text="${sourceObject.name}" />
+                <ui:crumb class="active" controller="subscription" action="show" id="${sourceObject.id}" text="${sourceObject.name}" />
             </g:if>
-        </semui:breadcrumbs>
+        </ui:breadcrumbs>
     </g:else>
 
+    <ui:h1HeaderWithIcon>
     <g:if test="${isRenewSub}">
-        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'subscription.details.renewals.renew_sub.label')}: <g:if test="${sourceObject}">${sourceObject.name}</g:if></h1>
+        ${message(code: 'subscription.details.renewals.renew_sub.label')}: <g:if test="${sourceObject}">${sourceObject.name}</g:if>
     </g:if>
     <g:else>
-        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'copyElementsIntoObject.label', args: [message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])} </h1>
+        ${message(code: 'copyElementsIntoObject.label', args: [message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}
     </g:else>
+    </ui:h1HeaderWithIcon>
 
-    <semui:messages data="${flash}"/>
+    <ui:messages data="${flash}"/>
 
     <% Map params = [:]
         if (sourceObjectId)   params << [sourceObjectId: genericOIDService.getOID(sourceObject)]
@@ -142,8 +140,8 @@
         </div>
     </g:if>
     <g:else>
-        <semui:subNav showInTabular="true">
-            <semui:complexSubNavItem class="${workFlowPart == CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS ? 'active' : ''}" disabled="${transferIntoMember}" controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS]}" >
+        <ui:subNav showInTabular="true">
+            <ui:complexSubNavItem class="${workFlowPart == CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS ? 'active' : ''}" disabled="${transferIntoMember}" controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS]}" >
                 <div class="content" >
                     <div class="title">${message(code: 'copyElementsIntoObject.general_data.label')}</div>
                     <div class="description">
@@ -166,9 +164,9 @@
 
                     </div>
                 </div>
-            </semui:complexSubNavItem>
+            </ui:complexSubNavItem>
 
-            <semui:complexSubNavItem class="${workFlowPart == CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS ? 'active' : ''}" disabled="${transferIntoMember}" controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS]}" >
+            <ui:complexSubNavItem class="${workFlowPart == CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS ? 'active' : ''}" disabled="${transferIntoMember}" controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS]}" >
                 <div class="content" >
                     <div class="title">${message(code: 'copyElementsIntoObject.inventory.label')}</div>
                     <div class="description">
@@ -178,9 +176,9 @@
                         <i class="icon object group"></i>${message(code: 'subscription.details.ieGroups')}
                     </div>
                 </div>
-            </semui:complexSubNavItem>
+            </ui:complexSubNavItem>
 
-            <semui:complexSubNavItem class="${workFlowPart == CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS ? 'active' : ''}" controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS]}" >
+            <ui:complexSubNavItem class="${workFlowPart == CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS ? 'active' : ''}" controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS]}" >
                 <div class="content">
                     <div class="title">${message(code: 'copyElementsIntoObject.attachements.label')}</div>
                     <div class="description">
@@ -189,10 +187,10 @@
                         <i class="checked calendar icon"></i>${message(code: 'menu.institutions.tasks')}
                     </div>
                 </div>
-            </semui:complexSubNavItem>
+            </ui:complexSubNavItem>
 
             <g:if test="${isSubscriberVisible && accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")}">
-                <semui:complexSubNavItem class="${workFlowPart == CopyElementsService.WORKFLOW_SUBSCRIBER ? 'active' : ''}" controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: CopyElementsService.WORKFLOW_SUBSCRIBER]}" >
+                <ui:complexSubNavItem class="${workFlowPart == CopyElementsService.WORKFLOW_SUBSCRIBER ? 'active' : ''}" controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: CopyElementsService.WORKFLOW_SUBSCRIBER]}" >
                     <div class="content">
                         <div class="title">
                             ${message(code: 'consortium.subscriber')}
@@ -201,10 +199,10 @@
                             <i class="university icon"></i>${message(code: 'consortium.subscriber')}
                         </div>
                     </div>
-                </semui:complexSubNavItem>
+                </ui:complexSubNavItem>
             </g:if>
 
-            <semui:complexSubNavItem class="${workFlowPart == CopyElementsService.WORKFLOW_PROPERTIES ? 'active' : ''}" controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: CopyElementsService.WORKFLOW_PROPERTIES]}" >
+            <ui:complexSubNavItem class="${workFlowPart == CopyElementsService.WORKFLOW_PROPERTIES ? 'active' : ''}" controller="subscription" action="copyElementsIntoSubscription" params="${params << [workFlowPart: CopyElementsService.WORKFLOW_PROPERTIES]}" >
                 <div class="content">
                     <div class="title">${message(code: 'properties')}</div>
                     <div class="description">
@@ -212,8 +210,8 @@
                     </div>
 
                 </div>
-            </semui:complexSubNavItem>
-        </semui:subNav>
+            </ui:complexSubNavItem>
+        </ui:subNav>
     </g:else>
     <br />
     <div class="la-legend">
@@ -238,5 +236,5 @@
         <laser:render template="/templates/copyElements/copyElements" />
     </g:else>
     <laser:render template="/templates/copyElements/copyElementsJS"/>
-</body>
-</html>
+
+<laser:htmlEnd />

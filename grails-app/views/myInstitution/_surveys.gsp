@@ -91,7 +91,7 @@
 
     </g:each>
 
-    <semui:paginate action="dashboard" controller="myInstitution" offset="${surveysOffset}" max="${max ?: contextService.getUser().getDefaultPageSize()}" params="${[view:'Surveys']}" total="${countSurvey}"/>
+    <ui:paginate action="dashboard" controller="myInstitution" offset="${surveysOffset}" max="${max ?: contextService.getUser().getPageSizeOrDefault()}" params="${[view:'Surveys']}" total="${countSurvey}"/>
 
 </div>
 <laser:script file="${this.getGroovyPageFileName()}">

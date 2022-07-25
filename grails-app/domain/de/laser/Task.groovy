@@ -117,7 +117,7 @@ class Task {
      * This getter is used by the mail template and retrieves link arguments for the object display to which this task is associated
      * @return a {@link Map} of link arguments for the object with which this task is associated
      */
-    def getDisplayArgs() {
+    Map getDisplayArgs() {
         Map<String, Object> displayArgs = [action: 'show', absolute: true]
         if (license) {
             displayArgs.controller = 'license'

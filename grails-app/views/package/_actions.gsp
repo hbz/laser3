@@ -4,35 +4,35 @@
 <g:set var="user" value="${contextService.getUser()}"/>
 <g:set var="org" value="${contextService.getOrg()}"/>
 
-<semui:actionsDropdown>
+<ui:actionsDropdown>
 %{--    <g:if test="${(editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM','INST_EDITOR')) && ! ['list'].contains(actionName)}">
-        <semui:actionsDropdownItem message="task.create.new" data-semui="modal" href="#modalCreateTask" />
-        <semui:actionsDropdownItem message="template.documents.add" data-semui="modal" href="#modalCreateDocument" />
+        <ui:actionsDropdownItem message="task.create.new" data-ui="modal" href="#modalCreateTask" />
+        <ui:actionsDropdownItem message="template.documents.add" data-ui="modal" href="#modalCreateDocument" />
     </g:if>
     <g:if test="${accessService.checkMinUserOrgRole(user,org,'INST_EDITOR') && ! ['list'].contains(actionName)}">
-        <semui:actionsDropdownItem message="template.addNote" data-semui="modal" href="#modalCreateNote" />
+        <ui:actionsDropdownItem message="template.addNote" data-ui="modal" href="#modalCreateNote" />
     </g:if>
     <g:if test="${(editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM','INST_EDITOR')) && ! ['list'].contains(actionName)}">
         <div class="divider"></div>
     </g:if>--}%
 
     <g:if test="${(editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM', 'INST_EDITOR')) && !['list'].contains(actionName) && packageInstance}">
-        <semui:actionsDropdownItem message="package.show.linkToSub" data-semui="modal" href="#linkToSubModal"/>
+        <ui:actionsDropdownItem message="package.show.linkToSub" data-ui="modal" href="#linkToSubModal"/>
         <div class="divider"></div>
     </g:if>
 
-    <semui:actionsDropdownItemDisabled controller="package" action="compare" message="menu.public.comp_pkg"/>
+    <ui:actionsDropdownItemDisabled controller="package" action="compare" message="menu.public.comp_pkg"/>
 
-</semui:actionsDropdown>
+</ui:actionsDropdown>
 
 <g:if test="${(editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM', 'INST_EDITOR')) && !['list'].contains(actionName) && packageInstance}">
-    <semui:modal id="linkToSubModal" contentClass="scrolling" message="package.show.linkToSub" msgSave="${message(code: 'default.button.link.label')}">
+    <ui:modal id="linkToSubModal" contentClass="scrolling" message="package.show.linkToSub" msgSave="${message(code: 'default.button.link.label')}">
 
         <g:form class="ui form" url="[controller: 'package', action: 'processLinkToSub', id: params.id]">
 
             <div class="field">
                 <label>${message(code: 'filter.status')}</label>
-                <laser:select class="ui dropdown" name="status" id="status"
+                <ui:select class="ui dropdown" name="status" id="status"
                               from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}"
                               optionKey="id"
                               optionValue="value"
@@ -42,9 +42,9 @@
                               onchange="JSPC.app.adjustDropdown()"/>
             </div>
             <br id="element-vor-target-dropdown"/>
-            <br>
-            <br>
-            <br>
+            <br/>
+            <br/>
+            <br/>
 
             <div class="grouped required fields">
                 <label for="With">${message(code: 'subscription.details.linkPackage.label')}</label>
@@ -52,20 +52,20 @@
                 <div class="field">
                     <div class="ui radio checkbox">
                         <input type="radio" name="addType" id="With" value="With" tabindex="0" class="hidden">
-                        <label>${message(code: 'subscription.details.link.with_ents')}</label>
+                        <label for="With">${message(code: 'subscription.details.link.with_ents')}</label>
                     </div>
                 </div>
 
                 <div class="field">
                     <div class="ui radio checkbox">
                         <input type="radio" name="addType" id="Without" value="Without" tabindex="0" class="hidden">
-                        <label>${message(code: 'subscription.details.link.no_ents')}</label>
+                        <label for="Without">${message(code: 'subscription.details.link.no_ents')}</label>
                     </div>
                 </div>
             </div>
 
-            <br>
-            <br>
+            <br/>
+            <br/>
 
             <div class="field">
                 <h3 class="ui dividing header">
@@ -103,7 +103,7 @@
                             <td>
                                 <g:if test="${!(settingKey in excludes)}">
                                     <g:if test="${true}">
-                                        <laser:select class="ui dropdown"
+                                        <ui:select class="ui dropdown"
                                                       name="${settingKey}!§!setting"
                                                       from="${RefdataCategory.getAllRefdataValues(RDConstants.PENDING_CHANGE_CONFIG_SETTING)}"
                                                       optionKey="id" optionValue="value"
@@ -199,7 +199,7 @@
             JSPC.app.adjustDropdown()
         </laser:script>
 
-    </semui:modal>
+    </ui:modal>
 </g:if>
 
 %{--

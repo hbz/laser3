@@ -1,80 +1,73 @@
 <%@ page import="de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Platform; de.laser.titles.BookInstance; de.laser.remote.ApiSource; de.laser.Org;" %>
-<laser:serviceInjection/>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'subscription.details.renewEntitlements.label')}</title>
-</head>
+<laser:htmlStart message="subscription.details.renewEntitlements.label" serviceInjection="true"/>
 
-<body>
-<semui:breadcrumbs>
+<ui:breadcrumbs>
     <g:if test="${contextOrg.id == surveyConfig.surveyInfo.owner.id}">
-        <semui:crumb controller="survey" action="currentSurveysConsortia" message="currentSurveys.label"/>
-        <semui:crumb controller="survey" action="show"
+        <ui:crumb controller="survey" action="currentSurveysConsortia" message="currentSurveys.label"/>
+        <ui:crumb controller="survey" action="show"
                      params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]" message="issueEntitlementsSurvey.label"/>
     </g:if>
     <g:else>
-        <semui:crumb controller="myInstitution" action="currentSurveys" message="currentSurveys.label"/>
-        <semui:crumb controller="myInstitution" action="surveyInfos"
+        <ui:crumb controller="myInstitution" action="currentSurveys" message="currentSurveys.label"/>
+        <ui:crumb controller="myInstitution" action="surveyInfos"
                      params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]" message="issueEntitlementsSurvey.label"/>
     </g:else>
-    <semui:crumb controller="subscription" action="index" id="${newSub.id}" class="active" text="${newSub.name}"/>
-</semui:breadcrumbs>
+    <ui:crumb controller="subscription" action="index" id="${newSub.id}" class="active" text="${newSub.name}"/>
+</ui:breadcrumbs>
 
-<semui:controlButtons>
-    <semui:exportDropdown>
+<ui:controlButtons>
+    <ui:exportDropdown>
 
         <div class="header">KBART Exports</div>
-        <semui:exportDropdownItem>
+        <ui:exportDropdownItem>
             <g:link class="item" action="renewEntitlementsWithSurvey"
                     id="${newSub.id}"
                     params="${[surveyConfigID: surveyConfig.id,
                                exportKBart   : true,
                                tab           : 'allIEs']}">${message(code: 'renewEntitlementsWithSurvey.selectableTitles')}</g:link>
-        </semui:exportDropdownItem>
+        </ui:exportDropdownItem>
 
         <g:if test="${countCurrentIEs > 0}">
 
-            <semui:exportDropdownItem>
+            <ui:exportDropdownItem>
                 <g:link class="item" action="renewEntitlementsWithSurvey"
                         id="${newSub.id}"
                         params="${[surveyConfigID: surveyConfig.id,
                                    exportKBart   : true,
                                    tab           : 'currentIEs']}">${message(code: 'renewEntitlementsWithSurvey.currentTitles')}</g:link>
-            </semui:exportDropdownItem>
+            </ui:exportDropdownItem>
         </g:if>
 
-        <semui:exportDropdownItem>
+        <ui:exportDropdownItem>
             <g:link class="item" action="renewEntitlementsWithSurvey"
                     id="${newSub.id}"
                     params="${[surveyConfigID: surveyConfig.id,
                                exportKBart   : true,
                                tab           : 'selectedIEs']}">${message(code: 'renewEntitlementsWithSurvey.currentEntitlements')}</g:link>
-        </semui:exportDropdownItem>
+        </ui:exportDropdownItem>
 
-        <semui:exportDropdownItem>
+        <ui:exportDropdownItem>
             <g:link class="item" action="renewEntitlementsWithSurvey"
                     id="${newSub.id}"
                     params="${[surveyConfigID: surveyConfig.id,
                                exportKBart   : true,
                                tab           : 'toBeSelectedIEs']}">${message(code: 'renewEntitlementsWithSurvey.toBeSelectedIEs')}</g:link>
-        </semui:exportDropdownItem>
+        </ui:exportDropdownItem>
 
         <div class="divider"></div>
 
         <div class="header">${message(code: 'default.button.exports.xls')}s</div>
 
-        <semui:exportDropdownItem>
+        <ui:exportDropdownItem>
             <g:link class="item" action="renewEntitlementsWithSurvey"
                     id="${newSub.id}"
                     params="${[surveyConfigID: surveyConfig.id,
                                exportXLS     : true,
                                tab           : 'allIEs']}">${message(code: 'renewEntitlementsWithSurvey.selectableTitles')}</g:link>
-        </semui:exportDropdownItem>
+        </ui:exportDropdownItem>
 
         <g:if test="${countCurrentIEs > 0}">
-            <semui:exportDropdownItem>
+            <ui:exportDropdownItem>
                 <g:link class="item" action="renewEntitlementsWithSurvey"
                         id="${newSub.id}"
                         params="${[surveyConfigID : surveyConfig.id,
@@ -82,28 +75,28 @@
                                    tab           : 'currentIEs']}">
                     ${message(code: 'renewEntitlementsWithSurvey.currentTitles')}
                 </g:link>
-            </semui:exportDropdownItem>
+            </ui:exportDropdownItem>
         </g:if>
 
-        <semui:exportDropdownItem>
+        <ui:exportDropdownItem>
             <g:link class="item" action="renewEntitlementsWithSurvey"
                     id="${newSub.id}"
                     params="${[surveyConfigID: surveyConfig.id,
                                exportXLS     : true,
                                tab           : 'selectedIEs']}">${message(code: 'renewEntitlementsWithSurvey.currentEntitlements')}</g:link>
-        </semui:exportDropdownItem>
+        </ui:exportDropdownItem>
 
-        <semui:exportDropdownItem>
+        <ui:exportDropdownItem>
             <g:link class="item" action="renewEntitlementsWithSurvey"
                     id="${newSub.id}"
                     params="${[surveyConfigID: surveyConfig.id,
                                exportXLS     : true,
                                tab           : 'toBeSelectedIEs']}">${message(code: 'renewEntitlementsWithSurvey.toBeSelectedIEs')}</g:link>
-        </semui:exportDropdownItem>
+        </ui:exportDropdownItem>
 
 
         <g:if test="${showStatisticByParticipant}">
-            <semui:exportDropdownItem>
+            <ui:exportDropdownItem>
                 <g:link class="item" action="renewEntitlementsWithSurvey"
                         id="${newSub.id}"
                         params="${[surveyConfigID : surveyConfig.id,
@@ -111,11 +104,11 @@
                                    tab            : 'allIEs']}">
                     ${message(code: 'renewEntitlementsWithSurvey.selectableTitles')} + ${message(code: 'default.stats.label')}
                 </g:link>
-            </semui:exportDropdownItem>
+            </ui:exportDropdownItem>
         </g:if>
 
         <g:if test="${showStatisticByParticipant}">
-            <semui:exportDropdownItem>
+            <ui:exportDropdownItem>
                 <g:link class="item" action="renewEntitlementsWithSurvey"
                         id="${newSub.id}"
                         params="${[surveyConfigID: surveyConfig.id,
@@ -124,8 +117,8 @@
                                    tab           : 'allIEsStats',
                                    loadFor       : 'allIEsStats',
                                    tabStat: params.tabStat]}">${message(code:'default.usage.exports.all')} "${message(code: 'default.stats.label')}"</g:link>
-            </semui:exportDropdownItem>
-            <semui:exportDropdownItem>
+            </ui:exportDropdownItem>
+            <ui:exportDropdownItem>
                 <g:link class="item" action="renewEntitlementsWithSurvey"
                         id="${newSub.id}"
                         params="${[surveyConfigID: surveyConfig.id,
@@ -134,19 +127,16 @@
                                    tab           : 'holdingIEsStats',
                                    loadFor       : 'holdingIEsStats',
                                    tabStat: params.tabStat]}">${message(code:'default.usage.exports.all')} "${message(code: 'default.stats.label')}" ${message(code: 'default.stats.holding')}</g:link>
-            </semui:exportDropdownItem>
+            </ui:exportDropdownItem>
         </g:if>
-    </semui:exportDropdown>
-</semui:controlButtons>
+    </ui:exportDropdown>
+</ui:controlButtons>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>
-${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.name}
-<semui:surveyStatus object="${surveyConfig.surveyInfo}"/>
-</h1>
+<ui:h1HeaderWithIcon text="${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.name}">
+    <survey:status object="${surveyConfig.surveyInfo}"/>
+</ui:h1HeaderWithIcon>
 
-<g:if test="${flash}">
-    <semui:messages data="${flash}"/>
-</g:if>
+    <ui:messages data="${flash}"/>
 
 <div class="sixteen wide column">
     <div class="two fields">
@@ -169,26 +159,17 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
         </div>
     </div>
 </div>
-</br>
+<br />
 
 <g:if test="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, subscriber).finishDate != null}">
-    <div class="ui icon positive message">
-        <i class="info icon"></i>
-
-        <div class="content">
-            <div class="header"></div>
-
-            <p>
-                <%-- <g:message code="surveyInfo.finishOrSurveyCompleted"/> --%>
-                <g:message code="renewEntitlementsWithSurvey.finish.info"/>.
-            </p>
-        </div>
-    </div>
+    <ui:msg class="positive" icon="info" noClose="true">
+        <g:message code="renewEntitlementsWithSurvey.finish.info"/>.
+    </ui:msg>
 </g:if>
 
 <g:if test="${participant}">
 
-    <semui:form>
+    <ui:form>
         <g:set var="choosenOrg" value="${Org.findById(participant.id)}"/>
         <g:set var="choosenOrgCPAs" value="${choosenOrg?.getGeneralContactPersons(false)}"/>
 
@@ -215,26 +196,20 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
             </tbody>
         </table>
 
-    </semui:form>
+    </ui:form>
 </g:if>
 
 <g:if test="${selectProcess}">
-    <div class="ui positive message">
-        <i class="close icon"></i>
-
-        <div class="header"><g:message code="renewEntitlementsWithSurvey.issueEntitlementSelect.label"/></div>
-
-        <p>
+    <ui:msg class="positive" header="${message(code:'renewEntitlementsWithSurvey.issueEntitlementSelect.label')}">
             <g:message code="renewEntitlementsWithSurvey.issueEntitlementSelect.selectProcess"
                        args="[selectProcess.processCount, countAllIEs, selectProcess.countSelectIEs]"/>
-        </p>
-    </div>
+    </ui:msg>
 </g:if>
 
 
 <g:if test="${(params.tab == 'allIEs' || params.tab == 'allIEsStats') && editable}">
 
-    <semui:form>
+    <ui:form>
         <g:form class="ui form" controller="subscription" action="renewEntitlementsWithSurvey"
                 params="${[id: newSub.id, surveyConfigID: surveyConfig.id, tab: params.tab]}"
                 method="post" enctype="multipart/form-data">
@@ -287,7 +262,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
                 $('input:text', $(e.target).parent()).val(name);
             });
         </laser:script>
-    </semui:form>
+    </ui:form>
 </g:if>
 
 
@@ -309,48 +284,48 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
     </div>
 </g:if>
 
-</br>
-<semui:tabs actionName="${actionName}">
-    <semui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
+<br />
+<ui:tabs actionName="${actionName}">
+    <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
                     params="[id: newSub.id, surveyConfigID: surveyConfig.id, tab: 'allIEs']"
                     text="${message(code: "renewEntitlementsWithSurvey.selectableTitles")}" tab="allIEs"
                     counts="${countAllIEs}"/>
-    <semui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
+    <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
                     params="[id: newSub.id, surveyConfigID: surveyConfig.id, tab: 'toBeSelectedIEs']"
                     text="${message(code: "renewEntitlementsWithSurvey.toBeSelectedIEs")}" tab="toBeSelectedIEs"
                     counts="${toBeSelectedIEs}"/>
-    <semui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
+    <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
                     params="[id: newSub.id, surveyConfigID: surveyConfig.id, tab: 'selectedIEs']"
                     text="${message(code: "renewEntitlementsWithSurvey.currentTitlesSelect")}" tab="selectedIEs"
                     counts="${countSelectedIEs}"/>
-    <semui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
+    <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
                     params="[id: newSub.id, surveyConfigID: surveyConfig.id, tab: 'currentIEs']"
                     text="${message(code: "renewEntitlementsWithSurvey.currentTitles")}" tab="currentIEs"
                     counts="${countCurrentIEs}"/>
 
     <g:if test="${showStatisticByParticipant}">
-        <semui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
+        <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
                         params="[id: newSub.id, surveyConfigID: surveyConfig.id, tab: 'allIEsStats']"
                         text="${message(code: "renewEntitlementsWithSurvey.allIEsStats")}" tab="allIEsStats"/>
-        <semui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
+        <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
                         params="[id: newSub.id, surveyConfigID: surveyConfig.id, tab: 'holdingIEsStats']"
                         text="${message(code: "renewEntitlementsWithSurvey.holdingIEsStats")}" tab="holdingIEsStats"/>
     </g:if>
 
-</semui:tabs>
+</ui:tabs>
 
 
 <g:if test="${params.tab in ['allIEsStats', 'holdingIEsStats']}">
-    <semui:tabs>
-        <semui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
+    <ui:tabs>
+        <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
                         params="${params + [tabStat: 'total']}"
                         text="${message(code: 'default.usage.allUsageGrid.header')}" tab="total" subTab="tabStat"/>
         <g:each in="${monthsInRing}" var="month">
-            <semui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
+            <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
                             params="${params + [tabStat: DateUtils.getSDF_yyyyMM().format(month)]}" text="${DateUtils.getSDF_yyyyMM().format(month)}"
                             tab="${DateUtils.getSDF_yyyyMM().format(month)}" subTab="tabStat"/>
         </g:each>
-    </semui:tabs>
+    </ui:tabs>
 </g:if>
 
 <g:form name="renewEntitlements" id="${newSub.id}" action="processRenewEntitlementsWithSurvey" class="ui form">
@@ -414,20 +389,19 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
 </g:form>
 
 <g:if test="${usages}">
-    <semui:paginate action="renewEntitlementsWithSurvey" controller="subscription" params="${params}"
+    <ui:paginate action="renewEntitlementsWithSurvey" controller="subscription" params="${params}"
                     next="${message(code: 'default.paginate.next')}"
                     prev="${message(code: 'default.paginate.prev')}" max="${max}"
                     total="${total}"/>
 </g:if>
 
 <g:if test="${sourceIEs}">
-    <semui:paginate action="renewEntitlementsWithSurvey" controller="subscription" params="${params}"
+    <ui:paginate action="renewEntitlementsWithSurvey" controller="subscription" params="${params}"
                     next="${message(code: 'default.paginate.next')}"
                     prev="${message(code: 'default.paginate.prev')}" max="${max}"
                     total="${num_ies_rows}"/>
 </g:if>
 
-</body>
 <laser:script file="${this.getGroovyPageFileName()}">
 
 
@@ -485,4 +459,4 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
     });
 
 </laser:script>
-</html>
+<laser:htmlEnd />

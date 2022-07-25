@@ -1,32 +1,24 @@
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'task.plural')}</title>
-</head>
-
-<body>
+<laser:htmlStart message="task.plural" />
 
     <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
-    <semui:controlButtons>
+    <ui:controlButtons>
         <laser:render template="actions" />
-    </semui:controlButtons>
+    </ui:controlButtons>
 
-    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
-        <semui:xEditable owner="${license}" field="reference" id="reference"/>
-    </h1>
+    <ui:h1HeaderWithIcon>
+        <ui:xEditable owner="${license}" field="reference" id="reference"/>
+    </ui:h1HeaderWithIcon>
 
-    <semui:anualRings object="${license}" controller="license" action="show" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
+    <ui:anualRings object="${license}" controller="license" action="show" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
 
     <laser:render template="nav" />
 
-    <semui:messages data="${flash}" />
+    <ui:messages data="${flash}" />
 
-    <laser:render template="/templates/tasks/table" model="${[taskInstanceList:taskInstanceList,taskInstanceCount:taskInstanceCount]}"/>
-    <laser:render template="/templates/tasks/table2" model="${[taskInstanceList:myTaskInstanceList,taskInstanceCount:myTaskInstanceCount]}"/>
+    <laser:render template="/templates/tasks/tables" model="${[
+            taskInstanceList: taskInstanceList,     taskInstanceCount: taskInstanceCount,
+            myTaskInstanceList: myTaskInstanceList, myTaskInstanceCount: myTaskInstanceCount
+    ]}"/>
 
-    <laser:render template="/templates/tasks/js_taskedit"/>
-
-</body>
-</html>
+<laser:htmlEnd />

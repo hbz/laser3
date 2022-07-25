@@ -1,6 +1,6 @@
 <%@ page import="de.laser.utils.LocaleUtils; de.laser.RefdataCategory; de.laser.Address; de.laser.FormService; de.laser.storage.RDStore; de.laser.RefdataValue;de.laser.storage.RDConstants; de.laser.I10nTranslation; org.springframework.context.i18n.LocaleContextHolder;" %>
 <laser:serviceInjection />
-<semui:modal id="addressFormModal" text="${modalText ?: message(code: 'address.add.label')}" msgClose="${message(code: 'default.button.cancel')}" msgSave="${modalMsgSave ?: message(code: 'default.button.create.label')}">
+<ui:modal id="addressFormModal" text="${modalText ?: message(code: 'address.add.label')}" msgClose="${message(code: 'default.button.cancel')}" msgSave="${modalMsgSave ?: message(code: 'default.button.create.label')}">
     <g:form id="create_address" class="ui form" url="${url}" method="POST">
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
         <g:if test="${addressInstance}">
@@ -20,8 +20,8 @@
             <label for="type">
                 ${RefdataCategory.getByDesc(RDConstants.ADDRESS_TYPE).getI10n('desc')}
             </label>
-            %{--<laser:select class="ui dropdown multiple" id="type" name="type.id"--}%
-            <laser:select class="ui dropdown search selection" id="type" name="type.id"
+            %{--<ui:select class="ui dropdown multiple" id="type" name="type.id"--}%
+            <ui:select class="ui dropdown search selection" id="type" name="type.id"
                           from="${Address.getAllRefdataValues()}"
                           optionKey="id"
                           optionValue="value"
@@ -122,7 +122,7 @@
                     <label for="country">
                         <g:message code="address.country.label" />
                     </label>
-                    <laser:select class="ui dropdown" id="country" name="country.id"
+                    <ui:select class="ui dropdown" id="country" name="country.id"
                                   from="${RefdataCategory.getAllRefdataValues(RDConstants.COUNTRY)}"
                                   optionKey="id"
                                   optionValue="value"
@@ -176,4 +176,4 @@
         $("#country").change(function() { JSPC.app.updateDropdown(); });
     </laser:script>
 
-</semui:modal>
+</ui:modal>

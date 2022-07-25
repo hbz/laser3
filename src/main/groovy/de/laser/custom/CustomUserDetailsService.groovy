@@ -1,6 +1,6 @@
 package de.laser.custom
 
-import de.laser.utils.AppUtils
+import de.laser.utils.CodeUtils
 import grails.core.GrailsApplication
 import grails.core.GrailsClass
 import grails.gorm.transactions.Transactional
@@ -26,7 +26,7 @@ class CustomUserDetailsService implements GrailsUserDetailsService {
 
         ConfigObject conf = SpringSecurityUtils.securityConfig
         String userClassName = conf.userLookup.userDomainClassName
-        GrailsClass dc = AppUtils.getDomainClass(userClassName)
+        GrailsClass dc = CodeUtils.getDomainArtefact(userClassName)
         if (!dc) {
             throw new IllegalArgumentException("The specified user domain class '$userClassName' is not a domain class")
         }

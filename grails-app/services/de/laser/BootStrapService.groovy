@@ -1,10 +1,11 @@
 package de.laser
 
+import de.laser.config.ConfigDefaults
 import de.laser.utils.DateUtils
 import liquibase.repackaged.com.opencsv.*
 import de.laser.auth.*
 import de.laser.utils.AppUtils
-import de.laser.utils.ConfigMapper
+import de.laser.config.ConfigMapper
 import de.laser.utils.PasswordUtils
 import de.laser.storage.RDConstants
 import de.laser.properties.PropertyDefinition
@@ -15,8 +16,8 @@ import grails.core.GrailsApplication
 import grails.gorm.transactions.Transactional
 import grails.util.Environment
 import groovy.sql.Sql
-import org.hibernate.SQLQuery
 import org.hibernate.SessionFactory
+import org.hibernate.query.NativeQuery
 import org.hibernate.type.TextType
 
 import javax.sql.DataSource
@@ -47,9 +48,10 @@ class BootStrapService {
 
         if (Environment.isDevelopmentMode() && ! quickStart) {
             ConfigMapper.checkCurrentConfig()
+            SystemEvent.checkDefinedEvents()
         }
 
-        log.info '--------------------------------------------------------------------------------'
+        log.info('--------------------------------------------------------------------------------')
 
         log.info("SystemId:  ${ConfigMapper.getLaserSystemId()}")
         log.info("Version:   ${AppUtils.getMeta('info.app.version')}")
@@ -64,13 +66,12 @@ class BootStrapService {
             log.info("Cache: ${dsp}")
         }
 
-        log.info '--------------------------------------------------------------------------------'
-
+        log.info('--------------------------------------------------------------------------------')
         SystemEvent.createEvent('BOOTSTRAP_STARTUP')
 
         if (quickStart) {
-            log.info "Quick start performed - setup operations ignored .. "
-            log.info '--------------------------------------------------------------------------------'
+            log.info("Quick start performed - setup operations ignored .. ")
+            log.info('--------------------------------------------------------------------------------')
         }
         else {
             // Reset harddata flag for given refdata and properties
@@ -99,9 +100,6 @@ class BootStrapService {
             log.debug("setupSystemUsers ..")
             setupSystemUsers()
 
-            log.debug("setupAdminUsers ..")
-            setupAdminUsers()
-
             log.debug("setupSystemSettings ..")
             setupSystemSettings()
 
@@ -111,22 +109,24 @@ class BootStrapService {
             log.debug("setIdentifierNamespace ..")
             setIdentifierNamespace()
 
-            log.debug("setupContentItems .. deprecated")
-            setupContentItems()
-
             log.debug("setupOnixPlRefdata .. deprecated")
             setupOnixPlRefdata()
 
-            log.debug("checking database ..")
-            if (!Org.findAll() && !Person.findAll() && !Address.findAll() && !Contact.findAll()) {
-                organisationService.createOrgsFromScratch()
+            if (AppUtils.getCurrentServer() == AppUtils.QA) {
+                log.debug("setupAdminUsers ..")
+                setupAdminUsers()
+
+                if (!Org.findAll() && !Person.findAll() && !Address.findAll() && !Contact.findAll()) {
+                    log.debug("createOrgsFromScratch ..")
+                    organisationService.createOrgsFromScratch()
+                }
             }
 
             log.debug("adjustDatabasePermissions ..")
             adjustDatabasePermissions()
         }
 
-        log.debug("setJSONFormatDate ..")
+        log.debug("JSON.registerObjectMarshaller(Date) ..")
 
         JSON.registerObjectMarshaller(Date) {
             return it ? DateUtils.getSDF_yyyyMMddTHHmmssZ().format( it ) : null
@@ -153,14 +153,14 @@ class BootStrapService {
     void setupSystemUsers() {
 
         // Create anonymousUser that serves as a replacement when users are deleted
-        User anonymousUser = User.findByUsername('anonymous')
-        if (anonymousUser) {
-            log.debug("${anonymousUser.username} exists .. skipped")
+        User au = User.findByUsername('anonymous')
+        if (au) {
+            log.debug("${au.username} exists .. skipped")
         }
         else {
             log.debug("creating user ..")
 
-            anonymousUser = new User(
+            au = new User(
                     username: 'anonymous',
                     password: PasswordUtils.getRandomUserPassword(),
                     display: 'Anonymous User',
@@ -172,7 +172,7 @@ class BootStrapService {
 
             if (role.roleType != 'user') {
                 log.debug("  -> adding role: ${role}")
-                UserRole.create anonymousUser, role
+                UserRole.create au, role
             }
         }
 
@@ -233,8 +233,6 @@ class BootStrapService {
     void setupAdminUsers() {
 
         if (AppUtils.getCurrentServer() == AppUtils.QA) {
-            log.debug("check if all user accounts are existing on QA ...")
-
             Map<String,Org> modelOrgs = [konsorte: Org.findByName('Musterkonsorte'),
                                          vollnutzer: Org.findByName('Mustereinrichtung'),
                                          konsortium: Org.findByName('Musterkonsortium')]
@@ -345,16 +343,16 @@ class BootStrapService {
      * @param objType the object type reference; this is needed to read the definitions in the columns correctly and is one of RefdataCategory, RefdataValue or PropertyDefinition
      * @return the {@link List} of rows (each row parsed as {@link Map}) retrieved from the source file
      */
-    List<Map> getParsedCsvData(String filePath, String objType) {
+    List<Map> getParsedCsvData(String filePath) {
 
         List<Map> result = []
         File csvFile = grailsApplication.mainContext.getResource(filePath).file
 
-        if (! ['RefdataCategory', 'RefdataValue', 'PropertyDefinition'].contains(objType)) {
-            log.warn "getParsedCsvData() - invalid object type ${objType}!"
+        if (! (filePath.contains('RefdataCategory') || filePath.contains('RefdataValue') || filePath.contains('PropertyDefinition')) ) {
+            log.warn("getParsedCsvData() - invalid object type ${filePath}!")
         }
         else if (! csvFile.exists()) {
-            log.warn "getParsedCsvData() - ${filePath} not found!"
+            log.warn("getParsedCsvData() - ${filePath} not found!")
         }
         else {
             csvFile.withReader { reader ->
@@ -365,7 +363,7 @@ class BootStrapService {
 
                 while (line = csvr.readNext()) {
                     if (line[0]) {
-                        if (objType == 'RefdataCategory') {
+                        if (filePath.contains('RefdataCategory')) {
                             // CSV: [token, value_de, value_en]
                             Map<String, Object> map = [
                                     token   : line[0].trim(),
@@ -377,7 +375,7 @@ class BootStrapService {
                             ]
                             result.add(map)
                         }
-                        if (objType == 'RefdataValue') {
+                        if (filePath.contains('RefdataValue')) {
                             // CSV: [rdc, token, value_de, value_en]
                             Map<String, Object> map = [
                                     token   : line[1].trim(),
@@ -392,7 +390,7 @@ class BootStrapService {
                             ]
                             result.add(map)
                         }
-                        if (objType == 'PropertyDefinition') {
+                        if (filePath.contains('PropertyDefinition')) {
                             Map<String, Object> map = [
                                     token       : line[1].trim(),
                                     category    : line[0].trim(),
@@ -406,8 +404,6 @@ class BootStrapService {
                                     i10n        : [
                                             name_de: line[2].trim(),
                                             name_en: line[3].trim(),
-                                            //descr_de: line[0].trim(),
-                                            //descr_en: line[0].trim(),
                                             expl_de: line[9].trim(),
                                             expl_en: line[10].trim()
                                     ]
@@ -443,8 +439,8 @@ class BootStrapService {
                         if (fileSql.take(26).equalsIgnoreCase('CREATE OR REPLACE FUNCTION')) {
 
                             try {
-                                SQLQuery query    = sessionFactory.currentSession.createSQLQuery(fileSql)
-                                SQLQuery validate = sessionFactory.currentSession
+                                NativeQuery query    = sessionFactory.currentSession.createSQLQuery(fileSql)
+                                NativeQuery validate = sessionFactory.currentSession
                                         .createSQLQuery(validateSql)
                                         .addScalar("regexp_matches", new TextType())
 
@@ -531,12 +527,12 @@ class BootStrapService {
      */
     void setupRefdata() {
 
-        List rdcList = getParsedCsvData('setup/RefdataCategory.csv', 'RefdataCategory')
+        List rdcList = getParsedCsvData( ConfigDefaults.SETUP_REFDATA_CATEGORY_CSV )
         rdcList.each { map ->
             RefdataCategory.construct(map)
         }
 
-        List rdvList = getParsedCsvData('setup/RefdataValue.csv', 'RefdataValue')
+        List rdvList = getParsedCsvData( ConfigDefaults.SETUP_REFDATA_VALUE_CSV )
         rdvList.each { map ->
             RefdataValue.construct(map)
         }
@@ -548,7 +544,7 @@ class BootStrapService {
      */
     void setupPropertyDefinitions() {
 
-        List pdList = getParsedCsvData('setup/PropertyDefinition.csv', 'PropertyDefinition')
+        List pdList = getParsedCsvData( ConfigDefaults.SETUP_PROPERTY_DEFINITION_CSV )
         pdList.each { map ->
             PropertyDefinition.construct(map)
         }
@@ -605,43 +601,6 @@ class BootStrapService {
         usageStatusList.each { String token ->
             RefdataValue.construct( [token: token, rdc: RDConstants.USAGE_STATUS, hardData: BOOTSTRAP, i10n:[value_de: token, value_en: token]] )
         }
-    }
-
-    @Deprecated
-    void setupContentItems() {
-
-        // The default template for a property change on a title
-        ContentItem.lookupOrCreate ('ChangeNotification.TitleInstance.propertyChange','', '''
-Title change - The <strong>${evt.prop}</strong> field was changed from  "<strong>${evt.oldLabel?:evt.old}</strong>" to "<strong>${evt.newLabel?:evt.new}</strong>".
-''')
-
-        ContentItem.lookupOrCreate ('ChangeNotification.TitleInstance.identifierAdded','', '''
-An identifier was added to title ${OID?.title}.
-''')
-
-        ContentItem.lookupOrCreate ('ChangeNotification.TitleInstance.identifierRemoved','', '''
-An identifier was removed from title ${OID?.title}.
-''')
-
-        ContentItem.lookupOrCreate ('ChangeNotification.TitleInstancePackagePlatform.updated','', '''
-TIPP change for title ${OID?.title?.title} - The <strong>${evt.prop}</strong> field was changed from  "<strong>${evt.oldLabel?:evt.old}</strong>" to "<strong>${evt.newLabel?:evt.new}</strong>".
-''')
-
-        ContentItem.lookupOrCreate ('ChangeNotification.TitleInstancePackagePlatform.added','', '''
-TIPP Added for title ${OID?.title?.title} ${evt.linkedTitle} on platform ${evt.linkedPlatform} .
-''')
-
-        ContentItem.lookupOrCreate ('ChangeNotification.TitleInstancePackagePlatform.deleted','', '''
-TIPP Deleted for title ${OID?.title?.title} ${evt.linkedTitle} on platform ${evt.linkedPlatform} .
-''')
-
-        ContentItem.lookupOrCreate ('ChangeNotification.Package.created','', '''
-New package added with id ${OID.id} - "${OID.name}".
-''')
-
-        ContentItem.lookupOrCreate ('kbplus.noHostPlatformURL','', '''
-No Host Platform URL Content
-''')
     }
 
     /**

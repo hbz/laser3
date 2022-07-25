@@ -1,28 +1,16 @@
 <%@ page import="de.laser.Subscription; de.laser.RefdataCategory; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.finance.CostItem" %>
-<laser:serviceInjection/>
-<!doctype html>
 
+<laser:htmlStart message="myinst.currentSubscriptions.label" serviceInjection="true"/>
 
+<ui:breadcrumbs>
+    <ui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg().getDesignation()}"/>
+    <ui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
+    <ui:crumb message="createIssueEntitlementsSurvey.label" class="active"/>
+</ui:breadcrumbs>
 
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'myinst.currentSubscriptions.label')}</title>
-</head>
+<ui:h1HeaderWithIcon message="createIssueEntitlementsSurvey.label" type="Survey" />
 
-<body>
-
-<semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg().getDesignation()}"/>
-    <semui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
-    <semui:crumb message="createIssueEntitlementsSurvey.label" class="active"/>
-</semui:breadcrumbs>
-
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerTitleIcon
-        type="Survey"/>${message(code: 'createIssueEntitlementsSurvey.label')}</h1>
-
-
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 
 <div class="ui icon info message">
@@ -31,12 +19,11 @@
 </div>
 
 
-<h2 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${message(code: 'myinst.currentSubscriptions.label')}
-<semui:totalNumber total="${num_sub_rows}"/>
+<h2 class="ui left floated aligned icon header la-clear-before"><ui:headerIcon/>${message(code: 'myinst.currentSubscriptions.label')}
+<ui:totalNumber total="${num_sub_rows}"/>
 </h2>
 
-<laser:render template="/templates/filter/javascript" />
-<semui:filter showFilterButton="true">
+<ui:filter showFilterButton="true" addFilterJs="true">
     <g:form action="createIssueEntitlementsSurvey" controller="survey" method="get" class="ui small form">
         <input type="hidden" name="isSiteReloaded" value="yes"/>
         <input type="hidden" name="id" value="${params.id}"/>
@@ -60,13 +47,13 @@
             </div>
             <!-- 1-2 -->
             <div class="field">
-                <semui:datepicker label="default.valid_on.label" id="validOn" name="validOn"
+                <ui:datepicker label="default.valid_on.label" id="validOn" name="validOn"
                                   placeholder="filter.placeholder" value="${validOn}"/>
             </div>
 
             <div class="field">
                 <label>${message(code: 'default.status.label')}</label>
-                <laser:select class="ui dropdown" name="status"
+                <ui:select class="ui dropdown" name="status"
                               from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}"
                               optionKey="id"
                               optionValue="value"
@@ -83,7 +70,7 @@
             <!-- 2-3 -->
             <div class="field">
                 <label>${message(code: 'subscription.form.label')}</label>
-                <laser:select class="ui dropdown" name="form"
+                <ui:select class="ui dropdown" name="form"
                               from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_FORM)}"
                               optionKey="id"
                               optionValue="value"
@@ -93,7 +80,7 @@
             <!-- 2-4 -->
             <div class="field">
                 <label>${message(code: 'subscription.resource.label')}</label>
-                <laser:select class="ui dropdown" name="resource"
+                <ui:select class="ui dropdown" name="resource"
                               from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_RESOURCE)}"
                               optionKey="id"
                               optionValue="value"
@@ -124,7 +111,7 @@
             </div>
         </div>
     </g:form>
-</semui:filter>
+</ui:filter>
 
 <div class="subscription-results">
     <g:if test="${subscriptions}">
@@ -280,11 +267,10 @@
 
 
 <g:if test="${true}">
-    <semui:paginate action="createSubscriptionSurvey" controller="survey" params="${params}"
+    <ui:paginate action="createSubscriptionSurvey" controller="survey" params="${params}"
                     next="${message(code: 'default.paginate.next')}"
                     prev="${message(code: 'default.paginate.prev')}" max="${max}"
                     total="${num_sub_rows}"/>
 </g:if>
 
-</body>
-</html>
+<laser:htmlEnd />

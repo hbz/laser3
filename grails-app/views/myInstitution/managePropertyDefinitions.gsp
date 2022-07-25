@@ -1,32 +1,27 @@
 <%@ page import="de.laser.I10nTranslation; de.laser.properties.PropertyDefinition; de.laser.RefdataValue; de.laser.RefdataCategory" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
+
+<laser:htmlStart message="menu.institutions.prop_defs" />
         <g:set var="entityName" value="${message(code: 'org.label')}" />
-        <title>${message(code:'laser')} : ${message(code: 'menu.institutions.prop_defs')}</title>
-    </head>
-    <body>
 
-    <semui:breadcrumbs>
-        <semui:crumb message="menu.institutions.manage_props" class="active" />
-    </semui:breadcrumbs>
+    <ui:breadcrumbs>
+        <ui:crumb message="menu.institutions.manage_props" class="active" />
+    </ui:breadcrumbs>
 
-    <semui:controlButtons>
-        <semui:exportDropdown>
-            <semui:exportDropdownItem>
+    <ui:controlButtons>
+        <ui:exportDropdown>
+            <ui:exportDropdownItem>
                 <g:link class="item" action="managePropertyDefinitions" params="[cmd: 'exportXLS']">${message(code: 'default.button.export.xls')}</g:link>
-            </semui:exportDropdownItem>
-        </semui:exportDropdown>
+            </ui:exportDropdownItem>
+        </ui:exportDropdown>
         <laser:render template="actions"/>
-    </semui:controlButtons>
+    </ui:controlButtons>
 
-    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'menu.institutions.manage_props')}</h1>
+    <ui:h1HeaderWithIcon message="menu.institutions.manage_props" />
 
     <laser:render template="nav" />
 
-    <semui:messages data="${flash}" />
+    <ui:messages data="${flash}" />
 
 		<div class="ui styled fluid accordion">
 			<g:each in="${propertyDefinitions}" var="entry">
@@ -49,25 +44,25 @@
                                 <tr>
                                     <td>
                                         <g:if test="${pd.isHardData}">
-                                            <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.hardData.tooltip')}">
+                                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.hardData.tooltip')}">
                                                 <i class="check circle icon green"></i>
                                             </span>
                                         </g:if>
                                         <g:if test="${pd.multipleOccurrence}">
-                                            <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
+                                            <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
                                                 <i class="redo icon orange"></i>
                                             </span>
                                         </g:if>
 
                                         <g:if test="${pd.isUsedForLogic}">
-                                            <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.isUsedForLogic.tooltip')}">
+                                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.isUsedForLogic.tooltip')}">
                                                 <i class="ui icon orange cube"></i>
                                             </span>
                                         </g:if>
                                     </td>
                                     <td>
                                         <g:if test="${!pd.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
-                                            <semui:xEditable owner="${pd}" field="name_${languageSuffix}" />
+                                            <ui:xEditable owner="${pd}" field="name_${languageSuffix}" />
                                         </g:if>
                                         <g:else>
                                             ${pd.getI10n('name')}
@@ -75,7 +70,7 @@
                                     </td>
                                     <td>
                                         <g:if test="${!pd.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
-                                            <semui:xEditable owner="${pd}" field="expl_${languageSuffix}" type="textarea" />
+                                            <ui:xEditable owner="${pd}" field="expl_${languageSuffix}" type="textarea" />
                                         </g:if>
                                         <g:else>
                                             ${pd.getI10n('expl')}
@@ -103,5 +98,4 @@
 			</g:each>
         </div>
 
-	</body>
-</html>
+<laser:htmlEnd />

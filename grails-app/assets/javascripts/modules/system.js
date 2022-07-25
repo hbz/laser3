@@ -1,5 +1,4 @@
-
-// modules/system.js
+// module: assets/javascripts/modules/system.js
 
 system = {
 

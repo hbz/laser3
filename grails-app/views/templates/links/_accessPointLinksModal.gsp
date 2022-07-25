@@ -1,6 +1,6 @@
 
 <g:if test="${editmode}">
-    <a role="button" class="ui button ${tmplCss}" data-semui="modal" href="#${tmplModalID}">
+    <a role="button" class="ui button ${tmplCss}" data-ui="modal" href="#${tmplModalID}">
         <g:if test="${tmplIcon}">
             <i class="${tmplIcon} icon"></i>
         </g:if>
@@ -10,7 +10,7 @@
     </a>
 </g:if>
 
-<semui:modal id="${tmplModalID}" text="${tmplText}">
+<ui:modal id="${tmplModalID}" text="${tmplText}">
 
     <g:form action="linkAccessPoint" controller="platform" method="get" class="form-inline ui small form">
         <input type="hidden" name="platform_id" value="${platformInstance.id}">
@@ -41,4 +41,4 @@
         </div>
     </g:form>
 
-</semui:modal>
+</ui:modal>

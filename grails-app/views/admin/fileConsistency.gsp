@@ -1,19 +1,13 @@
 <%@ page import="de.laser.storage.RDStore; de.laser.DocContext" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code: "menu.admin.fileConsistency")}</title>
-</head>
 
-<body>
+<laser:htmlStart message="menu.admin.fileConsistency" />
 
-<semui:breadcrumbs>
-    <semui:crumb message="menu.admin" controller="admin" action="index"/>
-    <semui:crumb message="menu.admin.fileConsistency" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb message="menu.admin" controller="admin" action="index"/>
+    <ui:crumb message="menu.admin.fileConsistency" class="active"/>
+</ui:breadcrumbs>
 
-<h1 class="ui header la-noMargin-top">${message(code: "menu.admin.fileConsistency")}</h1>
+<ui:h1HeaderWithIcon message="menu.admin.fileConsistency" />
 
 <div class="ui grid">
     <div class="sixtenn wide column">
@@ -23,9 +17,9 @@
         <table class="ui sortable celled la-js-responsive-table la-table compact la-ignore-fixed table">
             <thead>
                 <tr>
-                    <th>Beschreibung</th>
+                    <th>${message(code:'default.description.label')}</th>
                     <th></th>
-                    <th>Anzahl</th>
+                    <th>${message(code:'default.count.label')}</th>
                 </tr>
             </thead>
             <tbody>
@@ -52,9 +46,9 @@
          <table class="ui sortable celled la-js-responsive-table la-table compact la-ignore-fixed table">
             <thead>
                 <tr>
-                    <th>Beschreibung</th>
+                    <th>${message(code:'default.description.label')}</th>
                     <th></th>
-                    <th>Anzahl</th>
+                    <th>${message(code:'default.count.label')}</th>
                 </tr>
             </thead>
             <tbody>
@@ -103,9 +97,9 @@
         <table class="ui sortable celled la-js-responsive-table la-table compact la-ignore-fixed table">
             <thead>
             <tr>
-                <th>Beschreibung</th>
+                <th>${message(code:'default.description.label')}</th>
                 <th>Spec.</th>
-                <th>Anzahl</th>
+                <th>${message(code:'default.count.label')}</th>
             </tr>
             </thead>
             <tbody>
@@ -133,11 +127,11 @@
 
         <h3 class="ui header"><i class="ui tasks icon"></i><span class="content">ToDo-Liste (${listOfDocsInUseOrphaned.size()} Dateiobjekte)</span></h3>
 
-        <div class="ui info message">
+        <ui:msg class="info" noClose="true">
             Alle aufgelisteten Einträge repräsentieren referenzierte Dateiobjekte in der Datenbank OHNE entspr. Dateien im Filesystem.
             <br />
             Rote Einträge markieren ungültige Referenzen: DocContext.owner( <span style="color:red">status = deleted</span> ) => Doc.
-        </div>
+        </ui:msg>
 
         <div class="ui list">
             <g:each in="${listOfDocsInUseOrphaned}" var="doc">
@@ -208,6 +202,4 @@
     </div>
 </div>
 
-
-</body>
-</html>
+<laser:htmlEnd />

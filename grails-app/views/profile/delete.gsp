@@ -1,32 +1,25 @@
 <%@ page import="de.laser.auth.User; de.laser.DeletionService" %>
-<g:set var="deletionService" bean="deletionService" />
-<laser:serviceInjection />
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code: 'profile')}</title>
-</head>
 
-<body>
-    <semui:breadcrumbs>
-        <semui:crumb message="profile.bc.profile" class="active"/>
-    </semui:breadcrumbs>
+<laser:htmlStart message="profile" serviceInjection="true" />
 
-    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'profile')}</h1>
+    <ui:breadcrumbs>
+        <ui:crumb message="profile.bc.profile" class="active"/>
+    </ui:breadcrumbs>
 
-    <semui:messages data="${flash}" />
+    <ui:h1HeaderWithIcon message="profile" />
+
+    <ui:messages data="${flash}" />
 
     <g:if test="${delResult}">
 
         <g:if test="${delResult.status == DeletionService.RESULT_CUSTOM}">
-            <semui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="deletion.custom.msg.user" />
+            <ui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="deletion.custom.msg.user" />
         </g:if>
         <g:if test="${delResult.status == DeletionService.RESULT_BLOCKED}">
-            <semui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="deletion.blocked.msg.user" />
+            <ui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="deletion.blocked.msg.user" />
         </g:if>
         <g:if test="${delResult.status == DeletionService.RESULT_ERROR}">
-            <semui:msg class="negative" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
+            <ui:msg class="negative" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
         </g:if>
 
         <g:form controller="profile" action="delete" data-confirm-id="deleteProfile_form" params="${[id: user.id, process: true]}">
@@ -52,7 +45,7 @@
                     </g:if>
                     <g:else>
                         <input disabled type="submit" class="ui button red" value="${message(code:'deletion.user')}" />
-                        <semui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="user.delete.substitute.missing" />
+                        <ui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="user.delete.substitute.missing" />
                     </g:else>
                 </g:if>
                 <g:elseif test="${delResult.status != DeletionService.RESULT_ERROR}">
@@ -74,7 +67,7 @@
             <thead>
             <tr>
                 <th>Objekte, Referenzen</th>
-                <th>Anzahl</th>
+                <th>${message(code:'default.count.label')}</th>
                 <th>Objekt-Ids</th>
             </tr>
             </thead>
@@ -139,5 +132,4 @@
 
     </g:if>
 
-</body>
-</html>
+<laser:htmlEnd />

@@ -1,4 +1,4 @@
-<%@page import="de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.PendingChangeConfiguration; de.laser.Platform; de.laser.SubscriptionPackage; de.laser.finance.CostItem; de.laser.Org" %>
+<%@page import="de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.PendingChangeConfiguration; de.laser.Platform; de.laser.Subscription; de.laser.SubscriptionPackage; de.laser.finance.CostItem; de.laser.Org" %>
 <laser:serviceInjection />
 
 <div class="ui card">
@@ -34,13 +34,13 @@
                                         <g:each in="${Platform.executeQuery('select distinct tipp.platform from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg',[pkg:sp.pkg])}" var="platform">
                                             <g:if test="${platform}">
                                                 <g:link controller="platform" action="show" id="${platform.id}">${platform.name}</g:link>
-                                                <semui:linkIcon href="${platform.primaryUrl?.startsWith('http') ? platform.primaryUrl : 'http://' + platform.primaryUrl}"/>
+                                                <ui:linkWithIcon href="${platform.primaryUrl?.startsWith('http') ? platform.primaryUrl : 'http://' + platform.primaryUrl}"/>
                                             </g:if>
                                         </g:each>
                                     </g:if>
                                     <g:elseif test="${sp.pkg.nominalPlatform}">
                                         <g:link controller="platform" action="show" id="${sp.pkg.nominalPlatform.id}">${sp.pkg.nominalPlatform.name}</g:link>
-                                        <semui:linkIcon href="${sp.pkg.nominalPlatform.primaryUrl?.startsWith('http') ? sp.pkg.nominalPlatform.primaryUrl : 'http://' + sp.pkg.nominalPlatform.primaryUrl}"/>
+                                        <ui:linkWithIcon href="${sp.pkg.nominalPlatform.primaryUrl?.startsWith('http') ? sp.pkg.nominalPlatform.primaryUrl : 'http://' + sp.pkg.nominalPlatform.primaryUrl}"/>
                                     </g:elseif>
                                 </div>
                             </div>
@@ -170,7 +170,7 @@
                                             <td>
                                                 <g:if test="${!(settingKey in excludes)}">
                                                     <g:if test="${editmode}">
-                                                        <laser:select class="ui dropdown"
+                                                        <ui:select class="ui dropdown"
                                                                       name="${settingKey}!§!setting" from="${RefdataCategory.getAllRefdataValues(RDConstants.PENDING_CHANGE_CONFIG_SETTING)}"
                                                                       optionKey="id" optionValue="value"
                                                                       value="${(pcc && pcc.settingValue) ? pcc.settingValue.id : RDStore.PENDING_CHANGE_CONFIG_PROMPT.id}"

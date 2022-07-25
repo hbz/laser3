@@ -1,5 +1,5 @@
 <%@ page import="de.laser.Platform; de.laser.CustomerIdentifier; de.laser.IdentifierNamespace" %>
-<semui:modal id="modalCreateCustomerIdentifier"
+<ui:modal id="modalCreateCustomerIdentifier"
              text="${customeridentifier? message(code:'org.customerIdentifier.create.edit') : message(code:'org.customerIdentifier.create.new')}"
              isEditModal="true"
              msgSave="${customeridentifier ? message(code:'default.button.save.label') : message(code:'default.button.create.label')}">
@@ -35,7 +35,7 @@
         </div>
 
         <div class="field">
-            <label for="value">${message(code: 'org.requestorKey')}:</label>
+            <label for="requestorKey">${message(code: 'org.requestorKey')}:</label>
 
             <input type="text" id="requestorKey" name="requestorKey" value="${customeridentifier?.requestorKey}"/>
         </div>
@@ -47,4 +47,4 @@
         </div>
 
     </g:form>
-</semui:modal>
+</ui:modal>

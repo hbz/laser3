@@ -1,26 +1,18 @@
 <%@ page import="de.laser.RefdataCategory; de.laser.AuditConfig;de.laser.storage.RDConstants" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'surveyInfo.renewal')}</title>
+<laser:htmlStart message="surveyInfo.renewal" />
 
-</head>
-
-<body>
-
-<semui:breadcrumbs>
-    <semui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
+<ui:breadcrumbs>
+    <ui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
 
     <g:if test="${surveyInfo}">
-        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}"
+        <ui:crumb controller="survey" action="show" id="${surveyInfo.id}"
                      params="[surveyConfigID: surveyConfig.id]" text="${surveyInfo.name}"/>
     </g:if>
-    <semui:crumb message="surveyInfo.renewal" class="active"/>
-</semui:breadcrumbs>
+    <ui:crumb message="surveyInfo.renewal" class="active"/>
+</ui:breadcrumbs>
 
-<semui:controlButtons>
-</semui:controlButtons>
+<ui:controlButtons>
+</ui:controlButtons>
 
 <g:if test="${(errors && (errors.size() > 0))}">
     <div>
@@ -32,12 +24,11 @@
     </div>
 </g:if>
 
-<h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
-${surveyInfo.name}
-<semui:surveyStatus object="${surveyInfo}"/>
-</h1>
+<ui:h1HeaderWithIcon text="${surveyInfo.name}" type="Survey">
+<survey:status object="${surveyInfo}"/>
+</ui:h1HeaderWithIcon>
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 <g:set var="counter" value="${-1}"/>
 <g:set var="index" value="${0}"/>
@@ -73,7 +64,7 @@ ${surveyInfo.name}
             </tr>
             <tr>
                 <th>${message(code: 'default.startDate.label')}</th>
-                <td><semui:datepicker class="wide eight" id="subscription.start_date" name="subscription.start_date" placeholder="default.date.label" value="${permissionInfo?.sub_startDate}" required="" /></td>
+                <td><ui:datepicker class="wide eight" id="subscription.start_date" name="subscription.start_date" placeholder="default.date.label" value="${permissionInfo?.sub_startDate}" required="" /></td>
                 <td class="center aligned">
                     <div class="ui checkbox">
                         <input type="checkbox" name="auditList" value="startDate" ${AuditConfig.getConfig(subscription, 'startDate') ? 'checked': ''} />
@@ -82,7 +73,7 @@ ${surveyInfo.name}
             </tr>
             <tr>
                 <th>${message(code: 'default.endDate.label')}</th>
-                <td><semui:datepicker class="wide eight" id="subscription.end_date" name="subscription.end_date" placeholder="default.date.label" value="${permissionInfo?.sub_endDate}" /></td>
+                <td><ui:datepicker class="wide eight" id="subscription.end_date" name="subscription.end_date" placeholder="default.date.label" value="${permissionInfo?.sub_endDate}" /></td>
                 <td class="center aligned">
                     <div class="ui checkbox">
                         <input type="checkbox" name="auditList" value="endDate" ${AuditConfig.getConfig(subscription, 'endDate') ? 'checked': ''} />
@@ -214,5 +205,4 @@ ${surveyInfo.name}
     </div>
 </g:form>
 
-</body>
-</html>
+<laser:htmlEnd />

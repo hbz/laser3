@@ -2,12 +2,12 @@
 <g:set var="esdConfig" value="${BaseConfig.getCurrentConfigElasticsearchData(cfgKey)}" />
 
 <div class="ui segment form">
-    <div class="fields <laser:numberToString number="${cfgQueryList.size()}" min="2"/>">
+    <div class="fields <reporting:numberToString number="${cfgQueryList.size()}" min="2"/>">
         <g:each in="${cfgQueryList}" var="cfgQuery" status="qi">
             <g:each in="${cfgQuery}" var="field">
                 <div class="field">
                     <label for="query-chooser-1-${qi}">${BaseConfig.getConfigLabel(field.key)}</label>
-                    <semui:dropdownWithI18nExplanations name="query-chooser"
+                    <ui:dropdownWithI18nExplanations name="query-chooser"
                                                         id="query-chooser-1-${qi}"
                                                         from="${field.value}"
                                                         optionKey="${{it.key}}"
@@ -20,12 +20,12 @@
         </g:each>
     </div>
 
-    <div class="fields <laser:numberToString number="${2 + cfgDistributionList.size()}"/>">
+    <div class="fields <reporting:numberToString number="${2 + cfgDistributionList.size()}"/>">
         <g:each in="${cfgDistributionList}" var="cfgDistribution" status="di">
             <g:each in="${cfgDistribution}" var="field">
                 <div class="field">
                     <label for="query-chooser-2-${di}">${BaseConfig.getConfigLabel('distribution')}</label>
-                         <semui:dropdownWithI18nExplanations name="query-chooser"
+                         <ui:dropdownWithI18nExplanations name="query-chooser"
                                                              id="query-chooser-2-${di}"
                                                              from="${field.value}"
                                                              optionKey="${{it.key}}"
@@ -49,8 +49,8 @@
 
         <div class="field" style="text-align: right">
             <label for="query-export-button">&nbsp;</label>
-            <button id="query-export-button" class="ui icon button la-modern-button" data-href="#queryExportModal" data-semui="modal" disabled><i class="ui icon download"></i></button>
-            <button id="query-help-button" class="ui icon button la-modern-button" data-href="#queryHelpModal" data-semui="modal" disabled><i class="ui icon question"></i></button>
+            <button id="query-export-button" class="ui icon button la-modern-button" data-href="#queryExportModal" data-ui="modal" disabled><i class="ui icon download"></i></button>
+            <button id="query-help-button" class="ui icon button la-modern-button" data-href="#queryHelpModal" data-ui="modal" disabled><i class="ui icon question"></i></button>
         </div>
     </div>
 </div>

@@ -1,27 +1,20 @@
-<!doctype html>
-<html>
-  <head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'menu.institutions.change_log')}</title>
-  </head>
+<laser:htmlStart message="menu.institutions.change_log" />
 
-  <body>
-
-  <semui:breadcrumbs>
-    <semui:crumb message="menu.institutions.change_log" class="active" />
-  </semui:breadcrumbs>
+  <ui:breadcrumbs>
+    <ui:crumb message="menu.institutions.change_log" class="active" />
+  </ui:breadcrumbs>
 
 
-  <semui:controlButtons>
-    <semui:exportDropdown>
-      <semui:exportDropdownItem>
+  <ui:controlButtons>
+    <ui:exportDropdown>
+      <ui:exportDropdownItem>
         <g:link controller="myInstitution" class="item" action="changeLog" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
-      </semui:exportDropdownItem>
-    </semui:exportDropdown>
+      </ui:exportDropdownItem>
+    </ui:exportDropdown>
     <laser:render template="actions"/>
-  </semui:controlButtons>
+  </ui:controlButtons>
 
-  <h1 class="ui icon header la-clear-before"><semui:headerIcon />${message(code:'menu.institutions.change_log')}</h1>
+  <ui:h1HeaderWithIcon message="menu.institutions.change_log" />
 
         <p>
           <strong>
@@ -57,7 +50,6 @@
         </g:each>
       </table>
 
-        <semui:paginate  action="changeLog" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" max="${max}" total="${num_changes}" />
+        <ui:paginate action="changeLog" controller="myInstitution" params="${params}" max="${max}" total="${num_changes}" />
 
-  </body>
-</html>
+<laser:htmlEnd />

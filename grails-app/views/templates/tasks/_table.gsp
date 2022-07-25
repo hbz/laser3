@@ -5,7 +5,7 @@
 
     <div class="sixteen wide column">
 
-        <h2 class="ui header">${message(code: 'task.myTasks.header')} <semui:totalNumber total="${taskInstanceCount}"/></h2>
+        <p class="ui header">${message(code: 'task.myTasks.header')} <ui:totalNumber total="${taskInstanceCount}"/></p>
 
         <table class="ui sortable celled la-js-responsive-table la-table table">
             <thead>
@@ -34,7 +34,7 @@
                     <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${taskInstance?.endDate}"/></td>
 
                     <td>
-                        <semui:xEditableRefData config="${de.laser.storage.RDConstants.TASK_STATUS}" owner="${taskInstance}" field="status" overwriteEditable="${overwriteEditable}" />
+                        <ui:xEditableRefData config="${de.laser.storage.RDConstants.TASK_STATUS}" owner="${taskInstance}" field="status" overwriteEditable="${overwriteEditable}" />
                     </td>
                     <g:if test="${controllerName == 'myInstitution'}">
                     <td>
@@ -86,7 +86,7 @@
             </tbody>
         </table>
 
-        <semui:paginate total="${taskInstanceCount}" params="${params}" />
+        <ui:paginate total="${taskInstanceCount}" params="${params}" />
 
 
     </div><!-- .sixteen -->

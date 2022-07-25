@@ -166,7 +166,6 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         status      column:'sub_status_rv_fk'
         type        column:'sub_type_rv_fk',        index: 'sub_type_idx'
         kind        column:'sub_kind_rv_fk'
-        //owner       column:'sub_owner_license_fk',  index: 'sub_owner_idx'
         form        column:'sub_form_fk'
         resource    column:'sub_resource_fk'
         name        column:'sub_name'
@@ -179,10 +178,10 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         instanceOf              column:'sub_parent_sub_fk', index:'sub_parent_idx'
         administrative          column:'sub_is_administrative'
         isSlaved        column:'sub_is_slaved'
-        hasPerpetualAccess column: 'sub_has_perpetual_access', defaultValue: false
+        hasPerpetualAccess column: 'sub_has_perpetual_access'
         //hasPerpetualAccess column: 'sub_has_perpetual_access_rv_fk'
-        hasPublishComponent column: 'sub_has_publish_component', defaultValue: false
-        isPublicForApi  column:'sub_is_public_for_api', defaultValue: false
+        hasPublishComponent column: 'sub_has_publish_component'
+        isPublicForApi  column:'sub_is_public_for_api'
 
         dateCreated          column: 'sub_date_created'
         lastUpdated          column: 'sub_last_updated'
@@ -208,7 +207,6 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         globalUID(nullable:true, blank:false, unique:true, maxSize:255)
         type        (nullable:true)
         kind        (nullable:true)
-        //owner(nullable:true, blank:false)
         form        (nullable:true)
         resource    (nullable:true)
         startDate(nullable:true, validator: { val, obj ->
@@ -692,7 +690,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      * @param user the {@link User} whose grants should be checked
      * @return true if this subscription is editable, false otherwise
      */
-    boolean isEditableBy(user) {
+    boolean isEditableBy(User user) {
         hasPerm('edit', user)
     }
 
@@ -701,7 +699,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      * @param user the {@link User} whose grants should be checked
      * @return true if this subscription is viewable, false otherwise
      */
-    boolean isVisibleBy(user) {
+    boolean isVisibleBy(User user) {
         hasPerm('view', user)
     }
 
@@ -711,7 +709,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      * @param user the {@link User} whose right should be checked
      * @return true if the given permission has been granted to the given user for this subscription, false otherwise
      */
-    boolean hasPerm(perm, user) {
+    boolean hasPerm(String perm, User user) {
         Role adm = Role.findByAuthority('ROLE_ADMIN')
         Role yda = Role.findByAuthority('ROLE_YODA')
 
@@ -720,7 +718,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         }
 
         Org contextOrg = BeanStore.getContextService().getOrg()
-        if (user.getAuthorizedOrgsIds().contains(contextOrg?.id)) {
+        if (user.getAffiliationOrgsIdList().contains(contextOrg?.id)) {
 
             OrgRole cons = OrgRole.findBySubAndOrgAndRoleType(
                     this, contextOrg, RDStore.OR_SUBSCRIPTION_CONSORTIA
@@ -749,7 +747,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      * @param changeDocument the change map as JSON document which will be passed to the child objects
      */
     @Transient
-    def notifyDependencies(changeDocument) {
+    void notifyDependencies(Map changeDocument) {
         log.debug("notifyDependencies(${changeDocument})")
 
         List<PendingChange> slavedPendingChanges = []
@@ -759,7 +757,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
             log.debug("Send pending change to ${ds.id}")
 
-            Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+            Locale locale = LocaleContextHolder.getLocale()
             String description = BeanStore.getMessageSource().getMessage('default.accept.placeholder',null, locale)
             String definedType = 'text'
 
@@ -870,7 +868,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
       String hqlString = "select sub from Subscription sub where lower(sub.name) like :name "
         Map<String, Object> hqlParams = [name: ((params.q ? params.q.toLowerCase() : '' ) + "%")]
-      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd")
+      SimpleDateFormat sdf = DateUtils.getSDF_yyyyMMdd()
       RefdataValue cons_role        = RDStore.OR_SUBSCRIPTION_CONSORTIA
       RefdataValue subscr_role      = RDStore.OR_SUBSCRIBER
       RefdataValue subscr_cons_role = RDStore.OR_SUBSCRIBER_CONS

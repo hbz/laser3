@@ -109,7 +109,7 @@
         </div>
 
 
-        <div class="ui segment">
+    %{--    <div class="ui segment">
             <h4 class="ui header">${message(code: 'subscriptionsManagement.deletePropertyInfo')}</h4>
 
             <g:link class="ui button negative js-open-confirm-modal"
@@ -117,7 +117,7 @@
                     data-confirm-term-how="ok" action="${actionName}" id="${params.id}"
                     params="[processOption: 'deleteAllProperties', propertiesFilterPropDef: propertiesFilterPropDef, tab: params.tab]">${message(code: 'subscriptionsManagement.deleteProperty.button', args: [propertiesFilterPropDef.getI10n('name')])}</g:link>
 
-        </div>
+        </div>--}%
 
         <div class="divider"></div>
 
@@ -142,15 +142,15 @@
 
                     <td>
                         <g:formatDate formatName="default.date.format.notime" date="${subscription.startDate}"/>
-                        <semui:auditButton auditable="[subscription, 'startDate']"/>
+                        <ui:auditButton auditable="[subscription, 'startDate']"/>
                     </td>
                     <td>
                         <g:formatDate formatName="default.date.format.notime" date="${subscription.endDate}"/>
-                        <semui:auditButton auditable="[subscription, 'endDate']"/>
+                        <ui:auditButton auditable="[subscription, 'endDate']"/>
                     </td>
                     <td>
                         ${subscription.status.getI10n('value')}
-                        <semui:auditButton auditable="[subscription, 'status']"/>
+                        <ui:auditButton auditable="[subscription, 'status']"/>
                     </td>
                     <td>
 
@@ -163,7 +163,7 @@
                                         <span class="la-popup-tooltip la-delay"
                                               data-content="Anzahl der allg. Merkmale in der Lizenz"
                                               data-position="top right">
-                                            <semui:totalNumber
+                                            <ui:totalNumber
                                                     total="${SubscriptionProperty.executeQuery('select count(id) from SubscriptionProperty where owner = :sub AND ((tenant = :contextOrg OR tenant is null) OR (tenant != :contextOrg AND isPublic = true)) AND type.tenant is null', [contextOrg: contextOrg, sub: subscription])[0] }"/>
                                         </span>
                                     </div>
@@ -180,32 +180,32 @@
                                                         scope="request"/>--}%
 
                                                 <g:if test="${customProperty.type.isIntegerType()}">
-                                                    <semui:xEditable owner="${customProperty}" type="number"
+                                                    <ui:xEditable owner="${customProperty}" type="number"
                                                                      field="intValue"/>
                                                 </g:if>
                                                 <g:elseif test="${customProperty.type.isStringType()}">
-                                                    <semui:xEditable owner="${customProperty}" type="text"
+                                                    <ui:xEditable owner="${customProperty}" type="text"
                                                                      field="stringValue"/>
                                                 </g:elseif>
                                                 <g:elseif test="${customProperty.type.isBigDecimalType()}">
-                                                    <semui:xEditable owner="${customProperty}" type="text"
+                                                    <ui:xEditable owner="${customProperty}" type="text"
                                                                      field="decValue"/>
                                                 </g:elseif>
                                                 <g:elseif test="${customProperty.type.isDateType()}">
-                                                    <semui:xEditable owner="${customProperty}" type="date"
+                                                    <ui:xEditable owner="${customProperty}" type="date"
                                                                      field="dateValue"/>
                                                 </g:elseif>
                                                 <g:elseif test="${customProperty.type.isURLType()}">
-                                                    <semui:xEditable owner="${customProperty}" type="url"
+                                                    <ui:xEditable owner="${customProperty}" type="url"
                                                                      field="urlValue"
 
                                                                      class="la-overflow la-ellipsis"/>
                                                     <g:if test="${customProperty.value}">
-                                                        <semui:linkIcon href="${customProperty.value}"/>
+                                                        <ui:linkWithIcon href="${customProperty.value}"/>
                                                     </g:if>
                                                 </g:elseif>
                                                 <g:elseif test="${customProperty.type.isRefdataValueType()}">
-                                                    <semui:xEditableRefData owner="${customProperty}" type="text"
+                                                    <ui:xEditableRefData owner="${customProperty}" type="text"
                                                                             field="refValue"
                                                                             config="${customProperty.type.refdataCategory}"/>
                                                 </g:elseif>
@@ -249,7 +249,7 @@
                                         <span class="la-popup-tooltip la-delay"
                                               data-content="Anzahl der priv. Merkmale in der Lizenz"
                                               data-position="top right">
-                                            <semui:totalNumber
+                                            <ui:totalNumber
                                                     total="${SubscriptionProperty.executeQuery('select count(id) from SubscriptionProperty where owner = :sub AND (type.tenant = :contextOrg AND tenant = :contextOrg)', [contextOrg: contextOrg, sub: subscription])[0] }"/>
                                         </span>
                                     </div>
@@ -267,32 +267,32 @@
                                                        scope="request"/>
 
                                                 <g:if test="${privateProperty.type.isIntegerType()}">
-                                                    <semui:xEditable owner="${privateProperty}" type="number"
+                                                    <ui:xEditable owner="${privateProperty}" type="number"
                                                                      field="intValue"/>
                                                 </g:if>
                                                 <g:elseif test="${privateProperty.type.isStringType()}">
-                                                    <semui:xEditable owner="${privateProperty}" type="text"
+                                                    <ui:xEditable owner="${privateProperty}" type="text"
                                                                      field="stringValue"/>
                                                 </g:elseif>
                                                 <g:elseif test="${privateProperty.type.isBigDecimalType()}">
-                                                    <semui:xEditable owner="${privateProperty}" type="text"
+                                                    <ui:xEditable owner="${privateProperty}" type="text"
                                                                      field="decValue"/>
                                                 </g:elseif>
                                                 <g:elseif test="${privateProperty.type.isDateType()}">
-                                                    <semui:xEditable owner="${privateProperty}" type="date"
+                                                    <ui:xEditable owner="${privateProperty}" type="date"
                                                                      field="dateValue"/>
                                                 </g:elseif>
                                                 <g:elseif test="${privateProperty.type.isURLType()}">
-                                                    <semui:xEditable owner="${privateProperty}" type="url"
+                                                    <ui:xEditable owner="${privateProperty}" type="url"
                                                                      field="urlValue"
 
                                                                      class="la-overflow la-ellipsis"/>
                                                     <g:if test="${privateProperty.value}">
-                                                        <semui:linkIcon href="${privateProperty.value}"/>
+                                                        <ui:linkWithIcon href="${privateProperty.value}"/>
                                                     </g:if>
                                                 </g:elseif>
                                                 <g:elseif test="${privateProperty.type.isRefdataValueType()}">
-                                                    <semui:xEditableRefData owner="${privateProperty}" type="text"
+                                                    <ui:xEditableRefData owner="${privateProperty}" type="text"
                                                                             field="refValue"
                                                                             config="${privateProperty.type.refdataCategory}"/>
                                                 </g:elseif>
@@ -354,7 +354,7 @@
 
     <div class="ui segment">
         <g:form action="${actionName}" method="post" class="ui form propertiesForm"
-                params="[tab: params.tab, processOption: 'changeCreateProperty']">
+                params="[tab: params.tab]">
             <g:hiddenField id="ppm_id_${params.id}" name="id" value="${params.id}"/>
 
             <div class="field required">
@@ -404,16 +404,32 @@
                 </g:else>
             </div>
 
-            <button class="ui button" ${!editable ? 'disabled="disabled"' : ''}
-                    type="submit">${message(code: 'default.button.save_changes')}</button>
+            <div class="two fields">
+                <div class="eight wide field" style="text-align: left;">
+                    <div class="ui buttons">
+                        <button class="ui positive button" ${!editable ? 'disabled="disabled"' : ''} type="submit"
+                                name="processOption"
+                                value="changeCreateProperty">${message(code: 'default.button.save_changes')}</button>
+                    </div>
+                </div>
+
+                <div class="eight wide field" style="text-align: right;">
+                    <div class="ui buttons">
+                        <button class="ui button negative " ${!editable ? 'disabled="disabled"' : ''} type="submit"
+                                name="processOption"
+                                value="deleteProperty">${message(code: 'subscriptionsManagement.deleteProperty.button', args: [propertiesFilterPropDef.getI10n('name')])}</button>
+                    </div>
+
+                </div>
+            </div>
 
 
             <h3 class="ui header">
                 <g:if test="${controllerName == "subscription"}">
-                    ${message(code: 'subscriptionsManagement.subscriber')} <semui:totalNumber
+                    ${message(code: 'subscriptionsManagement.subscriber')} <ui:totalNumber
                         total="${filteredSubscriptions.size()}"/>
                 </g:if><g:else>
-                    ${message(code: 'subscriptionsManagement.subscriptions')} <semui:totalNumber
+                    ${message(code: 'subscriptionsManagement.subscriptions')} <ui:totalNumber
                             total="${filteredSubscriptions.size()}/${num_sub_rows}"/>
                 </g:else>
             </h3>
@@ -491,17 +507,17 @@
                         </g:if>
 
                         <td>
-                            <semui:xEditable owner="${sub}" field="startDate" type="date"
+                            <ui:xEditable owner="${sub}" field="startDate" type="date"
                                              overwriteEditable="${editableOld}"/>
-                            %{--<semui:auditButton auditable="[sub, 'startDate']"/>--}%
+                            %{--<ui:auditButton auditable="[sub, 'startDate']"/>--}%
                         </td>
-                        <td><semui:xEditable owner="${sub}" field="endDate" type="date"
+                        <td><ui:xEditable owner="${sub}" field="endDate" type="date"
                                              overwriteEditable="${editableOld}"/>
-                        %{--<semui:auditButton auditable="[sub, 'endDate']"/>--}%
+                        %{--<ui:auditButton auditable="[sub, 'endDate']"/>--}%
                         </td>
                         <td>
                             ${sub.status.getI10n('value')}
-                            <semui:auditButton auditable="[sub, 'status']"/>
+                            <ui:auditButton auditable="[sub, 'status']"/>
                         </td>
                         <td>
                             <g:if test="${sub.isMultiYear}">
@@ -522,7 +538,7 @@
                                             <span class="la-popup-tooltip la-delay"
                                                   data-content="Anzahl der allg. Merkmale in der Lizenz"
                                                   data-position="top right">
-                                                <semui:totalNumber
+                                                <ui:totalNumber
                                                         total="${SubscriptionProperty.executeQuery('select count(id) from SubscriptionProperty where owner = :sub AND (tenant = :contextOrg OR tenant is null OR (tenant != :contextOrg AND isPublic = true)) AND type.tenant is null', [contextOrg: contextOrg, sub: sub])[0] }"/>
                                             </span>
                                         </div>
@@ -535,34 +551,34 @@
 
                                                 <div class="content">
                                                     <g:if test="${customProperty.type.isIntegerType()}">
-                                                        <semui:xEditable owner="${customProperty}" type="number"
+                                                        <ui:xEditable owner="${customProperty}" type="number"
                                                                          field="intValue"/>
                                                     </g:if>
                                                     <g:elseif test="${customProperty.type.isStringType()}">
-                                                        <semui:xEditable owner="${customProperty}" type="text"
+                                                        <ui:xEditable owner="${customProperty}" type="text"
                                                                          field="stringValue"/>
                                                     </g:elseif>
                                                     <g:elseif
                                                             test="${customProperty.type.isBigDecimalType()}">
-                                                        <semui:xEditable owner="${customProperty}" type="text"
+                                                        <ui:xEditable owner="${customProperty}" type="text"
                                                                          field="decValue"/>
                                                     </g:elseif>
                                                     <g:elseif test="${customProperty.type.isDateType()}">
-                                                        <semui:xEditable owner="${customProperty}" type="date"
+                                                        <ui:xEditable owner="${customProperty}" type="date"
                                                                          field="dateValue"/>
                                                     </g:elseif>
                                                     <g:elseif test="${customProperty.type.isURLType()}">
-                                                        <semui:xEditable owner="${customProperty}" type="url"
+                                                        <ui:xEditable owner="${customProperty}" type="url"
                                                                          field="urlValue"
 
                                                                          class="la-overflow la-ellipsis"/>
                                                         <g:if test="${customProperty.value}">
-                                                            <semui:linkIcon href="${customProperty.value}"/>
+                                                            <ui:linkWithIcon href="${customProperty.value}"/>
                                                         </g:if>
                                                     </g:elseif>
                                                     <g:elseif
                                                             test="${customProperty.type.isRefdataValueType()}">
-                                                        <semui:xEditableRefData owner="${customProperty}" type="text"
+                                                        <ui:xEditableRefData owner="${customProperty}" type="text"
                                                                                 field="refValue"
                                                                                 config="${customProperty.type.refdataCategory}"/>
                                                     </g:elseif>
@@ -604,7 +620,7 @@
                                             <span class="la-popup-tooltip la-delay"
                                                   data-content="Anzahl der priv. Merkmale in der Lizenz"
                                                   data-position="top right">
-                                                <semui:totalNumber
+                                                <ui:totalNumber
                                                         total="${SubscriptionProperty.executeQuery('select count(id) from SubscriptionProperty where owner = :sub AND (type.tenant = :contextOrg AND tenant = :contextOrg)', [contextOrg: contextOrg, sub: sub])[0] }"/>
                                             </span>
                                         </div>
@@ -618,33 +634,33 @@
 
                                                 <div class="content">
                                                     <g:if test="${privateProperty.type.isIntegerType()}">
-                                                        <semui:xEditable owner="${privateProperty}" type="number"
+                                                        <ui:xEditable owner="${privateProperty}" type="number"
                                                                          field="intValue"/>
                                                     </g:if>
                                                     <g:elseif test="${privateProperty.type.isStringType()}">
-                                                        <semui:xEditable owner="${privateProperty}" type="text"
+                                                        <ui:xEditable owner="${privateProperty}" type="text"
                                                                          field="stringValue"/>
                                                     </g:elseif>
                                                     <g:elseif
                                                             test="${privateProperty.type.isBigDecimalType()}">
-                                                        <semui:xEditable owner="${privateProperty}" type="text"
+                                                        <ui:xEditable owner="${privateProperty}" type="text"
                                                                          field="decValue"/>
                                                     </g:elseif>
                                                     <g:elseif test="${privateProperty.type.isDateType()}">
-                                                        <semui:xEditable owner="${privateProperty}" type="date"
+                                                        <ui:xEditable owner="${privateProperty}" type="date"
                                                                          field="dateValue"/>
                                                     </g:elseif>
                                                     <g:elseif test="${privateProperty.type.isURLType()}">
-                                                        <semui:xEditable owner="${privateProperty}" type="url"
+                                                        <ui:xEditable owner="${privateProperty}" type="url"
                                                                          field="urlValue"
                                                                          class="la-overflow la-ellipsis"/>
                                                         <g:if test="${privateProperty.value}">
-                                                            <semui:linkIcon href="${privateProperty.value}"/>
+                                                            <ui:linkWithIcon href="${privateProperty.value}"/>
                                                         </g:if>
                                                     </g:elseif>
                                                     <g:elseif
                                                             test="${privateProperty.type.isRefdataValueType()}">
-                                                        <semui:xEditableRefData owner="${privateProperty}" type="text"
+                                                        <ui:xEditableRefData owner="${privateProperty}" type="text"
                                                                                 field="refValue"
                                                                                 config="${privateProperty.type.refdataCategory}"/>
                                                     </g:elseif>
@@ -700,7 +716,7 @@
 
     <g:if test="${controllerName == "myInstitution"}">
         <g:if test="${filteredSubscriptions}">
-            <semui:paginate action="${actionName}" controller="${controllerName}" params="${params+[propertiesFilterPropDef: propertiesFilterPropDef]}"
+            <ui:paginate action="${actionName}" controller="${controllerName}" params="${params+[propertiesFilterPropDef: propertiesFilterPropDef]}"
                             next="${message(code: 'default.paginate.next')}"
                             prev="${message(code: 'default.paginate.prev')}" max="${max}"
                             total="${num_sub_rows}"/>

@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.annotations.Check404
 import de.laser.auth.User
  
 import de.laser.utils.DateUtils
@@ -19,7 +20,15 @@ class TaskController  {
     ContextService contextService
     TaskService taskService
 
-    static allowedMethods = [create: 'POST', edit: 'POST', delete: 'POST']
+	//-----
+
+	static allowedMethods = [create: 'POST', edit: 'POST', delete: 'POST']
+
+	final static Map<String, String> CHECK404_ALTERNATIVES = [
+			'myInstitution/tasks' : 'menu.institutions.tasks'
+	]
+
+	//-----
 
 	/**
 	 * Processes the submitted input parameters and creates a new task for the given owner object
@@ -29,7 +38,7 @@ class TaskController  {
 	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def create() {
 		Task.withTransaction {
-			def contextOrg  = contextService.getOrg()
+			Org contextOrg = contextService.getOrg()
 			SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
 
 			if (params.endDate) {
@@ -83,8 +92,9 @@ class TaskController  {
 	@DebugInfo(test='hasAffiliation("INST_EDITOR")')
 	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def _modal_create() {
-        def contextOrg  = contextService.getOrg()
-		def result      = taskService.getPreconditions(contextOrg)
+        Org contextOrg = contextService.getOrg()
+		Map result = taskService.getPreconditions(contextOrg)
+
 		result.validSubscriptionsList = new ArrayList()
 		result.validSubscriptions.each{
 			result.validSubscriptionsList.add([it.id, it.dropdownNamingConvention(contextService.getOrg())])
@@ -98,10 +108,11 @@ class TaskController  {
 	 */
 	@DebugInfo(test='hasAffiliation("INST_USER")', wtc = DebugInfo.WITH_TRANSACTION)
 	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+	@Check404()
     def edit() {
 		Task.withTransaction {
 			Org contextOrg = contextService.getOrg()
-			def result = taskService.getPreconditionsWithoutTargets(contextOrg)
+			Map result = taskService.getPreconditionsWithoutTargets(contextOrg)
 
 			SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
 
@@ -114,12 +125,6 @@ class TaskController  {
 			if (((!taskInstance.responsibleOrg) && taskInstance.responsibleUser != contextService.getUser()) && (taskInstance.responsibleOrg != contextOrg) && (taskInstance.creator != contextService.getUser())) {
 				flash.error = message(code: 'task.edit.norights', args: [taskInstance.title]) as String
 				redirect(url: request.getHeader('referer'))
-				return
-			}
-
-			if (!taskInstance) {
-				flash.message = message(code: 'default.not.found.message', args: [message(code: 'task.label'), params.id]) as String
-				redirect controller: 'myInstitution', action: 'dashboard'
 				return
 			}
 
@@ -169,7 +174,7 @@ class TaskController  {
 	@Secured(['permitAll']) // TODO
 	def ajaxEdit() {
 		Org contextOrg = contextService.getOrg()
-		def result     = taskService.getPreconditionsWithoutTargets(contextOrg)
+		Map result = taskService.getPreconditionsWithoutTargets(contextOrg)
 		result.params = params
 		result.taskInstance = Task.get(params.id)
 

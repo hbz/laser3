@@ -1,0 +1,26 @@
+
+echarts / version 5.3.3
+
+    chart
+        - bar *
+        - line *
+        - pie *
+        - scatter *
+
+    coordinate systems
+        - grid *
+        - singleaxis *
+
+    component
+        - title *
+        - timeline *
+        - legend *
+        - tooltip *
+        - markpoint *
+        - markline *
+        - markarea *
+        - toolbox *
+
+    others
+        - utilites *
+        - code compression *

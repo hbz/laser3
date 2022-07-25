@@ -128,7 +128,7 @@ class OrgRole implements ShareableTrait {
      * Used for dynamic binding for hql queries
      * @return the status of the destination, depending on its class
      */
-    def getOwnerStatus() {
+    RefdataValue getOwnerStatus() {
         if (pkg)        { return pkg.getPackageStatus() }
         else if (sub)   { return sub.getStatus() }
         else if (lic)   { return lic.getStatus() }

@@ -7,8 +7,8 @@ import javax.persistence.Transient
  * A source may have a record type ({@link #rectype}):
  * <ul>
  *     <li>{@link Package}</li>
- *     <li>{@link Org}</li>
- *     <li>{@link TitleInstancePackagePlatform}</li>
+ *     <li>{@link de.laser.Org}</li>
+ *     <li>{@link de.laser.TitleInstancePackagePlatform}</li>
  * </ul>
  * and a source type ({@link #type}):
  * <ul>
@@ -77,7 +77,7 @@ class GlobalRecordSource {
     @Transient
     String getBaseUrl() {
         // For now, assume type=gokb - and trim off the oai/packages
-        uri.replaceAll('oai.*','');
+        uri.replaceAll('oai.*','')
     }
 
     @Deprecated
@@ -91,7 +91,7 @@ class GlobalRecordSource {
      * @param source_id the ID of the source to be deleted
      */
     @Transient
-    static void removeSource(source_id) {
+    static void removeSource(long source_id) {
         GlobalRecordSource.executeUpdate("delete GlobalRecordSource grs where grs.id = :id", [id: source_id])
     }
 }

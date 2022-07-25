@@ -1,17 +1,9 @@
 <%@ page import="de.laser.Org; de.laser.PersonRole; de.laser.OrgRole; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.Contact; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.storage.RDConstants;" %>
 
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'gasco.title')}</title>
-</head>
+<laser:htmlStart message="gasco.title" />
 
-<body>
+<ui:h1HeaderWithIcon text="${message(code: 'menu.public.gasco_monitor')}: ${message(code: 'gasco.licenceSearch')}" />
 
-<h1 class="ui icon header la-clear-before">
-    ${message(code: 'menu.public.gasco_monitor')}: ${message(code: 'gasco.licenceSearch')}
-</h1>
     <div class="ui grid">
         <div class="eleven wide column">
             <div class="ui la-search segment">
@@ -231,5 +223,5 @@
         }
     </style>
 </sec:ifAnyGranted>
-</body>
-</html>
+
+<laser:htmlEnd />

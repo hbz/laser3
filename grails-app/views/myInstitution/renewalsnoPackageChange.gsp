@@ -1,17 +1,10 @@
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} ${message(code: 'myinst.renewals')}</title>
-</head>
+<laser:htmlStart message="myinst.renewals" />
 
-<body>
-
-<semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
-    <semui:crumb controller="myInstitution" action="currentSubscriptions" message="myinst.currentSubscriptions.label"/>
-    <semui:crumb message="myinst.renewals" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
+    <ui:crumb controller="myInstitution" action="currentSubscriptions" message="myinst.currentSubscriptions.label"/>
+    <ui:crumb message="myinst.renewals" class="active"/>
+</ui:breadcrumbs>
 
 <g:if test="${(errors && (errors.size() > 0))}">
     <div>
@@ -23,7 +16,7 @@
     </div>
 </g:if>
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 <g:set var="counter" value="${-1}"/>
 <g:set var="index" value="${0}"/>
@@ -43,12 +36,12 @@
                 <tr>
                     <th><g:checkBox name="subscription.copyStart" value="${true}"/></th>
                     <th>${message(code: 'default.startDate.label')}</th>
-                    <td><semui:datepicker class="wide eight" id="subscription.start_date" name="subscription.start_date" placeholder="default.date.label" value="${permissionInfo?.sub_startDate}" required="" /></td>
+                    <td><ui:datepicker class="wide eight" id="subscription.start_date" name="subscription.start_date" placeholder="default.date.label" value="${permissionInfo?.sub_startDate}" required="" /></td>
                 </tr>
                 <tr>
                     <th><g:checkBox name="subscription.copyEnd" value="${true}"/></th>
                     <th>${message(code: 'default.endDate.label')}</th>
-                    <td><semui:datepicker class="wide eight" id="subscription.end_date" name="subscription.end_date" placeholder="default.date.label" value="${permissionInfo?.sub_endDate}" /></td>
+                    <td><ui:datepicker class="wide eight" id="subscription.end_date" name="subscription.end_date" placeholder="default.date.label" value="${permissionInfo?.sub_endDate}" /></td>
                 </tr>
                 <tr>
                     <th><g:checkBox name="subscription.copyDocs" value="${true}"/></th>
@@ -134,5 +127,4 @@
     <input type="hidden" name="ecount" value="${counter}"/>
 </g:form>
 
-</body>
-</html>
+<laser:htmlEnd />

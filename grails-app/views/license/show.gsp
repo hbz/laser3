@@ -1,50 +1,39 @@
 <%@ page import="de.laser.Subscription;de.laser.License;de.laser.DocContext;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.properties.PropertyDefinition;de.laser.interfaces.CalculatedType" %>
-<!doctype html>
-<laser:serviceInjection />
-<html>
-  <head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'license.details.label')}</title>
-  </head>
+<laser:htmlStart message="license.details.label" serviceInjection="true"/>
 
-    <body>
-
-        <semui:debugInfo>
+        <ui:debugInfo>
             <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
-        </semui:debugInfo>
+        </ui:debugInfo>
 
         <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
-        <semui:controlButtons>
+        <ui:controlButtons>
             <laser:render template="actions" />
-        </semui:controlButtons>
+        </ui:controlButtons>
 
-        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
-            <semui:xEditable owner="${license}" field="reference" id="reference"/>
-        </h1>
+        <ui:h1HeaderWithIcon>
+            <ui:xEditable owner="${license}" field="reference" id="reference"/>
+        </ui:h1HeaderWithIcon>
 
-        <semui:anualRings object="${license}" controller="license" action="show" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
+        <ui:anualRings object="${license}" controller="license" action="show" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
 
         <laser:render template="nav" />
 
-        <%--<semui:objectStatus object="${license}" status="${license.status}" />--%>
+        <%--<ui:objectStatus object="${license}" status="${license.status}" />--%>
 
         <g:if test="${license.instanceOf && (institution.id == license.getLicensingConsortium()?.id)}">
-            <div class="ui negative message">
-                <div class="header"><g:message code="myinst.message.attention" /></div>
-                <p>
+                <ui:msg class="negative" header="${message(code:'myinst.message.attention')}" noClose="true">
                     <g:message code="myinst.licenseDetails.message.ChildView" />
                     <g:message code="myinst.licenseDetails.message.ConsortialView" />
                     <g:link controller="license" action="show" id="${license.instanceOf.id}">
                         <g:message code="myinst.subscriptionDetails.message.here" />
                     </g:link>.
-                </p>
-            </div>
+                </ui:msg>
         </g:if>
 
         <laser:render template="/templates/meta/identifier" model="${[object: license, editable: editable]}" />
 
-        <semui:messages data="${flash}" />
+        <ui:messages data="${flash}" />
 
         <%--<g:if test="${institution.id == license.getLicensingConsortium()?.id || (! license.getLicensingConsortium() && institution.id == license.getLicensee()?.id)}">
             <laser:render template="/templates/pendingChanges" model="${['pendingChanges':pendingChanges, 'flash':flash, 'model':license]}"/>
@@ -53,7 +42,7 @@
         <div class="ui stackable grid">
 
             <div class="ten wide column">
-                <%--semui:errors bean="${titleInstanceInstance}" /--%>
+                <%--ui:errors bean="${titleInstanceInstance}" /--%>
 
                 <!--<h4 class="ui header">${message(code:'license.details.information')}</h4>-->
 
@@ -64,28 +53,28 @@
                                 <dl>
                                     <dt class="control-label">${message(code: 'license.startDate.label')}</dt>
                                     <dd>
-                                        <semui:xEditable owner="${license}" type="date" field="startDate" validation="datesCheck" />
+                                        <ui:xEditable owner="${license}" type="date" field="startDate" validation="datesCheck" />
                                     </dd>
                                     <g:if test="${editable}">
-                                        <dd class="la-js-editmode-container"><semui:auditButton auditable="[license, 'startDate']" auditConfigs="${auditConfigs}" /></dd>
+                                        <dd class="la-js-editmode-container"><ui:auditButton auditable="[license, 'startDate']" auditConfigs="${auditConfigs}" /></dd>
                                     </g:if>
                                 </dl>
                                 <dl>
                                     <dt class="control-label">${message(code: 'license.endDate.label')}</dt>
                                     <dd>
-                                        <semui:xEditable owner="${license}" type="date" field="endDate" validation="datesCheck" />
+                                        <ui:xEditable owner="${license}" type="date" field="endDate" validation="datesCheck" />
                                     </dd>
                                     <g:if test="${editable}">
-                                        <dd class="la-js-editmode-container"><semui:auditButton auditable="[license, 'endDate']" auditConfigs="${auditConfigs}" /></dd>
+                                        <dd class="la-js-editmode-container"><ui:auditButton auditable="[license, 'endDate']" auditConfigs="${auditConfigs}" /></dd>
                                     </g:if>
                                 </dl>
                                 <dl>
                                     <dt class="control-label">${message(code: 'license.openEnded.label')}</dt>
                                     <dd>
-                                        <semui:xEditableRefData owner="${license}" field="openEnded" config="${RDConstants.Y_N_U}"/>
+                                        <ui:xEditableRefData owner="${license}" field="openEnded" config="${RDConstants.Y_N_U}"/>
                                     </dd>
                                     <g:if test="${editable}">
-                                        <dd class="la-js-editmode-container"><semui:auditButton auditable="[license, 'openEnded']" auditConfigs="${auditConfigs}" /></dd>
+                                        <dd class="la-js-editmode-container"><ui:auditButton auditable="[license, 'openEnded']" auditConfigs="${auditConfigs}" /></dd>
                                     </g:if>
                                 </dl>
                             </div>
@@ -95,19 +84,19 @@
                                 <dl>
                                     <dt><label class="control-label">${message(code:'license.status.label')}</label></dt>
                                     <dd>
-                                        <semui:xEditableRefData owner="${license}" field="status" config="${RDConstants.LICENSE_STATUS}"/>
+                                        <ui:xEditableRefData owner="${license}" field="status" config="${RDConstants.LICENSE_STATUS}"/>
                                     </dd>
                                     <g:if test="${editable}">
-                                        <dd class="la-js-editmode-container"><semui:auditButton auditable="[license, 'status']" auditConfigs="${auditConfigs}"/></dd>
+                                        <dd class="la-js-editmode-container"><ui:auditButton auditable="[license, 'status']" auditConfigs="${auditConfigs}"/></dd>
                                     </g:if>
                                 </dl>
                                 <dl>
                                     <dt><label class="control-label">${message(code:'license.licenseCategory.label')}</label></dt>
                                     <dd>
-                                        <semui:xEditableRefData owner="${license}" field="licenseCategory" config="${RDConstants.LICENSE_CATEGORY}"/>
+                                        <ui:xEditableRefData owner="${license}" field="licenseCategory" config="${RDConstants.LICENSE_CATEGORY}"/>
                                     </dd>
                                     <g:if test="${editable}">
-                                        <dd class="la-js-editmode-container"><semui:auditButton auditable="[license, 'licenseCategory']" auditConfigs="${auditConfigs}"/></dd>
+                                        <dd class="la-js-editmode-container"><ui:auditButton auditable="[license, 'licenseCategory']" auditConfigs="${auditConfigs}"/></dd>
                                     </g:if>
                                 </dl>
 
@@ -122,16 +111,16 @@
                                             ${message(code:'license.details.linktoLicense.pendingChange')}
                                         </dt>
                                         <dd>
-                                            <semui:xEditableBoolean owner="${license}" field="isSlaved" />
+                                            <ui:xEditableBoolean owner="${license}" field="isSlaved" />
                                         </dd>
                                     </dl>--%>
                                 </g:if>
 
                                 <dl>
                                     <dt class="control-label">${message(code: 'license.isPublicForApi.label')}</dt>
-                                    <dd><semui:xEditableBoolean owner="${license}" field="isPublicForApi" /></dd>
+                                    <dd><ui:xEditableBoolean owner="${license}" field="isPublicForApi" /></dd>
                                     <g:if test="${editable}">
-                                        <dd class="la-js-editmode-container"><semui:auditButton auditable="[license, 'isPublicForApi']" auditConfigs="${auditConfigs}"/></dd>
+                                        <dd class="la-js-editmode-container"><ui:auditButton auditable="[license, 'isPublicForApi']" auditConfigs="${auditConfigs}"/></dd>
                                     </g:if>
                                 </dl>
 
@@ -196,8 +185,7 @@
                 }
             }).done(function(response){
                 $("#links").html(response);
-                r2d2.initDynamicSemuiStuff('#links');
+                r2d2.initDynamicUiStuff('#links');
             })
     </laser:script>
-  </body>
-</html>
+<laser:htmlEnd />

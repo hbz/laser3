@@ -1,5 +1,4 @@
-
-// modules/r2d2.js
+// module: assets/javascripts/modules/r2d2.js
 
 r2d2 = {
 
@@ -44,7 +43,7 @@ r2d2 = {
                         return year + '-' + month + '-' + day;
                     }
                     else {
-                        alert('Please report this error: ' + JSPC.vars.dateFormat + ' for semui-datepicker unsupported');
+                        alert('Please report this error: ' + JSPC.vars.dateFormat + ' for ui-datepicker unsupported');
                     }
                 }
             },
@@ -79,10 +78,10 @@ r2d2 = {
     go : function() {
         r2d2.initGlobalAjaxLogin();
 
-        r2d2.initGlobalSemuiStuff();
+        r2d2.initGlobalUiStuff();
         r2d2.initGlobalXEditableStuff();
 
-        r2d2.initDynamicSemuiStuff('body');
+        r2d2.initDynamicUiStuff('body');
         r2d2.initDynamicXEditableStuff('body');
 
         $("html").css("cursor", "auto");
@@ -154,8 +153,8 @@ r2d2 = {
         });
     },
 
-    initGlobalSemuiStuff : function() {
-        console.log("r2d2.initGlobalSemuiStuff()");
+    initGlobalUiStuff : function() {
+        console.log("r2d2.initGlobalUiStuff()");
         // copy email adress next to icon and putting it in cache
 
         $('.js-copyTrigger').click(function(){
@@ -360,7 +359,7 @@ r2d2 = {
                         return "Ungültiges Format";
                     }
                 }
-                // custom validate functions via semui:xEditable validation="xy"
+                // custom validate functions via ui:xEditable validation="xy"
                 var dVal = $(this).attr('data-validation')
                 if (dVal) {
                     if (dVal.includes('notEmpty')) {
@@ -464,8 +463,8 @@ r2d2 = {
     },
 
 
-    initDynamicSemuiStuff : function(ctxSel) {
-        console.log("r2d2.initDynamicSemuiStuff( " + ctxSel + " )")
+    initDynamicUiStuff : function(ctxSel) {
+        console.log("r2d2.initDynamicUiStuff( " + ctxSel + " )")
 
         if (! ctxSel) { return null }
         let confirmationModalXeditableFlag = false;
@@ -482,13 +481,13 @@ r2d2 = {
             $( ".button" ).blur();
         });
 
-        // close semui:messages alerts
+        // close ui:messages alerts
         $(ctxSel + ' .close.icon').click(function() {
             $(this).parent().hide();
         });
 
         // modals
-        $(ctxSel + " *[data-semui='modal']").click(function() {
+        $(ctxSel + " *[data-ui='modal']").click(function() {
             var triggerElement = $(this)
             var href = $(this).attr('data-href')
             if (! href) {

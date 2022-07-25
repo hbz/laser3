@@ -11,6 +11,7 @@ import de.laser.storage.RDStore
 import grails.converters.JSON
 import groovy.util.logging.Slf4j
 import org.grails.web.json.JSONElement
+import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
 
@@ -264,7 +265,6 @@ class PendingChange {
         }
 
         if (configMap.prop) {
-
             if (configMap.prop in PendingChange.DATE_FIELDS) {
                 SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
                 changeParams.newValue = (configMap.newValue && configMap.newValue instanceof Date) ? sdf.format(configMap.newValue) : (configMap.newValue ?: null)
@@ -282,8 +282,6 @@ class PendingChange {
                 changeParams.newValue = configMap.newValue
                 changeParams.oldValue = configMap.oldValue
             }
-
-
 
             changeParams << [prop: configMap.prop]
             if (!configMap.oid) {
@@ -320,7 +318,6 @@ class PendingChange {
                 pc = new PendingChange()
             }
         }
-
         return pc
     }
 
@@ -387,7 +384,7 @@ class PendingChange {
      */
     def getParsedParams() {
 
-        Locale locale = org.springframework.context.i18n.LocaleContextHolder.getLocale()
+        Locale locale = LocaleContextHolder.getLocale()
         JSONElement parsedParams = JSON.parse(msgParams)
 
         // def value type

@@ -43,8 +43,7 @@
 </g:if>
 <g:set var="availableStatus" value="${RefdataCategory.getAllRefdataValues(RDConstants.TIPP_STATUS)-RDStore.TIPP_STATUS_REMOVED}"/>
 
-<laser:render template="/templates/filter/javascript"/>
-<semui:filter showFilterButton="true">
+<ui:filter showFilterButton="true" addFilterJs="true">
     <g:form controller="${controllerName}" action="${actionName}" id="${params.id}" method="get" class="ui form">
         <g:hiddenField name="sort" value="${params.sort}"/>
         <g:hiddenField name="order" value="${params.order}"/>
@@ -86,7 +85,7 @@
             </g:if>
             <g:if test="${params.mode != 'advanced' && !showStatsFilter && actionName != 'renewEntitlementsWithSurvey'}">
                 <div class="field">
-                    <semui:datepicker label="subscription.details.asAt" id="asAt" name="asAt"
+                    <ui:datepicker label="subscription.details.asAt" id="asAt" name="asAt"
                                       value="${params.asAt}"
                                       placeholder="subscription.details.asAt.placeholder"/>
                 </div>
@@ -265,7 +264,7 @@
             <g:if test="${controllerName == 'subscription' && !showStatsFilter}">
                 <div class="field">
                     <label>${message(code: 'issueEntitlement.perpetualAccessBySub.label')}</label>
-                    <laser:select class="ui fluid dropdown" name="hasPerpetualAccess"
+                    <ui:select class="ui fluid dropdown" name="hasPerpetualAccess"
                                   from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                   optionKey="id"
                                   optionValue="value"
@@ -275,7 +274,7 @@
                 <g:if test="${actionName =='index' && subscription.ieGroups.size() > 0}">
                     <div class="field">
                         <label>${message(code: 'issueEntitlement.inTitleGroups')}</label>
-                        <laser:select class="ui fluid dropdown" name="inTitleGroups"
+                        <ui:select class="ui fluid dropdown" name="inTitleGroups"
                                       from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                                       optionKey="id"
                                       optionValue="value"
@@ -347,4 +346,4 @@
                        value="${message(code: 'default.button.filter.label')}"/>
             </div>
     </g:form>
-</semui:filter>
+</ui:filter>

@@ -1,5 +1,4 @@
-<laser:render template="/templates/filter/javascript" />
-<semui:filter showFilterButton="true">
+<ui:filter showFilterButton="true" addFilterJs="true">
     <g:form action="${actionName}" params="${params}" method="get" class="ui form">
         <input type="hidden" name="sort" value="${params.sort}">
         <input type="hidden" name="order" value="${params.order}">
@@ -15,10 +14,10 @@
         </div>
         <div class="three fields">
             <div class="field">
-                <semui:datepicker label="package.compare.filter.coverage_startsBefore" id="startsBefore" name="startsBefore" value="${params.startsBefore}" />
+                <ui:datepicker label="package.compare.filter.coverage_startsBefore" id="startsBefore" name="startsBefore" value="${params.startsBefore}" />
             </div>
             <div class="field">
-                <semui:datepicker label="package.compare.filter.coverage_endsAfter" id="endsAfter" name="endsAfter" value="${params.endsAfter}" />
+                <ui:datepicker label="package.compare.filter.coverage_endsAfter" id="endsAfter" name="endsAfter" value="${params.endsAfter}" />
             </div>
             <div class="field">
 
@@ -26,10 +25,10 @@
         </div>
         <div class="three fields">
             <div class="field">
-                <semui:datepicker label="package.compare.filter.accessStartDate" id="accessStartDate" name="accessStartDate" value="${params.accessStartDate}" />
+                <ui:datepicker label="package.compare.filter.accessStartDate" id="accessStartDate" name="accessStartDate" value="${params.accessStartDate}" />
             </div>
             <div class="field">
-                <semui:datepicker label="package.compare.filter.accessEndDate" id="accessEndDate" name="accessEndDate" value="${params.accessEndDate}" />
+                <ui:datepicker label="package.compare.filter.accessEndDate" id="accessEndDate" name="accessEndDate" value="${params.accessEndDate}" />
             </div>
             <div class="field la-field-right-aligned">
 
@@ -38,4 +37,4 @@
             </div>
         </div>
     </g:form>
-</semui:filter>
+</ui:filter>

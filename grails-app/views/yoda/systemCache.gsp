@@ -1,20 +1,13 @@
 <%@ page import="de.laser.utils.DateUtils" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'menu.yoda.systemCache')}</title>
-</head>
-<body>
 
-<laser:serviceInjection />
+<laser:htmlStart message="menu.yoda.systemCache" serviceInjection="true"/>
 
-<semui:breadcrumbs>
-    <semui:crumb message="menu.yoda" controller="yoda" action="index"/>
-    <semui:crumb message="menu.yoda.systemCache" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb message="menu.yoda" controller="yoda" action="index"/>
+    <ui:crumb message="menu.yoda.systemCache" class="active"/>
+</ui:breadcrumbs>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.systemCache')}</h1>
+<ui:h1HeaderWithIcon message="menu.yoda.systemCache" />
 
 <g:set var="sessionCache" value="${contextService.getSessionCache()}" />
 <h2 class="ui header">SessionCache <span class="ui label">${sessionCache.getSession().class}</span></h2>
@@ -140,5 +133,4 @@
 
 <hr />
 
-</body>
-</html>
+<laser:htmlEnd />

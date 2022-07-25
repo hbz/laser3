@@ -30,12 +30,12 @@
         </g:if>
         <g:elseif test="${showWekbId}">
             ${orgInstance.gokbId}
-            <semui:linkIcon href="${ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI,true)?.editUrl}/public/orgContent/${orgInstance.gokbId}" />
+            <ui:linkWithIcon href="${ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI,true)?.editUrl}/public/orgContent/${orgInstance.gokbId}" />
         </g:elseif>
         <g:else>
             ${id.value == IdentifierNamespace.UNKNOWN ? "" : id.value}
                 <g:if test="${id.getURL()}">
-                    <semui:linkIcon href="${id.getURL()}" />
+                    <ui:linkWithIcon href="${id.getURL()}" />
                 </g:if>
         </g:else>
     </td>

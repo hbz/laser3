@@ -1,28 +1,21 @@
 <%@ page import="de.laser.Combo; de.laser.CustomerIdentifier; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Org; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
-<laser:serviceInjection/>
 
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
+<laser:htmlStart message="menu.institutions.org_info" serviceInjection="true" />
+
     <g:set var="isGrantedOrgRoleAdminOrOrgEditor" value="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}" />
-    <title>${message(code: 'laser')} : ${message(code:'menu.institutions.org_info')}</title>
-</head>
 
-<body>
-
-<semui:debugInfo>
+<ui:debugInfo>
     <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]"/>
     %{--<laser:render template="/templates/debug/orgRoles" model="[debug: orgInstance.links]"/>--}%
     %{--<laser:render template="/templates/debug/prsRoles" model="[debug: orgInstance.prsLinks]"/>--}%
-</semui:debugInfo>
+</ui:debugInfo>
 
 <laser:render template="breadcrumb"
           model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView]}"/>
 
 <g:if test="${editable_identifier || editable_customeridentifier}">
-    <semui:controlButtons>
+    <ui:controlButtons>
         <laser:render template="actions" model="${[
                 org: orgInstance,
                 user: user,
@@ -31,23 +24,23 @@
                 editable_customeridentifier: editable_customeridentifier,
                 hasAccessToCustomeridentifier: hasAccessToCustomeridentifier
         ]}"/>
-    </semui:controlButtons>
+    </ui:controlButtons>
 </g:if>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${orgInstance.name}</h1>
+<ui:h1HeaderWithIcon text="${orgInstance.name}" />
 
 <laser:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg]}"/>
 
-<semui:objectStatus object="${orgInstance}" status="${orgInstance.status}"/>
+<ui:objectStatus object="${orgInstance}" status="${orgInstance.status}"/>
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
-<semui:tabs actionName="ids">
-    <semui:tabsItem controller="org" action="ids" params="[id: orgInstance.id, tab: 'identifier']" tab="identifier" text="${message(code:'default.identifiers.label')}"/>
+<ui:tabs actionName="ids">
+    <ui:tabsItem controller="org" action="ids" params="[id: orgInstance.id, tab: 'identifier']" tab="identifier" text="${message(code:'default.identifiers.label')}"/>
     <g:if test="${hasAccessToCustomeridentifier}">
-        <semui:tabsItem controller="org" action="ids" params="[id: orgInstance.id, tab: 'customerIdentifiers']" tab="customerIdentifiers" text="${message(code:'org.customerIdentifier.plural')}"/>
+        <ui:tabsItem controller="org" action="ids" params="[id: orgInstance.id, tab: 'customerIdentifiers']" tab="customerIdentifiers" text="${message(code:'org.customerIdentifier.plural')}"/>
     </g:if>
-</semui:tabs>
+</ui:tabs>
 
 %{---------------IDENTIFIERS-----------------------}%
 <div class="ui bottom attached tab active segment">
@@ -87,8 +80,7 @@
 
 %{--------------CUSTOMER IDENTIFIERS------------------------}%
         <g:if test="${params.tab == 'customerIdentifiers'}">
-            <laser:render template="/templates/filter/javascript" />
-            <semui:filter showFilterButton="true">
+            <ui:filter showFilterButton="true" addFilterJs="true">
                 <g:form controller="organisation" action="ids" class="ui small form" method="get">
                     <g:hiddenField name="tab" value="customerIdentifiers"/>
                     <g:hiddenField name="id" value="${orgInstance.id}"/>
@@ -128,7 +120,7 @@
                         </div>
                     </div>
                 </g:form>
-            </semui:filter>
+            </ui:filter>
             <table class="ui la-js-responsive-table la-table table">
                 <thead>
                     <tr>
@@ -179,8 +171,7 @@
             </table>
         </g:if>
     </div>
-</body>
-</html>
+
 <g:if test="${actionName == 'ids'}">
     <laser:script file="${this.getGroovyPageFileName()}">
         JSPC.app.IdContoller =  {
@@ -211,7 +202,7 @@
                         $("#dynamicModalContainer").html(result);
                         $("#dynamicModalContainer .ui.modal").modal({
                             onVisible: function () {
-                                r2d2.initDynamicSemuiStuff('#modalCreateCustomerIdentifier');
+                                r2d2.initDynamicUiStuff('#modalCreateCustomerIdentifier');
                                 r2d2.initDynamicXEditableStuff('#modalCreateCustomerIdentifier');
                             }
                         }).modal('show');
@@ -221,3 +212,5 @@
         }
     </laser:script>
 </g:if>
+
+<laser:htmlEnd />

@@ -6,18 +6,22 @@ import de.laser.exceptions.ChangeAcceptException
 import de.laser.finance.CostItem
 import de.laser.cache.SessionCacheWrapper
 import de.laser.properties.PropertyDefinition
-import de.laser.utils.AppUtils
+import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.base.AbstractLockableService
 import grails.converters.JSON
+import grails.core.GrailsApplication
 import grails.gorm.transactions.Transactional
 import grails.core.GrailsClass
 import grails.web.databinding.DataBindingUtils
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import net.sf.json.JSONObject
+import org.grails.datastore.mapping.model.PersistentEntity
+import org.grails.datastore.mapping.model.PersistentProperty
+import org.grails.datastore.mapping.model.types.Association
 import org.grails.web.json.JSONElement
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
@@ -36,6 +40,7 @@ class PendingChangeService extends AbstractLockableService {
     AuditService auditService
     ContextService contextService
     EscapeService escapeService
+    GrailsApplication grailsApplication
     GenericOIDService genericOIDService
     MessageSource messageSource
     SubscriptionService subscriptionService
@@ -111,50 +116,54 @@ class PendingChangeService extends AbstractLockableService {
                         break
 
                     case EVENT_PROPERTY_CHANGE :  // Generic property change
-                        // TODO [ticket=1894]
-                        // if ( ( payload.changeTarget != null ) && ( payload.changeTarget.length() > 0 ) ) {
                         if ( pendingChange.payloadChangeTargetOid?.length() > 0 || payload.changeTarget?.length() > 0) {
                             String targetOID = pendingChange.payloadChangeTargetOid ?: payload.changeTarget
-                            //def target_object = genericOIDService.resolveOID(payload.changeTarget);
                             def target_object = genericOIDService.resolveOID(targetOID.replace('Custom','').replace('Private',''))
                             if ( target_object ) {
                                 target_object.refresh()
-                                // Work out if parsed_change_info.changeDoc.prop is an association - If so we will need to resolve the OID in the value
-                                GrailsClass domain_class = AppUtils.getDomainClass( target_object.class.name )
-                                def prop_info = domain_class.getPersistentProperty(payload.changeDoc.prop)
-                                if(prop_info == null){
-                                    log.debug("We are dealing with custom properties or identifiers: ${payload}")
-                                    //processCustomPropertyChange(payload)
-                                    if(payload.changeDoc.OID.contains(Identifier.class.name))
-                                        _processIdentifierChange(pendingChange, payload)
-                                    else if(payload.changeDoc.OID.contains("Property"))
-                                        _processCustomPropertyChange(pendingChange, payload) // TODO [ticket=1894]
-                                }
-                                else if ( prop_info.name == 'status' ) {
-                                    RefdataValue oldStatus = (RefdataValue) genericOIDService.resolveOID(payload.changeDoc.old)
-                                    RefdataValue newStatus = (RefdataValue) genericOIDService.resolveOID(payload.changeDoc.new)
-                                    log.debug("Updating status from ${oldStatus.getI10n('value')} to ${newStatus.getI10n('value')}")
-                                    target_object.status = newStatus
-                                }
-                                else if ( prop_info.isAssociation() ) {
-                                    log.debug("Setting association for ${payload.changeDoc.prop} to ${payload.changeDoc.new}");
-                                    target_object[payload.changeDoc.prop] = genericOIDService.resolveOID(payload.changeDoc.new)
-                                }
-                                else if ( prop_info.getType() == java.util.Date ) {
-                                    log.debug("Date processing.... parse \"${payload.changeDoc.new}\"");
-                                    if ( ( payload.changeDoc.new != null ) && ( payload.changeDoc.new.toString() != 'null' ) ) {
-                                        //if ( ( parsed_change_info.changeDoc.new != null ) && ( parsed_change_info.changeDoc.new != 'null' ) ) {
-                                        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"); // yyyy-MM-dd'T'HH:mm:ss.SSSZ 2013-08-31T23:00:00Z
-                                        Date d = df.parse(payload.changeDoc.new)
-                                        target_object[payload.changeDoc.prop] = d
+                                // GrailsClass domain_class = CodeUtils.getDomainClass( target_object.class.name )
+                                // def prop_info = domain_class.getPersistentProperty(payload.changeDoc.prop)
+                                PersistentEntity pe = CodeUtils.getPersistentEntity( target_object.class.name )
+
+                                if (pe) {
+                                    PersistentProperty prop_info = pe.persistentProperties.find { it.name == payload.changeDoc.prop }
+                                    Association prop_info_association = pe.associations.find { it.name == payload.changeDoc.prop }
+
+                                    if (prop_info) {
+                                        if (prop_info.getName() == 'status') {
+                                            RefdataValue oldStatus = (RefdataValue) genericOIDService.resolveOID(payload.changeDoc.old)
+                                            RefdataValue newStatus = (RefdataValue) genericOIDService.resolveOID(payload.changeDoc.new)
+                                            log.debug("Updating status from ${oldStatus.getI10n('value')} to ${newStatus.getI10n('value')}")
+                                            target_object.status = newStatus
+                                        }
+                                        else if (prop_info.getType() == java.util.Date) {
+                                            log.debug("Date processing.... parse \"${payload.changeDoc.new}\"");
+                                            if ((payload.changeDoc.new != null) && (payload.changeDoc.new.toString() != 'null')) {
+                                                SimpleDateFormat df = DateUtils.getSDF_yyyyMMddTHHmmssZ()
+                                                // yyyy-MM-dd'T'HH:mm:ss.SSSZ 2013-08-31T23:00:00Z
+                                                Date d = df.parse(payload.changeDoc.new)
+                                                target_object[payload.changeDoc.prop] = d
+                                            } else {
+                                                target_object[payload.changeDoc.prop] = null
+                                            }
+                                        }
+                                        else if (prop_info && prop_info_association) {
+                                            log.debug("Setting association for ${payload.changeDoc.prop} to ${payload.changeDoc.new}");
+                                            target_object[payload.changeDoc.prop] = genericOIDService.resolveOID(payload.changeDoc.new)
+                                        }
+                                        else {
+                                            log.debug("Setting value for ${payload.changeDoc.prop} to ${payload.changeDoc.new}");
+                                            target_object[payload.changeDoc.prop] = payload.changeDoc.new
+                                        }
                                     }
                                     else {
-                                        target_object[payload.changeDoc.prop] = null
+                                        log.debug("We are dealing with custom properties or identifiers: ${payload}")
+                                        //processCustomPropertyChange(payload)
+                                        if (payload.changeDoc.OID.contains(Identifier.class.name))
+                                            _processIdentifierChange(pendingChange, payload)
+                                        else if (payload.changeDoc.OID.contains("Property"))
+                                            _processCustomPropertyChange(pendingChange, payload) // TODO [ticket=1894]
                                     }
-                                }
-                                else {
-                                    log.debug("Setting value for ${payload.changeDoc.prop} to ${payload.changeDoc.new}");
-                                    target_object[payload.changeDoc.prop] = payload.changeDoc.new
                                 }
 
                                 if(target_object.save()) {
@@ -169,20 +178,20 @@ class PendingChangeService extends AbstractLockableService {
                         break
 
                     case EVENT_OBJECT_NEW :
-                        GrailsClass new_domain_class = AppUtils.getDomainClass( payload.newObjectClass )
-                        if ( new_domain_class != null ) {
-                            def new_instance = new_domain_class.getClazz().newInstance()
+                        Class new_dc = CodeUtils.getDomainClass( payload.newObjectClass )
+                        if ( new_dc != null ) {
+                            def new_instance = new_dc.newInstance()
                             // like bindData(destination, map), that only exists in controllers
 
-                            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S")
+                            SimpleDateFormat sdf = DateUtils.getSDF_yyyyMMdd_HHmmssS()
                             if(payload.changeDoc?.startDate || payload.changeDoc?.endDate)
                             {
-                                payload.changeDoc?.startDate = ((payload.changeDoc?.startDate != null) && (payload.changeDoc?.startDate.length() > 0)) ? sdf.parse(payload.changeDoc?.startDate) : null
-                                payload.changeDoc?.endDate = ((payload.changeDoc?.endDate != null) && (payload.changeDoc?.endDate.length() > 0)) ? sdf.parse(payload.changeDoc?.endDate) : null
+                                payload.changeDoc?.startDate = ((payload.changeDoc?.startDate != null) && (payload.changeDoc?.startDate?.length() > 0)) ? sdf.parse(payload.changeDoc?.startDate) : null
+                                payload.changeDoc?.endDate = ((payload.changeDoc?.endDate != null) && (payload.changeDoc?.endDate?.length() > 0)) ? sdf.parse(payload.changeDoc?.endDate) : null
                             }
                             if(payload.changeDoc?.accessStartDate || payload.changeDoc?.accessEndDate) {
-                                payload.changeDoc?.accessStartDate = ((payload.changeDoc?.accessStartDate != null) && (payload.changeDoc?.accessStartDate.length() > 0)) ? sdf.parse(payload.changeDoc?.accessStartDate) : null
-                                payload.changeDoc?.accessEndDate = ((payload.changeDoc?.accessEndDate != null) && (payload.changeDoc?.accessEndDate.length() > 0)) ? sdf.parse(payload.changeDoc?.accessEndDate) : null
+                                payload.changeDoc?.accessStartDate = ((payload.changeDoc?.accessStartDate != null) && (payload.changeDoc?.accessStartDate?.length() > 0)) ? sdf.parse(payload.changeDoc?.accessStartDate) : null
+                                payload.changeDoc?.accessEndDate = ((payload.changeDoc?.accessEndDate != null) && (payload.changeDoc?.accessEndDate?.length() > 0)) ? sdf.parse(payload.changeDoc?.accessEndDate) : null
                             }
 
 
@@ -201,15 +210,15 @@ class PendingChangeService extends AbstractLockableService {
                         if ( pendingChange.payloadChangeTargetOid?.length() > 0 ) {
                             def target_object = genericOIDService.resolveOID(pendingChange.payloadChangeTargetOid)
                             if ( target_object ) {
-                                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S")
+                                SimpleDateFormat sdf = DateUtils.getSDF_yyyyMMdd_HHmmssS()
                                 if(payload.changeDoc?.startDate || payload.changeDoc?.endDate)
                                 {
-                                    payload.changeDoc?.startDate = ((payload.changeDoc?.startDate != null) && (payload.changeDoc?.startDate.length() > 0)) ? sdf.parse(payload.changeDoc?.startDate) : null
-                                    payload.changeDoc?.endDate = ((payload.changeDoc?.endDate != null) && (payload.changeDoc?.endDate.length() > 0)) ? sdf.parse(payload.changeDoc?.endDate) : null
+                                    payload.changeDoc?.startDate = ((payload.changeDoc?.startDate != null) && (payload.changeDoc?.startDate?.length() > 0)) ? sdf.parse(payload.changeDoc?.startDate) : null
+                                    payload.changeDoc?.endDate = ((payload.changeDoc?.endDate != null) && (payload.changeDoc?.endDate?.length() > 0)) ? sdf.parse(payload.changeDoc?.endDate) : null
                                 }
                                 if(payload.changeDoc?.accessStartDate || payload.changeDoc?.accessEndDate) {
-                                    payload.changeDoc?.accessStartDate = ((payload.changeDoc?.accessStartDate != null) && (payload.changeDoc?.accessStartDate.length() > 0)) ? sdf.parse(payload.changeDoc?.accessStartDate) : null
-                                    payload.changeDoc?.accessEndDate = ((payload.changeDoc?.accessEndDate != null) && (payload.changeDoc?.accessEndDate.length() > 0)) ? sdf.parse(payload.changeDoc?.accessEndDate) : null
+                                    payload.changeDoc?.accessStartDate = ((payload.changeDoc?.accessStartDate != null) && (payload.changeDoc?.accessStartDate?.length() > 0)) ? sdf.parse(payload.changeDoc?.accessStartDate) : null
+                                    payload.changeDoc?.accessEndDate = ((payload.changeDoc?.accessEndDate != null) && (payload.changeDoc?.accessEndDate?.length() > 0)) ? sdf.parse(payload.changeDoc?.accessEndDate) : null
                                 }
 
                                 if(payload.changeDoc?.status)
@@ -248,7 +257,7 @@ class PendingChangeService extends AbstractLockableService {
                         break
 
                     case EVENT_COVERAGE_UPDATE:
-                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+                        SimpleDateFormat sdf = DateUtils.getSDF_yyyyMMddTHHmmssZ()
                         IssueEntitlementCoverage target = (IssueEntitlementCoverage) genericOIDService.resolveOID(pendingChange.payloadChangeTargetOid)
                         Map changeAttrs = payload.changeDoc
                         if(target) {
@@ -1052,7 +1061,7 @@ class PendingChangeService extends AbstractLockableService {
                     targetTitle = (IssueEntitlement) target
                 }
                 else if(target instanceof Subscription) {
-                    targetTitle = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :target and ie.tipp = :tipp and ie.status != :deleted',[target:target,tipp:pc.tipp,deleted:RDStore.TIPP_STATUS_DELETED])[0]
+                    targetTitle = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :target and ie.tipp = :tipp and ie.status not in (:ieStatus)',[target:target,tipp:pc.tipp,ieStatus:[RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]])[0]
                 }
                 if(targetTitle) {
                     log.debug("set ${targetTitle} ${pc.targetProperty} to ${parsedNewValue}")
@@ -1071,7 +1080,7 @@ class PendingChangeService extends AbstractLockableService {
                     targetTitle = (IssueEntitlement) target
                 }
                 else if(target instanceof Subscription) {
-                    targetTitle = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :target and ie.tipp = :tipp and ie.status != :deleted',[target:target,tipp:pc.tipp,deleted:RDStore.TIPP_STATUS_DELETED])[0]
+                    targetTitle = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :target and ie.tipp = :tipp and ie.status not in (:ieStatus)',[target:target,tipp:pc.tipp,ieStatus:[RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]])[0]
                 }
                 if(targetTitle) {
                     log.debug("deleting ${targetTitle} from holding ...")
@@ -1098,7 +1107,7 @@ class PendingChangeService extends AbstractLockableService {
                     targetCov = (IssueEntitlementCoverage) target
                 }
                 else if(target instanceof Subscription) {
-                    List<IssueEntitlement> ieCheck = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :target and ie.tipp = :tipp and ie.status != :deleted',[target:target,tipp:pc.tippCoverage.tipp,deleted:RDStore.TIPP_STATUS_DELETED])
+                    List<IssueEntitlement> ieCheck = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :target and ie.tipp = :tipp and ie.status not in (:ieStatus)',[target:target,tipp:pc.tippCoverage.tipp,ieStatus:[RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]])
                     if(ieCheck.size() > 0) {
                         IssueEntitlement ie = (IssueEntitlement) ieCheck.get(0)
                         targetCov = (IssueEntitlementCoverage) pc.tippCoverage.findEquivalent(ie.coverages)
@@ -1160,7 +1169,7 @@ class PendingChangeService extends AbstractLockableService {
                 }
                 else if(target instanceof Subscription) {
                     JSONObject oldMap = JSON.parse(pc.oldValue) as JSONObject
-                    ie = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :target and ie.tipp.id = :tipp and ie.status != :deleted',[target:target,tipp:oldMap.tipp.id as Long,deleted:RDStore.TIPP_STATUS_DELETED])[0]
+                    ie = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :target and ie.tipp.id = :tipp and ie.status not in (:ieStatus)',[target:target,tipp:oldMap.tipp.id as Long,ieStatus:[RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]])[0]
                     for (String k : AbstractCoverage.equivalencyProperties) {
                         targetCov = ie.coverages.find { IssueEntitlementCoverage iec -> iec[k] == oldMap[k] }
                         if(targetCov) {
@@ -1374,7 +1383,7 @@ class PendingChangeService extends AbstractLockableService {
         }
         else if(newChange.tippCoverage) {
             target = newChange.tippCoverage
-            childSubscriptions.addAll(Subscription.executeQuery('select s from Subscription s join s.issueEntitlements ie where s.instanceOf = :parent and ie.tipp = :tipp and ie.status != :deleted',[parent:subPkg.subscription,tipp:target.tipp,deleted:RDStore.TIPP_STATUS_DELETED]))
+            childSubscriptions.addAll(Subscription.executeQuery('select s from Subscription s join s.issueEntitlements ie where s.instanceOf = :parent and ie.tipp = :tipp and ie.status not in (:ieStatus)',[parent:subPkg.subscription,tipp:target.tipp,ieStatus:[RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]]))
         }
         /*else if(newChange.priceItem && newChange.priceItem.tipp) {
             target = newChange.priceItem

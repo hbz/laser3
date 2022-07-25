@@ -1,16 +1,12 @@
 <%@ page import="de.laser.Org" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${user.display}</title>
-</head>
-<body>
+
+<laser:htmlStart text="${user.display}" />
+
       <laser:render template="breadcrumb" model="${[ params:params ]}"/>
 
-      <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${user.username} : ${user.displayName ?: 'No username'}</h1>
+      <ui:h1HeaderWithIcon text="${user.username} : ${user.displayName ?: 'No username'}" />
 
-      <semui:messages data="${flash}" />
+      <ui:messages data="${flash}" />
 
       <h2 class="ui header">${message(code:'user.affiliation.plural')}</h2>
 
@@ -49,5 +45,5 @@
           </g:each>
         </tbody>
       </table>
-</body>
-</html>
+
+<laser:htmlEnd />

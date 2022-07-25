@@ -5,6 +5,7 @@ import de.laser.DocContext
 import de.laser.Org
 import de.laser.Subscription
 import de.laser.finance.CostItem
+import de.laser.storage.PropertyStore
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.properties.PropertyDefinition
@@ -91,8 +92,8 @@ class SurveyConfig {
 
         header(nullable: true, blank: false)
         comment(nullable: true, blank: true)
-        documents(nullable: true, blank: false)
-        orgs(nullable: true, blank: false)
+        documents   (nullable: true)
+        orgs        (nullable: true)
         scheduledStartDate  (nullable: true)
         scheduledEndDate    (nullable: true)
         internalComment(nullable: true, blank: true)
@@ -102,7 +103,7 @@ class SurveyConfig {
         urlComment(nullable: true, blank: false)
         urlComment2(nullable: true, blank: false)
         urlComment3(nullable: true, blank: false)
-        propertySet(nullable: true, blank: false)
+        propertySet (nullable: true)
         transferWorkflow (nullable: true, blank: false)
     }
 
@@ -485,13 +486,13 @@ class SurveyConfig {
         LinkedHashSet<SurveyConfigProperties> propertiesNoMandatory = []
 
         this.surveyProperties.each {
-            if(it.surveyProperty == RDStore.SURVEY_PROPERTY_PARTICIPATION){
+            if(it.surveyProperty == PropertyStore.SURVEY_PROPERTY_PARTICIPATION){
                 propertiesParticipation << it
             }
-            else if(it.mandatoryProperty == true && it.surveyProperty != RDStore.SURVEY_PROPERTY_PARTICIPATION){
+            else if(it.mandatoryProperty == true && it.surveyProperty != PropertyStore.SURVEY_PROPERTY_PARTICIPATION){
                 propertiesMandatory << it
             }
-            else if(it.mandatoryProperty == false && it.surveyProperty != RDStore.SURVEY_PROPERTY_PARTICIPATION){
+            else if(it.mandatoryProperty == false && it.surveyProperty != PropertyStore.SURVEY_PROPERTY_PARTICIPATION){
                 propertiesNoMandatory << it
             }
         }

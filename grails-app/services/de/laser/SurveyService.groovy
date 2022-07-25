@@ -4,6 +4,7 @@ package de.laser
 import de.laser.auth.User
 import de.laser.auth.UserOrg
 import de.laser.finance.CostItem
+import de.laser.config.ConfigDefaults
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
 import de.laser.stats.Counter4ApiSource
@@ -11,6 +12,7 @@ import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5ApiSource
 import de.laser.stats.Counter5Report
 import de.laser.storage.BeanStore
+import de.laser.storage.PropertyStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
@@ -20,7 +22,7 @@ import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyResult
 import de.laser.system.SystemEvent
 import de.laser.utils.AppUtils
-import de.laser.utils.ConfigMapper
+import de.laser.config.ConfigMapper
 import de.laser.utils.DateUtils
 import grails.gorm.transactions.Transactional
 import grails.plugins.mail.MailService
@@ -149,7 +151,7 @@ class SurveyService {
 
     @Deprecated
     boolean isContinueToParticipate(Org org, SurveyConfig surveyConfig) {
-        def participationProperty = RDStore.SURVEY_PROPERTY_PARTICIPATION
+        PropertyDefinition participationProperty = PropertyStore.SURVEY_PROPERTY_PARTICIPATION
 
         def result = SurveyResult.findBySurveyConfigAndParticipantAndType(surveyConfig, org, participationProperty)?.getResult() == RDStore.YN_YES ? true : false
 
@@ -372,7 +374,7 @@ class SurveyService {
 
                 row.add([field: surveyConfig.surveyInfo.owner.name ?: '', style: null])
                 row.add([field: surveyConfig.comment ?: '', style: null])
-                row.add([field: surveyConfig.surveyInfo.endDate ? DateUtils.getSDF_ddMMyyy().format( Date.parse('yyyy-MM-dd hh:mm:SS.S', surveyConfig.surveyInfo.endDate.toString()) ) : '', style: null])
+                row.add([field: surveyConfig.surveyInfo.endDate ? DateUtils.getSDF_ddMMyyy().format( DateUtils.getSDF_yyyyMMdd_hhmmSSS().parse(surveyConfig.surveyInfo.endDate.toString()) ) : '', style: null])
 
                 if (surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]) {
                     row.add([field: surveyConfig.url ?: '', style: null])
@@ -405,9 +407,8 @@ class SurveyService {
 
                     if (surveyConfig.subSurveyUseForTransfer) {
                         CostItem surveyCostItem = CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, contextOrg), RDStore.COST_ITEM_DELETED)
-
-                        row.add([field: surveyConfig.scheduledStartDate ? DateUtils.getSDF_ddMMyyy().format( Date.parse('yyyy-MM-dd hh:mm:SS.S', surveyConfig.scheduledStartDate.toString()) ): '', style: null])
-                        row.add([field: surveyConfig.scheduledEndDate ? DateUtils.getSDF_ddMMyyy().format( Date.parse('yyyy-MM-dd hh:mm:SS.S', surveyConfig.scheduledEndDate.toString()) ): '', style: null])
+                        row.add([field: surveyConfig.scheduledStartDate ? DateUtils.getSDF_ddMMyyy().format( DateUtils.getSDF_yyyyMMdd_hhmmSSS().parse(surveyConfig.scheduledStartDate.toString()) ): '', style: null])
+                        row.add([field: surveyConfig.scheduledEndDate ? DateUtils.getSDF_ddMMyyy().format( DateUtils.getSDF_yyyyMMdd_hhmmSSS().parse(surveyConfig.scheduledEndDate.toString()) ): '', style: null])
                         row.add([field: surveyCostItem?.costInBillingCurrencyAfterTax ?: '', style: null])
                         row.add([field: surveyCostItem?.billingCurrency?.value ?: '', style: null])
                         row.add([field: surveyCostItem?.costDescription ?: '', style: null])
@@ -1282,7 +1283,6 @@ class SurveyService {
             if (params.copySurvey.copyDocs) {
                 if ((dctx.owner?.contentType == Doc.CONTENT_TYPE_FILE) && (dctx.status != RDStore.DOC_CTX_STATUS_DELETED)) {
                     Doc clonedContents = new Doc(
-                            status: dctx.owner.status,
                             type: dctx.owner.type,
                             content: dctx.owner.content,
                             uuid: dctx.owner.uuid,
@@ -1293,7 +1293,7 @@ class SurveyService {
                             migrated: dctx.owner.migrated,
                             owner: dctx.owner.owner
                     ).save()
-                    String fPath = ConfigMapper.getDocumentStorageLocation() ?: '/tmp/laser'
+                    String fPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
                     Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
                     Path target = new File("${fPath}/${clonedContents.uuid}").toPath()
                     Files.copy(source, target)
@@ -1310,7 +1310,6 @@ class SurveyService {
             if (params.copySurvey.copyAnnouncements) {
                 if ((dctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(dctx.domain) && (dctx.status != RDStore.DOC_CTX_STATUS_DELETED)) {
                     Doc clonedContents = new Doc(
-                            status: dctx.owner.status,
                             type: dctx.owner.type,
                             content: dctx.owner.content,
                             uuid: dctx.owner.uuid,

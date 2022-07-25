@@ -1,22 +1,15 @@
-<!doctype html>
-<html>
-  <head>
-    <meta name="layout" content="laser">
-      <title>${message(code:'laser')} : Admin: User Merge</title>
-  </head>
+<laser:htmlStart text="Admin: User Merge" />
 
-  <body>
+    <ui:breadcrumbs>
+        <ui:crumb message="menu.admin" controller="admin" action="index" />
+        <ui:crumb text="User Merge" class="active"/>
+    </ui:breadcrumbs>
 
-    <semui:breadcrumbs>
-        <semui:crumb message="menu.admin" controller="admin" action="index" />
-        <semui:crumb text="User Merge" class="active"/>
-    </semui:breadcrumbs>
+    <ui:h1HeaderWithIcon text="User Merge" />
 
-    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />User Merge</h1>
+    <ui:messages data="${flash}" />
 
-    <semui:messages data="${flash}" />
-
-<semui:form>
+<ui:form>
     <g:form action="userMerge" method="GET" class="ui form">
 
         <p>Select the user to keep, and the user whose rights will be transferred. When 'merge' is clicked,
@@ -38,7 +31,7 @@
             </div>
         </div>
     </g:form>
-</semui:form>
+</ui:form>
 
   
   <div id="user_merge_modal" class="modal hide">
@@ -84,5 +77,5 @@
         $('#user_merge_modal').modal('show');
     </laser:script>
   </g:if>
-  </body>
-</html>
+
+<laser:htmlEnd />

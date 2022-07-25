@@ -1250,8 +1250,6 @@ class FinanceService {
                     if(subscription == null || subPkg == null)
                         mappingErrorBag.entitlementWithoutPackageOrSubscription = true
                     else {
-                        // TODO [ticket=1789]
-                        // List<TitleInstance> titleMatches = TitleInstance.executeQuery("select distinct idOcc.ti from IdentifierOccurrence idOcc join idOcc.identifier id where id.value = :idCandidate and id.ns in :namespaces",[idCandidate: ieIdentifier, namespaces: [namespaces.isbn,namespaces.doi,namespaces.zdb,namespaces.issn,namespaces.eissn]])
                         List<TitleInstancePackagePlatform> titleMatches = TitleInstancePackagePlatform.executeQuery("select distinct id.tipp from Identifier id where id.value = :idCandidate and id.ns in :namespaces", [idCandidate: ieIdentifier, namespaces: [namespaces.isbn,namespaces.doi,namespaces.zdb,namespaces.issn,namespaces.eissn]])
                         if(!titleMatches)
                             mappingErrorBag.noValidTitle = ieIdentifier
@@ -1558,7 +1556,7 @@ class FinanceService {
     Map<String,Object> importCostItems(GrailsParameterMap params) {
         Map<String,Object> result = [error:[]]
         Org contextOrg = contextService.getOrg()
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+        SimpleDateFormat sdf = DateUtils.getSDF_yyyyMMddTHHmmssZ()
         def candidates = JSON.parse(params.candidates)
         def bcJSON = JSON.parse(params.budgetCodes)
         Map<Integer, String> budgetCodes = [:]

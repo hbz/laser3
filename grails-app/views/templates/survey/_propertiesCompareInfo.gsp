@@ -6,12 +6,6 @@
 <g:if test="${customProperties?.size() > 0}">
     <div class="ui card la-js-responsive-table la-dl-no-table">
         <div class="content">
-            <h3 class="ui header">
-                ${message(code: 'survey.subscription.propertiesChange')}
-            </h3>
-        </div>
-
-        <div class="content">
 
             <table class="ui celled table la-js-responsive-table la-table">
                 <thead>
@@ -35,42 +29,42 @@
                             </g:if>
                         </td>
                         <g:set var="propValues" value="${prop.getValue()}"/>
-                        <g:if test="${(subscription in propValues.owner)}">
+                        <g:if test="${(subscription && subscription.id in propValues.owner.id)}">
                             <td class="center aligned">
                                 <div class="ui relaxed divided list">
                                     <g:each var="subProperty" in="${propValues}">
-                                        <g:if test="${subProperty.owner == subscription}">
+                                        <g:if test="${subProperty.owner.id == subscription.id}">
                                             <div class="item">
                                             %{--SOURCE-SUBSCRIPTION--}%
 
                                                 <g:if test="${subProperty.type.isIntegerType()}">
-                                                    <semui:xEditable owner="${subProperty}" type="text" field="intValue"
+                                                    <ui:xEditable owner="${subProperty}" type="text" field="intValue"
                                                                      overwriteEditable="${overwriteEditable}"/>
                                                 </g:if>
                                                 <g:elseif test="${subProperty.type.isStringType()}">
-                                                    <semui:xEditable owner="${subProperty}" type="text"
+                                                    <ui:xEditable owner="${subProperty}" type="text"
                                                                      field="stringValue"
                                                                      overwriteEditable="${overwriteEditable}"/>
                                                 </g:elseif>
                                                 <g:elseif test="${subProperty.type.isBigDecimalType()}">
-                                                    <semui:xEditable owner="${subProperty}" type="text" field="decValue"
+                                                    <ui:xEditable owner="${subProperty}" type="text" field="decValue"
                                                                      overwriteEditable="${overwriteEditable}"/>
                                                 </g:elseif>
                                                 <g:elseif test="${subProperty.type.isDateType()}">
-                                                    <semui:xEditable owner="${subProperty}" type="date"
+                                                    <ui:xEditable owner="${subProperty}" type="date"
                                                                      field="dateValue"
                                                                      overwriteEditable="${overwriteEditable}"/>
                                                 </g:elseif>
                                                 <g:elseif test="${subProperty.type.isURLType()}">
-                                                    <semui:xEditable owner="${subProperty}" type="url" field="urlValue"
+                                                    <ui:xEditable owner="${subProperty}" type="url" field="urlValue"
                                                                      overwriteEditable="${overwriteEditable}"
                                                                      class="la-overflow la-ellipsis"/>
                                                     <g:if test="${subProperty.value}">
-                                                        <semui:linkIcon href="${subProperty.value}"/>
+                                                        <ui:linkWithIcon href="${subProperty.value}"/>
                                                     </g:if>
                                                 </g:elseif>
                                                 <g:elseif test="${subProperty.type.isRefdataValueType()}">
-                                                    <semui:xEditableRefData owner="${subProperty}" type="text"
+                                                    <ui:xEditableRefData owner="${subProperty}" type="text"
                                                                             field="refValue"
                                                                             config="${subProperty.type.refdataCategory}"
                                                                             overwriteEditable="${overwriteEditable}"/>
@@ -91,7 +85,7 @@
                                 </div>
                             </td>
                         </g:if>
-                        <g:if test="${!(subscription in propValues.owner)}">
+                        <g:if test="${!(subscription && subscription.id in propValues.owner.id)}">
                             <td class="center aligned">
                                 <a class="ui circular label la-popup-tooltip la-delay"
                                    data-content="<g:message
@@ -99,42 +93,42 @@
                                 </a>
                             </td>
                         </g:if>
-                        <g:if test="${(successorSubscription in propValues.owner)}">
+                        <g:if test="${(successorSubscription && successorSubscription.id in propValues.owner.id)}">
                             <td class="center aligned">
                                 <div class="ui relaxed divided list">
                                     <g:each var="subProperty" in="${propValues}">
                                     %{--TARGET-SUBSCRIPTION--}%
-                                        <g:if test="${subProperty.owner == successorSubscription}">
+                                        <g:if test="${subProperty.owner.id == successorSubscription.id}">
                                             <div class="item">
                                                 <g:if test="${subProperty.type.isIntegerType()}">
-                                                    <semui:xEditable owner="${subProperty}" type="text" field="intValue"
+                                                    <ui:xEditable owner="${subProperty}" type="text" field="intValue"
                                                                      overwriteEditable="${overwriteEditable}"/>
                                                 </g:if>
 
                                                 <g:elseif test="${subProperty.type.isStringType()}">
-                                                    <semui:xEditable owner="${subProperty}" type="text"
+                                                    <ui:xEditable owner="${subProperty}" type="text"
                                                                      field="stringValue"
                                                                      overwriteEditable="${overwriteEditable}"/>
                                                 </g:elseif>
                                                 <g:elseif test="${subProperty.type.isBigDecimalType()}">
-                                                    <semui:xEditable owner="${subProperty}" type="text" field="decValue"
+                                                    <ui:xEditable owner="${subProperty}" type="text" field="decValue"
                                                                      overwriteEditable="${overwriteEditable}"/>
                                                 </g:elseif>
                                                 <g:elseif test="${subProperty.type.isDateType()}">
-                                                    <semui:xEditable owner="${subProperty}" type="date"
+                                                    <ui:xEditable owner="${subProperty}" type="date"
                                                                      field="dateValue"
                                                                      overwriteEditable="${overwriteEditable}"/>
                                                 </g:elseif>
                                                 <g:elseif test="${subProperty.type.isURLType()}">
-                                                    <semui:xEditable owner="${subProperty}" type="url" field="urlValue"
+                                                    <ui:xEditable owner="${subProperty}" type="url" field="urlValue"
                                                                      overwriteEditable="${overwriteEditable}"
                                                                      class="la-overflow la-ellipsis"/>
                                                     <g:if test="${subProperty.value}">
-                                                        <semui:linkIcon/>
+                                                        <ui:linkWithIcon/>
                                                     </g:if>
                                                 </g:elseif>
                                                 <g:elseif test="${subProperty.type.isRefdataValueType()}">
-                                                    <semui:xEditableRefData owner="${subProperty}" type="text"
+                                                    <ui:xEditableRefData owner="${subProperty}" type="text"
                                                                             field="refValue"
                                                                             config="${subProperty.type.refdataCategory}"
                                                                             overwriteEditable="${overwriteEditable}"/>
@@ -155,7 +149,7 @@
                                 </div>
                             </td>
                         </g:if>
-                        <g:if test="${!(successorSubscription in propValues.owner)}">
+                        <g:if test="${!(successorSubscription && successorSubscription.id in propValues.owner.id)}">
                             <td class="center aligned">
                                 <a class="ui circular label la-popup-tooltip la-delay"
                                    data-content="<g:message

@@ -1,6 +1,6 @@
 <%@ page import="java.sql.Timestamp; org.springframework.context.i18n.LocaleContextHolder; de.laser.Org; de.laser.License; de.laser.Subscription; de.laser.Task; de.laser.storage.RDStore;de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.RefdataCategory" %>
 <laser:serviceInjection />
-<semui:modal id="modalCreateTask" message="task.create.new">
+<ui:modal id="modalCreateTask" message="task.create.new">
 
     <g:form class="ui form" id="create_task" url="[controller: 'task', action: 'create']" method="post">
         <g:if test="${controllerName != 'myInstitution' && controllerName != 'ajaxHtml'}">
@@ -32,28 +32,28 @@
                         <input id="generalradio" type="radio" value="general" name="linkto" tabindex="0" class="hidden" checked="">
                         <label for="generalradio">${message(code: 'task.general')}</label>
                     </div>
-                    &nbsp &nbsp
+                    &nbsp; &nbsp;
                     <div class="ui radio checkbox">
                         <input id="licenseradio" type="radio" value="license" name="linkto" tabindex="0" class="hidden">
                         <label for="licenseradio">
                             <g:message code="license.label" />
                         </label>
                     </div>
-                    &nbsp &nbsp
+                    &nbsp; &nbsp;
                     %{--<div class="ui radio checkbox">
                         <input id="pkgradio" type="radio" value="pkg" name="linkto" tabindex="0" class="hidden">
                         <label for="pkgradio">
                             <g:message code="package.label" />
                         </label>
                     </div>
-                    &nbsp &nbsp--}%
+                    &nbsp; &nbsp;--}%
                     <div class="ui radio checkbox">
                         <input id="subscriptionradio" type="radio" value="subscription" name="linkto" tabindex="0" class="hidden">
                         <label for="subscriptionradio">
                             <g:message code="default.subscription.label" />
                         </label>
                     </div>
-                    &nbsp &nbsp
+                    &nbsp; &nbsp;
                     <div class="ui radio checkbox">
                         <input id="orgradio" type="radio" value="org" name="linkto" tabindex="0" class="hidden">
                         <label for="orgradio">
@@ -133,7 +133,7 @@
                     <label for="status">
                         <g:message code="task.status.label" /> <g:message code="messageRequiredField" />
                     </label>
-                    <laser:select id="status" name="status.id"
+                    <ui:select id="status" name="status.id"
                                   from="${RefdataCategory.getAllRefdataValues(RDConstants.TASK_STATUS)}"
                                   optionValue="value" optionKey="id" required=""
                                   value="${taskInstance?.status?.id ?: RDStore.TASK_STATUS_OPEN.id}"
@@ -142,7 +142,7 @@
                     />
                 </div>
 
-                <semui:datepicker class="wide eight" label="task.endDate.label" id="endDate" name="endDate"
+                <ui:datepicker class="wide eight" label="task.endDate.label" id="endDate" name="endDate"
                                   placeholder="default.date.label" value="${taskInstance?.endDate}" required=""
                                   bean="${taskInstance}"/>
 
@@ -365,4 +365,4 @@
         }
     </laser:script>
 
-</semui:modal>
+</ui:modal>

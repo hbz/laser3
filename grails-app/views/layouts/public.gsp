@@ -14,9 +14,9 @@
     <asset:stylesheet src="laser.css"/>%{-- dont move --}%
 
     <laser:javascript src="base.js"/>%{-- dont move --}%
-    <script data-type="fix">
-        <g:render template="/templates/javascript/jspc.js" />%{-- g:render; dont move --}%
-        <g:render template="/templates/javascript/jspc.dict.js" />%{-- g:render; dont move --}%
+    <script data-type="fixed">
+        <g:render template="/templates/jspc/jspc.js" />%{-- g:render; dont move --}%
+        <g:render template="/templates/jspc/jspc.dict.js" />%{-- g:render; dont move --}%
     </script>
 
     <g:layoutHead/>

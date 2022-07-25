@@ -1,7 +1,7 @@
 /*
- * FileName: laser.css
+ * bundle: assets/stylesheets/laser.css
  *
  *= require base.css
- *= require /laser/semantic.min.css         //-- themes
- *= require tmp_semui.css
+ *= require /laser/semantic.min.css         //--> assets/themes
+ *= require modules/tmp_semui.css
  */

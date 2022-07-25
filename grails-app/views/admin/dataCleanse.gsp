@@ -1,15 +1,9 @@
-<!doctype html>
-<html>
-  <head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : Data import explorer</title>
-  </head>
+<laser:htmlStart text="Data import explorer" />
 
-  <body>
     <div>
       <p>
         Admin
       </p>
     </div>
-  </body>
-</html>
+
+<laser:htmlEnd />

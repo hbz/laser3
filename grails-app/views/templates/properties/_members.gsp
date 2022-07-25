@@ -1,5 +1,5 @@
 <!-- A: templates/properties/_members -->
-%{-- To use, add the g:render custom_props inside a div with id=custom_props_div_xxx --}%
+%{-- To use, add the laser:render custom_props inside a div with id=custom_props_div_xxx --}%
 %{-- on head of container page, and on window load execute  --}%
 %{-- c3po.initProperties("<g:createLink controller='ajaxJson' action='lookup'/>", "#custom_props_div_xxx"); --}%
 
@@ -10,7 +10,7 @@
 <g:set var="overwriteEditable" value="${editable || accessService.checkPermAffiliationX('ORG_INST','INST_EDITOR','ROLE_ADMIN')}" />--%>
 
 <g:if test="${newProp}">
-    <semui:errors bean="${newProp}" />
+    <ui:errors bean="${newProp}" />
 </g:if>
 <g:if test="${subscription}">
     <g:set var="memberSubs" value="${Subscription.executeQuery('select s from Subscription s where s.instanceOf = :sub', [sub: subscription])}"/>
@@ -34,12 +34,12 @@
                                 ${propType.getI10n('name')}
                             </g:else>
                             <g:if test="${propType.mandatory}">
-                                <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.mandatory.tooltip')}">
+                                <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'default.mandatory.tooltip')}">
                                     <i class="star icon yellow"></i>
                                 </span>
                             </g:if>
                             <g:if test="${propType.multipleOccurrence}">
-                                <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
+                                <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
                                     <i class="redo icon orange"></i>
                                 </span>
                             </g:if>
@@ -58,12 +58,12 @@
                             ${propType.getI10n('name')}
                         </g:else>
                         <g:if test="${propType.mandatory}">
-                            <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.mandatory.tooltip')}">
+                            <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'default.mandatory.tooltip')}">
                                 <i class="star icon yellow"></i>
                             </span>
                         </g:if>
                         <g:if test="${propType.multipleOccurrence}">
-                            <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
+                            <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
                                 <i class="redo icon orange"></i>
                             </span>
                         </g:if>

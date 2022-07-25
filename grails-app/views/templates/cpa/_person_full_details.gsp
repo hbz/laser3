@@ -40,7 +40,7 @@
                 <g:if test="${editable}">
 
                     <g:if test="${tmplShowAddPersonRoles}">
-                        <input class="ui icon button" type="button" data-semui="modal"
+                        <input class="ui icon button" type="button" data-ui="modal"
                                data-href="#prsRoleFormModal${personRole.id}_F"
                                value="Funktionen">
                         <laser:render template="/person/prsRoleModal" model="[personInstance: person,
@@ -51,7 +51,7 @@
                                                                           message:'person.function_new.label',
                                                                           presetOrgId: personContext.id ]"/>
 
-                        <input class="ui icon button" type="button" data-semui="modal"
+                        <input class="ui icon button" type="button" data-ui="modal"
                                data-href="#prsRoleFormModal${personRole.id}_P"
                                value="Positionen">
                         <laser:render template="/person/prsRoleModal" model="[personInstance: person,
@@ -64,7 +64,7 @@
                     </g:if>
 
                     <g:if test="${tmplShowAddContacts}">
-                        <input class="ui icon button" type="button" data-semui="modal"
+                        <input class="ui icon button" type="button" data-ui="modal"
                                data-href="#contactFormModal${personRole.id}"
                                value="${message(code: 'person.contacts.label')}">
                         <laser:render template="/contact/formModal" model="['prsId': person.id, prId: personRole.id, modalId: 'contactFormModal' + personRole.id]"/>

@@ -1,6 +1,6 @@
 package de.laser
 
-
+import de.laser.annotations.Check404
 import de.laser.auth.User
 import de.laser.ctrl.LicenseControllerService
 import de.laser.custom.CustomWkhtmltoxService
@@ -18,6 +18,7 @@ import de.laser.storage.RDStore
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinitionGroup
 import grails.plugin.springsecurity.annotation.Secured
+import org.apache.http.HttpStatus
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
@@ -53,6 +54,12 @@ class LicenseController {
     SubscriptionService subscriptionService
     TaskService taskService
 
+    //-----
+
+    final static Map<String, String> CHECK404_ALTERNATIVES = [
+             'myInstitution/currentLicenses' : 'license.current'
+    ]
+
     //----------------------------------------- general or ungroupable section ----------------------------------------
 
     /**
@@ -60,6 +67,7 @@ class LicenseController {
      */
     @DebugInfo(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @Check404()
     def show() {
 
         Profiler prf = new Profiler()
@@ -127,7 +135,7 @@ class LicenseController {
 
             // -- private properties
 
-            result.authorizedOrgs = result.user.authorizedOrgs
+            result.authorizedOrgs = result.user.getAffiliationOrgs()
 
             // create mandatory LicensePrivateProperties if not existing
 
@@ -176,7 +184,7 @@ class LicenseController {
                         result.visiblePrsLinks << pl
                     } else {
                         // nasty lazy loading fix
-                        result.user.authorizedOrgs.each { ao ->
+                        result.user.getAffiliationOrgs().each { ao ->
                             if (ao.getId() == pl.prs.tenant.getId()) {
                                 result.visiblePrsLinks << pl
                             }
@@ -193,10 +201,6 @@ class LicenseController {
         //result.availableSubs = []
 
         result.availableLicensorList = orgTypeService.getOrgsForTypeLicensor().minus(result.visibleOrgRelations.collect { OrgRole oo -> oo.org })
-                /*OrgRole.executeQuery(
-                        "select o from OrgRole oo join oo.org o where oo.lic.id = :lic and oo.roleType.value = 'Licensor'",
-                        [lic: result.license.id]
-                )*/
         result.existingLicensorIdList = []
 
         List bm = prf.stopBenchmark()
@@ -241,6 +245,7 @@ class LicenseController {
      */
     @DebugInfo(test = 'hasAffiliation("INST_USER")', ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @Check404()
     def tasks() {
         Map<String,Object> ctrlResult = licenseControllerService.tasks(this,params)
         if(ctrlResult.error == LicenseControllerService.STATUS_ERROR) {
@@ -365,6 +370,7 @@ class LicenseController {
      */
     @DebugInfo(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
+    @Check404()
     Map<String,Object> linkLicenseToSubs() {
         Map<String, Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW_AND_EDIT)
         result.putAll(subscriptionService.getMySubscriptions(params,result.user,result.institution))
@@ -378,6 +384,7 @@ class LicenseController {
      */
     @DebugInfo(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @Check404()
     def linkedSubs() {
         Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW)
         if (!result) {
@@ -466,6 +473,7 @@ class LicenseController {
      */
     @DebugInfo(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @Check404()
     def members() {
         log.debug("license id:${params.id}");
 
@@ -519,6 +527,7 @@ class LicenseController {
      */
     @DebugInfo(test = 'hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
+    @Check404()
     def linkMemberLicensesToSubs() {
         Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW_AND_EDIT)
         result.tableConfig = ['onlyMemberSubs']
@@ -579,14 +588,12 @@ class LicenseController {
     @Deprecated
     @DebugInfo(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @Check404()
     def pendingChanges() {
-        log.debug("license id:${params.id}");
-
         Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
-
         def validMemberLicenses = License.where {
             instanceOf == result.license
         }
@@ -594,7 +601,6 @@ class LicenseController {
         result.pendingChanges = [:]
 
         validMemberLicenses.each{ member ->
-
             if (executorWrapperService.hasRunningProcess(member)) {
                 log.debug("PendingChange processing in progress")
                 result.processingpc = true
@@ -604,7 +610,6 @@ class LicenseController {
                         "select pc from PendingChange as pc where license.id = :licId and ( pc.status is null or pc.status = :status ) order by pc.ts desc",
                         [licId: member.id, status: RDStore.PENDING_CHANGE_PENDING]
                 )
-
                 result.pendingChanges << ["${member.id}": pendingChanges]
             }
         }
@@ -614,22 +619,19 @@ class LicenseController {
     @Deprecated
     @DebugInfo(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @Check404()
     def history() {
-        log.debug("license::history : ${params}");
-
         Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError(401); return
         }
 
-        // postgresql migration
         String subQuery = 'select cast(lp.id as string) from LicenseProperty as lp where lp.owner = :owner'
         List subQueryResult = LicenseProperty.executeQuery(subQuery, [owner: result.license])
 
         String base_query = "select e from AuditLogEvent as e where ( (className=:licClass and persistedObjectId = cast(:licId as string))"
         Map<String, Object> query_params = [licClass:result.license.class.name, licId:"${result.license.id}"]
 
-        // postgresql migration
         if (subQueryResult) {
             base_query += ' or (className = :prop and persistedObjectId in (:subQueryResult)) ) order by e.dateCreated desc'
             query_params.'prop' = LicenseProperty.class.name
@@ -661,12 +663,11 @@ class LicenseController {
      */
     @DebugInfo(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @Check404()
     def changes() {
-        log.debug("license::changes : ${params}")
-
         Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW)
         if (!result) {
-            response.sendError(401); return
+            response.sendError( HttpStatus.SC_FORBIDDEN ); return
         }
 
         String baseQuery = "select pc from PendingChange as pc where pc.license = :lic and pc.status.value in (:stats)"
@@ -677,7 +678,6 @@ class LicenseController {
                 baseParams,
                 [max: result.max, offset: result.offset]
         )
-
         result.todoHistoryLinesTotal = PendingChange.executeQuery(
                 baseQuery,
                 baseParams
@@ -694,10 +694,11 @@ class LicenseController {
      */
     @DebugInfo(test = 'hasAffiliation("INST_USER")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @Check404()
     def notes() {
         Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW)
         if (!result) {
-            response.sendError(401); return
+            response.sendError( HttpStatus.SC_FORBIDDEN ); return
         }
         result
     }
@@ -709,13 +710,12 @@ class LicenseController {
      * @see DocContext
      */
     @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER")
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
-    })
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER") })
+    @Check404()
     def documents() {
         Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW)
         if (!result) {
-            response.sendError(401); return
+            response.sendError( HttpStatus.SC_FORBIDDEN ); return
         }
         result
     }
@@ -763,7 +763,7 @@ class LicenseController {
         result.editable = result.sourceObject?.isEditableBy(result.user)
 
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.isConsortialObjects = (result.sourceObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL)
@@ -861,7 +861,7 @@ class LicenseController {
         result.editable = result.sourceObject.isEditableBy(result.user)
 
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.isConsortialObjects = (result.sourceObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL && result.targetObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL) ?: false

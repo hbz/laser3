@@ -26,7 +26,7 @@
         modalId = "modalCreateDocument"
     }
 %>
-<semui:modal id="${modalId}" text="${modalText}" msgSave="${submitButtonLabel}">
+<ui:modal id="${modalId}" text="${modalText}" msgSave="${submitButtonLabel}">
 
     <g:form class="ui form" url="${formUrl}" method="post" enctype="multipart/form-data">
         <input type="hidden" name="ownerid" value="${ownobj?.id}"/>
@@ -115,7 +115,7 @@
                                 value = docctx.shareConf?.id
                             }
                         %>
-                        <laser:select from="${availableConfigs}" class="ui dropdown fluid la-not-clearable" name="shareConf"
+                        <ui:select from="${availableConfigs}" class="ui dropdown fluid la-not-clearable" name="shareConf"
                                       optionKey="id" optionValue="value" value="${value}"/>
                     </dd>
                 </dl>
@@ -138,4 +138,4 @@
 
     </g:form>
 
-</semui:modal>
+</ui:modal>

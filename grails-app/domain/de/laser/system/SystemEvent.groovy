@@ -2,7 +2,10 @@ package de.laser.system
 
 import de.laser.utils.DateUtils
 import de.laser.storage.BeanStore
+import de.laser.utils.LocaleUtils
 import grails.converters.JSON
+import groovy.util.logging.Slf4j
+import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
@@ -12,6 +15,7 @@ import java.time.LocalDate
  * This class reflects cronjob-related event records and serves to mark events. Depending on the relevance of the event, this event appears in a mail reminder sent to all developers (every morning at 7 o'clock AM;
  * this time may be defined by a cronjob script on a server instance directly). The system events may be reviewed in /admin/systemEvents where every event is listed and cronjob runnings may be checked
  */
+@Slf4j
 class SystemEvent {
 
     @Transient
@@ -50,7 +54,6 @@ class SystemEvent {
             'DBDD_SERVICE_START_3'          : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'DBDD_SERVICE_COMPLETE_3'       : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'DBDD_SERVICE_ERROR_3'          : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.ERROR],
-            'DBM_SCRIPT_START'              : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'DBM_SCRIPT_INFO'               : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'DBM_SCRIPT_ERROR'              : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.ERROR],
             'FT_INDEX_UPDATE_START'         : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
@@ -176,6 +179,28 @@ class SystemEvent {
         }
     }
 
+    static boolean checkDefinedEvents() {
+        MessageSource messageSource = BeanStore.getMessageSource()
+        boolean valid = true
+        log.info 'SystemEvent - checkDefinedEvents'
+
+        DEFINED_EVENTS.each { k, v ->
+            try {
+                messageSource.getMessage('se.' + k, null, LocaleUtils.getLocaleDE())
+            } catch(Exception e) {
+                log.warn '- locale DE not found for ' + k
+                valid = false
+            }
+            try {
+                messageSource.getMessage('se.' + k, null, LocaleUtils.getLocaleEN())
+            } catch(Exception e) {
+                log.warn '- locale EN not found for ' + k
+                valid = false
+            }
+        }
+        valid
+    }
+
     /**
      * Gets a list of distinct sources of all system events
      * @param list a list of system events whose source should be retrieved
@@ -203,7 +228,12 @@ class SystemEvent {
      */
     private void _setInfo() {
         if (!i18n) {
-            i18n = BeanStore.getMessageSource().getMessage('se.' + (token ?: 'UNKNOWN'), null, LocaleContextHolder.locale)
+            try {
+                i18n = BeanStore.getMessageSource().getMessage('se.' + token, null, LocaleContextHolder.locale)
+            } catch (Exception e) {
+                log.warn '- missing locale for token: ' + token
+                i18n = BeanStore.getMessageSource().getMessage('se.UNKNOWN', null, LocaleContextHolder.locale)
+            }
         }
     }
 

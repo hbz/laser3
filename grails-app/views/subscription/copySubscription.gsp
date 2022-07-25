@@ -1,26 +1,18 @@
 <%@ page import="de.laser.Person; de.laser.RefdataValue; de.laser.SubscriptionController; de.laser.CopyElementsService;de.laser.storage.RDStore;de.laser.PendingChangeConfiguration;" %>
-<laser:serviceInjection />
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'myinst.copySubscription')}</title>
-</head>
+<laser:htmlStart message="myinst.copySubscription" serviceInjection="true" />
 
-<body>
-
-<semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="currentSubscriptions" text="${message(code:'myinst.currentSubscriptions.label')}" />
+<ui:breadcrumbs>
+    <ui:crumb controller="myInstitution" action="currentSubscriptions" text="${message(code:'myinst.currentSubscriptions.label')}" />
 
     <g:if test="${sourceObject}">
-        <semui:crumb action="show" controller="subscription" id="${sourceObject.id}" text="${sourceObject.name}" />
-        <semui:crumb class="active" text="${message(code: 'myinst.copySubscription')}" />
+        <ui:crumb action="show" controller="subscription" id="${sourceObject.id}" text="${sourceObject.name}" />
+        <ui:crumb class="active" text="${message(code: 'myinst.copySubscription')}" />
     </g:if>
-</semui:breadcrumbs>
+</ui:breadcrumbs>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'myinst.copySubscription')}: ${sourceObject.name}</h1>
+<ui:h1HeaderWithIcon text="${message(code: 'myinst.copySubscription')}: ${sourceObject.name}" />
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 <% Map params = [:]
 if (sourceObjectId) params << [sourceObjectId: genericOIDService.getOID(sourceObject)]
@@ -113,12 +105,11 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
     <laser:render template="/templates/copyElements/copyPackagesAndIEs" />
 </g:elseif>
 <g:elseif test="${workFlowPart == CopyElementsService.WORKFLOW_SUBSCRIBER && isConsortialObjects && accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")}">
-    <g:render template="/templates/copyElements/copySubscriber" />
+    <laser:render template="/templates/copyElements/copySubscriber" />
 </g:elseif>
 <g:else>
     <laser:render template="/templates/copyElements/copyElements" />
 </g:else>
 <laser:render template="/templates/copyElements/copyElementsJS"/>
 
-</body>
-</html>
+<laser:htmlEnd />

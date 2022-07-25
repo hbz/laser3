@@ -1,9 +1,5 @@
 <%@ page import="de.laser.License; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.UserSetting" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : Frontend for Developers</title>
+<laser:htmlStart text="Frontend for Developers"> %{-- <!doctype html><html><head>--}%
 
     <style>
     #example .example .column .icon {
@@ -53,9 +49,9 @@
         padding-top: 2em;
     }
     </style>
-</head>
 
-<body>
+</laser:htmlStart> %{-- </head><body>--}%
+
 %{-- help sidebar --}%
 <laser:render template="/templates/help/help_subscription_show"/>
 <section id="example">
@@ -78,5 +74,6 @@
 </section>
 %{-- OFFENE FRAGEN WCAG  --}%
 <laser:render template="frontend_wcag" />
-</body>
-</html>
+
+
+<laser:htmlEnd /> %{-- </body></html> --}%

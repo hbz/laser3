@@ -14,6 +14,7 @@ import de.laser.ReportingGlobalService
 import de.laser.ReportingLocalService
 import de.laser.SubscriptionService
 import de.laser.auth.Role
+import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.properties.LicenseProperty
@@ -33,7 +34,6 @@ import de.laser.RefdataCategory
 import de.laser.RefdataValue
 import de.laser.base.AbstractI10n
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
-import de.laser.utils.AppUtils
 import de.laser.annotations.DebugInfo
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
@@ -403,7 +403,7 @@ class AjaxJsonController {
                             break
                         case PropertyDefinition.ORG_PROP: values = OrgProperty.executeQuery('select op from OrgProperty op where op.type = :propDef and ((op.tenant = :tenant and op.isPublic = true) or op.tenant = null)',[propDef:propDef,tenant:contextService.getOrg()])
                             break
-                    /*case PropertyDefinition.PLA_PROP: values = PlatformProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.org,false)
+                    /*case PropertyDefinition.PLA_PROP: values = PlatformProperty.findAllByTypeAndTenantAndIsPublic(propDef,contextService.getOrg(),false)
                         break
                     case PropertyDefinition.PRS_PROP: values = PersonProperty.findAllByType(propDef)
                         break*/
@@ -566,10 +566,9 @@ class AjaxJsonController {
         Map<String, Object> result = [values: []]
         params.max = params.max ?: 40
 
-        GrailsClass domain_class = AppUtils.getDomainClass(params.baseClass)
-
-        if (domain_class) {
-            result.values = domain_class.getClazz().refdataFind(params)
+        Class dc = CodeUtils.getDomainClass(params.baseClass)
+        if (dc) {
+            result.values = dc.refdataFind(params)
             result.values.sort{ x,y -> x.text.compareToIgnoreCase y.text }
         }
         else {

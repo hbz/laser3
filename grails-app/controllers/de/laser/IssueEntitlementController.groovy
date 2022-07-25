@@ -1,9 +1,9 @@
 package de.laser
 
-
+import de.laser.annotations.Check404
 import de.laser.auth.User
-import de.laser.utils.ConfigMapper
-import de.laser.helper.SwissKnife
+import de.laser.config.ConfigMapper
+import de.laser.utils.SwissKnife
 import de.laser.properties.PlatformProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.annotations.DebugInfo
@@ -15,24 +15,18 @@ import org.springframework.transaction.TransactionStatus
  * This controller handles issue entitlement detail calls
  */
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class IssueEntitlementController  {
+class IssueEntitlementController {
 
     ContextService contextService
     FactService factService
 
-   static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
+    //-----
 
-    /**
-     * @deprecated The method {@link SubscriptionController#processAddEntitlements()} does the entitlement adding;
-     * use {@link SubscriptionController#addEntitlements()} resp. {@link SubscriptionService#issueEntitlementEnrichment(java.io.InputStream, java.util.Set, de.laser.Subscription, boolean, boolean)}
-     * instead
-     */
-    @Deprecated
-    @DebugInfo(test='hasAffiliation("INST_EDITOR")', wtc = DebugInfo.NOT_TRANSACTIONAL)
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
-    def create() {
-        redirect controller: 'issueEntitlement', action: 'show', params: params
-    }
+    static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
+
+    final static Map<String, String> CHECK404_ALTERNATIVES = [ : ]
+
+    //-----
 
     /**
      * Shows the given issue entitlement details
@@ -40,6 +34,7 @@ class IssueEntitlementController  {
      */
     @DebugInfo(test = 'hasAffiliation("INST_USER")', wtc = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @Check404()
     def show() {
       Map<String, Object> result = [:]
 
@@ -86,12 +81,6 @@ class IssueEntitlementController  {
           }
       }
 
-      if (!result.issueEntitlementInstance) {
-        flash.message = message(code: 'default.not.found.message', args: [message(code: 'issueEntitlement.label'), params.id]) as String
-        redirect action: 'list'
-        return
-      }
-
      /* String base_qry = "from TitleInstancePackagePlatform as tipp where tipp = :tipp and tipp.status != :status"
       Map<String,Object> qry_params = [tipp:result.issueEntitlementInstance.tipp,status:RDStore.TIPP_STATUS_DELETED]
 
@@ -128,13 +117,6 @@ class IssueEntitlementController  {
       //result.num_tipp_rows = TitleInstancePackagePlatform.executeQuery("select tipp.id "+base_qry, qry_params ).size()
 
       result
-
-    }
-
-    @DebugInfo(test='hasAffiliation("INST_EDITOR")', wtc = DebugInfo.NOT_TRANSACTIONAL)
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
-    def edit() {
-        redirect controller: 'issueEntitlement', action: 'show', params: params
     }
 
     @DebugInfo(test='hasAffiliation("INST_EDITOR")', wtc = DebugInfo.WITH_TRANSACTION)

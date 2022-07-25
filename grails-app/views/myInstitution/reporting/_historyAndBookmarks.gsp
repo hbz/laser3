@@ -112,7 +112,7 @@
                         <td>
                             <div class="content">
                                 <div class="header">
-                                    <strong><semui:xEditable owner="${fav}" field="title" overwriteEditable="true" /></strong>
+                                    <strong><ui:xEditable owner="${fav}" field="title" overwriteEditable="true" /></strong>
                                     <g:if test="${fav.id == lastAddedBookmarkId}">
                                         <i id="last-added-bookmark" class="ui icon bookmark small teal"></i>
                                     </g:if>
@@ -121,7 +121,7 @@
                                     <laser:render template="/myInstitution/reporting/query/generic_filterLabels" model="${[filterLabels: fav.getParsedLabels(), simple: true]}" />
                                 </div>
                                 <div class="footer">
-                                    <semui:xEditable owner="${fav}" field="description" overwriteEditable="true" />
+                                    <ui:xEditable owner="${fav}" field="description" overwriteEditable="true" />
                                 </div>
                             </div>
                         </td>

@@ -4,7 +4,7 @@
 
         <a role="button"
            class="ui button la-modern-button"
-           data-semui="modal" href="#${tmplModalID}"
+           data-ui="modal" href="#${tmplModalID}"
            class="la-popup-tooltip la-delay">
             <g:if test="${tmplButtonText}">
                 ${tmplButtonText}
@@ -27,7 +27,7 @@
     }
 %>
 
-<semui:modal id="${tmplModalID}" text="${tmplText}" msgSave="${message(code: 'default.button.link.label')}">
+<ui:modal id="${tmplModalID}" text="${tmplText}" msgSave="${message(code: 'default.button.link.label')}">
     <g:form class="ui form" controller="survey" action="setProviderOrLicenseLink" params="[surveyConfigID: surveyConfig.id, id: surveyInfo.id]" method="post">
         <div class="field">
             <div id="sub_role_tab_${tmplModalID}" class="ui grid">
@@ -47,7 +47,7 @@
             </div>
         </div>
     </g:form>
-</semui:modal>
+</ui:modal>
 <g:if test="${linkField}">
     <laser:script file="${this.getGroovyPageFileName()}">
         $("#${linkField}").dropdown({

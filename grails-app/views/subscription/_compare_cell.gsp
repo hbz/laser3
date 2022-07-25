@@ -54,11 +54,11 @@
 		<tr >
 			<td colspan="2">${message(code:'default.note.label')}:
 			  <g:if test="${obj.endIssue != null}"> 
-			  ${obj.coverageNote}</td>
+			  	${obj.coverageNote}
 			  </g:if> <g:else>
-			  	${obj.tipp.coverageNote}</td>
+			  	${obj.tipp.coverageNote}
 			  </g:else>
-			
+			</td>
 		</tr>
 	</tbody>
 </table>

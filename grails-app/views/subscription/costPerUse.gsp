@@ -1,20 +1,13 @@
 <%@ page import="de.laser.Subscription" %>
-
-<!doctype html>
-<html>
-  <head>
-      <meta name="layout" content="laser">
-      <title>${message(code:'laser')} : ${message(code:'default.subscription.label')}</title>
-  </head>
-  <body>
+<laser:htmlStart message="default.subscription.label" />
 
     <laser:render template="breadcrumb" model="${[ params:params ]}"/>
 
-    <semui:messages data="${flash}" />
+    <ui:messages data="${flash}" />
 
-    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
-        <semui:xEditable owner="${subscription}" field="name" />
-    </h1>
+    <ui:h1HeaderWithIcon>
+      <ui:xEditable owner="${subscription}" field="name" />
+    </ui:h1HeaderWithIcon>
 
     <laser:render template="nav"  />
 
@@ -58,5 +51,4 @@
         </p>
       </g:else>
 
-  </body>
-</html>
+<laser:htmlEnd />

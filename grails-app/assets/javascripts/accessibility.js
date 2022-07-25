@@ -1,6 +1,6 @@
-// FileName: accessibility.js
+// bundle: assets/javascripts/accessibility.js
 //
-//= require /javascript/semantic.min.js         //-- themes
+//= require /javascript/semantic.min.js         //--> assets/themes
 //= require modules/r2d2.js
 //= require modules/c3po.js
 //= require modules/decksaver.js

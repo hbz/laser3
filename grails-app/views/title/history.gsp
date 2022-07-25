@@ -1,27 +1,20 @@
 <%@ page import="de.laser.titles.TitleInstance" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'title.nav.history')}</title>
-</head>
+<laser:htmlStart message="title.nav.history" />
 
-<body>
-
-    <semui:breadcrumbs>
-        <semui:crumb controller="title" action="list" message="menu.public.all_titles" />
-        <semui:crumb class="active" text="${message(code:'default.title.label')}: ${titleInstance.title}" />
-    </semui:breadcrumbs>
+    <ui:breadcrumbs>
+        <ui:crumb controller="title" action="list" message="menu.public.all_titles" />
+        <ui:crumb class="active" text="${message(code:'default.title.label')}: ${titleInstance.title}" />
+    </ui:breadcrumbs>
 
     <g:if test="${editable}">
-        <semui:crumbAsBadge message="default.editable" class="orange" />
+        <ui:crumbAsBadge message="default.editable" class="orange" />
     </g:if>
 
-    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${titleInstance.title}</h1>
+    <ui:h1HeaderWithIcon text="${titleInstance.title}" />
 
     <laser:render template="nav" />
 
-    <semui:messages data="${flash}" />
+    <ui:messages data="${flash}" />
 
     <g:if test="${formattedHistoryLines?.size() > 0}">
 
@@ -57,7 +50,7 @@
       </div>
 
         <g:if test="${historyLines != null}" >
-          <semui:paginate  action="history" controller="title" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" maxsteps="${max}" total="${num_hl}" />
+          <ui:paginate action="history" controller="title" params="${params}" maxsteps="${max}" total="${num_hl}" />
         </g:if>
 
     </g:if>
@@ -66,5 +59,4 @@
     </g:else>
 
 
-</body>
-</html>
+<laser:htmlEnd />

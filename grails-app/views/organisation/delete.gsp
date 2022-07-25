@@ -1,18 +1,8 @@
-<g:set var="deletionService" bean="deletionService" />
+<laser:htmlStart message="org.label" serviceInjection="true"/>
 
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'org.label')}</title>
-</head>
-
-<body>
     <laser:render template="breadcrumb" model="${[ orgInstance:orgInstance, params:params ]}"/>
 
-    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
-        ${orgInstance?.name}
-    </h1>
+    <ui:h1HeaderWithIcon text="${orgInstance?.name}" />
 
     <g:if test="${delResult.status != deletionService.RESULT_SUCCESS}">
         <laser:render template="nav" />
@@ -22,22 +12,22 @@
 
     <g:if test="${delResult}">
         <g:if test="${delResult.status == deletionService.RESULT_SUCCESS}">
-            <semui:msg class="positive" header="" message="deletion.success.msg" />
+            <ui:msg class="positive" message="deletion.success.msg" />
             <g:link controller="organisation" action="listInstitution" class="ui button">${message(code:'menu.public.all_insts')}</g:link>
         </g:if>
         <g:else>
             <g:if test="${delResult.status == deletionService.RESULT_SUBSTITUTE_NEEDED}">
-                <semui:msg class="info" header="" message="org.delete.info2" />
+                <ui:msg class="info" message="org.delete.info2" />
             </g:if>
             <g:else>
-                <semui:msg class="info" header="" message="org.delete.info" />
+                <ui:msg class="info" message="org.delete.info" />
             </g:else>
 
             <g:if test="${delResult.status == deletionService.RESULT_BLOCKED}">
-                <semui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="deletion.blocked.msg.org" />
+                <ui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="deletion.blocked.msg.org" />
             </g:if>
             <g:if test="${delResult.status == deletionService.RESULT_ERROR}">
-                <semui:msg class="negative" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
+                <ui:msg class="negative" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
             </g:if>
 
             <g:link controller="organisation" action="listInstitution" class="ui button">${message(code:'menu.public.all_insts')}</g:link>
@@ -77,7 +67,7 @@
             <thead>
             <tr>
                 <th>Anhängende, bzw. referenzierte Objekte</th>
-                <th>Anzahl</th>
+                <th>${message(code:'default.count.label')}</th>
                 <th>Objekt-Ids</th>
             </tr>
             </thead>
@@ -116,5 +106,4 @@
         </table>
     </g:if>
 
-</body>
-</html>
+<laser:htmlEnd />

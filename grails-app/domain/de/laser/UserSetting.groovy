@@ -22,7 +22,7 @@ class UserSetting {
      * The settings for an {@link User} which can be configured
      */
     static enum KEYS {
-        PAGE_SIZE                                   (Long),
+        PAGE_SIZE                                   (Integer),
         DASHBOARD                                   (Org),
         THEME                                       (RefdataValue, RDConstants.USER_SETTING_THEME),
         DASHBOARD_TAB                               (RefdataValue, RDConstants.USER_SETTING_DASHBOARD_TAB),

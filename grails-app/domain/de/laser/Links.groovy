@@ -89,7 +89,7 @@ class Links {
      * @param key the object whose pair should be retrieved - may be a {@link License}, a {@link Subscription} or a license/subscription OID
      * @return the link pair of the given object
      */
-    def getOther(key) {
+    def getOther(def key) {
         def context
         if(key instanceof Subscription || key instanceof License) {
             context = key

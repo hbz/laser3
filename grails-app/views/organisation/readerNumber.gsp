@@ -1,36 +1,29 @@
 <%@ page import="de.laser.Org;de.laser.Person;de.laser.PersonRole;de.laser.RefdataValue;de.laser.RefdataCategory;de.laser.storage.RDConstants;de.laser.ReaderNumber;de.laser.utils.DateUtils; de.laser.storage.RDStore" %>
-<laser:serviceInjection />
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
+<laser:htmlStart message="menu.institutions.readerNumbers" serviceInjection="true"/>
+
         <g:set var="entityName" value="${message(code: 'org.label')}"/>
-        <title>${message(code: 'laser')} : ${message(code:'menu.institutions.readerNumbers')}</title>
-    </head>
 
-    <body>
-
-        <semui:breadcrumbs>
+        <ui:breadcrumbs>
             <g:if test="${institutionalView}">
-                <semui:crumb message="menu.my.insts" controller="myInstitution" action="manageMembers" params="[comboType:RDStore.COMBO_TYPE_CONSORTIUM]"/>
-                <semui:crumb text="${orgInstance.sortname}" class="active"/>
+                <ui:crumb message="menu.my.insts" controller="myInstitution" action="manageMembers" params="[comboType:RDStore.COMBO_TYPE_CONSORTIUM]"/>
+                <ui:crumb text="${orgInstance.sortname}" class="active"/>
             </g:if>
             <g:else>
-                <semui:crumb text="${orgInstance.sortname}" class="active"/>
+                <ui:crumb text="${orgInstance.sortname}" class="active"/>
             </g:else>
-        </semui:breadcrumbs>
+        </ui:breadcrumbs>
 
         <g:if test="${editable}">
-            <semui:controlButtons>
+            <ui:controlButtons>
                 <laser:render template="actions" />
-            </semui:controlButtons>
+            </ui:controlButtons>
         </g:if>
 
-        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${orgInstance.name}</h1>
+        <ui:h1HeaderWithIcon text="${orgInstance.name}" />
 
         <laser:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: orgInstance.id == contextService.getOrg().id]}"/>
 
-        <semui:messages data="${flash}"/>
+        <ui:messages data="${flash}"/>
 
         <laser:render template="/readerNumber/formModal" model="[formId: 'newForUni',withSemester: true,title:message(code: 'readerNumber.createForUni.label'), semester: RefdataValue.getCurrentSemester().id]"/>
         <laser:render template="/readerNumber/formModal" model="[formId: 'newForPublic',withDueDate: true,title:message(code: 'readerNumber.createForPublic.label')]"/>
@@ -71,7 +64,7 @@
                                 <td>
                                     <g:set var="number" value="${numbersInstance.getValue().get(column)}"/>
                                     <g:if test="${number}">
-                                        <semui:xEditable owner="${number}" field="value" format="number"/>
+                                        <ui:xEditable owner="${number}" field="value" format="number"/>
                                     </g:if>
                                 </td>
                             </g:each>
@@ -92,12 +85,12 @@
                                 </g:if>
                             </td>
                             <td>
-                                <semui:xEditable type="readerNumber" owner="${numbersInstance.getValue().entrySet()[0].getValue()}" field="dateGroupNote"/>
+                                <ui:xEditable type="readerNumber" owner="${numbersInstance.getValue().entrySet()[0].getValue()}" field="dateGroupNote"/>
                             </td>
                             <td class="x">
                                 <g:if test="${editable}">
                                     <g:if test="${missing}">
-                                        <a role="button" class="ui icon button blue la-modern-button" data-semui="modal" href="#newForSemester${numbersInstance.getKey().id}"
+                                        <a role="button" class="ui icon button blue la-modern-button" data-ui="modal" href="#newForSemester${numbersInstance.getKey().id}"
                                            aria-label="${message(code: 'ariaLabel.edit.universal')}">
                                             <i aria-hidden="true" class="write icon"></i>
                                         </a>
@@ -139,12 +132,12 @@
                                     <td>
                                         <g:set var="number" value="${numbersInstance.getValue().get(column)}"/>
                                         <g:if test="${number}">
-                                            <semui:xEditable owner="${number}" field="value" type="number"/>
+                                            <ui:xEditable owner="${number}" field="value" type="number"/>
                                         </g:if>
                                     </td>
                                 </g:each>
                                 <td><g:formatNumber number="${dueDateSums.get(numbersInstance.getKey())}" format="${message(code:'default.decimal.format')}"/></td>
-                                <td><semui:xEditable type="readerNumber" owner="${numbersInstance.getValue().entrySet()[0].getValue()}" field="dateGroupNote"/></td>
+                                <td><ui:xEditable type="readerNumber" owner="${numbersInstance.getValue().entrySet()[0].getValue()}" field="dateGroupNote"/></td>
                                 <td class="x">
                                     <g:if test="${editable}">
                                         <g:link class="ui icon negative button la-modern-button js-open-confirm-modal" controller="readerNumber" action="delete"
@@ -165,5 +158,5 @@
         <g:else>
             <g:message code="readerNumber.noNumbersEntered"/>
         </g:else>
-    </body>
-</html>
+
+<laser:htmlEnd />

@@ -1,27 +1,19 @@
-<%@ page import="de.laser.utils.ConfigMapper; de.laser.system.SystemSetting; de.laser.jobs.HeartbeatJob" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'menu.yoda.systemSettings')}</title>
-</head>
+<%@ page import="de.laser.config.ConfigMapper; de.laser.system.SystemSetting; de.laser.jobs.HeartbeatJob" %>
+<laser:htmlStart message="menu.yoda.systemSettings" />
 
-<body>
+<ui:breadcrumbs>
+    <ui:crumb message="menu.yoda" controller="yoda" action="index"/>
+    <ui:crumb message="menu.yoda.systemSettings" class="active"/>
+</ui:breadcrumbs>
 
-<semui:breadcrumbs>
-    <semui:crumb message="menu.yoda" controller="yoda" action="index"/>
-    <semui:crumb message="menu.yoda.systemSettings" class="active"/>
-</semui:breadcrumbs>
-
-<div>
-    <h1 class="ui header la-clear-before la-noMargin-top">${message(code: 'menu.yoda.systemSettings')}</h1>
+    <ui:h1HeaderWithIcon message="menu.yoda.systemSettings" />
 
     <g:set var="mailConfigDisabled" value="${ConfigMapper.getGrailsMailDisabled()}" />
     <g:set var="maintenanceModeEnabled" value="${SystemSetting.findByName('MaintenanceMode').value == 'true'}" />
 
-    <div class="ui info message">
+    <ui:msg class="info" noClose="true">
         <i class="ui icon hand point right"></i> ${message(code: 'system.maintenanceMode.info', args: [HeartbeatJob.HEARTBEAT_IN_SECONDS])}
-    </div>
+    </ui:msg>
 
     <table class="ui celled la-js-responsive-table la-table table">
         <thead>
@@ -86,7 +78,7 @@
                         <g:link controller="yoda" action="toggleBoolSetting" params="${[setting: s.name]}">${s.value}</g:link>
                     </g:if>
                     <g:else>
-                        <semui:xEditable owner="${s}" field="value" overwriteEditable="${true}"/>
+                        <ui:xEditable owner="${s}" field="value" overwriteEditable="${true}"/>
                     </g:else>
                 </td>
                 <td>
@@ -95,6 +87,5 @@
         </g:each>
         </tbody>
     </table>
-</div>
-</body>
-</html>
+
+<laser:htmlEnd />

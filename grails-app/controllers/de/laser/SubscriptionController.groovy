@@ -1,15 +1,15 @@
 package de.laser
 
-
+import de.laser.annotations.Check404
 import de.laser.annotations.DebugInfo
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.exceptions.EntitlementCreationException
-import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyOrg
 import de.laser.utils.DateUtils
+import de.laser.utils.SwissKnife
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.time.TimeCategory
@@ -41,6 +41,12 @@ class SubscriptionController {
     SubscriptionService subscriptionService
     SurveyService surveyService
 
+    //-----
+
+    final static Map<String, String> CHECK404_ALTERNATIVES = [
+            'myInstitution/currentSubscriptions' : 'myinst.currentSubscriptions.label'
+    ]
+
     //-------------------------------------- general or ungroupable section -------------------------------------------
 
     /**
@@ -49,6 +55,7 @@ class SubscriptionController {
      */
     @DebugInfo(test = 'hasAffiliation("INST_USER")', ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @Check404()
     def show() {
         Map<String,Object> ctrlResult = subscriptionControllerService.show(params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
@@ -66,6 +73,7 @@ class SubscriptionController {
      */
     @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER") })
+    @Check404()
     def tasks() {
         Map<String,Object> ctrlResult = subscriptionControllerService.tasks(this,params)
         if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
@@ -89,6 +97,7 @@ class SubscriptionController {
      */
     @DebugInfo(test = 'hasAffiliation("INST_USER")', ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @Check404()
     def history() {
         Map<String,Object> ctrlResult = subscriptionControllerService.history(this,params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
@@ -103,6 +112,7 @@ class SubscriptionController {
     @Deprecated
     @DebugInfo(test = 'hasAffiliation("INST_USER")', ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @Check404()
     def changes() {
         Map<String,Object> ctrlResult = subscriptionControllerService.changes(this,params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
@@ -120,6 +130,7 @@ class SubscriptionController {
      */
     @DebugInfo(test = 'hasAffiliation("INST_USER")', ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @Check404()
     def stats() {
         Map<String,Object> ctrlResult
         SXSSFWorkbook wb
@@ -256,6 +267,7 @@ class SubscriptionController {
      */
     @DebugInfo(test = 'hasAffiliation("INST_USER")', ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @Check404()
     def notes() {
         Map<String,Object> ctrlResult = subscriptionControllerService.notes(this, params)
         if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
@@ -270,9 +282,8 @@ class SubscriptionController {
      * @return the table view of documents for the given subscription
      */
     @DebugInfo(perm="ORG_INST,ORG_CONSORTIUM", affil="INST_USER", ctrlService = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER")
-    })
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_INST,ORG_CONSORTIUM", "INST_USER") })
+    @Check404()
     def documents() {
         Map<String,Object> ctrlResult = subscriptionControllerService.documents(this, params)
         if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
@@ -320,6 +331,7 @@ class SubscriptionController {
      */
     @DebugInfo(test = 'hasAffiliation("INST_USER")', ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @Check404()
     def members() {
         Map<String,Object> ctrlResult = subscriptionControllerService.members(this,params)
         if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
@@ -393,6 +405,7 @@ class SubscriptionController {
      */
     @DebugInfo(test = 'hasAffiliation("INST_EDITOR")', ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
+    @Check404
     def addMembers() {
         log.debug("addMembers ..")
         Map<String,Object> ctrlResult = subscriptionControllerService.addMembers(this,params)
@@ -456,9 +469,7 @@ class SubscriptionController {
      * @return the requested tab view
      */
     @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")
-    })
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR") })
     def membersSubscriptionsManagement() {
         def input_file
 
@@ -511,6 +522,7 @@ class SubscriptionController {
      */
     @DebugInfo(test = 'hasAffiliation("INST_USER")', ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @Check404()
     def surveys() {
         Map<String,Object> ctrlResult = subscriptionControllerService.surveys(this, params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
@@ -525,9 +537,8 @@ class SubscriptionController {
      * @return a table view of surveys from the consortium's point of view
      */
     @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_USER", ctrlService = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = {
-        ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER")
-    })
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER") })
+    @Check404()
     def surveysConsortia() {
         Map<String,Object> ctrlResult = subscriptionControllerService.surveysConsortia(this, params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
@@ -561,11 +572,11 @@ class SubscriptionController {
         else {
             if(params.addUUID) {
                 switch(params.addType) {
-                    case "With": flash.message = message(code:'subscription.details.link.processingWithEntitlements')
+                    case "With": flash.message = message(code:'subscription.details.link.processingWithEntitlements') as String
                         redirect action: 'index', params: [id: params.id, gokbId: params.addUUID]
                         return
                         break
-                    case "Without": flash.message = message(code:'subscription.details.link.processingWithoutEntitlements')
+                    case "Without": flash.message = message(code:'subscription.details.link.processingWithoutEntitlements') as String
                         redirect action: 'addEntitlements', params: [id: params.id, packageLinkPreselect: params.addUUID, preselectedName: ctrlResult.result.packageName]
                         return
                         break
@@ -595,11 +606,11 @@ class SubscriptionController {
         else {
             if(params.addUUID) {
                 switch(params.addType) {
-                    case "With": flash.message = message(code:'subscription.details.link.processingWithEntitlements')
+                    case "With": flash.message = message(code:'subscription.details.link.processingWithEntitlements') as String
                         redirect action: 'index', params: [id: params.id, gokbId: params.addUUID]
                         return
                         break
-                    case "Without": flash.message = message(code:'subscription.details.link.processingWithoutEntitlements')
+                    case "Without": flash.message = message(code:'subscription.details.link.processingWithoutEntitlements') as String
                         redirect action: 'addEntitlements', params: [id: params.id, packageLinkPreselect: params.addUUID, preselectedName: ctrlResult.result.packageName]
                         return
                         break
@@ -648,6 +659,7 @@ class SubscriptionController {
      */
     @DebugInfo(test = 'hasAffiliation("INST_USER")', ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @Check404()
     def index() {
         Map<String,Object> ctrlResult = subscriptionControllerService.index(this,params)
         if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
@@ -738,6 +750,7 @@ class SubscriptionController {
      */
     @DebugInfo(test = 'hasAffiliation("INST_USER")', ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    @Check404()
     def entitlementChanges() {
         Map<String,Object> ctrlResult = subscriptionControllerService.entitlementChanges(params)
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
@@ -1141,11 +1154,11 @@ class SubscriptionController {
         Map<String, Object> ctrlResult = subscriptionControllerService.removeEntitlementGroup(params)
         Object[] args = [message(code:'issueEntitlementGroup.label'),params.titleGroup]
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            flash.error = message(code: 'default.not.found.message', args) as String
+            flash.error = message(code: 'default.not.found.message', args: args) as String
         }
         else
         {
-            flash.message = message(code:'default.deleted.message',args) as String
+            flash.message = message(code:'default.deleted.message', args: args) as String
         }
         redirect action: 'manageEntitlementGroup', id: params.sub
     }
@@ -1391,6 +1404,7 @@ class SubscriptionController {
      */
     @DebugInfo(test = 'hasAffiliation("INST_EDITOR")', ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
+    @Check404()
     def setupPendingChangeConfiguration() {
         Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         if(!result) {
@@ -1760,9 +1774,10 @@ class SubscriptionController {
 
     //--------------------------------------------- admin section -------------------------------------------------
 
+    @Deprecated
     @DebugInfo(ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(['ROLE_ADMIN'])
-    @Deprecated
+    @Check404()
     def pendingChanges() {
         Map<String,Object> ctrlResult = subscriptionControllerService.pendingChanges(this, params)
         if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
@@ -1783,6 +1798,7 @@ class SubscriptionController {
      */
     @DebugInfo(perm="ORG_CONSORTIUM,ORG_INST", affil="INST_USER")
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM,ORG_INST", "INST_USER") })
+    @Check404()
     def reporting() {
         if (! params.token) {
             params.token = 'static#' + params.id
@@ -1806,6 +1822,7 @@ class SubscriptionController {
      */
     @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_USER")
     @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER") })
+    @Check404()
     def workflows() {
         Map<String,Object> ctrlResult = subscriptionControllerService.workflows( params )
 

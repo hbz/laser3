@@ -81,7 +81,7 @@
                 <g:if test="${editable && tmplShowDeleteButton}">
 
                     <g:if test="${showAddContacts}">
-                        <input class="ui icon button" type="button" data-semui="modal"
+                        <input class="ui icon button" type="button" data-ui="modal"
                                data-href="#contactFormModal${personRole.prs.id}"
                                value="${message(code: 'default.add.label', args: [message(code: 'person.contacts.label')])}">
                         <laser:render template="/contact/formModal" model="['prsId': personRole.prs.id, modalId: 'contactFormModal'+personRole.prs.id]"/>
@@ -137,7 +137,7 @@
                     $("#dynamicModalContainer").html(result);
                     $("#dynamicModalContainer .ui.modal").modal({
                         onVisible: function () {
-                            r2d2.initDynamicSemuiStuff('#personModal');
+                            r2d2.initDynamicUiStuff('#personModal');
                             r2d2.initDynamicXEditableStuff('#personModal');
                         }
                     }).modal('show');

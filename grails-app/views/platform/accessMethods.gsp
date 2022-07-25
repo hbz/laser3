@@ -1,21 +1,16 @@
 <%@ page import="de.laser.Platform;de.laser.PlatformAccessMethod;de.laser.storage.RDConstants" %>
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <g:set var="entityName" value="${message(code: 'platform.label')}" />
-        <title>${message(code:'laser')} : <g:message code="default.show.label" args="[entityName]" /></title>
-    </head>
-    <body>
 
-        <semui:breadcrumbs>
-            <semui:crumb controller="platform" action="index" message="platform.show.all" />
-            <semui:crumb class="active" id="${platformInstance.id}" text="${platformInstance.name}" />
-        </semui:breadcrumbs>
+<g:set var="entityName" value="${message(code: 'platform.label')}" />
+<laser:htmlStart text="${message(code:"default.show.label", args:[entityName])}" />
 
-        <semui:modeSwitch controller="platform" action="show" params="${params}" />
+        <ui:breadcrumbs>
+            <ui:crumb controller="platform" action="index" message="platform.show.all" />
+            <ui:crumb class="active" id="${platformInstance.id}" text="${platformInstance.name}" />
+        </ui:breadcrumbs>
 
-        <h1 class="ui header la-noMargin-top">
+        <ui:modeSwitch controller="platform" action="show" params="${params}" />
+
+        <ui:h1HeaderWithIcon>
             <g:if test="${editable}"><span id="platformNameEdit"
                                            class="xEditableValue"
                                            data-type="textarea"
@@ -24,11 +19,11 @@
                                            data-url='<g:createLink controller="ajax" action="editableSetValue"/>'>${platformInstance.name}</span>
             </g:if>
             <g:else>${platformInstance.name}</g:else>
-        </h1>
+        </ui:h1HeaderWithIcon>
 
-        <semui:messages data="${flash}" />
+        <ui:messages data="${flash}" />
         
-        <laser:render template="nav" contextPath="." />
+%{--        <laser:render template="nav" contextPath="." />--}%
 
         <g:form class="form" url="[controller: 'accessMethod', action: 'create']" method="POST">
             <table  class="ui celled la-js-responsive-table la-table table">
@@ -68,7 +63,7 @@
 
                     <tr>
                         <td>
-                            <laser:select class="ui dropdown values" id="accessMethod"
+                            <ui:select class="ui dropdown values" id="accessMethod"
                                           name="accessMethod"
                                           from="${PlatformAccessMethod.getAllRefdataValues(RDConstants.ACCESS_METHOD)}"
                                           optionKey="id"
@@ -77,24 +72,23 @@
                         </td>
                         <td>
                             <div class="field wide six">
-                                <semui:datepicker hideLabel="true" id="validFrom" name="validFrom" value ="${params.validFrom}">
-                                </semui:datepicker>
+                                <ui:datepicker hideLabel="true" id="validFrom" name="validFrom" value ="${params.validFrom}">
+                                </ui:datepicker>
                             </div>
                         </td>
                         <td>
                             <div class="field wide six">
-                                <semui:datepicker  hideLabel="true" id="validTo" name="validTo" value ="${params.validTo}">
-                                </semui:datepicker>
+                                <ui:datepicker  hideLabel="true" id="validTo" name="validTo" value ="${params.validTo}">
+                                </ui:datepicker>
                             </div>
                         </td>
                         <td>
                             <input type="hidden" name="platfId" value="${platformInstance.id}" />
-                            <input type="Submit" class="ui tiny button" value="${message(code:'accessMethod.button.add')}" onClick="this.form.submit()"/>
+                            <input type="submit" class="ui tiny button" value="${message(code:'accessMethod.button.add')}" onClick="this.form.submit()"/>
                         </td>
                     </tr>
                 </tbody>
             </table>
         </g:form>
 
-    </body>
-</html>
+<laser:htmlEnd />

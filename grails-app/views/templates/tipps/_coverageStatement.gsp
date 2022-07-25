@@ -15,44 +15,44 @@
     <div class="la-card-column">
         <div class="la-card-flexRow">
             <i class="grey fitted calendar alternate icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.startDate.tooltip')}"></i>
-            <semui:xEditable owner="${covStmt}" type="date" field="startDate" overwriteEditable="${overwriteEditable}"/>
+            <ui:xEditable owner="${covStmt}" type="date" field="startDate" overwriteEditable="${overwriteEditable}"/>
         </div>
         <div class="la-card-flexRow">
             <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.startVolume.tooltip')}"></i>
-            <semui:xEditable owner="${covStmt}" field="startVolume" overwriteEditable="${overwriteEditable}"/>
+            <ui:xEditable owner="${covStmt}" field="startVolume" overwriteEditable="${overwriteEditable}"/>
         </div>
         <div class="la-card-flexRow">
             <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.startIssue.tooltip')}"></i>
-            <semui:xEditable owner="${covStmt}" field="startIssue" overwriteEditable="${overwriteEditable}"/>
+            <ui:xEditable owner="${covStmt}" field="startIssue" overwriteEditable="${overwriteEditable}"/>
         </div>
-        <semui:dateDevider/>
+        <ui:dateDevider/>
         <!-- bis -->
         <div class="la-card-flexRow">
             <i class="grey fitted calendar alternate icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.endDate.tooltip')}"></i>
-            <semui:xEditable owner="${covStmt}" type="date" field="endDate" overwriteEditable="${overwriteEditable}"/>
+            <ui:xEditable owner="${covStmt}" type="date" field="endDate" overwriteEditable="${overwriteEditable}"/>
         </div>
         <div class="la-card-flexRow">
             <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.endVolume.tooltip')}"></i>
-            <semui:xEditable owner="${covStmt}" field="endVolume" overwriteEditable="${overwriteEditable}"/>
+            <ui:xEditable owner="${covStmt}" field="endVolume" overwriteEditable="${overwriteEditable}"/>
         </div>
         <div class="la-card-flexRow">
             <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code: 'tipp.endIssue.tooltip')}"></i>
-            <semui:xEditable owner="${covStmt}" field="endIssue" overwriteEditable="${overwriteEditable}"/>
+            <ui:xEditable owner="${covStmt}" field="endIssue" overwriteEditable="${overwriteEditable}"/>
         </div>
     </div>
     <div class="la-card-column-with-row">
         <div class="la-card-row">
             <div class="la-card-flexRow">
                 <i class="grey icon quote right la-popup-tooltip la-delay" data-content="${message(code: 'default.note.label')}"></i>
-                <semui:xEditable owner="${covStmt}" field="coverageNote" overwriteEditable="${overwriteEditable}"/>
+                <ui:xEditable owner="${covStmt}" field="coverageNote" overwriteEditable="${overwriteEditable}"/>
             </div>
             <div class="la-card-flexRow">
                 <i class="grey icon file alternate right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.coverageDepth')}"></i>
-                <semui:xEditable owner="${covStmt}" field="coverageDepth" overwriteEditable="${overwriteEditable}"/>
+                <ui:xEditable owner="${covStmt}" field="coverageDepth" overwriteEditable="${overwriteEditable}"/>
             </div>
             <div class="la-card-flexRow">
                 <i class="grey icon hand paper right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.embargo')}"></i>
-                <semui:xEditable owner="${covStmt}" field="embargo" overwriteEditable="${overwriteEditable}"/>
+                <ui:xEditable owner="${covStmt}" field="embargo" overwriteEditable="${overwriteEditable}"/>
             </div>
         </div>
         <div class="la-card-row">

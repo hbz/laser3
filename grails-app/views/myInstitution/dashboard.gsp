@@ -1,20 +1,12 @@
 <%@ page import="de.laser.utils.DateUtils; de.laser.workflow.WorkflowHelper; de.laser.workflow.WfWorkflow; de.laser.UserSetting; de.laser.system.SystemAnnouncement; de.laser.storage.RDConstants; de.laser.AccessService; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DashboardDueDate" %>
 
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'menu.institutions.dash')}</title>
-    </head>
-    <body>
+<laser:htmlStart message="menu.institutions.dash" serviceInjection="true"/>
 
-        <laser:serviceInjection />
+        <ui:breadcrumbs>
+            <ui:crumb text="${message(code:'menu.institutions.dash')}" class="active" />
+        </ui:breadcrumbs>
 
-        <semui:breadcrumbs>
-            <semui:crumb text="${message(code:'menu.institutions.dash')}" class="active" />
-        </semui:breadcrumbs>
-
-        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${institution.name}</h1>
+        <ui:h1HeaderWithIcon text="${institution.name}" />
 
         <div class="ui equal width grid la-clear-before">
             <div class="row">
@@ -38,26 +30,25 @@
                         <div class="item">
                             <g:link controller="org" action="show" id="${institution.id}">${message(code: 'menu.institutions.org_info')}</g:link>
                         </div>
-                        <semui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="finance" message="menu.institutions.finance" />
-                        <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="reporting" message="myinst.reporting" />
+                        <ui:securedMainNavItem affiliation="INST_USER" controller="myInstitution" action="finance" message="menu.institutions.finance" />
+                        <ui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="reporting" message="myinst.reporting" />
                     </div>
                 </div>
 
                 <div class="column">
                     <div class="ui divided relaxed list">
-                        <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="myInstitution" action="tasks" message="task.plural" />
-                        <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="myInstitution" action="addressbook" message="menu.institutions.myAddressbook" />
-                        <semui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="myInstitution" action="managePrivatePropertyDefinitions" message="menu.institutions.manage_props" />
+                        <ui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="myInstitution" action="tasks" message="task.plural" />
+                        <ui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="myInstitution" action="addressbook" message="menu.institutions.myAddressbook" />
+                        <ui:securedMainNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="myInstitution" action="managePrivatePropertyDefinitions" message="menu.institutions.manage_props" />
                     </div>
                 </div>
             </div>
         </div>
 
-        <semui:messages data="${flash}" />
+        <ui:messages data="${flash}" />
         <br />
-    <%-- should be made overridable by pagination setting --%>
     <%
-        def us_dashboard_tab
+        RefdataValue us_dashboard_tab
         switch(params.view) {
             case "PendingChanges": us_dashboard_tab = RefdataValue.getByValueAndCategory('PendingChanges', RDConstants.USER_SETTING_DASHBOARD_TAB)
             break
@@ -65,59 +56,56 @@
             break
             case "Surveys": us_dashboard_tab = RefdataValue.getByValueAndCategory('Surveys', RDConstants.USER_SETTING_DASHBOARD_TAB)
                 break
-            default: us_dashboard_tab = user.getSetting(UserSetting.KEYS.DASHBOARD_TAB, RefdataValue.getByValueAndCategory('Due Dates', RDConstants.USER_SETTING_DASHBOARD_TAB))
+            default:
+                us_dashboard_tab = user.getSettingsValue(UserSetting.KEYS.DASHBOARD_TAB, RefdataValue.getByValueAndCategory('Due Dates', RDConstants.USER_SETTING_DASHBOARD_TAB))
             break
         }
     %>
     <div class="ui secondary stackable pointing tabular menu">
-        <a class="${us_dashboard_tab.getValue().value=='Due Dates' || us_dashboard_tab.getValue()=='Due Dates' ? 'active item':'item'}" data-tab="duedates">
+        <a class="${us_dashboard_tab.value == 'Due Dates' ? 'active item':'item'}" data-tab="duedates">
             <i class="checked alarm end icon large"></i>
-            ${dueDatesCount}
-            ${message(code:'myinst.dash.due_dates.label')}
+            ${dueDatesCount} ${message(code:'myinst.dash.due_dates.label')}
         </a>
 
         <g:if test="${editable && institution.getCustomerType() in ['ORG_INST', 'ORG_CONSORTIUM']}">
-            <a class="${us_dashboard_tab.getValue().value == 'PendingChanges' || us_dashboard_tab.getValue() == 'PendingChanges' ? 'active item':'item'}" data-tab="pendingchanges">
+            <a class="${us_dashboard_tab.value == 'PendingChanges' ? 'active item':'item'}" data-tab="pendingchanges">
                 <i class="history icon large"></i>
                 <span id="pendingCount">${message(code:'myinst.pendingChanges.label', args: [message(code:'myinst.loadPending')])}</span>
             </a>
         </g:if>
-        <a class="${us_dashboard_tab.getValue().value == 'AcceptedChanges' || us_dashboard_tab.getValue() == 'AcceptedChanges' ? 'active item':'item'}" data-tab="acceptedchanges">
+        <a class="${us_dashboard_tab.value == 'AcceptedChanges' ? 'active item':'item'}" data-tab="acceptedchanges">
             <i class="warning circle icon large"></i>
             <span id="notificationsCount">${message(code:'myinst.acceptedChanges.label', args: [message(code:'myinst.loadPending')])}</span>
         </a>
 
-        <a class="${us_dashboard_tab.getValue().value=='Announcements' || us_dashboard_tab.getValue() == 'Announcements' ? 'active item':'item'}" data-tab="news" id="jsFallbackAnnouncements">
+        <a class="${us_dashboard_tab.value == 'Announcements' ? 'active item':'item'}" data-tab="news" id="jsFallbackAnnouncements">
             <i class="bullhorn icon large"></i>
-            ${systemAnnouncements.size()}
-            ${message(code:'announcement.plural')}
+            ${systemAnnouncements.size()} ${message(code:'announcement.plural')}
         </a>
 
-        <a class="${us_dashboard_tab.getValue().value=='Surveys' || us_dashboard_tab.getValue()=='Surveys' ? 'active item':'item'}" data-tab="surveys">
+        <a class="${us_dashboard_tab.value == 'Surveys' ? 'active item':'item'}" data-tab="surveys">
             <i class="chart pie icon large"></i>
             <span id="surveyCount">${message(code:'myinst.dash.survey.label', args: [message(code: 'myinst.loadPending')])}</span>
         </a>
 
         <g:if test="${accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')}">
-            <a class="${us_dashboard_tab.getValue().value=='Tasks' || us_dashboard_tab.getValue()=='Tasks' ? 'active item':'item'}" data-tab="tasks">
+            <a class="${us_dashboard_tab.value == 'Tasks' ? 'active item':'item'}" data-tab="tasks">
                 <i class="checked calendar icon large"></i>
-                ${tasksCount}
-                ${message(code:'myinst.dash.task.label')}
+                ${tasksCount} ${message(code:'myinst.dash.task.label')}
             </a>
         </g:if>
 
         <sec:ifAnyGranted roles="ROLE_ADMIN"><!-- TODO: reporting-permissions -->
             <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
-                <a class="${us_dashboard_tab.getValue().value=='Workflows' || us_dashboard_tab.getValue() == 'Workflows' ? 'active item':'item'}" data-tab="workflows">
+                <a class="${us_dashboard_tab.value == 'Workflows' ? 'active item':'item'}" data-tab="workflows">
                     <i class="tasks icon large"></i>
-                    ${currentWorkflowsCount}
-                    ${message(code:'workflow.plural')}
+                    ${currentWorkflowsCount} ${message(code:'workflow.plural')}
                 </a>
             </g:if>
         </sec:ifAnyGranted>
 
     </div><!-- secondary -->
-        <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value == 'Due Dates' || us_dashboard_tab.getValue()=='Due Dates' ? 'active':''}" data-tab="duedates">
+        <div class="ui bottom attached tab ${us_dashboard_tab.value == 'Due Dates' ? 'active':''}" data-tab="duedates">
             <div>
                 <laser:render template="/user/dueDatesView"
                           model="[user: user, dueDates: dueDates, dueDatesCount: dueDatesCount]"/>
@@ -125,14 +113,12 @@
         </div>
 
         <g:if test="${editable}">
-            <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value == 'PendingChanges' || us_dashboard_tab.getValue() == 'PendingChanges' ? 'active':''}" data-tab="pendingchanges" id="pendingChanges">
-
+            <div class="ui bottom attached tab ${us_dashboard_tab.value == 'PendingChanges' ? 'active':''}" data-tab="pendingchanges" id="pendingChanges">
             </div>
         </g:if>
-        <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value == 'AcceptedChanges' || us_dashboard_tab.getValue() == 'AcceptedChanges' ? 'active':''}" data-tab="acceptedchanges" id="acceptedChanges">
-
+        <div class="ui bottom attached tab ${us_dashboard_tab.value == 'AcceptedChanges' ? 'active':''}" data-tab="acceptedchanges" id="acceptedChanges">
         </div>
-        <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value=='Announcements' || us_dashboard_tab.getValue() == 'Announcements' ? 'active':''}" data-tab="news">
+        <div class="ui bottom attached tab ${us_dashboard_tab.value =='Announcements' ? 'active':''}" data-tab="news">
 
             <g:message code="profile.dashboardSysAnnTimeWindow"
                        args="${user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)}" />
@@ -169,7 +155,7 @@
         </div>
 
         <g:if test="${accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')}">
-        <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value=='Tasks' || us_dashboard_tab.getValue() == 'Tasks' ? 'active':''}" data-tab="tasks">
+        <div class="ui bottom attached tab ${us_dashboard_tab.value == 'Tasks' ? 'active':''}" data-tab="tasks">
 
             <g:if test="${editable}">
                 <div class="ui right aligned grid">
@@ -189,7 +175,7 @@
                             <div class="right floated author">
                                 Status:
                                 <span>
-                                <semui:xEditableRefData config="${RDConstants.TASK_STATUS}" owner="${tsk}" field="status" />
+                                <ui:xEditableRefData config="${RDConstants.TASK_STATUS}" owner="${tsk}" field="status" />
                                 </span>
                             </div>
                         </div>
@@ -248,7 +234,7 @@
 
         </g:if>
 
-        <div class="ui bottom attached tab segment ${us_dashboard_tab.getValue().value == 'Surveys' || us_dashboard_tab.getValue()=='Surveys' ? 'active':''}" data-tab="surveys" style="border-top: 1px solid #d4d4d5; ">
+        <div class="ui bottom attached tab segment ${us_dashboard_tab.value == 'Surveys' ? 'active':''}" data-tab="surveys" style="border-top: 1px solid #d4d4d5; ">
                 <div class="la-float-right">
                     <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
                         <g:link controller="survey" action="workflowsSurveysConsortia" class="ui button">${message(code:'menu.my.surveys')}</g:link>
@@ -265,10 +251,10 @@
 
         <sec:ifAnyGranted roles="ROLE_ADMIN"><!-- TODO: reporting-permissions -->
         <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
-            <div class="ui bottom attached tab ${us_dashboard_tab.getValue().value == 'Workflows' || us_dashboard_tab.getValue() == 'Workflows' ? 'active':''}" data-tab="workflows">
+            <div class="ui bottom attached tab ${us_dashboard_tab.value == 'Workflows' ? 'active':''}" data-tab="workflows">
                 <div>
                     <g:if test="${currentWorkflows.size() != currentWorkflowsCount}">
-                        <semui:msg class="info" text="${message(code:'workflow.dashboard.msg.more', args:[currentWorkflows.size(), currentWorkflowsCount, g.createLink(controller:'myInstitution', action:'currentWorkflows', params:[max:200])])}" />
+                        <ui:msg class="info" text="${message(code:'workflow.dashboard.msg.more', args:[currentWorkflows.size(), currentWorkflowsCount, g.createLink(controller:'myInstitution', action:'currentWorkflows', params:[max:200])])}" />
                     </g:if>
                     <table class="ui celled table la-js-responsive-table la-table">
                         <thead>
@@ -367,7 +353,7 @@
             }).done(function(response){
                 $("#pendingChanges").html($(response).filter("#pendingChangesWrapper"));
                 $("#acceptedChanges").html($(response).filter("#acceptedChangesWrapper"));
-                r2d2.initDynamicSemuiStuff('#pendingChanges');
+                r2d2.initDynamicUiStuff('#pendingChanges');
             })
         }
 
@@ -376,7 +362,7 @@
                 url: "<g:createLink controller="ajaxHtml" action="getSurveys" params="${params}"/>"
             }).done(function(response){
                 $("#surveyWrapper").html(response);
-                  r2d2.initDynamicSemuiStuff('#surveyWrapper');
+                  r2d2.initDynamicUiStuff('#surveyWrapper');
             })
         }
 
@@ -396,8 +382,7 @@
         JSPC.app.loadSurveys();
     </laser:script>
 
-    <semui:debugInfo>
+    <ui:debugInfo>
         <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
-    </semui:debugInfo>
-    </body>
-</html>
+    </ui:debugInfo>
+<laser:htmlEnd />

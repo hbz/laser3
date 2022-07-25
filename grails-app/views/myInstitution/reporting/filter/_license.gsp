@@ -16,16 +16,16 @@
 
             <g:each in="${config.filter.default}" var="cfgFilter">
                 <g:if test="${cfgFilter.containsAll(['startDateLimit','endDateLimit']) && cfgFilter.size() == 2}">
-                    <div class="fields <laser:numberToString number="${cfgFilter.size()}" min="4"/>">
+                    <div class="fields <reporting:numberToString number="${cfgFilter.size()}" min="4"/>">
                 </g:if>
                 <g:elseif test="${cfgFilter.findAll{it.contains('Date')}.size() == cfgFilter.size()}"> %{-- tmp datepicker layout fix --}%
                     <div class="fields">
                 </g:elseif>
                 <g:else>
-                    <div class="fields <laser:numberToString number="${cfgFilter.size()}" min="2"/>">
+                    <div class="fields <reporting:numberToString number="${cfgFilter.size()}" min="2"/>">
                 </g:else>
                     <g:each in="${cfgFilter}" var="field">
-                        <laser:reportFilterField config="${config}" field="${field}" />
+                        <reporting:filterField config="${config}" field="${field}" />
                     </g:each>
                 </div>
             </g:each>
@@ -40,9 +40,9 @@
             </div>
 
             <g:each in="${config.filter.default}" var="cfgFilter">
-                <div class="fields <laser:numberToString number="${cfgFilter.size()}" min="2"/>">
+                <div class="fields <reporting:numberToString number="${cfgFilter.size()}" min="2"/>">
                     <g:each in="${cfgFilter}" var="field">
-                        <laser:reportFilterField config="${config}" field="${field}" key="member" />
+                        <reporting:filterField config="${config}" field="${field}" key="member" />
                     </g:each>
                 </div>
             </g:each>
@@ -57,9 +57,9 @@
             </div>
 
             <g:each in="${config.filter.default}" var="cfgFilter">
-                <div class="fields <laser:numberToString number="${cfgFilter.size()}" min="2"/>">
+                <div class="fields <reporting:numberToString number="${cfgFilter.size()}" min="2"/>">
                     <g:each in="${cfgFilter}" var="field">
-                        <laser:reportFilterField config="${config}" field="${field}" key="licensor" />
+                        <reporting:filterField config="${config}" field="${field}" key="licensor" />
                     </g:each>
                 </div>
             </g:each>

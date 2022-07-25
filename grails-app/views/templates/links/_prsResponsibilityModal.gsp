@@ -1,4 +1,4 @@
-<semui:modal id="prsLinksModal" text="Neuen ${modalPrsLinkRole.getI10n("value")} hinzufügen" hideSubmitButton="true">
+<ui:modal id="prsLinksModal" text="Neuen ${modalPrsLinkRole.getI10n("value")} hinzufügen" hideSubmitButton="true">
 
         <%--<p>${message(code:'myinst.addressBook.visibleOnly')}</p>--%>
     <p>Hier können Sie einen ihrer öffentlichen Kontakte mit diesem Objekt verknüpfen.</p>
@@ -47,4 +47,4 @@
         </table>
     </div>
 
-</semui:modal>
+</ui:modal>

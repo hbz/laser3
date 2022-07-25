@@ -1,9 +1,7 @@
 <%@ page import="de.laser.survey.SurveyConfig; de.laser.Subscription; de.laser.Person; de.laser.SubscriptionsQueryService; java.text.SimpleDateFormat; de.laser.storage.RDStore; de.laser.FormService" %>
 <laser:serviceInjection/>
 
-<g:set var="formService" bean="formService"/>
-
-<semui:form>
+<ui:form>
 
     <g:if test="${!copyObject}">
         <laser:render template="/templates/copyElements/selectSourceAndTargetObject" model="[
@@ -18,7 +16,7 @@
             method="post" class="ui form newLicence">
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
         <g:if test="${targetObject instanceof Subscription && SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransfer(targetObject, true)}">
-            <semui:msg class="negative" message="copyElementsIntoObject.surveyExist"/>
+            <ui:msg class="negative" message="copyElementsIntoObject.surveyExist"/>
         </g:if>
         <g:else>
 
@@ -135,10 +133,8 @@
             <input id="copySubscriber" type="submit" class="ui button js-click-control"
                    value="${message(code: 'copyElementsIntoObject.copySubscriber.button')}" ${submitDisabled}/>
         </div>
-        </tbody>
-    </table>
     </g:form>
-</semui:form>
+</ui:form>
 
 <laser:script file="${this.getGroovyPageFileName()}">
         $("#firstTable .titleCell").each(function (k) {

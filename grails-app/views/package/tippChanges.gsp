@@ -1,27 +1,16 @@
 <%@ page import="de.laser.TitleInstancePackagePlatform; de.laser.Subscription;de.laser.License;de.laser.finance.CostItem;de.laser.PendingChange; de.laser.IssueEntitlement; de.laser.storage.RDStore; de.laser.RefdataValue;" %>
-<laser:serviceInjection/>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'myinst.menu.pendingChanges.label')}</title>
-</head>
+<laser:htmlStart message="myinst.menu.pendingChanges.label" serviceInjection="true" />
 
-<body>
+<ui:breadcrumbs>
+    <ui:crumb controller="package" action="index" text="${message(code: 'package.show.all')}"/>
+    <ui:crumb text="${packageInstance.name}" id="${packageInstance.id}" class="active"/>
+</ui:breadcrumbs>
 
-<semui:breadcrumbs>
-    <semui:crumb controller="package" action="index" text="${message(code: 'package.show.all')}"/>
-    <semui:crumb text="${packageInstance.name}" id="${packageInstance.id}" class="active"/>
-</semui:breadcrumbs>
-
-<h1 class="ui icon header la-noMargin-top"><semui:headerIcon/>
-<semui:xEditable owner="${packageInstance}" field="name"/>
-</h1>
-
+<ui:h1HeaderWithIcon>
+    <ui:xEditable owner="${packageInstance}" field="name"/>
+</ui:h1HeaderWithIcon>
 
 <laser:render template="nav"/>
-
-
 
 <g:set var="counter" value="${offset + 1}"/>
 <table class="ui celled la-js-responsive-table la-table table sortable">
@@ -112,8 +101,6 @@
     </tbody>
 </table>
 
-<semui:paginate offset="${offset}" max="${max}" total="${num_change_rows}" params="${params}"/>
+<ui:paginate offset="${offset}" max="${max}" total="${num_change_rows}" params="${params}"/>
 
-</div>
-</body>
-</html>
+<laser:htmlEnd />

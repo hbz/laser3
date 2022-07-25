@@ -40,8 +40,7 @@
                     break
                 case RDStore.SHARE_CONF_UPLOADER_AND_TARGET: if(inOwnerOrg || inTargetOrg) visible = true //the owner org and the target org may see the document i.e. the document has been shared with the target org
                     break
-                case RDStore.SHARE_CONF_CONSORTIUM:
-                case RDStore.SHARE_CONF_ALL: visible = true //definition says that everyone with "access" to target org. How are such access roles defined and where?
+                case [ RDStore.SHARE_CONF_CONSORTIUM, RDStore.SHARE_CONF_ALL ]: visible = true //definition says that everyone with "access" to target org. How are such access roles defined and where?
                     break
                 default:
                     //fallback: documents are visible if share configuration is missing or obsolete
@@ -65,7 +64,7 @@
     }
 %>
 <g:if test="${accessService.checkPerm("ORG_INST,ORG_CONSORTIUM")}">
-    <semui:card message="${documentMessage}" class="documents la-js-hideable ${css_class}" href="#modalCreateDocument" editable="${editable || editable2}">
+    <ui:card message="${documentMessage}" class="documents la-js-hideable ${css_class}" href="#modalCreateDocument" editable="${editable || editable2}">
         <g:each in="${baseItems}" var="docctx">
             <g:if test="${(( docctx.owner?.contentType==Doc.CONTENT_TYPE_FILE ) && ( docctx.status?.value!='Deleted'))}">
                 <div class="ui small feed content la-js-dont-hide-this-card">
@@ -88,7 +87,7 @@
                                 <%-- START First Button --%>
                                 <laser:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />
                                 <button type="button" class="ui icon blue button la-modern-button editable-cancel"
-                                        data-semui="modal"
+                                        data-ui="modal"
                                         data-href="#modalEditDocument_${docctx.id}"
                                         aria-label="${message(code: 'ariaLabel.change.universal')}">
                                     <i class="pencil icon"></i></button>
@@ -126,7 +125,7 @@
                             <%-- START Third Button --%>
                             <g:if test="${!(ownobj instanceof Org) && ownobj?.showUIShareButton() && accessService.checkMinUserOrgRole(contextService.getUser(), docctx.owner.owner, "INST_EDITOR")}">
                                 <g:if test="${docctx?.isShared}">
-                                    <laser:remoteLink class="ui icon green button la-modern-button js-no-wait-wheel la-popup-tooltip la-delay"
+                                    <ui:remoteLink class="ui icon green button la-modern-button js-no-wait-wheel la-popup-tooltip la-delay"
                                                       controller="ajax"
                                                       action="toggleShare"
                                                       params='[owner:genericOIDService.getOID(ownobj), sharedObject:genericOIDService.getOID(docctx), tmpl:"documents", ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?:  actionName]'
@@ -136,10 +135,10 @@
                                                       role="button"
                                     >
                                         <i class="icon la-share la-js-editmode-icon"></i>
-                                    </laser:remoteLink>
+                                    </ui:remoteLink>
                                 </g:if>
                                 <g:else>
-                                    <laser:remoteLink class="ui icon blue button la-modern-button js-no-wait-wheel la-popup-tooltip la-delay js-open-confirm-modal"
+                                    <ui:remoteLink class="ui icon blue button la-modern-button js-no-wait-wheel la-popup-tooltip la-delay js-open-confirm-modal"
                                                       controller="ajax"
                                                       action="toggleShare"
                                                       params='[owner:genericOIDService.getOID(ownobj), sharedObject:genericOIDService.getOID(docctx), tmpl:"documents", ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?:  actionName]'
@@ -151,7 +150,7 @@
                                                       role="button"
                                     >
                                         <i class="la-share slash icon la-js-editmode-icon"></i>
-                                    </laser:remoteLink>
+                                    </ui:remoteLink>
                                 </g:else>
                             </g:if>
                         </div>
@@ -159,10 +158,10 @@
                 </div>
             </g:if>
         </g:each>
-    </semui:card>
+    </ui:card>
 </g:if>
 <g:if test="${sharedItems}">
-    <semui:card message="license.documents.shared" class="documents la-js-hideable ${css_class}" editable="${editable}">
+    <ui:card message="license.documents.shared" class="documents la-js-hideable ${css_class}" editable="${editable}">
         <g:each in="${sharedItems}" var="docctx">
             <g:if test="${((docctx.owner?.contentType==Doc.CONTENT_TYPE_FILE) && (docctx.status?.value!='Deleted'))}">
                 <div class="ui small feed content la-js-dont-hide-this-card">
@@ -185,7 +184,7 @@
                         <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                             <div class="two wide column">
                                 <laser:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />
-                                <button type="button" class="ui icon blue button la-modern-button editable-cancel" data-semui="modal"
+                                <button type="button" class="ui icon blue button la-modern-button editable-cancel" data-ui="modal"
                                         data-href="#modalEditDocument_${docctx.id}"
                                         aria-label="${message(code: 'ariaLabel.change.universal')}">
                                 <i class="pencil icon"></i></button>
@@ -196,6 +195,6 @@
             </g:if>
 
         </g:each>
-    </semui:card>
+    </ui:card>
 </g:if>
 

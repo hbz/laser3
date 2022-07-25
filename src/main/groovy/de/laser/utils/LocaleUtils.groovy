@@ -1,7 +1,9 @@
 package de.laser.utils
 
+import groovy.transform.CompileStatic
 import org.springframework.context.i18n.LocaleContextHolder
 
+@CompileStatic
 class LocaleUtils {
 
     static String getCurrentLang() {
@@ -24,8 +26,7 @@ class LocaleUtils {
      * @return the decoded locale part to use in queries
      */
     static String decodeLocale(String locale) {
-
-        if(locale?.contains("-")) {
+        if (locale?.contains("-")) {
             return locale.split("-").first().toLowerCase()
         }
         else if(locale?.contains("_")) {
@@ -48,5 +49,12 @@ class LocaleUtils {
                 break
         }
         localizedName
+    }
+
+    static Locale getLocaleDE() {
+        Locale.forLanguageTag('de-DE')
+    }
+    static Locale getLocaleEN() {
+        Locale.forLanguageTag('en-EN')
     }
 }

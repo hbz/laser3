@@ -75,7 +75,7 @@
 
                     <g:if test="${query == 'license-x-property'}">
                         <td>
-                            <laser:reportObjectProperties owner="${lic}" tenant="${contextService.getOrg()}" propDefId="${id}" />
+                            <reporting:objectProperties owner="${lic}" tenant="${contextService.getOrg()}" propDefId="${id}" />
                         </td>
                     </g:if>
 

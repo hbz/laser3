@@ -1,25 +1,18 @@
 <%@ page import="de.laser.auth.User; de.laser.DeletionService" %>
-<g:set var="deletionService" bean="deletionService" />
-<laser:serviceInjection />
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'user.delete.label')}</title>
-</head>
-<body>
+<laser:htmlStart message="user.delete.label" serviceInjection="true"/>
+
     <laser:render template="/user/global/breadcrumb" model="${[ params:params ]}"/>
 
-    <semui:controlButtons>
+    <ui:controlButtons>
         <laser:render template="/user/global/actions" />
-    </semui:controlButtons>
+    </ui:controlButtons>
 
-    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="user.delete.label" /></h1>
+    <ui:h1HeaderWithIcon message="user.delete.label" />
     <h2 class="ui header la-noMargin-top">${user.username} - ${user.displayName ?: 'Nutzer unbekannt'}</h2>
 
     <g:if test="${delResult}">
         <g:if test="${delResult.status == DeletionService.RESULT_SUCCESS}">
-            <semui:msg class="positive" header="" message="deletion.success.msg" />
+            <ui:msg class="positive" message="deletion.success.msg" />
 
             <g:if test="${controllerName == 'myInstitution'}">
                 <g:link action="users" class="ui button"><g:message code="org.nav.users"/></g:link>
@@ -34,20 +27,20 @@
         </g:if>
         <g:else>
             <g:if test="${delResult.status == DeletionService.RESULT_SUBSTITUTE_NEEDED}">
-                <semui:msg noClose="true" class="warning" header="" message="user.delete.info2" />
+                <ui:msg noClose="true" class="warning" message="user.delete.info2" />
             </g:if>
             <g:else>
-                <semui:msg noClose="true" class="warning" header="" message="user.delete.info" />
+                <ui:msg noClose="true" class="warning" message="user.delete.info" />
             </g:else>
 
             <g:if test="${delResult.status == DeletionService.RESULT_CUSTOM}">
-                <semui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="deletion.custom.msg.user" />
+                <ui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="deletion.custom.msg.user" />
             </g:if>
             <g:if test="${delResult.status == DeletionService.RESULT_BLOCKED}">
-                <semui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="deletion.blocked.msg.user" />
+                <ui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="deletion.blocked.msg.user" />
             </g:if>
             <g:if test="${delResult.status == DeletionService.RESULT_ERROR}">
-                <semui:msg class="negative" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
+                <ui:msg class="negative" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
             </g:if>
 
             <%
@@ -92,7 +85,7 @@
                             </g:if>
                             <g:else>
                                 <input disabled type="submit" class="ui button red" value="${message(code:'deletion.user')}" />
-                                <semui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="user.delete.substitute.missing" />
+                                <ui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="user.delete.substitute.missing" />
                             </g:else>
                         </g:if>
                         <g:elseif test="${delResult.status != DeletionService.RESULT_ERROR}">
@@ -118,7 +111,7 @@
             <thead>
             <tr>
                 <th>Objekte, Referenzen</th>
-                <th>Anzahl</th>
+                <th>${message(code:'default.count.label')}</th>
                 <th>Objekt-Ids</th>
             </tr>
             </thead>
@@ -183,5 +176,4 @@
 
     </g:if>
 
-</body>
-</html>
+<laser:htmlEnd />

@@ -13,7 +13,6 @@ class SystemProfilerInterceptor implements grails.artefact.Interceptor {
     SystemProfilerInterceptor() {
         matchAll().excludes(controller:  ~/(ajax|ajaxHtml|ajaxJson|ajaxOpen)/)
                   .excludes(uri: CustomWebSocketConfig.WS_STOMP + '/**') // websockets
-
     }
 
     boolean before() {
@@ -22,7 +21,6 @@ class SystemProfilerInterceptor implements grails.artefact.Interceptor {
         if (debugUtil) {
             debugUtil.startSimpleBench( Profiler.generateKey( getWebRequest() ) )
         }
-
         true
     }
 
@@ -33,7 +31,6 @@ class SystemProfilerInterceptor implements grails.artefact.Interceptor {
         if (contextService.getUser()) {
             SystemActivityProfiler.addActiveUser(contextService.getUser())
         }
-
         true
     }
 }

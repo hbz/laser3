@@ -3,7 +3,7 @@ package de.laser
 
 import de.laser.annotations.DebugInfo
 import de.laser.storage.RDStore
-import de.laser.helper.SwissKnife
+import de.laser.utils.SwissKnife
 import grails.plugin.springsecurity.annotation.Secured
 
 /**
@@ -59,7 +59,6 @@ class CompareController  {
         SwissKnife.setPaginationParams(result, params, result.user)
         result.institution = result.contextOrg
         params.status = params.status ?: [RDStore.SUBSCRIPTION_CURRENT.id.toString()]
-
 
         result.objects = []
 

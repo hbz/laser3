@@ -1,25 +1,15 @@
-<!doctype html>
-<html>
-  <head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'menu.datamanager')} ${message(code:'default.dashboard')}</title>
-  </head>
+<laser:htmlStart text="${message(code:'menu.datamanager')} ${message(code:'default.dashboard')}" />
 
-  <body>
+    <ui:breadcrumbs>
+      <ui:crumb message="menu.datamanager" class="active"/>
+    </ui:breadcrumbs>
 
-    <semui:breadcrumbs>
-      <semui:crumb message="menu.datamanager" class="active"/>
-    </semui:breadcrumbs>
-
-    <h1 class="ui icon header la-clear-before la-noMargin-top">
-      <i class="circular icon hdd" style="background-color:#b5c334; border-color:#b5c334; color:white;"></i>
-      ${message(code:'menu.datamanager')}
-    </h1>
+  <ui:h1HeaderWithIcon message="menu.datamanager" type="datamanager" />
 
   <br />
   <br />
 
-    <semui:messages data="${flash}" />
+    <ui:messages data="${flash}" />
 
     <g:if test="${pendingChanges?.size() > 0}">
         <h2 class="ui icon header la-clear-before la-noMargin-top">${message(code:'datamanager.pending.label')}</h2>
@@ -52,5 +42,4 @@
       </div>
     </g:else>
 
-  </body>
-</html>
+<laser:htmlEnd />

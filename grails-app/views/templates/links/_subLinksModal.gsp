@@ -4,7 +4,7 @@
 
         <a role="button"
            class="ui button la-modern-button ${tmplCss}"
-           data-semui="modal" href="#${tmplModalID}"
+           data-ui="modal" href="#${tmplModalID}"
            class="la-popup-tooltip la-delay"
            data-content="${message(code:'license.details.editLink')}">
             <g:if test="${tmplIcon}">
@@ -54,7 +54,7 @@
     }
 %>
 
-<semui:modal id="${tmplModalID}" text="${tmplText}">
+<ui:modal id="${tmplModalID}" text="${tmplText}">
     <g:form id="link_${tmplModalID}" class="ui form" url="${urlParams}" method="post">
         <input type="hidden" name="context" value="${linkInstanceType == Combo.class.name ? context.id : genericOIDService.getOID(context)}"/>
         <%
@@ -180,7 +180,7 @@
             </div>
         </div>
     </g:form>
-</semui:modal>
+</ui:modal>
 <g:if test="${!link}">
     <laser:script file="${this.getGroovyPageFileName()}">
         $("#${selectPair}").dropdown({

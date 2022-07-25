@@ -1,6 +1,6 @@
 package de.laser
 
-
+import de.laser.annotations.Check404
 import de.laser.annotations.DebugInfo
 import de.laser.auth.Role
 import de.laser.auth.UserRole
@@ -23,6 +23,8 @@ import de.laser.survey.SurveyResult
 import de.laser.system.SystemActivityProfiler
 import de.laser.system.SystemProfiler
 import de.laser.system.SystemSetting
+import de.laser.utils.AppUtils
+import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
@@ -78,7 +80,9 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     @Transactional
     def index() {
-        Map result = [:]
+        Map<String, Object> result = [
+                docStore: AppUtils.getDocumentStorageInfo()
+        ]
         result
     }
 
@@ -404,14 +408,14 @@ class YodaController {
                 'getStaticApplicationContext'
         ]
 
-        grailsApplication.controllerClasses.toList().each { controller ->
-            Class controllerClass = controller.clazz
-            if (controllerClass.name.startsWith('de.laser')) {
+        CodeUtils.getAllControllerClasses().each { controller ->
+            if (controller.name.startsWith('de.laser')) {
                 Map<String, Object> mList = [public:[:], others:[:]]
 
-                controllerClass.declaredMethods.each { Method method ->
+                controller.declaredMethods.each { Method method ->
                     int mods = method.getModifiers()
-                    if ( ! Modifier.isSynthetic(mods) && (
+//                  if (! Modifier.isSynthetic(mods) && (   // Access to 'SYNTHETIC' exceeds its access rights
+                    if ( ((mods & 4096) == 0) && (          // isSynthetic(int mod) { (mod & 4096) != 0; }
                             (method.getAnnotation(Action) || Modifier.isPrivate(mods)) ||
                             (Modifier.isStatic(mods) && ! (method.name in blacklist))
                     ) ) {
@@ -439,6 +443,10 @@ class YodaController {
                                     mInfo.refactoring = 'done'
                                 }
                             }
+                        }
+
+                        if (method.getAnnotation(Check404)) {
+                            mInfo.check404 = Check404.KEY
                         }
 
                         if (method.getAnnotation(Secured)) {
@@ -474,13 +482,13 @@ class YodaController {
                     }
                 }
 
-                cList.putAt( controllerClass.simpleName, [
-                        'secured': controllerClass.getAnnotation(Secured)?.value(),
+                cList.putAt( controller.simpleName, [
+                        'secured': controller.getAnnotation(Secured)?.value(),
                         'methods': [
                                 public: mList.public.sort{it.key},
                                 others: mList.others.sort{it.key}
                         ],
-                        'deprecated': controllerClass.getAnnotation(Deprecated) ? true : false
+                        'deprecated': controller.getAnnotation(Deprecated) ? true : false
                 ])
             }
         }
@@ -675,10 +683,8 @@ class YodaController {
      */
     @Secured(['ROLE_YODA'])
     def fullReset() {
-
        log.debug("Clear ES")
        dataloadService.clearDownAndInitES()
-
         log.debug("redirecting to home ..")
 
         redirect controller:'home'
@@ -689,10 +695,8 @@ class YodaController {
      */
     @Secured(['ROLE_YODA'])
     def killDataloadService() {
-
         log.debug("kill DataloadService")
         dataloadService.killDataloadService()
-
         log.debug("redirecting to home ..")
 
         redirect controller:'home'
@@ -892,14 +896,6 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     def newESSource() {
         log.debug("manageGlobalSources ..")
-
-        /*result.newSource = ElasticsearchSource.findByIdentifier(params.identifier) ?: new ElasticsearchSource(
-                identifier:params.identifier,
-                name:params.name,
-                host:params.uri)
-
-        result.newSource.save(flush:true)*/
-
         redirect action:'manageGlobalSources'
     }
 
@@ -907,7 +903,6 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     def deleteGlobalSource() {
         GlobalRecordSource.removeSource(params.long('id'))
-
         redirect(action:'manageGlobalSources')
     }
 
@@ -1073,7 +1068,6 @@ class YodaController {
                     costItem.owner.name = it.name
                     costItem.owner.shortname = it.shortname
                     costItem.owner.sortname = it.sortname
-                    //costItem.owner.ownerType = it.orgType?.value
                     costItem.owner.libraryType = it.libraryType?.value
                 }
 
@@ -1423,9 +1417,6 @@ class YodaController {
             }
 
         }
-        def output = JsonOutput.toJson(resultMap)
-
-        //println(output)
 
         response.setHeader("Content-disposition", "attachment; filename=\"Moe.csv\"")
         response.contentType = "text/csv"

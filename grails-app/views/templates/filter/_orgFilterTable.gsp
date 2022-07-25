@@ -87,7 +87,7 @@
                 <th class="la-th-wrap">${message(code: 'survey.active')}</th>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('identifier')}">
-                <th>Identifier</th>
+                <th>${message(code:'default.identifier.label')}</th>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('wibid')}">
                 <th>WIB</th>
@@ -150,7 +150,7 @@
                     <g:set var="costItemElements"
                            value="${RefdataValue.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :org', [org: institution])}"/>
 
-                        <laser:select name="selectedCostItemElement"
+                        <ui:select name="selectedCostItemElement"
                                       from="${costItemElements}"
                                       optionKey="id"
                                       optionValue="value"
@@ -713,7 +713,7 @@
                             </g:link>
                         </g:else>
 
-                        <semui:xEditableAsIcon owner="${orgSub}" class="ui icon center aligned" iconClass="info circular inverted" field="comment" type="textarea" overwriteEditable="${false}"/>
+                        <ui:xEditableAsIcon owner="${orgSub}" class="ui icon center aligned" iconClass="info circular inverted" field="comment" type="textarea" overwriteEditable="${false}"/>
 
                     </g:if>
                 </td>
@@ -742,7 +742,7 @@
                             </g:link>
                         </g:else>
 
-                        <semui:xEditableAsIcon owner="${orgSub}" class="ui icon center aligned" iconClass="info circular inverted" field="comment" type="textarea" overwriteEditable="${false}"/>
+                        <ui:xEditableAsIcon owner="${orgSub}" class="ui icon center aligned" iconClass="info circular inverted" field="comment" type="textarea" overwriteEditable="${false}"/>
 
                     </g:if>
                 </td>
@@ -964,7 +964,7 @@
 
                         $('#dynamicModalContainer .ui.modal').modal({
                             onVisible: function () {
-                                r2d2.initDynamicSemuiStuff('#costItem_ajaxModal');
+                                r2d2.initDynamicUiStuff('#costItem_ajaxModal');
                                 r2d2.initDynamicXEditableStuff('#costItem_ajaxModal');
 
                                 JSPC.callbacks.dynPostFunc();
@@ -997,7 +997,7 @@
 
                 $('#dynamicModalContainer .ui.modal').modal({
                     onVisible: function () {
-                        r2d2.initDynamicSemuiStuff('#modalSurveyCostItem');
+                        r2d2.initDynamicUiStuff('#modalSurveyCostItem');
                         r2d2.initDynamicXEditableStuff('#modalSurveyCostItem');
                     },
                     detachable: true,

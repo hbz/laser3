@@ -1,17 +1,11 @@
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'menu.yoda.systemConfiguration')} </title>
-</head>
-<body>
+<laser:htmlStart message="menu.yoda.systemConfiguration" />
 
-<semui:breadcrumbs>
-    <semui:crumb message="menu.yoda" controller="yoda" action="index"/>
-    <semui:crumb message="menu.yoda.systemConfiguration" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb message="menu.yoda" controller="yoda" action="index"/>
+    <ui:crumb message="menu.yoda.systemConfiguration" class="active"/>
+</ui:breadcrumbs>
 
-<h1 class="ui header la-clear-before la-noMargin-top">${message(code:'menu.yoda.systemConfiguration')}</h1>
+<ui:h1HeaderWithIcon message="menu.yoda.systemConfiguration" />
 
 <%
     Set<String> dubs = []
@@ -91,5 +85,4 @@
     </tbody>
 </table>
 
-</body>
-</html>
+<laser:htmlEnd />

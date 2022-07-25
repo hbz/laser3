@@ -1,33 +1,25 @@
 <%@ page import="de.laser.Person; de.laser.RefdataValue; de.laser.SubscriptionController; de.laser.CopyElementsService" %>
-<laser:serviceInjection/>
 
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'copyElementsIntoObject.label', args: [message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}</title>
-</head>
+<laser:htmlStart text="${message(code: 'copyElementsIntoObject.label', args: [message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}" serviceInjection="true"/>
 
-<body>
-
-<semui:breadcrumbs>
-    <semui:crumb text="${message(code:'license.current')}" controller="myInstitution" action="currentLicenses" />
+<ui:breadcrumbs>
+    <ui:crumb text="${message(code:'license.current')}" controller="myInstitution" action="currentLicenses" />
 
     <g:if test="${sourceObject}">
-        <semui:crumb class="active" controller="license" id="${sourceObject.id}" action="show" text="${sourceObject.dropdownNamingConvention()}" />
+        <ui:crumb class="active" controller="license" id="${sourceObject.id}" action="show" text="${sourceObject.dropdownNamingConvention()}" />
     </g:if>
-</semui:breadcrumbs>
+</ui:breadcrumbs>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${message(code: 'copyElementsIntoObject.label', args: [message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}</h1>
+<ui:h1HeaderWithIcon text="${message(code: 'copyElementsIntoObject.label', args: [message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}" />
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 <% Map params = [:];
 if (sourceObjectId) params << [sourceObjectId: genericOIDService.getOID(sourceObject)]
 if (targetObjectId) params << [targetObjectId: genericOIDService.getOID(targetObject)]
 %>
-<semui:subNav showInTabular="true">
-    <semui:complexSubNavItem
+<ui:subNav showInTabular="true">
+    <ui:complexSubNavItem
             class="${workFlowPart == CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS ? 'active' : ''}"
             controller="license" action="copyElementsIntoLicense"
             params="${params << [workFlowPart: CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS]}">
@@ -48,9 +40,9 @@ if (targetObjectId) params << [targetObjectId: genericOIDService.getOID(targetOb
 
             </div>
         </div>
-    </semui:complexSubNavItem>
+    </ui:complexSubNavItem>
 
-    <semui:complexSubNavItem
+    <ui:complexSubNavItem
             class="${workFlowPart == CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS ? 'active' : ''}"
             controller="license" action="copyElementsIntoLicense"
             params="${params << [workFlowPart: CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS]}">
@@ -63,10 +55,10 @@ if (targetObjectId) params << [targetObjectId: genericOIDService.getOID(targetOb
                 <i class="checked calendar icon"></i>${message(code: 'menu.institutions.tasks')}
             </div>
         </div>
-    </semui:complexSubNavItem>
+    </ui:complexSubNavItem>
 
 %{--    <g:if test="${isSubscriberVisible && accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_EDITOR")}">
-        <semui:complexSubNavItem class="${workFlowPart == CopyElementsService.WORKFLOW_SUBSCRIBER ? 'active' : ''}"
+        <ui:complexSubNavItem class="${workFlowPart == CopyElementsService.WORKFLOW_SUBSCRIBER ? 'active' : ''}"
                                  controller="license" action="copyElementsIntoLicense"
                                  params="${params << [workFlowPart: CopyElementsService.WORKFLOW_SUBSCRIBER]}">
             <div class="content">
@@ -78,10 +70,10 @@ if (targetObjectId) params << [targetObjectId: genericOIDService.getOID(targetOb
                     <i class="university icon"></i>${message(code: 'consortium.subscriber')}
                 </div>
             </div>
-        </semui:complexSubNavItem>
+        </ui:complexSubNavItem>
     </g:if>--}%
 
-    <semui:complexSubNavItem class="${workFlowPart == CopyElementsService.WORKFLOW_PROPERTIES ? 'active' : ''}"
+    <ui:complexSubNavItem class="${workFlowPart == CopyElementsService.WORKFLOW_PROPERTIES ? 'active' : ''}"
                              controller="license" action="copyElementsIntoLicense"
                              params="${params << [workFlowPart: CopyElementsService.WORKFLOW_PROPERTIES]}">
         <div class="content">
@@ -92,8 +84,8 @@ if (targetObjectId) params << [targetObjectId: genericOIDService.getOID(targetOb
             </div>
 
         </div>
-    </semui:complexSubNavItem>
-</semui:subNav>
+    </ui:complexSubNavItem>
+</ui:subNav>
 
 <br />
 
@@ -115,5 +107,5 @@ if (targetObjectId) params << [targetObjectId: genericOIDService.getOID(targetOb
     <laser:render template="/templates/copyElements/copyElements"/>
 </g:else>
 <laser:render template="/templates/copyElements/copyElementsJS"/>
-</body>
-</html>
+
+<laser:htmlEnd />

@@ -1,22 +1,13 @@
 <%@ page import="de.laser.RefdataValue;de.laser.storage.RDConstants" %>
-<!doctype html>
-<html>
-  <head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'menu.public.all_titles')}</title>
-  </head>
-  <body>
+<laser:htmlStart message="menu.public.all_titles" />
 
-    <semui:breadcrumbs>
-      <semui:crumb message="menu.public.all_titles" class="active" />
-    </semui:breadcrumbs>
+    <ui:breadcrumbs>
+      <ui:crumb message="menu.public.all_titles" class="active" />
+    </ui:breadcrumbs>
 
-    <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code:'menu.public.all_titles')}
-      <semui:totalNumber total="${resultsTotal >= 10000 ? '10000+' : (resultsTotal > 0 ? resultsTotal : 0)}"/>
-    </h1>
+    <ui:h1HeaderWithIcon message="menu.public.all_titles" total="${resultsTotal >= 10000 ? '10000+' : (resultsTotal > 0 ? resultsTotal : 0)}" floated="true" />
 
-    <laser:render template="/templates/filter/javascript" />
-    <semui:filter showFilterButton="true">
+    <ui:filter showFilterButton="true" addFilterJs="true">
       <g:form action="index" role="form" class="ui form" method="get" params="${params}">
         <input type="hidden" name="offset" value="${params.offset}"/>
         <div class="three fields">
@@ -34,13 +25,13 @@
             </div>
         </div>
       </g:form>
-    </semui:filter>
+    </ui:filter>
 
     <div class="ui grid la-clear-before">
         <div class="sixteen wide column">
 
              <g:if test="${hits && resultsTotal > 0}" >
-               <semui:messages data="${flash}" />
+               <ui:messages data="${flash}" />
 
                <div class="ui icon info message">
                  <i class="exclamation triangle icon"></i>
@@ -70,7 +61,7 @@
                           <td>${ (params.int('offset') ?: 0)  + jj + 1 }</td>
                           <td>
                             <%-- ? needed because there are TIPP residuals from TitleInstance era which have no type set --%>
-                            <semui:listIcon type="${hit.getSourceAsMap().type?.value}"/>
+                            <ui:listIcon type="${hit.getSourceAsMap().type?.value}"/>
                             <strong><g:link controller="tipp" action="show" id="${hit.getSourceAsMap().dbId}">${hit.getSourceAsMap().name}</g:link></strong>
                           </td>
                           <td>
@@ -105,10 +96,9 @@
             </g:else>
 
               <g:if test="${hits}" >
-                <semui:paginate controller="title" action="index" params="${params}" next="${message(code: 'default.paginate.next')}" prev="${message(code: 'default.paginate.prev')}" maxsteps="10" total="${resultsTotal}" />
+                <ui:paginate controller="title" action="index" params="${params}" next="${message(code: 'default.paginate.next')}" prev="${message(code: 'default.paginate.prev')}" maxsteps="10" total="${resultsTotal}" />
               </g:if>
 
         </div><!-- .sixteen -->
       </div><!-- .grid -->
-  </body>
-</html>
+<laser:htmlEnd />

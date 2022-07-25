@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyConfigProperties; de.laser.survey.SurveyOrg; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.RefdataCategory; de.laser.RefdataValue" %>
+<%@ page import="de.laser.storage.PropertyStore; de.laser.survey.SurveyConfigProperties; de.laser.survey.SurveyOrg; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.RefdataCategory; de.laser.RefdataValue" %>
 
 <g:set var="surveyOrg"
        value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)}"/>
@@ -28,7 +28,7 @@
                         <dt class="control-label">
                             ${message(code: 'surveyOrg.ownerComment.label', args: [institution.sortname])}
                         </dt>
-                        <dd><semui:xEditable owner="${surveyOrg}" field="ownerComment" type="textarea"/></dd>
+                        <dd><ui:xEditable owner="${surveyOrg}" field="ownerComment" type="textarea"/></dd>
 
                     </dl>
                 </g:if>
@@ -42,7 +42,7 @@
                                 <i class="question small circular inverted icon"></i>
                             </div>
                         </dt>
-                        <dd><semui:xEditable owner="${surveyConfig}" field="internalComment" type="textarea"/></dd>
+                        <dd><ui:xEditable owner="${surveyConfig}" field="internalComment" type="textarea"/></dd>
 
                     </dl>
 
@@ -51,9 +51,9 @@
                             ${message(code: 'surveyconfig.url.label')}
                         </dt>
                         <dd>
-                            <semui:xEditable owner="${surveyConfig}" field="url" type="text"/>
+                            <ui:xEditable owner="${surveyConfig}" field="url" type="text"/>
                             <g:if test="${surveyConfig.url}">
-                                <semui:linkIcon href="${surveyConfig.url}"/>
+                                <ui:linkWithIcon href="${surveyConfig.url}"/>
                             </g:if>
 
                         </dd>
@@ -61,7 +61,7 @@
                             ${message(code: 'surveyconfig.urlComment.label')}
                         </dt>
                         <dd>
-                            <semui:xEditable owner="${surveyConfig}" field="urlComment" type="textarea"/>
+                            <ui:xEditable owner="${surveyConfig}" field="urlComment" type="textarea"/>
                         </dd>
 
                     </dl>
@@ -71,16 +71,16 @@
                             ${message(code: 'surveyconfig.url2.label')}
                         </dt>
                         <dd>
-                            <semui:xEditable owner="${surveyConfig}" field="url2" type="text"/>
+                            <ui:xEditable owner="${surveyConfig}" field="url2" type="text"/>
                             <g:if test="${surveyConfig.url2}">
-                                <semui:linkIcon href="${surveyConfig.url2}"/>
+                                <ui:linkWithIcon href="${surveyConfig.url2}"/>
                             </g:if>
                         </dd>
                         <dt class="control-label">
                             ${message(code: 'surveyconfig.urlComment2.label')}
                         </dt>
                         <dd>
-                            <semui:xEditable owner="${surveyConfig}" field="urlComment2" type="textarea"/>
+                            <ui:xEditable owner="${surveyConfig}" field="urlComment2" type="textarea"/>
                         </dd>
 
                     </dl>
@@ -90,16 +90,16 @@
                             ${message(code: 'surveyconfig.url3.label')}
                         </dt>
                         <dd>
-                            <semui:xEditable owner="${surveyConfig}" field="url3" type="text"/>
+                            <ui:xEditable owner="${surveyConfig}" field="url3" type="text"/>
                             <g:if test="${surveyConfig.url3}">
-                                <semui:linkIcon href="${surveyConfig.url3}"/>
+                                <ui:linkWithIcon href="${surveyConfig.url3}"/>
                             </g:if>
                         </dd>
                         <dt class="control-label">
                             ${message(code: 'surveyconfig.urlComment3.label')}
                         </dt>
                         <dd>
-                            <semui:xEditable owner="${surveyConfig}" field="urlComment3" type="textarea"/>
+                            <ui:xEditable owner="${surveyConfig}" field="urlComment3" type="textarea"/>
                         </dd>
 
                     </dl>
@@ -133,7 +133,7 @@
                                 ${message(code: 'surveyconfig.url.label')}
                             </dt>
                             <dd>
-                                <semui:xEditable owner="${surveyConfig}" field="url" type="text"
+                                <ui:xEditable owner="${surveyConfig}" field="url" type="text"
                                                  overwriteEditable="${false}"/>
 
                                 <g:if test="${surveyConfig.urlComment}">
@@ -142,7 +142,7 @@
                                         <i class="info circle icon"></i>
                                     </span>
                                 </g:if>
-                                <semui:linkIcon href="${surveyConfig.url}"/>
+                                <ui:linkWithIcon href="${surveyConfig.url}"/>
                             </dd>
 
                         </dl>
@@ -154,7 +154,7 @@
                                 ${message(code: 'surveyconfig.url2.label')}
                             </dt>
                             <dd>
-                                <semui:xEditable owner="${surveyConfig}" field="url2" type="text"
+                                <ui:xEditable owner="${surveyConfig}" field="url2" type="text"
                                                  overwriteEditable="${false}"/>
 
                                 <g:if test="${surveyConfig.urlComment2}">
@@ -164,7 +164,7 @@
                                     </span>
                                 </g:if>
 
-                                <semui:linkIcon href="${surveyConfig.url2}"/>
+                                <ui:linkWithIcon href="${surveyConfig.url2}"/>
                             </dd>
 
                         </dl>
@@ -176,7 +176,7 @@
                                 ${message(code: 'surveyconfig.url3.label')}
                             </dt>
                             <dd>
-                                <semui:xEditable owner="${surveyConfig}" field="url3" type="text"
+                                <ui:xEditable owner="${surveyConfig}" field="url3" type="text"
                                                  overwriteEditable="${false}"/>
 
                                 <g:if test="${surveyConfig.urlComment3}">
@@ -186,7 +186,7 @@
                                     </span>
                                 </g:if>
 
-                                <semui:linkIcon href="${surveyConfig.url3}"/>
+                                <ui:linkWithIcon href="${surveyConfig.url3}"/>
                             </dd>
 
                         </dl>
@@ -224,6 +224,11 @@
     </div>
     <aside class="six wide column la-sidekick">
         <div class="ui one cards">
+
+            <div id="container-documents">
+                <g:render template="/survey/surveyLinkCard"/>
+            </div>
+
             <g:if test="${controllerName == 'survey' && actionName == 'show'}">
                 <div id="container-tasks">
                     <laser:render template="/templates/tasks/card"
@@ -260,9 +265,9 @@
 <g:if test="${actionName == "show" && contextOrg.id == surveyConfig.surveyInfo.owner.id}">
     <g:set var="surveyProperties" value="${surveyConfig.getSortedSurveyConfigProperties()}"/>
 
-    <semui:form>
+    <ui:form>
 
-        <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'surveyProperty.selected.label')} <semui:totalNumber
+        <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'surveyProperty.selected.label')} <ui:totalNumber
                 total="${surveyProperties.size()}"/></h4>
 
         <table class="ui celled sortable la-js-responsive-table table la-js-responsive-table la-table">
@@ -325,7 +330,7 @@
 
                     <td>
                         <g:set var="surveyPropertyMandatoryEditable" value="${(editable && surveyInfo.status == RDStore.SURVEY_IN_PROCESSING &&
-                                (surveyInfo.type != RDStore.SURVEY_TYPE_RENEWAL || (surveyInfo.type == RDStore.SURVEY_TYPE_RENEWAL && surveyPropertyConfig.surveyProperty != RDStore.SURVEY_PROPERTY_PARTICIPATION)))}"/>
+                                (surveyInfo.type != RDStore.SURVEY_TYPE_RENEWAL || (surveyInfo.type == RDStore.SURVEY_TYPE_RENEWAL && surveyPropertyConfig.surveyProperty != PropertyStore.SURVEY_PROPERTY_PARTICIPATION)))}"/>
                         <g:form action="setSurveyPropertyMandatory" method="post" class="ui form"
                                 params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, surveyConfigProperties: surveyPropertyConfig.id]">
 
@@ -363,7 +368,7 @@
 
                             <div class="field required">
                                 <label>${message(code: 'surveyConfigs.property')} <g:message code="messageRequiredField" /></label>
-                                <semui:dropdown name="selectedProperty"
+                                <ui:dropdown name="selectedProperty"
 
                                                 class="la-filterPropDef"
                                                 from="${properties}"
@@ -385,13 +390,13 @@
 
         </table>
 
-    </semui:form>
+    </ui:form>
 </g:if>
 
 <g:if test="${surveyResults}">
-    <semui:form>
+    <ui:form>
         <h3 class="ui header"><g:message code="surveyConfigsInfo.properties"/>
-        <semui:totalNumber
+        <ui:totalNumber
                 total="${surveyResults.size()}"/>
         </h3>
 
@@ -473,51 +478,51 @@
                     </td>
                     <td>
                         <g:if test="${surveyResult.type.isIntegerType()}">
-                            <semui:xEditable owner="${surveyResult}" type="text" field="intValue"/>
+                            <ui:xEditable owner="${surveyResult}" type="text" field="intValue"/>
                         </g:if>
                         <g:elseif test="${surveyResult.type.isStringType()}">
-                            <semui:xEditable owner="${surveyResult}" type="text" field="stringValue"/>
+                            <ui:xEditable owner="${surveyResult}" type="text" field="stringValue"/>
                         </g:elseif>
                         <g:elseif test="${surveyResult.type.isBigDecimalType()}">
-                            <semui:xEditable owner="${surveyResult}" type="text" field="decValue"/>
+                            <ui:xEditable owner="${surveyResult}" type="text" field="decValue"/>
                         </g:elseif>
                         <g:elseif test="${surveyResult.type.isDateType()}">
-                            <semui:xEditable owner="${surveyResult}" type="date" field="dateValue"/>
+                            <ui:xEditable owner="${surveyResult}" type="date" field="dateValue"/>
                         </g:elseif>
                         <g:elseif test="${surveyResult.type.isURLType()}">
-                            <semui:xEditable owner="${surveyResult}" type="url" field="urlValue"
+                            <ui:xEditable owner="${surveyResult}" type="url" field="urlValue"
                                              overwriteEditable="${overwriteEditable}"
                                              class="la-overflow la-ellipsis"/>
                             <g:if test="${surveyResult.urlValue}">
-                                <semui:linkIcon href="${surveyResult.urlValue}"/>
+                                <ui:linkWithIcon href="${surveyResult.urlValue}"/>
                             </g:if>
                         </g:elseif>
                         <g:elseif test="${surveyResult.type.isRefdataValueType()}">
 
-                            <g:if test="${surveyResult.type == RDStore.SURVEY_PROPERTY_PARTICIPATION && surveyResult.owner.id != contextOrg.id}">
-                                <semui:xEditableRefData owner="${surveyResult}" field="refValue" type="text"
+                            <g:if test="${surveyResult.type == PropertyStore.SURVEY_PROPERTY_PARTICIPATION && surveyResult.owner.id != contextOrg.id}">
+                                <ui:xEditableRefData owner="${surveyResult}" field="refValue" type="text"
                                                         id="participation"
                                                         config="${surveyResult.type.refdataCategory}"/>
                             </g:if>
                             <g:else>
-                                <semui:xEditableRefData owner="${surveyResult}" type="text" field="refValue"
+                                <ui:xEditableRefData owner="${surveyResult}" type="text" field="refValue"
                                                         config="${surveyResult.type.refdataCategory}"/>
                             </g:else>
                         </g:elseif>
                     </td>
                     <td>
-                        <semui:xEditable owner="${surveyResult}" type="textarea" field="comment"/>
+                        <ui:xEditable owner="${surveyResult}" type="textarea" field="comment"/>
                     </td>
                     <td>
                         <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_USER')}">
-                            <semui:xEditable owner="${surveyResult}" type="textarea" field="ownerComment"/>
+                            <ui:xEditable owner="${surveyResult}" type="textarea" field="ownerComment"/>
                         </g:if>
                         <g:else>
-                            <semui:xEditable owner="${surveyResult}" type="textarea" field="participantComment"/>
+                            <ui:xEditable owner="${surveyResult}" type="textarea" field="participantComment"/>
                         </g:else>
                     </td>
                 </tr>
             </g:each>
         </table>
-    </semui:form>
+    </ui:form>
 </g:if>

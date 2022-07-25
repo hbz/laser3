@@ -1,34 +1,26 @@
 <%@ page import="de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem;de.laser.FormService" %>
-<laser:serviceInjection />
+<laser:htmlStart message="license.member.plural" serviceInjection="true"/>
 
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
     <g:set var="entityName" value="${message(code: 'org.label')}"/>
-    <title>${message(code: 'laser')} : ${message(code: 'license.member.plural')}</title>
-</head>
 
-<body>
-
-<semui:debugInfo>
+<ui:debugInfo>
     <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
-</semui:debugInfo>
+</ui:debugInfo>
 
 <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
-<semui:controlButtons>
+<ui:controlButtons>
     <%-- is as placeholder for breaking header --%>
-</semui:controlButtons>
+</ui:controlButtons>
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
-    <semui:xEditable owner="${license}" field="reference" id="reference"/>
-    <semui:totalNumber total="${totalCount}"/>
-</h1>
+<ui:h1HeaderWithIcon>
+    <ui:xEditable owner="${license}" field="reference" id="reference"/>
+    <ui:totalNumber total="${totalCount}"/>
+</ui:h1HeaderWithIcon>
 
-<semui:anualRings object="${license}" controller="license" action="show" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
+<ui:anualRings object="${license}" controller="license" action="show" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
 
 <laser:render template="nav" />
 
@@ -40,5 +32,4 @@
 </div>
 <laser:render template="/templates/subscription/consortiaSubscriptionTable"/>
 
-</body>
-</html>
+<laser:htmlEnd />

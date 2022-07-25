@@ -23,15 +23,15 @@
 
                     <td>
                         <g:formatDate formatName="default.date.format.notime" date="${subscription.startDate}"/>
-                        <semui:auditButton auditable="[subscription, 'startDate']"/>
+                        <ui:auditButton auditable="[subscription, 'startDate']"/>
                     </td>
                     <td>
                         <g:formatDate formatName="default.date.format.notime" date="${subscription.endDate}"/>
-                        <semui:auditButton auditable="[subscription, 'endDate']"/>
+                        <ui:auditButton auditable="[subscription, 'endDate']"/>
                     </td>
                     <td>
                         ${subscription.status.getI10n('value')}
-                        <semui:auditButton auditable="[subscription, 'status']"/>
+                        <ui:auditButton auditable="[subscription, 'status']"/>
                     </td>
                     <td class="x">
                         <g:link controller="subscription" action="show" id="${subscription.id}"
@@ -55,9 +55,9 @@
         <h4 class="ui header">${message(code: 'subscriptionsManagement.info.subscriptionProperty')}</h4>
 
         <div class="two fields">
-            <semui:datepicker label="subscription.startDate.label" id="valid_from" name="valid_from"/>
+            <ui:datepicker label="subscription.startDate.label" id="valid_from" name="valid_from"/>
 
-            <semui:datepicker label="subscription.endDate.label" id="valid_to" name="valid_to"/>
+            <ui:datepicker label="subscription.endDate.label" id="valid_to" name="valid_to"/>
         </div>
 
         <div class="two fields">
@@ -68,13 +68,13 @@
                     fakeList.addAll(RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS))
                     fakeList.remove(RefdataValue.getByValueAndCategory('Deleted', RDConstants.SUBSCRIPTION_STATUS))
                 %>
-                <laser:select name="process_status" from="${fakeList}" optionKey="id" optionValue="value"
+                <ui:select name="process_status" from="${fakeList}" optionKey="id" optionValue="value"
                               noSelection="${['': '']}"
                               value="${['': '']}"/>
             </div>
             <div class="field">
                 <label>${message(code: 'subscription.isMultiYear.label')}</label>
-                <laser:select name="process_isMultiYear"
+                <ui:select name="process_isMultiYear"
                               from="${RefdataCategory.getAllRefdataValues(RDConstants.Y_N)}"
                               optionKey="id" optionValue="value" noSelection="${['': '']}"
                               value="${['': '']}"/>
@@ -88,10 +88,10 @@
 
         <h3 class="ui header">
             <g:if test="${controllerName == "subscription"}">
-                ${message(code: 'subscriptionsManagement.subscriber')} <semui:totalNumber
+                ${message(code: 'subscriptionsManagement.subscriber')} <ui:totalNumber
                     total="${filteredSubscriptions.size()}"/>
             </g:if><g:else>
-                ${message(code: 'subscriptionsManagement.subscriptions')} <semui:totalNumber
+                ${message(code: 'subscriptionsManagement.subscriptions')} <ui:totalNumber
                         total="${filteredSubscriptions.size()}/${num_sub_rows}"/>
             </g:else>
         </h3>
@@ -163,20 +163,20 @@
                         <td>${sub.name}</td>
                     </g:if>
                     <td>
-                        <semui:xEditable owner="${sub}" field="startDate" type="date" validation="datesCheck"/>
-                        <semui:auditButton auditable="[sub, 'startDate']"/>
+                        <ui:xEditable owner="${sub}" field="startDate" type="date" validation="datesCheck"/>
+                        <ui:auditButton auditable="[sub, 'startDate']"/>
                     </td>
-                    <td><semui:xEditable owner="${sub}" field="endDate" type="date" validation="datesCheck"/>
-                    <semui:auditButton auditable="[sub, 'endDate']"/>
+                    <td><ui:xEditable owner="${sub}" field="endDate" type="date" validation="datesCheck"/>
+                    <ui:auditButton auditable="[sub, 'endDate']"/>
                     </td>
                     <td>
-                        <semui:xEditableRefData owner="${sub}" field="status"
+                        <ui:xEditableRefData owner="${sub}" field="status"
                                                 config="${RDConstants.SUBSCRIPTION_STATUS}"
                                                 constraint="removeValue_deleted"/>
-                        <semui:auditButton auditable="[sub, 'status']"/>
+                        <ui:auditButton auditable="[sub, 'status']"/>
                     </td>
                     <td>
-                        <semui:xEditableBoolean owner="${sub}" field="isMultiYear"/>
+                        <ui:xEditableBoolean owner="${sub}" field="isMultiYear"/>
                     </td>
                     <td class="x">
                         <g:link controller="subscription" action="show" id="${sub.id}"

@@ -74,31 +74,10 @@
             </g:each>
 
             <g:if test="${hiddenPropertiesMessages.size() > 0}">
-                    <semui:msg class="info" header="" text="${hiddenPropertiesMessages.join('<br />')}" />
+                    <ui:msg class="info" text="${hiddenPropertiesMessages.join('<br />')}" />
             </g:if>
 
         <%-- orphaned properties --%>
-
-        <%--
-        <div class="content">
-            <h5 class="ui header">
-                <g:if test="${derivedPropDefGroups.global || derivedPropDefGroups.local || derivedPropDefGroups.member}">
-                    ${message(code:'subscription.properties.orphaned')}
-                </g:if>
-                <g:else>
-                    ${message(code:'license.properties')}
-                </g:else>
-            </h5>
-
-            <div id="custom_props_div_props">
-                <laser:render template="/templates/properties/orphaned" model="${[
-                        prop_desc: PropertyDefinition.LIC_PROP,
-                        ownobj: license,
-                        orphanedProperties: derivedPropDefGroups.orphanedProperties,
-                        custom_props_div: "custom_props_div_props" ]}"/>
-            </div>
-        </div>
-        --%>
 
         <%-- custom properties --%>
 

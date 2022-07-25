@@ -8,7 +8,7 @@
     <g:set var="filterLabels" value="${GlobalExportHelper.getCachedFilterLabels( token )}" />
     <g:set var="queryLabels" value="${GlobalExportHelper.getCachedQueryLabels( token )}" />
 
-    <semui:modal id="${modalID}" text="${message(code: 'reporting.modal.export.key.' + export.KEY)}" msgSave="${message(code: 'default.button.export.label')}">
+    <ui:modal id="${modalID}" text="${message(code: 'reporting.modal.export.key.' + export.KEY)}" msgSave="${message(code: 'default.button.export.label')}">
 
         <g:set var="dcSize" value="${GlobalExportHelper.getDetailsCache(token).idList.size()}" />
         <g:if test="${dcSize > 50}">
@@ -159,7 +159,7 @@
                                       optionKey="key" optionValue="value"
                                       from="${[csv:'CSV', pdf:'PDF', xlsx: 'XLSX']}"
                             />
-                            %{-- <semui:dropdownWithI18nExplanations name="fileformat"
+                            %{-- <ui:dropdownWithI18nExplanations name="fileformat"
                                     class="ui dropdown la-not-clearable"
                                     from="[csv: ['CSV', 'Comma-Separated Values'], pdf: ['PDF', 'Portable Document Format'], xlsx: ['XLSX', 'Excel - Office Open XML']]" value="csv"
                                     optionKey="key"
@@ -188,7 +188,7 @@
             <input type="hidden" name="context" value="${BaseConfig.KEY_MYINST}" />
         </g:form>
 
-    </semui:modal>
+    </ui:modal>
 
     <laser:script file="${this.getGroovyPageFileName()}">
 

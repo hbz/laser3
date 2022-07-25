@@ -1,22 +1,16 @@
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'task.plural')}</title>
-</head>
-<body>
+<laser:htmlStart message="task.plural" />
 
     <laser:render template="breadcrumb" model="${[ params:params ]}"/>
-    <semui:controlButtons>
+    <ui:controlButtons>
         <laser:render template="actions" />
-    </semui:controlButtons>
-    <h1 class="ui  icon header la-noMargin-top"><semui:headerIcon />
+    </ui:controlButtons>
+    <ui:h1HeaderWithIcon>
         <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
             <laser:render template="iconSubscriptionIsChild"/>
         </g:if>
-        <semui:xEditable owner="${subscription}" field="name" />
-    </h1>
-    <semui:anualRings object="${subscription}" controller="subscription" action="tasks" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+        <ui:xEditable owner="${subscription}" field="name" />
+    </ui:h1HeaderWithIcon>
+    <ui:anualRings object="${subscription}" controller="subscription" action="tasks" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
     <laser:render template="nav" />
 
@@ -24,12 +18,12 @@
         <laser:render template="message" />
     </g:if>
 
-    <semui:messages data="${flash}" />
+    <ui:messages data="${flash}" />
 
-    <laser:render template="/templates/tasks/table" model="${[taskInstanceList:taskInstanceList, taskInstanceCount:taskInstanceCount]}"/>
-    <laser:render template="/templates/tasks/table2" model="${[taskInstanceList:myTaskInstanceList, taskInstanceCount:myTaskInstanceCount]}"/>
-    <laser:render template="/templates/tasks/js_taskedit"/>
+    <laser:render template="/templates/tasks/tables" model="${[
+            taskInstanceList: taskInstanceList,     taskInstanceCount: taskInstanceCount,
+            myTaskInstanceList: myTaskInstanceList, myTaskInstanceCount: myTaskInstanceCount
+    ]}"/>
 
-</body>
-</html>
+<laser:htmlEnd />
 

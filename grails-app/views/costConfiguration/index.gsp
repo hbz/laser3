@@ -1,21 +1,15 @@
 <%@ page import="de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue" %>
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code: 'menu.institutions.costConfiguration')}</title>
-    </head>
-    <body>
+<laser:htmlStart message="menu.institutions.costConfiguration" />
 
-        <semui:breadcrumbs>
-            <semui:crumb message="menu.institutions.costConfiguration" class="active" />
-        </semui:breadcrumbs>
+        <ui:breadcrumbs>
+            <ui:crumb message="menu.institutions.costConfiguration" class="active" />
+        </ui:breadcrumbs>
 
-        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/><g:message code="menu.institutions.costConfiguration"/></h1>
+        <ui:h1HeaderWithIcon message="menu.institutions.costConfiguration" />
 
-        <semui:messages data="${flash}"/>
+        <ui:messages data="${flash}"/>
 
-        <semui:msg class="warning" header="${message(code: 'message.information')}" message="costConfiguration.preset" />
+        <ui:msg class="warning" header="${message(code: 'message.information')}" message="costConfiguration.preset" />
 
         <g:if test="${editable}">
             <div class="content ui form">
@@ -45,7 +39,7 @@
                         <tr>
                             <td>${ciec.costItemElement.getI10n('value')}</td>
                             <td>
-                                <semui:xEditableRefData owner="${ciec}" field="elementSign" emptytext="${message(code:'financials.costItemConfiguration.notSet')}" config="${de.laser.storage.RDConstants.COST_CONFIGURATION}"/>
+                                <ui:xEditableRefData owner="${ciec}" field="elementSign" emptytext="${message(code:'financials.costItemConfiguration.notSet')}" config="${de.laser.storage.RDConstants.COST_CONFIGURATION}"/>
                             </td>
                             <g:if test="${editable}">
                                 <td>
@@ -85,7 +79,7 @@
 
                     $('#dynamicModalContainer .ui.modal').modal({
                         onVisible: function () {
-                            r2d2.initDynamicSemuiStuff('#ciecModal');
+                            r2d2.initDynamicUiStuff('#ciecModal');
                             r2d2.initDynamicXEditableStuff('#ciecModal');
                         },
                         detachable: true,
@@ -100,5 +94,5 @@
                 })
             })
         </laser:script>
-    </body>
-</html>
+
+<laser:htmlEnd />

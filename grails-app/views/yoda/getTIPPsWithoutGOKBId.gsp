@@ -1,14 +1,9 @@
-<laser:serviceInjection/>
-<%@ page import="de.laser.storage.RDStore; de.laser.TitleInstancePackagePlatform; grails.converters.JSON" contentType="text/html;charset=UTF-8" %>
+<%@ page import="de.laser.storage.RDStore; de.laser.TitleInstancePackagePlatform; grails.converters.JSON" %>
 <g:set var="contextOrg" value="${contextService.getOrg()}"/>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : Datenbereinigung: TIPPs ohne we:kb ID</title>
-    </head>
 
-    <body>
-        <semui:messages data="${flash}"/>
+<laser:htmlStart text="Datenbereinigung: TIPPs ohne we:kb ID" serviceInjection="true"/>
+
+        <ui:messages data="${flash}"/>
         <table>
             <thead>
                 <tr>
@@ -53,5 +48,5 @@
                 </tr>
             </tfoot>
         </table>
-    </body>
-</html>
+
+<laser:htmlEnd />

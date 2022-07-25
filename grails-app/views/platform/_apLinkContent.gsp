@@ -1,4 +1,4 @@
-<semui:filter>
+<ui:filter>
     <g:form action="linkAccessPoint" controller="platform" method="get" class="ui small form">
         <input type="hidden" name="platform_id" value="${platformInstance.id}">
         <div class="fields">
@@ -8,7 +8,7 @@
                           optionKey="id"
                           optionValue="name"
                           value="${selectedInstitution} "
-                          onchange="${laser.remoteJsOnChangeHandler(
+                          onchange="${ui.remoteJsOnChangeHandler(
                                   action:   'dynamicApLink',
                                   data:     '{platform_id:' + platformInstance.id + ', institution_id:this.value}',
                                   update:   '#dynamicUpdate',
@@ -28,7 +28,7 @@
             </div>
         </div>
     </g:form>
-</semui:filter>
+</ui:filter>
 <table class="ui sortable celled la-js-responsive-table la-table table la-ignore-fixed la-bulk-header">
     <thead>
     <tr>

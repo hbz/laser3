@@ -1,6 +1,7 @@
 package de.laser.custom
 
-import de.laser.utils.ConfigMapper
+import de.laser.config.ConfigDefaults
+import de.laser.config.ConfigMapper
 import de.laser.storage.BeanStore
 import grails.core.GrailsApplication
 import liquibase.Liquibase
@@ -61,7 +62,8 @@ class CustomMigrationCallbacks {
 			def dataSource = ConfigMapper.getConfig('dataSource', Map)
 			URI uri = new URI(dataSource.url.substring(5))
 
-			String backupFile = ConfigMapper.getDeployBackupLocation() + "/laser-backup-${(new SimpleDateFormat('yyyy-MM-dd-HH:mm:ss')).format(new Date())}.sql"
+			String backupFile = (ConfigMapper.getDeployBackupLocation() ?: ConfigDefaults.DEPLOYBACKUP_LOCATION_FALLBACK) +
+					"/laser-backup-${(new SimpleDateFormat('yyyy-MM-dd-HH:mm:ss')).format(new Date())}.sql"
 
 			Map<String, String> config = [
 					dbname: "${uri.getScheme()}://${dataSource.username}:${dataSource.password}@${uri.getHost()}:${uri.getPort()}${uri.getRawPath()}",

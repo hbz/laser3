@@ -52,9 +52,8 @@ class SurveyInfo {
     static constraints = {
         startDate (nullable:true)
         endDate (nullable:true)
-        surveyConfigs (nullable:true, blank:false)
+        surveyConfigs (nullable:true)
         comment (nullable:true, blank:true)
-        isRenewalSent (nullable:true)
         license (nullable:true)
         provider (nullable:true)
     }
@@ -92,7 +91,7 @@ class SurveyInfo {
      * and participants in the survey, false otherwise
      */
     boolean checkOpenSurvey() {
-        boolean check = this.surveyConfigs.size() > 0 ? true : false
+        boolean check = this.surveyConfigs.size() > 0
 
         this.surveyConfigs.each {
 
@@ -139,8 +138,8 @@ class SurveyInfo {
 
         result.sort{it.value}
 
-        print(result)
-        print(count)
+        //print(result)
+        //print(count)
 
 
         result = result?.find{it.value == count} ? result?.find{it.value == count}.key : null

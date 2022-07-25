@@ -28,12 +28,14 @@ import grails.gsp.PageRenderer
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugins.mail.MailService
 import grails.util.Holders
+import groovy.transform.CompileStatic
 import org.grails.plugins.web.taglib.ApplicationTagLib
 import org.springframework.context.MessageSource
 import org.springframework.context.MessageSourceResolvable
 
 import javax.sql.DataSource
 
+@CompileStatic
 class BeanStore {
 
     static def get(String bean) {
@@ -55,17 +57,17 @@ class BeanStore {
         MessageSource messageSource = Holders.grailsApplication.mainContext.getBean('messageSource') as MessageSource
 
         // in progress
-        if (false) {
-            messageSource.metaClass.getMessage = { String code ->
-                getMessageSource().getMessage(code, null, code, org.springframework.context.i18n.LocaleContextHolder.getLocale())
-            }
-            messageSource.metaClass.getMessage = { String code, Object[] args ->
-                getMessageSource().getMessage(code, args, code, org.springframework.context.i18n.LocaleContextHolder.getLocale())
-            }
-            messageSource.metaClass.getMessage = { MessageSourceResolvable resolvable ->
-                getMessageSource().getMessage(resolvable, org.springframework.context.i18n.LocaleContextHolder.getLocale())
-            }
-        }
+//        if (false) {
+//            messageSource.metaClass.getMessage = { String code ->
+//                getMessageSource().getMessage(code, null, code, org.springframework.context.i18n.LocaleContextHolder.getLocale())
+//            }
+//            messageSource.metaClass.getMessage = { String code, Object[] args ->
+//                getMessageSource().getMessage(code, args, code, org.springframework.context.i18n.LocaleContextHolder.getLocale())
+//            }
+//            messageSource.metaClass.getMessage = { MessageSourceResolvable resolvable ->
+//                getMessageSource().getMessage(resolvable, org.springframework.context.i18n.LocaleContextHolder.getLocale())
+//            }
+//        }
         messageSource
     }
     static SpringSecurityService getSpringSecurityService() {

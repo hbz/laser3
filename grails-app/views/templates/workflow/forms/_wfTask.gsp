@@ -15,7 +15,7 @@
 
         <div class="field four wide required">
             <label for="${prefix}_priority">${message(code:'default.priority.label')}</label>
-            <laser:select class="ui dropdown la-not-clearable" id="${prefix}_priority" name="${prefix}_priority"
+            <ui:select class="ui dropdown la-not-clearable" id="${prefix}_priority" name="${prefix}_priority"
                           required="required"
                           noSelection="${['' : message(code:'default.select.choose.label')]}"
                           from="${RefdataCategory.getAllRefdataValues( RDConstants.WF_TASK_PRIORITY )}"
@@ -64,7 +64,7 @@
 
 %{-- <div class="field">
 <label for="${prefix}_type">Typ</label>
-<laser:select class="ui dropdown" id="${prefix}_type" name="${prefix}_type"
+<ui:select class="ui dropdown" id="${prefix}_type" name="${prefix}_type"
               noSelection="${['' : message(code:'default.select.choose.label')]}"
               from="${RefdataCategory.getAllRefdataValues( RDConstants.WF_TASK_TYPE )}"
               value="${task?.type?.id}"
@@ -81,7 +81,7 @@
 
         <div class="field required">
             <label for="${prefix}_status">${message(code:'default.status.label')}</label>
-            <laser:select class="ui dropdown la-not-clearable" id="${prefix}_status" name="${prefix}_status"
+            <ui:select class="ui dropdown la-not-clearable" id="${prefix}_status" name="${prefix}_status"
                           required="required"
                           from="${RefdataCategory.getAllRefdataValues( RDConstants.WF_TASK_STATUS )}"
                           value="${task?.status?.id}"

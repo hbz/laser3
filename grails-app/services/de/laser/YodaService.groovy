@@ -2,7 +2,7 @@ package de.laser
 
 
 import de.laser.exceptions.SyncException
-import de.laser.utils.ConfigMapper
+import de.laser.config.ConfigMapper
 import de.laser.remote.GlobalRecordSource
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
@@ -11,7 +11,7 @@ import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
-import groovy.util.slurpersupport.GPathResult
+import groovy.xml.slurpersupport.GPathResult
 import groovyx.net.http.ContentType
 import groovyx.net.http.HTTPBuilder
 import groovyx.net.http.Method

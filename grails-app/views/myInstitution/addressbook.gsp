@@ -1,55 +1,43 @@
-<%@ page
-        import="de.laser.PersonRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Org; de.laser.Person; de.laser.RefdataValue; de.laser.RefdataCategory"
-%>
-<!doctype html>
+<%@ page import="de.laser.PersonRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Org; de.laser.Person; de.laser.RefdataValue; de.laser.RefdataCategory" %>
 
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'menu.institutions.myAddressbook')}</title>
-</head>
+<laser:htmlStart message="menu.institutions.myAddressbook" />
 
-<body>
+<ui:breadcrumbs>
+    <ui:crumb message="menu.institutions.myAddressbook" class="active"/>
+</ui:breadcrumbs>
 
-<semui:breadcrumbs>
-    <semui:crumb message="menu.institutions.myAddressbook" class="active"/>
-</semui:breadcrumbs>
-
-<semui:controlButtons>
-    <semui:actionsDropdown>
+<ui:controlButtons>
+    <ui:actionsDropdown>
         <g:if test="${editable}">
             <g:if test="${institution.getCustomerType() == 'ORG_CONSORTIUM'}">
 
-                <a href="#createPersonModal" class="item" data-semui="modal"
+                <a href="#createPersonModal" class="item" data-ui="modal"
                    onclick="JSPC.app.personCreate('contactPersonForInstitution');"><g:message
                         code="person.create_new.contactPersonForInstitution.label"/></a>
             </g:if>
 
-            <a href="#createPersonModal" class="item" data-semui="modal"
+            <a href="#createPersonModal" class="item" data-ui="modal"
                onclick="JSPC.app.personCreate('contactPersonForProviderAgency');"><g:message
                     code="person.create_new.contactPersonForProviderAgency.label"/></a>
 
-            <a href="#createPersonModal" class="item" data-semui="modal"
+            <a href="#createPersonModal" class="item" data-ui="modal"
                onclick="JSPC.app.personCreate('contactPersonForPublic');"><g:message
                     code="person.create_new.contactPersonForPublic.label"/></a>
 
         </g:if>
 
-        <semui:actionsDropdownItem notActive="true" data-semui="modal" href="#copyFilteredEmailAddresses_ajaxModal"
+        <ui:actionsDropdownItem notActive="true" data-ui="modal" href="#copyFilteredEmailAddresses_ajaxModal"
                                    message="menu.institutions.copy_emailaddresses.button"/>
-    </semui:actionsDropdown>
-</semui:controlButtons>
+    </ui:actionsDropdown>
+</ui:controlButtons>
 
 <laser:render template="/templates/copyFilteredEmailAddresses" model="[emailAddresses: emailAddresses]"/>
 
-<h1 class="ui left floated aligned icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${message(code: 'menu.institutions.myAddressbook')}
-<semui:totalNumber total="${num_visiblePersons}"/>
-</h1>
+<ui:h1HeaderWithIcon message="menu.institutions.myAddressbook" total="${num_visiblePersons}" floated="true" />
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
-<laser:render template="/templates/filter/javascript"/>
-<semui:filter showFilterButton="true">
+<ui:filter showFilterButton="true" addFilterJs="true">
     <g:form action="addressbook" controller="myInstitution" method="get" class="ui small form">
         <div class="four fields">
             <div class="field">
@@ -75,7 +63,7 @@
         <div class="two fields">
             <div class="field">
                 <label><g:message code="person.function.label"/></label>
-                <laser:select class="ui dropdown search"
+                <ui:select class="ui dropdown search"
                               name="function"
                               from="${PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION)}"
                               multiple=""
@@ -87,7 +75,7 @@
 
             <div class="field">
                 <label><g:message code="person.position.label"/></label>
-                <laser:select class="ui dropdown search"
+                <ui:select class="ui dropdown search"
                               name="position"
                               from="${PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION)}"
                               multiple=""
@@ -130,7 +118,7 @@
             <input type="submit" class="ui secondary button" value="${message(code: 'default.button.filter.label')}">
         </div>
     </g:form>
-</semui:filter>
+</ui:filter>
 
 <laser:render template="/templates/cpa/person_table" model="${[
         persons       : visiblePersons,
@@ -139,14 +127,11 @@
         tmplConfigShow: ['lineNumber', 'organisation', 'function', 'position', 'name', 'showContacts', 'showAddresses']
 ]}"/>
 
-<semui:paginate action="addressbook" controller="myInstitution" params="${params}"
+<ui:paginate action="addressbook" controller="myInstitution" params="${params}"
                 next="${message(code: 'default.paginate.next')}"
                 prev="${message(code: 'default.paginate.prev')}"
                 max="${max}"
                 total="${num_visiblePersons}"/>
-
-</body>
-
 
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.app.personCreate = function (contactFor) {
@@ -163,7 +148,7 @@
                 $("#dynamicModalContainer").html(result);
                 $("#dynamicModalContainer .ui.modal").modal({
                     onVisible: function () {
-                        r2d2.initDynamicSemuiStuff('#personModal');
+                        r2d2.initDynamicUiStuff('#personModal');
                         r2d2.initDynamicXEditableStuff('#personModal');
                     }
                 }).modal('show');
@@ -172,4 +157,4 @@
     }
 </laser:script>
 
-</html>
+<laser:htmlEnd />

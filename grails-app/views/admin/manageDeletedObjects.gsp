@@ -1,18 +1,11 @@
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code: "menu.admin.deletedObjects")}</title>
-</head>
+<laser:htmlStart message="menu.admin.deletedObjects" />
 
-<body>
+<ui:breadcrumbs>
+    <ui:crumb message="menu.admin" controller="admin" action="index"/>
+    <ui:crumb message="menu.admin.deletedObjects" class="active"/>
+</ui:breadcrumbs>
 
-<semui:breadcrumbs>
-    <semui:crumb message="menu.admin" controller="admin" action="index"/>
-    <semui:crumb message="menu.admin.deletedObjects" class="active"/>
-</semui:breadcrumbs>
-
-<h1 class="ui header la-noMargin-top">${message(code: "menu.admin.deletedObjects")}</h1>
+<ui:h1HeaderWithIcon message="menu.admin.deletedObjects" />
 
 <div class="ui grid">
     <div class="twelve wide column">
@@ -21,7 +14,7 @@
             <thead>
                 <tr>
                     <th>Objekt</th>
-                    <th>Anzahl</th>
+                    <th>${message(code:'default.count.label')}</th>
                 </tr>
             </thead>
             <tbody>
@@ -37,5 +30,4 @@
     </div>
 </div>
 
-</body>
-</html>
+<laser:htmlEnd />

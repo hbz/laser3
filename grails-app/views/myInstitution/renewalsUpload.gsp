@@ -1,24 +1,17 @@
-<!doctype html>
-<html>
-  <head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} ${message(code:'myinst.renewalUpload.label')}</title>
-  </head>
+<laser:htmlStart message="myinst.renewalUpload.label" />
 
-  <body>
+  <ui:breadcrumbs>
+    <ui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
+    <ui:crumb controller="myInstitution" action="currentSubscriptions" message="myinst.currentSubscriptions.label" />
+    <ui:crumb message="menu.institutions.imp_renew" class="active" />
+  </ui:breadcrumbs>
 
-  <semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
-    <semui:crumb controller="myInstitution" action="currentSubscriptions" message="myinst.currentSubscriptions.label" />
-    <semui:crumb message="menu.institutions.imp_renew" class="active" />
-  </semui:breadcrumbs>
-
-    <semui:form>
+    <ui:form>
       <g:form class="ui form" action="renewalsUpload" method="post" enctype="multipart/form-data" params="${params}">
           <input type="file" id="renewalsWorksheet" name="renewalsWorksheet"/><br /><br />
         <button type="submit" class="ui button">${message(code:'myinst.renewalUpload.upload')}</button>
       </g:form>
-    </semui:form>
+    </ui:form>
 
     <g:if test="${(errors && (errors.size() > 0))}">
       <div>
@@ -30,7 +23,7 @@
       </div>
     </g:if>
 
-   <semui:messages data="${flash}" />
+   <ui:messages data="${flash}" />
    <g:set var="counter" value="${-1}" />
    <g:set var="index" value="${0}"/>
       <g:form action="processRenewal" method="post" enctype="multipart/form-data" params="${params}">
@@ -49,12 +42,12 @@
                     <tr>
                         <th><g:checkBox name="subscription.copyStart" value="${true}" /></th>
                         <th>${message(code:'default.startDate.label')}</th>
-                        <td><semui:datepicker class="wide eight" id="subscription.start_date" name="subscription.start_date" placeholder="default.date.label" value="${permissionInfo?.sub_startDate}" required="" /></td>
+                        <td><ui:datepicker class="wide eight" id="subscription.start_date" name="subscription.start_date" placeholder="default.date.label" value="${permissionInfo?.sub_startDate}" required="" /></td>
                     </tr>
                     <tr>
                         <th><g:checkBox name="subscription.copyEnd" value="${true}" /></th>
                         <th>${message(code:'default.endDate.label')}</th>
-                        <td><semui:datepicker class="wide eight" id="subscription.end_date" name="subscription.end_date" placeholder="default.date.label" value="${permissionInfo?.sub_endDate}" /></td>
+                        <td><ui:datepicker class="wide eight" id="subscription.end_date" name="subscription.end_date" placeholder="default.date.label" value="${permissionInfo?.sub_endDate}" /></td>
                     </tr>
                     <tr>
                         <th><g:checkBox name="subscription.copyDocs" value="${true}" /></th>
@@ -132,5 +125,4 @@
         <input type="hidden" name="ecount" value="${counter}"/>
       </g:form>
 
-  </body>
-</html>
+<laser:htmlEnd />

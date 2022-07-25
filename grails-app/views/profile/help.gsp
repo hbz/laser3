@@ -1,18 +1,11 @@
 <%@ page import="de.laser.RefdataValue;de.laser.auth.Role;de.laser.auth.UserOrg" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code: 'menu.user.help')}</title>
-</head>
+<laser:htmlStart message="menu.user.help" />
 
-<body>
+<ui:breadcrumbs>
+    <ui:crumb message="menu.institutions.help" class="active"/>
+</ui:breadcrumbs>
 
-<semui:breadcrumbs>
-    <semui:crumb message="menu.institutions.help" class="active"/>
-</semui:breadcrumbs>
-
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'menu.user.help')}</h1>
+<ui:h1HeaderWithIcon message="menu.user.help" />
 
 <h2 class="ui icon header la-clear-before la-noMargin-top"><g:message code="help.contentHelp"/></h2>
 
@@ -82,5 +75,4 @@
         </div>
     </div>
 
-</body>
-</html>
+<laser:htmlEnd />

@@ -5,7 +5,8 @@ import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.exceptions.CreationException
 import de.laser.finance.CostItem
 import de.laser.finance.PriceItem
-import de.laser.utils.ConfigMapper
+import de.laser.config.ConfigDefaults
+import de.laser.config.ConfigMapper
 import de.laser.helper.FactoryResult
 import de.laser.storage.RDStore
 import de.laser.interfaces.ShareSupport
@@ -224,36 +225,6 @@ class CopyElementsService {
         }
         result
     }
-
-    /*Map loadDataFor_MyProperties(Map params) {
-        LinkedHashMap result = [:]
-        Object sourceObject = genericOIDService.resolveOID(params.sourceObjectId)
-        Object targetObject = null
-        List<Object> objectsToCompare = [sourceObject]
-        if (params.targetObjectId) {
-            targetObject = genericOIDService.resolveOID(params.targetObjectId)
-            objectsToCompare.add(targetObject)
-        }
-
-
-        Org contextOrg = contextService.getOrg()
-        *//*objectsToCompare.each { Object obj ->
-            Map customProperties = result.customProperties
-            customProperties = comparisonService.buildComparisonTree(customProperties, obj, obj.propertySet.findAll { it.type.tenant == null && it.tenant?.id == contextOrg.id }.sort { it.type.getI10n('name') })
-            result.customProperties = customProperties
-            Map privateProperties = result.privateProperties
-            privateProperties = comparisonService.buildComparisonTree(privateProperties, obj, obj.propertySet.findAll { it.type.tenant?.id == contextOrg.id }.sort { it.type.getI10n('name') })
-            result.privateProperties = privateProperties
-        }*//*
-
-        result = regroupObjectProperties(objectsToCompare)
-
-        if (targetObject) {
-            result.targetObject = targetObject.refresh()
-        }
-
-        result
-    }*/
 
     /**
      * Loads the subscription holdings to copy or delete
@@ -1158,7 +1129,7 @@ class CopyElementsService {
                         newDocContext.owner = newDoc
                         _save(newDocContext, flash)
 
-                        String fPath = ConfigMapper.getDocumentStorageLocation() ?: '/tmp/laser'
+                        String fPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
 
                         Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
                         Path target = new File("${fPath}/${newDoc.uuid}").toPath()
@@ -1654,8 +1625,8 @@ class CopyElementsService {
     boolean copyEntitlements(List<IssueEntitlement> entitlementsToTake, Object targetObject, def flash) {
         Locale locale = LocaleContextHolder.getLocale()
         entitlementsToTake.each { ieToTake ->
-            if (ieToTake.status != RDStore.TIPP_STATUS_DELETED) {
-                def list = subscriptionService.getIssueEntitlements(targetObject).findAll { it.tipp.id == ieToTake.tipp.id && it.status != RDStore.TIPP_STATUS_DELETED }
+            if (!(ieToTake.status in [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED])) {
+                def list = subscriptionService.getIssueEntitlements(targetObject).findAll { it.tipp.id == ieToTake.tipp.id && !(it.status in [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]) }
                 if (list.size() > 0) {
                     // mich gibts schon! Fehlermeldung ausgeben!
                     Object[] args = [ieToTake.name]
@@ -1778,7 +1749,7 @@ class CopyElementsService {
                 if (issueEntitlementGroup.save()) {
 
                     ieGroup.items.each { ieGroupItem ->
-                        IssueEntitlement ie = IssueEntitlement.findBySubscriptionAndTippAndStatusNotEqual(targetObject, ieGroupItem.ie.tipp, RDStore.TIPP_STATUS_DELETED)
+                        IssueEntitlement ie = IssueEntitlement.findBySubscriptionAndTippAndStatusNotInList(targetObject, ieGroupItem.ie.tipp, [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED])
                         if (ie && !IssueEntitlementGroupItem.findByIe(ie)) {
                             IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
                                     ie: ie,

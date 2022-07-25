@@ -51,7 +51,7 @@
                     <span  class="la-popup-tooltip la-delay" data-content="${message(code:'financials.costItemConfiguration')}" data-position="left center">
                         <i class="money bill alternate icon"></i>
                     </span>&nbsp;/&nbsp;
-                    <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
+                    <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
                         <i class="ui icon eye orange"></i>
                     </span>
                 </th>
@@ -206,11 +206,11 @@
 
                     <td>
                         <g:if test="${ci?.id}">
-                            <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${dataTooltip}">${raw(icon)}</span>
+                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${dataTooltip}">${raw(icon)}</span>
                         </g:if>
 
                         <g:if test="${ci?.isVisibleForSubscriber}">
-                            <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
+                            <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'financials.isVisibleForSubscriber')}" style="margin-left:10px">
                                 <i class="ui icon eye orange"></i>
                             </span>
                         </g:if>
@@ -286,7 +286,4 @@
     </g:else>
 </g:else>
 
-<semui:paginate action="${actionName}" controller="${controllerName}" params="${params}"
-                next="${message(code:'default.paginate.next')}"
-                prev="${message(code:'default.paginate.prev')}"
-                max="${max}" total="${totalCount}" />
+<ui:paginate action="${actionName}" controller="${controllerName}" params="${params}" max="${max}" total="${totalCount}" />

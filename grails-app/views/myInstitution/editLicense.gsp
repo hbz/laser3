@@ -1,10 +1,4 @@
-<!doctype html>
-<html>
-  <head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} Data import explorer</title>
-  </head>
-  <body>
+<laser:htmlStart text="Data import explorer" />
     <div>
       <div>
         <p>
@@ -12,5 +6,4 @@
         </p>
       </div>
     </div>
-  </body>
-</html>
+<laser:htmlEnd />

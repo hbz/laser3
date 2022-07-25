@@ -1,6 +1,6 @@
 package de.laser
 
-
+import de.laser.annotations.Check404
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.ctrl.UserControllerService
@@ -15,7 +15,7 @@ import grails.plugin.springsecurity.annotation.Secured
  * This controller handles calls related to global user management
  */
 @Secured(['IS_AUTHENTICATED_FULLY'])
-class UserController  {
+class UserController {
 
     ContextService contextService
     DeletionService deletionService
@@ -24,7 +24,13 @@ class UserController  {
     UserControllerService userControllerService
     UserService userService
 
+    //-----
+
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: ['GET', 'POST']]
+
+    final static Map<String, String> CHECK404_ALTERNATIVES = [ 'list' : 'menu.institutions.users' ]
+
+    //-----
 
     /**
      * Redirects to the list view
@@ -42,10 +48,10 @@ class UserController  {
     @Secured(closure = {
         ctx.contextService.getUser()?.hasRole('ROLE_ADMIN') || ctx.contextService.getUser()?.hasAffiliation("INST_ADM")
     })
+    @Check404()
     def delete() {
         Map<String, Object> result = userControllerService.getResultGenerics(params)
 
-        if (result.user) {
             List<Org> affils = Org.executeQuery('select distinct uo.org from UserOrg uo where uo.user = :user', [user: result.user])
 
             if (affils.size() > 1) {
@@ -57,10 +63,10 @@ class UserController  {
             if (params.process && result.editable) {
                 User userReplacement = (User) genericOIDService.resolveOID(params.userReplacement)
 
-                result.delResult = deletionService.deleteUser(result.user, userReplacement, false)
+                result.delResult = deletionService.deleteUser(result.user as User, userReplacement, false)
             }
             else {
-                result.delResult = deletionService.deleteUser(result.user, null, DeletionService.DRY_RUN)
+                result.delResult = deletionService.deleteUser(result.user as User, null, DeletionService.DRY_RUN)
             }
 
             List<Org> orgList = Org.executeQuery('select distinct uo.org from UserOrg uo where uo.user = :self', [self: result.user])
@@ -68,11 +74,6 @@ class UserController  {
                     'select distinct u from User u join u.affiliations ua where ua.org in :orgList and u != :self and ua.formalRole = :instAdm order by u.username',
                     [orgList: orgList, self: result.user, instAdm: Role.findByAuthority('INST_ADM')]
             ) : []
-        }
-        else {
-            redirect controller: 'user', action: 'list'
-            return
-        }
 
         render view: '/user/global/delete', model: result
     }
@@ -82,7 +83,6 @@ class UserController  {
      */
     @Secured(['ROLE_ADMIN'])
     def list() {
-
         Map<String, Object> result = userControllerService.getResultGenerics(params)
         Map filterParams = params
 
@@ -104,7 +104,6 @@ class UserController  {
                 modifyAccountEnability: SpringSecurityUtils.ifAllGranted('ROLE_YODA')
         ]
 
-
         render view: '/user/global/list', model: result
     }
 
@@ -113,15 +112,11 @@ class UserController  {
      * affiliations of the user may be edited freely
      */
     @Secured(['ROLE_ADMIN'])
+    @Check404()
     def edit() {
         Map<String, Object> result = userControllerService.getResultGenerics(params)
 
         if (! result.editable) {
-            redirect action: 'list'
-            return
-        }
-        else if (! result.user) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'user.label'), params.id]) as String
             redirect action: 'list'
             return
         }
@@ -143,6 +138,7 @@ class UserController  {
     @Secured(closure = {
         ctx.contextService.getUser()?.hasRole('ROLE_ADMIN') || ctx.contextService.getUser()?.hasAffiliation("INST_ADM")
     })
+    @Check404()
     def show() {
         Map<String, Object> result = userControllerService.getResultGenerics(params)
         result
@@ -204,7 +200,7 @@ class UserController  {
         Role formalRole = Role.get(params.formalRole)
 
         if (result.user && org && formalRole) {
-            instAdmService.createAffiliation(result.user, org, formalRole, flash)
+            instAdmService.createAffiliation(result.user as User, org, formalRole, flash)
         }
 
         redirect controller: 'user', action: 'edit', id: params.id

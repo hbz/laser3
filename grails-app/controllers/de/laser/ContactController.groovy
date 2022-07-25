@@ -73,25 +73,6 @@ class ContactController  {
     }
 
 	/**
-	 * Shows the given contact entity
-	 * @return the contact details view or the contact list if not found
-	 */
-    @Secured(['ROLE_USER'])
-    def show() {
-		Contact contactInstance = Contact.get(params.id)
-        if (! contactInstance) {
-			flash.message = message(code: 'default.not.found.message', args: [message(code: 'contact.label'), params.id]) as String
-            redirect action: 'list'
-            return
-        }
-
-		[
-            contactInstance: contactInstance,
-            editable: addressbookService.isContactEditable(contactInstance, contextService.getUser())
-		] // TODO
-    }
-
-	/**
 	 * Deletes the given contact entity
 	 * @return the contact list in case of success; the details view otherwise
 	 */

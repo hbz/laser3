@@ -137,13 +137,13 @@
                         </g:elseif>
                     </td>
                     <td>
-                        <semui:xEditableRefData config="${de.laser.storage.RDConstants.COST_ITEM_STATUS}" emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costItemStatus" />
+                        <ui:xEditableRefData config="${de.laser.storage.RDConstants.COST_ITEM_STATUS}" emptytext="${message(code:'default.button.edit.label')}" owner="${ci}" field="costItemStatus" />
                     </td>
                     <td>
-                        <semui:xEditable owner="${ci}" type="date" field="startDate" validation="datesCheck"/>
+                        <ui:xEditable owner="${ci}" type="date" field="startDate" validation="datesCheck"/>
                         <br />
                         <span class="la-secondHeaderRow" data-label="${message(code:'financials.dateTo')}:">
-                            <semui:xEditable owner="${ci}" type="date" field="endDate" validation="datesCheck"/>
+                            <ui:xEditable owner="${ci}" type="date" field="endDate" validation="datesCheck"/>
                         </span>
                     </td>
                     <td>
@@ -263,13 +263,13 @@
 </table>
 <g:if test="${data.costItems}">
     <g:if test="${fixedSubscription}">
-        <semui:paginate mapping="subfinance" params="${params+[showView:'own']}"
+        <ui:paginate mapping="subfinance" params="${params+[showView:'own']}"
                         next="${message(code: 'default.paginate.next')}"
                         prev="${message(code: 'default.paginate.prev')}"
                         max="${max}" offset="${ownOffset ? ownOffset : 0}" total="${data.count}"/>
     </g:if>
     <g:else>
-        <semui:paginate action="finance" controller="myInstitution" params="${params+[showView:'own']}"
+        <ui:paginate action="finance" controller="myInstitution" params="${params+[showView:'own']}"
                         next="${message(code: 'default.paginate.next')}"
                         prev="${message(code: 'default.paginate.prev')}"
                         max="${max}" offset="${ownOffset ? ownOffset : 0}" total="${data.count}"/>

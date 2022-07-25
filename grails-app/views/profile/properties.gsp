@@ -1,18 +1,11 @@
 <%@ page import="de.laser.RefdataCategory; de.laser.I10nTranslation; de.laser.properties.PropertyDefinition; de.laser.RefdataValue"  %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code: 'menu.user.properties')}</title>
-</head>
+<laser:htmlStart message="menu.user.properties" />
 
-<body>
+<ui:breadcrumbs>
+    <ui:crumb message="menu.user.properties" class="active"/>
+</ui:breadcrumbs>
 
-<semui:breadcrumbs>
-    <semui:crumb message="menu.user.properties" class="active"/>
-</semui:breadcrumbs>
-
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'menu.user.properties')}</h1>
+<ui:h1HeaderWithIcon message="menu.user.properties" />
 
 <h2 class="la-clear-before">${message(code: 'propertyDefinition.plural')}</h2>
 
@@ -138,5 +131,4 @@
     </g:each>
 </div>
 
-</body>
-</html>
+<laser:htmlEnd />

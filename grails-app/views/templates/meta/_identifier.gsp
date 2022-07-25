@@ -24,7 +24,7 @@
                     <hr/>
                     <div class="field">
                         <label for="namespace">${message(code:'identifier.namespace.label')}</label>
-                        <semui:dropdownWithI18nExplanations name="namespace" id="namespace" class="ui search dropdown"
+                        <ui:dropdownWithI18nExplanations name="namespace" id="namespace" class="ui search dropdown"
                                                             from="${nsList}" noSelection=""
                                                             optionKey="${{ IdentifierNamespace.class.name + ':' + it.id }}"
                                                             optionValue="${{ it.getI10n('name') ?: it.ns }}"

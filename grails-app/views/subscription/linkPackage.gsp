@@ -1,36 +1,29 @@
 <%@ page import="de.laser.utils.DateUtils; de.laser.Org; de.laser.finance.CostItem; de.laser.Subscription; de.laser.Platform; de.laser.Package; java.text.SimpleDateFormat; de.laser.PendingChangeConfiguration; de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.storage.RDStore;" %>
-<!doctype html>
+<laser:htmlStart message="subscription.details.linkPackage.heading" />
 
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'subscription.details.linkPackage.heading')}</title>
-</head>
-
-<body>
-<semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="currentSubscriptions"
+<ui:breadcrumbs>
+    <ui:crumb controller="myInstitution" action="currentSubscriptions"
                  text="${message(code: 'myinst.currentSubscriptions.label')}"/>
-    <semui:crumb controller="subscription" action="index" id="${subscription.id}"
+    <ui:crumb controller="subscription" action="index" id="${subscription.id}"
                  text="${subscription.name}"/>
-    <semui:crumb class="active"
+    <ui:crumb class="active"
                  text="${message(code: 'subscription.details.linkPackage.heading')}"/>
-</semui:breadcrumbs>
+</ui:breadcrumbs>
 
-<semui:controlButtons>
+<ui:controlButtons>
     <laser:render template="actions"/>
-</semui:controlButtons>
+</ui:controlButtons>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${subscription.name}</h1>
-<br>
-<br>
+<ui:h1HeaderWithIcon text="${subscription.name}" />
+<br/>
+<br/>
 
 <h2 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'subscription.details.linkPackage.heading')}</h2>
-<br>
-<br>
+<br/>
+<br/>
 
 <h3 class="ui left floated aligned icon header la-clear-before">${message(code: 'package.plural')}
-<semui:totalNumber total="${recordsCount}"/>
+<ui:totalNumber total="${recordsCount}"/>
 </h3>
 
 
@@ -38,7 +31,7 @@
     <laser:render template="/templates/filter/packageGokbFilter"/>
 </g:if>
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 <div class="ui icon message" id="durationAlert" style="display: none">
     <i class="notched circle loading icon"></i>
@@ -147,7 +140,7 @@
                         <button type="button" class="ui icon button la-popup-tooltip la-delay ${disabled}"
                                 data-addUUID="${record.uuid}"
                                 data-packageName="${record.name}"
-                                data-semui="modal"
+                                data-ui="modal"
                                 data-href="#linkPackageModal"
                                 data-content="${message(code: 'subscription.details.linkPackage.button', args: [record.name])}"><g:message
                                 code="subscription.details.linkPackage.label"/></button>
@@ -181,7 +174,7 @@
     </table>
 
 
-    <semui:paginate action="linkPackage" controller="subscription" params="${params}"
+    <ui:paginate action="linkPackage" controller="subscription" params="${params}"
                     next="${message(code: 'default.paginate.next')}"
                     prev="${message(code: 'default.paginate.prev')}" max="${max}"
                     total="${recordsCount}"/>
@@ -203,7 +196,7 @@
 
 <div id="magicArea"></div>
 
-<semui:modal contentClass="scrolling" id="linkPackageModal" message="myinst.currentSubscriptions.link_pkg"
+<ui:modal contentClass="scrolling" id="linkPackageModal" message="myinst.currentSubscriptions.link_pkg"
              msgSave="${message(code: 'default.button.link.label')}">
 
     <g:form class="ui form" id="linkPackageForm" url="[controller: 'subscription', action: 'processLinkPackage', id: params.id]">
@@ -221,20 +214,20 @@
                     <div class="field">
                         <div class="ui radio checkbox">
                             <input type="radio" name="addType" id="With" value="With" tabindex="0" class="hidden">
-                            <label>${message(code: 'subscription.details.link.with_ents')}</label>
+                            <label for="With">${message(code: 'subscription.details.link.with_ents')}</label>
                         </div>
                     </div>
 
                     <div class="field">
                         <div class="ui radio checkbox">
                             <input type="radio" name="addType" id="Without" value="Without" tabindex="0" class="hidden">
-                            <label>${message(code: 'subscription.details.link.no_ents')}</label>
+                            <label for="Without">${message(code: 'subscription.details.link.no_ents')}</label>
                         </div>
                     </div>
                 </div>
 
-                <br>
-                <br>
+                <br/>
+                <br/>
 
                 <div class="field">
                     <h5 class="ui dividing header">
@@ -263,7 +256,7 @@
                                 <td>
                                     <g:if test="${!(settingKey in excludes)}">
                                         <g:if test="${editable}">
-                                            <laser:select class="ui dropdown"
+                                            <ui:select class="ui dropdown"
                                                           name="${settingKey}!§!setting"
                                                           from="${RefdataCategory.getAllRefdataValues(RDConstants.PENDING_CHANGE_CONFIG_SETTING)}"
                                                           optionKey="id" optionValue="value"
@@ -312,8 +305,8 @@
                         </div>
                     </div>
 
-                    <br>
-                    <br>
+                    <br/>
+                    <br/>
 
                     <div class="field">
                         <h5 class="ui dividing header">
@@ -379,7 +372,7 @@
                 });
     </laser:script>
 
-</semui:modal>
+</ui:modal>
 
 <laser:script file="${this.getGroovyPageFileName()}">
 %{--    JSPC.app.unlinkPackage = function (pkg_id){
@@ -422,5 +415,5 @@
             }
         });
 </laser:script>
-</body>
-</html>
+
+<laser:htmlEnd />

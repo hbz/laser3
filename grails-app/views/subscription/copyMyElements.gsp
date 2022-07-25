@@ -1,28 +1,20 @@
 <%@ page import="de.laser.Person; de.laser.RefdataValue; de.laser.SubscriptionController; de.laser.CopyElementsService" %>
-<laser:serviceInjection/>
+<laser:htmlStart message="subscription.details.copyMyElements.label" serviceInjection="true" />
 
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'subscription.details.copyMyElements.label')}</title>
-</head>
-
-<body>
 <laser:render template="breadcrumb" model="${[params: params]}"/>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${message(code: 'subscription.details.copyMyElements.label')}</h1>
+<ui:h1HeaderWithIcon message="subscription.details.copyMyElements.label" />
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 <% Map params = [:];
 if (sourceObjectId) params << [sourceObjectId: genericOIDService.getOID(sourceObject)];
 if (targetObjectId) params << [targetObjectId: genericOIDService.getOID(targetObject)];
 %>
 
-<semui:subNav>
+<ui:subNav>
 
-    <semui:complexSubNavItem class="${workFlowPart == CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS ? 'active' : ''}"
+    <ui:complexSubNavItem class="${workFlowPart == CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS ? 'active' : ''}"
                              controller="subscription" action="copyMyElements"
                              params="${params << [workFlowPart: CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS]}">
         <div class="content">
@@ -34,9 +26,9 @@ if (targetObjectId) params << [targetObjectId: genericOIDService.getOID(targetOb
                 <i class="checked calendar icon"></i>${message(code: 'menu.institutions.tasks')}
             </div>
         </div>
-    </semui:complexSubNavItem>
+    </ui:complexSubNavItem>
 
-    <semui:complexSubNavItem class="${workFlowPart == CopyElementsService.WORKFLOW_PROPERTIES ? 'active' : ''}" controller="subscription"
+    <ui:complexSubNavItem class="${workFlowPart == CopyElementsService.WORKFLOW_PROPERTIES ? 'active' : ''}" controller="subscription"
                              action="copyMyElements" params="${params << [workFlowPart: CopyElementsService.WORKFLOW_PROPERTIES]}">
         <div class="content">
             <div class="title">${message(code: 'properties')}</div>
@@ -46,8 +38,8 @@ if (targetObjectId) params << [targetObjectId: genericOIDService.getOID(targetOb
             </div>
 
         </div>
-    </semui:complexSubNavItem>
-</semui:subNav>
+    </ui:complexSubNavItem>
+</ui:subNav>
 
 <br />
 
@@ -65,5 +57,4 @@ if (targetObjectId) params << [targetObjectId: genericOIDService.getOID(targetOb
 </g:elseif>
 <laser:render template="/templates/copyElements/copyElementsJS"/>
 
-</body>
-</html>
+<laser:htmlEnd />

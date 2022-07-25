@@ -84,7 +84,7 @@ class ContextService {
      */
     List<Org> getMemberships() {
         User user = getUser()
-        user ? user.authorizedOrgs : []
+        user ? user.getAffiliationOrgs() : []
     }
 
     EhcacheWrapper getUserCache(String cacheKeyPrefix) {

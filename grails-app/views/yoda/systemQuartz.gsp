@@ -1,18 +1,12 @@
-<%@ page import="de.laser.utils.ConfigMapper" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'menu.yoda.systemQuartz')}</title>
-</head>
-<body>
+<%@ page import="de.laser.config.ConfigMapper" %>
+<laser:htmlStart message="menu.yoda.systemQuartz" />
 
-<semui:breadcrumbs>
-    <semui:crumb message="menu.yoda" controller="yoda" action="index"/>
-    <semui:crumb message="menu.yoda.systemQuartz" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb message="menu.yoda" controller="yoda" action="index"/>
+    <ui:crumb message="menu.yoda.systemQuartz" class="active"/>
+</ui:breadcrumbs>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.systemQuartz')}</h1>
+<ui:h1HeaderWithIcon message="menu.yoda.systemQuartz" />
 
 %{--${ConfigMapper.setConfig( ConfigMapper.QUARTZ_HEARTBEAT, new Date())} ##--}%
 %{--${ConfigMapper.getQuartzHeartbeat()} ##--}%
@@ -95,5 +89,4 @@
         }, (30 * 1000)); // refresh ~ 30 Seconds
     </laser:script>
 
-</body>
-</html>
+<laser:htmlEnd />

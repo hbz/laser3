@@ -1,6 +1,23 @@
 ## LAS:eR - API
 
-Source: ${de.laser.utils.ConfigMapper.getGrailsServerURL()} - Version: ${de.laser.api.v0.ApiManager.VERSION}
+Source: ${de.laser.config.ConfigMapper.getGrailsServerURL()} - Version: ${de.laser.api.v0.ApiManager.VERSION}
+
+#### 1.21
+
+- bugfix collection of ies
+
+#### 1.2
+
+- bugfix collection of ies
+
+#### 1.1
+
+- added request parameter `changedFrom` for __/ezb/subscription/__
+- added new object: `EZBInstitutionList` (for documentation; no change on internal code)
+- added new object: `EZBInstitutionStub` (for documentation; no change on internal code)
+- removal of mandatory consortium permission for member subscriptions
+- schema updated
+- internal refactoring
 
 #### 1.0
 

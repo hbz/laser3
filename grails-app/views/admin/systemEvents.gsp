@@ -1,20 +1,15 @@
 <%@ page import="de.laser.system.SystemEvent;" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'menu.admin.systemEvents')}</title>
-</head>
-<body>
 
-<semui:breadcrumbs>
-    <semui:crumb message="menu.admin" controller="admin" action="index"/>
-    <semui:crumb message="menu.admin.systemEvents" class="active"/>
-</semui:breadcrumbs>
+<laser:htmlStart message="menu.admin.systemEvents" />
 
-<h1 class="ui header la-clear-before la-noMargin-top">${message(code:'menu.admin.systemEvents')}</h1>
+<ui:breadcrumbs>
+    <ui:crumb message="menu.admin" controller="admin" action="index"/>
+    <ui:crumb message="menu.admin.systemEvents" class="active"/>
+</ui:breadcrumbs>
 
-    <semui:filter>
+    <ui:h1HeaderWithIcon message="menu.admin.systemEvents" />
+
+    <ui:filter>
         <form id="filter" class="ui form">
             <div class="five fields">
                 <div class="field">
@@ -82,9 +77,8 @@
                 }
             })
         </laser:script>
-    </semui:filter>
+    </ui:filter>
 
-<div>
     <table class="ui sortable celled la-js-responsive-table la-table la-hover-table compact table">
         <thead>
         <tr>
@@ -147,6 +141,5 @@
         </g:each>
         </tbody>
     </table>
-</div>
-</body>
-</html>
+
+<laser:htmlEnd />

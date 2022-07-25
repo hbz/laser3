@@ -1,18 +1,13 @@
 <%@ page import="de.laser.Person; de.laser.properties.PropertyDefinition" %>
-<!doctype html>
-<html>
-	<head>
-		<meta name="layout" content="laser">
-		<g:set var="entityName" value="${message(code: 'person.label')}" />
-		<title>${message(code:'laser')} : <g:message code="default.edit.label" args="[entityName]" /></title>
-	</head>
-	<body>
 
-		<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="default.edit.label" args="[entityName]" /></h1>
+<g:set var="entityName" value="${message(code: 'person.label')}" />
+<laser:htmlStart text="${message(code:"default.edit.label", args:[entityName])}" />
 
-		<semui:messages data="${flash}" />
+		<ui:h1HeaderWithIcon message="default.edit.label" args="[entityName]" />
 
-		<semui:errors bean="${personInstance}" />
+		<ui:messages data="${flash}" />
+
+		<ui:errors bean="${personInstance}" />
 
 		<div class="ui grid">
 
@@ -42,5 +37,4 @@
 			</aside><!-- .four -->
 
 		</div><!-- .grid -->
-	</body>
-</html>
+<laser:htmlEnd />

@@ -1,12 +1,6 @@
 <%@ page import="de.laser.*;de.laser.auth.Role" %>
-<laser:serviceInjection />
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'user.create_new.label')}</title>
-</head>
-<body>
+
+<laser:htmlStart message="user.create_new.label" serviceInjection="true" />
 
     %{--<g:if test="${controllerName == 'myInstitution'}">
         // myInstitution has no breadcrumb yet
@@ -19,9 +13,9 @@
         <laser:render template="/user/global/breadcrumb" model="${[ inContextOrg: inContextOrg, orgInstance: orgInstance, institutionalView: institutionalView, params:params ]}"/>
     %{--</g:if>--}%
 
-        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'user.create_new.label')}</h1>
+        <ui:h1HeaderWithIcon message="user.create_new.label" />
 
-        <semui:messages data="${flash}" />
+        <ui:messages data="${flash}" />
 
         <g:if test="${editable}">
             <g:form name="newUser" class="ui form" controller="${controllerName}" action="processCreateUser" method="post">
@@ -155,5 +149,4 @@
         });
 </laser:script>
 
-</body>
-</html>
+<laser:htmlEnd />

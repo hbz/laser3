@@ -1,6 +1,5 @@
 package de.laser.properties
 
-import de.laser.ContentItem
 import de.laser.Org
 import de.laser.PendingChangeService
 import de.laser.Subscription
@@ -129,26 +128,13 @@ class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated imp
      * This method is used by generic access method and reflects changes made to a subscription property to inheriting subscription properties.
      * @param changeDocument the map of changes being passed through to the inheriting properties
      */
-    def notifyDependencies(changeDocument) {
+    void notifyDependencies(Map changeDocument) {
         log.debug("notifyDependencies(${changeDocument})")
 
         if (changeDocument.event.equalsIgnoreCase('SubscriptionProperty.updated')) {
 
-            // legacy ++
-
             Locale locale = LocaleContextHolder.getLocale()
-            ContentItem contentItemDesc = ContentItem.findByKeyAndLocale("kbplus.change.subscription."+changeDocument.prop, locale.toString())
             String description = BeanStore.getMessageSource().getMessage('default.accept.placeholder',null, locale)
-            if (contentItemDesc) {
-                description = contentItemDesc.content
-            }
-            else {
-                ContentItem defaultMsg = ContentItem.findByKeyAndLocale("kbplus.change.subscription.default", locale.toString())
-                if( defaultMsg)
-                    description = defaultMsg.content
-            }
-
-            // legacy ++
 
             List<PendingChange> slavedPendingChanges = []
 

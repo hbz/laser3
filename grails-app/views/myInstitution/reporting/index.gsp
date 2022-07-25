@@ -1,22 +1,14 @@
-<%@page import="de.laser.utils.ConfigMapper; de.laser.reporting.report.ElasticSearchHelper; de.laser.reporting.report.GenericHelper; de.laser.ReportingFilter; de.laser.reporting.export.GlobalExportHelper; de.laser.reporting.report.myInstitution.base.BaseConfig;de.laser.ReportingGlobalService;de.laser.Org;de.laser.Subscription;de.laser.reporting.report.ReportingCache;de.laser.properties.PropertyDefinition" %>
-<laser:serviceInjection/>
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title><g:message code="laser"/> : <g:message code="myinst.reporting"/></title>
-        <laser:javascript src="echarts.js"/>%{-- dont move --}%
-    </head>
+<%@page import="de.laser.config.ConfigMapper; de.laser.reporting.report.ElasticSearchHelper; de.laser.reporting.report.GenericHelper; de.laser.ReportingFilter; de.laser.reporting.export.GlobalExportHelper; de.laser.reporting.report.myInstitution.base.BaseConfig;de.laser.ReportingGlobalService;de.laser.Org;de.laser.Subscription;de.laser.reporting.report.ReportingCache;de.laser.properties.PropertyDefinition" %>
+<laser:htmlStart message="myinst.reporting" serviceInjection="true">
+    <laser:javascript src="echarts.js"/>%{-- dont move --}%
+</laser:htmlStart>
 
-    <body>
-        <semui:breadcrumbs>
-            <semui:crumb controller="myInstitution" action="dashboard" text="${institution.getDesignation()}"/>
-            <semui:crumb text="${message(code:'myinst.reporting')}" class="active" />
-        </semui:breadcrumbs>
+        <ui:breadcrumbs>
+            <ui:crumb controller="myInstitution" action="dashboard" text="${institution.getDesignation()}"/>
+            <ui:crumb text="${message(code:'myinst.reporting')}" class="active" />
+        </ui:breadcrumbs>
 
-        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
-            <g:message code="myinst.reporting"/>
-        </h1>
+        <ui:h1HeaderWithIcon message="myinst.reporting" />
 
         <laser:render template="/templates/reporting/helper" />%{--js--}%
 
@@ -195,7 +187,7 @@
                 })
                 .done( function (data) {
                     $('#filter-wrapper').html(data);
-                    r2d2.initDynamicSemuiStuff('#filter-wrapper');
+                    r2d2.initDynamicUiStuff('#filter-wrapper');
                     r2d2.initDynamicXEditableStuff('#filter-wrapper');
 
                     JSPC.app.reporting.initFilterEvents();
@@ -386,8 +378,7 @@
             JSPC.app.reporting.initFilterEvents();
         </laser:script>
 
-        <semui:modal id="reporting-modal-error" text="REPORTING" hideSubmitButton="true">
+        <ui:modal id="reporting-modal-error" text="REPORTING" hideSubmitButton="true">
             <p><i class="icon exclamation triangle large orange"></i> ${message(code:'reporting.modal.error')}</p>
-        </semui:modal>
-    </body>
-</html>
+        </ui:modal>
+<laser:htmlEnd />

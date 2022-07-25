@@ -1,13 +1,8 @@
 <%@ page import="de.laser.Address" %>
 
-<!doctype html>
-<html>
-	<head>
-		<meta name="layout" content="laser">
-		<g:set var="entityName" value="${message(code: 'address.label')}" />
-		<title>${message(code:'laser')} : <g:message code="default.create.label" args="[entityName]" /></title>
-	</head>
-	<body>
+<g:set var="entityName" value="${message(code: 'address.label')}" />
+<laser:htmlStart text="${message(code:"default.create.label", args:[entityName])}" />
+
 		<div>
 		<div>
 			
@@ -33,13 +28,11 @@
 			
 			<div class="span9">
 
+				<ui:h1HeaderWithIcon message="default.create.label" args="[entityName]" />
 
-					<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="default.create.label" args="[entityName]" /></h1>
+				<ui:messages data="${flash}" />
 
-
-				<semui:messages data="${flash}" />
-
-				<semui:errors bean="${addressInstance}" />
+				<ui:errors bean="${addressInstance}" />
 
 					<g:form class="ui form" action="create" >
 						<fieldset>
@@ -58,5 +51,4 @@
 
 		</div>
 		</div>
-	</body>
-</html>
+<laser:htmlEnd />

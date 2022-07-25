@@ -2,11 +2,15 @@ package de.laser.utils
 
 import de.laser.ContextService
 import de.laser.cache.SessionCacheWrapper
+import de.laser.config.ConfigDefaults
+import de.laser.config.ConfigMapper
 import de.laser.storage.BeanStore
 import grails.util.Environment
 import grails.util.Holders
-import grails.core.GrailsClass
 import groovy.util.logging.Slf4j
+
+import java.nio.file.Files
+import java.nio.file.Paths
 
 /**
  * Util class for determining domain classes
@@ -54,7 +58,7 @@ class AppUtils {
 
     static boolean isRestartedByDevtools() {
         try {
-            FileReader fr = new FileReader('./grails-app/conf/spring/restart.trigger')
+            FileReader fr = new FileReader( ConfigDefaults.DEVTOOLS_TRIGGER_FILE )
             if (fr) {
                 Long ts = Long.parseLong(fr.readLine())
                 if (30000 > (System.currentTimeMillis() - ts)) {
@@ -85,48 +89,22 @@ class AppUtils {
         }
     }
 
-    // -- domain classes
+    // --
 
-    /**
-     * Gets the domain class entity for the given class name. The name has to be complete
-     * @param qualifiedName the fully qualified name of the class to retrieve
-     * @return the {@link GrailsClass} instance
-     */
-    static GrailsClass getDomainClass(String qualifiedName) {
-        // fallback
-        String fallback = qualifiedName.replace('class ', '')
-        GrailsClass dc = Holders.grailsApplication.getArtefact('Domain', fallback)
-
-        if (! dc) {
-            log.warn "Found no result - getDomainClass( ${qualifiedName} )"
+    static Map<String, Object> getDocumentStorageInfo() {
+        Map<String, Object> info = [
+                folderPath : ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK,
+                folderSize : '?',
+                filesCount : '?'
+        ]
+        try {
+            File folder = new File( info.folderPath as String )
+            if (folder.exists()) {
+                info.folderSize = (folder.directorySize() / 1024 / 1024).round(2)
+                info.filesCount = Files.walk(Paths.get( info.folderPath as String )).filter(Files::isRegularFile).toArray().size()
+            }
         }
-        dc
-    }
-
-    /**
-     * Gets the domain class entity for the given class name. The name can be completed, i.e. does not need to be fully qualified
-     * @param qualifiedName the name of the class to retrieve
-     * @return the {@link GrailsClass} instance
-     */
-    static GrailsClass getDomainClassGeneric(String name) {
-        GrailsClass dc
-        List<String> namespaces = [ 'de.laser' ]
-
-        for (String ns : namespaces) {
-            dc = Holders.grailsApplication.getArtefact('Domain', ns + '.' + name)
-            if (dc) { break }
-        }
-        if (! dc) {
-            log.warn "Found no result - getDomainClassGeneric( ${name} )"
-        }
-        dc
-    }
-
-    /**
-     * Returns a complete list of currently registered domain classes
-     * @return a list of {@link GrailsClass} entitles
-     */
-    static List<GrailsClass> getAllDomainClasses() {
-        Holders.grailsApplication.getArtefacts('Domain').toList()
+        catch (Exception e) {}
+        info
     }
 }

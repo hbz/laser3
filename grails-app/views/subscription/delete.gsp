@@ -1,19 +1,8 @@
-<g:set var="deletionService" bean="deletionService" />
-<g:set var="accessService" bean="accessService" />
+<laser:htmlStart message="default.subscription.label" serviceInjection="true"/>
 
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'default.subscription.label')}</title>
-</head>
-
-<body>
     <laser:render template="breadcrumb" model="${[ subscription:subscription, params:params ]}"/>
 
-    <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />
-        ${subscription.name}
-    </h1>
+    <ui:h1HeaderWithIcon text="${subscription.name}" />
 
     <g:if test="${delResult.status != deletionService.RESULT_SUCCESS}">
         <laser:render template="nav" />
@@ -21,20 +10,20 @@
 
     <g:if test="${delResult}">
         <g:if test="${delResult.status == deletionService.RESULT_SUCCESS}">
-            <semui:msg class="positive" header="" message="deletion.success.msg" />
+            <ui:msg class="positive" message="deletion.success.msg" />
             <g:link controller="myInstitution" action="currentSubscriptions" class="ui button">${message(code:'menu.my.subscriptions')}</g:link>
             <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
                 <g:link controller="subscription" action="members" id="${parentId}" class="ui button">${message(code:"subscription.details.consortiaMembers.label")}</g:link>
             </g:if>
         </g:if>
         <g:else>
-            <semui:msg class="info" header="" message="subscription.delete.info" />
+            <ui:msg class="info" message="subscription.delete.info" />
 
             <g:if test="${delResult.status == deletionService.RESULT_BLOCKED}">
-                <semui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="deletion.blocked.msg.subscription" />
+                <ui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="deletion.blocked.msg.subscription" />
             </g:if>
             <g:if test="${delResult.status == deletionService.RESULT_ERROR}">
-                <semui:msg class="negative" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
+                <ui:msg class="negative" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
             </g:if>
 
             <g:link controller="myInstitution" action="currentSubscriptions" class="ui button">${message(code:'menu.my.subscriptions')}</g:link>
@@ -95,5 +84,4 @@
         </table>
     </g:if>
 
-</body>
-</html>
+<laser:htmlEnd />

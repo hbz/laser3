@@ -1,22 +1,15 @@
 <%@ page import="de.laser.IssueEntitlement; de.laser.TitleInstancePackagePlatform;de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition" %>
 
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'gasco.title')}</title>
-</head>
+<laser:htmlStart message="gasco.title" />
 
-<body>
-    <h1 class="ui icon header la-clear-before">
-        ${subscription}
+    <ui:h1HeaderWithIcon text="${subscription}">
         <g:if test="${issueEntitlementsCount}">
             &nbsp;&nbsp;
             (${issueEntitlements?.size()} von ${issueEntitlementsCount})
         </g:if>
-    </h1>
+    </ui:h1HeaderWithIcon>
 
-    <semui:filter>
+    <ui:filter>
         <form class="ui form">
             <div class="fields">
 
@@ -48,7 +41,7 @@
 
             </div>
         </form>
-    </semui:filter>
+    </ui:filter>
 
     <table class="ui celled la-js-responsive-table la-table table">
         <thead>
@@ -65,12 +58,12 @@
                 <tr>
                     <td>${counter + 1}</td>
                     <td>
-                        <semui:listIcon type="${tipp.medium?.value}"/>
+                        <ui:listIcon type="${tipp.medium?.value}"/>
                         <strong>${tipp.name}</strong>
                         <br />
 
                         <g:if test="${tipp.hostPlatformURL}">
-                            <semui:linkIcon href="${tipp.hostPlatformURL.startsWith('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
+                            <ui:linkWithIcon href="${tipp.hostPlatformURL.startsWith('http') ? tipp.hostPlatformURL : 'http://' + tipp.hostPlatformURL}"/>
                         </g:if>
                         <br />
 
@@ -117,5 +110,5 @@
     }
     </style>
 </sec:ifAnyGranted>
-</body>
-</html>
+
+<laser:htmlEnd />

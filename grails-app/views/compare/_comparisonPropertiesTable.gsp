@@ -55,28 +55,28 @@
                         <div class="la-copyElements-flex-item">
                         <g:if test="${propValue.getValue() != "" && propValue.getValue() != null}">
                             <g:if test="${propValue.type.isIntegerType()}">
-                                <semui:xEditable owner="${propValue}" type="text" field="intValue"
+                                <ui:xEditable owner="${propValue}" type="text" field="intValue"
                                                  overwriteEditable="${false}"/>
                             </g:if>
 
                             <g:elseif test="${propValue.type.isStringType()}">
-                                <semui:xEditable owner="${propValue}" type="text" field="stringValue"
+                                <ui:xEditable owner="${propValue}" type="text" field="stringValue"
                                                  overwriteEditable="${false}"/>
                             </g:elseif>
                             <g:elseif test="${propValue.type.isBigDecimalType()}">
-                                <semui:xEditable owner="${propValue}" type="text" field="decValue"
+                                <ui:xEditable owner="${propValue}" type="text" field="decValue"
                                                  overwriteEditable="${false}"/>
                             </g:elseif>
                             <g:elseif test="${propValue.type.isDateType()}">
-                                <semui:xEditable owner="${propValue}" type="date" field="dateValue"
+                                <ui:xEditable owner="${propValue}" type="date" field="dateValue"
                                                  overwriteEditable="${false}"/>
                             </g:elseif>
                             <g:elseif test="${propValue.type.isURLType()}">
-                                <semui:xEditable owner="${propValue}" type="url" field="urlValue"
+                                <ui:xEditable owner="${propValue}" type="url" field="urlValue"
                                                  overwriteEditable="${false}"
                                                  class="la-overflow la-ellipsis"/>
                                 <g:if test="${propValue.value}">
-                                    <semui:linkIcon href="${propValue.value}"/>
+                                    <ui:linkWithIcon href="${propValue.value}"/>
                                 </g:if>
                             </g:elseif>
                             <g:elseif test="${propValue.type.isRefdataValueType()}">
@@ -86,16 +86,16 @@
                                         <%
                                             String value
                                             switch (propValue.refValue.owner) {
-                                                case RefdataCategory.getByDesc(RDConstants.Y_N):
-                                                case RefdataCategory.getByDesc(RDConstants.Y_N_O):
+                                                case [ RefdataCategory.getByDesc(RDConstants.Y_N), RefdataCategory.getByDesc(RDConstants.Y_N_O) ]:
                                                     switch (propValue.refValue) {
-                                                        case RDStore.YN_YES:
-                                                        case RDStore.YNO_YES: value = raw('<i class="green thumbs up icon large"></i>')
+                                                        case [ RDStore.YN_YES, RDStore.YNO_YES ]:
+                                                            value = raw('<i class="green thumbs up icon large"></i>')
                                                             break
-                                                        case RDStore.YN_NO:
-                                                        case RDStore.YNO_NO: value = raw('<i class="red thumbs down icon large"></i>')
+                                                        case [ RDStore.YN_NO, RDStore.YNO_NO ]:
+                                                            value = raw('<i class="red thumbs down icon large"></i>')
                                                             break
-                                                        case RDStore.YNO_OTHER: value = raw('<i class="yellow dot circle icon large"></i>')
+                                                        case RDStore.YNO_OTHER:
+                                                            value = raw('<i class="yellow dot circle icon large"></i>')
                                                             break
                                                     }
                                                     break
@@ -139,7 +139,7 @@
                         </g:if>
                         <g:else>
                                 <span data-position="top left" class="la-popup-tooltip la-delay"
-                                  data-content="${message(code: "default.compare.propertyValueNotSet")}"/><i
+                                  data-content="${message(code: "default.compare.propertyValueNotSet")}"><i
                                 class="close icon"></i></span>
                         </g:else>
 

@@ -1,21 +1,14 @@
-<!doctype html>
-<html>
-  <head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : Manage FTControl</title>
-  </head>
+<laser:htmlStart text="Manage FTControl" />
 
-  <body>
+    <ui:breadcrumbs>
+        <ui:crumb message="menu.yoda" controller="yoda" action="index"/>
+        <ui:crumb text="FTControl" class="active" />
+    </ui:breadcrumbs>
 
-    <semui:breadcrumbs>
-        <semui:crumb message="menu.yoda" controller="yoda" action="index"/>
-        <semui:crumb text="FTControl" class="active" />
-    </semui:breadcrumbs>
+    <ui:h1HeaderWithIcon text="Currently Running: ${dataloadService.update_running}" />
+    <h2 class="ui header">Last update run: <g:formatDate date="${dataloadService.lastIndexUpdate}" format="${message(code:'default.date.format.noZ')}"/></h2>
 
-  <h1 class="ui header la-clear-before la-noMargin-top">Currently Running: ${dataloadService.update_running}</h1>
-  <h2 class="ui header">Last update run: <g:formatDate date="${dataloadService.lastIndexUpdate}" format="${message(code:'default.date.format.noZ')}"/></h2>
-
-    <semui:messages data="${flash}" />
+    <ui:messages data="${flash}" />
 
       <table class="ui celled la-js-responsive-table la-table table">
         <thead>
@@ -43,13 +36,13 @@
                   ${ftControl.dbElements}
               </td>
               <td>
-                  <semui:xEditable owner="${ftControl}" field="lastTimestamp"/>
+                  <ui:xEditable owner="${ftControl}" field="lastTimestamp"/>
               </td>
               <td>
                 <g:formatDate date="${new Date(ftControl.lastTimestamp)}" format="${message(code:'default.date.format.noZ')}"/>
               </td>
               <td>
-                <semui:xEditableBoolean owner="${ftControl}" field="active"/>
+                <ui:xEditableBoolean owner="${ftControl}" field="active"/>
               </td>
             </tr>
           </g:each>
@@ -62,10 +55,10 @@
       <thead>
       <tr>
         <th>index</th>
-        <th>type</th>
+          <th>${message(code:'default.type.label')}</th>
         <th>countIndex</th>
         <th>countDB</th>
-        <th>Action</th>
+        <th>${message(code:'default.action.label')}</th>
       </tr>
       </thead>
       <tbody>
@@ -80,5 +73,5 @@
       </g:each>
       </tbody>
     </table>
-  </body>
-</html>
+
+<laser:htmlEnd />

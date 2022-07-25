@@ -3,7 +3,7 @@ package de.laser.jobs
 import de.laser.SystemService
 import de.laser.annotations.UnderDevelopment
 import de.laser.custom.CustomWebSocketConfig
-import de.laser.utils.ConfigMapper
+import de.laser.config.ConfigMapper
 import de.laser.system.SystemActivityProfiler
 import de.laser.base.AbstractJob
 import grails.converters.JSON
@@ -41,7 +41,7 @@ class HeartbeatJob extends AbstractJob {
 
     @UnderDevelopment
     def execute() {
-        if (! start()) {
+        if (! start(null, true)) { // suppress logging to shrink file
             return false
         }
         try {
@@ -64,6 +64,6 @@ class HeartbeatJob extends AbstractJob {
             log.error e.getMessage()
         }
 
-        jobIsRunning = false
+        stop(null, true) // suppress logging to shrink file
     }
 }

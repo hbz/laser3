@@ -1,26 +1,16 @@
 <%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory;" %>
-<laser:serviceInjection/>
+<laser:htmlStart message="createGeneralSurvey.label" serviceInjection="true"/>
 
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'createGeneralSurvey.label')}</title>
-</head>
+<ui:breadcrumbs>
+    <ui:crumb controller="survey" action="workflowsSurveysConsortia" message="currentSurveys.label"/>
+    <ui:crumb message="createGeneralSurvey.label" class="active"/>
+</ui:breadcrumbs>
 
-<body>
+<ui:h1HeaderWithIcon message="createGeneralSurvey.label" type="Survey" />
 
-<semui:breadcrumbs>
+<ui:messages data="${flash}"/>
 
-    <semui:crumb controller="survey" action="workflowsSurveysConsortia" message="currentSurveys.label"/>
-    <semui:crumb message="createGeneralSurvey.label" class="active"/>
-</semui:breadcrumbs>
-
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerTitleIcon type="Survey"/>${message(code: 'createGeneralSurvey.label')}</h1>
-
-<semui:messages data="${flash}"/>
-
-<semui:form>
+<ui:form>
     <g:form action="processCreateGeneralSurvey" controller="survey" method="post" class="ui form">
         <div class="field required ">
             <label>${message(code: 'surveyInfo.name.label')}  <g:message code="messageRequiredField" /></label>
@@ -28,10 +18,10 @@
         </div>
 
         <div class="two fields ">
-            <semui:datepicker label="surveyInfo.startDate.label" id="startDate" name="startDate"
+            <ui:datepicker label="surveyInfo.startDate.label" id="startDate" name="startDate"
                               value="${params.startDate}" required="" />
 
-            <semui:datepicker label="surveyInfo.endDate.label" id="endDate" name="endDate"
+            <ui:datepicker label="surveyInfo.endDate.label" id="endDate" name="endDate"
                               value="${params.endDate}" />
         </div>
 
@@ -55,7 +45,6 @@
                value="${message(code: 'createGeneralSurvey.create')}"/>
 
     </g:form>
-</semui:form>
+</ui:form>
 
-</body>
-</html>
+<laser:htmlEnd />

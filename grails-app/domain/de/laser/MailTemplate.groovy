@@ -1,5 +1,8 @@
 package de.laser
 
+import de.laser.annotations.RefdataInfo
+import de.laser.storage.RDConstants
+
 /**
  * This class represents a mail template element for the (semi-)automatised sending of mails ex LAS:eR.
  * The sending procedure is controlled by the flag sentBySystem
@@ -8,13 +11,14 @@ class MailTemplate {
 
     String name
     String text
-
     Org owner
     String subject
 
     boolean sentBySystem = false
 
+    @RefdataInfo(cat = RDConstants.MAIL_TEMPLATE_TYPE)
     RefdataValue type
+    @RefdataInfo(cat = RDConstants.MAIL_TEMPLATE_LANGUAGE)
     RefdataValue language
 
     Date dateCreated

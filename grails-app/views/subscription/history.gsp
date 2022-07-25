@@ -1,25 +1,18 @@
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'license.nav.edit_history')}</title>
-</head>
-<body>
+<laser:htmlStart message="license.nav.edit_history" />
 
     <laser:render template="breadcrumb" model="${[ subscription:subscription, params:params ]}"/>
 
-    <semui:controlButtons>
+    <ui:controlButtons>
         <laser:render template="actions" />
-    </semui:controlButtons>
+    </ui:controlButtons>
 
-    <h1 class="ui icon header la-noMargin-top"><semui:headerIcon />
+    <ui:h1HeaderWithIcon>
         <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
             <laser:render template="iconSubscriptionIsChild"/>
         </g:if>
-        <semui:xEditable owner="${subscription}" field="name" />
-    </h1>
-    <semui:anualRings object="${subscription}" controller="subscription" action="history" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
-
+        <ui:xEditable owner="${subscription}" field="name" />
+    </ui:h1HeaderWithIcon>
+    <ui:anualRings object="${subscription}" controller="subscription" action="history" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
     <laser:render template="nav" />
 
@@ -54,8 +47,7 @@
         </g:if>
       </table>
 
-    <semui:paginate  action="history" controller="subscription" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" max="${max}" total="${historyLinesTotal}" />
+    <ui:paginate action="history" controller="subscription" params="${params}" max="${max}" total="${historyLinesTotal}" />
 
 
-</body>
-</html>
+<laser:htmlEnd />

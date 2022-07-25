@@ -41,9 +41,32 @@ class DatabaseInfo {
         (new Sql(dataSource)).firstRow('show LC_COLLATE').get('lc_collate') as String
     }
 
+    static String getDatabaseConflicts() {
+        DataSource dataSource = BeanStore.getDataSource()
+        GroovyRowResult row = (new Sql(dataSource)).firstRow('select * from pg_stat_database_conflicts where datname = current_database()')
+        row.findAll { it.key.startsWith('confl_') }.collect { it -> it.key.replace('confl_', '') + ':' + it.value }.join(', ')
+    }
+
     static String getDatabaseSize() {
         DataSource dataSource = BeanStore.getDataSource()
         (new Sql(dataSource)).firstRow('select pg_size_pretty(pg_database_size(current_database())) as dbsize').get('dbsize') as String
+    }
+
+    static Map<String, Map> getDatabaseStatistics() {
+        DataSource dataSource = BeanStore.getDataSource()
+        Sql sql = new Sql(dataSource)
+
+        Map<String, Map> result = [:]
+        if (sql.firstRow("select 1 from information_schema.tables where table_catalog = current_database() and table_schema = 'public' and table_name = 'pg_stat_statements'")) {
+            String hql = """
+                select queryid, calls, total_time, min_time, max_time, mean_time, query from pg_stat_statements where queryid is not null 
+                and query not like '%pg_%' and query not in ('BEGIN', 'COMMIT', 'SELECT \$1')
+                """
+
+            result.calls = sql.rows(hql + " order by calls desc limit 15").collect{getGroovyRowResultAsMap(it) }
+            result.maxTime = sql.rows(hql + " order by max_time desc limit 15").collect{getGroovyRowResultAsMap(it) }
+        }
+        result
     }
 
     static List<Map<String, Object>> getDatabaseUserFunctions() {

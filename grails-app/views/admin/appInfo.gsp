@@ -1,19 +1,13 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.helper.DatabaseInfo; de.laser.utils.AppUtils; de.laser.storage.BeanStore; de.laser.system.SystemSetting; grails.util.Metadata; de.laser.reporting.report.ElasticSearchHelper; grails.util.Environment; de.laser.utils.ConfigMapper" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'menu.admin.appInfo')}</title>
-</head>
+<%@ page import="de.laser.utils.DateUtils; de.laser.helper.DatabaseInfo; de.laser.utils.AppUtils; de.laser.storage.BeanStore; de.laser.system.SystemSetting; grails.util.Metadata; de.laser.reporting.report.ElasticSearchHelper; grails.util.Environment; de.laser.config.ConfigMapper" %>
 
-<body>
+<laser:htmlStart message="menu.admin.appInfo" />
 
-    <semui:breadcrumbs>
-        <semui:crumb message="menu.admin" controller="admin" action="index"/>
-        <semui:crumb message="menu.admin.appInfo" class="active"/>
-    </semui:breadcrumbs>
+    <ui:breadcrumbs>
+        <ui:crumb message="menu.admin" controller="admin" action="index"/>
+        <ui:crumb message="menu.admin.appInfo" class="active"/>
+    </ui:breadcrumbs>
 
-    <h1 class="ui left aligned icon header la-noMargin-top"><semui:headerIcon />${message(code:'menu.admin.appInfo')}</h1>
+    <ui:h1HeaderWithIcon message="menu.admin.appInfo" />
 
     <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
         <thead>
@@ -50,7 +44,7 @@
         </thead>
         <tbody>
             <tr><td>Database</td><td> ${ConfigMapper.getConfig('dataSource.url', String).split('/').last()}</td></tr>
-            <tr><td>DBM version</td><td> ${dbmVersion[0]} @ ${dbmVersion[1]} <br/> ${DateUtils.getLocalizedSDF_noZ().format(dbmVersion[2])}</td></tr>
+            <tr><td>DBM version</td><td> ${dbmVersion[0]} -> ${dbmVersion[1]} <br/> ${DateUtils.getLocalizedSDF_noZ().format(dbmVersion[2])}</td></tr>
             <tr><td>DBM updateOnStart</td><td> ${ConfigMapper.getPluginConfig('databasemigration.updateOnStart', Boolean)}</td></tr>
             <tr><td>Collations</td><td>
                 <%
@@ -66,21 +60,39 @@
         <tbody>
     </table>
 
+    <g:set var="ES_URL" value="${BeanStore.getESWrapperService().getUrl() ?: 'unbekannt'}" />
+
     <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
         <thead>
             <tr><th class="seven wide">ES Index</th><th class="nine wide"></th></tr>
         </thead>
         <tbody>
+            <tr>
+                <td>Url</td>
+                <td><a href="${ES_URL}/_cat/indices?v" target="_blank">${ES_URL}</a> -> ${BeanStore.getESWrapperService().ES_Cluster}</td>
+            </tr>
+            <tr>
+                <td>Indices</td>
+                <td>
+                    ${BeanStore.getESWrapperService().ES_Indices}
+                </td>
+            </tr>
             <tr><td>Currently running</td><td>${dataloadService.update_running}</td></tr>
             <tr><td>Last update run</td><td>${dataloadService.lastIndexUpdate}</td></tr>
-            <tr><td>Configuration</td><td>
-                ${BeanStore.getESWrapperService().ES_Host} / ${BeanStore.getESWrapperService().ES_Cluster}
-                <br />
-                ${BeanStore.getESWrapperService().ES_Indices.values()}
-            </td></tr>
             <g:each in="${esinfos}" var="es">
                 <tr><td>DomainClass: ${es.domainClassName}</td><td>DB Elements: ${es.dbElements}, ES Elements: ${es.esElements}<br /> Last Update: ${new Date(es.lastTimestamp)}</td></tr>
             </g:each>
+        </tbody>
+    </table>
+
+    <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
+        <thead>
+        <tr><th class="seven wide">Files</th><th class="nine wide"></th></tr>
+        </thead>
+        <tbody>
+        <tr><td>Document storage</td><td> ${docStore.folderPath}</td></tr>
+        <tr><td>Files count</td><td> ${docStore.filesCount}</td></tr>
+        <tr><td>Storage size</td><td> ${docStore.folderSize} MB</td></tr>
         </tbody>
     </table>
 
@@ -104,10 +116,10 @@
                 <td><a href="${ConfigMapper.getConfig('reporting.elasticSearch.url', String) + '/_cat/indices?v'}" target="_blank">${ConfigMapper.getConfig('reporting.elasticSearch.url', String)}</a></td>
             </tr>
             <tr>
-                <td>ElasticSearch indicies</td>
+                <td>ElasticSearch indices</td>
                 <td>
-                    <g:if test="${ConfigMapper.getConfig('reporting.elasticSearch.indicies', Map)}">
-                        <g:each in="${ConfigMapper.getConfig('reporting.elasticSearch.indicies', Map)}" var="k, v">
+                    <g:if test="${ConfigMapper.getConfig('reporting.elasticSearch.indices', Map)}">
+                        <g:each in="${ConfigMapper.getConfig('reporting.elasticSearch.indices', Map)}" var="k, v">
                             <a href="${ConfigMapper.getConfig('reporting.elasticSearch.url', String) + '/' + v + '/_search'}" target="_blank">${v} (${k})</a><br />
                         </g:each>
                     </g:if>
@@ -159,5 +171,5 @@
             </td></tr>
         </tbody>
     </table>
-</body>
-</html>
+
+<laser:htmlEnd />

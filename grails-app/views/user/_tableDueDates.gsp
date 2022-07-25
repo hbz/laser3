@@ -62,7 +62,7 @@
                             </g:else>
                         </g:elseif>
                         <g:elseif test="${obj instanceof Task}">
-                            <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="Aufgabe">
+                            <span data-position="top right" class="la-popup-tooltip la-delay" data-content="Aufgabe">
                                 <i class="icon checked calendar la-list-icon"></i>
                             </span>
                             <a href="#" class="header" onclick="JSPC.app.taskedit(${obj?.id});">${obj?.title}</a>
@@ -95,7 +95,7 @@
                 </td>
                 <td class="x">
                     <g:if test="${false}">
-                        <laser:remoteLink class="ui icon  negative button la-modern-button js-open-confirm-modal"
+                        <ui:remoteLink class="ui icon  negative button la-modern-button js-open-confirm-modal"
                                           controller="ajax"
                                           action="deleteDashboardDueDate_does_not_exist_yet"
                                           params=''
@@ -109,10 +109,10 @@
                                           ariaLabel="${message(code:'ariaLabel.delete.universal')}"
                         >
                             <i class="trash alternate outline icon"></i>
-                        </laser:remoteLink>
+                        </ui:remoteLink>
                     </g:if>
                     <g:if test="${dashDueDate?.isHidden}">
-                        <laser:remoteLink class="ui icon blue button la-modern-button la-popup-tooltip la-delay"
+                        <ui:remoteLink class="ui icon blue button la-modern-button la-popup-tooltip la-delay"
                                           data-content="${message(code:'myinst.dash.due_dates.visibility.off.tooltip')}"
                                           controller="ajax"
                                           action="showDashboardDueDate"
@@ -126,10 +126,10 @@
                                           ariaLabel="Termin wieder auf Ihrem Dashboard anzeigen lassen"
                         >
                             <i class="icon bell slash la-js-editmode-icon "></i>
-                        </laser:remoteLink>
+                        </ui:remoteLink>
                     </g:if>
                     <g:else>
-                        <laser:remoteLink class="ui icon green button la-modern-button la-popup-tooltip la-delay"
+                        <ui:remoteLink class="ui icon green button la-modern-button la-popup-tooltip la-delay"
                                           data-content="${message(code:'myinst.dash.due_dates.visibility.on.tooltip')}"
                                           controller="ajax"
                                           action="hideDashboardDueDate"
@@ -141,12 +141,12 @@
                                           ariaLabel="Termin nicht auf Ihrem Dashboard anzeigen lassen"
                         >
                             <i class="icon bell la-js-editmode-icon"></i>
-                        </laser:remoteLink>
+                        </ui:remoteLink>
                     </g:else>
                 </td>
                 <td class="x">
                 <g:if test="${dashDueDate?.dueDateObject.isDone}">
-                    <laser:remoteLink class="ui green button la-modern-button la-popup-tooltip la-delay"
+                    <ui:remoteLink class="ui green button la-modern-button la-popup-tooltip la-delay"
                                       data-content="${message(code:'myinst.dash.due_dates.status.pending.tooltip')}"
                                       controller="ajax"
                                       action="dashboardDueDateSetIsUndone"
@@ -160,10 +160,10 @@
                                       ariaLabel="fälligen Termin auf NICHT erledigt sezten"
                     >
                         <i class="icon check la-js-editmode-icon"></i>
-                    </laser:remoteLink>
+                    </ui:remoteLink>
                 </g:if>
                 <g:else>
-                    <laser:remoteLink class="ui icon blue button la-modern-button la-popup-tooltip la-delay"
+                    <ui:remoteLink class="ui icon blue button la-modern-button la-popup-tooltip la-delay"
                                       data-content="${message(code:'myinst.dash.due_dates.status.done.tooltip')}"
                                       controller="ajax"
                                       action="dashboardDueDateSetIsDone"
@@ -175,7 +175,7 @@
                                       ariaLabel="${message(code:'ariaLabel.check.universal')}"
                     >
                         <i class="icon check la-js-editmode-icon"></i>
-                    </laser:remoteLink>
+                    </ui:remoteLink>
                 </g:else>
                 </td>
             </tr>

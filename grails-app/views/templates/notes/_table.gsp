@@ -1,5 +1,5 @@
 <laser:serviceInjection/>
-<g:form id="delete_doc_form" url="[controller:"${controllerName}",action:'deleteDocuments']" method="post">
+<g:form id="delete_doc_form" url="${[controller: controllerName, action: 'deleteDocuments']}" method="post">
 
     <table class="ui celled la-js-responsive-table la-table table license-documents">
         <thead>
@@ -35,7 +35,7 @@
 
                         <g:if test="${instance.respondsTo('showUIShareButton') && instance.showUIShareButton()}">
                             <g:if test="${docctx.isShared}">
-                                <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
+                                <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
                                     <g:link controller="ajax" action="toggleShare" class="ui icon button green la-modern-button"
                                             params='[owner:genericOIDService.getOID(instance), sharedObject:genericOIDService.getOID(docctx), ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]'>
                                         <i class="alternate share icon"></i>
@@ -43,7 +43,7 @@
                                 </span>
                             </g:if>
                             <g:else>
-                                <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.off')}">
+                                <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.off')}">
                                     <g:link controller="ajax" action="toggleShare" class="ui icon button blue la-modern-button"
                                             params='[owner:genericOIDService.getOID(instance), sharedObject:genericOIDService.getOID(docctx), ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]'>
                                         <i class="la-share slash icon"></i>

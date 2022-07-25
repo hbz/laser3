@@ -1,19 +1,13 @@
 <%@ page import="de.laser.Subscription" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} ${message(code: 'myinst.renewalSearch.label')}</title>
-</head>
+<laser:htmlStart message="myinst.renewalSearch.label" />
 
-<body>
-    <semui:breadcrumbs>
-        <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
-        <semui:crumb controller="myInstitution" action="currentSubscriptions" message="myinst.currentSubscriptions.label"/>
-        <semui:crumb message="menu.institutions.gen_renewals" class="active"/>
-    </semui:breadcrumbs>
+    <ui:breadcrumbs>
+        <ui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}"/>
+        <ui:crumb controller="myInstitution" action="currentSubscriptions" message="myinst.currentSubscriptions.label"/>
+        <ui:crumb message="menu.institutions.gen_renewals" class="active"/>
+    </ui:breadcrumbs>
 
-    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.institutions.gen_renewals')}</h1>
+    <ui:h1HeaderWithIcon message="menu.institutions.gen_renewals" />
 
     <g:form class="ui form" action="renewalsSearch" method="get" params="${params}">
         <input type="hidden" name="offset" value="${params.offset}"/>
@@ -35,21 +29,14 @@
         </div>
     </g:form>
 
-    <div class="ui info message">
-        <div class="header">${message(code: 'myinst.renewalSearch.workflowinfo')}</div>
-
-        <p>${message(code: 'myinst.renewalSearch.workflow')}</p>
-    </div>
+    <ui:msg class="info" header="${message(code: 'myinst.renewalSearch.workflowinfo')}" message="myinst.renewalSearch.workflow" noClose="true" />
 
 <hr />
 
 <g:if test="${basket.size() <= 1}">
 
-    <div class="ui info message">
-        <div class="header">Info</div>
+    <ui:msg class="info" header="Info" message="myinst.renewalSearch.auswahl" noClose="true" />
 
-        <p>${message(code: 'myinst.renewalSearch.auswahl')}</p>
-    </div>
     <hr />
 </g:if>
 
@@ -178,7 +165,7 @@
                 </thead>
                 <tbody>
                 <g:each in="${basket}" var="itm">
-                    <tr></tr>
+                    <tr>
                     <td><g:if test="${itm.getClass().getName() != Subscription.class.name}">
                         <i class="gift icon"></i>${itm.name}
                     </g:if><g:else>
@@ -200,5 +187,5 @@
         </div>
     </aside>
 </g:form>
-</body>
-</html>
+
+<laser:htmlEnd />

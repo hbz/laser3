@@ -1,26 +1,22 @@
 <%@ page import="de.laser.Org" %>
-<!doctype html>
-<html>
-	<head>
-		<meta name="layout" content="laser">
-		<g:set var="entityName" value="${message(code: 'default.provider.label')}" />
-		<title>${message(code:'laser')} : <g:message code="default.create.label" args="[entityName]" /></title>
-	</head>
-	<body>
-	<semui:breadcrumbs>
-		<semui:crumb message="menu.public.all_providers" controller="organisation" action="listProvider"  />
-		<semui:crumb text="${message(code:"default.create.label",args:[entityName])}" class="active"/>
-	</semui:breadcrumbs>
 
-		<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="default.create.label" args="[entityName]" /></h1>
+<g:set var="entityName" value="${message(code: 'default.provider.label')}" />
+<laser:htmlStart text="${message(code:"default.create.label", args:[entityName])}" />
 
-		<semui:messages data="${flash}" />
+	<ui:breadcrumbs>
+		<ui:crumb message="menu.public.all_providers" controller="organisation" action="listProvider"  />
+		<ui:crumb text="${message(code:"default.create.label",args:[entityName])}" class="active"/>
+	</ui:breadcrumbs>
 
-		<semui:errors bean="${orgInstance}" />
+		<ui:h1HeaderWithIcon message="default.create.label" args="[entityName]" />
+
+		<ui:messages data="${flash}" />
+
+		<ui:errors bean="${orgInstance}" />
 
 		<p>${message(code:'org.findProviderMatches.note')}</p>
 
-		<semui:searchSegment controller="organisation" action="findProviderMatches" method="get">
+		<ui:searchSegment controller="organisation" action="findProviderMatches" method="get">
 			<div class="field">
 				<label for="proposedProvider">${message(code:'org.findProviderMatches.proposed')}</label>
 				<input type="text" id="proposedProvider" name="proposedProvider" value="${params.proposedProvider}" />
@@ -30,8 +26,7 @@
 				<input type="submit" value="${message(code:'default.button.search.label')}" class="ui secondary button">
 				<g:link controller="organisation" action="listProvider" class="ui button">${message(code:'default.button.cancel.label')}</g:link>
 			</div>
-		</semui:searchSegment>
-
+		</ui:searchSegment>
 
 
 				<g:if test="${providerMatches != null}">
@@ -62,15 +57,14 @@
 							</g:each>
 							</tbody>
 						</table>
-						<semui:msg class="warning" message="org.findProviderMatches.match" args="[params.proposedProvider]" />
+						<ui:msg class="warning" message="org.findProviderMatches.match" args="[params.proposedProvider]" />
 						<g:link controller="organisation" action="createProvider" class="ui negative button" params="${[provider:params.proposedProvider]}">${message(code:'org.findProviderMatches.matches.create', args: [params.proposedProvider])}</g:link>
 					</g:if>
 					<g:else>
-						<semui:msg class="warning" message="org.findProviderMatches.no_match" args="[params.proposedProvider]" />
+						<ui:msg class="warning" message="org.findProviderMatches.no_match" args="[params.proposedProvider]" />
 						<g:link controller="organisation" action="createProvider" class="ui positive button" params="${[provider:params.proposedProvider]}">${message(code:'org.findProviderMatches.no_matches.create', args: [params.proposedProvider])}</g:link>
 					</g:else>
 				</g:if>
 
 
-	</body>
-</html>
+<laser:htmlEnd />

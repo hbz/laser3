@@ -1,48 +1,39 @@
 <%@ page import="de.laser.survey.SurveyConfig;de.laser.RefdataValue;de.laser.finance.CostItem;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition; org.springframework.context.i18n.LocaleContextHolder; de.laser.storage.RDStore;" %>
-<laser:serviceInjection/>
+<laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyCostItems.label')})" serviceInjection="true"/>
 
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'survey.label')} (${message(code: 'surveyCostItems.label')})</title>
-</head>
-
-<body>
-
-<semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg().getDesignation()}"/>
-    <semui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
+<ui:breadcrumbs>
+    <ui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg().getDesignation()}"/>
+    <ui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
     <g:if test="${surveyInfo}">
-        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}"
+        <ui:crumb controller="survey" action="show" id="${surveyInfo.id}"
                      params="[surveyConfigID: surveyConfig.id]" text="${surveyConfig.getConfigNameShort()}"/>
     </g:if>
-    <semui:crumb message="surveyCostItems.label" class="active"/>
-</semui:breadcrumbs>
+    <ui:crumb message="surveyCostItems.label" class="active"/>
+</ui:breadcrumbs>
 
-<semui:controlButtons>
-    <semui:exportDropdown>
-        <semui:exportDropdownItem>
+<ui:controlButtons>
+    <ui:exportDropdown>
+        <ui:exportDropdownItem>
             <g:link class="item" action="exportSurCostItems" id="${surveyInfo.id}"
                     params="[exportXLSX: true, surveyConfigID: surveyConfig.id]">${message(code: 'survey.exportSurveyCostItems')}</g:link>
-        </semui:exportDropdownItem>
-    </semui:exportDropdown>
+        </ui:exportDropdownItem>
+    </ui:exportDropdown>
     <laser:render template="actions"/>
-</semui:controlButtons>
+</ui:controlButtons>
 
-<h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
-<semui:xEditable owner="${surveyInfo}" field="name"/>
-</h1>
-<semui:surveyStatusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="surveyCostItems"/>
+<ui:h1HeaderWithIcon type="Survey">
+<ui:xEditable owner="${surveyInfo}" field="name"/>
+</ui:h1HeaderWithIcon>
+<survey:statusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="surveyCostItems"/>
 
 
 
 
 <laser:render template="nav"/>
 
-<semui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
+<ui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 <br />
 
@@ -125,9 +116,7 @@
             <br />
             <br />
 
-            <laser:render template="/templates/filter/javascript" />
-
-            <semui:filter showFilterButton="true">
+            <ui:filter showFilterButton="true" addFilterJs="true">
                 <g:form action="surveyCostItems" method="post" class="ui form"
                 params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
                 <laser:render template="/templates/filter/orgFilter"
@@ -136,7 +125,7 @@
                                   tmplConfigFormFilter: true
                           ]"/>
                 </g:form>
-            </semui:filter>
+            </ui:filter>
 
             <br><br>
 
@@ -195,7 +184,7 @@
 
                     <div class="four wide column">
                     <g:if test="${surveyParticipantsHasAccess}">
-                        <a data-semui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
+                        <a data-ui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
                             <g:message code="survey.copyEmailaddresses.participantsHasAccess"/>
                         </a>
                     </g:if>
@@ -219,7 +208,7 @@
 
                     <div class="four wide column">
                     <g:if test="${surveyParticipantsHasNotAccess}">
-                        <a data-semui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasNotAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
+                        <a data-ui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasNotAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
                             <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>
                         </a>
                     </g:if>
@@ -249,7 +238,7 @@
 
                     <div class="four wide column">
                     <g:if test="${surveyParticipantsHasAccess}">
-                        <a data-semui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
+                        <a data-ui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
                             <g:message code="survey.copyEmailaddresses.participantsHasAccess"/>
                         </a>
                     </g:if>
@@ -274,7 +263,7 @@
 
                     <div class="four wide column">
                     <g:if test="${surveyParticipantsHasNotAccess}">
-                        <a data-semui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasNotAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
+                        <a data-ui="modal" class="ui icon button right floated" data-orgIdList="${(surveyParticipantsHasNotAccess.id)?.join(',')}" href="#copyEmailaddresses_static">
                             <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>
                         </a>
                     </g:if>
@@ -355,7 +344,7 @@ JSPC.app.addForAllSurveyCostItem = function(orgsIDs) {
 
                                 $('#dynamicModalContainer .ui.modal').modal({
                                     onVisible: function () {
-                                        r2d2.initDynamicSemuiStuff('#modalSurveyCostItem');
+                                        r2d2.initDynamicUiStuff('#modalSurveyCostItem');
                                         r2d2.initDynamicXEditableStuff('#modalSurveyCostItem');
 
                                     },
@@ -376,5 +365,4 @@ JSPC.app.addForAllSurveyCostItem = function(orgsIDs) {
 
 </laser:script>
 
-</body>
-</html>
+<laser:htmlEnd />

@@ -18,5 +18,4 @@ abstract class AbstractReport {
     Date reportFrom
     Date reportTo
     Integer reportCount
-
 }

@@ -1,34 +1,28 @@
 <%@ page import="de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.I10nTranslation; grails.plugin.springsecurity.SpringSecurityUtils" %>
-<laser:serviceInjection/>
-<!doctype html>
-<html>
-	<head>
-		<meta name="layout" content="laser">
-		<title>${message(code:'laser')} : ${message(code: 'menu.admin.managePropertyDefinitions')}</title>
-	</head>
 
-    <body>
-		<semui:breadcrumbs>
-			<semui:crumb message="menu.admin" controller="admin" action="index" />
-			<semui:crumb message="menu.admin.managePropertyDefinitions" class="active"/>
-		</semui:breadcrumbs>
+<laser:htmlStart message="menu.admin.managePropertyDefinitions" serviceInjection="true"/>
 
-        <semui:controlButtons>
+		<ui:breadcrumbs>
+			<ui:crumb message="menu.admin" controller="admin" action="index" />
+			<ui:crumb message="menu.admin.managePropertyDefinitions" class="active"/>
+		</ui:breadcrumbs>
+
+        <ui:controlButtons>
             <%--<laser:render template="actions"/>--%>
             <%--
-            <button class="ui button" value="" data-href="#addPropertyDefinitionModal" data-semui="modal" >${message(code:'propertyDefinition.create_new.label')}</button>
+            <button class="ui button" value="" data-href="#addPropertyDefinitionModal" data-ui="modal" >${message(code:'propertyDefinition.create_new.label')}</button>
             --%>
             <%-- included in case someone of the admins wishes this export
-            <semui:exportDropdown>
-                <semui:exportDropdownItem>
+            <ui:exportDropdown>
+                <ui:exportDropdownItem>
                     <g:link class="item" action="managePropertyDefinitions" params="[cmd: 'exportXLS']">${message(code: 'default.button.export.xls')}</g:link>
-                </semui:exportDropdownItem>
-            </semui:exportDropdown>--%>
-        </semui:controlButtons>
+                </ui:exportDropdownItem>
+            </ui:exportDropdown>--%>
+        </ui:controlButtons>
 
-		<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="menu.admin.managePropertyDefinitions"/></h1>
+        <ui:h1HeaderWithIcon message="menu.admin.managePropertyDefinitions" />
 
-		<semui:messages data="${flash}" />
+		<ui:messages data="${flash}" />
 
 		<div class="ui styled fluid accordion">
 			<g:each in="${propertyDefinitions}" var="entry">
@@ -55,23 +49,23 @@
                                 <tr>
                                     <td>
                                         <g:if test="${pd.isHardData}">
-                                            <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.hardData.tooltip')}">
+                                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.hardData.tooltip')}">
                                                 <i class="check circle icon green"></i>
                                             </span>
                                         </g:if>
                                         <g:if test="${pd.multipleOccurrence}">
-                                            <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
+                                            <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
                                                 <i class="redo icon orange"></i>
                                             </span>
                                         </g:if>
 
                                         <g:if test="${usedPdList?.contains(pd.id)}">
-                                            <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.dataIsUsed.tooltip', args:[pd.id])}">
+                                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.dataIsUsed.tooltip', args:[pd.id])}">
                                                 <i class="info circle icon blue"></i>
                                             </span>
                                         </g:if>
                                         <g:if test="${pd.isUsedForLogic}">
-                                            <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.isUsedForLogic.tooltip')}">
+                                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.isUsedForLogic.tooltip')}">
                                                 <i class="ui icon orange cube"></i>
                                             </span>
                                         </g:if>
@@ -86,7 +80,7 @@
                                     </td>
                                     <td>
                                         <g:if test="${!pd.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
-                                            <semui:xEditable owner="${pd}" field="name_de" />
+                                            <ui:xEditable owner="${pd}" field="name_de" />
                                         </g:if>
                                         <g:else>
                                             ${pd.getI10n('name', 'de')}
@@ -94,7 +88,7 @@
                                     </td>
                                     <td>
                                         <g:if test="${!pd.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
-                                            <semui:xEditable owner="${pd}" field="name_en" />
+                                            <ui:xEditable owner="${pd}" field="name_en" />
                                         </g:if>
                                         <g:else>
                                             ${pd.getI10n('name', 'en')}
@@ -102,7 +96,7 @@
                                     </td>
                                     <td>
                                         <g:if test="${!pd.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
-                                            <semui:xEditable owner="${pd}" field="expl_de" type="textarea" />
+                                            <ui:xEditable owner="${pd}" field="expl_de" type="textarea" />
                                         </g:if>
                                         <g:else>
                                             ${pd.getI10n('expl', 'de')}
@@ -110,7 +104,7 @@
                                     </td>
                                     <td>
                                         <g:if test="${!pd.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
-                                            <semui:xEditable owner="${pd}" field="expl_en" type="textarea" />
+                                            <ui:xEditable owner="${pd}" field="expl_en" type="textarea" />
                                         </g:if>
                                         <g:else>
                                             ${pd.getI10n('expl', 'en')}
@@ -119,7 +113,7 @@
                                     <td>
                                         <g:set var="pdRdc" value="${pd.type?.split('\\.').last()}"/>
                                         <g:if test="${'RefdataValue'.equals(pdRdc)}">
-                                            <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${pd.refdataCategory}">
+                                            <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${pd.refdataCategory}">
                                                 <small>${pd.type?.split('\\.').last()}</small>
                                             </span>
                                         </g:if>
@@ -157,7 +151,7 @@
                                         </g:if>
 
                                         <g:if test="${(pd.descr == PropertyDefinition.SUB_PROP) && !PropertyDefinition.findByNameAndDescrAndTenant(pd.name, PropertyDefinition.SVY_PROP, null)}">
-                                            <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'propertyDefinition.copySubPropToSurProp.label')}">
+                                            <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'propertyDefinition.copySubPropToSurProp.label')}">
                                                 <g:link class="ui icon button blue la-modern-button" action="transferSubPropToSurProp" params="[propertyDefinition: pd.id]">
                                                     <i class="copy icon"></i>
                                                 </g:link>
@@ -166,8 +160,8 @@
 
                                         <sec:ifAnyGranted roles="ROLE_YODA">
                                             <g:if test="${usedPdList?.contains(pd.id)}">
-                                                <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'propertyDefinition.exchange.label')}">
-                                                    <button class="ui icon blue button la-modern-button" data-href="#replacePropertyDefinitionModal" data-semui="modal"
+                                                <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'propertyDefinition.exchange.label')}">
+                                                    <button class="ui icon blue button la-modern-button" data-href="#replacePropertyDefinitionModal" data-ui="modal"
                                                             data-xcg-pd="${pd.class.name}:${pd.id}"
                                                             data-xcg-type="${pd.type}"
                                                             data-xcg-rdc="${pd.refdataCategory}"
@@ -198,7 +192,7 @@
 
         <laser:render template="/myInstitution/replacePropertyDefinition" model="[action: actionName]"/>
 
-        <semui:modal id="addPropertyDefinitionModal" message="propertyDefinition.create_new.label">
+        <ui:modal id="addPropertyDefinitionModal" message="propertyDefinition.create_new.label">
 
             <g:form class="ui form" id="create_cust_prop" url="[controller: 'ajax', action: 'addCustomPropertyType']" >
                 <input type="hidden" name="reloadReferer" value="/admin/managePropertyDefinitions"/>
@@ -211,7 +205,7 @@
 
                 <div class="fields">
                     <div class="field five wide">
-                        <label class="property-label">Context:</label>
+                        <label for="cust_prop_desc" class="property-label">Context:</label>
                         <select name="cust_prop_desc" id="cust_prop_desc" class="ui dropdown">
                             <g:each in="${PropertyDefinition.AVAILABLE_CUSTOM_DESCR}" var="pd">
                                 <option value="${pd}"><g:message code="propertyDefinition.${pd}.label" /></option>
@@ -246,7 +240,7 @@
 
             </g:form>
 
-        </semui:modal>
+        </ui:modal>
 
 		<laser:script file="${this.getGroovyPageFileName()}">
 
@@ -296,5 +290,4 @@
 
 		</laser:script>
 
-	</body>
-</html>
+<laser:htmlEnd />

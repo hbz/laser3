@@ -1,40 +1,32 @@
 <%@ page import="de.laser.Package" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'task.plural')}</title>
-</head>
+<laser:htmlStart message="task.plural" />
 
-<body>
-
-    <semui:breadcrumbs>
-        <semui:crumb controller="package" action="index" text="${message(code:'package.show.all')}" />
-        <semui:crumb text="${packageInstance?.name}" id="${packageInstance?.id}" class="active"/>
-    </semui:breadcrumbs>
-    <semui:controlButtons>
-        <semui:exportDropdown>
-            <semui:exportDropdownItem>
+    <ui:breadcrumbs>
+        <ui:crumb controller="package" action="index" text="${message(code:'package.show.all')}" />
+        <ui:crumb text="${packageInstance?.name}" id="${packageInstance?.id}" class="active"/>
+    </ui:breadcrumbs>
+    <ui:controlButtons>
+        <ui:exportDropdown>
+            <ui:exportDropdownItem>
                 <g:link class="item" action="show" params="${params+[format:'json']}">JSON</g:link>
-            </semui:exportDropdownItem>
-            <semui:exportDropdownItem>
+            </ui:exportDropdownItem>
+            <ui:exportDropdownItem>
                 <g:link class="item" action="show" params="${params+[format:'xml']}">XML</g:link>
-            </semui:exportDropdownItem>
-        </semui:exportDropdown>
+            </ui:exportDropdownItem>
+        </ui:exportDropdown>
         <laser:render template="actions" />
-    </semui:controlButtons>
-    <semui:modeSwitch controller="package" action="show" params="${params}"/>
+    </ui:controlButtons>
+    <ui:modeSwitch controller="package" action="show" params="${params}"/>
 
-    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${packageInstance?.name}</h1>
+    <ui:h1HeaderWithIcon text="${packageInstance?.name}" />
 
     <laser:render template="nav"/>
 
-    <semui:messages data="${flash}" />
+    <ui:messages data="${flash}" />
 
-    <laser:render template="/templates/tasks/table" model="${[taskInstanceList:taskInstanceList,taskInstanceCount:taskInstanceCount]}"/>
-    <laser:render template="/templates/tasks/table2" model="${[taskInstanceList:myTaskInstanceList,taskInstanceCount:myTaskInstanceCount]}"/>
+    <laser:render template="/templates/tasks/tables" model="${[
+            taskInstanceList: taskInstanceList,     taskInstanceCount: taskInstanceCount,
+            myTaskInstanceList: myTaskInstanceList, myTaskInstanceCount: myTaskInstanceCount
+    ]}"/>
 
-    <laser:render template="/templates/tasks/js_taskedit"/>
-
-</body>
-</html>
+<laser:htmlEnd />

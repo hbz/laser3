@@ -1,21 +1,15 @@
 <%@ page import="de.laser.storage.RDStore; de.laser.DocContext" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: "menu.admin.recoveryDoc")}</title>
-</head>
 
-<body>
+<laser:htmlStart message="menu.admin.recoveryDoc" />
 
-<semui:breadcrumbs>
-    <semui:crumb message="menu.admin" controller="admin" action="index"/>
-    <semui:crumb message="menu.admin.recoveryDoc" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb message="menu.admin" controller="admin" action="index"/>
+    <ui:crumb message="menu.admin.recoveryDoc" class="active"/>
+</ui:breadcrumbs>
 
-<h1 class="ui header la-noMargin-top">${message(code: "menu.admin.recoveryDoc")}</h1>
+<ui:h1HeaderWithIcon message="menu.admin.recoveryDoc" />
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 <g:if test="${doc}">
 
@@ -173,5 +167,4 @@
     <h2 class="ui header">Dokument in der Datenbank mit entspr. Datei im Filesystem gefunden.</h2>
 </g:else>
 
-</body>
-</html>
+<laser:htmlEnd />

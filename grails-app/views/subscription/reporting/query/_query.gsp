@@ -1,7 +1,7 @@
 <%@ page import="de.laser.reporting.report.local.SubscriptionReport" %>
 <div class="ui segment form">
 
-    <div class="fields <laser:numberToString number="${cfgTimelineList.size() + 2}" min="2"/>">
+    <div class="fields <reporting:numberToString number="${cfgTimelineList.size() + 2}" min="2"/>">
         <g:each in="${cfgTimelineList}" var="cfgTimeline" status="ti">
             <g:each in="${cfgTimeline}" var="field">
                 <div class="field">
@@ -34,8 +34,8 @@
 
         <div class="field" style="text-align: right">
             <label for="query-export-button">&nbsp;</label>
-            <button id="query-export-button" class="ui icon button" data-href="#queryExportModal" data-semui="modal" disabled><i class="ui icon download"></i></button>
-            <button id="query-help-button" class="ui icon button" data-href="#queryHelpModal" data-semui="modal" disabled><i class="ui icon question"></i></button>
+            <button id="query-export-button" class="ui icon button" data-href="#queryExportModal" data-ui="modal" disabled><i class="ui icon download"></i></button>
+            <button id="query-help-button" class="ui icon button" data-href="#queryHelpModal" data-ui="modal" disabled><i class="ui icon question"></i></button>
         </div>
     </div>
 </div>

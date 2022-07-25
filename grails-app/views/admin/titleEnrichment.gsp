@@ -1,20 +1,14 @@
 <%@ page import="de.laser.storage.RDStore" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : Titles Enrichment</title>
-</head>
 
-<body>
+<laser:htmlStart text="Titles Enrichment" />
 
-<semui:breadcrumbs>
-    <semui:crumb message="menu.admin" controller="admin" action="index" />
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb message="menu.admin" controller="admin" action="index" />
+</ui:breadcrumbs>
 
-<h1 class="ui left aligned icon header la-clear-before"><semui:headerIcon/>Title Enrichment of series_name, monograph_parent_collection_title, subject_reference, summary_of_content</h1>
+<ui:h1HeaderWithIcon text="Title Enrichment of series_name, monograph_parent_collection_title, subject_reference, summary_of_content" />
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 <g:form class="ui form" controller="admin" action="titleEnrichment" params="" method="post"
         enctype="multipart/form-data">
@@ -51,5 +45,4 @@
     });
 </laser:script>
 
-</body>
-</html>
+<laser:htmlEnd />

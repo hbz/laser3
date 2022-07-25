@@ -1,26 +1,19 @@
 <%@page import="de.laser.FormService" %>
-<laser:serviceInjection />
 
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <g:set var="entityName" value="${message(code: 'org.label')}" />
-        <title>${message(code:'laser')} : ${message(code: 'menu.institutions.add_consortia_members')}</title>
-    </head>
-    <body>
+<laser:htmlStart message="menu.institutions.add_consortia_members" serviceInjection="true" />
+    <g:set var="entityName" value="${message(code: 'org.label')}" />
 
-    <semui:breadcrumbs>
-        <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
-        <semui:crumb message="menu.institutions.manage_consortia" controller="myInstitution" action="manageMembers"/>
-        <semui:crumb message="menu.institutions.add_consortia_members" class="active" />
-    </semui:breadcrumbs>
-    
-    <h1 class="ui left aligned icon header la-clear-before"><semui:headerIcon />${message(code: 'menu.institutions.add_consortia_members')}</h1>
+    <ui:breadcrumbs>
+        <ui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
+        <ui:crumb message="menu.institutions.manage_consortia" controller="myInstitution" action="manageMembers"/>
+        <ui:crumb message="menu.institutions.add_consortia_members" class="active" />
+    </ui:breadcrumbs>
 
-    <semui:messages data="${flash}" />
+    <ui:h1HeaderWithIcon message="menu.institutions.add_consortia_members" />
 
-    <semui:filter>
+    <ui:messages data="${flash}" />
+
+    <ui:filter>
         <g:form action="addMembers" method="get" class="ui form">
             <laser:render template="/templates/filter/orgFilter"
                       model="[
@@ -28,7 +21,7 @@
                               tmplConfigFormFilter: true
                       ]"/>
         </g:form>
-    </semui:filter>
+    </ui:filter>
 
     <g:if test="${availableOrgs}">
     <g:form action="addMembers" controller="myInstitution" method="post" class="ui form">
@@ -53,5 +46,4 @@
         </g:else>
     </g:else>
 
-  </body>
-</html>
+<laser:htmlEnd />

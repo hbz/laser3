@@ -1,33 +1,27 @@
 <%@ page import="de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.Org; de.laser.I10nTranslation" %>
 
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
+<laser:htmlStart message="menu.institutions.private_props" serviceInjection="true"/>
+
         <g:set var="entityName" value="${message(code: 'org.label')}" />
-        <title>${message(code:'laser')} : ${message(code: 'menu.institutions.private_props')}</title>
-    </head>
-    <body>
-    <laser:serviceInjection />
 
-    <semui:breadcrumbs>
-        <semui:crumb message="menu.institutions.manage_props" class="active" />
-    </semui:breadcrumbs>
+    <ui:breadcrumbs>
+        <ui:crumb message="menu.institutions.manage_props" class="active" />
+    </ui:breadcrumbs>
 
-    <semui:controlButtons>
-        <semui:exportDropdown>
-            <semui:exportDropdownItem>
+    <ui:controlButtons>
+        <ui:exportDropdown>
+            <ui:exportDropdownItem>
                 <g:link class="item" action="${actionName}" params="[cmd: 'exportXLS']">${message(code: 'default.button.export.xls')}</g:link>
-            </semui:exportDropdownItem>
-        </semui:exportDropdown>
+            </ui:exportDropdownItem>
+        </ui:exportDropdown>
         <laser:render template="actions"/>
-    </semui:controlButtons>
+    </ui:controlButtons>
 
-    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'menu.institutions.manage_props')}</h1>
+    <ui:h1HeaderWithIcon message="menu.institutions.manage_props" />
 
     <laser:render template="nav" />
 
-    <semui:messages data="${flash}" />
+    <ui:messages data="${flash}" />
 
     <g:if test="${propertyDefinitions}">
 
@@ -62,27 +56,27 @@
                                     <tr>
                                         <td>
                                             <g:if test="${pd.isHardData}">
-                                                <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.hardData.tooltip')}">
+                                                <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.hardData.tooltip')}">
                                                     <i class="check circle icon green"></i>
                                                 </span>
                                             </g:if>
                                             <g:if test="${pd.multipleOccurrence}">
-                                                <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
+                                                <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'default.multipleOccurrence.tooltip')}">
                                                     <i class="redo icon orange"></i>
                                                 </span>
                                             </g:if>
 
                                             <g:if test="${pd.isUsedForLogic}">
-                                                <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.isUsedForLogic.tooltip')}">
+                                                <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.isUsedForLogic.tooltip')}">
                                                     <i class="ui icon orange cube"></i>
                                                 </span>
                                             </g:if>
                                         </td>
                                         <td>
-                                            <semui:xEditable owner="${pd}" field="name_${languageSuffix}" />
+                                            <ui:xEditable owner="${pd}" field="name_${languageSuffix}" />
                                         </td>
                                         <td>
-                                            <semui:xEditable owner="${pd}" field="expl_${languageSuffix}" type="textarea" />
+                                            <ui:xEditable owner="${pd}" field="expl_${languageSuffix}" type="textarea" />
                                         </td>
                                         <td>
                                             ${PropertyDefinition.getLocalizedValue(pd.type)}
@@ -161,8 +155,8 @@
                                                     </g:link>
                                                 </g:if>
                                                 <g:else>
-                                                    <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'propertyDefinition.exchange.label')}">
-                                                        <button class="ui icon blue button la-modern-button" data-href="#replacePropertyDefinitionModal" data-semui="modal"
+                                                    <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'propertyDefinition.exchange.label')}">
+                                                        <button class="ui icon blue button la-modern-button" data-href="#replacePropertyDefinitionModal" data-ui="modal"
                                                                 data-xcg-pd="${pd.class.name}:${pd.id}"
                                                                 data-xcg-type="${pd.type}"
                                                                 data-xcg-rdc="${pd.refdataCategory}"
@@ -173,8 +167,8 @@
                                                 </g:else>
                                             </g:if>
                                             <g:elseif test="${changeProperties && pd.countOwnUsages() > 0}">
-                                                <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'propertyDefinition.exchange.label')}">
-                                                    <button class="ui icon blue button la-modern-button" data-href="#replacePropertyDefinitionModal" data-semui="modal"
+                                                <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'propertyDefinition.exchange.label')}">
+                                                    <button class="ui icon blue button la-modern-button" data-href="#replacePropertyDefinitionModal" data-ui="modal"
                                                             data-xcg-pd="${pd.class.name}:${pd.id}"
                                                             data-xcg-type="${pd.type}"
                                                             data-xcg-rdc="${pd.refdataCategory}"
@@ -195,7 +189,7 @@
 
     <laser:render template="/myInstitution/replacePropertyDefinition" model="[action: actionName]"/>
 
-    <semui:modal id="addPropertyDefinitionModal" message="propertyDefinition.create_new.label">
+    <ui:modal id="addPropertyDefinitionModal" message="propertyDefinition.create_new.label">
 
         <g:form class="ui form" action="managePrivatePropertyDefinitions" >
             <g:field type="hidden" name="cmd" value="add" />
@@ -250,9 +244,7 @@
             <div class="fields">
                 <div class="field hide" id="cust_prop_ref_data_name" style="width: 100%">
                     <label class="property-label"><g:message code="refdataCategory.label" /></label>
-
                     <input type="hidden" name="refdatacategory" id="cust_prop_refdatacatsearch"/>
-                    <g:set var="propertyService" bean="propertyService"/>
 
                     <div class="ui grid" style="margin-top:1em">
                         <div class="ten wide column">
@@ -284,7 +276,7 @@
             </div>
 
         </g:form>
-    </semui:modal>
+    </ui:modal>
 
     <laser:script file="${this.getGroovyPageFileName()}">
 
@@ -341,5 +333,4 @@
 
     </laser:script>
 
-  </body>
-</html>
+<laser:htmlEnd />

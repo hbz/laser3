@@ -99,8 +99,7 @@ class DocstoreService {
                         break
                     case RDStore.SHARE_CONF_UPLOADER_AND_TARGET: visible = inOwnerOrg || inTargetOrg
                         break
-                    case RDStore.SHARE_CONF_CONSORTIUM:
-                    case RDStore.SHARE_CONF_ALL: visible = true //this remark still counts - definition says that everyone with "access" to target org. How are such access roles defined and where?
+                    case [ RDStore.SHARE_CONF_CONSORTIUM, RDStore.SHARE_CONF_ALL ]: visible = true //this remark still counts - definition says that everyone with "access" to target org. How are such access roles defined and where?
                         break
                     default:
                         if(docctx.shareConf)

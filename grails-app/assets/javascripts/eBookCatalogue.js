@@ -1,3 +1,3 @@
-// FileName: ebookCatalogue.js
+// bundle: assets/javascripts/ebookCatalogue.js
 //
-//= require libs/jquery-3.5.1.js
+//= require libs/jquery-3.6.0.js

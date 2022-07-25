@@ -1,6 +1,7 @@
 package de.laser.utils
 
 import de.laser.storage.BeanStore
+import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
@@ -10,6 +11,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 
+@CompileStatic
 @Slf4j
 class DateUtils {
 
@@ -60,12 +62,12 @@ class DateUtils {
         return new SimpleDateFormat('dd.MM.yyyy')
     }
 
-    static SimpleDateFormat getSDF_forFilename(){
-        return new SimpleDateFormat('yyyyMMdd-HHmm')
-    }
-
     static SimpleDateFormat getSDF_MMMyyyy(){
         return new SimpleDateFormat('MMM-yyyy')
+    }
+
+    static SimpleDateFormat getSDF_yy(){
+        return new SimpleDateFormat('yy')
     }
 
     static SimpleDateFormat getSDF_yyyy(){
@@ -84,12 +86,30 @@ class DateUtils {
         return new SimpleDateFormat('yyyy-MM-dd')
     }
 
+    static SimpleDateFormat getSDF_yyyyMMdd_hhmmSSS(){
+        return new SimpleDateFormat('yyyy-MM-dd hh:mm:SS.S')
+    }
+
+    static SimpleDateFormat getSDF_yyyyMMdd_HHmmss(){
+        return new SimpleDateFormat('yyyy-MM-dd HH:mm:ss')
+    }
+
+    static SimpleDateFormat getSDF_yyyyMMdd_HHmmssS(){
+        return new SimpleDateFormat('yyyy-MM-dd HH:mm:ss.S')
+    }
+
     static SimpleDateFormat getSDF_yyyyMMddTHHmmss(){
         return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
     }
 
     static SimpleDateFormat getSDF_yyyyMMddTHHmmssZ(){
-        return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z")
+        return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+    }
+
+    // --
+
+    static SimpleDateFormat getSDF_forFilename(){
+        return new SimpleDateFormat('yyyyMMdd-HHmm')
     }
 
     // --
@@ -101,7 +121,7 @@ class DateUtils {
     // --
 
     static Date parseDateGeneric(String value) {
-        Date parsed_date
+        Date parsed_date = null
 
         List<SimpleDateFormat> supportedFormats = [
                 new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"),

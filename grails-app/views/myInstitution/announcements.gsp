@@ -1,20 +1,11 @@
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'announcement.plural')}</title>
-    </head>
+<laser:htmlStart message="announcement.plural" />
 
-    <body>
+        <ui:breadcrumbs>
+            <ui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
+            <ui:crumb message="announcement.plural" class="active" />
+        </ui:breadcrumbs>
 
-        <semui:breadcrumbs>
-            <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
-            <semui:crumb message="announcement.plural" class="active" />
-        </semui:breadcrumbs>
-
-        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
-            ${message(code:'announcement.plural')}
-        </h1>
+        <ui:h1HeaderWithIcon message="announcement.plural" />
 
         <br />
         <br />
@@ -37,5 +28,4 @@
               </g:each>
             </table>
 
-  </body>
-</html>
+<laser:htmlEnd />

@@ -1,29 +1,19 @@
 <%@ page import="de.laser.utils.LocaleUtils; de.laser.utils.DateUtils; de.laser.survey.SurveyConfig; de.laser.I10nTranslation; org.springframework.context.i18n.LocaleContextHolder; de.laser.RefdataValue; de.laser.DocContext;de.laser.storage.RDStore; java.text.SimpleDateFormat;" %>
-<laser:serviceInjection/>
+
+<laser:htmlStart message="search.advancedSearch" serviceInjection="true"/>
 
 <%
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+    SimpleDateFormat sdf = DateUtils.getSDF_yyyyMMddTHHmmssZ()
     SimpleDateFormat sdfNoTime = DateUtils.getLocalizedSDF_noTime()
     String languageSuffix = LocaleUtils.getCurrentLang()
     String period
 %>
 
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'search.advancedSearch')}</title>
-</head>
+<ui:breadcrumbs>
+    <ui:crumb message="search.advancedSearch" class="active"/>
+</ui:breadcrumbs>
 
-<body>
-
-<semui:breadcrumbs>
-    <semui:crumb message="search.advancedSearch" class="active"/>
-</semui:breadcrumbs>
-
-<h1 class="ui left aligned icon header">
-    <i class="circular icon search"></i> ${message(code: 'search.advancedSearch')}
-</h1>
+<ui:h1HeaderWithIcon message="search.advancedSearch" type="Search" />
 
 <%
     def addFacet = { params, facet, val ->
@@ -240,7 +230,7 @@
                 </div>
             </div>
             <div class="twelve wide column">
-                <h3 class="ui header">${message(code: 'search.search.filter')} <semui:totalNumber total="${resultsTotal}"/></h3>
+                <h3 class="ui header">${message(code: 'search.search.filter')} <ui:totalNumber total="${resultsTotal}"/></h3>
                 <p>
                     <g:each in="${['rectype', 'endYear', 'startYear', 'consortiaName', 'providerName', 'status']}" var="facet">
                         <g:each in="${params.list(facet)}" var="fv">
@@ -452,7 +442,7 @@
                                     <strong>${message(code: 'platform.primaryURL')}</strong>:
                                         <g:if test="${hit.getSourceAsMap().primaryUrl}">
                                             ${hit.getSourceAsMap().primaryUrl}
-                                            <semui:linkIcon href="${hit.getSourceAsMap().primaryUrl}"/>
+                                            <ui:linkWithIcon href="${hit.getSourceAsMap().primaryUrl}"/>
                                         </g:if>
                                     <br />
                                     <strong>${message(code: 'platform.provider')}</strong>:
@@ -707,7 +697,7 @@
                                     <br />
                                     <strong>${message(code: 'task.endDate.label')}</strong>:
                                         <g:if test="${hit.getSourceAsMap()?.endDate}">
-                                            <g:formatDate format="${message(code:'default.date.format.notime')}" date="${new Date().parse("yyyy-MM-dd'T'HH:mm:ssZ", hit.getSourceAsMap().endDate)}"/>
+                                            <g:formatDate format="${message(code:'default.date.format.notime')}" date="${new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ").parse(hit.getSourceAsMap().endDate)}"/>
                                         </g:if>
                                     <br />
                                     <strong>${message(code: 'default.description.label')}</strong>: <article class="la-readmore">${hit.getSourceAsMap()?.description}</article>
@@ -856,7 +846,7 @@
                     </g:each>
                 </table>
 
-                <semui:paginate action="index" controller="search" params="${params}"
+                <ui:paginate action="index" controller="search" params="${params}"
                                 next="${message(code: 'default.paginate.next')}"
                                 prev="${message(code: 'default.paginate.prev')}" max="${max}"
                                 total="${resultsTotal}"/>
@@ -866,5 +856,4 @@
 
 </g:if>
 
-</body>
-</html>
+<laser:htmlEnd />

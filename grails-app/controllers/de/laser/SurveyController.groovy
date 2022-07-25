@@ -1,10 +1,11 @@
 package de.laser
 
-
+import de.laser.annotations.Check404
 import de.laser.annotations.DebugInfo
 import de.laser.ctrl.FinanceControllerService
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.ctrl.SurveyControllerService
+import de.laser.custom.CustomWkhtmltoxService
 import de.laser.finance.Order
 import de.laser.finance.PriceItem
 import de.laser.properties.SubscriptionProperty
@@ -14,17 +15,21 @@ import de.laser.finance.CostItem
 import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinition
+import de.laser.storage.PropertyStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyConfigProperties
 import de.laser.survey.SurveyInfo
+import de.laser.survey.SurveyLinks
 import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyResult
 import de.laser.utils.DateUtils
+import de.laser.utils.SwissKnife
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
 import groovy.time.TimeCategory
+import org.apache.http.HttpStatus
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.i18n.LocaleContextHolder
@@ -50,7 +55,7 @@ class SurveyController {
     ContextService contextService
     ComparisonService comparisonService
     CopyElementsService copyElementsService
-    //CustomWkhtmltoxService wkhtmltoxService
+    CustomWkhtmltoxService wkhtmltoxService
     DocstoreService docstoreService
     EscapeService escapeService
     ExecutorService executorService
@@ -68,6 +73,14 @@ class SurveyController {
     SurveyControllerService surveyControllerService
     SurveyService surveyService
     TaskService taskService
+
+    //-----
+
+    final static Map<String, String> CHECK404_ALTERNATIVES = [
+            'myInstitution/currentSurveys' : 'currentSurveys.label'
+    ]
+
+    //-----
 
     /**
      * Redirects the call to the survey details view
@@ -330,7 +343,6 @@ class SurveyController {
 
         //flash.message = g.message(code: "createGeneralSurvey.create.successfull")
         redirect action: 'show', id: surveyInfo.id
-
     }
 
     /**
@@ -634,12 +646,12 @@ class SurveyController {
                 //Wenn es eine Umfrage schon gibt, die als Übertrag dient. Dann ist es auch keine Lizenz Umfrage mit einem Teilnahme-Merkmal abfragt!
                 if (subSurveyUseForTransfer) {
                     SurveyConfigProperties configProperty = new SurveyConfigProperties(
-                            surveyProperty: RDStore.SURVEY_PROPERTY_PARTICIPATION,
+                            surveyProperty: PropertyStore.SURVEY_PROPERTY_PARTICIPATION,
                             surveyConfig: surveyConfig,
                             mandatoryProperty: true)
 
                     SurveyConfigProperties configProperty2 = new SurveyConfigProperties(
-                            surveyProperty: RDStore.SURVEY_PROPERTY_ORDER_NUMBER,
+                            surveyProperty: PropertyStore.SURVEY_PROPERTY_ORDER_NUMBER,
                             surveyConfig: surveyConfig)
 
                     if (configProperty.save() && configProperty2.save()) {
@@ -744,8 +756,20 @@ class SurveyController {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_USER", "ROLE_ADMIN")
     })
+    @Check404(domain=SurveyInfo)
     def show() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
+
+        result.surveyLinksMessage = []
+
+        if(SurveyLinks.executeQuery("from SurveyLinks where sourceSurvey = :surveyInfo and sourceSurvey.status = :startStatus and targetSurvey.status != sourceSurvey.status", [surveyInfo: result.surveyInfo, startStatus: RDStore.SURVEY_SURVEY_STARTED]).size() > 0){
+            result.surveyLinksMessage  << message(code: 'surveyLinks.surveysNotStartet')
+        }
+
+        if(SurveyLinks.executeQuery("from SurveyLinks where sourceSurvey = :surveyInfo and sourceSurvey.status = :startStatus and targetSurvey.status = sourceSurvey.status and targetSurvey.endDate != sourceSurvey.endDate", [surveyInfo: result.surveyInfo, startStatus: RDStore.SURVEY_SURVEY_STARTED]).size() > 0){
+            result.surveyLinksMessage  << message(code: 'surveyLinks.surveysNotSameEndDate')
+        }
+
 
         if(result.surveyInfo.surveyConfigs.size() >= 1  || params.surveyConfigID) {
 
@@ -754,7 +778,7 @@ class SurveyController {
             result.navigation = surveyService.getConfigNavigation(result.surveyInfo,  result.surveyConfig)
 
             if ( result.surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]) {
-                result.authorizedOrgs = result.user.authorizedOrgs
+                result.authorizedOrgs = result.user.getAffiliationOrgs()
 
                 // restrict visible for templates/links/orgLinksAsList
                 result.visibleOrgRelations = []
@@ -773,7 +797,7 @@ class SurveyController {
                result.sortConfig = [consSort:'oo.org.sortname',consOrder:'asc',
                                     ownSort:'ci.costTitle',ownOrder:'asc']
 
-                result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
+                result.max = params.max ? Integer.parseInt(params.max) : result.user.getPageSizeOrDefault()
                 //cost items
                 //params.forExport = true
                 LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
@@ -785,6 +809,17 @@ class SurveyController {
                     result.costItemSums.consCosts = costItems.cons.sums
                 }
                 result.links = linksGenerationService.getSourcesAndDestinations(result.subscription,result.user)
+
+                if(result.surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION]) {
+                    result.successorSubscription = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
+                    Collection<AbstractPropertyWithCalculatedLastUpdated> props
+                    props = result.surveyConfig.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
+                    if(result.successorSubscription){
+                        props += result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
+                    }
+                    result.customProperties = comparisonService.comparePropertiesWithAudit(props, true, true)
+                }
+
             }
 
             Org contextOrg = contextService.getOrg()
@@ -801,13 +836,6 @@ class SurveyController {
                     result.properties << it
                 }
             }*/
-
-            if(result.surveyConfig.subSurveyUseForTransfer) {
-                result.successorSubscription = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
-
-                result.customProperties = result.successorSubscription ? comparisonService.comparePropertiesWithAudit(result.surveyConfig.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == contextOrg.id || (it.tenant?.id != contextOrg.id && it.isPublic))} + result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == contextOrg.id || (it.tenant?.id != contextOrg.id && it.isPublic))}, true, true) : null
-            }
-
 
         }
 
@@ -906,7 +934,7 @@ class SurveyController {
         params.orgType = RDStore.OT_INSTITUTION.id.toString()
         params.orgSector = RDStore.O_SECTOR_HIGHER_EDU.id.toString()
 
-        params.subStatus = RDStore.SUBSCRIPTION_CURRENT.id.toString()
+        params.subStatus = (params.filterSet && !params.subStatus) ? null : (params.subStatus ?: RDStore.SUBSCRIPTION_CURRENT.id.toString())
 
         result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
 
@@ -1016,7 +1044,7 @@ class SurveyController {
     Map<String,Object> processSurveyCostItemsBulk() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.putAll(financeControllerService.getEditVars(result.institution))
@@ -1149,7 +1177,7 @@ class SurveyController {
     Map<String,Object> setSurveyConfigFinish() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.surveyConfig.configFinish = params.configFinish ?: false
@@ -1176,7 +1204,7 @@ class SurveyController {
     Map<String,Object> workflowRenewalSent() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.surveyInfo.isRenewalSent = params.renewalSent ?: false
@@ -1203,7 +1231,7 @@ class SurveyController {
     Map<String,Object> workflowCostItemsFinish() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.surveyConfig.costItemsFinish = params.costItemsFinish ?: false
@@ -1229,7 +1257,7 @@ class SurveyController {
     Map<String,Object> setSurveyPropertyMandatory() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         SurveyConfigProperties surveyConfigProperties = SurveyConfigProperties.get(params.surveyConfigProperties)
@@ -1257,7 +1285,7 @@ class SurveyController {
     Map<String,Object> setSurveyCompleted() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.surveyInfo.status = params.surveyCompleted ? RDStore.SURVEY_COMPLETED : RDStore.SURVEY_IN_EVALUATION
@@ -1283,7 +1311,7 @@ class SurveyController {
     Map<String,Object> setSurveyTransferConfig() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         Map transferWorkflow = result.surveyConfig.transferWorkflow ? JSON.parse(result.surveyConfig.transferWorkflow) : [:]
@@ -1393,7 +1421,7 @@ class SurveyController {
             }
             catch (Exception e) {
                 log.error("Problem", e);
-                response.sendError(500)
+                response.sendError(HttpStatus.SC_INTERNAL_SERVER_ERROR)
                 return
             }
         }
@@ -1525,7 +1553,7 @@ class SurveyController {
      Map<String,Object> processTransferParticipants() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         if(!params.targetSubscriptionId) {
@@ -1977,14 +2005,14 @@ class SurveyController {
      Map<String,Object> evaluationParticipant() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.participant = Org.get(params.participant)
 
         result.surveyInfo = SurveyInfo.get(params.id) ?: null
 
-        result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
+        result.surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.surveyConfigID) : result.surveyInfo.surveyConfigs[0]
 
         result.surveyResults = []
 
@@ -2016,7 +2044,7 @@ class SurveyController {
             //result.offsets = [consOffset:0]
             //result.sortConfig = [consSort:'ci.costTitle',consOrder:'asc']
 
-            result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
+            result.max = params.max ? Integer.parseInt(params.max) : result.user.getPageSizeOrDefault()
             //cost items
             //params.forExport = true
             LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
@@ -2063,11 +2091,21 @@ class SurveyController {
                 }
 
         }
-
-            if(result.surveyConfig.subSurveyUseForTransfer) {
-                result.successorSubscription = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
-
-                result.customProperties = result.successorSubscription ? comparisonService.comparePropertiesWithAudit(result.surveyConfig.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))} + result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}, true, true) : null
+            if(result.surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION]) {
+                if (!result.subscription) {
+                    result.successorSubscriptionParent = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
+                    result.successorSubscription = result.successorSubscriptionParent ? result.successorSubscriptionParent.getDerivedSubscriptionBySubscribers(result.participant) : null
+                } else {
+                    result.successorSubscription = result.subscription._getCalculatedSuccessorForSurvey()
+                }
+                if (result.successorSubscription) {
+                    List objects = []
+                    if(result.subscription){
+                        objects << result.subscription
+                    }
+                    objects << result.successorSubscription
+                    result = result + compareService.compareProperties(objects)
+                }
             }
         }
 
@@ -2084,7 +2122,7 @@ class SurveyController {
     Map<String,Object> generatePdfForParticipant() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
         result.participant = Org.get(params.participant)
 
@@ -2112,7 +2150,7 @@ class SurveyController {
                 result.offsets = [subscrOffset:0]
                 result.sortConfig = [subscrSort:'sub.name',subscrOrder:'asc']
 
-                result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
+                result.max = params.max ? Integer.parseInt(params.max) : result.user.getPageSizeOrDefault()
 
                 LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
                 result.costItemSums = [:]
@@ -2154,11 +2192,16 @@ class SurveyController {
                 }
             }
 
-            if(result.surveyConfig.subSurveyUseForTransfer) {
-                result.successorSubscription = result.surveyConfig.subscription._getCalculatedSuccessorSurvey()
-
-                result.customProperties = result.successorSubscription ? comparisonService.comparePropertiesWithAudit(result.surveyConfig.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))} + result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}, true, true) : null
+            if(result.surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION]) {
+                result.successorSubscription = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
+                Collection<AbstractPropertyWithCalculatedLastUpdated> props
+                props = result.surveyConfig.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
+                if(result.successorSubscription){
+                    props += result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
+                }
+                result.customProperties = comparisonService.comparePropertiesWithAudit(props, true, true)
             }
+
             result.links = linksGenerationService.getSourcesAndDestinations(result.subscription,result.user)
         }
 
@@ -2208,7 +2251,7 @@ class SurveyController {
      Map<String,Object> allSurveyProperties() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_USER','ROLE_ADMIN')) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.properties = surveyService.getSurveyProperties(result.institution)
@@ -2230,7 +2273,7 @@ class SurveyController {
      Map<String,Object> addSurveyPropToConfig() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.editable = (result.surveyInfo && result.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
@@ -2489,7 +2532,7 @@ class SurveyController {
      Map<String,Object> processOpenSurvey() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.editable = (result.surveyInfo && result.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
@@ -2540,7 +2583,7 @@ class SurveyController {
      Map<String,Object> processEndSurvey() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         if (result.editable) {
@@ -2571,7 +2614,7 @@ class SurveyController {
      Map<String,Object> processBackInProcessingSurvey() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         if (result.editable) {
@@ -2595,7 +2638,7 @@ class SurveyController {
      Map<String,Object> processOpenSurveyNow() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.editable = (result.surveyInfo && result.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
@@ -2661,7 +2704,7 @@ class SurveyController {
      Map<String,Object> openSurveyAgain() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         if(result.surveyInfo && result.surveyInfo.status.id in [RDStore.SURVEY_IN_EVALUATION.id, RDStore.SURVEY_COMPLETED.id, RDStore.SURVEY_SURVEY_COMPLETED.id ]){
@@ -2698,7 +2741,7 @@ class SurveyController {
      Map<String,Object> deleteSurveyParticipants() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.editable = (result.surveyInfo && result.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
@@ -2754,7 +2797,7 @@ class SurveyController {
      Map<String,Object> deleteSurveyInfo() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.editable = (result.surveyInfo.status in [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY])
@@ -2825,7 +2868,7 @@ class SurveyController {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         result.putAll(financeControllerService.getEditVars(result.institution))
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
         result.costItem = CostItem.findById(params.costItem)
 
@@ -2857,7 +2900,7 @@ class SurveyController {
      Map<String,Object> addForAllSurveyCostItem() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.putAll(financeControllerService.getEditVars(result.institution))
@@ -2894,7 +2937,7 @@ class SurveyController {
      Map<String,Object> setInEvaluation() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.surveyInfo.status = RDStore.SURVEY_IN_EVALUATION
@@ -2920,7 +2963,7 @@ class SurveyController {
      Map<String,Object> setCompleted() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.surveyInfo.status = RDStore.SURVEY_COMPLETED
@@ -2946,7 +2989,7 @@ class SurveyController {
      Map<String,Object> setCompletedSurvey() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         SurveyInfo.withTransaction { TransactionStatus ts ->
@@ -2972,7 +3015,7 @@ class SurveyController {
      Map<String,Object> setSurveyConfigComment() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.surveyConfig.comment = params.comment
@@ -3033,7 +3076,7 @@ class SurveyController {
                 }
                 catch (Exception e) {
                     log.error("Problem", e);
-                    response.sendError(500)
+                    response.sendError(HttpStatus.SC_INTERNAL_SERVER_ERROR)
                     return
                 }
             }
@@ -3054,7 +3097,7 @@ class SurveyController {
     Map<String,Object> showPropertiesChanged() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTimeNoPoint()
@@ -3129,7 +3172,7 @@ class SurveyController {
      Map<String,Object> copySurvey() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
@@ -3221,7 +3264,7 @@ class SurveyController {
      Map<String,Object> addSubMembersToSurvey() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         surveyService.addSubMembers(result.surveyConfig)
@@ -3241,7 +3284,7 @@ class SurveyController {
      Map<String,Object> processCopySurvey() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         SurveyInfo baseSurveyInfo = result.surveyInfo
@@ -3341,7 +3384,7 @@ class SurveyController {
 
         Subscription subscription = Subscription.get(params.parentSub ?: null)
 
-        SimpleDateFormat sdf = new SimpleDateFormat('dd.MM.yyyy')
+        SimpleDateFormat sdf = DateUtils.getSDF_ddMMyyyy()
 
         result.errors = []
         Date newStartDate
@@ -3483,7 +3526,7 @@ class SurveyController {
      def exportSurCostItems() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
         //result.putAll(financeControllerService.setEditVars(result.institution))
 
@@ -3551,7 +3594,7 @@ class SurveyController {
 
             if (!accessService.checkMinUserOrgRole(user, result.institution, "INST_EDITOR")) {
                 result.error = message(code: 'financials.permission.unauthorised', args: [result.institution ? result.institution.name : 'N/A']) as String
-                response.sendError(403)
+                response.sendError(HttpStatus.SC_FORBIDDEN)
                 return
             }
 
@@ -3760,7 +3803,7 @@ class SurveyController {
      Map<String,Object> compareMembersOfTwoSubs() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.parentSubscription = result.surveyConfig.subscription
@@ -3802,7 +3845,7 @@ class SurveyController {
         result.participantsList = result.participantsList.sort{it.sortname}
 
 
-        result.participationProperty = RDStore.SURVEY_PROPERTY_PARTICIPATION
+        result.participationProperty = PropertyStore.SURVEY_PROPERTY_PARTICIPATION
         if(result.surveyConfig.subSurveyUseForTransfer && result.parentSuccessorSubscription) {
             String query = "select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType"
             result.memberLicenses = License.executeQuery(query, [subscription: result.parentSuccessorSubscription, linkType: RDStore.LINKTYPE_LICENSE])
@@ -3823,7 +3866,7 @@ class SurveyController {
      Map<String,Object> copySurveyCostItems() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.parentSubscription = result.surveyConfig.subscription
@@ -3873,7 +3916,7 @@ class SurveyController {
      Map<String,Object> proccessCopySurveyCostItems() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         if(result.surveyConfig.subSurveyUseForTransfer){
@@ -3906,7 +3949,7 @@ class SurveyController {
                         copyCostItem.costInLocalCurrency = costItem.costInBillingCurrency
                     }
                     Org org = participantSub.getSubscriber()
-                    SurveyResult surveyResult = org ? SurveyResult.findBySurveyConfigAndParticipantAndTypeAndStringValueIsNotNull(result.surveyConfig, org, RDStore.SURVEY_PROPERTY_ORDER_NUMBER) : null
+                    SurveyResult surveyResult = org ? SurveyResult.findBySurveyConfigAndParticipantAndTypeAndStringValueIsNotNull(result.surveyConfig, org, PropertyStore.SURVEY_PROPERTY_ORDER_NUMBER) : null
 
                     if(surveyResult){
                         Order order = new Order(orderNumber: surveyResult.getValue(), owner: result.institution)
@@ -3942,7 +3985,7 @@ class SurveyController {
      Map<String,Object> copySurveyCostItemsToSub() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.parentSubscription = result.surveyConfig.subscription
@@ -3982,7 +4025,7 @@ class SurveyController {
      Map<String,Object> proccessCopySurveyCostItemsToSub() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.parentSubscription = result.surveyConfig.subscription
@@ -4037,7 +4080,7 @@ class SurveyController {
      Map<String,Object> copyProperties() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         params.tab = params.tab ?: 'surveyProperties'
@@ -4060,9 +4103,9 @@ class SurveyController {
         result.properties
         if(params.tab == 'surveyProperties') {
             result.properties = SurveyConfigProperties.findAllBySurveyConfig(result.surveyConfig).surveyProperty.findAll{it.tenant == null}
-            result.properties -= RDStore.SURVEY_PROPERTY_PARTICIPATION
-            result.properties -= RDStore.SURVEY_PROPERTY_MULTI_YEAR_2
-            result.properties -= RDStore.SURVEY_PROPERTY_MULTI_YEAR_3
+            result.properties -= PropertyStore.SURVEY_PROPERTY_PARTICIPATION
+            result.properties -= PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_2
+            result.properties -= PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_3
         }
 
         if(params.tab == 'customProperties') {
@@ -4143,7 +4186,7 @@ class SurveyController {
      Map<String,Object> proccessCopyProperties() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         if(result.surveyConfig.subSurveyUseForTransfer){
@@ -4281,7 +4324,7 @@ class SurveyController {
      Map<String,Object> processTransferParticipantsByRenewal() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.parentSubscription = result.surveyConfig.subscription
@@ -4289,7 +4332,7 @@ class SurveyController {
         result.parentSuccessorSubscription = result.surveyConfig.subscription?._getCalculatedSuccessorForSurvey()
         result.parentSuccessorSubChilds = result.parentSuccessorSubscription ? subscriptionService.getValidSubChilds(result.parentSuccessorSubscription) : null
 
-        result.participationProperty = RDStore.SURVEY_PROPERTY_PARTICIPATION
+        result.participationProperty = PropertyStore.SURVEY_PROPERTY_PARTICIPATION
 
         result.properties = []
         result.properties.addAll(SurveyConfigProperties.findAllBySurveyPropertyNotEqualAndSurveyConfig(result.participationProperty, result.surveyConfig)?.surveyProperty)
@@ -4297,12 +4340,12 @@ class SurveyController {
         result.multiYearTermThreeSurvey = null
         result.multiYearTermTwoSurvey = null
 
-        if (RDStore.SURVEY_PROPERTY_MULTI_YEAR_3.id in result.properties.id) {
-            result.multiYearTermThreeSurvey = RDStore.SURVEY_PROPERTY_MULTI_YEAR_3
+        if (PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_3.id in result.properties.id) {
+            result.multiYearTermThreeSurvey = PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_3
             result.properties.remove(result.multiYearTermThreeSurvey)
         }
-        if (RDStore.SURVEY_PROPERTY_MULTI_YEAR_2.id in result.properties.id) {
-            result.multiYearTermTwoSurvey = RDStore.SURVEY_PROPERTY_MULTI_YEAR_2
+        if (PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_2.id in result.properties.id) {
+            result.multiYearTermTwoSurvey = PropertyStore.SURVEY_PROPERTY_MULTI_YEAR_2
             result.properties.remove(result.multiYearTermTwoSurvey)
 
         }
@@ -4760,7 +4803,7 @@ class SurveyController {
         result.editable = result.sourceObject.surveyInfo.isEditable()
 
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
         result.allObjects_readRights = SurveyConfig.executeQuery("select surConfig from SurveyConfig as surConfig join surConfig.surveyInfo as surInfo where surInfo.owner = :contextOrg order by surInfo.name", [contextOrg: result.contextOrg])
@@ -4857,40 +4900,97 @@ class SurveyController {
     Map<String,Object> setProviderOrLicenseLink() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
-            response.sendError(401); return
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
-        if(params.license){
-            License license = genericOIDService.resolveOID(params.license)
-            result.surveyInfo.license = license ?: result.surveyInfo.license
+        SurveyInfo.withTransaction { TransactionStatus ts ->
+            if (params.license) {
+                License license = genericOIDService.resolveOID(params.license)
+                result.surveyInfo.license = license ?: result.surveyInfo.license
 
-            if (!result.surveyInfo.save(flush: true)) {
-                flash.error = g.message(code: 'surveyInfo.link.fail')
+                if (!result.surveyInfo.save()) {
+                    flash.error = g.message(code: 'surveyInfo.link.fail')
+                }
+            }
+
+            if (params.provider) {
+                Org provider = genericOIDService.resolveOID(params.provider)
+                result.surveyInfo.provider = provider ?: result.surveyInfo.provider
+
+                if (!result.surveyInfo.save()) {
+                    flash.error = g.message(code: 'surveyInfo.link.fail')
+                }
+            }
+
+            if (params.unlinkLicense) {
+                result.surveyInfo.license = null
+
+                if (!result.surveyInfo.save()) {
+                    flash.error = g.message(code: 'surveyInfo.unlink.fail')
+                }
+            }
+
+            if (params.unlinkProvider) {
+                result.surveyInfo.provider = null
+
+                if (!result.surveyInfo.save()) {
+                    flash.error = g.message(code: 'surveyInfo.unlink.fail')
+                }
             }
         }
 
-        if(params.provider){
-            Org provider = genericOIDService.resolveOID(params.provider)
-            result.surveyInfo.provider = provider ?: result.surveyInfo.provider
+        redirect(url: request.getHeader('referer'))
 
-            if (!result.surveyInfo.save(flush: true)) {
-                flash.error = g.message(code: 'surveyInfo.link.fail')
-            }
+    }
+
+    /**
+     * Set link to license or provider
+     * @return a redirect to the referer
+     */
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = 1)
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    Map<String,Object> setSurveyLink() {
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
+        if (!result.editable) {
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
-        if(params.unlinkLicense){
-            result.surveyInfo.license = null
+        SurveyInfo.withTransaction { TransactionStatus ts ->
+            if (params.linkSurvey) {
+                SurveyInfo linkSurvey = SurveyInfo.get(params.linkSurvey)
 
-            if (!result.surveyInfo.save(flush: true)) {
-                flash.error = g.message(code: 'surveyInfo.unlink.fail')
+                if (linkSurvey) {
+                    if (SurveyLinks.findBySourceSurveyAndTargetSurvey(result.surveyInfo, linkSurvey)) {
+                        flash.error = g.message(code: 'surveyLinks.link.exists')
+                    } else {
+                        SurveyLinks surveyLink = new SurveyLinks(sourceSurvey: result.surveyInfo, targetSurvey: linkSurvey)
+                        if (!surveyLink.save()) {
+                            flash.error = g.message(code: 'surveyInfo.link.fail')
+                        } else {
+                            if (params.bothDirection && !SurveyLinks.findBySourceSurveyAndTargetSurvey(linkSurvey, result.surveyInfo)) {
+                                SurveyLinks surveyLink2 = new SurveyLinks(sourceSurvey: linkSurvey, targetSurvey: result.surveyInfo, bothDirection: true)
+                                surveyLink.bothDirection = true
+
+                                if (!surveyLink2.save() && !surveyLink.save()) {
+                                    flash.error = g.message(code: 'surveyInfo.link.fail')
+                                }
+                            }
+                        }
+                    }
+                }
             }
-        }
 
-        if(params.unlinkProvider){
-            result.surveyInfo.provider = null
+            if (params.unlinkSurveyLink) {
+                SurveyLinks surveyLink = SurveyLinks.get(params.unlinkSurveyLink)
+                if(surveyLink.bothDirection){
+                    SurveyLinks surveyLink2 = SurveyLinks.findBySourceSurveyAndTargetSurvey(surveyLink.targetSurvey, surveyLink.sourceSurvey)
+                    if(surveyLink2)
+                        surveyLink2.delete()
+                }
+                surveyLink.delete()
 
-            if (!result.surveyInfo.save(flush: true)) {
-                flash.error = g.message(code: 'surveyInfo.unlink.fail')
             }
         }
 

@@ -1,21 +1,15 @@
-<%@ page import="de.laser.storage.RDStore; grails.converters.JSON;de.laser.OrgRole" contentType="text/html;charset=UTF-8" %>
-<laser:serviceInjection/>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title><g:message code="laser"/> : <g:message code="myinst.subscriptionImport.post.title"/></title>
-    </head>
+<%@ page import="de.laser.storage.RDStore; grails.converters.JSON;de.laser.OrgRole" %>
+<laser:htmlStart message="myinst.subscriptionImport.post.title" serviceInjection="true"/>
 
-    <body>
-        <semui:breadcrumbs>
-            <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
-            <semui:crumb message="menu.institutions.subscriptionImport" class="active"/>
-        </semui:breadcrumbs>
+        <ui:breadcrumbs>
+            <ui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
+            <ui:crumb message="menu.institutions.subscriptionImport" class="active"/>
+        </ui:breadcrumbs>
         <br />
-        <semui:messages data="${flash}" />
+        <ui:messages data="${flash}" />
         <h2 class="ui header"><g:message code="myinst.subscriptionImport.post.header2"/></h2>
         <h3 class="ui header"><g:message code="myinst.subscriptionImport.post.header3"/></h3>
-    <semui:form>
+    <ui:form>
         <g:form name="subscriptionParameter" action="addSubscriptions" controller="subscription" method="post">
             <g:hiddenField name="candidates" value="${candidates.keySet() as JSON}"/>
             <table class="ui striped table">
@@ -122,8 +116,8 @@
                 </tfoot>
             </table>
         </g:form>
-    </semui:form>
-    </body>
+    </ui:form>
+
     <laser:script file="${this.getGroovyPageFileName()}">
             $("#takeAll").change(function(){
                 if($(this).is(":checked")) {
@@ -134,4 +128,4 @@
                 }
             });
     </laser:script>
-</html>
+<laser:htmlEnd />

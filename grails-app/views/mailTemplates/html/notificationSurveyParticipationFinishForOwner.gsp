@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.ConfigMapper; de.laser.properties.PropertyDefinition; de.laser.UserSetting; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated;" %>
+<%@ page import="de.laser.config.ConfigMapper; de.laser.properties.PropertyDefinition; de.laser.UserSetting; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated;" %>
 <laser:serviceInjection/>
 
 <!doctype html>

@@ -1,6 +1,6 @@
 <%@ page import="de.laser.properties.PropertyDefinition; de.laser.PersonRole; de.laser.Contact; de.laser.Person; de.laser.FormService; de.laser.storage.RDStore; de.laser.RefdataValue;de.laser.RefdataCategory;de.laser.storage.RDConstants" %>
 <laser:serviceInjection/>
-<semui:modal id="${modalID ?: 'personModal'}" formID="person_form"
+<ui:modal id="${modalID ?: 'personModal'}" formID="person_form"
              text="${modalText ?: message(code: 'person.create_new.label')}"
              contentClass="scrolling "
              msgClose="${message(code: 'default.button.cancel')}"
@@ -152,7 +152,7 @@
                         <label for="gender">
                             <g:message code="person.gender.label"/>
                         </label>
-                        <laser:select class="ui dropdown" id="gender" name="gender"
+                        <ui:select class="ui dropdown" id="gender" name="gender"
                                       from="${Person.getAllRefdataValues(RDConstants.GENDER)}"
                                       optionKey="id"
                                       optionValue="value"
@@ -214,7 +214,7 @@
         <g:if test="${showContacts}">
             <div class="field">
                 <br />
-                <label for="contacts">
+                <label>
                     <g:message code="person.contacts.label"/>:
                 </label>
 
@@ -226,7 +226,7 @@
                             </div>
 
                             <div class="field wide four">
-                                <laser:select class="ui search dropdown" name="contactLang${contact.id}"
+                                <ui:select class="ui search dropdown" name="contactLang${contact.id}"
                                               from="${RefdataCategory.getAllRefdataValues(RDConstants.LANGUAGE_ISO)}"
                                               optionKey="id"
                                               optionValue="value"
@@ -261,7 +261,7 @@
                 <div class="three fields" id="contactFields1">
                     <div class="field wide four">
                         <label></label>
-                        <laser:select class="ui dropdown" name="contentType.id"
+                        <ui:select class="ui dropdown" name="contentType.id"
                                       from="${Contact.getAllRefdataValues(RDConstants.CONTACT_CONTENT_TYPE)}"
                                       optionKey="id"
                                       optionValue="value"
@@ -270,7 +270,7 @@
 
                     <div class="field wide four">
                         <label></label>
-                        <laser:select class="ui search dropdown" name="contactLang.id"
+                        <ui:select class="ui search dropdown" name="contactLang.id"
                                       from="${RefdataCategory.getAllRefdataValues(RDConstants.LANGUAGE_ISO)}"
                                       optionKey="id"
                                       optionValue="value"
@@ -295,7 +295,7 @@
         <g:if test="${showAddresses}">
             <div class="field">
                 <br />
-                <label for="addresses">
+                <label>
                     <g:message code="person.addresses.label"/>:
                 </label>
                 <g:if test="${personInstance}">
@@ -424,7 +424,7 @@
                             $('#addContactElement').attr('class', 'ui icon button disable');
                             $('#addContactElement').attr('disabled', 'disabled');
                         }
-                        r2d2.initDynamicSemuiStuff('#contactElementsContainer');
+                        r2d2.initDynamicUiStuff('#contactElementsContainer');
                     },
                     error: function (j, status, eThrown) {
                         console.log('Error ' + eThrown)
@@ -460,7 +460,7 @@
                             $('#addAddressElement').attr('class', 'ui icon button disable');
                             $('#addAddressElement').attr('disabled', 'disabled');
                         }
-                        r2d2.initDynamicSemuiStuff('#addressElementsContainer');
+                        r2d2.initDynamicUiStuff('#addressElementsContainer');
                     },
                     error: function (j, status, eThrown) {
                         console.log('Error ' + eThrown)
@@ -521,4 +521,4 @@
 
     </laser:script>
 
-</semui:modal>
+</ui:modal>

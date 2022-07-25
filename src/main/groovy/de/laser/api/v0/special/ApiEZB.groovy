@@ -13,6 +13,7 @@ import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import groovy.util.logging.Slf4j
 
+import java.sql.Timestamp
 import java.text.SimpleDateFormat
 
 /**
@@ -151,8 +152,8 @@ class ApiEZB {
         orgs.each { Org org ->
             Map<String, Object> orgStubMap = ApiUnsecuredMapReader.getOrganisationStubMap(org)
             orgStubMap.subscriptions = []
-            String queryString = 'SELECT DISTINCT(sub) FROM Subscription sub JOIN sub.orgRelations oo WHERE oo.org = :owner AND oo.roleType in (:roles) AND sub.isPublicForApi = true AND sub.instanceOf is null'
-            Map<String, Object> queryParams = [owner: org, roles: [RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER]]
+            String queryString = 'SELECT DISTINCT(sub) FROM Subscription sub JOIN sub.orgRelations oo WHERE oo.org = :owner AND oo.roleType in (:roles) AND sub.isPublicForApi = true'
+            Map<String, Object> queryParams = [owner: org, roles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA]] //set to OR_SUBSCRIBER_CONS
             if(changedFrom) {
                 queryString += ' AND sub.lastUpdatedCascading >= :changedFrom'
                 queryParams.changedFrom = changedFrom
@@ -163,8 +164,11 @@ class ApiEZB {
 
             available.each { Subscription sub ->
                 Map<String, Object> subscriptionStubMap = ApiUnsecuredMapReader.getSubscriptionStubMap(sub)
+                //not needed, we regard bottommost level, consortium does not want to care about permissions
+                /*
                 Set<OrgRole> availableMembers = OrgRole.executeQuery('select oo from OrgRole oo where oo.sub.instanceOf = :parent and oo.roleType = :roleType and exists(select os from OrgSetting os where os.org = oo.org and os.key = :ezbAccess and os.rdValue = :yes)', [parent: sub, roleType: RDStore.OR_SUBSCRIBER_CONS, ezbAccess: OrgSetting.KEYS.EZB_SERVER_ACCESS, yes: RDStore.YN_YES])
                 subscriptionStubMap.members = ApiCollectionReader.getOrgLinkCollection(availableMembers, ApiReader.IGNORE_SUBSCRIPTION, contextOrg)
+                 */
                 orgStubMap.subscriptions.add(subscriptionStubMap)
             }
             result << orgStubMap
@@ -180,7 +184,7 @@ class ApiEZB {
      * @return TSV | FORBIDDEN
      * @see Subscription
      */
-    static requestSubscription(Subscription sub) {
+    static requestSubscription(Subscription sub, Date changedFrom = null) {
         Map<String, List> export
 
         boolean hasAccess = calculateAccess(sub)
@@ -199,6 +203,12 @@ class ApiEZB {
                 log.error("No platform available! Continue without proprietary namespace!")
             }
             Sql sql = GlobalService.obtainSqlConnection()
+            String dateFilter = ""
+            Map<String, Object> genericFilter = [subId: sub.id]
+            if(changedFrom) {
+                dateFilter = " and ie_last_updated >= :changedFrom "
+                genericFilter.changedFrom = new Timestamp(changedFrom.getTime())
+            }
             log.debug("Begin generateTitleExportKBARTSQL")
             sql.withTransaction {
                 List<String> titleHeaders = getBaseTitleHeaders()
@@ -209,14 +219,14 @@ class ApiEZB {
                         "case ie_access_start_date when null then tipp_access_start_date else ie_access_start_date end as access_start_date, " +
                         "case ie_access_end_date when null then tipp_access_end_date else ie_access_end_date end as access_end_date " +
                         "from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id " +
-                        "where ie_subscription_fk = :subId and ie_status_rv_fk != :deleted order by ie_sortname, ie_name", [subId: sub.id, deleted: RDStore.TIPP_STATUS_DELETED.id])
+                        "where ie_subscription_fk = :subId and ie_status_rv_fk != :deleted and ie_status_rv_fk != :removed ${dateFilter} order by ie_sortname, ie_name", genericFilter+[deleted: RDStore.TIPP_STATUS_DELETED.id, removed: RDStore.TIPP_STATUS_REMOVED.id])
                 List<GroovyRowResult> packageData = sql.rows('select pkg_id, pkg_name from subscription_package join package on sp_pkg_fk = pkg_id where sp_sub_fk = :subId', [subId: sub.id])
                 List<GroovyRowResult> packageIDs = sql.rows('select id_pkg_fk, id_value, idns_ns from identifier join identifier_namespace on id_ns_fk = idns_id join subscription_package on id_pkg_fk = sp_pkg_fk where sp_sub_fk = :subId', [subId: sub.id])
-                log.debug("select id_pkg_fk, id_value, idns_ns from identifier join identifier_namespace on id_ns_fk = idns_id join subscription_package on id_pkg_fk = sp_pkg_fk where sp_sub_fk = ${sub.id}")
+                //log.debug("select id_pkg_fk, id_value, idns_ns from identifier join identifier_namespace on id_ns_fk = idns_id join subscription_package on id_pkg_fk = sp_pkg_fk where sp_sub_fk = ${sub.id}")
                 List<GroovyRowResult> otherTitleIdentifierNamespaces = sql.rows('select distinct(idns_ns) from identifier_namespace join identifier on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id join issue_entitlement on tipp_id = ie_tipp_fk where ie_subscription_fk = :subId and lower(idns_ns) != any(:coreTitleNS)', [subId: sub.id, coreTitleNS: sql.connection.createArrayOf('varchar', IdentifierNamespace.CORE_TITLE_NS as Object[])])
-                log.debug("select distinct(idns_ns) from identifier_namespace join identifier on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id join issue_entitlement on tipp_id = ie_tipp_fk where ie_subscription_fk = :subId and lower(idns_ns) != any(${IdentifierNamespace.CORE_TITLE_NS.toListString()})")
-                List<GroovyRowResult> priceItemRows = sql.rows('select pi_id, pi_ie_fk, (select rdv_value from refdata_value where rdv_id = pi_list_currency_rv_fk) as pi_list_currency, pi_list_price, (select rdv_value from refdata_value where rdv_id = pi_local_currency_rv_fk) as pi_local_currency, pi_local_price from price_item join issue_entitlement on pi_ie_fk = ie_id where ie_subscription_fk = :subId', [subId: sub.id])
-                Map<Long, Map<String, GroovyRowResult>> priceItems = ApiToolkit.preprocessPriceItemRows(priceItemRows)
+                //log.debug("select distinct(idns_ns) from identifier_namespace join identifier on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id join issue_entitlement on tipp_id = ie_tipp_fk where ie_subscription_fk = :subId and lower(idns_ns) != any(${IdentifierNamespace.CORE_TITLE_NS.toListString()})")
+                List<GroovyRowResult> priceItemRows = sql.rows('select pi_id, pi_ie_fk, (select rdv_value from refdata_value where rdv_id = pi_list_currency_rv_fk) as pi_list_currency, pi_list_price, (select rdv_value from refdata_value where rdv_id = pi_local_currency_rv_fk) as pi_local_currency, pi_local_price from price_item join issue_entitlement on pi_ie_fk = ie_id where ie_subscription_fk = :subId'+dateFilter, genericFilter)
+                Map<Long, Map<String, GroovyRowResult>> priceItems = ExportService.preprocessPriceItemRows(priceItemRows, 'pi_ie_fk')
                 titleHeaders.addAll(otherTitleIdentifierNamespaces.collect { GroovyRowResult ns -> "${ns['idns_ns']}_identifier"})
                 export = [titleRow:titleHeaders,columnData:[]]
                 long start = System.currentTimeMillis()

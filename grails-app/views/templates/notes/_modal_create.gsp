@@ -1,4 +1,4 @@
-<semui:modal id="modalCreateNote" text="${message(code:'template.addNote')}">
+<ui:modal id="modalCreateNote" text="${message(code:'template.addNote')}">
 
     <g:form id="create_note" class="ui form" url="[controller:'doc', action:'createNote']" method="post">
         <input type="hidden" name="ownerid" value="${ownobj.id}"/>
@@ -16,4 +16,4 @@
             <textarea id="licenseNote" name="licenseNote"></textarea>
         </div>
     </g:form>
-</semui:modal>
+</ui:modal>

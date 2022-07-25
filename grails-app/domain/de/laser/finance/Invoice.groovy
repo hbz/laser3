@@ -47,7 +47,6 @@ class Invoice {
           invoiceNumber(blank:false)
               startDate (nullable:true)
                 endDate (nullable:true)
-                  owner(blank:false)
             description(nullable: true, blank: false)
 
       // Nullable is true, because values are already in the database

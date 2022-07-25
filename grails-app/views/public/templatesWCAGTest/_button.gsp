@@ -76,7 +76,7 @@
         <div class="content">
             <dl>
                 <dt class="control-label">Status</dt>
-                <dd><span><a href="#" id="de.laser.Subscription:11636:status" class="xEditableManyToOne editable editable-click" data-value="de.laser.RefdataValue:103" data-pk="de.laser.Subscription:11636" data-type="select" data-name="status" data-source="/laser/ajax/sel2RefdataSearch/subscription.status?format=json&amp;oid=de.laser.Subscription%3A11636&amp;constraint=removeValue_deleted" data-url="/laser/ajax/genericSetRel" data-emptytext="Bearbeiten">Aktiv</a></span></dd>
+                <dd><span><a href="#" id="de.laser.Subscription:11636:status" class="xEditableManyToOne editable editable-click" data-value="de.laser.RefdataValue:103" data-pk="de.laser.Subscription:11636" data-type="select" data-name="status" data-source="/laser/ajax/select2RefdataSearch/subscription.status?format=json&amp;oid=de.laser.Subscription%3A11636&amp;constraint=removeValue_deleted" data-url="/laser/ajax/genericSetData" data-emptytext="Bearbeiten">Aktiv</a></span></dd>
                 <dd class="la-js-editmode-container">
 
                     <g:if test="${params.toggle=="true"}">

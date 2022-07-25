@@ -1,33 +1,24 @@
 <%@ page import="de.laser.survey.SurveyOrg; de.laser.finance.CostItem; de.laser.Person; de.laser.storage.RDStore; de.laser.interfaces.CalculatedType; de.laser.survey.SurveyResult" %>
-<laser:serviceInjection/>
-
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'subscription.details.surveys.label')}</title>
-</head>
-
-<body>
+<laser:htmlStart message="subscription.details.surveys.label" serviceInjection="true"/>
 
 <laser:render template="breadcrumb" model="${[params: params]}"/>
 
-<semui:controlButtons>
+<ui:controlButtons>
     <laser:render template="actions"/>
-</semui:controlButtons>
+</ui:controlButtons>
 
-<h1 class="ui icon header la-noMargin-top"><semui:headerIcon/>
-<semui:xEditable owner="${subscription}" field="name"/>
-<semui:totalNumber total="${surveys.size()}"/>
-</h1>
-<semui:anualRings object="${subscription}" controller="subscription" action="surveysConsortia"
+<ui:h1HeaderWithIcon>
+<ui:xEditable owner="${subscription}" field="name"/>
+<ui:totalNumber total="${surveys.size()}"/>
+</ui:h1HeaderWithIcon>
+<ui:anualRings object="${subscription}" controller="subscription" action="surveysConsortia"
                   navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
 
 <laser:render template="nav"/>
 
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 <g:if test="${surveys}">
     <table class="ui celled sortable table la-js-responsive-table la-table">
@@ -190,12 +181,11 @@
 </g:if>
 <g:else>
 
-    <semui:form>
+    <ui:form>
         <h3 class="ui header">
             <g:message code="survey.notExist.plural"/>
         </h3>
-    </semui:form>
+    </ui:form>
 </g:else>
-</body>
-</html>
+<laser:htmlEnd />
 

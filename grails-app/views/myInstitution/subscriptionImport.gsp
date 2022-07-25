@@ -1,22 +1,14 @@
 <%@ page import="de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory" %>
-<laser:serviceInjection/>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title><g:message code="laser"/> : <g:message code="myinst.subscriptionImport.pageTitle"/></title>
-</head>
+<laser:htmlStart message="myinst.subscriptionImport.pageTitle" serviceInjection="true"/>
 
-<body>
-<semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="currentSubscriptions" message="myinst.currentSubscriptions.label"/>
-    <semui:crumb message="menu.institutions.subscriptionImport" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb controller="myInstitution" action="currentSubscriptions" message="myinst.currentSubscriptions.label"/>
+    <ui:crumb message="menu.institutions.subscriptionImport" class="active"/>
+</ui:breadcrumbs>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/><g:message
-        code="menu.institutions.subscriptionImport"/></h1>
+<ui:h1HeaderWithIcon message="menu.institutions.subscriptionImport" />
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 <div class="ui grid">
     <div class="sixteen wide column">
@@ -28,8 +20,8 @@
 
                 <div class="content">
                     <g:message code="myinst.subscriptionImport.headline"/>
-                    <br>
-                    <br>
+                    <br/>
+                    <br/>
                     <a href="${resource(dir: 'files', file: 'LizenzImportVollnutzerBeispiel.csv')}"
                        download="template_bulk_load_subscription_records.csv">
                         <p><g:message code="myinst.subscriptionImport.template"/></p>
@@ -109,5 +101,4 @@
         </div>
     </div>
 </div>
-</body>
-</html>
+<laser:htmlEnd />

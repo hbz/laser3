@@ -4,7 +4,7 @@ package de.laser
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.utils.AppUtils
-import de.laser.utils.ConfigMapper
+import de.laser.config.ConfigMapper
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition

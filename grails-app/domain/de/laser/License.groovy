@@ -2,6 +2,7 @@ package de.laser
 
 import de.laser.annotations.RefdataInfo
 import de.laser.auth.Role
+import de.laser.auth.User
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.utils.DateUtils
 import de.laser.interfaces.CalculatedType
@@ -389,9 +390,9 @@ class License extends AbstractBaseWithCalculatedLastUpdated
       withTransaction {
           DocContext note = DocContext.findByLicenseAndDomain(this, domain)
           if (note) {
-              log.debug("update existing note...");
+              log.debug("update existing note...")
               if (note_content == '') {
-                  log.debug("Delete note doc ctx...");
+                  log.debug("Delete note doc ctx...")
                   note.delete()
                   note.owner.delete()
               } else {
@@ -399,7 +400,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
                   note.owner.save()
               }
           } else {
-              log.debug("Create new note...");
+              log.debug("Create new note...")
               if ((note_content) && (note_content.trim().length() > 0)) {
                   Doc doc = new Doc(content: note_content, lastUpdated: new Date(), dateCreated: new Date())
                   DocContext newctx = new DocContext(license: this, owner: doc, domain: domain)
@@ -420,7 +421,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
      * @param user the {@link de.laser.auth.User} whose rights should be verified
      * @return true if the user has editing permissions on the license, false otherwise
      */
-    boolean isEditableBy(user) {
+    boolean isEditableBy(User user) {
         hasPerm("edit", user)
     }
 
@@ -429,7 +430,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
      * @param user the {@link de.laser.auth.User} whose rights should be verified
      * @return true if the user has viewing permissions on the license, false otherwise
      */
-    boolean isVisibleBy(user) {
+    boolean isVisibleBy(User user) {
       hasPerm('view', user)
     }
 
@@ -439,7 +440,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
      * @param user the {@link de.laser.auth.User} whose grant should be verified
      * @return true if the grant for the user is given, false otherwise
      */
-    boolean hasPerm(perm, user) {
+    boolean hasPerm(String perm, User user) {
         ContextService contextService = BeanStore.getContextService()
         Role adm = Role.findByAuthority('ROLE_ADMIN')
         Role yda = Role.findByAuthority('ROLE_YODA')
@@ -448,7 +449,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
             return true
         }
 
-        if (user.getAuthorizedOrgsIds().contains(contextService.getOrg().id)) {
+        if (user.getAffiliationOrgsIdList().contains(contextService.getOrg().id)) {
 
             OrgRole cons = OrgRole.findByLicAndOrgAndRoleType(
                     this, contextService.getOrg(), RDStore.OR_LICENSING_CONSORTIUM
@@ -513,7 +514,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
      * @param changeDocument the {@link Map} of change being processed
      */
     @Transient
-    def notifyDependencies(changeDocument) {
+    void notifyDependencies(Map changeDocument) {
         log.debug("notifyDependencies(${changeDocument})")
 
         List<PendingChange> slavedPendingChanges = []

@@ -1,24 +1,16 @@
 <%@ page import="de.laser.Subscription; de.laser.License; de.laser.RefdataValue" %>
-<laser:serviceInjection />
-
-<!doctype html>
-<html>
-<head>
-  <meta name="layout" content="laser">
-  <title>${message(code:'laser')} : ${message(code:'pendingChange.plural')}</title>
-</head>
-<body>
+<laser:htmlStart message="pendingChange.plural" serviceInjection="true" />
 
     <laser:render template="breadcrumb" model="${[ license:subscription, params:params ]}"/>
 
-    <semui:controlButtons>
+    <ui:controlButtons>
         <laser:render template="actions" />
-    </semui:controlButtons>
+    </ui:controlButtons>
 
-    <h1 class="ui icon header la-noMargin-top"><semui:headerIcon />
-        <semui:xEditable owner="${subscription}" field="name" />
-    </h1>
-    <semui:anualRings object="${subscription}" controller="subscription" action="pendingChanges" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+    <ui:h1HeaderWithIcon>
+        <ui:xEditable owner="${subscription}" field="name" />
+    </ui:h1HeaderWithIcon>
+    <ui:anualRings object="${subscription}" controller="subscription" action="pendingChanges" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
 
     <laser:render template="nav" />
@@ -32,5 +24,4 @@
     </g:each>
 
 
-</body>
-</html>
+<laser:htmlEnd />

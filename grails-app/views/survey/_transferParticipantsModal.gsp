@@ -1,7 +1,7 @@
 <%@ page import="de.laser.RefdataValue; de.laser.License" %>
 <g:set var="auditConfigProvidersAgencies" value="${parentSuccessorSubscription.orgRelations?.findAll {it.isShared}}" />
 
-<semui:modal id="transferParticipantsModal" message="surveyInfo.transferParticipants"
+<ui:modal id="transferParticipantsModal" message="surveyInfo.transferParticipants"
              msgSave="${message(code: 'surveyInfo.transferParticipants.button')}">
 
     <h3 class="ui header"><g:message code="surveyInfo.transferParticipants.option"/>:</h3>
@@ -171,11 +171,11 @@
                     </laser:script>
                 </g:if>
                 <g:else>
-                    <semui:msg class="info" text="${message(code:'surveyInfo.transferParticipants.noMemberLicenses')}"/>
+                    <ui:msg class="info" message="surveyInfo.transferParticipants.noMemberLicenses" />
                 </g:else>
             </div>
         </div>
 
     </g:form>
 
-</semui:modal>
+</ui:modal>

@@ -1,5 +1,5 @@
 <%@ page import="de.laser.PersonRole" %>
-<semui:modal id="${cssId}" text="Neuen ${modalPrsLinkRole.getI10n("value")} hinzufügen" hideSubmitButton="true">
+<ui:modal id="${cssId}" text="Neuen ${modalPrsLinkRole.getI10n("value")} hinzufügen" hideSubmitButton="true">
 
     <p>${message(code:'myinst.addressBook.visibleOnly')}</p>
 
@@ -74,4 +74,4 @@
 
     </div>
 
-</semui:modal>
+</ui:modal>

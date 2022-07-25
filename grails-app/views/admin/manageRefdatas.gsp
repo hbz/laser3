@@ -1,33 +1,27 @@
-<%@ page import="de.laser.RefdataCategory; de.laser.I10nTranslation; de.laser.RefdataValue" %>
-<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
-<!doctype html>
-<html>
-	<head>
-		<meta name="layout" content="laser">
-		<title>${message(code:'laser')} : ${message(code: 'menu.admin.manageRefdatas')}</title>
-	</head>
+<%@ page import="de.laser.RefdataCategory; de.laser.I10nTranslation; de.laser.RefdataValue; grails.plugin.springsecurity.SpringSecurityUtils" %>
 
-    <body>
-        <semui:debugInfo>
+<laser:htmlStart message="menu.admin.manageRefdatas" />
+
+        <ui:debugInfo>
             <laser:render template="/templates/refdata/integrityCheck" model="[result: integrityCheckResult]" />
-        </semui:debugInfo>
+        </ui:debugInfo>
 
-		<semui:breadcrumbs>
-			<semui:crumb message="menu.admin" controller="admin" action="index" />
-			<semui:crumb message="menu.admin.manageRefdatas" class="active"/>
-		</semui:breadcrumbs>
+		<ui:breadcrumbs>
+			<ui:crumb message="menu.admin" controller="admin" action="index" />
+			<ui:crumb message="menu.admin.manageRefdatas" class="active"/>
+		</ui:breadcrumbs>
 
-		<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="menu.admin.manageRefdatas"/></h1>
+        <ui:h1HeaderWithIcon message="menu.admin.manageRefdatas" />
 
-        <semui:messages data="${flash}" />
+        <ui:messages data="${flash}" />
 
             <div class="content ui form">
                 <div class="fields">
                     <div class="field">
-                        <button class="ui button" value="" data-href="#addRefdataValueModal" data-semui="modal">${message(code:'refdataValue.create_new.label')}</button>
+                        <button class="ui button" value="" data-href="#addRefdataValueModal" data-ui="modal">${message(code:'refdataValue.create_new.label')}</button>
                     </div>
                     <div class="field">
-                        <button class="ui button" value="" data-href="#addRefdataCategoryModal" data-semui="modal">${message(code:'refdataCategory.create_new.label')}</button>
+                        <button class="ui button" value="" data-href="#addRefdataCategoryModal" data-ui="modal">${message(code:'refdataCategory.create_new.label')}</button>
                     </div>
                 </div>
             </div>
@@ -59,7 +53,7 @@
                                 <td></td>
                                 <td>
                                     <g:if test="${!rdc.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
-                                        <strong><semui:xEditable owner="${rdc}" field="desc_de" /></strong>
+                                        <strong><ui:xEditable owner="${rdc}" field="desc_de" /></strong>
                                     </g:if>
                                     <g:else>
                                         <strong>${rdc.getI10n('desc', 'de')}</strong>
@@ -67,7 +61,7 @@
                                 </td>
                                 <td>
                                     <g:if test="${!rdc.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
-                                        <strong><semui:xEditable owner="${rdc}" field="desc_en" /></strong>
+                                        <strong><ui:xEditable owner="${rdc}" field="desc_en" /></strong>
                                     </g:if>
                                     <g:else>
                                         <strong>${rdc.getI10n('desc', 'en')}</strong>
@@ -81,13 +75,13 @@
                                 <tr>
                                     <td>
                                         <g:if test="${rdv.isHardData}">
-                                            <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.hardData.tooltip')}">
+                                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.hardData.tooltip')}">
                                                 <i class="check circle icon green"></i>
                                             </span>
                                         </g:if>
 
                                         <g:if test="${usedRdvList?.contains(rdv.id)}">
-                                            <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'default.dataIsUsed.tooltip', args:[rdv.id])}">
+                                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.dataIsUsed.tooltip', args:[rdv.id])}">
                                                 <i class="info circle icon blue"></i>
                                             </span>
                                         </g:if>
@@ -97,7 +91,7 @@
                                     </td>
                                     <td>
                                         <g:if test="${!rdv.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
-                                            <semui:xEditable owner="${rdv}" field="value_de" />
+                                            <ui:xEditable owner="${rdv}" field="value_de" />
                                         </g:if>
                                         <g:else>
                                             ${rdv.getI10n('value', 'de')}
@@ -105,7 +99,7 @@
                                     </td>
                                     <td>
                                         <g:if test="${!rdv.isHardData && SpringSecurityUtils.ifAnyGranted('ROLE_YODA')}">
-                                            <semui:xEditable owner="${rdv}" field="value_en" />
+                                            <ui:xEditable owner="${rdv}" field="value_en" />
                                         </g:if>
                                         <g:else>
                                             ${rdv.getI10n('value', 'en')}
@@ -115,7 +109,7 @@
                                         <sec:ifAnyGranted roles="ROLE_YODA">
                                             <g:if test="${usedRdvList?.contains(rdv.id)}">
                                                 <span data-position="top rightla-popup-tooltip la-delay" data-content="${message(code:'refdataValue.exchange.label')}">
-                                                    <button class="ui icon button la-modern-button" data-href="#replaceRefdataValueModal" data-semui="modal"
+                                                    <button class="ui icon button la-modern-button" data-href="#replaceRefdataValueModal" data-ui="modal"
                                                             data-xcg-rdv="${rdv.class.name}:${rdv.id}"
                                                             data-xcg-rdc="${rdc.class.name}:${rdc.id}"
                                                             data-xcg-debug="${rdv.getI10n('value')} (${rdv.value})"
@@ -142,7 +136,7 @@
             </g:each>
         </div>
 
-        <semui:modal id="replaceRefdataValueModal" message="refdataValue.exchange.label" isEditModal="isEditModal">
+        <ui:modal id="replaceRefdataValueModal" message="refdataValue.exchange.label" isEditModal="isEditModal">
             <g:form class="ui form" url="[controller: 'admin', action: 'manageRefdatas']">
                 <input type="hidden" name="cmd" value="replaceRefdataValue"/>
                 <input type="hidden" name="xcgRdvFrom" value=""/>
@@ -152,19 +146,19 @@
                 <br />
 
                 <div class="field">
-                    <label for="xcgRdvTo">Innerhalb derselben Kategorie</label>
+                    <label for="xcgRdvTo">Werte derselben Kategorie</label>
                     <select id="xcgRdvTo"></select>
                 </div>
 
-                <p>oder</p>
+%{--                <p>oder</p>--}%
 
-                <div class="field">
-                    <label for="xcgRdvGlobalTo">Kategorieübergreifend</label>
-                    <div class="ui right labeled input">
-                        <input id="xcgRdvGlobalTo" name="xcgRdvGlobalTo" value="RefdataCategory_KEY:RefdataValue_KEY" />
-                        <div class="ui red label">WARNUNG</div>
-                    </div>
-                </div>
+%{--                <div class="field">--}%
+%{--                    <label for="xcgRdvGlobalTo">Kategorieübergreifend</label>--}%
+%{--                    <div class="ui right labeled input">--}%
+%{--                        <input id="xcgRdvGlobalTo" name="xcgRdvGlobalTo" value="RefdataCategory_KEY:RefdataValue_KEY" />--}%
+%{--                        <div class="ui red label">WARNUNG</div>--}%
+%{--                    </div>--}%
+%{--                </div>--}%
 
             </g:form>
 
@@ -201,9 +195,9 @@
                     })
             </laser:script>
 
-        </semui:modal>
+        </ui:modal>
 
-        <semui:modal id="addRefdataValueModal" message="refdataValue.create_new.label">
+        <ui:modal id="addRefdataValueModal" message="refdataValue.create_new.label">
 
             <g:form class="ui form" url="[controller: 'ajax', action: 'addRefdataValue']">
                 <input type="hidden" name="reloadReferer" value="/admin/manageRefdatas"/>
@@ -213,7 +207,7 @@
                     <input type="text" name="refdata_value"/>
                 </div>
                 <div class="field">
-                    <label class="property-label">Kategorie</label>
+                    <label for="refdata_modal_select" class="property-label">Kategorie</label>
                     <g:select
                         from="${rdCategories}"
                         optionKey="id" optionValue="${{it.getI10n('desc')}}"
@@ -222,9 +216,9 @@
                 </div>
 
             </g:form>
-        </semui:modal>
+        </ui:modal>
 
-        <semui:modal id="addRefdataCategoryModal" message="refdataCategory.create_new.label">
+        <ui:modal id="addRefdataCategoryModal" message="refdataCategory.create_new.label">
 
             <g:form class="ui form" url="[controller: 'ajax', action: 'addRefdataCategory']">
                 <input type="hidden" name="reloadReferer" value="/admin/manageRefdatas"/>
@@ -235,7 +229,6 @@
                 </div>
 
             </g:form>
-        </semui:modal>
+        </ui:modal>
 
-	</body>
-</html>
+<laser:htmlEnd />

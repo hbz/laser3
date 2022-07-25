@@ -2,7 +2,7 @@ package de.laser.jobs
 
 import de.laser.DataloadService
 import de.laser.base.AbstractJob
-import de.laser.utils.ConfigMapper
+import de.laser.config.ConfigMapper
 import groovy.util.logging.Slf4j
 
 @Slf4j

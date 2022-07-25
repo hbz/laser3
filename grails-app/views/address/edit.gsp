@@ -1,29 +1,24 @@
 <%@ page import="de.laser.storage.RDStore; de.laser.Address" %>
-<!doctype html>
-<html>
-	<head>
-		<meta name="layout" content="laser">
-		<g:set var="entityName" value="${message(code: 'address.label')}" />
-		<title>${message(code:'laser')} : <g:message code="default.edit.label" args="[entityName]" /></title>
-	</head>
 
-	<body>
-	<semui:breadcrumbs>
+<g:set var="entityName" value="${message(code: 'address.label')}" />
+<laser:htmlStart text="${message(code:"default.edit.label", args:[entityName])}" />
+
+	<ui:breadcrumbs>
 		<g:if test="${addressInstance.org && (RDStore.OT_PROVIDER.id in addressInstance.org.getAllOrgTypeIds())}">
-			<semui:crumb message="menu.public.all_providers" controller="organisation" action="listProvider"/>
-			<semui:crumb message="${addressInstance.org.getDesignation()}" controller="organisation" action="show" id="${addressInstance.org.id}"/>
+			<ui:crumb message="menu.public.all_providers" controller="organisation" action="listProvider"/>
+			<ui:crumb message="${addressInstance.org.getDesignation()}" controller="organisation" action="show" id="${addressInstance.org.id}"/>
 		</g:if>
 		<g:else>
-			<semui:crumb message="menu.public.all_orgs" controller="organisation" action="index"/>
+			<ui:crumb message="menu.public.all_orgs" controller="organisation" action="index"/>
 		</g:else>
-		<semui:crumb text="${g.message(code:'default.edit.label', args:[entityName])}" class="active"/>
-	</semui:breadcrumbs>
+		<ui:crumb text="${g.message(code:'default.edit.label', args:[entityName])}" class="active"/>
+	</ui:breadcrumbs>
 
-		<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="default.edit.label" args="[entityName]" /></h1>
+		<ui:h1HeaderWithIcon message="default.edit.label" args="[entityName]" />
 
-		<semui:messages data="${flash}" />
+		<ui:messages data="${flash}" />
 
-		<semui:errors bean="${addressInstance}" />
+		<ui:errors bean="${addressInstance}" />
 
 		<div class="ui grid">
 			
@@ -53,5 +48,4 @@
             </aside><!-- .four -->
 
 		</div><!-- .grid -->
-	</body>
-</html>
+<laser:htmlEnd />

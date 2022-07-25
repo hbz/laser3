@@ -1,18 +1,18 @@
 <div class="ui segment">
     <h3 class="ui header">
         <g:if test="${controllerName == "subscription"}">
-            ${message(code: 'subscriptionsManagement.subscriber')} <semui:totalNumber
+            ${message(code: 'subscriptionsManagement.subscriber')} <ui:totalNumber
                 total="${keyPairs.size()}"/>
         </g:if><g:else>
-            ${message(code: 'subscriptionsManagement.subscriptions')} <semui:totalNumber
+            ${message(code: 'subscriptionsManagement.subscriptions')} <ui:totalNumber
                     total="${keyPairs.size()}/${num_sub_rows}"/>
         </g:else>
     </h3>
-    <semui:tabs>
+    <ui:tabs>
         <g:each in="${platforms}" var="platform">
-            <semui:tabsItem controller="subscription" action="membersSubscriptionsManagement" tab="${platform.id.toString()}" subTab="tabPlat" params="${params + [tab: 'customerIdentifiers', tabPlat: platform.id.toString()]}" text="${platform.name}"/>
+            <ui:tabsItem controller="subscription" action="membersSubscriptionsManagement" tab="${platform.id.toString()}" subTab="tabPlat" params="${params + [tab: 'customerIdentifiers', tabPlat: platform.id.toString()]}" text="${platform.name}"/>
         </g:each>
-    </semui:tabs>
+    </ui:tabs>
     <div class="ui bottom attached tab active">
         <table class="ui la-js-responsive-table la-table table">
             <thead>
@@ -32,9 +32,9 @@
                     <td>
                         ${pair.getProvider()} : ${pair.platform.name}
                     </td>
-                    <td><semui:xEditable owner="${pair}" field="value"/></td>
-                    <td><semui:xEditable owner="${pair}" field="requestorKey"/></td>
-                    <td><semui:xEditable owner="${pair}" field="note"/></td>
+                    <td><ui:xEditable owner="${pair}" field="value"/></td>
+                    <td><ui:xEditable owner="${pair}" field="requestorKey"/></td>
+                    <td><ui:xEditable owner="${pair}" field="note"/></td>
                     <td>
                         <g:if test="${editable}">
                             <g:link controller="subscription"

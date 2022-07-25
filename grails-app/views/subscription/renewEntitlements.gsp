@@ -1,28 +1,20 @@
 <%@ page import="de.laser.storage.RDStore; de.laser.Subscription; de.laser.Platform; de.laser.titles.BookInstance" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'default.subscription.label')}</title>
-</head>
+<laser:htmlStart message="default.subscription.label" />
 
-<body>
-<semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="currentSubscriptions" text="${message(code: 'myinst.currentSubscriptions.label')}"/>
-    <semui:crumb controller="subscription" action="index" id="${subscription.id}" text="${subscription.name}"/>
-    <semui:crumb class="active" text="${message(code: 'subscription.details.renewEntitlements.label')}"/>
-</semui:breadcrumbs>
-<semui:controlButtons>
+<ui:breadcrumbs>
+    <ui:crumb controller="myInstitution" action="currentSubscriptions" text="${message(code: 'myinst.currentSubscriptions.label')}"/>
+    <ui:crumb controller="subscription" action="index" id="${subscription.id}" text="${subscription.name}"/>
+    <ui:crumb class="active" text="${message(code: 'subscription.details.renewEntitlements.label')}"/>
+</ui:breadcrumbs>
+<ui:controlButtons>
     <laser:render template="actions"/>
-</semui:controlButtons>
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/> <g:message code="subscription.details.renewEntitlements.label" /></h1>
+</ui:controlButtons>
+
+<ui:h1HeaderWithIcon message="subscription.details.renewEntitlements.label" />
 
 <laser:render template="nav"/>
 
-
-<g:if test="${flash}">
-    <semui:messages data="${flash}"/>
-</g:if>
+    <ui:messages data="${flash}"/>
 
 <g:form name="renewEntitlements" id="${newSub.id}" action="processRenewEntitlements" class="ui form">
     <g:hiddenField id="tippsToAdd" name="tippsToAdd"/>
@@ -42,7 +34,6 @@
     </div>
 </g:form>
 
-</body>
 <laser:script file="${this.getGroovyPageFileName()}">
         JSPC.app.tippsToAdd = [];
         JSPC.app.tippsToDelete = [];
@@ -111,4 +102,4 @@
             $("#tippsToDelete").val(JSPC.app.tippsToDelete.join(','));
         });
 </laser:script>
-</html>
+<laser:htmlEnd />

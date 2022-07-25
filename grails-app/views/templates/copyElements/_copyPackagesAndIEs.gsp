@@ -1,9 +1,7 @@
 <%@ page import="de.laser.PendingChangeConfiguration; de.laser.IssueEntitlement; de.laser.SubscriptionController; de.laser.storage.RDStore; de.laser.Person; de.laser.Subscription; de.laser.FormService; de.laser.storage.RDConstants; de.laser.RefdataCategory; org.springframework.context.i18n.LocaleContextHolder; de.laser.I10nTranslation" %>
 <laser:serviceInjection/>
 
-<g:set var="formService" bean="formService"/>
-
-<semui:form>
+<ui:form>
 
     <g:if test="${!fromSurvey && !isRenewSub && !copyObject}">
         <laser:render template="/templates/copyElements/selectSourceAndTargetObject" model="[
@@ -63,7 +61,7 @@
                                     <i class="gift icon"></i>
                                     <g:link controller="package" action="show" target="_blank"
                                             id="${sp.pkg.id}">${sp.pkg.name}</g:link>
-                                    <semui:debugInfo>PkgId: ${sp.pkg.id}</semui:debugInfo>
+                                    <ui:debugInfo>PkgId: ${sp.pkg.id}</ui:debugInfo>
                                     <g:if test="${sp.pkg.contentProvider}">(${sp.pkg.contentProvider.name})</g:if>
                                 </label>
 
@@ -83,18 +81,18 @@
                                                 <g:each in="${ies}" var="ie">
                                                     <g:if test="${ie.tipp.status == RDStore.TIPP_STATUS_DELETED}">
                                                         <div class="item willBeReplaced willBeReplacedStrong">
-                                                            <semui:listIcon hideTooltip="true" type="${ie.tipp.titleType}"/>
+                                                            <ui:listIcon hideTooltip="true" type="${ie.tipp.titleType}"/>
                                                             <strong><g:link controller="tipp" action="show" id="${ie.tipp.id}">${ie.name}</g:link></strong>
                                                         </div>
                                                         <i><g:message code="issueEntitlement.missingSource"/></i>
                                                     </g:if>
                                                     <g:else>
                                                         <div class="item">
-                                                            <semui:listIcon hideTooltip="true" type="${ie.tipp.titleType}"/>
+                                                            <ui:listIcon hideTooltip="true" type="${ie.tipp.titleType}"/>
                                                             <strong><g:link controller="tipp" action="show" id="${ie.tipp.id}">${ie.name}</g:link></strong>
                                                         </div>
                                                     </g:else>
-                                                    <semui:debugInfo>Tipp PkgId: ${ie.tipp.pkg.id}, Tipp ID: ${ie.tipp.id}</semui:debugInfo>
+                                                    <ui:debugInfo>Tipp PkgId: ${ie.tipp.pkg.id}, Tipp ID: ${ie.tipp.id}</ui:debugInfo>
                                                 </g:each>
                                             </g:if>
                                         </div>
@@ -147,7 +145,7 @@
                                                                     <td><g:message code="subscription.packages.${pcc.settingKey}"/></td>
                                                                     <td>
                                                                         <g:if test="${!(pcc.settingKey in excludes)}">
-                                                                            <laser:select class="ui dropdown"
+                                                                            <ui:select class="ui dropdown"
                                                                                           name="subscription.takePackageSettings" from="${RefdataCategory.getAllRefdataValues(RDConstants.PENDING_CHANGE_CONFIG_SETTING)}"
                                                                                           optionKey="${{genericOIDService.getOID(sp)+'§'+pcc.settingKey+'§'+it.id}}" optionValue="value" data-pkgid="${sp.id}"
                                                                                           value="${pcc.settingValue ? genericOIDService.getOID(sp)+'§'+pcc.settingKey+'§'+pcc.settingValue.id : RDStore.PENDING_CHANGE_CONFIG_PROMPT.id}"/>
@@ -224,7 +222,7 @@
                                     <i class="gift icon"></i>
                                     <g:link controller="packageDetails" action="show" target="_blank"
                                             id="${sp.pkg.id}">${sp.pkg.name}</g:link>
-                                    <semui:debugInfo>PkgId: ${sp.pkg.id}</semui:debugInfo>
+                                    <ui:debugInfo>PkgId: ${sp.pkg.id}</ui:debugInfo>
                                     <g:if test="${sp.pkg.contentProvider}">(${sp.pkg.contentProvider.name})</g:if>
                                 </label>
 
@@ -244,11 +242,11 @@
                                             <g:if test="${ies}">
                                                 <g:each in="${ies}" var="ie">
                                                     <div class="item">
-                                                        <semui:listIcon hideTooltip="true"
+                                                        <ui:listIcon hideTooltip="true"
                                                                         type="${ie.tipp.titleType}"/>
                                                         <strong><g:link controller="tipp" action="show"
                                                                         id="${ie.tipp.id}">${ie.name}</g:link></strong>
-                                                        <semui:debugInfo>Tipp PkgId: ${ie.tipp.pkg.id}, Tipp ID: ${ie.tipp.id}</semui:debugInfo>
+                                                        <ui:debugInfo>Tipp PkgId: ${ie.tipp.pkg.id}, Tipp ID: ${ie.tipp.id}</ui:debugInfo>
                                                     </div>
                                                 </g:each>
                                             </g:if>
@@ -342,7 +340,7 @@
                                                 <g:each in="${titleGroup.items?.sort { it.ie.sortname }}"
                                                         var="item">
                                                     <div class="item">
-                                                        <semui:listIcon hideTooltip="true" type="${item.ie.tipp.titleType}"/>
+                                                        <ui:listIcon hideTooltip="true" type="${item.ie.tipp.titleType}"/>
                                                         <strong>
                                                             <g:link controller="tipp" action="show" id="${item.ie.tipp.id}">${item.ie.name}</g:link>
                                                         </strong>
@@ -389,7 +387,7 @@
                                                 <g:each in="${titleGroup.items?.sort { it.ie.tipp.titleType }}"
                                                         var="item">
                                                     <div class="item">
-                                                        <semui:listIcon hideTooltip="true"
+                                                        <ui:listIcon hideTooltip="true"
                                                                         type="${item.ie.tipp.titleType}"/>
                                                         <strong><g:link controller="tipp" action="show"
                                                                         id="${item.ie.tipp.id}">${item.ie.name}</g:link></strong>
@@ -456,7 +454,7 @@
             </div>
         </g:else>
     </g:form>
-</semui:form>
+</ui:form>
 <g:if test="${!copyObject}">
     <laser:script file="${this.getGroovyPageFileName()}">
 

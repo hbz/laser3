@@ -1,40 +1,33 @@
 <%@ page import="de.laser.OrgSetting; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.Org; de.laser.auth.Role; de.laser.storage.RDStore; de.laser.storage.RDConstants" %>
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
-<laser:serviceInjection />
 
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'org.nav.options')}</title>
-    </head>
-    <body>
+<laser:htmlStart message="org.nav.options" serviceInjection="true" />
 
-        <semui:breadcrumbs>
+        <ui:breadcrumbs>
             <g:if test="${!inContextOrg}">
-                <semui:crumb text="${orgInstance.getDesignation()}" class="active"/>
+                <ui:crumb text="${orgInstance.getDesignation()}" class="active"/>
             </g:if>
-        </semui:breadcrumbs>
+        </ui:breadcrumbs>
 
-        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${orgInstance.name}</h1>
+        <ui:h1HeaderWithIcon text="${orgInstance.name}" />
 
-        <semui:objectStatus object="${orgInstance}" status="${orgInstance.status}" />
+        <ui:objectStatus object="${orgInstance}" status="${orgInstance.status}" />
 
         <laser:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg]}"/>
 
-        <semui:messages data="${flash}" />
+        <ui:messages data="${flash}" />
 
-        <semui:tabs actionName="settings">
-            <semui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'general']" tab="general" text="${message(code: 'org.setting.tab.general')}"/>
+        <ui:tabs actionName="settings">
+            <ui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'general']" tab="general" text="${message(code: 'org.setting.tab.general')}"/>
             <g:if test="${accessService.checkPermX('FAKE,ORG_INST,ORG_CONSORTIUM', 'ROLE_ADMIN,ROLE_ORG_EDITOR')}">
-                <semui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'api']" tab="api" text="${message(code: 'org.setting.tab.api')}"/>
+                <ui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'api']" tab="api" text="${message(code: 'org.setting.tab.api')}"/>
             </g:if>
-            <semui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'ezb']" tab="ezb" text="${message(code: 'org.setting.tab.ezb')}"/>
-            <semui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'natstat']" tab="natstat" text="${message(code: 'org.setting.tab.natstat')}"/>
+            <ui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'ezb']" tab="ezb" text="${message(code: 'org.setting.tab.ezb')}"/>
+            <ui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'natstat']" tab="natstat" text="${message(code: 'org.setting.tab.natstat')}"/>
             <g:if test="${accessService.checkPermX('ORG_INST,ORG_CONSORTIUM', 'ROLE_ADMIN,ROLE_ORG_EDITOR')}">
-                <semui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'oamonitor']" tab="oamonitor" text="${message(code: 'org.setting.tab.oamonitor')}"/>
+                <ui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'oamonitor']" tab="oamonitor" text="${message(code: 'org.setting.tab.oamonitor')}"/>
             </g:if>
-        </semui:tabs>
+        </ui:tabs>
 
         <div class="ui bottom attached tab active segment">
 
@@ -47,7 +40,7 @@
                                 <thead>
                                 <tr>
                                     <th>Merkmal</th>
-                                    <th>Wert</th>
+                                    <th>${message(code:'default.value.label')}</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -57,7 +50,7 @@
                                     $('body #natstat_server_access').editable('destroy').editable({
                                         tpl: '<select class="ui dropdown"></select>'
                                     }).on('shown', function() {
-                                        r2d2.initDynamicSemuiStuff('body');
+                                        r2d2.initDynamicUiStuff('body');
                                         $(".table").trigger('reflow');
                                         $('.ui.dropdown')
                                                 .dropdown({
@@ -71,7 +64,7 @@
                                     $('body #oamonitor_server_access').editable('destroy').editable({
                                         tpl: '<select class="ui dropdown"></select>'
                                     }).on('shown', function() {
-                                        r2d2.initDynamicSemuiStuff('body');
+                                        r2d2.initDynamicUiStuff('body');
                                         $(".table").trigger('reflow');
                                         $('.ui.dropdown')
                                                 .dropdown({
@@ -85,7 +78,7 @@
                                     $('body #ezb_server_access').editable('destroy').editable({
                                         tpl: '<select class="ui dropdown"></select>'
                                     }).on('shown', function() {
-                                        r2d2.initDynamicSemuiStuff('body');
+                                        r2d2.initDynamicUiStuff('body');
                                         $(".table").trigger('reflow');
                                         $('.ui.dropdown')
                                                 .dropdown({
@@ -121,7 +114,7 @@
 
                                             <g:if test="${editable && os.key in OrgSetting.getEditableSettings()}">
                                                 <g:if test="${OrgSetting.KEYS.NATSTAT_SERVER_ACCESS == os.key}">
-                                                    <semui:xEditableRefData owner="${os}"
+                                                    <ui:xEditableRefData owner="${os}"
                                                                             field="rdValue"
                                                                             id="natstat_server_access"
                                                                             data_confirm_tokenMsg="${message(code: 'org.setting.NATSTAT_SERVER_ACCESS.confirm')}"
@@ -131,7 +124,7 @@
                                                                             config="${os.key.rdc}" />
                                                 </g:if>
                                                 <g:elseif test="${OrgSetting.KEYS.OAMONITOR_SERVER_ACCESS == os.key}">
-                                                    <semui:xEditableRefData owner="${os}"
+                                                    <ui:xEditableRefData owner="${os}"
                                                                             field="rdValue"
                                                                             id="oamonitor_server_access"
                                                                             data_confirm_tokenMsg="${message(code: 'org.setting.OAMONITOR_SERVER_ACCESS.confirm')}"
@@ -141,7 +134,7 @@
                                                                             config="${os.key.rdc}" />
                                                 </g:elseif>
                                                 <g:elseif test="${OrgSetting.KEYS.EZB_SERVER_ACCESS == os.key}">
-                                                    <semui:xEditableRefData owner="${os}"
+                                                    <ui:xEditableRefData owner="${os}"
                                                                             field="rdValue"
                                                                             id="ezb_server_access"
                                                                             data_confirm_tokenMsg="${message(code: 'org.setting.EZB.confirm')}"
@@ -151,13 +144,13 @@
                                                                             config="${os.key.rdc}" />
                                                 </g:elseif>
                                                 <g:elseif test="${os.key.type == RefdataValue}">
-                                                    <semui:xEditableRefData owner="${os}" field="rdValue" config="${os.key.rdc}" />
+                                                    <ui:xEditableRefData owner="${os}" field="rdValue" config="${os.key.rdc}" />
                                                 </g:elseif>
                                                 <g:elseif test="${os.key.type == Role}">
                                                     ${os.getValue()?.getI10n('authority')} (Editierfunktion deaktiviert) <%-- TODO --%>
                                                 </g:elseif>
                                                 <g:else>
-                                                    <semui:xEditable owner="${os}" field="strValue" />
+                                                    <ui:xEditable owner="${os}" field="strValue" />
                                                 </g:else>
 
                                             </g:if>
@@ -165,7 +158,7 @@
 
                                                 <g:if test="${OrgSetting.KEYS.GASCO_ENTRY == os.key}">
                                                     <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
-                                                        <semui:xEditableRefData owner="${os}" field="rdValue" config="${os.key.rdc}" />
+                                                        <ui:xEditableRefData owner="${os}" field="rdValue" config="${os.key.rdc}" />
                                                     </g:if>
                                                     <g:else>
                                                         ${os.getValue()?.getI10n('value')}
@@ -218,5 +211,4 @@
 
         </div><!-- .grid -->
 
-    </body>
-</html>
+<laser:htmlEnd />

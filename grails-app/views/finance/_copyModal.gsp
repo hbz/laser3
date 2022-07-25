@@ -2,7 +2,7 @@
 <%@ page import="de.laser.Subscription; de.laser.finance.CostItem; de.laser.finance.CostItemGroup; de.laser.finance.BudgetCode; de.laser.OrgRole; de.laser.RefdataValue" %>
 <laser:serviceInjection />
 
-<semui:modal id="costItem_ajaxModal" text="${message(code:'financials.costItem.copy.tooltip')}">
+<ui:modal id="costItem_ajaxModal" text="${message(code:'financials.costItem.copy.tooltip')}">
     <g:form class="ui small form" id="copyCost" url="${formUrl}">
 
         <g:hiddenField name="shortcode" value="${contextService.getOrg().shortcode}" />
@@ -42,5 +42,5 @@
         </div><!-- .field -->
 
     </g:form>
-</semui:modal>
+</ui:modal>
 <!-- _copyModal.gsp -->

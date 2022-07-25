@@ -1,22 +1,15 @@
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : Test E-Mail Sending</title>
-    </head>
+<laser:htmlStart text="Test E-Mail Sending" />
 
-    <body>
-
-    <semui:breadcrumbs>
-        <semui:crumb message="menu.admin" controller="admin" action="index"/>
-        <semui:crumb text="Test E-Mail Sending" class="active"/>
-    </semui:breadcrumbs>
+    <ui:breadcrumbs>
+        <ui:crumb message="menu.admin" controller="admin" action="index"/>
+        <ui:crumb text="Test E-Mail Sending" class="active"/>
+    </ui:breadcrumbs>
 
     <h2>Test E-Mail Sending</h2>
 
-    <semui:messages data="${flash}" />
+    <ui:messages data="${flash}" />
 
-    <semui:form>
+    <ui:form>
         <g:form action="testMailSending" class="ui form">
             <div class="field">
                 <label for="mailAddress">Mail Address</label>
@@ -35,11 +28,10 @@
                     <input type="submit" name="sendTestMail" class="ui button" value="Send Test Mail" />
             </div>
         </g:form>
-    </semui:form>
+    </ui:form>
 
     <g:if test="${mailDisabled}">
-        <semui:msg class="warning" header="${message(code:'default.hint.label')}" text="${message(code:'system.config.mail.disabled')}" />
+        <ui:msg class="warning" header="${message(code:'default.hint.label')}" message="system.config.mail.disabled" />
     </g:if>
 
-  </body>
-</html>
+<laser:htmlEnd />

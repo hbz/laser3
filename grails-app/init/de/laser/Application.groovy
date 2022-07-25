@@ -1,6 +1,6 @@
 package de.laser
 
-import de.laser.utils.ConfigMapper
+import de.laser.config.ConfigMapper
 import grails.boot.GrailsApp
 import grails.boot.config.GrailsAutoConfiguration
 import groovy.util.logging.Slf4j

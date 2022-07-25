@@ -188,13 +188,13 @@ class BaseConfig {
         getCustomImplRefdata(key, null)
     }
 
-    static Map<String, Object> getCustomImplRefdata(String key, Class clazz) {
+    static Map<String, Object> getCustomImplRefdata(String key, Class cfgClass) {
 
         ContextService contextService = BeanStore.getContextService()
         MessageSource messageSource = BeanStore.getMessageSource()
         SubscriptionsQueryService subscriptionsQueryService = BeanStore.getSubscriptionsQueryService()
 
-        // println 'BaseConfig.getCustomImplRefdata() -> ' + clazz + ' ' + key
+        // println 'BaseConfig.getCustomImplRefdata() -> ' + cfgClass + ' ' + key
 
         Locale locale = LocaleContextHolder.getLocale()
         String ck = 'reporting.customImpl.'
@@ -337,9 +337,9 @@ class BaseConfig {
         else if (key == CI_CTX_PROPERTY_KEY) {
             String descr = ''
 
-            if (clazz == License) { descr = PropertyDefinition.LIC_PROP }
-            else if (clazz == Org) { descr = PropertyDefinition.ORG_PROP }
-            else if (clazz == Subscription) { descr = PropertyDefinition.SUB_PROP }
+            if (cfgClass == License) { descr = PropertyDefinition.LIC_PROP }
+            else if (cfgClass == Org) { descr = PropertyDefinition.ORG_PROP }
+            else if (cfgClass == Subscription) { descr = PropertyDefinition.SUB_PROP }
 
             List<PropertyDefinition> propList = descr ? PropertyDefinition.executeQuery(
                     'select pd from PropertyDefinition pd where pd.descr = :descr and (pd.tenant is null or pd.tenant = :ctx) order by pd.name_de',

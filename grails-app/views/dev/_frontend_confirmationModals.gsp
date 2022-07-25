@@ -62,7 +62,7 @@
 <h4 class="ui header">Link (Button), der den AJAX-Contoler aufruft</h4>
 <div class="html ui top attached segment example">
     <div class="ui top attached label"></div>
-    <laser:remoteLink class="ui icon negative button la-modern-button js-open-confirm-modal la-popup-tooltip la-delay"
+    <ui:remoteLink class="ui icon negative button la-modern-button js-open-confirm-modal la-popup-tooltip la-delay"
                       controller="dev"
                       action="frontend"
                       params=""
@@ -73,19 +73,19 @@
                       role="button">
 
         <i aria-hidden="true" class="trash alternate outline icon"></i>
-    </laser:remoteLink>
+    </ui:remoteLink>
 </div>
 
 <%-- Confirmation modal in case of selecting special option in  dropdown--%>
 <h4 class="ui header">Auswahl einer bestimmten Option im X-Editable Dropdown</h4>
 <div class="html ui top attached segment example">
     <div class="ui top attached label"></div>
-    <a href="#" id="ezb_server_access" class="xEditableManyToOne js-open-confirm-modal-xeditable editable editable-click" data-onblur="ignore" data-pk="de.laser.OrgSetting:3103" data-confirm-term-how="ok" data-confirm-tokenmsg="Wollen Sie wirklich der Weitergabe der Lizenzdaten Ihrer Einrichtung an die EZB zustimmen?" data-confirm-value="de.laser.RefdataValue:1" data-type="select" data-name="rdValue" data-source="/ajax/sel2RefdataSearch/y.n?format=json&amp;oid=de.laser.OrgSetting%3A3103" data-url="/ajax/genericSetRel" data-emptytext="Bearbeiten" style="background-color: rgb(241, 235, 229);">Ja</a>
+    <a href="#" id="ezb_server_access" class="xEditableManyToOne js-open-confirm-modal-xeditable editable editable-click" data-onblur="ignore" data-pk="de.laser.OrgSetting:3103" data-confirm-term-how="ok" data-confirm-tokenmsg="Wollen Sie wirklich der Weitergabe der Lizenzdaten Ihrer Einrichtung an die EZB zustimmen?" data-confirm-value="de.laser.RefdataValue:1" data-type="select" data-name="rdValue" data-source="/ajax/select2RefdataSearch/y.n?format=json&amp;oid=de.laser.OrgSetting%3A3103" data-url="/ajax/genericSetData" data-emptytext="Bearbeiten" style="background-color: rgb(241, 235, 229);">Ja</a>
     <laser:script file="${this.getGroovyPageFileName()}">
         $('body #ezb_server_access').editable('destroy').editable({
             tpl: '<select class="ui dropdown"></select>'
         }).on('shown', function() {
-        r2d2.initDynamicSemuiStuff('body');
+        r2d2.initDynamicUiStuff('body');
 
         $('.ui.dropdown')
             .dropdown({
@@ -116,7 +116,7 @@
             .
             .
             }).on('shown', function() {
-            <strong>r2d2.initDynamicSemuiStuff('body');</strong>
+            <strong>r2d2.initDynamicUiStuff('body');</strong>
 
                 $('.ui.dropdown')
                     .dropdown({

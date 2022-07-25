@@ -2,7 +2,7 @@ package de.laser.ctrl
 
 import de.laser.*
 import de.laser.auth.User
-import de.laser.helper.SwissKnife
+import de.laser.utils.SwissKnife
 import de.laser.interfaces.CalculatedType
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap

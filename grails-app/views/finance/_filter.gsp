@@ -7,9 +7,8 @@
     String getAllRefDataValuesForCategoryQuery = "select rdv from RefdataValue as rdv where rdv.owner.desc=:category order by rdv.order, rdv.value_" + locale
 %>
 
-    <%--normal semui:filter comes along with more functionality which conflicts with ajax dropdown initialisation, see ERMS-1420--%>
-    <laser:render template="/templates/filter/javascript" />
-    <semui:filter showFilterButton="true">
+    <%--normal ui:filter comes along with more functionality which conflicts with ajax dropdown initialisation, see ERMS-1420--%>
+    <ui:filter showFilterButton="true" addFilterJs="true">
         <%
             Map<String,Object> formUrl = [controller: 'myInstitution', action: 'finance']
             SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
@@ -57,7 +56,7 @@
                     <div class="field">
                         <g:set var="subStatus" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.SUBSCRIPTION_STATUS])}" scope="request"/>
                         <label for="filterSubStatus">${message(code:'subscription.status.label')}</label>
-                        <laser:select id="filterSubStatus" class="ui fluid dropdown search" name="filterSubStatus"
+                        <ui:select id="filterSubStatus" class="ui fluid dropdown search" name="filterSubStatus"
                                       from="${subStatus}"
                                       optionKey="id"
                                       optionValue="value"
@@ -188,42 +187,42 @@
 
             <div class="three fields">
                 <div class="field">
-                    <semui:datepicker label="financials.financialYear" id="filterCIFinancialYear" name="filterCIFinancialYear" placeholder="filter.placeholder"
+                    <ui:datepicker label="financials.financialYear" id="filterCIFinancialYear" name="filterCIFinancialYear" placeholder="filter.placeholder"
                                       value="${filterPresets?.filterCIFinancialYear}"/>
                 </div>
 
                 <div class="field">
-                    <semui:datepicker label="financials.invoice_from" id="filterCIInvoiceFrom" name="filterCIInvoiceFrom" placeholder="filter.placeholder"
+                    <ui:datepicker label="financials.invoice_from" id="filterCIInvoiceFrom" name="filterCIInvoiceFrom" placeholder="filter.placeholder"
                                       value="${filterPresets?.filterCIInvoiceFrom}"/>
                 </div>
 
                 <div class="field">
-                    <semui:datepicker label="financials.invoice_to" id="filterCIInvoiceTo" name="filterCIInvoiceTo" placeholder="filter.placeholder"
+                    <ui:datepicker label="financials.invoice_to" id="filterCIInvoiceTo" name="filterCIInvoiceTo" placeholder="filter.placeholder"
                                       value="${filterPresets?.filterCIInvoiceTo}"/>
                 </div>
             </div>
 
             <div class="three fields">
                 <div class="field">
-                    <semui:datepicker label="default.valid_on.label" id="filterCIValidOn" name="filterCIValidOn" placeholder="filter.placeholder" value="${filterPresets?.filterCIValidOn}"/>
+                    <ui:datepicker label="default.valid_on.label" id="filterCIValidOn" name="filterCIValidOn" placeholder="filter.placeholder" value="${filterPresets?.filterCIValidOn}"/>
                 </div>
 
                 <div class="field">
-                    <semui:datepicker label="financials.paid_from" id="filterCIPaidFrom" name="filterCIPaidFrom" placeholder="filter.placeholder" value="${filterPresets?.filterCIPaidFrom}"/>
+                    <ui:datepicker label="financials.paid_from" id="filterCIPaidFrom" name="filterCIPaidFrom" placeholder="filter.placeholder" value="${filterPresets?.filterCIPaidFrom}"/>
                 </div>
 
                 <div class="field">
-                    <semui:datepicker label="financials.paid_to" id="filterCIPaidTo" name="filterCIPaidTo" placeholder="filter.placeholder" value="${filterPresets?.filterCIPaidTo}"/>
+                    <ui:datepicker label="financials.paid_to" id="filterCIPaidTo" name="filterCIPaidTo" placeholder="filter.placeholder" value="${filterPresets?.filterCIPaidTo}"/>
                 </div>
             </div>
             <div class="three fields">
 
                 <div class="field">
-                    <semui:datepicker label="financials.dateFrom" id="filterCIDateFrom" name="filterCIDateFrom" placeholder="filter.placeholder" value="${filterPresets?.filterCIDateFrom}"/>
+                    <ui:datepicker label="financials.dateFrom" id="filterCIDateFrom" name="filterCIDateFrom" placeholder="filter.placeholder" value="${filterPresets?.filterCIDateFrom}"/>
                 </div>
 
                 <div class="field">
-                    <semui:datepicker label="financials.dateTo" id="filterCIDateTo" name="filterCIDateTo" placeholder="filter.placeholder" value="${filterPresets?.filterCIDateTo}"/>
+                    <ui:datepicker label="financials.dateTo" id="filterCIDateTo" name="filterCIDateTo" placeholder="filter.placeholder" value="${filterPresets?.filterCIDateTo}"/>
                 </div>
                 <div class="field">
                     <div class="ui checkbox">
@@ -272,7 +271,7 @@
 
             <%--<g:hiddenField name="orgId" value="${institution.id}"/>--%>
         </g:form>
-    </semui:filter>
+    </ui:filter>
 
 <!-- _filter.gsp -->
 

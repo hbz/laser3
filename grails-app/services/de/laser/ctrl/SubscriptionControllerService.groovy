@@ -24,9 +24,10 @@ import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyOrg
-import de.laser.utils.ConfigMapper
+import de.laser.config.ConfigMapper
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
+import de.laser.utils.SwissKnife
 import de.laser.workflow.WfWorkflow
 import grails.converters.JSON
 import de.laser.stats.Counter4Report
@@ -41,11 +42,11 @@ import org.apache.commons.lang.StringEscapeUtils
 import org.apache.commons.lang3.RandomStringUtils
 import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
-import org.hibernate.SQLQuery
 import org.hibernate.Session
 import org.hibernate.SessionFactory
 import org.grails.orm.hibernate.cfg.GrailsDomainBinder
 import org.grails.orm.hibernate.cfg.PropertyConfig
+import org.hibernate.query.NativeQuery
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.MultipartFile
@@ -444,7 +445,7 @@ class SubscriptionControllerService {
                     c5CheckParams.endDate = queryParams.endDate
                 }
                 Session sess = sessionFactory.getCurrentSession()
-                SQLQuery query = sess.createSQLQuery('select * from counter5report where c5r_report_institution_fk = :customer and c5r_platform_fk in (:platforms) and (c5r_title_fk in (select ie_tipp_fk from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk in (:refSubs) and ie_accept_status_rv_fk = :acceptStatus and ie_status_rv_fk = :current and tipp_status_rv_fk = :current) or c5r_title_fk is null)'+sqlDateRange)
+                NativeQuery query = sess.createSQLQuery('select * from counter5report where c5r_report_institution_fk = :customer and c5r_platform_fk in (:platforms) and (c5r_title_fk in (select ie_tipp_fk from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk in (:refSubs) and ie_accept_status_rv_fk = :acceptStatus and ie_status_rv_fk = :current and tipp_status_rv_fk = :current) or c5r_title_fk is null)'+sqlDateRange)
                 query.setParameter('customer', c5CheckParams.customer.id)
                 query.setParameterList('platforms', c5CheckParams.platforms.collect { Platform plat -> plat.id })
                 query.setParameterList('refSubs', refSubs.collect{ Subscription s -> s.id })
@@ -1524,7 +1525,7 @@ class SubscriptionControllerService {
             } else {
                 log.debug("Subscription has no linked packages yet")
             }
-            /*result.max = params.max ? params.int('max') : result.user.getDefaultPageSizeAsInteger()
+            /*result.max = params.max ? params.int('max') : result.user.getPageSizeOrDefault()
             List gokbRecords = []
             ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true).each { ApiSource api ->
                 gokbRecords << gokbService.getPackagesMap(api, params.q, false).records
@@ -1818,7 +1819,7 @@ class SubscriptionControllerService {
             }
             result.num_ies_rows = entitlements.size()
             if(entitlements) {
-                String orderClause = 'order by tipp.sortname asc'
+                String orderClause = 'order by ie.sortname, tipp.sortname'
                 if(params.sort){
                     if(params.sort == 'startDate')
                         orderClause = "order by ic.startDate ${params.order}, lower(ie.sortname) asc "
@@ -2002,6 +2003,7 @@ class SubscriptionControllerService {
             RefdataValue tipp_current = RDStore.TIPP_STATUS_CURRENT
             RefdataValue ie_deleted = RDStore.TIPP_STATUS_DELETED
             RefdataValue ie_current = RDStore.TIPP_STATUS_CURRENT
+            RefdataValue ie_removed = RDStore.TIPP_STATUS_REMOVED
             List<Long> tippIDs = []
             List<TitleInstancePackagePlatform> tipps = []
             List errorList = []
@@ -2013,7 +2015,7 @@ class SubscriptionControllerService {
                 sessionCache.put("/subscription/addEntitlements/${params.id}", [:])
                 checkedCache = sessionCache.get("/subscription/addEntitlements/${params.id}")
             }
-            Set<String> addedTipps = IssueEntitlement.executeQuery('select tipp.gokbId from IssueEntitlement ie join ie.tipp tipp where ie.status != :deleted and ie.subscription = :sub',[deleted:ie_deleted,sub:result.subscription])
+            Set<String> addedTipps = IssueEntitlement.executeQuery('select tipp.gokbId from IssueEntitlement ie join ie.tipp tipp where ie.status not in (:status) and ie.subscription = :sub',[status:[ie_deleted, ie_removed],sub:result.subscription])
             /*result.subscription.issueEntitlements.each { ie ->
                 if(ie instanceof IssueEntitlement && ie.status != ie_deleted)
                     addedTipps[ie.tipp] = ie.tipp.gokbId
@@ -2542,7 +2544,7 @@ class SubscriptionControllerService {
                                 println "now restoring deleted coverage ${i}"
                                 Map<String, Object> oldCoverage = JSON.parse(row['pc_old_value'])
                                 //when migrating to dev: change deleted by removed
-                                List<Long> ie = IssueEntitlement.executeQuery("select ie.id from IssueEntitlement ie where ie.tipp.id = :tippId and ie.subscription.id = :subId and ie.status != :deleted", [tippId: Integer.toUnsignedLong(oldCoverage.tipp.id), subId: Long.parseLong(row['sub_fk']), deleted: RDStore.TIPP_STATUS_DELETED])
+                                List<Long> ie = IssueEntitlement.executeQuery("select ie.id from IssueEntitlement ie where ie.tipp.id = :tippId and ie.subscription.id = :subId and ie.status not in (:ieStatus)", [tippId: Integer.toUnsignedLong(oldCoverage.tipp.id), subId: Long.parseLong(row['sub_fk']), ieStatus: [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]])
                                 if(ie) {
                                     Map<String, Object> ieCovMap = [ie: ie[0],
                                                                     dateCreated: new Timestamp(DateUtils.parseDateGeneric(oldCoverage.dateCreated).getTime()),

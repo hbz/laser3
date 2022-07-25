@@ -1,24 +1,16 @@
-<laser:serviceInjection />
-
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
+<laser:htmlStart message="menu.public.all_insts" serviceInjection="true"/>
         <g:set var="entityName" value="${message(code: 'org.label')}" />
-        <title>${message(code:'laser')} : ${message(code: 'menu.public.all_insts')}</title>
-    </head>
-    <body>
 
-    <semui:breadcrumbs>
-        <semui:crumb message="menu.public.all_insts" class="active" />
-    </semui:breadcrumbs>
+    <ui:breadcrumbs>
+        <ui:crumb message="menu.public.all_insts" class="active" />
+    </ui:breadcrumbs>
 
-    <semui:controlButtons>
-        <semui:exportDropdown>
-            <semui:exportDropdownItem>
-                <a class="item" data-semui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
-            </semui:exportDropdownItem>
-        </semui:exportDropdown>
+    <ui:controlButtons>
+        <ui:exportDropdown>
+            <ui:exportDropdownItem>
+                <a class="item" data-ui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
+            </ui:exportDropdownItem>
+        </ui:exportDropdown>
 
         <%
             editable = (editable && accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')) || contextService.getUser()?.hasRole('ROLE_ADMIN,ROLE_ORG_EDITOR') || accessService.checkConstraint_ORG_COM_EDITOR()
@@ -26,16 +18,13 @@
         <g:if test="${editable}">
             <laser:render template="actions" />
         </g:if>
-    </semui:controlButtons>
-    
-    <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code: 'menu.public.all_insts')}
-        <semui:totalNumber total="${consortiaMemberTotal}"/>
-    </h1>
+    </ui:controlButtons>
 
-    <semui:messages data="${flash}" />
+    <ui:h1HeaderWithIcon message="menu.public.all_insts" total="${consortiaMemberTotal}" floated="true" />
 
-    <laser:render template="/templates/filter/javascript" />
-    <semui:filter showFilterButton="true">
+    <ui:messages data="${flash}" />
+
+    <ui:filter showFilterButton="true" addFilterJs="true">
         <g:form action="listInstitution" method="get" class="ui form">
             <laser:render template="/templates/filter/orgFilter"
                       model="[
@@ -43,7 +32,7 @@
                               tmplConfigFormFilter: true
                       ]"/>
         </g:form>
-    </semui:filter>
+    </ui:filter>
 
     <laser:render template="/templates/filter/orgFilterTable"
               model="[orgList: availableOrgs,
@@ -54,8 +43,8 @@
                       ]
               ]"/>
 
-    <semui:paginate action="listInstitution" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" max="${max}" total="${consortiaMemberTotal}" />
+    <ui:paginate action="listInstitution" params="${params}" max="${max}" total="${consortiaMemberTotal}" />
 
     <laser:render template="/myInstitution/export/individuallyExportModalOrgs" model="[modalID: 'individuallyExportModal', orgType: 'institution']" />
-  </body>
-</html>
+
+<laser:htmlEnd />

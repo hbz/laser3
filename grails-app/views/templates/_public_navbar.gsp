@@ -2,7 +2,7 @@
     <div class="navbar-inner">
         <div class="ui container center aligned">
         	<img class="brand-img"  style="float: none;" alt="Logo Laser" src="${resource(dir: 'images', file: 'laser-logo-1.png')}"/>
-            <!--
+            %{--
             <ul class="nav">
                 <li id="home" <g:if test="${active.equals("home")}"> class="active" </g:if>>
                     <a href="${createLink(uri: '/')}">${message(code:'default.home.label')}</a>
@@ -17,7 +17,7 @@
                     <a href="${createLink(uri: '/contact-us')}">${message(code:'public.nav.contact.label')}</a>
                 </li>
             </ul>
-            -->
+            --}%
         </div>
     </div>
 </div>

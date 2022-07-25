@@ -22,15 +22,18 @@ import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupItem
 import de.laser.storage.BeanStore
+import de.laser.storage.PropertyStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyConfigProperties
 import de.laser.survey.SurveyInfo
+import de.laser.survey.SurveyLinks
 import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyResult
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
+import de.laser.utils.SwissKnife
 import de.laser.workflow.WfWorkflow
 import de.laser.workflow.WfWorkflowPrototype
 import grails.gsp.PageRenderer
@@ -38,6 +41,7 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.commons.collections.BidiMap
 import org.apache.commons.collections.bidimap.DualHashBidiMap
+import org.apache.http.HttpStatus
 import org.apache.poi.POIXMLProperties
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.FillPatternType
@@ -69,6 +73,7 @@ class MyInstitutionController  {
     AccessService accessService
     AddressbookService addressbookService
     ContextService contextService
+    CompareService compareService
     ComparisonService comparisonService
     DeletionService deletionService
     DocstoreService docstoreService
@@ -202,7 +207,7 @@ class MyInstitutionController  {
             qry3 += " and ((pkg.packageStatus is null) or (pkg.packageStatus != :pkgDeleted))"
             qry3 += " and ((tipp.status is null) or (tipp.status != :tippDeleted))"
 
-            def qryParams3 = [
+            Map qryParams3 = [
                     subIds         : idsCurrentSubscriptions,
                     pkgDeleted     : RDStore.PACKAGE_STATUS_DELETED,
                     tippDeleted    : RDStore.TIPP_STATUS_DELETED
@@ -328,7 +333,7 @@ class MyInstitutionController  {
 
         result.is_inst_admin = accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_ADM')
 
-        def date_restriction = null
+        Date date_restriction = null
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
 
         if (params.validOn == null || params.validOn.trim() == '') {
@@ -645,7 +650,7 @@ class MyInstitutionController  {
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]) as String
-            response.sendError(401)
+            response.sendError(HttpStatus.SC_FORBIDDEN)
             return;
         }
 
@@ -697,17 +702,17 @@ class MyInstitutionController  {
 
             if (! accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR')) {
                 flash.error = message(code:'myinst.error.noAdmin', args:[org.name]) as String
-                response.sendError(401)
-                // render(status: '401', text:"You do not have permission to access ${org.name}. Please request access on the profile page");
+                response.sendError(HttpStatus.SC_FORBIDDEN)
+                // render(status: '403', text:"You do not have permission to access ${org.name}. Please request access on the profile page");
                 return
             }
-            def baseLicense = params.baselicense ? License.get(params.baselicense) : null
+            License baseLicense = params.baselicense ? License.get(params.baselicense) : null
             //Nur wenn von Vorlage ist
             if (baseLicense) {
-                if (!baseLicense?.hasPerm("view", user)) {
-                    log.debug("return 401....")
+                if (! baseLicense.hasPerm("view", user)) {
+                    log.debug("return 403....")
                     flash.error = message(code: 'myinst.newLicense.error') as String
-                    response.sendError(401)
+                    response.sendError(HttpStatus.SC_FORBIDDEN)
                     return
                 }
                 else {
@@ -856,7 +861,7 @@ join sub.orgRelations or_sub where
             }
             catch (Exception e) {
                 log.error("Problem",e);
-                response.sendError(500)
+                response.sendError(HttpStatus.SC_INTERNAL_SERVER_ERROR)
                 return
             }
         }
@@ -1316,7 +1321,7 @@ join sub.orgRelations or_sub where
 
         Map<String,Object> qryParams = [
                 institution: result.institution,
-                deleted: RDStore.TIPP_STATUS_DELETED,
+                ieStatus: [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED],
                 current: RDStore.SUBSCRIPTION_CURRENT,
                 orgRoles: orgRoles
         ]
@@ -1370,7 +1375,7 @@ join sub.orgRelations or_sub where
             orderByClause = 'order by tipp.sortname asc, tipp.name asc'
         }
 
-        String qryString = "select ie.id from IssueEntitlement ie join ie.tipp tipp join ie.subscription sub join sub.orgRelations oo where ie.status != :deleted and sub.status = :current and oo.roleType in (:orgRoles) and oo.org = :institution "
+        String qryString = "select ie.id from IssueEntitlement ie join ie.tipp tipp join ie.subscription sub join sub.orgRelations oo where ie.status not in (:ieStatus) and sub.status = :current and oo.roleType in (:orgRoles) and oo.org = :institution "
         if(queryFilter)
             qryString += ' and '+queryFilter.join(' and ')
 
@@ -1381,7 +1386,7 @@ join sub.orgRelations or_sub where
             if (filterPvd) {
                 currentIssueEntitlements.addAll(IssueEntitlement.executeQuery("select ie.id from IssueEntitlement ie join ie.tipp tipp join tipp.orgs oo where oo.roleType in (:cpRole) and oo.org.id in ("+filterPvd.join(", ")+") order by ie.sortname asc",[cpRole:[RDStore.OR_CONTENT_PROVIDER,RDStore.OR_PROVIDER,RDStore.OR_AGENCY,RDStore.OR_PUBLISHER]]))
             }
-            Set<TitleInstancePackagePlatform> allTitles = currentIssueEntitlements ? TitleInstancePackagePlatform.executeQuery('select tipp from IssueEntitlement ie join ie.tipp tipp where ie.id in (:ids) and ie.status != :deleted '+orderByClause,[deleted: RDStore.TIPP_STATUS_DELETED, ids: currentIssueEntitlements.drop(result.offset).take(result.max)]) : []
+            Set<TitleInstancePackagePlatform> allTitles = currentIssueEntitlements ? TitleInstancePackagePlatform.executeQuery('select tipp from IssueEntitlement ie join ie.tipp tipp where ie.id in (:ids) and ie.status not in (:ieStatus) '+orderByClause,[ieStatus: [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED], ids: currentIssueEntitlements.drop(result.offset).take(result.max)]) : []
             result.subscriptions = Subscription.executeQuery('select sub from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo where oo.roleType in (:orgRoles) and oo.org = :institution and sub.status = :current '+instanceFilter+" order by sub.name asc",[
                     institution: result.institution,
                     current: RDStore.SUBSCRIPTION_CURRENT,
@@ -1514,7 +1519,7 @@ join sub.orgRelations or_sub where
 
             qry3 += " and ((pkg.packageStatus is null) or (pkg.packageStatus != :pkgDeleted))"
 
-            def qryParams3 = [
+            Map qryParams3 = [
                     currentSubIds  : currentSubIds,
                     pkgDeleted     : RDStore.PACKAGE_STATUS_DELETED
             ]
@@ -1595,7 +1600,7 @@ join sub.orgRelations or_sub where
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = "You do not have permission to access ${result.institution.name} pages. Please request access on the profile page";
-            response.sendError(401)
+            response.sendError(HttpStatus.SC_FORBIDDEN)
             return;
         }
 
@@ -1939,7 +1944,7 @@ join sub.orgRelations or_sub where
             return
         }else {
             result.surveyResults = result.surveyResults.groupBy {it.id[1]}
-            result.countSurveys = surveyService.getSurveyParticipantCounts_New(result.institution, params)
+            result.countSurveys = surveyService._getSurveyParticipantCounts_New(result.institution, params)
 
             withFormat {
                 html {
@@ -1976,7 +1981,7 @@ join sub.orgRelations or_sub where
 
         if(result.surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]) {
             result.subscription = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(result.institution)
-            result.authorizedOrgs = result.user.authorizedOrgs
+            result.authorizedOrgs = result.user.getAffiliationOrgs()
             // restrict visible for templates/links/orgLinksAsList
             result.costItemSums = [:]
             result.visibleOrgRelations = []
@@ -1993,7 +1998,7 @@ join sub.orgRelations or_sub where
                 result.offsets = [subscrOffset: 0]
                 result.sortConfig = [subscrSort: 'sub.name', subscrOrder: 'asc']
 
-                result.max = params.max ? Integer.parseInt(params.max) : result.user.getDefaultPageSizeAsInteger()
+                result.max = params.max ? Integer.parseInt(params.max) : result.user.getPageSizeOrDefault()
                 //cost items
                 //params.forExport = true
                 LinkedHashMap costItems = result.subscription ? financeService.getCostItemsForSubscription(params, result) : null
@@ -2003,10 +2008,14 @@ join sub.orgRelations or_sub where
 		        result.links = linksGenerationService.getSourcesAndDestinations(result.subscription,result.user)
             }
 
-            if(result.surveyConfig.subSurveyUseForTransfer) {
+            if(result.surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION]) {
                 result.successorSubscription = result.surveyConfig.subscription._getCalculatedSuccessorForSurvey()
-
-                result.customProperties = result.successorSubscription ? comparisonService.comparePropertiesWithAudit(result.surveyConfig.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))} + result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}, true, true) : null
+                Collection<AbstractPropertyWithCalculatedLastUpdated> props
+                props = result.surveyConfig.subscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
+                if(result.successorSubscription){
+                    props += result.successorSubscription.propertySet.findAll{it.type.tenant == null && (it.tenant?.id == result.contextOrg.id || (it.tenant?.id != result.contextOrg.id && it.isPublic))}
+                }
+                result.customProperties = comparisonService.comparePropertiesWithAudit(props, true, true)
             }
 
             if (result.subscription && result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
@@ -2090,7 +2099,7 @@ join sub.orgRelations or_sub where
         }
 
         SurveyInfo surveyInfo = SurveyInfo.get(params.id)
-        SurveyConfig surveyConfig = SurveyConfig.get(params.surveyConfigID)
+        SurveyConfig surveyConfig = params.surveyConfigID ? SurveyConfig.get(params.surveyConfigID) : surveyInfo.surveyConfigs[0]
         boolean sendMailToSurveyOwner = false
 
         SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(result.institution, surveyConfig)
@@ -2139,7 +2148,7 @@ join sub.orgRelations or_sub where
         boolean noParticipation = false
         if(surveyInfo.isMandatory) {
             if(surveyConfig && surveyConfig.subSurveyUseForTransfer){
-                noParticipation = (SurveyResult.findByParticipantAndSurveyConfigAndType(result.institution, surveyConfig, RDStore.SURVEY_PROPERTY_PARTICIPATION).refValue == RDStore.YN_NO)
+                noParticipation = (SurveyResult.findByParticipantAndSurveyConfigAndType(result.institution, surveyConfig, PropertyStore.SURVEY_PROPERTY_PARTICIPATION).refValue == RDStore.YN_NO)
             }
         }
 
@@ -2172,6 +2181,95 @@ join sub.orgRelations or_sub where
 
 
         redirect(url: request.getHeader('referer'))
+    }
+
+    @DebugInfo(perm="ORG_BASIC_MEMBER", affil="INST_EDITOR", specRole="ROLE_ADMIN")
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_BASIC_MEMBER", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    def surveyLinkOpenNewSurvey() {
+        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
+
+        if (!result.editable) {
+            flash.error = g.message(code: "default.notAutorized.message")
+            redirect(url: request.getHeader('referer'))
+        }
+
+        SurveyLinks surveyLink = SurveyLinks.get(params.surveyLink)
+        SurveyInfo surveyInfo = surveyLink.targetSurvey
+        SurveyConfig surveyConfig = surveyInfo.surveyConfigs[0]
+        Org org = result.institution
+
+        result.editable = (surveyInfo && surveyInfo.status in [RDStore.SURVEY_SURVEY_STARTED]) ? result.editable : false
+
+        if(result.institution.id == surveyInfo.owner.id) {
+            org = params.participant ? Org.get(params.participant) : null
+        }
+
+        if (org && surveyLink && result.editable) {
+
+            SurveyOrg.withTransaction { TransactionStatus ts ->
+                    boolean existsMultiYearTerm = false
+                    Subscription sub = surveyConfig.subscription
+                    if (sub && !surveyConfig.pickAndChoose && surveyConfig.subSurveyUseForTransfer) {
+                        Subscription subChild = sub.getDerivedSubscriptionBySubscribers(org)
+
+                        if (subChild && subChild.isCurrentMultiYearSubscriptionNew()) {
+                            existsMultiYearTerm = true
+                        }
+
+                    }
+
+                    if (!(SurveyOrg.findAllBySurveyConfigAndOrg(surveyConfig, org)) && !existsMultiYearTerm) {
+                        SurveyOrg surveyOrg = new SurveyOrg(
+                                surveyConfig: surveyConfig,
+                                org: org,
+                                orgInsertedItself: true
+                        )
+
+                        if (!surveyOrg.save()) {
+                            log.debug("Error by add Org to SurveyOrg ${surveyOrg.errors}")
+                            flash.error = message(code: 'surveyLinks.participateToSurvey.fail')
+                        } else {
+                            if(surveyInfo.status in [RDStore.SURVEY_SURVEY_STARTED]){
+                                surveyConfig.surveyProperties.each { SurveyConfigProperties property ->
+                                    if (!SurveyResult.findWhere(owner: surveyInfo.owner, participant: org, type: property.surveyProperty, surveyConfig: surveyConfig)) {
+                                        SurveyResult surveyResult = new SurveyResult(
+                                                owner: surveyInfo.owner,
+                                                participant: org ?: null,
+                                                startDate: surveyInfo.startDate,
+                                                endDate: surveyInfo.endDate ?: null,
+                                                type: property.surveyProperty,
+                                                surveyConfig: surveyConfig
+                                        )
+
+                                        if (surveyResult.save()) {
+                                            log.debug(surveyResult.toString())
+                                        } else {
+                                            log.error("Not create surveyResult: " + surveyResult)
+                                            flash.error = message(code: 'surveyLinks.participateToSurvey.fail')
+                                        }
+                                    }
+                                }
+
+                                surveyService.emailsToSurveyUsersOfOrg(surveyInfo, org, false)
+                                //flash.message = message(code: 'surveyLinks.participateToSurvey.success')
+                            }
+                        }
+                    }
+                surveyConfig.save()
+                }
+
+            if(result.institution.id == surveyInfo.owner.id){
+                redirect(controller: 'survey', action: 'evaluationParticipant', id: surveyInfo.id, params: [participant: org.id])
+            } else{
+                redirect(action: 'surveyInfos', id: surveyInfo.id)
+            }
+
+        }else {
+            redirect(url: request.getHeader('referer'))
+        }
+
     }
 
     /**
@@ -2552,7 +2650,7 @@ join sub.orgRelations or_sub where
                 }
                 if (! cache.get(pmKey) || params.max || params.offset) {
                     cache.put(pmKey, [
-                            max:    params.max ? params.int('max') : contextService.getUser().getDefaultPageSizeAsInteger(),
+                            max:    params.max ? params.int('max') : contextService.getUser().getPageSizeOrDefault(),
                             offset: params.offset ? params.int('offset') : 0
                     ])
                 }
@@ -2566,7 +2664,7 @@ join sub.orgRelations or_sub where
             }
             else {
                 params.putAll( [
-                        max: contextService.getUser().getDefaultPageSizeAsInteger(),
+                        max: contextService.getUser().getPageSizeOrDefault(),
                         offset: 0
                 ] )
             }
@@ -3315,7 +3413,7 @@ join sub.orgRelations or_sub where
             return
         }else {
             result.surveyResults = result.surveyResults.groupBy {it.id[1]}
-            result.countSurveys = surveyService.getSurveyParticipantCounts_New(result.participant, params)
+            result.countSurveys = surveyService._getSurveyParticipantCounts_New(result.participant, params)
 
             result
         }
@@ -3486,7 +3584,7 @@ join sub.orgRelations or_sub where
         //result.validSubChilds = validSubChildren
 
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
-        //result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.org)
+        //result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.getOrg())
         Set<PropertyDefinition> propList = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd where pd.descr in (:availableTypes) and (pd.tenant = null or pd.tenant = :ctx) order by pd."+localizedName+" asc",
                 [ctx:result.institution,availableTypes:[PropertyDefinition.SUB_PROP,PropertyDefinition.LIC_PROP,PropertyDefinition.PRS_PROP,PropertyDefinition.PLA_PROP,PropertyDefinition.ORG_PROP]])
         result.propList = propList
@@ -3826,7 +3924,7 @@ join sub.orgRelations or_sub where
         User user = contextService.getUser()
         Org org = (Org) genericOIDService.resolveOID(params.oid)
 
-        if (user && org && org.id in user.getAuthorizedOrgsIds()) {
+        if (user && org && org.id in user.getAffiliationOrgsIdList()) {
             log.debug('switched context to: ' + org)
             contextService.setOrg(org)
         }
@@ -3890,7 +3988,7 @@ join sub.orgRelations or_sub where
 
             if (! (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR'))) {
                 flash.error = message(code:'license.permissionInfo.noPerms') as String
-                response.sendError(401)
+                response.sendError(HttpStatus.SC_FORBIDDEN)
                 return;
             }
 
@@ -3899,7 +3997,7 @@ join sub.orgRelations or_sub where
                 return
             }else {
                 flash.error = message(code:'license.permissionInfo.noPerms') as String
-                response.sendError(401)
+                response.sendError(HttpStatus.SC_FORBIDDEN)
                 return;
             }
         }

@@ -24,6 +24,7 @@ class SurveyOrg {
 
     Date finishDate
 
+    boolean orgInsertedItself = false
 
     static constraints = {
         ownerComment(nullable: true, blank: false)
@@ -42,6 +43,8 @@ class SurveyOrg {
         dateCreated column: 'surorg_date_created'
         lastUpdated column: 'surorg_last_updated'
         finishDate  column: 'surorg_finish_date'
+
+        orgInsertedItself column: 'org_inserted_itself'
     }
 
     def afterDelete() {

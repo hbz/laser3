@@ -1,35 +1,19 @@
 <%@ page import="de.laser.survey.SurveyOrg; de.laser.RefdataCategory; de.laser.survey.SurveyResult; de.laser.storage.RDStore; de.laser.OrgRole;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.Subscription;de.laser.finance.CostItem" %>
-<laser:serviceInjection/>
-<!doctype html>
+<laser:htmlStart message="currentSurveys.label" serviceInjection="true" />
 
+<ui:breadcrumbs>
+    <ui:crumb message="currentSurveys.label" class="active"/>
+</ui:breadcrumbs>
 
-
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'currentSurveys.label')}</title>
-</head>
-
-<body>
-
-<semui:breadcrumbs>
-    <semui:crumb message="currentSurveys.label" class="active"/>
-</semui:breadcrumbs>
-
-<semui:controlButtons>
+<ui:controlButtons>
     <laser:render template="actions"/>
-</semui:controlButtons>
+</ui:controlButtons>
 
+<ui:h1HeaderWithIcon message="currentSurveys.label" type="Survey" total="${surveysCount}" floated="true" />
 
-<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerTitleIcon
-        type="Survey"/>${message(code: 'currentSurveys.label')}
-<semui:totalNumber total="${surveysCount}"/>
-</h1>
+<ui:messages data="${flash}"/>
 
-<semui:messages data="${flash}"/>
-
-<laser:render template="/templates/filter/javascript"/>
-<semui:filter showFilterButton="true">
+<ui:filter showFilterButton="true" addFilterJs="true">
     <g:form action="workflowsSurveysConsortia" controller="survey" method="post" class="ui small form"
             params="[tab: params.tab]">
         <div class="four fields">
@@ -46,18 +30,18 @@
 
 
             <div class="field">
-                <semui:datepicker label="surveyInfo.startDate.label" id="startDate" name="startDate"
+                <ui:datepicker label="surveyInfo.startDate.label" id="startDate" name="startDate"
                                   placeholder="filter.placeholder" value="${params.startDate}"/>
             </div>
 
 
             <div class="field">
-                <semui:datepicker label="surveyInfo.endDate.label" id="endDate" name="endDate"
+                <ui:datepicker label="surveyInfo.endDate.label" id="endDate" name="endDate"
                                   placeholder="filter.placeholder" value="${params.endDate}"/>
             </div>
 
             <div class="field">
-                <label>${message(code: 'default.valid_onYear.label')}</label>
+                <label for="validOnYear">${message(code: 'default.valid_onYear.label')}</label>
 
                 <select id="validOnYear" name="validOnYear" multiple="" class="ui search selection fluid dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
@@ -79,13 +63,13 @@
 
         <div class="three fields">
             <div class="field">
-                <label>${message(code: 'menu.my.providers')}</label>
+                <label for="filterPvd">${message(code: 'menu.my.providers')}</label>
                 <select id="filterPvd" name="filterPvd" multiple="" class="ui search selection fluid dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
                     <g:each in="${providers.sort { it.name }}" var="provider">
                         <option <%=(params.list('filterPvd').contains(provider.id.toString())) ? 'selected="selected"' : ''%>
-                        value="${provider.id}" ">
+                        value="${provider.id}">
                         ${provider.name}
                         </option>
                     </g:each>
@@ -94,13 +78,13 @@
             </div>
 
             <div class="field">
-                <label>${message(code: 'menu.my.subscriptions')}</label>
+                <label for="filterSub">${message(code: 'menu.my.subscriptions')}</label>
                 <select id="filterSub" name="filterSub" multiple="" class="ui search selection fluid dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
                     <g:each in="${subscriptions.sort { it }}" var="sub">
                         <option <%=(params.list('filterSub').contains(sub)) ? 'selected="selected"' : ''%>
-                        value="${sub}" ">
+                        value="${sub}">
                         ${sub}
                         </option>
                     </g:each>
@@ -117,7 +101,7 @@
 
             <div class="field">
                 <label>${message(code: 'surveyInfo.type.label')}</label>
-                <laser:select class="ui dropdown" name="type"
+                <ui:select class="ui dropdown" name="type"
                               from="${RefdataCategory.getAllRefdataValues(de.laser.storage.RDConstants.SURVEY_TYPE)}"
                               optionKey="id"
                               optionValue="value"
@@ -186,7 +170,7 @@
 
         </div>
     </g:form>
-</semui:filter>
+</ui:filter>
 
 
 <%
@@ -194,24 +178,24 @@
     tmpParams.remove("tab")
 %>
 
-<semui:tabs actionName="${actionName}">
-    <semui:tabsItem controller="survey" action="workflowsSurveysConsortia"
+<ui:tabs actionName="${actionName}">
+    <ui:tabsItem controller="survey" action="workflowsSurveysConsortia"
                     params="${tmpParams + [tab: 'created']}" text="Erstellt" tab="created"
                     counts="${countSurveyConfigs.created}"/>
-    <semui:tabsItem controller="survey" action="workflowsSurveysConsortia"
+    <ui:tabsItem controller="survey" action="workflowsSurveysConsortia"
                     params="${tmpParams + [tab: 'active']}" text="Aktiv" tab="active"
                     counts="${countSurveyConfigs.active}"/>
-    <semui:tabsItem controller="survey" action="workflowsSurveysConsortia"
+    <ui:tabsItem controller="survey" action="workflowsSurveysConsortia"
                     params="${tmpParams + [tab: 'finish']}" text="Beendet" tab="finish"
                     counts="${countSurveyConfigs.finish}"/>
-    <semui:tabsItem controller="survey" action="workflowsSurveysConsortia"
+    <ui:tabsItem controller="survey" action="workflowsSurveysConsortia"
                     params="${tmpParams + [tab: 'inEvaluation']}" text="In Auswertung" tab="inEvaluation"
                     counts="${countSurveyConfigs.inEvaluation}"/>
 
-    <semui:tabsItem controller="survey" action="workflowsSurveysConsortia"
+    <ui:tabsItem controller="survey" action="workflowsSurveysConsortia"
                     params="${tmpParams + [tab: 'completed']}" text="Abgeschlossen" tab="completed"
                     counts="${countSurveyConfigs.completed}"/>
-</semui:tabs>
+</ui:tabs>
 
 <div class="ui bottom attached tab segment active">
 
@@ -409,11 +393,10 @@
 
 
 <g:if test="${surveysCount}">
-    <semui:paginate action="${actionName}" controller="${controllerName}" params="${params}"
+    <ui:paginate action="${actionName}" controller="${controllerName}" params="${params}"
                     next="${message(code: 'default.paginate.next')}"
                     prev="${message(code: 'default.paginate.prev')}" max="${max}"
                     total="${surveysCount}"/>
 </g:if>
 
-</body>
-</html>
+<laser:htmlEnd />

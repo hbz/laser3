@@ -18,7 +18,7 @@ class LogoutController {
 	 * Index action. Redirects to the Spring security logout uri.
 	 */
 	def index = {
-		// TODO put any pre-logout code here
+		// any pre-logout code here
 		SystemActivityProfiler.removeActiveUser(contextService.getUser())
 
 		redirect uri: SpringSecurityUtils.securityConfig.logout.filterProcessesUrl // '/j_spring_security_logout'

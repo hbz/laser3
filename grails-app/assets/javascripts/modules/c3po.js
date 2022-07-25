@@ -1,5 +1,4 @@
-
-// modules/c3po.js
+// module: assets/javascripts/modules/c3po.js
 
 c3po = {
 

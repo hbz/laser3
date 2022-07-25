@@ -14,9 +14,4 @@ class PermGrant {
         perm    column:'pmgr_perm_fk'
         role    column:'pmgr_role_fk'
     }
-
-    static constraints = {
-        perm    unique: false
-        role    unique: false
-    }
 }

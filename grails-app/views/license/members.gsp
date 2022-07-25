@@ -1,33 +1,25 @@
 <%@ page import="de.laser.License; de.laser.RefdataCategory; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.storage.RDConstants; de.laser.Person; de.laser.Subscription" %>
-<laser:serviceInjection />
 
-<!doctype html>
-<html>
-<head>
-  <meta name="layout" content="laser">
-  <title>${message(code:'laser')} : ${message(code:'license.details.incoming.childs',args:[message(code:'consortium.subscriber')])}</title>
-</head>
-<body>
+<laser:htmlStart text="${message(code:'license.details.incoming.childs',args:[message(code:'consortium.subscriber')])}" serviceInjection="true" />
 
     <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
-    <semui:controlButtons>
+    <ui:controlButtons>
         <g:if test="${accessService.checkMinUserOrgRole(user,institution,"INST_EDITOR")}">
             <laser:render template="actions" />
         </g:if>
-    </semui:controlButtons>
+    </ui:controlButtons>
 
-    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
-        <semui:xEditable owner="${license}" field="reference" id="reference"/>
-        <semui:totalNumber total="${validMemberLicenses.size() ?: 0}"/>
-    </h1>
+    <ui:h1HeaderWithIcon>
+        <ui:xEditable owner="${license}" field="reference" id="reference"/>
+        <ui:totalNumber total="${validMemberLicenses.size() ?: 0}"/>
+    </ui:h1HeaderWithIcon>
 
-    <semui:anualRings object="${license}" controller="license" action="show" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
+    <ui:anualRings object="${license}" controller="license" action="show" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
 
 <laser:render template="nav" />
 
-<laser:render template="/templates/filter/javascript" />
-<semui:filter showFilterButton="true">
+<ui:filter showFilterButton="true" addFilterJs="true">
     <g:form action="members" controller="license" params="${[id:params.id]}" method="get" class="ui form">
         <div class="three fields">
             <div class="field">
@@ -40,12 +32,12 @@
                 </select>
             </div>
             <div class="field">
-                <semui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${validOn}" />
+                <ui:datepicker label="default.valid_on.label" id="validOn" name="validOn" placeholder="filter.placeholder" value="${validOn}" />
             </div>
 
             <div class="field">
                 <label>${message(code: 'default.status.label')}</label>
-                <laser:select class="ui dropdown" name="status"
+                <ui:select class="ui dropdown" name="status"
                               from="${ RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS) }"
                               optionKey="id"
                               optionValue="value"
@@ -80,7 +72,7 @@
             </div>
         </div>
     </g:form>
-</semui:filter>
+</ui:filter>
 
 <table class="ui celled la-js-responsive-table la-table table">
     <thead>
@@ -136,7 +128,7 @@
                         <i aria-hidden="true" class="write icon"></i></g:link>
                 </td>
                 <td>
-                    <g:link action="linkMemberLicensesToSubs" id="${lic.id}"><semui:totalNumber total="${row.subs ?: 0}"/></g:link>
+                    <g:link action="linkMemberLicensesToSubs" id="${lic.id}"><ui:totalNumber total="${row.subs ?: 0}"/></g:link>
                 </td>
             </tr>
         </g:each>
@@ -144,5 +136,4 @@
     </tbody>
 </table>
 
-</body>
-</html>
+<laser:htmlEnd />

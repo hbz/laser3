@@ -1,21 +1,12 @@
-<%@ page import="de.laser.utils.ConfigMapper; de.laser.utils.DateUtils; grails.util.Metadata; de.laser.utils.AppUtils" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'menu.admin')} ${message(code:'default.dashboard')}</title>
-</head>
+<%@ page import="de.laser.config.ConfigMapper; de.laser.utils.DateUtils; grails.util.Metadata; de.laser.utils.AppUtils" %>
 
-<body>
+<laser:htmlStart text="${message(code:'menu.admin')} ${message(code:'default.dashboard')}" />
 
-    <semui:breadcrumbs>
-        <semui:crumb message="menu.admin" controller="admin" action="index" class="active"/>
-    </semui:breadcrumbs>
+    <ui:breadcrumbs>
+        <ui:crumb message="menu.admin" controller="admin" action="index" class="active"/>
+    </ui:breadcrumbs>
 
-    <h1 class="ui icon header la-clear-before la-noMargin-top">
-        <i class="circular icon trophy" style="background-color:#f3a43b; border-color:#f3a43b; color:white;"></i>
-        ${message(code:'menu.admin')}
-    </h1>
+    <ui:h1HeaderWithIcon message="menu.admin" type="admin" />
 
     <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
         <thead>
@@ -26,7 +17,8 @@
             <tr><td>Configuration file</td><td> ${ConfigMapper.getCurrentConfigFile(this.applicationContext.getEnvironment()).name}</td></tr>
             <tr><td>Environment</td><td> ${Metadata.getCurrent().getEnvironment()}</td></tr>
             <tr><td>Database</td><td> ${ConfigMapper.getConfig('dataSource.url', String).split('/').last()}</td></tr>
-            <tr><td>DBM version</td><td> ${dbmVersion[0]} @ ${dbmVersion[1]} <br/> ${DateUtils.getLocalizedSDF_noZ().format(dbmVersion[2])}</td></tr>
+            <tr><td>DBM version</td><td> ${dbmVersion[0]} -> ${dbmVersion[1]} <br/> ${DateUtils.getLocalizedSDF_noZ().format(dbmVersion[2])}</td></tr>
+            <tr><td>Document storage</td><td> ${docStore.filesCount} Files -> ${docStore.folderSize} MB</td></tr>
         </tbody>
     </table>
 
@@ -58,5 +50,4 @@
         </tbody>
     </table>
 
-</body>
-</html>
+<laser:htmlEnd />

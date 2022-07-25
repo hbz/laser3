@@ -1,20 +1,13 @@
 <%@ page import="de.laser.Platform; de.laser.Package; de.laser.Org; de.laser.storage.RDStore" %>
-<!doctype html>
-<html>
-	<head>
-		<meta name="layout" content="laser">
-		<title>${message(code: 'laser')} : ${message(code: 'platforms.all_platforms.label')}</title>
-	</head>
-	<body>
-	<semui:breadcrumbs>
-		<semui:crumb message="platforms.all_platforms.label" class="active" />
-	</semui:breadcrumbs>
+<laser:htmlStart message="platforms.all_platforms.label" />
 
-	<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon /><g:message code="platforms.all_platforms.label" />
-		<semui:totalNumber total="${recordsCount}"/>
-	</h1>
+	<ui:breadcrumbs>
+		<ui:crumb message="platforms.all_platforms.label" class="active" />
+	</ui:breadcrumbs>
 
-			<semui:messages data="${flash}" />
+	<ui:h1HeaderWithIcon message="platforms.all_platforms.label" total="${recordsCount}" floated="true" />
+
+			<ui:messages data="${flash}" />
 
 			<laser:render template="/templates/filter/platformFilter"/>
 
@@ -82,8 +75,6 @@
 				</tbody>
 			</table>
 
-    <semui:paginate  action="list" controller="platform" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" max="${max}" total="${recordsCount}" />
+    <ui:paginate action="list" controller="platform" params="${params}" max="${max}" total="${recordsCount}" />
 
-
-	</body>
-</html>
+<laser:htmlEnd />

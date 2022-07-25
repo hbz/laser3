@@ -1,27 +1,22 @@
 <%@ page import="de.laser.storage.RDStore; de.laser.Org; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.FormService" %>
-<laser:serviceInjection/>
-<!doctype html>
-<html>
-	<head>
-		<meta name="layout" content="laser">
-		<g:set var="entityName" value="${message(code: 'default.institution')}" />
-		<title>${message(code:'laser')} : <g:message code="default.create.label" args="[entityName]" /></title>
-	</head>
-	<body>
-	<semui:breadcrumbs>
-		<semui:crumb message="menu.public.all_insts" controller="organisation" action="listInstitution"  />
-		<semui:crumb text="${message(code:"default.create.label",args:[entityName])}" class="active"/>
-	</semui:breadcrumbs>
 
-		<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="default.create.label" args="[entityName]" /></h1>
+<g:set var="entityName" value="${message(code: 'default.institution')}" />
+<laser:htmlStart text="${message(code:"default.create.label", args:[entityName])}" serviceInjection="true"/>
 
-		<semui:messages data="${flash}" />
+	<ui:breadcrumbs>
+		<ui:crumb message="menu.public.all_insts" controller="organisation" action="listInstitution"  />
+		<ui:crumb text="${message(code:"default.create.label",args:[entityName])}" class="active"/>
+	</ui:breadcrumbs>
 
-		<semui:errors bean="${orgInstance}" />
+		<ui:h1HeaderWithIcon message="default.create.label" args="[entityName]" />
+
+		<ui:messages data="${flash}" />
+
+		<ui:errors bean="${orgInstance}" />
 
 		<p>${message(code:'org.findInstitutionMatches.note')}</p>
 
-		<semui:searchSegment controller="organisation" action="findOrganisationMatches" method="get">
+		<ui:searchSegment controller="organisation" action="findOrganisationMatches" method="get">
 			<div class="field">
 				<label>${message(code:'org.findInstitutionMatches.proposed')}</label>
 				<input type="text" name="proposedOrganisation" value="${params.proposedOrganisation}" />
@@ -37,7 +32,7 @@
 				<input type="submit" value="${message(code:'default.button.search.label')}" class="ui secondary button">
 				<g:link controller="organisation" action="list" class="ui button">${message(code:'default.button.cancel.label')}</g:link>
 			</div>
-		</semui:searchSegment>
+		</ui:searchSegment>
 
 
 
@@ -101,23 +96,22 @@
 							</tbody>
 						</table>
 						<g:if test="${params.proposedOrganisation && !params.proposedOrganisation.isEmpty()}">
-							<semui:msg class="warning" message="org.findInstitutionMatches.match" args="[params.proposedOrganisation]" />
+							<ui:msg class="warning" message="org.findInstitutionMatches.match" args="[params.proposedOrganisation]" />
 							<g:link controller="organisation" action="createMember" class="ui negative button" params="${[institution:params.proposedOrganisation]}">${message(code:'org.findInstitutionMatches.matches.create', args: [params.proposedOrganisation])}</g:link>
 						</g:if>
 						<g:else if="${params.proposedOrganisation.isEmpty()}">
-							<semui:msg class="warning" message="org.findInstitutionMatches.matchNoName" args="[params.proposedOrganisation]" />
+							<ui:msg class="warning" message="org.findInstitutionMatches.matchNoName" args="[params.proposedOrganisation]" />
 
 						</g:else>
 					</g:if>
 					<g:elseif test="${params.proposedOrganisation && !params.proposedOrganisation.isEmpty()}">
-						<semui:msg class="warning" message="org.findInstitutionMatches.no_match" args="[params.proposedOrganisation]" />
+						<ui:msg class="warning" message="org.findInstitutionMatches.no_match" args="[params.proposedOrganisation]" />
 						<g:link controller="organisation" action="createMember" class="ui positive button" params="${[institution:params.proposedOrganisation,(FormService.FORM_SERVICE_TOKEN):formService.getNewToken()]}">${message(code:'org.findInstitutionMatches.no_matches.create', args: [params.proposedOrganisation])}</g:link>
 					</g:elseif>
 					<g:elseif test="${params.proposedOrganisationID && !params.proposedOrganisationID.isEmpty()}">
-						<semui:msg class="warning" message="org.findInstitutionMatches.no_id_match" args="[params.proposedOrganisationID]" />
+						<ui:msg class="warning" message="org.findInstitutionMatches.no_id_match" args="[params.proposedOrganisationID]" />
 					</g:elseif>
 				</g:if>
 
 
-	</body>
-</html>
+<laser:htmlEnd />

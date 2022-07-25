@@ -1,13 +1,12 @@
 
 <g:if test="${processingpc}">
-    <semui:msg class="negative"  message="pendingchange.inprogress" />
+    <ui:msg class="negative"  message="pendingchange.inprogress" />
 </g:if>
 
 <g:if test="${editable && pendingChanges?.size() > 0}">
 
     <g:if test="${! tmplSimpleView}">
         <div class="ui segment">
-
             <h3 class="ui header">
                 ${message(code:'template.pendingChanges')}
             </h3>

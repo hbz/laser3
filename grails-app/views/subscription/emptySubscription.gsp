@@ -1,24 +1,17 @@
-<laser:serviceInjection />
-
 <%@ page import="de.laser.RefdataCategory;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.Combo;de.laser.RefdataValue;de.laser.Org" %>
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'myinst.emptySubscription.label')}</title>
-        </head>
-    <body>
 
-        <semui:breadcrumbs>
-            <semui:crumb controller="myInstitution" action="currentSubscriptions" message="myinst.currentSubscriptions.label" />
-            <semui:crumb message="myinst.emptySubscription.label" class="active" />
-        </semui:breadcrumbs>
+<laser:htmlStart message="myinst.emptySubscription.label" serviceInjection="true"/>
 
-        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'myinst.emptySubscription.label')}</h1>
+        <ui:breadcrumbs>
+            <ui:crumb controller="myInstitution" action="currentSubscriptions" message="myinst.currentSubscriptions.label" />
+            <ui:crumb message="myinst.emptySubscription.label" class="active" />
+        </ui:breadcrumbs>
 
-        <semui:messages data="${flash}"/>
+        <ui:h1HeaderWithIcon message="myinst.emptySubscription.label" />
 
-        <semui:form>
+        <ui:messages data="${flash}"/>
+
+        <ui:form>
             <g:form action="processEmptySubscription" method="post" class="ui form newSubscription">
                 <div class="field required">
                     <label>${message(code:'myinst.emptySubscription.name')} <g:message code="messageRequiredField" /></label>
@@ -26,14 +19,14 @@
                  </div>
 
                 <div class="two fields">
-                    <semui:datepicker label="subscription.startDate.label" id="valid_from" name="valid_from" value="${defaultStartYear}" />
+                    <ui:datepicker label="subscription.startDate.label" id="valid_from" name="valid_from" value="${defaultStartYear}" />
 
-                    <semui:datepicker label="subscription.endDate.label" id="valid_to" name="valid_to" value="${defaultEndYear}" />
+                    <ui:datepicker label="subscription.endDate.label" id="valid_to" name="valid_to" value="${defaultEndYear}" />
                 </div>
 
                 <div class="field required">
                     <label>${message(code:'default.status.label')} <g:message code="messageRequiredField" /></label>
-                    <laser:select name="status" from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}" optionKey="id" optionValue="value"
+                    <ui:select name="status" from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}" optionKey="id" optionValue="value"
                                   noSelection="${['' : '']}"
                                   value="${['':'']}"
                                   class="ui select dropdown"/>
@@ -46,7 +39,7 @@
                     %>
                     <div class="field">
                         <label>${message(code:'myinst.emptySubscription.create_as')}</label>
-                        <laser:select id="asOrgType" name="type" from="${subscriptionTypes}" value="${RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id}" optionKey="id" optionValue="value" class="ui select dropdown" />
+                        <ui:select id="asOrgType" name="type" from="${subscriptionTypes}" value="${RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id}" optionKey="id" optionValue="value" class="ui select dropdown" />
                     </div>
                 </g:if>
                 <g:elseif test="${accessService.checkPerm('ORG_CONSORTIUM')}">
@@ -65,7 +58,7 @@
                 <input id="submitterFallback" type="submit" class="ui button js-click-control" value="${message(code:'default.button.create.label')}" />
                 <input type="button" class="ui button js-click-control" onclick="JSPC.helper.goBack();" value="${message(code:'default.button.cancel.label')}" />
             </g:form>
-        </semui:form>
+        </ui:form>
 
     <hr />
         <laser:script file="${this.getGroovyPageFileName()}">
@@ -121,5 +114,4 @@
                          }
                     });
         </laser:script>
-    </body>
-</html>
+<laser:htmlEnd />

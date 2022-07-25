@@ -1,12 +1,8 @@
 <%@ page import="de.laser.Contact" %>
-<!doctype html>
-<html>
-	<head>
-		<meta name="layout" content="laser">
-		<g:set var="entityName" value="${message(code: 'contact.label')}" />
-		<title>${message(code:'laser')} : <g:message code="default.create.label" args="[entityName]" /></title>
-	</head>
-	<body>
+
+<g:set var="entityName" value="${message(code: 'contact.label')}" />
+<laser:htmlStart text="${message(code:"default.create.label", args:[entityName])}" />
+
 		<div>
 		<div>
 			
@@ -32,11 +28,11 @@
 			
 			<div class="span9">
 
-				<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="default.create.label" args="[entityName]" /></h1>
+				<ui:h1HeaderWithIcon message="default.create.label" args="[entityName]" />
 
-				<semui:messages data="${flash}" />
+				<ui:messages data="${flash}" />
 
-				<semui:errors bean="${contactInstance}" />
+				<ui:errors bean="${contactInstance}" />
 
 					<g:form class="ui form" action="create" >
 						<fieldset>
@@ -55,5 +51,4 @@
 
 		</div>
 		</div>
-	</body>
-</html>
+<laser:htmlEnd />

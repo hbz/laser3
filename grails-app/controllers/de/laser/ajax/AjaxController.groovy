@@ -15,17 +15,19 @@ import de.laser.interfaces.ShareSupport
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
+import de.laser.storage.PropertyStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyResult
-import de.laser.utils.AppUtils
+import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
+import de.laser.utils.SwissKnife
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
-import grails.core.GrailsClass
+import org.apache.http.HttpStatus
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.springframework.context.i18n.LocaleContextHolder
@@ -186,12 +188,12 @@ class AjaxController {
     /**
      * This is the call route for processing an xEditable reference data or role change
      * @return the new value for display update in the xEditable field
-     * @see SemanticUiInplaceTagLib#xEditableRole
-     * @see SemanticUiInplaceTagLib#xEditableRefData
+     * @see UiInplaceTagLib#xEditableRole
+     * @see UiInplaceTagLib#xEditableRefData
      */
     @Secured(['ROLE_USER'])
     @Transactional
-    def genericSetRel() {
+    def genericSetData() {
         String result = ''
 
         try {
@@ -235,7 +237,7 @@ class AjaxController {
                             SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(target.surveyConfig, target.participant)
 
                             //If Survey Owner set Value then set FinishDate
-                            if (org?.id == target.owner.id && (target.type == RDStore.SURVEY_PROPERTY_PARTICIPATION) && surveyOrg.finishDate == null) {
+                            if (org?.id == target.owner.id && (target.type == PropertyStore.SURVEY_PROPERTY_PARTICIPATION) && surveyOrg.finishDate == null) {
                                 String property = target.type.getImplClassValueProperty()
 
                                 if (target[property] != null) {
@@ -277,12 +279,12 @@ class AjaxController {
             }
 
         } catch (Exception e) {
-            log.error("@ genericSetRel()")
+            log.error("@ genericSetData()")
             log.error(e.toString())
         }
 
         Map resp = [newValue: result]
-        log.debug("genericSetRel() returns ${resp as JSON}")
+        log.debug("genericSetData() returns ${resp as JSON}")
         render resp as JSON
     }
 
@@ -291,9 +293,9 @@ class AjaxController {
      * @return a {@link List} of {@link Map}s of structure [value: oid, text: text] to be used in dropdowns; the list may be returned purely or as JSON
      */
     @Secured(['ROLE_USER'])
-    def sel2RefdataSearch() {
+    def select2RefdataSearch() {
 
-        log.debug("sel2RefdataSearch params: ${params}")
+        log.debug("select2RefdataSearch params: ${params}")
     
         List result = []
         Map<String, Object> config = refdata_config.get(params.id?.toString()) //we call toString in case we got a GString
@@ -458,8 +460,8 @@ class AjaxController {
               if(params.tab == 'currentIEs') {
                   Map query = filterService.getIssueEntitlementQuery(params+[ieAcceptStatusFixed: true], previousSubscription)
                   List<IssueEntitlement> previousTipps = previousSubscription ? IssueEntitlement.executeQuery("select ie.tipp.id " + query.query, query.queryParams) : []
-                  sourceIEs = previousTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatusNotEqual(TitleInstancePackagePlatform.findAllByIdInList(previousTipps), previousSubscription, RDStore.TIPP_STATUS_DELETED) : []
-                  sourceIEs = sourceIEs + (sourceTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatusNotEqual(TitleInstancePackagePlatform.findAllByIdInList(targetIETipps), newSub, RDStore.TIPP_STATUS_DELETED) : [])
+                  sourceIEs = previousTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatusNotInList(TitleInstancePackagePlatform.findAllByIdInList(previousTipps), previousSubscription, [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]) : []
+                  sourceIEs = sourceIEs + (sourceTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatusNotInList(TitleInstancePackagePlatform.findAllByIdInList(targetIETipps), newSub, [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]) : [])
 
               }
 
@@ -474,7 +476,7 @@ class AjaxController {
               if(params.tab == 'selectedIEs') {
                   sourceTipps = selectedIETipps
                   sourceTipps = sourceTipps.minus(targetIETipps)
-                  sourceIEs = sourceTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatusNotEqual(TitleInstancePackagePlatform.findAllByIdInList(sourceTipps), newSub, RDStore.TIPP_STATUS_DELETED) : []
+                  sourceIEs = sourceTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatusNotInList(TitleInstancePackagePlatform.findAllByIdInList(sourceTipps), newSub, [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]) : []
               }
 
               sourceIEs.each { IssueEntitlement ie ->
@@ -488,8 +490,9 @@ class AjaxController {
                   pkgFilter << Package.get(filterParams.pkgFilter)
               else pkgFilter.addAll(SubscriptionPackage.executeQuery('select sp.pkg from SubscriptionPackage sp where sp.subscription.id = :sub', [sub: params.long("sub")]))
               Map<String, Object> tippFilter = filterService.getTippQuery(filterParams, pkgFilter.toList())
-              String query = tippFilter.query.replace("select tipp.id", "select tipp.gokbId").replace("order by lower(tipp.sortname) asc", "")
-              Set<String> tippUUIDs = TitleInstancePackagePlatform.executeQuery(query+" and not exists (select ie.id from IssueEntitlement ie join ie.tipp tipp2 where ie.subscription.id = :sub and tipp.id = tipp2.id and ie.status = tipp2.status)", tippFilter.queryParams+[sub: params.long("sub")])
+              String query = tippFilter.query.replace("select tipp.id", "select tipp.gokbId")
+              query = query.replace("where ", "where not exists (select ie.id from IssueEntitlement ie join ie.tipp tipp2 where ie.subscription.id = :sub and tipp.id = tipp2.id and ie.status = tipp2.status) and ")
+              Set<String> tippUUIDs = TitleInstancePackagePlatform.executeQuery(query, tippFilter.queryParams+[sub: params.long("sub")])
               tippUUIDs.each { String e ->
                   newChecked[e] = params.checked == 'true' ? 'checked' : null
               }
@@ -790,7 +793,7 @@ class AjaxController {
         def error
         def msg
         def ownerClass = params.ownerClass // we might need this for addCustomPropertyValue
-        def owner      = AppUtils.getDomainClass( ownerClass )?.getClazz()?.get(params.ownerId)
+        def owner      = CodeUtils.getDomainClass( ownerClass )?.get(params.ownerId)
 
         // TODO ownerClass
         if (PropertyDefinition.findByNameAndDescrAndTenantIsNull(params.cust_prop_name, params.cust_prop_desc)) {
@@ -888,7 +891,7 @@ class AjaxController {
     if(params.propIdent.length() > 0) {
       def error
       def newProp
-      def owner = AppUtils.getDomainClass( params.ownerClass )?.getClazz()?.get(params.ownerId)
+      def owner = CodeUtils.getDomainClass( params.ownerClass )?.get(params.ownerId)
         PropertyDefinition type = PropertyDefinition.get(params.propIdent.toLong())
         Org contextOrg = contextService.getOrg()
       def existingProp = owner.propertySet.find { it.type.name == type.name && it.tenant?.id == contextOrg.id }
@@ -1027,7 +1030,7 @@ class AjaxController {
         def error
         def newProp
         Org tenant = Org.get(params.tenantId)
-          def owner  = AppUtils.getDomainClass( params.ownerClass )?.getClazz()?.get(params.ownerId)
+          def owner  = CodeUtils.getDomainClass( params.ownerClass )?.get(params.ownerId)
           PropertyDefinition type   = PropertyDefinition.get(params.propIdent.toLong())
 
         if (! type) { // new property via select2; tmp deactivated
@@ -1212,7 +1215,7 @@ class AjaxController {
     @Secured(['ROLE_USER'])
     @Transactional
     def toggleIdentifierAuditConfig() {
-        def owner = AppUtils.getDomainClass( params.ownerClass )?.getClazz()?.get(params.ownerId)
+        def owner = CodeUtils.getDomainClass( params.ownerClass )?.get(params.ownerId)
         if(formService.validateToken(params)) {
             Identifier identifier  = Identifier.get(params.id)
 
@@ -1321,7 +1324,7 @@ class AjaxController {
     def togglePropertyAuditConfig() {
         String className = params.propClass.split(" ")[1]
         def propClass = Class.forName(className)
-        def owner     = AppUtils.getDomainClass( params.ownerClass )?.getClazz()?.get(params.ownerId)
+        def owner     = CodeUtils.getDomainClass( params.ownerClass )?.get(params.ownerId)
         def property  = propClass.get(params.id)
         def prop_desc = property.getType().getDescr()
         Org contextOrg = contextService.getOrg()
@@ -1408,7 +1411,7 @@ class AjaxController {
     def deleteCustomProperty() {
         String className = params.propClass.split(" ")[1]
         def propClass = Class.forName(className)
-        def owner     = AppUtils.getDomainClass( params.ownerClass )?.getClazz()?.get(params.ownerId)
+        def owner     = CodeUtils.getDomainClass( params.ownerClass )?.get(params.ownerId)
         def property  = propClass.get(params.id)
         def prop_desc = property.getType().getDescr()
         Org contextOrg = contextService.getOrg()
@@ -1470,7 +1473,7 @@ class AjaxController {
     def propClass = Class.forName(className)
     def property  = propClass.get(params.id)
     def tenant    = property.type.tenant
-    def owner     = AppUtils.getDomainClass( params.ownerClass )?.getClazz()?.get(params.ownerId)
+    def owner     = CodeUtils.getDomainClass( params.ownerClass )?.get(params.ownerId)
     def prop_desc = property.getType().getDescr()
 
     owner.propertySet.remove(property)
@@ -1524,7 +1527,7 @@ class AjaxController {
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = "You do not have permission to access ${contextService.getOrg().name} pages. Please request access on the profile page"
-            response.sendError(401)
+            response.sendError(HttpStatus.SC_FORBIDDEN)
             return
         }
 
@@ -1586,7 +1589,7 @@ class AjaxController {
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = "You do not have permission to access ${contextService.getOrg().name} pages. Please request access on the profile page"
-            response.sendError(401)
+            response.sendError(HttpStatus.SC_FORBIDDEN)
             return
         }
 
@@ -1651,9 +1654,9 @@ class AjaxController {
     @Secured(['ROLE_ORG_EDITOR'])
     @Transactional
     def deletePersonRole(){
-        def obj = genericOIDService.resolveOID(params.oid)
-        if (obj) {
-            obj.delete()
+        PersonRole personRole = genericOIDService.resolveOID(params.oid) as PersonRole
+        if (personRole) {
+            personRole.delete()
         }
     }
 
@@ -1720,14 +1723,14 @@ class AjaxController {
     log.debug("AjaxController::addToCollection ${params}");
 
     def contextObj = resolveOID2(params.__context)
-    GrailsClass domain_class = AppUtils.getDomainClass( params.__newObjectClass )
-    if ( domain_class ) {
+    Class dc = CodeUtils.getDomainClass( params.__newObjectClass )
+    if ( dc ) {
 
         if ( contextObj ) {
             log.debug("Create a new instance of ${params.__newObjectClass}")
 
-            def new_obj = domain_class.getClazz().newInstance();
-            PersistentEntity new_obj_pe = grailsApplication.mappingContext.getPersistentEntity(domain_class.getClazz().name)
+            def new_obj = dc.newInstance()
+            PersistentEntity new_obj_pe = CodeUtils.getPersistentEntity(dc.name)
 
             new_obj_pe.persistentProperties.each { p ->
                 if ( params[p.name] ) {
@@ -1753,32 +1756,6 @@ class AjaxController {
                     }
                 }
             }
-
-//        domain_class.getPersistentProperties().each { p -> // list of GrailsDomainClassProperty
-//          // log.debug("${p.name} (assoc=${p.isAssociation()}) (oneToMany=${p.isOneToMany()}) (ManyToOne=${p.isManyToOne()}) (OneToOne=${p.isOneToOne()})");
-//          if ( params[p.name] ) {
-//            if ( p.isAssociation() ) {
-//              if ( p.isManyToOne() || p.isOneToOne() ) {
-//                // Set ref property
-//                // log.debug("set assoc ${p.name} to lookup of OID ${params[p.name]}");
-//                // if ( key == __new__ then we need to create a new instance )
-//                def new_assoc = resolveOID2(params[p.name])
-//                if(new_assoc){
-//                  new_obj[p.name] = new_assoc
-//                }
-//              }
-//              else {
-//                // Add to collection
-//                // log.debug("add to collection ${p.name} for OID ${params[p.name]}");
-//                new_obj[p.name].add(resolveOID2(params[p.name]))
-//              }
-//            }
-//            else {
-//              // log.debug("Set simple prop ${p.name} = ${params[p.name]}");
-//              new_obj[p.name] = params[p.name]
-//            }
-//          }
-//        }
 
         if ( params.__recip ) {
           // log.debug("Set reciprocal property ${params.__recip} to ${contextObj}");
@@ -1824,14 +1801,14 @@ class AjaxController {
     String[] oid_components = oid.split(':')
     def result
 
-    GrailsClass domain_class = AppUtils.getDomainClass(oid_components[0])
-    if (domain_class) {
+    Class dc = CodeUtils.getDomainClass(oid_components[0])
+    if (dc) {
       if (oid_components[1] == '__new__') {
-        result = domain_class.getClazz().refdataCreate(oid_components)
+        result = dc.refdataCreate(oid_components)
         // log.debug("Result of create ${oid} is ${result?.id}");
       }
       else {
-        result = domain_class.getClazz().get(oid_components[1])
+        result = dc.get(oid_components[1])
       }
     }
     else {
@@ -1861,9 +1838,9 @@ class AjaxController {
     /**
      * This is the call route for processing an xEditable change other than reference data or role
      * @return the new value for display update in the xEditable field
-     * @see SemanticUiInplaceTagLib#xEditable
-     * @see SemanticUiInplaceTagLib#xEditableAsIcon
-     * @see SemanticUiInplaceTagLib#xEditableBoolean
+     * @see UiInplaceTagLib#xEditable
+     * @see UiInplaceTagLib#xEditableAsIcon
+     * @see UiInplaceTagLib#xEditableBoolean
      */
     @Secured(['ROLE_USER'])
     @Transactional
@@ -1965,7 +1942,7 @@ class AjaxController {
                     SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(target_object.surveyConfig, target_object.participant)
 
                     //If Survey Owner set Value then set FinishDate
-                    if (org?.id == target_object.owner.id && (target_object.type == RDStore.SURVEY_PROPERTY_PARTICIPATION) && surveyOrg.finishDate == null) {
+                    if (org?.id == target_object.owner.id && (target_object.type == PropertyStore.SURVEY_PROPERTY_PARTICIPATION) && surveyOrg.finishDate == null) {
                         String property = target_object.type.getImplClassValueProperty()
 
                         if (target_object[property] != null) {
@@ -2093,7 +2070,7 @@ class AjaxController {
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = "You do not have permission to access ${contextService.getOrg().name} pages. Please request access on the profile page"
-            response.sendError(401)
+            response.sendError(HttpStatus.SC_FORBIDDEN)
             return
         }
 

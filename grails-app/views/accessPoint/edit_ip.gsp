@@ -1,14 +1,8 @@
 <%@ page import="de.laser.oap.OrgAccessPoint; de.laser.storage.RDConstants" %>
-<laser:serviceInjection/>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <g:set var="entityName" value="${message(code: 'accessPoint.label')}"/>
-    <title>${message(code:'laser')} : <g:message code="default.edit.label" args="[entityName]"/></title>
-</head>
 
-<body>
+<g:set var="entityName" value="${message(code: 'accessPoint.label')}"/>
+<laser:htmlStart text="${message(code:"default.edit.label", args:[entityName])}" serviceInjection="true" />
+
 <laser:script file="${this.getGroovyPageFileName()}">
     $('body').attr('class', 'organisation_accessPoint_edit_${accessPoint.accessMethod}');
 </laser:script>
@@ -17,22 +11,22 @@
 
     <g:if test="${(accessService.checkPermAffiliation('ORG_BASIC_MEMBER', 'INST_EDITOR') && inContextOrg)
             || (accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR'))}">
-        <semui:controlButtons>
-            <semui:exportDropdown>
-                <semui:exportDropdownItem>
+        <ui:controlButtons>
+            <ui:exportDropdown>
+                <ui:exportDropdownItem>
                     <g:link class="item" action="edit_ip"
                             params="[id: accessPoint.id, exportXLSX: true]">${message(code: 'accessPoint.exportAccessPoint')}</g:link>
-                </semui:exportDropdownItem>
-            </semui:exportDropdown>
-        </semui:controlButtons>
+                </ui:exportDropdownItem>
+            </ui:exportDropdown>
+        </ui:controlButtons>
     </g:if>
 
-    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${orgInstance.name}</h1>
+    <ui:h1HeaderWithIcon text="${orgInstance.name}" />
 
     <laser:render template="/organisation/nav" model="${[orgInstance: accessPoint.org, inContextOrg: inContextOrg, tmplAccessPointsActive: true]}"/>
 
     <h2 class="ui header la-noMargin-top"><g:message code="default.edit.label" args="[entityName]"/></h2>
-    <semui:messages data="${flash}"/>
+    <ui:messages data="${flash}"/>
 
 
     <div class="la-inline-lists">
@@ -40,7 +34,7 @@
             <div class="content">
                 <dl>
                     <dt><g:message code="default.name.label" /></dt>
-                    <dd><semui:xEditable owner="${accessPoint}" field="name"/></dd>
+                    <dd><ui:xEditable owner="${accessPoint}" field="name"/></dd>
                 </dl>
                 <dl>
                     <dt><g:message code="accessMethod.label" /></dt>
@@ -54,8 +48,8 @@
     </div>
 
     <div class="ui top attached stackable tabular menu">
-        <a class="${tab == 'IPv4' ? 'active': ''} item" data-tab="IPv4">IPv4 <semui:totalNumber total="${accessPointDataList.ipv4Ranges.size()}"/></a>
-        <a class="${tab == 'IPv6' ? 'active': ''} item" data-tab="IPv6">IPv6 <semui:totalNumber total="${accessPointDataList.ipv6Ranges.size()}"/></a>
+        <a class="${tab == 'IPv4' ? 'active': ''} item" data-tab="IPv4">IPv4 <ui:totalNumber total="${accessPointDataList.ipv4Ranges.size()}"/></a>
+        <a class="${tab == 'IPv6' ? 'active': ''} item" data-tab="IPv6">IPv6 <ui:totalNumber total="${accessPointDataList.ipv6Ranges.size()}"/></a>
     </div>
 
 
@@ -122,7 +116,7 @@
                                 <g:field type="text" name="ip" id="ipv4_ip" value="${ip}"/>
                             </g:else>
                         </div>
-                        <input type="Submit" class="ui button"
+                        <input type="submit" class="ui button"
                                value="${message(code: 'accessPoint.button.add')}" />
                     </div>
                 </g:form>
@@ -153,7 +147,7 @@
                 <td>${accessPointData.ipInput}</td>
                 <td>
                     <g:set var="ipv6AdressRange" value="${accessPointData.ipRange.split('-')}"/>
-                    ${ipv6AdressRange[0]} -<br>
+                    ${ipv6AdressRange[0]} - <br/>
                     ${ipv6AdressRange.size() > 1 ? ipv6AdressRange[1] : ""}
                 </td>
                 <td>${accessPointData.ipCidr}</td>
@@ -196,7 +190,7 @@
                             <g:field type="text" name="ip" id="ipv6_ip" value="${ip}"/>
                         </g:else>
                     </div>
-                    <input type="Submit" class="ui button"
+                    <input type="submit" class="ui button"
                            value="${message(code: 'accessPoint.button.add')}" />
                 </div>
             </g:form>
@@ -211,5 +205,4 @@
               model="${[accessPoint: accessPoint, params: params, linkedPlatforms: linkedPlatforms, linkedPlatformSubscriptionPackages: linkedPlatformSubscriptionPackages]}"/>
 </div>
 
-</body>
-</html>
+<laser:htmlEnd />

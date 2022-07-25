@@ -1,5 +1,5 @@
 
-## Upgrade from Grails 3.3.11 to Grails 5.1.8
+## Upgrade from Grails 3.3.11 to Grails 5.2.1
 
 ### SpringBootDeveloperTools
 
@@ -17,7 +17,13 @@ Two different versions are currently used. New code should always use *org.apach
 ### Configuration
 
 Accessing configuration through dot notation *(config.a.b.c)* has been **deprecated**. 
-The configuration should be accessed via *de.laser.utils.ConfigMapper* so that settings can be maintained and validated at any time.
+The configuration should be accessed via *de.laser.config.ConfigMapper* so that settings can be maintained and validated at any time.
+Fallbacks and default values should be stored in *de.laser.config.ConfigDefaults*
+
+### Custom Tags
+
+Default namespace for custom tags has been changed from **semui** to **ui**. System related namespace is still **laser**. 
+Domain specific namespaces have been added.
 
 ### Database Migrations
 
@@ -30,19 +36,28 @@ To avoid confusion, the difference between localized and fixed usage in *de.lase
 
 ### ExecutorGrailsPlugin
 
-*org.grails.plugins:grails-executor* is deprecated. Replacement should take place.
+*org.grails.plugins:grails-executor* is deprecated as Grails already has similar functionality build in. Replacement should take place.
 
-### Fallbacks
+### ~~Fallbacks~~
 
-The following fallbacks have been set for faster migration. They can be treated later.
+~~The following fallbacks have been set for faster migration. They can be treated later.~~
 
-    grails.views.gsp.codecs.scriptlet: none
-    hibernate.allow_update_outside_transaction: true
+* ~~hibernate.allow_update_outside_transaction: true~~
+
+### Git
+
+The produktive branch has been renamed from *master* to *main*.
 
 ### HTTPBuilder
 
 *org.codehaus.groovy.modules.http-builder:http-builder* is outdated.
 A migration to *de.laser.http.BasicHttpClient* should take place.
+
+### HTTP Status Codes
+
+    401 Unauthorized            - authentication/login is required (only)
+    403 Forbidden               - missing permissions   
+    500 Internal Server Error   - processing failed due unexpected conditions
 
 ### Localization
 
@@ -89,6 +104,7 @@ Use BeanStore for static and non-static access to services and other beans.
     static ContextService getContextService() {
         Holders.grailsApplication.mainContext.getBean('contextService') as ContextService
     }
+
 ### Websockets
 
 Todo: Websocket communication is broken after upgrading from Grails 4 to Grails 5.
@@ -103,7 +119,7 @@ Todo: Websocket communication is broken after upgrading from Grails 4 to Grails 
 
 * #### GPars
 
-    *org.codehaus.gpars:gpars* is only used in one file.
+    *org.codehaus.gpars:gpars* is outdated and only used in one file.
 
 * #### Juniversalchardet
 

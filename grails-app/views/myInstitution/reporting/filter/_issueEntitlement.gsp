@@ -21,10 +21,10 @@
                     <div class="fields">
                 </g:if>
                 <g:else>
-                    <div class="fields <laser:numberToString number="${cfgFilter.size()}" min="2"/>">
+                    <div class="fields <reporting:numberToString number="${cfgFilter.size()}" min="2"/>">
                 </g:else>
                     <g:each in="${cfgFilter}" var="field">
-                        <laser:reportFilterField config="${config}" field="${field}" />
+                        <reporting:filterField config="${config}" field="${field}" />
                     </g:each>
                 </div>
             </g:each>

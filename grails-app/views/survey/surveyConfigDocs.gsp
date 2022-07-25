@@ -1,42 +1,33 @@
 <%@ page import="de.laser.survey.SurveyConfig;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;" %>
-<laser:serviceInjection/>
+<laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyConfigDocs.label')})" serviceInjection="true"/>
 
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'survey.label')} (${message(code: 'surveyConfigDocs.label')})</title>
-</head>
-
-<body>
-
-<semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg().getDesignation()}"/>
-    <semui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
+<ui:breadcrumbs>
+    <ui:crumb controller="myInstitution" action="dashboard" text="${contextService.getOrg().getDesignation()}"/>
+    <ui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
     <g:if test="${surveyInfo}">
-        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}"
+        <ui:crumb controller="survey" action="show" id="${surveyInfo.id}"
                      params="[surveyConfigID: surveyConfig.id]" text="${surveyConfig?.getConfigNameShort()}"/>
     </g:if>
-    <semui:crumb message="surveyConfigDocs.label" class="active"/>
-</semui:breadcrumbs>
+    <ui:crumb message="surveyConfigDocs.label" class="active"/>
+</ui:breadcrumbs>
 
 
-<semui:controlButtons>
+<ui:controlButtons>
     <laser:render template="actions"/>
-</semui:controlButtons>
+</ui:controlButtons>
 
-<h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
-<semui:xEditable owner="${surveyInfo}" field="name"/>
-</h1>
-<semui:surveyStatusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="surveyConfigDocs"/>
+<ui:h1HeaderWithIcon type="Survey">
+<ui:xEditable owner="${surveyInfo}" field="name"/>
+</ui:h1HeaderWithIcon>
+<survey:statusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="surveyConfigDocs"/>
 
 
 <laser:render template="nav"/>
 
-<semui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
+<ui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
 
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 <br />
 
@@ -80,10 +71,10 @@
 --}%
     <div class="sixteen wide stretched column">
 
-        <semui:form>
+        <ui:form>
 
             <div class="four wide column">
-                <button type="button" class="ui icon button blue la-modern-button right floated" data-semui="modal"
+                <button type="button" class="ui icon button blue la-modern-button right floated" data-ui="modal"
                         data-href="#modalCreateDocument"><i class="plus icon"></i></button>
                 <laser:render template="/templates/documents/modal"
                           model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
@@ -127,7 +118,7 @@
                                 <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i
                                         class="download icon"></i></g:link>
                                 <g:if test="${editable && !docctx.sharedFrom}">
-                                    <button type="button" class="ui icon blue button la-modern-button la-popup-tooltip la-delay" data-semui="modal"
+                                    <button type="button" class="ui icon blue button la-modern-button la-popup-tooltip la-delay" data-ui="modal"
                                             href="#modalEditDocument_${docctx.id}"
                                             data-content="${message(code: "template.documents.edit")}"
                                             aria-label="${message(code: 'ariaLabel.change.universal')}">
@@ -153,10 +144,9 @@
                 <laser:render template="/templates/documents/modal"
                           model="${[ownobj: surveyConfig, owntp: surveyConfig, docctx: docctx, doc: docctx.owner]}"/>
             </g:each>
-        </semui:form>
+        </ui:form>
     </div>
 
 </g:if>
 
-</body>
-</html>
+<laser:htmlEnd />

@@ -3,7 +3,7 @@ package de.laser
 
 import de.laser.properties.SubscriptionProperty
 import de.laser.properties.PropertyDefinition
-import de.laser.utils.ConfigMapper
+import de.laser.config.ConfigMapper
 import de.laser.storage.RDStore
 import grails.plugin.springsecurity.annotation.Secured
 import grails.plugins.mail.MailService

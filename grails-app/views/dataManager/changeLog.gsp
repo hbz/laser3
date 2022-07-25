@@ -1,15 +1,8 @@
-<!doctype html>
-<html>
-  <head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} ${message(code:'menu.datamanager.changelog')}</title>
-  </head>
-
-  <body>
+<laser:htmlStart message="menu.datamanager.changelog" />
   
-    <semui:breadcrumbs>
-      <semui:crumb message="menu.datamanager" controller="dataManager" action="index"/>
-      <semui:crumb message="menu.datamanager.changelog" class="active"/>
+    <ui:breadcrumbs>
+      <ui:crumb message="menu.datamanager" controller="dataManager" action="index"/>
+      <ui:crumb message="menu.datamanager.changelog" class="active"/>
 
       <li class="dropdown la-float-right">
         <a class="dropdown-toggle badge" id="export-menu" role="button" data-toggle="dropdown" data-target="#" href="">${message(code:'default.button.exports.label')}<strong class="caret"></strong></a>
@@ -17,20 +10,20 @@
           <li><g:link controller="dataManager" action="changeLog" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link></li>
         </ul>
       </li>
-    </semui:breadcrumbs>
+    </ui:breadcrumbs>
 
-      <h1 class="ui header la-clear-before la-noMargin-top">${message(code:'menu.datamanager.changelog')}</h1>
+      <ui:h1HeaderWithIcon message="menu.datamanager.changelog" />
 
       <h2 class="ui header">${message(code:'menu.institutions.change_log')} <span class="la-float-right">${message(code:'datamanager.changeLog.num_changes', args:[num_hl])}</span></h2>
 
-      <semui:messages data="${flash}" />
+      <ui:messages data="${flash}" />
 
-        <semui:filter>
+        <ui:filter>
             <g:form action="changeLog" controller="dataManager" method="get" class="ui form">
                 <div class="three fields">
-                    <semui:datepicker label="datamanager.changeLog.from_date" id="startDate" name="startDate" placeholder="default.date.label" value="${params.startDate}" />
+                    <ui:datepicker label="datamanager.changeLog.from_date" id="startDate" name="startDate" placeholder="default.date.label" value="${params.startDate}" />
 
-                    <semui:datepicker label="datamanager.changeLog.to_date" id="endDate" name="endDate" placeholder="default.date.label" value="${params.endDate}" />
+                    <ui:datepicker label="datamanager.changeLog.to_date" id="endDate" name="endDate" placeholder="default.date.label" value="${params.endDate}" />
 
                     <div class="field">
                         <label>${message(code:'datamanager.changeLog.actor')}</label>
@@ -70,7 +63,7 @@
                 <input  class="ui button" type="submit" value="${message(code:'default.button.submit.label')}"/>
             </div>
       </g:form>
-      </semui:filter>
+      </ui:filter>
 
     <g:set var="counter" value="${offset?:-1 +1}" />
 
@@ -114,7 +107,7 @@
         </table>
 
         <g:if test="${historyLines != null}" >
-          <semui:paginate  action="changeLog" controller="dataManager" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" maxsteps="${max}" total="${num_hl}" />
+          <ui:paginate action="changeLog" controller="dataManager" params="${params}" maxsteps="${max}" total="${num_hl}" />
         </g:if>
 
     </g:if>
@@ -122,5 +115,4 @@
       <div class="container alert-warn">
       </div>
     </g:else>
-  </body>
-</html>
+<laser:htmlEnd />

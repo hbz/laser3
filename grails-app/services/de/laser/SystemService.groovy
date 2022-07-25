@@ -1,6 +1,6 @@
 package de.laser
 
-import de.laser.utils.ConfigMapper
+import de.laser.config.ConfigMapper
 import de.laser.remote.ApiSource
 import de.laser.remote.GlobalRecordSource
 import de.laser.system.SystemMessage

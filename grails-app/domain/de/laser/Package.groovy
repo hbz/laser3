@@ -4,11 +4,13 @@ import de.laser.annotations.RefdataInfo
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
+import de.laser.utils.DateUtils
 import grails.web.servlet.mvc.GrailsParameterMap
 
 import javax.persistence.Transient
 import java.text.Normalizer
 import java.text.SimpleDateFormat
+import java.util.regex.Pattern
 
 /**
  * This class reflects a title package which may be subscribed as a whole or partially (e.g. pick-and-choose).
@@ -191,7 +193,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
 
     String hqlString = "select pkg from Package pkg where lower(pkg.name) like ? "
     def hqlParams = [((params.q ? params.q.toLowerCase() : '' ) + "%")]
-      SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd")
+      SimpleDateFormat sdf = DateUtils.getSDF_yyyyMMdd()
 
     if(params.hasDate ){
         Date startDate = params.startDate.length() > 1 ? sdf.parse(params.startDate) : null
@@ -215,7 +217,7 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     List queryResults = Package.executeQuery(hqlString, hqlParams)
 
     queryResults?.each { t ->
-      def resultText = t.name
+      String resultText = t.name
       String date = t.startDate? " (${sdf.format(t.startDate)})" :""
       resultText = params.inclPkgStartDate == "true" ? resultText + date : resultText
       resultText = params.hideIdent == "true" ? resultText : resultText+" (${t.identifier})"
@@ -256,11 +258,21 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
   static String generateSortName(String input_title) {
     if (!input_title) return null
     String s1 = Normalizer.normalize(input_title, Normalizer.Form.NFKD).trim().toLowerCase()
+      Pattern punctuation = Pattern.compile('\\p{P}')
+      s1 = s1.replaceAll(punctuation, '')
     s1 = s1.replaceFirst('^copy of ','')
     s1 = s1.replaceFirst('^the ','')
     s1 = s1.replaceFirst('^a ','')
+    s1 = s1.replaceFirst('^an ','')
     s1 = s1.replaceFirst('^der ','')
-
+    s1 = s1.replaceFirst('^die ','')
+    s1 = s1.replaceFirst('^das ','')
+    s1 = s1.replaceFirst('^l\'','')
+    s1 = s1.replaceFirst('^le ','')
+    s1 = s1.replaceFirst('^la ','')
+    s1 = s1.replaceFirst('^les ','')
+    s1 = s1.replaceFirst('^des ','')
+    s1 = s1.replaceAll('°', ' ') //no trailing or leading °, so trim() is not needed
     return s1.trim()
 
   }

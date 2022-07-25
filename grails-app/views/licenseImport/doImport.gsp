@@ -1,26 +1,18 @@
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <g:set var="entityName" value="${message(code: 'onixplLicense.license.label')}" />
-    <title>${message(code:'laser')} : <g:message code="default.import.label" args="[entityName]" /></title>
-</head>
-<body>
-<div>
-
+<g:set var="entityName" value="${message(code: 'onixplLicense.license.label')}" />
+<laser:htmlStart text="${message(code:"default.import.label", args:[entityName])}" />
 
         <g:unless test="${validationResult?.success}">
-            <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'onix.import.license')}
-            <g:if test="${license}"> ${message(code:'onix.import.for_license', args:[license.reference])}</g:if>
-            <g:else> ${message(code:'onix.import.unspec')}</g:else>
-            </h1>
+            <ui:h1HeaderWithIcon message="onix.import.license">
+                <g:if test="${license}"> ${message(code:'onix.import.for_license', args:[license.reference])}</g:if>
+                <g:else> ${message(code:'onix.import.unspec')}</g:else>
+            </ui:h1HeaderWithIcon>
             <br />
         </g:unless>
 
 
-    <semui:messages data="${flash}" />
+    <ui:messages data="${flash}" />
 
-    <semui:errors bean="${packageInstance}" />
+    <ui:errors bean="${packageInstance}" />
 
     <%-- Show summary --%>
     <g:if test="${validationResult}">
@@ -124,6 +116,4 @@
         </div>
     </g:if>
 
-</div>
-</body>
-</html>
+<laser:htmlEnd />

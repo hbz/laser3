@@ -1,12 +1,6 @@
 <%@ page import="de.laser.*; de.laser.auth.*" %>
-<laser:serviceInjection />
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'menu.institutions.users')}</title>
-</head>
-<body>
+<laser:htmlStart message="menu.institutions.users" serviceInjection="true"/>
+
         <g:if test="${controllerName == 'myInstitution'}">
         %{-- myInstitution has no breadcrumb yet --}%
             <laser:render template="/organisation/breadcrumb" model="${[ inContextOrg: inContextOrg, orgInstance: orgInstance, institutionalView: institutionalView, params:params ]}"/>
@@ -18,13 +12,11 @@
             <laser:render template="/user/breadcrumb" model="${[ inContextOrg: inContextOrg, orgInstance: orgInstance, institutionalView: institutionalView, params:params ]}"/>
         </g:if>
 
-        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
-            ${titleMessage} <semui:totalNumber total="${total}"/>
-        </h1>
+        <ui:h1HeaderWithIcon text="${titleMessage}" total="${total}" />
 
-        <semui:controlButtons>
+        <ui:controlButtons>
             <laser:render template="/user/global/actions" />
-        </semui:controlButtons>
+        </ui:controlButtons>
 
         <g:if test="${controllerName == 'myInstitution'}">
             <laser:render template="/organisation/nav" model="${navConfig}"/>
@@ -36,12 +28,11 @@
         <laser:render template="/templates/user/filter" model="${filterConfig}"/>
 
         <g:if test="${multipleAffiliationsWarning}">
-            <div class="ui info message la-clear-before">${message(code:'user.edit.info')}</div>
+            <ui:msg class="info" noClose="true" message="user.edit.info" />
         </g:if>
 
-        <semui:messages data="${flash}" />
+        <ui:messages data="${flash}" />
 
         <laser:render template="/templates/user/list" model="${tmplConfig}" />
 
-</body>
-</html>
+<laser:htmlEnd />

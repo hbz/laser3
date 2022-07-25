@@ -10,7 +10,7 @@
       <tr>
         <th>Item</th>
         <th>Details</th>
-        <th>Action</th>
+        <th>${message(code:'default.action.label')}</th>
       </tr>
       </thead>
       <tbody>

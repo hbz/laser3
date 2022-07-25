@@ -1,0 +1,268 @@
+/* ONLY TMP, REMOVE LATER */
+
+.ui.main {
+    padding-bottom: 3em;
+}
+
+/* myInstitutions/../dashboard */
+.ui.main .home-page {
+    margin-bottom: 1em;
+}
+.myInstitution_dashboard .ui.tab.active {
+    min-height: 150px;
+}
+
+/* hyperlinks */
+.ui.main a[class~=button],.ui.main a[class~=button]:hover {
+    border-bottom: none;
+}
+.ui.main .select2-container .select2-choice {
+    border-bottom: 1px solid #aaa;
+}
+
+/* form validation */
+.ui.form input:focus:invalid:focus,
+.ui.form textarea:focus:invalid:focus,
+.ui.form select:focus:invalid:focus,
+.ui.form input.calc.invalidCostCalc {
+    border-color: #e9322d;
+    box-shadow: 0 0 6px #f8b9b7;
+}
+/* form validation */
+.ui.form input:focus:invalid,
+.ui.form textarea:focus:invalid,
+.ui.form select:focus:invalid {
+    color: #b94a48;
+    border-color: #ee5f5b;
+}
+
+/* stretch content vertically */
+.ui.main .inline-lists dd,
+.ui.main .inline-lists dt {
+    line-height: 2em;
+}
+
+/**/
+.ui.main .ui.segment.form-actions {
+    background-color: #F9FAFB;
+}
+
+/* new semui modals .. MUST BE FIXED */
+.ui.main .ui.modal {
+    top: 15%;
+    z-index: 9999;
+}
+
+.ui.button > i.icon {
+    margin-right: 0 !important;
+    opacity: 1 !important;
+}
+
+/* select 2 */
+
+.ui .select2-container {
+    vertical-align: top;
+    width: inherit;
+}
+.ui .select2-container .select2-choice {
+    height: 36px;
+}
+.ui .select2-container .select2-choice > .select2-chosen {
+    line-height: 36px;
+}
+
+/* <type>Details/show */
+
+.ui.main div.inline-lists dl > dt,
+.ui.main div.inline-lists dl > dd {
+    line-height: 2.25em;
+}
+
+.ui.main div.inline-lists dl > dd > .ui.list {
+    margin: 0;
+}
+
+/* property forms in tables */
+
+.ui .table tfoot form {
+    margin: 0;
+}
+
+/* semantic ui - upgrade to 2.3 - start */
+
+.ui.modal {
+    left: initial; /* BUG !? */
+}
+/* semantic ui - upgrade to 2.3 - stop */
+
+/* dashboard tasks */
+
+body.myInstitution_dashboard .ui.tab .item .header {
+    margin: 0.5rem 0;
+}
+
+/* mainSearch */
+
+#mainSearch {
+}
+#mainSearch .prompt {
+    padding: 0.25rem 0.25rem 0.25rem 0.5rem;
+    border-radius: 0;
+    color: #555;
+}
+#mainSearch .input {
+    height: 60%;
+}
+
+/* select2 helper @ finance */
+
+.la-full-width {
+    width: 100%;
+}
+
+/* la-forward-back */
+
+.ui .la-forward-back i.icon {
+    margin: 0 !important;
+}
+
+/* la-bulk-header */
+
+.ui table.la-bulk-header thead {
+    background: white;
+}
+.ui table.la-bulk-header thead tr {
+}
+.ui table.la-bulk-header thead tr td,
+.ui table.la-bulk-header thead tr th {
+    line-height: 1rem;
+    border-bottom: 3px solid #e6eaef;
+}
+
+/* hotfix - finance */
+
+.ui.form .la-account-currency .field .calc {
+    float: left;
+}
+
+/* hotfix - visible elements with class hidden */
+
+.hidden {
+    display: none !important;
+}
+
+/* grid hover @ cpa */
+
+.ui.internally.grid > .row:hover {
+    background: rgba(0,0,0,.03);
+    color: rgba(0,0,0,.8);
+    transition: 0.1s color ease, 0.1s background-color ease;
+}
+
+#maintenance *, #systemMessages {
+    color: #2f2f2f !important;
+}
+#maintenance {
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    font-size: 1.1em;
+    border-top: 2px solid orange;
+}
+#maintenance > .segment {
+    padding: 3em 0;
+    font-size: 1.1em;
+}
+#maintenance > .segment > .header {
+    margin-top: 0 !important;
+}
+
+/* fix: bouncing top nav bar */
+
+.ui.fixed.inverted.menu {
+    min-height: 50px;
+}
+
+/* overrides default disabled element behavior, is for SemanticUiNavigationTagLib::securedMainNavItemDisabled and myInstitution/dashboard.gsp */
+
+.item .disabled[data-tooltip]{
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    color: rgba(0,0,0,0.3)
+}
+
+/* table-td-colors @ yoda/admin */
+
+.ui.la-table.table tr td[class^=table-td]       { vertical-align: top; }
+.ui.la-table.table tr td.table-td-yoda-blank    { }
+.ui.la-table.table tr td.table-td-yoda-green    { background-color: rgba(145, 204, 117, 0.15); }
+.ui.la-table.table tr td.table-td-yoda-yellow   { background-color: rgba(250, 200,  88, 0.15); }
+.ui.la-table.table tr td.table-td-yoda-red      { background-color: rgba(238, 102, 102, 0.15); }
+.ui.la-table.table tr td.table-td-yoda-blue     { background-color: rgba( 84, 112, 198, 0.15); }
+
+/* la-hover-table */
+
+.ui.table.la-hover-table tr.la-active {
+    outline: 1px solid #175784;
+    outline-offset: -1px;
+}
+
+/* loadingIndicator */
+
+#loadingIndicator {
+    position: fixed;
+    bottom: 3px;
+    left: 3px;
+    padding: 10px 15px;
+    font-weight: 700;
+    color: rgba(0,0,0, 0.6);
+    background-color: #e8e8e8;
+}
+
+/* debug info */
+
+#showSystemInfo {
+    position: fixed;
+    bottom: 40px;
+    right: 10px;
+}
+
+#showDebugInfo {
+    position: fixed;
+    bottom: 40px;
+    right: 55px;
+}
+
+#system-profiler {
+    position: fixed;
+    bottom: 3px;
+    right: 1px;
+}
+
+/* -- 2021-01-06 -- */
+
+main.ui.container.main {
+    position: relative;
+    padding-top: 0;             /* 105px */
+    margin-top: 105px;          /* switched from padding to margin */
+}
+.main > nav.ui.breadcrumb {
+    display: block !important;  /* full width to avoid <br> tags and other hacks */
+}
+.main > nav.ui.buttons {
+    position: absolute;         /* right upper corner */
+    top: 0;
+    right: 0;
+}
+
+/* -- new header icons -- */
+
+h1.header.icon > i.dna {
+    background-color:#d12e34; border-color:#d12e34; color:white;
+}
+h1.header.icon > i.hdd {
+    background-color:#b5c334; border-color:#b5c334; color:white;
+}
+h1.header.icon > i.trophy {
+    background-color:#f3a43b; border-color:#f3a43b; color:white;
+}

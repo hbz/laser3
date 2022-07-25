@@ -1,18 +1,13 @@
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'license.nav.todo_history')}</title>
-</head>
-<body>
+<laser:htmlStart message="license.nav.todo_history" />
+
     <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
-    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
-        <semui:xEditable owner="${license}" field="reference" id="reference"/>
-        <semui:totalNumber total="${todoHistoryLinesTotal}"/>
-    </h1>
+    <ui:h1HeaderWithIcon>
+        <ui:xEditable owner="${license}" field="reference" id="reference"/>
+        <ui:totalNumber total="${todoHistoryLinesTotal}"/>
+    </ui:h1HeaderWithIcon>
 
-    <semui:anualRings object="${license}" controller="license" action="show" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
+    <ui:anualRings object="${license}" controller="license" action="show" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
 
     <laser:render template="nav" />
 
@@ -47,7 +42,6 @@
                 </g:else>
 
                 <g:if test="${hl.status?.value in ['Accepted', 'Rejected']}">
-                    <%--${message(code:'subscription.details.todo_history.by_on', args:[(hl.user?.display ?: hl.user?.username)])}--%>
                     / <g:formatDate format="${message(code:'default.date.format.notime')}" date="${hl.actionDate}"/>
                 </g:if>
               </td>
@@ -59,8 +53,7 @@
         </g:if>
       </table>
 
-        <semui:paginate  action="todoHistory" controller="license" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" max="${max}" total="${todoHistoryLinesTotal}" />
+        <ui:paginate action="todoHistory" controller="license" params="${params}" max="${max}" total="${todoHistoryLinesTotal}" />
 
 
-</body>
-</html>
+<laser:htmlEnd />

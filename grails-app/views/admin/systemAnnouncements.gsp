@@ -1,27 +1,20 @@
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'menu.admin.announcements')}</title>
-    </head>
+<laser:htmlStart message="menu.admin.announcements" />
 
-    <body>
-
-    <semui:breadcrumbs>
-        <semui:crumb message="menu.admin" controller="admin" action="index"/>
-        <semui:crumb message="menu.admin.announcements" class="active"/>
-    </semui:breadcrumbs>
+    <ui:breadcrumbs>
+        <ui:crumb message="menu.admin" controller="admin" action="index"/>
+        <ui:crumb message="menu.admin.announcements" class="active"/>
+    </ui:breadcrumbs>
 
     <g:if test="${currentAnnouncement}">
-        <h1 class="ui left floated aligned header la-clear-before">${message(code:'announcement.update.label')}</h1>
+        <ui:h1HeaderWithIcon message="announcement.update.label" />
     </g:if>
     <g:else>
-        <h1 class="ui left floated aligned header la-clear-before">${message(code:'announcement.create.label')}</h1>
+        <ui:h1HeaderWithIcon message="announcement.create.label" />
     </g:else>
 
-    <semui:messages data="${flash}" />
+    <ui:messages data="${flash}" />
 
-    <semui:form>
+    <ui:form>
         <g:form action="createSystemAnnouncement" class="ui form">
             <input type="hidden" name="saId" value="${currentAnnouncement?.id}">
             <div class="field">
@@ -65,17 +58,17 @@ ${currentAnnouncement?.getCleanContent()}
                 </g:else>
             </div>
         </g:form>
-    </semui:form>
+    </ui:form>
 
     <br />
-    <h2 class="ui  header la-clear-before">${message(code:'announcement.previous.label')}</h2>
+    <h2 class="ui header la-clear-before">${message(code:'announcement.previous.label')}</h2>
 
 
     <g:if test="${mailDisabled}">
-        <semui:msg class="warning" header="${message(code:'default.hint.label')}" text="${message(code:'system.config.mail.disabled')}" />
+        <ui:msg class="warning" header="${message(code:'default.hint.label')}" message="system.config.mail.disabled" />
     </g:if>
     <g:else>
-        <semui:msg class="info" header="${message(code:'default.hint.label')}" text="${message(code:'announcement.recipient.count.info', args:[numberOfCurrentRecipients])}" />
+        <ui:msg class="info" header="${message(code:'default.hint.label')}" text="${message(code:'announcement.recipient.count.info', args:[numberOfCurrentRecipients])}" />
     </g:else>
 
     <div>
@@ -176,5 +169,4 @@ ${currentAnnouncement?.getCleanContent()}
         </g:each>
     </div>
 
-  </body>
-</html>
+<laser:htmlEnd />

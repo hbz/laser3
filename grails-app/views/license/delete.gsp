@@ -1,17 +1,8 @@
-<g:set var="deletionService" bean="deletionService" />
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'license.label')}</title>
-</head>
+<laser:htmlStart message="license.label" serviceInjection="true"/>
 
-<body>
     <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
-    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
-        ${license.reference}
-    </h1>
+    <ui:h1HeaderWithIcon text="${license.reference}" />
 
     <g:if test="${delResult.status != deletionService.RESULT_SUCCESS}">
         <laser:render template="nav" />
@@ -19,17 +10,17 @@
 
     <g:if test="${delResult}">
         <g:if test="${delResult.status == deletionService.RESULT_SUCCESS}">
-            <semui:msg class="positive" header="" message="deletion.success.msg" />
+            <ui:msg class="positive" message="deletion.success.msg" />
             <g:link controller="myInstitution" action="currentLicenses" class="ui button">${message(code:'menu.my.licenses')}</g:link>
         </g:if>
         <g:else>
-            <semui:msg class="info" header="" message="license.delete.info" />
+            <ui:msg class="info" message="license.delete.info" />
 
             <g:if test="${delResult.status == deletionService.RESULT_BLOCKED}">
-                <semui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="deletion.blocked.msg.license" />
+                <ui:msg class="negative" header="${message(code: 'deletion.blocked.header')}" message="deletion.blocked.msg.license" />
             </g:if>
             <g:if test="${delResult.status == deletionService.RESULT_ERROR}">
-                <semui:msg class="negative" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
+                <ui:msg class="negative" header="${message(code: 'deletion.error.header')}" message="deletion.error.msg" />
             </g:if>
 
             <g:link controller="myInstitution" action="currentLicenses" class="ui button">${message(code:'menu.my.licenses')}</g:link>
@@ -51,7 +42,7 @@
             <thead>
             <tr>
                 <th>Anhängende, bzw. referenzierte Objekte</th>
-                <th>Anzahl</th>
+                <th>${message(code:'default.count.label')}</th>
                 <th>Objekt-Ids</th>
             </tr>
             </thead>
@@ -84,5 +75,4 @@
         </table>
     </g:if>
 
-</body>
-</html>
+<laser:htmlEnd />

@@ -1,65 +1,55 @@
 <%@ page import="de.laser.titles.BookInstance; de.laser.remote.ApiSource; de.laser.storage.RDStore; de.laser.Subscription; de.laser.Platform; de.laser.Org; de.laser.IssueEntitlementGroup;" %>
-<laser:serviceInjection/>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'subscription.details.renewEntitlements.label')}</title>
-</head>
+<laser:htmlStart message="subscription.details.renewEntitlements.label" serviceInjection="true"/>
 
-<body>
-<semui:breadcrumbs>
-    <semui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
+<ui:breadcrumbs>
+    <ui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
 
     <g:if test="${surveyInfo}">
-        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}"
+        <ui:crumb controller="survey" action="show" id="${surveyInfo.id}"
                      params="[surveyConfigID: surveyConfig.id]" text="${surveyInfo.name}"/>
-        <semui:crumb class="active" controller="survey" action="surveyEvaluation" id="${surveyInfo.id}"
+        <ui:crumb class="active" controller="survey" action="surveyEvaluation" id="${surveyInfo.id}"
                      params="[surveyConfigID: surveyConfig.id]" message="surveyEvaluation.titles.label"/>
     </g:if>
 
-</semui:breadcrumbs>
+</ui:breadcrumbs>
 
-<semui:controlButtons>
-    <semui:exportDropdown>
-        <semui:exportDropdownItem>
+<ui:controlButtons>
+    <ui:exportDropdown>
+        <ui:exportDropdownItem>
             <g:link class="item" action="renewEntitlements" id="${surveyConfig.id}"
                     params="${[exportKBart: true, participant: participant.id]}">KBART Export</g:link>
-        </semui:exportDropdownItem>
-        <semui:exportDropdownItem>
+        </ui:exportDropdownItem>
+        <ui:exportDropdownItem>
             <g:link class="item" action="renewEntitlements" id="${surveyConfig.id}"
                     params="${[exportXLSX: true, participant: participant.id]}">${message(code: 'default.button.exports.xls')}</g:link>
-        </semui:exportDropdownItem>
-    </semui:exportDropdown>
+        </ui:exportDropdownItem>
+    </ui:exportDropdown>
 
         <g:if test="${surveyInfo.status.id in [RDStore.SURVEY_SURVEY_STARTED.id, RDStore.SURVEY_SURVEY_COMPLETED.id]}">
-            <semui:actionsDropdown>
+            <ui:actionsDropdown>
                 <g:if test="${surveyOrg.finishDate}">
-                    <semui:actionsDropdownItem controller="survey" action="openSurveyAgainForParticipant"
+                    <ui:actionsDropdownItem controller="survey" action="openSurveyAgainForParticipant"
                                                params="[surveyConfigID: surveyConfig.id, participant: participant.id]"
                                                message="openSurveyAgainForParticipant.button"/>
 
                 </g:if>
                 <g:if test="${!surveyOrg.finishDate}">
-                    <semui:actionsDropdownItem controller="survey" action="finishSurveyForParticipant"
+                    <ui:actionsDropdownItem controller="survey" action="finishSurveyForParticipant"
                                                params="[surveyConfigID: surveyConfig.id, participant: participant.id]"
                                                message="finishSurveyForParticipant.button"/>
 
                 </g:if>
-            </semui:actionsDropdown>
+            </ui:actionsDropdown>
         </g:if>
 
 
-</semui:controlButtons>
+</ui:controlButtons>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerTitleIcon type="Survey"/>
-<g:message code="issueEntitlementsSurvey.label"/>: <g:link controller="subscription" action="index"
-                                                           id="${subscriptionParticipant.id}">${surveyConfig.surveyInfo.name}</g:link>
-</h1>
+<ui:h1HeaderWithIcon message="issueEntitlementsSurvey.label" type="Survey">
+    : <g:link controller="subscription" action="index" id="${subscriptionParticipant.id}">${surveyConfig.surveyInfo.name}</g:link>
+</ui:h1HeaderWithIcon>
 
-<g:if test="${flash}">
-    <semui:messages data="${flash}"/>
-</g:if>
+    <ui:messages data="${flash}"/>
 
 <div class="eight wide field" style="text-align: right;">
     <g:link action="evaluationParticipant"
@@ -112,7 +102,7 @@
     </div>
 </g:if>--}%
 
-<semui:form>
+<ui:form>
 
     <h2 class="ui header left aligned aligned"><g:message
             code="renewEntitlementsWithSurvey.currentEntitlements"/> (${ies.size()})</h2>
@@ -153,7 +143,7 @@
                         </td>
                         <td>${counter++}</td>
                         <td class="titleCell">
-                            <semui:ieAcceptStatusIcon status="${ie.acceptStatus}"/>
+                            <ui:ieAcceptStatusIcon status="${ie.acceptStatus}"/>
 
                             <!-- START TEMPLATE -->
                             <laser:render template="/templates/title_short"
@@ -164,15 +154,15 @@
                         <td>
                             <g:if test="${ie.priceItems}">
                                     <g:each in="${ie.priceItems}" var="priceItem" status="i">
-                                        <g:message code="tipp.price.listPrice"/>: <semui:xEditable field="listPrice" owner="${priceItem}" format="" overwriteEditable="${false}"/>
-                                        <semui:xEditableRefData field="listCurrency" owner="${priceItem}" config="Currency" overwriteEditable="${false}"/>
+                                        <g:message code="tipp.price.listPrice"/>: <ui:xEditable field="listPrice" owner="${priceItem}" format="" overwriteEditable="${false}"/>
+                                        <ui:xEditableRefData field="listCurrency" owner="${priceItem}" config="Currency" overwriteEditable="${false}"/>
                                     <%--<g:formatNumber number="${priceItem.listPrice}" type="currency" currencyCode="${priceItem.listCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%><br/>
-                                        %{--<g:message code="tipp.price.localPrice"/>: <semui:xEditable field="localPrice"
-                                                                                          owner="${priceItem}"/> <semui:xEditableRefData
+                                        %{--<g:message code="tipp.price.localPrice"/>: <ui:xEditable field="localPrice"
+                                                                                          owner="${priceItem}"/> <ui:xEditableRefData
                                         field="localCurrency" owner="${priceItem}"
                                         config="Currency"/>--}% <%--<g:formatNumber number="${priceItem.localPrice}" type="currency" currencyCode="${priceItem.localCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%>
-                                        <%--<semui:xEditable field="startDate" type="date"
-                                                         owner="${priceItem}"/><semui:dateDevider/><semui:xEditable
+                                        <%--<ui:xEditable field="startDate" type="date"
+                                                         owner="${priceItem}"/><ui:dateDevider/><ui:xEditable
                                             field="endDate" type="date"
                                             owner="${priceItem}"/>  <g:formatDate format="${message(code:'default.date.format.notime')}" date="${priceItem.startDate}"/>--%>
                                         <g:if test="${i < ie.priceItems.size() - 1}"><hr></g:if>
@@ -242,7 +232,7 @@
 
     </div>
 
-</semui:form>
+</ui:form>
 
 
 
@@ -258,5 +248,4 @@
 
 </laser:script>
 
-</body>
-</html>
+<laser:htmlEnd />

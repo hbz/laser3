@@ -1,24 +1,17 @@
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code: 'privacyNotice')}</title>
-</head>
+<laser:htmlStart message="privacyNotice" />
 
-<body>
+<ui:breadcrumbs>
+    <ui:crumb message="privacyNotice" class="active"/>
+</ui:breadcrumbs>
 
-<semui:breadcrumbs>
-    <semui:crumb message="privacyNotice" class="active"/>
-</semui:breadcrumbs>
-
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code: 'privacyNotice')}</h1>
+<ui:h1HeaderWithIcon message="privacyNotice" />
 
 <br />
 <br />
 
-<semui:form>
+<ui:form>
 
-<a href="https://www.hbz-nrw.de/datenschutz"  class="ui button" target="_blank" onclick="$('#modalDsgvo').modal('hide')">
+<a href="https://www.hbz-nrw.de/datenschutz" class="ui button" target="_blank" onclick="$('#modalDsgvo').modal('hide')">
     <i class="share square icon"></i>
     ${message(code:'dse')}
 </a>
@@ -31,9 +24,7 @@
     ${message(code:'vdv')}
 </a>
 
-</semui:form>
+</ui:form>
 
-
-</body>
-</html>
+<laser:htmlEnd />
 

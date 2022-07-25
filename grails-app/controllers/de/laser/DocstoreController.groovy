@@ -3,8 +3,9 @@ package de.laser
 
 import de.laser.auth.User
 import de.laser.ctrl.DocstoreControllerService
-import de.laser.utils.AppUtils
-import de.laser.utils.ConfigMapper
+import de.laser.config.ConfigDefaults
+import de.laser.utils.CodeUtils
+import de.laser.config.ConfigMapper
 import de.laser.annotations.DebugInfo
 import de.laser.storage.RDConstants
 import de.laser.survey.SurveyConfig
@@ -70,10 +71,10 @@ class DocstoreController  {
 
             //retrieve uploading user and owner class
             User user = contextService.getUser()
-            GrailsClass domain_class = AppUtils.getDomainClass( params.ownerclass )
+            Class dc = CodeUtils.getDomainClass( params.ownerclass )
 
-            if (domain_class) {
-                def instance = domain_class.getClazz().get(params.ownerid)
+            if (dc) {
+                def instance = dc.get(params.ownerid)
                 if (instance) {
                     log.debug("Got owner instance ${instance}")
 
@@ -97,7 +98,7 @@ class DocstoreController  {
                         //move the uploaded file to its actual destination (= store the file)
                         File new_File
                         try {
-                            String fPath = ConfigMapper.getDocumentStorageLocation() ?: '/tmp/laser'
+                            String fPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
                             String fName = doc_content.uuid
 
                             File folder = new File("${fPath}")
@@ -146,7 +147,7 @@ class DocstoreController  {
 
                                     //store copies of the uploaded document files
                                     try {
-                                        String fPath = ConfigMapper.getDocumentStorageLocation() ?: '/tmp/laser'
+                                        String fPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
                                         String fName = doc_content2.uuid
 
                                         File folder = new File("${fPath}")

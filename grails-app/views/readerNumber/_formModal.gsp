@@ -25,7 +25,7 @@
         }
     }
 %>
-<semui:modal id="${formId}" text="${title}" isEditModal="${!formId.contains('new') ? formId : null}">
+<ui:modal id="${formId}" text="${title}" isEditModal="${!formId.contains('new') ? formId : null}">
 
     <g:form class="ui form create_number" url="[controller: 'readerNumber', action: !formId.contains('new') ? 'edit' : 'create', id: numbersInstance ? numbersInstance.id : null]" method="POST">
         <g:hiddenField name="orgid" value="${params.id}"/>
@@ -38,7 +38,7 @@
                     <label for="referenceGroup">
                         <g:message code="readerNumber.referenceGroup.label" />
                     </label>
-                    <semui:dropdownWithI18nExplanations name="referenceGroup" class="referenceGroup search"
+                    <ui:dropdownWithI18nExplanations name="referenceGroup" class="referenceGroup search"
                                                         from="${referenceGroups}"
                                                         optionKey="id" optionValue="value" optionExpl="expl" noSelection="${message(code:'default.select.choose.label')}"
                                                         value="${numbersInstance?.referenceGroup}"
@@ -47,13 +47,13 @@
                 <div class="field four wide">
                     <g:if test="${withSemester}">
                         <label for="semester"><g:message code="readerNumber.semester.label"/></label>
-                        <laser:select class="ui selection dropdown la-full-width" label="readerNumber.semester.label" id="semester" name="semester"
+                        <ui:select class="ui selection dropdown la-full-width" label="readerNumber.semester.label" id="semester" name="semester"
                                       from="${RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.SEMESTER)}"
                                       optionKey="id" optionValue="value" required=""
                                       value="${semester}"/>
                     </g:if>
                     <g:elseif test="${withDueDate}">
-                        <semui:datepicker label="readerNumber.dueDate.label" id="dueDate" name="dueDate"
+                        <ui:datepicker label="readerNumber.dueDate.label" id="dueDate" name="dueDate"
                                           placeholder="default.date.label" value="${numbersInstance?.dueDate ?: sdf.format(startOfYear)}" required=""
                                           bean="${numbersInstance}"/>
                     </g:elseif>
@@ -109,4 +109,4 @@
             });
     </laser:script>
 
-</semui:modal>
+</ui:modal>

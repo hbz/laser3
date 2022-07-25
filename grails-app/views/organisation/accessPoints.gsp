@@ -1,45 +1,40 @@
 <%@ page import="de.laser.Org; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.storage.RDConstants;" %>
-<laser:serviceInjection/>
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
+
+<laser:htmlStart message="org.nav.accessPoints" serviceInjection="true" />
         <g:set var="entityName" value="${message(code: 'org.label')}" />
-        <title>${message(code:'laser')} : ${message(code:'org.nav.accessPoints')}</title>
-    </head>
-    <body>
-    <semui:controlButtons>
+
+    <ui:controlButtons>
         <g:if test="${editable}">
-        <semui:exportDropdown>
-            <semui:exportDropdownItem>
+        <ui:exportDropdown>
+            <ui:exportDropdownItem>
                 <g:link class="item" action="accessPoints" params="${params + [exportXLSX: true]}">${message(code: 'accessPoint.exportAccessPoints')}</g:link>
-            </semui:exportDropdownItem>
-        </semui:exportDropdown>
+            </ui:exportDropdownItem>
+        </ui:exportDropdown>
         </g:if>
         <g:if test="${editable}">
 
-            <semui:actionsDropdown>
-                <semui:actionsDropdownItem controller="accessPoint" action="create" params="[id: orgInstance.id, accessMethod: 'ip']" message="accessPoint.create_ip"/>
-                <semui:actionsDropdownItem controller="accessPoint" action="create" params="[id: orgInstance.id, accessMethod: 'proxy']" message="accessPoint.create_proxy"/>
-                <semui:actionsDropdownItem controller="accessPoint" action="create" params="[id: orgInstance.id, accessMethod: 'ezproxy']" message="accessPoint.create_ezproxy"/>
-                <semui:actionsDropdownItem controller="accessPoint" action="create" params="[id: orgInstance.id, accessMethod: 'oa']" message="accessPoint.create_openAthens"/>
-                <semui:actionsDropdownItem controller="accessPoint" action="create" params="[id: orgInstance.id, accessMethod: 'shibboleth']" message="accessPoint.create_shibboleth"/>
-            </semui:actionsDropdown>
+            <ui:actionsDropdown>
+                <ui:actionsDropdownItem controller="accessPoint" action="create" params="[id: orgInstance.id, accessMethod: 'ip']" message="accessPoint.create_ip"/>
+                <ui:actionsDropdownItem controller="accessPoint" action="create" params="[id: orgInstance.id, accessMethod: 'proxy']" message="accessPoint.create_proxy"/>
+                <ui:actionsDropdownItem controller="accessPoint" action="create" params="[id: orgInstance.id, accessMethod: 'ezproxy']" message="accessPoint.create_ezproxy"/>
+                <ui:actionsDropdownItem controller="accessPoint" action="create" params="[id: orgInstance.id, accessMethod: 'oa']" message="accessPoint.create_openAthens"/>
+                <ui:actionsDropdownItem controller="accessPoint" action="create" params="[id: orgInstance.id, accessMethod: 'shibboleth']" message="accessPoint.create_shibboleth"/>
+            </ui:actionsDropdown>
 
         </g:if>
-    </semui:controlButtons>
+    </ui:controlButtons>
 
-    <semui:breadcrumbs>
+    <ui:breadcrumbs>
         <g:if test="${!inContextOrg}">
-            <semui:crumb text="${orgInstance.getDesignation()}" class="active"/>
+            <ui:crumb text="${orgInstance.getDesignation()}" class="active"/>
         </g:if>
-    </semui:breadcrumbs>
+    </ui:breadcrumbs>
 
-    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${orgInstance.name}</h1>
+    <ui:h1HeaderWithIcon text="${orgInstance.name}" />
 
     <laser:render template="nav" model="${[orgInstance: orgInstance, inContextOrg: orgInstance.id == contextService.getOrg().id]}" />
 
-    <semui:messages data="${flash}" />
+    <ui:messages data="${flash}" />
 
     <div class="la-inline-lists">
 
@@ -159,8 +154,4 @@
     </div>
 
 
-
-
-
-    </body>
-</html>
+<laser:htmlEnd />

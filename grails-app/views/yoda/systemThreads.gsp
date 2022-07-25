@@ -1,26 +1,17 @@
 <%@ page import="java.lang.management.ManagementFactory" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'menu.yoda.systemThreads')}</title>
-</head>
+<laser:htmlStart message="menu.yoda.systemThreads" serviceInjection="true"/>
 
-<body>
-    <laser:serviceInjection />
+    <ui:breadcrumbs>
+        <ui:crumb message="menu.yoda" controller="yoda" action="index"/>
+        <ui:crumb message="menu.yoda.systemThreads" class="active"/>
+    </ui:breadcrumbs>
 
-    <semui:breadcrumbs>
-        <semui:crumb message="menu.yoda" controller="yoda" action="index"/>
-        <semui:crumb message="menu.yoda.systemThreads" class="active"/>
-    </semui:breadcrumbs>
-
-    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.systemThreads')}</h1>
+    <ui:h1HeaderWithIcon message="menu.yoda.systemThreads" />
 
     <g:set var="threads" value="${Thread.getAllStackTraces().keySet().sort{ it.id }}" />
     <g:set var="tmxBean" value="${ManagementFactory.getThreadMXBean()}" />
 
-    <div class="ui message info">
-        <p>
+    <ui:msg class="info" noClose="true">
             <strong>Anzahl gefundener Threads: ${threads.size()}</strong>
             <br />
             <br />
@@ -30,8 +21,7 @@
             </g:if>
             Seit Systemstart wurden <strong>${tmxBean.getTotalStartedThreadCount()}</strong> Threads erzeugt.
             Die Höchstlast lag bei <strong>${tmxBean.getPeakThreadCount()}</strong> Threads.
-        </p>
-    </div>
+    </ui:msg>
 
     <table class="ui celled la-js-responsive-table la-table la-hover-table compact table" id="contextTable">
         <tbody>
@@ -73,5 +63,4 @@
         </tbody>
     </table>
 
-</body>
-</html>
+<laser:htmlEnd />

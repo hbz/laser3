@@ -1,23 +1,13 @@
 <%@ page import="de.laser.utils.DateUtils; de.laser.Org; de.laser.Package; de.laser.Platform; java.text.SimpleDateFormat;" %>
-<!doctype html>
+<laser:htmlStart message="package.show.all" />
 
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'package.show.all')}</title>
-</head>
+<ui:breadcrumbs>
+    <ui:crumb message="package.show.all" class="active"/>
+</ui:breadcrumbs>
 
-<body>
+<ui:h1HeaderWithIcon message="package.show.all" total="${recordsCount}" floated="true" />
 
-<semui:breadcrumbs>
-    <semui:crumb message="package.show.all" class="active"/>
-</semui:breadcrumbs>
-
-<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${message(code: 'package.show.all')}
-<semui:totalNumber total="${recordsCount ?: 0}"/>
-</h1>
-
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 <g:if test="${!error}">
     <laser:render template="/templates/filter/packageGokbFilter"/>
@@ -165,7 +155,7 @@
             </table>
 
 
-            <semui:paginate action="index" controller="package" params="${params}"
+            <ui:paginate action="index" controller="package" params="${params}"
                             next="${message(code: 'default.paginate.next')}"
                             prev="${message(code: 'default.paginate.prev')}" max="${max}"
                             total="${recordsCount}"/>
@@ -184,5 +174,4 @@
     </div>
 </div>
 
-</body>
-</html>
+<laser:htmlEnd />

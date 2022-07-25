@@ -30,6 +30,31 @@ class ChangeNotificationService extends AbstractLockableService {
     // N,B, This is critical for this service as it's called from domain object OnChange handlers
     static transactional = false
 
+    static final Map<String, String> CHANGE_NOTIFICATIONS = [
+
+        'TitleInstance.propertyChange' :
+                'Title change - The <strong>${evt.prop}</strong> field was changed from "<strong>${evt.oldLabel?:evt.old}</strong>" to "<strong>${evt.newLabel?:evt.new}</strong>".',
+
+        'TitleInstance.identifierAdded' :
+                'An identifier was added to title ${OID?.title}.',
+
+        'TitleInstance.identifierRemoved' :
+                'An identifier was removed from title ${OID?.title}.',
+
+        'TitleInstancePackagePlatform.updated' :
+                'TIPP change for title ${OID?.title?.title} - The <strong>${evt.prop}</strong> field was changed from "<strong>${evt.oldLabel?:evt.old}</strong>" to "<strong>${evt.newLabel?:evt.new}</strong>".',
+
+        'TitleInstancePackagePlatform.added' :
+                'TIPP Added for title ${OID?.title?.title} ${evt.linkedTitle} on platform ${evt.linkedPlatform} .',
+
+        'TitleInstancePackagePlatform.deleted' :
+                'TIPP Deleted for title ${OID?.title?.title} ${evt.linkedTitle} on platform ${evt.linkedPlatform} .' ,
+
+        'Package.created' :
+                'New package added with id ${OID.id} - "${OID.name}".'
+    ]
+
+
     @Deprecated
   void broadcastEvent(String contextObjectOID, changeDetailDocument) {
     // log.debug("broadcastEvent(${contextObjectOID},${changeDetailDocument})");
@@ -119,15 +144,15 @@ class ChangeNotificationService extends AbstractLockableService {
             JSONElement parsed_event_info = JSON.parse(pc.changeDocument)
           log.debug("Event Info: ${parsed_event_info}")
 
-            ContentItem change_template = ContentItem.findByKey("ChangeNotification.${parsed_event_info.event}")
+            String change_template = CHANGE_NOTIFICATIONS.get(parsed_event_info.event)
           if ( change_template != null ) {
-            def event_props = [o:contextObject, evt:parsed_event_info]
+            Map event_props = [o:contextObject, evt:parsed_event_info]
             if ( parsed_event_info.OID != null && parsed_event_info.OID.length() > 0 ) {
               event_props.OID = genericOIDService.resolveOID(parsed_event_info.OID);
             }
             if( event_props.OID ) {
               def engine = new groovy.text.GStringTemplateEngine()
-              def tmpl = engine.createTemplate(change_template.content).make(event_props)
+              def tmpl = engine.createTemplate(change_template).make(event_props)
               sw.write("<li>");
               sw.write(tmpl.toString());
               sw.write("</li>");
@@ -151,34 +176,6 @@ class ChangeNotificationService extends AbstractLockableService {
 
         sw.write("</ul></p>");
 
-        if ( contextObject != null ) {
-          if ( contextObject.metaClass.respondsTo(contextObject, 'getNotificationEndpoints') ) {
-            String announcement_content = sw.toString()
-            // Does the objct have a zendesk URL, or any other comms URLs for that matter?
-              // How do we decouple Same-As links? Only the object should know about what
-            // notification services it's registered with? What about the case where we're adding
-            // a new thing? Whats registered?
-            contextObject.notificationEndpoints.each { ne ->
-              // log.debug("  -> consider ${ne}");
-              switch ( ne.service ) {
-
-                case 'announcements':
-                    RefdataValue announcement_type = RefdataValue.getByValueAndCategory('Announcement', RDConstants.DOCUMENT_TYPE)
-                  // result.recentAnnouncements = Doc.findAllByType(announcement_type,[max:10,sort:'dateCreated',order:'desc'])
-                    new Doc(title:'Automated Announcement',
-                            type:announcement_type,
-                            content:announcement_content,
-                            dateCreated:new Date(),
-                            user:User.findByUsername('admin')).save()
-
-                  break;
-                default:
-                  break;
-              }
-            }
-          }
-        }
-
             if (pc_delete_list) {
                 log.debug('Deleting ChangeNotificationQueueItems: ' + pc_delete_list)
                 ChangeNotificationQueueItem.executeUpdate('DELETE FROM ChangeNotificationQueueItem WHERE id in (:idList)', [idList: pc_delete_list])
@@ -197,10 +194,6 @@ class ChangeNotificationService extends AbstractLockableService {
     def fireEvent(Map<String, Object> changeDocument) {
         log.debug("fireEvent(${changeDocument})")
 
-        //store changeDoc in cache
-        //EhcacheWrapper cache = cacheService.getTTL1800Cache("/pendingChanges/")
-        //cache.put(changeDocument.OID,changeDocument)
-
         // TODO [ticket=1807] should not be done in extra thread but collected and saved afterwards
         executorService.execute({
             Thread.currentThread().setName("PendingChangeSubmission")
@@ -217,17 +210,6 @@ class ChangeNotificationService extends AbstractLockableService {
         })
     }
 
-    @Deprecated
-    def registerPendingChange(prop, target, desc, objowner, changeMap) {
-
-        def msgToken = null
-        def msgParams = null
-        def legacyDesc = desc
-
-        registerPendingChange(prop, target, objowner, changeMap, msgToken, msgParams, legacyDesc)
-    }
-
-    //def registerPendingChange(prop, target, desc, objowner, changeMap) << legacy
     @Deprecated
     /**
      * This method registers pending changes and is going to be kept because of backwards compatibility.

@@ -22,8 +22,8 @@
             <label for="type">
                 ${RefdataCategory.getByDesc(RDConstants.ADDRESS_TYPE).getI10n('desc')}
             </label>
-            %{--<laser:select class="ui dropdown multiple" id="type" name="type.id"--}%
-            <laser:select class="ui dropdown search selection" id="type" name="type"
+            %{--<ui:select class="ui dropdown multiple" id="type" name="type.id"--}%
+            <ui:select class="ui dropdown search selection" id="type" name="type"
                           from="${Address.getAllRefdataValues()}"
                           optionKey="id"
                           optionValue="value"
@@ -124,7 +124,7 @@
                     <label for="country">
                         <g:message code="address.country.label" />
                     </label>
-                    <laser:select class="ui dropdown" id="country" name="country"
+                    <ui:select class="ui dropdown" id="country" name="country"
                                   from="${RefdataCategory.getAllRefdataValues(RDConstants.COUNTRY)}"
                                   optionKey="id"
                                   optionValue="value"
@@ -137,7 +137,7 @@
                     <label for="region">
                         <g:message code="address.region.label" />
                     </label>
-                    <laser:select class="ui dropdown" id="region" name="region"
+                    <ui:select class="ui dropdown" id="region" name="region"
                                   from="${RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_DE, RDConstants.REGIONS_AT, RDConstants.REGIONS_CH])}"
                                   optionKey="id"
                                   optionValue="value"

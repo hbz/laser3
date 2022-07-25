@@ -1,29 +1,24 @@
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'task.plural')}</title>
-</head>
-<body>
+<laser:htmlStart message="task.plural" />
 
-    <semui:breadcrumbs>
+    <ui:breadcrumbs>
         <g:if test="${!inContextOrg}">
-            <semui:crumb text="${orgInstance.getDesignation()}" class="active"/>
+            <ui:crumb text="${orgInstance.getDesignation()}" class="active"/>
         </g:if>
-    </semui:breadcrumbs>
-    <semui:controlButtons>
+    </ui:breadcrumbs>
+    <ui:controlButtons>
         <laser:render template="actions" model="${[org:org]}"/>
-    </semui:controlButtons>
-    <h1 class="ui  icon header la-noMargin-top"><semui:headerIcon />${orgInstance.name}</h1>
+    </ui:controlButtons>
+
+    <ui:h1HeaderWithIcon text="${orgInstance.name}" />
 
     <laser:render template="nav" />
 
-    <semui:messages data="${flash}" />
+    <ui:messages data="${flash}" />
 
-    <laser:render template="/templates/tasks/table" model="${[taskInstanceList:taskInstanceList, taskInstanceCount:taskInstanceCount]}"/>
-    <laser:render template="/templates/tasks/table2" model="${[taskInstanceList:myTaskInstanceList, taskInstanceCount:myTaskInstanceCount]}"/>
-    <laser:render template="/templates/tasks/js_taskedit"/>
+    <laser:render template="/templates/tasks/tables" model="${[
+            taskInstanceList: taskInstanceList,     taskInstanceCount: taskInstanceCount,
+            myTaskInstanceList: myTaskInstanceList, myTaskInstanceCount: myTaskInstanceCount
+    ]}"/>
 
-</body>
-</html>
+<laser:htmlEnd />
 

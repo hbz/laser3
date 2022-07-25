@@ -1,22 +1,15 @@
 <%@ page import="de.laser.Package" %>
-<!doctype html>
-<html>
-  <head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'package.label')}</title>
-  </head>
-  <body>
 
-      <semui:breadcrumbs>
-          <semui:crumb controller="package" action="index" text="${message(code:'package.show.all')}" />
-          <semui:crumb text="${packageInstance.name}" id="${packageInstance.id}" class="active"/>
-      </semui:breadcrumbs>
+      <ui:breadcrumbs>
+          <ui:crumb controller="package" action="index" text="${message(code:'package.show.all')}" />
+          <ui:crumb text="${packageInstance.name}" id="${packageInstance.id}" class="active"/>
+      </ui:breadcrumbs>
 
-      <semui:modeSwitch controller="package" action="${params.action}" params="${params}" />
+      <ui:modeSwitch controller="package" action="${params.action}" params="${params}" />
 
-      <semui:controlButtons>
-          <semui:exportDropdown>
-              <semui:exportDropdownItem>
+      <ui:controlButtons>
+          <ui:exportDropdown>
+              <ui:exportDropdownItem>
                   <g:if test="${filterSet}">
                       <g:link class="item js-open-confirm-modal"
                               data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}"
@@ -28,11 +21,11 @@
                   <g:else>
                       <g:link class="item" action="${actionName}" params="${params + [format: 'csv']}">CSV Export</g:link>
                   </g:else>
-              </semui:exportDropdownItem>
-              <semui:exportDropdownItem>
-                  <a class="item" data-semui="modal" href="#individuallyExportTippsModal">Click Me Excel Export</a>
-              </semui:exportDropdownItem>
-              <semui:exportDropdownItem>
+              </ui:exportDropdownItem>
+              <ui:exportDropdownItem>
+                  <a class="item" data-ui="modal" href="#individuallyExportTippsModal">Click Me Excel Export</a>
+              </ui:exportDropdownItem>
+              <ui:exportDropdownItem>
                   <g:if test="${filterSet}">
                       <g:link class="item js-open-confirm-modal"
                               data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}"
@@ -46,8 +39,8 @@
                           <g:message code="default.button.exports.xls"/>
                       </g:link>
                   </g:else>
-              </semui:exportDropdownItem>
-              <semui:exportDropdownItem>
+              </ui:exportDropdownItem>
+              <ui:exportDropdownItem>
                   <g:if test="${filterSet}">
                       <g:link class="item js-open-confirm-modal"
                               data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}"
@@ -60,14 +53,13 @@
                       <g:link class="item" action="${actionName}"
                               params="${params + [exportKBart: true]}">KBART Export</g:link>
                   </g:else>
-              </semui:exportDropdownItem>
-          </semui:exportDropdown>
+              </ui:exportDropdownItem>
+          </ui:exportDropdown>
           <laser:render template="actions" />
-      </semui:controlButtons>
+      </ui:controlButtons>
 
 
-          <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
-
+          <ui:h1HeaderWithIcon>
               <g:if test="${editable}"><span id="packageNameEdit"
                         class="xEditableValue"
                         data-type="textarea"
@@ -75,14 +67,14 @@
                         data-name="name"
                         data-url='<g:createLink controller="ajax" action="editableSetValue"/>'>${packageInstance.name}</span></g:if>
               <g:else>${packageInstance.name}</g:else>
-          </h1>
+          </ui:h1HeaderWithIcon>
 
   <laser:render template="nav"/>
 
 
-  <semui:messages data="${flash}" />
+  <ui:messages data="${flash}" />
 
-  <semui:errors bean="${packageInstance}" />
+  <ui:errors bean="${packageInstance}" />
 
   <div class="row">
       <div class="column">
@@ -102,7 +94,7 @@
   </div>
 
   <g:if test="${titlesList}">
-      <semui:paginate action="${actionName}" controller="package" params="${params}"
+      <ui:paginate action="${actionName}" controller="package" params="${params}"
                       next="${message(code: 'default.paginate.next')}" prev="${message(code: 'default.paginate.prev')}"
                       maxsteps="${max}" total="${num_tipp_rows}"/>
   </g:if>
@@ -125,5 +117,3 @@
       }
     </laser:script>
 
-  </body>
-</html>

@@ -1,21 +1,15 @@
 <%@ page import="de.laser.properties.PropertyDefinition;de.laser.*"%>
 
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'menu.institutions.manage_prop_groups')}</title>
-    </head>
-    <body>
+<laser:htmlStart message="menu.institutions.manage_prop_groups" />
 
-        <semui:breadcrumbs>
-            <semui:crumb message="menu.admin" controller="admin" action="index" />
-            <semui:crumb message="menu.institutions.manage_prop_groups" class="active"/>
-        </semui:breadcrumbs>
+        <ui:breadcrumbs>
+            <ui:crumb message="menu.admin" controller="admin" action="index" />
+            <ui:crumb message="menu.institutions.manage_prop_groups" class="active"/>
+        </ui:breadcrumbs>
 
-        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="menu.institutions.manage_prop_groups"/></h1>
+        <ui:h1HeaderWithIcon message="menu.institutions.manage_prop_groups" />
 
-        <semui:messages data="${flash}" />
+        <ui:messages data="${flash}" />
 
         <g:if test="${editable}">
             <div class="content ui form">
@@ -32,10 +26,10 @@
     <table class="ui celled sortable table la-js-responsive-table la-table compact">
         <thead>
             <tr>
-                <th>Name</th>
-                <th>Beschreibung</th>
+                <th>${message(code:'default.name.label')}</th>
+                <th>${message(code:'default.description.label')}</th>
                 <th>Merkmale</th>
-                <th>Typ</th>
+                <th>${message(code:'default.type.label')}</th>
                 <th>Anzeigen (Voreinstellung)</th>
                 <th class="la-action-info">${message(code:'default.actions.label')}</th>
             </tr>
@@ -44,10 +38,10 @@
             <g:each in="${propDefGroups}" var="pdGroup">
                 <tr>
                     <td>
-                        <semui:xEditable owner="${pdGroup}" field="name" />
+                        <ui:xEditable owner="${pdGroup}" field="name" />
                     </td>
                     <td>
-                        <semui:xEditable owner="${pdGroup}" field="description" />
+                        <ui:xEditable owner="${pdGroup}" field="description" />
                     </td>
                     <td>
                         ${pdGroup.getPropertyDefinitions().size()}
@@ -66,7 +60,7 @@
                         <%-- TODO: REFACTORING x.class.name with pd.desc --%>
                     </td>
                     <td>
-                        <semui:xEditableBoolean owner="${pdGroup}" field="isVisible" />
+                        <ui:xEditableBoolean owner="${pdGroup}" field="isVisible" />
                     </td>
                     <td class="x">
                         <g:if test="${editable}">
@@ -100,7 +94,7 @@
 
                 $('#dynamicModalContainer .ui.modal').modal({
                     onVisible: function () {
-                        r2d2.initDynamicSemuiStuff('#propDefGroupModal');
+                        r2d2.initDynamicUiStuff('#propDefGroupModal');
                         r2d2.initDynamicXEditableStuff('#propDefGroupModal');
                         $("html").css("cursor", "auto");
                         JSPC.callbacks.dynPostFunc()
@@ -118,5 +112,4 @@
         })
     </laser:script>
 
-  </body>
-</html>
+<laser:htmlEnd />

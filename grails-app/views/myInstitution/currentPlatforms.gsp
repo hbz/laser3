@@ -1,22 +1,13 @@
 <%@ page import="de.laser.Platform; de.laser.storage.RDStore" %>
+<laser:htmlStart message="menu.my.platforms" />
 
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'menu.my.platforms')}</title>
-</head>
-<body>
+<ui:breadcrumbs>
+    <ui:crumb message="menu.my.platforms" class="active" />
+</ui:breadcrumbs>
 
-<semui:breadcrumbs>
-    <semui:crumb message="menu.my.platforms" class="active" />
-</semui:breadcrumbs>
+<ui:h1HeaderWithIcon message="menu.my.platforms" total="${platformInstanceTotal}" floated="true" />
 
-<h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon/>${message(code:'menu.my.platforms')}
-    <semui:totalNumber total="${platformInstanceTotal}"/>
-</h1>
-
-<semui:messages data="${flash}" />
+<ui:messages data="${flash}" />
 
 <laser:render template="/templates/filter/platformFilter"/>
 
@@ -60,9 +51,18 @@
                 </g:if>
             </td>
             <td>
-                <g:each in="${platformInstance.getContextOrgAccessPoints(contextOrg)}" var="oap" >
-                    <g:link controller="accessPoint" action="edit_${oap.accessMethod}" id="${oap.id}">${oap.name} (${oap.accessMethod.getI10n('value')})</g:link> <br />
-                </g:each>
+
+                <%
+                    String hql = "select oap from OrgAccessPoint oap " +
+                            "join oap.oapp as oapp where oap.org=:org and oapp.active = true and oapp.platform.id =${platformInstance.id} and oapp.subPkg is null order by LOWER(oap.name)"
+
+                    println hql
+
+//                    OrgAccessPoint.executeQuery(hql, ['org': contextOrg])
+                %>
+%{--                <g:each in="${platformInstance.getContextOrgAccessPoints(contextOrg)}" var="oap" >--}%
+%{--                    <g:link controller="accessPoint" action="edit_${oap.accessMethod}" id="${oap.id}">${oap.name} (${oap.accessMethod.getI10n('value')})</g:link> <br />--}%
+%{--                </g:each>--}%
             </td>
             <td>
                 <g:each in="${subscriptionMap.get('platform_' + platformInstance.id)}" var="sub">
@@ -90,9 +90,8 @@
     </tbody>
 </table>
 
-<semui:debugInfo>
+<ui:debugInfo>
     <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
-</semui:debugInfo>
+</ui:debugInfo>
 
-</body>
-</html>
+<laser:htmlEnd />

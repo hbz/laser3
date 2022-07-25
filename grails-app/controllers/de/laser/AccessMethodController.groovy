@@ -25,7 +25,7 @@ class AccessMethodController  {
     @Secured(['ROLE_USER'])
     @Transactional
     def create() {
-        params.max = params.max ?: contextService.getUser().getDefaultPageSize()
+        params.max = params.max ?: contextService.getUser().getPageSizeOrDefault()
 
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         if (params.validFrom) {

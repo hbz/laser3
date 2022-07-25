@@ -18,7 +18,7 @@
 <div class="fields la-forms-grid">
     <div class="eight wide field">
         <div class="field">
-            <label>${message(code: 'financials.newCosts.costTitle')}</label>
+            <label for="newCostTitle">${message(code: 'financials.newCosts.costTitle')}</label>
             <input type="text" name="newCostTitle" id="newCostTitle" value="${costItem?.costTitle}"/>
         </div><!-- .field -->
 
@@ -29,7 +29,7 @@
             <div class="field">
                 <label><g:message code="financials.costItemElement"/></label>
                 <g:if test="${costItemElements}">
-                    <laser:select name="newCostItemElement" id="newCostItemElement_${idSuffix}" class="ui fluid dropdown"
+                    <ui:select name="newCostItemElement" id="newCostItemElement_${idSuffix}" class="ui fluid dropdown"
                                   from="${costItemElements.collect { ciec -> ciec.costItemElement }}"
                                   optionKey="id"
                                   optionValue="value"
@@ -42,7 +42,7 @@
             </div><!-- .field -->
             <div class="field">
                 <label><g:message code="financials.costItemConfiguration"/></label>
-                <laser:select name="ciec" id="ciec_${idSuffix}" class="ui fluid  dropdown"
+                <ui:select name="ciec" id="ciec_${idSuffix}" class="ui fluid  dropdown"
                               from="${costItemSigns}"
                               optionKey="id"
                               optionValue="value"
@@ -53,7 +53,7 @@
 
         <div class="field">
             <label>${message(code: 'default.status.label')}</label>
-            <laser:select name="newCostItemStatus" id="newCostItemStatus_${idSuffix}" title="${g.message(code: 'financials.addNew.costState')}"
+            <ui:select name="newCostItemStatus" id="newCostItemStatus_${idSuffix}" title="${g.message(code: 'financials.addNew.costState')}"
                           class="ui dropdown"
                           from="${costItemStatus}"
                           optionKey="id"
@@ -118,14 +118,14 @@
         <div class="two fields">
             <div class="field">
                 <div class="ui checkbox">
-                    <label><g:message code="financials.newCosts.roundBillingSum"/></label>
+                    <label for="newBillingSumRounding_${idSuffix}"><g:message code="financials.newCosts.roundBillingSum"/></label>
                     <input name="newBillingSumRounding" id="newBillingSumRounding_${idSuffix}" class="hidden calc" type="checkbox"
                         <g:if test="${costItem?.billingSumRounding}">checked="checked"</g:if>/>
                 </div>
             </div><!-- .field -->
             <div class="field">
                 <div class="ui checkbox">
-                    <label><g:message code="financials.newCosts.roundFinalSum"/></label>
+                    <label for="newFinalCostRounding_${idSuffix}"><g:message code="financials.newCosts.roundFinalSum"/></label>
                     <input name="newFinalCostRounding" id="newFinalCostRounding_${idSuffix}" class="hidden calc" type="checkbox"
                         <g:if test="${costItem?.finalCostRounding}">checked="checked"</g:if>/>
                 </div>
@@ -138,10 +138,10 @@
 
 <div class="field ">
     <div class="two fields la-forms-grid">
-        <semui:datepicker label="financials.dateFrom" id="newStartDate" name="newStartDate" placeholder="default.date.label"
+        <ui:datepicker label="financials.dateFrom" id="newStartDate" name="newStartDate" placeholder="default.date.label"
                           value="${costItem?.startDate}"/>
 
-        <semui:datepicker label="financials.dateTo" id="newEndDate" name="newEndDate" placeholder="default.date.label"
+        <ui:datepicker label="financials.dateTo" id="newEndDate" name="newEndDate" placeholder="default.date.label"
                           value="${costItem?.endDate}"/>
     </div>
 
@@ -149,7 +149,7 @@
     <div class="one fields la-forms-grid">
         <fieldset class="sixteen wide field">
             <div class="field">
-                <label>${message(code: 'survey.costItemModal.descriptionfor', args: [surveyOrg ? surveyOrg.org.name : 'alle'])}</label>
+                <label for="newDescription">${message(code: 'survey.costItemModal.descriptionfor', args: [surveyOrg ? surveyOrg.org.name : 'alle'])}</label>
                 <textarea name="newDescription" id="newDescription"
                           placeholder="${message(code: 'default.description.label')}">${costItem?.costDescription}</textarea>
             </div><!-- .field -->

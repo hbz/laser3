@@ -1,26 +1,20 @@
 <%@page import="de.laser.GlobalSourceSyncService" %>
-<!doctype html>
-<html>
-  <head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : Manage Global Sorces</title>
-  </head>
 
-  <body>
+<laser:htmlStart text="Manage Global Sources" />
 
-    <semui:breadcrumbs>
-        <semui:crumb message="menu.yoda" controller="yoda" action="index"/>
-        <semui:crumb text="Global Sources" class="active" />
-    </semui:breadcrumbs>
+    <ui:breadcrumbs>
+        <ui:crumb message="menu.yoda" controller="yoda" action="index"/>
+        <ui:crumb text="Global Sources" class="active" />
+    </ui:breadcrumbs>
 
-    <semui:messages data="${flash}" />
+    <ui:messages data="${flash}" />
 
       <table class="ui celled la-js-responsive-table la-table table">
         <thead>
           <tr>
-            <th>Identifier</th>
-            <th>Name</th>
-            <th>Type</th>
+              <th>${message(code:'default.identifier.label')}</th>
+              <th>${message(code:'default.name.label')}</th>
+              <th>${message(code:'default.type.label')}</th>
             <th>Up To</th>
             <th>URL</th>
             <th>URL to editable instance</th>
@@ -91,7 +85,7 @@
 
       <br />
 
-    <semui:form>
+    <ui:form>
         <g:form action="newGlobalSource" class="ui form">
 
             <div class="fields two">
@@ -158,6 +152,6 @@
             </div>
 
         </g:form>
-    </semui:form>
-  </body>
-</html>
+    </ui:form>
+
+<laser:htmlEnd />

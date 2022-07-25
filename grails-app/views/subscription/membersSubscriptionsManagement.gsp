@@ -1,27 +1,18 @@
 <%@ page import="de.laser.License; de.laser.Person; de.laser.storage.RDStore; de.laser.FormService" %>
-<laser:serviceInjection/>
+<laser:htmlStart message="subscriptionsManagement.subscriptions.members" serviceInjection="true"/>
 
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'subscriptionsManagement.subscriptions.members')}</title>
-</head>
-
-<body>
-
-<semui:breadcrumbs>
-    <semui:crumb controller="myInstitution" action="currentSubscriptions"
+<ui:breadcrumbs>
+    <ui:crumb controller="myInstitution" action="currentSubscriptions"
                  text="${message(code: 'myinst.currentSubscriptions.label')}"/>
-    <semui:crumb controller="subscription" action="show" id="${subscription.id}"
+    <ui:crumb controller="subscription" action="show" id="${subscription.id}"
                  text="${subscription.name}"/>
-    <semui:crumb class="active"
+    <ui:crumb class="active"
                  text="${message(code: 'subscriptionsManagement.subscriptions.members')}"/>
-</semui:breadcrumbs>
+</ui:breadcrumbs>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${subscription.name}</h1>
+<ui:h1HeaderWithIcon text="${subscription.name}" />
 
-<semui:anualRings object="${subscription}" controller="subscription" action="${actionName}"
+<ui:anualRings object="${subscription}" controller="subscription" action="${actionName}"
                   navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
 
@@ -31,7 +22,7 @@
 
 <laser:render template="/templates/management/navSubscriptionManagement" model="${[args: args]}"/>
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 <h4 class="ui header">
     <g:message code="subscription"/>: <g:link
@@ -77,6 +68,5 @@
 </g:elseif>
 
 
-</body>
-</html>
+<laser:htmlEnd />
 

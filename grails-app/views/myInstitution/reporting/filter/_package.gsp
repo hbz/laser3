@@ -25,18 +25,18 @@
 
             <div class="filter-wrapper-default">
                 <g:each in="${config.filter.default}" var="cfgFilter">
-                    <div class="fields <laser:numberToString number="${cfgFilter.size()}" min="2"/>">
+                    <div class="fields <reporting:numberToString number="${cfgFilter.size()}" min="2"/>">
                         <g:each in="${cfgFilter}" var="field">
-                            <laser:reportFilterField config="${config}" field="${field}" />
+                            <reporting:filterField config="${config}" field="${field}" />
                         </g:each>
                     </div>
                 </g:each>
             </div>
             <div class="filter-wrapper-my">
                 <g:each in="${config.filter.my}" var="cfgFilter">
-                    <div class="fields <laser:numberToString number="${cfgFilter.size()}" min="2"/>">
+                    <div class="fields <reporting:numberToString number="${cfgFilter.size()}" min="2"/>">
                     <g:each in="${cfgFilter}" var="field">
-                        <laser:reportFilterField config="${config}" field="${field}" />
+                        <reporting:filterField config="${config}" field="${field}" />
                     </g:each>
                     </div>
                 </g:each>
@@ -94,9 +94,9 @@
 %{--                </div>--}%
 
 %{--                <g:each in="${config.filter.default}" var="cfgFilter">--}%
-%{--                    <div class="fields <laser:numberToString number="${cfgFilter.size()}" min="2"/>">--}%
+%{--                    <div class="fields <reporting:numberToString number="${cfgFilter.size()}" min="2"/>">--}%
 %{--                        <g:each in="${cfgFilter}" var="field">--}%
-%{--                            <laser:reportFilterField config="${config}" field="${field}" key="provider" />--}%
+%{--                            <reporting:filterField config="${config}" field="${field}" key="provider" />--}%
 %{--                        </g:each>--}%
 %{--                    </div>--}%
 %{--                </g:each>--}%
@@ -113,9 +113,9 @@
 %{--                </div>--}%
 
 %{--                <g:each in="${config.filter.default}" var="cfgFilter">--}%
-%{--                    <div class="fields <laser:numberToString number="${cfgFilter.size()}" min="2"/>">--}%
+%{--                    <div class="fields <reporting:numberToString number="${cfgFilter.size()}" min="2"/>">--}%
 %{--                        <g:each in="${cfgFilter}" var="field">--}%
-%{--                            <laser:reportFilterField config="${config}" field="${field}" key="platform" />--}%
+%{--                            <reporting:filterField config="${config}" field="${field}" key="platform" />--}%
 %{--                        </g:each>--}%
 %{--                    </div>--}%
 %{--                </g:each>--}%

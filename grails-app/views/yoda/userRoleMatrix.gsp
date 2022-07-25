@@ -1,17 +1,11 @@
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'menu.yoda.userRoleMatrix')}</title>
-</head>
-<body>
+<laser:htmlStart message="menu.yoda.userRoleMatrix" />
 
-<semui:breadcrumbs>
-    <semui:crumb message="menu.yoda" controller="yoda" action="index"/>
-    <semui:crumb message="menu.yoda.userRoleMatrix" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb message="menu.yoda" controller="yoda" action="index"/>
+    <ui:crumb message="menu.yoda.userRoleMatrix" class="active"/>
+</ui:breadcrumbs>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.userRoleMatrix')}</h1>
+<ui:h1HeaderWithIcon message="menu.yoda.userRoleMatrix" />
 
 <div class="ui accordion">
     <g:each in="${matrix}" var="role">
@@ -41,5 +35,4 @@
     </g:each>
 </div>
 
-</body>
-</html>
+<laser:htmlEnd />

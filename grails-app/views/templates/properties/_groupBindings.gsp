@@ -50,13 +50,13 @@
                                 }
                             %>
                             <g:if test="${editable && binding}">
-                                <semui:xEditableBoolean owner="${binding}" field="isVisible" />
+                                <ui:xEditableBoolean owner="${binding}" field="isVisible" />
                             </g:if>
                         </td>
                         <g:if test="${showConsortiaFunctions == true}">
                             <td>
                                 <g:if test="${editable && binding}">
-                                    <semui:xEditableBoolean owner="${binding}" field="isVisibleForConsortiaMembers" />
+                                    <ui:xEditableBoolean owner="${binding}" field="isVisibleForConsortiaMembers" />
                                 </g:if>
                             </td>
                         </g:if>
@@ -64,7 +64,7 @@
                             <g:if test="${editable}">
                                 <g:if test="${! binding}">
                                     <g:if test="${propDefGroup.isVisible}">
-                                        <laser:remoteLink controller="ajax" action="addCustomPropertyGroupBinding"
+                                        <ui:remoteLink controller="ajax" action="addCustomPropertyGroupBinding"
                                                       params='[propDefGroup: "${propDefGroup.class.name}:${propDefGroup.id}",
                                                                ownobj:"${ownobj.class.name}:${ownobj.id}",
                                                                isVisible:"No",
@@ -75,10 +75,10 @@
                                                       data-update="propDefGroupBindingConfig"
                                                       class="ui icon button">
                                             Nicht anzeigen
-                                        </laser:remoteLink>
+                                        </ui:remoteLink>
                                     </g:if>
                                     <g:else>
-                                        <laser:remoteLink controller="ajax" action="addCustomPropertyGroupBinding"
+                                        <ui:remoteLink controller="ajax" action="addCustomPropertyGroupBinding"
                                                       params='[propDefGroup: "${propDefGroup.class.name}:${propDefGroup.id}",
                                                                ownobj:"${ownobj.class.name}:${ownobj.id}",
                                                                isVisible:"Yes",
@@ -89,11 +89,11 @@
                                                       data-update="propDefGroupBindingConfig"
                                                       class="ui icon button">
                                             Anzeigen
-                                        </laser:remoteLink>
+                                        </ui:remoteLink>
                                     </g:else>
                                 </g:if>
                                 <g:else>
-                                    <laser:remoteLink controller="ajax" action="deleteCustomPropertyGroupBinding"
+                                    <ui:remoteLink controller="ajax" action="deleteCustomPropertyGroupBinding"
                                                   params='[propDefGroupBinding: "${binding.class.name}:${binding.id}",
                                                            propDefGroup: "${propDefGroup.class.name}:${propDefGroup.id}",
                                                            ownobj:"${ownobj.class.name}:${ownobj.id}",
@@ -106,7 +106,7 @@
                                                       role="button"
                                                       ariaLabel="${message(code: 'ariaLabel.delete.universal')}">
                                         <i class="icon times"></i>
-                                    </laser:remoteLink>
+                                    </ui:remoteLink>
                                 </g:else>
                             </g:if>
                         </td>

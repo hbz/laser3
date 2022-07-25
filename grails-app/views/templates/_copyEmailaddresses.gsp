@@ -4,7 +4,7 @@
 
 <g:set var="modalID" value="${modalID ?: 'copyEmailaddresses_ajaxModal'}"/>
 
-<semui:modal id="${modalID}" text="${message(code:'menu.institutions.copy_emailaddresses', args:[orgList?.size()?:0])}" hideSubmitButton="true">
+<ui:modal id="${modalID}" text="${message(code:'menu.institutions.copy_emailaddresses', args:[orgList?.size()?:0])}" hideSubmitButton="true">
     <g:set var="rdvAllPersonFunctions" value="${PersonRole.getAllRefdataValues(RDConstants.PERSON_FUNCTION)}" scope="request"/>
     <g:set var="rdvAllPersonPositions" value="${PersonRole.getAllRefdataValues(RDConstants.PERSON_POSITION)}" scope="request"/>
     <div class="ui la-filter segment la-clear-before">
@@ -13,7 +13,7 @@
                 <label><g:message code="person.function.label" /></label>
             </div>
             <div>
-                <laser:select class="ui dropdown search"
+                <ui:select class="ui dropdown search"
                               name="prsFunctionMultiSelect"
                               multiple=""
                               from="${rdvAllPersonFunctions}"
@@ -27,7 +27,7 @@
                 <label><g:message code="person.position.label" /></label>
             </div>
             <div>
-                <laser:select class="ui dropdown search"
+                <ui:select class="ui dropdown search"
                               name="prsPositionMultiSelect"
                               multiple=""
                               from="${rdvAllPersonPositions}"
@@ -108,5 +108,5 @@
 
     </laser:script>
 
-</semui:modal>
+</ui:modal>
 <!-- _copyEmailAddresses.gsp -->

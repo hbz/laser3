@@ -1,13 +1,13 @@
 package de.laser
 
-
+import de.laser.annotations.Check404
 import de.laser.auth.User
 import de.laser.utils.DateUtils
 import de.laser.annotations.DebugInfo
 import de.laser.remote.ApiSource
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
-import de.laser.helper.SwissKnife
+import de.laser.utils.SwissKnife
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
@@ -46,7 +46,17 @@ class PackageController {
     //TaskService taskService
     YodaService yodaService
 
+    //-----
+
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
+
+    final static Map<String, String> CHECK404_ALTERNATIVES = [
+            'index' : 'package.show.all',
+            'list' : 'myinst.packages',
+            'myInstitution/currentPackages' : 'menu.my.packages'
+    ]
+
+    //-----
 
     /**
      * Lists current packages in the we:kb ElasticSearch index.
@@ -366,6 +376,7 @@ class PackageController {
      * because some data will not be mirrored to the app
      */
     @Secured(['ROLE_USER'])
+    @Check404()
     def show() {
         Map<String, Object> result = [:]
 
@@ -376,11 +387,6 @@ class PackageController {
         else if(params.id ==~ /[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}/)
             packageInstance = Package.findByGokbId(params.id)
         else packageInstance = Package.findByGlobalUID(params.id)
-        if (!packageInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label'), params.id]) as String
-            redirect action: 'index'
-            return
-        }
 
         result.currentTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_CURRENT])[0]
         result.plannedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_EXPECTED])[0]
@@ -452,6 +458,7 @@ class PackageController {
      * @see TitleInstancePackagePlatform
      */
     @Secured(['ROLE_USER'])
+    @Check404()
     def current() {
         log.debug("current ${params}");
         Map<String, Object> result = [:]
@@ -461,18 +468,11 @@ class PackageController {
         result.contextCustomerType = result.contextOrg.getCustomerType()
 
         Package packageInstance = Package.get(params.id)
-        if (!packageInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label'), params.id]) as String
-            redirect action: 'index'
-            return
-        }
         result.packageInstance = packageInstance
-
 
         if (executorWrapperService.hasRunningProcess(packageInstance)) {
             result.processingpc = true
         }
-
         /*result.pendingChanges = PendingChange.executeQuery(
                 "select pc from PendingChange as pc where pc.pkg = :pkg and ( pc.status is null or pc.status = :status ) order by ts, payload",
                 [pkg: packageInstance, status: RDStore.PENDING_CHANGE_PENDING]
@@ -502,6 +502,7 @@ class PackageController {
             }
             out.flush()
             out.close()
+            return
         } else if (params.exportXLSX) {
             response.setHeader("Content-disposition", "attachment; filename=\"${filename}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -516,12 +517,13 @@ class PackageController {
             response.outputStream.flush()
             response.outputStream.close()
             workbook.dispose()
+            return
         }else if(params.exportClickMeExcel) {
             if (params.filename) {
                 filename =params.filename
             }
 
-            ArrayList<TitleInstancePackagePlatform> tipps = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList,[sort:'tipp.sortname']) : [:]
+            ArrayList<TitleInstancePackagePlatform> tipps = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList,[sort:'sortname']) : [:]
 
             Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
             Map<String, Object> selectedFields = [:]
@@ -533,6 +535,7 @@ class PackageController {
             response.outputStream.flush()
             response.outputStream.close()
             wb.dispose()
+            return
         }
         withFormat {
             html {
@@ -541,7 +544,7 @@ class PackageController {
                 result.expiredTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_RETIRED])[0]
                 result.deletedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_DELETED])[0]
                 //we can be sure that no one will request more than 32768 entries ...
-                result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList.drop(result.offset).take(result.max)) : []
+                result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList.drop(result.offset).take(result.max), [sort: 'sortname']) : []
                 result.num_tipp_rows = titlesList.size()
 
                 result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max
@@ -558,6 +561,7 @@ class PackageController {
                 }
                 out.flush()
                 out.close()
+                return
             }
         }
     }
@@ -620,10 +624,8 @@ class PackageController {
         result.deletedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_DELETED])[0]
 
         SwissKnife.setPaginationParams(result, params, (User) result.user)
-
-        def limits = (!params.format || params.format.equals("html")) ? [max: result.max, offset: result.offset] : [offset: 0]
-
         String filename
+
         if (func == "planned") {
             params.status = RDStore.TIPP_STATUS_EXPECTED.id
             filename = "${escapeService.escapeString(packageInstance.name + '_' + message(code: 'package.show.nav.planned'))}_${DateUtils.getLocalizedSDF_noTimeNoPoint().format(new Date())}"
@@ -715,16 +717,12 @@ class PackageController {
      * @see PendingChange
      */
     @Secured(['ROLE_USER'])
+    @Check404()
     def tippChanges() {
         Map<String, Object> result = [:]
 
         result.user = contextService.getUser()
         Package packageInstance = Package.get(params.id)
-        if (!packageInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label'), params.id]) as String
-            redirect action: 'index'
-            return
-        }
 
         result.packageInstance = packageInstance
 
@@ -807,11 +805,11 @@ class PackageController {
                 }
             }
             switch (params.addType) {
-                case "With": flash.message = message(code: 'subscription.details.link.processingWithEntitlements')
+                case "With": flash.message = message(code: 'subscription.details.link.processingWithEntitlements') as String
                     redirect controller: 'subscription', action: 'index', params: [id: result.subscription.id, gokbId: result.pkg.gokbId]
                     return
                     break
-                case "Without": flash.message = message(code: 'subscription.details.link.processingWithoutEntitlements')
+                case "Without": flash.message = message(code: 'subscription.details.link.processingWithoutEntitlements') as String
                     redirect controller: 'subscription', action: 'addEntitlements', params: [id: result.subscription.id, packageLinkPreselect: result.pkg.gokbId, preselectedName: result.pkg.name]
                     return
                     break
@@ -828,6 +826,7 @@ class PackageController {
     @Deprecated
     @Secured(['ROLE_ADMIN'])
     @Transactional
+    @Check404()
     def history() {
         Map<String, Object> result = [:]
         boolean exporting = params.format == 'csv'
@@ -837,8 +836,7 @@ class PackageController {
             params.max = 9999999
             result.offset = 0
         } else {
-            User user = contextService.getUser()
-            SwissKnife.setPaginationParams(result, params, user)
+            SwissKnife.setPaginationParams(result, params, contextService.getUser())
             params.max = result.max
         }
 
@@ -874,7 +872,7 @@ class PackageController {
 
         result.historyLines.each { hl ->
 
-            def line_to_add = [:]
+            Map line_to_add = [:]
             def linetype = null
 
             switch (hl.className) {

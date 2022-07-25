@@ -96,7 +96,7 @@ class BasicHttpClient {
     // --->
 
     HttpResponse request(Method method, Map<String, String> customHeaders, ResponseType responseType, PostType postType, def body, Closure onSuccess, Closure onFailure) {
-        HttpResponse response
+        HttpResponse response = null
 
         log.debug '[ request ] ' + url + ' (Method: ' + method + ', Accept: ' + responseType + ', Content-Type: ' + postType + ')'
 
@@ -133,7 +133,7 @@ class BasicHttpClient {
     // --->
 
     HttpResponse innerGET(ResponseType responseType, Map<String, String> customHeaders) {
-        HttpResponse response
+        HttpResponse response = null
 
         responseType = responseType ?: ResponseType.TEXT
         customHeaders = customHeaders ?: [:]
@@ -155,7 +155,7 @@ class BasicHttpClient {
     }
 
     HttpResponse innerPOST(ResponseType responseType, PostType postType, def body = '', Map<String, String> customHeaders) {
-        HttpResponse response
+        HttpResponse response = null
 
         responseType = responseType ?: ResponseType.TEXT
         postType = postType ?: PostType.JSON
@@ -214,7 +214,7 @@ class BasicHttpClient {
     // --->
 
     static def getParsedResponse(HttpResponse response, ResponseType responseType) {
-        def result
+        def result = null
 
         try {
             if (responseType == ResponseType.TEXT) {

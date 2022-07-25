@@ -3,7 +3,7 @@
     List notAvailable = [ RDStore.DOC_TYPE_ONIXPL, RDStore.DOC_TYPE_NOTE, RDStore.DOC_TYPE_ANNOUNCEMENT ]
     List documentTypes = RefdataCategory.getAllRefdataValues(RDConstants.DOCUMENT_TYPE)-notAvailable
 %>
-<semui:filter>
+<ui:filter>
     <g:form id="documentFilter" class="ui form" controller="${controllerName}" action="documents">
         <div class="two fields">
             <div class="field">
@@ -33,7 +33,7 @@
             <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label')}" />
         </div>
     </g:form>
-</semui:filter>
+</ui:filter>
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.app.cfg = {}
     JSPC.app.cfg.org = false;

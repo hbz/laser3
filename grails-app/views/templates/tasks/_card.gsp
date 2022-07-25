@@ -4,7 +4,7 @@
 <%--OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${accessService.checkMinUserOrgRole(user, institution, 'INST_EDITOR')} @ ${institution}--%>
 <g:set var="overwriteEditable" value="${editable || accessService.checkMinUserOrgRole(user, institution, 'INST_EDITOR')}" />
 
-<semui:card message="task.plural" class="notes la-js-hideable ${css_class}" href="#modalCreateTask" editable="${overwriteEditable}">
+<ui:card message="task.plural" class="notes la-js-hideable ${css_class}" href="#modalCreateTask" editable="${overwriteEditable}">
     <div class="ui relaxed divided list  la-js-dont-hide-this-card">
     <g:each in="${tasks}" var="tsk">
         <g:if test="${tsk.status == RDStore.TASK_STATUS_DONE}">
@@ -75,7 +75,7 @@
         </div>--}%
     </g:each>
     </div>
-</semui:card>
+</ui:card>
 
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.app.taskedit = function (id) {

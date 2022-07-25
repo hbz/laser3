@@ -1,22 +1,16 @@
 <%@ page import="de.laser.auth.UserRole;de.laser.Org;de.laser.auth.Role" %>
-<laser:serviceInjection />
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : <g:message code="user.edit.label" /></title>
-</head>
-<body>
+<laser:htmlStart message="user.edit.label" serviceInjection="true"/>
+
         <laser:render template="/user/global/breadcrumb" model="${[ params:params ]}"/>
 
-        <semui:controlButtons>
+        <ui:controlButtons>
             <laser:render template="/user/global/actions" />
-        </semui:controlButtons>
+        </ui:controlButtons>
 
-        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="user.edit.label" /></h1>
+        <ui:h1HeaderWithIcon message="user.edit.label" />
         <h2 class="ui header la-noMargin-top">${user.username}</h2>
 
-    <semui:messages data="${flash}" />
+    <ui:messages data="${flash}" />
 
     <div class="ui two column grid">
 
@@ -47,14 +41,14 @@
 
                 <div class="ui field">
                     <label>${message(code:'user.email')}</label>
-                    <semui:xEditable owner="${user}" field="email" validation="email"/>
+                    <ui:xEditable owner="${user}" field="email" validation="email"/>
                 </div>
 
                 <g:if test="${editable}">
 
                     <div class="ui field">
                         <label>${message(code:'user.enabled.label')}</label>
-                        <semui:xEditableBoolean owner="${user}" field="enabled" />
+                        <ui:xEditableBoolean owner="${user}" field="enabled" />
                     </div>
 
                     <g:form controller="user" action="newPassword" params="${[id: user.id]}">
@@ -169,7 +163,7 @@
         </g:elseif> --}%
 
         <g:if test="${ availableOrgs }">
-            <g:if test="${controllerName == 'user' || (controllerName in ['myInstitution', 'organisation'] && ! user.isAuthorizedInstMember(orgInstance))}">
+            <g:if test="${controllerName == 'user' || (controllerName in ['myInstitution', 'organisation'] && ! user.hasInstMemberAffiliation(orgInstance))}">
                 <div class="ui segment form">
 
                     <g:form controller="${controllerName}" action="addAffiliation" class="ui form" method="get">
@@ -217,5 +211,4 @@
         </g:if>
     </g:if>
 
-</body>
-</html>
+<laser:htmlEnd />

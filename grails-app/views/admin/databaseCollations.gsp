@@ -1,19 +1,13 @@
 <%@ page import="de.laser.helper.DatabaseInfo; groovy.sql.GroovyRowResult; de.laser.RefdataValue; de.laser.storage.BeanStore" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code: "menu.admin.databaseCollations")}</title>
-</head>
 
-<body>
+<laser:htmlStart message="menu.admin.databaseCollations" />
 
-<semui:breadcrumbs>
-    <semui:crumb message="menu.admin" controller="admin" action="index"/>
-    <semui:crumb message="menu.admin.databaseCollations" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb message="menu.admin" controller="admin" action="index"/>
+    <ui:crumb message="menu.admin.databaseCollations" class="active"/>
+</ui:breadcrumbs>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top">${message(code: "menu.admin.databaseCollations")}</h1>
+<ui:h1HeaderWithIcon message="menu.admin.databaseCollations" />
 
 <div class="ui secondary stackable pointing tabular menu">
     <a data-tab="first" class="item active">Übersicht</a>
@@ -176,6 +170,4 @@
     }).trigger('change')
 </laser:script>
 
-</body>
-
-</html>
+<laser:htmlEnd />

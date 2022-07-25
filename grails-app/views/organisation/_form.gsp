@@ -28,7 +28,7 @@
 	<label for="sector">
 		<g:message code="org.sector.label" />
 	</label>
-	<laser:select id="sector" name="sector.id" from="${RefdataCategory.getAllRefdataValues(RDConstants.ORG_SECTOR)}"
+	<ui:select id="sector" name="sector.id" from="${RefdataCategory.getAllRefdataValues(RDConstants.ORG_SECTOR)}"
 				  optionKey="id" optionValue="value" value="${orgInstance?.sector?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
 </div>
 
@@ -36,7 +36,7 @@
 	<label for="libraryType">
 		<g:message code="org.libraryType.label" />
 	</label>
-	<laser:select id="libraryType" name="libraryType.id" from="${RefdataCategory.getAllRefdataValues(RDConstants.LIBRARY_TYPE)}"
+	<ui:select id="libraryType" name="libraryType.id" from="${RefdataCategory.getAllRefdataValues(RDConstants.LIBRARY_TYPE)}"
 				  optionKey="id" optionValue="value" value="${orgInstance?.libraryType?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
 </div>
 </div>
@@ -59,7 +59,7 @@
 	<label for="country">
 		<g:message code="org.country.label" />
 	</label>
-	<laser:select id="country" name="country.id" from="${RefdataCategory.getAllRefdataValues(RDConstants.COUNTRY)}"
+	<ui:select id="country" name="country.id" from="${RefdataCategory.getAllRefdataValues(RDConstants.COUNTRY)}"
 			  optionKey="id" optionValue="value" value="${orgInstance?.country?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
 </div>
 
@@ -67,7 +67,7 @@
 	<label for="region">
 		<g:message code="org.region.label" />
 	</label>
-	<laser:select id="region" name="region.id" from="${RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_DE, RDConstants.REGIONS_AT, RDConstants.REGIONS_CH])}"
+	<ui:select id="region" name="region.id" from="${RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_DE, RDConstants.REGIONS_AT, RDConstants.REGIONS_CH])}"
 			  optionKey="id" optionValue="value" value="${orgInstance?.region?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
 </div>
 
@@ -75,7 +75,7 @@
 	<label for="libraryNetwork">
 		<g:message code="org.libraryNetwork.label" />
 	</label>
-	<laser:select id="libraryNetwork" name="libraryNetwork.id" from="${RefdataCategory.getAllRefdataValues(RDConstants.LIBRARY_NETWORK)}"
+	<ui:select id="libraryNetwork" name="libraryNetwork.id" from="${RefdataCategory.getAllRefdataValues(RDConstants.LIBRARY_NETWORK)}"
 			  optionKey="id" optionValue="value" value="${orgInstance?.libraryNetwork?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
 </div>
 
@@ -83,6 +83,6 @@
 	<label for="funderType">
 		<g:message code="org.funderType.label" />
 	</label>
-	<laser:select id="funderType" name="funderType.id" from="${RefdataCategory.getAllRefdataValues(RDConstants.FUNDER_TYPE)}"
+	<ui:select id="funderType" name="funderType.id" from="${RefdataCategory.getAllRefdataValues(RDConstants.FUNDER_TYPE)}"
 			  optionKey="id" optionValue="value" value="${orgInstance?.funderType?.id}" class="ui dropdown many-to-one" noSelection="['null': '']"/>
 </div>

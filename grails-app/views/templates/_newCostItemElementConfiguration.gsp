@@ -1,5 +1,5 @@
 <%@ page import="de.laser.storage.RDStore; de.laser.RefdataValue" %>
-<semui:modal id="ciecModal" message="costItemElementConfiguration.create_new.label">
+<ui:modal id="ciecModal" message="costItemElementConfiguration.create_new.label">
 
     <g:form class="ui form" url="${formUrl}" method="POST">
 
@@ -17,4 +17,4 @@
             </div><!-- .row -->
         </div><!-- .grid -->
     </g:form>
-</semui:modal>
+</ui:modal>

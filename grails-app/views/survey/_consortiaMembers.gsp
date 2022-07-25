@@ -1,9 +1,7 @@
 <%@ page import="de.laser.survey.SurveyConfig; de.laser.storage.RDStore;" %>
 <br />
 
-<laser:render template="/templates/filter/javascript" />
-
-<semui:filter showFilterButton="true">
+<ui:filter showFilterButton="true" addFilterJs="true">
     <g:form action="surveyParticipants" method="post" class="ui form"
             params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
         <laser:render template="/templates/filter/orgFilter"
@@ -12,9 +10,9 @@
                           tmplConfigFormFilter: true
                   ]"/>
     </g:form>
-</semui:filter>
+</ui:filter>
 
-<br><br>
+<br/><br/>
 <g:form action="addSurveyParticipants" controller="survey" method="post" class="ui form"
         params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
 

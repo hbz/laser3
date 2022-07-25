@@ -42,15 +42,15 @@ class BookInstance extends TitleInstance {
 
     static constraints = {
 
-        dateFirstInPrint(nullable:true);
-        dateFirstOnline(nullable:true);
-        summaryOfContent(nullable:true, blank:false);
-        volume(nullable:true, blank:false);
-        firstAuthor (nullable:true, blank:false);
-        firstEditor (nullable:true, blank:false);
-        editionDifferentiator (nullable:true, blank:false);
+        dateFirstInPrint    (nullable:true)
+        dateFirstOnline     (nullable:true)
+        summaryOfContent    (nullable:true, blank:false)
+        volume              (nullable:true, blank:false)
+        firstAuthor         (nullable:true, blank:false)
+        firstEditor         (nullable:true, blank:false)
+        editionDifferentiator (nullable:true, blank:false)
         editionNumber       (nullable:true)
-        editionStatement (nullable:true, blank:false);
+        editionStatement    (nullable:true, blank:false)
 
     }
 

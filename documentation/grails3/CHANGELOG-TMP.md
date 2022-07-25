@@ -7,6 +7,40 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4366    22.07.2022  rc-2.3  2.3.3       Moe     Bug         Fehlermeldung Leitweg-ID trotz Eintragung
+
+4358    15.07.2022  rc-2.3  2.3.2       Moe     Bug         Umfragen entküpfen: Verknüpfung wird in "Zielumfrage" weiterhin angezeigt
+
+4356    14.07.2022  rc-2.3  2.3.2       Moe     Feature     Teilnehmerverwaltung: Merkmale für einzelene Teilnehmer löschbar machen
+
+4039    13.07.2022  rc-2.3  2.3.2       Moe     Bug         500er bei Meine Lizenzverwaltung / Dokumente anhängen
+
+4352    12.07.2022  rc-2.3  2.3.2       Moe     Bug         Titel werden nicht in den Bestand übernommen
+
+4353    12.07.2022  rc-2.3  2.3.2       Moe     Bug         Benutzername nicht in Reset-Mail verschicken
+
+4351    12.07.2022  rc-2.3  2.3.2       Moe     Bug         Lizenzverlängerungsumfrage: Kopierfunktion deaktivieren
+
+4081    06.07.2022  rc-2.3  2.3.2       Moe     Bug         Hinweis auf fehlende Leitweg-ID bei elektronischer Rechnungsstellung fehl!
+
+4327    06.07.2022  rc-2.3  2.3.2       Moe     Feature     Lizenzumfrage: Anzeige aktuelle/zukünftige Lizenzbedingungen konfigurierbar machen
+
+4345    06.07.2022  rc-2.3  2.3.2       Moe     Bug         IssueEntitlement werden angewissen Stellen nicht richtig gefiltern
+
+4331    06.07.2022  rc-2.3  2.3.2       Moe     Bug         Fehler beim Hinzufügen von Titeln
+
+4333    30.06.2022  rc-2.3  2.3.2       Moe     Bug         Fehler bei Export von KBART
+
+4326    30.06.2022  rc-2.3  2.3.2       Moe     Bug         Verlängerungsumfrage: Statusfilter im Teilnehmerreiter entfernen
+
+4319    24.06.2022  rc-2.3  2.3.2       Moe     Bug         Umfragen miteinander verknüpfen
+
+4318    24.06.2022  rc-2.3  2.3.2       Andreas Bug         Sortierung von Titel an diversen Stellen korrigiert
+
+4313    22.06.2022  rc-2.3  2.3.2       Andreas Bug         diverse Nachbesserungen API (Versionssprung 1.0 auf 1.1)
+
+4311    21.06.2022  rc-2.3  2.3.2       Andreas Bug         ClickMichExcel für Meine Einrichtungen lieferte leere Tabelle aus
+
 4308    21.06.2022  rc-2.3  2.3.1       Moe     Feature     Laufzeit-Ende lässt sich bei automatischer Verlängerung bearbeiten
 
 4307    21.06.2022  rc-2.3  2.3.1       Moe     Bug         Bei "Automatisch um ein Jahr verlängern" Prüfung in meine Lizenzverwaltung einbauen

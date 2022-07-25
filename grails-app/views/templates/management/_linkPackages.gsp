@@ -150,10 +150,10 @@
 
             <h3 class="ui header">
                 <g:if test="${controllerName == "subscription"}">
-                    ${message(code: 'subscriptionsManagement.subscriber')} <semui:totalNumber
+                    ${message(code: 'subscriptionsManagement.subscriber')} <ui:totalNumber
                         total="${filteredSubscriptions.size()}"/>
                 </g:if><g:else>
-                    ${message(code: 'subscriptionsManagement.subscriptions')} <semui:totalNumber
+                    ${message(code: 'subscriptionsManagement.subscriptions')} <ui:totalNumber
                             total="${filteredSubscriptions.size()}/${num_sub_rows}"/>
                 </g:else>
             </h3>

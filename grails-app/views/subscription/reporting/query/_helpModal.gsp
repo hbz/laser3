@@ -1,7 +1,7 @@
 <%@ page import="de.laser.reporting.export.LocalExportHelper;" %>
 <laser:serviceInjection />
 <!-- _helpModal.gsp -->
-<semui:infoModal id="${modalID}">
+<ui:infoModal id="${modalID}">
 
     <div class="help-section" data-help-section="timeline-member">
         <p class="ui header">
@@ -62,7 +62,7 @@
     <div class="help-section" data-help-section="default">
         ${message(code:'reporting.ui.global.help.missing')}
     </div>
-</semui:infoModal>
+</ui:infoModal>
 
 <style>
 #queryHelpModal .items .item {

@@ -1,19 +1,14 @@
 <%@ page import="de.laser.Org" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'menu.yoda.profilerLoadtime')}</title>
+<laser:htmlStart message="menu.yoda.profilerLoadtime">
     <laser:javascript src="echarts.js"/>%{-- dont move --}%
-</head>
-<body>
+</laser:htmlStart>
 
-<semui:breadcrumbs>
-    <semui:crumb message="menu.yoda" controller="yoda" action="index"/>
-    <semui:crumb message="menu.yoda.profiler" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb message="menu.yoda" controller="yoda" action="index"/>
+    <ui:crumb message="menu.yoda.profiler" class="active"/>
+</ui:breadcrumbs>
 
-    <h1 class="ui icon header la-clear-before la-noMargin-top">${message(code:'menu.yoda.profiler')}</h1>
+    <ui:h1HeaderWithIcon message="menu.yoda.profiler" />
 
     <nav class="ui secondary menu">
         <g:link controller="yoda" action="profilerLoadtime" class="item active">Ladezeiten</g:link>
@@ -284,5 +279,4 @@
     }
 </style>
 
-</body>
-</html>
+<laser:htmlEnd />

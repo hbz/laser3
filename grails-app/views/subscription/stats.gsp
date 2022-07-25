@@ -1,41 +1,34 @@
 <%@ page import="de.laser.utils.DateUtils; de.laser.storage.RDStore; org.springframework.context.i18n.LocaleContextHolder; de.laser.Subscription; de.laser.IssueEntitlement; de.laser.stats.Counter4ApiSource; de.laser.stats.Counter4Report; de.laser.stats.Counter5Report" %>
-<laser:serviceInjection />
+<laser:htmlStart message="subscription.details.stats.label" serviceInjection="true"/>
+
 <g:set var="subjects" value="${controlledListService.getAllPossibleSubjectsBySub(subscription)}"/>
 <g:set var="ddcs" value="${controlledListService.getAllPossibleDdcsBySub(subscription)}"/>
 <g:set var="languages" value="${controlledListService.getAllPossibleLanguagesBySub(subscription)}"/>
 
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'subscription.details.stats.label')}</title>
-    </head>
-    <body>
-        <semui:debugInfo>
+        <ui:debugInfo>
             <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
-        </semui:debugInfo>
+        </ui:debugInfo>
         <laser:render template="breadcrumb" model="${[ params:params ]}"/>
-        <semui:controlButtons>
-            <semui:exportDropdown>
-                <semui:exportDropdownItem>
+        <ui:controlButtons>
+            <ui:exportDropdown>
+                <ui:exportDropdownItem>
                     <g:link class="item" action="stats" params="${params+[exportXLS:true, data: 'fetchAll']}">${message(code:'default.usage.exports.all')}</g:link>
                     <g:link class="item" action="stats" params="${params+[exportXLS:true, data: 'fetchFiltered']}">${message(code:'default.usage.exports.filtered')}</g:link>
-                </semui:exportDropdownItem>
-            </semui:exportDropdown>
+                </ui:exportDropdownItem>
+            </ui:exportDropdown>
             <laser:render template="actions" />
-        </semui:controlButtons>
-        <h1 class="ui icon header la-noMargin-top">
-            <semui:headerIcon />
+        </ui:controlButtons>
+        <ui:h1HeaderWithIcon>
             <laser:render template="iconSubscriptionIsChild"/>
             ${subscription.name}
-        </h1>
-        <semui:anualRings object="${subscription}" controller="subscription" action="show" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+        </ui:h1HeaderWithIcon>
+        <ui:anualRings object="${subscription}" controller="subscription" action="show" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
         <laser:render template="nav" />
 
-        <semui:objectStatus object="${subscription}" status="${subscription.status}" />
+        <ui:objectStatus object="${subscription}" status="${subscription.status}" />
         <laser:render template="message" />
-        <semui:messages data="${flash}" />
+        <ui:messages data="${flash}" />
         <div class="ui icon info message">
             <i class="info icon"></i>
             <g:message code="default.usage.exports.warning"/>
@@ -85,8 +78,7 @@
             </div>
         </g:if>
         <g:else>
-            <laser:render template="/templates/filter/javascript"/>
-            <semui:filter showFilterButton="true">
+            <ui:filter showFilterButton="true" addFilterJs="true">
                 <g:form action="stats" class="ui form" method="get">
                     <g:hiddenField name="tab" value="${params.tab}"/>
                     <g:hiddenField name="id" value="${subscription.id}"/>
@@ -221,13 +213,13 @@
                         </div>
                     </div>
                 </g:form>
-            </semui:filter>
-            <semui:tabs class="la-overflowX-auto">
-                <semui:tabsItem controller="subscription" action="stats" params="${params + [tab: 'total']}" text="${message(code: 'default.usage.allUsageGrid.header')}" tab="total"/>
+            </ui:filter>
+            <ui:tabs class="la-overflowX-auto">
+                <ui:tabsItem controller="subscription" action="stats" params="${params + [tab: 'total']}" text="${message(code: 'default.usage.allUsageGrid.header')}" tab="total"/>
                 <g:each in="${monthsInRing}" var="month">
-                    <semui:tabsItem controller="subscription" action="stats" params="${params + [tab: DateUtils.getSDF_yyyyMM().format(month)]}" text="${DateUtils.getSDF_yyyyMM().format(month)}" tab="${DateUtils.getSDF_yyyyMM().format(month)}"/>
+                    <ui:tabsItem controller="subscription" action="stats" params="${params + [tab: DateUtils.getSDF_yyyyMM().format(month)]}" text="${DateUtils.getSDF_yyyyMM().format(month)}" tab="${DateUtils.getSDF_yyyyMM().format(month)}"/>
                 </g:each>
-            </semui:tabs>
+            </ui:tabs>
             <div class="ui bottom attached tab active segment">
                 <g:if test="${params.tab == 'total'}">
                     <table class="ui celled la-js-responsive-table la-table table">
@@ -271,7 +263,7 @@
                             </g:each>
                         </tbody>
                     </table>
-                    <semui:paginate total="${total}" params="${params}" max="${max}" offset="${offset}"/>
+                    <ui:paginate total="${total}" params="${params}" max="${max}" offset="${offset}"/>
                 </g:else>
             </div>
         </g:else>
@@ -297,5 +289,4 @@
                 });
             });
         </laser:script>
-    </body>
-</html>
+<laser:htmlEnd />

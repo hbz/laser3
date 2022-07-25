@@ -94,7 +94,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 Date oldDate = source.haveUpTo
                 //Date oldDate = DateUtils.getSDF_ymd().parse('2022-01-01') //debug only
                 log.info("getting records from job #${source.id} with uri ${source.uri} since ${oldDate}")
-                SimpleDateFormat sdf = new SimpleDateFormat('yyyy-MM-dd HH:mm:ss')
+                SimpleDateFormat sdf = DateUtils.getSDF_yyyyMMdd_HHmmss()
                 String componentType
                 /*
                     structure:
@@ -508,7 +508,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
     void updateRecords(List<Map> rawRecords, int offset) {
         //necessary filter for DEV database
         List<Map> records = rawRecords.findAll { Map tipp -> tipp.containsKey("hostPlatformUuid") && tipp.containsKey("tippPackageUuid") }
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+        SimpleDateFormat sdf = DateUtils.getSDF_yyyyMMddTHHmmssZ()
         Set<String> platformUUIDs = records.collect { Map tipp -> tipp.hostPlatformUuid } as Set<String>
         log.debug("found platform UUIDs: ${platformUUIDs.toListString()}")
         Set<String> packageUUIDs = records.collect { Map tipp -> tipp.tippPackageUuid } as Set<String>

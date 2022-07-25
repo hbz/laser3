@@ -43,7 +43,7 @@ class PriceItem extends AbstractBase {
                         issueEntitlement: IssueEntitlement]
 
     static mapping = {
-        id                  column: 'pi_id', index:'pi_idx'
+        id                  column: 'pi_id'
         version             column: 'pi_version'
         globalUID           column: 'pi_guid'
         listPrice           column: 'pi_list_price'

@@ -97,18 +97,6 @@ class CacheService implements ApplicationContextAware {
 
     /* --- */
 
-    /*
-    Copy Cache
-    A copy cache can have two behaviors: it can copy Element instances it returns, when copyOnRead is true and copy elements it stores, when copyOnWrite to true.
-    -> A copy-on-read cache can be useful when you can't let multiple threads access the same Element instance (and the value it holds) concurrently.
-    For example, where the programming model doesn't allow it, or you want to isolate changes done concurrently from each other.
-    -> Copy on write also lets you determine exactly what goes in the cache and when (i.e., when the value that will be in the cache will be in state it was when it actually was put in cache).
-    All mutations to the value, or the element, after the put operation will not be reflected in the cache.
-    By default, the copy operation will be performed using standard Java object serialization. For some applications, however, this might not be good (or fast) enough.
-    You can configure your own CopyStrategy, which will be used to perform these copy operations. For example, you could easily implement use cloning rather than Serialization.
-    For more information about copy caches, see “Passing Copies Instead of References” in the Configuration Guide for Ehcache.
-    */
-
     /**
      * Gets a personalised cache for the given user which lasts for the whole session. A new cache record will be
      * created if it does not exist

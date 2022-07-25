@@ -22,7 +22,7 @@
     //println "EDITABLE2: ${editable2}"
 %>
 
-    <semui:card message="license.notes" class="notes la-js-hideable ${css_class}" href="#modalCreateNote" editable="${editable || editable2}">
+    <ui:card message="license.notes" class="notes la-js-hideable ${css_class}" href="#modalCreateNote" editable="${editable || editable2}">
         <g:each in="${baseItems}" var="docctx">
             <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) )}">
                 <div class="ui small feed content la-js-dont-hide-this-card">
@@ -31,7 +31,7 @@
                             <g:if test="${(docctx.owner.owner?.id == contextService.getOrg().id || docctx.owner.owner == null) && (editable || editable2)}">
                                 <a onclick="JSPC.app.noteedit(${docctx.owner.id});">
                                     <g:if test="${docctx.owner.title}">
-                                        ${docctx.owner.title}</a>
+                                        ${docctx.owner.title}
                                     </g:if>
                                     <g:else>
                                         <g:message code="license.notes.noTitle"/>
@@ -41,7 +41,7 @@
                             <g:else>
                                 <a onclick="JSPC.app.noteread(${docctx.owner.id});">
                                     <g:if test="${docctx.owner.title}">
-                                        ${docctx.owner.title}</a>
+                                        ${docctx.owner.title}
                                     </g:if>
                                     <g:else>
                                         <g:message code="license.notes.noTitle"/>
@@ -68,7 +68,7 @@
                             <g:if test="${ownobj.respondsTo('showUIShareButton') && ownobj.showUIShareButton()}">
                             <%-- START Second Button --%>
                                 <g:if test="${docctx?.isShared}">
-                                    <laser:remoteLink class="ui icon green button la-modern-button js-no-wait-wheel la-popup-tooltip la-delay"
+                                    <ui:remoteLink class="ui icon green button la-modern-button js-no-wait-wheel la-popup-tooltip la-delay"
                                                       controller="ajax"
                                                       action="toggleShare"
                                                       params='[owner:genericOIDService.getOID(ownobj), sharedObject:genericOIDService.getOID(docctx), tmpl:"notes", ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]'
@@ -78,10 +78,10 @@
                                                       role="button"
                                     >
                                         <i class="icon la-share la-js-editmode-icon"></i>
-                                    </laser:remoteLink>
+                                    </ui:remoteLink>
                                 </g:if>
                                 <g:else>
-                                    <laser:remoteLink class="ui icon blue button la-modern-button js-no-wait-wheel la-popup-tooltip la-delay js-open-confirm-modal"
+                                    <ui:remoteLink class="ui icon blue button la-modern-button js-no-wait-wheel la-popup-tooltip la-delay js-open-confirm-modal"
                                                       controller="ajax"
                                                       action="toggleShare"
                                                       params='[owner:genericOIDService.getOID(ownobj), sharedObject:genericOIDService.getOID(docctx), tmpl:"notes", ajaxCallController: ajaxCallController ?: controllerName, ajaxCallAction: ajaxCallAction ?: actionName]'
@@ -93,7 +93,7 @@
                                                       role="button"
                                     >
                                         <i class="la-share slash icon la-js-editmode-icon"></i>
-                                    </laser:remoteLink>
+                                    </ui:remoteLink>
                                 </g:else>
 
                             </g:if>
@@ -111,10 +111,10 @@
                 </div>
             </g:if>
         </g:each>
-    </semui:card>
+    </ui:card>
 
     <g:if test="${sharedItems}">
-        <semui:card message="license.notes.shared" class="documents la-js-hideable ${css_class}" editable="${editable}">
+        <ui:card message="license.notes.shared" class="documents la-js-hideable ${css_class}" editable="${editable}">
             <g:each in="${sharedItems}" var="docctx">
 
                 <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') )}">
@@ -133,7 +133,7 @@
                             <div class="four wide column">
                                 <g:if test="${docctx.owner.owner?.id == contextService.getOrg().id}">
                                     <laser:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />
-                                    <button type="button" class="ui icon blue button la-modern-button editable-cancel" data-semui="modal" data-href="#modalEditDocument_${docctx.id}" ><i class="pencil icon"></i></button>
+                                    <button type="button" class="ui icon blue button la-modern-button editable-cancel" data-ui="modal" data-href="#modalEditDocument_${docctx.id}" ><i class="pencil icon"></i></button>
                                 </g:if>
                             </div>
                         </div>
@@ -141,7 +141,7 @@
                 </g:if>
 
             </g:each>
-        </semui:card>
+        </ui:card>
     </g:if>
 
     <laser:script file="${this.getGroovyPageFileName()}">

@@ -4,7 +4,7 @@
    <div id="contactFields" class="three fields">
        <div class="field four wide">
            <label></label>
-            <laser:select class="ui dropdown" name="contentType.id"
+            <ui:select class="ui dropdown" name="contentType.id"
                           from="${Contact.getAllRefdataValues(RDConstants.CONTACT_CONTENT_TYPE)}"
                           optionKey="id"
                           optionValue="value"
@@ -13,7 +13,7 @@
 
         <div class="field four wide">
             <label></label>
-            <laser:select class="ui search dropdown" name="contactLang.id"
+            <ui:select class="ui search dropdown" name="contactLang.id"
                           from="${RefdataCategory.getAllRefdataValues(RDConstants.LANGUAGE_ISO)}"
                           optionKey="id"
                           optionValue="value"

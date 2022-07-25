@@ -1,47 +1,39 @@
 <%@ page import="de.laser.remote.ApiSource; de.laser.Package; de.laser.RefdataCategory; de.laser.titles.BookInstance" %>
+<laser:htmlStart message="title.details" />
 
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'title.details')}</title>
-</head>
-  <body>
+      <ui:breadcrumbs>
+          <ui:crumb controller="title" action="list" message="menu.public.all_titles" />
+          <ui:crumb class="active" text="${message(code:'default.title.label')}: ${ti.title}" />
+      </ui:breadcrumbs>
 
-      <semui:breadcrumbs>
-          <semui:crumb controller="title" action="list" message="menu.public.all_titles" />
-          <semui:crumb class="active" text="${message(code:'default.title.label')}: ${ti.title}" />
-      </semui:breadcrumbs>
-
-  <h1 class="ui icon header la-clear-before la-noMargin-top">
-            <semui:headerTitleIcon type="${ti.printTitleType()}"/>
+        <ui:h1HeaderWithIcon type="${ti.printTitleType()}">
             ${ti.title}
             <g:if test="${ti.status?.value && ti.status.value != 'Current'}">
                 <span class="badge badge-error" style="vertical-align:middle;">${ti.status.getI10n('value')}</span>
             </g:if>
-        </h1>
+        </ui:h1HeaderWithIcon>
 
         <laser:render template="nav" />
 
         <laser:render template="/templates/meta/identifier" model="${[object: ti, editable: editable]}" />
 
-        <semui:messages data="${flash}" />
+        <ui:messages data="${flash}" />
 
         <div class="ui grid">
 
             <div class="sixteen wide column">
 
-                <semui:form>
+                <ui:form>
                     <!-- START TEMPLATE -->
                     <laser:render template="/templates/title_long"
                               model="${[ie: null, tipp: ti,
                                         showPackage: true, showPlattform: true, showCompact: false, showEmptyFields: true]}"/>
                     <!-- END TEMPLATE -->
-                </semui:form>
+                </ui:form>
             </div>
 
             <div class="sixteen wide column">
-                <semui:form>
+                <ui:form>
                   <g:each in="${duplicates}" var="entry">
 
                           ${message(code:'title.edit.duplicate.warn', args:[entry.key])}:
@@ -52,7 +44,7 @@
                           </ul>
 
                   </g:each>
-                </semui:form>
+                </ui:form>
             </div>
 
         </div><!-- .grid -->
@@ -74,10 +66,10 @@
                     <td><g:link controller="organisation" action="show" id="${org.org.id}">${org.org.name}</g:link></td>
                     <td>${org?.roleType?.getI10n("value")}</td>
                     <td>
-                      <semui:xEditable owner="${org}" type="date" field="startDate"/>
+                      <ui:xEditable owner="${org}" type="date" field="startDate"/>
                     </td>
                     <td>
-                      <semui:xEditable owner="${org}" type="date" field="endDate"/>
+                      <ui:xEditable owner="${org}" type="date" field="endDate"/>
                     </td>
                   </tr>
                 </g:each>
@@ -123,7 +115,7 @@
             </g:if>
 
   <h3 class="ui icon header la-clear-before la-noMargin-top"><g:message code="title.edit.tipp"/>
-  <semui:totalNumber total="${ti.tipps.size()}"/>
+  <ui:totalNumber total="${ti.tipps.size()}"/>
   </h3>
 
             %{--NEW VIEW FOR TIPPS--}%
@@ -186,7 +178,7 @@
                       <div class="item">
                           <i class="grey key icon la-popup-tooltip la-delay" data-content="${message(code: 'default.status.label')}"></i>
                           <div class="content">
-                              <semui:xEditableRefData owner="${t}" field="status" config="${de.laser.storage.RDConstants.TIPP_STATUS}"/>
+                              <ui:xEditableRefData owner="${t}" field="status" config="${de.laser.storage.RDConstants.TIPP_STATUS}"/>
                           </div>
                       </div>
 
@@ -237,7 +229,7 @@
                           <g:formatDate format="${message(code:'default.date.format.notime')}" date="${covStmt.startDate}"/><br />
                           <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.startVolume')}"></i>${covStmt.startVolume}<br />
                           <i class="grey fitted la-notebook icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.startIssue')}"></i>${covStmt.startIssue}<br />
-                          <semui:dateDevider/>
+                          <ui:dateDevider/>
                           <!-- bis -->
                           <g:formatDate format="${message(code:'default.date.format.notime')}" date="${covStmt.endDate}"/><br />
                           <i class="grey fitted la-books icon la-popup-tooltip la-delay" data-content="${message(code:'tipp.endVolume')}"></i>${covStmt.endVolume}<br />
@@ -250,10 +242,10 @@
               </td>
               <td>
                   <!-- von -->
-                  <semui:xEditable owner="${t}" type="date" field="accessStartDate" />
-                  <semui:dateDevider/>
+                  <ui:xEditable owner="${t}" type="date" field="accessStartDate" />
+                  <ui:dateDevider/>
                   <!-- bis -->
-                  <semui:xEditable owner="${t}" type="date" field="accessEndDate" />
+                  <ui:xEditable owner="${t}" type="date" field="accessEndDate" />
               </td>
           </tr>
 
@@ -265,5 +257,4 @@
 
             <br /><br />
 
-  </body>
-</html>
+<laser:htmlEnd />

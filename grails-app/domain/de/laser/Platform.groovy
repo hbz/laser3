@@ -129,7 +129,7 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
 
     if ( !platform && params.name && (params.name.trim().length() > 0)  ) {
 
-      String norm_name = params.name.trim().toLowerCase();
+      String norm_name = params.name.trim().toLowerCase()
         //TODO: Dieser Zweig passieert nicht bei we:kb Sync
       if( params.primaryUrl && (params.primaryUrl.length() > 0) ){
 
@@ -195,7 +195,7 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
    * @param subscriptionPackage the subscription (represented by the {@link SubscriptionPackage} link) whose configurations should be verified
    * @return true if there are access point configurations linked to this platform and the given subscription package, false otherwise
    */
-  boolean usesPlatformAccessPoints(contextOrg, subscriptionPackage){
+  boolean usesPlatformAccessPoints(Org contextOrg, SubscriptionPackage subscriptionPackage){
     // TODO do we need the contextOrg?
     // look for OrgAccessPointLinks for this platform and a given subscriptionPackage, if we can find that "marker",
     // we know the AccessPoints are not derived from the AccessPoints configured for the platform
@@ -210,7 +210,7 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
    * @param contextOrg the context {@link Org} whose configurations should be retrieved
    * @return a {@link List} of {@link OrgAccessPoint}s pointing to this platform and defined by the given institution
    */
-  List<OrgAccessPoint> getContextOrgAccessPoints(contextOrg) {
+  List<OrgAccessPoint> getContextOrgAccessPoints(Org contextOrg) {
     String hql = "select oap from OrgAccessPoint oap " +
         "join oap.oapp as oapp where oap.org=:org and oapp.active = true and oapp.platform.id =${this.id} and oapp.subPkg is null order by LOWER(oap.name)"
     OrgAccessPoint.executeQuery(hql, ['org': contextOrg])

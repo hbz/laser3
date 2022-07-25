@@ -1,26 +1,20 @@
 <%@ page import="de.laser.reporting.report.ReportingCache; de.laser.reporting.report.myInstitution.base.BaseConfig" %>
-<laser:serviceInjection/>
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : <g:message code="myinst.reporting"/></title>
-        <laser:javascript src="echarts.js"/>%{-- dont move --}%
-    </head>
+<laser:htmlStart message="myinst.reporting" serviceInjection="true">
+    <laser:javascript src="echarts.js"/>%{-- dont move --}%
+</laser:htmlStart>
 
-    <body>
         <laser:render template="breadcrumb" model="${[ subscription:subscription, params:params ]}"/>
 
-        <semui:controlButtons>
+        <ui:controlButtons>
             <laser:render template="actions" />
-        </semui:controlButtons>
+        </ui:controlButtons>
     
-        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
+        <ui:h1HeaderWithIcon>
             <laser:render template="iconSubscriptionIsChild"/>
-            <semui:xEditable owner="${subscription}" field="name" />
-        </h1>
+            <ui:xEditable owner="${subscription}" field="name" />
+        </ui:h1HeaderWithIcon>
 
-        <semui:anualRings object="${subscription}" controller="subscription" action="reporting" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+        <ui:anualRings object="${subscription}" controller="subscription" action="reporting" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
         <laser:render template="nav" />
         <laser:render template="message"/>
@@ -127,8 +121,7 @@
             }
         </laser:script>
 
-        <semui:modal id="reporting-modal-error" text="REPORTING" hideSubmitButton="true">
+        <ui:modal id="reporting-modal-error" text="REPORTING" hideSubmitButton="true">
             <p><i class="icon exclamation triangle large orange"></i> ${message(code:'reporting.modal.error')}</p>
-        </semui:modal>
-</body>
-</html>
+        </ui:modal>
+<laser:htmlEnd />

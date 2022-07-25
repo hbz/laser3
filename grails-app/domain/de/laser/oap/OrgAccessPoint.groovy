@@ -44,6 +44,7 @@ class OrgAccessPoint extends AbstractBase {
         version         column:'oar_version'
         name            column:'oar_name'
         org             column:'oar_org_fk'
+        globalUID       column:'oar_guid'
         accessMethod    column:'oar_access_method_rv_fk'
         dateCreated     column:'oar_date_created'
         lastUpdated     column:'oar_last_updated'

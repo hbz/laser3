@@ -1,11 +1,11 @@
 package de.laser
 
-
+import de.laser.config.ConfigDefaults
 import de.laser.utils.AppUtils
 import de.laser.helper.DatabaseInfo
 import de.laser.utils.LocaleUtils
 import de.laser.cache.EhcacheWrapper
-import de.laser.helper.SwissKnife
+import de.laser.utils.SwissKnife
 import de.laser.remote.FTControl
 import de.laser.titles.BookInstance
 import de.laser.titles.TitleInstance
@@ -30,11 +30,11 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import grails.plugins.mail.MailService
 import groovy.sql.Sql
-import org.hibernate.SQLQuery
 import org.hibernate.Session
 import org.hibernate.SessionFactory
+import org.hibernate.query.NativeQuery
 import org.springframework.web.multipart.commons.CommonsMultipartFile
-import de.laser.utils.ConfigMapper
+import de.laser.config.ConfigMapper
 
 import java.nio.file.Files
 import java.nio.file.Path
@@ -75,7 +75,8 @@ class AdminController  {
 
         Map<String, Object> result = [
                 dbmVersion  : dbmQuery.size() > 0 ? dbmQuery.first() : ['unkown', 'unkown', 'unkown'],
-                events      : SystemEvent.list([max: 10, sort: 'created', order: 'desc'])
+                events      : SystemEvent.list([max: 10, sort: 'created', order: 'desc']),
+                docStore    : AppUtils.getDocumentStorageInfo()
         ]
 
         result
@@ -361,7 +362,7 @@ class AdminController  {
                         log.debug("Selected users : ${usrMrg}, ${usrKeep}")
 
                         result.userRoles = usrMrg.getAuthorities()
-                        result.userAffiliations =  usrMrg.getAuthorizedAffiliations()
+                        result.userAffiliations =  usrMrg.affiliations
                         result.userMerge = usrMrg
                         result.userKeep = usrKeep
                     }
@@ -422,9 +423,9 @@ class AdminController  {
     @Transactional
     def copyUserRoles(User usrMrg, User usrKeep){
         Set<Role> mergeRoles = usrMrg.getAuthorities()
-        Set<UserOrg> mergeAffil = usrMrg.getAuthorizedAffiliations()
+        Set<UserOrg> mergeAffil = usrMrg.affiliations
         Set<Role> currentRoles = usrKeep.getAuthorities()
-        Set<UserOrg> currentAffil = usrKeep.getAuthorizedAffiliations()
+        Set<UserOrg> currentAffil = usrKeep.affiliations
 
         mergeRoles.each{ role ->
             if (!currentRoles.contains(role) && role.authority != "ROLE_YODA") {
@@ -597,22 +598,12 @@ class AdminController  {
         result.dbmVersion       = dbmQuery.size() > 0 ? dbmQuery.first() : ['unkown', 'unkown', 'unkown']
 
         result.defaultCollate   = DatabaseInfo.getDatabaseCollate()
+        result.dbConflicts      = DatabaseInfo.getDatabaseConflicts()
         result.dbSize           = DatabaseInfo.getDatabaseSize()
+        result.dbStatistics     = DatabaseInfo.getDatabaseStatistics()
         result.dbActivity       = DatabaseInfo.getDatabaseActivity()
         result.dbUserFunctions  = DatabaseInfo.getDatabaseUserFunctions()
         result.dbTableUsage     = DatabaseInfo.getAllTablesUsageInfo()
-        result
-    }
-
-    /**
-     * Delivers the counts of rows in the database tables
-     */
-    @Secured(['ROLE_ADMIN'])
-    def databaseStatistics() {
-        Map<String, Object> result = [:]
-
-        Sql sql = GlobalService.obtainSqlConnection()
-        result.statistic = sql.rows("select * from count_rows_for_all_tables('public')")
 
         result
     }
@@ -665,7 +656,7 @@ class AdminController  {
     def fileConsistency() {
         Map<String, Object> result = [:]
 
-        result.filePath = ConfigMapper.getDocumentStorageLocation() ?: '/tmp/laser'
+        result.filePath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
 
         Closure fileCheck = { Doc doc ->
 
@@ -761,7 +752,7 @@ class AdminController  {
     def recoveryDoc() {
         Map<String, Object> result = [:]
 
-        result.filePath = ConfigMapper.getDocumentStorageLocation() ?: '/tmp/laser'
+        result.filePath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
 
         Closure fileCheck = { Doc doc ->
 
@@ -805,7 +796,7 @@ class AdminController  {
     def processRecoveryDoc() {
         Map<String, Object> result = [:]
 
-        result.filePath = ConfigMapper.getDocumentStorageLocation() ?: '/tmp/laser'
+        result.filePath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
 
         Closure fileCheck = { Doc doc ->
 
@@ -998,7 +989,7 @@ class AdminController  {
                 break
         }
 
-        SQLQuery sqlQuery = (sessionFactory.currentSession).createSQLQuery("""
+        NativeQuery sqlQuery = (sessionFactory.currentSession).createSQLQuery("""
 SELECT * FROM (
       SELECT idns.idns_ns,
              idns.idns_id,
@@ -1260,29 +1251,29 @@ SELECT * FROM (
                 else if (rdvTo && rdvTo.owner == rdvFrom.owner) {
                     check = true
                 }
-                else if (! rdvTo && params.xcgRdvGlobalTo) {
-
-                    List<String> pParts = params.xcgRdvGlobalTo.split(':')
-                    if (pParts.size() == 2) {
-                        RefdataCategory rdvToCat = RefdataCategory.getByDesc(pParts[0].trim())
-                        RefdataValue rdvToRdv = RefdataValue.getByValueAndCategory(pParts[1].trim(), pParts[0].trim())
-
-                        if (rdvToRdv && rdvToRdv.owner == rdvToCat ) {
-                            rdvTo = rdvToRdv
-                            check = true
-                        }
-                    }
-                }
+//                else if (! rdvTo && params.xcgRdvGlobalTo) {
+//
+//                    List<String> pParts = params.xcgRdvGlobalTo.split(':')
+//                    if (pParts.size() == 2) {
+//                        RefdataCategory rdvToCat = RefdataCategory.getByDesc(pParts[0].trim())
+//                        RefdataValue rdvToRdv = RefdataValue.getByValueAndCategory(pParts[1].trim(), pParts[0].trim())
+//
+//                        if (rdvToRdv && rdvToRdv.owner == rdvToCat ) {
+//                            rdvTo = rdvToRdv
+//                            check = true
+//                        }
+//                    }
+//                }
 
                 if (check) {
                     try {
                         int count = refdataService.replaceRefdataValues(rdvFrom, rdvTo)
 
-                        flash.message = "${count} Vorkommen von ${params.xcgRdvFrom} wurden durch ${params.xcgRdvTo}${params.xcgRdvGlobalTo} ersetzt."
+                        flash.message = "${count} Vorkommen von ${params.xcgRdvFrom} wurden durch ${params.xcgRdvTo} ersetzt."
                     }
                     catch (Exception e) {
                         log.error( e.toString() )
-                        flash.error = "${params.xcgRdvFrom} konnte nicht durch ${params.xcgRdvTo}${params.xcgRdvGlobalTo} ersetzt werden."
+                        flash.error = "${params.xcgRdvFrom} konnte nicht durch ${params.xcgRdvTo} ersetzt werden."
                     }
 
                 }
@@ -1369,9 +1360,6 @@ SELECT * FROM (
                         ((colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol].trim().isEmpty()) || colMap.printIdentifierCol < 0)) {
                 }
                 else {
-
-                    // TODO [ticket=1789]
-                    //def tiObj = TitleInstance.executeQuery('select ti from TitleInstance ti join ti.ids ids where ids in (select io from IdentifierOccurrence io join io.identifier id where id.ns in :namespaces and id.value = :value)',[namespaces:idCandidate.namespaces,value:idCandidate.value])
                     List<TitleInstance> tiObj = TitleInstance.executeQuery('select ti from TitleInstance ti join ti.ids ident where ident.ns in :namespaces and ident.value = :value', [namespaces:idCandidate.namespaces, value:idCandidate.value])
                     if(tiObj) {
 
@@ -1455,7 +1443,9 @@ SELECT * FROM (
 
     @Secured(['ROLE_ADMIN'])
     def appInfo() {
-        Map<String, Object> result = [:]
+        Map<String, Object> result = [
+                docStore: AppUtils.getDocumentStorageInfo()
+        ]
 
         result.statsSyncService = [:]
 

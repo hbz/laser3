@@ -1,7 +1,7 @@
 package de.laser
 
-
-import de.laser.helper.SwissKnife
+import de.laser.annotations.Check404
+import de.laser.utils.SwissKnife
 import de.laser.titles.TitleHistoryEvent
 import de.laser.titles.TitleInstance
 import de.laser.auth.User
@@ -17,6 +17,15 @@ class TitleController  {
 
     ContextService contextService
     ESSearchService ESSearchService
+
+    //-----
+
+    final static Map<String, String> CHECK404_ALTERNATIVES = [
+            'title/list': 'menu.public.all_titles',
+            'myInstitution/currentTitles': 'myinst.currentTitles.label'
+    ]
+
+    //-----
 
     /**
      * Call to the list of all title instances recorded in the system
@@ -40,7 +49,7 @@ class TitleController  {
             params.rectype = "TitleInstancePackagePlatform" // Tells ESSearchService what to look for
             //params.showAllTitles = true
             result.user = contextService.getUser()
-            params.max = params.max ?: result.user.getDefaultPageSize()
+            params.max = params.max ?: result.user.getPageSizeOrDefault()
 
             if (params.search.equals("yes")) {
                 params.offset = params.offset ? params.int('offset') : 0
@@ -79,17 +88,12 @@ class TitleController  {
 
     @Deprecated
     @Secured(['ROLE_USER'])
+    @Check404(domain = TitleInstancePackagePlatform)
     Map<String,Object> show() {
         Map<String, Object> result = [:]
 
         result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
 
-        result.ti = TitleInstancePackagePlatform.get(params.id)
-        if (! result.ti) {
-            flash.error = message(code:'titleInstance.error.notFound.es') as String
-            redirect action: 'list'
-            return
-        }
         result.titleHistory = TitleHistoryEvent.executeQuery("select distinct thep.event from TitleHistoryEventParticipant as thep where thep.participant = :participant", [participant: result.tipp] )
 
         result
@@ -100,6 +104,7 @@ class TitleController  {
      * @return a list of history events
      */
   @Secured(['ROLE_USER'])
+  @Check404(domain = TitleInstance)
   def history() {
     Map<String, Object> result = [:]
     boolean exporting = params.format == 'csv'
@@ -110,8 +115,7 @@ class TitleController  {
       result.offset = 0
     }
     else {
-        User user = contextService.getUser()
-        SwissKnife.setPaginationParams(result, params, user)
+        SwissKnife.setPaginationParams(result, params, contextService.getUser())
         params.max = result.max
     }
 

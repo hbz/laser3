@@ -1,21 +1,16 @@
 <%@ page import="de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.RefdataValue" %>
-<!doctype html>
-<html>
-  <head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'myinst.financeImport.pageTitle')}</title>
-  </head>
 
-  <body>
-  <semui:breadcrumbs>
-    <semui:crumb message="menu.institutions.financeImport" class="active"/>
-  </semui:breadcrumbs>
+<laser:htmlStart message="myinst.financeImport.pageTitle" />
 
-    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.institutions.financeImport')}</h1>
+  <ui:breadcrumbs>
+    <ui:crumb message="menu.institutions.financeImport" class="active"/>
+  </ui:breadcrumbs>
 
-    <semui:messages data="${flash}" />
+    <ui:h1HeaderWithIcon message="menu.institutions.financeImport" />
 
-       <semui:msg class="warning" header="${message(code: 'message.information')}" message="myinst.financeImport.headline" />
+    <ui:messages data="${flash}" />
+
+       <ui:msg class="warning" header="${message(code: 'message.information')}" message="myinst.financeImport.headline" />
 
           <g:if test="${params.id}">
               <g:link action="generateFinanceImportWorksheet" params="${[id:params.id]}">
@@ -75,5 +70,4 @@
               <input class="ui button" type="submit" value="${message(code:"myinst.financeImport.upload")}"/>
           </g:uploadForm>
 
-  </body>
-</html>
+<laser:htmlEnd />

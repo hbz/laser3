@@ -1,18 +1,12 @@
-<%@ page import="de.laser.OrgRole; grails.converters.JSON;de.laser.storage.RDStore" contentType="text/html;charset=UTF-8" %>
-<laser:serviceInjection/>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'myinst.financeImport.post.title')}</title>
-    </head>
+<%@ page import="de.laser.OrgRole; grails.converters.JSON;de.laser.storage.RDStore" %>
+<laser:htmlStart message="myinst.financeImport.post.title" serviceInjection="true"/>
 
-    <body>
-        <semui:breadcrumbs>
-            <semui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
-            <semui:crumb message="menu.institutions.financeImport" class="active"/>
-        </semui:breadcrumbs>
+        <ui:breadcrumbs>
+            <ui:crumb controller="myInstitution" action="dashboard" text="${institution?.getDesignation()}" />
+            <ui:crumb message="menu.institutions.financeImport" class="active"/>
+        </ui:breadcrumbs>
         <br />
-        <semui:messages data="${flash}" />
+        <ui:messages data="${flash}" />
         <h2 class="ui header">${message(code:'myinst.financeImport.post.header2')}</h2>
         <h3 class="ui header">${message(code:'myinst.financeImport.post.header3')}</h3>
         <g:form name="costItemParameter" action="importCostItems" controller="finance" method="post">
@@ -104,7 +98,7 @@
                 </tfoot>
             </table>
         </g:form>
-    </body>
+
     <laser:script file="${this.getGroovyPageFileName()}">
             $("#takeAll").change(function(){
                 if($(this).is(":checked")) {
@@ -115,4 +109,4 @@
                 }
             });
     </laser:script>
-</html>
+<laser:htmlEnd />

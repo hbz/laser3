@@ -2,7 +2,7 @@ package de.laser
 
 import de.laser.auth.User
 import de.laser.ctrl.UsageControllerService
-import de.laser.helper.SwissKnife
+import de.laser.utils.SwissKnife
 import de.laser.stats.Fact
 import de.laser.stats.StatsTripleCursor
 import grails.plugin.springsecurity.annotation.Secured
@@ -188,11 +188,10 @@ class UsageController  {
             factParams.customer_id = instOrg
             cursorParams.customerName = wibid
         }
-        def deletedCursorCount = StatsTripleCursor.executeUpdate('delete from StatsTripleCursor t1 where 1=1' + cursorAndWhereCondition,
-            cursorParams)
-        def deletedFactCount = Fact.executeUpdate('delete from Fact t1 where 1=1' + factAndWhereCondition,
-            factParams)
+        int deletedCursorCount = StatsTripleCursor.executeUpdate('delete from StatsTripleCursor t1 where 1=1' + cursorAndWhereCondition, cursorParams)
+        int deletedFactCount = Fact.executeUpdate('delete from Fact t1 where 1=1' + factAndWhereCondition, factParams)
         log.debug("Deleted ${deletedCursorCount} entries from StatsTripleCursor table and ${deletedFactCount} entries from fact table")
+
         flash.message = message(code: 'default.usage.delete.success') as String
         redirect(view: "index", model: result)
     }

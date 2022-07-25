@@ -8,8 +8,8 @@ info:
     Please copy and paste required/generated fields.
 
      &#10095;
-     [Here](${de.laser.utils.ConfigMapper.getGrailsServerURL()}/api/v0/changelog.md) you will find the changelog,
-     [here](${de.laser.utils.ConfigMapper.getGrailsServerURL()}/api/v0/specs.yaml) you will find almost current specs and
+     [Here](${de.laser.config.ConfigMapper.getGrailsServerURL()}/api/v0/changelog.md) you will find the changelog,
+     [here](${de.laser.config.ConfigMapper.getGrailsServerURL()}/api/v0/specs.yaml) you will find almost current specs and
      [here]() you will get an example for the HMAC generation.
 
   contact:
@@ -18,11 +18,11 @@ info:
 
 <g:if test="${grails.util.Environment.current == grails.util.Environment.PRODUCTION}">
 servers:
-  - url: ${de.laser.utils.ConfigMapper.getGrailsServerURL()}/api/v0
+  - url: ${de.laser.config.ConfigMapper.getGrailsServerURL()}/api/v0
 </g:if>
 <g:else>
 servers:
-  - url: ${de.laser.utils.ConfigMapper.getGrailsServerURL()}/api/v0
+  - url: ${de.laser.config.ConfigMapper.getGrailsServerURL()}/api/v0
 </g:else>
 
 paths:

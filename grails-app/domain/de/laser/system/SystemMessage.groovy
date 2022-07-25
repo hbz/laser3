@@ -79,7 +79,7 @@ class SystemMessage {
         switch (LocaleUtils.getCurrentLang()) {
             case 'de':
                 return content_de
-                break;
+                break
             case 'en':
                 return content_en
                 break

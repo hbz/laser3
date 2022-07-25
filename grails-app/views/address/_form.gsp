@@ -3,9 +3,8 @@
 <div class="field ${hasErrors(bean: addressInstance, field: 'type', 'error')} ">
 	<label for="type">
 		${RefdataCategory.getByDesc(RDConstants.ADDRESS_TYPE).getI10n('desc')}
-
 	</label>
-	<laser:select class="ui dropdown" id="type" name="type.id"
+	<ui:select class="ui dropdown" id="type" name="type.id"
 				  from="${Address.getAllRefdataValues()}"
 				  optionKey="id"
 				  optionValue="value"
@@ -16,7 +15,6 @@
 <div class="field ${hasErrors(bean: addressInstance, field: 'prs', 'error')} ">
     <label for="prs">
         <g:message code="address.prs.label" />
-
     </label>
     <g:select id="prs" name="prs.id" from="${Person.list()}" optionKey="id" value="${addressInstance?.prs?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
@@ -24,7 +22,6 @@
 <div class="field ${hasErrors(bean: addressInstance, field: 'org', 'error')} ">
     <label for="org">
         <g:message code="address.org.label" />
-
     </label>
     <g:select id="org" name="org.id" from="${Org.list()}" optionKey="id" value="${addressInstance?.org?.id}" class="many-to-one" noSelection="['null': '']"/>
 </div>
@@ -42,7 +39,6 @@
 <div class="field ${hasErrors(bean: addressInstance, field: 'street_2', 'error')} ">
 	<label for="street_2">
 		<g:message code="address.street_2.label" />
-		
 	</label>
 	<g:textField id="street_2" name="street_2" value="${addressInstance?.street_2}"/>
 </div>
@@ -61,14 +57,13 @@
 		<span class="required-indicator">*</span>
 	</label>
 	<g:textField id="city" name="city" required="" value="${addressInstance?.city}"/>
-
 </div>
 
 <div class="field ${hasErrors(bean: addressInstance, field: 'state', 'error')}">
 	<label for="region">
 		<g:message code="address.region.label" />
 	</label>
-	<laser:select class="ui dropdown" id="region" name="region.id"
+	<ui:select class="ui dropdown" id="region" name="region.id"
 				  from="${RefdataCategory.getAllRefdataValues([RDConstants.REGIONS_DE, RDConstants.REGIONS_AT,
                                                                RDConstants.REGIONS_CH])}"
 				  optionKey="id"
@@ -81,7 +76,7 @@
 	<label for="country">
 		<g:message code="address.country.label" />
 	</label>
-	<laser:select class="ui dropdown" id="country" name="country.id"
+	<ui:select class="ui dropdown" id="country" name="country.id"
 				  from="${RefdataCategory.getAllRefdataValues(RDConstants.COUNTRY)}"
 				  optionKey="id"
 				  optionValue="value"
@@ -94,7 +89,6 @@
 <div class="field ${hasErrors(bean: addressInstance, field: 'pob', 'error')} ">
 	<label for="pob">
 		<g:message code="address.pob.label" />
-
 	</label>
 	<g:textField id="pob" name="pob" value="${addressInstance?.pob}"/>
 </div>
@@ -102,7 +96,6 @@
 <div class="field ${hasErrors(bean: addressInstance, field: 'pobZipcode', 'error')} ">
 	<label for="pobZipcode">
 		<g:message code="address.pobZipcode.label" />
-
 	</label>
 	<g:textField id="pobZipcode" name="pobZipcode" value="${addressInstance?.pobZipcode}"/>
 </div>
@@ -110,7 +103,6 @@
 <div class="field ${hasErrors(bean: addressInstance, field: 'pobCity', 'error')} ">
 	<label for="pobCity">
 		<g:message code="address.pobCity.label" />
-
 	</label>
 	<g:textField id="pobCity" name="pobCity" value="${addressInstance?.pobCity}"/>
 </div>
@@ -120,7 +112,6 @@
 <div class="field ${hasErrors(bean: addressInstance, field: 'name', 'error')} ">
     <label for="name">
         <g:message code="address.name.label" />
-
     </label>
     <g:textField id="name" name="name" value="${addressInstance?.name}"/>
 </div>
@@ -128,7 +119,6 @@
 <div class="field ${hasErrors(bean: addressInstance, field: 'additionFirst', 'error')} ">
     <label for="additionFirst">
         <g:message code="address.additionFirst.label" />
-
     </label>
     <g:textField id="additionFirst" name="additionFirst" value="${addressInstance?.additionFirst}"/>
 </div>
@@ -136,7 +126,6 @@
 <div class="field ${hasErrors(bean: addressInstance, field: 'additionSecond', 'error')} ">
     <label for="additionSecond">
         <g:message code="address.additionSecond.label" />
-
     </label>
     <g:textField id="additionSecond" name="additionSecond" value="${addressInstance?.additionSecond}"/>
 </div>

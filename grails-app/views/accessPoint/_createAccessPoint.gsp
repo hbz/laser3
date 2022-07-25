@@ -1,6 +1,6 @@
 <%@ page import="de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
-<semui:form>
+<ui:form>
     <g:form action="processCreate" controller="accessPoint" id="${orgInstance.id}" method="post" class="ui form">
         <g:hiddenField name="accessMethod" value="${genericOIDService.getOID(accessMethod)}" />
         <g:if test="${accessMethod == RDStore.ACCESS_POINT_TYPE_IP}">
@@ -55,4 +55,4 @@
         </g:elseif>
         <input type="submit" class="ui button js-click-control" value="${message(code: 'default.button.create.label')}"/>
     </g:form>
-</semui:form>
+</ui:form>

@@ -1,8 +1,6 @@
 package de.laser
 
-
 import de.laser.titles.TitleInstance
- 
 import de.laser.annotations.DebugInfo
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
@@ -46,7 +44,7 @@ class PersonController  {
     def create() {
         Person.withTransaction {
             Org contextOrg = contextService.getOrg()
-            List userMemberships = contextService.getUser().authorizedOrgs
+            List userMemberships = contextService.getUser().getAffiliationOrgs()
 
             switch (request.method) {
                 case 'GET':
@@ -168,24 +166,6 @@ class PersonController  {
                                     }
                                 }
                             }
-
-                            /*['contact1', 'contact2', 'contact3'].each { c ->
-                        if (params."${c}_contentType" && params."${c}_type" && params."${c}_content") {
-
-                            RefdataValue rdvCT = RefdataValue.get(params."${c}_contentType")
-                            RefdataValue rdvTY = RefdataValue.get(params."${c}_type")
-
-                            if(RDStore.CCT_EMAIL == rdvCT){
-                                if ( !formService.validateEmailAddress(params."${c}_content") ) {
-                                    flash.error = message(code:'contact.create.email.error')
-                                    return
-                                }
-                            }
-
-                            Contact contact = new Contact(prs: personInstance, contentType: rdvCT, type: rdvTY, content: params."${c}_content")
-                            contact.save(flush: true)
-                        }
-                    }*/
 
                             flash.message = message(code: 'default.created.message', args: [message(code: 'person.label'), personInstance.toString()]) as String
                         }

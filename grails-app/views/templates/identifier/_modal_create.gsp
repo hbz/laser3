@@ -1,5 +1,5 @@
 <%@ page import="de.laser.Org; de.laser.IdentifierNamespace" %>
-<semui:modal id="modalCreateIdentifier" formID="identifier"
+<ui:modal id="modalCreateIdentifier" formID="identifier"
              text="${identifier? message(code:'default.identifier.edit') : message(code:'default.identifier.create')}"
              isEditModal="true"
              msgSave="${identifier ? message(code:'default.button.save.label') : message(code:'default.button.create.label')}">
@@ -52,4 +52,4 @@
         </div>
 
     </g:form>
-</semui:modal>
+</ui:modal>

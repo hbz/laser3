@@ -1,22 +1,15 @@
 <%@ page import="de.laser.License; de.laser.storage.RDConstants; de.laser.storage.RDStore; de.laser.RefdataCategory" %>
-<laser:serviceInjection/>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'menu.my.comp_sub')}</title>
-</head>
+<laser:htmlStart message="menu.my.comp_sub" serviceInjection="true"/>
 
-<body>
-<semui:breadcrumbs>
-    <semui:crumb text="${message(code: 'menu.my.subscriptions')}" controller="myInstitution"
+<ui:breadcrumbs>
+    <ui:crumb text="${message(code: 'menu.my.subscriptions')}" controller="myInstitution"
                  action="currentSubscriptions"/>
-    <semui:crumb class="active" message="menu.my.comp_sub"/>
-</semui:breadcrumbs>
+    <ui:crumb class="active" message="menu.my.comp_sub"/>
+</ui:breadcrumbs>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${message(code: 'menu.my.comp_sub')}</h1>
+<ui:h1HeaderWithIcon message="menu.my.comp_sub" />
 
-<semui:form>
+<ui:form>
     <g:form class="ui form" action="${actionName}" method="post">
         <div class="ui field">
             <label for="selectedSubscriptions">${message(code: 'default.compare.subscriptions')}</label>
@@ -59,7 +52,7 @@
         </div>
 
     </g:form>
-</semui:form>
+</ui:form>
 
 <g:if test="${objects}">
     <laser:render template="nav"/>
@@ -122,5 +115,4 @@
     JSPC.app.adjustDropdown();
 </laser:script>
 
-</body>
-</html>
+<laser:htmlEnd />

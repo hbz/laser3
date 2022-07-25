@@ -1,33 +1,24 @@
-<%@ page import="de.laser.utils.ConfigMapper; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.titles.JournalInstance; de.laser.titles.BookInstance; de.laser.remote.ApiSource; de.laser.IssueEntitlement" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <g:set var="entityName" value="${message(code: 'issueEntitlement.label')}"/>
-    <title>${message(code: 'laser')} : <g:message code="default.show.label" args="[entityName]"/></title>
-</head>
+<%@ page import="de.laser.config.ConfigMapper; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.titles.JournalInstance; de.laser.titles.BookInstance; de.laser.remote.ApiSource; de.laser.IssueEntitlement" %>
 
-<body>
-<semui:breadcrumbs>
+<g:set var="entityName" value="${message(code: 'issueEntitlement.label')}"/>
+<laser:htmlStart text="${message(code:"default.show.label", args:[entityName])}" />
+
+<ui:breadcrumbs>
     <g:if test="${issueEntitlementInstance.subscription.subscriber}">
-        <semui:crumb controller="myInstitution" action="currentSubscriptions"
+        <ui:crumb controller="myInstitution" action="currentSubscriptions"
                      params="${[shortcode: issueEntitlementInstance.subscription.subscriber.shortcode]}"
                      text="${issueEntitlementInstance.subscription.subscriber.name} - ${message(code: 'subscription.plural')}"/>
     </g:if>
-    <semui:crumb controller="subscription" action="index" id="${issueEntitlementInstance.subscription.id}"
+    <ui:crumb controller="subscription" action="index" id="${issueEntitlementInstance.subscription.id}"
                  text="${issueEntitlementInstance.subscription.name}"/>
-    <semui:crumb class="active" id="${issueEntitlementInstance.id}"
+    <ui:crumb class="active" id="${issueEntitlementInstance.id}"
                  text="${issueEntitlementInstance.name}"/>
-</semui:breadcrumbs>
+</ui:breadcrumbs>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerTitleIcon
-        type="${issueEntitlementInstance.tipp.titleType}"/>
+<ui:h1HeaderWithIcon message="issueEntitlement.for_title.label" args="[issueEntitlementInstance.name, issueEntitlementInstance.subscription.name]"
+                        type="${issueEntitlementInstance.tipp.titleType}" />
 
-<g:message code="issueEntitlement.for_title.label"
-           args="[issueEntitlementInstance.name, issueEntitlementInstance.subscription.name]"/>
-</h1>
-
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 <laser:render template="/templates/meta/identifier" model="${[object: issueEntitlementInstance, editable: false]}"/>
 
@@ -45,8 +36,8 @@
                 <g:link controller="subscription" action="show" id="${issueEntitlementInstance.subscription.id}">
                     ${issueEntitlementInstance.subscription.dropdownNamingConvention()}
                 </g:link>
-                <br>
-                <br>
+                <br/>
+                <br/>
                 <g:link controller="subscription" action="index" id="${issueEntitlementInstance.subscription.id}">
                     <g:message code="subscription.details.current_ent"/>
                 </g:link>
@@ -98,7 +89,7 @@
                         <i class="grey calendar icon la-popup-tooltip la-delay"
                            data-content="${message(code: 'subscription.details.access_start')}"></i>
                         <g:if test="${editable}">
-                            <semui:xEditable owner="${issueEntitlementInstance}" type="date"
+                            <ui:xEditable owner="${issueEntitlementInstance}" type="date"
                                              field="accessStartDate"/>
                             <i class="grey question circle icon la-popup-tooltip la-delay"
                                data-content="${message(code: 'subscription.details.access_start.note')}"></i>
@@ -113,7 +104,7 @@
                         <i class="grey calendar icon la-popup-tooltip la-delay"
                            data-content="${message(code: 'subscription.details.access_end')}"></i>
                         <g:if test="${editable}">
-                            <semui:xEditable owner="${issueEntitlementInstance}" type="date" field="accessEndDate"/>
+                            <ui:xEditable owner="${issueEntitlementInstance}" type="date" field="accessEndDate"/>
                             <i class="grey question circle icon la-popup-tooltip la-delay"
                                data-content="${message(code: 'subscription.details.access_end.note')}"></i>
                         </g:if>
@@ -138,20 +129,20 @@
                                         <div class="content">
                                             <div class="la-card-column">
                                                 <g:message code="tipp.price.listPrice"/>:
-                                                <semui:xEditable field="listPrice"
-                                                                 owner="${priceItem}"/> <semui:xEditableRefData
+                                                <ui:xEditable field="listPrice"
+                                                                 owner="${priceItem}"/> <ui:xEditableRefData
                                                         field="listCurrency" owner="${priceItem}" config="Currency"/>
 
                                                 <br/>
-                                                <g:message code="tipp.price.localPrice"/>: <semui:xEditable
+                                                <g:message code="tipp.price.localPrice"/>: <ui:xEditable
                                                         field="localPrice"
-                                                        owner="${priceItem}"/> <semui:xEditableRefData
+                                                        owner="${priceItem}"/> <ui:xEditableRefData
                                                         field="localCurrency" owner="${priceItem}" config="Currency"/>
                                                 <%--<br/>
-                                                (<g:message code="tipp.price.startDate"/> <semui:xEditable field="startDate"
+                                                (<g:message code="tipp.price.startDate"/> <ui:xEditable field="startDate"
                                                                                                           type="date"
                                                                                                           owner="${priceItem}"/>-
-                                                <g:message code="tipp.price.endDate"/> <semui:xEditable field="endDate"
+                                                <g:message code="tipp.price.endDate"/> <ui:xEditable field="endDate"
                                                                                                        type="date"
                                                                                                        owner="${priceItem}"/>)--%>
                                             </div>
@@ -200,7 +191,7 @@
 
             <div class="content">
                 <span class="la-float-right">
-                    <laser:statsLink class="ui basic negative"
+                    <ui:statsLink class="ui basic negative"
                                      base="${ConfigMapper.getStatsApiUrl()}"
                                      module="statistics"
                                      controller="default"
@@ -213,7 +204,7 @@
                                      ]"
                                      title="Springe zu Statistik im Nationalen Statistikserver">
                         <i class="chart bar outline icon"></i>
-                    </laser:statsLink>
+                    </ui:statsLink>
                 </span>
 
 
@@ -257,7 +248,7 @@
                             <td>${reportMetric}</td>
                             <g:each in="${v}" status="i" var="v2">
                                 <td>
-                                    <laser:statsLink
+                                    <ui:statsLink
                                             base="${ConfigMapper.getStatsApiUrl()}"
                                             module="statistics"
                                             controller="default"
@@ -272,7 +263,7 @@
                                             ]"
                                             title="Springe zu Statistik im Nationalen Statistikserver">
                                         ${v2}
-                                    </laser:statsLink>
+                                    </ui:statsLink>
                                 </td>
                             </g:each>
                         </tr>
@@ -298,7 +289,7 @@
         </div>
 
         <div class="content">
-            <semui:filter>
+            <ui:filter>
                 <g:form action="show" params="${params}" method="get" class="ui form">
                     <input type="hidden" name="sort" value="${params.sort}">
                     <input type="hidden" name="order" value="${params.order}">
@@ -310,13 +301,13 @@
                         </div>
 
                         <div class="field">
-                            <semui:datepicker label="default.startsBefore.label" id="startsBefore"
+                            <ui:datepicker label="default.startsBefore.label" id="startsBefore"
                                               name="startsBefore"
                                               value="${params.startsBefore}"/>
                         </div>
 
                         <div class="field">
-                            <semui:datepicker label="default.endsAfter.label" id="endsAfter" name="endsAfter"
+                            <ui:datepicker label="default.endsAfter.label" id="endsAfter" name="endsAfter"
                                               value="${params.endsAfter}"/>
                         </div>
                     </div>
@@ -327,7 +318,7 @@
                     </div>
 
                 </g:form>
-            </semui:filter>
+            </ui:filter>
 
             <table class="ui celled la-js-responsive-table la-table table">
                 <thead>
@@ -374,5 +365,4 @@
     --%>
 </div>
 
-</body>
-</html>
+<laser:htmlEnd />

@@ -1,11 +1,12 @@
 package de.laser
 
+import de.laser.annotations.Check404
 import de.laser.auth.User
 import de.laser.ctrl.PlatformControllerService
 import de.laser.annotations.DebugInfo
 import de.laser.remote.ApiSource
 import de.laser.storage.RDStore
-import de.laser.helper.SwissKnife
+import de.laser.utils.SwissKnife
 import de.laser.oap.OrgAccessPoint
 import de.laser.oap.OrgAccessPointLink
 import grails.plugin.springsecurity.annotation.Secured
@@ -21,7 +22,16 @@ class PlatformController  {
     GokbService gokbService
     PlatformControllerService platformControllerService
 
+    //-----
+
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
+
+    final static Map<String, String> CHECK404_ALTERNATIVES = [
+            'list' : 'platforms.all_platforms.label',
+            'myInstitution/currentPlatforms' : 'menu.my.platforms'
+    ]
+
+    //-----
 
     /**
      * Landing point; redirects to the list of platforms
@@ -102,6 +112,7 @@ class PlatformController  {
      * @return the details view of the platform
      */
     @Secured(['ROLE_USER'])
+    @Check404()
     def show() {
         Map<String, Object> result = platformControllerService.getResultGenerics(params)
         Platform platformInstance
@@ -110,12 +121,6 @@ class PlatformController  {
         else if(params.id ==~ /[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}/)
             platformInstance = Platform.findByGokbId(params.id)
         else platformInstance = Platform.findByGlobalUID(params.id)
-
-        if (!platformInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'platform.label'), params.id]) as String
-            redirect action: 'list'
-            return
-        }
 
         result.platformInstance = platformInstance
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
@@ -130,24 +135,6 @@ class PlatformController  {
             result.platformInstanceRecord = records ? records[0] : [:]
         }
         result.editable = accessService.checkPermAffiliationX('ORG_BASIC_MEMBER,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')
-
-        /*
-        List currentSubIds = orgTypeService.getCurrentSubscriptionIds(result.contextOrg)
-
-        String qry = "select distinct(ap) , spoap.id" +
-                " from " +
-                "    TitleInstancePackagePlatform tipp join tipp.platform platf join tipp.pkg pkg, " +
-                "    SubscriptionPackage subPkg join subPkg.subscriptionPackageOrgAccessPoint spoap join spoap.orgAccessPoint ap " +
-                " where " +
-                "    subPkg.pkg = pkg and "+
-                "    platf.id =  (:platformId) and " +
-                "    subPkg.subscription.id in (:currentSubIds)"
-        Map<String,Object> qryParams = [
-                platformId : platformInstance.id,
-                currentSubIds : currentSubIds
-        ]
-        //List orgAccessPointList = OrgAccessPoint.executeQuery(qry, qryParams)
-        */
 
         String hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as ap " +
                     "where ap.org =:institution and oapl.active=true and oapl.platform.id=${platformInstance.id} " +
@@ -169,16 +156,11 @@ class PlatformController  {
      * Lists all access methods linked to the given platform
      */
     @Secured(['ROLE_USER'])
+    @Check404()
     def accessMethods() {
         // TODO: editable is undefined
         def editable
         Platform platformInstance = Platform.get(params.id)
-        if (!platformInstance) {
-            flash.message = message(code: 'default.not.found.message',
-                    args: [message(code: 'platform.label'), params.id]) as String
-            redirect action: 'list'
-            return
-        }
 
         List<PlatformAccessMethod> platformAccessMethodList = PlatformAccessMethod.findAllByPlatf(platformInstance, [sort: ["accessMethod": 'asc', "validFrom" : 'asc']])
 
@@ -193,17 +175,13 @@ class PlatformController  {
     @Deprecated
     @DebugInfo(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
+    @Check404()
     def link() {
         Map<String, Object> result = [:]
         Platform platformInstance = Platform.get(params.id)
-        if (!platformInstance) {
-            flash.message = message(code: 'default.not.found.message',
-                args: [message(code: 'platform.label'), params.id]) as String
-            redirect action: 'list'
-            return
-        }
+
         Org selectedInstitution = contextService.getOrg()
-        List<Org> authorizedOrgs = contextService.getUser().getAuthorizedOrgs()
+        List<Org> authorizedOrgs = contextService.getUser().getAffiliationOrgs()
 
         String hql = "select oapl from OrgAccessPointLink oapl join oapl.oap as ap "
             hql += "where ap.org =:institution and oapl.active=true and oapl.platform.id=${platformInstance.id}"
@@ -239,7 +217,7 @@ class PlatformController  {
             redirect action: 'list'
             return
         }
-        List<Org> authorizedOrgs = contextService.getUser().getAuthorizedOrgs()
+        List<Org> authorizedOrgs = contextService.getUser().getAffiliationOrgs()
         Org selectedInstitution =  contextService.getOrg()
         if (params.institution_id){
             selectedInstitution = Org.get(params.institution_id)

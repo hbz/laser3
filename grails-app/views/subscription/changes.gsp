@@ -1,25 +1,18 @@
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'license.nav.todo_history')}</title>
-</head>
-
-<body>
+<laser:htmlStart message="license.nav.todo_history" />
 
     <laser:render template="breadcrumb" model="${[ subscription: subscription, params:params ]}"/>
-    <semui:controlButtons>
+    <ui:controlButtons>
         <laser:render template="actions" />
-    </semui:controlButtons>
-    <h1 class="ui icon header la-noMargin-top"><semui:headerIcon />
+    </ui:controlButtons>
+
+    <ui:h1HeaderWithIcon>
         <g:if test="${subscription.instanceOf && (contextOrg.id == subscription.getConsortia()?.id)}">
             <laser:render template="iconSubscriptionIsChild"/>
         </g:if>
-        <semui:xEditable owner="${subscription}" field="name" />
-        <semui:totalNumber total="${todoHistoryLinesTotal}"/>
-    </h1>
-    <semui:anualRings object="${subscription}" controller="subscription" action="changes" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
-
+        <ui:xEditable owner="${subscription}" field="name" />
+        <ui:totalNumber total="${todoHistoryLinesTotal}"/>
+    </ui:h1HeaderWithIcon>
+    <ui:anualRings object="${subscription}" controller="subscription" action="changes" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
     <laser:render template="nav" />
 
@@ -27,16 +20,13 @@
         <laser:render template="message" />
     </g:if>
 
-    <div class="ui info message">
-        <div class="header"></div>
-        <p>
+    <ui:msg class="info" noClose="true">
             Hier sehen Sie:
             <ul>
                 <li>Änderungen am Bestand einer Lizenz</li>
                 <li>Änderung an der Lizenz durch die Konsortialstelle (nur vererbte Änderungen)</li>
             </ul>
-        </p>
-    </div>
+    </ui:msg>
 
     <table class="ui celled la-js-responsive-table la-table table">
           <thead>
@@ -82,7 +72,6 @@
         </g:if>
       </table>
 
-        <semui:paginate  action="todoHistory" controller="subscription" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" max="${max}" total="${todoHistoryLinesTotal}" />
+        <ui:paginate action="todoHistory" controller="subscription" params="${params}" max="${max}" total="${todoHistoryLinesTotal}" />
 
-</body>
-</html>
+<laser:htmlEnd />

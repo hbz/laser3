@@ -1,9 +1,7 @@
 <%@ page import="de.laser.survey.SurveyConfig; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.Person; de.laser.Doc; de.laser.Subscription; de.laser.FormService" %>
 <laser:serviceInjection />
 
-<g:set var="formService" bean="formService"/>
-
-<semui:form>
+<ui:form>
     <g:set var="isInstAdm" value="${contextService.getUser().hasAffiliation("INST_ADM")}"/>
 
     <g:if test="${!fromSurvey && !copyObject}">
@@ -122,12 +120,12 @@
                                             <g:if test="${isConsortialObjects}">
                                                 <div class="right aligned wide column">
                                                     <g:if test="${docctx.isShared}">
-                                                        <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
+                                                        <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
                                                             <i class="la-share icon la-js-editmode-icon"></i>
                                                         </span>
                                                     </g:if>
                                                     <g:else>
-                                                        <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.off')}">
+                                                        <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.off')}">
                                                             <i class="la-share slash icon la-js-editmode-icon"></i>
                                                         </span>
                                                     </g:else>
@@ -228,12 +226,12 @@
                                                         <g:if test="${isConsortialObjects}">
                                                             <div class="right aligned wide column">
                                                                 <g:if test="${docctx.isShared}">
-                                                                    <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
+                                                                    <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
                                                                         <i class="la-share icon la-js-editmode-icon"></i>
                                                                     </span>
                                                                 </g:if>
                                                                 <g:else>
-                                                                    <span data-position="top left"  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.off')}">
+                                                                    <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.off')}">
                                                                         <i class="la-share slash icon la-js-editmode-icon"></i>
                                                                     </span>
                                                                 </g:else>
@@ -354,7 +352,7 @@
             </div>
         </g:else>
     </g:form>
-</semui:form>
+</ui:form>
 <g:if test="${!copyObject}">
     <laser:script file="${this.getGroovyPageFileName()}">
 

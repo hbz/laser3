@@ -66,7 +66,7 @@
                         </g:if>
 
                         <g:if test="${showPersons}">
-                                <button class="ui icon button blue la-modern-button la-selectable-button la-popup-tooltip la-delay" data-semui="modal" data-href="#${cssId}" data-content="${message(code:'subscription.details.addNewContact')}">
+                                <button class="ui icon button blue la-modern-button la-selectable-button la-popup-tooltip la-delay" data-ui="modal" data-href="#${cssId}" data-content="${message(code:'subscription.details.addNewContact')}">
                                     <i class="address plus icon"></i>
                                 </button>
 

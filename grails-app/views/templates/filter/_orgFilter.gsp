@@ -67,7 +67,7 @@
                     <g:if test="${orgTypes == null || orgTypes.isEmpty()}">
                         <g:set var="orgTypes" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.ORG_TYPE])}" scope="request"/>
                     </g:if>
-                    <laser:select class="ui dropdown search" id="orgType" name="orgType"
+                    <ui:select class="ui dropdown search" id="orgType" name="orgType"
                                   from="${orgTypes}"
                                   optionKey="id"
                                   optionValue="value"
@@ -83,7 +83,7 @@
                         %{--<g:set var="orgRoles" value="${RefdataCategory.getAllRefdataValues(RDConstants.ORGANISATIONAL_ROLE)}"/>--}%
                         <g:set var="orgRoles" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.ORGANISATIONAL_ROLE])}" scope="request"/>
                     </g:if>
-                    <laser:select class="ui dropdown search" id="orgRole" name="orgRole"
+                    <ui:select class="ui dropdown search" id="orgRole" name="orgRole"
                                   from="${orgRoles}"
                                   optionKey="id"
                                   optionValue="value"
@@ -96,7 +96,7 @@
                 <div class="field">
                     <label for="orgSector">${message(code: 'org.sector.label')}</label>
                     <g:set var="orgSectors" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.ORG_SECTOR])}" scope="request"/>
-                    <laser:select class="ui dropdown search" id="orgSector" name="orgSector"
+                    <ui:select class="ui dropdown search" id="orgSector" name="orgSector"
                                   from="${orgSectors}"
                                   optionKey="id"
                                   optionValue="value"
@@ -139,7 +139,7 @@
                 <div class="field">
                     <label for="country">${message(code: 'org.country.label')}</label>
                     <g:set var="countries" value="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: RDConstants.COUNTRY])}" scope="request"/>
-                    <laser:select class="ui dropdown search" id="country" name="country"
+                    <ui:select class="ui dropdown search" id="country" name="country"
                                   from="${countries}"
                                   optionKey="id"
                                   optionValue="value"
@@ -150,7 +150,7 @@
             <g:if test="${field.equalsIgnoreCase('customerType')}">
             <div class="field">
                 <label for="customerType">${message(code:'org.customerType.label')}</label>
-                <laser:select id="customerType" name="customerType"
+                <ui:select id="customerType" name="customerType"
                               from="${[Role.findByAuthority('FAKE')] + Role.findAllByRoleType('org')}"
                               optionKey="id"
                               optionValue="authority"
@@ -174,7 +174,7 @@
             <g:if test="${field.equalsIgnoreCase('subStatus')}">
                 <div class="field">
                     <label for="subStatus">${message(code:'subscription.status.label')}</label>
-                    <laser:select id="subStatus" name="subStatus"
+                    <ui:select id="subStatus" name="subStatus"
                                   from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}"
                                   optionKey="id"
                                   optionValue="value"
@@ -192,7 +192,7 @@
             </g:if>
             <g:if test="${field.equalsIgnoreCase('subValidOn')}">
                 <div class="field">
-                    <semui:datepicker label="default.valid_on.label" id="subValidOn" name="subValidOn" placeholder="filter.placeholder" value="${params.subValidOn}" />
+                    <ui:datepicker label="default.valid_on.label" id="subValidOn" name="subValidOn" placeholder="filter.placeholder" value="${params.subValidOn}" />
                 </div>
             </g:if>
             <g:if test="${field.equalsIgnoreCase('subPerpetualAccess')}">

@@ -1,17 +1,11 @@
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'menu.yoda.appControllers')}</title>
-</head>
-<body>
+<laser:htmlStart message="menu.yoda.appControllers" />
 
-<semui:breadcrumbs>
-    <semui:crumb message="menu.yoda" controller="yoda" action="index"/>
-    <semui:crumb message="menu.yoda.appControllers" class="active"/>
-</semui:breadcrumbs>
+<ui:breadcrumbs>
+    <ui:crumb message="menu.yoda" controller="yoda" action="index"/>
+    <ui:crumb message="menu.yoda.appControllers" class="active"/>
+</ui:breadcrumbs>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.yoda.appControllers')}</h1>
+<ui:h1HeaderWithIcon message="menu.yoda.appControllers" />
 
 <h2 class="ui header">Roles and Hierarchies</h2>
 
@@ -145,6 +139,9 @@
                                             <span class="${infoValue}">${infoValue}</span>
                                         </g:each>
                                     </g:elseif>
+                                    <g:elseif test="${info.key == 'check404'}">
+                                        <strong class="warning">[404]</strong>
+                                    </g:elseif>
                                     <g:elseif test="${info.key == 'transactional'}">
                                         <strong class="${info.value}">@${info.value}</strong>
                                     </g:elseif>
@@ -188,6 +185,9 @@
                                                 <span class="${infoValue}">${infoValue}</span>
                                             </g:each>
                                         </g:elseif>
+                                        <g:elseif test="${info.key == 'check404'}">
+                                            <strong class="warning">[404]</strong>
+                                        </g:elseif>
                                         <g:elseif test="${info.key == 'transactional'}">
                                             <strong class="${info.value}">@${info.value}</strong>
                                         </g:elseif>
@@ -224,7 +224,7 @@
 <style>
 .secInfoWrapper span {
     font-weight: bolder;
-    padding: 0px 5px;
+    padding: 0 5px;
     color: #FF00FF;
 }
 .secInfoWrapper2 span {
@@ -311,6 +311,6 @@
     color: #8B4513;
 }
 </style>
-</body>
-</html>
+
+<laser:htmlEnd />
 

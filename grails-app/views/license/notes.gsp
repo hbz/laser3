@@ -1,25 +1,19 @@
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'license.nav.notes')}</title>
-</head>
-<body>
+<laser:htmlStart message="license.nav.notes" />
+
     <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
-    <semui:controlButtons>
+    <ui:controlButtons>
         <laser:render template="actions" />
-    </semui:controlButtons>
+    </ui:controlButtons>
 
-    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
-        <semui:xEditable owner="${license}" field="reference" id="reference"/>
-    </h1>
+    <ui:h1HeaderWithIcon>
+        <ui:xEditable owner="${license}" field="reference" id="reference"/>
+    </ui:h1HeaderWithIcon>
 
-    <semui:anualRings object="${license}" controller="license" action="show" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
+    <ui:anualRings object="${license}" controller="license" action="show" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
 
     <laser:render template="nav" />
 
     <laser:render template="/templates/notes/table" model="${[instance: license, redirect: 'notes']}"/>
 
-</body>
-</html>
+<laser:htmlEnd />

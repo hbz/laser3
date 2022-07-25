@@ -1,51 +1,35 @@
 <%@ page import="de.laser.survey.SurveyConfig; de.laser.RefdataValue; de.laser.properties.PropertyDefinition; de.laser.survey.SurveyOrg; de.laser.storage.RDStore; de.laser.RefdataCategory; de.laser.Org" %>
 
-<laser:serviceInjection/>
+<g:set var="currenMsgCode" value="${params.tab == 'participantsViewAllFinish' ? 'openParticipantsAgain.label' : 'openParticipantsAgain.reminder'}" />
 
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'survey.label')} (<g:if test="${params.tab == 'participantsViewAllFinish'}">
-        ${message(code:"openParticipantsAgain.label")}
-    </g:if>
-    <g:else>
-        ${message(code:"openParticipantsAgain.reminder")}
-    </g:else>)</title>
-</head>
+<laser:htmlStart text="${message(code: 'survey.label')}  ${message(code: currenMsgCode)}" serviceInjection="true" />
 
-<body>
-
-<semui:breadcrumbs>
-    <semui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
+<ui:breadcrumbs>
+    <ui:crumb controller="survey" action="workflowsSurveysConsortia" text="${message(code: 'menu.my.surveys')}"/>
     <g:if test="${surveyInfo}">
-        <semui:crumb controller="survey" action="show" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]"
+        <ui:crumb controller="survey" action="show" id="${surveyInfo.id}" params="[surveyConfigID: surveyConfig.id]"
                      text="${surveyConfig.getConfigNameShort()}"/>
     </g:if>
-    <g:if test="${params.tab == 'participantsViewAllFinish'}">
-        <semui:crumb message="openParticipantsAgain.label" class="active"/>
-    </g:if>
-    <g:else>
-        <semui:crumb message="openParticipantsAgain.reminder" class="active"/>
-    </g:else>
-</semui:breadcrumbs>
 
-<semui:controlButtons>
+    <ui:crumb message="${currenMsgCode}" class="active"/>
+</ui:breadcrumbs>
+
+<ui:controlButtons>
     <laser:render template="actions"/>
-</semui:controlButtons>
+</ui:controlButtons>
 
-<h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
-<semui:xEditable owner="${surveyInfo}" field="name"/>
-<semui:surveyStatus object="${surveyInfo}"/>
-</h1>
+<ui:h1HeaderWithIcon type="Survey">
+<ui:xEditable owner="${surveyInfo}" field="name"/>
+<survey:status object="${surveyInfo}"/>
+</ui:h1HeaderWithIcon>
 
 
 
 <laser:render template="nav"/>
 
-<semui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
+<ui:objectStatus object="${surveyInfo}" status="${surveyInfo.status}"/>
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 <br />
 
@@ -60,12 +44,7 @@
         ${surveyConfig.getConfigNameShort()}
     </g:else>:
 
-    <g:if test="${params.tab == 'participantsViewAllFinish'}">
-        ${message(code: 'openParticipantsAgain.label')}
-    </g:if>
-    <g:else>
-        ${message(code: 'openParticipantsAgain.reminder')}
-    </g:else>
+        ${message(code: "${currenMsgCode}")}
 </h2>
 <br />
 
@@ -90,14 +69,14 @@
 
         </div>
 
-        <semui:form>
+        <ui:form>
 
                 <laser:render template="evaluationParticipantsView" model="[showCheckbox: true,
                                                                         showOpenParticipantsAgainButtons: true,
                                                                         processAction: 'processOpenParticipantsAgain',
                                                                         tmplConfigShow   : ['lineNumber', 'name', (surveyConfig.pickAndChoose ? 'finishedDate' : ''), (surveyConfig.pickAndChoose ? 'surveyTitlesCount' : ''), 'surveyProperties', 'commentOnlyForOwner']]"/>
 
-        </semui:form>
+        </ui:form>
 
     </div>
 </div>
@@ -112,5 +91,4 @@
     })
 </laser:script>
 
-</body>
-</html>
+<laser:htmlEnd />

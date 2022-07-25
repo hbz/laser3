@@ -82,7 +82,7 @@
             </g:each>
         </div><!-- .grid -->
         <div>
-            <semui:paginate controller="myInstitution" action="dashboard" offset="${pendingOffset ? pendingOffset : '0'}" max="${max}" params="${[view:'PendingChanges']}" total="${pendingCount}"/>
+            <ui:paginate controller="myInstitution" action="dashboard" offset="${pendingOffset ? pendingOffset : '0'}" max="${max}" params="${[view:'PendingChanges']}" total="${pendingCount}"/>
         </div>
     </div>
 </g:if>
@@ -137,7 +137,7 @@
         </g:each>
     </div><!-- .grid -->
     <div>
-        <semui:paginate controller="myInstitution" action="dashboard" offset="${acceptedOffset ? acceptedOffset : '0'}" max="${max}" params="${[view:'AcceptedChanges']}" total="${notificationsCount}"/>
+        <ui:paginate controller="myInstitution" action="dashboard" offset="${acceptedOffset ? acceptedOffset : '0'}" max="${max}" params="${[view:'AcceptedChanges']}" total="${notificationsCount}"/>
     </div>
     <laser:script file="${this.getGroovyPageFileName()}">
         $("#pendingCount").text("${message(code: 'myinst.pendingChanges.label', args: [pendingCount])}");

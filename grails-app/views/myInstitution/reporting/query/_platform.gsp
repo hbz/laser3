@@ -26,13 +26,11 @@
         </div>
     </g:if>
     <g:else>
-        <div class="ui message negative">
-            <p><g:message code="reporting.filter.result.x.empty" /></p>
+        <ui:msg class="negative" noClose="true" message="reporting.filter.result.x.empty" />
 
-            <g:if test="${filterResult.get(ElasticSearchHelper.ELASTICSEARCH_IS_NOT_REACHABLE)}">
-                <p><i class="icon large exclamation circle"></i> ${message(code:'reporting.filter.result.x.elasticSearchIsNotReachable')}</p>
-            </g:if>
-        </div>
+        <g:if test="${filterResult.get(ElasticSearchHelper.ELASTICSEARCH_IS_NOT_REACHABLE)}">
+            <ui:msg class="negative" icon="large exclamation circle" message="reporting.filter.result.x.elasticSearchIsNotReachable" noClose="true" />
+        </g:if>
     </g:else>
 
     <laser:render template="/myInstitution/reporting/query/generic_filterLabels" model="${[filterLabels: filterResult.labels]}" />

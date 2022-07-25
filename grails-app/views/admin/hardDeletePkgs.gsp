@@ -1,22 +1,15 @@
-<!doctype html>
-<html>
-  <head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} Admin::Package Delete</title>
-  </head>
+<laser:htmlStart text="Admin::Package Delete" />
 
-    <body>
+        <ui:breadcrumbs>
+            <ui:crumb message="menu.admin" controller="admin" action="index" />
+            <ui:crumb text="Package Delete" class="active"/>
+        </ui:breadcrumbs>
 
-        <semui:breadcrumbs>
-            <semui:crumb message="menu.admin" controller="admin" action="index" />
-            <semui:crumb text="Package Delete" class="active"/>
-        </semui:breadcrumbs>
+        <ui:h1HeaderWithIcon text="Package Delete" />
 
-        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />Package Delete</h1>
+        <ui:messages data="${flash}" />
 
-        <semui:messages data="${flash}" />
-
-        <semui:filter>
+        <ui:filter>
             <g:form action="hardDeletePkgs" method="get" params="${params}" class="ui form">
                 <input type="hidden" name="offset" value="${params.offset}"/>
 
@@ -28,7 +21,7 @@
                     <button type="submit" name="search" value="yes" class="ui secondary button">Search</button>
                 </div>
             </g:form>
-        </semui:filter>
+        </ui:filter>
 
         <table class="ui sortable celled la-js-responsive-table la-table table">
           <thead>
@@ -71,5 +64,4 @@
         }
         </laser:script>
 
-  </body>
-</html>     
+<laser:htmlEnd />

@@ -1,18 +1,11 @@
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'license.nav.edit_history')}</title>
-</head>
-
-<body>
+<laser:htmlStart message="license.nav.edit_history" />
 
     <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
-    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />
-        <semui:xEditable owner="${license}" field="reference" id="reference"/>
-        <semui:totalNumber total="${historyLinesTotal?:'0'}"/>
-    </h1>
+    <ui:h1HeaderWithIcon>
+        <ui:xEditable owner="${license}" field="reference" id="reference"/>
+        <ui:totalNumber total="${historyLinesTotal?:'0'}"/>
+    </ui:h1HeaderWithIcon>
 
     <laser:render template="nav" />
 
@@ -43,7 +36,6 @@
         </g:if>
       </table>
 
-        <semui:paginate  action="editHistory" controller="license" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" max="${max}" total="${historyLinesTotal}" />
+        <ui:paginate action="editHistory" controller="license" params="${params}" max="${max}" total="${historyLinesTotal}" />
 
-</body>
-</html>
+<laser:htmlEnd />

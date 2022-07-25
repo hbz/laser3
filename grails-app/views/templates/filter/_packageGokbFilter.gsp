@@ -1,5 +1,4 @@
-<laser:render template="/templates/filter/javascript"/>
-<semui:filter showFilterButton="true">
+<ui:filter showFilterButton="true" addFilterJs="true">
     <g:form action="${actionName}" controller="${controllerName}" params="${params}" method="get" class="ui small form clearing">
         <input type="hidden" name="isSiteReloaded" value="yes"/>
 
@@ -91,4 +90,4 @@
             </div>
         </div>
     </g:form>
-</semui:filter>
+</ui:filter>

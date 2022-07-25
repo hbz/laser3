@@ -51,7 +51,7 @@
 <g:if test="${editable}">
     <input class="ui button"
            value="${message(code: 'default.add.label', args: [message(code: 'person.label')])}"
-           data-semui="modal"
+           data-ui="modal"
            data-href="#prsLinksModal" />
 </g:if>
 

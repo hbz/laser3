@@ -1,19 +1,13 @@
 <%@page import="grails.converters.JSON" %>
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : Manage Stats Sources</title>
-    </head>
 
-    <body>
+<laser:htmlStart text="Manage Stats Sources" />
 
-        <semui:breadcrumbs>
-            <semui:crumb message="menu.yoda" controller="yoda" action="index"/>
-            <semui:crumb text="Stats Sources" class="active" />
-        </semui:breadcrumbs>
+        <ui:breadcrumbs>
+            <ui:crumb message="menu.yoda" controller="yoda" action="index"/>
+            <ui:crumb text="Stats Sources" class="active" />
+        </ui:breadcrumbs>
 
-        <semui:messages data="${flash}" />
+        <ui:messages data="${flash}" />
 
         <table class="ui celled la-js-responsive-table la-table table">
             <thead>
@@ -50,5 +44,5 @@
                 </g:each>
             </tbody>
         </table>
-    </body>
-</html>
+
+<laser:htmlEnd />

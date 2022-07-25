@@ -241,9 +241,9 @@ class TaskService {
      */
     List<Task> chopOffForPageSize(List taskInstanceList, User user, int offset){
         int taskInstanceCount = taskInstanceList.size() ?: 0
-        if (taskInstanceCount > user.getDefaultPageSize()) {
+        if (taskInstanceCount > user.getPageSizeOrDefault()) {
             try {
-                taskInstanceList = taskInstanceList.subList(offset, offset + user.getDefaultPageSizeAsInteger())
+                taskInstanceList = taskInstanceList.subList(offset, offset + user.getPageSizeOrDefault())
             }
             catch (IndexOutOfBoundsException e) {
                 taskInstanceList = taskInstanceList.subList(offset, taskInstanceCount)
@@ -440,7 +440,7 @@ class TaskService {
 
         result.taskCreator                  = contextService.getUser()
         result.validResponsibleOrgs         = contextOrg ? [contextOrg] : []
-        result.validResponsibleUsers        = _getUserDropdown(contextOrg)
+        result.validResponsibleUsers        = getUserDropdown(contextOrg)
         result.validPackages                = _getPackagesDropdown(contextOrg)
         result.validOrgsDropdown            = _getOrgsDropdown(contextOrg)
         result.validSubscriptionsDropdown   = _getSubscriptionsDropdown(contextOrg, false)
@@ -464,7 +464,7 @@ class TaskService {
      * @param contextOrg the institution whose affiliated users should be retrieved
      * @return a list of users
      */
-    private List<User> _getUserDropdown(Org contextOrg) {
+    List<User> getUserDropdown(Org contextOrg) {
         List<User> validResponsibleUsers   = contextOrg ? User.executeQuery(
                 "select u from User as u where exists (select uo from UserOrg as uo where uo.user = u and uo.org = :org) order by lower(u.display)",
                 [org: contextOrg]) : []

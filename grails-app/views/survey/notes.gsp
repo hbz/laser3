@@ -1,28 +1,22 @@
 <%@ page import="de.laser.survey.SurveyConfig;" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'default.notes.label')}</title>
-</head>
+<laser:htmlStart message="default.notes.label" />
 
-<body>
 <laser:render template="breadcrumb" model="${[params: params]}"/>
 
-<semui:controlButtons>
+<ui:controlButtons>
     <laser:render template="actions"/>
-</semui:controlButtons>
+</ui:controlButtons>
 
-<h1 class="ui icon header"><semui:headerTitleIcon type="Survey"/>
-<semui:xEditable owner="${surveyInfo}" field="name"
+<ui:h1HeaderWithIcon type="Survey">
+<ui:xEditable owner="${surveyInfo}" field="name"
                  overwriteEditable="${surveyInfo.isSubscriptionSurvey ? false : editable}"/>
-</h1>
-<semui:surveyStatusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="show"/>
+</ui:h1HeaderWithIcon>
+<survey:statusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="show"/>
 
 
 <laser:render template="nav"/>
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 
 <br/>
@@ -43,5 +37,4 @@
 
 <laser:render template="/templates/notes/table" model="${[instance: surveyConfig, redirect: 'notes']}"/>
 
-</body>
-</html>
+<laser:htmlEnd />

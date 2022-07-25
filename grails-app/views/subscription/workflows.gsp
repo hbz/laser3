@@ -1,42 +1,35 @@
 <%@ page import="de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.workflow.*; de.laser.WorkflowService; de.laser.workflow.WorkflowHelper" %>
-<laser:serviceInjection/>
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'workflow.plural')}</title>
-    </head>
-<body>
+<laser:htmlStart message="workflow.plural" serviceInjection="true" />
 
     <laser:render template="breadcrumb" model="${[ subscription:subscription, params:params ]}"/>
 
-    <semui:controlButtons>
+    <ui:controlButtons>
         <laser:render template="actions" />
-    </semui:controlButtons>
+    </ui:controlButtons>
 
-    <h1 class="ui icon header la-noMargin-top"><semui:headerIcon />
+    <ui:h1HeaderWithIcon>
         <laser:render template="iconSubscriptionIsChild"/>
-        <semui:xEditable owner="${subscription}" field="name" />
-    </h1>
-    <semui:anualRings object="${subscription}" controller="subscription" action="history" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+        <ui:xEditable owner="${subscription}" field="name" />
+    </ui:h1HeaderWithIcon>
+    <ui:anualRings object="${subscription}" controller="subscription" action="history" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
     <laser:render template="nav" />
     <laser:render template="message"/>
 
     <g:if test="${status == WorkflowService.OP_STATUS_DONE}">
         <g:if test="${cmd == 'delete'}">
-            <semui:msg class="positive" message="workflow.delete.ok" />
+            <ui:msg class="positive" message="workflow.delete.ok" />
         </g:if>
         <g:else>
-            <semui:msg class="positive" message="workflow.edit.ok" />
+            <ui:msg class="positive" message="workflow.edit.ok" />
         </g:else>
     </g:if>
     <g:elseif test="${status == WorkflowService.OP_STATUS_ERROR}">
         <g:if test="${cmd == 'delete'}">
-            <semui:msg class="negative" message="workflow.delete.error" />
+            <ui:msg class="negative" message="workflow.delete.error" />
         </g:if>
         <g:else>
-            <semui:msg class="negative" message="workflow.edit.error" />
+            <ui:msg class="negative" message="workflow.edit.error" />
         </g:else>
     </g:elseif>
 
@@ -84,16 +77,16 @@
                         <g:each in="${tasks}" var="task" status="ti">
                             <g:if test="${task.child}">
                                 <div style="width:8px"></div>
-                                    <laser:workflowTask task="${task}" params="${[key: 'subscription:' + subscription.id + ':' + WfTask.KEY + ':' + task.id]}" />
+                                    <workflow:task task="${task}" params="${[key: 'subscription:' + subscription.id + ':' + WfTask.KEY + ':' + task.id]}" />
 
                                     <g:set var="children" value="${task.child.getSequence()}" />
                                     <g:each in="${children}" var="child" status="ci">
-                                        <laser:workflowTask task="${child}" params="${[key: 'subscription:' + subscription.id + ':' + WfTask.KEY + ':' + child.id]}" />
+                                        <workflow:task task="${child}" params="${[key: 'subscription:' + subscription.id + ':' + WfTask.KEY + ':' + child.id]}" />
                                     </g:each>
                                 <div style="width:8px"></div>
                             </g:if>
                             <g:else>
-                                <laser:workflowTask task="${task}" params="${[key: 'subscription:' + subscription.id + ':' + WfTask.KEY + ':' + task.id]}" />
+                                <workflow:task task="${task}" params="${[key: 'subscription:' + subscription.id + ':' + WfTask.KEY + ':' + task.id]}" />
                             </g:else>
                         </g:each>
                     </div>
@@ -208,7 +201,7 @@
                                             <!-- -->
                                             <g:each in="${task.condition.getFields()}" var="field" status="fi">
                                                 <br/>
-                                                <laser:workflowTaskConditionField condition="${task.condition}" field="${field}" />
+                                                <workflow:taskConditionField condition="${task.condition}" field="${field}" />
                                             </g:each>
                                             <!-- -->
                                             <g:if test="${contextService.getUser().hasAffiliation('INST_ADM') || SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")}"><!-- TODO: reporting-permissions -->
@@ -273,7 +266,7 @@
                                                     <!-- -->
                                                     <g:each in="${child.condition.getFields()}" var="field" status="fi">
                                                         <br/>
-                                                        <laser:workflowTaskConditionField condition="${child.condition}" field="${field}" />
+                                                        <workflow:taskConditionField condition="${child.condition}" field="${field}" />
                                                     </g:each>
                                                     <!-- -->
                                                     <g:if test="${contextService.getUser().hasAffiliation('INST_ADM') || SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")}"><!-- TODO: reporting-permissions -->
@@ -354,5 +347,4 @@
         </g:else>
     </laser:script>
 
-</body>
-</html>
+<laser:htmlEnd />

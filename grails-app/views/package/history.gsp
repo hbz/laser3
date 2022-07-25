@@ -1,21 +1,14 @@
 <%@ page import="de.laser.Package" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'package.show.nav.history')}</title>
-</head>
+<laser:htmlStart message="package.show.nav.history" />
 
-<body>
+    <ui:breadcrumbs>
+        <ui:crumb controller="package" action="index" text="${message(code:'package.show.all')}" />
+        <ui:crumb text="${packageInstance.name}" id="${packageInstance.id}" class="active"/>
+    </ui:breadcrumbs>
 
-    <semui:breadcrumbs>
-        <semui:crumb controller="package" action="index" text="${message(code:'package.show.all')}" />
-        <semui:crumb text="${packageInstance.name}" id="${packageInstance.id}" class="active"/>
-    </semui:breadcrumbs>
+    <ui:h1HeaderWithIcon text="${packageInstance?.name}" />
 
-    <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${packageInstance?.name}</h1>
-
-    <semui:messages data="${flash}" />
+    <ui:messages data="${flash}" />
 
     <laser:render template="nav"/>
 
@@ -51,7 +44,7 @@
         </table>
 
         <g:if test="${historyLines != null}" >
-          <semui:paginate  action="history" controller="package" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" maxsteps="${max}" total="${num_hl}" />
+          <ui:paginate action="history" controller="package" params="${params}" maxsteps="${max}" total="${num_hl}" />
         </g:if>
 
     </g:if>
@@ -60,7 +53,4 @@
       </div>
     </g:else>
 
-
-
-</body>
-</html>
+<laser:htmlEnd />

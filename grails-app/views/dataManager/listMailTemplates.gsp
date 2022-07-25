@@ -1,28 +1,21 @@
 <%@ page import="de.laser.MailTemplate; de.laser.storage.RDConstants;de.laser.RefdataCategory" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code: 'laser')} : ${message(code: 'mailTemplate.plural.label')}</title>
-</head>
+<laser:htmlStart message="mailTemplate.plural.label" />
 
-<body>
+<ui:breadcrumbs>
+    <ui:crumb controller="dataManager" action="index" text="${message(code:'menu.datamanager')}" />
+    <ui:crumb message="mailTemplate.plural.label" class="active"/>
+</ui:breadcrumbs>
 
-<semui:breadcrumbs>
-    <semui:crumb controller="dataManager" action="index" text="${message(code:'menu.datamanager')}" />
-    <semui:crumb message="mailTemplate.plural.label" class="active"/>
-</semui:breadcrumbs>
+<ui:controlButtons>
+    <ui:actionsDropdown>
+        <ui:actionsDropdownItem data-ui="modal" href="#modalCreateMailTemplate" message="mailTemplate.create.button"/>
+    </ui:actionsDropdown>
+</ui:controlButtons>
 
-<semui:controlButtons>
-    <semui:actionsDropdown>
-        <semui:actionsDropdownItem data-semui="modal" href="#modalCreateMailTemplate" message="mailTemplate.create.button"/>
-    </semui:actionsDropdown>
-</semui:controlButtons>
+<ui:h1HeaderWithIcon message="mailTemplate.plural.label" />
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${message(code: 'mailTemplate.plural.label')}</h1>
-
-<semui:messages data="${flash}"/>
-<semui:form>
+<ui:messages data="${flash}"/>
+<ui:form>
     <g:if test="${mailTemplates?.size() > 0}">
 
         <table class="ui celled sortable table table-tworow la-js-responsive-table la-table">
@@ -54,7 +47,7 @@
                                 data-mailTemplateText="${template.text}"
                                 data-mailTemplateType="${template.type.id}"
                                 data-mailTemplateLanguage="${template.language.id}"
-                                data-semui="modal"
+                                data-ui="modal"
                                 data-href="#editMailTemplate"
                                 data-content="Mail Template ändern" data-position="top left"><i class="edit icon"></i></button>
                     </td>
@@ -69,10 +62,10 @@
             ${message(code: 'result.empty')}
         </div>
     </g:else>
-</semui:form>
+</ui:form>
 
 
-<semui:modal id="editMailTemplate" message="mailTemplate.label" isEditModal="isEditModal">
+<ui:modal id="editMailTemplate" message="mailTemplate.label" isEditModal="isEditModal">
 
     <g:form class="ui form" url="[controller: 'dataManager', action: 'editMailTemplate']">
         <input type="hidden" name="target" value="" />
@@ -125,9 +118,9 @@
         }
     </laser:script>
 
-</semui:modal>
+</ui:modal>
 
-<semui:modal id="modalCreateMailTemplate" text="${message(code:'mailTemplate.create.label')}">
+<ui:modal id="modalCreateMailTemplate" text="${message(code:'mailTemplate.create.label')}">
 
     <g:form id="create_mail_template" class="ui form" url="[controller:'dataManager', action:'createMailTemplate']" method="post">
 
@@ -169,7 +162,6 @@
         </div>
 
     </g:form>
-</semui:modal>
+</ui:modal>
 
-</body>
-</html>
+<laser:htmlEnd />

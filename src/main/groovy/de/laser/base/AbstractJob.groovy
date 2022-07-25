@@ -19,15 +19,16 @@ abstract class AbstractJob {
         jobIsRunning
     }
 
-    protected boolean start(String startEventToken = null) {
+    protected boolean start(String startEventToken = null, boolean suppressLog = false) {
         if (! isAvailable()) {
             return false
         }
         else {
             jobIsRunning = true
 
-            log.info ' -> ' + this.class.simpleName + ' started'
-
+            if (!suppressLog) {
+                log.info ' -> ' + this.class.simpleName + ' started'
+            }
             if (startEventToken) {
                 SystemEvent.createEvent( startEventToken )
             }
@@ -35,9 +36,10 @@ abstract class AbstractJob {
         true
     }
 
-    protected void stop(String stopEventToken = null) {
-        log.info ' -> ' + this.class.simpleName + ' finished'
-
+    protected void stop(String stopEventToken = null, boolean suppressLog = false) {
+        if (!suppressLog) {
+            log.info ' -> ' + this.class.simpleName + ' finished'
+        }
         if (stopEventToken) {
             SystemEvent.createEvent( stopEventToken )
         }

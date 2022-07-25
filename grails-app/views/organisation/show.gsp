@@ -1,10 +1,6 @@
 <%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Org; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo" %>
-<laser:serviceInjection/>
 
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
+<laser:htmlStart message="menu.institutions.org_info" serviceInjection="true" />
 
     <g:if test="${isProviderOrAgency}">
         <g:set var="entityName" value="${message(code: 'default.provider.label')}"/>
@@ -15,20 +11,17 @@
     <g:else>
         <g:set var="entityName" value="${message(code: 'org.label')}"/>
     </g:else>
-    <title>${message(code: 'laser')} : ${message(code:'menu.institutions.org_info')}</title>
-</head>
 
-<body>
 
 <laser:render template="breadcrumb"
           model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView]}"/>
 
 
-<semui:controlButtons>
+<ui:controlButtons>
     <laser:render template="actions" model="${[org: orgInstance, user: user]}"/>
-</semui:controlButtons>
+</ui:controlButtons>
 
-<h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon/>${orgInstance.name}</h1>
+<ui:h1HeaderWithIcon text="${orgInstance.name}" />
 
 <g:if test="${missing.size() > 0}">
     <div class="ui icon message warning">
@@ -48,11 +41,11 @@
     </div>
 </g:if>
 
-<laser:render debug="true"template="nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, isProviderOrAgency: isProviderOrAgency]}"/>
+<laser:render debug="true" template="nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, isProviderOrAgency: isProviderOrAgency]}"/>
 
-<semui:objectStatus object="${orgInstance}" status="${orgInstance.status}"/>
+<ui:objectStatus object="${orgInstance}" status="${orgInstance.status}"/>
 
-<semui:messages data="${flash}"/>
+<ui:messages data="${flash}"/>
 
 <div class="ui stackable grid">
     <div class="ten wide column">
@@ -63,7 +56,7 @@
                     <dl>
                         <dt><g:message code="default.name.label" /></dt>
                         <dd>
-                            <semui:xEditable owner="${orgInstance}" field="name"/>
+                            <ui:xEditable owner="${orgInstance}" field="name"/>
                             <g:if test="${orgInstance.getCustomerType() == 'ORG_INST'}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                                       data-content="${orgInstance.getCustomerTypeI10n()}">
@@ -76,7 +69,7 @@
                         <dl>
                             <dt><g:message code="org.shortname.label" /></dt>
                             <dd>
-                                <semui:xEditable owner="${orgInstance}" field="shortname"/>
+                                <ui:xEditable owner="${orgInstance}" field="shortname"/>
                             </dd>
                         </dl>
                         <g:if test="${!isProviderOrAgency}">
@@ -85,7 +78,7 @@
                                     <g:message code="org.sortname.label" />
                                 </dt>
                                 <dd>
-                                    <semui:xEditable owner="${orgInstance}" field="sortname"/>
+                                    <ui:xEditable owner="${orgInstance}" field="sortname"/>
                                 </dd>
                             </dl>
                         </g:if>
@@ -105,9 +98,9 @@
                     <dl>
                         <dt><g:message code="default.url.label"/></dt>
                         <dd>
-                            <semui:xEditable owner="${orgInstance}" type="url" field="url" class="la-overflow la-ellipsis" />
+                            <ui:xEditable owner="${orgInstance}" type="url" field="url" class="la-overflow la-ellipsis" />
                             <g:if test="${orgInstance.url}">
-                                <semui:linkIcon href="${orgInstance.url}" />
+                                <ui:linkWithIcon href="${orgInstance.url}" />
                             </g:if>
                             <br />&nbsp<br />&nbsp<br />
                         </dd>
@@ -122,7 +115,7 @@
                                 </span>
                             </dt>
                             <dd>
-                                <semui:xEditable owner="${orgInstance}" field="linkResolverBaseURL" />
+                                <ui:xEditable owner="${orgInstance}" field="linkResolverBaseURL" />
                                 <br />&nbsp<br />&nbsp<br />
                             </dd>
                         </dl>
@@ -135,7 +128,7 @@
                                 </span>
                             </dt>
                             <dd>
-                                <semui:xEditable owner="${orgInstance}" field="legalPatronName"/>
+                                <ui:xEditable owner="${orgInstance}" field="legalPatronName"/>
                             </dd>
                         </dl>
                     </g:if>
@@ -149,9 +142,9 @@
                                 </span>
                             </dt>
                             <dd>
-                                <semui:xEditable owner="${orgInstance}" type="url" field="urlGov" class="la-overflow la-ellipsis" />
+                                <ui:xEditable owner="${orgInstance}" type="url" field="urlGov" class="la-overflow la-ellipsis" />
                                 <g:if test="${orgInstance.urlGov}">
-                                    <semui:linkIcon href="${orgInstance.urlGov}" />
+                                    <ui:linkWithIcon href="${orgInstance.urlGov}" />
                                 </g:if>
                             </dd>
                         </dl>
@@ -171,7 +164,7 @@
                                 </span>
                             </dt>
                             <dd>
-                                <semui:xEditableBoolean owner="${orgInstance}" field="eInvoice"/>
+                                <ui:xEditableBoolean owner="${orgInstance}" field="eInvoice"/>
                             </dd>
                         </dl>
                         <dl>
@@ -183,7 +176,7 @@
                                 </span>
                             </dt>
                             <dd>
-                                <semui:xEditableRefData owner="${orgInstance}" field="eInvoicePortal" config="${RDConstants.E_INVOICE_PORTAL}"/>
+                                <ui:xEditableRefData owner="${orgInstance}" field="eInvoicePortal" config="${RDConstants.E_INVOICE_PORTAL}"/>
                             </dd>
                         </dl>
                     </div>
@@ -222,14 +215,14 @@
                         <dl>
                             <dt><g:message code="org.sector.label" /></dt>
                             <dd>
-                                <semui:xEditableRefData owner="${orgInstance}" field="sector" config="${RDConstants.ORG_SECTOR}"/>
+                                <ui:xEditableRefData owner="${orgInstance}" field="sector" config="${RDConstants.ORG_SECTOR}"/>
                             </dd>
                         </dl>
                         <dl>
                             <dt>${message(code: 'default.status.label')}</dt>
 
                             <dd>
-                                <semui:xEditableRefData owner="${orgInstance}" field="status" config="${RDConstants.ORG_STATUS}"/>
+                                <ui:xEditableRefData owner="${orgInstance}" field="status" config="${RDConstants.ORG_STATUS}"/>
                             </dd>
                         </dl>
                         <g:if test="${orgInstance.status == RDStore.ORG_STATUS_RETIRED}">
@@ -345,7 +338,7 @@
                                 </span>
                             </dt>
                             <dd>
-                                <semui:xEditableRefData owner="${orgInstance}" field="libraryType"
+                                <ui:xEditableRefData owner="${orgInstance}" field="libraryType"
                                                         config="${RDConstants.LIBRARY_TYPE}"/>
                             </dd>
                         </dl>
@@ -373,7 +366,7 @@
                                 </span>
                             </dt>
                             <dd>
-                                <semui:xEditableRefData owner="${orgInstance}" field="libraryNetwork"
+                                <ui:xEditableRefData owner="${orgInstance}" field="libraryNetwork"
                                                         config="${RDConstants.LIBRARY_NETWORK}"/>
                             </dd>
                         </dl>
@@ -386,7 +379,7 @@
                                 </span>
                             </dt>
                             <dd>
-                                <semui:xEditableRefData owner="${orgInstance}" field="funderType" config="${RDConstants.FUNDER_TYPE}"/>
+                                <ui:xEditableRefData owner="${orgInstance}" field="funderType" config="${RDConstants.FUNDER_TYPE}"/>
                             </dd>
                         </dl>
                         <dl>
@@ -398,7 +391,7 @@
                                 </span>
                             </dt>
                             <dd>
-                                <semui:xEditableRefData owner="${orgInstance}" field="funderHskType" config="${RDConstants.FUNDER_HSK_TYPE}"/>
+                                <ui:xEditableRefData owner="${orgInstance}" field="funderHskType" config="${RDConstants.FUNDER_HSK_TYPE}"/>
                             </dd>
                         </dl>
                         <dl>
@@ -410,7 +403,7 @@
                                 </span>
                             </dt>
                             <dd>
-                                <semui:xEditableRefData id="country" owner="${orgInstance}" field="country" config="${RDConstants.COUNTRY}" />
+                                <ui:xEditableRefData id="country" owner="${orgInstance}" field="country" config="${RDConstants.COUNTRY}" />
                                 &nbsp
                             </dd>
                             <dt>
@@ -423,9 +416,9 @@
                             <dd>
                                 <%-- for non-editable views, the region is displayed three times - not for editable views! --%>
                                 <g:if test="${editable}">
-                                    <semui:xEditableRefData id="regions_${RDStore.COUNTRY_DE.id}" owner="${orgInstance}" field="region" config="${RDConstants.REGIONS_DE}"/>
-                                    <semui:xEditableRefData id="regions_${RDStore.COUNTRY_AT.id}" owner="${orgInstance}" field="region" config="${RDConstants.REGIONS_AT}"/>
-                                    <semui:xEditableRefData id="regions_${RDStore.COUNTRY_CH.id}" owner="${orgInstance}" field="region" config="${RDConstants.REGIONS_CH}"/>
+                                    <ui:xEditableRefData id="regions_${RDStore.COUNTRY_DE.id}" owner="${orgInstance}" field="region" config="${RDConstants.REGIONS_DE}"/>
+                                    <ui:xEditableRefData id="regions_${RDStore.COUNTRY_AT.id}" owner="${orgInstance}" field="region" config="${RDConstants.REGIONS_AT}"/>
+                                    <ui:xEditableRefData id="regions_${RDStore.COUNTRY_CH.id}" owner="${orgInstance}" field="region" config="${RDConstants.REGIONS_CH}"/>
                                 </g:if>
                                 <g:else>
                                     ${orgInstance.region?.getI10n("value")}
@@ -485,14 +478,14 @@
 
                                     <div class="item">
 
-                                        <a href="#createPersonModal" class="ui button" size="35" data-semui="modal"
+                                        <a href="#createPersonModal" class="ui button" data-ui="modal"
                                            onclick="JSPC.app.personCreate('contactPersonForProviderAgencyPublic', ${orgInstance.id}, '&supportType=${RDStore.PRS_FUNC_TECHNICAL_SUPPORT.id}');"><g:message
                                                 code="personFormModalTechnichalSupport"/></a>
 
                                     </div>
                                     <div class="item">
 
-                                        <a href="#createPersonModal" class="ui button" size="35" data-semui="modal"
+                                        <a href="#createPersonModal" class="ui button" data-ui="modal"
                                            onclick="JSPC.app.personCreate('contactPersonForProviderAgencyPublic', ${orgInstance.id}, '&supportType=${RDStore.PRS_FUNC_SERVICE_SUPPORT.id}');"><g:message
                                                 code="personFormModalServiceSupport"/></a>
 
@@ -628,14 +621,12 @@
     </aside>
 </div>
 
-<semui:debugInfo>
+<ui:debugInfo>
     <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]"/>
 %{-- grails-3: performance issue <laser:render template="/templates/debug/orgRoles" model="[debug: orgInstance.links]"/> --}%
 %{--<laser:render template="/templates/debug/prsRoles" model="[debug: orgInstance.prsLinks]"/>--}%
-</semui:debugInfo>
+</ui:debugInfo>
 
-</body>
-</html>
 <laser:script file="${this.getGroovyPageFileName()}">
     $('#country').on('save', function(e, params) {
         JSPC.app.showRegionsdropdown(params.newValue);
@@ -675,3 +666,5 @@
     }
 </g:if>
 </laser:script>
+
+<laser:htmlEnd />

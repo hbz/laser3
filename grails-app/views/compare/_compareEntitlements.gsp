@@ -1,6 +1,6 @@
 <%@ page import="de.laser.TitleInstancePackagePlatform" %>
 <laser:serviceInjection/>
-<semui:form>
+<ui:form>
     <table class="ui selectable celled table la-js-responsive-table la-table la-ignore-fixed">
         <thead>
             <tr>
@@ -26,7 +26,7 @@
             <laser:render template="compareEntitlementRow" model="[showPlattform: showPlattform, showPackage: showPackage, ies: ies, objects: objects]"/>
         </tbody>
     </table>
-</semui:form>
+</ui:form>
 <laser:script file="${this.getGroovyPageFileName()}">
     let max = ${max};
     let offset = ${offset+max};

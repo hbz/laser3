@@ -1,10 +1,12 @@
 package de.laser.utils
 
+import groovy.transform.CompileStatic
 import org.apache.commons.lang.RandomStringUtils
 
 import java.util.regex.Matcher
 import java.util.regex.Pattern
 
+@CompileStatic
 class PasswordUtils {
 
     static final String USER_PASSWORD_INFO =

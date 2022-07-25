@@ -28,7 +28,6 @@ class SystemSetting {
 
     static constraints = {
         name        (blank:false)
-        tp          (blank:false)
         value       (nullable:true, blank:true, maxSize:1024)
 
         // Nullable is true, because values are already in the database

@@ -1,18 +1,13 @@
 <%@ page import="de.laser.PlatformAccessMethod" %>
-<!doctype html>
-<html>
-	<head>
-		<meta name="layout" content="laser">
-		<g:set var="entityName" value="${message(code: 'accessMethod.label')}" />
-		<title>${message(code:'laser')} : <g:message code="default.edit.label" args="[entityName]" /></title>
-	</head>
-	<body>
+
+<g:set var="entityName" value="${message(code: 'accessMethod.label')}" />
+<laser:htmlStart text="${message(code:"default.edit.label", args:[entityName])}" />
 
                 <laser:render template="breadcrumb" model="${[ accessMethod:accessMethod, params:params ]}"/>
 
-                <h1 class="ui header la-noMargin-top"><g:message code="default.edit.label" args="[entityName]" /></h1>
+                <ui:h1HeaderWithIcon message="default.edit.label" args="[entityName]" />
 
-                <semui:messages data="${flash}" />
+                <ui:messages data="${flash}" />
 
                 <g:form class="ui form" url="[controller: 'accessMethod', action: 'update']" method="POST">
                     <g:hiddenField id="accessMethod_id_${accessMethod.id}" name="id" value="${accessMethod.id}" />
@@ -34,8 +29,8 @@
 
                                     <dt><g:message code="accessMethod.valid_to" /></dt>
                                     <dd>
-                                        <semui:datepicker hideLabel="true" id="validTo" name="validTo" value ="${accessMethod.validTo}">
-                                        </semui:datepicker>
+                                        <ui:datepicker hideLabel="true" id="validTo" name="validTo" value ="${accessMethod.validTo}">
+                                        </ui:datepicker>
                                     </dd>
 
                                 </dl>
@@ -46,7 +41,7 @@
 
                     <div class="ui segment form-actions">
                         <g:link class="ui button" controller="platform" action="accessMethods"  id="${platfId}" >${message(code:'default.button.back')}</g:link>
-                        <input type="Submit" class="ui button" value="${message(code:'accessMethod.button.update')}" onClick="this.form.submit()" />
+                        <input type="submit" class="ui button" value="${message(code:'accessMethod.button.update')}" onClick="this.form.submit()" />
                         <g:link class="ui negative button" action="delete" controller="accessMethod"
                                 id="${accessMethod.id}" onclick="return confirm('${message(code: 'accessMethod.delete.confirm', args: [(accessMethod.accessMethod ?: 'this access method')])}')"
                         >${message(code:'default.button.delete.label')}</g:link>
@@ -54,5 +49,4 @@
 
                 </g:form>
 
-	</body>
-</html>
+<laser:htmlEnd />

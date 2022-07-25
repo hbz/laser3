@@ -24,7 +24,7 @@
                             <label><g:message code="financials.isVisibleForSubscriber"/></label>
                             <g:set var="newIsVisibleForSubscriberValue" value="${costItem?.isVisibleForSubscriber ? RDStore.YN_YES.id : RDStore.YN_NO.id}" />
                             <g:if test="${idSuffix == 'bulk'}">
-                                <laser:select name="newIsVisibleForSubscriber" id="newIsVisibleForSubscriber_${idSuffix}" class="ui dropdown"
+                                <ui:select name="newIsVisibleForSubscriber" id="newIsVisibleForSubscriber_${idSuffix}" class="ui dropdown"
                                               from="${yn}"
                                               optionKey="id"
                                               optionValue="value"
@@ -32,7 +32,7 @@
                                               value="" />
                             </g:if>
                             <g:else>
-                                <laser:select name="newIsVisibleForSubscriber" id="newIsVisibleForSubscriber_${idSuffix}" class="ui dropdown"
+                                <ui:select name="newIsVisibleForSubscriber" id="newIsVisibleForSubscriber_${idSuffix}" class="ui dropdown"
                                               from="${yn}"
                                               optionKey="id"
                                               optionValue="value"
@@ -73,7 +73,7 @@
                     <div class="field">
                         <label><g:message code="financials.costItemElement"/></label>
                         <g:if test="${costItemElements}">
-                            <laser:select name="newCostItemElement" id="newCostItemElement_${idSuffix}" class="ui dropdown"
+                            <ui:select name="newCostItemElement" id="newCostItemElement_${idSuffix}" class="ui dropdown"
                                           from="${costItemElements.collect{ ciec -> ciec.costItemElement }}"
                                           optionKey="id"
                                           optionValue="value"
@@ -86,7 +86,7 @@
                     </div><!-- .field -->
                     <div class="field">
                         <label><g:message code="financials.costItemConfiguration"/></label>
-                        <laser:select name="ciec" id="ciec_${idSuffix}" class="ui dropdown"
+                        <ui:select name="ciec" id="ciec_${idSuffix}" class="ui dropdown"
                                       from="${costItemSigns}"
                                       optionKey="id"
                                       optionValue="value"
@@ -96,7 +96,7 @@
                 </div>
                 <div class="field">
                     <label>${message(code:'default.status.label')}</label>
-                    <laser:select name="newCostItemStatus" id="newCostItemStatus_${idSuffix}" title="${g.message(code: 'financials.addNew.costState')}" class="ui dropdown"
+                    <ui:select name="newCostItemStatus" id="newCostItemStatus_${idSuffix}" title="${g.message(code: 'financials.addNew.costState')}" class="ui dropdown"
                                   from="${costItemStatus}"
                                   optionKey="id"
                                   optionValue="value"
@@ -328,21 +328,21 @@
         <div class="three fields">
             <fieldset class="field la-modal-fieldset-no-margin la-forms-grid">
                 <div class="two fields">
-                    <semui:datepicker label="financials.datePaid" name="newDatePaid" id="newDatePaid_${idSuffix}" placeholder="financials.datePaid" value="${costItem?.datePaid}" />
+                    <ui:datepicker label="financials.datePaid" name="newDatePaid" id="newDatePaid_${idSuffix}" placeholder="financials.datePaid" value="${costItem?.datePaid}" />
 
                     <%-- to restrict upon year: https://jsbin.com/ruqakehefa/1/edit?html,js,output , cf. example 8! --%>
-                    <semui:datepicker label="financials.financialYear" name="newFinancialYear" id="newFinancialYear_${idSuffix}" placeholder="financials.financialYear" value="${costItem?.financialYear}" />
+                    <ui:datepicker label="financials.financialYear" name="newFinancialYear" id="newFinancialYear_${idSuffix}" placeholder="financials.financialYear" value="${costItem?.financialYear}" />
                 </div>
                 <div class="two fields">
-                    <semui:datepicker label="financials.dateFrom" name="newStartDate" id="newStartDate_${idSuffix}" placeholder="default.date.label" value="${costItem?.startDate}" />
+                    <ui:datepicker label="financials.dateFrom" name="newStartDate" id="newStartDate_${idSuffix}" placeholder="default.date.label" value="${costItem?.startDate}" />
 
-                    <semui:datepicker label="financials.dateTo" name="newEndDate" id="newEndDate_${idSuffix}" placeholder="default.date.label" value="${costItem?.endDate}" />
+                    <ui:datepicker label="financials.dateTo" name="newEndDate" id="newEndDate_${idSuffix}" placeholder="default.date.label" value="${costItem?.endDate}" />
                 </div>
             </fieldset> <!-- 1/3 field -->
 
             <fieldset class="field la-modal-fieldset-margin la-forms-grid">
                 <div class="field la-more-margin">
-                    <semui:datepicker label="financials.invoiceDate" name="newInvoiceDate" id="newInvoiceDate_${idSuffix}" placeholder="financials.invoiceDate" value="${costItem?.invoiceDate}" />
+                    <ui:datepicker label="financials.invoiceDate" name="newInvoiceDate" id="newInvoiceDate_${idSuffix}" placeholder="financials.invoiceDate" value="${costItem?.invoiceDate}" />
                 </div>
                 <div class="field">
                     <label>${message(code:'default.description.label')}</label>

@@ -134,7 +134,7 @@ class BaseExportHelper {
         List<Integer> reorder = []
         int max = formFields.keySet().size()
 
-        for (def i=0; i<max; i++) {
+        for (int i=0; i<max; i++) {
             if (i%2==0) {
                 reorder[i] = ( i - i/2 ) as Integer
             } else {

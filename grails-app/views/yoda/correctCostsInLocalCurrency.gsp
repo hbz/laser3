@@ -1,11 +1,7 @@
-<%@ page import="de.laser.RefdataValue" contentType="text/html;charset=UTF-8" %>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : Kostenposten berechnen</title>
-    </head>
+<%@ page import="de.laser.RefdataValue" %>
 
-    <body>
+<laser:htmlStart text="Kostenposten berechnen" />
+
             <table class="ui celled table" id="calcResults">
                 <g:each in="${costItems.entrySet()}" var="entry">
                     <g:set var="ci" value="${entry.getKey()}"/>
@@ -22,5 +18,4 @@
                 </g:each>
             </table>
 
-    </body>
-</html>
+<laser:htmlEnd />

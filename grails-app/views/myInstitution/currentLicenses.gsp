@@ -1,59 +1,49 @@
 <%@ page import="de.laser.License;de.laser.RefdataCategory;de.laser.interfaces.CalculatedType;de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.RefdataValue;de.laser.Links" %>
-<!doctype html>
-<html>
-  <head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : ${message(code:'license.current')}</title>
-  </head>
-  <body>
-  <laser:serviceInjection />
 
-  <semui:breadcrumbs>
-      <semui:crumb message="license.current" class="active" />
-  </semui:breadcrumbs>
+<laser:htmlStart message="license.current" serviceInjection="true" />
 
-  <semui:controlButtons>
-      <semui:exportDropdown>
+  <ui:breadcrumbs>
+      <ui:crumb message="license.current" class="active" />
+  </ui:breadcrumbs>
+
+  <ui:controlButtons>
+      <ui:exportDropdown>
           <g:if test="${filterSet || defaultSet}">
-              <semui:exportDropdownItem>
+              <ui:exportDropdownItem>
                   <g:link class="item js-open-confirm-modal" data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
                           data-confirm-term-how="ok" action="currentLicenses" target="_blank" params="${params+[exportPDF:true]}">${message(code:'default.button.exports.pdf')}</g:link>
-              </semui:exportDropdownItem>
-              <semui:exportDropdownItem>
+              </ui:exportDropdownItem>
+              <ui:exportDropdownItem>
                   <g:link class="item js-open-confirm-modal" data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
                           data-confirm-term-how="ok" action="currentLicenses" params="${params+[exportXLS:true]}">${message(code:'default.button.exports.xls')}</g:link>
-              </semui:exportDropdownItem>
-              <semui:exportDropdownItem>
+              </ui:exportDropdownItem>
+              <ui:exportDropdownItem>
                   <g:link class="item js-open-confirm-modal" data-confirm-tokenMsg = "${message(code: 'confirmation.content.exportPartial')}"
                           data-confirm-term-how="ok" action="currentLicenses" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
-              </semui:exportDropdownItem>
+              </ui:exportDropdownItem>
           </g:if>
           <g:else>
-              <semui:exportDropdownItem>
+              <ui:exportDropdownItem>
                   <g:link class="item" action="currentLicenses" target="_blank" params="${params+[exportPDF:true]}">${message(code:'default.button.exports.pdf')}</g:link>
-              </semui:exportDropdownItem>
-              <semui:exportDropdownItem>
+              </ui:exportDropdownItem>
+              <ui:exportDropdownItem>
                   <g:link class="item" action="currentLicenses" params="${params+[exportXLS:true]}">${message(code:'default.button.exports.xls')}</g:link>
-              </semui:exportDropdownItem>
-              <semui:exportDropdownItem>
+              </ui:exportDropdownItem>
+              <ui:exportDropdownItem>
                   <g:link class="item" action="currentLicenses" params="${params+[format:'csv']}">${message(code:'default.button.exports.csv')}</g:link>
-              </semui:exportDropdownItem>
+              </ui:exportDropdownItem>
           </g:else>
-      </semui:exportDropdown>
+      </ui:exportDropdown>
 
       <laser:render template="actions" />
 
-  </semui:controlButtons>
+  </ui:controlButtons>
 
-  <h1 class="ui left floated aligned icon header la-clear-before"><semui:headerIcon />${message(code:'license.current')}
-      <semui:totalNumber total="${licenseCount}"/>
-  </h1>
+  <ui:h1HeaderWithIcon message="license.current" total="${licenseCount}" floated="true" />
 
-  <semui:messages data="${flash}" />
+  <ui:messages data="${flash}" />
 
-  <laser:render template="/templates/filter/javascript" />
-
-  <semui:filter showFilterButton="true" class="license-searches">
+  <ui:filter showFilterButton="true" addFilterJs="true" class="license-searches">
       <form class="ui form">
           <div class="four fields">
               <div class="field">
@@ -76,14 +66,14 @@
                   </div>
               </g:if>
               <div class="field">
-                  <semui:datepicker label="license.valid_on" id="validOn" name="validOn" placeholder="default.date.label" value="${validOn}" />
+                  <ui:datepicker label="license.valid_on" id="validOn" name="validOn" placeholder="default.date.label" value="${validOn}" />
               </div>
               <laser:render template="/templates/properties/genericFilter" model="[propList: propList, label:message(code: 'subscription.property.search')]"/>
           </div>
           <div class="three fields">
               <div class="field">
                   <label for="status">${message(code: 'license.status.label')}</label>
-                  <laser:select class="ui dropdown" name="status"
+                  <ui:select class="ui dropdown" name="status"
                                 from="${ RefdataCategory.getAllRefdataValues(RDConstants.LICENSE_STATUS) }"
                                 optionKey="id"
                                 optionValue="value"
@@ -112,7 +102,7 @@
           <div class="three fields">
               <div class="field">
                   <label for="subStatus">${message(code: 'subscription.status.label')}</label>
-                  <laser:select class="ui dropdown" name="subStatus"
+                  <ui:select class="ui dropdown" name="subStatus"
                                 from="${ RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS) }"
                                 optionKey="id"
                                 optionValue="value"
@@ -135,7 +125,7 @@
               </div>
           </div>
       </form>
-  </semui:filter>
+  </ui:filter>
 
   <g:form action="compareLicenses" controller="compare" method="post">
 
@@ -223,7 +213,7 @@
                           <g:if test="${'action' in licenseFilterTable}">
                               <td class="x">
                               <g:if test="${(contextCustomerType == "ORG_INST" && l._getCalculatedType() == License.TYPE_LOCAL) || (contextCustomerType == "ORG_CONSORTIUM" && l._getCalculatedType() == License.TYPE_CONSORTIAL)}">
-                                  <span data-position="top right"  class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.copy.tooltip')}">
+                                  <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.copy.tooltip')}">
                                       <g:link controller="license" action="copyLicense" params="${[sourceObjectId: genericOIDService.getOID(l), copyObject: true]}" class="ui icon button blue la-modern-button">
                                           <i class="copy icon"></i>
                                       </g:link>
@@ -251,9 +241,8 @@
   </g:if>
 
   </g:form>
-      <semui:paginate action="currentLicenses" controller="myInstitution" params="${params}" next="${message(code:'default.paginate.next')}" prev="${message(code:'default.paginate.prev')}" max="${max}" total="${licenseCount}" />
-      <semui:debugInfo>
+      <ui:paginate action="currentLicenses" controller="myInstitution" params="${params}" max="${max}" total="${licenseCount}" />
+      <ui:debugInfo>
           <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
-      </semui:debugInfo>
-  </body>
-</html>
+      </ui:debugInfo>
+<laser:htmlEnd />

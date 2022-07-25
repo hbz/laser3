@@ -194,27 +194,6 @@ class ProfileController {
             }
         }
 
-        // deprecated
-        if ( params.defaultPageSize != null ) {
-            try {
-                long l = Long.parseLong(params.defaultPageSize);
-                if ( ( l >= 5 ) && ( l <= 100 ) ) {
-                    Long new_long = new Long(l);
-                    if ( new_long != user.getDefaultPageSize() ) {
-                        flash.message += message(code:'profile.updateProfile.updated.pageSize')
-                    }
-                    //user.setDefaultPageSizeTMP(new_long)
-                    def setting = user.getSetting(KEYS.PAGE_SIZE, null)
-                    setting.setValue(size)
-
-                }
-                else {
-                    flash.message+= message(code:'profile.updateProfile.updated.pageSize.error')
-                }
-            }
-            catch ( Exception e ) {}
-        }
-
         user.save()
 
         if (params.profile_dashboard) {

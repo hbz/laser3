@@ -1,4 +1,4 @@
-<semui:modal id="prsLinksModal" text="Neue Kontaktperson hinzufügen" hideSubmitButton="true">
+<ui:modal id="prsLinksModal" text="Neue Kontaktperson hinzufügen" hideSubmitButton="true">
 
     <p>${message(code:'myinst.addressBook.visibleOnly')}</p>
 
@@ -68,4 +68,4 @@
         </laser:script>
     </div>
 
-</semui:modal>
+</ui:modal>

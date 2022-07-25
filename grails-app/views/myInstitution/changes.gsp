@@ -1,19 +1,12 @@
 <%@page import="de.laser.Subscription;de.laser.License;de.laser.finance.CostItem;de.laser.PendingChange" %>
-<laser:serviceInjection/>
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'myinst.menu.pendingChanges.label')}</title>
-    </head>
 
-    <body>
+<laser:htmlStart message="myinst.menu.pendingChanges.label" serviceInjection="true" />
 
-        <semui:breadcrumbs>
-            <semui:crumb message="myinst.pendingChanges.label" class="active" />
-        </semui:breadcrumbs>
+        <ui:breadcrumbs>
+            <ui:crumb message="myinst.pendingChanges.label" class="active" />
+        </ui:breadcrumbs>
 
-        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'myinst.menu.pendingChanges.label')}</h1>
+        <ui:h1HeaderWithIcon message="myinst.menu.pendingChanges.label" />
 
             <g:if test="${packages}">
                 <g:form controller="pendingChange" action="processAll">
@@ -101,7 +94,6 @@
             </tbody>
         </table>
 
-    <semui:paginate offset="${offset}" max="${max}" total="${pendingCount}"/>
+    <ui:paginate offset="${offset}" max="${max}" total="${pendingCount}"/>
 
-  </body>
-</html>
+<laser:htmlEnd />

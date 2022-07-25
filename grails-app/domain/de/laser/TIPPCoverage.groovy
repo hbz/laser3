@@ -36,7 +36,7 @@ class TIPPCoverage extends AbstractCoverage {
     }
 
     static mapping = {
-        id column:'tc_id', index: 'tc_id_idx'
+        id column:'tc_id'
         version column:'tc_version'
         startDate column:'tc_start_date', index: 'tc_dates_idx'
         startVolume column:'tc_start_volume'

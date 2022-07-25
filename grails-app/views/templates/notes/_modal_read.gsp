@@ -1,4 +1,4 @@
-<semui:modal id="modalReadNote" text="${message(code:'template.readNote')}" hideSubmitButton="true">
+<ui:modal id="modalReadNote" text="${message(code:'template.readNote')}" hideSubmitButton="true">
 
     <g:form id="read_note" class="ui form"  url="[controller:'doc', action:'show', id:noteInstance.id]" method="post">
         <div class="field">
@@ -10,4 +10,4 @@
             <textarea id="content" name="content">${noteInstance.content}</textarea>
         </div>
     </g:form>
-</semui:modal>
+</ui:modal>

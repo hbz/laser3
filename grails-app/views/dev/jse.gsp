@@ -42,21 +42,21 @@
 
     <laser:render template="jse_tmpl" model="[pos:'unten']" />
 
-    <laser:remoteLink class="ui icon positive button" role="button"
+    <ui:remoteLink class="ui icon positive button" role="button"
                       controller="dev" action="jse" params="[xhr:true]"
                       data-before="console.log('-- XHR CALL --')"
                       data-update="jse_xhr"
-    >XHR</laser:remoteLink>
+    >XHR</ui:remoteLink>
 
     <div id="jse_xhr">
     &nbsp;
     </div>
 
-    <laser:remoteLink class="ui icon positive button" role="button"
+    <ui:remoteLink class="ui icon positive button" role="button"
                       controller="dev" action="jse" params="[xhr_full:true]"
                       data-before="console.log('-- XHR_full CALL --')"
                       data-update="jse_xhr_full"
-    >XHR full</laser:remoteLink>
+    >XHR full</ui:remoteLink>
 
     <div id="jse_xhr_full">
     &nbsp;

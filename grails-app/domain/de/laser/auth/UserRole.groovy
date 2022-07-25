@@ -17,8 +17,7 @@ class UserRole implements Serializable, Comparable {
 	static belongsTo = [user: User, role: Role]
 
 	static constraints = {
-		user nullable: false
-		role nullable: false, validator: { Role r, UserRole ur ->
+		role validator: { Role r, UserRole ur ->
 			if (ur.user?.id) {
 				if (exists(ur.user.id, r.id)) {
 					return ['userRole.exists']

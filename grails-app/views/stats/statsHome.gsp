@@ -1,20 +1,13 @@
-<!doctype html>
-<html>
-    <head>
-        <meta name="layout" content="laser">
-        <title>${message(code:'laser')} : ${message(code:'menu.admin.statistics')}</title>
-    </head>
+<laser:htmlStart message="menu.admin.statistics" />
 
-    <body>
+        <ui:breadcrumbs>
+            <ui:crumb message="menu.admin" controller="admin" action="index"/>
+            <ui:crumb message="menu.admin.statistics" class="active"/>
+        </ui:breadcrumbs>
 
-        <semui:breadcrumbs>
-            <semui:crumb message="menu.admin" controller="admin" action="index"/>
-            <semui:crumb message="menu.admin.statistics" class="active"/>
-        </semui:breadcrumbs>
+        <ui:h1HeaderWithIcon message="menu.admin.statistics" />
 
-        <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon />${message(code:'menu.admin.statistics')}</h1>
-
-        <table class="ui celled la-js-responsive-table la-table table">
+        <table class="ui celled la-js-responsive-table la-table compact table">
             <thead>
                 <tr>
                     <th>Institution</th>
@@ -39,5 +32,4 @@
             </tbody>
         </table>
 
-    </body>
-</html>
+<laser:htmlEnd />

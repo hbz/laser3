@@ -1,22 +1,16 @@
 <%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
-<!doctype html>
-<html>
-<head>
-    <meta name="layout" content="laser">
-    <title>${message(code:'laser')} : Login</title>
-</head>
 
-<body>
+<laser:htmlStart text="Login" />
 
 <div id='login' class="container">
     <div class='inner'>
         <div class='header'>
-            <h1 class="ui icon header la-clear-before la-noMargin-top"><semui:headerIcon /><g:message code="springSecurity.login.header"/></h1>
+            <ui:h1HeaderWithIcon message="springSecurity.login.header" />
         </div>
     <p>
-        <semui:messages data="${flash}" />
+        <ui:messages data="${flash}" />
     </p>
-    <semui:card >
+    <ui:card >
         <div class="content">
             <form action='${postUrl}' method='POST' id='loginForm' class='ui form cssform' autocomplete='off'>
                 <div class="field">
@@ -45,7 +39,7 @@
                 </div>
             </g:form>
         </div>
-    </semui:card>
+    </ui:card>
     </div>
 </div>
 <laser:script file="${this.getGroovyPageFileName()}">
@@ -61,5 +55,5 @@
         }
     });
 </laser:script>
-</body>
-</html>
+
+<laser:htmlEnd />

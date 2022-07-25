@@ -1,23 +1,23 @@
 <laser:serviceInjection />
 
-<semui:breadcrumbs>
+<ui:breadcrumbs>
 
-    <semui:crumb text="${message(code:'license.current')}" controller="myInstitution" action="currentLicenses" />
+    <ui:crumb text="${message(code:'license.current')}" controller="myInstitution" action="currentLicenses" />
 
-    <semui:crumb text="${license?.reference}" class="active" />
+    <ui:crumb text="${license?.reference}" class="active" />
 
     <g:if test="${actionName == 'index'}">
-        <semui:exportDropdown>
-            <semui:exportDropdownItem>
+        <ui:exportDropdown>
+            <ui:exportDropdownItem>
                 <g:link class="item" controller="license" action="show" id="${license.id}" params="${params + [format:'json']}">JSON</g:link>
-            </semui:exportDropdownItem>
-            <semui:exportDropdownItem>
+            </ui:exportDropdownItem>
+            <ui:exportDropdownItem>
                 <g:link class="item" controller="license" action="show" id="${license.id}" params="${params + [format:'xml']}">XML</g:link>
-            </semui:exportDropdownItem>
-            <semui:exportDropdownItem>
+            </ui:exportDropdownItem>
+            <ui:exportDropdownItem>
                 <g:link class="item" controller="license" action="show" id="${license.id}" params="${params + [format:'csv']}">CSV</g:link>
-            </semui:exportDropdownItem>
-        </semui:exportDropdown>
+            </ui:exportDropdownItem>
+        </ui:exportDropdown>
     </g:if>
-</semui:breadcrumbs>
+</ui:breadcrumbs>
 

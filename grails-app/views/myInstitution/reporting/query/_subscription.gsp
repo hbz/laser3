@@ -5,16 +5,12 @@
     <g:set var="validFilterResult" value="${filterResult.data.subscriptionIdList || filterResult.data.memberIdList || filterResult.data.consortiumIdList || filterResult.data.providerIdList || filterResult.data.agencyIdList}" />
 
     <g:if test="${validFilterResult}">
-        <div class="ui message success">
-            <p>
+        <ui:msg class="positive" noClose="true">
                 <laser:render template="/myInstitution/reporting/query/filterResult" model="${[filter: filter, filterResult: filterResult]}" />
-            </p>
-        </div>
+        </ui:msg>
     </g:if>
     <g:else>
-        <div class="ui message negative">
-            <p><g:message code="reporting.filter.result.x.empty" /></p>
-        </div>
+        <ui:msg class="negative" noClose="true" message="reporting.filter.result.x.empty" />
     </g:else>
 
     <laser:render template="/myInstitution/reporting/query/generic_filterLabels" model="${[filterLabels: filterResult.labels]}" />

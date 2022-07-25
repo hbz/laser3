@@ -41,7 +41,7 @@ spring:
     jmx:
         unique-names: true
     main:
-        lazy-initialization: true # for local development // TODO
+        lazy-initialization: true # from: false
         banner-mode: "off"
     groovy:
         template:
@@ -124,7 +124,7 @@ grails:
             htmlcodec: xml
             codecs:
                 expression: html
-                scriptlet: none # fallback // TODO: html
+                scriptlet: none # from: html
                 taglib: none
                 staticparts: none
 
@@ -132,6 +132,8 @@ grails:
 # ---[ plugins ---
 
 grails:
+    mail:
+        poolSize: 20
     plugin:
         auditLog:
             auditDomainClassName: 'org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent'
@@ -191,7 +193,7 @@ grails:
 # ---[ hibernate, dataSource, environments ---
 
 hibernate:
-    allow_update_outside_transaction: true # fallback // TODO: hibernate 5.1 behavior
+    allow_update_outside_transaction: false # TODO: hibernate 5.1 behavior
     cache:
         default_schema: 'public'
         ehcache:

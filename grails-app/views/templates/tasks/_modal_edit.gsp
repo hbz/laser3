@@ -1,7 +1,7 @@
 <%@ page import="de.laser.storage.RDStore; de.laser.Task;de.laser.storage.RDConstants; de.laser.RefdataCategory" %>
 <laser:serviceInjection />
 
-<semui:modal id="modalEditTask" message="task.edit" isEditModal="true" >
+<ui:modal id="modalEditTask" message="task.edit" isEditModal="true" >
 
     <g:form class="ui form" id="edit_task" url="[controller:'task',action:'edit',id:taskInstance?.id]" method="post">
         <g:hiddenField name="version" value="${taskInstance?.version}" />
@@ -41,13 +41,13 @@
                     <label for="status">
                         <g:message code="task.status.label" />
                     </label>
-                    <laser:select id="status" name="status.id" from="${RefdataCategory.getAllRefdataValues(RDConstants.TASK_STATUS)}"
+                    <ui:select id="status" name="status.id" from="${RefdataCategory.getAllRefdataValues(RDConstants.TASK_STATUS)}"
                                   optionValue="value" optionKey="id" required=""
                                   value="${taskInstance?.status?.id ?: RDStore.TASK_STATUS_OPEN.id}"
                                   class="ui dropdown search many-to-one"/>
                 </div>
 
-                <semui:datepicker class="wide eight" label="task.endDate.label" id="endDate" name="endDate" placeholder="default.date.label" value="${formatDate(format:message(code:'default.date.format.notime'), date:taskInstance?.endDate)}" required="true" bean="${taskInstance}" />
+                <ui:datepicker class="wide eight" label="task.endDate.label" id="endDate" name="endDate" placeholder="default.date.label" value="${formatDate(format:message(code:'default.date.format.notime'), date:taskInstance?.endDate)}" required="true" bean="${taskInstance}" />
 
             </div>
         </div>
@@ -171,5 +171,5 @@
                 });
         }
     </laser:script>
-</semui:modal>
+</ui:modal>
 

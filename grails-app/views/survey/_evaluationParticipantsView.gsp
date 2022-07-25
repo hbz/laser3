@@ -38,7 +38,7 @@
         </g:link>
 
     </g:if>
-<br><br>
+<br/><br/>
 
 
 
@@ -54,8 +54,8 @@
                     params="[surveyConfigID: surveyConfig.id, tab: params.tab, exportXLSX: true]">
                 Export ${message(code: 'renewalEvaluation.propertiesChanged')}
             </g:link>
-            <br>
-            <br>
+            <br/>
+            <br/>
         </g:if>
 
 
@@ -99,9 +99,7 @@
 
 </g:if>
 
-<laser:render template="/templates/filter/javascript" />
-
-<semui:filter showFilterButton="true">
+<ui:filter showFilterButton="true" addFilterJs="true">
 <g:form action="${actionName}" method="post" class="ui form"
         params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
     <laser:render template="/templates/filter/orgFilter"
@@ -110,13 +108,13 @@
                       tmplConfigFormFilter: true
               ]"/>
 </g:form>
-</semui:filter>
+</ui:filter>
 
 
 
 <g:form action="${processAction}" controller="survey" method="post" class="ui form"
         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: params.tab]">
-    <br><br>
+    <br/><br/>
     <h4 class="ui header"><g:message code="surveyParticipants.hasAccess"/></h4>
 
     <g:set var="surveyParticipantsHasAccess"
@@ -124,14 +122,14 @@
 
 
         <g:if test="${surveyParticipantsHasAccess}">
-            <a data-semui="modal" class="ui icon button right floated"
+            <a data-ui="modal" class="ui icon button right floated"
                data-orgIdList="${(surveyParticipantsHasAccess.org.id)?.join(',')}"
                href="#copyEmailaddresses_static">
                 <g:message code="survey.copyEmailaddresses.participantsHasAccess"/>
             </a>
         </g:if>
 
-<br><br>
+<br/><br/>
 
 
 
@@ -224,12 +222,6 @@
                             </g:link>
 
 
-                            <g:if test="${!surveyConfig.hasOrgSubscription(participant)}">
-                                <span data-position="top right" class="la-popup-tooltip la-delay"
-                                      data-content="${message(code: 'surveyResult.newOrg')}">
-                                    <i class="star black large  icon"></i>
-                                </span>
-                            </g:if>
                             <g:if test="${surveyConfig.checkResultsEditByOrg(participant) == SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                       data-content="${message(code: 'surveyResult.processedOrg')}">
@@ -263,6 +255,21 @@
                                 </span>
                             </g:if>
 
+
+                            <g:if test="${!surveyConfig.hasOrgSubscription(participant)}">
+                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                      data-content="${message(code: 'surveyResult.newOrg')}">
+                                    <i class="star black large  icon"></i>
+                                </span>
+                            </g:if>
+
+                            <g:if test="${surveyOrg.orgInsertedItself}">
+                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                      data-content="${message(code: 'surveyLinks.newParticipate')}">
+                                    <i class="paper plane outline large icon"></i>
+                                </span>
+                            </g:if>
+
                         </td>
                     </g:if>
 
@@ -276,7 +283,7 @@
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('commentOnlyForOwner')}">
                         <td>
-                            <semui:xEditable owner="${surveyOrg}" type="text" field="ownerComment"/>
+                            <ui:xEditable owner="${surveyOrg}" type="text" field="ownerComment"/>
                         </td>
                     </g:if>
 
@@ -297,7 +304,7 @@
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('finishedDate')}">
                         <td>
-                            <semui:surveyFinishDate participant="${participant}"
+                            <survey:finishDate participant="${participant}"
                                                     surveyConfig="${surveyConfig}"/>
                         </td>
                     </g:if>
@@ -316,7 +323,7 @@
         </g:each>
         </tbody>
     </table>
-    <br><br>
+    <br/><br/>
     <h4 class="ui header"><g:message code="surveyParticipants.hasNotAccess"/></h4>
 
     <g:set var="surveyParticipantsHasNotAccess"
@@ -324,7 +331,7 @@
 
 
     <g:if test="${surveyParticipantsHasNotAccess}">
-        <a data-semui="modal" class="ui icon button right floated"
+        <a data-ui="modal" class="ui icon button right floated"
            data-orgIdList="${(surveyParticipantsHasNotAccess.org.id)?.join(',')}"
            href="#copyEmailaddresses_static">
             <g:message code="survey.copyEmailaddresses.participantsHasNoAccess"/>
@@ -424,12 +431,6 @@
                             </g:link>
 
 
-                            <g:if test="${!surveyConfig.hasOrgSubscription(participant)}">
-                                <span data-position="top right" class="la-popup-tooltip la-delay"
-                                      data-content="${message(code: 'surveyResult.newOrg')}">
-                                    <i class="star black large  icon"></i>
-                                </span>
-                            </g:if>
                             <g:if test="${surveyConfig.checkResultsEditByOrg(participant) == SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                       data-content="${message(code: 'surveyResult.processedOrg')}">
@@ -463,6 +464,20 @@
                                 </span>
                             </g:if>
 
+                            <g:if test="${!surveyConfig.hasOrgSubscription(participant)}">
+                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                      data-content="${message(code: 'surveyResult.newOrg')}">
+                                    <i class="star black large  icon"></i>
+                                </span>
+                            </g:if>
+
+                            <g:if test="${surveyOrg.orgInsertedItself}">
+                                <span data-position="top right" class="la-popup-tooltip la-delay"
+                                      data-content="${message(code: 'surveyLinks.newParticipate')}">
+                                    <i class="paper plane outline large icon"></i>
+                                </span>
+                            </g:if>
+
                         </td>
                     </g:if>
 
@@ -476,7 +491,7 @@
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('commentOnlyForOwner')}">
                         <td>
-                            <semui:xEditable owner="${surveyOrg}" type="text" field="ownerComment"/>
+                            <ui:xEditable owner="${surveyOrg}" type="text" field="ownerComment"/>
                         </td>
                     </g:if>
 
@@ -492,7 +507,7 @@
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('finishedDate')}">
                         <td>
-                            <semui:surveyFinishDate participant="${participant}"
+                            <survey:finishDate participant="${participant}"
                                                     surveyConfig="${surveyConfig}"/>
                         </td>
                     </g:if>
@@ -515,14 +530,14 @@
     <g:if test="${showTransferFields}">
         <br />
         <br />
-        <semui:form>
+        <ui:form>
         <div class="ui form">
         <h3 class="ui header">${message(code: 'surveyTransfer.info.label')}:</h3>
             <div class="two fields">
                 <div class="ui field">
                      <div class="field">
                         <label>${message(code: 'filter.status')}</label>
-                        <laser:select class="ui dropdown" name="status" id="status"
+                        <ui:select class="ui dropdown" name="status" id="status"
                                       from="${ RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS) }"
                                       optionKey="id"
                                       optionValue="value"
@@ -537,14 +552,14 @@
 
                 </div>
                 <div class="field">
-                    <semui:datepicker label="subscription.startDate.label" id="startDate" name="startDate" value=""/>
+                    <ui:datepicker label="subscription.startDate.label" id="startDate" name="startDate" value=""/>
 
-                    <semui:datepicker label="subscription.endDate.label" id="endDate" name="endDate" value=""/>
+                    <ui:datepicker label="subscription.endDate.label" id="endDate" name="endDate" value=""/>
                 </div>
             </div>
 
             <input class="ui button" type="submit" value="${message(code: 'surveyTransfer.button')}">
-        </semui:form>
+        </ui:form>
         </div>
 
     </g:if>

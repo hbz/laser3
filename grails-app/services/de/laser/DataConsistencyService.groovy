@@ -1,13 +1,16 @@
 package de.laser
 
 
-import de.laser.utils.AppUtils
 import de.laser.storage.BeanStore
+import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
-import de.laser.helper.SwissKnife
+import de.laser.utils.SwissKnife
 import de.laser.titles.TitleInstance
 import grails.gorm.transactions.Transactional
+import org.grails.core.io.support.GrailsFactoriesLoader
+import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.plugins.web.taglib.ApplicationTagLib
+import org.grails.validation.discovery.ConstrainedDiscovery
 
 import java.text.SimpleDateFormat
 
@@ -150,26 +153,23 @@ class DataConsistencyService {
         List<String> candidates = []
         List<String> statements = []
 
-        AppUtils.getAllDomainClasses().sort{ it.clazz.simpleName }.each { dc ->
+        CodeUtils.getAllDomainClasses().each { cls ->
 
-            Collection bools = dc.persistentProperties.findAll {it.type in [boolean, java.lang.Boolean]}
+            PersistentEntity pe = CodeUtils.getPersistentEntity( cls.name )
+            Collection bools    = pe ? pe.persistentProperties.findAll {it.type in [boolean, java.lang.Boolean]} : []
+            Map constraints     = GrailsFactoriesLoader.loadFactory(ConstrainedDiscovery.class).findConstrainedProperties(pe)
 
             if (! bools.isEmpty()) {
                 Map<String, Boolean> props = [:]
 
                 bools.each { it ->
-                    props.putAt( it.name, dc.constraints[ it.name ].isNullable() )
+                    props.putAt( it.name, constraints[ it.name ].isNullable() )
                 }
-
-                // println " " + dc.clazz.simpleName
                 props.each{ k,v ->
-                    // String ctrl = "select count(o) from ${dc.clazz.simpleName} o where o.${k} is null"
-                    // println "   nullable ? ${k} : ${v}, DB contains null values : " + Org.executeQuery(ctrl)
-
                     if (v.equals(true)) {
-                        candidates.add( "${dc.clazz.simpleName}.${k} -> ${v}" )
+                        candidates.add( "${cls.simpleName}.${k} -> ${v}" )
 
-                        String tableName = SwissKnife.toSnakeCase(dc.clazz.simpleName)
+                        String tableName = SwissKnife.toSnakeCase(cls.simpleName)
                         String columnName = SwissKnife.toSnakeCase(k)
                         String sql = "update ${tableName} set ${columnName} = false where ${columnName} is null;"
 

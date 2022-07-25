@@ -182,7 +182,4 @@ class AccessPointControllerService {
             }
         }
     }
-
-
-
 }
