@@ -224,7 +224,7 @@ class ApiEZB {
                         "case ie_access_start_date when null then tipp_access_start_date else ie_access_start_date end as access_start_date, " +
                         "case ie_access_end_date when null then tipp_access_end_date else ie_access_end_date end as access_end_date " +
                         "from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id " +
-                        "where ie_subscription_fk = :subId and ie_status_rv_fk != :deleted and ie_status_rv_fk != :removed ${dateFilter} order by ie_sortname, ie_name", genericFilter+[deleted: RDStore.TIPP_STATUS_DELETED.id, removed: RDStore.TIPP_STATUS_REMOVED.id])
+                        "where ie_subscription_fk = :subId and ie_status_rv_fk != :removed ${dateFilter} order by ie_sortname, ie_name", genericFilter+[removed: RDStore.TIPP_STATUS_REMOVED.id])
                 List<GroovyRowResult> packageData = sql.rows('select pkg_id, pkg_name from subscription_package join package on sp_pkg_fk = pkg_id where sp_sub_fk = :subId', [subId: sub.id])
                 List<GroovyRowResult> packageIDs = sql.rows('select id_pkg_fk, id_value, idns_ns from identifier join identifier_namespace on id_ns_fk = idns_id join subscription_package on id_pkg_fk = sp_pkg_fk where sp_sub_fk = :subId', [subId: sub.id])
                 //log.debug("select id_pkg_fk, id_value, idns_ns from identifier join identifier_namespace on id_ns_fk = idns_id join subscription_package on id_pkg_fk = sp_pkg_fk where sp_sub_fk = ${sub.id}")

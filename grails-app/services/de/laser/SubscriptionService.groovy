@@ -676,8 +676,8 @@ class SubscriptionService {
      */
     List getIssueEntitlements(Subscription subscription) {
         List<IssueEntitlement> ies = subscription?
-                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status not in (:ieStatus)",
-                        [sub: subscription, ieStatus: [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]])
+                IssueEntitlement.executeQuery("select ie from IssueEntitlement as ie where ie.subscription = :sub and ie.status != :ieStatus",
+                        [sub: subscription, ieStatus: RDStore.TIPP_STATUS_REMOVED])
                 : []
         ies.sort {it.sortname}
         ies
@@ -733,8 +733,8 @@ class SubscriptionService {
                 qry_params.current = RDStore.TIPP_STATUS_CURRENT
             }
             else {
-                base_qry += " and ie.status not in (:ieStatus) "
-                qry_params.ieStatus = [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]
+                base_qry += " and ie.status != :ieStatus "
+                qry_params.ieStatus = RDStore.TIPP_STATUS_REMOVED
             }
 
             if(params.ieAcceptStatusFixed) {
@@ -1009,23 +1009,23 @@ class SubscriptionService {
             //List packageTitles = sql.rows("select * from title_instance_package_platform where tipp_pkg_fk = :pkgId and tipp_status_rv_fk = :current", [pkgId: pkg.id, current: RDStore.TIPP_STATUS_CURRENT.id])
             sql.withBatch('insert into issue_entitlement (ie_version, ie_date_created, ie_last_updated, ie_subscription_fk, ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_reason, ie_medium_rv_fk, ie_status_rv_fk, ie_accept_status_rv_fk, ie_name, ie_sortname, ie_perpetual_access_by_sub_fk) select ' +
                     '0, now(), now(), (select sub_id from subscription where sub_id = :subId), ie_tipp_fk, ie_access_start_date, ie_access_end_date, ie_reason, ie_medium_rv_fk, ie_status_rv_fk, ie_accept_status_rv_fk, ie_name, ie_sortname, (select case sub_has_perpetual_access when true then sub_id else null end from subscription where sub_id = :subId) from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id ' +
-                    'where tipp_pkg_fk = :pkgId and ie_subscription_fk = :parentId and ie_status_rv_fk != :deleted and ie_status_rv_fk != :removed') { BatchingPreparedStatementWrapper stmt ->
+                    'where tipp_pkg_fk = :pkgId and ie_subscription_fk = :parentId and ie_status_rv_fk != :removed') { BatchingPreparedStatementWrapper stmt ->
                 memberSubs.each { Subscription memberSub ->
-                    stmt.addBatch([pkgId: pkg.id, subId: memberSub.id, parentId: subscription.id, deleted: RDStore.TIPP_STATUS_DELETED.id, removed: RDStore.TIPP_STATUS_REMOVED.id])
+                    stmt.addBatch([pkgId: pkg.id, subId: memberSub.id, parentId: subscription.id, removed: RDStore.TIPP_STATUS_REMOVED.id])
                 }
             }
             sql.withBatch('insert into issue_entitlement_coverage (ic_version, ic_ie_fk, ic_date_created, ic_last_updated, ic_start_date, ic_start_volume, ic_start_issue, ic_end_date, ic_end_volume, ic_end_issue, ic_coverage_depth, ic_coverage_note, ic_embargo) select ' +
                     '0, (select ie_id from issue_entitlement where ie_subscription_fk = :subId and ie_tipp_fk = tipp_id and ie_status_rv_fk = tipp_status_rv_fk), now(), now(), ic_start_date, ic_start_volume, ic_start_issue, ic_end_date, ic_end_volume, ic_end_issue, ic_coverage_depth, ic_coverage_note, ic_embargo from issue_entitlement_coverage join issue_entitlement on ic_ie_fk = ie_id join title_instance_package_platform on ie_tipp_fk = tipp_id ' +
-                    'where tipp_pkg_fk = :pkgId and ie_subscription_fk = :parentId and ie_status_rv_fk != :deleted and ie_status_rv_fk != :removed') { BatchingPreparedStatementWrapper stmt ->
+                    'where tipp_pkg_fk = :pkgId and ie_subscription_fk = :parentId and ie_status_rv_fk != :removed') { BatchingPreparedStatementWrapper stmt ->
                 memberSubs.each { Subscription memberSub ->
-                    stmt.addBatch([pkgId: pkg.id, subId: memberSub.id, parentId: subscription.id, deleted: RDStore.TIPP_STATUS_DELETED.id, removed: RDStore.TIPP_STATUS_REMOVED.id])
+                    stmt.addBatch([pkgId: pkg.id, subId: memberSub.id, parentId: subscription.id, removed: RDStore.TIPP_STATUS_REMOVED.id])
                 }
             }
             sql.withBatch('insert into price_item (version, pi_ie_fk, pi_date_created, pi_last_updated, pi_guid, pi_list_currency_rv_fk, pi_list_price) select ' +
                     "0, (select ie_id from issue_entitlement where ie_subscription_fk = :subId and ie_tipp_fk = tipp_id and ie_status_rv_fk = tipp_status_rv_fk), now(), now(), concat('priceitem:',gen_random_uuid()), pi_list_currency_rv_fk, pi_list_price from price_item join issue_entitlement on pi_ie_fk = ie_id join title_instance_package_platform on ie_tipp_fk = tipp_id " +
-                    'where tipp_pkg_fk = :pkgId and ie_subscription_fk = :parentId and ie_status_rv_fk != :deleted and ie_status_rv_fk != :removed') { BatchingPreparedStatementWrapper stmt ->
+                    'where tipp_pkg_fk = :pkgId and ie_subscription_fk = :parentId and ie_status_rv_fk != :removed') { BatchingPreparedStatementWrapper stmt ->
                 memberSubs.each { Subscription memberSub ->
-                    stmt.addBatch([pkgId: pkg.id, subId: memberSub.id, parentId: subscription.id, deleted: RDStore.TIPP_STATUS_DELETED.id, removed: RDStore.TIPP_STATUS_REMOVED.id])
+                    stmt.addBatch([pkgId: pkg.id, subId: memberSub.id, parentId: subscription.id, removed: RDStore.TIPP_STATUS_REMOVED.id])
                 }
             }
         }
@@ -1412,7 +1412,7 @@ class SubscriptionService {
             return false
         }
         else {
-            ie.status = RDStore.TIPP_STATUS_DELETED
+            ie.status = RDStore.TIPP_STATUS_REMOVED
             if(ie.save()) {
                 return true
             }
@@ -1434,7 +1434,7 @@ class SubscriptionService {
             return false
         }
         else {
-            ie.status = RDStore.TIPP_STATUS_DELETED
+            ie.status = RDStore.TIPP_STATUS_REMOVED
             if(ie.save()) {
                 return true
             }
@@ -1508,7 +1508,7 @@ class SubscriptionService {
                     println "processing ${wekbId}"
                     List<GroovyRowResult> existingEntitlements = sql.rows('select ie_id from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk = :subId and ie_status_rv_fk = :current and tipp_gokb_id = :key',[subId: sub.id, current: RDStore.TIPP_STATUS_CURRENT.id, key: wekbId])
                     if(existingEntitlements.size() == 0) {
-                        Map<String, Object> configMap = [wekbId: wekbId, subId: sub.id, acceptStatus: acceptStatus], coverageMap = [wekbId: wekbId, subId: sub.id, deleted: RDStore.TIPP_STATUS_DELETED.id, removed: RDStore.TIPP_STATUS_REMOVED.id], priceMap = [wekbId: wekbId, subId: sub.id, deleted: RDStore.TIPP_STATUS_DELETED.id, removed: RDStore.TIPP_STATUS_REMOVED.id]
+                        Map<String, Object> configMap = [wekbId: wekbId, subId: sub.id, acceptStatus: acceptStatus, removed: RDStore.TIPP_STATUS_REMOVED.id], coverageMap = [wekbId: wekbId, subId: sub.id, removed: RDStore.TIPP_STATUS_REMOVED.id], priceMap = [wekbId: wekbId, subId: sub.id, removed: RDStore.TIPP_STATUS_REMOVED.id]
                         if(pickAndChoosePerpetualAccess || sub.hasPerpetualAccess){
                             configMap.perpetualAccessBySub = sub.id
                         }
@@ -1600,13 +1600,13 @@ class SubscriptionService {
             }
             coverageDirectMapSet.each { Map<String, Object> configMap ->
                 sql.withBatch("insert into issue_entitlement_coverage (ic_version, ic_start_date, ic_start_issue, ic_start_volume, ic_end_date, ic_end_issue, ic_end_volume, ic_coverage_depth, ic_coverage_note, ic_embargo, ic_ie_fk) " +
-                        "select 0, tc_start_date, tc_start_issue, tc_start_volume, tc_end_date, tc_end_issue, tc_end_volume, tc_coverage_depth, tc_coverage_note, tc_embargo, ie_id from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id join tippcoverage on tc_tipp_fk = tipp_id where ie_subscription_fk = :subId and tipp_gokb_id = :wekbId and ie_status_rv_fk != :deleted") { BatchingStatementWrapper stmt ->
+                        "select 0, tc_start_date, tc_start_issue, tc_start_volume, tc_end_date, tc_end_issue, tc_end_volume, tc_coverage_depth, tc_coverage_note, tc_embargo, ie_id from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id join tippcoverage on tc_tipp_fk = tipp_id where ie_subscription_fk = :subId and tipp_gokb_id = :wekbId and ie_status_rv_fk != :removed") { BatchingStatementWrapper stmt ->
                     stmt.addBatch(configMap)
                 }
             }
             priceItemDirectSet.each { Map<String, Object> configMap ->
                 sql.withBatch("insert into price_item (version, pi_guid, pi_list_price, pi_list_currency_rv_fk, pi_ie_fk) " +
-                        "select 0, concat('priceitem:',gen_random_uuid()), pi_list_price, pi_list_currency_rv_fk, ie_id from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id join price_item on pi_tipp_fk = tipp_id where ie_subscription_fk = :subId and tipp_gokb_id = :wekbId and ie_status_rv_fk != :deleted") { BatchingStatementWrapper stmt ->
+                        "select 0, concat('priceitem:',gen_random_uuid()), pi_list_price, pi_list_currency_rv_fk, ie_id from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id join price_item on pi_tipp_fk = tipp_id where ie_subscription_fk = :subId and tipp_gokb_id = :wekbId and ie_status_rv_fk != :removed") { BatchingStatementWrapper stmt ->
                     stmt.addBatch(configMap)
                 }
             }
@@ -2469,7 +2469,7 @@ class SubscriptionService {
 
                 List<Long> titleIds = TitleInstancePackagePlatform.executeQuery('select tipp.id from TitleInstancePackagePlatform tipp join tipp.ids ident where ident.ns in :namespaces and ident.value = :value', [namespaces:idCandidate.namespaces, value:idCandidate.value])
                 if (titleIds.size() > 0) {
-                    List<IssueEntitlement> issueEntitlements = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp.id in (:titleIds) and ie.subscription.id = :subId and ie.status not in (:ieStatus)', [titleIds: titleIds, subId: subscription.id, ieStatus: [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]])
+                    List<IssueEntitlement> issueEntitlements = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp.id in (:titleIds) and ie.subscription.id = :subId and ie.status != :ieStatus', [titleIds: titleIds, subId: subscription.id, ieStatus: RDStore.TIPP_STATUS_REMOVED])
                     if (issueEntitlements.size() > 0) {
                         IssueEntitlement issueEntitlement = issueEntitlements[0]
                         IssueEntitlementCoverage ieCoverage = new IssueEntitlementCoverage()
@@ -2627,7 +2627,7 @@ class SubscriptionService {
 
                 List<Long> titleIds = TitleInstancePackagePlatform.executeQuery('select tipp.id from TitleInstancePackagePlatform tipp join tipp.ids ident where ident.ns in :namespaces and ident.value = :value', [namespaces:idCandidate.namespaces, value:idCandidate.value])
                 if (titleIds.size() > 0) {
-                    List<IssueEntitlement> issueEntitlements = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp.id in (:titleIds) and ie.subscription.id = :subId and ie.status not in (:ieStatus)', [titleIds: titleIds, subId: subscription.id, ieStatus: [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]])
+                    List<IssueEntitlement> issueEntitlements = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.tipp.id in (:titleIds) and ie.subscription.id = :subId and ie.status != :ieStatus', [titleIds: titleIds, subId: subscription.id, ieStatus: RDStore.TIPP_STATUS_REMOVED])
                     if (issueEntitlements.size() > 0) {
                         IssueEntitlement issueEntitlement = issueEntitlements[0]
                         count++
