@@ -43,6 +43,7 @@ class BasicHttpClient {
     static enum PostType {
         TEXT    ('text/plain'),
         JSON    ('application/json'),
+        SOAP    ('application/soap+xml'),
         URLENC  ('application/x-www-form-urlencoded')
 
         final String mineType
