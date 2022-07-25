@@ -10,7 +10,6 @@ import org.grails.datastore.mapping.model.PersistentEntity
 /**
  * Util class for determining domain classes
  */
-@CompileStatic
 @Slf4j
 class CodeUtils {
 

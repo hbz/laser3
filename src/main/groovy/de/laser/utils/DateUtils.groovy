@@ -11,7 +11,6 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 
-@CompileStatic
 @Slf4j
 class DateUtils {
 
