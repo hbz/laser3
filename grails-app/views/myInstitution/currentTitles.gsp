@@ -340,9 +340,7 @@
 
     <g:if test="${titles}">
         <ui:paginate action="currentTitles" controller="myInstitution" params="${params}"
-                        next="${message(code: 'default.paginate.next')}"
-                        prev="${message(code: 'default.paginate.prev')}" max="${max}"
-                        total="${num_ti_rows}"/>
+                        max="${max}" total="${num_ti_rows}"/>
     </g:if>
 
 </div>

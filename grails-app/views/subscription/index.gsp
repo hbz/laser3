@@ -476,9 +476,7 @@
 
 <g:if test="${entitlements}">
     <ui:paginate action="index" controller="subscription" params="${params}"
-                    next="${message(code: 'default.paginate.next')}"
-                    prev="${message(code: 'default.paginate.prev')}" max="${max}"
-                    total="${num_ies_rows}"/>
+                    max="${max}" total="${num_ies_rows}"/>
 </g:if>
 
 

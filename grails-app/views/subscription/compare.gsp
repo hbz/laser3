@@ -205,7 +205,7 @@
 					</tbody>
 				</table>
 
-		        <ui:paginate  action="compare" controller="subscription" params="${params}" next="Next" prev="Prev" maxsteps="${max}" total="${unionListSize}" />
+		        <ui:paginate  action="compare" controller="subscription" params="${params}" maxsteps="${max}" total="${unionListSize}" />
 
 				</div>
 			</g:if>

@@ -390,16 +390,12 @@
 
 <g:if test="${usages}">
     <ui:paginate action="renewEntitlementsWithSurvey" controller="subscription" params="${params}"
-                    next="${message(code: 'default.paginate.next')}"
-                    prev="${message(code: 'default.paginate.prev')}" max="${max}"
-                    total="${total}"/>
+                    max="${max}" total="${total}"/>
 </g:if>
 
 <g:if test="${sourceIEs}">
     <ui:paginate action="renewEntitlementsWithSurvey" controller="subscription" params="${params}"
-                    next="${message(code: 'default.paginate.next')}"
-                    prev="${message(code: 'default.paginate.prev')}" max="${max}"
-                    total="${num_ies_rows}"/>
+                    max="${max}" total="${num_ies_rows}"/>
 </g:if>
 
 <laser:script file="${this.getGroovyPageFileName()}">

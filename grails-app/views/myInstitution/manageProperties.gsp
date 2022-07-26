@@ -267,8 +267,6 @@
             </table>
         </g:form>
         <ui:paginate params="${params+[setWithout: true, setWith: false]}"
-                        next="${message(code: 'default.paginate.next')}"
-                        prev="${message(code: 'default.paginate.prev')}"
                         max="${max}" offset="${withoutPropOffset}"
                         total="${countObjWithoutProp}"/>
     </div>
@@ -517,8 +515,6 @@
             </table>
         </g:form>
         <ui:paginate params="${params+[setWith: true, setWithout: false]}"
-                        next="${message(code: 'default.paginate.next')}"
-                        prev="${message(code: 'default.paginate.prev')}"
                         max="${max}" offset="${withPropOffset}"
                         total="${countObjWithProp}"/>
     </div>

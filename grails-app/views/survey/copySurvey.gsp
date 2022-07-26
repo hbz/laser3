@@ -563,9 +563,7 @@
 
         <g:if test="${num_sub_rows}">
             <ui:paginate action="copySurvey" controller="survey" params="${params}"
-                            next="${message(code: 'default.paginate.next')}"
-                            prev="${message(code: 'default.paginate.prev')}" max="${max}"
-                            total="${num_sub_rows}"/>
+                            max="${max}" total="${num_sub_rows}"/>
         </g:if>
 
     </g:form>

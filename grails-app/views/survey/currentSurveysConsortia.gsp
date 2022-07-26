@@ -397,9 +397,7 @@
 
 <g:if test="${surveysCount}">
     <ui:paginate action="${actionName}" controller="${controllerName}" params="${params}"
-                    next="${message(code: 'default.paginate.next')}"
-                    prev="${message(code: 'default.paginate.prev')}" max="${max}"
-                    total="${surveysCount}"/>
+                    max="${max}" total="${surveysCount}"/>
 </g:if>
 
 <ui:debugInfo>
