@@ -308,7 +308,7 @@ class StatusUpdateService extends AbstractLockableService {
                 currentIEs.eachWithIndex { IssueEntitlement ieA, int index ->
                     Map<String,Object> changeMap = [target:ieA.subscription]
                     String changeDesc
-                    if(ieA.tipp.status != RDStore.TIPP_STATUS_DELETED) {
+                    if(ieA.tipp.status != RDStore.TIPP_STATUS_REMOVED) {
                         TitleInstancePackagePlatform tippB = TitleInstancePackagePlatform.get(ieA.tipp.id) //for session refresh
                         Set<Map<String,Object>> diffs = globalSourceSyncService.getTippDiff(ieA,tippB)
                         diffs.each { Map<String,Object> diff ->
@@ -373,7 +373,7 @@ class StatusUpdateService extends AbstractLockableService {
                     }
                 }
                 Set<TitleInstancePackagePlatform> currentTIPPs = sp.subscription.issueEntitlements.collect { IssueEntitlement ie -> ie.tipp }
-                Set<TitleInstancePackagePlatform> inexistentTIPPs = pkg.tipps.findAll { TitleInstancePackagePlatform tipp -> !currentTIPPs.contains(tipp) && tipp.status != RDStore.TIPP_STATUS_DELETED }
+                Set<TitleInstancePackagePlatform> inexistentTIPPs = pkg.tipps.findAll { TitleInstancePackagePlatform tipp -> !currentTIPPs.contains(tipp) && tipp.status != RDStore.TIPP_STATUS_REMOVED }
                 inexistentTIPPs.each { TitleInstancePackagePlatform tippB ->
                     log.debug("adding new TIPP ${tippB} to subscription ${sp.subscription.id}")
                     changeNotificationService.determinePendingChangeBehavior([target:sp.subscription,oid:genericOIDService.getOID(tippB)],PendingChangeConfiguration.NEW_TITLE,sp)

@@ -638,7 +638,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }//test with set, otherwise make check
                     packagesToNotify.put(updatedTIPP.packageUUID,diffsOfPackage)
                 }
-                else if(!(updatedTIPP.status in [RDStore.TIPP_STATUS_DELETED.value, PERMANENTLY_DELETED])) {
+                else if(!(updatedTIPP.status in [RDStore.TIPP_STATUS_DELETED.value, RDStore.TIPP_STATUS_REMOVED.value, PERMANENTLY_DELETED])) {
                     Package pkg = packagesOnPage.get(updatedTIPP.packageUUID)
                     if(pkg)
                         addNewTIPP(pkg, updatedTIPP, platformsOnPage)
