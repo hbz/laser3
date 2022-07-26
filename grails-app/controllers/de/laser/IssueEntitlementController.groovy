@@ -82,7 +82,7 @@ class IssueEntitlementController {
       }
 
      /* String base_qry = "from TitleInstancePackagePlatform as tipp where tipp = :tipp and tipp.status != :status"
-      Map<String,Object> qry_params = [tipp:result.issueEntitlementInstance.tipp,status:RDStore.TIPP_STATUS_DELETED]
+      Map<String,Object> qry_params = [tipp:result.issueEntitlementInstance.tipp,status:RDStore.TIPP_STATUS_REMOVED]
 
       if ( params.filter ) {
         base_qry += " and genfunc_filter_matcher(tipp.pkg.name,:pkgName) = true "

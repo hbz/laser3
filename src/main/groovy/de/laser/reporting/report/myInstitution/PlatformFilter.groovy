@@ -44,9 +44,9 @@ class PlatformFilter extends BaseFilter {
 //                        "TitleInstancePackagePlatform tipp join tipp.platform plt where tipp.pkg = pkg " +
 //                        "and sub.id in (:subIdList) " +
 //                        "and (pkg.packageStatus is null or pkg.packageStatus != :pkgDeleted) " +
-//                        "and (tipp.status is null or tipp.status != :tippDeleted) " +
+//                        "and (tipp.status is null or tipp.status != :tippRemoved) " +
 //                        "and plt.status != :pltStatus",
-//                        [subIdList: subIdList, pkgDeleted: RDStore.PACKAGE_STATUS_DELETED, tippDeleted: RDStore.TIPP_STATUS_DELETED, pltStatus: RDStore.PLATFORM_STATUS_DELETED]
+//                        [subIdList: subIdList, pkgDeleted: RDStore.PACKAGE_STATUS_DELETED, tippDeleted: RDStore.TIPP_STATUS_REMOVED, pltStatus: RDStore.PLATFORM_STATUS_DELETED]
 //                )
                 queryParams.platformIdList = Platform.executeQuery(
                         "select distinct plt.id from SubscriptionPackage subPkg join subPkg.subscription sub join subPkg.pkg pkg join pkg.nominalPlatform plt " +

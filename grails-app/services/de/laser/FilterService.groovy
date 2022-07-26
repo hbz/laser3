@@ -1084,8 +1084,8 @@ class FilterService {
             filterSet = true
         }
         else if (params.mode == 'advanced' && showDeletedTipps != true) {
-            base_qry += "and tipp.status != :tippStatusDeleted "
-            qry_params.tippStatusDeleted = RDStore.TIPP_STATUS_DELETED
+            base_qry += "and tipp.status != :tippStatusRemoved "
+            qry_params.tippStatusRemoved = RDStore.TIPP_STATUS_REMOVED
         }
 
         if (asAt != null) {
@@ -1217,8 +1217,8 @@ class FilterService {
             qry_params.current = RDStore.TIPP_STATUS_CURRENT
         }
         else {
-            base_qry += " and ie.status != :deleted "
-            qry_params.deleted = RDStore.TIPP_STATUS_DELETED
+            base_qry += " and ie.status != :removed "
+            qry_params.deleted = RDStore.TIPP_STATUS_REMOVED
         }*/
 
         if(params.ieAcceptStatusFixed) {

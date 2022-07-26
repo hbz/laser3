@@ -383,7 +383,7 @@ class CopyElementsService {
                     //List sourceHolding = sql.rows("select * from title_instance_package_platform join issue_entitlement on tipp_id = ie_tipp_fk where ie_subscription_fk = :source and ie_status_rv_fk = :current", [source: subMember.id, current: RDStore.TIPP_STATUS_CURRENT.id])
                     //packageService.bulkAddHolding(sql, newSubscription.id, sourceHolding, subMember.hasPerpetualAccess)
                     /*subMember.issueEntitlements?.each { ie ->
-                        if (ie.status != RDStore.TIPP_STATUS_DELETED) {
+                        if (ie.status != RDStore.TIPP_STATUS_REMOVED) {
                             def ieProperties = ie.properties
                             ieProperties.globalUID = null
 
@@ -1472,7 +1472,7 @@ class CopyElementsService {
 //        targetObject.issueEntitlements.each{ ie ->
         subscriptionService.getIssueEntitlements(targetObject).each { ie ->
             if (packagesToDelete.find { subPkg -> subPkg?.pkg?.id == ie?.tipp?.pkg?.id }) {
-                ie.status = RDStore.TIPP_STATUS_DELETED
+                ie.status = RDStore.TIPP_STATUS_REMOVED
                 _save(ie, flash)
             }
         }
@@ -1535,11 +1535,11 @@ class CopyElementsService {
                     packageService.bulkAddHolding(sql, targetObject.id, newSubscriptionPackage.pkg.id, targetObject.hasPerpetualAccess)
                     /*
                     List<IssueEntitlement> targetIEs = subscriptionService.getIssueEntitlements(targetObject)
-                            //.findAll { it.tipp.id == ie.tipp.id && it.status != RDStore.TIPP_STATUS_DELETED }
+                            //.findAll { it.tipp.id == ie.tipp.id && it.status != RDStore.TIPP_STATUS_REMOVED }
                     subscriptionPackage.getIssueEntitlementsofPackage().each { ie ->
                         //deleted check on both levels here because there are issue entitlements pointing to TIPPs which have been removed from we:kb
-                        if (ie.status != RDStore.TIPP_STATUS_DELETED && ie.tipp.status != RDStore.TIPP_STATUS_DELETED) {
-                            boolean check = targetIEs.find { IssueEntitlement targetIE -> targetIE.tipp.id == ie.tipp.id && targetIE.status != RDStore.TIPP_STATUS_DELETED }
+                        if (ie.status != RDStore.TIPP_STATUS_REMOVED && ie.tipp.status != RDStore.TIPP_STATUS_REMOVED) {
+                            boolean check = targetIEs.find { IssueEntitlement targetIE -> targetIE.tipp.id == ie.tipp.id && targetIE.status != RDStore.TIPP_STATUS_REMOVED }
                             if (check) {
                                 // mich gibts schon! Da aber der Prozeß asynchron läuft, kann keine Fehlermeldung (mehr) ausgegeben werden!
                                 Object[] args = [ie.name]
@@ -1607,7 +1607,7 @@ class CopyElementsService {
      */
     boolean deleteEntitlements(List<IssueEntitlement> entitlementsToDelete, Object targetObject, def flash) {
         entitlementsToDelete.each {
-            it.status = RDStore.TIPP_STATUS_DELETED
+            it.status = RDStore.TIPP_STATUS_REMOVED
             _save(it, flash)
         }
 //        IssueEntitlement.executeUpdate(
@@ -1625,8 +1625,8 @@ class CopyElementsService {
     boolean copyEntitlements(List<IssueEntitlement> entitlementsToTake, Object targetObject, def flash) {
         Locale locale = LocaleContextHolder.getLocale()
         entitlementsToTake.each { ieToTake ->
-            if (!(ieToTake.status in [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED])) {
-                def list = subscriptionService.getIssueEntitlements(targetObject).findAll { it.tipp.id == ieToTake.tipp.id && !(it.status in [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]) }
+            if (ieToTake.status != RDStore.TIPP_STATUS_REMOVED) {
+                def list = subscriptionService.getIssueEntitlements(targetObject).findAll { it.tipp.id == ieToTake.tipp.id && (it.status != RDStore.TIPP_STATUS_REMOVED) }
                 if (list.size() > 0) {
                     // mich gibts schon! Fehlermeldung ausgeben!
                     Object[] args = [ieToTake.name]
@@ -1749,7 +1749,7 @@ class CopyElementsService {
                 if (issueEntitlementGroup.save()) {
 
                     ieGroup.items.each { ieGroupItem ->
-                        IssueEntitlement ie = IssueEntitlement.findBySubscriptionAndTippAndStatusNotInList(targetObject, ieGroupItem.ie.tipp, [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED])
+                        IssueEntitlement ie = IssueEntitlement.findBySubscriptionAndTippAndStatusNotEqual(targetObject, ieGroupItem.ie.tipp, RDStore.TIPP_STATUS_REMOVED)
                         if (ie && !IssueEntitlementGroupItem.findByIe(ie)) {
                             IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
                                     ie: ie,

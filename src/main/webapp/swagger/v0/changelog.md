@@ -2,7 +2,11 @@
 
 Source: ${de.laser.config.ConfigMapper.getGrailsServerURL()} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
-#### 1.21
+#### 1.4
+
+- internal refactoring
+
+#### 1.3
 
 - bugfix collection of ies
 

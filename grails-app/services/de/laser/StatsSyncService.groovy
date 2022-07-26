@@ -109,7 +109,6 @@ class StatsSyncService {
             "join ie.subscription.orgRelations as orgrel "+
             "join ie.tipp.ids as titleIdentifier "+
             "where titleIdentifier.ns.ns in ('zdb','doi') "+
-            "and ie.status.value <> '${RDStore.TIPP_STATUS_DELETED}' " +
             "and ie.status.value <> '${RDStore.TIPP_STATUS_REMOVED}' " +
             "and po.roleType.value in ('Provider','Content Provider') "+
             "and exists (select cp from pf.propertySet as cp where cp.type.name = 'NatStat Supplier ID')" +
