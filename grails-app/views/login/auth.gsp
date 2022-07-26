@@ -1,15 +1,23 @@
-<%@ page import="grails.plugin.springsecurity.SpringSecurityUtils" %>
+<%@ page import="grails.util.Environment; grails.plugin.springsecurity.SpringSecurityUtils" %>
 
 <laser:htmlStart text="Login" />
 
 <div id='login' class="container">
     <div class='inner'>
+
         <div class='header'>
-            <ui:h1HeaderWithIcon message="springSecurity.login.header" />
+            <g:if test="${Environment.isDevelopmentMode()}">
+                <ui:h1HeaderWithIcon message="springSecurity.login.header" />
+            </g:if>
+            <g:else>
+                <h1 class="ui header">Das System ist noch NICHT einsatzbereit!</h1>
+            </g:else>
         </div>
+
     <p>
         <ui:messages data="${flash}" />
     </p>
+
     <ui:card >
         <div class="content">
             <form action='${postUrl}' method='POST' id='loginForm' class='ui form cssform' autocomplete='off'>

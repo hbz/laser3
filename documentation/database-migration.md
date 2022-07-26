@@ -22,8 +22,10 @@
     }
 
     dependencies {
-        compile 'org.grails.plugins:database-migration:4.1.0'
-        compile 'org.liquibase:liquibase-core:4.8.0'
+        implementation 'org.grails.plugins:database-migration:4.1.0', {
+            exclude module: 'spring-boot-cli'
+        }
+        implementation 'org.liquibase:liquibase-core:4.11.0'
     }
 
 **grails-app/conf/application.yml**

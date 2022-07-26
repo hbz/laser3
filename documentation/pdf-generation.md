@@ -12,7 +12,7 @@
 **build.gradle**
 
     dependencies {
-        compile 'org.grails.plugins:wkhtmltopdf:1.0.0.RC9'
+        implementation 'org.grails.plugins:wkhtmltopdf:1.0.0.RC9'
         // ..
     }
 
