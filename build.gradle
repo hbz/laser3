@@ -113,7 +113,9 @@ dependencies {
     implementation 'org.grails.plugins:spring-security-core:5.1.0'          // from 3.2.3
     implementation 'org.grails.plugins:http-builder-helper:1.1.0'           // 2017
     implementation 'org.grails.plugins:audit-logging:4.0.3'                 // from 3.0.3
-    implementation 'org.grails.plugins:database-migration:4.1.0'            // from 3.0.3
+    implementation 'org.grails.plugins:database-migration:4.1.0', {         // from 3.0.3
+        exclude module: 'spring-boot-cli'
+    }
     implementation 'org.grails.plugins:grails-executor:0.4'                 // 2016 - DEPRECATED
     implementation 'org.grails.plugins:mail:3.0.0'                          // from 2.0.0
     implementation 'org.grails.plugins:quartz:2.0.13'                       // 2019
@@ -140,8 +142,6 @@ dependencies {
 
     // --------------------------------------------------
 
-    runtimeOnly 'org.glassfish.web:el-impl:2.2.1-b05'
-    runtimeOnly 'com.h2database:h2'
     runtimeOnly 'org.apache.tomcat:tomcat-jdbc'
     runtimeOnly 'javax.xml.bind:jaxb-api:2.3.1'
     runtimeOnly 'org.postgresql:postgresql:42.4.0'                          // from 42.3.0
