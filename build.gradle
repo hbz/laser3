@@ -77,6 +77,8 @@ configurations {
 dependencies {
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     developmentOnly 'org.springframework.boot:spring-boot-starter-tomcat'    // implementation
+
+    compileOnly 'io.micronaut:micronaut-inject-groovy'
     console 'org.grails:grails-console'
 
     implementation 'org.springframework.boot:spring-boot-starter-logging'
@@ -100,13 +102,8 @@ dependencies {
     implementation 'org.grails.plugins:gsp'
 
     implementation 'io.micronaut:micronaut-http-client'
-    compileOnly 'io.micronaut:micronaut-inject-groovy'
 
     profile 'org.grails.profiles:web'
-
-    runtimeOnly 'org.apache.tomcat:tomcat-jdbc'                             // from runtime
-    runtimeOnly 'javax.xml.bind:jaxb-api:2.3.1'                             // from runtime
-    runtimeOnly 'org.postgresql:postgresql:42.4.0'                          // from 42.3.0
 
     // --------------------------------------------------
 
@@ -140,6 +137,12 @@ dependencies {
 
     implementation 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.2'
     implementation 'org.quartz-scheduler:quartz:2.3.2'
+
+    // --------------------------------------------------
+
+    runtimeOnly 'org.apache.tomcat:tomcat-jdbc'                             // from runtime
+    runtimeOnly 'javax.xml.bind:jaxb-api:2.3.1'                             // from runtime
+    runtimeOnly 'org.postgresql:postgresql:42.4.0'                          // from 42.3.0
 }
 
 springBoot {
