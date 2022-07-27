@@ -14,9 +14,7 @@
             </g:else>
         </div>
 
-    <p>
         <ui:messages data="${flash}" />
-    </p>
 
     <ui:card >
         <div class="content">

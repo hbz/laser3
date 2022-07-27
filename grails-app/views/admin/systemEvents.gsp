@@ -97,14 +97,10 @@
             <%
                 String tdClass = 'table-td-yoda-blue'
                 switch (el.relevance?.value?.toLowerCase()) {
-                    case 'info' :
-                        tdClass = 'table-td-yoda-blank'; break
-                    case 'ok' :
-                        tdClass = 'table-td-yoda-green'; break
-                    case 'warning' :
-                        tdClass = 'table-td-yoda-yellow'; break
-                    case 'error' :
-                        tdClass = 'table-td-yoda-red'; break
+                    case 'info'     : tdClass = 'table-td-yoda-blank'; break
+                    case 'ok'       : tdClass = 'table-td-yoda-green'; break
+                    case 'warning'  : tdClass = 'table-td-yoda-yellow'; break
+                    case 'error'    : tdClass = 'table-td-yoda-red'; break
                 }
             %>
             <tr

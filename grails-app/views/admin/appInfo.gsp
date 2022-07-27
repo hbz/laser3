@@ -14,13 +14,12 @@
             <tr><th class="seven wide">Application</th><th class="nine wide"></th></tr>
         </thead>
         <tbody>
-            <tr><td>App name</td><td> ${AppUtils.getMeta('info.app.name')}</td></tr>
-            <tr><td>App version</td><td> ${AppUtils.getMeta('info.app.version')}</td></tr>
+            <tr><td>App Id/Name/Version</td><td> ${ConfigMapper.getLaserSystemId()} / ${AppUtils.getMeta('info.app.name')} / ${AppUtils.getMeta('info.app.version')}</td></tr>
             <tr><td>Grails version</td><td> ${AppUtils.getMeta('info.app.grailsVersion')}</td></tr>
             <tr><td>Groovy (currently running)</td><td> ${GroovySystem.getVersion()}</td></tr>
             <tr><td>Java (currently running)</td><td> ${System.getProperty('java.version')}</td></tr>
             <tr><td>Configuration file</td><td> ${ConfigMapper.getCurrentConfigFile(this.applicationContext.getEnvironment()).name}</td></tr>
-            <tr><td>Environment</td><td> ${Metadata.getCurrent().getEnvironment()}</td></tr>
+            <tr><td>Environment/Server</td><td> ${Metadata.getCurrent().getEnvironment()} / ${AppUtils.getCurrentServer()}</td></tr>
             <tr><td>Session timeout</td><td> ${(session.getMaxInactiveInterval() / 60)} Minutes</td></tr>
             <tr><td>Last quartz heartbeat</td><td>${ConfigMapper.getQuartzHeartbeat()}</td></tr>
         </tbody>

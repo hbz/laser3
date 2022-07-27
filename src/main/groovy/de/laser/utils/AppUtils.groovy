@@ -33,13 +33,13 @@ class AppUtils {
         if (! Environment.isDevelopmentMode()) {
 
             switch (ConfigMapper.getLaserSystemId()) {
-                case { it.startsWith('LAS:eR-Dev') }:
+                case { it.startsWithIgnoreCase('LAS:eR-DEV') }:
                     return DEV
                     break
-                case { it.startsWith('LAS:eR-QA/Stage') }:
+                case { it.startsWithIgnoreCase('LAS:eR-QA/Stage') }:
                     return QA
                     break
-                case 'LAS:eR-Productive':
+                case { it.equalsIgnoreCase('LAS:eR-Productive') }:
                     return PROD
                     break
             }

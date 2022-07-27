@@ -13,7 +13,6 @@ import de.laser.interfaces.CalculatedType
 import de.laser.titles.TitleInstance
 import de.laser.utils.CodeUtils
 import grails.converters.JSON
-import grails.core.GrailsApplication
 import org.elasticsearch.action.bulk.BulkItemResponse
 import org.elasticsearch.action.bulk.BulkRequest
 import org.elasticsearch.action.bulk.BulkResponse
@@ -43,7 +42,6 @@ class DataloadService {
     ExecutorService executorService
     //def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
     GlobalService globalService
-    GrailsApplication grailsApplication
 
     def stats = [:]
 
@@ -1202,7 +1200,6 @@ class DataloadService {
 
                 log.debug("Do updateFTIndexes");
                 updateFTIndexes()
-                //log.debug("Clear down and init ES completed...")
 
             } else {
                 log.debug("!!!!Clear down and init ES is not possible because updateFTIndexes is currently in process!!!!");
@@ -1336,7 +1333,6 @@ class DataloadService {
         log.debug("End to check ES Elements with DB Elements")
 
         return true
-
     }
 
     /**
@@ -1348,5 +1344,4 @@ class DataloadService {
             log.debug("kill DataloadService done!")
         }
     }
-
 }

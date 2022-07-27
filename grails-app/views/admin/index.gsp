@@ -13,9 +13,9 @@
             <tr><th class="seven wide">${AppUtils.getMeta('info.app.name')}</th><th class="nine wide"></th></tr>
         </thead>
         <tbody>
-            <tr><td>App version</td><td> ${AppUtils.getMeta('info.app.version')}</td></tr>
+            <tr><td>App Id/Version</td><td> ${ConfigMapper.getLaserSystemId()} / ${AppUtils.getMeta('info.app.version')}</td></tr>
             <tr><td>Configuration file</td><td> ${ConfigMapper.getCurrentConfigFile(this.applicationContext.getEnvironment()).name}</td></tr>
-            <tr><td>Environment</td><td> ${Metadata.getCurrent().getEnvironment()}</td></tr>
+            <tr><td>Environment/Server</td><td> ${Metadata.getCurrent().getEnvironment()} / ${AppUtils.getCurrentServer()}</td></tr>
             <tr><td>Database</td><td> ${ConfigMapper.getConfig('dataSource.url', String).split('/').last()}</td></tr>
             <tr><td>DBM version</td><td> ${dbmVersion[0]} -> ${dbmVersion[1]} <br/> ${DateUtils.getLocalizedSDF_noZ().format(dbmVersion[2])}</td></tr>
             <tr><td>Document storage</td><td> ${docStore.filesCount} Files -> ${docStore.folderSize} MB</td></tr>
@@ -38,13 +38,22 @@
         </thead>
         <tbody>
         <g:each in="${events}" var="el" status="i">
+            <%
+                String tdClass = 'table-td-yoda-blue'
+                switch (el.relevance?.value?.toLowerCase()) {
+                    case 'info'     : tdClass = 'table-td-yoda-blank'; break
+                    case 'ok'       : tdClass = 'table-td-yoda-green'; break
+                    case 'warning'  : tdClass = 'table-td-yoda-yellow'; break
+                    case 'error'    : tdClass = 'table-td-yoda-red'; break
+                }
+            %>
             <tr>
-                <td> ${el.category} </td>
-                <td> ${el.relevance} </td>
-                <td> ${el.source} </td>
-                <td> ${el.event} </td>
-                <td> ${el.payload?.replaceAll(',', ', ')} </td>
-                <td> <g:formatDate date="${el.created}" format="${message(code:'default.date.format.noZ')}" /> </td>
+                <td class="${tdClass}"> ${el.category} </td>
+                <td class="${tdClass}"> ${el.relevance} </td>
+                <td class="${tdClass}"> ${el.source} </td>
+                <td class="${tdClass}"> ${el.event} </td>
+                <td class="${tdClass}"> ${el.payload?.replaceAll(',', ', ')} </td>
+                <td class="${tdClass}"> <g:formatDate date="${el.created}" format="${message(code:'default.date.format.noZ')}" /> </td>
             </tr>
         </g:each>
         </tbody>
