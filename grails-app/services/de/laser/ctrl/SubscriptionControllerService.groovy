@@ -1569,12 +1569,12 @@ class SubscriptionControllerService {
 
             if(params.provider) {
                 result.filterSet = true
-                esQuery += "&providerName=${params.provider}"
+                esQuery += "&provider=${params.provider.replaceAll('&','ampersand')}"
             }
 
             if(params.curatoryGroup) {
                 result.filterSet = true
-                esQuery += "&curatoryGroupExact=${params.curatoryGroup}"
+                esQuery += "&curatoryGroupExact=${params.curatoryGroup.replaceAll('&','ampersand')}"
             }
 
             if(params.resourceTyp) {
