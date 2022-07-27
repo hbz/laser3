@@ -39,8 +39,8 @@
 
 <%
     List ehCaches = [
-        ehcacheManager.getCacheNames().findAll { it -> !it.startsWith('com.k_int.') && !it.startsWith('de.laser.')},
-        ehcacheManager.getCacheNames().findAll { it -> it.startsWith('com.k_int.') || it.startsWith('de.laser.')}
+        ehcacheManager.getCacheNames().findAll { it -> !it.startsWith('de.laser.')},
+        ehcacheManager.getCacheNames().findAll { it -> it.startsWith('de.laser.')}
     ]
 %>
 

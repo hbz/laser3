@@ -164,8 +164,8 @@ grails:
                         access: [ 'permitAll' ]
                     -   pattern: '/static/**'
                         access: [ 'permitAll' ]
-                    -   pattern: '/ws-socket/**'
-                        access: [ 'permitAll' ]
+#-   pattern: '/ws-socket/**'
+#    access: [ 'permitAll' ]
                     -   pattern: '/**/js/**'
                         access: [ 'permitAll' ]
                     -   pattern: '/**/css/**'
@@ -193,7 +193,7 @@ grails:
 # ---[ hibernate, dataSource, environments ---
 
 hibernate:
-    allow_update_outside_transaction: false # TODO: hibernate 5.1 behavior
+    allow_update_outside_transaction: false
     cache:
         default_schema: 'public'
         ehcache:
