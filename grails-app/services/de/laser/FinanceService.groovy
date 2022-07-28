@@ -1171,7 +1171,7 @@ class FinanceService {
                 'eissn':IdentifierNamespace.findByNsAndNsType('eissn', TitleInstancePackagePlatform.class.name)
         ]
         rows.eachWithIndex { row, Integer r ->
-            log.debug("now processing entry ${r}")
+            //log.debug("now processing entry ${r}")
             Map mappingErrorBag = [:]
             List<String> cols = row.split('\t')
             //check if we have some mandatory properties ...

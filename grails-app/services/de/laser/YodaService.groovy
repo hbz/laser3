@@ -279,8 +279,8 @@ class YodaService {
             //is a consequent error of GOKbService's copy-paste-mess ...
             if(esQuery.warning)
                 esResult = esQuery.warning.records
-            else if(esQuery.info)
-                esResult = esQuery.info.records
+//            else if(esQuery.info)
+//                esResult = esQuery.info.records
             if(esResult) {
                 Map gokbPlatformRecord = esResult[0]
                 if(gokbPlatformRecord.name == platform.name)

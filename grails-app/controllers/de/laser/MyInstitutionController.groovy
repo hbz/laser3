@@ -1543,7 +1543,7 @@ join sub.orgRelations or_sub where
             /*, [max:result.max, offset:result.offset])) */
             log.debug("after query: ${System.currentTimeMillis()-start}")
             packageSubscriptionList.eachWithIndex { entry, int i ->
-                log.debug("processing entry ${i} at: ${System.currentTimeMillis()-start}")
+                // log.debug("processing entry ${i} at: ${System.currentTimeMillis()-start}")
                 String key = 'package_' + entry[0].id
 
                 if (! result.subscriptionMap.containsKey(key)) {

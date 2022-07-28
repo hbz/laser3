@@ -123,7 +123,7 @@ class ElasticSearchHelper {
                                 }
                             },
                         { resp ->
-                                log.warn (resp.statusLine)
+                                log.warn ('Response: ' + resp.getStatus().getCode() + ' - ' + resp.getStatus().getReason())
                             }
                     )
                 }
@@ -174,7 +174,7 @@ class ElasticSearchHelper {
                                 }
                             },
                             { resp ->
-                                log.warn (resp.statusLine)
+                                log.warn ('Response: ' + resp.getStatus().getCode() + ' - ' + resp.getStatus().getReason())
                             }
                     )
                 }

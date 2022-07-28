@@ -107,7 +107,7 @@ class BasicHttpClient {
             response = innerPOST(responseType, postType, body, customHeaders) 
         }
 
-        int sc = response ? response.code() : -1
+        int sc = response ? response.getStatus().getCode() : -1
         log.debug '[ request ] httpStatusCode: ' + sc
 
         if (sc >= 200 && sc < 300) {

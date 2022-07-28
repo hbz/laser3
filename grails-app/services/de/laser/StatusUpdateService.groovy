@@ -312,7 +312,7 @@ class StatusUpdateService extends AbstractLockableService {
                         TitleInstancePackagePlatform tippB = TitleInstancePackagePlatform.get(ieA.tipp.id) //for session refresh
                         Set<Map<String,Object>> diffs = globalSourceSyncService.getTippDiff(ieA,tippB)
                         diffs.each { Map<String,Object> diff ->
-                            log.debug("now processing entry #${index}, payload: ${diff}")
+                            // log.debug("now processing entry #${index}, payload: ${diff}")
                             if(diff.prop == 'coverage') {
                                 //the city Coventry is beautiful, isn't it ... but here is the COVerageENTRY meant.
                                 diff.covDiffs.each { covEntry ->
