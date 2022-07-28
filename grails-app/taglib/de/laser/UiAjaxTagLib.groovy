@@ -26,7 +26,7 @@ class UiAjaxTagLib {
 
         String href = g.createLink(hrefMap)
 
-        out << "<a aria-label= '${ariaLabel}' role='${role}' class='${cssClass} la-js-remoteLink'  href='" + href + "'"
+        out << '<a aria-label="' + ariaLabel + '" role="' + role + '" class="' + cssClass + ' la-js-remoteLink"  href="' + href + '"'
 
         attrs.each { k,v ->
             out << ' ' << k << '="' << v << '"'

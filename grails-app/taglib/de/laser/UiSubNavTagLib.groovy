@@ -24,7 +24,7 @@ class UiSubNavTagLib {
 
     def complexSubNavItem = { attrs, body ->
 
-        String aClass = ((this.pageScope.variables?.workFlowPart == attrs.workFlowPart) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
+        String cssClass = ((this.pageScope.variables?.workFlowPart == attrs.workFlowPart) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
 
         if (attrs.controller) {
             if(attrs.disabled == true) {
@@ -32,7 +32,7 @@ class UiSubNavTagLib {
             }
             else {
                 out << g.link(body(),
-                        class: aClass,
+                        class: cssClass,
                         controller: attrs.controller,
                         action: attrs.action,
                         params: attrs.params
@@ -48,7 +48,7 @@ class UiSubNavTagLib {
 
         def (text, message) = SwissKnife.getTextAndMessage(attrs)
         String linkBody  = (text && message) ? text + " - " + message : text + message
-        String aClass    = ((this.pageScope.variables?.actionName == attrs.action && (attrs.tab == params.tab || attrs.tab == params[attrs.subTab])) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
+        String cssClass    = ((this.pageScope.variables?.actionName == attrs.action && (attrs.tab == params.tab || attrs.tab == params[attrs.subTab])) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
 
         String tooltip = attrs.tooltip ?: ""
         Integer counts = attrs.counts ? attrs.counts as Integer : null
@@ -66,7 +66,7 @@ class UiSubNavTagLib {
         }
         else if (attrs.controller) {
             out << g.link(linkBody,
-                    class: aClass,
+                    class: cssClass,
                     controller: attrs.controller,
                     action: attrs.action,
                     params: attrs.params,
@@ -74,7 +74,7 @@ class UiSubNavTagLib {
             )
         }
         else {
-            out << '<a href="" class="' + aClass + '">' + linkBody + '</a>'
+            out << '<a href="" class="' + cssClass + '">' + linkBody + '</a>'
         }
     }
 
@@ -83,8 +83,8 @@ class UiSubNavTagLib {
     def securedSubNavItem = { attrs, body ->
 
         def (lbText, lbMessage) = SwissKnife.getTextAndMessage(attrs)
-        String linkBody  = (lbText && lbMessage) ? lbText + " - " + lbMessage : lbText + lbMessage
-        String aClass = ((this.pageScope.variables?.actionName == attrs.action) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
+        String linkBody = (lbText && lbMessage) ? lbText + " - " + lbMessage : lbText + lbMessage
+        String cssClass = ((this.pageScope.variables?.actionName == attrs.action) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
 
         String tooltip = attrs.tooltip ?: ""
         Integer counts = attrs.counts ? attrs.counts as Integer : null
@@ -102,7 +102,7 @@ class UiSubNavTagLib {
         if (check) {
             if (attrs.controller) {
                 out << g.link(linkBody,
-                        class: aClass,
+                        class: cssClass,
                         controller: attrs.controller,
                         action: attrs.action,
                         params: attrs.params

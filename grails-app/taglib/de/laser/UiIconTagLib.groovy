@@ -58,7 +58,7 @@ class UiIconTagLib {
 
     def propertyIcon = { attrs, body ->
         def object = attrs.object
-        String aClass = (attrs.class ? ' ' + attrs.class : '')
+        String cssClass = (attrs.class ?: '')
         String defaultToolTippContent = object ? message(code: "${object.getClass().getSimpleName().toLowerCase()}.${attrs.propertyName}.label") : null
         String toolTippContent = attrs.toolTippContent ?: (defaultToolTippContent ?: '')
 
@@ -114,7 +114,7 @@ class UiIconTagLib {
                 break
         }
 
-        out << '<i aria-hidden="true" class="' + aClass + ' icon ' + icon + '"></i> '
+        out << '<i aria-hidden="true" class="' + cssClass + ' icon ' + icon + '"></i> '
 
         if(showToolTipp) {
             out << '</span>'

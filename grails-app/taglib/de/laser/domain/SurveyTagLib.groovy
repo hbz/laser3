@@ -170,28 +170,6 @@ class SurveyTagLib {
         }
     }
 
-    def editButton = { attrs, body ->
-        def surveyResult = attrs.surveyResult
-        def surveyInfo = attrs.surveyInfo
-        def surveyConfig = attrs.surveyInfo
-        def linkBody = "<i class='write icon'></i>"
-        def (text, message) = SwissKnife.getTextAndMessage(attrs)
-        def aClass = attrs.class
-
-        out << "<span class='la-popup-tooltip la-delay'"
-        out << "data-content='${message}'>"
-
-        out << g.link(linkBody,
-                class: aClass,
-                controller: attrs.controller,
-                action: attrs.action,
-                params: attrs.params,
-                id: attrs.id
-        )
-
-        out << "</span>"
-    }
-
     def finishIcon = { attrs, body ->
         def surveyConfig = attrs.surveyConfig
         def participant = attrs.participant
