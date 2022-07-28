@@ -2,7 +2,7 @@ package de.laser.system
 
 import de.laser.utils.SwissKnife
 
-class LaserTagLib {
+class SystemTagLib {
 
     static namespace = 'laser'
 

@@ -2,7 +2,7 @@ package de.laser
 
 import de.laser.utils.SwissKnife
 
-class UiAjaxTagLib {
+class AjaxTagLib {
 
     static namespace = 'ui'
 

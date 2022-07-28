@@ -1,11 +1,8 @@
 package de.laser
 
-
 import de.laser.utils.SwissKnife
 
-// Semantic UI
-
-class UiDropdownTagLib {
+class DropdownTagLib {
 
     static namespace = 'ui'
 

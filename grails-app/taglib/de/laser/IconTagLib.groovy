@@ -4,7 +4,7 @@ import de.laser.titles.BookInstance
 import de.laser.titles.DatabaseInstance
 import de.laser.titles.JournalInstance
 
-class UiIconTagLib {
+class IconTagLib {
 
     static namespace = 'ui'
 

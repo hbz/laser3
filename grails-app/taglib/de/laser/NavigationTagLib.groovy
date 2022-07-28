@@ -1,11 +1,13 @@
 package de.laser
 
+import de.laser.AccessService
+import de.laser.ContextService
 import de.laser.utils.SwissKnife
 import de.laser.storage.BeanStore
 import org.springframework.context.MessageSource
 import org.springframework.web.servlet.support.RequestContextUtils
 
-class UiNavigationTagLib {
+class NavigationTagLib {
 
     AccessService accessService
     ContextService contextService

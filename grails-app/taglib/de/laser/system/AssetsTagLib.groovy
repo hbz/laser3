@@ -6,7 +6,7 @@ import grails.util.Environment
 import org.grails.io.support.GrailsResourceUtils
 import org.grails.web.servlet.mvc.GrailsWebRequest
 
-class LaserAssetsTagLib {
+class AssetsTagLib {
 
     static namespace = 'laser'
 
