@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4196    28.07.2022  dev     3.0         Andreas Feature     Entfernen des HTTPBuilders
+
 4345    25.07.2022  rc-2.3  2.3.3       Andreas Bug         Kontrolle und Anpassung der Titelabfragen vorgenommen
 
 4343    25.07.2022  rc-2.3  2.3.3       Andreas Bug         diverse Bugs bei der Änderungsanzeige behoben
