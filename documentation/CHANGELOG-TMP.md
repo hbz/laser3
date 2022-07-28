@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      28.07.2022  rc-2.3  2.3.3       Andreas Feature     Ausblenden des Statistikreiters bei fehlenden Daten
+
 4374    26.07.2022  rc-2.3  2.3.3       Andreas Bug         Anpassung der ES-Abfrage nach Paketen in der we:kb
 
 4345    25.07.2022  rc-2.3  2.3.3       Andreas Bug         Kontrolle und Anpassung der Titelabfragen vorgenommen
