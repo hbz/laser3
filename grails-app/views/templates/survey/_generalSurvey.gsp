@@ -396,8 +396,7 @@
 <g:if test="${surveyResults}">
     <ui:form>
         <h3 class="ui header"><g:message code="surveyConfigsInfo.properties"/>
-        <ui:totalNumber
-                total="${surveyResults.size()}"/>
+        <ui:totalNumber total="${surveyResults.size()}"/>
         </h3>
 
         <table class="ui celled sortable table la-js-responsive-table la-table">

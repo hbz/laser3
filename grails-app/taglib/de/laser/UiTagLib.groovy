@@ -682,16 +682,17 @@ class UiTagLib {
     }
 
     def anualRings = { attrs, body ->
-        def object = attrs.object
 
+        String ddf_notime = message(code: 'default.date.format.notime')
+
+        def object = attrs.object
         def prev = attrs.navPrev
         def next = attrs.navNext
-        def status = object.status?.value
-        String color
-        String tooltip
-        String startDate
-        String endDate
-        String dash
+        String color = ''
+        String tooltip = message(code: 'subscription.details.statusNotSet')
+        String startDate = ''
+        String endDate = ''
+        String dash = ''
 
         String prevStartDate
         String prevEndDate
@@ -709,20 +710,19 @@ class UiTagLib {
                 default: color = 'la-status-else'
                     break
             }
-        } else {
-            tooltip = message(code: 'subscription.details.statusNotSet')
         }
-        out << "<div class='ui large label la-annual-rings'>"
+        out << '<div class="ui large label la-annual-rings">'
+
         if (object.startDate) {
-            startDate = g.formatDate(date: object.startDate, format: message(code: 'default.date.format.notime'))
+            startDate = g.formatDate(date: object.startDate, format: ddf_notime)
         }
         if (object.endDate) {
             dash = '–'
-            endDate = g.formatDate(date: object.endDate, format: message(code: 'default.date.format.notime'))
+            endDate = g.formatDate(date: object.endDate, format: ddf_notime)
         }
         if (prev) {
-            if (prev?.size() == 1) {
-                prev?.each { p ->
+            if (prev.size() == 1) {
+                prev.each { p ->
                     if (attrs.mapping) {
                         out << g.link("<i class='arrow left icon'></i>", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: p.id], mapping: attrs.mapping)
 
@@ -732,17 +732,14 @@ class UiTagLib {
                 }
             } else {
 
-                out << "<div class='ui right pointing dropdown'>" +
-                        "<i class='arrow left icon'></i>" +
-                        "<div class='menu'>"
-                prev?.each { p ->
+                out << '<div class="ui right pointing dropdown"> <i class="arrow left icon"></i> <div class="menu">'
 
-
+                prev.each { p ->
                     if (p.startDate) {
-                        prevStartDate = g.formatDate(date: p.startDate, format: message(code: 'default.date.format.notime'))
+                        prevStartDate = g.formatDate(date: p.startDate, format: ddf_notime)
                     }
                     if (p.endDate) {
-                        prevEndDate = g.formatDate(date: p.endDate, format: message(code: 'default.date.format.notime'))
+                        prevEndDate = g.formatDate(date: p.endDate, format: ddf_notime)
                     }
                     if (attrs.mapping) {
                         out << g.link("<strong>${p instanceof License ? p.reference : p.name}:</strong> " + "${prevStartDate}" + "${dash}" + "${prevEndDate}", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: p.id], mapping: attrs.mapping)
@@ -750,26 +747,20 @@ class UiTagLib {
                         out << g.link("<strong>${p instanceof License ? p.reference : p.name}:</strong> " + "${prevStartDate}" + "${dash}" + "${prevEndDate}", controller: attrs.controller, action: attrs.action, class: "item", id: p.id)
                     }
                 }
-                out << "</div>" +
-                        "</div>"
+                out << '</div> </div>'
             }
         } else {
             out << '<i aria-hidden="true" class="arrow left icon disabled"></i>'
         }
-        out << "<span class='la-annual-rings-text'>"
-        out << startDate
-        out << dash
-        out << endDate
-        out << "</span>"
+        out << '<span class="la-annual-rings-text">' + startDate + dash + endDate + '</span>'
 
         out << "<a class='ui ${color} circular tiny label la-popup-tooltip la-delay'  data-variation='tiny' data-content='Status: ${tooltip}'>"
         out << '       &nbsp;'
         out << '</a>'
 
         if (next) {
-
-            if (next?.size() == 1) {
-                next?.each { n ->
+            if (next.size() == 1) {
+                next.each { n ->
                     if (attrs.mapping) {
                         out << g.link("<i class='arrow right icon'></i>", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: n.id], mapping: attrs.mapping)
 
@@ -778,16 +769,14 @@ class UiTagLib {
                     }
                 }
             } else {
-                out << "<div class='ui left pointing dropdown'>" +
-                        "<i class='arrow right icon'></i>" +
-                        "<div class='menu'>"
-                next?.each { n ->
+                out << '<div class="ui left pointing dropdown"> <i class="arrow right icon"></i> <div class="menu">'
 
+                next.each { n ->
                     if (n.startDate) {
-                        nextStartDate = g.formatDate(date: n.startDate, format: message(code: 'default.date.format.notime'))
+                        nextStartDate = g.formatDate(date: n.startDate, format: ddf_notime)
                     }
                     if (n.endDate) {
-                        nextEndDate = g.formatDate(date: n.endDate, format: message(code: 'default.date.format.notime'))
+                        nextEndDate = g.formatDate(date: n.endDate, format: ddf_notime)
                     }
                     if (attrs.mapping) {
                         out << g.link("<strong>${n instanceof License ? n.reference : n.name}:</strong> " + "${nextStartDate}" + "${dash}" + "${nextEndDate}", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: n.id], mapping: attrs.mapping)
@@ -795,8 +784,7 @@ class UiTagLib {
                         out << g.link("<strong>${n instanceof License ? n.reference : n.name}:</strong> " + "${nextStartDate}" + "${dash}" + "${nextEndDate}", controller: attrs.controller, action: attrs.action, class: "item", id: n.id)
                     }
                 }
-                out << "</div>" +
-                        "</div>"
+                out << '</div> </div>'
             }
         } else {
             out << '<i aria-hidden="true" class="arrow right icon disabled"></i>'
@@ -805,22 +793,22 @@ class UiTagLib {
     }
 
     def anualRingsModern = { attrs, body ->
-        def object = attrs.object
+        String ddf_notime = message(code: 'default.date.format.notime')
 
+        def object = attrs.object
         def prev = attrs.navPrev
         def next = attrs.navNext
-        def status = object.status?.value
-        def color
-        def tooltip
-        def startDate
-        def endDate
-        def dash
+        String color = ''
+        String tooltip = message(code: 'subscription.details.statusNotSet')
+        String startDate = ''
+        String endDate = ''
+        String dash = ''
 
-        def prevStartDate
-        def prevEndDate
+        String prevStartDate
+        String prevEndDate
 
-        def nextStartDate
-        def nextEndDate
+        String nextStartDate
+        String nextEndDate
 
         if (object.status) {
             tooltip = object.status.getI10n('value')
@@ -832,20 +820,19 @@ class UiTagLib {
                 default: color = 'la-status-else'
                     break
             }
-        } else {
-            tooltip = message(code: 'subscription.details.statusNotSet')
         }
-        out << "<div class='ui large label la-annual-rings-modern'>"
+        out << '<div class="ui large label la-annual-rings-modern">'
+
         if (object.startDate) {
-            startDate = g.formatDate(date: object.startDate, format: message(code: 'default.date.format.notime'))
+            startDate = g.formatDate(date: object.startDate, format: ddf_notime)
         }
         if (object.endDate) {
             dash = '–'
-            endDate = g.formatDate(date: object.endDate, format: message(code: 'default.date.format.notime'))
+            endDate = g.formatDate(date: object.endDate, format: ddf_notime)
         }
         if (prev) {
-            if (prev?.size() == 1) {
-                prev?.each { p ->
+            if (prev.size() == 1) {
+                prev.each { p ->
                     if (attrs.mapping) {
                         out << g.link("<i class='arrow left icon'></i>", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: p.id], mapping: attrs.mapping)
 
@@ -854,18 +841,14 @@ class UiTagLib {
                     }
                 }
             } else {
+                out << '<div class="ui right pointing dropdown"> <i class="arrow left icon"></i> <div class="menu">'
 
-                out << "<div class='ui right pointing dropdown'>" +
-                        "<i class='arrow left icon'></i>" +
-                        "<div class='menu'>"
-                prev?.each { p ->
-
-
+                prev.each { p ->
                     if (p.startDate) {
-                        prevStartDate = g.formatDate(date: p.startDate, format: message(code: 'default.date.format.notime'))
+                        prevStartDate = g.formatDate(date: p.startDate, format: ddf_notime)
                     }
                     if (p.endDate) {
-                        prevEndDate = g.formatDate(date: p.endDate, format: message(code: 'default.date.format.notime'))
+                        prevEndDate = g.formatDate(date: p.endDate, format: ddf_notime)
                     }
                     if (attrs.mapping) {
                         out << g.link("<strong>${p instanceof License ? p.reference : p.name}:</strong> " + "${prevStartDate}" + "${dash}" + "${prevEndDate}", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: p.id], mapping: attrs.mapping)
@@ -873,26 +856,20 @@ class UiTagLib {
                         out << g.link("<strong>${p instanceof License ? p.reference : p.name}:</strong> " + "${prevStartDate}" + "${dash}" + "${prevEndDate}", controller: attrs.controller, action: attrs.action, class: "item", id: p.id)
                     }
                 }
-                out << "</div>" +
-                        "</div>"
+                out << '</div> </div>'
             }
         } else {
             out << '<i aria-hidden="true" class="arrow left icon disabled"></i>'
         }
-        out << "<span class='la-annual-rings-text'>"
-        out << startDate
-        out << dash
-        out << endDate
-        out << "</span>"
+        out << '<span class="la-annual-rings-text">' + startDate + dash + endDate + '</span>'
 
         out << "<a class='ui ${color} circular tiny label la-popup-tooltip la-delay'  data-variation='tiny' data-content='Status: ${tooltip}'>"
         out << '       &nbsp;'
         out << '</a>'
 
         if (next) {
-
-            if (next?.size() == 1) {
-                next?.each { n ->
+            if (next.size() == 1) {
+                next.each { n ->
                     if (attrs.mapping) {
                         out << g.link("<i class='arrow right icon'></i>", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: n.id], mapping: attrs.mapping)
 
@@ -901,16 +878,14 @@ class UiTagLib {
                     }
                 }
             } else {
-                out << "<div class='ui left pointing dropdown'>" +
-                        "<i class='arrow right icon'></i>" +
-                        "<div class='menu'>"
-                next?.each { n ->
+                out << '<div class="ui left pointing dropdown"> <i class="arrow right icon"></i> <div class="menu">'
 
+                next.each { n ->
                     if (n.startDate) {
-                        nextStartDate = g.formatDate(date: n.startDate, format: message(code: 'default.date.format.notime'))
+                        nextStartDate = g.formatDate(date: n.startDate, format: ddf_notime)
                     }
                     if (n.endDate) {
-                        nextEndDate = g.formatDate(date: n.endDate, format: message(code: 'default.date.format.notime'))
+                        nextEndDate = g.formatDate(date: n.endDate, format: ddf_notime)
                     }
                     if (attrs.mapping) {
                         out << g.link("<strong>${n instanceof License ? n.reference : n.name}:</strong> " + "${nextStartDate}" + "${dash}" + "${nextEndDate}", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: n.id], mapping: attrs.mapping)
@@ -918,8 +893,7 @@ class UiTagLib {
                         out << g.link("<strong>${n instanceof License ? n.reference : n.name}:</strong> " + "${nextStartDate}" + "${dash}" + "${nextEndDate}", controller: attrs.controller, action: attrs.action, class: "item", id: n.id)
                     }
                 }
-                out << "</div>" +
-                        "</div>"
+                out << '</div> </div>'
             }
         } else {
             out << '<i aria-hidden="true" class="arrow right icon disabled"></i>'
@@ -931,20 +905,16 @@ class UiTagLib {
         def total = attrs.total ?: 0
         def newClass = attrs.class ?: ''
 
-        out << '<span class="ui circular ' + newClass + ' label">'
-        out << total
-        out << '</span>'
+        out << '<span class="ui circular ' + newClass + ' label">' + total + '</span>'
     }
 
     def dateDevider = { attrs, body ->
-        out << "<span class='ui grey horizontal divider la-date-devider'>"
-        out << "        ${message(code:'default.to')}"
-        out << "</span>"
+
+        out << '<span class="ui grey horizontal divider la-date-devider">' + message(code:'default.to') + '</span>'
     }
 
     def tabs = { attrs, body ->
-        def newClass = attrs.class ?: ''
-        out << '<div class="ui top attached tabular ' + newClass + ' stackable menu">'
+        out << '<div class="ui top attached tabular stackable menu">'
         out << body()
         out << '</div>'
     }
@@ -968,20 +938,6 @@ class UiTagLib {
             )
         } else {
             out << linkBody
-        }
-    }
-
-    def gokbValue = { attrs, body ->
-
-        if(attrs.gokbId && attrs.field) {
-
-            ApiSource api = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-            String gokbId = "${attrs.gokbId}"
-            Map record = gokbService.getPackageMapWithUUID(api, gokbId)
-
-            if(record && record[attrs.field]){
-                out << ((record[attrs.field] instanceof List) ? record[attrs.field].join(', ') : record[attrs.field])
-            }
         }
     }
 

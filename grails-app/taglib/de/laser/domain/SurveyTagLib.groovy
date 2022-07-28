@@ -17,12 +17,12 @@ class SurveyTagLib {
     def status = { attrs, body ->
         def object = attrs.object
 
-        def statusType = object.status?.owner?.desc
-        def color
-        def tooltip
-        def startDate
-        def endDate
-        def dash
+        String statusType = object.status?.owner?.desc
+        String color = ''
+        String tooltip = message(code: 'subscription.details.statusNotSet')
+        String startDate = ''
+        String endDate = ''
+        String dash = ''
 
         if (object.status) {
             tooltip = object.status.getI10n('value')
@@ -43,10 +43,9 @@ class SurveyTagLib {
                 default: color = 'la-status-else'
                     break
             }
-        } else {
-            tooltip = message(code: 'subscription.details.statusNotSet')
         }
-        out << "<div class='ui large label la-annual-rings'>"
+        out << '<div class="ui large label la-annual-rings">'
+
         if (object.startDate) {
             startDate = g.formatDate(date: object.startDate, format: message(code: 'default.date.format.notime'))
         }
@@ -55,11 +54,7 @@ class SurveyTagLib {
             endDate = g.formatDate(date: object.endDate, format: message(code: 'default.date.format.notime'))
         }
         out << '<i aria-hidden="true" class="icon"></i>'
-        out << "<span class='la-annual-rings-text'>"
-        out << startDate
-        out << dash
-        out << endDate
-        out << "</span>"
+        out << '<span class="la-annual-rings-text">' + startDate + dash + endDate + '</span>'
 
         out << "<a class='ui ${color} circular tiny label la-popup-tooltip la-delay'  data-variation='tiny' data-content='Status: ${tooltip}'>"
         out << '       &nbsp;'
@@ -69,9 +64,9 @@ class SurveyTagLib {
         out << '</div>'
 
         if(actionName != 'show'){
-            out << "<div class='ui label survey-${object.type.value}'>"
+            out << '<div class="ui label survey-' + object.type.value + '">'
             out << object.type.getI10n('value')
-            out << "</div>"
+            out << '</div>'
 
 /*            if(object.isMandatory) {
                 out << "<span class='la-long-tooltip la-popup-tooltip la-delay' data-position='right center' data-content='${message(code: "surveyInfo.isMandatory.label.info2")}'>"
@@ -86,14 +81,14 @@ class SurveyTagLib {
         def object = attrs.object
         SurveyConfig surveyConfig = attrs.surveyConfig
 
-        def statusType = object.status?.owner?.desc
-        def color
-        def tooltip
-        def startDate
-        def endDate
-        def dash
-        def prev
-        def next
+        String statusType = object.status?.owner?.desc
+        String color = ''
+        String tooltip = message(code: 'subscription.details.statusNotSet')
+        String startDate = ''
+        String endDate = ''
+        String dash = ''
+        String prev
+        String next
 
         if(surveyConfig.subSurveyUseForTransfer){
             LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(surveyConfig.subscription)
@@ -120,10 +115,9 @@ class SurveyTagLib {
                 default: color = 'la-status-else'
                     break
             }
-        } else {
-            tooltip = message(code: 'subscription.details.statusNotSet')
         }
         out << "<div class='ui large label la-annual-rings'>"
+
         if (object.startDate) {
             startDate = g.formatDate(date: object.startDate, format: message(code: 'default.date.format.notime'))
         }
@@ -133,23 +127,19 @@ class SurveyTagLib {
         }
 
         if (prev) {
-            out << g.link("<i class='arrow left icon'></i>", controller: attrs.controller, action: attrs.action, class: "item", id: prev.surveyInfo.id, params: [surveyConfigID: prev.id])
+            out << g.link('<i class="arrow left icon"></i>', controller: attrs.controller, action: attrs.action, class: "item", id: prev.surveyInfo.id, params: [surveyConfigID: prev.id])
         } else {
             out << '<i aria-hidden="true" class="arrow left icon disabled"></i>'
         }
 
-        out << "<span class='la-annual-rings-text'>"
-        out << startDate
-        out << dash
-        out << endDate
-        out << "</span>"
+        out << '<span class="la-annual-rings-text">' + startDate + dash + endDate + '</span>'
 
         out << "<a class='ui ${color} circular tiny label la-popup-tooltip la-delay'  data-variation='tiny' data-content='Status: ${tooltip}'>"
         out << '       &nbsp;'
         out << '</a>'
 
         if (next) {
-            out << g.link("<i class='arrow right icon'></i>", controller: attrs.controller, action: attrs.action, class: "item", id: next.surveyInfo.id, params: [surveyConfigID: next.id])
+            out << g.link('<i class="arrow right icon"></i>', controller: attrs.controller, action: attrs.action, class: "item", id: next.surveyInfo.id, params: [surveyConfigID: next.id])
         } else {
             out << '<i aria-hidden="true" class="arrow right icon disabled"></i>'
         }
@@ -157,9 +147,9 @@ class SurveyTagLib {
         out << '</div>'
 
         if(actionName != 'show'){
-            out << "<div class='ui label survey-${object.type.value}'>"
+            out << '<div class="ui label survey-' + object.type.value + '">'
             out << object.type.getI10n('value')
-            out << "</div>"
+            out << '</div>'
 
 /*            if(object.isMandatory) {
                 out << "<span class='la-long-tooltip la-popup-tooltip la-delay' data-position='right center' data-content='${message(code: "surveyInfo.isMandatory.label.info2")}'>"
@@ -179,23 +169,23 @@ class SurveyTagLib {
 
             if (finishDate) {
                 if (surveyOwnerView) {
-                    out << "<span class='la-long-tooltip la-popup-tooltip la-delay' data-position='top right' data-variation='tiny'"
-                    out << "data-content='${message(code: "surveyResult.finish.info.consortia")}'>"
-                    out << " <i class='check big green icon'></i></span>"
+                    out << '<span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top right" data-variation="tiny"'
+                    out << ' data-content="' + message(code: "surveyResult.finish.info.consortia") + '">'
+                    out <<   ' <i class="check big green icon"></i></span>'
                 } else {
-                    out << "<span class='la-long-tooltip la-popup-tooltip la-delay' data-position='top right' data-variation='tiny'"
-                    out << "data-content='${message(code: "surveyResult.finish.info")}'>"
-                    out << " <i class='check big green icon'></i></span>"
+                    out << '<span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top right" data-variation="tiny"'
+                    out << ' data-content="' + message(code: "surveyResult.finish.info") + '">'
+                    out <<   ' <i class="check big green icon"></i></span>'
                 }
             } else {
                 if (surveyOwnerView) {
-                    out << "<span class='la-long-tooltip la-popup-tooltip la-delay' data-position='top right' data-variation='tiny'"
-                    out << "data-content='${message(code: "surveyResult.noFinish.info.consortia")}'>"
-                    out << " <i class='circle red icon'></i></span>"
+                    out << '<span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top right" data-variation="tiny"'
+                    out << ' data-content="' + message(code: "surveyResult.noFinish.info.consortia") + '">'
+                    out <<   ' <i class="circle red icon"></i></span>'
                 } else {
-                    out << "<span class='la-long-tooltip la-popup-tooltip la-delay' data-position='top right' data-variation='tiny'"
-                    out << "data-content='${message(code: "surveyResult.noFinish.info")}'>"
-                    out << " <i class='circle red icon'></i></span>"
+                    out << '<span class="la-long-tooltip la-popup-tooltip la-delay" data-position="top right" data-variation="tiny"'
+                    out << ' data-content="' + message(code: "surveyResult.noFinish.info") + '">'
+                    out <<   ' <i class="circle red icon"></i></span>'
                 }
             }
     }
