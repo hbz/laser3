@@ -8,6 +8,7 @@ import groovy.xml.slurpersupport.GPathResult
 import io.micronaut.http.client.HttpClient
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpResponse
+import io.micronaut.http.client.HttpClientConfiguration
 import org.grails.web.json.JSONObject
 
 @Slf4j
@@ -66,6 +67,17 @@ class BasicHttpClient {
         try {
             this.url = url.toURL()
             client = HttpClient.create(this.url)
+        }
+        catch(Exception e) {
+            log.error e.getMessage()
+        }
+        this
+    }
+
+    BasicHttpClient(String url, HttpClientConfiguration config) {
+        try {
+            this.url = url.toURL()
+            client = HttpClient.create(this.url, config)
         }
         catch(Exception e) {
             log.error e.getMessage()

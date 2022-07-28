@@ -209,7 +209,9 @@ class UserService {
                 Role role = Role.findByAuthority(rot)
                 if (role) {
                     UserOrg uo = UserOrg.findByUserAndOrgAndFormalRole(user, orgToCheck, role)
-                    check = check || (uo && user.affiliations.contains(uo))
+                    //for users with multiple affiliations, login fails because of LazyInitializationException of the domain collection
+                    List<UserOrg> affiliations = UserOrg.findAllByUser(user)
+                    check = check || (uo && affiliations.contains(uo))
                 }
             }
         }
