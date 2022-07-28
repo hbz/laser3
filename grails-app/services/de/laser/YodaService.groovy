@@ -158,12 +158,12 @@ class YodaService {
             }
         }
         Closure failure = { resp, reader ->
-            log.error("server response: ${resp.statusLine}")
+            log.warn ('Response: ' + resp.getStatus().getCode() + ' - ' + resp.getStatus().getReason())
             if(resp.code() == 404) {
                 result.error = resp.status
             }
             else
-                throw new SyncException("error on request: ${resp.statusLine} : ${reader}")
+                throw new SyncException("error on request: ${resp.getStatus().getCode()} : ${reader}")
         }
         Map<String, Object> queryParams = [componentType: 'TitleInstancePackagePlatform',
                                            max: 10000,

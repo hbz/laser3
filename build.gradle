@@ -20,7 +20,6 @@ buildscript {
 
         // -- dependency resolving issue
 
-        classpath 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.2'
         classpath 'org.quartz-scheduler:quartz:2.3.2'
     }
 }
@@ -111,7 +110,6 @@ dependencies {
     implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.15.2'   // from 7.4.2
 
     implementation 'org.grails.plugins:spring-security-core:5.1.0'          // from 3.2.3
-    implementation 'org.grails.plugins:http-builder-helper:1.1.0'           // 2017
     implementation 'org.grails.plugins:audit-logging:4.0.3'                 // from 3.0.3
     implementation 'org.grails.plugins:database-migration:4.1.0', {         // from 3.0.3
         exclude module: 'spring-boot-cli'
@@ -133,12 +131,9 @@ dependencies {
     implementation 'org.apache.commons:commons-lang3:3.12.0'                // from 3.9
     implementation 'org.apache.poi:poi-ooxml:3.17'                          // from 3.9 : 5.x available
     implementation 'org.codehaus.gpars:gpars:1.2.1'                         // 2014
+    implementation 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.2' // 2014
     implementation 'org.liquibase:liquibase-core:4.11.0'                    // from 3.5.5 : + org.grails.plugins:database-migration
-
-    // -- dependency resolving issue
-
-    implementation 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.2'
-    implementation 'org.quartz-scheduler:quartz:2.3.2'
+    implementation 'org.quartz-scheduler:quartz:2.3.2'                      // 2019
 
     // --------------------------------------------------
 
