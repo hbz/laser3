@@ -24,8 +24,6 @@ import groovy.sql.Sql
 import groovy.xml.slurpersupport.GPathResult
 import groovy.xml.StreamingMarkupBuilder
 import groovyx.gpars.GParsPool
-import groovyx.net.http.RESTClient
-import groovyx.net.http.URIBuilder
 import io.micronaut.http.client.DefaultHttpClientConfiguration
 import io.micronaut.http.client.HttpClientConfiguration
 import org.grails.web.json.JSONArray
@@ -1064,31 +1062,17 @@ class StatsSyncService {
             return availableReportCache[queryParamsHash]
         }
         try {
-            URIBuilder uri = new URIBuilder(ConfigMapper.getStatsApiUrl())
-            String baseUrl = uri.getScheme() + "://" + uri.getHost()
-            String basePath = uri.getPath().endsWith('/') ? uri.getPath() : uri.getPath() + '/'
-            String path = basePath + 'Sushiservice/reports'
-
-            RESTClient v5Endpoint = new RESTClient(baseUrl)
-            def result = v5Endpoint.get(
-                path: path,
-                headers: ["Accept": "application/json"],
-                query: [
-                    apikey      : queryParams.apiKey,
-                    requestor_id: queryParams.requestor.toString(),
-                    customer_id : queryParams.customer,
-                    platform    : queryParams.platform,
-                ])
             List reportList = []
-            result.getData().each {it ->
-                if (it.code) {
-                    errors.add("SUSHI Error for ${queryParams.customer}|${queryParams.requestor}|${queryParams.platform}: ${it.code}-${it.message}\n")
+            BasicHttpClient http = new BasicHttpClient(ConfigMapper.getStatsApiUrl() + "Sushiservice/GetReport?apikey=${queryParams.apiKey}&requestor_id=${queryParams.requestor.toString()}&customer_id=${queryParams.customer}&platform=${queryParams.platform}")
+            Closure success = { resp, reader ->
+                if (resp.Report_ID && resp.Release) {
+                    reportList.add(resp.Report_ID + 'R' + resp.Release)
                 }
-                if (it.Report_ID && it.Release) {
-                    reportList.add(it.Report_ID + 'R' + it.Release)
-                }
-
             }
+            Closure failure = { resp, reader ->
+                errors.add("SUSHI Error for ${queryParams.customer}|${queryParams.requestor}|${queryParams.platform}: ${resp.code()}-${reader}\n")
+            }
+            http.get(BasicHttpClient.ResponseType.JSON, success, failure)
             availableReportCache[queryParamsHash] = reportList
         } catch (Exception e) {
             String message = "Error getting available Reports from NatStat API"
