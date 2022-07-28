@@ -3,6 +3,7 @@ package de.laser
 
 import de.laser.exceptions.SyncException
 import de.laser.config.ConfigMapper
+import de.laser.http.BasicHttpClient
 import de.laser.remote.GlobalRecordSource
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
@@ -12,9 +13,6 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import groovy.xml.slurpersupport.GPathResult
-import groovyx.net.http.ContentType
-import groovyx.net.http.HTTPBuilder
-import groovyx.net.http.Method
 
 /**
  * This service handles bulk and cleanup operations, testing areas and debug information
@@ -148,32 +146,29 @@ class YodaService {
         Map<String, Object> result = [:]
         Map<String, String> wekbUuids = [:]
         Set<Map> titles = []
-        HTTPBuilder http = new HTTPBuilder(grs.uri+'/find') //we presume that the count will never get beyond 10000
-        http.request(Method.POST, ContentType.JSON) { req ->
-            body = [componentType: 'TitleInstancePackagePlatform',
-                    max: 10000,
-                    status: ['Removed', GlobalSourceSyncService.PERMANENTLY_DELETED]]
-            requestContentType = ContentType.URLENC
-            response.success = { resp, json ->
-                if(resp.status == 200) {
-                    json.records.each{ Map record ->
-                        wekbUuids.put(record.uuid, record.status)
-                    }
-                }
-                else {
-                    throw new SyncException("erroneous response")
+        BasicHttpClient http = new BasicHttpClient(grs.uri+'/find') //we presume that the count will never get beyond 10000
+        Closure success = { resp, json ->
+            if(resp.code() == 200) {
+                json.records.each{ Map record ->
+                    wekbUuids.put(record.uuid, record.status)
                 }
             }
-            response.failure = { resp, reader ->
-                log.error("server response: ${resp.statusLine}")
-                if(resp.status == 404) {
-                    requestResult.error = resp.status
-                }
-                else
-                    throw new SyncException("error on request: ${resp.statusLine} : ${reader}")
+            else {
+                throw new SyncException("erroneous response")
             }
         }
-        http.shutdown()
+        Closure failure = { resp, reader ->
+            log.error("server response: ${resp.statusLine}")
+            if(resp.code() == 404) {
+                result.error = resp.status
+            }
+            else
+                throw new SyncException("error on request: ${resp.statusLine} : ${reader}")
+        }
+        Map<String, Object> queryParams = [componentType: 'TitleInstancePackagePlatform',
+                                           max: 10000,
+                                           status: ['Removed', GlobalSourceSyncService.PERMANENTLY_DELETED]]
+        http.post(BasicHttpClient.ResponseType.JSON, BasicHttpClient.PostType.URLENC, queryParams, success, failure)
         if(wekbUuids) {
             wekbUuids.each { String key, String status ->
                 TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbId(key)
