@@ -26,10 +26,14 @@ import groovy.xml.StreamingMarkupBuilder
 import groovyx.gpars.GParsPool
 import groovyx.net.http.RESTClient
 import groovyx.net.http.URIBuilder
+import io.micronaut.http.client.DefaultHttpClientConfiguration
+import io.micronaut.http.client.HttpClientConfiguration
+import org.grails.web.json.JSONArray
 
 import java.security.MessageDigest
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
+import java.time.Duration
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.ZoneId
@@ -934,15 +938,18 @@ class StatsSyncService {
         try {
             Closure success = { resp, json ->
                 if(resp.code() == 200) {
-                    if(json instanceof ArrayList) {
+                    if(json instanceof JSONArray) {
                         result.list = json
                     }
-                    else if(!json.containsKey("Exception") && !requestList) {
+                    else if(json != null && !json.containsKey("Exception") && !requestList) {
                         result.header = json["Report_Header"]
                         result.items = json["Report_Items"]
                     }
-                    else {
+                    else if(json != null) {
                         result.error = json["Exception"]["Message"]
+                    }
+                    else {
+                        result.error = "invalid JSON returned, retry call"
                     }
                 }
                 else if(json.containsKey("Report_Header")) {
@@ -958,7 +965,9 @@ class StatsSyncService {
                 else
                     result.error = "server response: ${resp.status()} - ${reader}"
             }
-            BasicHttpClient http = new BasicHttpClient(url)
+            HttpClientConfiguration config = new DefaultHttpClientConfiguration()
+            config.readTimeout = Duration.ofMinutes(1)
+            BasicHttpClient http = new BasicHttpClient(url, config)
             http.get(BasicHttpClient.ResponseType.JSON, success, failure)
         }
         catch (Exception e) {
@@ -978,7 +987,9 @@ class StatsSyncService {
     def fetchXMLData(String url, requestBody) {
         def result = null
         try  {
-            BasicHttpClient http = new BasicHttpClient(url)
+            HttpClientConfiguration config = new DefaultHttpClientConfiguration()
+            config.readTimeout = Duration.ofMinutes(1)
+            BasicHttpClient http = new BasicHttpClient(url, config)
             Closure success = { resp, GPathResult xml ->
                 if(resp.code() == 200) {
                     result = xml
