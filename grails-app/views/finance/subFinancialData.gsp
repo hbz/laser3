@@ -83,7 +83,7 @@
             }
         %>
 
-        <h1 class="ui icon header la-noMargin-top">
+        <h1 class="ui icon header la-clear-before la-noMargin-top">
             <semui:headerTitleIcon type="Subscription"/>
             <g:render template="/subscription/iconSubscriptionIsChild"/>
 

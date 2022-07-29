@@ -25365,6 +25365,11 @@ body[class*="platform"] .ui.icon.header .circular.icon.la-object:before {
   text-align: left;
   position: relative;
 }
+
+.ui.icon.header > .icons,
+.ui.icon.header > i.icon {
+  display: inline-block;
+}
 /*!
  * # Fomantic-UI 2.8.8 - Icon
  * http://github.com/fomantic/Fomantic-UI/
