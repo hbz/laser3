@@ -18,6 +18,9 @@ import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
 import de.laser.utils.SwissKnife
+import de.laser.stats.Counter4Report
+import de.laser.stats.Counter5Report
+import de.laser.titles.TitleInstance
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.sql.BatchingPreparedStatementWrapper
@@ -1787,6 +1790,14 @@ class SubscriptionService {
     boolean showConsortiaFunctions(Org contextOrg, Subscription subscription) {
         return ((subscription.getConsortia()?.id == contextOrg.id) && subscription._getCalculatedType() in
                 [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE])
+    }
+
+    boolean areStatsAvailable(Collection<Platform> subscribedPlatforms, Collection<Long> refSubs) {
+        Map<String, Object> checkParams = [max: 1, plat: subscribedPlatforms, refSubs: refSubs]
+        int result = Counter4Report.executeQuery('select c4r.id from Counter4Report c4r join c4r.title tipp where c4r.platform in (:plat) and tipp.pkg in (select sp.pkg from SubscriptionPackage sp where sp.subscription.id in (:refSubs))', checkParams).size()
+        if(result == 0)
+            result = Counter5Report.executeQuery('select c5r.id from Counter5Report c5r join c5r.title tipp where c5r.platform in (:plat) and tipp.pkg in (select sp.pkg from SubscriptionPackage sp where sp.subscription.id in (:refSubs))', checkParams).size()
+        result > 0
     }
 
     /**

@@ -7,7 +7,13 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4378    29.07.2022  rc-2.3  2.3.3       Andreas Bug         Eine Umfrage konnte nur einmal verknüpft werden
+
 4196    28.07.2022  dev     3.0         Andreas Feature     Entfernen des HTTPBuilders
+
+--      28.07.2022  rc-2.3  2.3.3       Andreas Feature     Ausblenden des Statistikreiters bei fehlenden Daten
+
+4374    26.07.2022  rc-2.3  2.3.3       Andreas Bug         Anpassung der ES-Abfrage nach Paketen in der we:kb
 
 4345    25.07.2022  rc-2.3  2.3.3       Andreas Bug         Kontrolle und Anpassung der Titelabfragen vorgenommen
 
@@ -237,7 +243,7 @@
 
 3880    20.04.2022  dev     2.3         Moe     Feature     Reihenfolge (Pflicht)Merkmale in allen Umfragen
 
-4195    19.04.2022  dev     2.3         Moe      Bug         Umfrage erstellen: Bearbeitungsoption für Dokumente
+4195    19.04.2022  dev     2.3         Moe     Bug         Umfrage erstellen: Bearbeitungsoption für Dokumente
 
 --      14.04.2022  rc-2.2  2.2.13      Andreas Bug         Bugfix für Statistik-Sync
 
