@@ -138,6 +138,7 @@ grails:
         auditLog:
             auditDomainClassName: 'org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent'
             defaultActor: 'SYS'
+            disabled: true  # events are triggered, but not persisted
         databasemigration:
             updateOnStart:  true
             dbDocController:
