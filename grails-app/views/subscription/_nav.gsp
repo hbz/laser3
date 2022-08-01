@@ -70,9 +70,5 @@
 
     <%--
     <ui:subNavItem controller="subscription" action="changes" params="${[id:params.id]}" message="license.nav.todo_history" />
-
-    <sec:ifAnyGranted roles="ROLE_ADMIN">
-        <ui:subNavItem controller="subscription" action="history" params="${[id:params.id]}" class="la-role-admin" message="license.nav.edit_history" />
-    </sec:ifAnyGranted>
     --%>
 </ui:subNav>

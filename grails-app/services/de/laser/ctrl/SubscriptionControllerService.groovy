@@ -40,7 +40,6 @@ import groovy.sql.Sql
 import groovy.time.TimeCategory
 import org.apache.commons.lang.StringEscapeUtils
 import org.apache.commons.lang3.RandomStringUtils
-import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.hibernate.Session
 import org.hibernate.SessionFactory
@@ -317,28 +316,6 @@ class SubscriptionControllerService {
         else {
             int offset = params.offset ? Integer.parseInt(params.offset) : 0
             result.putAll(taskService.getTasks(offset, (User) result.user, (Org) result.institution, result.subscription))
-            [result:result,status:STATUS_OK]
-        }
-    }
-
-    /**
-     * Reveals the inheritance history for the given subscription
-     * @param controller unused
-     * @param params the request parameter map
-     * @return a list of audit log events for the given subscription
-     */
-    Map<String,Object> history(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
-        if (!result) {
-            [result:null,status:STATUS_ERROR]
-        }
-        else {
-            SwissKnife.setPaginationParams(result, params, (User) result.user)
-            Map<String, Object> qry_params = [cname: result.subscription.class.name, poid: result.subscription.id.toString()] //persistentObjectId is of type String
-            Set<AuditLogEvent> historyLines = AuditLogEvent.executeQuery("select e from AuditLogEvent as e where className = :cname and persistedObjectId = :poid order by id desc", qry_params)
-            result.historyLinesTotal = historyLines.size()
-            result.historyLines = historyLines.drop(result.offset).take(result.max)
-
             [result:result,status:STATUS_OK]
         }
     }

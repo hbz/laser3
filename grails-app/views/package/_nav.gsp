@@ -18,8 +18,4 @@
 
     <ui:subNavItem controller="package" action="notes" params="${[id:params.id]}" message="package.show.nav.notes" />--}%
 
-    <sec:ifAnyGranted roles="ROLE_ADMIN">
-        <ui:subNavItem controller="package" action="history" params="${[id:params.id]}" class="la-role-admin" message="package.show.nav.history" />
-    </sec:ifAnyGranted>
-
 </ui:subNav>

@@ -91,24 +91,6 @@ class SubscriptionController {
             }
     }
 
-    /**
-     * Call to list the inheritance course for the given subscription
-     * @return a list of audit log events related to this subscription
-     */
-    @DebugInfo(test = 'hasAffiliation("INST_USER")', ctrlService = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
-    @Check404()
-    def history() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.history(this,params)
-        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            if(!ctrlResult.result) {
-                response.sendError(401)
-                return
-            }
-        }
-        else ctrlResult.result
-    }
-
     @Deprecated
     @DebugInfo(test = 'hasAffiliation("INST_USER")', ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })

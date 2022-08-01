@@ -19,7 +19,6 @@ import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinitionGroup
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.http.HttpStatus
-import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.codehaus.groovy.runtime.InvokerHelper
 
@@ -615,48 +614,6 @@ class LicenseController {
         }
         result
     }
-
-    @Deprecated
-    @DebugInfo(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
-    @Check404()
-    def history() {
-        Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW)
-        if (!result) {
-            response.sendError(401); return
-        }
-
-        String subQuery = 'select cast(lp.id as string) from LicenseProperty as lp where lp.owner = :owner'
-        List subQueryResult = LicenseProperty.executeQuery(subQuery, [owner: result.license])
-
-        String base_query = "select e from AuditLogEvent as e where ( (className=:licClass and persistedObjectId = cast(:licId as string))"
-        Map<String, Object> query_params = [licClass:result.license.class.name, licId:"${result.license.id}"]
-
-        if (subQueryResult) {
-            base_query += ' or (className = :prop and persistedObjectId in (:subQueryResult)) ) order by e.dateCreated desc'
-            query_params.'prop' = LicenseProperty.class.name
-            query_params.'subQueryResult' = subQueryResult
-        }
-        else {
-            base_query += ') order by e.dateCreated desc'
-        }
-
-        result.historyLines = AuditLogEvent.executeQuery(
-                base_query, query_params, [max:result.max, offset:result.offset]
-        )
-
-    String propertyNameHql = "select pd.name from LicenseProperty as licP, PropertyDefinition as pd where licP.id = :lpid and licP.type = pd"
-    
-    result.historyLines?.each{
-      if(it.className == query_params.prop ){
-        def propertyName = LicenseProperty.executeQuery(propertyNameHql, [lpid: it.persistedObjectId.toLong()])[0]
-        it.propertyName = propertyName
-      }
-    }
-
-    result.historyLinesTotal = AuditLogEvent.executeQuery(base_query, query_params).size()
-    result
-  }
 
     /**
      * Should enumerate the changes done on the given license, function currently undetermined

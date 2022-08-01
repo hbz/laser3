@@ -9,11 +9,9 @@ import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.SwissKnife
 import grails.converters.JSON
-import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
-import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 
@@ -31,7 +29,6 @@ class PackageController {
     AccessService accessService
     AddressbookService addressbookService
     ContextService contextService
-    DocstoreService docstoreService
     EscapeService escapeService
     ExecutorService executorService
     ExecutorWrapperService executorWrapperService
@@ -821,108 +818,6 @@ class PackageController {
         }
 
         redirect(url: request.getHeader("referer"))
-    }
-
-    @Deprecated
-    @Secured(['ROLE_ADMIN'])
-    @Transactional
-    @Check404()
-    def history() {
-        Map<String, Object> result = [:]
-        boolean exporting = params.format == 'csv'
-
-        if (exporting) {
-            result.max = 9999999
-            params.max = 9999999
-            result.offset = 0
-        } else {
-            SwissKnife.setPaginationParams(result, params, contextService.getUser())
-            params.max = result.max
-        }
-
-        result.packageInstance = Package.get(params.id)
-        result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
-
-        def limits = (!params.format || params.format.equals("html")) ? [max: result.max, offset: result.offset] : [offset: 0]
-
-        // postgresql migration
-        String subQuery = 'select cast(id as string) from TitleInstancePackagePlatform as tipp where tipp.pkg = cast(:pkgid as int)'
-        List subQueryResult = TitleInstancePackagePlatform.executeQuery(subQuery, [pkgid: params.id])
-
-        //def base_query = 'from org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent as e where ( e.className = :pkgcls and e.persistedObjectId = cast(:pkgid as string)) or ( e.className = :tippcls and e.persistedObjectId in ( select id from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkgid ) )'
-        //def query_params = [ pkgcls: Package.class.name, tippcls: TitleInstancePackagePlatform.class.name, pkgid: params.id, subQueryResult: subQueryResult ]
-
-        String base_query = 'from org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent as e where ( e.className = :pkgcls and e.persistedObjectId = cast(:pkgid as string))'
-        def query_params = [pkgcls: Package.class.name, pkgid: params.id]
-
-        // postgresql migration
-        if (subQueryResult) {
-            base_query += ' or ( e.className = :tippcls and e.persistedObjectId in (:subQueryResult) )'
-            query_params.'tippcls' = TitleInstancePackagePlatform.class.name
-            query_params.'subQueryResult' = subQueryResult
-        }
-
-
-        log.debug("base_query: ${base_query}, params:${query_params}, limits:${limits}");
-
-        result.historyLines = AuditLogEvent.executeQuery('select e ' + base_query + ' order by e.lastUpdated desc', query_params, limits);
-        result.num_hl = AuditLogEvent.executeQuery('select e.id ' + base_query, query_params).size()
-        result.formattedHistoryLines = []
-
-
-        result.historyLines.each { hl ->
-
-            Map line_to_add = [:]
-            def linetype = null
-
-            switch (hl.className) {
-                case Package.class.name:
-                    Package package_object = Package.get(hl.persistedObjectId);
-                    line_to_add = [link        : createLink(controller: 'package', action: 'show', id: hl.persistedObjectId),
-                                   name        : package_object.toString(),
-                                   lastUpdated : hl.lastUpdated,
-                                   propertyName: hl.propertyName,
-                                   actor       : User.findByUsername(hl.actor),
-                                   oldValue    : hl.oldValue,
-                                   newValue    : hl.newValue
-                    ]
-                    linetype = 'Package'
-                    break;
-                case TitleInstancePackagePlatform.class.name:
-                    TitleInstancePackagePlatform tipp_object = TitleInstancePackagePlatform.get(hl.persistedObjectId);
-                    if (tipp_object != null) {
-                        line_to_add = [link        : createLink(controller: 'tipp', action: 'show', id: hl.persistedObjectId),
-                                       name        : tipp_object.name + " / " + tipp_object.pkg?.name,
-                                       lastUpdated : hl.lastUpdated,
-                                       propertyName: hl.propertyName,
-                                       actor       : User.findByUsername(hl.actor),
-                                       oldValue    : hl.oldValue,
-                                       newValue    : hl.newValue
-                        ]
-                        linetype = 'TIPP'
-                    } else {
-                        log.debug("Cleaning up history line that relates to a deleted item");
-                        hl.delete()
-                    }
-            }
-            switch (hl.eventName) {
-                case 'INSERT':
-                    line_to_add.eventName = "New ${linetype}"
-                    break;
-                case 'UPDATE':
-                    line_to_add.eventName = "Updated ${linetype}"
-                    break;
-                case 'DELETE':
-                    line_to_add.eventName = "Deleted ${linetype}"
-                    break;
-                default:
-                    line_to_add.eventName = "Unknown ${linetype}"
-                    break;
-            }
-            result.formattedHistoryLines.add(line_to_add);
-        }
-
-        result
     }
 
     /**
