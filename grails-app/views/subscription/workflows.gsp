@@ -18,7 +18,7 @@
         <g:render template="iconSubscriptionIsChild"/>
         <semui:xEditable owner="${subscription}" field="name" />
     </h1>
-    <semui:anualRings object="${subscription}" controller="subscription" action="history" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+    <semui:anualRings object="${subscription}" controller="subscription" action="workflows" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
     <g:render template="nav" />
     <g:render template="message"/>

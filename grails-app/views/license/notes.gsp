@@ -15,7 +15,7 @@
         <semui:xEditable owner="${license}" field="reference" id="reference"/>
     </h1>
 
-    <semui:anualRings object="${license}" controller="license" action="show" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
+    <semui:anualRings object="${license}" controller="license" action="notes" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
 
     <g:render template="nav" />
 
