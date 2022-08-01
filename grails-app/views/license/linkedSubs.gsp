@@ -15,7 +15,7 @@
         <ui:totalNumber total="${subscriptions.size() ?: 0}"/>
     </ui:h1HeaderWithIcon>
 
-    <ui:anualRings object="${license}" controller="license" action="show" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
+    <ui:anualRings object="${license}" controller="license" action="linkedSubs" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
 
 <laser:render template="nav" />
 

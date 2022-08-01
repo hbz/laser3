@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4380    01.08.2022  rc-2.3  2.3.3       Andreas Bug         Statistikreiter wurde bei Springen zwischen den Jahresringen nicht beibehalten
+
+4379    01.08.2022  rc-2.3  2.3.3       Andreas Feature     Umstrukturierung der Umfragedetailsicht
+
 4378    29.07.2022  rc-2.3  2.3.3       Andreas Bug         Eine Umfrage konnte nur einmal verknüpft werden
 
 4196    28.07.2022  dev     3.0         Andreas Feature     Entfernen des HTTPBuilders

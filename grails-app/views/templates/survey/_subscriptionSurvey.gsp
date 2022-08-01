@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.PropertyStore; de.laser.survey.SurveyConfigProperties; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig; de.laser.DocContext; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.Subscription; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory" %>
+<%@ page import="de.laser.storage.PropertyStore; de.laser.survey.SurveyConfigProperties; de.laser.survey.SurveyOrg; de.laser.survey.SurveyConfig; de.laser.DocContext; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.Subscription; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.Platform" %>
 <laser:serviceInjection/>
 <g:set var="surveyOrg"
        value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)}"/>
@@ -337,8 +337,7 @@
                         <div class="item">
                             <div class="title">
                                 <button
-                                        class="ui button icon blue la-modern-button la-popup-tooltip la-delay right floated "
-                                        data-content="<g:message code="surveyConfigsInfo.subscriptionInfo.show"/>">
+                                        class="ui button icon blue la-modern-button la-delay right floated">
                                     <i class="ui angle double down large icon"></i>
                                 </button>
                                 <laser:script file="${this.getGroovyPageFileName()}">
@@ -360,7 +359,7 @@
                                     <ui:headerTitleIcon type="Subscription"/>
                                     <h2 class="ui icon header">
                                         <g:link controller="subscription" action="show" id="${subscription.id}">
-                                            ${subscription.name}
+                                            <g:message code="surveyConfigsInfo.subscriptionInfo.show"/>
                                         </g:link>
                                     </h2>
                                     <ui:auditInfo auditable="[subscription, 'name']"/>
@@ -540,6 +539,43 @@
 
         <g:if test="${subscription && subscription.packages}">
             <div id="ieInfos" class="la-inline-lists"></div>
+        </g:if>
+
+        <%
+            Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: subscription])
+            if(!subscribedPlatforms) {
+                subscribedPlatforms = Platform.executeQuery("select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription", [subscription: subscription])
+            }
+        %>
+        <g:if test="${subscription && subscribedPlatforms && subscriptionService.areStatsAvailable(subscribedPlatforms, [subscription.id])}">
+            <div class="ui card">
+                <div class="content">
+                    <div id="statsInfos" class="ui accordion la-accordion-showMore js-subscription-info-accordion">
+                        <div class="item">
+                            <div class="title">
+                                <button
+                                        class="ui button icon blue la-modern-button la-delay right floated ">
+                                    <i class="ui angle double down large icon"></i>
+                                </button>
+
+                                <i aria-hidden="true" class="circular chart bar green outline inverted icon"></i>
+
+                                <h2 class="ui icon header la-clear-before la-noMargin-top">
+                                    <g:link controller="subscription" action="stats" target="_blank"
+                                            id="${subscription.id}"><g:message code="surveyConfigsInfo.stats.show"/></g:link>
+                                </h2>
+                            </div>
+                            <div class="content">
+                                <g:link controller="subscription" action="stats" target="_blank"
+                                        id="${subscription.id}" class="ui button">
+                                    <g:message code="renewEntitlementsWithSurvey.stats.button"/>
+                                </g:link>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
         </g:if>
 
     </div>

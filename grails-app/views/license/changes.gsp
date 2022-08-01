@@ -7,7 +7,7 @@
         <ui:totalNumber total="${todoHistoryLinesTotal}"/>
     </ui:h1HeaderWithIcon>
 
-    <ui:anualRings object="${license}" controller="license" action="show" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
+    <ui:anualRings object="${license}" controller="license" action="changes" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
 
     <laser:render template="nav" />
 

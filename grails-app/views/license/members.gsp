@@ -15,7 +15,7 @@
         <ui:totalNumber total="${validMemberLicenses.size() ?: 0}"/>
     </ui:h1HeaderWithIcon>
 
-    <ui:anualRings object="${license}" controller="license" action="show" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
+    <ui:anualRings object="${license}" controller="license" action="members" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
 
 <laser:render template="nav" />
 

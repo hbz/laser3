@@ -20,7 +20,7 @@
     <ui:totalNumber total="${totalCount}"/>
 </ui:h1HeaderWithIcon>
 
-<ui:anualRings object="${license}" controller="license" action="show" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
+<ui:anualRings object="${license}" controller="license" action="linkMemberLicensesToSubs" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
 
 <laser:render template="nav" />
 

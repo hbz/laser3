@@ -22,7 +22,7 @@
             <laser:render template="iconSubscriptionIsChild"/>
             ${subscription.name}
         </ui:h1HeaderWithIcon>
-        <ui:anualRings object="${subscription}" controller="subscription" action="show" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+        <ui:anualRings object="${subscription}" controller="subscription" action="stats" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
         <laser:render template="nav" />
 

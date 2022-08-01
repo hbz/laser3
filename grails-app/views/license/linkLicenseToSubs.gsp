@@ -14,7 +14,7 @@
         <ui:totalNumber total="${num_sub_rows}"/>
     </ui:h1HeaderWithIcon>
 
-    <ui:anualRings object="${license}" controller="license" action="show" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
+    <ui:anualRings object="${license}" controller="license" action="linkLicenseToSubs" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
 
     <laser:render template="nav" />
 

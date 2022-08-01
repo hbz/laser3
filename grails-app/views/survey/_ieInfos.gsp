@@ -7,7 +7,7 @@
                 <div class="item">
                     <div class="title">
                        <button
-                                class="ui button icon blue la-modern-button la-popup-tooltip la-delay right floated " data-content="<g:message code="surveyConfigsInfo.ieInfo.show"/>">
+                                class="ui button icon blue la-modern-button la-delay right floated ">
                             <i class="ui angle double down large icon"></i>
                         </button>
                         <laser:script file="${this.getGroovyPageFileName()}">
@@ -27,7 +27,7 @@
 
                         <h2 class="ui icon header la-clear-before la-noMargin-top">
                             <g:link controller="subscription" action="index" target="_blank"
-                                    id="${subscription.id}">${subscription.name}</g:link>
+                                    id="${subscription.id}"><g:message code="surveyConfigsInfo.ieInfo.show"/></g:link>
                         </h2>
                     </div>
                     <div class="content">
