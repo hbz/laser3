@@ -15,7 +15,6 @@ import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.validation.ObjectError
 import org.springframework.web.multipart.MultipartFile
 
@@ -677,7 +676,7 @@ class FinanceService {
                         ownFilter.remove('filterSubStatus')
                         String queryWithoutSub = "select ci from CostItem ci left join ci.costItemElement cie " +
                                 "where ci.owner = :org and ci.sub = null ${genericExcludes+filterQuery.ciFilter} "+
-                                "order by "+configMap.sortConfig.ownSort+" "+configMap.sortConfig.ownOrder+', cie.value_'+I10nTranslation.decodeLocale(LocaleContextHolder.getLocale())+' asc'
+                                "order by "+configMap.sortConfig.ownSort+" "+configMap.sortConfig.ownOrder+', cie.value_' + LocaleUtils.getCurrentLang() + ' asc'
                         prf.setBenchmark("execute second own query")
                         ownSubscriptionCostItems.addAll(CostItem.executeQuery(queryWithoutSub,[org:org]+genericExcludeParams+ownFilter))
                     }

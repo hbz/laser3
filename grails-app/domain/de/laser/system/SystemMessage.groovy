@@ -71,7 +71,7 @@ class SystemMessage {
     }
 
     /**
-     * Delivers the content according to the specified locale. This locale is specified by the {@link LocaleContextHolder}
+     * Delivers the content according to the specified locale. This locale is specified by the {@link LocaleUtils}
      * @return the localized content of the system message (German or English)
      */
     String getLocalizedContent() {

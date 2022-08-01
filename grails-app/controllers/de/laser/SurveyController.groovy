@@ -33,7 +33,6 @@ import groovy.time.TimeCategory
 import org.apache.http.HttpStatus
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.codehaus.groovy.runtime.InvokerHelper
-import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.transaction.TransactionStatus
 
@@ -2257,7 +2256,7 @@ class SurveyController {
 
         result.properties = surveyService.getSurveyProperties(result.institution)
 
-        result.language = LocaleContextHolder.getLocale().toString()
+        result.language = LocaleUtils.getCurrentLang()
 
         result
 
