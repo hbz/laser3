@@ -9,7 +9,7 @@ import de.laser.utils.DateUtils
 import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
-import net.sf.json.JSON
+import grails.converters.JSON
 import org.springframework.context.MessageSource
 
 import java.time.LocalDate

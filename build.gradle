@@ -131,7 +131,6 @@ dependencies {
     implementation 'org.apache.commons:commons-lang3:3.12.0'                // from 3.9
     implementation 'org.apache.poi:poi-ooxml:3.17'                          // from 3.9 : 5.x available
     implementation 'org.codehaus.gpars:gpars:1.2.1'                         // 2014
-    implementation 'org.codehaus.groovy.modules.http-builder:http-builder:0.7.2' // 2014
     implementation 'org.liquibase:liquibase-core:4.11.0'                    // from 3.5.5 : + org.grails.plugins:database-migration
     implementation 'org.quartz-scheduler:quartz:2.3.2'                      // 2019
 

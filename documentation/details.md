@@ -48,10 +48,10 @@ To avoid confusion, the difference between localized and fixed usage in *de.lase
 
 The produktive branch has been renamed from *master* to *main*.
 
-### HTTPBuilder
+### ~~HTTPBuilder~~
 
-*org.codehaus.groovy.modules.http-builder:http-builder* is outdated.
-A migration to *de.laser.http.BasicHttpClient* should take place.
+~~*org.codehaus.groovy.modules.http-builder:http-builder* is outdated.
+A migration to *de.laser.http.BasicHttpClient* should take place.~~
 
 ### HTTP Status Codes
 

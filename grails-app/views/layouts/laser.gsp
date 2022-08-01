@@ -229,7 +229,7 @@
 
                                 <div class="item" role="menuitem" aria-haspopup="true">
                                     <div class="title">
-                                        ${message(code:'menu.admin.sysAdmin')} <i class="dropdown icon"></i>
+                                        <i class="ui icon keyboard outline"></i> ${message(code:'menu.admin.sysAdmin')} <i class="dropdown icon"></i>
                                     </div>
 
                                     <div class="menu" role="menu">
@@ -243,15 +243,6 @@
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="triggerHousekeeping" onclick="return confirm('${message(code:'confirm.start.HouseKeeping')}')">${message(code:'menu.admin.triggerHousekeeping')}</ui:link>
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="initiateCoreMigration" onclick="return confirm('${message(code:'confirm.start.CoreMigration')}')">${message(code:'menu.admin.coreMigration')}</ui:link>
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="dataCleanse" onclick="return confirm('${message(code:'confirm.start.DataCleaningNominalPlatforms')}')">Run Data Cleaning (Nominal Platforms)</ui:link>
-                                    </div>
-                                </div>
-                                <div class="item" role="menuitem" aria-haspopup="true">
-                                    <div class="title">
-                                        <i class="ui icon code branch"></i> <span class="text">Developer</span> <i class="dropdown icon"></i>
-                                    </div>
-
-                                    <div class="menu" role="menu">
-                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="dev" action="frontend">Frontend</ui:link>
                                     </div>
                                 </div>
 
@@ -296,6 +287,18 @@
                                 <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="managePropertyDefinitions">${message(code:'menu.admin.managePropertyDefinitions')}</ui:link>
                                 <%--<ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="managePropertyGroups">${message(code:'menu.institutions.manage_prop_groups')}</ui:link>--%> <%-- property groups are always private?? --%>
                                 <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="manageRefdatas">${message(code:'menu.admin.manageRefdatas')}</ui:link>
+
+                                <div class="divider"></div>
+
+                                <div class="item" role="menuitem" aria-haspopup="true">
+                                    <div class="title">
+                                        <i class="ui icon code branch"></i> <span class="text">Developer</span> <i class="dropdown icon"></i>
+                                    </div>
+
+                                    <div class="menu" role="menu">
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="dev" action="frontend">Frontend</ui:link>
+                                    </div>
+                                </div>
 
                                 <div class="divider"></div>
 

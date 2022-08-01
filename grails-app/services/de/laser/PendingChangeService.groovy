@@ -12,17 +12,15 @@ import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.base.AbstractLockableService
 import grails.converters.JSON
-import grails.core.GrailsApplication
 import grails.gorm.transactions.Transactional
-import grails.core.GrailsClass
 import grails.web.databinding.DataBindingUtils
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
-import net.sf.json.JSONObject
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.datastore.mapping.model.PersistentProperty
 import org.grails.datastore.mapping.model.types.Association
 import org.grails.web.json.JSONElement
+import org.grails.web.json.JSONObject
 import org.springframework.context.MessageSource
 import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.transaction.TransactionStatus
@@ -40,7 +38,6 @@ class PendingChangeService extends AbstractLockableService {
     AuditService auditService
     ContextService contextService
     EscapeService escapeService
-    GrailsApplication grailsApplication
     GenericOIDService genericOIDService
     MessageSource messageSource
     SubscriptionService subscriptionService
