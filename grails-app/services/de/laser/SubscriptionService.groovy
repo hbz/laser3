@@ -19,6 +19,7 @@ import de.laser.stats.Counter5Report
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
+import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -28,7 +29,6 @@ import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.MultipartFile
 
 import java.sql.Timestamp
@@ -1872,7 +1872,7 @@ class SubscriptionService {
      * @return a map containing the candidates, the parent subscription type and the errors
      */
     Map subscriptionImport(MultipartFile tsvFile) {
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
         Org contextOrg = contextService.getOrg()
         RefdataValue comboType
         String[] parentSubType
@@ -2266,7 +2266,7 @@ class SubscriptionService {
      */
     List addSubscriptions(candidates,GrailsParameterMap params) {
         List errors = []
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
         Org contextOrg = contextService.getOrg()
         SimpleDateFormat databaseDateFormatParser = DateUtils.getSDF_yyyyMMddTHHmmssZ()
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()

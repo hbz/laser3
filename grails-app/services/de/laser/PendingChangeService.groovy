@@ -11,6 +11,7 @@ import de.laser.utils.DateUtils
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.base.AbstractLockableService
+import de.laser.utils.LocaleUtils
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.web.databinding.DataBindingUtils
@@ -22,7 +23,6 @@ import org.grails.datastore.mapping.model.types.Association
 import org.grails.web.json.JSONElement
 import org.grails.web.json.JSONObject
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.transaction.TransactionStatus
 
 import java.sql.Array
@@ -501,7 +501,7 @@ class PendingChangeService extends AbstractLockableService {
      */
     Map<String, Object> getChanges(LinkedHashMap<String, Object> configMap) {
         Map<String, Object> result = [:]
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
         Date time = new Date(System.currentTimeMillis() - Duration.ofDays(configMap.periodInDays).toMillis())
         Sql sql = GlobalService.obtainSqlConnection()
         List pending = [], notifications = []
@@ -687,7 +687,7 @@ class PendingChangeService extends AbstractLockableService {
         String ctx = 'dashboard/changes'
         Map<String, Object> changesCache = scw.get(ctx) as Map<String, Object>
         if(!changesCache) {
-            Locale locale = LocaleContextHolder.getLocale()
+            Locale locale = LocaleUtils.getCurrentLocale()
             Date time = new Date(System.currentTimeMillis() - Duration.ofDays(configMap.periodInDays).toMillis())
             //package changes
             String subscribedPackagesQuery = 'select new map(sp as subPackage, pcc as config) from PendingChangeConfiguration pcc join pcc.subscriptionPackage sp join sp.subscription sub join sub.orgRelations oo where oo.org = :context and oo.roleType in (:roleTypes) and ((pcc.settingValue = :prompt or pcc.withNotification = true))'
@@ -843,7 +843,7 @@ class PendingChangeService extends AbstractLockableService {
 
     @Deprecated
     Map<String,Object> printRow(PendingChange change) {
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
         String eventIcon, instanceIcon, eventString
         List<Object> eventData
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
@@ -883,7 +883,7 @@ class PendingChangeService extends AbstractLockableService {
      * @return the value as {@link Date} or {@link String}
      */
     def output(PendingChange change,String key) {
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
         def ret
         if(change.targetProperty in PendingChange.DATE_FIELDS) {
             Date date = DateUtils.parseDateGeneric(change[key])

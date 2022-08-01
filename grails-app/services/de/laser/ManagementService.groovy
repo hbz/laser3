@@ -18,7 +18,6 @@ import grails.web.servlet.mvc.GrailsParameterMap
 import org.grails.web.servlet.mvc.GrailsWebRequest
 import org.grails.web.util.WebUtils
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.servlet.http.HttpServletRequest
 import java.nio.file.Files
@@ -239,7 +238,7 @@ class ManagementService {
     void processLinkLicense(def controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(controller, params)
         if(result.editable && formService.validateToken(params)) {
-            Locale locale = LocaleContextHolder.getLocale()
+            Locale locale = LocaleUtils.getCurrentLocale()
             FlashScope flash = getCurrentFlashScope()
             List selectedSubs = params.list("selectedSubs"), selectedLicenseIDs = params.list("selectedLicense")
             if(selectedSubs && selectedLicenseIDs[0]) {
@@ -327,7 +326,7 @@ class ManagementService {
         Map<String,Object> result = getResultGenericsAndCheckAccess(controller, params)
         if (result.editable && formService.validateToken(params)) {
             FlashScope flash = getCurrentFlashScope()
-            Locale locale = LocaleContextHolder.getLocale()
+            Locale locale = LocaleUtils.getCurrentLocale()
             List selectedSubs = params.list("selectedSubs")
             result.message = []
             result.error = []
@@ -487,7 +486,7 @@ class ManagementService {
     void processProperties(def controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(controller, params)
         if(result.editable && formService.validateToken(params)) {
-            Locale locale = LocaleContextHolder.getLocale()
+            Locale locale = LocaleUtils.getCurrentLocale()
             FlashScope flash = getCurrentFlashScope()
             PropertyDefinition propertiesFilterPropDef = params.propertiesFilterPropDef ? genericOIDService.resolveOID(params.propertiesFilterPropDef.replace(" ", "")) : null
             List selectedSubs = []
@@ -643,7 +642,7 @@ class ManagementService {
     void processSubscriptionProperties(def controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(controller, params)
         if(result.editable && formService.validateToken(params)) {
-            Locale locale = LocaleContextHolder.getLocale()
+            Locale locale = LocaleUtils.getCurrentLocale()
             FlashScope flash = getCurrentFlashScope()
             List selectedSubs = params.list("selectedSubs")
             if (selectedSubs) {
@@ -752,7 +751,7 @@ class ManagementService {
     void processNotes(def controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(controller, params)
         if(result.editable && formService.validateToken(params)) {
-            Locale locale = LocaleContextHolder.getLocale()
+            Locale locale = LocaleUtils.getCurrentLocale()
             FlashScope flash = getCurrentFlashScope()
             List selectedSubs = params.list("selectedSubs")
             if (selectedSubs) {
@@ -801,7 +800,7 @@ class ManagementService {
         def input_stream = input_file.inputStream
         File sourceFile
         if(result.editable && formService.validateToken(params)) {
-            Locale locale = LocaleContextHolder.getLocale()
+            Locale locale = LocaleUtils.getCurrentLocale()
             FlashScope flash = getCurrentFlashScope()
             List selectedSubs = params.list("selectedSubs")
             if (selectedSubs) {

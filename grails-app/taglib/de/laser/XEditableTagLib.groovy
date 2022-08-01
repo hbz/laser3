@@ -1,12 +1,9 @@
 package de.laser
 
-import de.laser.GenericOIDService
-import de.laser.ReaderNumber
-import de.laser.RefdataValue
 import de.laser.auth.Role
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyResult
-import org.springframework.context.i18n.LocaleContextHolder
+import de.laser.utils.LocaleUtils
 
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -105,7 +102,7 @@ class XEditableTagLib {
                     if ((attrs.owner[attrs.field] == null) || (attrs.owner[attrs.field].toString().length()==0)) {
                     }
                     else if(attrs.field in ['decValue','listPrice','localPrice'] || (attrs.field == 'value' && attrs.owner instanceof ReaderNumber)) {
-                        NumberFormat nf = NumberFormat.getInstance(LocaleContextHolder.getLocale())
+                        NumberFormat nf = NumberFormat.getInstance(LocaleUtils.getCurrentLocale())
                         nf.setMinimumFractionDigits(2)
                         nf.setMaximumFractionDigits(2)
                         oldValue = nf.format(attrs.owner[attrs.field])
@@ -138,7 +135,7 @@ class XEditableTagLib {
                     if ((attrs.owner[attrs.field] == null) || (attrs.owner[attrs.field].toString().length()==0)) {
                     }
                     else if(attrs.field == 'decValue') {
-                        out << NumberFormat.getInstance(LocaleContextHolder.getLocale()).format(attrs.owner[attrs.field])
+                        out << NumberFormat.getInstance(LocaleUtils.getCurrentLocale()).format(attrs.owner[attrs.field])
                     }
                     else {
                         out << attrs.owner[attrs.field]

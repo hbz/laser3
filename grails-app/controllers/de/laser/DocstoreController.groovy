@@ -9,10 +9,9 @@ import de.laser.config.ConfigMapper
 import de.laser.annotations.DebugInfo
 import de.laser.storage.RDConstants
 import de.laser.survey.SurveyConfig
+import de.laser.utils.LocaleUtils
 import grails.plugin.springsecurity.annotation.Secured
-import grails.core.GrailsClass
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.transaction.TransactionStatus
 
 /**
@@ -37,7 +36,7 @@ class DocstoreController  {
         Doc doc = Doc.findByUuid(params.id)
 
         if (doc) {
-            String filename = doc.filename ?: messageSource.getMessage('template.documents.missing', null, LocaleContextHolder.getLocale())
+            String filename = doc.filename ?: messageSource.getMessage('template.documents.missing', null, LocaleUtils.getCurrentLocale())
 
             switch (doc.contentType) {
                 case Doc.CONTENT_TYPE_STRING:

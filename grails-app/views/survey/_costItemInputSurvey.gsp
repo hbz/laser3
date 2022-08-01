@@ -1,4 +1,4 @@
-<%@ page import="de.laser.finance.CostItem; de.laser.UserSetting; de.laser.storage.RDStore; de.laser.*; org.springframework.context.i18n.LocaleContextHolder; de.laser.finance.CostItemElementConfiguration;" %>
+<%@ page import="de.laser.finance.CostItem; de.laser.UserSetting; de.laser.storage.RDStore; de.laser.*; de.laser.finance.CostItemElementConfiguration;" %>
 <laser:serviceInjection/>
 
 <g:hiddenField name="shortcode" value="${contextService.getOrg().shortcode}"/>

@@ -47,7 +47,6 @@ import org.grails.orm.hibernate.cfg.GrailsDomainBinder
 import org.grails.orm.hibernate.cfg.PropertyConfig
 import org.hibernate.query.NativeQuery
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.MultipartFile
 
 import javax.sql.DataSource
@@ -360,7 +359,7 @@ class SubscriptionControllerService {
             subscribedPlatforms.each { Platform platformInstance ->
                 Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/find?uuid=${platformInstance.gokbId}")
                 if (queryResult.error && queryResult.error == 404) {
-                    result.wekbServerUnavailable = messageSource.getMessage('wekb.error.404', null, LocaleContextHolder.getLocale())
+                    result.wekbServerUnavailable = messageSource.getMessage('wekb.error.404', null, LocaleUtils.getCurrentLocale())
                 }
                 else if (queryResult.warning) {
                     List records = queryResult.warning.records
@@ -1004,7 +1003,7 @@ class SubscriptionControllerService {
         if(!result)
             [result:null,status:STATUS_ERROR]
         else {
-            Locale locale = LocaleContextHolder.getLocale()
+            Locale locale = LocaleUtils.getCurrentLocale()
             params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
             //the following two are arguments for a g.message-call on the view which expects an Object[]
             result.superOrgType = [messageSource.getMessage('consortium.superOrgType',null,locale)]
@@ -1489,7 +1488,7 @@ class SubscriptionControllerService {
             Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
             threadArray.each { Thread thread ->
                 if (thread.name == 'PackageTransfer_'+result.subscription.id && !SubscriptionPackage.findBySubscriptionAndPkg(result.subscription,Package.findByGokbId(params.addUUID))) {
-                    result.message = messageSource.getMessage('subscription.details.linkPackage.thread.running',null,LocaleContextHolder.getLocale())
+                    result.message = messageSource.getMessage('subscription.details.linkPackage.thread.running',null, LocaleUtils.getCurrentLocale())
                     result.bulkProcessRunning = true
                 }
             }
@@ -1586,7 +1585,7 @@ class SubscriptionControllerService {
 
             Map queryCuratoryGroups = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+'/groups')
             if(queryCuratoryGroups.error && queryCuratoryGroups.error == 404) {
-                result.error = messageSource.getMessage('wekb.error.404', null, LocaleContextHolder.getLocale())
+                result.error = messageSource.getMessage('wekb.error.404', null, LocaleUtils.getCurrentLocale())
                 [result:result, status: STATUS_ERROR]
             }
             else {
@@ -1698,7 +1697,7 @@ class SubscriptionControllerService {
     Map<String,Object> unlinkPackage(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         result.package = Package.get(params.package)
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
         if(params.confirmed) {
             Set<Subscription> childSubs = Subscription.findAllByInstanceOf(result.subscription)
             boolean unlinkErrorChild = false
@@ -1757,7 +1756,7 @@ class SubscriptionControllerService {
         if(!result)
             [result:null,status:STATUS_ERROR]
         else {
-            Locale locale = LocaleContextHolder.getLocale()
+            Locale locale = LocaleUtils.getCurrentLocale()
             Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
             Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
             threadArray.each {
@@ -1963,7 +1962,7 @@ class SubscriptionControllerService {
             [result:null,status:STATUS_ERROR]
         }
         else {
-            Locale locale = LocaleContextHolder.getLocale()
+            Locale locale = LocaleUtils.getCurrentLocale()
             result.preselectValues = params.preselectValues == 'on'
             result.preselectCoverageDates = params.preselectCoverageDates == 'on'
             result.uploadPriceInfo = params.uploadPriceInfo == 'on'
@@ -2369,7 +2368,7 @@ class SubscriptionControllerService {
             [result:null,status:STATUS_ERROR]
         }
         else {
-            Locale locale = LocaleContextHolder.getLocale()
+            Locale locale = LocaleUtils.getCurrentLocale()
             SessionCacheWrapper sessionCache = contextService.getSessionCache()
             Map cache = sessionCache.get("/subscription/addEntitlements/${result.subscription.id}")
             Map issueEntitlementCandidates = cache && cache.containsKey('issueEntitlementCandidates') ? cache.get('issueEntitlementCandidates') : [:]
@@ -2687,7 +2686,7 @@ class SubscriptionControllerService {
      */
     Map<String,Object> addEmptyPriceItem(GrailsParameterMap params) {
         Map<String,Object> result = [:]
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
         if(params.ieid) {
             IssueEntitlement ie = IssueEntitlement.get(params.ieid)
             if(ie) {
@@ -2819,7 +2818,7 @@ class SubscriptionControllerService {
      */
     Map<String,Object> processCreateEntitlementGroup(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
         if(!IssueEntitlementGroup.findBySubAndName(result.subscription, params.name)) {
             IssueEntitlementGroup issueEntitlementGroup = new IssueEntitlementGroup(name: params.name,
                     description: params.description ?: null,
@@ -2884,7 +2883,7 @@ class SubscriptionControllerService {
                 }
                 else {
                     Object[] args = [sp.pkg.name]
-                    result.message = messageSource.getMessage('subscription.details.renewEntitlements.submitSuccess',args,LocaleContextHolder.getLocale())
+                    result.message = messageSource.getMessage('subscription.details.renewEntitlements.submitSuccess',args, LocaleUtils.getCurrentLocale())
                 }
             }
             [result:result,status:STATUS_OK]
@@ -2903,7 +2902,7 @@ class SubscriptionControllerService {
             [result:null,status:STATUS_ERROR]
         }
         else {
-            Locale locale = LocaleContextHolder.getLocale()
+            Locale locale = LocaleUtils.getCurrentLocale()
             result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
             result.editable = surveyService.isEditableSurvey(result.institution, result.surveyConfig.surveyInfo)
             if(!result.editable) {
@@ -3021,7 +3020,7 @@ class SubscriptionControllerService {
             [result:null,status:STATUS_ERROR]
         }
         else {
-            Locale locale = LocaleContextHolder.getLocale()
+            Locale locale = LocaleUtils.getCurrentLocale()
             List<Links> previousSubscriptions = Links.findAllByDestinationSubscriptionAndLinkType(result.subscription, RDStore.LINKTYPE_FOLLOWS)
             if (previousSubscriptions.size() > 0) {
                 result.error = messageSource.getMessage('subscription.renewSubExist',null,locale)
@@ -3107,7 +3106,7 @@ class SubscriptionControllerService {
         if(!result)
             [result:null,status:STATUS_ERROR]
         else {
-            Locale locale = LocaleContextHolder.getLocale()
+            Locale locale = LocaleUtils.getCurrentLocale()
             result.isConsortialObjects = (result.sourceObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL)
             result.copyObject = true
             if (params.name && !result.targetObject) {
@@ -3395,7 +3394,7 @@ class SubscriptionControllerService {
 
         Map args = [:]
         if (result.consortialView) {
-            Locale locale = LocaleContextHolder.getLocale()
+            Locale locale = LocaleUtils.getCurrentLocale()
 
             args.superOrgType       = [messageSource.getMessage('consortium.superOrgType', null, locale)]
             args.memberTypeSingle   = [messageSource.getMessage('consortium.subscriber', null, locale)]

@@ -117,7 +117,7 @@ class SurveyControllerService {
              List<Subscription> childSubs = result.parentSubscription.getNonDeletedDerivedSubscriptions()
              if(childSubs) {
                  String localizedName
-                 switch(LocaleContextHolder.getLocale()) {
+                 switch(LocaleUtils.getCurrentLocale()) {
                      case Locale.GERMANY:
                      case Locale.GERMAN: localizedName = "name_de"
                          break
@@ -193,10 +193,10 @@ class SurveyControllerService {
                 newSurveyResult.sub = surveyResult.participantSubscription
                 if (result.properties) {
                     if (result.properties) {
-                        String locale = LocaleUtils.getCurrentLang()
+                        String lang = LocaleUtils.getCurrentLang()
                         //newSurveyResult.properties = SurveyResult.findAllByParticipantAndOwnerAndSurveyConfigAndTypeInList(surveyResult.participant, result.institution, result.surveyConfig, result.properties,[sort:type["value${locale}"],order:'asc'])
                         //in (:properties) throws for some unexplaniable reason a HQL syntax error whereas it is used in many other places without issues ... TODO
-                        String query = "select sr from SurveyResult sr join sr.type pd where pd in :properties and sr.participant = :participant and sr.owner = :context and sr.surveyConfig = :cfg order by pd.name_${locale} asc"
+                        String query = "select sr from SurveyResult sr join sr.type pd where pd in :properties and sr.participant = :participant and sr.owner = :context and sr.surveyConfig = :cfg order by pd.name_${lang} asc"
                         newSurveyResult.properties = SurveyResult.executeQuery(query, [participant: surveyResult.participant, context: result.institution, cfg: result.surveyConfig, properties: result.properties])
                     }
                 }
@@ -222,10 +222,10 @@ class SurveyControllerService {
                 newSurveyResult.resultOfParticipation = surveyResult
                 newSurveyResult.surveyConfig = result.surveyConfig
                 if (result.properties) {
-                    String locale = LocaleUtils.getCurrentLang()
+                    String lang = LocaleUtils.getCurrentLang()
                     //newSurveyResult.properties = SurveyResult.findAllByParticipantAndOwnerAndSurveyConfigAndTypeInList(surveyResult.participant, result.institution, result.surveyConfig, result.properties,[sort:type["value${locale}"],order:'asc'])
                     //in (:properties) throws for some unexplaniable reason a HQL syntax error whereas it is used in many other places without issues ... TODO
-                    String query = "select sr from SurveyResult sr join sr.type pd where pd in :properties and sr.participant = :participant and sr.owner = :context and sr.surveyConfig = :cfg order by pd.name_${locale} asc"
+                    String query = "select sr from SurveyResult sr join sr.type pd where pd in :properties and sr.participant = :participant and sr.owner = :context and sr.surveyConfig = :cfg order by pd.name_${lang} asc"
                     newSurveyResult.properties = SurveyResult.executeQuery(query, [participant: surveyResult.participant, context: result.institution, cfg: result.surveyConfig, properties: result.properties])
                 }
 
@@ -319,10 +319,10 @@ class SurveyControllerService {
                 newSurveyResult.resultOfParticipation = surveyResult
                 newSurveyResult.surveyConfig = result.surveyConfig
                 if (result.properties) {
-                    String locale = LocaleUtils.getCurrentLang()
+                    String lang = LocaleUtils.getCurrentLang()
                     //newSurveyResult.properties = SurveyResult.findAllByParticipantAndOwnerAndSurveyConfigAndTypeInList(it.participant, result.institution, result.surveyConfig, result.properties,[sort:type["value${locale}"],order:'asc'])
                     //in (:properties) throws for some unexplaniable reason a HQL syntax error whereas it is used in many other places without issues ... TODO
-                    String query = "select sr from SurveyResult sr join sr.type pd where pd in :properties and sr.participant = :participant and sr.owner = :context and sr.surveyConfig = :cfg order by pd.name_${locale} asc"
+                    String query = "select sr from SurveyResult sr join sr.type pd where pd in :properties and sr.participant = :participant and sr.owner = :context and sr.surveyConfig = :cfg order by pd.name_${lang} asc"
                     newSurveyResult.properties = SurveyResult.executeQuery(query, [participant: surveyResult.participant, context: result.institution, cfg: result.surveyConfig, properties: result.properties])
                 }
 

@@ -6,11 +6,11 @@ import de.laser.auth.User
 import de.laser.remote.ApiSource
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
+import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 
 /**
  * This service is a mirror of the {@link OrganisationController}, containing those controller methods
@@ -77,7 +77,7 @@ class OrganisationControllerService {
     Map<String,Object> createMember(OrganisationController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(controller,params)
         Org orgInstance
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
         if(formService.validateToken(params)) {
             try {
                 // createdBy will set by Org.beforeInsert()
@@ -110,7 +110,7 @@ class OrganisationControllerService {
      * @return OK if the switch was successful, ERROR otherwise
      */
     Map<String, Object> toggleCombo(OrganisationController controller, GrailsParameterMap params) {
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
         Map<String, Object> result = getResultGenericsAndCheckAccess(controller, params)
         if (!result) {
             return [result:null, status:STATUS_ERROR]
@@ -157,7 +157,7 @@ class OrganisationControllerService {
      */
     Map<String,Object> deleteCustomerIdentifier(OrganisationController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(controller,params)
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
         CustomerIdentifier ci = (CustomerIdentifier) genericOIDService.resolveOID(params.deleteCI)
         Org owner = ci.owner
         if (ci) {
@@ -214,7 +214,7 @@ class OrganisationControllerService {
                 result.editUrl = apiSource.editUrl.endsWith('/') ? apiSource.editUrl : apiSource.editUrl+'/'
                 Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/find?uuid=${result.orgInstance.gokbId}")
                 if (queryResult.error && queryResult.error == 404) {
-                    result.error = messageSource.getMessage('wekb.error.404', null, LocaleContextHolder.getLocale())
+                    result.error = messageSource.getMessage('wekb.error.404', null, LocaleUtils.getCurrentLocale())
                 }
                 else if (queryResult.warning) {
                     List records = queryResult.warning.records

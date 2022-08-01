@@ -519,10 +519,10 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     }
 
     static String getLocalizedValue(String key){
-        String locale = LocaleUtils.getCurrentLang()
+        String lang = LocaleUtils.getCurrentLang()
 
         if (PropertyDefinition.validTypes.containsKey(key)) {
-            return (PropertyDefinition.validTypes.get(key)."${locale}") ?: PropertyDefinition.validTypes.get(key)
+            return (PropertyDefinition.validTypes.get(key)."${lang}") ?: PropertyDefinition.validTypes.get(key)
         } else {
             return null
         }

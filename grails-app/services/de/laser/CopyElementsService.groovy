@@ -17,6 +17,7 @@ import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyConfigProperties
 import de.laser.survey.SurveyInfo
 import de.laser.survey.SurveyOrg
+import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
 import grails.web.mvc.FlashScope
 import groovy.sql.Sql
@@ -24,7 +25,6 @@ import org.codehaus.groovy.runtime.InvokerHelper
 import org.grails.web.servlet.mvc.GrailsWebRequest
 import org.grails.web.util.WebUtils
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.servlet.http.HttpServletRequest
 import java.nio.file.Files
@@ -249,7 +249,7 @@ class CopyElementsService {
      * @param flash the message container
      */
     void copySubscriber(List<Subscription> subscriptionToTake, Object targetObject, def flash) {
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
         targetObject.refresh()
         List<Subscription> targetChildSubs = subscriptionService.getValidSubChilds(targetObject), memberHoldingsToTransfer = []
         subscriptionToTake.each { Subscription subMember ->
@@ -829,7 +829,7 @@ class CopyElementsService {
 
             log.debug(params.toMapString())
             if(!bulkOperationRunning && isBothObjectsSet(sourceObject, targetObject, flash) && params.copyElementsSubmit) {
-                flash.message = messageSource.getMessage('subscription.details.linkPackage.thread.running',null,LocaleContextHolder.getLocale())
+                flash.message = messageSource.getMessage('subscription.details.linkPackage.thread.running',null, LocaleUtils.getCurrentLocale())
                 executorService.execute({
                     try {
                         Thread.currentThread().setName("PackageTransfer_${targetObject.id}")
@@ -886,7 +886,7 @@ class CopyElementsService {
                 })
             }
             else if(bulkOperationRunning) {
-                flash.message = messageSource.getMessage('subscription.details.linkPackage.thread.running',null,LocaleContextHolder.getLocale())
+                flash.message = messageSource.getMessage('subscription.details.linkPackage.thread.running',null, LocaleUtils.getCurrentLocale())
             }
             /*if (params.subscription?.deleteEntitlementIds && isBothObjectsSet(sourceObject, targetObject)) {
                 List<IssueEntitlement> entitlementsToDelete = params.list('subscription.deleteEntitlementIds').collect { genericOIDService.resolveOID(it) }
@@ -916,7 +916,7 @@ class CopyElementsService {
      * @return true if the deletion was successful, false otherwise
      */
     boolean deleteTasks(List<Long> toDeleteTasks, Object targetObject, def flash) {
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
         boolean isInstAdm = contextService.getUser().hasAffiliation("INST_ADM")
         def userId = contextService.getUser().id
         toDeleteTasks.each { deleteTaskId ->
@@ -1398,7 +1398,7 @@ class CopyElementsService {
      * @return true if the linking was successful, false otherwise
      */
     boolean copyOrgRelations(List<OrgRole> toCopyOrgRelations, Object sourceObject, Object targetObject, def flash) {
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
         if (!targetObject.orgRelations)
             targetObject.orgRelations = []
         //question mark may be necessary because of lazy loading (there were some NPEs here in the past)
@@ -1508,7 +1508,7 @@ class CopyElementsService {
      * @return true if the linking was successful, false otherwise
      */
     boolean copyPackages(List<SubscriptionPackage> packagesToTake, Object targetObject, def flash) {
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
         packagesToTake.each { SubscriptionPackage subscriptionPackage ->
             if (!SubscriptionPackage.findByPkgAndSubscription(subscriptionPackage.pkg, targetObject)) {
                 List<OrgAccessPointLink> pkgOapls = []
@@ -1623,7 +1623,7 @@ class CopyElementsService {
      * @return true if the entitlements were successfully transferred, false otherwise
      */
     boolean copyEntitlements(List<IssueEntitlement> entitlementsToTake, Object targetObject, def flash) {
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
         entitlementsToTake.each { ieToTake ->
             if (ieToTake.status != RDStore.TIPP_STATUS_REMOVED) {
                 def list = subscriptionService.getIssueEntitlements(targetObject).findAll { it.tipp.id == ieToTake.tipp.id && (it.status != RDStore.TIPP_STATUS_REMOVED) }
@@ -1677,7 +1677,7 @@ class CopyElementsService {
         } else {
             log.error("Problem saving ${obj.errors}")
             Object[] args = [obj]
-            flash.error += messageSource.getMessage('default.save.error.message', args, LocaleContextHolder.getLocale())
+            flash.error += messageSource.getMessage('default.save.error.message', args, LocaleUtils.getCurrentLocale())
             return false
         }
     }
@@ -1693,7 +1693,7 @@ class CopyElementsService {
             obj.delete()
             log.debug("Delete ${obj} ok")
         } else {
-            flash.error += messageSource.getMessage('default.delete.error.general.message', null, LocaleContextHolder.getLocale())
+            flash.error += messageSource.getMessage('default.delete.error.general.message', null, LocaleUtils.getCurrentLocale())
         }
     }
 
@@ -1705,7 +1705,7 @@ class CopyElementsService {
      * @return true if both objects are not null, false otherwise
      */
     boolean isBothObjectsSet(Object sourceObject, Object targetObject, FlashScope flash = getCurrentFlashScope()) {
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
 
         if (!sourceObject || !targetObject) {
             Object[] args = [messageSource.getMessage("${sourceObject.getClass().getSimpleName().toLowerCase()}.label", null, locale)]

@@ -57,7 +57,7 @@ class FinanceService {
      * @return result status map: OK upon success, ERROR on failure
      */
     Map<String,Object> createOrUpdateCostItem(GrailsParameterMap params) {
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
         Map<String,Object> result = financeControllerService.getResultGenerics(params)
         CostItem newCostItem
         try {
@@ -378,7 +378,7 @@ class FinanceService {
             }
             else {
                 log.error(ci.errors.toString())
-                result.error = messageSource.getMessage('default.delete.error.general.message',null,LocaleContextHolder.getLocale())
+                result.error = messageSource.getMessage('default.delete.error.general.message',null, LocaleUtils.getCurrentLocale())
                 [result:result,status:STATUS_ERROR]
             }
             [result:result,status:STATUS_OK]
@@ -457,7 +457,7 @@ class FinanceService {
         String reference = params.newReference ? params.newReference.trim() : null
         RefdataValue costItemStatus = params.newCostItemStatus ? (RefdataValue.get(params.long('newCostItemStatus'))) : null    //estimate, commitment, etc
         //block sum
-        NumberFormat format = NumberFormat.getInstance(LocaleContextHolder.getLocale())
+        NumberFormat format = NumberFormat.getInstance( LocaleUtils.getCurrentLocale() )
         //row 1
         Double costBillingCurrency = params.newCostInBillingCurrency ? format.parse(params.newCostInBillingCurrency).doubleValue() : 0.0 //0.00
         RefdataValue billingCurrency = RefdataValue.get(params.long('newCostCurrency')) //billingCurrency should be not null
@@ -1637,7 +1637,7 @@ class FinanceService {
     List<Map<String,Object>> orderedCurrency() {
         Set<RefdataValue> allCurrencies = RefdataCategory.getAllRefdataValuesWithOrder(RDConstants.CURRENCY)
 
-        List<Map<String,Object>> result = [[id:0,text:messageSource.getMessage('financials.currency.none',null, LocaleContextHolder.getLocale())]]
+        List<Map<String,Object>> result = [[id:0,text:messageSource.getMessage('financials.currency.none',null, LocaleUtils.getCurrentLocale())]]
         result.addAll(allCurrencies.collect { rdv ->
             [id: rdv.id, text: rdv.getI10n('value')]
         })

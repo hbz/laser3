@@ -8,11 +8,11 @@ import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.properties.*
 import de.laser.survey.SurveyResult
+import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
 
@@ -174,7 +174,7 @@ class PropertyService {
      */
     List addPrivatePropertyDefinition(GrailsParameterMap params) {
         log.debug("trying to add private property definition for institution: " + params)
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
         Org tenant = contextService.getOrg()
 
         if ( (params.pd_name && params.pd_descr && params.pd_type) &&

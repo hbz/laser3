@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.storage.RDStore; org.springframework.context.i18n.LocaleContextHolder; de.laser.Subscription; de.laser.IssueEntitlement; de.laser.stats.Counter4ApiSource; de.laser.stats.Counter4Report; de.laser.stats.Counter5Report" %>
+<%@ page import="de.laser.utils.DateUtils; de.laser.storage.RDStore; de.laser.Subscription; de.laser.IssueEntitlement; de.laser.stats.Counter4ApiSource; de.laser.stats.Counter4Report; de.laser.stats.Counter5Report" %>
 <laser:htmlStart message="subscription.details.stats.label" serviceInjection="true"/>
 
 <g:set var="subjects" value="${controlledListService.getAllPossibleSubjectsBySub(subscription)}"/>

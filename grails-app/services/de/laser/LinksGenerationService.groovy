@@ -5,10 +5,10 @@ import de.laser.auth.User
 import de.laser.exceptions.CreationException
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
+import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 
 /**
  * This service handles the display of hyperlinks between two linked objects and the
@@ -214,7 +214,7 @@ class LinksGenerationService {
      * @return result map OK if manipulation was successful, ERROR with a string describing the error otherwise
      */
     Map<String,Object> createOrUpdateLink(GrailsParameterMap params) {
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
         Map<String,Object> result = [institution:contextService.getOrg()]
         //error when no pair is given!
         params.keySet().each {

@@ -1,5 +1,5 @@
 <%--  model: [persons, restrictToOrg] --%>
-<%@ page import="de.laser.utils.LocaleUtils; de.laser.Org; de.laser.Person; de.laser.PersonRole; de.laser.I10nTranslation; org.springframework.context.i18n.LocaleContextHolder;" %>
+<%@ page import="de.laser.utils.LocaleUtils; de.laser.Org; de.laser.Person; de.laser.PersonRole; de.laser.I10nTranslation;" %>
 
 <g:set var="languageSuffix" value="${LocaleUtils.getCurrentLang()}"/>
 

@@ -5,6 +5,7 @@ import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.auth.UserOrg
 import de.laser.UserSetting.KEYS
+import de.laser.utils.LocaleUtils
 import de.laser.utils.PasswordUtils
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
@@ -12,7 +13,6 @@ import de.laser.properties.PropertyDefinition
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 
 /**
  * This controller manages calls to user profiles
@@ -63,7 +63,7 @@ class ProfileController {
     def properties() {
         Map<String, Object> propDefs = [:]
 
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
 
         String[] custPropDefs = PropertyDefinition.AVAILABLE_CUSTOM_DESCR.sort {a, b ->
             messageSource.getMessage("propertyDefinition.${a}.label", null, locale) <=> messageSource.getMessage("propertyDefinition.${b}.label", null, locale)

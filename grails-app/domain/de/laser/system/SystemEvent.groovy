@@ -6,7 +6,6 @@ import de.laser.utils.LocaleUtils
 import grails.converters.JSON
 import groovy.util.logging.Slf4j
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
 import java.time.LocalDate
@@ -229,10 +228,10 @@ class SystemEvent {
     private void _setInfo() {
         if (!i18n) {
             try {
-                i18n = BeanStore.getMessageSource().getMessage('se.' + token, null, LocaleContextHolder.locale)
+                i18n = BeanStore.getMessageSource().getMessage('se.' + token, null, LocaleUtils.getCurrentLocale())
             } catch (Exception e) {
                 log.warn '- missing locale for token: ' + token
-                i18n = BeanStore.getMessageSource().getMessage('se.UNKNOWN', null, LocaleContextHolder.locale)
+                i18n = BeanStore.getMessageSource().getMessage('se.UNKNOWN', null, LocaleUtils.getCurrentLocale())
             }
         }
     }

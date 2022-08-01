@@ -12,7 +12,6 @@ import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinition
 import grails.gorm.transactions.Transactional
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
 
@@ -543,7 +542,7 @@ class ControlledListService {
         Map result = [results:[]]
         Org org = contextService.getOrg()
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
         if(params.org == "true") {
             List allOrgs = DocContext.executeQuery('select distinct dc.org,dc.org.sortname from DocContext dc where dc.owner.owner = :ctxOrg and dc.org != null and (genfunc_filter_matcher(dc.org.name,:query) = true or genfunc_filter_matcher(dc.org.sortname,:query) = true) order by dc.org.sortname asc',[ctxOrg:org,query:params.query])
             allOrgs.each { DocContext it ->
@@ -619,7 +618,7 @@ class ControlledListService {
         titleTypes = TitleInstancePackagePlatform.executeQuery("select titleType from TitleInstancePackagePlatform where titleType is not null and pkg = :pkg and status = :status ", [pkg: pkg, status: tippStatus])
 
         if(titleTypes.size() == 0){
-            titleTypes << messageSource.getMessage('titleInstance.noTitleType.label', null, LocaleContextHolder.getLocale())
+            titleTypes << messageSource.getMessage('titleInstance.noTitleType.label', null, LocaleUtils.getCurrentLocale())
         }
         titleTypes
     }
@@ -637,7 +636,7 @@ class ControlledListService {
             titleTypes = TitleInstancePackagePlatform.executeQuery("select titleType from TitleInstancePackagePlatform where titleType is not null and pkg in (:pkg) ", [pkg: subscription.packages.pkg])
         }
         if(titleTypes.size() == 0){
-            titleTypes << messageSource.getMessage('titleInstance.noTitleType.label', null, LocaleContextHolder.getLocale())
+            titleTypes << messageSource.getMessage('titleInstance.noTitleType.label', null, LocaleUtils.getCurrentLocale())
         }
         titleTypes
     }
@@ -650,7 +649,6 @@ class ControlledListService {
      * @return a set of possible title types
      */
     Set<String> getAllPossibleMediumTypesByPackage(Package pkg, String forTitles) {
-        Locale locale = LocaleContextHolder.getLocale()
         RefdataValue tippStatus = getTippStatusForRequest(forTitles)
         Set<String> mediumTypes = []
 
@@ -666,7 +664,6 @@ class ControlledListService {
      * @return a set of possible title types
      */
     Set<String> getAllPossibleMediumTypesBySub(Subscription subscription) {
-        Locale locale = LocaleContextHolder.getLocale()
         Set<String> mediumTypes = []
 
         if(subscription.packages){
@@ -721,7 +718,7 @@ class ControlledListService {
         seriesName = TitleInstancePackagePlatform.executeQuery("select distinct(seriesName) from TitleInstancePackagePlatform where seriesName is not null and pkg = :pkg and status = :status order by seriesName", [pkg: pkg, status: tippStatus])
 
         if(seriesName.size() == 0){
-            seriesName << messageSource.getMessage('titleInstance.noSeriesName.label', null, LocaleContextHolder.getLocale())
+            seriesName << messageSource.getMessage('titleInstance.noSeriesName.label', null, LocaleUtils.getCurrentLocale())
         }
         seriesName
     }
@@ -739,7 +736,7 @@ class ControlledListService {
             seriesName = TitleInstancePackagePlatform.executeQuery("select distinct(seriesName) from TitleInstancePackagePlatform where seriesName is not null and pkg in (:pkg) order by seriesName", [pkg: subscription.packages.pkg])
         }
         if(seriesName.size() == 0){
-            seriesName << messageSource.getMessage('titleInstance.noSeriesName.label', null, LocaleContextHolder.getLocale())
+            seriesName << messageSource.getMessage('titleInstance.noSeriesName.label', null, LocaleUtils.getCurrentLocale())
         }
         seriesName
     }
@@ -820,7 +817,7 @@ class ControlledListService {
         List<String> rawSubjects = TitleInstancePackagePlatform.executeQuery("select distinct(subjectReference) from TitleInstancePackagePlatform where subjectReference is not null and pkg = :pkg and status = :status order by subjectReference", [pkg: pkg, status: tippStatus])
 
         if(rawSubjects.size() == 0){
-            subjects << messageSource.getMessage('titleInstance.noSubjectReference.label', null, LocaleContextHolder.getLocale())
+            subjects << messageSource.getMessage('titleInstance.noSubjectReference.label', null, LocaleUtils.getCurrentLocale())
         }
         else {
             rawSubjects.each { String rawSubject ->
@@ -850,7 +847,7 @@ class ControlledListService {
             rawSubjects = TitleInstancePackagePlatform.executeQuery("select distinct(subjectReference) from TitleInstancePackagePlatform where subjectReference is not null and pkg in (:pkg) order by subjectReference", [pkg: subscription.packages.pkg])
         }
         if(rawSubjects.size() == 0){
-            subjects << messageSource.getMessage('titleInstance.noSubjectReference.label', null, LocaleContextHolder.getLocale())
+            subjects << messageSource.getMessage('titleInstance.noSubjectReference.label', null, LocaleUtils.getCurrentLocale())
         }
         else {
             rawSubjects.each { String rawSubject ->
@@ -880,7 +877,7 @@ class ControlledListService {
         subjects = TitleInstancePackagePlatform.executeQuery("select distinct(Year(dateFirstOnline)) from TitleInstancePackagePlatform where dateFirstOnline is not null and pkg = :pkg and status = :status order by YEAR(dateFirstOnline)", [pkg: pkg, status: tippStatus])
 
         if(subjects.size() == 0){
-            subjects << messageSource.getMessage('default.selectionNotPossible.label', null, LocaleContextHolder.getLocale())
+            subjects << messageSource.getMessage('default.selectionNotPossible.label', null, LocaleUtils.getCurrentLocale())
         }
 
         subjects
@@ -899,7 +896,7 @@ class ControlledListService {
             yearsFirstOnline = TitleInstancePackagePlatform.executeQuery("select distinct(YEAR(dateFirstOnline)) from TitleInstancePackagePlatform where dateFirstOnline is not null and pkg in (:pkg) and status = :current order by YEAR(dateFirstOnline)", [pkg: subscription.packages.pkg,current: RDStore.TIPP_STATUS_CURRENT])
         }
         if(yearsFirstOnline.size() == 0){
-            yearsFirstOnline << messageSource.getMessage('default.selectionNotPossible.label', null, LocaleContextHolder.getLocale())
+            yearsFirstOnline << messageSource.getMessage('default.selectionNotPossible.label', null, LocaleUtils.getCurrentLocale())
         }
 
         yearsFirstOnline

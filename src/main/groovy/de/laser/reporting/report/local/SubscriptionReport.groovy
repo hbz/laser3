@@ -13,9 +13,9 @@ import de.laser.storage.BeanStore
 import de.laser.utils.DateUtils
 import de.laser.storage.RDStore
 import de.laser.reporting.report.myInstitution.base.BaseQuery
+import de.laser.utils.LocaleUtils
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
 
@@ -546,13 +546,13 @@ class SubscriptionReport {
 
     static String getMessage(String token) {
         MessageSource messageSource = BeanStore.getMessageSource()
-        messageSource.getMessage('reporting.local.subscription.' + token, null, LocaleContextHolder.getLocale())
+        messageSource.getMessage('reporting.local.subscription.' + token, null, LocaleUtils.getCurrentLocale())
     }
 
     static String getQueryLabel(String qKey, List qValues) {
         //println 'getQueryLabel(): ' + qKey + ' - ' + qValues
         MessageSource messageSource = BeanStore.getMessageSource()
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
 
         if (qValues[0].startsWith('generic')) {
             messageSource.getMessage('reporting.cfg.' + qValues[0], null, locale)

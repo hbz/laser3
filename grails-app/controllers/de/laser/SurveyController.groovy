@@ -25,6 +25,7 @@ import de.laser.survey.SurveyLinks
 import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyResult
 import de.laser.utils.DateUtils
+import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
@@ -1081,7 +1082,7 @@ class SurveyController {
             Boolean billingSumRounding = params.newBillingSumRounding == 'on'
             Boolean finalCostRounding = params.newFinalCostRounding == 'on'
 
-            NumberFormat format = NumberFormat.getInstance(LocaleContextHolder.getLocale())
+            NumberFormat format = NumberFormat.getInstance(LocaleUtils.getCurrentLocale())
             def cost_billing_currency = params.newCostInBillingCurrency ? format.parse(params.newCostInBillingCurrency).doubleValue() : null //0.00
 
 
@@ -3625,7 +3626,7 @@ class SurveyController {
             //moved to TAX_TYPES
             //RefdataValue cost_tax_type         = params.newCostTaxType ?          (RefdataValue.get(params.long('newCostTaxType'))) : null           //on invoice, self declared, etc
 
-            NumberFormat format = NumberFormat.getInstance(LocaleContextHolder.getLocale())
+            NumberFormat format = NumberFormat.getInstance(LocaleUtils.getCurrentLocale())
             def cost_billing_currency = params.newCostInBillingCurrency ? format.parse(params.newCostInBillingCurrency).doubleValue() : 0.00
             //def cost_currency_rate = params.newCostCurrencyRate ? params.double('newCostCurrencyRate', 1.00) : 1.00
             //def cost_local_currency = params.newCostInLocalCurrency ? format.parse(params.newCostInLocalCurrency).doubleValue() : 0.00

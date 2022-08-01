@@ -1,9 +1,9 @@
 // templates/jspc/_jspc.dict.js.gsp
 
-<%@ page import="java.util.Locale;java.util.List" %>
+<%@ page import="de.laser.utils.LocaleUtils; java.util.Locale;java.util.List" %>
 <%
-    Locale localeDe = new Locale.Builder().setLanguage("de").build()
-    Locale localeEn = new Locale.Builder().setLanguage("en").build()
+    Locale localeDe = LocaleUtils.getLocaleDE()
+    Locale localeEn = LocaleUtils.getLocaleEN()
 
     List<String> translations = [
             'confirm.dialog.clearUp',

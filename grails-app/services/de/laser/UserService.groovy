@@ -8,11 +8,11 @@ import de.laser.auth.UserRole
 import de.laser.config.ConfigMapper
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
+import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.web.mvc.FlashScope
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.validation.FieldError
 
 /**
@@ -97,7 +97,7 @@ class UserService {
      * @return the new user object or the error messages (null) in case of failure
      */
     User addNewUser(Map params, FlashScope flash) {
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
         User user = new User(params)
         user.enabled = true
 

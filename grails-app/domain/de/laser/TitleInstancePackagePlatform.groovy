@@ -8,8 +8,8 @@ import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.titles.TitleHistoryEvent
 import de.laser.utils.DateUtils
+import de.laser.utils.LocaleUtils
 import groovy.time.TimeCategory
-import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
 import java.text.Normalizer
@@ -306,7 +306,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
      */
     String getEbookFirstAutorOrFirstEditor(){
 
-        String label = BeanStore.getMessageSource().getMessage('title.firstAuthor.firstEditor.label',null, LocaleContextHolder.getLocale())
+        String label = BeanStore.getMessageSource().getMessage('title.firstAuthor.firstEditor.label',null, LocaleUtils.getCurrentLocale())
         if(firstEditor && firstAuthor) {
             return firstAuthor + ' ; ' + firstEditor + ' ' + label
         }

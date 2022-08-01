@@ -30,7 +30,6 @@ import grails.plugin.springsecurity.annotation.Secured
 import org.apache.http.HttpStatus
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
-import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.servlet.LocaleResolver
 import org.springframework.web.servlet.support.RequestContextUtils
 import de.laser.exceptions.ChangeAcceptException
@@ -302,13 +301,13 @@ class AjaxController {
         boolean defaultOrder = true
 
         if (config == null) {
-            String locale = LocaleUtils.getCurrentLang()
+            String lang = LocaleUtils.getCurrentLang()
             defaultOrder = false
             // If we werent able to locate a specific config override, assume the ID is just a refdata key
             config = [
                 domain      :'RefdataValue',
                 countQry    :"select count(rdv) from RefdataValue as rdv where rdv.owner.desc='" + params.id + "'",
-                rowQry      :"select rdv from RefdataValue as rdv where rdv.owner.desc='" + params.id + "' order by rdv.order asc, rdv.value_" + locale,
+                rowQry      :"select rdv from RefdataValue as rdv where rdv.owner.desc='" + params.id + "' order by rdv.order asc, rdv.value_" + lang,
                 qryParams   :[],
                 cols        :['value'],
                 format      :'simple'
@@ -1928,7 +1927,7 @@ class AjaxController {
 
 
                         if (target_object."${params.name}" instanceof BigDecimal) {
-                            result = NumberFormat.getInstance(LocaleContextHolder.getLocale()).format(target_object."${params.name}")
+                            result = NumberFormat.getInstance( LocaleUtils.getCurrentLocale() ).format(target_object."${params.name}")
                             //is for that German users do not cry about comma-dot-change
                         } else {
                             result = target_object."${params.name}"

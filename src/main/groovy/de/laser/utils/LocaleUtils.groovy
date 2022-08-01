@@ -6,8 +6,12 @@ import org.springframework.context.i18n.LocaleContextHolder
 @CompileStatic
 class LocaleUtils {
 
+    static Locale getCurrentLocale() {
+        LocaleContextHolder.getLocale()
+    }
+
     static String getCurrentLang() {
-        decodeLocale(LocaleContextHolder.getLocale())
+        decodeLocale(getCurrentLocale())
     }
 
     /**
@@ -40,7 +44,7 @@ class LocaleUtils {
     static String getLocalizedAttributeName(String attribute) {
         String localizedName
 
-        switch (LocaleContextHolder.getLocale()) {
+        switch (getCurrentLocale()) {
             case [Locale.GERMANY, Locale.GERMAN]:
                 localizedName = attribute + '_de'
                 break

@@ -165,11 +165,11 @@ class SurveyConfig {
      * @return the translation for the given survey type
      */
     static getLocalizedValue(key) {
-        String locale = LocaleUtils.getCurrentLang()
+        String lang = LocaleUtils.getCurrentLang()
 
         //println locale
         if (SurveyConfig.validTypes.containsKey(key)) {
-            return (SurveyConfig.validTypes.get(key)."${locale}") ?: SurveyConfig.validTypes.get(key)
+            return (SurveyConfig.validTypes.get(key)."${lang}") ?: SurveyConfig.validTypes.get(key)
         } else {
             return null
         }

@@ -11,11 +11,11 @@ import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyInfo
 import de.laser.system.SystemEvent
+import de.laser.utils.LocaleUtils
 import de.laser.utils.SqlDateUtils
 import grails.plugins.mail.MailService
 import grails.web.mapping.LinkGenerator
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 
 /**
  * This service takes care of the due dates: sets up and sends reminders about task end dates, due dates and notice periods linked to subscriptions, surveys or date properties (for organisations, subscriptions, platforms, person contacts or licenses)
@@ -52,7 +52,7 @@ class DashboardDueDatesService {
         from = ConfigMapper.getNotificationsEmailFrom()
         replyTo = ConfigMapper.getNotificationsEmailReplyTo()
         messageSource = BeanStore.getMessageSource()
-        locale = LocaleContextHolder.getLocale()
+        locale = LocaleUtils.getCurrentLocale()
         log.debug("Initialised DashboardDueDatesService...")
     }
 

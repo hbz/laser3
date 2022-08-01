@@ -3,13 +3,13 @@ package de.laser.ctrl
 import de.laser.*
 import de.laser.storage.RDStore
 import de.laser.oap.*
+import de.laser.utils.LocaleUtils
 import de.uni_freiburg.ub.Exception.InvalidRangeException
 import de.uni_freiburg.ub.IpRange
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.json.JsonOutput
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.dao.DataIntegrityViolationException
 
 /**
@@ -81,7 +81,7 @@ class AccessPointControllerService {
             // return only those input strings to UI which represent a invalid ip range
             Object[] args = [invalidRanges.join(' ')]
             result.invalidRanges = invalidRanges
-            result.error = messageSource.getMessage('accessPoint.invalid.ip', args, LocaleContextHolder.getLocale())
+            result.error = messageSource.getMessage('accessPoint.invalid.ip', args, LocaleUtils.getCurrentLocale())
             [result:result,status:STATUS_ERROR]
         }
         else [result:result,status:STATUS_OK]
@@ -95,7 +95,7 @@ class AccessPointControllerService {
      */
     Map<String,Object> createAccessPoint(GrailsParameterMap params, RefdataValue accessMethod) {
         Map<String,Object> result = [:]
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
         // without the org somehow passed we can only create AccessPoints for the context org
         Org orgInstance = accessService.checkPerm("ORG_CONSORTIUM") ? Org.get(params.id) : contextService.getOrg()
         if(!params.name) {
@@ -143,7 +143,7 @@ class AccessPointControllerService {
      */
     Map<String,Object> delete(GrailsParameterMap params) {
         Map<String,Object> result = [:]
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
         OrgAccessPoint accessPoint = OrgAccessPoint.get(params.id)
         if (!accessPoint) {
             Object[] args = [messageSource.getMessage('accessMethod.label',null,locale), params.id]

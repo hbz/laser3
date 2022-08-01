@@ -14,9 +14,9 @@ import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.traits.ShareableTrait
+import de.laser.utils.LocaleUtils
 import grails.plugins.orm.auditable.Auditable
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
-import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
 import java.text.Normalizer
@@ -526,7 +526,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
         derived_licenses.each { dl ->
             log.debug("Send pending change to ${dl.id}")
 
-            Locale locale = LocaleContextHolder.getLocale()
+            Locale locale = LocaleUtils.getCurrentLocale()
             String description = BeanStore.getMessageSource().getMessage('default.accept.placeholder',null, locale)
 
             String definedType = 'text'
@@ -621,7 +621,7 @@ class License extends AbstractBaseWithCalculatedLastUpdated
         String result = ''
         result += reference + " - " + statusString + " " + period
         if (CalculatedType.TYPE_PARTICIPATION == _getCalculatedType()) {
-            result += " - " + BeanStore.getMessageSource().getMessage('license.member', null, LocaleContextHolder.getLocale())
+            result += " - " + BeanStore.getMessageSource().getMessage('license.member', null, LocaleUtils.getCurrentLocale())
         }
 
         return result

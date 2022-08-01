@@ -12,7 +12,6 @@ import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.local.SubscriptionReport
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 
 import java.sql.Timestamp
 import java.time.Year
@@ -380,6 +379,6 @@ class BaseQuery {
     static String getChartLabel(String token) {
         //println 'getChartLabel(): ' + token
         MessageSource messageSource = BeanStore.getMessageSource()
-        messageSource.getMessage('reporting.chart.result.' + token, null, LocaleContextHolder.getLocale())
+        messageSource.getMessage('reporting.chart.result.' + token, null, LocaleUtils.getCurrentLocale())
     }
 }

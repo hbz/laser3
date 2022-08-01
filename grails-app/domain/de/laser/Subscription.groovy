@@ -16,9 +16,9 @@ import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.traits.ShareableTrait
+import de.laser.utils.LocaleUtils
 import grails.plugins.orm.auditable.Auditable
 import grails.web.servlet.mvc.GrailsParameterMap
-import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
 import java.text.SimpleDateFormat
@@ -757,7 +757,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
             log.debug("Send pending change to ${ds.id}")
 
-            Locale locale = LocaleContextHolder.getLocale()
+            Locale locale = LocaleUtils.getCurrentLocale()
             String description = BeanStore.getMessageSource().getMessage('default.accept.placeholder',null, locale)
             String definedType = 'text'
 
@@ -1026,7 +1026,7 @@ select distinct oap from OrgAccessPoint oap
                    additionalInfo =  orgRelationsMap.get(RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id)?.sortname
            }
            else{
-               additionalInfo = BeanStore.getMessageSource().getMessage('gasco.filter.consortialLicence',null, LocaleContextHolder.getLocale())
+               additionalInfo = BeanStore.getMessageSource().getMessage('gasco.filter.consortialLicence',null, LocaleUtils.getCurrentLocale())
            }
 
 

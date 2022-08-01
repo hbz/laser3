@@ -1,8 +1,8 @@
-<%@ page import="de.laser.utils.LocaleUtils; org.springframework.context.i18n.LocaleContextHolder; de.laser.I10nTranslation; de.laser.*; de.laser.auth.Role; de.laser.storage.RDConstants; de.laser.RefdataValue" %>
+<%@ page import="de.laser.utils.LocaleUtils; de.laser.I10nTranslation; de.laser.*; de.laser.auth.Role; de.laser.storage.RDConstants; de.laser.RefdataValue" %>
 
 <%
-    String locale = LocaleUtils.getCurrentLang()
-    String getAllRefDataValuesForCategoryQuery = "select rdv from RefdataValue as rdv where rdv.owner.desc=:category order by rdv.order, rdv.value_" + locale
+    String lang = LocaleUtils.getCurrentLang()
+    String getAllRefDataValuesForCategoryQuery = "select rdv from RefdataValue as rdv where rdv.owner.desc=:category order by rdv.order, rdv.value_" + lang
 %>
 
 <g:each in="${tmplConfigShow}" var="row">

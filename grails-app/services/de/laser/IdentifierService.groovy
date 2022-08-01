@@ -6,7 +6,6 @@ import de.laser.utils.LocaleUtils
 import de.laser.storage.RDStore
 import grails.gorm.transactions.Transactional
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 
 /**
  * This service manages generic identifier-related calls
@@ -52,7 +51,7 @@ class IdentifierService {
      */
     Map<String, Object> prepareIDsForTable(object, Org contextOrg = contextService.getOrg()) {
         boolean objIsOrgAndInst = object instanceof Org && object.getAllOrgTypeIds().contains(RDStore.OT_INSTITUTION.id)
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
         String lang = LocaleUtils.decodeLocale(locale)
         List<IdentifierNamespace> nsList = IdentifierNamespace.executeQuery('select idns from IdentifierNamespace idns where (idns.nsType = :objectType or idns.nsType = null) and idns.isFromLaser = true order by idns.name_'+lang+' asc',[objectType:object.class.name])
         Map<String, SortedSet> objectIds = [:]
