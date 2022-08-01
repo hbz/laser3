@@ -198,14 +198,8 @@
 
                                     <div class="divider"></div>
 
-                                    <%--<ui:link generateElementId="true" class="item" role="menuitem" controller="upload" action="reviewPackage">${message(code:'menu.datamanager.uploadPackage')}</ui:link>--%>
-                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="licenseImport" action="doImport">${message(code:'onix.import.license')}</ui:link>
-
-                                    <div class="divider"></div>
-
                                     <ui:link generateElementId="true" class="item" role="menuitem" controller="subscription" action="compare">${message(code:'menu.datamanager.compareSubscriptions')}</ui:link>
                                     <ui:link generateElementId="true" class="item" role="menuitem" controller="onixplLicenseCompare" action="index">${message(code:'menu.institutions.comp_onix')}</ui:link>
-                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="dataManager" action="changeLog">${message(code:'menu.datamanager.changelog')}</ui:link>
                                     <div class="divider"></div>
                                 </sec:ifAnyGranted>
 

@@ -223,8 +223,8 @@ class AdminController  {
                 'Subscription',
                 'TitleInstance',
                 'TitleInstancePackagePlatform',
-                'Combo',
-                'Doc'
+                'Combo'
+                //'Doc'
         ]
         result.jobList = jobList
 
