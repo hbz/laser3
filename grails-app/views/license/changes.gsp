@@ -12,7 +12,7 @@
         <semui:totalNumber total="${todoHistoryLinesTotal}"/>
     </h1>
 
-    <semui:anualRings object="${license}" controller="license" action="show" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
+    <semui:anualRings object="${license}" controller="license" action="changes" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
 
     <g:render template="nav" />
 
