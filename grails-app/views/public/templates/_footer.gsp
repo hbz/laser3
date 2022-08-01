@@ -125,20 +125,21 @@
             <div class="four wide column left aligned">
                 <h2 class="ui inverted header">${message(code: 'landingpage.footer.3.head')}</h2>
                 <div class="ui inverted link list">
+                    <g:set var="gitUrl" value="${AppUtils.getMeta('git.remote.origin.url')?.replace('.git', '')}" />
 
-                    <a target="_blank" class="item" href="https://github.com/hbz/laser2/releases">
+                    <a target="_blank" class="item" href="${gitUrl}/releases">
                         Version: ${AppUtils.getMeta('info.app.version')}
                     </a>
 
                     <g:if test="${AppUtils.getMeta('git.branch')}">
-                        <a target="_blank" class="item" href="https://github.com/hbz/laser2/tree/${AppUtils.getMeta('git.branch')}">
+                        <a target="_blank" class="item" href="${gitUrl}/tree/${AppUtils.getMeta('git.branch')}">
                             Branch: ${AppUtils.getMeta('git.branch')}
                         </a>
                     </g:if>
 
                     <div class="item">
                         <g:if test="${AppUtils.getMeta('git.commit.id')}">
-                            <a target="_blank" class="item" href="https://github.com/hbz/laser2/tree/${AppUtils.getMeta('git.commit.id')}">
+                            <a target="_blank" class="item" href="${gitUrl}/tree/${AppUtils.getMeta('git.commit.id')}">
                                 Build: ${AppUtils.getMeta('info.app.build.date')}
                             </a>
                         </g:if>
