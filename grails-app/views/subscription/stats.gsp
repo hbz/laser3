@@ -30,7 +30,7 @@
             <g:render template="iconSubscriptionIsChild"/>
             ${subscription.name}
         </h1>
-        <semui:anualRings object="${subscription}" controller="subscription" action="show" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+        <semui:anualRings object="${subscription}" controller="subscription" action="stats" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
         <g:render template="nav" />
 
