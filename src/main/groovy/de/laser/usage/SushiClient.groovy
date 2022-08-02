@@ -15,7 +15,7 @@ class SushiClient {
         ConfigMapper.getStatsApiUrl() + 'Sushiservice/GetReport'
     }
 
-    def query() {
+    void query() {
         log.debug("Calling STATS API:  ${clientOptions.reportName}, Title with ID ${clientOptions.statsTitleIdentifier}")
         log.debug("Period Begin: ${clientOptions.from}, Period End: ${clientOptions.mostRecentClosedPeriod}")
         String iType = clientOptions.statsIdentifierType ?: 'zdbid'
@@ -31,6 +31,7 @@ class SushiClient {
             log.error("An error occurred!")
         }
         http.get(BasicHttpClient.ResponseType.XML, success, failure)
+        http.close()
     }
 
     def getResult() {

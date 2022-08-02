@@ -91,9 +91,10 @@ class ElasticSearchHelper {
         if (idList) {
             List<List> pkgList = Package.executeQuery('select pkg.gokbId, pkg.id from Package pkg where pkg.id in (:idList)', [idList: idList])
 
+            BasicHttpClient client
             try {
                 Map rConfig = ConfigMapper.getConfig('reporting', Map) as Map
-                BasicHttpClient client = new BasicHttpClient( rConfig.elasticSearch.url + '/' + rConfig.elasticSearch.indices.packages + '/_search' )
+                client = new BasicHttpClient( rConfig.elasticSearch.url + '/' + rConfig.elasticSearch.indices.packages + '/_search' )
 
                 log.info 'Retrieving ' + pkgList.size() + ' items (chunksize ' + ELASTICSEARCH_CHUNKSIZE + ') from ' + client.url
 
@@ -131,6 +132,9 @@ class ElasticSearchHelper {
             catch (Exception e) {
                 log.error e.getMessage()
             }
+            finally {
+                if (client) { client.close() }
+            }
             result.orphanedIds = idList - result.records.keySet().collect{ Long.parseLong(it) }
         }
         result
@@ -142,9 +146,10 @@ class ElasticSearchHelper {
         if (idList) {
             List<List> pkgList = Platform.executeQuery('select plt.gokbId, plt.id from Platform plt where plt.id in (:idList)', [idList: idList])
 
+            BasicHttpClient client
             try {
                 Map rConfig = ConfigMapper.getConfig('reporting', Map) as Map
-                BasicHttpClient client = new BasicHttpClient( rConfig.elasticSearch.url + '/' + rConfig.elasticSearch.indices.platforms + '/_search' )
+                client = new BasicHttpClient( rConfig.elasticSearch.url + '/' + rConfig.elasticSearch.indices.platforms + '/_search' )
 
                 log.info 'Retrieving ' + pkgList.size() + ' items (chunksize ' + ELASTICSEARCH_CHUNKSIZE + ') from ' + client.url
 
@@ -182,6 +187,10 @@ class ElasticSearchHelper {
             catch (Exception e) {
                 log.error e.getMessage()
             }
+            finally {
+                if (client) { client.close() }
+            }
+
             result.orphanedIds = idList - result.records.keySet().collect{ Long.parseLong(it) }
         }
         result

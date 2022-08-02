@@ -85,6 +85,17 @@ class BasicHttpClient {
         this
     }
 
+    void close() {
+        try {
+            client.close()
+        }
+        catch(Exception e) {
+            log.error e.toString()
+        }
+    }
+
+    // --->
+
     HttpResponse get(ResponseType responseType) {
         get(null, responseType, null, null)
     }

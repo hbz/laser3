@@ -212,8 +212,9 @@ class StatsSyncService {
         ApiSource apiSource = ApiSource.findByActive(true)
         List<List> c4SushiSources = [], c5SushiSources = []
         //process each platform with a SUSHI API
+        BasicHttpClient http
         try {
-            BasicHttpClient http = new BasicHttpClient(apiSource.baseUrl+apiSource.fixToken+'/sushiSources')
+            http = new BasicHttpClient(apiSource.baseUrl+apiSource.fixToken+'/sushiSources')
             Closure success = { resp, json ->
                 if(resp.code() == 200) {
                     if(incremental) {
@@ -276,6 +277,10 @@ class StatsSyncService {
         catch (Exception ignored) {
             log.error("we:kb unavailable ... postpone next run!")
         }
+        finally {
+            if (http) { http.close() }
+        }
+
         Set<Long> namespaces = [IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISSN, TitleInstancePackagePlatform.class.name).id, IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISSN, TitleInstancePackagePlatform.class.name).id, IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISBN, TitleInstancePackagePlatform.class.name).id, IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.PISBN, TitleInstancePackagePlatform.class.name).id, IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.DOI, TitleInstancePackagePlatform.class.name).id]
             //c4SushiSources.each { Counter4ApiSource c4as ->
             c4SushiSources.each { List c4as ->
@@ -967,6 +972,7 @@ class StatsSyncService {
             config.readTimeout = Duration.ofMinutes(1)
             BasicHttpClient http = new BasicHttpClient(url, config)
             http.get(BasicHttpClient.ResponseType.JSON, success, failure)
+            http.close()
         }
         catch (Exception e) {
             result.error = "invalid response returned for ${url} - ${e.getMessage()}!"
@@ -984,10 +990,12 @@ class StatsSyncService {
      */
     def fetchXMLData(String url, requestBody) {
         def result = null
+
+        BasicHttpClient http
         try  {
             HttpClientConfiguration config = new DefaultHttpClientConfiguration()
             config.readTimeout = Duration.ofMinutes(1)
-            BasicHttpClient http = new BasicHttpClient(url, config)
+            http = new BasicHttpClient(url, config)
             Closure success = { resp, GPathResult xml ->
                 if(resp.code() == 200) {
                     result = xml
@@ -1005,6 +1013,9 @@ class StatsSyncService {
             result = [error: "invalid response returned for ${url} - ${e.getMessage()}!"]
             log.error("stack trace: ", e)
             log.error("Request body was: ${requestBody}")
+        }
+        finally {
+            if (http) { http.close() }
         }
         result
     }
@@ -1061,9 +1072,11 @@ class StatsSyncService {
             log.debug('Return available NatStat reports from cache')
             return availableReportCache[queryParamsHash]
         }
+
+        BasicHttpClient http
         try {
             List reportList = []
-            BasicHttpClient http = new BasicHttpClient(ConfigMapper.getStatsApiUrl() + "Sushiservice/GetReport?apikey=${queryParams.apiKey}&requestor_id=${queryParams.requestor.toString()}&customer_id=${queryParams.customer}&platform=${queryParams.platform}")
+            http = new BasicHttpClient(ConfigMapper.getStatsApiUrl() + "Sushiservice/GetReport?apikey=${queryParams.apiKey}&requestor_id=${queryParams.requestor.toString()}&customer_id=${queryParams.customer}&platform=${queryParams.platform}")
             Closure success = { resp, reader ->
                 if (resp.Report_ID && resp.Release) {
                     reportList.add(resp.Report_ID + 'R' + resp.Release)
@@ -1079,6 +1092,9 @@ class StatsSyncService {
             log.error(message)
             errors.add(message)
             log.error(e.message)
+        }
+        finally {
+            if (http) { http.close() }
         }
     }
 

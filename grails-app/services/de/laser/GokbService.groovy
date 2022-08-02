@@ -258,8 +258,9 @@ class GokbService {
     Map queryElasticsearch(String url){
         Map result = [:]
 
+        BasicHttpClient http
         try {
-            BasicHttpClient http = new BasicHttpClient( url.replaceAll(" ", "+") )
+            http = new BasicHttpClient( url.replaceAll(" ", "+") )
 
             Closure success = { resp, json ->
                 log.info ("server response: ${resp.getStatus().getReason()}")
@@ -281,6 +282,9 @@ class GokbService {
 
         } catch (Exception e) {
             log.error e.getMessage()
+        }
+        finally {
+            if (http) { http.close() }
         }
         result
     }

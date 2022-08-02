@@ -1949,6 +1949,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 throw new SyncException("error on request: ${resp.status()} : ${reader}")
         }
         http.post(BasicHttpClient.ResponseType.JSON, BasicHttpClient.PostType.URLENC, queryParams, success, failure)
+        http.close()
+
         result
     }
 

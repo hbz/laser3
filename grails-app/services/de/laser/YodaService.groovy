@@ -169,6 +169,8 @@ class YodaService {
                                            max: 10000,
                                            status: ['Removed', GlobalSourceSyncService.PERMANENTLY_DELETED]]
         http.post(BasicHttpClient.ResponseType.JSON, BasicHttpClient.PostType.URLENC, queryParams, success, failure)
+        http.close()
+
         if(wekbUuids) {
             wekbUuids.each { String key, String status ->
                 TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbId(key)
