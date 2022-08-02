@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      02.08.2022  rc-2.3  2.3.3       Andreas Bug         Fremdschlüsselverletzung bei Tilgen entfernter Titel beseitigt
+
 4380    01.08.2022  rc-2.3  2.3.3       Andreas Bug         Statistikreiter wurde bei Springen zwischen den Jahresringen nicht beibehalten
 
 4379    01.08.2022  rc-2.3  2.3.3       Andreas Feature     Umstrukturierung der Umfragedetailsicht
