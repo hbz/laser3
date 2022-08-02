@@ -194,7 +194,7 @@ grails:
 # ---[ hibernate, dataSource, environments ---
 
 hibernate:
-    allow_update_outside_transaction: false
+    allow_update_outside_transaction: true # false : todo: fallback for dataloadService
     cache:
         default_schema: 'public'
         ehcache:

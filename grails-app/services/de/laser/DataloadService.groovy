@@ -40,10 +40,9 @@ class DataloadService {
 
     ESWrapperService ESWrapperService
     ExecutorService executorService
-    //def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
     GlobalService globalService
 
-    def stats = [:]
+    final static int BULK_SIZE = 5000
 
     boolean update_running = false
     def lastIndexUpdate = null
@@ -874,9 +873,7 @@ class DataloadService {
 
         int count = 0
         long total = 0
-
         long highest_timestamp = 0
-        long highest_id = 0
 
         FTControl.withTransaction {
 
@@ -890,19 +887,16 @@ class DataloadService {
             }
 
             try {
-
                 if (latest_ft_record.active) {
 
                     if (ESWrapperService.testConnection() && es_indices && es_indices.get(domain.simpleName)) {
                         //log.debug("updateES - ${domain.name}")
-
                         //log.debug("result of findByDomain: ${latest_ft_record}")
 
                         log.debug("updateES ${domain.name} since ${new Date(latest_ft_record.lastTimestamp)}")
                         Date from = new Date(latest_ft_record.lastTimestamp)
-                        // def qry = domain.findAllByLastUpdatedGreaterThan(from,[sort:'lastUpdated'])
 
-                        def query
+                        List query
 
                         Class domainClass = CodeUtils.getDomainClass(domain.name)
                         if (org.apache.commons.lang.ClassUtils.getAllInterfaces(domainClass).contains(CalculatedLastUpdated)) {
@@ -911,18 +905,13 @@ class DataloadService {
                             query = domain.executeQuery("select d.id from " + domain.name + " as d where (d.lastUpdated > :from) or (d.dateCreated > :from and d.lastUpdated is null) order by d.lastUpdated asc, d.id", [from: from], [readonly: true]);
                         }
 
-                        //log.debug("Query completed .. processing rows ..")
-
                         String rectype
-
-                        //BulkRequest bulkRequest = new BulkRequest()
                         BulkRequest bulkRequest = new BulkRequest();
 
                         FTControl.withNewSession { Session session ->
                             for (domain_id in query) {
                                 Object r = domain.get(domain_id)
-                                def idx_record = recgen_closure(r)
-                                def future
+                                Map idx_record = recgen_closure(r)
                                 if (idx_record['_id'] == null) {
                                     log.error("******** Record without an ID: ${idx_record} Obj:${r} ******** ")
                                     continue
@@ -940,9 +929,6 @@ class DataloadService {
 
                                 bulkRequest.add(request)
 
-                                //bulkRequest.add(request)
-
-                                //println(request)
                                 /*IndexResponse indexResponse = esclient.index(request, RequestOptions.DEFAULT);
 
                         String index = indexResponse.getIndex();
@@ -970,14 +956,11 @@ class DataloadService {
                                     highest_timestamp = r.lastUpdated?.getTime();
                                 }
 
-                                //println(count)
-                                //println(total)
                                 count++
                                 total++
-                                if (count == 100) {
+                                if (count >= BULK_SIZE) {
                                     count = 0;
-
-                                    log.debug("noa ---> ${bulkRequest.numberOfActions()} : esib ---> ${bulkRequest.estimatedSizeInBytes()}") // TODO : remove
+                                    // log.debug("noa ---> ${bulkRequest.numberOfActions()} : esib ---> ${bulkRequest.estimatedSizeInBytes()}")
 
                                     BulkResponse bulkResponse = esclient.bulk(bulkRequest, RequestOptions.DEFAULT)
 
@@ -985,15 +968,17 @@ class DataloadService {
                                         for (BulkItemResponse bulkItemResponse : bulkResponse) {
                                             if (bulkItemResponse.isFailed()) {
                                                 BulkItemResponse.Failure failure = bulkItemResponse.getFailure()
-                                                log.debug("updateES ${domain.name}: ES Bulk operation has failure -> ${failure}")
+                                                log.warn("updateES ${domain.name}: #1 bulk operation failure -> ${failure}")
                                             }
                                         }
                                     }
 
-                                    log.debug("processed ${total} records (${domain.name})")
+                                    log.debug("- processed ${total} of ${query.size()} records ( ${domain.name} )")
                                     latest_ft_record.lastTimestamp = highest_timestamp
                                     latest_ft_record.save()
-                                    //session.flush()
+                                    session.flush()
+
+                                    bulkRequest = new BulkRequest()
                                 }
                             }
 
@@ -1003,21 +988,20 @@ class DataloadService {
                                 if (bulkResponse.hasFailures()) {
                                     for (BulkItemResponse bulkItemResponse : bulkResponse) {
                                         if (bulkItemResponse.isFailed()) {
-                                            BulkItemResponse.Failure failure =
-                                                    bulkItemResponse.getFailure()
-                                            println("ES Bulk operation has failure: " + failure)
+                                            BulkItemResponse.Failure failure = bulkItemResponse.getFailure()
+                                            log.warn("updateES ${domain.name}: #2 bulk operation failure -> ${failure}")
                                         }
                                     }
                                 }
                                 session.flush()
                             }
 
-                            log.debug("Processed ${total} records for ${domain.name}")
+                            log.debug("- finally processed ${total} records ( ${domain.name} )")
 
                             // update timestamp
                             latest_ft_record.lastTimestamp = highest_timestamp
                             latest_ft_record.save()
-                            session.flush()
+                            //session.flush()
                             session.clear()
                         }
                     } else {

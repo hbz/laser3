@@ -18,7 +18,6 @@ class StatusUpdateService extends AbstractLockableService {
     ContextService contextService
     GenericOIDService genericOIDService
     GlobalSourceSyncService globalSourceSyncService
-     //def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
 
     /**
      * Cronjob-triggered.
@@ -380,7 +379,6 @@ class StatusUpdateService extends AbstractLockableService {
                 }
                 stat.flush()
                 //sess.clear()
-                // //propertyInstanceMap.get().clear()
             }
         }
     }
