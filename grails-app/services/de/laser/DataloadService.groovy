@@ -977,6 +977,8 @@ class DataloadService {
                                 if (count == 100) {
                                     count = 0;
 
+                                    log.debug("noa ---> ${bulkRequest.numberOfActions()} : esib ---> ${bulkRequest.estimatedSizeInBytes()}") // TODO : remove
+
                                     BulkResponse bulkResponse = esclient.bulk(bulkRequest, RequestOptions.DEFAULT)
 
                                     if (bulkResponse.hasFailures()) {
