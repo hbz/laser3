@@ -28,6 +28,7 @@ import org.elasticsearch.client.core.CountResponse
 import org.elasticsearch.common.xcontent.XContentType
 import org.elasticsearch.rest.RestStatus
 import org.hibernate.Session
+import org.springframework.transaction.TransactionStatus
 
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Future
@@ -696,53 +697,6 @@ class DataloadService {
             result
         }
 
-        /*
-        updateES(SubscriptionPrivateProperty.class) { subPrivProp ->
-            def result = [:]
-
-            result._id = subPrivProp.getClass().getSimpleName().toLowerCase()+":"+subPrivProp.id
-            result.priority = 45
-            result.dbId = subPrivProp.id
-            result.name = subPrivProp.type?.name
-
-            result.visible = 'Private'
-            result.rectype = subPrivProp.getClass().getSimpleName()
-
-            if(subPrivProp.type.isIntegerType()){
-                result.description = subPrivProp.intValue
-            }
-            else if(subPrivProp.type.isStringType()){
-                result.description = subPrivProp.stringValue
-            }
-            else if(subPrivProp.type.isBigDecimalType()){
-                result.description = subPrivProp.decValue
-            }
-            else if(subPrivProp.type.isDateType()){
-                result.description = subPrivProp.dateValue
-            }
-            else if(subPrivProp.type.isURLType()){
-                result.description = subPrivProp.urlValue
-            }
-            else if(subPrivProp.type.isRefdataValueType()){
-                result.description = subPrivProp.refValue?.value
-            }
-
-
-
-            if(subPrivProp.owner){
-                result.objectId = subPrivProp.owner.id
-                result.objectName = subPrivProp.owner.name
-                result.objectTypeId = subPrivProp.owner.type?.id
-                result.objectClassName = subPrivProp.owner.getClass().getSimpleName().toLowerCase()
-            }
-
-            result.dateCreated = subPrivProp.dateCreated
-            result.lastUpdated = subPrivProp.lastUpdated
-
-            result
-        }
-         */
-
         updateES(LicenseProperty.class) { LicenseProperty licProp ->
             def result = [:]
 
@@ -801,54 +755,6 @@ class DataloadService {
             result
         }
 
-        /*
-        updateES( LicensePrivateProperty.class) { licPrivProp ->
-            def result = [:]
-
-            result._id = licPrivProp.getClass().getSimpleName().toLowerCase()+":"+licPrivProp.id
-            result.priority = 45
-            result.dbId = licPrivProp.id
-            result.name = licPrivProp.type?.name
-
-            result.visible = 'Private'
-            result.rectype = licPrivProp.getClass().getSimpleName()
-
-            if(licPrivProp.type.isIntegerType()){
-                result.description = licPrivProp.intValue
-            }
-            else if(licPrivProp.type.isStringType()){
-                result.description = licPrivProp.stringValue
-            }
-            else if(licPrivProp.type.isBigDecimalType()){
-                result.description = licPrivProp.decValue
-            }
-            else if(licPrivProp.type.isDateType()){
-                result.description = licPrivProp.dateValue
-            }
-            else if(licPrivProp.type.isURLType()){
-                result.description = licPrivProp.urlValue
-            }
-            else if(licPrivProp.type.isRefdataValueType()){
-                result.description = licPrivProp.refValue?.value
-            }
-
-            result.availableToOrgs = [licPrivProp.type.tenant?.id ?: 0]
-
-
-            if(licPrivProp.owner){
-                result.objectId = licPrivProp.owner.id
-                result.objectName = licPrivProp.owner.reference
-                result.objectTypeId = licPrivProp.owner.type?.id
-                result.objectClassName = licPrivProp.owner.getClass().getSimpleName().toLowerCase()
-            }
-
-            result.dateCreated = licPrivProp.dateCreated
-            result.lastUpdated = licPrivProp.lastUpdated
-
-            result
-        }
-        */
-
         update_running = false
         long elapsed = System.currentTimeMillis() - start_time
         lastIndexUpdate = new Date()
@@ -866,7 +772,7 @@ class DataloadService {
      * @param recgen_closure the closure to be used for record generation
      * @see ESWrapperService#ES_Indices
      */
-    def updateES( domain, recgen_closure) {
+    void updateES( domain, recgen_closure) {
 
         RestHighLevelClient esclient = ESWrapperService.getClient()
         Map es_indices = ESWrapperService.ES_Indices
@@ -875,7 +781,7 @@ class DataloadService {
         long total = 0
         long highest_timestamp = 0
 
-        FTControl.withTransaction {
+        FTControl.withTransaction { TransactionStatus ts ->
 
             FTControl latest_ft_record = FTControl.findByDomainClassNameAndActivity(domain.name, 'ESIndex')
 
@@ -928,28 +834,6 @@ class DataloadService {
                                 request.source(jsonString, XContentType.JSON)
 
                                 bulkRequest.add(request)
-
-                                /*IndexResponse indexResponse = esclient.index(request, RequestOptions.DEFAULT);
-
-                        String index = indexResponse.getIndex();
-                        String id = indexResponse.getId();
-                        if (indexResponse.getResult() == DocWriteResponse.Result.CREATED) {
-                            //log.debug("CREATED ${domain.name}")
-                        } else if (indexResponse.getResult() == DocWriteResponse.Result.UPDATED) {
-                            //log.debug("UPDATED ${domain.name}")
-                        } else {
-                            log.debug("ELSE ${domain.name}: ${indexResponse.getResult()}")
-                        }
-                        ReplicationResponse.ShardInfo shardInfo = indexResponse.getShardInfo();
-                        if (shardInfo.getTotal() != shardInfo.getSuccessful()) {
-
-                        }
-                        if (shardInfo.getFailed() > 0) {
-                            for (ReplicationResponse.ShardInfo.Failure failure : shardInfo.getFailures()) {
-                                String reason = failure.reason()
-                                println(reason)
-                            }
-                        }*/
 
                                 //latest_ft_record.lastTimestamp = r.lastUpdated?.getTime()
                                 if (r.lastUpdated?.getTime() > highest_timestamp) {
@@ -1033,7 +917,7 @@ class DataloadService {
                     checkESElementswithDBElements(domain.name)
                 }
                 catch (Exception e) {
-                    log.error("Problem by Close ES Client", e);
+                    log.error(e.toString())
                 }
             }
         }
@@ -1126,7 +1010,6 @@ class DataloadService {
     }
 
     log.debug("Completed normalisation step... updated ${rows_updated} rows in ${System.currentTimeMillis()-sort_str_start_time}ms");
-
   }
 
     /**
@@ -1177,11 +1060,10 @@ class DataloadService {
                 }
 
                 try {
-
                     client.close()
                 }
                 catch (Exception e) {
-                    log.error("Problem by Close ES Client", e);
+                    log.error(e.toString())
                 }
 
                 log.debug("Do updateFTIndexes");
@@ -1207,9 +1089,9 @@ class DataloadService {
         Map es_indices = ESWrapperService.ES_Indices
 
         try {
-
             if(ESWrapperService.testConnection()) {
-                log.debug("Begin to check ES Elements with DB Elements")
+                log.debug("Element comparison: ES <-> DB ( ${domainClassName} )")
+
                 FTControl ftControl = FTControl.findByDomainClassName(domainClassName)
 
                 if (ftControl && ftControl.active) {
@@ -1241,20 +1123,18 @@ class DataloadService {
                             ftControl.save()
                         }
                     }
-                log.debug("End to check ES Elements with DB Elements")
+                log.debug("Completed element comparison: ES <-> DB ( ${domainClassName} )")
             }
         }
-            finally {
-                try {
-                    esclient.close()
-                }
-                catch (Exception e) {
-                    log.error("Problem by Close ES Client", e);
-                }
+        finally {
+            try {
+                esclient.close()
             }
-
+            catch (Exception e) {
+                log.error(e.toString())
+            }
+        }
         return true
-
     }
 
     /**
@@ -1265,14 +1145,13 @@ class DataloadService {
      */
     boolean checkESElementswithDBElements() {
 
-        log.debug("Begin to check ES Elements with DB Elements")
-
         RestHighLevelClient esclient = ESWrapperService.getClient()
         Map es_indices = ESWrapperService.ES_Indices
 
         try {
-
             if(ESWrapperService.testConnection()) {
+                log.debug("Element comparison: ES <-> DB")
+
                 FTControl.list().each { ft ->
 
                     if (ft.active) {
@@ -1305,6 +1184,7 @@ class DataloadService {
                         }
                     }
                 }
+                log.debug("Completed element comparison: ES <-> DB")
             }
         }
         finally {
@@ -1312,12 +1192,9 @@ class DataloadService {
                 esclient.close()
             }
             catch (Exception e) {
-                log.error("Problem by Close ES Client", e);
+                log.error(e.toString())
             }
         }
-
-        log.debug("End to check ES Elements with DB Elements")
-
         return true
     }
 
