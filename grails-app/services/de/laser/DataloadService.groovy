@@ -12,6 +12,7 @@ import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.interfaces.CalculatedType
 import de.laser.titles.TitleInstance
 import de.laser.utils.CodeUtils
+import de.laser.utils.DateUtils
 import grails.converters.JSON
 import org.apache.commons.lang3.ClassUtils
 import org.elasticsearch.action.bulk.BulkItemResponse
@@ -47,7 +48,6 @@ class DataloadService {
     final static int BULK_SIZE = 5000
 
     boolean update_running = false
-    def lastIndexUpdate = null
     Future activeFuture
 
     /**
@@ -758,10 +758,9 @@ class DataloadService {
 
         update_running = false
         long elapsed = System.currentTimeMillis() - start_time
-        lastIndexUpdate = new Date()
 
         log.debug("IndexUpdateJob completed in ${elapsed}ms at ${new Date()} ")
-        SystemEvent.createEvent('FT_INDEX_UPDATE_END')
+        SystemEvent.createEvent('FT_INDEX_UPDATE_END', [ms: elapsed])
 
         return true
     }
@@ -1187,6 +1186,22 @@ class DataloadService {
             }
         }
         return true
+    }
+
+    String getLastFTIndexUpdateInfo() {
+        String info = '?'
+
+        SystemEvent se = SystemEvent.getLastByToken('FT_INDEX_UPDATE_END')
+        if (se) {
+            info = DateUtils.getLocalizedSDF_noZ().format(se.created)
+            if (se.payload) {
+                long ms = JSON.parse(se.payload).ms
+                if (ms) {
+                    info += ' (' + (ms/1000/60) + ' min.)'
+                }
+            }
+        }
+        info
     }
 
     /**

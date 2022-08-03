@@ -59,11 +59,22 @@
         <tbody>
     </table>
 
+    <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
+        <thead>
+            <tr><th class="seven wide">Files</th><th class="nine wide"></th></tr>
+        </thead>
+        <tbody>
+            <tr><td>Document storage</td><td> ${docStore.folderPath}</td></tr>
+            <tr><td>Files count</td><td> ${docStore.filesCount}</td></tr>
+            <tr><td>Storage size</td><td> ${docStore.folderSize} MB</td></tr>
+        </tbody>
+    </table>
+
     <g:set var="ES_URL" value="${BeanStore.getESWrapperService().getUrl() ?: 'unbekannt'}" />
 
     <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
         <thead>
-            <tr><th class="seven wide">ES Index</th><th class="nine wide"></th></tr>
+            <tr><th class="seven wide">FTControl / ES Index</th><th class="nine wide"></th></tr>
         </thead>
         <tbody>
             <tr>
@@ -76,22 +87,22 @@
                     ${BeanStore.getESWrapperService().ES_Indices}
                 </td>
             </tr>
-            <tr><td>Currently running</td><td>${dataloadService.update_running}</td></tr>
-            <tr><td>Last update run</td><td>${dataloadService.lastIndexUpdate}</td></tr>
-            <g:each in="${esinfos}" var="es">
-                <tr><td>DomainClass: ${es.domainClassName}</td><td>DB Elements: ${es.dbElements}, ES Elements: ${es.esElements}<br /> Last Update: ${new Date(es.lastTimestamp)}</td></tr>
+            <tr><td>Currently running</td><td>${dataload.update_running}</td></tr>
+            <tr><td>Last doFTUpdate</td><td>${dataload.lastFTIndexUpdateInfo}</td></tr>
+            <g:each in="${ftcInfos}" var="ftc">
+                <tr>
+                    <td>Domain: ${ftc.domainClassName}</td>
+                    <td>
+                        Elements in DB: ${ftc.dbElements}, ES: ${ftc.esElements}<br />
+                        <g:if test="${ftc.lastTimestamp}">
+                            Last ftUpdate: ${DateUtils.getLocalizedSDF_noZ().format(new Date(ftc.lastTimestamp))}
+                        </g:if>
+                        <g:else>
+                            No last ftUpdate info
+                        </g:else>
+                    </td>
+                </tr>
             </g:each>
-        </tbody>
-    </table>
-
-    <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
-        <thead>
-        <tr><th class="seven wide">Files</th><th class="nine wide"></th></tr>
-        </thead>
-        <tbody>
-        <tr><td>Document storage</td><td> ${docStore.folderPath}</td></tr>
-        <tr><td>Files count</td><td> ${docStore.filesCount}</td></tr>
-        <tr><td>Storage size</td><td> ${docStore.folderSize} MB</td></tr>
         </tbody>
     </table>
 
@@ -100,7 +111,7 @@
             <tr><th class="seven wide">Global Data Sync</th><th class="nine wide"></th></tr>
         </thead>
         <tbody>
-            <tr><td>Currently running</td><td>${globalSourceSyncService.running}</td></tr>
+            <tr><td>Currently running</td><td>${globalSourceSync.running}</td></tr>
         </tbody>
     </table>
 
@@ -142,29 +153,29 @@
             <tr><th class="seven wide">STATS Sync Service</th><th class="nine wide"></th></tr>
         </thead>
         <tbody>
-            <tr><td>Currently running</td><td>${statsSyncService.running}</td></tr>
-            <tr><td>Completed count</td><td>${statsSyncService.completedCount}</td></tr>
-            <tr><td>New fact count</td><td>${statsSyncService.newFactCount}</td></tr>
-            <tr><td>Total time (all threads)</td><td>${statsSyncService.totalTime} (ms)</td></tr>
-            <tr><td>Total time elapsed</td><td>${statsSyncService.syncElapsed} (ms)</td></tr>
-            <tr><td>Thread pool size</td><td>${statsSyncService.threads}</td></tr>
+            <tr><td>Currently running</td><td>${statsSync.running}</td></tr>
+            <tr><td>Completed count</td><td>${statsSync.completedCount}</td></tr>
+            <tr><td>New fact count</td><td>${statsSync.newFactCount}</td></tr>
+            <tr><td>Total time (all threads)</td><td>${statsSync.totalTime} (ms)</td></tr>
+            <tr><td>Total time elapsed</td><td>${statsSync.syncElapsed} (ms)</td></tr>
+            <tr><td>Thread pool size</td><td>${statsSync.threads}</td></tr>
             <tr><td>Last start time</td>
             <td>
-                <g:if test="${statsSyncService.syncStartTime != 0}">
-                    <g:formatDate date="${new Date(statsSyncService.syncStartTime)}" format="yyyy-MM-dd hh:mm"/>
+                <g:if test="${statsSync.syncStartTime != 0}">
+                    <g:formatDate date="${new Date(statsSync.syncStartTime)}" format="yyyy-MM-dd hh:mm"/>
                 </g:if>
                 <g:else>
                     Not started yet
                 </g:else>
             </tr>
-            <tr><td>Initial query time</td><td>${statsSyncService.queryTime} (ms)</td></tr>
+            <tr><td>Initial query time</td><td>${statsSync.queryTime} (ms)</td></tr>
 
-            <g:if test="${((statsSyncService.completedCount != 0) && (statsSyncService.totalTime != 0))}">
-                <tr><td>Average time per STATS triple (current/last run)</td><td>${statsSyncService.totalTime/statsSyncService.completedCount} (ms)</td></tr>
+            <g:if test="${((statsSync.completedCount != 0) && (statsSync.totalTime != 0))}">
+                <tr><td>Average time per STATS triple (current/last run)</td><td>${statsSync.totalTime/statsSync.completedCount} (ms)</td></tr>
             </g:if>
             <tr><td>Activity histogram</td>
             <td>
-                <g:each in="${statsSyncService.activityHistogram}" var="ah">
+                <g:each in="${statsSync.activityHistogram}" var="ah">
                     ${ah.key}:${ah.value}<br />
                 </g:each>
             </td></tr>

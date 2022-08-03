@@ -212,6 +212,10 @@ class SystemEvent {
         result.unique().sort()
     }
 
+    static SystemEvent getLastByToken(String token) {
+        find('from SystemEvent se where se.token = :token order by se.created desc', [token: token])
+    }
+
     /**
      * Cleans up recorded system events which are older than three years
      * @return the count of deleted events
@@ -219,8 +223,6 @@ class SystemEvent {
     static int cleanUpOldEvents() {
         executeUpdate('delete from SystemEvent se where se.created <= :limit', [limit: DateUtils.localDateToSqlDate( LocalDate.now().minusYears(3) )])
     }
-
-    // GETTER
 
     /**
      * This method is actually a getter. It gets the internationalised message by the system event token
@@ -235,6 +237,8 @@ class SystemEvent {
             }
         }
     }
+
+    // GETTER
 
     /**
      * Gets a certain part of the internationalised message string

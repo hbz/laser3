@@ -821,10 +821,10 @@ class YodaController {
         Map<String, Object> result = [:]
         log.debug("manageFTControle ..")
         result.ftControls = FTControl.list([sort: 'domainClassName'])
-        result.dataloadService = [:]
-        result.dataloadService.lastIndexUpdate = dataloadService.lastIndexUpdate
-        result.dataloadService.update_running = dataloadService.update_running
-        result.dataloadService.lastIndexUpdate = dataloadService.lastIndexUpdate
+        result.dataload = [
+            update_running : dataloadService.update_running,
+            lastFTIndexUpdateInfo : dataloadService.getLastFTIndexUpdateInfo()
+        ]
         result.editable = true
 
         RestHighLevelClient esclient = ESWrapperService.getClient()

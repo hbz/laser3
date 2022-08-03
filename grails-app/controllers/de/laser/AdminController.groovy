@@ -1447,16 +1447,14 @@ SELECT * FROM (
                 docStore: AppUtils.getDocumentStorageInfo()
         ]
 
-        result.statsSyncService = [:]
-
-        result.globalSourceSyncService = [
+        result.globalSourceSync = [
                 running: globalSourceSyncService.running
                 ]
-        result.dataloadService = [
+        result.dataload = [
                 update_running: dataloadService.update_running,
-                lastIndexUpdate: dataloadService.lastIndexUpdate
+                lastFTIndexUpdateInfo: dataloadService.getLastFTIndexUpdateInfo()
         ]
-        result.statsSyncService = [
+        result.statsSync = [
                 running: statsSyncService.running,
                 submitCount: statsSyncService.submitCount,
                 completedCount: statsSyncService.completedCount,
@@ -1468,7 +1466,7 @@ SELECT * FROM (
                 syncStartTime: statsSyncService.syncStartTime,
                 syncElapsed: statsSyncService.syncElapsed
                 ]
-        result.esinfos = FTControl.list()
+        result.ftcInfos = FTControl.list()
 
         List dbmQuery = (sessionFactory.currentSession.createSQLQuery(
                 'SELECT filename, id, dateexecuted from databasechangelog order by orderexecuted desc limit 1'
