@@ -237,7 +237,7 @@ class FinanceControllerService {
             costItemSigns:      RefdataCategory.getAllRefdataValues(RDConstants.COST_CONFIGURATION),
             costItemElements:   CostItemElementConfiguration.executeQuery('select ciec from CostItemElementConfiguration ciec join ciec.costItemElement cie where ciec.forOrganisation = :org order by cie.value_'+lang+' asc',[org:org]),
             taxType:            RefdataCategory.getAllRefdataValues(RDConstants.TAX_TYPE),
-            budgetCodes:        BudgetCode.findAllByOwner(org),
+            budgetCodes:        BudgetCode.findAllByOwner(org, [sort: 'value']),
             currency:           financeService.orderedCurrency()
         ]
     }

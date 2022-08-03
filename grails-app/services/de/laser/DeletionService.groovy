@@ -16,6 +16,7 @@ import de.laser.survey.SurveyResult
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5Report
 import de.laser.system.SystemProfiler
+import de.laser.titles.TitleHistoryEvent
 import de.laser.titles.TitleHistoryEventParticipant
 import groovy.util.logging.Slf4j
 import org.elasticsearch.action.delete.DeleteRequest
@@ -904,6 +905,7 @@ class DeletionService {
                 log.info("${PriceItem.executeUpdate('delete from PriceItem pi where pi.tipp in (:toDelete)', toDelete)} price items deleted")
                 log.info("${OrgRole.executeUpdate('delete from OrgRole oo where oo.tipp in (:toDelete)', toDelete)} org roles deleted")
                 log.info("${TitleHistoryEventParticipant.executeUpdate('delete from TitleHistoryEventParticipant thep where thep.participant in (:toDelete)', toDelete)} title history event participants deleted")
+                log.info("${TitleHistoryEvent.executeUpdate('delete from TitleHistoryEvent the where the.tipp in (:toDelete)', toDelete)} title history events deleted")
                 log.info("${Fact.executeUpdate('delete from Fact f where f.relatedTitle in (:toDelete)', toDelete)} facts deleted")
                 log.info("${Counter4Report.executeUpdate('delete from Counter4Report c4r where c4r.title in (:toDelete)', toDelete)} COUNTER 4 reports deleted")
                 log.info("${Counter5Report.executeUpdate('delete from Counter5Report c5r where c5r.title in (:toDelete)', toDelete)} COUNTER 5 reports deleted")
