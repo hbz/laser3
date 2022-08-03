@@ -99,7 +99,7 @@ class DataloadService {
 
         long start_time = System.currentTimeMillis()
 
-        updateES(Org.class) { org ->
+        updateES( Org.class ) { Org org ->
             def result = [:]
 
                 result._id = org.globalUID
@@ -153,7 +153,7 @@ class DataloadService {
             result
         }
 
-        updateES(TitleInstancePackagePlatform.class) { TitleInstancePackagePlatform tipp ->
+        updateES( TitleInstancePackagePlatform.class ) { TitleInstancePackagePlatform tipp ->
 
             def result = [:]
 
@@ -213,7 +213,7 @@ class DataloadService {
             result
         }
 
-        updateES(Package.class) { pkg ->
+        updateES( Package.class ) { Package pkg ->
             def result = [:]
 
                 result._id = pkg.globalUID
@@ -255,7 +255,7 @@ class DataloadService {
             result
         }
 
-        updateES(Platform.class) { plat ->
+        updateES( Platform.class ) { Platform plat ->
             def result = [:]
 
                 result._id = plat.globalUID
@@ -279,7 +279,7 @@ class DataloadService {
             result
         }
 
-        updateES(License.class) { lic ->
+        updateES( License.class ) { License lic ->
             def result = [:]
 
             result._id = lic.globalUID
@@ -342,7 +342,7 @@ class DataloadService {
             result
         }
 
-        updateES( Subscription.class) { sub ->
+        updateES( Subscription.class ) { Subscription sub ->
             def result = [:]
 
                 result._id = sub.globalUID
@@ -421,7 +421,7 @@ class DataloadService {
             result
         }
 
-        updateES(SurveyConfig.class) { surveyConfig ->
+        updateES( SurveyConfig.class ) { SurveyConfig surveyConfig ->
             def result = [:]
 
             result._id = surveyConfig.getClass().getSimpleName().toLowerCase()+":"+surveyConfig.id
@@ -457,7 +457,7 @@ class DataloadService {
             result
         }
 
-        updateES(SurveyOrg.class) { surOrg ->
+        updateES( SurveyOrg.class ) { SurveyOrg surOrg ->
             def result = [:]
 
             result._id = surOrg.getClass().getSimpleName().toLowerCase()+":"+surOrg.id
@@ -491,7 +491,7 @@ class DataloadService {
             result
         }
 
-        updateES(Task.class) { task ->
+        updateES( Task.class ) { Task task ->
             def result = [:]
 
             result._id = task.getClass().getSimpleName().toLowerCase()+":"+task.id
@@ -539,7 +539,7 @@ class DataloadService {
             result
         }
 
-        updateES(DocContext.class) { docCon ->
+        updateES( DocContext.class ) { DocContext docCon ->
             def result = [:]
 
             result._id = docCon.getClass().getSimpleName().toLowerCase()+":"+docCon.id
@@ -585,7 +585,7 @@ class DataloadService {
             result
         }
 
-        updateES(IssueEntitlement.class) { ie ->
+        updateES( IssueEntitlement.class ) { IssueEntitlement ie ->
             def result = [:]
 
             result._id = ie.globalUID
@@ -636,7 +636,7 @@ class DataloadService {
             result
         }
 
-        updateES(SubscriptionProperty.class) { SubscriptionProperty subProp ->
+        updateES( SubscriptionProperty.class ) { SubscriptionProperty subProp ->
             def result = [:]
 
             result._id = subProp.getClass().getSimpleName().toLowerCase()+":"+subProp.id
@@ -698,7 +698,7 @@ class DataloadService {
             result
         }
 
-        updateES(LicenseProperty.class) { LicenseProperty licProp ->
+        updateES( LicenseProperty.class ) { LicenseProperty licProp ->
             def result = [:]
 
             result._id = licProp.getClass().getSimpleName().toLowerCase()+":"+licProp.id
@@ -780,38 +780,38 @@ class DataloadService {
 
         int count = 0
         long total = 0
-        long highest_timestamp = 0
+        long startingTimestamp = 0
 
-        FTControl.withTransaction { TransactionStatus ts ->
+        //FTControl.withTransaction { TransactionStatus ts ->
 
             FTControl latest_ft_record = FTControl.findByDomainClassNameAndActivity(domainClass.name, 'ESIndex')
-
             if (!latest_ft_record) {
                 latest_ft_record = new FTControl(domainClassName: domainClass.name, activity: 'ESIndex', lastTimestamp: 0, active: true, esElements: 0, dbElements: 0)
-            } else {
-                highest_timestamp = latest_ft_record.lastTimestamp
-                //log.debug("Got existing ftcontrol record for ${domain.name} max timestamp is ${highest_timestamp} which is ${new Date(highest_timestamp)}");
             }
 
             try {
                 if (latest_ft_record.active) {
 
                     if (ESWrapperService.testConnection() && es_indices && es_indices.get(domainClass.simpleName)) {
-                        //log.debug("updateES - ${domain.name}")
-                        //log.debug("result of findByDomain: ${latest_ft_record}")
 
-                        log.debug("updateES ${domainClass.name} since ${new Date(latest_ft_record.lastTimestamp)}")
+                        log.debug("updateES ( ${domainClass.name} ) for changes since ${new Date(latest_ft_record.lastTimestamp)}")
                         Date from = new Date(latest_ft_record.lastTimestamp)
 
                         List<Long> idList = []
 
                         if (ClassUtils.getAllInterfaces(domainClass).contains(CalculatedLastUpdated)) {
-                            idList = domainClass.executeQuery("select d.id from " + domainClass.name + " as d where (d.lastUpdatedCascading is not null and d.lastUpdatedCascading > :from) or (d.lastUpdated > :from) or (d.dateCreated > :from and d.lastUpdated is null) order by d.lastUpdated asc, d.id", [from: from], [readonly: true])
+                            idList = domainClass.executeQuery(
+                                    "select d.id from " + domainClass.name + " as d where (d.lastUpdatedCascading is not null and d.lastUpdatedCascading > :from) or (d.lastUpdated > :from) or (d.dateCreated > :from and d.lastUpdated is null) order by d.lastUpdated asc, d.id",
+                                    [from: from], [readonly: true]
+                            )
                         } else {
-                            idList = domainClass.executeQuery("select d.id from " + domainClass.name + " as d where (d.lastUpdated > :from) or (d.dateCreated > :from and d.lastUpdated is null) order by d.lastUpdated asc, d.id", [from: from], [readonly: true]);
+                            idList = domainClass.executeQuery(
+                                    "select d.id from " + domainClass.name + " as d where (d.lastUpdated > :from) or (d.dateCreated > :from and d.lastUpdated is null) order by d.lastUpdated asc, d.id",
+                                    [from: from], [readonly: true]
+                            )
                         }
 
-                        String rectype
+                        startingTimestamp = System.currentTimeMillis()
                         BulkRequest bulkRequest = new BulkRequest();
 
                         FTControl.withNewSession { Session session ->
@@ -819,7 +819,8 @@ class DataloadService {
                                 Object r = domainClass.get(domain_id)
                                 Map idx_record = recgen_closure(r) as Map
                                 if (idx_record['_id'] == null) {
-                                    log.error("******** Record without an ID: ${idx_record} Obj:${r} ******** ")
+                                    // log.error("******** Record without an ID: ${idx_record} Obj:${r} ******** ")
+                                    log.warn("+++++ Record without an ID for: ${r} +++++")
                                     continue
                                 }
 
@@ -834,11 +835,6 @@ class DataloadService {
                                 request.source(jsonString, XContentType.JSON)
 
                                 bulkRequest.add(request)
-
-                                //latest_ft_record.lastTimestamp = r.lastUpdated?.getTime()
-                                if (r.lastUpdated?.getTime() > highest_timestamp) {
-                                    highest_timestamp = r.lastUpdated?.getTime();
-                                }
 
                                 count++
                                 total++
@@ -858,10 +854,6 @@ class DataloadService {
                                     }
 
                                     log.debug("- processed ${total} of ${idList.size()} records ( ${domainClass.name} )")
-                                    latest_ft_record.lastTimestamp = highest_timestamp
-                                    latest_ft_record.save()
-                                    session.flush()
-
                                     bulkRequest = new BulkRequest()
                                 }
                             }
@@ -877,20 +869,19 @@ class DataloadService {
                                         }
                                     }
                                 }
-                                session.flush()
                             }
 
                             log.debug("- finally processed ${total} records ( ${domainClass.name} )")
 
-                            // update timestamp
-                            latest_ft_record.lastTimestamp = highest_timestamp
+                            latest_ft_record.lastTimestamp = startingTimestamp
                             latest_ft_record.save()
-                            //session.flush()
+                            session.flush()
                             session.clear()
-                        }
+
+                        } // withNewSession
                     } else {
                         latest_ft_record.save()
-                        log.debug("updateES ${domainClass.name}: Fail -> ESWrapperService.testConnection() && es_indices && es_indices.get(domain.simpleName)")
+                        log.debug("updateES ${domainClass.name}: Failed -> ESWrapperService.testConnection() && es_indices && es_indices.get(domain.simpleName)")
                     }
                 } else {
                     latest_ft_record.save()
@@ -920,8 +911,8 @@ class DataloadService {
                     log.error(e.toString())
                 }
             }
-        }
-  }
+        //}
+    }
 
     @Deprecated
     def dataCleanse() {
@@ -1116,7 +1107,7 @@ class DataloadService {
                             //println(ft.dbElements +' , '+ ft.esElements)
 
                             if (ftControl.dbElements != ftControl.esElements) {
-                                log.debug("****ES NOT COMPLETE FOR ${ftControl.domainClassName}: ES Results = ${ftControl.esElements}, DB Results = ${ftControl.dbElements} -> RESET lastTimestamp****")
+                                log.debug("+++++ ES NOT COMPLETE FOR ${ftControl.domainClassName}: ES Results = ${ftControl.esElements}, DB Results = ${ftControl.dbElements} +++++")
                                 //ft.lastTimestamp = 0
                             }
 
@@ -1176,7 +1167,7 @@ class DataloadService {
                             //println(ft.dbElements +' , '+ ft.esElements)
 
                             if (ft.dbElements != ft.esElements) {
-                                log.debug("****ES NOT COMPLETE FOR ${ft.domainClassName}: ES Results = ${ft.esElements}, DB Results = ${ft.dbElements} -> RESET lastTimestamp****")
+                                log.debug("+++++ ES NOT COMPLETE FOR ${ft.domainClassName}: ES Results = ${ft.esElements}, DB Results = ${ft.dbElements} +++++")
                                 //ft.lastTimestamp = 0
                             }
 
@@ -1204,7 +1195,7 @@ class DataloadService {
     public synchronized void killDataloadService() {
         if (activeFuture != null) {
             activeFuture.cancel(true)
-            log.debug("kill DataloadService done!")
+            log.debug("killed DataloadService!")
         }
     }
 }

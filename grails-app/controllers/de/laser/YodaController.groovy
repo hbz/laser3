@@ -831,7 +831,7 @@ class YodaController {
 
         result.indices = []
         Map es_indices = ESWrapperService.ES_Indices
-        es_indices.each{ def indice ->
+        es_indices.each{ indice ->
             Map indexInfo = [:]
             indexInfo.name = indice.value
             indexInfo.type = indice.key
@@ -843,7 +843,7 @@ class YodaController {
                 CountResponse countResponse = esclient.count(countRequest, RequestOptions.DEFAULT)
                 indexInfo.countIndex = countResponse ? countResponse.getCount().toInteger() : 0
             }else {
-                indexInfo.countIndex = ""
+                indexInfo.countIndex = "n/a"
             }
 
             String query = "select count(id) from ${indice.key}"

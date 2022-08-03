@@ -17,6 +17,8 @@
 
     <ui:messages data="${flash}" />
 
+    <h2 class="ui header">FTControl</h2>
+
       <table class="ui celled la-js-responsive-table la-table table">
         <thead>
           <tr>
@@ -50,18 +52,18 @@
         </tbody>
       </table>
 
-    <h3>Indices</h3>
+    <h2 class="ui header">Elasticsearch</h2>
 
     <table class="ui celled la-js-responsive-table la-table table">
-      <thead>
-      <tr>
-        <th>index</th>
-          <th>${message(code:'default.type.label')}</th>
-        <th>countIndex</th>
-        <th>countDB</th>
-        <th>${message(code:'default.action.label')}</th>
-      </tr>
-      </thead>
+        <thead>
+            <tr>
+                <th>Indexname</th>
+                <th>${message(code:'default.type.label')}</th>
+                <th>ES-Einträge</th>
+                <th>DB-Einträge</th>
+                <th>${message(code:'default.action.label')}</th>
+            </tr>
+        </thead>
       <tbody>
       <g:each in="${indices.sort{it.type}}" var="indexInfo">
         <tr>
