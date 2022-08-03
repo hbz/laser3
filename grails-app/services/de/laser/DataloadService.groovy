@@ -13,6 +13,7 @@ import de.laser.interfaces.CalculatedType
 import de.laser.titles.TitleInstance
 import de.laser.utils.CodeUtils
 import grails.converters.JSON
+import org.apache.commons.lang3.ClassUtils
 import org.elasticsearch.action.bulk.BulkItemResponse
 import org.elasticsearch.action.bulk.BulkRequest
 import org.elasticsearch.action.bulk.BulkResponse
@@ -768,11 +769,11 @@ class DataloadService {
     /**
      * Updates the given domain index with the given record generating closure.
      * This bulk operation is being flushed at every 100 records
-     * @param domain the domain class whose index should be updated
+     * @param domainClass the domain class whose index should be updated
      * @param recgen_closure the closure to be used for record generation
      * @see ESWrapperService#ES_Indices
      */
-    void updateES( domain, recgen_closure) {
+    void updateES(Class domainClass, Closure recgen_closure) {
 
         RestHighLevelClient esclient = ESWrapperService.getClient()
         Map es_indices = ESWrapperService.ES_Indices
@@ -783,10 +784,10 @@ class DataloadService {
 
         FTControl.withTransaction { TransactionStatus ts ->
 
-            FTControl latest_ft_record = FTControl.findByDomainClassNameAndActivity(domain.name, 'ESIndex')
+            FTControl latest_ft_record = FTControl.findByDomainClassNameAndActivity(domainClass.name, 'ESIndex')
 
             if (!latest_ft_record) {
-                latest_ft_record = new FTControl(domainClassName: domain.name, activity: 'ESIndex', lastTimestamp: 0, active: true, esElements: 0, dbElements: 0)
+                latest_ft_record = new FTControl(domainClassName: domainClass.name, activity: 'ESIndex', lastTimestamp: 0, active: true, esElements: 0, dbElements: 0)
             } else {
                 highest_timestamp = latest_ft_record.lastTimestamp
                 //log.debug("Got existing ftcontrol record for ${domain.name} max timestamp is ${highest_timestamp} which is ${new Date(highest_timestamp)}");
@@ -795,29 +796,28 @@ class DataloadService {
             try {
                 if (latest_ft_record.active) {
 
-                    if (ESWrapperService.testConnection() && es_indices && es_indices.get(domain.simpleName)) {
+                    if (ESWrapperService.testConnection() && es_indices && es_indices.get(domainClass.simpleName)) {
                         //log.debug("updateES - ${domain.name}")
                         //log.debug("result of findByDomain: ${latest_ft_record}")
 
-                        log.debug("updateES ${domain.name} since ${new Date(latest_ft_record.lastTimestamp)}")
+                        log.debug("updateES ${domainClass.name} since ${new Date(latest_ft_record.lastTimestamp)}")
                         Date from = new Date(latest_ft_record.lastTimestamp)
 
-                        List query
+                        List<Long> idList = []
 
-                        Class domainClass = CodeUtils.getDomainClass(domain.name)
-                        if (org.apache.commons.lang.ClassUtils.getAllInterfaces(domainClass).contains(CalculatedLastUpdated)) {
-                            query = domain.executeQuery("select d.id from " + domain.name + " as d where (d.lastUpdatedCascading is not null and d.lastUpdatedCascading > :from) or (d.lastUpdated > :from) or (d.dateCreated > :from and d.lastUpdated is null) order by d.lastUpdated asc, d.id", [from: from], [readonly: true])
+                        if (ClassUtils.getAllInterfaces(domainClass).contains(CalculatedLastUpdated)) {
+                            idList = domainClass.executeQuery("select d.id from " + domainClass.name + " as d where (d.lastUpdatedCascading is not null and d.lastUpdatedCascading > :from) or (d.lastUpdated > :from) or (d.dateCreated > :from and d.lastUpdated is null) order by d.lastUpdated asc, d.id", [from: from], [readonly: true])
                         } else {
-                            query = domain.executeQuery("select d.id from " + domain.name + " as d where (d.lastUpdated > :from) or (d.dateCreated > :from and d.lastUpdated is null) order by d.lastUpdated asc, d.id", [from: from], [readonly: true]);
+                            idList = domainClass.executeQuery("select d.id from " + domainClass.name + " as d where (d.lastUpdated > :from) or (d.dateCreated > :from and d.lastUpdated is null) order by d.lastUpdated asc, d.id", [from: from], [readonly: true]);
                         }
 
                         String rectype
                         BulkRequest bulkRequest = new BulkRequest();
 
                         FTControl.withNewSession { Session session ->
-                            for (domain_id in query) {
-                                Object r = domain.get(domain_id)
-                                Map idx_record = recgen_closure(r)
+                            for (domain_id in idList) {
+                                Object r = domainClass.get(domain_id)
+                                Map idx_record = recgen_closure(r) as Map
                                 if (idx_record['_id'] == null) {
                                     log.error("******** Record without an ID: ${idx_record} Obj:${r} ******** ")
                                     continue
@@ -826,7 +826,7 @@ class DataloadService {
                                 String recid = idx_record['_id'].toString()
                                 idx_record.remove('_id');
 
-                                IndexRequest request = new IndexRequest(es_indices.get(domain.simpleName));
+                                IndexRequest request = new IndexRequest(es_indices[domainClass.simpleName])
                                 request.id(recid);
                                 String jsonString = idx_record as JSON
                                 //String jsonString = JsonOutput.toJson(idx_record)
@@ -852,12 +852,12 @@ class DataloadService {
                                         for (BulkItemResponse bulkItemResponse : bulkResponse) {
                                             if (bulkItemResponse.isFailed()) {
                                                 BulkItemResponse.Failure failure = bulkItemResponse.getFailure()
-                                                log.warn("updateES ${domain.name}: #1 bulk operation failure -> ${failure}")
+                                                log.warn("updateES ${domainClass.name}: #1 bulk operation failure -> ${failure}")
                                             }
                                         }
                                     }
 
-                                    log.debug("- processed ${total} of ${query.size()} records ( ${domain.name} )")
+                                    log.debug("- processed ${total} of ${idList.size()} records ( ${domainClass.name} )")
                                     latest_ft_record.lastTimestamp = highest_timestamp
                                     latest_ft_record.save()
                                     session.flush()
@@ -873,14 +873,14 @@ class DataloadService {
                                     for (BulkItemResponse bulkItemResponse : bulkResponse) {
                                         if (bulkItemResponse.isFailed()) {
                                             BulkItemResponse.Failure failure = bulkItemResponse.getFailure()
-                                            log.warn("updateES ${domain.name}: #2 bulk operation failure -> ${failure}")
+                                            log.warn("updateES ${domainClass.name}: #2 bulk operation failure -> ${failure}")
                                         }
                                     }
                                 }
                                 session.flush()
                             }
 
-                            log.debug("- finally processed ${total} records ( ${domain.name} )")
+                            log.debug("- finally processed ${total} records ( ${domainClass.name} )")
 
                             // update timestamp
                             latest_ft_record.lastTimestamp = highest_timestamp
@@ -890,31 +890,31 @@ class DataloadService {
                         }
                     } else {
                         latest_ft_record.save()
-                        log.debug("updateES ${domain.name}: Fail -> ESWrapperService.testConnection() && es_indices && es_indices.get(domain.simpleName)")
+                        log.debug("updateES ${domainClass.name}: Fail -> ESWrapperService.testConnection() && es_indices && es_indices.get(domain.simpleName)")
                     }
                 } else {
                     latest_ft_record.save()
-                    log.debug("updateES ${domain.name}: FTControle is not active")
+                    log.debug("updateES ${domainClass.name}: FTControl is not active")
                 }
 
             }
             catch (Exception e) {
                 log.error("Problem with FT index", e)
 
-                SystemEvent.createEvent('FT_INDEX_UPDATE_ERROR', ["index": domain.name])
+                SystemEvent.createEvent('FT_INDEX_UPDATE_ERROR', ["index": domainClass.name])
             }
             finally {
-                log.debug("Completed processing on ${domain.name} - saved ${total} records")
+                log.debug("Completed processing on ${domainClass.name} - saved ${total} records")
                 try {
                     if (ESWrapperService.testConnection()) {
                         if (latest_ft_record.active) {
-                            FlushRequest request = new FlushRequest(es_indices.get(domain.simpleName));
+                            FlushRequest request = new FlushRequest(es_indices.get(domainClass.simpleName));
                             FlushResponse flushResponse = esclient.indices().flush(request, RequestOptions.DEFAULT)
                         }
 
                         esclient.close()
                     }
-                    checkESElementswithDBElements(domain.name)
+                    checkESElementswithDBElements(domainClass.name)
                 }
                 catch (Exception e) {
                     log.error(e.toString())

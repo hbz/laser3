@@ -31,7 +31,7 @@ class ESWrapperService {
 
     static String ES_Host
     static String ES_Cluster
-    static Map ES_Indices = [:]
+    static Map<String, String> ES_Indices = [:]
 
     /**
      * Initialises the ElasticSearch connection and mapping parameters
