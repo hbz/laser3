@@ -13,7 +13,7 @@
                     </div>
                     <div class="ten wide column">
                         <g:select class="ui dropdown" name="linkSurvey"
-                                      from="${SurveyInfo.executeQuery("from SurveyInfo s where s.status in (:status) and s != :surveyInfo and s.owner = :owner and s.id not in (select sl.targetSurvey.id from SurveyLinks sl) order by s.name", [status: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_SURVEY_STARTED], surveyInfo: surveyInfo, owner: contextOrg])}"
+                                      from="${SurveyInfo.executeQuery("from SurveyInfo s where s.status in (:status) and s != :surveyInfo and s.owner = :owner and s.id not in (select sl.targetSurvey.id from SurveyLinks sl where sl.sourceSurvey.id = :surveyInfo) and s.id not in (select sl.sourceSurvey.id from SurveyLinks sl where sl.targetSurvey.id = :surveyInfo) order by s.name", [status: [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_SURVEY_STARTED], surveyInfo: surveyInfo, owner: contextOrg])}"
                                       optionKey="id"
                                       optionValue="${{(it.name) + ' - ' + it.type.getI10n('value') + ' - ' + ' (' +(it.startDate ? g.formatDate(date: it.startDate,format: message(code: 'default.date.format.notime')) : '') + (it.endDate ? " - "+ g.formatDate(date: it.endDate,format: message(code: 'default.date.format.notime')) : '') + ')'}}"
                                       required=""/>

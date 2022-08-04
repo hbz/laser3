@@ -322,8 +322,8 @@ class ApiCollectionReader {
 
         List<IssueEntitlement> ieList = IssueEntitlement.executeQuery(
                 'select ie from IssueEntitlement ie join ie.tipp tipp join ie.subscription sub join tipp.pkg pkg ' +
-                        ' where sub = :sub and pkg = :pkg and tipp.status != :statusTipp and ie.status not in (:statusIe)',
-                [sub: subPkg.subscription, pkg: subPkg.pkg, statusTipp: RDStore.TIPP_STATUS_DELETED, statusIe: [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]]
+                        ' where sub = :sub and pkg = :pkg and tipp.status != :statusTipp and ie.status != :statusIe',
+                [sub: subPkg.subscription, pkg: subPkg.pkg, statusTipp: RDStore.TIPP_STATUS_REMOVED, statusIe: RDStore.TIPP_STATUS_REMOVED]
         )
         ieList.each{ ie ->
             result << ApiIssueEntitlement.getIssueEntitlementMap(ie, ignoreRelation, context) // de.laser.IssueEntitlement
@@ -346,7 +346,7 @@ class ApiCollectionReader {
         List<IssueEntitlement> ieList = IssueEntitlement.executeQuery(
                 'select ie from IssueEntitlement ie join ie.tipp tipp join ie.subscription sub join tipp.pkg pkg ' +
                         ' where sub = :sub and pkg = :pkg and tipp.status != :statusTipp and ie.status != :statusIe',
-                [sub: subPkg.subscription, pkg: subPkg.pkg, statusTipp: RDStore.TIPP_STATUS_DELETED, statusIe: RDStore.TIPP_STATUS_DELETED]
+                [sub: subPkg.subscription, pkg: subPkg.pkg, statusTipp: RDStore.TIPP_STATUS_REMOVED, statusIe: RDStore.TIPP_STATUS_REMOVED]
         )
         */
         //missing are names etc., verify output - continue here!
@@ -356,8 +356,8 @@ class ApiCollectionReader {
                 "tipp_last_updated, tipp_id, (select rdv_value from refdata_value where rdv_id = tipp_status_rv_fk) as tipp_status, " +
                 "case tipp_title_type when 'Journal' then 'serial' when 'Book' then 'monograph' when 'Database' then 'database' else 'other' end as title_type " +
                 "from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id " +
-                "where ie_subscription_fk = :sub and tipp_pkg_fk = :pkg and tipp_status_rv_fk != :statusTipp and ie_status_rv_fk != :deleted and ie_status_rv_fk != :removed order by ie_sortname",
-                [sub: subPkg.subscription.id, pkg: subPkg.pkg.id, statusTipp: RDStore.TIPP_STATUS_DELETED.id, deleted: RDStore.TIPP_STATUS_DELETED.id, removed: RDStore.TIPP_STATUS_REMOVED.id])
+                "where ie_subscription_fk = :sub and tipp_pkg_fk = :pkg and tipp_status_rv_fk != :statusTipp and ie_status_rv_fk != :removed order by ie_sortname",
+                [sub: subPkg.subscription.id, pkg: subPkg.pkg.id, statusTipp: RDStore.TIPP_STATUS_REMOVED.id, removed: RDStore.TIPP_STATUS_REMOVED.id])
         log.debug("now fetching additional params ...")
         Map<String, Object> subParams = [subId: subPkg.subscription.id], pkgParams = [pkgId: subPkg.pkg.id]
         List<GroovyRowResult> priceItemRows = sql.rows('select pi_ie_fk, (select rdv_value from refdata_value where rdv_id = pi_list_currency_rv_fk) as pi_list_currency, pi_list_price, (select rdv_value from refdata_value where rdv_id = pi_local_currency_rv_fk) as pi_local_currency, pi_local_price from price_item join issue_entitlement on pi_ie_fk = ie_id where ie_subscription_fk = :subId', subParams),
