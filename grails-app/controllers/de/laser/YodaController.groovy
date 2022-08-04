@@ -1205,7 +1205,7 @@ class YodaController {
                         deletionService.deleteSubscription(sub, false)
                     }
                 } catch (Exception e) {
-                    println e
+                    log.error e.getMessage()
                 }
                 sleep(1000)
             }
@@ -1222,7 +1222,7 @@ class YodaController {
                         deletionService.deleteLicense(lic, false)
                     }
                 } catch (Exception e) {
-                    println e
+                    log.error e.getMessage()
                 }
                 sleep(1000)
             }
@@ -1290,28 +1290,28 @@ class YodaController {
         )
 
         if (params.cmd == 'doIt') {
-            println opp.collect{ it.id }
+            //println opp.collect{ it.id }
             if (opp.size() > 0) {
                 OrgProperty.executeUpdate('DELETE FROM OrgProperty opp WHERE opp.id in :idList',
                         [idList: opp.collect { it.id }]
                 )
             }
 
-            println spp.collect{ it.id }
+            //println spp.collect{ it.id }
             if (spp.size() > 0) {
                 SubscriptionProperty.executeUpdate('DELETE FROM SubscriptionProperty spp WHERE spp.id in :idList',
                         [idList: spp.collect { it.id }]
                 )
             }
 
-            println lpp.collect{ it.id }
+            //println lpp.collect{ it.id }
             if (lpp.size() > 0) {
                 LicenseProperty.executeUpdate('DELETE FROM LicenseProperty lpp WHERE lpp.id in :idList',
                         [idList: lpp.collect { it.id }]
                 )
             }
 
-            println ppp.collect{ it.id }
+            //println ppp.collect{ it.id }
             if (ppp.size() > 0) {
                 PersonProperty.executeUpdate('DELETE FROM PersonProperty ppp WHERE ppp.id in :idList',
                         [idList: ppp.collect { it.id }]

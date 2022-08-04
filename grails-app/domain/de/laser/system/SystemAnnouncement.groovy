@@ -10,6 +10,7 @@ import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import grails.converters.JSON
+import groovy.util.logging.Slf4j
 import org.springframework.context.MessageSource
 
 import java.time.LocalDate
@@ -18,6 +19,7 @@ import java.time.LocalDate
  * This class reflects system-wide messages which can be shown on the dashboard (for announcements).
  * The system announcement may be sent moreover to users who subscribed to these reminders. This reminder setting may be done in the user profile (and is stored as a {@link UserSetting}).
  */
+@Slf4j
 class SystemAnnouncement {
 
     User    user
@@ -112,7 +114,7 @@ class SystemAnnouncement {
      */
     boolean publish() {
         if (ConfigMapper.getConfig('grails.mail.disabled', Boolean) == true) {
-            println 'SystemAnnouncement.publish() failed due grails.mail.disabled = true'
+            log.debug 'SystemAnnouncement.publish() failed due grails.mail.disabled = true'
             return false
         }
 

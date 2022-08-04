@@ -179,9 +179,9 @@ class DataConsistencyService {
             }
         }
 
-        println "___ found candidates: "
-        candidates.each { println it }
-        println "___ generated pseudo statements: "
-        statements.each { println it }
+        log.debug "___ found candidates: "
+        candidates.each { log.debug it }
+        log.debug "___ generated pseudo statements: "
+        statements.each { log.debug it }
     }
 }

@@ -35,7 +35,7 @@ class RenewSubscriptionService extends AbstractLockableService {
     boolean subscriptionRenewCheck() {
         if (!running) {
             running = true
-            println "processing all current local subscriptions with annually periode to renew ..."
+            log.debug "processing all current local subscriptions with annually periode to renew ..."
             Date currentDate = new Date()
 
             List renewSuccessSubIds = []

@@ -6,6 +6,7 @@ import de.laser.TitleInstancePackagePlatform
 import de.laser.annotations.RefdataInfo
 import de.laser.base.AbstractBase
 import de.laser.storage.RDConstants
+import groovy.util.logging.Slf4j
 
 import javax.persistence.Transient
 
@@ -14,6 +15,7 @@ import javax.persistence.Transient
  * It may be global (i.e. package-wide, subscription-independent), then it is linked to a {@link TitleInstancePackagePlatform} or local (i.e. linked to a subscription), then, the {@link IssueEntitlement} is the owner of the item.
  * It thus cannot belong simultaneously to a {@link TitleInstancePackagePlatform} and to an {@link IssueEntitlement}
  */
+@Slf4j
 class PriceItem extends AbstractBase {
 
     @RefdataInfo(cat = RDConstants.CURRENCY)
@@ -95,7 +97,7 @@ class PriceItem extends AbstractBase {
         for (String k : equivalencyProperties) {
             equivalent = list.find { PriceItem pi -> pi[k] == this[k] }
             if (equivalent) {
-                println "Price item ${equivalent.id} considered as equivalent to ${this.id}"
+                log.debug "Price item ${equivalent.id} considered as equivalent to ${this.id}"
                 break
             }
         }

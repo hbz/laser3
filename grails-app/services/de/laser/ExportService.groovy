@@ -1448,20 +1448,20 @@ class ExportService {
 		data.titles.eachWithIndex { GroovyRowResult title, int outer ->
 			if(entitlementInstance == IssueEntitlement.class.name && data.coverageMap.get(title['ie_id'])) {
 				data.coverageMap.get(title['ie_id']).eachWithIndex { GroovyRowResult covStmt, int inner ->
-					println "now processing coverage statement ${inner} for record ${outer}"
+					log.debug "now processing coverage statement ${inner} for record ${outer}"
 					covStmt.putAll(title)
 					rows.add(buildRow('kbart', covStmt, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces))
 				}
 			}
 			else if(entitlementInstance == TitleInstancePackagePlatform.class.name && data.coverageMap.get(title['tipp_id'])) {
 				data.coverageMap.get(title['tipp_id']).eachWithIndex { GroovyRowResult covStmt, int inner ->
-					println "now processing coverage statement ${inner} for record ${outer}"
+					log.debug "now processing coverage statement ${inner} for record ${outer}"
 					covStmt.putAll(title)
 					rows.add(buildRow('kbart', covStmt, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces))
 				}
 			}
 			else {
-				println "now processing record ${outer}"
+				log.debug "now processing record ${outer}"
 				rows.add(buildRow('kbart', title, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces))
 			}
 		}
@@ -2056,7 +2056,7 @@ class ExportService {
 					}
 					export.rows.add(row)
 				}
-				println("flush after ${offset} ...")
+				log.debug("flush after ${offset} ...")
 				sess.flush()
 			}
 		}
@@ -2127,20 +2127,20 @@ class ExportService {
 		data.titles.eachWithIndex { GroovyRowResult title, int outer ->
 			if(entitlementInstance == IssueEntitlement.class.name && data.coverageMap.get(title['ie_id'])) {
 				data.coverageMap.get(title['ie_id']).eachWithIndex { GroovyRowResult covStmt, int inner ->
-					println "now processing coverage statement ${inner} for record ${outer}"
+					log.debug "now processing coverage statement ${inner} for record ${outer}"
 					covStmt.putAll(title)
 					rows.add(buildRow('excel', covStmt, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces, perpetuallyPurchasedTitleURLs, showStatsInMonthRings, subscriber))
 				}
 			}
 			else if(entitlementInstance == TitleInstancePackagePlatform.class.name && data.coverageMap.get(title['tipp_id'])) {
 				data.coverageMap.get(title['tipp_id']).eachWithIndex { GroovyRowResult covStmt, int inner ->
-					println "now processing coverage statement ${inner} for record ${outer}"
+					log.debug "now processing coverage statement ${inner} for record ${outer}"
 					covStmt.putAll(title)
 					rows.add(buildRow('excel', covStmt, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces, perpetuallyPurchasedTitleURLs, showStatsInMonthRings, subscriber))
 				}
 			}
 			else {
-				println "now processing record ${outer}"
+				log.debug "now processing record ${outer}"
 				rows.add(buildRow('excel', title, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces, perpetuallyPurchasedTitleURLs, showStatsInMonthRings, subscriber))
 			}
 		}

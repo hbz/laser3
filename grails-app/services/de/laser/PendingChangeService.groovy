@@ -1027,7 +1027,7 @@ class PendingChangeService extends AbstractLockableService {
      * @throws ChangeAcceptException
      */
     boolean accept(PendingChange pc, subId = null) throws ChangeAcceptException {
-        println("accept: ${pc.msgToken} for ${pc.pkg} or ${pc.tipp} or ${pc.tippCoverage}")
+        log.debug("accept: ${pc.msgToken} for ${pc.pkg} or ${pc.tipp} or ${pc.tippCoverage}")
         def done = false
         def target
         if(pc.oid)
@@ -1371,7 +1371,7 @@ class PendingChangeService extends AbstractLockableService {
      * @param contextOrg the subscriber
      */
     void applyPendingChange(PendingChange newChange,SubscriptionPackage subPkg,Org contextOrg) {
-        println("applyPendingChange")
+        log.debug("applyPendingChange")
         def target
         if(newChange.tipp)
             target = newChange.tipp
@@ -1383,7 +1383,7 @@ class PendingChangeService extends AbstractLockableService {
             PendingChange toApply = PendingChange.construct([target: target, oid: genericOIDService.getOID(subPkg.subscription), newValue: newChange.newValue, oldValue: newChange.oldValue, prop: newChange.targetProperty, msgToken: newChange.msgToken, status: RDStore.PENDING_CHANGE_PENDING, owner: contextOrg])
             if(accept(toApply, subPkg.subscription.id)) {
                 if(auditService.getAuditConfig(subPkg.subscription,newChange.msgToken)) {
-                    println("got audit config, processing ...")
+                    log.debug("got audit config, processing ...")
                     applyPendingChangeForHolding(newChange, subPkg, contextOrg)
                 }
             }
@@ -1400,7 +1400,7 @@ class PendingChangeService extends AbstractLockableService {
      * @param contextOrg the subscription consortium
      */
     void applyPendingChangeForHolding(PendingChange newChange,SubscriptionPackage subPkg,Org contextOrg) {
-        println("applyPendingChangeForHolding")
+        log.debug("applyPendingChangeForHolding")
         def target
         Set<Subscription> childSubscriptions = []
         if(newChange.tipp) {

@@ -1854,7 +1854,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             else
                 equivalent = listA.find { it[k] == itemB[k] && it[k] != null && itemB[k] != null }
             if (equivalent != null) {
-                println "Statement ${equivalent.id} located as equivalent to ${itemB} by ${k}: ${itemB[k]}"
+                log.debug "Statement ${equivalent.id} located as equivalent to ${itemB} by ${k}: ${itemB[k]}"
                 break
             }
         }

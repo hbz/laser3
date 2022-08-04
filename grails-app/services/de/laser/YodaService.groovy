@@ -235,7 +235,7 @@ class YodaService {
             //get platform, get eventual TIPPs of platform, determine from package which platform key is correct, if it is correct: ignore, otherwise, add to result
             List<Platform> platformDuplicates = Platform.findAllByGokbId(row[0])
             platformDuplicates.each { Platform platform ->
-                println("processing platform ${platform} with duplicate GOKb ID ${platform.gokbId}")
+                log.debug("processing platform ${platform} with duplicate GOKb ID ${platform.gokbId}")
                 //it ran too often into null pointer exceptions ... we set a tighter check!
                 if(platform.tipps.size() > 0) {
                     TitleInstancePackagePlatform referenceTIPP = platform.tipps[0]
@@ -270,7 +270,7 @@ class YodaService {
             }
         }
         platformsWithoutTIPPs.each { Platform platform ->
-            println("processing platform ${platform} without TIPP ${platform.gokbId} to check correctness ...")
+            log.debug("processing platform ${platform} without TIPP ${platform.gokbId} to check correctness ...")
             Map esQuery = gokbService.queryElasticsearch('https://wekb.hbz-nrw.de/api/find?uuid='+platform.gokbId)
             List esResult
             //is a consequent error of GOKbService's copy-paste-mess ...
@@ -281,9 +281,9 @@ class YodaService {
             if(esResult) {
                 Map gokbPlatformRecord = esResult[0]
                 if(gokbPlatformRecord.name == platform.name)
-                    println("Name ${platform.name} is correct")
+                    log.debug("Name ${platform.name} is correct")
                 else {
-                    println("Name ${platform.name} is not correct, should actually be ${gokbPlatformRecord.name}")
+                    log.debug("Name ${platform.name} is not correct, should actually be ${gokbPlatformRecord.name}")
                     result.platformsToUpdate << [old:platform.globalUID,correct:gokbPlatformRecord]
                 }
             }

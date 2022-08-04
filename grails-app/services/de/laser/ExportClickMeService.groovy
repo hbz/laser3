@@ -1770,7 +1770,7 @@ class ExportClickMeService {
                     _setIeRow(rowData, selectedExportFields, exportData)
 
                 }
-                println("flushing after ${offset} ...")
+                log.debug("flushing after ${offset} ...")
                 sess.flush()
             }
         }
@@ -1828,7 +1828,7 @@ class ExportClickMeService {
                     _setTippRow(rowData, selectedExportFields, exportData)
 
                 }
-                println("flushing after ${offset} ...")
+                log.debug("flushing after ${offset} ...")
                 sess.flush()
             }
         }

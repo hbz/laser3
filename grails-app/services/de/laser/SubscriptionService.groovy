@@ -1503,7 +1503,7 @@ class SubscriptionService {
             Set<Map<String, Object>> ieDirectMapSet = [], ieOverwriteMapSet = [], coverageDirectMapSet = [], coverageOverwriteMapSet = [], priceItemDirectSet = [], priceItemOverwriteSet = []
             checkMap.each { String wekbId, String checked ->
                 if(checked == 'checked') {
-                    println "processing ${wekbId}"
+                    log.debug "processing ${wekbId}"
                     List<GroovyRowResult> existingEntitlements = sql.rows('select ie_id from issue_entitlement join title_instance_package_platform on ie_tipp_fk = tipp_id where ie_subscription_fk = :subId and ie_status_rv_fk = :current and tipp_gokb_id = :key',[subId: sub.id, current: RDStore.TIPP_STATUS_CURRENT.id, key: wekbId])
                     if(existingEntitlements.size() == 0) {
                         Map<String, Object> configMap = [wekbId: wekbId, subId: sub.id, acceptStatus: acceptStatus, removed: RDStore.TIPP_STATUS_REMOVED.id], coverageMap = [wekbId: wekbId, subId: sub.id, removed: RDStore.TIPP_STATUS_REMOVED.id], priceMap = [wekbId: wekbId, subId: sub.id, removed: RDStore.TIPP_STATUS_REMOVED.id]
@@ -1773,8 +1773,8 @@ class SubscriptionService {
             return true
         }
         catch (Exception e) {
-            println 'error while rebasing TIPP ... rollback!'
-            println e.message
+            log.error 'error while rebasing TIPP ... rollback!'
+            log.error e.getMessage()
             return false
         }
     }

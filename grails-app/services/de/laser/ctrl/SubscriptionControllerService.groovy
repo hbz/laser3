@@ -2244,7 +2244,7 @@ class SubscriptionControllerService {
                     result.issueEntitlementOverwrite = issueEntitlementOverwrite
                     selectedTippIds.removeAll(addedTipps)
                     selectedTippIds.each { String wekbId ->
-                        //println("located tipp: ${wekbId}")
+                        //log.debug("located tipp: ${wekbId}")
                         result.checked[wekbId] = "checked"
                     }
                     result.identifiers = identifiers
@@ -2473,7 +2473,7 @@ class SubscriptionControllerService {
                     List<GroovyRowResult> acceptedTitleUpdates = sql.rows("select distinct on (pc_date_created::date, pc_target_property) pc_tipp_fk, pc_old_value, pc_target_property, split_part(pc_oid, ':', 2) as sub_fk from pending_change join title_instance_package_platform on pc_tipp_fk = tipp_id join subscription on split_part(pc_oid, ':', 2)::bigint = sub_id where pc_date_created > sub_end_date and tipp_pkg_fk = :pkgId and pc_status_rdv_fk = :accepted and (sub_id = :subId or sub_parent_sub_fk = :subId) and pc_tipp_fk is not null and pc_msg_token = :tippUpdated order by pc_date_created::date", [subId: sp.subscription.id, pkgId: sp.pkg.id, tippUpdated: PendingChangeConfiguration.TITLE_UPDATED])
                     //need to revert changes one by one ... very ugly!
                     acceptedTitleUpdates.eachWithIndex { GroovyRowResult row, int i ->
-                        println "now processing record ${i} of ${acceptedTitleUpdates.size()} entries"
+                        log.debug "now processing record ${i} of ${acceptedTitleUpdates.size()} entries"
                         sql.executeUpdate("update issue_entitlement set ${ieColNames[row['pc_target_property']].column} = :oldValue where ie_tipp_fk = :tipp and ie_subscription_fk = :subscription", [oldValue: row['pc_old_value'], tipp: row['pc_tipp_fk'], subscription: row['sub_fk']])
                     }
                     //revert deleted titles
@@ -2486,7 +2486,7 @@ class SubscriptionControllerService {
                     List<GroovyRowResult> acceptedCoverageUpdates = sql.rows("select distinct on (pc_date_created::date, pc_target_property) tc_tipp_fk, pc_tc_fk, pc_msg_token, pc_old_value, pc_new_value, pc_target_property, split_part(pc_oid, ':', 2) as sub_fk from pending_change join tippcoverage on pc_tc_fk = tc_id join title_instance_package_platform on tc_tipp_fk = tipp_id join subscription on split_part(pc_oid, ':', 2)::bigint = sub_id where pc_date_created > sub_end_date and tipp_pkg_fk = :pkgId and pc_status_rdv_fk = :accepted and pc_oid in (select concat('${Subscription.class.name}:',sub_id) from subscription where sub_id = :subId or sub_parent_sub_fk = :subId) and pc_tc_fk is not null and pc_msg_token = :covUpdated order by pc_date_created::date", [subId: sp.subscription.id, accepted: RDStore.PENDING_CHANGE_ACCEPTED.id, pkgId: sp.pkg.id, covUpdated: PendingChangeConfiguration.COVERAGE_UPDATED])
                     Map<Long, Map<String, Object>> revertingChanges = [:]
                     acceptedCoverageUpdates.eachWithIndex { GroovyRowResult row, int idx ->
-                        println "now processing change ${idx} out of ${acceptedCoverageUpdates.size()} records"
+                        log.debug "now processing change ${idx} out of ${acceptedCoverageUpdates.size()} records"
                         Map<String, Object> revertingMap = revertingChanges.get(row['pc_tc_fk'])
                         if(!revertingMap)
                             revertingMap = [subscriptions: new HashSet<Long>(), changes: []]
@@ -2502,7 +2502,7 @@ class SubscriptionControllerService {
                     }
                     revertingChanges.eachWithIndex { Long tc, Map<String, Object> revertingMap, int i ->
                         revertingMap.subscriptions.eachWithIndex { Long subKey, int j ->
-                            println "now reverting change ${i} out of ${revertingChanges.size()} records at subscriptions ${j} out of ${revertingMap.subscriptions.size()} subscriptions"
+                            log.debug "now reverting change ${i} out of ${revertingChanges.size()} records at subscriptions ${j} out of ${revertingMap.subscriptions.size()} subscriptions"
                             List<GroovyRowResult> revertingRecords = sql.rows("select ic_id from issue_entitlement_coverage join issue_entitlement on ic_ie_fk = ie_id join tippcoverage on ie_tipp_fk = tc_tipp_fk where tc_id = :tc and ie_subscription_fk = :subscription order by ic_id limit 1", [tc: tc, subscription: subKey])
                             if(revertingRecords.size() == 1) {
                                 GroovyRowResult oldRec = revertingRecords.get(0)
@@ -2518,7 +2518,7 @@ class SubscriptionControllerService {
                     if(deletedCoverages) {
                         sql.withBatch("insert into issue_entitlement_coverage (ic_version, ic_ie_fk, ic_start_date, ic_start_volume, ic_start_issue, ic_end_date, ic_end_volume, ic_end_issue, ic_coverage_note, ic_coverage_depth, ic_embargo, ic_date_created, ic_last_updated) values (0, :ie, :startDate, :startVolume, :startIssue, :endDate, :endVolume, :endIssue, :note, :depth, :embargo, :dateCreated, :lastUpdated)") { BatchingStatementWrapper stmt ->
                             deletedCoverages.eachWithIndex { GroovyRowResult row, int i ->
-                                println "now restoring deleted coverage ${i}"
+                                log.debug "now restoring deleted coverage ${i}"
                                 Map<String, Object> oldCoverage = JSON.parse(row['pc_old_value'])
                                 //when migrating to dev: change deleted by removed
                                 List<Long> ie = IssueEntitlement.executeQuery("select ie.id from IssueEntitlement ie where ie.tipp.id = :tippId and ie.subscription.id = :subId and ie.status != :ieStatus", [tippId: Integer.toUnsignedLong(oldCoverage.tipp.id), subId: Long.parseLong(row['sub_fk']), ieStatus: RDStore.TIPP_STATUS_REMOVED])

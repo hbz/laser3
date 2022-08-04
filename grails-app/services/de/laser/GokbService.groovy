@@ -263,9 +263,7 @@ class GokbService {
             http = new BasicHttpClient( url.replaceAll(" ", "+") )
 
             Closure success = { resp, json ->
-                log.info ("server response: ${resp.getStatus().getReason()}")
-                log.debug("server:          ${resp.getHeaders().get('Server')}")
-                log.debug("content length:  ${resp.getHeaders().get('Content-Length')}")
+                log.debug ("server response: ${resp.getStatus().getReason()}, server: ${resp.getHeaders().get('Server')}, content length: ${resp.getHeaders().get('Content-Length')}")
 
 //                if (resp.getStatus().getCode() < 400) {
                     result = ['warning': json]      // warning <-> info ?

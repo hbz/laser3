@@ -28,7 +28,7 @@ class StatusUpdateService extends AbstractLockableService {
     boolean subscriptionCheck() {
         if(!running) {
             running = true
-            println "processing all intended subscriptions ..."
+            log.debug "processing all intended subscriptions ..."
             Date currentDate = new Date()
             //Date currentDate = DateUtil.SDF_NoZ.parse("2020-05-30 03:00:00")
 
@@ -197,7 +197,7 @@ class StatusUpdateService extends AbstractLockableService {
     boolean licenseCheck() {
         if(!running) {
             running = true
-            println "processing all intended licenses ..."
+            log.debug "processing all intended licenses ..."
             Date currentDate = new Date()
 
             Map<String,Object> updatedObjs = [:]
