@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4389    04.08.2022  rc-2.3  2.3.3       Andreas Fehler      Zurücksetzung der Nutzungsstatistiken für eine Plattform löst auch ein Neuladen aus
+
+4388    04.08.2022  rc-2.3  2.3.3       Andreas Bug         500er bei Titelauswahl behoben
+
+3992    04.08.2022  rc-2.3  2.3.3       Andreas Bug         trim() bei Aufschlüsseln von Vertragsschlüsseln eingesetzt
+
 4302    02.08.2022  rc-2.3  2.3.3       Andreas Bug         Budgetcodes wurden in der Kosteneingabe falsch sortiert
 
 --      02.08.2022  rc-2.3  2.3.3       Andreas Bug         Fremdschlüsselverletzung bei Tilgen entfernter Titel beseitigt
