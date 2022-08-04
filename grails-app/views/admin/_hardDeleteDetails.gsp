@@ -35,14 +35,12 @@
 	              	</ul>
               </td>
               <td>
-              %{-- Add some CSS based on actionRequired to show green/red status --}%
               <g:if test="${conflict_item.action.actionRequired}">
-                  <i style="color:red" class="fa fa-times-circle"></i>
+                  <i class="icon times circle sc_red"></i>
                   <g:set var="actions_needed" value="true"/>
-
               </g:if>
               <g:else>
-                <i style="color:green" class="fa fa-check-circle"></i>
+                <i class="icon check circle sc_green"></i>
               </g:else>
                  ${conflict_item.action.text}				
               </td>

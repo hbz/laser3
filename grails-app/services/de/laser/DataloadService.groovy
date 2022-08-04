@@ -57,7 +57,7 @@ class DataloadService {
      */
     def updateFTIndexes() {
         //log.debug("updateFTIndexes ${this.hashCode()}")
-        if(update_running == false) {
+        if(! update_running) {
 
             if(!(activeFuture) || activeFuture.isDone()) {
 
@@ -67,11 +67,11 @@ class DataloadService {
                 })
                  log.debug("updateFTIndexes returning")
             }else{
-                log.debug("FT update already running")
+                log.debug("FT update already running #2")
                 return false
             }
         } else {
-            log.debug("FT update already running")
+            log.debug("FT update already running #1")
             return false
         }
     }
@@ -847,7 +847,7 @@ class DataloadService {
                                         for (BulkItemResponse bulkItemResponse : bulkResponse) {
                                             if (bulkItemResponse.isFailed()) {
                                                 BulkItemResponse.Failure failure = bulkItemResponse.getFailure()
-                                                log.warn("updateES ${domainClass.name}: #1 bulk operation failure -> ${failure}")
+                                                log.warn("- updateES ${domainClass.name}: #1 bulk operation failure -> ${failure}")
                                             }
                                         }
                                     }
@@ -864,7 +864,7 @@ class DataloadService {
                                     for (BulkItemResponse bulkItemResponse : bulkResponse) {
                                         if (bulkItemResponse.isFailed()) {
                                             BulkItemResponse.Failure failure = bulkItemResponse.getFailure()
-                                            log.warn("updateES ${domainClass.name}: #2 bulk operation failure -> ${failure}")
+                                            log.warn("- updateES ${domainClass.name}: #2 bulk operation failure -> ${failure}")
                                         }
                                     }
                                 }
@@ -950,8 +950,6 @@ class DataloadService {
       log.debug("Nominal platform is ${selected_platform} for ${p.id}");
       p.nominalPlatform = selected_platform
       p.save()
-
-
     }
 
     // Fill out any missing sort keys on titles, packages or licenses
@@ -1102,7 +1100,6 @@ class DataloadService {
                         FTControl.withTransaction {
                             ftControl.dbElements = domainClass.findAll().size()
                             ftControl.esElements = countIndex
-
                             //println(ft.dbElements +' , '+ ft.esElements)
 
                             if (ftControl.dbElements != ftControl.esElements) {
@@ -1162,7 +1159,6 @@ class DataloadService {
                         FTControl.withTransaction {
                             ft.dbElements = domainClass.findAll().size()
                             ft.esElements = countIndex
-
                             //println(ft.dbElements +' , '+ ft.esElements)
 
                             if (ft.dbElements != ft.esElements) {
@@ -1197,7 +1193,7 @@ class DataloadService {
             if (se.payload) {
                 long ms = JSON.parse(se.payload).ms
                 if (ms) {
-                    info += ' (' + (ms/1000/60) + ' min.)'
+                    info += ' (' + (ms/1000/60).round(2) + ' min.)'
                 }
             }
         }
@@ -1209,6 +1205,7 @@ class DataloadService {
      */
     public synchronized void killDataloadService() {
         if (activeFuture != null) {
+            SystemEvent.createEvent('FT_INDEX_UPDATE_KILLED')
             activeFuture.cancel(true)
             log.debug("killed DataloadService!")
         }

@@ -54,10 +54,10 @@
                             <span>${thread.getState()}</span>
                         </g:if>
                         <g:else>
-                            <span style="color:red">${thread.getState()}</span>
+                            <span class="sc_red">${thread.getState()}</span>
                         </g:else>
                     </td>
-                    <td class="${thClass}">${Math.round(tmxBean.getThreadCpuTime( thread.getId() ) / 1000000000 * 1000) / 1000}s</td>
+                    <td class="${thClass}">${(tmxBean.getThreadCpuTime( thread.getId() ) / 1000000000).round(3)}s</td>
                 </tr>
             </g:each>
         </tbody>

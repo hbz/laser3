@@ -180,7 +180,7 @@
                             <td>
                                 <div class="header">
                                     <strong>${task.title}</strong>
-                                    <span style="color: darkgrey">
+                                    <span class="sc_darkgrey">
                                         ( <i class="icon ${WorkflowHelper.getCssIconByTaskPriority(task.priority)}"></i> ${task.priority.getI10n('value')} )
                                     </span>
                                 </div>
@@ -244,7 +244,7 @@
                                     <td>
                                         <div class="header">
                                             <strong>${child.title}</strong>
-                                            <span style="color: darkgrey">
+                                            <span class="sc_darkgrey">
                                                 ( <i class="icon ${WorkflowHelper.getCssIconByTaskPriority(child.priority)}"></i> ${child.priority.getI10n('value')} )
                                             </span>
                                         </div>

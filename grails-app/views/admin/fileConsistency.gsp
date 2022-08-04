@@ -130,7 +130,7 @@
         <ui:msg class="info" noClose="true">
             Alle aufgelisteten Einträge repräsentieren referenzierte Dateiobjekte in der Datenbank OHNE entspr. Dateien im Filesystem.
             <br />
-            Rote Einträge markieren ungültige Referenzen: DocContext.owner( <span style="color:red">status = deleted</span> ) => Doc.
+            Rote Einträge markieren ungültige Referenzen: DocContext.owner( <span class="sc_red">status = deleted</span> ) => Doc.
         </ui:msg>
 
         <div class="ui list">

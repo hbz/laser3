@@ -26,12 +26,11 @@
                     </li>
                 </g:each>
                 <g:if test="${conflict_item.action.actionRequired}">
-                    <i class="fa fa-times-circle"></i>
+                    <i class="icon times circle sc_red"></i>
                     <g:set var="actions_needed" value="true"/>
-
                 </g:if>
                 <g:else>
-                    <i class="fa fa-check-circle"></i>
+                    <i class="icon check circle sc_green"></i>
                 </g:else>
             </ul>
         </g:each>
