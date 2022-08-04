@@ -215,7 +215,7 @@
     </ui:msg>
 
     <p class="ui header">
-        ${message(code: 'workflow.object.' + WfWorkflowPrototype.KEY)} <ui:totalNumber total="${WfWorkflowPrototype.findAll().size()}"/>
+        ${message(code: 'workflow.object.' + WfWorkflowPrototype.KEY)} <ui:totalNumber total="${WfWorkflowPrototype.count()}"/>
     </p>
 
     <g:if test="${key == WfWorkflowPrototype.KEY}">
@@ -277,7 +277,7 @@
     <!-- -->
 
     <p class="ui header">
-        ${message(code: 'workflow.object.' + WfTaskPrototype.KEY)} <ui:totalNumber total="${WfTaskPrototype.findAll().size()}"/>
+        ${message(code: 'workflow.object.' + WfTaskPrototype.KEY)} <ui:totalNumber total="${WfTaskPrototype.count()}"/>
     </p>
 
     <g:if test="${key == WfTaskPrototype.KEY}">
@@ -390,7 +390,7 @@
     <!-- -->
 
     <p class="ui header">
-        ${message(code: 'workflow.object.' + WfConditionPrototype.KEY)} <ui:totalNumber total="${WfConditionPrototype.findAll().size()}"/>
+        ${message(code: 'workflow.object.' + WfConditionPrototype.KEY)} <ui:totalNumber total="${WfConditionPrototype.count()}"/>
     </p>
 
     <g:if test="${key == WfConditionPrototype.KEY}">

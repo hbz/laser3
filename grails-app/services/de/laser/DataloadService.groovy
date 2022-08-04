@@ -45,7 +45,7 @@ class DataloadService {
     ExecutorService executorService
     GlobalService globalService
 
-    final static int BULK_SIZE = 5000
+    final static int BULK_SIZE = 10000
 
     boolean update_running = false
     Future activeFuture
@@ -84,8 +84,8 @@ class DataloadService {
      * @see ESWrapperService#ES_Indices
      */
     boolean doFTUpdate() {
-
         SystemEvent.createEvent('FT_INDEX_UPDATE_START')
+
         synchronized(this) {
             if ( update_running ) {
                 log.debug("Exiting FT update - one already running");
@@ -95,11 +95,23 @@ class DataloadService {
                 update_running = true;
             }
         }
+        long start_time = System.currentTimeMillis()
         log.debug("doFTUpdate: Execute IndexUpdateJob starting at ${new Date()}");
 
-        long start_time = System.currentTimeMillis()
+        _doFTUpdateUpdateESCalls()
 
-        updateES( Org.class ) { Org org ->
+        long elapsed = System.currentTimeMillis() - start_time
+        log.debug("doFTUpdate: Completed in ${elapsed}ms at ${new Date()} ")
+
+        SystemEvent.createEvent('FT_INDEX_UPDATE_END', [ms: elapsed])
+
+        update_running = false
+        true
+    }
+
+    private void _doFTUpdateUpdateESCalls() {
+
+        _updateES( Org.class ) { Org org ->
             def result = [:]
 
                 result._id = org.globalUID
@@ -153,7 +165,7 @@ class DataloadService {
             result
         }
 
-        updateES( TitleInstancePackagePlatform.class ) { TitleInstancePackagePlatform tipp ->
+        _updateES( TitleInstancePackagePlatform.class ) { TitleInstancePackagePlatform tipp ->
 
             def result = [:]
 
@@ -213,7 +225,7 @@ class DataloadService {
             result
         }
 
-        updateES( Package.class ) { Package pkg ->
+        _updateES( Package.class ) { Package pkg ->
             def result = [:]
 
                 result._id = pkg.globalUID
@@ -255,7 +267,7 @@ class DataloadService {
             result
         }
 
-        updateES( Platform.class ) { Platform plat ->
+        _updateES( Platform.class ) { Platform plat ->
             def result = [:]
 
                 result._id = plat.globalUID
@@ -279,7 +291,7 @@ class DataloadService {
             result
         }
 
-        updateES( License.class ) { License lic ->
+        _updateES( License.class ) { License lic ->
             def result = [:]
 
             result._id = lic.globalUID
@@ -342,7 +354,7 @@ class DataloadService {
             result
         }
 
-        updateES( Subscription.class ) { Subscription sub ->
+        _updateES( Subscription.class ) { Subscription sub ->
             def result = [:]
 
                 result._id = sub.globalUID
@@ -421,7 +433,7 @@ class DataloadService {
             result
         }
 
-        updateES( SurveyConfig.class ) { SurveyConfig surveyConfig ->
+        _updateES( SurveyConfig.class ) { SurveyConfig surveyConfig ->
             def result = [:]
 
             result._id = surveyConfig.getClass().getSimpleName().toLowerCase()+":"+surveyConfig.id
@@ -457,7 +469,7 @@ class DataloadService {
             result
         }
 
-        updateES( SurveyOrg.class ) { SurveyOrg surOrg ->
+        _updateES( SurveyOrg.class ) { SurveyOrg surOrg ->
             def result = [:]
 
             result._id = surOrg.getClass().getSimpleName().toLowerCase()+":"+surOrg.id
@@ -491,7 +503,7 @@ class DataloadService {
             result
         }
 
-        updateES( Task.class ) { Task task ->
+        _updateES( Task.class ) { Task task ->
             def result = [:]
 
             result._id = task.getClass().getSimpleName().toLowerCase()+":"+task.id
@@ -539,7 +551,7 @@ class DataloadService {
             result
         }
 
-        updateES( DocContext.class ) { DocContext docCon ->
+        _updateES( DocContext.class ) { DocContext docCon ->
             def result = [:]
 
             result._id = docCon.getClass().getSimpleName().toLowerCase()+":"+docCon.id
@@ -585,7 +597,7 @@ class DataloadService {
             result
         }
 
-        updateES( IssueEntitlement.class ) { IssueEntitlement ie ->
+        _updateES( IssueEntitlement.class ) { IssueEntitlement ie ->
             def result = [:]
 
             result._id = ie.globalUID
@@ -636,7 +648,7 @@ class DataloadService {
             result
         }
 
-        updateES( SubscriptionProperty.class ) { SubscriptionProperty subProp ->
+        _updateES( SubscriptionProperty.class ) { SubscriptionProperty subProp ->
             def result = [:]
 
             result._id = subProp.getClass().getSimpleName().toLowerCase()+":"+subProp.id
@@ -698,7 +710,7 @@ class DataloadService {
             result
         }
 
-        updateES( LicenseProperty.class ) { LicenseProperty licProp ->
+        _updateES( LicenseProperty.class ) { LicenseProperty licProp ->
             def result = [:]
 
             result._id = licProp.getClass().getSimpleName().toLowerCase()+":"+licProp.id
@@ -755,14 +767,6 @@ class DataloadService {
 
             result
         }
-
-        update_running = false
-        long elapsed = System.currentTimeMillis() - start_time
-
-        log.debug("IndexUpdateJob completed in ${elapsed}ms at ${new Date()} ")
-        SystemEvent.createEvent('FT_INDEX_UPDATE_END', [ms: elapsed])
-
-        return true
     }
 
     /**
@@ -772,7 +776,10 @@ class DataloadService {
      * @param recgen_closure the closure to be used for record generation
      * @see ESWrapperService#ES_Indices
      */
-    void updateES(Class domainClass, Closure recgen_closure) {
+    private void _updateES(Class domainClass, Closure recgen_closure) {
+        String logPrefix = "( ${domainClass.name} ) updateES"
+
+        log.info ( "${logPrefix} - Start")
 
         RestHighLevelClient esclient = ESWrapperService.getClient()
         Map es_indices = ESWrapperService.ES_Indices
@@ -900,6 +907,8 @@ class DataloadService {
                         if (latest_ft_record.active) {
                             FlushRequest request = new FlushRequest(es_indices.get(domainClass.simpleName));
                             FlushResponse flushResponse = esclient.indices().flush(request, RequestOptions.DEFAULT)
+
+                            log.debug("${logPrefix} - ${flushResponse}")
                         }
 
                         esclient.close()
@@ -1098,7 +1107,7 @@ class DataloadService {
                         }
 
                         FTControl.withTransaction {
-                            ftControl.dbElements = domainClass.findAll().size()
+                            ftControl.dbElements = domainClass.count()
                             ftControl.esElements = countIndex
                             //println(ft.dbElements +' , '+ ft.esElements)
 
@@ -1157,7 +1166,7 @@ class DataloadService {
                         }
 
                         FTControl.withTransaction {
-                            ft.dbElements = domainClass.findAll().size()
+                            ft.dbElements = domainClass.count()
                             ft.esElements = countIndex
                             //println(ft.dbElements +' , '+ ft.esElements)
 
