@@ -138,7 +138,7 @@ dependencies {
 
     runtimeOnly 'org.apache.tomcat:tomcat-jdbc'
     runtimeOnly 'javax.xml.bind:jaxb-api:2.3.1'
-    runtimeOnly 'org.postgresql:postgresql:42.4.0'                          // from 42.3.0
+    runtimeOnly 'org.postgresql:postgresql:42.4.1'                          // from 42.3.0
 }
 
 springBoot {

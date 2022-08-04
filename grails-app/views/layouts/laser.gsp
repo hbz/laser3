@@ -520,7 +520,7 @@
         <g:set var="visibilityContextOrgMenu" value="la-show-context-orgMenu" />
         <nav class="ui fixed menu la-contextBar" aria-label="${message(code:'wcag.label.modeNavigation')}" >
             <div class="ui container">
-                <button class="ui button big la-menue-button"><i class="bars icon"></i></button>
+                <button class="ui button big la-menue-button" style="display:none"><i class="bars icon"></i></button>
                 <div class="ui sub header item la-context-org">${contextOrg?.name}</div>
 
                 <div class="right menu la-advanced-view">

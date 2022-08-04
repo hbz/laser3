@@ -92,6 +92,15 @@
                     </div>
                 </div>
             </div>
+
+            <h3 class="ui header">${message(code:'elasticsearch.label')}</h3>
+            <div>
+                <div class="ui divided relaxed list">
+                    <div class="item">
+                        <g:link controller="yoda" action="manageFTControl" target="_blank">Manage FTControl</g:link>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="column">

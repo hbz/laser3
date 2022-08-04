@@ -34,7 +34,14 @@
               <td> ${i+1} </td>
               <td> ${ftControl.domainClassName} </td>
               <td> ${ftControl.activity} </td>
-              <td> ${ftControl.esElements} </td>
+              <td>
+                  <g:if test="${ftControl.esElements != ftControl.dbElements}">
+                      <span class="sc_red">${ftControl.esElements}</span>
+                  </g:if>
+                  <g:else>
+                      ${ftControl.esElements}
+                  </g:else>
+              </td>
               <td> ${ftControl.dbElements} </td>
               <td>
                   <ui:xEditable owner="${ftControl}" field="lastTimestamp"/>
@@ -69,7 +76,14 @@
                 <td>${i+1}</td>
                 <td>${indexInfo.name}</td>
                 <td>${indexInfo.type}</td>
-                <td>${indexInfo.countIndex}</td>
+                <td>
+                    <g:if test="${indexInfo.countIndex != indexInfo.countDB}">
+                        <span class="sc_red">${indexInfo.countIndex}</span>
+                    </g:if>
+                    <g:else>
+                        ${indexInfo.countIndex}
+                    </g:else>
+                </td>
                 <td>${indexInfo.countDB}</td>
                 <td><g:link action="deleteAndRefillIndex" params="[name: indexInfo.name]">Delete and refill Index</g:link></td>
             </tr>

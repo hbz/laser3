@@ -266,3 +266,9 @@ h1.header.icon > i.hdd {
 h1.header.icon > i.trophy {
     background-color:#f3a43b; border-color:#f3a43b; color:white;
 }
+
+/* -- simple color helper -- */
+
+p.sc_red, span.sc_red, strong.sc_red             { color:#d12e34; }
+p.sc_green, span.sc_green, strong.sc_green       { color:#b5c334; }
+p.sc_orange, span.sc_orange, strong.sc_orange    { color:#f3a43b; }
