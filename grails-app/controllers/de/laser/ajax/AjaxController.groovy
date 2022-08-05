@@ -544,7 +544,8 @@ class AjaxController {
 
               }
 
-              if(params.tab == 'allIEs') {
+              //TODO @Moe please verify
+              if(params.tab in ['allIEs', 'toBeSelectedIEs']) {
                   Map query = filterService.getIssueEntitlementQuery(params, baseSub)
                   List<Long> allIETipps = IssueEntitlement.executeQuery("select ie.tipp.id " + query.query, query.queryParams)
                   sourceTipps = allIETipps
