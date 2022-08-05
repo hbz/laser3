@@ -29,7 +29,7 @@ class IndexUpdateJob extends AbstractJob {
             return false
         }
         try {
-            if (!dataloadService.updateFTIndexes()) {
+            if (!dataloadService.updateFTIndices()) {
                 log.warn( 'IndexUpdateJob failed. Maybe ignored due blocked dataloadService' )
             }
         }

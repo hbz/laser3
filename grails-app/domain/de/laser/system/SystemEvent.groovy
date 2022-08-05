@@ -56,7 +56,7 @@ class SystemEvent {
             'DBM_SCRIPT_INFO'               : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'DBM_SCRIPT_ERROR'              : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.ERROR],
             'FT_INDEX_UPDATE_START'         : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
-            'FT_INDEX_UPDATE_END'           : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
+            'FT_INDEX_UPDATE_COMPLETE'      : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'FT_INDEX_UPDATE_ERROR'         : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.ERROR],
             'FT_INDEX_UPDATE_KILLED'        : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.WARNING],
             'FT_INDEX_CLEANUP_ERROR'        : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.ERROR],
@@ -161,10 +161,10 @@ class SystemEvent {
         withTransaction {
             SystemEvent result
 
-            if (SystemEvent.DEFINED_EVENTS.containsKey(token)) {
+            if (DEFINED_EVENTS.containsKey(token)) {
                 result = new SystemEvent(
-                        category: SystemEvent.DEFINED_EVENTS.get(token).category,
-                        relevance: SystemEvent.DEFINED_EVENTS.get(token).relevance)
+                        category: DEFINED_EVENTS.get(token).category,
+                        relevance: DEFINED_EVENTS.get(token).relevance)
             } else {
                 result = new SystemEvent(category: CATEGORY.UNKNOWN, relevance: RELEVANCE.UNKNOWN)
             }
@@ -217,12 +217,18 @@ class SystemEvent {
         find('from SystemEvent se where se.token = :token order by se.created desc', [token: token])
     }
 
-    /**
-     * Cleans up recorded system events which are older than three years
-     * @return the count of deleted events
-     */
-    static int cleanUpOldEvents() {
-        executeUpdate('delete from SystemEvent se where se.created <= :limit', [limit: DateUtils.localDateToSqlDate( LocalDate.now().minusYears(3) )])
+    void switchTo(String token, def payload) {
+        if (DEFINED_EVENTS.containsKey(token)) {
+            log.info 'changed given SystemEvent (ID:' + this.id + ') from ' + this.token + ' to ' + token
+
+            this.token = token
+            this.category = DEFINED_EVENTS.get(token).category
+            this.relevance = DEFINED_EVENTS.get(token).relevance
+        }
+        if (payload) {
+            this.payload = (new JSON(payload)).toString(false)
+        }
+        save()
     }
 
     /**

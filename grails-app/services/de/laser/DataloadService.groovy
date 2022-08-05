@@ -45,7 +45,7 @@ class DataloadService {
     ExecutorService executorService
     GlobalService globalService
 
-    final static int BULK_SIZE = 10000
+    final static int BULK_SIZE = 15000
 
     boolean update_running = false
     Future activeFuture
@@ -55,23 +55,23 @@ class DataloadService {
      * Starts the update of the ElasticSearch indices and initialises a parallel thread for the update
      * @return false if the job is already running, true otherwise
      */
-    def updateFTIndexes() {
+    def updateFTIndices() {
         //log.debug("updateFTIndexes ${this.hashCode()}")
         if(! update_running) {
 
             if(!(activeFuture) || activeFuture.isDone()) {
 
                 activeFuture = executorService.submit({
-                    Thread.currentThread().setName("DataloadServiceUpdateFTIndexes")
+                    Thread.currentThread().setName("DataloadServiceUpdateFTIndices")
                     doFTUpdate()
                 })
-                 log.debug("updateFTIndexes returning")
+                 log.debug("updateFTIndices returning")
             }else{
-                log.debug("FT update already running #2")
+                log.debug("doFTUpdate already running #2")
                 return false
             }
         } else {
-            log.debug("FT update already running #1")
+            log.debug("doFTUpdate already running #1")
             return false
         }
     }
@@ -84,11 +84,11 @@ class DataloadService {
      * @see ESWrapperService#ES_Indices
      */
     boolean doFTUpdate() {
-        SystemEvent.createEvent('FT_INDEX_UPDATE_START')
+        SystemEvent sysEvent = SystemEvent.createEvent('FT_INDEX_UPDATE_START')
 
         synchronized(this) {
             if ( update_running ) {
-                log.debug("Exiting FT update - one already running");
+                log.debug("doFTUpdate: exiting - one already running")
                 return false
             }
             else {
@@ -103,7 +103,7 @@ class DataloadService {
         long elapsed = System.currentTimeMillis() - start_time
         log.debug("doFTUpdate: Completed in ${elapsed}ms at ${new Date()} ")
 
-        SystemEvent.createEvent('FT_INDEX_UPDATE_END', [ms: elapsed])
+        sysEvent.switchTo('FT_INDEX_UPDATE_COMPLETE', [ms: elapsed])
 
         update_running = false
         true
@@ -800,7 +800,7 @@ class DataloadService {
 
                     if (ESWrapperService.testConnection() && es_indices && es_indices.get(domainClass.simpleName)) {
 
-                        log.debug("updateES ( ${domainClass.name} ) for changes since ${new Date(latest_ft_record.lastTimestamp)}")
+                        log.debug("${logPrefix} - for changes since ${new Date(latest_ft_record.lastTimestamp)}")
                         Date from = new Date(latest_ft_record.lastTimestamp)
 
                         List<Long> idList = []
@@ -846,7 +846,7 @@ class DataloadService {
                                 total++
                                 if (count >= BULK_SIZE) {
                                     count = 0;
-                                    // log.debug("noa ---> ${bulkRequest.numberOfActions()} : esib ---> ${bulkRequest.estimatedSizeInBytes()}")
+                                    log.debug("noa ---> ${bulkRequest.numberOfActions()} : esib ---> ${bulkRequest.estimatedSizeInBytes()/1024/1024}MB")
 
                                     BulkResponse bulkResponse = esclient.bulk(bulkRequest, RequestOptions.DEFAULT)
 
@@ -854,12 +854,12 @@ class DataloadService {
                                         for (BulkItemResponse bulkItemResponse : bulkResponse) {
                                             if (bulkItemResponse.isFailed()) {
                                                 BulkItemResponse.Failure failure = bulkItemResponse.getFailure()
-                                                log.warn("- updateES ${domainClass.name}: #1 bulk operation failure -> ${failure}")
+                                                log.warn("${logPrefix} - (#1) bulk operation failure -> ${failure}")
                                             }
                                         }
                                     }
 
-                                    log.debug("- processed ${total} of ${idList.size()} records ( ${domainClass.name} )")
+                                    log.debug("${logPrefix} - processed ${total} of ${idList.size()} records")
                                     bulkRequest = new BulkRequest()
                                 }
                             }
@@ -871,13 +871,13 @@ class DataloadService {
                                     for (BulkItemResponse bulkItemResponse : bulkResponse) {
                                         if (bulkItemResponse.isFailed()) {
                                             BulkItemResponse.Failure failure = bulkItemResponse.getFailure()
-                                            log.warn("- updateES ${domainClass.name}: #2 bulk operation failure -> ${failure}")
+                                            log.warn("${logPrefix} - (#2) bulk operation failure -> ${failure}")
                                         }
                                     }
                                 }
                             }
 
-                            log.debug("- finally processed ${total} records ( ${domainClass.name} )")
+                            log.debug("${logPrefix} - finally processed ${total} records")
 
                             latest_ft_record.lastTimestamp = startingTimestamp
                             latest_ft_record.save()
@@ -887,21 +887,21 @@ class DataloadService {
                         } // withNewSession
                     } else {
                         latest_ft_record.save()
-                        log.debug("updateES ${domainClass.name}: Failed -> ESWrapperService.testConnection() && es_indices && es_indices.get(domain.simpleName)")
+                        log.debug("${logPrefix} - failed -> ESWrapperService.testConnection() && es_indices && es_indices.get(domain.simpleName)")
                     }
                 } else {
                     latest_ft_record.save()
-                    log.debug("updateES ${domainClass.name}: FTControl is not active")
+                    log.debug("${logPrefix} - ignored. FTControl is not active")
                 }
 
             }
             catch (Exception e) {
-                log.error("Problem with FT index", e)
+                log.error("${logPrefix} - Error", e)
 
                 SystemEvent.createEvent('FT_INDEX_UPDATE_ERROR', ["index": domainClass.name])
             }
             finally {
-                log.debug("Completed processing on ${domainClass.name} - saved ${total} records")
+                log.debug("${logPrefix} - processing completed - saved ${total} records")
                 try {
                     if (ESWrapperService.testConnection()) {
                         if (latest_ft_record.active) {
@@ -920,6 +920,8 @@ class DataloadService {
                 }
             }
         //}
+
+        log.info ( "${logPrefix} - End")
     }
 
     @Deprecated
@@ -1015,16 +1017,16 @@ class DataloadService {
      * The new index is being rebuilt right after resetting
      */
     def clearDownAndInitES() {
-        log.debug("Clear down and init ES");
+        log.debug("clearDownAndInitES")
 
         RestHighLevelClient client = ESWrapperService.getClient()
-        SystemEvent.createEvent('YODA_ES_RESET_START')
 
         if(ESWrapperService.testConnection()) {
-
             if (!(activeFuture) || (activeFuture && activeFuture.cancel(true))) {
-                Collection esIndicesNames = ESWrapperService.ES_Indices.values() ?: []
 
+                SystemEvent.createEvent('YODA_ES_RESET_START')
+
+                Collection esIndicesNames = ESWrapperService.ES_Indices.values() ?: []
                 esIndicesNames.each { String indexName ->
                     try {
                         boolean isDeletedIndex = ESWrapperService.deleteIndex(indexName)
@@ -1063,14 +1065,15 @@ class DataloadService {
                     log.error(e.toString())
                 }
 
-                log.debug("Do updateFTIndexes");
-                updateFTIndexes()
+                log.debug("Do updateFTIndices");
+                updateFTIndices()
 
-            } else {
-                log.debug("!!!!Clear down and init ES is not possible because updateFTIndexes is currently in process!!!!");
+                SystemEvent.createEvent('YODA_ES_RESET_END')
+            }
+            else {
+                log.debug("!!!! clearDownAndInitES is not possible !!!!");
             }
         }
-        SystemEvent.createEvent('YODA_ES_RESET_END')
     }
 
     /**
@@ -1092,7 +1095,6 @@ class DataloadService {
                 FTControl ftControl = FTControl.findByDomainClassName(domainClassName)
 
                 if (ftControl && ftControl.active) {
-
                         Class domainClass = CodeUtils.getDomainClass(ftControl.domainClassName)
 
                         String indexName =  es_indices.get(domainClass.simpleName)
@@ -1118,8 +1120,12 @@ class DataloadService {
 
                             ftControl.save()
                         }
-                    }
-                log.debug("Completed element comparison: ES <-> DB ( ${domainClassName} )")
+
+                        log.debug("Completed element comparison: ES <-> DB ( ${domainClassName} )")
+                }
+                else {
+                    log.debug("Ignored element comparison, because ftControl is not active")
+                }
             }
         }
         finally {
@@ -1177,9 +1183,13 @@ class DataloadService {
 
                             ft.save()
                         }
+
+                        log.debug("Completed element comparison: ES <-> DB")
+                    }
+                    else {
+                        log.debug("Ignored element comparison, because ftControl is not active")
                     }
                 }
-                log.debug("Completed element comparison: ES <-> DB")
             }
         }
         finally {
@@ -1196,7 +1206,10 @@ class DataloadService {
     String getLastFTIndexUpdateInfo() {
         String info = '?'
 
-        SystemEvent se = SystemEvent.getLastByToken('FT_INDEX_UPDATE_END')
+        SystemEvent se = SystemEvent.getLastByToken('FT_INDEX_UPDATE_COMPLETE')
+        if (!se) {
+            se = SystemEvent.getLastByToken('FT_INDEX_UPDATE_START')
+        }
         if (se) {
             info = DateUtils.getLocalizedSDF_noZ().format(se.created)
             if (se.payload) {
@@ -1215,8 +1228,15 @@ class DataloadService {
     public synchronized void killDataloadService() {
         if (activeFuture != null) {
             SystemEvent.createEvent('FT_INDEX_UPDATE_KILLED')
+
             activeFuture.cancel(true)
-            log.debug("killed DataloadService!")
+            if (update_running) {
+                update_running = false
+                log.debug("killed DataloadService! Set DataloadService.update_running to false")
+            }
+            else {
+                log.debug("killed DataloadService!")
+            }
         }
     }
 }

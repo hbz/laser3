@@ -672,10 +672,10 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     def esIndexUpdate() {
         log.debug("manual start full text index")
-        dataloadService.updateFTIndexes()
-        log.debug("redirecting to home ..")
+        dataloadService.updateFTIndices()
+        log.debug("redirect ..")
 
-        redirect controller: 'home'
+        redirect controller: 'yoda', action: 'index'
     }
 
     /**
@@ -685,9 +685,9 @@ class YodaController {
     def fullReset() {
        log.debug("Clear ES")
        dataloadService.clearDownAndInitES()
-        log.debug("redirecting to home ..")
+        log.debug("redirect ..")
 
-        redirect controller:'home'
+        redirect controller: 'yoda', action: 'index'
     }
 
     /**
@@ -697,9 +697,9 @@ class YodaController {
     def killDataloadService() {
         log.debug("kill DataloadService")
         dataloadService.killDataloadService()
-        log.debug("redirecting to home ..")
+        log.debug("redirect ..")
 
-        redirect controller:'home'
+        redirect controller: 'yoda', action: 'index'
     }
 
     /**
@@ -710,9 +710,9 @@ class YodaController {
     def checkESElementswithDBElements() {
         log.debug("checkESElementswithDBElements")
         dataloadService.checkESElementswithDBElements()
-        log.debug("redirecting to home ..")
+        log.debug("redirect ..")
 
-        redirect controller: 'home'
+        redirect controller: 'yoda', action: 'index'
     }
 
     /**
@@ -873,7 +873,7 @@ class YodaController {
         esIndicesNames.each { String indexName ->
             ESWrapperService.createIndex(indexName)
         }
-        dataloadService.updateFTIndexes()
+        dataloadService.updateFTIndices()
         redirect action: 'manageFTControl'
     }
 
@@ -886,7 +886,7 @@ class YodaController {
         if (indexName) {
            ESWrapperService.deleteIndex(indexName)
            ESWrapperService.createIndex(indexName)
-           dataloadService.updateFTIndexes()
+           dataloadService.updateFTIndices()
         }
 
         redirect(action: 'manageFTControl')

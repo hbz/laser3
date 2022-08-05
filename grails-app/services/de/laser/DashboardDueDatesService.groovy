@@ -44,6 +44,19 @@ class DashboardDueDatesService {
     boolean update_running = false
     private static final String QRY_ALL_ORGS_OF_USER = "select distinct o from Org as o where exists ( select uo from UserOrg as uo where uo.org = o and uo.user = :user) order by o.name"
 
+    // TODO: refactoring; remove events; alter event
+    //
+    // DBDD_SERVICE_START_COLLECT_DASHBOARD_DATA
+    // DBDD_SERVICE_END_COLLECT_DASHBOARD_DATA
+    // DBDD_SERVICE_START_TRANSACTION
+    // DBDD_SERVICE_END_TRANSACTION
+    // DBDD_SERVICE_PROCESSING_2
+    // DBDD_SERVICE_COMPLETE_2
+    // DBDD_SERVICE_COMPLETE_3
+    //
+    // DBDD_SERVICE_START_2 <-
+
+
     /**
      * Initialises the service with configuration parameters
      */
@@ -108,8 +121,8 @@ class DashboardDueDatesService {
      * @return the message container, filled with the processing output
      */
     private _updateDashboardTableInDatabase(def flash){
-        SystemEvent.createEvent('DBDD_SERVICE_START_2')
-        SystemEvent.createEvent('DBDD_SERVICE_START_COLLECT_DASHBOARD_DATA')
+        SystemEvent sysEvent = SystemEvent.createEvent('DBDD_SERVICE_START_2')
+
         Date now = new Date();
         log.debug("Start DashboardDueDatesService updateDashboardTableInDatabase")
 
@@ -144,18 +157,15 @@ class DashboardDueDatesService {
                 }
             }
         }
-        SystemEvent.createEvent('DBDD_SERVICE_END_COLLECT_DASHBOARD_DATA', ['count': dashboarEntriesToInsert.size])
-        DashboardDueDate.withTransaction { session ->
-            SystemEvent.createEvent('DBDD_SERVICE_START_TRANSACTION', ['count': dashboarEntriesToInsert.size])
 
+        sysEvent.switchTo('DBDD_SERVICE_START_2', ['count': dashboarEntriesToInsert.size()])
+
+        DashboardDueDate.withTransaction { session ->
             try {
                 // delete (not-inserted and non-updated entries, they are obsolet)
                 int anzDeletes = DashboardDueDate.executeUpdate("DELETE from DashboardDueDate WHERE lastUpdated < :now and isHidden = false", [now: now])
                 log.debug("DashboardDueDatesService DELETES: " + anzDeletes);
-
-                log.debug("DashboardDueDatesService INSERT Anzahl: " + dashboarEntriesToInsert.size)
-                SystemEvent.createEvent('DBDD_SERVICE_END_TRANSACTION', ['count': dashboarEntriesToInsert.size])
-                SystemEvent.createEvent('DBDD_SERVICE_PROCESSING_2', ['count': dashboarEntriesToInsert.size])
+                log.debug("DashboardDueDatesService INSERT Anzahl: " + dashboarEntriesToInsert.size())
 
                 flash.message += messageSource.getMessage('menu.admin.updateDashboardTable.successful', null, locale)
             } catch (Throwable t) {
@@ -169,7 +179,6 @@ class DashboardDueDatesService {
             }
         }
         log.debug("Finished DashboardDueDatesService updateDashboardTableInDatabase")
-        SystemEvent.createEvent('DBDD_SERVICE_COMPLETE_2')
 
         flash
     }
@@ -180,9 +189,9 @@ class DashboardDueDatesService {
      * @return the message collector container with the processing output
      */
     private _sendEmailsForDueDatesOfAllUsers(def flash) {
-        try {
-            SystemEvent.createEvent('DBDD_SERVICE_START_3')
+        SystemEvent.createEvent('DBDD_SERVICE_START_3')
 
+        try {
             List<User> users = User.findAllByEnabledAndAccountExpiredAndAccountLocked(true, false, false)
             users.each { user ->
                 boolean userWantsEmailReminder = RDStore.YN_YES.equals(user.getSetting(UserSetting.KEYS.IS_REMIND_BY_EMAIL, RDStore.YN_NO).rdValue)
@@ -194,7 +203,6 @@ class DashboardDueDatesService {
                     }
                 }
             }
-            SystemEvent.createEvent('DBDD_SERVICE_COMPLETE_3')
 
             flash.message += messageSource.getMessage('menu.admin.sendEmailsForDueDates.successful', null, locale)
         } catch (Exception e) {
