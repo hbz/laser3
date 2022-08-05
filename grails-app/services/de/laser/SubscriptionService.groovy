@@ -1260,7 +1260,7 @@ class SubscriptionService {
         if (tipp == null) {
             throw new EntitlementCreationException("Unable to tipp ${gokbId}")
         }
-        else if(IssueEntitlement.findAllBySubscriptionAndTippAndStatus(sub, tipp, RDStore.TIPP_STATUS_CURRENT)) {
+        else if(IssueEntitlement.findAllBySubscriptionAndTippAndStatusInList(sub, tipp, [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_RETIRED])) {
             throw new EntitlementCreationException("Unable to create IssueEntitlement because IssueEntitlement exist with tipp ${gokbId}")
         }
         else if(IssueEntitlement.findBySubscriptionAndTippAndStatus(sub, tipp, RDStore.TIPP_STATUS_EXPECTED)) {
@@ -1279,6 +1279,11 @@ class SubscriptionService {
                     ieReason: 'Manually Added by User',
                     acceptStatus: acceptStatus)
             new_ie.generateSortTitle()
+
+            //fix for renewEntitlementsWithSurvey, overwrite TIPP status if holding's status differ
+            IssueEntitlement parentIE = IssueEntitlement.findBySubscriptionAndTippAndStatusNotEqual(sub.instanceOf, tipp, RDStore.TIPP_STATUS_REMOVED)
+            if(parentIE)
+                new_ie.status = parentIE.status
 
             if(pickAndChoosePerpetualAccess || sub.hasPerpetualAccess){
                 new_ie.perpetualAccessBySub = sub
@@ -1351,9 +1356,7 @@ class SubscriptionService {
                                         issueEntitlement: new_ie
                                 )
                                 pi.setGlobalUID()
-                                if (pi.save())
-                                    return true
-                                else {
+                                if (!pi.save()) {
                                     throw new EntitlementCreationException(pi.errors)
                                 }
                             }
@@ -1387,9 +1390,7 @@ class SubscriptionService {
                                     issueEntitlement: new_ie
                             )
                             pi.setGlobalUID()
-                            if (pi.save())
-                                return true
-                            else {
+                            if (!pi.save()) {
                                 throw new EntitlementCreationException(pi.errors)
                             }
                         }

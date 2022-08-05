@@ -1368,7 +1368,7 @@ class SubscriptionControllerService {
                 List<Long> toBeSelectedTippIDs = allTippIDs - selectedTippIDs
                 allQuery.query = allQuery.query.replace("where", "where ie.tipp.id in (:tippIds) and ")
                 allQuery.queryParams.tippIds = toBeSelectedTippIDs
-                if(toBeSelectedTippIDs > 0)
+                if(toBeSelectedTippIDs.size() > 0)
                     sourceIEs = IssueEntitlement.executeQuery("select ie.id " + allQuery.query, allQuery.queryParams)
 
             }
