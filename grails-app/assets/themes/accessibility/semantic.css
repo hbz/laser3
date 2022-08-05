@@ -29222,7 +29222,6 @@ Floated Menu / Item
 
 .ui.table thead tr:first-child > th,
 .ui.table thead tr:nth-child(2) > th {
-  position: -webkit-sticky !important;
   position: sticky !important;
   z-index: 2;
 }
@@ -40015,7 +40014,6 @@ body.pushable > .pusher {
 *******************************/
 
 .ui.native.sticky {
-  position: -webkit-sticky;
   position: -moz-sticky;
   position: -ms-sticky;
   position: -o-sticky;

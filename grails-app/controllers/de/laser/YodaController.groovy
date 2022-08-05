@@ -66,6 +66,8 @@ class YodaController {
     ESWrapperService ESWrapperService
     FinanceService financeService
     FormService formService
+    StatusUpdateService statusUpdateService
+    GokbService gokbService
     GlobalSourceSyncService globalSourceSyncService
     def quartzScheduler
     StatsSyncService statsSyncService
@@ -606,7 +608,19 @@ class YodaController {
      */
     @Secured(['ROLE_YODA'])
     Map<String, Object> manageStatsSources() {
-        Map<String, Object> result = [platforms: Platform.executeQuery('select p from LaserStatsCursor lsc join lsc.platform p join p.org o where p.org is not null order by o.name, o.sortname, p.name') as Set<Platform>]
+        Set<Platform> platforms = Platform.executeQuery('select p from LaserStatsCursor lsc join lsc.platform p join p.org o where p.org is not null order by o.name, o.sortname, p.name') as Set<Platform>
+        Map<String, Object> result = [platforms: platforms, platformInstanceRecords: [:]]
+        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        platforms.each { Platform platformInstance ->
+            Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/find?uuid=${platformInstance.gokbId}")
+            if (queryResult.error && queryResult.error == 404) {
+                result.wekbServerUnavailable = message(code: 'wekb.error.404')
+            }
+            else if (queryResult.warning) {
+                List records = queryResult.warning.records
+                result.platformInstanceRecords[platformInstance.gokbId] = records ? records[0] : [:]
+            }
+        }
         result
     }
 
@@ -617,12 +631,15 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     def resetStatsData() {
         boolean fullReset = Boolean.valueOf(params.fullReset)
-        Long platform = params.long("platform")
+        Platform platform = Platform.get(params.platform)
+        LaserStatsCursor.executeUpdate('delete from LaserStatsCursor lsc where lsc.platform = :plat', [plat: platform])
         if(fullReset) {
-            Counter4Report.executeUpdate('delete from Counter4Report c4r where c4r.platform.id = :plat', [plat: platform])
-            Counter5Report.executeUpdate('delete from Counter5Report c5r where c5r.platform.id = :plat', [plat: platform])
+            if(params.counterRevision == 'r4')
+                Counter4Report.executeUpdate('delete from Counter4Report c4r where c4r.platform = :plat', [plat: platform])
+            else if(params.counterRevision == 'r5')
+                Counter5Report.executeUpdate('delete from Counter5Report c5r where c5r.platform = :plat', [plat: platform])
+            statsSyncService.doFetch(false, platform.gokbId, params.sushiURL, params.counterRevision)
         }
-        LaserStatsCursor.executeUpdate('delete from LaserStatsCursor lsc where lsc.platform.id = :plat', [plat: platform])
         redirect(action: 'manageStatsSources')
     }
 
