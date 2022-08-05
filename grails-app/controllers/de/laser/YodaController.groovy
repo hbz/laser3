@@ -684,7 +684,7 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     def fullReset() {
        log.debug("Clear ES")
-       dataloadService.clearDownAndInitES()
+       dataloadService.resetESIndices()
         log.debug("redirect ..")
 
         redirect controller: 'yoda', action: 'index'

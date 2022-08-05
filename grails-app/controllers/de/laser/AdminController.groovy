@@ -509,14 +509,7 @@ class AdminController  {
         result.events = SystemEvent.list([max: params.filter_limit, sort: 'created', order: 'desc'])
         result
     }
-
-    @Deprecated
-    @Secured(['ROLE_YODA'])
-    def dataCleanse() {
-        // Sets nominal platform
-        dataloadService.dataCleanse()
-    }
-
+    
     /**
      * Enumerates the database collations currently used in the tables
      */

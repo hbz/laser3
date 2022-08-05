@@ -87,7 +87,6 @@
             <th>${message(code:'default.relevance.label')}</th>
             <th>${message(code:'default.source.label')}</th>
             <th>${message(code:'default.event.label')}</th>
-            <%--<th>Message</th>--%>
             <th>Payload</th>
             <th>${message(code:'default.date.label')}</th>
         </tr>
@@ -110,7 +109,7 @@
                     class="hidden"
             >
                 <td class="${tdClass}">
-                    <g:if test="${el.hasChanged}"><strong>${i+1}. *</strong></g:if><g:else>${i+1}.</g:else>
+                    ${i+1}.
                 </td>
                 <td class="${tdClass}">
                     ${el.category}
@@ -119,19 +118,20 @@
                     ${el.relevance}
                 </td>
                 <td class="${tdClass}">
-                    ${el.source}
+                    ${el.getSource()}
                 </td>
                 <td class="${tdClass}">
-                    ${el.event}
+                    ${el.getEvent()}
+                    <g:if test="${el.getEvent() != el.getDescr()}">
+                        : ${el.getDescr()}
+                    </g:if>
                 </td>
-                <%--<td class="${tdClass}">
-                    ${el.descr}
-                </td>--%>
                 <td class="${tdClass}">
                     ${el.payload?.replaceAll(',', ', ')}
                 </td>
                 <td class="${tdClass}">
                     <g:formatDate date="${el.created}" format="${message(code:'default.date.format.noZ')}" />
+                    <g:if test="${el.hasChanged}"> &nbsp; <i class="icon exclamation"></i> </g:if>
                 </td>
             </tr>
         </g:each>

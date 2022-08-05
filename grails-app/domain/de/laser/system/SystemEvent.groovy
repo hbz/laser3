@@ -78,9 +78,8 @@ class SystemEvent {
             'SYSANN_SENDING_OK'             : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO],
             'SYSANN_SENDING_ERROR'          : [category: CATEGORY.OTHER, relevance: RELEVANCE.ERROR],
             'YODA_ES_RESET_START'           : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO],
-            'YODA_ES_RESET_DROP_OK'         : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO],
-            'YODA_ES_RESET_CREATE_OK'       : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO],
-            'YODA_ES_RESET_END'             : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO]
+            'YODA_ES_RESET_DELETED'         : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO],
+            'YODA_ES_RESET_CREATED'         : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO]
     ]
 
     /**

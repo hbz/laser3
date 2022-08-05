@@ -38,4 +38,15 @@ databaseChangeLog = {
             rollback {}
         }
     }
+
+    changeSet(author: "klober (modified)", id: "1659682856959-6") {
+        grailsChange {
+            change {
+                sql.execute("delete from system_event where se_token = 'YODA_ES_RESET_END'")
+                sql.execute("delete from system_event where se_token = 'YODA_ES_RESET_DROP_OK'")
+                sql.execute("delete from system_event where se_token = 'YODA_ES_RESET_CREATE_OK'")
+            }
+            rollback {}
+        }
+    }
 }

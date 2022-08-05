@@ -784,23 +784,23 @@ class DataloadService {
         Map es_indices = ESWrapperService.ES_Indices
 
         int count = 0
-        long total = 0
-        long startingTimestamp = 0
+        long total = 0, currentTimestamp = 0
+        BigDecimal mb = 0, totalMb = 0
 
         //FTControl.withTransaction { TransactionStatus ts ->
 
-            FTControl latest_ft_record = FTControl.findByDomainClassNameAndActivity(domainClass.name, 'ESIndex')
-            if (!latest_ft_record) {
-                latest_ft_record = new FTControl(domainClassName: domainClass.name, activity: 'ESIndex', lastTimestamp: 0, active: true, esElements: 0, dbElements: 0)
+            FTControl ftControl = FTControl.findByDomainClassNameAndActivity(domainClass.name, 'ESIndex')
+            if (!ftControl) {
+                ftControl = new FTControl(domainClassName: domainClass.name, activity: 'ESIndex', lastTimestamp: 0, active: true, esElements: 0, dbElements: 0)
             }
 
             try {
-                if (latest_ft_record.active) {
+                if (ftControl.active) {
 
                     if (ESWrapperService.testConnection() && es_indices && es_indices.get(domainClass.simpleName)) {
 
-                        log.debug("${logPrefix} - for changes since ${new Date(latest_ft_record.lastTimestamp)}")
-                        Date from = new Date(latest_ft_record.lastTimestamp)
+                        log.debug("${logPrefix} - for changes since ${new Date(ftControl.lastTimestamp)}")
+                        Date from = new Date(ftControl.lastTimestamp)
 
                         List<Long> idList = []
 
@@ -816,7 +816,7 @@ class DataloadService {
                             )
                         }
 
-                        startingTimestamp = System.currentTimeMillis()
+                        currentTimestamp = System.currentTimeMillis()
                         BulkRequest bulkRequest = new BulkRequest();
 
                         FTControl.withNewSession { Session session ->
@@ -845,7 +845,8 @@ class DataloadService {
                                 total++
                                 if (count >= BULK_SIZE) {
                                     count = 0;
-                                    log.debug("noa ---> ${bulkRequest.numberOfActions()} : esib ---> ${bulkRequest.estimatedSizeInBytes()/1024/1024}MB")
+                                    mb = (bulkRequest.estimatedSizeInBytes()/1024/1024)
+                                    totalMb = totalMb + mb
 
                                     BulkResponse bulkResponse = esclient.bulk(bulkRequest, RequestOptions.DEFAULT)
 
@@ -858,12 +859,15 @@ class DataloadService {
                                         }
                                     }
 
-                                    log.debug("${logPrefix} - processed ${total} of ${idList.size()} records")
+                                    log.debug("${logPrefix} - processed ${total} of ${idList.size()} records ; bulkSize ${mb.round(2)}MB")
                                     bulkRequest = new BulkRequest()
                                 }
                             }
 
                             if (count > 0) {
+                                mb = (bulkRequest.estimatedSizeInBytes()/1024/1024)
+                                totalMb = totalMb + mb
+
                                 BulkResponse bulkResponse = esclient.bulk(bulkRequest, RequestOptions.DEFAULT)
 
                                 if (bulkResponse.hasFailures()) {
@@ -876,20 +880,20 @@ class DataloadService {
                                 }
                             }
 
-                            log.debug("${logPrefix} - finally processed ${total} records")
+                            log.debug("${logPrefix} - finally processed ${total} records ; ${totalMb.round(2)}MB")
 
-                            latest_ft_record.lastTimestamp = startingTimestamp
-                            latest_ft_record.save()
+                            ftControl.lastTimestamp = currentTimestamp
+                            ftControl.save()
                             session.flush()
                             session.clear()
 
                         } // withNewSession
                     } else {
-                        latest_ft_record.save()
+                        ftControl.save()
                         log.debug("${logPrefix} - failed -> ESWrapperService.testConnection() && es_indices && es_indices.get(domain.simpleName)")
                     }
                 } else {
-                    latest_ft_record.save()
+                    ftControl.save()
                     log.debug("${logPrefix} - ignored. FTControl is not active")
                 }
 
@@ -903,7 +907,7 @@ class DataloadService {
                 log.debug("${logPrefix} - processing completed - saved ${total} records")
                 try {
                     if (ESWrapperService.testConnection()) {
-                        if (latest_ft_record.active) {
+                        if (ftControl.active) {
                             FlushRequest request = new FlushRequest(es_indices.get(domainClass.simpleName));
                             FlushResponse flushResponse = esclient.indices().flush(request, RequestOptions.DEFAULT)
 
@@ -923,100 +927,13 @@ class DataloadService {
         log.info ( "${logPrefix} - End")
     }
 
-    @Deprecated
-    def dataCleanse() {
-        log.debug("dataCleanse")
-        executorService.execute({
-            //doDataCleanse()
-            log.debug("dataCleanse deactived")
-        })
-        log.debug("dataCleanse returning")
-    }
-
-    @Deprecated
-  def doDataCleanse() {
-    log.debug("dataCleansing");
-    // 1. Find all packages that do not have a nominal platform
-    Package.findAllByNominalPlatformIsNull().each { p ->
-      Map platforms = [:]
-      p.tipps.each{ tipp ->
-        if ( !platforms.keySet().contains(tipp.platform.id) ) {
-          platforms[tipp.platform.id] = [count:1, platform:tipp.platform]
-        }
-        else {
-          platforms[tipp.platform.id].count++
-        }
-      }
-
-      def selected_platform = null;
-      def largest = 0;
-      platforms.values().each { pl ->
-        log.debug("Processing ${pl}");
-        if ( pl['count'] > largest ) {
-          selected_platform = pl['platform']
-        }
-      }
-
-      log.debug("Nominal platform is ${selected_platform} for ${p.id}");
-      p.nominalPlatform = selected_platform
-      p.save()
-    }
-
-    // Fill out any missing sort keys on titles, packages or licenses
-    long num_rows_updated = 0
-    long sort_str_start_time = System.currentTimeMillis()
-    boolean rows_updated = true
-
-    while ( rows_updated ) {
-      rows_updated = false
-
-      TitleInstance.findAllBySortTitle(null,[max:100]).each {
-        log.debug("Normalise Title ${it.title}");
-        it.sortTitle = it.generateSortTitle(it.title) ?: 'AAA_Error'
-        if ( it.sortTitle != null ) {
-          it.save(failOnError:true)
-          num_rows_updated++
-          rows_updated = true
-        }
-      }
-
-      log.debug("Generate Missing Sort Package Names Rows_updated:: ${rows_updated} ${num_rows_updated}");
-      Package.findAllBySortName(null,[max:100]).each {
-        log.debug("Normalise Package Name ${it.name}");
-        it.sortname = it.generateSortName(it.name) ?: 'AAA_Error'
-        if ( it.sortname != null ) {
-          it.save(failOnError:true)
-          num_rows_updated++
-          rows_updated = true
-        }
-      }
-
-      log.debug("Generate Missing Sortable License References Rows_updated:: ${rows_updated} ${num_rows_updated}");
-      License.findAllBySortableReference(null,[max:100]).each {
-        log.debug("Normalise License Reference Name ${it.reference}");
-        it.sortableReference = it.generateSortableReference(it.reference) ?: 'AAA_Error'
-        if( it.sortableReference != null ) {
-          it.save(failOnError:true)
-          num_rows_updated++
-          rows_updated = true
-        }
-      }
-      
-      log.debug("Rows_updated:: ${rows_updated} ${num_rows_updated}");
-
-      globalService.cleanUpGorm();
-    }
-
-    log.debug("Completed normalisation step... updated ${rows_updated} rows in ${System.currentTimeMillis()-sort_str_start_time}ms");
-  }
-
     /**
      * Drops an old domain index and reinitialises it. An eventually running job is being cancelled; execution
      * is done if the job could be cancelled.
      * The new index is being rebuilt right after resetting
      */
-    def clearDownAndInitES() {
-        log.debug("clearDownAndInitES")
+    def resetESIndices() {
+        log.debug("resetESIndices")
 
         RestHighLevelClient client = ESWrapperService.getClient()
 
@@ -1025,15 +942,19 @@ class DataloadService {
 
                 SystemEvent.createEvent('YODA_ES_RESET_START')
 
+                List<String> deleted = [], deletedFailed = []
+                List<String> created = [], createdFailed = []
+
                 Collection esIndicesNames = ESWrapperService.ES_Indices.values() ?: []
                 esIndicesNames.each { String indexName ->
                     try {
                         boolean isDeletedIndex = ESWrapperService.deleteIndex(indexName)
                         if (isDeletedIndex) {
-                            log.debug("Drop old ES index completed OK")
-                            SystemEvent.createEvent('YODA_ES_RESET_DROP_OK')
+                            log.debug("deleted ES index: ${indexName}")
+                            deleted.add(indexName)
                         } else {
-                            log.error("Index wasn't deleted")
+                            log.error("failed to delete ES index: ${indexName}")
+                            deletedFailed.add(indexName)
                         }
                     }
                     catch (ElasticsearchException e) {
@@ -1043,19 +964,23 @@ class DataloadService {
                             log.warn("Problem deleting index ..", e)
                         }
 
-                        SystemEvent.createEvent('FT_INDEX_CLEANUP_ERROR', ["index": indexName])
+//                        SystemEvent.createEvent('FT_INDEX_CLEANUP_ERROR', [index: indexName])
+                        deletedFailed.add(indexName)
                     }
 
                     boolean isCreatedIndex = ESWrapperService.createIndex(indexName)
-
                     if (isCreatedIndex) {
-                        SystemEvent.createEvent('YODA_ES_RESET_CREATE_OK')
-                        log.debug("Create ES index completed OK")
+                        log.debug("created ES index: ${indexName}")
+                        created.add(indexName)
 
                     } else {
-                        log.error("Index wasn't created")
+                        log.debug("failed to create ES index: ${indexName}")
+                        createdFailed.add(indexName)
                     }
                 }
+
+                SystemEvent.createEvent('YODA_ES_RESET_DELETED',   [deleted: deleted, failed: deletedFailed])
+                SystemEvent.createEvent('YODA_ES_RESET_CREATED', [created: created, failed: createdFailed])
 
                 try {
                     client.close()
@@ -1067,10 +992,10 @@ class DataloadService {
                 log.debug("Do updateFTIndices");
                 updateFTIndices()
 
-                SystemEvent.createEvent('YODA_ES_RESET_END')
+                // SystemEvent.createEvent('YODA_ES_RESET_END')
             }
             else {
-                log.debug("!!!! clearDownAndInitES is not possible !!!!");
+                log.debug("!!!! resetESIndices is not possible !!!!");
             }
         }
     }

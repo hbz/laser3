@@ -93,7 +93,10 @@
                 <td class="${tdClass}"> ${el.source} </td>
                 <td class="${tdClass}"> ${el.event} </td>
                 <td class="${tdClass}"> ${el.payload?.replaceAll(',', ', ')} </td>
-                <td class="${tdClass}"> <g:formatDate date="${el.created}" format="${message(code:'default.date.format.noZ')}" /> </td>
+                <td class="${tdClass}">
+                    <g:formatDate date="${el.created}" format="${message(code:'default.date.format.noZ')}" />
+                    <g:if test="${el.hasChanged}"> &nbsp; <i class="icon exclamation"></i> </g:if>
+                </td>
             </tr>
         </g:each>
         </tbody>
