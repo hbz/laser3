@@ -817,7 +817,7 @@ class OrganisationController  {
 
             if(!result.institution.eInvoicePortal)
                 result.missing.eInvoicePortal = message(code: 'org.eInvoice.info.missing.eInvoicePortal')
-            if(!leitID || (leitID && (leitID.value != '' || leitID.value != null)))
+            if(!leitID || (leitID && (leitID.value == '' || leitID.value == null)))
                 result.missing.leitID = message(code: 'org.eInvoice.info.missing.leitID')
         }
 

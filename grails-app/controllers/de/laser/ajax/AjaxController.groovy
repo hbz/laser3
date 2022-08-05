@@ -539,12 +539,13 @@ class AjaxController {
               if(params.tab == 'currentIEs') {
                   Map query = filterService.getIssueEntitlementQuery(params+[ieAcceptStatusFixed: true], previousSubscription)
                   List<IssueEntitlement> previousTipps = previousSubscription ? IssueEntitlement.executeQuery("select ie.tipp.id " + query.query, query.queryParams) : []
-                  sourceIEs = previousTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatusNotInList(TitleInstancePackagePlatform.findAllByIdInList(previousTipps), previousSubscription, [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]) : []
-                  sourceIEs = sourceIEs + (sourceTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatusNotInList(TitleInstancePackagePlatform.findAllByIdInList(targetIETipps), newSub, [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]) : [])
+                  sourceIEs = previousTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatusNotEqual(TitleInstancePackagePlatform.findAllByIdInList(previousTipps), previousSubscription, RDStore.TIPP_STATUS_REMOVED) : []
+                  sourceIEs = sourceIEs + (sourceTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatusNotEqual(TitleInstancePackagePlatform.findAllByIdInList(targetIETipps), newSub, RDStore.TIPP_STATUS_REMOVED) : [])
 
               }
 
-              if(params.tab == 'allIEs') {
+              //TODO @Moe please verify
+              if(params.tab in ['allIEs', 'toBeSelectedIEs']) {
                   Map query = filterService.getIssueEntitlementQuery(params, baseSub)
                   List<Long> allIETipps = IssueEntitlement.executeQuery("select ie.tipp.id " + query.query, query.queryParams)
                   sourceTipps = allIETipps
@@ -555,7 +556,7 @@ class AjaxController {
               if(params.tab == 'selectedIEs') {
                   sourceTipps = selectedIETipps
                   sourceTipps = sourceTipps.minus(targetIETipps)
-                  sourceIEs = sourceTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatusNotInList(TitleInstancePackagePlatform.findAllByIdInList(sourceTipps), newSub, [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]) : []
+                  sourceIEs = sourceTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatusNotEqual(TitleInstancePackagePlatform.findAllByIdInList(sourceTipps), newSub, RDStore.TIPP_STATUS_REMOVED) : []
               }
 
               sourceIEs.each { IssueEntitlement ie ->

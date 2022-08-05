@@ -438,14 +438,27 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
         }
 
         JSPC.app.updateSelectionCache = function (index,checked) {
+            let filterParams = {
+                filter: "${params.filter}",
+                pkgFilter: "${params.pkgfilter}",
+                coverageDepth: "${params.coverageDepth}",
+                series_names: ${params.list("series_names")},
+                subject_references: ${params.list("subject_references")},
+                ddcs: ${params.list("ddcs")},
+                languages: ${params.list("languages")},
+                yearsFirstOnline: ${params.list("yearsFirstOnline")},
+                identifier: "${params.identifier}",
+                medium: ${params.list("medium")},
+                title_types: ${params.list("title_types")},
+                publishers: ${params.list("pulishers")},
+                hasPerpetualAccess: "${params.hasPerpetualAccess}"
+            };
             $.ajax({
                 url: "<g:createLink controller="ajax" action="updateChecked" />",
                 data: {
                     sub: "${newSub.id}?${params.tab}",
                     index: index,
-                    <g:if test="${params.pkgfilter}">
-                        packages: ${params.pkgfilter},
-                    </g:if>
+                    filterParams: JSON.stringify(filterParams),
                     referer: "${actionName}",
                     checked: checked,
                     tab: "${params.tab}",

@@ -255,7 +255,7 @@
                         <g:set var="excludes"
                                value="${[PendingChangeConfiguration.PACKAGE_PROP,
                                          PendingChangeConfiguration.PACKAGE_DELETED]}"/>
-                        <g:each in="${PendingChangeConfiguration.SETTING_KEYS}" var="settingKey">
+                        <g:each in="${PendingChangeConfiguration.SETTING_KEYS-PendingChangeConfiguration.TITLE_REMOVED}" var="settingKey">
                             <tr>
                                 <td class="control-label">
                                     <g:message code="subscription.packages.${settingKey}"/>

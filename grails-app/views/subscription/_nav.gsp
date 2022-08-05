@@ -1,4 +1,4 @@
-<%@ page import="de.laser.IssueEntitlement; de.laser.helper.RDStore;" %>
+<%@ page import="de.laser.IssueEntitlement; de.laser.helper.RDStore; de.laser.Platform; de.laser.Subscription" %>
 <laser:serviceInjection />
 
 <semui:subNav actionName="${actionName}">
@@ -34,7 +34,21 @@
         <semui:securedSubNavItem orgPerm="ORG_BASIC_MEMBER" controller="subscription" action="surveys" counts="${currentSurveysCounts}" params="${[id:params.id]}" message="subscription.details.surveys.label" />
     </g:if>
     <g:if test="${subscription.packages}">
-        <semui:subNavItem controller="subscription" action="stats" params="${[id:params.id]}" message="default.stats.label" />
+        <%
+            Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: subscription])
+            if(!subscribedPlatforms) {
+                subscribedPlatforms = Platform.executeQuery("select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription", [subscription: subscription])
+            }
+            Set<Long> subIds = [subscription.id]
+            subIds.addAll(Subscription.executeQuery('select s.id from Subscription s where s.instanceOf = :subscription', [subscription: subscription]))
+            boolean statsAvailable = subscriptionService.areStatsAvailable(subscribedPlatforms, subIds)
+        %>
+        <g:if test="${statsAvailable}">
+            <semui:subNavItem controller="subscription" action="stats" params="${[id:params.id]}" message="default.stats.label" />
+        </g:if>
+        <g:else>
+            <semui:subNavItem disabled="disabled" message="default.stats.label" tooltip="${message(code: 'default.stats.noStatsForSubscription')}"/>
+        </g:else>
     </g:if>
     <g:else>
         <semui:subNavItem disabled="disabled" message="default.stats.label" tooltip="${message(code: 'default.stats.noPackage')}"/>
