@@ -7,7 +7,9 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-4389    04.08.2022  rc-2.3  2.3.3       Andreas Fehler      Zurücksetzung der Nutzungsstatistiken für eine Plattform löst auch ein Neuladen aus
+4391    05.08.2022  rc-2.3  2.3.4       Andreas Bug         Sortierabfrage umstrukturiert bei Lizenzabfrage
+
+4389    04.08.2022  rc-2.3  2.3.3       Andreas Feature     Zurücksetzung der Nutzungsstatistiken für eine Plattform löst auch ein Neuladen aus
 
 4388    04.08.2022  rc-2.3  2.3.3       Andreas Bug         500er bei Titelauswahl behoben
 
