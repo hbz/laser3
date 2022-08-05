@@ -536,9 +536,12 @@ r2d2 = {
 
         // accordions
 
-        $(ctxSel + ' .ui.accordion').accordion();
+        $(ctxSel + ' .ui.accordion').accordion({
+            'animateChildren': false
+        });
 
         $(ctxSel + ' .ui.la-metabox.accordion').accordion({
+            'animateChildren': false,
 
             onOpening: function() {
                 //$(".table").trigger('reflow');

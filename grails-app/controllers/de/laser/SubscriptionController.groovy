@@ -1275,8 +1275,11 @@ class SubscriptionController {
 
                 List<Long> selectedTippIDs =  IssueEntitlement.executeQuery("select ie.tipp.id from IssueEntitlement as ie where ie.subscription = :sub and ie.acceptStatus != :acceptStat and ie.status = :ieStatus ", [sub: ctrlResult.result.newSub, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT])
                 toBeSelectedTippIDs.addAll(allTippIDs - selectedTippIDs)
-                exportIEIDs = IssueEntitlement.executeQuery("select ie.id from IssueEntitlement as ie where ie.tipp.id in (:tippIds) and ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus",
-                        [sub: ctrlResult.result.subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT, tippIds: toBeSelectedTippIDs])
+                if(toBeSelectedTippIDs.size()) {
+                    exportIEIDs = IssueEntitlement.executeQuery("select ie.id from IssueEntitlement as ie where ie.tipp.id in (:tippIds) and ie.subscription = :sub and ie.acceptStatus = :acceptStat and ie.status = :ieStatus",
+                            [sub: ctrlResult.result.subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT, tippIds: toBeSelectedTippIDs])
+                }
+
 
                 filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.toBeSelectedIEs') + '_' + ctrlResult.result.newSub.dropdownNamingConvention())
             }

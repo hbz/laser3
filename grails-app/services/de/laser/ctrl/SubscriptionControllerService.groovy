@@ -513,7 +513,7 @@ class SubscriptionControllerService {
                     else result.metricType = params.metricType
                     filter += " and r.metricType = :metricType "
                     queryParams.metricType = result.metricType
-                    c5sums.addAll(Counter5Report.executeQuery('select new map(r.reportType as reportType, r.reportFrom as reportMonth, r.metricType as metricType, sum(r.reportCount) as reportCount) from Counter5Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription in (:refSubs) and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null)'+filter+dateRange+' group by r.reportFrom, r.metricType, r.reportType order by r.reportFrom asc, r.metricType asc', queryParams))
+                    c5sums.addAll(Counter5Report.executeQuery('select new map(r.reportType as reportType, r.reportFrom as reportMonth, r.metricType as metricType, sum(r.reportCount) as reportCount) from Counter5Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription in (:refSubs) and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null)'+filter+dateRange+' group by r.reportFrom, r.reportType, r.metricType order by r.reportFrom asc, r.metricType asc', queryParams))
                     c5usages.addAll(Counter5Report.executeQuery('select r from Counter5Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription in (:refSubs) and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null)'+filter+dateRange+' order by '+sort, queryParams, [max: result.max, offset: result.offset]))
                     result.total = Counter5Report.executeQuery('select count(r) from Counter5Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription in (:refSubs) and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null)'+filter+dateRange, queryParams).get(0)
                     result.sums = c5sums
@@ -1368,7 +1368,8 @@ class SubscriptionControllerService {
                 List<Long> toBeSelectedTippIDs = allTippIDs - selectedTippIDs
                 allQuery.query = allQuery.query.replace("where", "where ie.tipp.id in (:tippIds) and ")
                 allQuery.queryParams.tippIds = toBeSelectedTippIDs
-                sourceIEs = IssueEntitlement.executeQuery("select ie.id " + allQuery.query, allQuery.queryParams)
+                if(toBeSelectedTippIDs.size() > 0)
+                    sourceIEs = IssueEntitlement.executeQuery("select ie.id " + allQuery.query, allQuery.queryParams)
 
             }
 

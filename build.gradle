@@ -16,6 +16,8 @@ buildscript {
     }
 }
 
+version '2.3.3'
+group 'laser2'
 
 apply plugin:'eclipse'
 apply plugin:'idea'
@@ -26,9 +28,6 @@ apply plugin:'asset-pipeline'
 apply plugin:'com.gorylenko.gradle-git-properties'
 
 // --- config
-
-version '2.3.2'
-group 'laser2'
 
 repositories {
     mavenLocal()
