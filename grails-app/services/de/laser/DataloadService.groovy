@@ -30,7 +30,6 @@ import org.elasticsearch.client.core.CountResponse
 import org.elasticsearch.common.xcontent.XContentType
 import org.elasticsearch.rest.RestStatus
 import org.hibernate.Session
-import org.springframework.transaction.TransactionStatus
 
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Future
@@ -103,7 +102,7 @@ class DataloadService {
         long elapsed = System.currentTimeMillis() - start_time
         log.debug("doFTUpdate: Completed in ${elapsed}ms at ${new Date()} ")
 
-        sysEvent.switchTo('FT_INDEX_UPDATE_COMPLETE', [ms: elapsed])
+        sysEvent.changeTo('FT_INDEX_UPDATE_COMPLETE', [ms: elapsed])
 
         update_running = false
         true

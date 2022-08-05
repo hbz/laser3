@@ -44,17 +44,7 @@ class DashboardDueDatesService {
     boolean update_running = false
     private static final String QRY_ALL_ORGS_OF_USER = "select distinct o from Org as o where exists ( select uo from UserOrg as uo where uo.org = o and uo.user = :user) order by o.name"
 
-    // TODO: refactoring; remove events; alter event
-    //
-    // DBDD_SERVICE_START_COLLECT_DASHBOARD_DATA
-    // DBDD_SERVICE_END_COLLECT_DASHBOARD_DATA
-    // DBDD_SERVICE_START_TRANSACTION
-    // DBDD_SERVICE_END_TRANSACTION
-    // DBDD_SERVICE_PROCESSING_2
-    // DBDD_SERVICE_COMPLETE_2
-    // DBDD_SERVICE_COMPLETE_3
-    //
-    // DBDD_SERVICE_START_2 <-
+    // TODO: refactoring; change event DBDD_SERVICE_START_2
 
 
     /**
@@ -158,7 +148,7 @@ class DashboardDueDatesService {
             }
         }
 
-        sysEvent.switchTo('DBDD_SERVICE_START_2', ['count': dashboarEntriesToInsert.size()])
+        sysEvent.changeTo('DBDD_SERVICE_START_2', ['count': dashboarEntriesToInsert.size()])
 
         DashboardDueDate.withTransaction { session ->
             try {

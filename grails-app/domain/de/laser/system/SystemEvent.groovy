@@ -20,11 +20,12 @@ class SystemEvent {
     @Transient
     private String i18n
 
-    String    token        // i18n and more
-    String    payload      // json for object ids, etx
+    String    token                 // i18n and more
+    String    payload               // json for object ids, etx
     CATEGORY  category
     RELEVANCE relevance
     Date      created
+    boolean   hasChanged = false    // changeTo called
 
     /**
      * The event types which may be triggered
@@ -43,15 +44,8 @@ class SystemEvent {
             'DBDD_SERVICE_COMPLETE_1'       : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'DBDD_SERVICE_ERROR_1'          : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.ERROR],
             'DBDD_SERVICE_START_2'          : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
-            'DBDD_SERVICE_PROCESSING_2'     : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
-            'DBDD_SERVICE_START_COLLECT_DASHBOARD_DATA':    [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
-            'DBDD_SERVICE_END_COLLECT_DASHBOARD_DATA':      [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
-            'DBDD_SERVICE_START_TRANSACTION': [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
-            'DBDD_SERVICE_END_TRANSACTION'  : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
-            'DBDD_SERVICE_COMPLETE_2'       : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'DBDD_SERVICE_ERROR_2'          : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.ERROR],
             'DBDD_SERVICE_START_3'          : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
-            'DBDD_SERVICE_COMPLETE_3'       : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'DBDD_SERVICE_ERROR_3'          : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.ERROR],
             'DBM_SCRIPT_INFO'               : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'DBM_SCRIPT_ERROR'              : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.ERROR],
@@ -125,9 +119,10 @@ class SystemEvent {
         id          column:'se_id'
         version     false
         token       column:'se_token'
-        payload     column:'se_payload',   type: 'text'
+        payload     column:'se_payload',    type: 'text'
         category    column:'se_category',   index: 'se_category_idx'
         relevance   column:'se_relevance',  index: 'se_relevance_idx'
+        hasChanged  column:'se_has_changed'
         created     column:'se_created'
     }
 
@@ -217,18 +212,23 @@ class SystemEvent {
         find('from SystemEvent se where se.token = :token order by se.created desc', [token: token])
     }
 
-    void switchTo(String token, def payload) {
-        if (DEFINED_EVENTS.containsKey(token)) {
-            log.info 'changed given SystemEvent (ID:' + this.id + ') from ' + this.token + ' to ' + token
+    void changeTo(String token, def payload) {
+        withTransaction {
+            if (DEFINED_EVENTS.containsKey(token)) {
+                log.info '> changed given SystemEvent (ID:' + this.id + ') from ' + this.token + ' to ' + token
 
-            this.token = token
-            this.category = DEFINED_EVENTS.get(token).category
-            this.relevance = DEFINED_EVENTS.get(token).relevance
+                this.token = token
+                this.category = DEFINED_EVENTS.get(token).category
+                this.relevance = DEFINED_EVENTS.get(token).relevance
+
+                this.hasChanged = true
+
+                if (payload) {
+                    this.payload = (new JSON(payload)).toString(false)
+                }
+                this.save()
+            }
         }
-        if (payload) {
-            this.payload = (new JSON(payload)).toString(false)
-        }
-        save()
     }
 
     /**

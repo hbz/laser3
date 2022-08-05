@@ -110,7 +110,7 @@
                     class="hidden"
             >
                 <td class="${tdClass}">
-                    ${i+1}.
+                    <g:if test="${el.hasChanged}"><strong>${i+1}. *</strong></g:if><g:else>${i+1}.</g:else>
                 </td>
                 <td class="${tdClass}">
                     ${el.category}
