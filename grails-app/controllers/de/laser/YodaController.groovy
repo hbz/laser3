@@ -822,7 +822,7 @@ class YodaController {
         log.debug("manageFTControle ..")
         result.ftControls = FTControl.list([sort: 'domainClassName'])
         result.dataload = [
-            update_running : dataloadService.update_running,
+            running : dataloadService.update_running,
             lastFTIndexUpdateInfo : dataloadService.getLastFTIndexUpdateInfo()
         ]
         result.editable = true

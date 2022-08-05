@@ -148,7 +148,7 @@ class DashboardDueDatesService {
             }
         }
 
-        sysEvent.changeTo('DBDD_SERVICE_START_2', ['count': dashboarEntriesToInsert.size()])
+        sysEvent.changeTo('DBDD_SERVICE_START_2', [count: dashboarEntriesToInsert.size()])
 
         DashboardDueDate.withTransaction { session ->
             try {

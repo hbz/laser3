@@ -44,7 +44,7 @@ class DataloadService {
     ExecutorService executorService
     GlobalService globalService
 
-    final static int BULK_SIZE = 15000
+    final static int BULK_SIZE = 10000
 
     boolean update_running = false
     Future activeFuture
@@ -1212,7 +1212,7 @@ class DataloadService {
         if (se) {
             info = DateUtils.getLocalizedSDF_noZ().format(se.created)
             if (se.payload) {
-                long ms = JSON.parse(se.payload).ms
+                long ms = JSON.parse(se.payload).ms ?: 0
                 if (ms) {
                     info += ' (' + (ms/1000/60).round(2) + ' min.)'
                 }

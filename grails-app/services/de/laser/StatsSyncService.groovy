@@ -525,8 +525,14 @@ class StatsSyncService {
      * @param result the request response containing details of the error circumstances
      */
     void notifyError(Sql sql, Map result) {
-        Map<String, Object> event = SystemEvent.DEFINED_EVENTS.STATS_SYNC_JOB_WARNING
-        sql.executeInsert('insert into system_event (se_category, se_created, se_payload, se_relevance, se_token) values (:cat, now(), :error, :rel, :token)', [cat: event.category.value, error: new JSON(result).toString(false), rel: event.relevance.value, token: 'STATS_SYNC_JOB_WARNING'])
+//        Map<String, Object> event = SystemEvent.DEFINED_EVENTS.STATS_SYNC_JOB_WARNING
+//        sql.executeInsert('insert into system_event (se_category, se_created, se_payload, se_relevance, se_token) values (:cat, now(), :error, :rel, :token)', [cat: event.category.value, error: new JSON(result).toString(false), rel: event.relevance.value, token: 'STATS_SYNC_JOB_WARNING'])
+
+        log.warn 'notifyError: ' + result.error?.toString()
+
+        Map payload = result.clone() as Map
+        payload.remove('error')
+        SystemEvent.createEvent('STATS_SYNC_JOB_WARNING', payload)
     }
 
     /**

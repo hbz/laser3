@@ -1451,7 +1451,7 @@ SELECT * FROM (
                 running: globalSourceSyncService.running
                 ]
         result.dataload = [
-                update_running: dataloadService.update_running,
+                running: dataloadService.update_running,
                 lastFTIndexUpdateInfo: dataloadService.getLastFTIndexUpdateInfo()
         ]
         result.statsSync = [

@@ -7,8 +7,8 @@
 
     <ui:h1HeaderWithIcon text="FTControl" />
 
-    <ui:msg class="${dataload.update_running ? 'success' : 'info'}" noClose="true">
-        Last doFTUpdate: <strong>${dataload.lastFTIndexUpdateInfo}</strong> ; Currently running: <strong>${dataload.update_running.toString().toUpperCase()}</strong>
+    <ui:msg class="${dataload.running ? 'success' : 'info'}" noClose="true">
+        Last doFTUpdate: <strong>${dataload.lastFTIndexUpdateInfo}</strong> ; Currently running: <strong>${dataload.running.toString().toUpperCase()}</strong>
     </ui:msg>
 
     <ui:messages data="${flash}" />
@@ -36,13 +36,15 @@
               <td> ${ftControl.activity} </td>
               <td>
                   <g:if test="${ftControl.esElements != ftControl.dbElements}">
-                      <span class="sc_red">${ftControl.esElements}</span>
+                      <span class="sc_red"><g:formatNumber number="${ftControl.esElements}" format="${message(code:'default.decimal.format')}"/></span>
                   </g:if>
                   <g:else>
-                      ${ftControl.esElements}
+                      <g:formatNumber number="${ftControl.esElements}" format="${message(code:'default.decimal.format')}"/>
                   </g:else>
               </td>
-              <td> ${ftControl.dbElements} </td>
+              <td>
+                  <g:formatNumber number="${ftControl.dbElements}" format="${message(code:'default.decimal.format')}"/>
+              </td>
               <td>
                   <ui:xEditable owner="${ftControl}" field="lastTimestamp"/>
               </td>
@@ -78,13 +80,22 @@
                 <td>${indexInfo.type}</td>
                 <td>
                     <g:if test="${indexInfo.countIndex != indexInfo.countDB}">
-                        <span class="sc_red">${indexInfo.countIndex}</span>
+                        <span class="sc_red">
+                            <g:if test="${indexInfo.countIndex != 'n/a'}">
+                                <g:formatNumber number="${indexInfo.countIndex}" format="${message(code:'default.decimal.format')}"/>
+                            </g:if>
+                            <g:else>
+                                ${indexInfo.countIndex}
+                            </g:else>
+                        </span>
                     </g:if>
                     <g:else>
-                        ${indexInfo.countIndex}
+                        <g:formatNumber number="${indexInfo.countIndex}" format="${message(code:'default.decimal.format')}"/>
                     </g:else>
                 </td>
-                <td>${indexInfo.countDB}</td>
+                <td>
+                    <g:formatNumber number="${indexInfo.countDB}" format="${message(code:'default.decimal.format')}"/>
+                </td>
                 <td><g:link action="deleteAndRefillIndex" params="[name: indexInfo.name]">Delete and refill Index</g:link></td>
             </tr>
             </g:each>

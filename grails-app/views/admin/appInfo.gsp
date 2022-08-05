@@ -44,8 +44,18 @@
         <tbody>
             <tr><td>Database</td><td> ${ConfigMapper.getConfig('dataSource.url', String).split('/').last()}</td></tr>
             <tr><td>DBM version</td><td> ${dbmVersion[0]} -> ${dbmVersion[1]} <br/> ${DateUtils.getLocalizedSDF_noZ().format(dbmVersion[2])}</td></tr>
-            <tr><td>DBM updateOnStart</td><td> ${ConfigMapper.getPluginConfig('databasemigration.updateOnStart', Boolean)}</td></tr>
-            <tr><td>Collations</td><td>
+            <tr>
+                <g:if test="${! ConfigMapper.getPluginConfig('databasemigration.updateOnStart', Boolean)}">
+                    <td class="table-td-yoda-red">DBM updateOnStart</td>
+                    <td class="table-td-yoda-red">${ConfigMapper.getPluginConfig('databasemigration.updateOnStart', Boolean)}</td>
+                </g:if>
+                <g:else>
+                    <td>DBM updateOnStart</td>
+                    <td>${ConfigMapper.getPluginConfig('databasemigration.updateOnStart', Boolean)}</td>
+                </g:else>
+            </tr>
+            <tr>
+                <td>Collations</td><td>
                 <%
                     Set collations = []
                     DatabaseInfo.getAllTablesCollationInfo().each { it ->
@@ -87,13 +97,33 @@
                     ${BeanStore.getESWrapperService().ES_Indices}
                 </td>
             </tr>
-            <tr><td>Currently running</td><td>${dataload.update_running}</td></tr>
+            <tr>
+                <g:if test="${dataload.running}">
+                    <td class="table-td-yoda-green">Currently running</td><td class="table-td-yoda-green">${dataload.running}</td>
+                </g:if>
+                <g:else>
+                    <td>Currently running</td><td>${dataload.running}</td>
+                </g:else>
+            </tr>
             <tr><td>Last doFTUpdate</td><td>${dataload.lastFTIndexUpdateInfo}</td></tr>
             <g:each in="${ftcInfos}" var="ftc">
                 <tr>
-                    <td>Domain: ${ftc.domainClassName}</td>
                     <td>
-                        Elements in DB: ${ftc.dbElements}, ES: ${ftc.esElements}<br />
+                        - ${ftc.domainClassName}
+                        <g:if test="${! ftc.active}"><span class="sc_grey">(inaktiv)</span></g:if>
+                    </td>
+                    <td>
+                        <g:if test="${ftc.dbElements != ftc.esElements}">
+                            <span class="sc_red">
+                                Elements in DB: <g:formatNumber number="${ftc.dbElements}" format="${message(code:'default.decimal.format')}"/>,
+                                ES: <g:formatNumber number="${ftc.esElements}" format="${message(code:'default.decimal.format')}"/>
+                            </span>
+                        </g:if>
+                        <g:else>
+                            Elements in DB: <g:formatNumber number="${ftc.dbElements}" format="${message(code:'default.decimal.format')}"/>,
+                            ES: <g:formatNumber number="${ftc.esElements}" format="${message(code:'default.decimal.format')}"/>
+                        </g:else>
+                        <br />
                         <g:if test="${ftc.lastTimestamp}">
                             Last ftUpdate: ${DateUtils.getLocalizedSDF_noZ().format(new Date(ftc.lastTimestamp))}
                         </g:if>
@@ -111,7 +141,14 @@
             <tr><th class="seven wide">Global Data Sync</th><th class="nine wide"></th></tr>
         </thead>
         <tbody>
-            <tr><td>Currently running</td><td>${globalSourceSync.running}</td></tr>
+            <tr>
+                <g:if test="${globalSourceSync.running}">
+                    <td class="table-td-yoda-green">Currently running</td><td class="table-td-yoda-green">${globalSourceSync.running}</td>
+                </g:if>
+                <g:else>
+                    <td>Currently running</td><td>${globalSourceSync.running}</td>
+                </g:else>
+            </tr>
         </tbody>
     </table>
 
@@ -153,7 +190,14 @@
             <tr><th class="seven wide">STATS Sync Service</th><th class="nine wide"></th></tr>
         </thead>
         <tbody>
-            <tr><td>Currently running</td><td>${statsSync.running}</td></tr>
+            <tr>
+                <g:if test="${statsSync.running}">
+                    <td class="table-td-yoda-green">Currently running</td><td class="table-td-yoda-green">${statsSync.running}</td>
+                </g:if>
+                <g:else>
+                    <td>Currently running</td><td>${statsSync.running}</td>
+                </g:else>
+            </tr>
             <tr><td>Completed count</td><td>${statsSync.completedCount}</td></tr>
             <tr><td>New fact count</td><td>${statsSync.newFactCount}</td></tr>
             <tr><td>Total time (all threads)</td><td>${statsSync.totalTime} (ms)</td></tr>
