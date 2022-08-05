@@ -11,6 +11,7 @@ import de.laser.properties.OrgProperty
 import de.laser.properties.PersonProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
+import de.laser.remote.ApiSource
 import de.laser.remote.ElasticsearchSource
 import de.laser.remote.FTControl
 import de.laser.remote.GlobalRecordSource
@@ -66,7 +67,6 @@ class YodaController {
     ESWrapperService ESWrapperService
     FinanceService financeService
     FormService formService
-    StatusUpdateService statusUpdateService
     GokbService gokbService
     GlobalSourceSyncService globalSourceSyncService
     def quartzScheduler
