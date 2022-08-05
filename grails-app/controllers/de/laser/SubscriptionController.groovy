@@ -323,7 +323,7 @@ class SubscriptionController {
         }
         else {
             SimpleDateFormat sdf = DateUtils.SDF_ymd
-            String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+            String datetoday = sdf.format(new Date())
             String filename = escapeService.escapeString(ctrlResult.result.subscription.name) + "_" + message(code:'subscriptionDetails.members.members') + "_" + datetoday
             if(params.exportXLS || params.exportShibboleths || params.exportEZProxys || params.exportProxys || params.exportIPs || params.exportClickMeExcel) {
                 SXSSFWorkbook wb

@@ -8,6 +8,8 @@ import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.i18n.LocaleContextHolder
 
+import java.text.SimpleDateFormat
+
 /**
  * A controlled list entry. Reference data values are composed as follows:
  * <ul>
@@ -230,15 +232,18 @@ class RefdataValue extends AbstractI10n implements Comparable<RefdataValue> {
      */
     static RefdataValue getCurrentSemester() {
         Calendar now = GregorianCalendar.getInstance(), adjacentYear = GregorianCalendar.getInstance()
+        SimpleDateFormat sdf = new SimpleDateFormat('yy')
         //Month is zero-based, April-September is summer term
         String semesterKey
         if(now.get(Calendar.MONTH) < 3) {
             adjacentYear.add(Calendar.YEAR, -1)
-            semesterKey = "w${adjacentYear.getTime().format("yy")}/${now.getTime().format("yy")}"
+            //semesterKey = "w${adjacentYear.getTime().format("yy")}/${now.getTime().format("yy")}"
+            semesterKey = "w${sdf.format(adjacentYear.getTime())}/${sdf.format(now.getTime())}"
         }
         else if(now.get(Calendar.MONTH) >= 9) {
             adjacentYear.add(Calendar.YEAR, 1)
-            semesterKey = "w${now.getTime().format("yy")}/${adjacentYear.getTime().format("yy")}"
+            //semesterKey = "w${now.getTime().format("yy")}/${adjacentYear.getTime().format("yy")}"
+            semesterKey = "w${sdf.format(now.getTime())}/${sdf.format(adjacentYear.getTime())}"
         }
         else {
             semesterKey = "s${now.getTime().format("yy")}"

@@ -1,6 +1,7 @@
 package de.laser
 
 import de.laser.helper.ConfigUtils
+import de.laser.helper.DateUtils
 import grails.core.GrailsApplication
 import grails.plugin.springsecurity.annotation.Secured
 import org.grails.exceptions.ExceptionUtils
@@ -33,12 +34,12 @@ class ServerCodesController {
             result.mailString =
                     "mailto:laser@hbz-nrw.de?subject=Fehlerbericht - " + ConfigUtils.getLaserSystemId() +
                     "&body=Ihre Fehlerbeschreibung (bitte angeben): " + nl + nl +
-                    "URI: " + request.forwardURI + nl +
-                    "Zeitpunkt: " + new Date().format( 'dd.MM.yyyy HH:mm:ss' ) + nl +
-                    "System: " + ConfigUtils.getLaserSystemId() + nl +
-                    "Branch: " + grailsApplication.metadata['git.branch'] + nl +
-                    "Commit: " + grailsApplication.metadata['git,commit.id'] + nl +
-                    "Class: " + (root?.class?.name ?: exception.class.name) + nl
+                    "URI: "     + request.forwardURI + nl +
+                    "Zeitpunkt: " + DateUtils.getSDF_NoZ().format( new Date() ) + nl +
+                    "System: "  + ConfigUtils.getLaserSystemId() + nl +
+                    "Branch: "  + grailsApplication.metadata['git.branch'] + nl +
+                    "Commit: "  + grailsApplication.metadata['git,commit.id'] + nl +
+                    "Class: "   + (root?.class?.name ?: exception.class.name) + nl
 
             if (exception.message) {
                 result.mailString += "Message: " + exception.message + nl

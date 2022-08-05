@@ -522,7 +522,7 @@ class MyInstitutionController  {
 		result.benchMark = bm
 
         SimpleDateFormat sdfNoPoint = DateUtils.getSDF_NoTimeNoPoint()
-        String filename = "${sdfNoPoint.format(new Date(System.currentTimeMillis()))}_${g.message(code: 'export.my.currentLicenses')}"
+        String filename = "${sdfNoPoint.format(new Date())}_${g.message(code: 'export.my.currentLicenses')}"
         List titles = [
                 g.message(code:'license.details.reference'),
                 g.message(code:'license.details.linked_subs'),
@@ -832,7 +832,7 @@ join sub.orgRelations or_sub where
 
         def message = g.message(code: 'export.my.currentProviders')
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
-        String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+        String datetoday = sdf.format(new Date())
         String filename = message+"_${datetoday}"
 
         result.cachedContent = true
@@ -913,7 +913,7 @@ join sub.orgRelations or_sub where
 
         // Write the output to a file
         SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
-        String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+        String datetoday = sdf.format(new Date())
         String filename = "${datetoday}_" + g.message(code: "export.my.currentSubscriptions")
 
 		//List bm = pu.stopBenchmark()
@@ -1293,7 +1293,7 @@ join sub.orgRelations or_sub where
         SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
         boolean defaultSet = false
         if (params.validOn == null) {
-            result.validOn = sdf.format(new Date(System.currentTimeMillis()))
+            result.validOn = sdf.format(new Date())
             checkedDate = sdf.parse(result.validOn)
             defaultSet = true
             log.debug("Getting titles as of ${checkedDate} (current)")
@@ -1943,7 +1943,7 @@ join sub.orgRelations or_sub where
             List surveyConfigsforExport = result.surveyResults.collect {it[1]}
             if ( params.surveyCostItems ) {
                 SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
-                String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+                String datetoday = sdf.format(new Date())
                 String filename = "${datetoday}_" + g.message(code: "surveyCostItems.label")
                 //if(wb instanceof XSSFWorkbook) file += "x";
                 response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
@@ -1951,7 +1951,7 @@ join sub.orgRelations or_sub where
                 wb = (SXSSFWorkbook) surveyService.exportSurveyCostItems(surveyConfigsforExport, result.institution)
             }else {
                 SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
-                String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+                String datetoday = sdf.format(new Date())
                 String filename = "${datetoday}_" + g.message(code: "survey.plural")
                 //if(wb instanceof XSSFWorkbook) file += "x";
                 response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
@@ -2077,7 +2077,7 @@ join sub.orgRelations or_sub where
 
         if ( params.exportXLSX ) {
             SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
-            String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+            String datetoday = sdf.format(new Date())
             String filename = "${datetoday}_" + g.message(code: "survey.label")
             //if(wb instanceof XSSFWorkbook) file += "x";
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
@@ -2816,7 +2816,7 @@ join sub.orgRelations or_sub where
         //exportHeader = message(code: 'export.my.consortia')
         //SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
         // Write the output to a file
-        //String file = "${sdf.format(new Date(System.currentTimeMillis()))}_"+exportHeader
+        //String file = "${sdf.format(new Date())}_"+exportHeader
 
 		List bm = pu.stopBenchmark()
 		result.benchMark = bm
@@ -2942,7 +2942,7 @@ join sub.orgRelations or_sub where
         exportHeader = message(code: 'export.my.consortia')
         SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
         // Write the output to a file
-        String file = "${sdf.format(new Date(System.currentTimeMillis()))}_"+exportHeader
+        String file = "${sdf.format(new Date())}_"+exportHeader
 
 		List bm = pu.stopBenchmark()
 		result.benchMark = bm
@@ -3225,7 +3225,7 @@ join sub.orgRelations or_sub where
                     log.error("Null value in column ${i}")
                 }
             }
-            String filename = "${DateUtils.SDF_NoTimeNoPoint.format(new Date(System.currentTimeMillis()))}_${g.message(code:'export.my.consortiaSubscriptions')}.xlsx"
+            String filename = "${DateUtils.SDF_NoTimeNoPoint.format(new Date())}_${g.message(code:'export.my.consortiaSubscriptions')}.xlsx"
             response.setHeader("Content-disposition","attachment; filename=\"${filename}\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             workbook.write(response.outputStream)
@@ -3365,7 +3365,7 @@ join sub.orgRelations or_sub where
                         row.add("${entry.value} ${entry.key}")
                         columnData.add(row)
                     }
-                    String filename = "${DateUtils.SDF_NoTimeNoPoint.format(new Date(System.currentTimeMillis()))}_${g.message(code: 'export.my.consortiaSubscriptions')}.csv"
+                    String filename = "${DateUtils.SDF_NoTimeNoPoint.format(new Date())}_${g.message(code: 'export.my.consortiaSubscriptions')}.csv"
                     response.setHeader("Content-disposition", "attachment; filename=\"${filename}\"")
                     response.contentType = "text/csv"
                     response.outputStream.withWriter { writer ->
@@ -3405,7 +3405,7 @@ join sub.orgRelations or_sub where
 
         /*if (params.validOnYear == null || params.validOnYear == '') {
             def sdfyear = new java.text.SimpleDateFormat(message(code: 'default.date.format.onlyYear'))
-            params.validOnYear = sdfyear.format(new Date(System.currentTimeMillis()))
+            params.validOnYear = sdfyear.format(new Date())
         }*/
 
         result.surveyYears = SurveyOrg.executeQuery("select Year(surorg.surveyConfig.surveyInfo.startDate) from SurveyOrg surorg where surorg.org = :org and surorg.surveyConfig.surveyInfo.startDate != null group by YEAR(surorg.surveyConfig.surveyInfo.startDate) order by YEAR(surorg.surveyConfig.surveyInfo.startDate)", [org: result.participant]) ?: []
@@ -3420,7 +3420,7 @@ join sub.orgRelations or_sub where
 
             SXSSFWorkbook wb
             SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
-            String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+            String datetoday = sdf.format(new Date())
             String filename = "${datetoday}_" + g.message(code: "survey.plural")
             //if(wb instanceof XSSFWorkbook) file += "x";
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
@@ -3545,7 +3545,7 @@ join sub.orgRelations or_sub where
         if(params.cmd == 'exportXLS') {
             SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
             SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(exportService.generatePropertyGroupUsageXLS(result.propDefGroups))
-            response.setHeader("Content-disposition", "attachment; filename=\"${sdf.format(new Date(System.currentTimeMillis()))}_${message(code:'export.my.propertyGroups')}.xlsx\"")
+            response.setHeader("Content-disposition", "attachment; filename=\"${sdf.format(new Date())}_${message(code:'export.my.propertyGroups')}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             workbook.write(response.outputStream)
             response.outputStream.flush()
@@ -3847,7 +3847,7 @@ join sub.orgRelations or_sub where
         if(params.cmd == 'exportXLS') {
             SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
             SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(exportService.generatePropertyUsageExportXLS(propDefs))
-            response.setHeader("Content-disposition", "attachment; filename=\"${sdf.format(new Date(System.currentTimeMillis()))}_${message(code:'export.my.privateProperties')}.xlsx\"")
+            response.setHeader("Content-disposition", "attachment; filename=\"${sdf.format(new Date())}_${message(code:'export.my.privateProperties')}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             workbook.write(response.outputStream)
             response.outputStream.flush()
@@ -3931,7 +3931,7 @@ join sub.orgRelations or_sub where
         if(params.cmd == 'exportXLS') {
             SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
             SXSSFWorkbook workbook = exportService.generateXLSXWorkbook(exportService.generatePropertyUsageExportXLS(propDefs))
-            response.setHeader("Content-disposition", "attachment; filename=\"${sdf.format(new Date(System.currentTimeMillis()))}_${message(code:'export.my.customProperties')}.xlsx\"")
+            response.setHeader("Content-disposition", "attachment; filename=\"${sdf.format(new Date())}_${message(code:'export.my.customProperties')}.xlsx\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             workbook.write(response.outputStream)
             response.outputStream.flush()

@@ -1,3 +1,4 @@
+<%@ page import="de.laser.helper.DateUtils" %>
 <!doctype html>
 <html>
 <head>
@@ -95,10 +96,10 @@
                                 <dt>
                                     <g:set var="ceKey" value="${element.getObjectKey() instanceof String ? element.getObjectKey() : element.getObjectKey().id}" />
                                     ${ceKey} -
-                                    creation=${new Date(element.getCreationTime()).format('HH:mm:ss')},
-                                    lastAccess=${new Date(element.getLastAccessTime()).format('HH:mm:ss')},
-                                    version=${element.version},
-                                    hitCount=${element.hitCount}
+                                    creation: ${DateUtils.getSDF_OnlyTime().format(element.getCreationTime())},
+                                    lastAccess: ${DateUtils.getSDF_OnlyTime().format(element.getLastAccessTime())},
+                                    version: ${element.version},
+                                    hitCount: ${element.hitCount}
                                 </dt>
                                 <dd>
                                     <g:set var="objectValue" value="${element.getObjectValue()}" />

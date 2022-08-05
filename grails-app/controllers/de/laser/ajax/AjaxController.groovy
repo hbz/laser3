@@ -12,7 +12,6 @@ import de.laser.interfaces.ShareSupport
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
-import de.laser.traits.I10nTrait
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
@@ -426,10 +425,7 @@ class AjaxController {
           }
           // default ..
           else {
-              if (it instanceof I10nTrait) {
-                  result.add([value: "${rowobj.class.name}:${rowobj.id}", text: "${it.getI10n(config.cols[0])}"])
-              }
-              else if (it instanceof AbstractI10n) {
+              if (it instanceof AbstractI10n) {
                   result.add([value: "${rowobj.class.name}:${rowobj.id}", text: "${it.getI10n(config.cols[0])}"])
               }
               else {

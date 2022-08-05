@@ -134,7 +134,7 @@ class SurveyController {
             SXSSFWorkbook wb
             if ( params.surveyCostItems ) {
                 SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
-                String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+                String datetoday = sdf.format(new Date())
                 String filename = "${datetoday}_" + g.message(code: "surveyCostItems.label")
                 //if(wb instanceof XSSFWorkbook) file += "x";
                 response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
@@ -142,7 +142,7 @@ class SurveyController {
                 wb = (SXSSFWorkbook) surveyService.exportSurveyCostItems(result.surveys.collect {it[1]}, result.institution)
             }else{
                 SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
-                String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+                String datetoday = sdf.format(new Date())
                 String filename = "${datetoday}_" + g.message(code: "survey.plural")
                 //if(wb instanceof XSSFWorkbook) file += "x";
                 response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
@@ -214,7 +214,7 @@ class SurveyController {
 
         if ( params.exportXLSX ) {
             SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
-            String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+            String datetoday = sdf.format(new Date())
             String filename = "${datetoday}_" + g.message(code: "survey.plural")
             //if(wb instanceof XSSFWorkbook) file += "x";
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
@@ -827,7 +827,7 @@ class SurveyController {
             SXSSFWorkbook wb
             if ( params.surveyCostItems ) {
                 SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
-                String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+                String datetoday = sdf.format(new Date())
                 String filename = "${datetoday}_" + g.message(code: "survey.label")
                 //if(wb instanceof XSSFWorkbook) file += "x";
                 response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
@@ -835,7 +835,7 @@ class SurveyController {
                 wb = (SXSSFWorkbook) surveyService.exportSurveyCostItems([result.surveyConfig], result.institution)
             }else{
                 SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
-                String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+                String datetoday = sdf.format(new Date())
                 String filename = "${datetoday}_" + g.message(code: "survey.label")
                 //if(wb instanceof XSSFWorkbook) file += "x";
                 response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
@@ -1355,7 +1355,7 @@ class SurveyController {
             SXSSFWorkbook wb
             if ( params.surveyCostItems ) {
                 SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
-                String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+                String datetoday = sdf.format(new Date())
                 String filename = "${datetoday}_" + g.message(code: "survey.label")
                 //if(wb instanceof XSSFWorkbook) file += "x";
                 response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
@@ -1363,7 +1363,7 @@ class SurveyController {
                 wb = (SXSSFWorkbook) surveyService.exportSurveyCostItems([result.surveyConfig], result.institution)
             }else {
                 SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
-                String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+                String datetoday = sdf.format(new Date())
                 String filename = "${datetoday}_" + g.message(code: "survey.label")
                 //if(wb instanceof XSSFWorkbook) file += "x";
                 response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
@@ -1378,7 +1378,7 @@ class SurveyController {
             try {
                 String message = g.message(code: 'renewalexport.renewals')
                 SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
-                String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+                String datetoday = sdf.format(new Date())
 
                 String filename
                 if (params.filename) {
@@ -2629,7 +2629,7 @@ class SurveyController {
 
         result.editable = (result.surveyInfo && result.surveyInfo.status != RDStore.SURVEY_IN_PROCESSING) ? false : result.editable
 
-        Date currentDate = new Date(System.currentTimeMillis())
+        Date currentDate = new Date()
 
         if (result.editable) {
 
@@ -3036,7 +3036,7 @@ class SurveyController {
                 try {
                     String message = g.message(code: 'renewalexport.renewals')
                     SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
-                    String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+                    String datetoday = sdf.format(new Date())
 
                     String filename
                     if (params.filename) {
@@ -3522,7 +3522,7 @@ class SurveyController {
 
         if (params.exportXLSX) {
             SimpleDateFormat sdf = DateUtils.getSDF_NoTimeNoPoint()
-            String datetoday = sdf.format(new Date(System.currentTimeMillis()))
+            String datetoday = sdf.format(new Date())
             String filename = "${datetoday}_" + g.message(code: "survey.exportSurveyCostItems")
             //if(wb instanceof XSSFWorkbook) file += "x";
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""

@@ -560,7 +560,7 @@ class AdminController  {
         if (params.filter_exclude)  { result.put('filter_exclude', params.filter_exclude) }
         if (params.filter_limit)    { result.put('filter_limit', params.filter_limit) }
 
-        result.events = SystemEvent.list([max: params.filter_limit])
+        result.events = SystemEvent.list([max: params.filter_limit, sort: 'created', order: 'desc'])
         result
     }
 
