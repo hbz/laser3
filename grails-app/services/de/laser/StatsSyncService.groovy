@@ -152,14 +152,14 @@ class StatsSyncService {
      * and puts the process on a new thread
      * @param incremental should only new data being loaded or a full data reload done?
      */
-    void doFetch(boolean incremental) {
+    void doFetch(boolean incremental, String platformUUID = '', String source = '', String revision = '') {
         log.debug("fetching data from providers started")
         if (running) {
             log.debug("Skipping sync ... fetching task already running")
             return
         }
         running = true
-        executorService.execute({ internalDoFetch(incremental) })
+        executorService.execute({ internalDoFetch(incremental, platformUUID, source, revision) })
     }
 
     /**
@@ -206,7 +206,7 @@ class StatsSyncService {
      * Both COUNTER 4 and COUNTER 5 are being processed here
      * @param incremental should only newest data being fetched or a full data reload done?
      */
-    void internalDoFetch(boolean incremental) {
+    void internalDoFetch(boolean incremental, String platformUUID = '', String source = '', String revision = '') {
         //List<Counter4ApiSource> c4SushiSources = Counter4ApiSource.executeQuery("select c4as from Counter4ApiSource c4as where not exists (select c5as.id from Counter5ApiSource c5as where c5as.provider = c4as.provider and c5as.platform = c4as.platform)")//[]
         //List<Counter5ApiSource> c5SushiSources = Counter5ApiSource.findAll()
         ApiSource apiSource = ApiSource.findByActive(true)
@@ -214,65 +214,75 @@ class StatsSyncService {
         //process each platform with a SUSHI API
         BasicHttpClient http
         try {
-            http = new BasicHttpClient(apiSource.baseUrl+apiSource.fixToken+'/sushiSources')
-            Closure success = { resp, json ->
-                if(resp.code() == 200) {
-                    if(incremental) {
-                        Calendar now = GregorianCalendar.getInstance()
-                        json.counter4ApiSources.each { c4as ->
-                            boolean add = false
-                            switch(c4as[2]) {
-                                case 'Daily': add = true
-                                    break
-                                case 'Weekly': add = now.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY
-                                    break
-                                case 'Monthly': add = now.get(Calendar.DAY_OF_MONTH) == MONTH_DUE_DATE
-                                    break
-                                case 'Quarterly': add = now.get(Calendar.DAY_OF_MONTH) == MONTH_DUE_DATE && now.get(Calendar.MONTH) in QUARTERLY_MONTHS
-                                    break
-                                case 'Half-Yearly': add = now.get(Calendar.DAY_OF_MONTH) == MONTH_DUE_DATE && now.get(Calendar.MONTH) in HALF_YEARLY_MONTHS
-                                    break
-                                case 'Yearly': add = now.get(Calendar.DAY_OF_MONTH) == MONTH_DUE_DATE && now.get(Calendar.MONTH) == YEARLY_MONTH
-                                    break
+            if(source && revision) {
+                if(revision == 'r4') {
+                    c4SushiSources.add([platformUUID, source])
+                }
+                else if(revision == 'r5') {
+                    c5SushiSources.add([platformUUID, source])
+                }
+            }
+            else {
+                http = new BasicHttpClient(apiSource.baseUrl+apiSource.fixToken+'/sushiSources')
+                Closure success = { resp, json ->
+                    if(resp.code() == 200) {
+                        if(incremental) {
+                            Calendar now = GregorianCalendar.getInstance()
+                            json.counter4ApiSources.each { c4as ->
+                                boolean add = false
+                                switch(c4as[2]) {
+                                    case 'Daily': add = true
+                                        break
+                                    case 'Weekly': add = now.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY
+                                        break
+                                    case 'Monthly': add = now.get(Calendar.DAY_OF_MONTH) == MONTH_DUE_DATE
+                                        break
+                                    case 'Quarterly': add = now.get(Calendar.DAY_OF_MONTH) == MONTH_DUE_DATE && now.get(Calendar.MONTH) in QUARTERLY_MONTHS
+                                        break
+                                    case 'Half-Yearly': add = now.get(Calendar.DAY_OF_MONTH) == MONTH_DUE_DATE && now.get(Calendar.MONTH) in HALF_YEARLY_MONTHS
+                                        break
+                                    case 'Yearly': add = now.get(Calendar.DAY_OF_MONTH) == MONTH_DUE_DATE && now.get(Calendar.MONTH) == YEARLY_MONTH
+                                        break
+                                }
+                                if(add) {
+                                    c4SushiSources.add(c4as)
+                                }
                             }
-                            if(add) {
-                                c4SushiSources.add(c4as)
+                            json.counter5ApiSources.each { c5as ->
+                                boolean add = false
+                                switch(c5as[2]) {
+                                    case 'Daily': add = true
+                                        break
+                                    case 'Weekly': add = now.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY
+                                        break
+                                    case 'Monthly': add = now.get(Calendar.DAY_OF_MONTH) == MONTH_DUE_DATE
+                                        break
+                                    case 'Quarterly': add = now.get(Calendar.DAY_OF_MONTH) == MONTH_DUE_DATE && now.get(Calendar.MONTH) in QUARTERLY_MONTHS
+                                        break
+                                    case 'Half-Yearly': add = now.get(Calendar.DAY_OF_MONTH) == MONTH_DUE_DATE && now.get(Calendar.MONTH) in HALF_YEARLY_MONTHS
+                                        break
+                                    case 'Yearly': add = now.get(Calendar.DAY_OF_MONTH) == MONTH_DUE_DATE && now.get(Calendar.MONTH) == YEARLY_MONTH
+                                        break
+                                }
+                                if(add) {
+                                    c5SushiSources.add(c5as)
+                                }
                             }
                         }
-                        json.counter5ApiSources.each { c5as ->
-                            boolean add = false
-                            switch(c5as[2]) {
-                                case 'Daily': add = true
-                                    break
-                                case 'Weekly': add = now.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY
-                                    break
-                                case 'Monthly': add = now.get(Calendar.DAY_OF_MONTH) == MONTH_DUE_DATE
-                                    break
-                                case 'Quarterly': add = now.get(Calendar.DAY_OF_MONTH) == MONTH_DUE_DATE && now.get(Calendar.MONTH) in QUARTERLY_MONTHS
-                                    break
-                                case 'Half-Yearly': add = now.get(Calendar.DAY_OF_MONTH) == MONTH_DUE_DATE && now.get(Calendar.MONTH) in HALF_YEARLY_MONTHS
-                                    break
-                                case 'Yearly': add = now.get(Calendar.DAY_OF_MONTH) == MONTH_DUE_DATE && now.get(Calendar.MONTH) == YEARLY_MONTH
-                                    break
-                            }
-                            if(add) {
-                                c5SushiSources.add(c5as)
-                            }
+                        else {
+                            c4SushiSources.addAll(json.counter4ApiSources)
+                            c5SushiSources.addAll(json.counter5ApiSources)
                         }
                     }
                     else {
-                        c4SushiSources.addAll(json.counter4ApiSources)
-                        c5SushiSources.addAll(json.counter5ApiSources)
+                        log.error("server response: ${resp.status()}")
                     }
                 }
-                else {
-                    log.error("server response: ${resp.status()}")
+                Closure failure = { resp, reader ->
+                    log.error("server response: ${resp.status()} - ${reader}")
                 }
+                http.get(BasicHttpClient.ResponseType.JSON, success, failure)
             }
-            Closure failure = { resp, reader ->
-                log.error("server response: ${resp.status()} - ${reader}")
-            }
-            http.get(BasicHttpClient.ResponseType.JSON, success, failure)
         }
         catch (Exception ignored) {
             log.error("we:kb unavailable ... postpone next run!")

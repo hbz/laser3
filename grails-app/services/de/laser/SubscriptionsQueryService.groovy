@@ -53,8 +53,8 @@ class SubscriptionsQueryService {
         String providerSort
         Map qry_params
         if(params.sort == "providerAgency") {
-            providerSort = ', (select oo.org.name from OrgRole oo where oo.sub = s and oo.roleType in (:providerAgency)) as sortname'
-            qry_params = [providerAgency:[RDStore.OR_PROVIDER,RDStore.OR_AGENCY]]
+            providerSort = ', (select oo.org.name from OrgRole oo where oo.sub = s and oo.roleType = :provider order by oo.org.name) as sortname1, (select oo.org.name from OrgRole oo where oo.sub = s and oo.roleType = :agency order by oo.org.name) as sortname2'
+            qry_params = [provider:RDStore.OR_PROVIDER, agency: RDStore.OR_AGENCY]
         }
         else {
             providerSort = ""
@@ -327,7 +327,7 @@ class SubscriptionsQueryService {
 
         if ((params.sort != null) && (params.sort.length() > 0)) {
             if(params.sort == "providerAgency")
-                base_qry += " order by sortname ${params.order}"
+                base_qry += " order by sortname1 ${params.order}, sortname2 ${params.order}"
             else
                 base_qry += (params.sort=="s.name") ? " order by LOWER(${params.sort}) ${params.order}":" order by ${params.sort} ${params.order}"
         } else {
