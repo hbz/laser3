@@ -1256,7 +1256,7 @@ class SubscriptionService {
         if (tipp == null) {
             throw new EntitlementCreationException("Unable to tipp ${gokbId}")
         }
-        else if(IssueEntitlement.findAllBySubscriptionAndTippAndStatus(sub, tipp, RDStore.TIPP_STATUS_CURRENT)) {
+        else if(IssueEntitlement.findAllBySubscriptionAndTippAndStatusInList(sub, tipp, [RDStore.TIPP_STATUS_CURRENT, RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_RETIRED])) {
             throw new EntitlementCreationException("Unable to create IssueEntitlement because IssueEntitlement exist with tipp ${gokbId}")
         }
         else if(IssueEntitlement.findBySubscriptionAndTippAndStatus(sub, tipp, RDStore.TIPP_STATUS_EXPECTED)) {
@@ -1275,6 +1275,11 @@ class SubscriptionService {
                     ieReason: 'Manually Added by User',
                     acceptStatus: acceptStatus)
             new_ie.generateSortTitle()
+
+            //fix for renewEntitlementsWithSurvey, overwrite TIPP status if holding's status differ
+            IssueEntitlement parentIE = IssueEntitlement.findBySubscriptionAndTippAndStatusNotEqual(sub.instanceOf, tipp, RDStore.TIPP_STATUS_REMOVED)
+            if(parentIE)
+                new_ie.status = parentIE.status
 
             if(pickAndChoosePerpetualAccess || sub.hasPerpetualAccess){
                 new_ie.perpetualAccessBySub = sub
@@ -1347,9 +1352,7 @@ class SubscriptionService {
                                         issueEntitlement: new_ie
                                 )
                                 pi.setGlobalUID()
-                                if (pi.save())
-                                    return true
-                                else {
+                                if (!pi.save()) {
                                     throw new EntitlementCreationException(pi.errors)
                                 }
                             }
@@ -1383,9 +1386,7 @@ class SubscriptionService {
                                     issueEntitlement: new_ie
                             )
                             pi.setGlobalUID()
-                            if (pi.save())
-                                return true
-                            else {
+                            if (!pi.save()) {
                                 throw new EntitlementCreationException(pi.errors)
                             }
                         }
@@ -2031,7 +2032,7 @@ class SubscriptionService {
                 List<String> licenseKeys = cols[colMap.licenses].split(',')
                     candidate.licenses = []
                     licenseKeys.each { String licenseKey ->
-                        List<License> licCandidates = License.executeQuery("select oo.lic from OrgRole oo join oo.lic l where :idCandidate in (cast(l.id as string),l.globalUID) and oo.roleType in :roleTypes and oo.org = :contextOrg", [idCandidate: licenseKey, roleTypes: [RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSING_CONSORTIUM, RDStore.OR_LICENSEE], contextOrg: contextOrg])
+                        List<License> licCandidates = License.executeQuery("select oo.lic from OrgRole oo join oo.lic l where :idCandidate in (cast(l.id as string),l.globalUID) and oo.roleType in :roleTypes and oo.org = :contextOrg", [idCandidate: licenseKey.trim(), roleTypes: [RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSING_CONSORTIUM, RDStore.OR_LICENSEE], contextOrg: contextOrg])
                         if (licCandidates.size() == 1) {
                             License license = licCandidates[0]
                             candidate.licenses << genericOIDService.getOID(license)
