@@ -219,7 +219,7 @@ class YodaService {
      * @return a {@link Map} containing obsolete platform records
      */
     Map<String, Object> listPlatformDuplicates() {
-        Map<String,Object> result = [ flagContentElasticsearch : true ] // gokbService.queryElasticsearch
+        Map<String,Object> result = [ flagContentGokb : true ] // gokbService.queryElasticsearch
         Map<String, GPathResult> oaiRecords = [:]
         List<Platform> platformsWithoutTIPPs = Platform.executeQuery('select plat from Platform plat where plat.tipps.size = 0')
         result.platformDupsWithoutTIPPs = []

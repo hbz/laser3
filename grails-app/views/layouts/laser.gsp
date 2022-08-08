@@ -346,11 +346,22 @@
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="dueDates_sendAllEmails">${message(code:'menu.admin.sendEmailsForDueDates')}</ui:link>
                                     </div>
                                 </div>
+
                                 <div class="divider"></div>
-                                <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="statsSync">${message(code:'menu.admin.stats.sync')}</ui:link>
-                                <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="manageStatsSources">SUSHI-Quellen bearbeiten</ui:link>
-                                <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="fetchStats" params="[(FormService.FORM_SERVICE_TOKEN): formService.getNewToken(), incremental: true]">${message(code:'menu.admin.stats.fetch.incremental')}</ui:link>
-                                <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="fetchStats" params="[(FormService.FORM_SERVICE_TOKEN): formService.getNewToken(), incremental: false]">${message(code:'menu.admin.stats.fetch')}</ui:link>
+
+                                <div class="item" role="menuitem" aria-haspopup="true">
+                                    <div class="title">
+                                        Statistik <i class="dropdown icon"></i>
+                                    </div>
+                                    <div class="menu" role="menu">
+
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="statsSync">${message(code:'menu.admin.stats.sync')}</ui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="manageStatsSources">SUSHI-Quellen bearbeiten</ui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="fetchStats" params="[(FormService.FORM_SERVICE_TOKEN): formService.getNewToken(), incremental: true]">${message(code:'menu.admin.stats.fetch.incremental')}</ui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="fetchStats" params="[(FormService.FORM_SERVICE_TOKEN): formService.getNewToken(), incremental: false]">${message(code:'menu.admin.stats.fetch')}</ui:link>
+                                    </div>
+                                </div>
+
                                 <div class="divider"></div>
 
                                 <div class="item" role="menuitem" aria-haspopup="true">
@@ -381,6 +392,8 @@
                                     </div>
                                 </div>
 
+                                <div class="divider"></div>
+
                                 <div class="item" role="menuitem" aria-haspopup="true">
                                     <div class="title">
                                         ${message(code:'elasticsearch.label')} <i class="dropdown icon"></i>
@@ -391,7 +404,6 @@
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="manageFTControl">Manage FTControl</ui:link>
                                         <div class="divider"></div>
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="fullReset" onclick="return confirm('${message(code:'confirm.start.resetESIndex')}')">${message(code:'menu.yoda.resetESIndex')}</ui:link>
-                                        <div class="divider"></div>
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="killDataloadService">Kill ES Update Index</ui:link>
                                         <div class="divider"></div>
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="createESIndices">Create ES Indices</ui:link>
@@ -416,6 +428,7 @@
 
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="databaseInfo">${message(code: "menu.admin.databaseInfo")}</ui:link>
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="databaseCollations">${message(code: "menu.admin.databaseCollations")}</ui:link>
+                                        <div class="divider"></div>
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="dataConsistency">${message(code: "menu.admin.dataConsistency")}</ui:link>
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="fileConsistency">${message(code: "menu.admin.fileConsistency")}</ui:link>
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="manageDeletedObjects">${message(code: "menu.admin.deletedObjects")}</ui:link>
@@ -530,9 +543,14 @@
                                 <i class="hourglass end icon"></i>
                             </span>
                         </g:if>
+                        <g:if test="${flagContentGokb}">
+                            <span class="ui icon button la-popup-tooltip la-delay" data-content="${message(code:'statusbar.flagContentGokb.tooltip')}" data-position="bottom right" data-variation="tiny">
+                                <i class="cloud icon"></i>
+                            </span>
+                        </g:if>
                         <g:if test="${flagContentElasticsearch}">
                             <span class="ui icon button la-popup-tooltip la-delay" data-content="${message(code:'statusbar.flagContentElasticsearch.tooltip')}" data-position="bottom right" data-variation="tiny">
-                                <i class="cloud download icon"></i>
+                                <i class="cloud icon"></i>
                             </span>
                         </g:if>
                     </div>

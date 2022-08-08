@@ -24,7 +24,7 @@ class LicenseService {
         List tmpQ // [String, Map<String, Object>]
 
         if(accessService.checkPerm("ORG_CONSORTIUM")) {
-            tmpQ = _getLicensesConsortiaQuery(params)
+            tmpQ = getLicensesConsortiaQuery(params)
             result.addAll(License.executeQuery("select l " + tmpQ[0], tmpQ[1]))
 
             tmpQ = _getLicensesConsortialLicenseQuery(params)
@@ -50,7 +50,7 @@ class LicenseService {
         List tmpQ // [String, Map<String, Object>]
 
         if(accessService.checkPerm("ORG_CONSORTIUM")) {
-            tmpQ = _getLicensesConsortiaQuery(params)
+            tmpQ = getLicensesConsortiaQuery(params)
             result.addAll(License.executeQuery("select l " + tmpQ[0], tmpQ[1]))
 
             tmpQ = _getLicensesConsortialLicenseQuery(params)
@@ -71,7 +71,7 @@ class LicenseService {
      * @param params the filter parameter map
      * @return a list of consortial parent licenses matching the given filter
      */
-    private List _getLicensesConsortiaQuery(Map params) {
+    List getLicensesConsortiaQuery(Map params) {
         Map qry_params = [roleTypeC: RDStore.OR_LICENSING_CONSORTIUM, roleTypeL: RDStore.OR_LICENSEE_CONS, lic_org: contextService.getOrg()]
         String base_qry = """from License as l where (
                     exists ( select o from l.orgRelations as o where ( 

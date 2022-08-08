@@ -612,7 +612,7 @@ class YodaController {
         Map<String, Object> result = [
                 platforms: platforms,
                 platformInstanceRecords: [:],
-                flagContentElasticsearch : true // gokbService.queryElasticsearch
+                flagContentGokb : true // gokbService.queryElasticsearch
         ]
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         platforms.each { Platform platformInstance ->
