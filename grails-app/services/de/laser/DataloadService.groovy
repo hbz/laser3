@@ -1139,7 +1139,7 @@ class DataloadService {
             if (se.payload) {
                 long ms = JSON.parse(se.payload).ms ?: 0
                 if (ms) {
-                    info += ' (' + (ms/1000/60).round(2) + ' min.)'
+                    info += ' (' + (ms/1000).round(2) + ' s.)'
                 }
             }
         }

@@ -525,9 +525,14 @@
 
                 <div class="right menu la-advanced-view">
                     <div class="item">
-                        <g:if test="${cachedContent}">
-                            <span class="ui icon button la-popup-tooltip la-delay" data-content="${message(code:'statusbar.cachedContent.tooltip')}" data-position="bottom right" data-variation="tiny">
+                        <g:if test="${flagContentCache}">
+                            <span class="ui icon button la-popup-tooltip la-delay" data-content="${message(code:'statusbar.flagContentCache.tooltip')}" data-position="bottom right" data-variation="tiny">
                                 <i class="hourglass end icon"></i>
+                            </span>
+                        </g:if>
+                        <g:if test="${flagContentElasticsearch}">
+                            <span class="ui icon button la-popup-tooltip la-delay" data-content="${message(code:'statusbar.flagContentElasticsearch.tooltip')}" data-position="bottom right" data-variation="tiny">
+                                <i class="cloud download icon"></i>
                             </span>
                         </g:if>
                     </div>

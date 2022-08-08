@@ -86,6 +86,9 @@
                     case 'warning'  : tdClass = 'table-td-yoda-yellow'; break
                     case 'error'    : tdClass = 'table-td-yoda-red'; break
                 }
+                if (el.hasChanged) {
+                    tdClass += ' sh_underline'
+                }
             %>
             <tr>
                 <td class="${tdClass}"> ${el.category} </td>
@@ -95,7 +98,6 @@
                 <td class="${tdClass}"> ${el.payload?.replaceAll(',', ', ')} </td>
                 <td class="${tdClass}">
                     <g:formatDate date="${el.created}" format="${message(code:'default.date.format.noZ')}" />
-                    <g:if test="${el.hasChanged}"> &nbsp; <i class="icon exclamation"></i> </g:if>
                 </td>
             </tr>
         </g:each>

@@ -346,6 +346,8 @@ class SubscriptionControllerService {
      */
     Map<String, Object> stats(GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
+        result.flagContentElasticsearch = true // gokbService.queryElasticsearch
+
         SwissKnife.setPaginationParams(result, params, result.user)
         if(!result)
             [result: null, status: STATUS_ERROR]

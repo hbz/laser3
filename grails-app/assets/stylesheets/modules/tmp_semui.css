@@ -267,10 +267,14 @@ h1.header.icon > i.trophy {
     background-color:#f3a43b; border-color:#f3a43b; color:white;
 }
 
-/* -- simple color helper -- */
+/* -- simple color -- */
 
 div.sc_red,      p.sc_red,      span.sc_red,      strong.sc_red,      i.sc_red      { color:#d12e34; }
 div.sc_green,    p.sc_green,    span.sc_green,    strong.sc_green,    i.sc_green    { color:#b5c334; font-weight: bolder }
 div.sc_orange,   p.sc_orange,   span.sc_orange,   strong.sc_orange,   i.sc_orange   { color:#f3a43b; }
 div.sc_grey,     p.sc_grey,     span.sc_grey,     strong.sc_grey,     i.sc_grey     { color:#808080; }
 div.sc_darkgrey, p.sc_darkgrey, span.sc_darkgrey, strong.sc_darkgrey, i.sc_darkgrey { color:#a9a9a9; }
+
+/* -- simple helper -- */
+
+td.sh_underline    { text-decoration: underline dotted; }
