@@ -112,7 +112,7 @@
                     <g:message code="surveyInfo.comment.label"/>
                 </label>
                 <g:if test="${surveyInfo.comment}">
-                    <textarea readonly="readonly" rows="3">${surveyInfo.comment}</textarea>
+                    <textarea class="la-textarea-resize-vertical" readonly="readonly" rows="3">${surveyInfo.comment}</textarea>
                 </g:if>
                 <g:else>
                     <g:message code="surveyConfigsInfo.comment.noComment"/>

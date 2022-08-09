@@ -130,7 +130,7 @@
                     <td><g:message code="copySurvey.copySurveyConfigComment"/></td>
                     <td>
                         <g:if test="${surveyConfig.comment}">
-                            <textarea readonly="readonly" rows="15">${surveyConfig.comment}</textarea>
+                            <textarea class="la-textarea-resize-vertical" readonly="readonly" rows="15">${surveyConfig.comment}</textarea>
                         </g:if>
                     </td>
                 </tr>
