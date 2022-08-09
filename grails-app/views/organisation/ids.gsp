@@ -144,7 +144,8 @@
                 <thead>
                     <tr>
                         <th class="one wide">${message(code:'default.number')}</th>
-                        <th class="five wide">${message(code:'default.provider.label')} : ${message(code:'platform.label')}</th>
+                        <g:sortableColumn title="${message(code:'default.provider.label')}" property="platform.org.name" class="three wide" params="[tab: 'customerIdentifiers']"/>
+                        <g:sortableColumn title="${message(code:'platform.label')}" property="platform.name" class="two wide" params="[tab: 'customerIdentifiers']"/>
                         <th class="three wide">${message(code:'org.customerIdentifier')}</th>
                         <th class="three wide">${message(code:'org.requestorKey')}</th>
                         <th class="two wide">${message(code:'default.note.label')}</th>
@@ -158,8 +159,9 @@
                             <tr>
                                 <td>${rowno+1}</td>
                                 <td>
-                                    ${ci.getProvider()} : ${ci.platform}
+                                    ${ci.getProvider()}
                                 </td>
+                                <td>${ci.platform}</td>
                                 <td>${ci.value}</td>
                                 <td>${ci.requestorKey}</td>
                                 <td>${ci.note}</td>
