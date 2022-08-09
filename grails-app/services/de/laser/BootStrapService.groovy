@@ -56,8 +56,8 @@ class BootStrapService {
         log.info("SystemId:      ${ConfigMapper.getLaserSystemId()}")
         log.info("Version:       ${AppUtils.getMeta('info.app.version')}")
         log.info("Server:        ${AppUtils.getCurrentServer()} @ ${ConfigMapper.getGrailsServerURL()}")
-        log.info("Database #1:   ${ConfigMapper.getConfig('dataSource.url', String)} ;  dbCreate: ${ConfigMapper.getConfig('dataSource.dbCreate', String)}")
-        log.info("Database #2:   ${ConfigMapper.getConfig('dataSources.storage.url', String)} ;  dbCreate: ${ConfigMapper.getConfig('dataSources.storage.dbCreate', String)}")
+        log.info("Database #1:   ${ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_DEFAULT + '.url', String)} ;  dbCreate: ${ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_DEFAULT + '.dbCreate', String)}")
+        log.info("Database #2:   ${ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_STORAGE + '.url', String)} ;  dbCreate: ${ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_STORAGE + '.dbCreate', String)}")
         log.info("Database migration plugin updateOnStart: ${ConfigMapper.getPluginConfig('databasemigration.updateOnStart', Boolean)}")
         log.info("Documents:     ${ConfigMapper.getDocumentStorageLocation()}")
 

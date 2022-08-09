@@ -51,31 +51,37 @@
     <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
         <thead>
             <tr>
-                <th class="seven wide">${AppUtils.getMeta('info.app.name')}</th><th class="nine wide"></th>
+                <th class="four wide">${AppUtils.getMeta('info.app.name')}</th>
+                <th class="six wide"></th>
+                <th class="six wide"></th>
             </tr>
         </thead>
         <tbody>
             <tr>
-                <td>App Id/Version</td><td>${ConfigMapper.getLaserSystemId()} / ${AppUtils.getMeta('info.app.version')}</td>
+                <td>App Id/Version</td>
+                <td colspan="2">${ConfigMapper.getLaserSystemId()} / ${AppUtils.getMeta('info.app.version')}</td>
             </tr>
             <tr>
-                <td>Configuration file</td><td>${ConfigMapper.getCurrentConfigFile(this.applicationContext.getEnvironment()).name}</td>
+                <td>Configuration file</td>
+                <td colspan="2">${ConfigMapper.getCurrentConfigFile(this.applicationContext.getEnvironment()).name}</td>
             </tr>
             <tr>
-                <td>Environment/Server</td><td>${Metadata.getCurrent().getEnvironment()} / ${AppUtils.getCurrentServer()}</td>
+                <td>Environment/Server</td>
+                <td colspan="2">${Metadata.getCurrent().getEnvironment()} / ${AppUtils.getCurrentServer()}</td>
             </tr>
             <tr>
-                <td>Database #1</td><td>${database.default.dbName}</td>
-            </tr>
-            <tr>
-                <td>Database #2</td><td>${database.storage.dbName}</td>
+                <td>Database</td>
+                <td>${database.default.dbName}</td>
+                <td>${database.storage.dbName}</td>
             </tr>
             <tr>
                 <td>DBM version</td>
-                <td>${database.dbmVersion[0]} -> ${database.dbmVersion[1]} <br/> ${DateUtils.getLocalizedSDF_noZ().format(database.dbmVersion[2])}</td>
+                <td>${database.default.dbmVersion[0]} -> ${database.default.dbmVersion[1]} <br/> ${DateUtils.getLocalizedSDF_noZ().format(database.default.dbmVersion[2])}</td>
+                <td>${database.storage.dbmVersion[0]} -> ${database.storage.dbmVersion[1]} <br/> ${DateUtils.getLocalizedSDF_noZ().format(database.storage.dbmVersion[2])}</td>
             </tr>
             <tr>
-                <td>Document storage</td><td colspan="2">${docStore.filesCount} Files -> ${docStore.folderSize} MB</td>
+                <td>Document storage</td>
+                <td colspan="2">${docStore.filesCount} Files -> ${docStore.folderSize} MB</td>
             </tr>
         </tbody>
     </table>

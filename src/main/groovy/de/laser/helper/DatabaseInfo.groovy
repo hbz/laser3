@@ -13,21 +13,21 @@ class DatabaseInfo {
     static final String DE_U_CO_PHONEBK_X_ICU   = "de-u-co-phonebk-x-icu"
     static final String EN_US_U_VA_POSIX_X_ICU  = "en-US-u-va-posix-x-icu"
     
-    static final String DATASOURCE_DEFAULT = "DATASOURCE_DEFAULT"
-    static final String DATASOURCE_STORAGE = "DATASOURCE_STORAGE"
+    static final String DS_DEFAULT = "DS_DEFAULT"
+    static final String DS_STORAGE = "DS_STORAGE"
 
-    static DataSource getDataSource(String dsIdentifier = DATASOURCE_DEFAULT) {
-        if (dsIdentifier == DATASOURCE_DEFAULT) {
+    static DataSource getDataSource(String dsIdentifier = DS_DEFAULT) {
+        if (dsIdentifier == DS_DEFAULT) {
             BeanStore.getDataSource()
         }
-        else if (dsIdentifier == DATASOURCE_STORAGE) {
-            BeanStore.getDataStorageSource()
+        else if (dsIdentifier == DS_STORAGE) {
+            BeanStore.getStorageDataSource()
         }
     }
 
     // --
 
-    static Map<String, String> getServerInfo(String dsIdentifier = DATASOURCE_DEFAULT) {
+    static Map<String, String> getServerInfo(String dsIdentifier = DS_DEFAULT) {
         DataSource dataSource = getDataSource(dsIdentifier)
         Sql sql = new Sql(dataSource)
 
@@ -42,7 +42,7 @@ class DatabaseInfo {
         }
     }
 
-    static List<Map<String, Object>> getDatabaseActivity(String dsIdentifier = DATASOURCE_DEFAULT) {
+    static List<Map<String, Object>> getDatabaseActivity(String dsIdentifier = DS_DEFAULT) {
         DataSource dataSource = getDataSource(dsIdentifier)
         Sql sql = new Sql(dataSource)
 
@@ -50,23 +50,23 @@ class DatabaseInfo {
         rows.collect{getGroovyRowResultAsMap(it) }
     }
 
-    static String getDatabaseCollate(String dsIdentifier = DATASOURCE_DEFAULT) {
+    static String getDatabaseCollate(String dsIdentifier = DS_DEFAULT) {
         DataSource dataSource = getDataSource(dsIdentifier)
         (new Sql(dataSource)).firstRow('show LC_COLLATE').get('lc_collate') as String
     }
 
-    static String getDatabaseConflicts(String dsIdentifier = DATASOURCE_DEFAULT) {
+    static String getDatabaseConflicts(String dsIdentifier = DS_DEFAULT) {
         DataSource dataSource = getDataSource(dsIdentifier)
         GroovyRowResult row = (new Sql(dataSource)).firstRow('select * from pg_stat_database_conflicts where datname = current_database()')
         row.findAll { it.key.startsWith('confl_') }.collect { it -> it.key.replace('confl_', '') + ':' + it.value }.join(', ')
     }
 
-    static String getDatabaseSize(String dsIdentifier = DATASOURCE_DEFAULT) {
+    static String getDatabaseSize(String dsIdentifier = DS_DEFAULT) {
         DataSource dataSource = getDataSource(dsIdentifier)
         (new Sql(dataSource)).firstRow('select pg_size_pretty(pg_database_size(current_database())) as dbsize').get('dbsize') as String
     }
 
-    static Map<String, List> getDatabaseStatistics(String dsIdentifier = DATASOURCE_DEFAULT) {
+    static Map<String, List> getDatabaseStatistics(String dsIdentifier = DS_DEFAULT) {
         DataSource dataSource = getDataSource(dsIdentifier)
         Sql sql = new Sql(dataSource)
 
@@ -83,7 +83,7 @@ class DatabaseInfo {
         result
     }
 
-    static List<Map<String, Object>> getDatabaseUserFunctions(String dsIdentifier = DATASOURCE_DEFAULT) {
+    static List<Map<String, Object>> getDatabaseUserFunctions(String dsIdentifier = DS_DEFAULT) {
         DataSource dataSource = getDataSource(dsIdentifier)
         Sql sql = new Sql(dataSource)
 
@@ -91,7 +91,7 @@ class DatabaseInfo {
         rows.collect{getGroovyRowResultAsMap(it) }
     }
 
-    static List<Map<String, Object>> getAllTablesWithCollations(String dsIdentifier = DATASOURCE_DEFAULT) {
+    static List<Map<String, Object>> getAllTablesWithCollations(String dsIdentifier = DS_DEFAULT) {
         DataSource dataSource = getDataSource(dsIdentifier)
         Sql sql = new Sql(dataSource)
 
@@ -106,7 +106,7 @@ class DatabaseInfo {
         rows.collect{getGroovyRowResultAsMap(it) }
     }
 
-    static List<Map<String, Object>> getAllTablesUsageInfo(String dsIdentifier = DATASOURCE_DEFAULT) {
+    static List<Map<String, Object>> getAllTablesUsageInfo(String dsIdentifier = DS_DEFAULT) {
         DataSource dataSource = getDataSource(dsIdentifier)
         Sql sql = new Sql(dataSource)
 
@@ -114,7 +114,7 @@ class DatabaseInfo {
         rows.collect{getGroovyRowResultAsMap(it) }
     }
 
-    static Map<String, List> getAllTablesCollationInfo(String dsIdentifier = DATASOURCE_DEFAULT) {
+    static Map<String, List> getAllTablesCollationInfo(String dsIdentifier = DS_DEFAULT) {
         DataSource dataSource = getDataSource(dsIdentifier)
         Sql sql = new Sql(dataSource)
         Map<String, List> result = [:]

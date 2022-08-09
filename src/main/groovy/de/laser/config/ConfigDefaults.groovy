@@ -5,6 +5,9 @@ import groovy.transform.CompileStatic
 @CompileStatic
 class ConfigDefaults {
 
+    final static String DATASOURCE_DEFAULT              = 'dataSource'
+    final static String DATASOURCE_STORAGE              = 'dataSources.storage'
+
     final static String SETUP_REFDATA_CATEGORY_CSV      = 'setup/RefdataCategory.csv'                       // -> BootstrapService
     final static String SETUP_REFDATA_VALUE_CSV         = 'setup/RefdataValue.csv'
     final static String SETUP_PROPERTY_DEFINITION_CSV   = 'setup/PropertyDefinition.csv'

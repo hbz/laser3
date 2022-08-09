@@ -59,7 +59,10 @@ class CustomMigrationCallbacks {
 			println '-        ' + diff.size() + ' relevant changesets found ..'
 			println '-        dumping current database ..'
 
-			def dataSource = ConfigMapper.getConfig('dataSource', Map)
+			// TODO !!!
+			// TODO !!!
+			// TODO !!!
+			Map dataSource = ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_DEFAULT, Map) as Map
 			URI uri = new URI(dataSource.url.substring(5))
 
 			String backupFile = (ConfigMapper.getDeployBackupLocation() ?: ConfigDefaults.DEPLOYBACKUP_LOCATION_FALLBACK) +

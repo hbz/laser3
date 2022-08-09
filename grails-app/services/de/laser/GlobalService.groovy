@@ -37,4 +37,9 @@ class GlobalService {
         DataSource dataSource = BeanStore.getDataSource()
         new Sql(dataSource)
     }
+
+    static Sql obtainStorageSqlConnection() {
+        DataSource dataSource = BeanStore.getStorageDataSource()
+        new Sql(dataSource)
+    }
 }

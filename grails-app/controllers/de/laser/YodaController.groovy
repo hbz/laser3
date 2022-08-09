@@ -5,6 +5,7 @@ import de.laser.annotations.DebugInfo
 import de.laser.auth.Role
 import de.laser.auth.UserRole
 import de.laser.base.AbstractJob
+import de.laser.config.ConfigDefaults
 import de.laser.finance.CostItem
 import de.laser.properties.LicenseProperty
 import de.laser.properties.OrgProperty
@@ -98,7 +99,7 @@ class YodaController {
         Map result = [:]
 
         result.blacklist = [
-                'jira', 'dataSource', 'dataSource.password', 'dataSources.storage.password'
+                'jira', 'dataSource', ConfigDefaults.DATASOURCE_DEFAULT + '.password', ConfigDefaults.DATASOURCE_STORAGE + '.password'
         ]
         result.editable = true
         result.currentConfig = grails.util.Holders.config.findAll { ! it.key.matches("[A-Z|_]*") }

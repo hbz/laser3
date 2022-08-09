@@ -27,11 +27,13 @@
             </tr>
             <tr>
                 <td>DBM version</td>
-                <td colspan="2">${dbInfo.dbmVersion[0]} -> ${dbInfo.dbmVersion[1]} <br/> ${DateUtils.getLocalizedSDF_noZ().format(dbInfo.dbmVersion[2])}</td>
+                <td>${dbInfo.default.dbmVersion[0]} -> ${dbInfo.default.dbmVersion[1]} <br/> ${DateUtils.getLocalizedSDF_noZ().format(dbInfo.default.dbmVersion[2])}</td>
+                <td>${dbInfo.storage.dbmVersion[0]} -> ${dbInfo.storage.dbmVersion[1]} <br/> ${DateUtils.getLocalizedSDF_noZ().format(dbInfo.storage.dbmVersion[2])}</td>
             </tr>
             <tr>
                 <td>DBM updateOnStart</td>
-                <td colspan="2">${dbInfo.dbmUpdateOnStart}</td>
+                <td>${dbInfo.dbmUpdateOnStart}</td>
+                <td>${dbInfo.dbmUpdateOnStart}</td>
             </tr>
             <tr>
                 <td>Config dbCreate</td>
@@ -52,7 +54,7 @@
                 <td>
                 <%
                     collations = [dbInfo.storage.defaultCollate]
-                    DatabaseInfo.getAllTablesCollationInfo( DatabaseInfo.DATASOURCE_STORAGE ).each { it ->
+                    DatabaseInfo.getAllTablesCollationInfo( DatabaseInfo.DS_STORAGE ).each { it ->
                         List c = it.value['collation'].findAll()
                         if (! c.isEmpty()) { collations.addAll(c) }
                     }
@@ -86,7 +88,7 @@
             <tr>
                 <td>Postgresql server</td>
                 <td>${DatabaseInfo.getServerInfo()}</td>
-                <td>${DatabaseInfo.getServerInfo(DatabaseInfo.DATASOURCE_STORAGE)}</td>
+                <td>${DatabaseInfo.getServerInfo(DatabaseInfo.DS_STORAGE)}</td>
             </tr>
         <tbody>
     </table>

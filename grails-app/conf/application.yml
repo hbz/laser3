@@ -141,8 +141,12 @@ grails:
             disabled: true  # events are triggered, but not persisted
         databasemigration:
             updateOnStart:  true
+            changelogFileName: 'changelog.groovy'
             dbDocController:
                 enabled: false
+            storage:
+                updateOnStart: true
+                changelogFileName: 'changelog-storage.groovy'
         wkhtmltopdf:
             binary: '/usr/bin/wkhtmltopdf'
         springsecurity:
@@ -235,6 +239,10 @@ dataSource:
         testOnReturn: false
         jdbcInterceptors: ConnectionState
         defaultTransactionIsolation: java.sql.Connection.TRANSACTION_READ_COMMITTED
+dataSources:
+    storage:
+        username: laser
+        password: laser
 
 environments:
     development:
