@@ -66,12 +66,13 @@ class Counter4Report extends AbstractReport {
     String category
 
     static mapping = {
+        datasource          'stats'
         id                  column: 'c4r_id'
         version             column: 'c4r_version'
-        title               column: 'c4r_title_fk', index: 'c4r_title_idx, c4r_report_when_idx'
+        titleId             column: 'c4r_title_fk', index: 'c4r_title_idx, c4r_report_when_idx'
         publisher           column: 'c4r_publisher', type: 'text'
-        platform            column: 'c4r_platform_fk', index: 'c4r_plat_idx'
-        reportInstitution   column: 'c4r_report_institution_fk', index: 'c4r_ri_idx, c4r_report_when_idx'
+        platformId          column: 'c4r_platform_fk', index: 'c4r_plat_idx'
+        reportInstitutionId column: 'c4r_report_institution_fk', index: 'c4r_ri_idx, c4r_report_when_idx'
         reportType          column: 'c4r_report_type', index: 'c4r_rt_idx, c4r_report_when_idx'
         category            column: 'c4r_category'
         metricType          column: 'c4r_metric_type', index: 'c4r_metric_type_idx, c4r_report_when_idx'
@@ -82,8 +83,11 @@ class Counter4Report extends AbstractReport {
 
     static constraints = {
         title               (nullable: true) //because of platform reports!
+        publisher           (nullable: true) //because of platform reports!
         title(unique: ['reportType', 'platform', 'reportInstitution', 'metricType', 'reportFrom', 'reportTo'])
     }
+
+    static transients = ['title', 'platform', 'reportInstitution']
 
     /**
      * Was implemented to create reports by GORM; as this has proven very unperformant, COUNTER reports are now inserted by native SQL. See StatsSyncService for that.

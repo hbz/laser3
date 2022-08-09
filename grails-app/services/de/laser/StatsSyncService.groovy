@@ -15,7 +15,6 @@ import de.laser.stats.Counter5ApiSource
 import de.laser.system.SystemEvent
 import de.laser.usage.StatsSyncServiceOptions
 import de.laser.usage.SushiClient
-import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.json.JsonOutput
@@ -303,7 +302,7 @@ class StatsSyncService {
                     if(keyPairs) {
                         GParsPool.withPool(THREAD_POOL_SIZE) { pool ->
                             keyPairs.eachWithIndexParallel { Map keyPair, int i ->
-                                Sql sql = GlobalService.obtainSqlConnection()
+                                Sql sql = GlobalService.obtainSqlConnection(), statsSql = GlobalService.obtainStatsConnection()
                                 //TitleInstancePackagePlatform.withNewSession {
                                 sql.withTransaction {
                                     List laserStatsCursor = sql.rows("select lsc_latest_from_date, lsc_latest_to_date, lsc_report_id from laser_stats_cursor where lsc_platform_fk = :platform and lsc_customer_fk = :customer", [platform: c4asPlatform.id, customer: keyPair.customerId])
@@ -332,7 +331,7 @@ class StatsSyncService {
                                         boolean more = true
                                         while (more) {
                                             log.debug("${Thread.currentThread().getName()} is getting ${reportID} for ${keyPair.customerName} from ${yyyyMMdd.format(startTime.getTime())}-${yyyyMMdd.format(currentYearEnd.getTime())}")
-                                            Map<String, Object> result = performCounter4Request(sql, statsUrl, reportID, calendarConfig.now, startTime, currentYearEnd, c4asPlatform, keyPair, namespaces)
+                                            Map<String, Object> result = performCounter4Request(sql, statsSql, statsUrl, reportID, calendarConfig.now, startTime, currentYearEnd, c4asPlatform, keyPair, namespaces)
                                             if(result.error && result.error != true) {
                                                 notifyError(sql, [platform: c4asPlatform.name, uuid: c4asPlatform.gokbId, url: statsUrl, error: result, customer: keyPair.customerName, keyPair: "${keyPair.value}:${keyPair.requestorKey}"])
                                                 sql.executeInsert('insert into stats_missing_period (smp_version, smp_from_date, smp_to_date, smp_customer_fk, smp_platform_fk, smp_report_id) values (0, :from, :to, :customer, :platform, :reportID)',
@@ -360,7 +359,7 @@ class StatsSyncService {
                                                     Calendar from = GregorianCalendar.getInstance(), to = GregorianCalendar.getInstance()
                                                     from.setTimeInMillis(row.get("smp_from_date").getTime())
                                                     to.setTimeInMillis(row.get("smp_to_date").getTime())
-                                                    result = performCounter4Request(sql, statsUrl, reportID, calendarConfig.now, from, to, c4asPlatform, keyPair, namespaces)
+                                                    result = performCounter4Request(sql, statsSql, statsUrl, reportID, calendarConfig.now, from, to, c4asPlatform, keyPair, namespaces)
                                                     if(result.success) {
                                                         donePeriods << row.get("smp_id")
                                                     }
@@ -412,7 +411,7 @@ class StatsSyncService {
                     if(keyPairs) {
                         GParsPool.withPool(THREAD_POOL_SIZE) { pool ->
                             keyPairs.eachWithIndexParallel { Map<String, Object> keyPair, int i ->
-                                Sql sql = GlobalService.obtainSqlConnection()
+                                Sql sql = GlobalService.obtainSqlConnection(), statsSql = GlobalService.obtainStatsConnection()
                                 sql.withTransaction {
                                     List laserStatsCursor = sql.rows("select lsc_latest_from_date, lsc_latest_to_date,lsc_report_id from laser_stats_cursor where lsc_platform_fk = :platform and lsc_customer_fk = :customer", [platform: c5asPlatform.id, customer: keyPair.customerId])
                                     boolean onlyNewest = laserStatsCursor ? incremental : false
@@ -460,7 +459,7 @@ class StatsSyncService {
                                             boolean more = true
                                             while(more) {
                                                 String reportReqId = statsUrl.endsWith("/") ? reportId : '/'+reportId, url = statsUrl+reportReqId+params+"&begin_date=${monthFormatter.format(startTime.getTime())}&end_date=${monthFormatter.format(currentYearEnd.getTime())}"
-                                                Map report = performCounter5Request(sql, url, reportId, c5asPlatform, keyPair, namespaces)
+                                                Map report = performCounter5Request(sql, statsSql, url, reportId, c5asPlatform, keyPair, namespaces)
                                                 if(report.error) {
                                                     notifyError(sql, [platform: c5asPlatform.name, uuid: c5asPlatform.gokbId, url: url, error: report.error, customer: keyPair.customerName, keyPair: "${keyPair.value}:${keyPair.requestorKey}"])
                                                     sql.executeInsert('insert into stats_missing_period (smp_version, smp_from_date, smp_to_date, smp_customer_fk, smp_platform_fk, smp_report_id) values (0, :from, :to, :customer, :platform, :reportID)',
@@ -477,7 +476,7 @@ class StatsSyncService {
                                                     List<Object> donePeriods = []
                                                     currentMissingPeriods.each { GroovyRowResult row ->
                                                         Date from = row.get("smp_from_date"), to = row.get("smp_to_date")
-                                                        report = performCounter5Request(sql, statsUrl+reportReqId+params+"&begin_date=${monthFormatter.format(from)}&end_date=${monthFormatter.format(to)}", reportId, c5asPlatform, keyPair, namespaces)
+                                                        report = performCounter5Request(sql, statsSql, statsUrl+reportReqId+params+"&begin_date=${monthFormatter.format(from)}&end_date=${monthFormatter.format(to)}", reportId, c5asPlatform, keyPair, namespaces)
                                                         if(report.success) {
                                                             donePeriods << row.get("smp_id")
                                                         }
@@ -560,7 +559,7 @@ class StatsSyncService {
      * @param namespaces the identifier namespaces within which a matching identifier may be contained
      * @return a map containing the request status - success or error on failure
      */
-    Map<String, Object> performCounter4Request(Sql sql, String statsUrl, String reportID, Calendar now, Calendar startTime, Calendar endTime, Platform c4asPlatform, Map keyPair, Set<Long> namespaces) {
+    Map<String, Object> performCounter4Request(Sql sql, Sql statsSql, String statsUrl, String reportID, Calendar now, Calendar startTime, Calendar endTime, Platform c4asPlatform, Map keyPair, Set<Long> namespaces) {
         StreamingMarkupBuilder requestBuilder = new StreamingMarkupBuilder()
         def requestBody = requestBuilder.bind {
             mkp.xmlDeclaration()
@@ -622,7 +621,7 @@ class StatsSyncService {
                 //lsc.missingPeriods.remove(wasMissing)
                 GPathResult reportItems = reportData.'ns2:Report'.'ns2:Customer'.'ns2:ReportItems'
                 if(reportID == Counter4ApiSource.PLATFORM_REPORT_1) {
-                    int[] resultCount = sql.withBatch( "insert into counter4report (c4r_version, c4r_platform_fk, c4r_publisher, c4r_report_institution_fk, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count) " +
+                    int[] resultCount = statsSql.withBatch( "insert into counter4report (c4r_version, c4r_platform_fk, c4r_publisher, c4r_report_institution_fk, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count) " +
                             "values (:version, :platform, :publisher, :reportInstitution, :reportType, :category, :metricType, :reportFrom, :reportTo, :reportCount) " +
                             "on conflict on constraint unique_counter_4_report do " +
                             "update set c4r_report_count = :reportCount") { stmt ->
@@ -655,14 +654,14 @@ class StatsSyncService {
                                     Map<String, Object> selMap = configMap.clone() as Map<String, Object> //simple assignment makes call by reference so modifies the actual object
                                     selMap.remove('version')
                                     selMap.remove('reportCount')
-                                    List<GroovyRowResult> existingKey = sql.rows('select c4r_id from counter4report where c4r_platform_fk = :platform ' +
+                                    List<GroovyRowResult> existingKey = statsSql.rows('select c4r_id from counter4report where c4r_platform_fk = :platform ' +
                                             'and c4r_report_institution_fk = :reportInstitution ' +
                                             'and c4r_report_type = :reportType ' +
                                             'and c4r_metric_type = :metricType ' +
                                             'and c4r_report_from = :reportFrom ' +
                                             'and c4r_report_to = :reportTo', selMap)
                                     if(existingKey) {
-                                        sql.execute('update counter4report set c4r_report_count = :reportCount, c4r_publisher = :publisher where c4r_id = :reportId', [reportCount: count, publisher: reportItem.'ns2:ItemPublisher'.text(), reportId: existingKey[0].get('c4r_id')])
+                                        statsSql.execute('update counter4report set c4r_report_count = :reportCount, c4r_publisher = :publisher where c4r_id = :reportId', [reportCount: count, publisher: reportItem.'ns2:ItemPublisher'.text(), reportId: existingKey[0].get('c4r_id')])
                                     }
                                     else
                                         stmt.addBatch(configMap)
@@ -675,7 +674,7 @@ class StatsSyncService {
                     log.debug("${Thread.currentThread().getName()} reports success: ${resultCount.length}")
                 }
                 else {
-                    int[] resultCount = sql.withBatch( "insert into counter4report (c4r_version, c4r_title_fk, c4r_publisher, c4r_platform_fk, c4r_report_institution_fk, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count) " +
+                    int[] resultCount = statsSql.withBatch( "insert into counter4report (c4r_version, c4r_title_fk, c4r_publisher, c4r_platform_fk, c4r_report_institution_fk, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count) " +
                             "values (:version, :title, :publisher, :platform, :reportInstitution, :reportType, :category, :metricType, :reportFrom, :reportTo, :reportCount) " +
                             "on conflict on constraint unique_counter_4_report do " +
                             "update set c4r_report_count = :reportCount") { stmt ->
@@ -757,7 +756,7 @@ class StatsSyncService {
      * @param namespaces the identifier namespaces within which a matching identifier may be contained
      * @return a map containing the request status - success or error on failure
      */
-    Map<String, Object> performCounter5Request(Sql sql, String url, String reportId, Platform c5asPlatform, Map keyPair, Set<Long> namespaces) {
+    Map<String, Object> performCounter5Request(Sql sql, Sql statsSql, String url, String reportId, Platform c5asPlatform, Map keyPair, Set<Long> namespaces) {
         Map<String, Object> report = fetchJSONData(url)
         if(report.header) {
             List<Map> exceptions = report.header.Exceptions
@@ -775,7 +774,7 @@ class StatsSyncService {
                 //if(wasMissing)
                 //lsc.missingPeriods.remove(wasMissing)
                 if(reportId in [Counter5ApiSource.PLATFORM_MASTER_REPORT, Counter5ApiSource.PLATFORM_USAGE]) {
-                    int[] resultCount = sql.withBatch( "insert into counter5report (c5r_version, c5r_publisher, c5r_platform_fk, c5r_report_institution_fk, c5r_report_type, c5r_metric_type, c5r_report_from, c5r_report_to, c5r_report_count) " +
+                    int[] resultCount = statsSql.withBatch( "insert into counter5report (c5r_version, c5r_publisher, c5r_platform_fk, c5r_report_institution_fk, c5r_report_type, c5r_metric_type, c5r_report_from, c5r_report_to, c5r_report_count) " +
                             "values (:version, :publisher, :platform, :reportInstitution, :reportType, :metricType, :reportFrom, :reportTo, :reportCount)") { stmt ->
                         report.items.each { Map reportItem ->
                             int ctr = 0
@@ -793,7 +792,7 @@ class StatsSyncService {
                                     Map<String, Object> selMap = configMap.clone() as Map<String, Object> //simple assignment makes call by reference so modifies the actual object
                                     selMap.remove('version')
                                     selMap.remove('reportCount')
-                                    List<GroovyRowResult> existingKey = sql.rows('select c5r_id from counter5report where c5r_publisher = :publisher ' +
+                                    List<GroovyRowResult> existingKey = statsSql.rows('select c5r_id from counter5report where c5r_publisher = :publisher ' +
                                             'and c5r_platform_fk = :platform ' +
                                             'and c5r_report_institution_fk = :reportInstitution ' +
                                             'and c5r_report_type = :reportType ' +
@@ -801,7 +800,7 @@ class StatsSyncService {
                                             'and c5r_report_from = :reportFrom ' +
                                             'and c5r_report_to = :reportTo', selMap)
                                     if(existingKey) {
-                                        sql.execute('update counter5report set c5r_report_count = :reportCount where c5r_id = :reportId', [reportCount: instance.Count as int, reportId: existingKey[0].get('c5r_id')])
+                                        statsSql.execute('update counter5report set c5r_report_count = :reportCount where c5r_id = :reportId', [reportCount: instance.Count as int, reportId: existingKey[0].get('c5r_id')])
                                     }
                                     else
                                         stmt.addBatch(configMap)
@@ -822,7 +821,7 @@ class StatsSyncService {
                     log.debug("${Thread.currentThread().getName()} reports success: ${resultCount.length}")
                 }
                 else {
-                    int[] resultCount = sql.withBatch( "insert into counter5report (c5r_version, c5r_title_fk, c5r_publisher, c5r_platform_fk, c5r_report_institution_fk, c5r_report_type, c5r_metric_type, c5r_access_type, c5r_access_method, c5r_report_from, c5r_report_to, c5r_report_count) " +
+                    int[] resultCount = statsSql.withBatch( "insert into counter5report (c5r_version, c5r_title_fk, c5r_publisher, c5r_platform_fk, c5r_report_institution_fk, c5r_report_type, c5r_metric_type, c5r_access_type, c5r_access_method, c5r_report_from, c5r_report_to, c5r_report_count) " +
                             "values (:version, :title, :publisher, :platform, :reportInstitution, :reportType, :metricType, :accessType, :accessMethod, :reportFrom, :reportTo, :reportCount) " +
                             "on conflict on constraint unique_counter_5_report do " +
                             "update set c5r_report_count = :reportCount, c5r_access_type = :accessType, c5r_access_method = :accessMethod") { stmt ->

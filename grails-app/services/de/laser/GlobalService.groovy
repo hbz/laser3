@@ -37,4 +37,9 @@ class GlobalService {
         DataSource dataSource = BeanStore.getDataSource()
         new Sql(dataSource)
     }
+
+    static Sql obtainStatsConnection() {
+        DataSource dataSource = BeanStore.getStatsDataSource()
+        new Sql(dataSource)
+    }
 }

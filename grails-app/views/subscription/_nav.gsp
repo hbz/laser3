@@ -41,7 +41,8 @@
             }
             Set<Long> subIds = [subscription.id]
             subIds.addAll(Subscription.executeQuery('select s.id from Subscription s where s.instanceOf = :subscription', [subscription: subscription]))
-            boolean statsAvailable = subscriptionService.areStatsAvailable(subscribedPlatforms, subIds)
+            boolean statsAvailable = false
+            subscriptionService.areStatsAvailable(subscribedPlatforms, subIds)
         %>
         <g:if test="${statsAvailable}">
             <ui:subNavItem controller="subscription" action="stats" params="${[id:params.id]}" message="default.stats.label" />

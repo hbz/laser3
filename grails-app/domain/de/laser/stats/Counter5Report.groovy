@@ -102,12 +102,13 @@ class Counter5Report extends AbstractReport {
     String accessMethod
 
     static mapping = {
+        datasource          'stats'
         id                  column: 'c5r_id'
         version             column: 'c5r_version'
-        title               column: 'c5r_title_fk', index: 'c5r_title_idx, c5r_report_when_idx'
+        //title               column: 'c5r_title_fk', index: 'c5r_title_idx, c5r_report_when_idx'
         publisher           column: 'c5r_publisher', type: 'text'
-        platform            column: 'c5r_platform_fk', index: 'c5r_plat_idx'
-        reportInstitution   column: 'c5r_report_institution_fk', index: 'c5r_ri_idx, c5r_report_when_idx'
+        //platform            column: 'c5r_platform_fk', index: 'c5r_plat_idx'
+        //reportInstitution   column: 'c5r_report_institution_fk', index: 'c5r_ri_idx, c5r_report_when_idx'
         reportType          column: 'c5r_report_type', index: 'c5r_rt_idx, c5r_report_when_idx'
         accessType          column: 'c5r_access_type', index: 'c5r_access_type_idx'
         accessMethod        column: 'c5r_access_method', index: 'c5r_access_method_idx'
@@ -124,6 +125,8 @@ class Counter5Report extends AbstractReport {
         accessMethod        (nullable: true, blank: false)
         title(unique: ['platform', 'reportInstitution', 'metricType', 'reportFrom', 'reportTo', 'reportType'])
     }
+
+    static transients = ['title', 'platform', 'reportInstitution']
 
     /**
      * Was implemented to create reports by GORM; as this has proven very unperformant, COUNTER reports are now inserted by native SQL. See StatsSyncService for that.

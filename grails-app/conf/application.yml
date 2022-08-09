@@ -22,6 +22,10 @@ grails:
         params:
             exclude:
                 - password
+    transaction:
+        chainedTransactionManagerPostProcessor:
+            enabled: true
+            blacklistPattern: '.*'
 
 info:
     app:
@@ -141,8 +145,12 @@ grails:
             disabled: true  # events are triggered, but not persisted
         databasemigration:
             updateOnStart:  true
+            changelogFileName: 'changelog.groovy'
             dbDocController:
                 enabled: false
+            stats:
+                updateOnStart: true
+                changelogFileName: 'changelog-stats.groovy'
         wkhtmltopdf:
             binary: '/usr/bin/wkhtmltopdf'
         springsecurity:
@@ -235,17 +243,36 @@ dataSource:
         testOnReturn: false
         jdbcInterceptors: ConnectionState
         defaultTransactionIsolation: java.sql.Connection.TRANSACTION_READ_COMMITTED
+dataSources:
+    stats:
+        username: laser
+        password: laser
+        autoReconnect: true
+        driverClassName: org.postgresql.Driver
+        dialect: org.hibernate.dialect.PostgreSQLDialect
 
 environments:
     development:
         dataSource:
             dbCreate: none #create-drop
             url: jdbc:postgresql://localhost:5432/laser3
+        dataSources:
+            stats:
+                dbCreate: none
+                url: jdbc:postgresql://localhost:5432/stats
     test:
         dataSource:
             dbCreate: none #update
             url: jdbc:postgresql://localhost:5432/laser3
+        dataSources:
+            stats:
+                dbCreate: none
+                url: jdbc:postgresql://localhost:5432/stats
     production:
         dataSource:
             dbCreate: none
             url: jdbc:postgresql://localhost:5432/laser3
+        dataSources:
+            stats:
+                dbCreate: none
+                url: jdbc:postgresql://localhost:5432/stats
