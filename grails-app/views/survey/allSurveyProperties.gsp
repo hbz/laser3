@@ -138,7 +138,7 @@
 
         <div class="field">
             <label class="property-label">${message(code: 'propertyDefinition.expl.label')}</label>
-            <textarea name="pd_expl" id="pd_expl" class="ui textarea" rows="2"></textarea>
+            <textarea class="la-textarea-resize-vertical" name="pd_expl" id="pd_expl" class="ui textarea" rows="2"></textarea>
         </div>
 
         <div class="fields">
