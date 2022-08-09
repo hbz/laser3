@@ -153,7 +153,7 @@
                                     ${message(code: 'surveyconfig.comment.label')}
                                     <i class="question small circular inverted icon"></i>
                                 </div></label>
-                                <textarea name="comment" rows="15">${surveyConfig.comment}</textarea>
+                                <textarea class="la-textarea-resize-vertical" name="comment" rows="15">${surveyConfig.comment}</textarea>
                             </div>
 
                             <div class="left aligned">
@@ -255,7 +255,7 @@
                                 <g:message code="surveyConfigsInfo.comment"/>
                             </label>
                             <g:if test="${surveyConfig.comment}">
-                                <textarea readonly="readonly" rows="1">${surveyConfig.comment}</textarea>
+                                <textarea class="la-textarea-resize-vertical" readonly="readonly" rows="1">${surveyConfig.comment}</textarea>
                             </g:if>
                             <g:else>
                                 <g:message code="surveyConfigsInfo.comment.noComment"/>

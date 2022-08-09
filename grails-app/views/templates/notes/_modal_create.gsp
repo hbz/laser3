@@ -13,7 +13,7 @@
         <div class="field">
             <label for="licenseNote">${message(code:'template.addNote.note')}:</label>
 
-            <textarea id="licenseNote" name="licenseNote"></textarea>
+            <textarea class="la-textarea-resize-vertical" id="licenseNote" name="licenseNote"></textarea>
         </div>
     </g:form>
 </semui:modal>
