@@ -25,6 +25,9 @@ beans = {
     migrationCallbacks( CustomMigrationCallbacks ) {
         grailsApplication = ref('grailsApplication')
     }
+
+    springConfig.addAlias('sessionFactory_dataSource_storage', 'sessionFactory_storage')
+    springConfig.addAlias('transactionManager_dataSource_storage', 'transactionManager_storage')
     // .. ]
 
     // [ password migration/fallback ..

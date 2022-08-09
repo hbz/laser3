@@ -22,6 +22,10 @@ grails:
         params:
             exclude:
                 - password
+#    transaction:
+#        chainedTransactionManagerPostProcessor:
+#            enabled: true
+#            blacklistPattern: '.*'
 
 info:
     app:
