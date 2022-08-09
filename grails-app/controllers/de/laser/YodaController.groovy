@@ -98,7 +98,7 @@ class YodaController {
         Map result = [:]
 
         result.blacklist = [
-                'jira', 'dataSource', 'dataSource.password'
+                'jira', 'dataSource', 'dataSource.password', 'dataSources.storage.password'
         ]
         result.editable = true
         result.currentConfig = grails.util.Holders.config.findAll { ! it.key.matches("[A-Z|_]*") }

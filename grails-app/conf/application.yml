@@ -241,11 +241,23 @@ environments:
         dataSource:
             dbCreate: none #create-drop
             url: jdbc:postgresql://localhost:5432/laser3
+        dataSources:
+            storage:
+                dbCreate: none #create-drop
+                url: jdbc:postgresql://localhost:5432/laser3_storage
     test:
         dataSource:
             dbCreate: none #update
             url: jdbc:postgresql://localhost:5432/laser3
+        dataSources:
+            storage:
+                dbCreate: none #create-drop
+                url: jdbc:postgresql://localhost:5432/laser3_storage
     production:
         dataSource:
             dbCreate: none
             url: jdbc:postgresql://localhost:5432/laser3
+        dataSources:
+            storage:
+                dbCreate: none #create-drop
+                url: jdbc:postgresql://localhost:5432/laser3_storage

@@ -285,21 +285,6 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
     result
   }
 
-    @Deprecated
-    private String _stringify(def obj) {
-      String result
-    if ( obj != null ) {
-      if ( obj instanceof Date ) {
-          SimpleDateFormat df = DateUtils.getSDF_yyyyMMdd()
-          result = df.format(obj)
-      }
-      else {
-        result = obj.toString()
-      }
-    }
-        result
-    }
-
     /**
      * Gets the first author and / or the first editor of the book instance
      * @return a concatenated string of the first author / first editor of the book

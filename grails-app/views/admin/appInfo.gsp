@@ -39,33 +39,59 @@
 
     <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
         <thead>
-            <tr><th class="seven wide">Database</th><th class="nine wide"></th></tr>
+            <tr>
+                <th class="four wide">Database</th>
+                <th class="six wide"></th>
+                <th class="six wide"></th>
+            </tr>
         </thead>
         <tbody>
-            <tr><td>Database</td><td> ${ConfigMapper.getConfig('dataSource.url', String).split('/').last()}</td></tr>
-            <tr><td>DBM version</td><td> ${dbmVersion[0]} -> ${dbmVersion[1]} <br/> ${DateUtils.getLocalizedSDF_noZ().format(dbmVersion[2])}</td></tr>
             <tr>
-                <g:if test="${! ConfigMapper.getPluginConfig('databasemigration.updateOnStart', Boolean)}">
+                <td>Database</td>
+                <td>${dbInfo.default.dbName}</td>
+                <td>${dbInfo.storage.dbName}</td>
+            </tr>
+            <tr>
+                <td>DBM version</td>
+                <td colspan="2">${dbInfo.dbmVersion[0]} -> ${dbInfo.dbmVersion[1]} <br/> ${DateUtils.getLocalizedSDF_noZ().format(dbInfo.dbmVersion[2])}</td>
+            </tr>
+            <tr>
+                <g:if test="${! dbInfo.dbmUpdateOnStart}">
                     <td class="table-td-yoda-red">DBM updateOnStart</td>
-                    <td class="table-td-yoda-red">${ConfigMapper.getPluginConfig('databasemigration.updateOnStart', Boolean)}</td>
+                    <td colspan="2" class="table-td-yoda-red">${dbInfo.dbmUpdateOnStart}</td>
                 </g:if>
                 <g:else>
                     <td>DBM updateOnStart</td>
-                    <td>${ConfigMapper.getPluginConfig('databasemigration.updateOnStart', Boolean)}</td>
+                    <td colspan="2">${dbInfo.dbmUpdateOnStart}</td>
                 </g:else>
             </tr>
             <tr>
-                <td>Collations</td><td>
+                <td>Collations</td>
+                <td>
                 <%
-                    Set collations = []
+                    Set collations = [dbInfo.default.defaultCollate]
                     DatabaseInfo.getAllTablesCollationInfo().each { it ->
                         List c = it.value['collation'].findAll()
                         if (! c.isEmpty()) { collations.addAll(c) }
                     }
                     collations.each { print it + '<br/>' }
                 %>
-            </td></tr>
-            <tr><td>Postgresql server</td><td> ${DatabaseInfo.getServerInfo()}</td></tr>
+                <td>
+                    <%
+                        collations = [dbInfo.storage.defaultCollate]
+                        DatabaseInfo.getAllTablesCollationInfo( DatabaseInfo.DATASOURCE_STORAGE ).each { it ->
+                            List c = it.value['collation'].findAll()
+                            if (! c.isEmpty()) { collations.addAll(c) }
+                        }
+                        collations.each { print it + '<br/>' }
+                    %>
+                </td>
+            </tr>
+            <tr>
+                <td>Postgresql server</td>
+                <td>${DatabaseInfo.getServerInfo()}</td>
+                <td>${DatabaseInfo.getServerInfo(DatabaseInfo.DATASOURCE_STORAGE)}</td>
+            </tr>
         <tbody>
     </table>
 
