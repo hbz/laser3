@@ -67,7 +67,9 @@ class PackageController {
             redirect controller: 'package', action: 'list'
             return
         }
-        Map<String, Object> result = [:]
+        Map<String, Object> result = [
+                flagContentGokb : true // gokbService.queryElasticsearch
+        ]
         result.user = contextService.getUser()
         SwissKnife.setPaginationParams(result, params, result.user)
 
@@ -445,6 +447,7 @@ class PackageController {
             result.packageInstanceRecord = records ? records[0] : [:]
         }
 
+        result.flagContentGokb = true // gokbService.queryElasticsearch
         result
     }
 

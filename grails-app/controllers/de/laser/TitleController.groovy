@@ -1,10 +1,7 @@
 package de.laser
 
 import de.laser.annotations.Check404
-import de.laser.utils.SwissKnife
 import de.laser.titles.TitleHistoryEvent
-import de.laser.titles.TitleInstance
-import de.laser.auth.User
 
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
@@ -82,6 +79,7 @@ class TitleController  {
             result.filterSet = true
         }
 
+        result.flagContentElasticsearch = true // ESSearchService.search
         result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
         result
     }

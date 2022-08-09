@@ -609,7 +609,11 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     Map<String, Object> manageStatsSources() {
         Set<Platform> platforms = Platform.executeQuery('select p from LaserStatsCursor lsc join lsc.platform p join p.org o where p.org is not null order by o.name, o.sortname, p.name') as Set<Platform>
-        Map<String, Object> result = [platforms: platforms, platformInstanceRecords: [:]]
+        Map<String, Object> result = [
+                platforms: platforms,
+                platformInstanceRecords: [:],
+                flagContentGokb : true // gokbService.queryElasticsearch
+        ]
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         platforms.each { Platform platformInstance ->
             Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/find?uuid=${platformInstance.gokbId}")

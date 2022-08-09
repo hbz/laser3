@@ -197,11 +197,6 @@ war {
             '**/groovy-groovydoc-*.jar'
     )
 }
-/*
-seems not to be necessary any more - if enabled, dbm-gorm-diff cannot be executed on Windows machines
-grails {
-    pathingJar = true // windows - command line limitation
-}*/
 
 // ---[ plugin: asset pipeline ]---
 

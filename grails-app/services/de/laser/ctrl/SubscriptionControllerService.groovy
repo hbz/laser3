@@ -346,6 +346,8 @@ class SubscriptionControllerService {
      */
     Map<String, Object> stats(GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
+        result.flagContentGokb = true // gokbService.queryElasticsearch
+
         SwissKnife.setPaginationParams(result, params, result.user)
         if(!result)
             [result: null, status: STATUS_ERROR]
@@ -1583,6 +1585,8 @@ class SubscriptionControllerService {
             String order = params.order ? "&order="+params.order: "&order=asc"
             String max = params.max ? "&max=${params.max}": "&max=${result.max}"
             String offset = params.offset ? "&offset=${params.offset}": "&offset=${result.offset}"
+
+            result.flagContentGokb = true // gokbService.queryElasticsearch
 
             Map queryCuratoryGroups = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+'/groups')
             if(queryCuratoryGroups.error && queryCuratoryGroups.error == 404) {

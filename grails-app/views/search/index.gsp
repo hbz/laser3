@@ -168,12 +168,7 @@
     </g:form>
 </div>
 
-
-
 <g:if test="${hits}">
-
-
-
         <br />
         <div class="ui stackable grid">
             <div class="four wide column">

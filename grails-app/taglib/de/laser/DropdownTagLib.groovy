@@ -194,7 +194,7 @@ class DropdownTagLib {
 
         attrs.from.eachWithIndex { el, i ->
             out << '<div class="item" data-value="' + (optionKey ? optionKey(el) : '') + '">'
-            out << optionValue ? optionValue(el).toString().encodeAsHTML() : '?'
+            out <<  optionValue(el).toString().encodeAsHTML()
 
             def tenant = el.hasProperty('tenant') ? el.tenant : null
             def owner  = el.hasProperty('owner') ? el.owner : null
