@@ -236,7 +236,7 @@
         </div>
     </g:if>
 
-    <h2 class="ui header">Nutzung (schnelle Berechnung)</h2>
+    <h2 class="ui header">Nutzung (ungefähre/schnelle Berechnung)</h2>
 
     <table class="ui celled la-js-responsive-table la-table table la-hover-table compact">
         <thead>
