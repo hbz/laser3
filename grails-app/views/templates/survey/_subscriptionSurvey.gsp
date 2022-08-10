@@ -546,10 +546,8 @@
             if(!subscribedPlatforms) {
                 subscribedPlatforms = Platform.executeQuery("select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription", [subscription: subscription])
             }
-            Set<Long> reportingInstitutions = []
-            reportingInstitutions.addAll(Subscription.executeQuery('select oo.org.id from OrgRole oo join oo.sub s where s.instanceOf = :subscription and oo.roleType in (:roleTypes)', [subscription: subscription, roleTypes: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]))
         %>
-        <g:if test="${subscription && subscribedPlatforms && subscriptionService.areStatsAvailable(subscribedPlatforms, subscription.packages.collect { SubscriptionPackage sp -> sp.pkg.id }, reportingInstitutions)}">
+        <g:if test="${subscription && subscribedPlatforms && subscriptionService.areStatsAvailable(subscribedPlatforms, subscription.packages.collect { SubscriptionPackage sp -> sp.pkg.id }, [subscription.getSubscriber().id])}">
             <div class="ui card">
                 <div class="content">
                     <div id="statsInfos" class="ui accordion la-accordion-showMore js-subscription-info-accordion">
