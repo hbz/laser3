@@ -41,9 +41,6 @@ class IssueEntitlement extends AbstractBase implements Comparable {
     String name
     String sortname
 
-    @Deprecated
-    String ieReason
-
     Subscription perpetualAccessBySub
 
     //merged as the difference between an IssueEntitlement and a TIPP is mainly former's attachment to a subscription, otherwise, they are functionally identical, even dependent upon each other. So why keep different refdata categories?
@@ -97,7 +94,6 @@ class IssueEntitlement extends AbstractBase implements Comparable {
             status column:'ie_status_rv_fk', index: 'ie_status_idx'
       subscription column:'ie_subscription_fk', index: 'ie_sub_idx, ie_sub_tipp_idx'
               tipp column:'ie_tipp_fk',         index: 'ie_tipp_idx, ie_sub_tipp_idx'
-          ieReason column:'ie_reason'
         perpetualAccessBySub column:'ie_perpetual_access_by_sub_fk'
             medium column:'ie_medium_rv_fk', index: 'ie_medium_idx'
     accessStartDate column:'ie_access_start_date'
@@ -113,7 +109,6 @@ class IssueEntitlement extends AbstractBase implements Comparable {
     static constraints = {
         globalUID      (nullable:true, blank:false, unique:true, maxSize:255)
         status         (nullable:true)
-        ieReason       (nullable:true, blank:true)
         name           (nullable:true)
         sortname       (nullable:true)
         medium         (nullable:true)

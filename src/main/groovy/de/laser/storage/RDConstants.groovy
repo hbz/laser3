@@ -172,7 +172,6 @@ class RDConstants {
     public static final String TRANSFORM_FORMAT       = 'transform.format'
     public static final String TRANSFORM_TYPE         = 'transform.type'
 
-    public static final String USAGE_STATUS               = 'usage.status'
     public static final String USER_SETTING_DASHBOARD_TAB = 'user.setting.dashboard.tab'
     public static final String USER_SETTING_THEME         = 'user.setting.theme'
 
