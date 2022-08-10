@@ -53,13 +53,13 @@ class BootStrapService {
 
         log.info('--------------------------------------------------------------------------------')
 
-        log.info("SystemId:  ${ConfigMapper.getLaserSystemId()}")
-        log.info("Version:   ${AppUtils.getMeta('info.app.version')}")
-        log.info("Server:    ${AppUtils.getCurrentServer()} @ ${ConfigMapper.getGrailsServerURL()}")
-        log.info("Database:  ${ConfigMapper.getConfig('dataSource.url', String)}")
-        log.info("Database datasource dbCreate: ${ConfigMapper.getConfig('dataSource.dbCreate', String)}")
+        log.info("SystemId:      ${ConfigMapper.getLaserSystemId()}")
+        log.info("Version:       ${AppUtils.getMeta('info.app.version')}")
+        log.info("Server:        ${AppUtils.getCurrentServer()} @ ${ConfigMapper.getGrailsServerURL()}")
+        log.info("Database #1:   ${ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_DEFAULT + '.url', String)} ;  dbCreate: ${ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_DEFAULT + '.dbCreate', String)}")
+        log.info("Database #2:   ${ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_STORAGE + '.url', String)} ;  dbCreate: ${ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_STORAGE + '.dbCreate', String)}")
         log.info("Database migration plugin updateOnStart: ${ConfigMapper.getPluginConfig('databasemigration.updateOnStart', Boolean)}")
-        log.info("Documents: ${ConfigMapper.getDocumentStorageLocation()}")
+        log.info("Documents:     ${ConfigMapper.getDocumentStorageLocation()}")
 
         String dsp = cacheService.getDiskStorePath()
         if (dsp) {

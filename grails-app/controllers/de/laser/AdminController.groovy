@@ -30,7 +30,6 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import grails.plugins.mail.MailService
 import groovy.sql.Sql
-import org.hibernate.Session
 import org.hibernate.SessionFactory
 import org.hibernate.query.NativeQuery
 import org.springframework.web.multipart.commons.CommonsMultipartFile
@@ -69,14 +68,20 @@ class AdminController  {
     @Secured(['ROLE_ADMIN'])
     @Transactional
     def index() {
-        List dbmQuery = (sessionFactory.currentSession.createSQLQuery(
-                'SELECT filename, id, dateexecuted from databasechangelog order by orderexecuted desc limit 1'
-        )).list()
 
         Map<String, Object> result = [
-                dbmVersion  : dbmQuery.size() > 0 ? dbmQuery.first() : ['unkown', 'unkown', 'unkown'],
-                events      : SystemEvent.list([max: 10, sort: 'created', order: 'desc']),
-                docStore    : AppUtils.getDocumentStorageInfo()
+            database: [
+                default: [
+                    dbName     : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_DEFAULT + '.url', String).split('/').last(),
+                    dbmVersion : GlobalService.obtainSqlConnection().firstRow('SELECT filename, id, dateexecuted from databasechangelog order by orderexecuted desc limit 1').collect { it.value }
+                ],
+                storage: [
+                    dbName     : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_STORAGE + '.url', String).split('/').last(),
+                    dbmVersion : GlobalService.obtainStorageSqlConnection().firstRow('SELECT filename, id, dateexecuted from databasechangelog order by orderexecuted desc limit 1').collect { it.value }
+                ]
+            ],
+            events      : SystemEvent.list([max: 10, sort: 'created', order: 'desc']),
+            docStore    : AppUtils.getDocumentStorageInfo()
         ]
 
         result
@@ -582,23 +587,37 @@ class AdminController  {
 
     @Secured(['ROLE_ADMIN'])
     def databaseInfo() {
-        Map<String, Object> result = [:]
 
-        Session hibSess = sessionFactory.currentSession
-        List dbmQuery = (hibSess.createSQLQuery(
-                'SELECT filename, id, dateexecuted from databasechangelog order by orderexecuted desc limit 1'
-        )).list()
-        result.dbmVersion       = dbmQuery.size() > 0 ? dbmQuery.first() : ['unkown', 'unkown', 'unkown']
+        Map<String, Object> result = [
+            dbmUpdateOnStart : ConfigMapper.getPluginConfig('databasemigration.updateOnStart', Boolean),
 
-        result.defaultCollate   = DatabaseInfo.getDatabaseCollate()
-        result.dbConflicts      = DatabaseInfo.getDatabaseConflicts()
-        result.dbSize           = DatabaseInfo.getDatabaseSize()
-        result.dbStatistics     = DatabaseInfo.getDatabaseStatistics()
-        result.dbActivity       = DatabaseInfo.getDatabaseActivity()
-        result.dbUserFunctions  = DatabaseInfo.getDatabaseUserFunctions()
-        result.dbTableUsage     = DatabaseInfo.getAllTablesUsageInfo()
+            default: [
+                    dbName           : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_DEFAULT + '.url', String).split('/').last(),
+                    dbmDbCreate      : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_DEFAULT + '.dbCreate', String),
+                    defaultCollate   : DatabaseInfo.getDatabaseCollate(),
+                    dbConflicts      : DatabaseInfo.getDatabaseConflicts(),
+                    dbSize           : DatabaseInfo.getDatabaseSize(),
+                    dbStatistics     : DatabaseInfo.getDatabaseStatistics(),
+                    dbActivity       : DatabaseInfo.getDatabaseActivity(),
+                    dbUserFunctions  : DatabaseInfo.getDatabaseUserFunctions(),
+                    dbTableUsage     : DatabaseInfo.getAllTablesUsageInfo(),
+                    dbmVersion       : GlobalService.obtainSqlConnection().firstRow('SELECT filename, id, dateexecuted from databasechangelog order by orderexecuted desc limit 1').collect { it.value }
+            ],
+            storage: [
+                    dbName           : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_STORAGE + '.url', String).split('/').last(), // TODO
+                    dbmDbCreate      : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_STORAGE + '.dbCreate', String), // TODO
+                    defaultCollate   : DatabaseInfo.getDatabaseCollate( DatabaseInfo.DS_STORAGE ),
+                    dbConflicts      : DatabaseInfo.getDatabaseConflicts( DatabaseInfo.DS_STORAGE ),
+                    dbSize           : DatabaseInfo.getDatabaseSize( DatabaseInfo.DS_STORAGE ),
+                    dbStatistics     : DatabaseInfo.getDatabaseStatistics( DatabaseInfo.DS_STORAGE ),
+                    dbActivity       : DatabaseInfo.getDatabaseActivity( DatabaseInfo.DS_STORAGE ),
+                    dbUserFunctions  : DatabaseInfo.getDatabaseUserFunctions( DatabaseInfo.DS_STORAGE ),
+                    dbTableUsage     : DatabaseInfo.getAllTablesUsageInfo( DatabaseInfo.DS_STORAGE ),
+                    dbmVersion       : GlobalService.obtainStorageSqlConnection().firstRow('SELECT filename, id, dateexecuted from databasechangelog order by orderexecuted desc limit 1').collect { it.value }
+            ]
+        ]
 
-        result
+        [dbInfo: result]
     }
 
     /**
@@ -1461,10 +1480,22 @@ SELECT * FROM (
                 ]
         result.ftcInfos = FTControl.list()
 
-        List dbmQuery = (sessionFactory.currentSession.createSQLQuery(
-                'SELECT filename, id, dateexecuted from databasechangelog order by orderexecuted desc limit 1'
-        )).list()
-        result.dbmVersion = dbmQuery.size() > 0 ? dbmQuery.first() : ['unkown', 'unkown', 'unkown']
+        result.dbInfo = [
+                dbmUpdateOnStart : ConfigMapper.getPluginConfig('databasemigration.updateOnStart', Boolean),
+
+                default: [
+                        dbName           : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_DEFAULT + '.url', String).split('/').last(),
+                        dbmDbCreate      : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_DEFAULT + '.dbCreate', String),
+                        defaultCollate   : DatabaseInfo.getDatabaseCollate(),
+                        dbmVersion       : GlobalService.obtainSqlConnection().firstRow('SELECT filename, id, dateexecuted from databasechangelog order by orderexecuted desc limit 1').collect { it.value }
+                ],
+                storage: [
+                        dbName           : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_STORAGE + '.url', String).split('/').last(), // TODO
+                        dbmDbCreate      : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_STORAGE + '.dbCreate', String), // TODO
+                        defaultCollate   : DatabaseInfo.getDatabaseCollate( DatabaseInfo.DS_STORAGE ),
+                        dbmVersion       : GlobalService.obtainStorageSqlConnection().firstRow('SELECT filename, id, dateexecuted from databasechangelog order by orderexecuted desc limit 1').collect { it.value }
+                ]
+        ]
 
         result
     }

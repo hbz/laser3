@@ -50,8 +50,8 @@ class BeanStore {
     static DataSource getDataSource() {
         Holders.grailsApplication.mainContext.getBean('dataSource') as DataSource
     }
-    static DataSource getStatsDataSource() {
-        Holders.grailsApplication.mainContext.getBean('dataSource_stats') as DataSource
+    static DataSource getStorageDataSource() {
+        Holders.grailsApplication.mainContext.getBean('dataSource_storage') as DataSource
     }
     static PageRenderer getGroovyPageRenderer() {
         Holders.grailsApplication.mainContext.getBean('groovyPageRenderer') as PageRenderer

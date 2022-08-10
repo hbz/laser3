@@ -22,10 +22,10 @@ grails:
         params:
             exclude:
                 - password
-    transaction:
-        chainedTransactionManagerPostProcessor:
-            enabled: true
-            blacklistPattern: '.*'
+#    transaction:
+#        chainedTransactionManagerPostProcessor:
+#            enabled: true
+#            blacklistPattern: '.*'
 
 info:
     app:
@@ -148,9 +148,9 @@ grails:
             changelogFileName: 'changelog.groovy'
             dbDocController:
                 enabled: false
-            stats:
+            storage:
                 updateOnStart: true
-                changelogFileName: 'changelog-stats.groovy'
+                changelogFileName: 'changelog-storage.groovy'
         wkhtmltopdf:
             binary: '/usr/bin/wkhtmltopdf'
         springsecurity:
@@ -244,12 +244,9 @@ dataSource:
         jdbcInterceptors: ConnectionState
         defaultTransactionIsolation: java.sql.Connection.TRANSACTION_READ_COMMITTED
 dataSources:
-    stats:
+    storage:
         username: laser
         password: laser
-        autoReconnect: true
-        driverClassName: org.postgresql.Driver
-        dialect: org.hibernate.dialect.PostgreSQLDialect
 
 environments:
     development:
@@ -257,22 +254,22 @@ environments:
             dbCreate: none #create-drop
             url: jdbc:postgresql://localhost:5432/laser3
         dataSources:
-            stats:
-                dbCreate: none
-                url: jdbc:postgresql://localhost:5432/stats
+            storage:
+                dbCreate: none #create-drop
+                url: jdbc:postgresql://localhost:5432/laser3_storage
     test:
         dataSource:
             dbCreate: none #update
             url: jdbc:postgresql://localhost:5432/laser3
         dataSources:
-            stats:
-                dbCreate: none
-                url: jdbc:postgresql://localhost:5432/stats
+            storage:
+                dbCreate: none #create-drop
+                url: jdbc:postgresql://localhost:5432/laser3_storage
     production:
         dataSource:
             dbCreate: none
             url: jdbc:postgresql://localhost:5432/laser3
         dataSources:
-            stats:
-                dbCreate: none
-                url: jdbc:postgresql://localhost:5432/stats
+            storage:
+                dbCreate: none #create-drop
+                url: jdbc:postgresql://localhost:5432/laser3_storage

@@ -21,7 +21,10 @@ aggr_es_indices = [
 dataSource.url      = 'jdbc:postgresql://localhost:5432/laser'
 dataSource.username = 'laser'
 dataSource.password = 'laser'
-dataSource.dbCreate = 'none'
+
+dataSources.storage.url      = 'jdbc:postgresql://localhost:5432/laser_storage'
+dataSources.storage.username = 'laser'
+dataSources.storage.password = 'laser'
 
 deployBackupLocation 	= '/tmp/laserDeployBackups'    // database backups (before deploys)
 documentStorageLocation = '/tmp/laserDocumentStorage'  // uploaded documents

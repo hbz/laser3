@@ -1,6 +1,6 @@
 databaseChangeLog = {
 
-    changeSet(author: "kloberd (generated)", id: "changelog") {}
+    changeSet(author: "kloberd (generated)", id: "laser") {}
 
     include file: 'changelogs/2022-02-07.groovy'
     include file: 'changelogs/2022-02-09.groovy'
