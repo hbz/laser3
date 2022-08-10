@@ -1796,11 +1796,11 @@ class SubscriptionService {
                 [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE])
     }
 
-    boolean areStatsAvailable(Collection<Platform> subscribedPlatforms, Collection<Long> refSubs) {
-        Map<String, Object> checkParams = [max: 1, plat: subscribedPlatforms, refSubs: refSubs]
-        int result = Counter4Report.executeQuery('select c4r.id from Counter4Report c4r join c4r.title tipp where c4r.platform in (:plat) and tipp.pkg in (select sp.pkg from SubscriptionPackage sp where sp.subscription.id in (:refSubs))', checkParams).size()
+    boolean areStatsAvailable(Collection<Platform> subscribedPlatforms, Collection<Long> refPkgs, Collection<Long> reportInstitutions) {
+        Map<String, Object> checkParams = [max: 1, plat: subscribedPlatforms, refPkgs: refPkgs, reportInstitutions: reportInstitutions]
+        int result = Counter4Report.executeQuery('select c4r.id from Counter4Report c4r join c4r.title tipp where c4r.platform in (:plat) and tipp.pkg.id in (:refPkgs) and c4r.reportInstitution.id in (:reportInstitutions)', checkParams).size()
         if(result == 0)
-            result = Counter5Report.executeQuery('select c5r.id from Counter5Report c5r join c5r.title tipp where c5r.platform in (:plat) and tipp.pkg in (select sp.pkg from SubscriptionPackage sp where sp.subscription.id in (:refSubs))', checkParams).size()
+            result = Counter5Report.executeQuery('select c5r.id from Counter5Report c5r join c5r.title tipp where c5r.platform in (:plat) and tipp.pkg.id in (:refPkgs) and c5r.reportInstitution.id in (:reportInstitutions)', checkParams).size()
         result > 0
     }
 

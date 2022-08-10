@@ -970,7 +970,10 @@ class OrganisationController  {
                     query += " and platform.id = :platform"
                     queryParams.platform = params.long("ciPlatform")
                 }
-                String sort = " order by platform.name asc"
+                String sort = " order by platform.org.name asc"
+                if(params.sort) {
+                    sort = " order by ${params.sort} ${params.order}"
+                }
                 if (SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')) {
                     result.customerIdentifier = CustomerIdentifier.executeQuery(query+sort, queryParams)
                 } else if (inContextOrg) {
