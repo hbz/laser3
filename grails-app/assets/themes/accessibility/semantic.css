@@ -22227,6 +22227,11 @@ legend {
 .ui.form .fields .field.la-more-margin {
   margin: 0 0 2em;
 }
+
+.la-textarea-resize-vertical {
+  resize: vertical!important;
+  /* user can resize vertically, but width is fixed */
+}
 /*!
  * # Semantic UI 2.4.2 - Grid
  * http://github.com/semantic-org/semantic-ui/
