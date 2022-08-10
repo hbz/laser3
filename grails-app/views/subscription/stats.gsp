@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.storage.RDStore; de.laser.Subscription; de.laser.IssueEntitlement; de.laser.stats.Counter4ApiSource; de.laser.stats.Counter4Report; de.laser.stats.Counter5Report" %>
+<%@ page import="de.laser.utils.DateUtils; de.laser.storage.RDStore; de.laser.Subscription; de.laser.SubscriptionPackage; de.laser.IssueEntitlement; de.laser.stats.Counter4ApiSource; de.laser.stats.Counter4Report; de.laser.stats.Counter5Report" %>
 <laser:htmlStart message="subscription.details.stats.label" serviceInjection="true"/>
 
 <g:set var="subjects" value="${controlledListService.getAllPossibleSubjectsBySub(subscription)}"/>
@@ -65,7 +65,7 @@
                         <tr>
                             <td>
                                 <g:link action="stats" id="${row.memberSubId}">${row.memberName}
-                                    <g:if test="${subscriptionService.areStatsAvailable(subscribedPlatforms, [row.memberSubId, subscription.id])}">
+                                    <g:if test="${subscriptionService.areStatsAvailable(subscribedPlatforms, subscription.packages.collect { SubscriptionPackage sp -> sp.pkg.id }, [row.memberId])}">
                                         <span class="la-popup-tooltip la-delay" data-content="${message(code: 'default.usage.statsAvailable')}"><i class="chart bar outline icon"></i></span>
                                     </g:if>
                                 </g:link>

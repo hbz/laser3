@@ -7,7 +7,7 @@
         </div>
         <div class="field">
             <label for="content">${message(code:'default.note.label')}:</label>
-            <textarea id="content" name="content">${noteInstance?.content}</textarea>
+            <textarea id="content" class="la-textarea-resize-vertical" name="content">${noteInstance?.content}</textarea>
         </div>
     </g:form>
 </ui:modal>

@@ -57,7 +57,7 @@
         <div class="field ">
             <label>${message(code: 'surveyInfo.comment.label')}</label>
 
-            <textarea name="comment">${params.comment}</textarea>
+            <textarea class="la-textarea-resize-vertical" name="comment">${params.comment}</textarea>
         </div>
 
         <input type="submit" class="ui button"
