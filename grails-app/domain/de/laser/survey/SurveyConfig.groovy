@@ -303,9 +303,9 @@ class SurveyConfig {
 
         SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(this, org)
 
-        if(surveyOrg.finishDate){
+        if (surveyOrg?.finishDate){
             return true
-        }else  if (this.subSurveyUseForTransfer && surveyOrg && surveyOrg.existsMultiYearTerm()) {
+        }else if (this.subSurveyUseForTransfer && surveyOrg?.existsMultiYearTerm()) {
             return true
         } else {
            return false
