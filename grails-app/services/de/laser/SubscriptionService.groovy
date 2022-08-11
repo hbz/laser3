@@ -1272,7 +1272,7 @@ class SubscriptionService {
                     tipp: tipp,
                     name: tipp.name,
                     medium: tipp.medium,
-                    ieReason: 'Manually Added by User',
+                    // ieReason: 'Manually Added by User',
                     acceptStatus: acceptStatus)
             new_ie.generateSortTitle()
 
@@ -1632,7 +1632,7 @@ class SubscriptionService {
                     tipp: tipp,
                     name: tipp.name,
                     medium: tipp.medium,
-                    ieReason: 'Manually Added by User',
+                    // ieReason: 'Manually Added by User',
                     acceptStatus: acceptStatus)
             new_ie.generateSortTitle()
 
