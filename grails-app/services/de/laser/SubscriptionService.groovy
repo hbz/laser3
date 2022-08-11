@@ -1792,18 +1792,17 @@ class SubscriptionService {
                 [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE])
     }
 
-    boolean areStatsAvailable(Collection<Platform> subscribedPlatforms, Collection<Long> refSubs) {
+    boolean areStatsAvailable(Collection<Platform> subscribedPlatforms, Collection<Long> refPkgs, Collection<Long> reportInstitutions) {
         //withTransaction necessary because of different dataSource, cf. https://github.com/grails/grails-core/issues/10383
-        Long contextOrgId = contextService.getOrg().id
-        Set<Long> titleKeysInPackage = TitleInstancePackagePlatform.executeQuery('select tipp.id from TitleInstancePackagePlatform tipp where tipp.pkg in (select sp.pkg from SubscriptionPackage sp where sp.subscription.id in (:refSubs)) and tipp.status != :removed', [removed: RDStore.TIPP_STATUS_REMOVED, refSubs: refSubs])
+        Set<Long> titleKeysInPackage = TitleInstancePackagePlatform.executeQuery('select tipp.id from TitleInstancePackagePlatform tipp where tipp.pkg in (select sp.pkg from SubscriptionPackage sp where sp.pkg.id in (:refPkgs)) and tipp.status != :removed', [removed: RDStore.TIPP_STATUS_REMOVED, refPkgs: refPkgs])
         int result = 0
         Counter4Report.withTransaction {
-            Map<String, Object> checkParams = [plat: subscribedPlatforms.collect { Platform plat -> plat.id }, reportInstitution: contextOrgId]
-            Set<Long> titleKeys = Counter4Report.executeQuery('select c4r.titleId from Counter4Report c4r where c4r.platformId in (:plat) and c4r.reportInstitutionId = :reportInstitution', checkParams)
+            Map<String, Object> checkParams = [plat: subscribedPlatforms.collect { Platform plat -> plat.id }, reportInstitutions: reportInstitutions]
+            Set<Long> titleKeys = Counter4Report.executeQuery('select c4r.titleId from Counter4Report c4r where c4r.platformId in (:plat) and c4r.reportInstitutionId in (:reportInstitutions)', checkParams)
             Set<Long> intersection = titleKeysInPackage.intersect(titleKeys)
             result = intersection.size()
             if(result == 0) {
-                titleKeys = Counter5Report.executeQuery('select c5r.titleId from Counter5Report c5r where c5r.platformId in (:plat) and c5r.reportInstitutionId = :reportInstitution', checkParams)
+                titleKeys = Counter5Report.executeQuery('select c5r.titleId from Counter5Report c5r where c5r.platformId in (:plat) and c5r.reportInstitutionId in (:reportInstitutions)', checkParams)
                 intersection = titleKeysInPackage.intersect(titleKeys)
                 result = intersection.size()
             }

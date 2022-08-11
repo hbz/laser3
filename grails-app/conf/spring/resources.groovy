@@ -86,7 +86,7 @@ beans = {
     // .. ]
 
     //workaround for multi datasource bug, see https://github.com/grails/grails-database-migration/issues/157 (the PR is still open!)
-    springConfig.addAlias('sessionFactory_dataSource_stats', 'sessionFactory_stats')
-    springConfig.addAlias('transactionManager_dataSource_stats', 'transactionManager_stats')
+    springConfig.addAlias('sessionFactory_dataSource_storage', 'sessionFactory_storage')
+    springConfig.addAlias('transactionManager_dataSource_storage', 'transactionManager_storage')
 
 }

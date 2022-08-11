@@ -244,7 +244,7 @@ class StatsSyncService {
                                         break
                                 }
                                 if(add) {
-                                    c4SushiSources.add(c4as)
+                                    //c4SushiSources.add(c4as)
                                 }
                             }
                             json.counter5ApiSources.each { c5as ->
@@ -302,7 +302,7 @@ class StatsSyncService {
                     if(keyPairs) {
                         GParsPool.withPool(THREAD_POOL_SIZE) { pool ->
                             keyPairs.eachWithIndexParallel { Map keyPair, int i ->
-                                Sql sql = GlobalService.obtainSqlConnection(), statsSql = GlobalService.obtainStatsConnection()
+                                Sql sql = GlobalService.obtainSqlConnection(), statsSql = GlobalService.obtainStorageSqlConnection()
                                 //TitleInstancePackagePlatform.withNewSession {
                                 sql.withTransaction {
                                     List laserStatsCursor = sql.rows("select lsc_latest_from_date, lsc_latest_to_date, lsc_report_id from laser_stats_cursor where lsc_platform_fk = :platform and lsc_customer_fk = :customer", [platform: c4asPlatform.id, customer: keyPair.customerId])
@@ -411,7 +411,7 @@ class StatsSyncService {
                     if(keyPairs) {
                         GParsPool.withPool(THREAD_POOL_SIZE) { pool ->
                             keyPairs.eachWithIndexParallel { Map<String, Object> keyPair, int i ->
-                                Sql sql = GlobalService.obtainSqlConnection(), statsSql = GlobalService.obtainStatsConnection()
+                                Sql sql = GlobalService.obtainSqlConnection(), statsSql = GlobalService.obtainStorageSqlConnection()
                                 sql.withTransaction {
                                     List laserStatsCursor = sql.rows("select lsc_latest_from_date, lsc_latest_to_date,lsc_report_id from laser_stats_cursor where lsc_platform_fk = :platform and lsc_customer_fk = :customer", [platform: c5asPlatform.id, customer: keyPair.customerId])
                                     boolean onlyNewest = laserStatsCursor ? incremental : false

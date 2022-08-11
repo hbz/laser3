@@ -102,13 +102,13 @@ class Counter5Report extends AbstractReport {
     String accessMethod
 
     static mapping = {
-        datasource          'stats'
+        datasource          'storage'
         id                  column: 'c5r_id'
         version             column: 'c5r_version'
-        //title               column: 'c5r_title_fk', index: 'c5r_title_idx, c5r_report_when_idx'
+        titleId             column: 'c5r_title_fk', index: 'c5r_title_idx, c5r_report_when_idx'
         publisher           column: 'c5r_publisher', type: 'text'
-        //platform            column: 'c5r_platform_fk', index: 'c5r_plat_idx'
-        //reportInstitution   column: 'c5r_report_institution_fk', index: 'c5r_ri_idx, c5r_report_when_idx'
+        platformId          column: 'c5r_platform_fk', index: 'c5r_plat_idx'
+        reportInstitutionId column: 'c5r_report_institution_fk', index: 'c5r_ri_idx, c5r_report_when_idx'
         reportType          column: 'c5r_report_type', index: 'c5r_rt_idx, c5r_report_when_idx'
         accessType          column: 'c5r_access_type', index: 'c5r_access_type_idx'
         accessMethod        column: 'c5r_access_method', index: 'c5r_access_method_idx'
@@ -119,8 +119,8 @@ class Counter5Report extends AbstractReport {
     }
 
     static constraints = {
-        title               (nullable: true) //because of platform reports!
-        publisher           (nullable: true, blank: false) //because of platform reports!
+        titleId             (nullable: true) //because of platform reports!
+        publisherId         (nullable: true, blank: false) //because of platform reports!
         accessType          (nullable: true, blank: false)
         accessMethod        (nullable: true, blank: false)
         title(unique: ['platform', 'reportInstitution', 'metricType', 'reportFrom', 'reportTo', 'reportType'])

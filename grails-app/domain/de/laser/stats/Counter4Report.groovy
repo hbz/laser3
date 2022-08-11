@@ -66,7 +66,7 @@ class Counter4Report extends AbstractReport {
     String category
 
     static mapping = {
-        datasource          'stats'
+        datasource          'storage'
         id                  column: 'c4r_id'
         version             column: 'c4r_version'
         titleId             column: 'c4r_title_fk', index: 'c4r_title_idx, c4r_report_when_idx'
@@ -82,8 +82,8 @@ class Counter4Report extends AbstractReport {
     }
 
     static constraints = {
-        title               (nullable: true) //because of platform reports!
-        publisher           (nullable: true) //because of platform reports!
+        titleId             (nullable: true) //because of platform reports!
+        publisherId         (nullable: true) //because of platform reports!
         title(unique: ['reportType', 'platform', 'reportInstitution', 'metricType', 'reportFrom', 'reportTo'])
     }
 

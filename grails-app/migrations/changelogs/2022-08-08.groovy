@@ -123,6 +123,10 @@ databaseChangeLog = {
             column(name: "c4r_report_to")
 
             column(name: "c4r_report_type")
+
+            column(name: "c4r_title_fk")
+
+            column(name: "c4r_report_institution_fk")
         }
     }
 
@@ -171,6 +175,10 @@ databaseChangeLog = {
             column(name: "c5r_report_to")
 
             column(name: "c5r_report_type")
+
+            column(name: "c5r_title_fk")
+
+            column(name: "c5r_report_institution_fk")
         }
     }
 
@@ -186,6 +194,42 @@ databaseChangeLog = {
 
     changeSet(author: "galffy (modified)", id: "1659944322270-16") {
         addUniqueConstraint(columnNames: "c5r_report_type, c5r_report_to, c5r_report_from, c5r_metric_type, c5r_report_institution_fk, c5r_platform_fk, c5r_title_fk", constraintName: "unique_counter_5_report", tableName: "counter5report")
+    }
+
+    changeSet(author: "galffy (hand-coded)", id: "1659944322270-17") {
+        createIndex(indexName: "c4r_title_idx", tableName: "counter4report") {
+            column(name: "c4r_title_fk")
+        }
+    }
+
+    changeSet(author: "galffy (hand-coded)", id: "1659944322270-18") {
+        createIndex(indexName: "c4r_plat_idx", tableName: "counter4report") {
+            column(name: "c4r_platform_fk")
+        }
+    }
+
+    changeSet(author: "galffy (hand-coded)", id: "1659944322270-19") {
+        createIndex(indexName: "c4r_ri_idx", tableName: "counter4report") {
+            column(name: "c4r_report_institution_fk")
+        }
+    }
+
+    changeSet(author: "galffy (hand-coded)", id: "1659944322270-20") {
+        createIndex(indexName: "c5r_title_idx", tableName: "counter5report") {
+            column(name: "c5r_title_fk")
+        }
+    }
+
+    changeSet(author: "galffy (hand-coded)", id: "1659944322270-21") {
+        createIndex(indexName: "c5r_plat_idx", tableName: "counter5report") {
+            column(name: "c5r_platform_fk")
+        }
+    }
+
+    changeSet(author: "galffy (hand-coded)", id: "1659944322270-22") {
+        createIndex(indexName: "c5r_ri_idx", tableName: "counter5report") {
+            column(name: "c5r_report_institution_fk")
+        }
     }
 
     /*
