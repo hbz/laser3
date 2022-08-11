@@ -109,9 +109,6 @@ class BootStrapService {
             log.debug("setIdentifierNamespace ..")
             setIdentifierNamespace()
 
-            log.debug("setupOnixPlRefdata .. deprecated")
-            setupOnixPlRefdata()
-
             if (AppUtils.getCurrentServer() == AppUtils.QA) {
                 log.debug("setupAdminUsers ..")
                 setupAdminUsers()
@@ -547,59 +544,6 @@ class BootStrapService {
         List pdList = getParsedCsvData( ConfigDefaults.SETUP_PROPERTY_DEFINITION_CSV )
         pdList.each { map ->
             PropertyDefinition.construct(map)
-        }
-    }
-
-    @Deprecated
-    void setupOnixPlRefdata() {
-
-        // Refdata values that need to be added to the database to allow ONIX-PL licenses to be compared properly. The code will
-        // add them to the DB if they don't already exist.
-        Map<String, List> refdatavalues = [
-                "User" : [ "Authorized User", "ExternalAcademic", "ExternalLibrarian", "ExternalStudent",
-                           "ExternalTeacher", "ExternalTeacherInCountryOfLicensee", "LibraryUserUnaffiliated", "Licensee",
-                           "LicenseeAlumnus", "LicenseeAuxiliary", "LicenseeContractor", "LicenseeContractorOrganization",
-                           "LicenseeContractorStaff", "LicenseeDistanceLearningStudent", "LicenseeExternalStudent", "LicenseeFaculty",
-                           "LicenseeInternalStudent", "LicenseeLibrary", "LicenseeLibraryStaff", "LicenseeNonFacultyStaff",
-                           "LicenseeResearcher", "LicenseeRetiredStaff", "LicenseeStaff", "LicenseeStudent", "LoansomeDocUser",
-                           "OtherTeacherOfAuthorizedUsers", "RegulatoryAuthority", "ResearchSponsor", "ThirdParty", "ThirdPartyLibrary",
-                           "ThirdPartyNonCommercialLibrary", "ThirdPartyOrganization", "ThirdPartyPerson", "WalkInUser" ],
-
-                "UsedResource" : ["AcademicPaper", "AcademicWork", "AcademicWorkIncludingLicensedContent",
-                                  "AcknowledgmentOfSource", "AuthoredContent", "AuthoredContentPeerReviewedCopy", "AuthorizedUserOwnWork",
-                                  "CatalogOrInformationSystem", "CombinedWorkIncludingLicensedContent", "CompleteArticle", "CompleteBook",
-                                  "CompleteChapter", "CompleteIssue", "CopyrightNotice", "CopyrightNoticesOrDisclaimers",
-                                  "CoursePackElectronic", "CoursePackPrinted", "CourseReserveElectronic", "CourseReservePrinted",
-                                  "DataFromLicensedContent", "DerivedWork", "DigitalInstructionalMaterial",
-                                  "DigitalInstructionalMaterialIncludingLicensedContent",
-                                  "DigitalInstructionalMaterialWithLinkToLicensedContent", "DownloadedLicensedContent",
-                                  "ImagesInLicensedContent", "LicensedContent", "LicensedContentBriefExcerpt", "LicensedContentMetadata",
-                                  "LicensedContentPart", "LicensedContentPartDigital", "LicensedContentPartPrinted", "LicenseeContent",
-                                  "LicenseeWebsite", "LinkToLicensedContent", "MaterialForPresentation", "PersonalPresentationMaterial",
-                                  "PrintedInstructionalMaterial", "SpecialNeedsInstructionalMaterial", "ThirdPartyWebsite",
-                                  "TrainingMaterial", "UserContent", "UserWebsite"]
-        ]
-
-        refdatavalues.each { String rdc, List<String> rdvList ->
-            rdvList.each { String rdv ->
-
-                Map<String, Object> map = [
-                        token   : rdv,
-                        rdc     : rdc,
-                        hardData: BOOTSTRAP,
-                        i10n    : [value_de: rdv, value_en: rdv]
-                ]
-
-                RefdataValue.construct(map)
-            }
-        }
-
-        List<String> usageStatusList = [
-                'UseForDataMining', 'InterpretedAsPermitted', 'InterpretedAsProhibited',
-                'Permitted', 'Prohibited', 'SilentUninterpreted', 'NotApplicable'
-        ]
-        usageStatusList.each { String token ->
-            RefdataValue.construct( [token: token, rdc: RDConstants.USAGE_STATUS, hardData: BOOTSTRAP, i10n:[value_de: token, value_en: token]] )
         }
     }
 
