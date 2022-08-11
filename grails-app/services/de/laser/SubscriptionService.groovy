@@ -15,7 +15,9 @@ import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
+import de.laser.stats.Counter4ApiSource
 import de.laser.stats.Counter4Report
+import de.laser.stats.Counter5ApiSource
 import de.laser.stats.Counter5Report
 import de.laser.titles.TitleInstance
 import grails.gorm.transactions.Transactional
@@ -1798,9 +1800,9 @@ class SubscriptionService {
 
     boolean areStatsAvailable(Collection<Platform> subscribedPlatforms, Collection<Long> refPkgs, Collection<Long> reportInstitutions) {
         Map<String, Object> checkParams = [max: 1, plat: subscribedPlatforms, refPkgs: refPkgs, reportInstitutions: reportInstitutions]
-        int result = Counter4Report.executeQuery('select c4r.id from Counter4Report c4r join c4r.title tipp where c4r.platform in (:plat) and tipp.pkg.id in (:refPkgs) and c4r.reportInstitution.id in (:reportInstitutions)', checkParams).size()
+        int result = Counter4Report.executeQuery('select c4r.id from Counter4Report c4r where c4r.platform in (:plat) and (exists(select tipp.id from TitleInstancePackagePlatform tipp where tipp.id = c4r.title.id and tipp.pkg.id in (:refPkgs)) or c4r.reportType in (:platformReports)) and c4r.reportInstitution.id in (:reportInstitutions)', checkParams+[platformReports: [Counter4ApiSource.PLATFORM_REPORT_1]]).size()
         if(result == 0)
-            result = Counter5Report.executeQuery('select c5r.id from Counter5Report c5r join c5r.title tipp where c5r.platform in (:plat) and tipp.pkg.id in (:refPkgs) and c5r.reportInstitution.id in (:reportInstitutions)', checkParams).size()
+            result = Counter5Report.executeQuery('select c5r.id from Counter5Report c5r where c5r.platform in (:plat) and (exists(select tipp.id from TitleInstancePackagePlatform tipp where tipp.id = c5r.title.id and tipp.pkg.id in (:refPkgs)) or c5r.reportType in (:platformReports)) and c5r.reportInstitution.id in (:reportInstitutions)', checkParams+[platformReports: [Counter5ApiSource.PLATFORM_MASTER_REPORT, Counter5ApiSource.PLATFORM_USAGE]]).size()
         result > 0
     }
 

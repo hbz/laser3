@@ -568,7 +568,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      * @return the {@link Org} linked as 'Subscription Consortia' to this subscription or null if none exists (this is the case for local subscriptions)
      */
     Org getConsortia() { // TODO getConsortium()
-        Org result = orgRelations.find { OrgRole oo -> oo.roleType == RDStore.OR_SUBSCRIPTION_CONSORTIA }?.org //null check necessary because of single users!
+        Org result = OrgRole.findByRoleTypeAndSub(RDStore.OR_SUBSCRIPTION_CONSORTIA, this)?.org //null check necessary because of single users!
         result
     }
 
