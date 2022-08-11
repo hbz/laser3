@@ -4,24 +4,24 @@
     <table class="ui celled la-js-responsive-table la-table table license-documents">
         <thead>
         <tr>
-            <%--<g:if test="${editable}"><th>${message(code:'default.select.label')}</th></g:if> : REMOVED BULK --%>
-            <th>${message(code:'title.label')}</th>
-            <th>${message(code:'default.note.label')}</th>
-            <th>${message(code:'default.date.label')}</th>
-            <th>${message(code:'default.actions.label')}</th>
+            <th class="ten wide">${message(code:'default.note.label')}</th>
+            <th class="two wide">${message(code:'default.lastUpdated.label')}</th>
+            <th class="two wide">${message(code:'default.dateCreated.label')}</th>
+            <th class="two wide">${message(code:'default.actions.label')}</th>
         </tr>
         </thead>
         <tbody>
-        <g:each in="${instance.documents.sort{it.owner?.title?.toLowerCase()}}" var="docctx">
+        <g:each in="${instance.documents.sort{ "${it.owner?.lastUpdated}_${it.owner?.dateCreated}" }.reverse()}" var="docctx">
             <g:if test="${docctx.owner.contentType == 0 && (docctx.status == null || docctx.status?.value != 'Deleted') && ((!docctx.sharedFrom && docctx.owner?.owner?.id == contextService.getOrg().id) || docctx.sharedFrom)}">
                 <tr>
-                    <%--<g:if test="${editable}"><td><input type="checkbox" name="_deleteflag.${docctx.id}" value="true"/></td></g:if> : REMOVED BULK --%>
-
-                    <th scope="row" class="la-th-column la-main-object" >
-                        ${docctx.owner.title}
-                    </th>
                     <td>
+                        <strong>${docctx.owner.title}</strong> <br />
                         ${docctx.owner.content}
+                    </td>
+                    <td>
+                        <g:if test="${docctx.owner.dateCreated != docctx.owner.lastUpdated}">
+                            <g:formatDate format="${message(code:'default.date.format.noZ')}" date="${docctx.owner.lastUpdated}"/>
+                        </g:if>
                     </td>
                     <td>
                         <g:formatDate format="${message(code:'default.date.format.notime')}" date="${docctx.owner.dateCreated}"/>
