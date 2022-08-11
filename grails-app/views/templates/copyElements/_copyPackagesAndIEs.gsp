@@ -432,7 +432,7 @@
 
                 <div class="eight wide field" style="text-align: right;">
                     <g:set var="submitDisabled" value="${(sourceObject && targetObject) ? '' : 'disabled'}"/>
-                    <input type="submit" id="copyElementsSubmit" class="ui button js-click-control" value="${submitButtonText}"
+                    <input type="submit" name="copyElementsSubmit" id="copyElementsSubmit" class="ui button js-click-control" value="${submitButtonText}"
                            data-confirm-id="copyElements"
                            data-confirm-tokenMsg="${message(code: 'copyElementsIntoObject.delete.elements', args: [g.message(code:  "${sourceObject.getClass().getSimpleName().toLowerCase()}.label")])}"
                            data-confirm-term-how="delete" ${submitDisabled}/>
@@ -441,7 +441,7 @@
         </g:if>
         <g:elseif test="${copyObject}">
             <div class="sixteen wide field" style="text-align: right;">
-                <input type="submit" class="ui button js-click-control"
+                <input type="submit" name="copyElementsSubmit" id="copyElementsSubmit" class="ui button js-click-control"
                        value="${message(code: 'default.button.copy.label')}"/>
             </div>
         </g:elseif>
