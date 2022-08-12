@@ -11,9 +11,8 @@
         </tr>
         </thead>
         <tbody>
-        <g:each in="${instance.documents.sort{ "${it.owner?.lastUpdated}_${it.owner?.dateCreated}" }.reverse()}" var="docctx">
-            <g:if test="${docctx.owner.contentType == 0 && (docctx.status == null || docctx.status?.value != 'Deleted') && ((!docctx.sharedFrom && docctx.owner?.owner?.id == contextService.getOrg().id) || docctx.sharedFrom)}">
-                <tr>
+        <g:each in="${docstoreService.getNotes(instance, contextService.getOrg())}" var="docctx">
+            <tr>
                     <td>
                         <strong>${docctx.owner.title}</strong> <br />
                         ${docctx.owner.content}
@@ -69,7 +68,6 @@
                         </g:if>
                     </td>
                 </tr>
-            </g:if>
         </g:each>
         </tbody>
     </table>

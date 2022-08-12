@@ -68,6 +68,7 @@ class SubscriptionControllerService {
     AddressbookService addressbookService
     AuditService auditService
     ContextService contextService
+    DocstoreService docstoreService
     FactService factService
     EscapeService escapeService
     ExecutorService executorService
@@ -3364,6 +3365,12 @@ class SubscriptionControllerService {
             }
             result.showConsortiaFunctions = subscriptionService.showConsortiaFunctions(result.contextOrg, result.subscription)
 
+            int tc1 = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.subscription).size()
+            int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.subscription).size()
+            result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
+
+
+            result.notesCount = docstoreService.getNotes(result.subscription, result.contextOrg).size()
 
             result.workflowCount = WfWorkflow.executeQuery(
                     'select count(wf) from WfWorkflow wf where wf.subscription = :sub and wf.owner = :ctxOrg',

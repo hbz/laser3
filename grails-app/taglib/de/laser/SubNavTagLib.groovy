@@ -52,14 +52,13 @@ class SubNavTagLib {
         String cssClass    = ((this.pageScope.variables?.actionName == attrs.action && (attrs.tab == params.tab || attrs.tab == params[attrs.subTab])) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
 
         String tooltip = attrs.tooltip ?: ""
-        Integer counts = attrs.counts ? attrs.counts as Integer : null
 
         if (tooltip != "") {
             linkBody = '<div class="la-popup-tooltip la-delay" data-content="' + tooltip + '">' + linkBody + '</div>'
         }
 
-        if (counts) {
-            linkBody = linkBody + '<div class="ui floating blue circular label">'+counts+'</div>'
+        if (attrs.counts) {
+            linkBody = linkBody + '<div class="ui floating blue circular label">' + attrs.counts + '</div>'
         }
 
         if (attrs.disabled) {
@@ -88,19 +87,17 @@ class SubNavTagLib {
         String cssClass = ((this.pageScope.variables?.actionName == attrs.action) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
 
         String tooltip = attrs.tooltip ?: ""
-        Integer counts = attrs.counts ? attrs.counts as Integer : null
-
         boolean check = SwissKnife.checkAndCacheNavPerms(attrs, request)
 
         if (tooltip != "") {
             linkBody = '<div data-tooltip="' + tooltip + '" data-position="bottom center">' + linkBody + '</div>'
         }
 
-        if (counts) {
-            linkBody = linkBody + '<div class="ui floating blue circular label">'+counts+'</div>'
-        }
-
         if (check) {
+            if (attrs.counts) {
+                linkBody = linkBody + '<div class="ui floating blue circular label">' + attrs.counts + '</div>'
+            }
+
             if (attrs.controller) {
                 out << g.link(linkBody,
                         class: cssClass,

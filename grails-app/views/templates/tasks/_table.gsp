@@ -1,6 +1,5 @@
 <laser:serviceInjection />
 
-
 <div class="ui grid la-clear-before">
 
     <div class="sixteen wide column">
@@ -29,7 +28,7 @@
                 <!-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')} -->
                 <g:set var="overwriteEditable" value="${editable || taskService.isTaskEditableBy(taskInstance, contextService.getUser(), contextService.getOrg())}" />
                 <tr>
-                    <th scope="row" class="la-th-column la-main-object" >${fieldValue(bean: taskInstance, field: "title")}</th>
+                    <td>${fieldValue(bean: taskInstance, field: "title")}</td>
 
                     <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${taskInstance?.endDate}"/></td>
 

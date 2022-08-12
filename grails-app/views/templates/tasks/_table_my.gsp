@@ -8,29 +8,22 @@
             <thead>
             <tr>
                 <g:sortableColumn property="lower(t.title)" title="${message(code: 'default.title.label')}"/>
-
                 <g:sortableColumn property="t.endDate" title="${message(code: 'task.endDate.label')}"/>
-
                 <g:sortableColumn property="t.status" title="${message(code: 'task.status.label')}"/>
-
                 <g:if test="${controllerName == 'myInstitution'}">
                     <th>${message(code: 'task.object.label')}</th>
                 </g:if>
-
-                <%--<g:sortableColumn property="lower(ru.username)" title="${message(code: 'task.responsibleEmployee.label')}"/>--%>
                 <th>
                     ${message(code: 'task.assignedTo.label')}
                 </th>
-
                 <g:sortableColumn property="t.createDate" title="${message(code: 'task.createDate.label')}"/>
-
                 <th class="la-action-info">${message(code:'default.actions.label')}</th>
             </tr>
             </thead>
             <tbody>
             <g:each in="${taskInstanceList}" var="taskInstance">
                 <tr>
-                    <th scope="row" class="la-th-column la-main-object" >${fieldValue(bean: taskInstance, field: "title")}</th>
+                    <td>${fieldValue(bean: taskInstance, field: "title")}</td>
 
                     <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${taskInstance?.endDate}"/></td>
 

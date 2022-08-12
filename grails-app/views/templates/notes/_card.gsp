@@ -5,7 +5,7 @@
     List<DocContext> baseItems = []
     List<DocContext> sharedItems = []
 
-    ownobj.documents.sort{ "${it.owner?.lastUpdated}_${it.owner?.dateCreated}" }.reverse().each{ it ->
+    docstoreService.getNotes(ownobj, contextService.getOrg()).each{ it ->
         if (it.status != RDStore.DOC_CTX_STATUS_DELETED){
             if (it.sharedFrom) {
                 sharedItems << it

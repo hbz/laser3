@@ -155,4 +155,31 @@ class DocstoreService {
         }
         [filteredDocuments: filteredDocuments, sharedItems: sharedItems]
     }
+
+    List<DocContext> getNotes(def objInstance, Org docOwner) {
+
+        Map queryParams = [instance: objInstance, del: RDStore.DOC_CTX_STATUS_DELETED, docOwner: docOwner]
+        String query =  "and dc.owner = d and d.contentType = 0 and (dc.status is null or dc.status != :del) " +
+                        "and (dc.sharedFrom is not null or (dc.sharedFrom is null and d.owner =: docOwner)) " +
+                        "order by d.lastUpdated desc, d.dateCreated desc"
+
+        if (objInstance instanceof Subscription) {
+            query = "dc.subscription = :instance " + query
+        }
+        else if (objInstance instanceof License) {
+            query = "dc.license = :instance " + query
+        }
+        else if (objInstance instanceof Org) {
+            query = "dc.org = :instance " + query
+        }
+        else if (objInstance instanceof SurveyConfig) {
+            query = "dc.surveyConfig = :instance " + query
+        }
+        else {
+            return []
+        }
+
+
+        Doc.executeQuery("select dc from DocContext dc, Doc d where " + query, queryParams)
+    }
 }
