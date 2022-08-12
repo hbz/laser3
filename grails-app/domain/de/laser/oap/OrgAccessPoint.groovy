@@ -112,14 +112,14 @@ class OrgAccessPoint extends AbstractBase {
 
         qry += " and ((pkg.packageStatus is null) or (pkg.packageStatus != :pkgDeleted))"
         qry += " and ((p.status is null) or (p.status != :platformDeleted))"
-        qry += " and ((tipp.status is null) or (tipp.status != :tippDeleted))"
+        qry += " and ((tipp.status is null) or (tipp.status != :tippRemoved))"
         qry += " order by p.normname asc"
 
         def qryParams = [
             currentSubIds: currentSubIds,
             pkgDeleted: RDStore.PACKAGE_STATUS_DELETED,
             platformDeleted: RDStore.PLATFORM_STATUS_DELETED,
-            tippDeleted: RDStore.TIPP_STATUS_DELETED,
+            tippRemoved: RDStore.TIPP_STATUS_REMOVED,
             orgAccessPoint: this
         ]
 

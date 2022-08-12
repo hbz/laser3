@@ -7,6 +7,24 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4302    02.08.2022  rc-2.3  2.3.3       Andreas Bug         Budgetcodes wurden in der Kosteneingabe falsch sortiert
+
+--      02.08.2022  rc-2.3  2.3.3       Andreas Bug         Fremdschlüsselverletzung bei Tilgen entfernter Titel beseitigt
+
+4380    01.08.2022  rc-2.3  2.3.3       Andreas Bug         Statistikreiter wurde bei Springen zwischen den Jahresringen nicht beibehalten
+
+4379    01.08.2022  rc-2.3  2.3.3       Andreas Feature     Umstrukturierung der Umfragedetailsicht
+
+4378    29.07.2022  rc-2.3  2.3.3       Andreas Bug         Eine Umfrage konnte nur einmal verknüpft werden
+
+--      28.07.2022  rc-2.3  2.3.3       Andreas Feature     Ausblenden des Statistikreiters bei fehlenden Daten
+
+4374    26.07.2022  rc-2.3  2.3.3       Andreas Bug         Anpassung der ES-Abfrage nach Paketen in der we:kb
+
+4345    25.07.2022  rc-2.3  2.3.3       Andreas Bug         Kontrolle und Anpassung der Titelabfragen vorgenommen
+
+4343    25.07.2022  rc-2.3  2.3.3       Andreas Bug         diverse Bugs bei der Änderungsanzeige behoben
+
 4366    22.07.2022  rc-2.3  2.3.3       Moe     Bug         Fehlermeldung Leitweg-ID trotz Eintragung
 
 4358    15.07.2022  rc-2.3  2.3.2       Moe     Bug         Umfragen entküpfen: Verknüpfung wird in "Zielumfrage" weiterhin angezeigt
