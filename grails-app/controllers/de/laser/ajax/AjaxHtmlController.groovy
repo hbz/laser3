@@ -321,11 +321,10 @@ class AjaxHtmlController {
      */
     @Secured(['ROLE_USER'])
     def editTask() {
-        Org contextOrg = contextService.getOrg()
-        Map<String, Object> result = taskService.getPreconditionsWithoutTargets(contextOrg)
-
+        Map<String, Object> result = [:]
         result.params = params
         result.taskInstance = Task.get(params.id)
+        result.contextOrg = contextService.getOrg()
 
         if (result.taskInstance){
             render template: "/templates/tasks/modal_edit", model: result

@@ -146,8 +146,7 @@ class SubscriptionControllerService {
             //def task_tasks = task {
             // tasks
             result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.subscription)
-            Map<String,Object> preCon = taskService.getPreconditionsWithoutTargets(result.contextOrg)
-            result << preCon
+
             Set<Long> excludes = [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id]
             if(result.institution.getCustomerType() == "ORG_CONSORTIUM")
                 excludes << RDStore.OR_SUBSCRIPTION_CONSORTIA.id

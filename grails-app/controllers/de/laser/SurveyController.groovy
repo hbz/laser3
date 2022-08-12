@@ -821,14 +821,10 @@ class SurveyController {
                 }
 
             }
-
-            Org contextOrg = contextService.getOrg()
-            result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, contextOrg,  result.surveyConfig)
-            Map<String,Object> preCon = taskService.getPreconditionsWithoutTargets(contextOrg)
-            result << preCon
+            result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg,  result.surveyConfig)
 
             result.properties = []
-            List allProperties = surveyService.getSurveyProperties(contextOrg)
+            List allProperties = surveyService.getSurveyProperties(result.contextOrg)
             result.properties = allProperties
             /*allProperties.each {
 

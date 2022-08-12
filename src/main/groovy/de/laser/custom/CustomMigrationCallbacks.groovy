@@ -77,7 +77,7 @@ class CustomMigrationCallbacks {
 
 			println '--------------------------------------------------------------------------------'
 			println '-     Database migration'
-			println '-        ' + diff.size() + ' relevant changesets found ..'
+			println '-        ' + diff.size() + ' relevant changeset/s found ..'
 			println '-        dumping current database ..'
 
 			URI uri = new URI(dataSource.url.substring(5))
