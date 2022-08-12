@@ -50,10 +50,8 @@ class TaskService {
     Map<String, Object> getTasks(int offset, User user, Org contextOrg, object) {
         Map<String, Object> result = [:]
         result.taskInstanceList = getTasksByResponsiblesAndObject(user, contextOrg, object)
-        result.taskInstanceCount = result.taskInstanceList.size()
         result.taskInstanceList = chopOffForPageSize(result.taskInstanceList, user, offset)
         result.myTaskInstanceList = getTasksByCreatorAndObject(user,  object)
-        result.myTaskInstanceCount = result.myTaskInstanceList.size()
         result.myTaskInstanceList = chopOffForPageSize(result.myTaskInstanceList, user, offset)
         result
     }

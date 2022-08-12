@@ -1,26 +1,26 @@
+<%@ page import="de.laser.storage.RDConstants" %>
 <laser:serviceInjection />
 
 <div class="ui grid la-clear-before">
-
     <div class="sixteen wide column">
-
-        <p class="ui header">${message(code: 'task.myTasks.header')} <ui:totalNumber total="${taskInstanceCount}"/></p>
 
         <table class="ui sortable celled la-js-responsive-table la-table table">
             <thead>
             <tr>
-                <g:sortableColumn property="lower(t.title)" title="${message(code: 'default.title.label')}"/>
-                <g:sortableColumn property="t.endDate" title="${message(code: 'task.endDate.label')}"/>
-                <g:sortableColumn property="t.status" title="${message(code: 'task.status.label')}"/>
-                <g:if test="${controllerName == 'myInstitution'}">
-                    <th>${message(code: 'task.object.label')}</th>
-                </g:if>
-                <th>
+                <th class="two wide">${message(code: 'task.endDate.label')}</th>
+                <th class="six wide">
+                    ${message(code: 'default.title.label')}
+                    <g:if test="${controllerName == 'myInstitution'}">
+                        / ${message(code: 'task.object.label')}
+                    </g:if>
+                </th>
+                <th class="three wide">
                     ${message(code: 'task.assignedTo.label')}
                 </th>
-                <g:sortableColumn property="lower(t.creator.username)" title="${message(code: 'task.creator.label')}"/>
-                <g:sortableColumn property="t.createDate" title="${message(code: 'task.createDate.label')}"/>
-                <th class="la-action-info">${message(code:'default.actions.label')}</th>
+                <th>${message(code: 'task.status.label')}</th>
+                <th class="two wide">${message(code: 'task.creator.label')}</th>
+                <th class="two wide">${message(code: 'task.createDate.label')}</th>
+                <th class="one wide la-action-info">${message(code:'default.actions.label')}</th>
             </tr>
             </thead>
             <tbody>
@@ -28,36 +28,45 @@
                 <!-- OVERWRITE editable for INST_EDITOR: ${editable} -&gt; ${accessService.checkMinUserOrgRole(user, contextService.getOrg(), 'INST_EDITOR')} -->
                 <g:set var="overwriteEditable" value="${editable || taskService.isTaskEditableBy(taskInstance, contextService.getUser(), contextService.getOrg())}" />
                 <tr>
-                    <td>${fieldValue(bean: taskInstance, field: "title")}</td>
-
-                    <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${taskInstance?.endDate}"/></td>
-
                     <td>
-                        <ui:xEditableRefData config="${de.laser.storage.RDConstants.TASK_STATUS}" owner="${taskInstance}" field="status" overwriteEditable="${overwriteEditable}" />
+                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${taskInstance?.endDate}"/>
                     </td>
-                    <g:if test="${controllerName == 'myInstitution'}">
                     <td>
-                        <g:if test="${taskInstance.license}">
-                            <g:link controller="license" action="show" id="${taskInstance.license?.id}">${fieldValue(bean: taskInstance, field: "license")}</g:link> <br />
-                        </g:if>
-                        <g:if test="${taskInstance.org}">
-                            <g:link controller="organisation" action="show" id="${taskInstance.org?.id}">${fieldValue(bean: taskInstance, field: "org")}</g:link> <br />
-                        </g:if>
-                        <g:if test="${taskInstance.pkg}">
-                            <g:link controller="package" action="show" id="${taskInstance.pkg?.id}">${fieldValue(bean: taskInstance, field: "pkg")}</g:link> <br />
-                        </g:if>
-                        <g:if test="${taskInstance.subscription}">
-                            <g:link controller="subscription" action="show" id="${taskInstance.subscription?.id}">${fieldValue(bean: taskInstance, field: "subscription")}</g:link>
+                        ${fieldValue(bean: taskInstance, field: "title")}
+
+                        <g:if test="${controllerName == 'myInstitution'}">
+                            <g:if test="${taskInstance.license}">
+                                <br /> <g:link controller="license" action="show" id="${taskInstance.license?.id}">${fieldValue(bean: taskInstance, field: "license")}</g:link> <br />
+                            </g:if>
+                            <g:if test="${taskInstance.org}">
+                                <br /> <g:link controller="organisation" action="show" id="${taskInstance.org?.id}">${fieldValue(bean: taskInstance, field: "org")}</g:link> <br />
+                            </g:if>
+                            <g:if test="${taskInstance.pkg}">
+                                <br /> <g:link controller="package" action="show" id="${taskInstance.pkg?.id}">${fieldValue(bean: taskInstance, field: "pkg")}</g:link> <br />
+                            </g:if>
+                            <g:if test="${taskInstance.subscription}">
+                                <br /> <g:link controller="subscription" action="show" id="${taskInstance.subscription?.id}">${fieldValue(bean: taskInstance, field: "subscription")}</g:link>
+                            </g:if>
                         </g:if>
                     </td>
-                    </g:if>
-
                     <td>
-                        <g:if test="${taskInstance.responsibleOrg}">${taskInstance.responsibleOrg.name} <br /></g:if>
-                        <g:if test="${taskInstance.responsibleUser}">${taskInstance.responsibleUser.display}</g:if>
+                        <g:if test="${taskInstance.responsibleOrg?.id == contextService.getOrg().id || taskInstance.responsibleUser?.id == contextService.getUser().id}">
+                            <i class="icon hand point right"></i>
+                        </g:if>
+                        <g:if test="${taskInstance.responsibleOrg}"> ${taskInstance.responsibleOrg.name} <br /> </g:if>
+                        <g:if test="${taskInstance.responsibleUser}"> ${taskInstance.responsibleUser.display} </g:if>
                     </td>
-
-                    <td>${taskInstance.creator.display}</td>
+                    <td>
+                        <ui:xEditableRefData config="${RDConstants.TASK_STATUS}" owner="${taskInstance}" field="status" overwriteEditable="${overwriteEditable}" />
+                    </td>
+                    <td>
+                        <g:if test="${taskInstance.creator?.id == contextService.getUser().id}">
+                            <i class="icon hand point right"></i>${taskInstance.creator.display}
+                        </g:if>
+                        <g:else>
+                            ${taskInstance.creator.display}
+                        </g:else>
+                    </td>
 
                     <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${taskInstance.createDate}"/></td>
 
@@ -87,8 +96,6 @@
 
         <ui:paginate total="${taskInstanceCount}" params="${params}" />
 
-
     </div><!-- .sixteen -->
-
 </div><!-- .grid -->
 
