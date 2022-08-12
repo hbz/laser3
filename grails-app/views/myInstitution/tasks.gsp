@@ -54,8 +54,8 @@
         <laser:render template="/templates/tasks/modal_create" />
 
         <laser:render template="/templates/tasks/tables" model="${[
-                taskInstanceList: taskInstanceList,     taskInstanceCount: taskInstanceCount,
-                myTaskInstanceList: myTaskInstanceList, myTaskInstanceCount: myTaskInstanceCount
+                taskInstanceList: taskInstanceList,
+                myTaskInstanceList: myTaskInstanceList
         ]}"/>
 
 <laser:htmlEnd />

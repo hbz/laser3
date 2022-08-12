@@ -4,6 +4,7 @@ import de.laser.annotations.RefdataInfo
 import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper
 import de.laser.storage.RDConstants
+import org.apache.http.HttpStatus
 
 /**
  * A document object representation. The document may be an uploaded file with annotations or a note without file. As legacy, automatised messages / announcements were stored as docs as well. This type is specified by the
@@ -68,15 +69,17 @@ class Doc {
             String fPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
             File file = new File("${fPath}/${uuid}")
             output = file.getBytes()
+
+            response.setContentType(mimeType)
+            response.addHeader("Content-Disposition", "attachment; filename=\"${filename}\"")
+            response.setHeader('Content-Length', "${output.length}")
+
+            response.outputStream << output
         } catch(Exception e) {
-            log.error(e)
+            log.error(e.getMessage())
+
+            response.sendError(HttpStatus.SC_NOT_FOUND)
         }
-
-        response.setContentType(mimeType)
-        response.addHeader("Content-Disposition", "attachment; filename=\"${filename}\"")
-        response.setHeader('Content-Length', "${output.length}")
-
-        response.outputStream << output
     }
 
     def beforeInsert = {

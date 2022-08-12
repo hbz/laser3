@@ -112,7 +112,8 @@ class TaskController  {
     def edit() {
 		Task.withTransaction {
 			Org contextOrg = contextService.getOrg()
-			Map result = taskService.getPreconditionsWithoutTargets(contextOrg)
+            Map<String, Object> result = [:]
+			result.contextOrg = contextOrg
 
 			SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
 
@@ -173,9 +174,9 @@ class TaskController  {
 	 */
 	@Secured(['permitAll']) // TODO
 	def ajaxEdit() {
-		Org contextOrg = contextService.getOrg()
-		Map result = taskService.getPreconditionsWithoutTargets(contextOrg)
+        Map<String, Object> result = [:]
 		result.params = params
+		result.contextOrg = contextService.getOrg()
 		result.taskInstance = Task.get(params.id)
 
 		render template: "/templates/tasks/modal_edit", model: result

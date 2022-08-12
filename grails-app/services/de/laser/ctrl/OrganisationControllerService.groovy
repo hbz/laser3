@@ -24,11 +24,13 @@ class OrganisationControllerService {
 
     AccessService accessService
     ContextService contextService
+    DocstoreService docstoreService
     FormService formService
     GenericOIDService genericOIDService
     GokbService gokbService
     LinksGenerationService linksGenerationService
     MessageSource messageSource
+    TaskService taskService
 
     //---------------------------------------- linking section -------------------------------------------------
 
@@ -190,6 +192,7 @@ class OrganisationControllerService {
         Org org = contextService.getOrg()
         Map<String, Object> result = [user:user,
                                       institution:org,
+                                      contextOrg: org,
                                       inContextOrg:true,
                                       institutionalView:false,
                                       isGrantedOrgRoleAdminOrOrgEditor: SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR'),
@@ -241,6 +244,13 @@ class OrganisationControllerService {
             result.orgInstance = result.institution
             result.inContextOrg = true
         }
+
+        int tc1 = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.orgInstance).size()
+        int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.orgInstance).size()
+        result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
+
+        result.notesCount = docstoreService.getNotes(result.orgInstance, result.contextOrg).size()
+
         result.links = linksGenerationService.getOrgLinks(result.orgInstance)
         result.targetCustomerType = result.orgInstance.getCustomerType()
         result.allOrgTypeIds = result.orgInstance.getAllOrgTypeIds()

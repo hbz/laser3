@@ -12,7 +12,8 @@ Use the Gradle task **devtools.triggerRestart** to update this file and force a 
 
 ### Apache Commons Lang
 
-Two different versions are currently used. New code should always use *org.apache.commons.lang3*, not the previous version *org.apache.commons.lang*
+~~Two different versions are currently used.~~ New code should always use *org.apache.commons.lang3*, 
+not the previous version *org.apache.commons.lang* (which is still a dependency of 'org.grails.plugins:gsp')
 
 ### Configuration
 

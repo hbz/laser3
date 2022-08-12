@@ -845,8 +845,6 @@ class OrganisationController  {
         prf.setBenchmark('tasks')
 
         result.tasks = taskService.getTasksByResponsiblesAndObject(result.user,result.institution,result.orgInstance)
-        Map<String,Object> preCon = taskService.getPreconditionsWithoutTargets(result.institution)
-        result << preCon
 
         prf.setBenchmark('properties')
 
