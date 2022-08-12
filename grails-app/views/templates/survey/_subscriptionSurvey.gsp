@@ -1,4 +1,4 @@
-<%@ page import="de.laser.SurveyConfig; de.laser.DocContext; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.SurveyOrg; de.laser.SurveyConfigProperties; de.laser.Subscription; de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.RefdataCategory; de.laser.Platform; de.laser.SubscriptionPackage" %>
+<%@ page import="de.laser.SurveyConfig; de.laser.DocContext; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.properties.PropertyDefinition; de.laser.SurveyOrg; de.laser.SurveyConfigProperties; de.laser.Subscription; de.laser.helper.RDStore; de.laser.helper.RDConstants; de.laser.RefdataCategory; de.laser.Platform; de.laser.SubscriptionPackage; de.laser.Org" %>
 <laser:serviceInjection/>
 <g:set var="surveyOrg"
        value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)}"/>
@@ -546,8 +546,11 @@
             if(!subscribedPlatforms) {
                 subscribedPlatforms = Platform.executeQuery("select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription", [subscription: subscription])
             }
+            boolean areStatsAvailable = false
+            if(subscription.packages.size() > 0)
+                areStatsAvailable = subscriptionService.areStatsAvailable(subscribedPlatforms, subscription.packages.collect { SubscriptionPackage sp -> sp.pkg.id }, Org.executeQuery('select oo.org.id from OrgRole oo where oo.sub.instanceOf = :subscription and oo.roleType in (:subscrTypes)', [subscription: subscription, subscrTypes: [RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER_CONS]]))
         %>
-        <g:if test="${subscription && subscribedPlatforms && subscriptionService.areStatsAvailable(subscribedPlatforms, subscription.packages.collect { SubscriptionPackage sp -> sp.pkg.id }, [subscription.getSubscriber().id])}">
+        <g:if test="${subscription && subscribedPlatforms && areStatsAvailable}">
             <div class="ui card">
                 <div class="content">
                     <div id="statsInfos" class="ui accordion la-accordion-showMore js-subscription-info-accordion">
