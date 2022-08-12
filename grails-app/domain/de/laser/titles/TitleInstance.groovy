@@ -10,7 +10,7 @@ import de.laser.base.AbstractBaseWithCalculatedLastUpdated
 import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.annotations.RefdataInfo
-import org.apache.commons.lang.StringUtils
+import org.apache.commons.lang3.StringUtils
 
 import java.text.Normalizer
 import java.text.SimpleDateFormat

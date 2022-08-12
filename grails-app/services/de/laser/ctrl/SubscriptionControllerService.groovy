@@ -38,7 +38,7 @@ import groovy.sql.BatchingStatementWrapper
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import groovy.time.TimeCategory
-import org.apache.commons.lang.StringEscapeUtils
+import org.apache.commons.lang3.StringEscapeUtils
 import org.apache.commons.lang3.RandomStringUtils
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.hibernate.Session
@@ -2258,7 +2258,8 @@ class SubscriptionControllerService {
                         String escapedFileName
                         try {
                             // escapedFileName = StringEscapeCategory.encodeAsHtml(result.identifiers.filename)
-                            escapedFileName = StringEscapeUtils.escapeHtml(result.identifiers.filename)
+                            // todo: check if it's needed and migrate to e.g. org.apache.commons.commons-text
+                            escapedFileName = StringEscapeUtils.escapeHtml4(result.identifiers.filename)
                         }
                         catch (Exception | Error e) {
                             log.error(e.printStackTrace())

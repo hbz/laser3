@@ -3,7 +3,7 @@ package de.laser.api.v0
 import de.laser.Org
 import de.laser.OrgSetting
 import de.laser.storage.Constants
-import org.apache.commons.lang.RandomStringUtils
+import org.apache.commons.lang3.RandomStringUtils
 import org.springframework.web.context.request.RequestAttributes
 import org.springframework.web.context.request.RequestContextHolder
 

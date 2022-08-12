@@ -1,7 +1,7 @@
 package de.laser.utils
 
 import groovy.transform.CompileStatic
-import org.apache.commons.lang.RandomStringUtils
+import org.apache.commons.lang3.RandomStringUtils
 
 import java.util.regex.Matcher
 import java.util.regex.Pattern
