@@ -63,8 +63,8 @@ class WorkflowTagLib {
         String cssIcon = WorkflowHelper.getCssIconByTaskPriority( task.priority )
 
         out << '<span class="la-popup-tooltip la-delay" data-position="top center" data-html="' + tooltip.encodeAsHTML() + '">'
-        out <<   '<a href="' + g.createLink( controller:'ajaxHtml', action:'useWfXModal', params:attrs.params ) + '" class="ui label large wfModalLink ' + cssColor + '">'
-        out <<     '<i class="ui icon ' + cssIcon + '" style="margin-left:0;"></i>'
+        out <<   '<a href="' + g.createLink( controller:'ajaxHtml', action:'useWfXModal', params:attrs.params ) + '" class="ui icon button wfModalLink">'
+        out <<     '<i class="ui icon ' + cssColor + ' ' + cssIcon + '" style="margin-left:0;"></i>'
         out <<   '</a>'
         out << '</span>'
     }
