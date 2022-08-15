@@ -14,7 +14,9 @@ import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
+import de.laser.stats.Counter4ApiSource
 import de.laser.stats.Counter4Report
+import de.laser.stats.Counter5ApiSource
 import de.laser.stats.Counter5Report
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
@@ -1793,10 +1795,15 @@ class SubscriptionService {
     }
 
     boolean areStatsAvailable(Collection<Platform> subscribedPlatforms, Collection<Long> refPkgs, Collection<Long> reportInstitutions) {
-        Map<String, Object> checkParams = [max: 1, plat: subscribedPlatforms, refPkgs: refPkgs, reportInstitutions: reportInstitutions]
-        int result = Counter4Report.executeQuery('select c4r.id from Counter4Report c4r join c4r.title tipp where c4r.platform in (:plat) and tipp.pkg.id in (:refPkgs) and c4r.reportInstitution.id in (:reportInstitutions)', checkParams).size()
+        Map<String, Object> checkParams = [max: 1, plat: subscribedPlatforms, reportInstitutions: reportInstitutions]
+        //repeating of 0 checks necessary because of query plan - join result in sequence scans at large datasets (Postgres does not seek indices when > 10% of data is being retrieved)
+        int result = Counter4Report.executeQuery('select count(c4r.id) from Counter4Report c4r join c4r.title tipp where c4r.platform in (:plat) and tipp.pkg.id in (:refPkgs) and c4r.reportInstitution.id in (:reportInstitutions)', checkParams+[refPkgs: refPkgs])[0]
         if(result == 0)
-            result = Counter5Report.executeQuery('select c5r.id from Counter5Report c5r join c5r.title tipp where c5r.platform in (:plat) and tipp.pkg.id in (:refPkgs) and c5r.reportInstitution.id in (:reportInstitutions)', checkParams).size()
+            result = Counter4Report.executeQuery('select count(c4r.id) from Counter4Report c4r where c4r.platform in (:plat) and c4r.reportType = :reportType and c4r.reportInstitution.id in (:reportInstitutions)', checkParams+[reportType: Counter4ApiSource.PLATFORM_REPORT_1])[0]
+        if(result == 0)
+            result = Counter5Report.executeQuery('select count(c5r.id) from Counter5Report c5r join c5r.title tipp where c5r.platform in (:plat) and tipp.pkg.id in (:refPkgs) and c5r.reportInstitution.id in (:reportInstitutions)', checkParams+[refPkgs: refPkgs])[0]
+        if(result == 0)
+            result = Counter5Report.executeQuery('select count(c5r.id) from Counter5Report c5r where c5r.platform in (:plat) and c5r.reportType in (:reportTypes) and c5r.reportInstitution.id in (:reportInstitutions)', checkParams + [reportTypes: [Counter5ApiSource.PLATFORM_USAGE, Counter5ApiSource.PLATFORM_MASTER_REPORT]])[0]
         result > 0
     }
 
