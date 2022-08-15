@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.storage.RDStore; de.laser.Subscription; de.laser.SubscriptionPackage; de.laser.IssueEntitlement; de.laser.stats.Counter4ApiSource; de.laser.stats.Counter4Report; de.laser.stats.Counter5Report" %>
+<%@ page import="java.time.format.DateTimeFormatter; de.laser.utils.DateUtils; de.laser.storage.RDStore; de.laser.Subscription; de.laser.SubscriptionPackage; de.laser.IssueEntitlement; de.laser.stats.Counter4ApiSource; de.laser.stats.Counter4Report; de.laser.stats.Counter5Report" %>
 <laser:htmlStart message="subscription.details.stats.label" serviceInjection="true"/>
 
 <g:set var="subjects" value="${controlledListService.getAllPossibleSubjectsBySub(subscription)}"/>
@@ -189,7 +189,7 @@
                         <div class="field">
                             <g:if test="${accessTypes}">
                                 <label for="accessType"><g:message code="default.usage.accessType"/></label>
-                                <select name="accessType" id="accessType" class="ui selection dropdown">
+                                <select name="accessType" id="accessType" class="ui search selection dropdown">
                                     <option value=""><g:message code="default.select.choose.label"/></option>
                                     <g:each in="${accessTypes}" var="accessType">
                                         <option <%=(params.accessType == accessType) ? 'selected="selected"' : ''%>
@@ -215,7 +215,7 @@
             <ui:tabs class="la-overflowX-auto">
                 <ui:tabsItem controller="subscription" action="stats" params="${params + [tab: 'total']}" text="${message(code: 'default.usage.allUsageGrid.header')}" tab="total"/>
                 <g:each in="${monthsInRing}" var="month">
-                    <ui:tabsItem controller="subscription" action="stats" params="${params + [tab: DateUtils.getSDF_yyyyMM().format(month)]}" text="${DateUtils.getSDF_yyyyMM().format(month)}" tab="${DateUtils.getSDF_yyyyMM().format(month)}"/>
+                    <ui:tabsItem controller="subscription" action="stats" params="${params + [tab: month.format(DateTimeFormatter.ofPattern('yyyy-MM'))]}" text="${month.format(DateTimeFormatter.ofPattern('yyyy-MM'))}" tab="${month.format(DateTimeFormatter.ofPattern('yyyy-MM'))}"/>
                 </g:each>
             </ui:tabs>
             <div class="ui bottom attached tab active segment">
@@ -231,7 +231,7 @@
                             <g:each in="${sums}" var="row">
                                 <tr>
                                     <td><g:formatDate date="${row.reportMonth}" format="yyyy-MM"/></td>
-                                    <g:set var="reportType" value="${row.reportType in Counter4ApiSource.COUNTER_4_REPORTS ? row.reportType : row.reportType.toLowerCase()}"/>
+                                    <g:set var="reportType" value="${row.reportType in Counter4Report.COUNTER_4_REPORTS ? row.reportType : row.reportType.toLowerCase()}"/>
                                     <td><g:link action="stats" params="${params + [tab: DateUtils.getSDF_yyyyMM().format(row.reportMonth), reportType: reportType, metricType: row.metricType]}">${row.reportCount}</g:link></td>
                                 </tr>
                             </g:each>

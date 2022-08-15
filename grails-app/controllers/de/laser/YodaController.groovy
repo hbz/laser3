@@ -639,10 +639,16 @@ class YodaController {
         Platform platform = Platform.get(params.platform)
         LaserStatsCursor.executeUpdate('delete from LaserStatsCursor lsc where lsc.platform = :plat', [plat: platform])
         if(fullReset) {
-            if(params.counterRevision == 'r4')
-                Counter4Report.executeUpdate('delete from Counter4Report c4r where c4r.platform = :plat', [plat: platform])
-            else if(params.counterRevision == 'r5')
-                Counter5Report.executeUpdate('delete from Counter5Report c5r where c5r.platform = :plat', [plat: platform])
+            if(params.counterRevision == 'r4') {
+                Counter4Report.withTransaction {
+                    Counter4Report.executeUpdate('delete from Counter4Report c4r where c4r.platformId = :plat', [plat: platform.id])
+                }
+            }
+            else if(params.counterRevision == 'r5') {
+                Counter5Report.withTransaction {
+                    Counter5Report.executeUpdate('delete from Counter5Report c5r where c5r.platformId = :plat', [plat: platform.id])
+                }
+            }
             statsSyncService.doFetch(false, platform.gokbId, params.sushiURL, params.counterRevision)
         }
         redirect(action: 'manageStatsSources')

@@ -4,14 +4,14 @@ package de.laser
 import de.laser.base.AbstractCounterApiSource
 import de.laser.http.BasicHttpClient
 import de.laser.config.ConfigMapper
+import de.laser.stats.Counter4Report
+import de.laser.stats.Counter5Report
 import de.laser.utils.DateUtils
 import de.laser.remote.ApiSource
 import de.laser.stats.Fact
 import de.laser.stats.StatsTripleCursor
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
-import de.laser.stats.Counter4ApiSource
-import de.laser.stats.Counter5ApiSource
 import de.laser.system.SystemEvent
 import de.laser.usage.StatsSyncServiceOptions
 import de.laser.usage.SushiClient
@@ -206,8 +206,6 @@ class StatsSyncService {
      * @param incremental should only newest data being fetched or a full data reload done?
      */
     void internalDoFetch(boolean incremental, String platformUUID = '', String source = '', String revision = '') {
-        //List<Counter4ApiSource> c4SushiSources = Counter4ApiSource.executeQuery("select c4as from Counter4ApiSource c4as where not exists (select c5as.id from Counter5ApiSource c5as where c5as.provider = c4as.provider and c5as.platform = c4as.platform)")//[]
-        //List<Counter5ApiSource> c5SushiSources = Counter5ApiSource.findAll()
         ApiSource apiSource = ApiSource.findByActive(true)
         List<List> c4SushiSources = [], c5SushiSources = []
         //process each platform with a SUSHI API
@@ -291,7 +289,6 @@ class StatsSyncService {
         }
 
         Set<Long> namespaces = [IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISSN, TitleInstancePackagePlatform.class.name).id, IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISSN, TitleInstancePackagePlatform.class.name).id, IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISBN, TitleInstancePackagePlatform.class.name).id, IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.PISBN, TitleInstancePackagePlatform.class.name).id, IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.DOI, TitleInstancePackagePlatform.class.name).id]
-            //c4SushiSources.each { Counter4ApiSource c4as ->
             c4SushiSources.each { List c4as ->
                 /*Set titles = TitleInstancePackagePlatform.executeQuery('select new map(id.value as identifier, tipp.id as title) from Identifier id  join id.tipp tipp where tipp.platform = :plat and tipp.status != :removed',
                         [plat: c4as.platform, removed: RDStore.TIPP_STATUS_REMOVED])*/
@@ -313,7 +310,7 @@ class StatsSyncService {
                                     //DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
                                     Calendar startTime = GregorianCalendar.getInstance(), currentYearEnd = GregorianCalendar.getInstance()
                                     log.debug("${Thread.currentThread().getName()} is now processing key pair ${i}, requesting data for ${keyPair.customerName}:${keyPair.value}:${keyPair.requestorKey}")
-                                    Counter4ApiSource.COUNTER_4_REPORTS.each { String reportID ->
+                                    Counter4Report.COUNTER_4_REPORTS.each { String reportID ->
                                         startTime.setTime(calendarConfig.startDate)
                                         currentYearEnd.setTime(calendarConfig.endNextRun)
                                         if(onlyNewest) {
@@ -620,7 +617,7 @@ class StatsSyncService {
                 //if(wasMissing)
                 //lsc.missingPeriods.remove(wasMissing)
                 GPathResult reportItems = reportData.'ns2:Report'.'ns2:Customer'.'ns2:ReportItems'
-                if(reportID == Counter4ApiSource.PLATFORM_REPORT_1) {
+                if(reportID == Counter4Report.PLATFORM_REPORT_1) {
                     int[] resultCount = statsSql.withBatch( "insert into counter4report (c4r_version, c4r_platform_fk, c4r_publisher, c4r_report_institution_fk, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count) " +
                             "values (:version, :platform, :publisher, :reportInstitution, :reportType, :category, :metricType, :reportFrom, :reportTo, :reportCount) " +
                             "on conflict on constraint unique_counter_4_report do " +
@@ -773,7 +770,7 @@ class StatsSyncService {
                 //StatsMissingPeriod wasMissing = lsc.missingPeriods.find{ StatsMissingPeriod period -> period.from == startTime.getTime() && period.to == currentYearEnd.getTime() }
                 //if(wasMissing)
                 //lsc.missingPeriods.remove(wasMissing)
-                if(reportId in [Counter5ApiSource.PLATFORM_MASTER_REPORT, Counter5ApiSource.PLATFORM_USAGE]) {
+                if(reportId in [Counter5Report.PLATFORM_MASTER_REPORT, Counter5Report.PLATFORM_USAGE]) {
                     int[] resultCount = statsSql.withBatch( "insert into counter5report (c5r_version, c5r_publisher, c5r_platform_fk, c5r_report_institution_fk, c5r_report_type, c5r_metric_type, c5r_report_from, c5r_report_to, c5r_report_count) " +
                             "values (:version, :publisher, :platform, :reportInstitution, :reportType, :metricType, :reportFrom, :reportTo, :reportCount)") { stmt ->
                         report.items.each { Map reportItem ->
@@ -905,43 +902,6 @@ class StatsSyncService {
             true
         }
         else false
-    }
-
-    @Deprecated
-    boolean updateStatsSource(GrailsParameterMap params) {
-        AbstractCounterApiSource source
-        if(params.c4source) {
-            source = Counter4ApiSource.get(params.c4source)
-        }
-        if(params.c5source) {
-            source = Counter5ApiSource.get(params.c5source)
-        }
-        if(source) {
-            source.arguments = null
-            Map<String, Object> arguments = [:]
-            params.list("arg[]")?.eachWithIndex { String arg, int i ->
-                arguments[arg] = [value: params.list("val[]")[i]]
-            }
-            if(arguments)
-                source.arguments = arguments
-            return source.save()
-        }
-        false
-    }
-
-    @Deprecated
-    boolean deleteStatsSource(GrailsParameterMap params) {
-        if(params.counter4) {
-            Counter4ApiSource source = Counter4ApiSource.get(params.counter4)
-            source.delete()
-            true
-        }
-        if(params.counter5) {
-            Counter5ApiSource source = Counter5ApiSource.get(params.counter5)
-            source.delete()
-            true
-        }
-        false
     }
 
     /**
