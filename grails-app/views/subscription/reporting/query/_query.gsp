@@ -1,7 +1,7 @@
 <%@ page import="de.laser.reporting.report.local.SubscriptionReport" %>
 <div class="ui segment form">
 
-    <div class="fields <reporting:numberToString number="${cfgTimelineList.size() + 2}" min="2"/>">
+    <div class="fields <uiReporting:numberToString number="${cfgTimelineList.size() + 2}" min="2"/>">
         <g:each in="${cfgTimelineList}" var="cfgTimeline" status="ti">
             <g:each in="${cfgTimeline}" var="field">
                 <div class="field">

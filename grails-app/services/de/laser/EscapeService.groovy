@@ -2,7 +2,7 @@ package de.laser
 
 import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
-import org.apache.commons.lang.StringUtils
+import org.apache.commons.lang3.StringUtils
 
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols

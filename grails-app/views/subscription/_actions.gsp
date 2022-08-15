@@ -201,7 +201,7 @@
 </g:if>
 <g:if test="${editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM','INST_EDITOR')}">
     <laser:render template="/templates/documents/modal" model="${[ownobj: subscription, owntp: 'subscription']}"/>
-    <laser:render template="/templates/tasks/modal_create" model="${[ownobj: subscription, owntp: 'subscription', validResponsibleUsers: taskService.getUserDropdown(institution)]}"/>
+    <laser:render template="/templates/tasks/modal_create" model="${[ownobj: subscription, owntp: 'subscription']}"/>
 </g:if>
 <g:if test="${accessService.checkMinUserOrgRole(user,contextOrg,'INST_EDITOR')}">
     <laser:render template="/templates/notes/modal_create" model="${[ownobj: subscription, owntp: 'subscription']}"/>

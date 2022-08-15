@@ -273,12 +273,12 @@
 
                 <td class="center aligned">
 
-                    <survey:finishIcon participant="${institution}" surveyConfig="${surveyConfig}" surveyOwnerView="${false}"/>
+                    <uiSurvey:finishIcon participant="${institution}" surveyConfig="${surveyConfig}" surveyOwnerView="${false}"/>
 
                 </td>
                 <g:if test="${params.tab == 'finish'}">
                     <td class="center aligned">
-                        <survey:finishDate participant="${institution}" surveyConfig="${surveyConfig}"/>
+                        <uiSurvey:finishDate participant="${institution}" surveyConfig="${surveyConfig}"/>
                     </td>
                 </g:if>
 

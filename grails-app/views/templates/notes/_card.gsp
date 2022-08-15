@@ -5,7 +5,7 @@
     List<DocContext> baseItems = []
     List<DocContext> sharedItems = []
 
-    ownobj.documents.sort{it.owner?.title}.each{ it ->
+    docstoreService.getNotes(ownobj, contextService.getOrg()).each{ it ->
         if (it.status != RDStore.DOC_CTX_STATUS_DELETED){
             if (it.sharedFrom) {
                 sharedItems << it
@@ -18,8 +18,6 @@
     }
 
     boolean editable2 = accessService.checkMinUserOrgRole(contextService.getUser(),contextService.getOrg(),"INST_EDITOR")
-    //println "EDITABLE: ${editable}"
-    //println "EDITABLE2: ${editable2}"
 %>
 
     <ui:card message="license.notes" class="notes la-js-hideable ${css_class}" href="#modalCreateNote" editable="${editable || editable2}">
@@ -49,8 +47,14 @@
                                 </a>
                             </g:else>
                             <br />
-                            ${message(code:'template.notes.created')}
-                            <g:formatDate format="${message(code:'default.date.format.notime')}" date="${docctx.owner.dateCreated}"/>
+                            <g:if test="${docctx.owner.dateCreated == docctx.owner.lastUpdated}">
+                                ${message(code:'template.notes.created')}
+                            </g:if>
+                            <g:else>
+                                ${message(code:'template.notes.updated')}
+                            </g:else>
+                            <g:formatDate format="${message(code:'default.date.format.notime')}" date="${docctx.owner.lastUpdated}"/>
+
                         </div>
                         <div class="right aligned six wide column la-column-left-lessPadding">
                             <%-- START First Button --%>
@@ -128,13 +132,22 @@
                                 <g:else>
                                     <a onclick="JSPC.app.noteread(${docctx.owner.id});">Ohne Titel</a>
                                 </g:else>
-                                (${docctx.owner.type.getI10n("value")})
+%{--                                (${docctx.owner.type.getI10n("value")})--}%
+
+                                <br />
+                                <g:if test="${docctx.owner.dateCreated == docctx.owner.lastUpdated}">
+                                    ${message(code:'template.notes.created')}
+                                </g:if>
+                                <g:else>
+                                    ${message(code:'template.notes.updated')}
+                                </g:else>
+                                <g:formatDate format="${message(code:'default.date.format.notime')}" date="${docctx.owner.lastUpdated}"/>
                             </div>
                             <div class="four wide column">
-                                <g:if test="${docctx.owner.owner?.id == contextService.getOrg().id}">
-                                    <laser:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />
-                                    <button type="button" class="ui icon blue button la-modern-button editable-cancel" data-ui="modal" data-href="#modalEditDocument_${docctx.id}" ><i class="pencil icon"></i></button>
-                                </g:if>
+%{--                                <g:if test="${docctx.owner.owner?.id == contextService.getOrg().id}">--}%
+%{--                                    <laser:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />--}%
+%{--                                    <button type="button" class="ui icon blue button la-modern-button editable-cancel" data-ui="modal" data-href="#modalEditDocument_${docctx.id}" ><i class="pencil icon"></i></button>--}%
+%{--                                </g:if>--}%
                             </div>
                         </div>
                     </div>

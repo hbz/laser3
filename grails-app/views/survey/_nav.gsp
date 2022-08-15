@@ -103,11 +103,11 @@
                               message="surveyConfigDocs.label"/>
 
             <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="tasks"
-                              params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
+                              params="${[id: params.id, surveyConfigID: surveyConfig.id]}" counts="${tasksCount}"
                               message="task.plural"/>
 
             <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="notes"
-                              params="${[id: params.id, surveyConfigID: surveyConfig.id]}"
+                              params="${[id: params.id, surveyConfigID: surveyConfig.id]}" counts="${notesCount}"
                               message="default.notes.label"/>
 
             <ui:subNavItem controller="survey" disabled="${subNavDisable}" tooltip="${disableTooltip}" action="surveyParticipants"

@@ -11,7 +11,7 @@
 <ui:xEditable owner="${surveyInfo}" field="name"
                  overwriteEditable="${surveyInfo.isSubscriptionSurvey ? false : editable}"/>
 </ui:h1HeaderWithIcon>
-<survey:statusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="show"/>
+<uiSurvey:statusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="show"/>
 
 
 <laser:render template="nav"/>
@@ -35,8 +35,8 @@
 </h2>
 
 <laser:render template="/templates/tasks/tables" model="${[
-        taskInstanceList: taskInstanceList,     taskInstanceCount: taskInstanceCount,
-        myTaskInstanceList: myTaskInstanceList, myTaskInstanceCount: myTaskInstanceCount
+        taskInstanceList: taskInstanceList,
+        myTaskInstanceList: myTaskInstanceList
 ]}"/>
 
 <laser:htmlEnd />

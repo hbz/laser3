@@ -2461,11 +2461,9 @@ join sub.orgRelations or_sub where
         Map<String, Object> queryForFilter = filterService.getTaskQuery(params, sdFormat)
         int offset = params.offset ? Integer.parseInt(params.offset) : 0
         result.taskInstanceList = taskService.getTasksByResponsibles(result.user, result.institution, queryForFilter)
-        result.taskInstanceCount = result.taskInstanceList.size()
         result.taskInstanceList = taskService.chopOffForPageSize(result.taskInstanceList, result.user, offset)
 
         result.myTaskInstanceList = taskService.getTasksByCreator(result.user,  queryForFilter, null)
-        result.myTaskInstanceCount = result.myTaskInstanceList.size()
         result.myTaskInstanceList = taskService.chopOffForPageSize(result.myTaskInstanceList, result.user, offset)
 
         Map<String, Object> preCon = taskService.getPreconditions(result.institution)

@@ -70,7 +70,7 @@
 
                     <g:if test="${query in [ 'subscription-x-property', 'subscription-x-memberSubscriptionProperty' ]}">
                         <td>
-                            <reporting:objectProperties owner="${sub}" tenant="${contextService.getOrg()}" propDefId="${id}" />
+                            <uiReporting:objectProperties owner="${sub}" tenant="${contextService.getOrg()}" propDefId="${id}" />
                         </td>
                     </g:if>
                     <g:elseif test="${query == 'subscription-x-platform'}">

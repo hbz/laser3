@@ -34,26 +34,26 @@
                 <tr>
                     <td>${i + 1}.</td>
 
-                    <reporting:detailsTableTD config="${dtConfig}" field="name">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="name">
 
                         <g:link controller="package" action="show" id="${pkg.id}" target="_blank">${pkg.name}</g:link>
-                    </reporting:detailsTableTD>
+                    </uiReporting:detailsTableTD>
 
-                    <reporting:detailsTableTD config="${dtConfig}" field="sortname">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="sortname">
 
                         <g:if test="${pkg.sortname}">
                             <g:link controller="package" action="show" id="${pkg.id}" target="_blank">${pkg.sortname}</g:link>
                         </g:if>
-                    </reporting:detailsTableTD>
+                    </uiReporting:detailsTableTD>
 
-                    <reporting:detailsTableTD config="${dtConfig}" field="package-altname">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="package-altname">
 
                         <g:if test="${esRecordIds.contains(pkg.id)}">
                             ${esRecords.get(pkg.id as String).altname?.join(', ')}
                         </g:if>
-                    </reporting:detailsTableTD>
+                    </uiReporting:detailsTableTD>
 
-                    <reporting:detailsTableTD config="${dtConfig}" field="package-x-id">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="package-x-id">
 
                         <g:if test="${esRecordIds.contains(pkg.id)}">
                             <%
@@ -64,38 +64,38 @@
                                 }.join(',<br/>')
                             %>
                         </g:if>
-                    </reporting:detailsTableTD>
+                    </uiReporting:detailsTableTD>
 
-                    <reporting:detailsTableTD config="${dtConfig}" field="contentType">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="contentType">
 
                         ${pkg.contentType?.getI10n('value')}
-                    </reporting:detailsTableTD>
+                    </uiReporting:detailsTableTD>
 
-                    <reporting:detailsTableTD config="${dtConfig}" field="packageStatus">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="packageStatus">
 
                         ${pkg.packageStatus?.getI10n('value')}
-                    </reporting:detailsTableTD>
+                    </uiReporting:detailsTableTD>
 
-                    <reporting:detailsTableTD config="${dtConfig}" field="orProvider">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="orProvider">
 
                         <g:each in="${pkg.orgs.findAll{ it.roleType in [ RDStore.OR_PROVIDER, RDStore.OR_CONTENT_PROVIDER ]}}" var="ro">
                             <g:link controller="org" action="show" id="${ro.org.id}" target="_blank">${ro.org.sortname ?: ro.org.name}</g:link><br />
                         </g:each>
-                    </reporting:detailsTableTD>
+                    </uiReporting:detailsTableTD>
 
-                    <reporting:detailsTableTD config="${dtConfig}" field="nominalPlatform">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="nominalPlatform">
 
                         <g:if test="${pkg.nominalPlatform}">
                             <g:link controller="platform" action="show" id="${pkg.nominalPlatform.id}" target="_blank">${pkg.nominalPlatform.name}</g:link>
                         </g:if>
-                    </reporting:detailsTableTD>
+                    </uiReporting:detailsTableTD>
 
-                    <reporting:detailsTableTD config="${dtConfig}" field="file">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="file">
 
                         ${pkg.file?.getI10n('value')}
-                    </reporting:detailsTableTD>
+                    </uiReporting:detailsTableTD>
 
-                    <reporting:detailsTableTD config="${dtConfig}" field="_+_currentTitles">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="_+_currentTitles">
 
                         <%
                             List tipps = TitleInstancePackagePlatform.executeQuery(
@@ -104,75 +104,75 @@
                             )
                             println tipps[0] > 0 ? tipps[0] : ''
                         %>
-                    </reporting:detailsTableTD>
+                    </uiReporting:detailsTableTD>
 
-                    <reporting:detailsTableTD config="${dtConfig}" field="package-breakable">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="package-breakable">
 
-                        <reporting:detailsTableEsValue key="${key}" id="${pkg.id}" field="breakable" records="${esRecords}" />
-                    </reporting:detailsTableTD>
+                        <uiReporting:detailsTableEsValue key="${key}" id="${pkg.id}" field="breakable" records="${esRecords}" />
+                    </uiReporting:detailsTableTD>
 
-                    <reporting:detailsTableTD config="${dtConfig}" field="package-paymentType">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="package-paymentType">
 
-                        <reporting:detailsTableEsValue key="${key}" id="${pkg.id}" field="paymentType" records="${esRecords}" />
-                    </reporting:detailsTableTD>
+                        <uiReporting:detailsTableEsValue key="${key}" id="${pkg.id}" field="paymentType" records="${esRecords}" />
+                    </uiReporting:detailsTableTD>
 
-                    <reporting:detailsTableTD config="${dtConfig}" field="package-openAccess">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="package-openAccess">
 
-                        <reporting:detailsTableEsValue key="${key}" id="${pkg.id}" field="openAccess" records="${esRecords}" />
-                    </reporting:detailsTableTD>
+                        <uiReporting:detailsTableEsValue key="${key}" id="${pkg.id}" field="openAccess" records="${esRecords}" />
+                    </uiReporting:detailsTableTD>
 
-                    <reporting:detailsTableTD config="${dtConfig}" field="package-consistent">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="package-consistent">
 
-                        <reporting:detailsTableEsValue key="${key}" id="${pkg.id}" field="consistent" records="${esRecords}" />
-                    </reporting:detailsTableTD>
+                        <uiReporting:detailsTableEsValue key="${key}" id="${pkg.id}" field="consistent" records="${esRecords}" />
+                    </uiReporting:detailsTableTD>
 
-                    <reporting:detailsTableTD config="${dtConfig}" field="package-scope">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="package-scope">
 
-                        <reporting:detailsTableEsValue key="${key}" id="${pkg.id}" field="scope" records="${esRecords}" />
-                    </reporting:detailsTableTD>
+                        <uiReporting:detailsTableEsValue key="${key}" id="${pkg.id}" field="scope" records="${esRecords}" />
+                    </uiReporting:detailsTableTD>
 
-                    <reporting:detailsTableTD config="${dtConfig}" field="package-x-ddc">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="package-x-ddc">
 
                         <g:if test="${esRecordIds.contains(pkg.id)}">
                             <g:each in="${esRecords.get(pkg.id as String).ddcs}" var="ddc">
                                 ${ RefdataValue.getByValueAndCategory(ddc.value as String, RDConstants.DDC)?.getI10n('value') ?: GenericHelper.flagUnmatched( ddc.value_de ) } <br />
                             </g:each>
                         </g:if>
-                    </reporting:detailsTableTD>
+                    </uiReporting:detailsTableTD>
 
-                    <reporting:detailsTableTD config="${dtConfig}" field="package-x-nationalRange">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="package-x-nationalRange">
 
                         <g:if test="${esRecordIds.contains(pkg.id)}">
                             <g:each in="${esRecords.get(pkg.id as String).nationalRanges}" var="nationalRange">
                                 ${ RefdataValue.getByValueAndCategory(nationalRange.value as String, RDConstants.COUNTRY)?.getI10n('value') ?: GenericHelper.flagUnmatched( nationalRange.value ) } <br />
                             </g:each>
                         </g:if>
-                    </reporting:detailsTableTD>
+                    </uiReporting:detailsTableTD>
 
-                    <reporting:detailsTableTD config="${dtConfig}" field="package-x-regionalRange">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="package-x-regionalRange">
 
                         <g:if test="${esRecordIds.contains(pkg.id)}">
                             <g:each in="${esRecords.get(pkg.id as String).regionalRanges}" var="regionalRange">
                                 ${ RefdataValue.getByValueAndCategory(regionalRange.value as String, RDConstants.REGIONS_DE)?.getI10n('value') ?: GenericHelper.flagUnmatched( regionalRange.value ) } <br />
                             </g:each>
                         </g:if>
-                    </reporting:detailsTableTD>
+                    </uiReporting:detailsTableTD>
 
-                    <reporting:detailsTableTD config="${dtConfig}" field="package-x-language">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="package-x-language">
 
                         <g:each in="${pkg.languages}" var="lang">
                             ${lang.language.getI10n('value')} <br />
                         </g:each>
-                    </reporting:detailsTableTD>
+                    </uiReporting:detailsTableTD>
 
-                    <reporting:detailsTableTD config="${dtConfig}" field="package-description">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="package-description">
 
                         <g:if test="${esRecordIds.contains(pkg.id)}">
                             ${esRecords.get(pkg.id as String).description}
                         </g:if>
-                    </reporting:detailsTableTD>
+                    </uiReporting:detailsTableTD>
 
-                    <reporting:detailsTableTD config="${dtConfig}" field="package-descriptionURL">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="package-descriptionURL">
 
                         <g:if test="${esRecordIds.contains(pkg.id)}">
                             <g:set var="descriptionURL" value="${esRecords.get(pkg.id as String).descriptionURL}" />
@@ -180,9 +180,9 @@
                                 <a href="${descriptionURL}" target="_blank">${descriptionURL}</a>
                             </g:if>
                         </g:if>
-                    </reporting:detailsTableTD>
+                    </uiReporting:detailsTableTD>
 
-                    <reporting:detailsTableTD config="${dtConfig}" field="package-x-curatoryGroup">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="package-x-curatoryGroup">
 
                         <g:if test="${esRecordIds.contains(pkg.id)}">
                             <g:each in="${esRecords.get(pkg.id as String).curatoryGroups}" var="curatoryGroup">
@@ -196,18 +196,18 @@
                                 ${curatoryGroup.name} ${cgType}<br />
                             </g:each>
                         </g:if>
-                    </reporting:detailsTableTD>
+                    </uiReporting:detailsTableTD>
 
-                    <reporting:detailsTableTD config="${dtConfig}" field="package-x-archivingAgency">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="package-x-archivingAgency">
 
                         <g:if test="${esRecordIds.contains(pkg.id)}">
                             <g:each in="${esRecords.get(pkg.id as String).packageArchivingAgencies}" var="archivingAgency">
                                 ${archivingAgency.archivingAgency}<br />
                             </g:each>
                         </g:if>
-                    </reporting:detailsTableTD>
+                    </uiReporting:detailsTableTD>
 
-                    <reporting:detailsTableTD config="${dtConfig}" field="_+_lastUpdated">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="_+_lastUpdated">
 
                         <g:if test="${esRecordIds.contains(pkg.id)}">
                             <g:formatDate format="${message(code:'default.date.format.notime')}" date="${DateUtils.parseDateGeneric(esRecords.getAt(pkg.id.toString()).lastUpdatedDisplay)}" />
@@ -215,9 +215,9 @@
                         <g:else>
                             <g:formatDate format="${message(code:'default.date.format.notime')}" date="${pkg._getCalculatedLastUpdated()}" />
                         </g:else>
-                    </reporting:detailsTableTD>
+                    </uiReporting:detailsTableTD>
 
-                    <reporting:detailsTableTD config="${dtConfig}" field="_+_wekb">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="_+_wekb">
 
                         <g:if test="${wekb?.baseUrl && pkg.gokbId}">
                             <g:if test="${esRecordIds.contains(pkg.id)}">
@@ -230,7 +230,7 @@
                                 </span>
                             </g:else>
                         </g:if>
-                    </reporting:detailsTableTD>
+                    </uiReporting:detailsTableTD>
 
                 </tr>
             </g:each>

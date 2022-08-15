@@ -111,7 +111,7 @@
                     case 'error'    : tdClass = 'table-td-yoda-red'; break
                 }
                 if (el.hasChanged) {
-                    tdClass += ' sh_underline'
+                    tdClass += ' sf_underline'
                 }
             %>
             <tr>

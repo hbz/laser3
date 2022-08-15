@@ -120,8 +120,6 @@ class LicenseController {
 
             // tasks
             result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.institution, result.license)
-            Map<String, Object> preCon = taskService.getPreconditionsWithoutTargets(result.institution)
-            result << preCon
 
             String i10value = LocaleUtils.getLocalizedAttributeName('value')
             // restrict visible for templates/links/orgLinksAsList

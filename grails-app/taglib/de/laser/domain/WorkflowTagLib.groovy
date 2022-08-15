@@ -8,7 +8,7 @@ import de.laser.workflow.WfTask
 
 class WorkflowTagLib {
 
-    static namespace = 'workflow'
+    static namespace = 'uiWorkflow'
 
     def task = { attrs, body ->
 

@@ -12,7 +12,7 @@ class SurveyTagLib {
     ContextService contextService
     LinksGenerationService linksGenerationService
 
-    static namespace = 'survey'
+    static namespace = 'uiSurvey'
 
     def status = { attrs, body ->
         def object = attrs.object

@@ -17,10 +17,10 @@
                     <div class="fields">
                 </g:if>
                 <g:else>
-                    <div class="fields <reporting:numberToString number="${cfgFilter.size()}" min="2"/>">
+                    <div class="fields <uiReporting:numberToString number="${cfgFilter.size()}" min="2"/>">
                 </g:else>
                     <g:each in="${cfgFilter}" var="field">
-                        <reporting:filterField config="${config}" field="${field}" />
+                        <uiReporting:filterField config="${config}" field="${field}" />
                     </g:each>
                 </div>
             </g:each>

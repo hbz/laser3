@@ -33,16 +33,16 @@
 
             <g:each in="${config.filter.default}" var="cfgFilter">
                 <g:if test="${cfgFilter.containsAll(['startDateLimit','endDateLimit']) && cfgFilter.size() == 2}">
-                    <div class="fields <reporting:numberToString number="${cfgFilter.size()}" min="4"/>">
+                    <div class="fields <uiReporting:numberToString number="${cfgFilter.size()}" min="4"/>">
                 </g:if>
                 <g:elseif test="${cfgFilter.findAll{it.contains('Date')}.size() == cfgFilter.size()}"> %{-- tmp datepicker layout fix --}%
                     <div class="fields">
                 </g:elseif>
                 <g:else>
-                    <div class="fields <reporting:numberToString number="${cfgFilter.size()}" min="2"/>">
+                    <div class="fields <uiReporting:numberToString number="${cfgFilter.size()}" min="2"/>">
                 </g:else>
                     <g:each in="${cfgFilter}" var="field">
-                        <reporting:filterField config="${config}" field="${field}" />
+                        <uiReporting:filterField config="${config}" field="${field}" />
                     </g:each>
                 </div>
             </g:each>
@@ -60,16 +60,16 @@
 
                 <g:each in="${config.filter.default}" var="cfgFilter">
                     <g:if test="${cfgFilter.containsAll(['startDateLimit','endDateLimit']) && cfgFilter.size() == 2}">
-                        <div class="fields <reporting:numberToString number="${cfgFilter.size()}" min="4"/>">
+                        <div class="fields <uiReporting:numberToString number="${cfgFilter.size()}" min="4"/>">
                     </g:if>
                     <g:elseif test="${cfgFilter.findAll{it.contains('Date')}.size() == cfgFilter.size()}"> %{-- tmp datepicker layout fix --}%
                         <div class="fields">
                     </g:elseif>
                     <g:else>
-                        <div class="fields <reporting:numberToString number="${cfgFilter.size()}" min="2"/>">
+                        <div class="fields <uiReporting:numberToString number="${cfgFilter.size()}" min="2"/>">
                     </g:else>
                         <g:each in="${cfgFilter}" var="field">
-                            <reporting:filterField config="${config}" field="${field}" key="memberSubscription" />
+                            <uiReporting:filterField config="${config}" field="${field}" key="memberSubscription" />
                         </g:each>
                     </div>
                 </g:each>
@@ -87,9 +87,9 @@
                 </div>
 
                 <g:each in="${config.filter.default}" var="cfgFilter">
-                    <div class="fields <reporting:numberToString number="${cfgFilter.size()}" min="2"/>">
+                    <div class="fields <uiReporting:numberToString number="${cfgFilter.size()}" min="2"/>">
                         <g:each in="${cfgFilter}" var="field">
-                            <reporting:filterField config="${config}" field="${field}" key="member" />
+                            <uiReporting:filterField config="${config}" field="${field}" key="member" />
                         </g:each>
                     </div>
                 </g:each>
@@ -109,9 +109,9 @@
 
                     %{--
                     <g:each in="${config.filter.default}" var="cfgFilter">
-                        <div class="fields <reporting:numberToString number="${cfgFilter.size()}" min="2"/>">
+                        <div class="fields <uiReporting:numberToString number="${cfgFilter.size()}" min="2"/>">
                             <g:each in="${cfgFilter}" var="field">
-                                <reporting:filterField config="${config}" field="${field}" key="consortium" />
+                                <uiReporting:filterField config="${config}" field="${field}" key="consortium" />
                             </g:each>
                         </div>
                     </g:each>
@@ -133,9 +133,9 @@
                 </div>
 
                 <g:each in="${config.filter.default}" var="cfgFilter">
-                    <div class="fields <reporting:numberToString number="${cfgFilter.size()}" min="2"/>">
+                    <div class="fields <uiReporting:numberToString number="${cfgFilter.size()}" min="2"/>">
                         <g:each in="${cfgFilter}" var="field">
-                            <reporting:filterField config="${config}" field="${field}" key="provider" />
+                            <uiReporting:filterField config="${config}" field="${field}" key="provider" />
                         </g:each>
                     </div>
                 </g:each>
@@ -154,9 +154,9 @@
                 </div>
 
                 <g:each in="${config.filter.default}" var="cfgFilter">
-                    <div class="fields <reporting:numberToString number="${cfgFilter.size()}" min="2"/>">
+                    <div class="fields <uiReporting:numberToString number="${cfgFilter.size()}" min="2"/>">
                         <g:each in="${cfgFilter}" var="field">
-                            <reporting:filterField config="${config}" field="${field}" key="agency" />
+                            <uiReporting:filterField config="${config}" field="${field}" key="agency" />
                         </g:each>
                     </div>
                 </g:each>

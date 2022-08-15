@@ -2,6 +2,7 @@ package de.laser.ctrl
 
 import de.laser.AccessService
 import de.laser.ContextService
+import de.laser.DocstoreService
 import de.laser.License
 import de.laser.Org
 import de.laser.Subscription
@@ -11,10 +12,8 @@ import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyConfigProperties
 import de.laser.SurveyController
 import de.laser.survey.SurveyInfo
-import de.laser.survey.SurveyLinks
 import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyResult
-import de.laser.Task
 import de.laser.TaskService
 import de.laser.auth.User
 import de.laser.utils.LocaleUtils
@@ -34,6 +33,7 @@ class SurveyControllerService {
 
     AccessService accessService
     ContextService contextService
+    DocstoreService docstoreService
     SubscriptionService subscriptionService
     TaskService taskService
 
@@ -61,6 +61,12 @@ class SurveyControllerService {
         if (result.surveyConfig) {
             result.transferWorkflow = result.surveyConfig.transferWorkflow ? JSON.parse(result.surveyConfig.transferWorkflow) : null
         }
+
+        int tc1 = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.surveyConfig).size()
+        int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.surveyConfig).size()
+        result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
+
+        result.notesCount = docstoreService.getNotes(result.surveyConfig, result.contextOrg).size()
 
         result.subscription = result.surveyConfig.subscription ?: null
 

@@ -38,7 +38,7 @@ import groovy.sql.BatchingStatementWrapper
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import groovy.time.TimeCategory
-import org.apache.commons.lang.StringEscapeUtils
+import org.apache.commons.lang3.StringEscapeUtils
 import org.apache.commons.lang3.RandomStringUtils
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.hibernate.SessionFactory
@@ -67,6 +67,7 @@ class SubscriptionControllerService {
     AddressbookService addressbookService
     AuditService auditService
     ContextService contextService
+    DocstoreService docstoreService
     FactService factService
     EscapeService escapeService
     ExecutorService executorService
@@ -145,8 +146,7 @@ class SubscriptionControllerService {
             //def task_tasks = task {
             // tasks
             result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.subscription)
-            Map<String,Object> preCon = taskService.getPreconditionsWithoutTargets(result.contextOrg)
-            result << preCon
+
             Set<Long> excludes = [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id]
             if(result.institution.getCustomerType() == "ORG_CONSORTIUM")
                 excludes << RDStore.OR_SUBSCRIPTION_CONSORTIA.id
@@ -2281,7 +2281,8 @@ class SubscriptionControllerService {
                         String escapedFileName
                         try {
                             // escapedFileName = StringEscapeCategory.encodeAsHtml(result.identifiers.filename)
-                            escapedFileName = StringEscapeUtils.escapeHtml(result.identifiers.filename)
+                            // todo: check if it's needed and migrate to e.g. org.apache.commons.commons-text
+                            escapedFileName = StringEscapeUtils.escapeHtml4(result.identifiers.filename)
                         }
                         catch (Exception | Error e) {
                             log.error(e.printStackTrace())
@@ -3388,6 +3389,12 @@ class SubscriptionControllerService {
             }
             result.showConsortiaFunctions = subscriptionService.showConsortiaFunctions(result.contextOrg, result.subscription)
 
+            int tc1 = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.subscription).size()
+            int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.subscription).size()
+            result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
+
+
+            result.notesCount = docstoreService.getNotes(result.subscription, result.contextOrg).size()
 
             result.workflowCount = WfWorkflow.executeQuery(
                     'select count(wf) from WfWorkflow wf where wf.subscription = :sub and wf.owner = :ctxOrg',
