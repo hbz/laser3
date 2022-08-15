@@ -1014,10 +1014,13 @@ class StatsSyncService {
         }
         else {
             Calendar currentYear = GregorianCalendar.getInstance()
-            //initially set to January 1st, '18; set flexibly to start of current year
+            //initially set to January 1st, '18; set flexibly to start of past year
+            currentYear.add(Calendar.YEAR, -1)
             currentYear.set(Calendar.DAY_OF_YEAR, 1)
             startDate = currentYear.getTime()
-            endNextRun = now.getTime()
+            currentYear.set(Calendar.MONTH, 11)
+            currentYear.set(Calendar.DAY_OF_MONTH, 31)
+            endNextRun = currentYear.getTime()
             endTime = now.getTime()
         }
         [startDate: startDate, endTime: endTime, endNextRun: endNextRun, now: now]

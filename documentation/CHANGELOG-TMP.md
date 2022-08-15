@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4397    11.08.2022  rc-2.3  2.3.5       Andreas Bug         Fehler bei der Übertragung von Lizenzen behoben
+
+--      11.08.2022  rc-2.3  2.3.5       Andreas Bug         Statistik wird jetzt auch ohne Titel angezeigt
+
 --      09.08.2022  rc-2.3  2.3.4       Andreas Feature     Sicht bei Kundennummern optimiert
 
 --      09.08.2022  rc-2.3  2.3.4       Andreas Bug         Abfrage bei Überprüfung vorhandener Nutzungsstatistiken optimiert
