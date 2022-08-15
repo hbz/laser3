@@ -899,6 +899,7 @@ class DeletionService {
                 Map<String,Collection<TitleInstancePackagePlatform>> toDelete = [toDelete:tippsToDelete]
                 Map<String,Collection<IssueEntitlement>> delIssueEntitlements = [toDelete:IssueEntitlement.findAllByTippInListAndStatus(tippsToDelete, RDStore.TIPP_STATUS_REMOVED)]
                 log.info("${PendingChange.executeUpdate('delete from PendingChange pc where pc.tippCoverage in (select tc from TIPPCoverage tc where tc.tipp in (:toDelete))',toDelete)} coverage pending changes deleted")
+                log.info("${PendingChange.executeUpdate('delete from PendingChange pc where pc.priceItem in (select pi from PriceItem pi where pi.tipp in (:toDelete))',toDelete)} price item pending changes deleted")
                 log.info("${TIPPCoverage.executeUpdate('delete from TIPPCoverage tc where tc.tipp in (:toDelete)',toDelete)} coverages deleted")
                 log.info("${Identifier.executeUpdate('delete from Identifier i where i.tipp in (:toDelete)',toDelete)} identifiers deleted")
                 log.info("${PriceItem.executeUpdate('delete from PriceItem pi where pi.tipp in (:toDelete)', toDelete)} price items deleted")
