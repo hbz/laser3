@@ -48,7 +48,7 @@ class PublicController {
             }
         }
         catch (Exception e) {
-            println "Unable to perform email due to exception ${e.message}"
+            log.error "Unable to perform email due to exception ${e.message}"
         }
     }
 

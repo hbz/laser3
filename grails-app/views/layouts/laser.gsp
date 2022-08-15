@@ -155,14 +155,7 @@
 
                                 <div class="divider"></div>
                                 <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_ADM" controller="myInstitution" action="users" message="menu.institutions.users" />
-
                                 <ui:securedMainNavItem generateElementId="true" role="menuitem" orgPerm="ORG_INST,ORG_CONSORTIUM" affiliation="INST_USER" controller="myInstitution" action="reporting" message="menu.institutions.reporting" />
-
-                                <sec:ifAnyGranted roles="ROLE_YODA">
-                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="myInstitution" action="changeLog">${message(code:'menu.institutions.change_log')}</ui:link>
-                                    <%--<ui:securedMainNavItem generateElementId="true" affiliation="INST_EDITOR" controller="myInstitution" action="changeLog" message="menu.institutions.change_log" />--%>
-                                </sec:ifAnyGranted>
-
                             </div>
                         </div>
                     </g:if>
@@ -198,14 +191,8 @@
 
                                     <div class="divider"></div>
 
-                                    <%--<ui:link generateElementId="true" class="item" role="menuitem" controller="upload" action="reviewPackage">${message(code:'menu.datamanager.uploadPackage')}</ui:link>--%>
-                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="licenseImport" action="doImport">${message(code:'onix.import.license')}</ui:link>
-
-                                    <div class="divider"></div>
-
                                     <ui:link generateElementId="true" class="item" role="menuitem" controller="subscription" action="compare">${message(code:'menu.datamanager.compareSubscriptions')}</ui:link>
                                     <ui:link generateElementId="true" class="item" role="menuitem" controller="onixplLicenseCompare" action="index">${message(code:'menu.institutions.comp_onix')}</ui:link>
-                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="dataManager" action="changeLog">${message(code:'menu.datamanager.changelog')}</ui:link>
                                     <div class="divider"></div>
                                 </sec:ifAnyGranted>
 
@@ -229,7 +216,7 @@
 
                                 <div class="item" role="menuitem" aria-haspopup="true">
                                     <div class="title">
-                                        ${message(code:'menu.admin.sysAdmin')} <i class="dropdown icon"></i>
+                                        <i class="ui icon keyboard outline"></i> ${message(code:'menu.admin.sysAdmin')} <i class="dropdown icon"></i>
                                     </div>
 
                                     <div class="menu" role="menu">
@@ -242,16 +229,7 @@
 
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="triggerHousekeeping" onclick="return confirm('${message(code:'confirm.start.HouseKeeping')}')">${message(code:'menu.admin.triggerHousekeeping')}</ui:link>
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="initiateCoreMigration" onclick="return confirm('${message(code:'confirm.start.CoreMigration')}')">${message(code:'menu.admin.coreMigration')}</ui:link>
-                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="dataCleanse" onclick="return confirm('${message(code:'confirm.start.DataCleaningNominalPlatforms')}')">Run Data Cleaning (Nominal Platforms)</ui:link>
-                                    </div>
-                                </div>
-                                <div class="item" role="menuitem" aria-haspopup="true">
-                                    <div class="title">
-                                        <i class="ui icon code branch"></i> <span class="text">Developer</span> <i class="dropdown icon"></i>
-                                    </div>
-
-                                    <div class="menu" role="menu">
-                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="dev" action="frontend">Frontend</ui:link>
+                                        %{--<ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="dataCleanse" onclick="return confirm('${message(code:'confirm.start.DataCleaningNominalPlatforms')}')">Run Data Cleaning (Nominal Platforms)</ui:link>--}%
                                     </div>
                                 </div>
 
@@ -296,6 +274,18 @@
                                 <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="managePropertyDefinitions">${message(code:'menu.admin.managePropertyDefinitions')}</ui:link>
                                 <%--<ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="managePropertyGroups">${message(code:'menu.institutions.manage_prop_groups')}</ui:link>--%> <%-- property groups are always private?? --%>
                                 <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="manageRefdatas">${message(code:'menu.admin.manageRefdatas')}</ui:link>
+
+                                <div class="divider"></div>
+
+                                <div class="item" role="menuitem" aria-haspopup="true">
+                                    <div class="title">
+                                        <i class="ui icon code branch"></i> <span class="text">Developer</span> <i class="dropdown icon"></i>
+                                    </div>
+
+                                    <div class="menu" role="menu">
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="dev" action="frontend">Frontend</ui:link>
+                                    </div>
+                                </div>
 
                                 <div class="divider"></div>
 
@@ -349,11 +339,22 @@
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="dueDates_sendAllEmails">${message(code:'menu.admin.sendEmailsForDueDates')}</ui:link>
                                     </div>
                                 </div>
+
                                 <div class="divider"></div>
-                                <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="statsSync">${message(code:'menu.admin.stats.sync')}</ui:link>
-                                <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="manageStatsSources">SUSHI-Quellen bearbeiten</ui:link>
-                                <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="fetchStats" params="[(FormService.FORM_SERVICE_TOKEN): formService.getNewToken(), incremental: true]">${message(code:'menu.admin.stats.fetch.incremental')}</ui:link>
-                                <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="fetchStats" params="[(FormService.FORM_SERVICE_TOKEN): formService.getNewToken(), incremental: false]">${message(code:'menu.admin.stats.fetch')}</ui:link>
+
+                                <div class="item" role="menuitem" aria-haspopup="true">
+                                    <div class="title">
+                                        Statistik <i class="dropdown icon"></i>
+                                    </div>
+                                    <div class="menu" role="menu">
+
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="statsSync">${message(code:'menu.admin.stats.sync')}</ui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="manageStatsSources">SUSHI-Quellen bearbeiten</ui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="fetchStats" params="[(FormService.FORM_SERVICE_TOKEN): formService.getNewToken(), incremental: true]">${message(code:'menu.admin.stats.fetch.incremental')}</ui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="fetchStats" params="[(FormService.FORM_SERVICE_TOKEN): formService.getNewToken(), incremental: false]">${message(code:'menu.admin.stats.fetch')}</ui:link>
+                                    </div>
+                                </div>
+
                                 <div class="divider"></div>
 
                                 <div class="item" role="menuitem" aria-haspopup="true">
@@ -384,6 +385,8 @@
                                     </div>
                                 </div>
 
+                                <div class="divider"></div>
+
                                 <div class="item" role="menuitem" aria-haspopup="true">
                                     <div class="title">
                                         ${message(code:'elasticsearch.label')} <i class="dropdown icon"></i>
@@ -394,7 +397,6 @@
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="manageFTControl">Manage FTControl</ui:link>
                                         <div class="divider"></div>
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="fullReset" onclick="return confirm('${message(code:'confirm.start.resetESIndex')}')">${message(code:'menu.yoda.resetESIndex')}</ui:link>
-                                        <div class="divider"></div>
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="killDataloadService">Kill ES Update Index</ui:link>
                                         <div class="divider"></div>
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="createESIndices">Create ES Indices</ui:link>
@@ -419,6 +421,7 @@
 
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="databaseInfo">${message(code: "menu.admin.databaseInfo")}</ui:link>
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="databaseCollations">${message(code: "menu.admin.databaseCollations")}</ui:link>
+                                        <div class="divider"></div>
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="dataConsistency">${message(code: "menu.admin.dataConsistency")}</ui:link>
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="fileConsistency">${message(code: "menu.admin.fileConsistency")}</ui:link>
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="manageDeletedObjects">${message(code: "menu.admin.deletedObjects")}</ui:link>
@@ -523,14 +526,24 @@
         <g:set var="visibilityContextOrgMenu" value="la-show-context-orgMenu" />
         <nav class="ui fixed menu la-contextBar" aria-label="${message(code:'wcag.label.modeNavigation')}" >
             <div class="ui container">
-                <button class="ui button big la-menue-button"><i class="bars icon"></i></button>
+                <button class="ui button big la-menue-button" style="display:none"><i class="bars icon"></i></button>
                 <div class="ui sub header item la-context-org">${contextOrg?.name}</div>
 
                 <div class="right menu la-advanced-view">
                     <div class="item">
-                        <g:if test="${cachedContent}">
-                            <span class="ui icon button la-popup-tooltip la-delay" data-content="${message(code:'statusbar.cachedContent.tooltip')}" data-position="bottom right" data-variation="tiny">
+                        <g:if test="${flagContentCache}">
+                            <span class="ui icon button la-popup-tooltip la-delay" data-content="${message(code:'statusbar.flagContentCache.tooltip')}" data-position="bottom right" data-variation="tiny">
                                 <i class="hourglass end icon"></i>
+                            </span>
+                        </g:if>
+                        <g:if test="${flagContentGokb}">
+                            <span class="ui icon button la-popup-tooltip la-delay" data-content="${message(code:'statusbar.flagContentGokb.tooltip')}" data-position="bottom right" data-variation="tiny">
+                                <i class="cloud icon"></i>
+                            </span>
+                        </g:if>
+                        <g:if test="${flagContentElasticsearch}">
+                            <span class="ui icon button la-popup-tooltip la-delay" data-content="${message(code:'statusbar.flagContentElasticsearch.tooltip')}" data-position="bottom right" data-variation="tiny">
+                                <i class="cloud icon"></i>
                             </span>
                         </g:if>
                     </div>

@@ -11,7 +11,6 @@ import de.laser.storage.RDStore
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 
 /**
  * This class is a service mirror for {@link FinanceController} to capsule the complex data manipulation
@@ -98,6 +97,8 @@ class FinanceControllerService {
             result.navNextSubscription = navigation.nextLink
             result.navPrevSubscription = navigation.prevLink
         }
+        Locale locale = LocaleUtils.getCurrentLocale()
+
         //see the decision tree above
         List<String> dataToDisplay = []
         boolean editable = false
@@ -120,7 +121,7 @@ class FinanceControllerService {
                             result.showVisibilitySettings = true
                             result.showConsortiaFunctions = true
                             result.sortConfig.consSort = 'ci.costTitle'
-                            result.subMemberLabel = messageSource.getMessage('consortium.subscriber',null, LocaleContextHolder.getLocale())
+                            result.subMemberLabel = messageSource.getMessage('consortium.subscriber',null, locale)
                             result.subMembers = Subscription.executeQuery('select s, oo.org.sortname as sortname from Subscription s join s.orgRelations oo where s = :parent and oo.roleType in :subscrRoles order by sortname asc',[parent:result.subscription,subscrRoles:[RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]).collect { row -> row[0]}
                             result.showVisibilitySettings = true
                             editable = true
@@ -131,7 +132,7 @@ class FinanceControllerService {
                         dataToDisplay.addAll(['own','cons'])
                         result.showView = 'cons'
                         result.showConsortiaFunctions = true
-                        result.subMemberLabel = messageSource.getMessage('consortium.subscriber',null,LocaleContextHolder.getLocale())
+                        result.subMemberLabel = messageSource.getMessage('consortium.subscriber',null, locale)
                         result.subMembers = Subscription.executeQuery('select s, oo.org.sortname as sortname from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscrRoles order by sortname asc',[parent:result.subscription,subscrRoles:[RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]).collect { row -> row[0]}
                         result.showVisibilitySettings = true
                         editable = true
@@ -143,7 +144,7 @@ class FinanceControllerService {
                     result.showView = 'cons'
                     result.showConsortiaFunctions = true
                     result.showVisibilitySettings = true
-                    result.subMemberLabel = messageSource.getMessage('consortium.subscriber',null,LocaleContextHolder.getLocale())
+                    result.subMemberLabel = messageSource.getMessage('consortium.subscriber',null, locale)
                     Set<Org> consMembers = Subscription.executeQuery(
                             'select oo.org, oo.org.sortname as sortname from Subscription s ' +
                                     'join s.instanceOf subC ' +
@@ -208,7 +209,7 @@ class FinanceControllerService {
      * @return a {@link Map} containing further general parameters
      */
     Map<String,Object> getAdditionalGenericEditResults(Map configMap) {
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
         Map<String,Object> result = getEditVars(configMap.institution)
 
         log.debug(configMap.dataToDisplay)
@@ -230,13 +231,13 @@ class FinanceControllerService {
      * @return a {@link Map} containing generic parameters for manipulating cost items
      */
     Map<String,Object> getEditVars(Org org) {
-        String locale = LocaleUtils.getCurrentLang()
+        String lang = LocaleUtils.getCurrentLang()
         [
             costItemStatus:     RefdataCategory.getAllRefdataValues(RDConstants.COST_ITEM_STATUS) - RDStore.COST_ITEM_DELETED,
             costItemSigns:      RefdataCategory.getAllRefdataValues(RDConstants.COST_CONFIGURATION),
-            costItemElements:   CostItemElementConfiguration.executeQuery('select ciec from CostItemElementConfiguration ciec join ciec.costItemElement cie where ciec.forOrganisation = :org order by cie.value_'+locale+' asc',[org:org]),
+            costItemElements:   CostItemElementConfiguration.executeQuery('select ciec from CostItemElementConfiguration ciec join ciec.costItemElement cie where ciec.forOrganisation = :org order by cie.value_'+lang+' asc',[org:org]),
             taxType:            RefdataCategory.getAllRefdataValues(RDConstants.TAX_TYPE),
-            budgetCodes:        BudgetCode.findAllByOwner(org),
+            budgetCodes:        BudgetCode.findAllByOwner(org, [sort: 'value']),
             currency:           financeService.orderedCurrency()
         ]
     }

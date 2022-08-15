@@ -36,8 +36,8 @@
                 <g:link controller="subscription" action="show" id="${issueEntitlementInstance.subscription.id}">
                     ${issueEntitlementInstance.subscription.dropdownNamingConvention()}
                 </g:link>
-                <br>
-                <br>
+                <br/>
+                <br/>
                 <g:link controller="subscription" action="index" id="${issueEntitlementInstance.subscription.id}">
                     <g:message code="subscription.details.current_ent"/>
                 </g:link>

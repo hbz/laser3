@@ -1,15 +1,14 @@
 package de.laser
 
-
 import de.laser.auth.Role
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyResult
-import org.springframework.context.i18n.LocaleContextHolder
+import de.laser.utils.LocaleUtils
 
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 
-class UiInplaceTagLib {
+class XEditableTagLib {
 
     GenericOIDService genericOIDService
 
@@ -38,39 +37,35 @@ class UiInplaceTagLib {
             String default_empty = message(code:'default.button.edit.label')
             String data_link     = null
 
-            out << "<a href=\"#\" id=\"${id}\" class=\"xEditableValue ${attrs.class ?: ''}\""
+            out << '<a href="#" id="' +  id + '" class="xEditableValue ' + (attrs.class ?: '') + '"'
 
             if(attrs.owner instanceof SurveyResult){
-                out << " data-onblur=\"submit\""
+                out << ' data-onblur="submit"'
             }else {
-                out << " data-onblur=\"ignore\""
+                out << ' data-onblur="ignore"'
             }
 
             if (attrs.type == "date") {
-                out << " data-type=\"text\"" // combodate | date
+                out << ' data-type="text"' // combodate | date
 
                 String df = "${message(code:'default.date.format.notime').toUpperCase()}"
-                out << " data-format=\"${df}\""
-                out << " data-viewformat=\"${df}\""
-                out << " data-template=\"${df}\""
+                out << ' data-format="' + df + '" data-viewformat="' + df + '" data-template="' + df + '"'
 
                 default_empty = message(code:'default.date.format.notime.normal')
-
             }
             else if(attrs.type == "readerNumber") {
-                out << " data-type=\"text\""
+                out << ' data-type="text"'
             }
             else {
-                out << " data-type=\"${attrs.type?:'text'}\""
+                out << ' data-type="' + (attrs.type ?: 'text') + '"'
             }
-            out << " data-pk=\"${oid}\""
-            out << " data-name=\"${attrs.field}\""
+            out << ' data-pk="' + oid + '" data-name="' + attrs.field + '"'
 
             if (attrs.validation) {
-                out << " data-validation=\"${attrs.validation}\" "
+                out << ' data-validation="' + attrs.validation + '"'
             }
             if (attrs.maxlength) {
-                out << " data-maxlength=\"${attrs.maxlength}\" "
+                out << ' data-maxlength="' + attrs.maxlength + '"'
             }
 
             switch (attrs.type) {
@@ -87,18 +82,15 @@ class UiInplaceTagLib {
                     data_link = createLink(controller:'ajax', action: 'editableSetValue').encodeAsHTML()
                 break
             }
-
-            if (attrs.emptytext)
-                out << " data-emptytext=\"${attrs.emptytext}\""
-            else {
-                out << " data-emptytext=\"${default_empty}\""
+            if (data_link) {
+                out << ' data-url="' + data_link + '"'
             }
+
+            out << ' data-emptytext="' + (attrs.emptytext ?: default_empty) + '"'
 
             if (attrs.type == "date" && attrs.language) {
                 out << "data-datepicker=\"{ 'language': '${attrs.language}' }\" language=\"${attrs.language}\" "
             }
-
-            out << " data-url=\"${data_link}\""
 
             if (! body) {
                 String oldValue = ''
@@ -110,7 +102,7 @@ class UiInplaceTagLib {
                     if ((attrs.owner[attrs.field] == null) || (attrs.owner[attrs.field].toString().length()==0)) {
                     }
                     else if(attrs.field in ['decValue','listPrice','localPrice'] || (attrs.field == 'value' && attrs.owner instanceof ReaderNumber)) {
-                        NumberFormat nf = NumberFormat.getInstance(LocaleContextHolder.getLocale())
+                        NumberFormat nf = NumberFormat.getInstance(LocaleUtils.getCurrentLocale())
                         nf.setMinimumFractionDigits(2)
                         nf.setMaximumFractionDigits(2)
                         oldValue = nf.format(attrs.owner[attrs.field])
@@ -119,14 +111,14 @@ class UiInplaceTagLib {
                         oldValue = attrs.owner[attrs.field]
                     }
                 }
-                out << " data-oldvalue=\"${oldValue.encodeAsHTML()}\">"
+                out << ' data-oldvalue="' + oldValue.encodeAsHTML() + '">'
                 out << oldValue.encodeAsHTML()
             }
             else {
-                out << ">"
+                out << '>'
                 out << body()
             }
-            out << "</a>"
+            out << '</a>'
         }
         // !editable
         else {
@@ -143,7 +135,7 @@ class UiInplaceTagLib {
                     if ((attrs.owner[attrs.field] == null) || (attrs.owner[attrs.field].toString().length()==0)) {
                     }
                     else if(attrs.field == 'decValue') {
-                        out << NumberFormat.getInstance(LocaleContextHolder.getLocale()).format(attrs.owner[attrs.field])
+                        out << NumberFormat.getInstance(LocaleUtils.getCurrentLocale()).format(attrs.owner[attrs.field])
                     }
                     else {
                         out << attrs.owner[attrs.field]

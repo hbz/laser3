@@ -1,6 +1,7 @@
 package de.laser
 
 import de.laser.finance.PriceItem
+import de.laser.http.BasicHttpClient
 import de.laser.remote.ApiSource
 import de.laser.remote.GlobalRecordSource
 import de.laser.system.SystemEvent
@@ -13,9 +14,7 @@ import de.laser.base.AbstractLockableService
 import de.laser.titles.TitleHistoryEvent
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
-import groovyx.net.http.ContentType
-import groovyx.net.http.HTTPBuilder
-import groovyx.net.http.Method
+import io.micronaut.http.HttpResponse
 import org.hibernate.Session
 
 import java.text.SimpleDateFormat
@@ -639,7 +638,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }//test with set, otherwise make check
                     packagesToNotify.put(updatedTIPP.packageUUID,diffsOfPackage)
                 }
-                else if(!(updatedTIPP.status in [RDStore.TIPP_STATUS_DELETED.value, PERMANENTLY_DELETED])) {
+                else if(!(updatedTIPP.status in [RDStore.TIPP_STATUS_DELETED.value, RDStore.TIPP_STATUS_REMOVED.value, PERMANENTLY_DELETED])) {
                     Package pkg = packagesOnPage.get(updatedTIPP.packageUUID)
                     if(pkg)
                         addNewTIPP(pkg, updatedTIPP, platformsOnPage)
@@ -1855,7 +1854,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
             else
                 equivalent = listA.find { it[k] == itemB[k] && it[k] != null && itemB[k] != null }
             if (equivalent != null) {
-                println "Statement ${equivalent.id} located as equivalent to ${itemB} by ${k}: ${itemB[k]}"
+                log.debug "Statement ${equivalent.id} located as equivalent to ${itemB} by ${k}: ${itemB[k]}"
                 break
             }
         }
@@ -1918,18 +1917,17 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * @throws SyncException
      */
     Map<String,Object> fetchRecordJSON(boolean useScroll, Map<String,Object> queryParams) throws SyncException {
-        //I need to address a bulk output endpoint like https://github.com/hbz/lobid-resources/blob/f93201bec043cc732b27814a6ab4aea390d1aa9e/web/app/controllers/resources/Application.java, method bulkResult().
-        //By then, I should query the "normal" endpoint /wekb/api/find?
-        HTTPBuilder http
+        BasicHttpClient http
+        String uri = source.uri.endsWith('/') ? source.uri : source.uri+'/'
         if(useScroll) {
-            http = new HTTPBuilder(source.uri + '/scroll')
-            String debugString = source.uri+'/scroll?'
+            http = new BasicHttpClient(uri + 'scroll')
+            String debugString = uri+'scroll?'
             queryParams.each { String k, v ->
                 debugString += '&' + k + '=' + v
             }
             log.debug(debugString)
         }
-        else http = new HTTPBuilder(source.uri+'/find')
+        else http = new BasicHttpClient(uri+'find')
         Map<String,Object> result = [:]
         //setting default status
         if(queryParams.componentType == 'TitleInstancePackagePlatform' || queryParams.component_type == 'TitleInstancePackagePlatform') {
@@ -1937,30 +1935,22 @@ class GlobalSourceSyncService extends AbstractLockableService {
             //queryParams.status = ["Removed"] //debug only
         }
         //log.debug(queryParams.toMapString())
-        http.request(Method.POST, ContentType.JSON) { req ->
-            body = queryParams
-            requestContentType = ContentType.URLENC
-            response.success = { resp, json ->
-                if(resp.status == 200) {
-                    result.count = json.size ?: json.count
-                    result.records = json.records
-                    result.scrollId = json.scrollId
-                    result.hasMoreRecords = Boolean.valueOf(json.hasMoreRecords)
-                }
-                else {
-                    throw new SyncException("erroneous response")
-                }
-            }
-            response.failure = { resp, reader ->
-                log.error("server response: ${resp.statusLine}")
-                if(resp.status == 404) {
-                    result.error = resp.status
-                }
-                else
-                    throw new SyncException("error on request: ${resp.statusLine} : ${reader}")
-            }
+        Closure success = { HttpResponse resp, json ->
+            result.count = json.size ?: json.count
+            result.records = json.records
+            result.scrollId = json.scrollId
+            result.hasMoreRecords = Boolean.valueOf(json.hasMoreRecords)
         }
-        http.shutdown()
+        Closure failure = { HttpResponse resp, reader ->
+            if(resp.code() == 404) {
+                result.error = resp.code()
+            }
+            else
+                throw new SyncException("error on request: ${resp.status()} : ${reader}")
+        }
+        http.post(BasicHttpClient.ResponseType.JSON, BasicHttpClient.PostType.URLENC, queryParams, success, failure)
+        http.close()
+
         result
     }
 

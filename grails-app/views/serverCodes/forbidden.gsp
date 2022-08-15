@@ -14,16 +14,15 @@
                 ${message(code: 'serverCode.forbidden.message1')}
             </h2>
 
-            <g:if test="${!flash.error}">
-                <div>
+            <div>
                     <p>${message(code: 'serverCode.forbidden.message2')}</p>
                     <br />
 
                     <p>
-                        <button class="ui button" onclick="JSPC.helper.goBack()">${message(code: 'default.button.back')}</button>
+                        <button class="ui button la-js-dont-hide-button" onclick="JSPC.helper.goBack()">${message(code: 'default.button.back')}</button>
                     </p>
-                </div>
-            </g:if>
+            </div>
+
         </div>
     </div>
 

@@ -35,7 +35,7 @@ class RenewSubscriptionService extends AbstractLockableService {
     boolean subscriptionRenewCheck() {
         if (!running) {
             running = true
-            println "processing all current local subscriptions with annually periode to renew ..."
+            log.debug "processing all current local subscriptions with annually periode to renew ..."
             Date currentDate = new Date()
 
             List renewSuccessSubIds = []
@@ -165,7 +165,7 @@ class RenewSubscriptionService extends AbstractLockableService {
 
                                 //IssueEntitlements
                                 subscription.issueEntitlements.each { IssueEntitlement ie ->
-                                    if (!(ie.status in [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED])) {
+                                    if (ie.status != RDStore.TIPP_STATUS_REMOVED) {
                                         def ieProperties = ie.properties
 
                                         IssueEntitlement newIssueEntitlement = new IssueEntitlement()
@@ -232,7 +232,7 @@ class RenewSubscriptionService extends AbstractLockableService {
                                     if (newIssueEntitlementGroup.save()) {
 
                                         ieGroup.items.each { IssueEntitlementGroup ieGroupItem ->
-                                            IssueEntitlement ie = IssueEntitlement.findBySubscriptionAndTippAndStatusNotInList(copySub, ieGroupItem.ie.tipp, [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED])
+                                            IssueEntitlement ie = IssueEntitlement.findBySubscriptionAndTippAndStatusNotEqual(copySub, ieGroupItem.ie.tipp, RDStore.TIPP_STATUS_REMOVED)
                                             if (ie && !IssueEntitlementGroupItem.findByIe(ie)) {
                                                 IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
                                                         ie: ie,

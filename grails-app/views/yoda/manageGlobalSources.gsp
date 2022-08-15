@@ -12,9 +12,9 @@
       <table class="ui celled la-js-responsive-table la-table table">
         <thead>
           <tr>
-            <th>Identifier</th>
-            <th>Name</th>
-            <th>Type</th>
+              <th>${message(code:'default.identifier.label')}</th>
+              <th>${message(code:'default.name.label')}</th>
+              <th>${message(code:'default.type.label')}</th>
             <th>Up To</th>
             <th>URL</th>
             <th>URL to editable instance</th>

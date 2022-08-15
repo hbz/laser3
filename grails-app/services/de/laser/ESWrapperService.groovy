@@ -31,7 +31,7 @@ class ESWrapperService {
 
     static String ES_Host
     static String ES_Cluster
-    static Map ES_Indices = [:]
+    static Map<String, String> ES_Indices = [:]
 
     /**
      * Initialises the ElasticSearch connection and mapping parameters
@@ -55,12 +55,10 @@ class ESWrapperService {
      * @return
      */
     RestHighLevelClient getClient() {
-        RestHighLevelClient esclient = new RestHighLevelClient(
+        new RestHighLevelClient(
                 RestClient.builder(
                         new HttpHost(ES_Host, 9200, "http"),
-                        new HttpHost(ES_Host, 9201, "http")));
-
-        esclient
+                        new HttpHost(ES_Host, 9201, "http")))
     }
 
     // TMP
@@ -163,7 +161,7 @@ class ESWrapperService {
      */
     boolean deleteIndex(String indexName){
         log.info("deleteIndex ${indexName} ...")
-        RestHighLevelClient esclient = this.getClient()
+        RestHighLevelClient esclient = getClient()
         GetIndexRequest request = new GetIndexRequest(indexName)
 
         if (esclient.indices().exists(request, RequestOptions.DEFAULT)) {
@@ -195,7 +193,7 @@ class ESWrapperService {
      */
     boolean createIndex(String indexName){
         log.info("createIndex ${indexName}...")
-        RestHighLevelClient esclient = this.getClient()
+        RestHighLevelClient esclient = getClient()
         GetIndexRequest request = new GetIndexRequest(indexName)
 
         if (!esclient.indices().exists(request, RequestOptions.DEFAULT)) {
@@ -204,9 +202,9 @@ class ESWrapperService {
             CreateIndexRequest createRequest = new CreateIndexRequest(indexName)
 
             log.debug("Adding index settings..")
-            createRequest.settings(JsonOutput.toJson(this.getSettings().get("settings")), XContentType.JSON)
+            createRequest.settings(JsonOutput.toJson(getSettings().get("settings")), XContentType.JSON)
             log.debug("Adding index mappings..")
-            createRequest.mapping(JsonOutput.toJson(this.getMapping()), XContentType.JSON)
+            createRequest.mapping(JsonOutput.toJson(getMapping()), XContentType.JSON)
 
             CreateIndexResponse createIndexResponse = esclient.indices().create(createRequest, RequestOptions.DEFAULT)
 
@@ -215,7 +213,7 @@ class ESWrapperService {
 
             if (acknowledged) {
                 log.debug("Index ${indexName} successfully created!")
-                String domainClassName = this.ES_Indices.find {it.value == indexName}.key
+                String domainClassName = ES_Indices.find {it.value == indexName}.key
 
                 FTControl.withTransaction {
                     int res = FTControl.executeUpdate("delete FTControl c where c.domainClassName = :deleteFT", [deleteFT: "de.laser.${domainClassName}"])

@@ -3,8 +3,8 @@ package de.laser.reporting.export.myInstitution
 import de.laser.storage.BeanStore
 import de.laser.reporting.export.GlobalExportHelper
 import de.laser.reporting.export.base.BaseQueryExport
+import de.laser.utils.LocaleUtils
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 
 class GlobalQueryExport extends BaseQueryExport {
 
@@ -28,7 +28,7 @@ class GlobalQueryExport extends BaseQueryExport {
         if ( ! chart) {
             MessageSource messageSource = BeanStore.getMessageSource()
 
-            result.cols.add( messageSource.getMessage('default.count.label', null, LocaleContextHolder.getLocale()) )
+            result.cols.add( messageSource.getMessage('default.count.label', null, LocaleUtils.getCurrentLocale()) )
             result.rows = data.collect{ e ->
                 [e.label.toString(), e.idList.size()]
             }

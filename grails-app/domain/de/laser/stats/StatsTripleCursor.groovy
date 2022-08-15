@@ -43,7 +43,6 @@ class StatsTripleCursor {
         supplierId(blank:false,maxSize:32)
         customerId(blank:false,maxSize:32)
         availTo(nullable:true)
-        numFacts(maxSize:11)
         jerror(nullable:true, blank:true)
     }
 }

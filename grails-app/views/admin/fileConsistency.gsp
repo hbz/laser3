@@ -17,9 +17,9 @@
         <table class="ui sortable celled la-js-responsive-table la-table compact la-ignore-fixed table">
             <thead>
                 <tr>
-                    <th>Beschreibung</th>
+                    <th>${message(code:'default.description.label')}</th>
                     <th></th>
-                    <th>Anzahl</th>
+                    <th>${message(code:'default.count.label')}</th>
                 </tr>
             </thead>
             <tbody>
@@ -46,9 +46,9 @@
          <table class="ui sortable celled la-js-responsive-table la-table compact la-ignore-fixed table">
             <thead>
                 <tr>
-                    <th>Beschreibung</th>
+                    <th>${message(code:'default.description.label')}</th>
                     <th></th>
-                    <th>Anzahl</th>
+                    <th>${message(code:'default.count.label')}</th>
                 </tr>
             </thead>
             <tbody>
@@ -97,9 +97,9 @@
         <table class="ui sortable celled la-js-responsive-table la-table compact la-ignore-fixed table">
             <thead>
             <tr>
-                <th>Beschreibung</th>
+                <th>${message(code:'default.description.label')}</th>
                 <th>Spec.</th>
-                <th>Anzahl</th>
+                <th>${message(code:'default.count.label')}</th>
             </tr>
             </thead>
             <tbody>
@@ -130,7 +130,7 @@
         <ui:msg class="info" noClose="true">
             Alle aufgelisteten Einträge repräsentieren referenzierte Dateiobjekte in der Datenbank OHNE entspr. Dateien im Filesystem.
             <br />
-            Rote Einträge markieren ungültige Referenzen: DocContext.owner( <span style="color:red">status = deleted</span> ) => Doc.
+            Rote Einträge markieren ungültige Referenzen: DocContext.owner( <span class="sc_red">status = deleted</span> ) => Doc.
         </ui:msg>
 
         <div class="ui list">

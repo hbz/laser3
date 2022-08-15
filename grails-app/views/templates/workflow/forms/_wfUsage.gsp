@@ -52,7 +52,7 @@
                                     <div class="header">
                                         %{-- <i class="icon ${WorkflowHelper.getCssIconAndColorByStatus(task.status)}"></i> --}%
                                         <strong>${task.title}</strong>
-                                        <span style="color: darkgrey">
+                                        <span class="sc_darkgrey">
                                         ( <i class="icon ${WorkflowHelper.getCssIconByTaskPriority(task.priority)}"></i> ${task.priority.getI10n('value')} )
                                     </span>
                                     </div>
@@ -100,7 +100,7 @@
                                             <div class="header">
                                                 %{-- <i class="icon ${WorkflowHelper.getCssIconAndColorByStatus(child.status)}"></i> --}%
                                                 <strong>${child.title}</strong>
-                                                <span style="color: darkgrey">
+                                                <span class="sc_darkgrey">
                                                 ( <i class="icon ${WorkflowHelper.getCssIconByTaskPriority(child.priority)}"></i> ${child.priority.getI10n('value')} )
                                             </span>
                                             </div>
@@ -162,7 +162,7 @@
             <p><strong>${task.title}</strong></p>
             <p>${task.description}</p>
             <p>
-                <i class="icon ${WorkflowHelper.getCssIconByTaskPriority(task.priority)}" style="color:darkgrey"></i>
+                <i class="icon ${WorkflowHelper.getCssIconByTaskPriority(task.priority)} sc_darkgrey"></i>
                 ${task.priority.getI10n('value')}
             </p>
         </div>

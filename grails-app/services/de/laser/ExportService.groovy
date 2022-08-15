@@ -15,6 +15,7 @@ import de.laser.stats.Counter4ApiSource
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5ApiSource
 import de.laser.stats.Counter5Report
+import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.sql.GroovyRowResult
@@ -34,7 +35,6 @@ import org.apache.poi.xssf.usermodel.XSSFFont
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import org.hibernate.Session
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 
 import java.awt.*
 import java.math.RoundingMode
@@ -99,7 +99,7 @@ class ExportService {
 	 * @return an Excel map as SXSSFWorkbook
 	 */
     SXSSFWorkbook generateXLSXWorkbook(Map sheets) {
-		Locale locale = LocaleContextHolder.getLocale()
+		Locale locale = LocaleUtils.getCurrentLocale()
 		XSSFWorkbook wb = new XSSFWorkbook()
 		POIXMLProperties xmlProps = wb.getProperties()
 		POIXMLProperties.CoreProperties coreProps = xmlProps.getCoreProperties()
@@ -201,7 +201,7 @@ class ExportService {
 	 * @return depending on the format, an Excel worksheet or a CSV file
 	 */
 	def exportOrg(Collection orgs, String message, boolean addHigherEducationTitles, String format) {
-		Locale locale = LocaleContextHolder.getLocale()
+		Locale locale = LocaleUtils.getCurrentLocale()
 		List titles = [messageSource.getMessage('org.sortname.label',null,locale), 'Name', messageSource.getMessage('org.shortname.label',null,locale),messageSource.getMessage('globalUID.label',null,locale)]
 
 
@@ -540,7 +540,7 @@ class ExportService {
 	 * @return an Excel worksheet of the usage report, either according to the COUNTER 4 or COUNTER 5 format
 	 */
 	SXSSFWorkbook exportReport(GrailsParameterMap params, Map data, Boolean showPriceDate = false, Boolean showMetricType = false, Boolean showOtherData = false) {
-		Locale locale = LocaleContextHolder.getLocale()
+		Locale locale = LocaleUtils.getCurrentLocale()
 		XSSFWorkbook workbook = new XSSFWorkbook()
 		POIXMLProperties xmlProps = workbook.getProperties()
 		POIXMLProperties.CoreProperties coreProps = xmlProps.getCoreProperties()
@@ -1038,7 +1038,7 @@ class ExportService {
 	 * @return a Excel worksheet of the given cost data
 	 */
 	SXSSFWorkbook processFinancialXLSX(Map<String,Object> result) {
-		Locale locale = LocaleContextHolder.getLocale()
+		Locale locale = LocaleUtils.getCurrentLocale()
 		SimpleDateFormat dateFormat = DateUtils.getLocalizedSDF_noTime()
 		XSSFWorkbook workbook = new XSSFWorkbook()
 		POIXMLProperties xmlProps = workbook.getProperties()
@@ -1366,7 +1366,7 @@ class ExportService {
 	 * @return a {@link Map} of the Excel sheets containing the table data
 	 */
 	Map<String,Map> generatePropertyUsageExportXLS(Map propDefs) {
-		Locale locale = LocaleContextHolder.getLocale()
+		Locale locale = LocaleUtils.getCurrentLocale()
 		List titleRow = [messageSource.getMessage('default.name.label',null,locale),
 						 messageSource.getMessage('propertyDefinition.expl.label',null,locale),
 						 messageSource.getMessage('default.type.label',null,locale),
@@ -1411,7 +1411,7 @@ class ExportService {
 	 * @return an Excel worksheet containing the property distribution among the objects grouped per object type and property definition group
 	 */
 	Map<String,Map> generatePropertyGroupUsageXLS(Map propDefGroups) {
-		Locale locale = LocaleContextHolder.getLocale()
+		Locale locale = LocaleUtils.getCurrentLocale()
 		List titleRow = [messageSource.getMessage("default.name.label",null,locale),
 						 messageSource.getMessage("propertyDefinitionGroup.table.header.description",null,locale),
 						 messageSource.getMessage("propertyDefinitionGroup.table.header.properties",null,locale),
@@ -1448,20 +1448,20 @@ class ExportService {
 		data.titles.eachWithIndex { GroovyRowResult title, int outer ->
 			if(entitlementInstance == IssueEntitlement.class.name && data.coverageMap.get(title['ie_id'])) {
 				data.coverageMap.get(title['ie_id']).eachWithIndex { GroovyRowResult covStmt, int inner ->
-					println "now processing coverage statement ${inner} for record ${outer}"
+					log.debug "now processing coverage statement ${inner} for record ${outer}"
 					covStmt.putAll(title)
 					rows.add(buildRow('kbart', covStmt, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces))
 				}
 			}
 			else if(entitlementInstance == TitleInstancePackagePlatform.class.name && data.coverageMap.get(title['tipp_id'])) {
 				data.coverageMap.get(title['tipp_id']).eachWithIndex { GroovyRowResult covStmt, int inner ->
-					println "now processing coverage statement ${inner} for record ${outer}"
+					log.debug "now processing coverage statement ${inner} for record ${outer}"
 					covStmt.putAll(title)
 					rows.add(buildRow('kbart', covStmt, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces))
 				}
 			}
 			else {
-				println "now processing record ${outer}"
+				log.debug "now processing record ${outer}"
 				rows.add(buildRow('kbart', title, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces))
 			}
 		}
@@ -2056,7 +2056,7 @@ class ExportService {
 					}
 					export.rows.add(row)
 				}
-				println("flush after ${offset} ...")
+				log.debug("flush after ${offset} ...")
 				sess.flush()
 			}
 		}
@@ -2077,7 +2077,7 @@ class ExportService {
 	Map<String, List> generateTitleExportCustom(Map configMap, String entitlementInstance, List showStatsInMonthRings = [], Org subscriber = null, Collection perpetuallyPurchasedTitleURLs = []) {
 		log.debug("Begin generateTitleExportCustom")
 		Sql sql = GlobalService.obtainSqlConnection()
-		Locale locale = LocaleContextHolder.getLocale()
+		Locale locale = LocaleUtils.getCurrentLocale()
 		Map<String, Object> data = getTitleData(configMap, entitlementInstance, sql)
 		List<String> titleHeaders = [
 				messageSource.getMessage('tipp.name',null,locale),
@@ -2127,20 +2127,20 @@ class ExportService {
 		data.titles.eachWithIndex { GroovyRowResult title, int outer ->
 			if(entitlementInstance == IssueEntitlement.class.name && data.coverageMap.get(title['ie_id'])) {
 				data.coverageMap.get(title['ie_id']).eachWithIndex { GroovyRowResult covStmt, int inner ->
-					println "now processing coverage statement ${inner} for record ${outer}"
+					log.debug "now processing coverage statement ${inner} for record ${outer}"
 					covStmt.putAll(title)
 					rows.add(buildRow('excel', covStmt, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces, perpetuallyPurchasedTitleURLs, showStatsInMonthRings, subscriber))
 				}
 			}
 			else if(entitlementInstance == TitleInstancePackagePlatform.class.name && data.coverageMap.get(title['tipp_id'])) {
 				data.coverageMap.get(title['tipp_id']).eachWithIndex { GroovyRowResult covStmt, int inner ->
-					println "now processing coverage statement ${inner} for record ${outer}"
+					log.debug "now processing coverage statement ${inner} for record ${outer}"
 					covStmt.putAll(title)
 					rows.add(buildRow('excel', covStmt, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces, perpetuallyPurchasedTitleURLs, showStatsInMonthRings, subscriber))
 				}
 			}
 			else {
-				println "now processing record ${outer}"
+				log.debug "now processing record ${outer}"
 				rows.add(buildRow('excel', title, data.identifierMap, data.priceItemMap, data.reportMap, data.coreTitleIdentifierNamespaces, data.otherTitleIdentifierNamespaces, perpetuallyPurchasedTitleURLs, showStatsInMonthRings, subscriber))
 			}
 		}

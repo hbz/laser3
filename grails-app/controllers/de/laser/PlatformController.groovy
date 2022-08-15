@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.annotations.Check404
 import de.laser.auth.User
 import de.laser.ctrl.PlatformControllerService
 import de.laser.annotations.DebugInfo
@@ -21,7 +22,16 @@ class PlatformController  {
     GokbService gokbService
     PlatformControllerService platformControllerService
 
+    //-----
+
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
+
+    final static Map<String, String> CHECK404_ALTERNATIVES = [
+            'list' : 'platforms.all_platforms.label',
+            'myInstitution/currentPlatforms' : 'menu.my.platforms'
+    ]
+
+    //-----
 
     /**
      * Landing point; redirects to the list of platforms
@@ -102,6 +112,7 @@ class PlatformController  {
      * @return the details view of the platform
      */
     @Secured(['ROLE_USER'])
+    @Check404()
     def show() {
         Map<String, Object> result = platformControllerService.getResultGenerics(params)
         Platform platformInstance
@@ -111,16 +122,11 @@ class PlatformController  {
             platformInstance = Platform.findByGokbId(params.id)
         else platformInstance = Platform.findByGlobalUID(params.id)
 
-        if (!platformInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'platform.label'), params.id]) as String
-            redirect action: 'list'
-            return
-        }
-
         result.platformInstance = platformInstance
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
         result.editUrl = apiSource.editUrl.endsWith('/') ? apiSource.editUrl : apiSource.editUrl+'/'
 
+        result.flagContentGokb = true // gokbService.queryElasticsearch
         Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/find?uuid=${platformInstance.gokbId}")
         if (queryResult.error && queryResult.error == 404) {
             flash.error = message(code:'wekb.error.404') as String
@@ -151,16 +157,11 @@ class PlatformController  {
      * Lists all access methods linked to the given platform
      */
     @Secured(['ROLE_USER'])
+    @Check404()
     def accessMethods() {
         // TODO: editable is undefined
         def editable
         Platform platformInstance = Platform.get(params.id)
-        if (!platformInstance) {
-            flash.message = message(code: 'default.not.found.message',
-                    args: [message(code: 'platform.label'), params.id]) as String
-            redirect action: 'list'
-            return
-        }
 
         List<PlatformAccessMethod> platformAccessMethodList = PlatformAccessMethod.findAllByPlatf(platformInstance, [sort: ["accessMethod": 'asc', "validFrom" : 'asc']])
 
@@ -175,15 +176,11 @@ class PlatformController  {
     @Deprecated
     @DebugInfo(test='hasAffiliation("INST_EDITOR")')
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
+    @Check404()
     def link() {
         Map<String, Object> result = [:]
         Platform platformInstance = Platform.get(params.id)
-        if (!platformInstance) {
-            flash.message = message(code: 'default.not.found.message',
-                args: [message(code: 'platform.label'), params.id]) as String
-            redirect action: 'list'
-            return
-        }
+
         Org selectedInstitution = contextService.getOrg()
         List<Org> authorizedOrgs = contextService.getUser().getAffiliationOrgs()
 

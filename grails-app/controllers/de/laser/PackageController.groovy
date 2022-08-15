@@ -1,21 +1,19 @@
 package de.laser
 
-
+import de.laser.annotations.Check404
 import de.laser.auth.User
 import de.laser.utils.DateUtils
 import de.laser.annotations.DebugInfo
 import de.laser.remote.ApiSource
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
+import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
 import grails.converters.JSON
-import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
-import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat
@@ -31,7 +29,6 @@ class PackageController {
     AccessService accessService
     AddressbookService addressbookService
     ContextService contextService
-    DocstoreService docstoreService
     EscapeService escapeService
     ExecutorService executorService
     ExecutorWrapperService executorWrapperService
@@ -46,7 +43,17 @@ class PackageController {
     //TaskService taskService
     YodaService yodaService
 
+    //-----
+
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
+
+    final static Map<String, String> CHECK404_ALTERNATIVES = [
+            'index' : 'package.show.all',
+            'list' : 'myinst.packages',
+            'myInstitution/currentPackages' : 'menu.my.packages'
+    ]
+
+    //-----
 
     /**
      * Lists current packages in the we:kb ElasticSearch index.
@@ -60,7 +67,9 @@ class PackageController {
             redirect controller: 'package', action: 'list'
             return
         }
-        Map<String, Object> result = [:]
+        Map<String, Object> result = [
+                flagContentGokb : true // gokbService.queryElasticsearch
+        ]
         result.user = contextService.getUser()
         SwissKnife.setPaginationParams(result, params, result.user)
 
@@ -76,12 +85,12 @@ class PackageController {
 
         if (params.provider) {
             result.filterSet = true
-            esQuery += "&provider=${params.provider}"
+            esQuery += "&provider=${params.provider.replaceAll('&','ampersand')}"
         }
 
         if (params.curatoryGroup) {
             result.filterSet = true
-            esQuery += "&curatoryGroupExact=${params.curatoryGroup}"
+            esQuery += "&curatoryGroupExact=${params.curatoryGroup.replaceAll('&','ampersand')}"
         }
 
         if (params.ddc) {
@@ -366,6 +375,7 @@ class PackageController {
      * because some data will not be mirrored to the app
      */
     @Secured(['ROLE_USER'])
+    @Check404()
     def show() {
         Map<String, Object> result = [:]
 
@@ -376,11 +386,6 @@ class PackageController {
         else if(params.id ==~ /[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}/)
             packageInstance = Package.findByGokbId(params.id)
         else packageInstance = Package.findByGlobalUID(params.id)
-        if (!packageInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label'), params.id]) as String
-            redirect action: 'index'
-            return
-        }
 
         result.currentTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_CURRENT])[0]
         result.plannedTippsCounts = TitleInstancePackagePlatform.executeQuery("select count(tipp) from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkg and tipp.status = :status", [pkg: packageInstance, status: RDStore.TIPP_STATUS_EXPECTED])[0]
@@ -442,6 +447,7 @@ class PackageController {
             result.packageInstanceRecord = records ? records[0] : [:]
         }
 
+        result.flagContentGokb = true // gokbService.queryElasticsearch
         result
     }
 
@@ -452,6 +458,7 @@ class PackageController {
      * @see TitleInstancePackagePlatform
      */
     @Secured(['ROLE_USER'])
+    @Check404()
     def current() {
         log.debug("current ${params}");
         Map<String, Object> result = [:]
@@ -461,18 +468,11 @@ class PackageController {
         result.contextCustomerType = result.contextOrg.getCustomerType()
 
         Package packageInstance = Package.get(params.id)
-        if (!packageInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label'), params.id]) as String
-            redirect action: 'index'
-            return
-        }
         result.packageInstance = packageInstance
-
 
         if (executorWrapperService.hasRunningProcess(packageInstance)) {
             result.processingpc = true
         }
-
         /*result.pendingChanges = PendingChange.executeQuery(
                 "select pc from PendingChange as pc where pc.pkg = :pkg and ( pc.status is null or pc.status = :status ) order by ts, payload",
                 [pkg: packageInstance, status: RDStore.PENDING_CHANGE_PENDING]
@@ -717,16 +717,12 @@ class PackageController {
      * @see PendingChange
      */
     @Secured(['ROLE_USER'])
+    @Check404()
     def tippChanges() {
         Map<String, Object> result = [:]
 
         result.user = contextService.getUser()
         Package packageInstance = Package.get(params.id)
-        if (!packageInstance) {
-            flash.message = message(code: 'default.not.found.message', args: [message(code: 'package.label'), params.id]) as String
-            redirect action: 'index'
-            return
-        }
 
         result.packageInstance = packageInstance
 
@@ -779,7 +775,7 @@ class PackageController {
         result.subscription = genericOIDService.resolveOID(params.targetObjectId)
 
         if (result.subscription) {
-            Locale locale = LocaleContextHolder.getLocale()
+            Locale locale = LocaleUtils.getCurrentLocale()
             Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
             Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
             boolean bulkProcessRunning = false
@@ -825,107 +821,6 @@ class PackageController {
         }
 
         redirect(url: request.getHeader("referer"))
-    }
-
-    @Deprecated
-    @Secured(['ROLE_ADMIN'])
-    @Transactional
-    def history() {
-        Map<String, Object> result = [:]
-        boolean exporting = params.format == 'csv'
-
-        if (exporting) {
-            result.max = 9999999
-            params.max = 9999999
-            result.offset = 0
-        } else {
-            SwissKnife.setPaginationParams(result, params, contextService.getUser())
-            params.max = result.max
-        }
-
-        result.packageInstance = Package.get(params.id)
-        result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
-
-        def limits = (!params.format || params.format.equals("html")) ? [max: result.max, offset: result.offset] : [offset: 0]
-
-        // postgresql migration
-        String subQuery = 'select cast(id as string) from TitleInstancePackagePlatform as tipp where tipp.pkg = cast(:pkgid as int)'
-        List subQueryResult = TitleInstancePackagePlatform.executeQuery(subQuery, [pkgid: params.id])
-
-        //def base_query = 'from org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent as e where ( e.className = :pkgcls and e.persistedObjectId = cast(:pkgid as string)) or ( e.className = :tippcls and e.persistedObjectId in ( select id from TitleInstancePackagePlatform as tipp where tipp.pkg = :pkgid ) )'
-        //def query_params = [ pkgcls: Package.class.name, tippcls: TitleInstancePackagePlatform.class.name, pkgid: params.id, subQueryResult: subQueryResult ]
-
-        String base_query = 'from org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent as e where ( e.className = :pkgcls and e.persistedObjectId = cast(:pkgid as string))'
-        def query_params = [pkgcls: Package.class.name, pkgid: params.id]
-
-        // postgresql migration
-        if (subQueryResult) {
-            base_query += ' or ( e.className = :tippcls and e.persistedObjectId in (:subQueryResult) )'
-            query_params.'tippcls' = TitleInstancePackagePlatform.class.name
-            query_params.'subQueryResult' = subQueryResult
-        }
-
-
-        log.debug("base_query: ${base_query}, params:${query_params}, limits:${limits}");
-
-        result.historyLines = AuditLogEvent.executeQuery('select e ' + base_query + ' order by e.lastUpdated desc', query_params, limits);
-        result.num_hl = AuditLogEvent.executeQuery('select e.id ' + base_query, query_params).size()
-        result.formattedHistoryLines = []
-
-
-        result.historyLines.each { hl ->
-
-            Map line_to_add = [:]
-            def linetype = null
-
-            switch (hl.className) {
-                case Package.class.name:
-                    Package package_object = Package.get(hl.persistedObjectId);
-                    line_to_add = [link        : createLink(controller: 'package', action: 'show', id: hl.persistedObjectId),
-                                   name        : package_object.toString(),
-                                   lastUpdated : hl.lastUpdated,
-                                   propertyName: hl.propertyName,
-                                   actor       : User.findByUsername(hl.actor),
-                                   oldValue    : hl.oldValue,
-                                   newValue    : hl.newValue
-                    ]
-                    linetype = 'Package'
-                    break;
-                case TitleInstancePackagePlatform.class.name:
-                    TitleInstancePackagePlatform tipp_object = TitleInstancePackagePlatform.get(hl.persistedObjectId);
-                    if (tipp_object != null) {
-                        line_to_add = [link        : createLink(controller: 'tipp', action: 'show', id: hl.persistedObjectId),
-                                       name        : tipp_object.name + " / " + tipp_object.pkg?.name,
-                                       lastUpdated : hl.lastUpdated,
-                                       propertyName: hl.propertyName,
-                                       actor       : User.findByUsername(hl.actor),
-                                       oldValue    : hl.oldValue,
-                                       newValue    : hl.newValue
-                        ]
-                        linetype = 'TIPP'
-                    } else {
-                        log.debug("Cleaning up history line that relates to a deleted item");
-                        hl.delete()
-                    }
-            }
-            switch (hl.eventName) {
-                case 'INSERT':
-                    line_to_add.eventName = "New ${linetype}"
-                    break;
-                case 'UPDATE':
-                    line_to_add.eventName = "Updated ${linetype}"
-                    break;
-                case 'DELETE':
-                    line_to_add.eventName = "Deleted ${linetype}"
-                    break;
-                default:
-                    line_to_add.eventName = "Unknown ${linetype}"
-                    break;
-            }
-            result.formattedHistoryLines.add(line_to_add);
-        }
-
-        result
     }
 
     /**

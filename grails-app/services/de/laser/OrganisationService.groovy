@@ -8,9 +8,9 @@ import de.laser.config.ConfigMapper
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
+import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 
 /**
  * This service handles specific organisation-related matters
@@ -64,7 +64,7 @@ class OrganisationService {
      * @return a String containing the CSV output or the Excel sheet containing the output
      */
     def exportOrg(List orgs, message, boolean addHigherEducationTitles, String format) {
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
 
         List<String> titles = [
                 messageSource.getMessage('org.sortname.label',null, locale),

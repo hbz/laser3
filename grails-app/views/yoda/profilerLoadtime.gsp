@@ -84,10 +84,10 @@
                     <td>
                         <g:set var="avg" value="${((double) stat[2] / 1000).round(2)}" />
                         <g:if test="${avg >= 8}">
-                            <strong style="color:red"> ${avg} </strong>
+                            <strong class="sc_red"> ${avg} </strong>
                         </g:if>
                         <g:elseif test="${avg >= 4}">
-                            <strong style="color:orange"> ${avg} </strong>
+                            <strong class="sc_orange"> ${avg} </strong>
                         </g:elseif>
                         <g:else>
                             <span>${avg}</span>
@@ -165,10 +165,10 @@
                         <td>
                             <g:set var="avg" value="${((double) stat[2] / 1000).round(2)}" />
                             <g:if test="${avg >= 8}">
-                                <strong style="color:red"> ${avg} </strong>
+                                <strong class="sc_red"> ${avg} </strong>
                             </g:if>
                             <g:elseif test="${avg >= 4}">
-                                <strong style="color:orange"> ${avg} </strong>
+                                <strong class="sc_orange"> ${avg} </strong>
                             </g:elseif>
                             <g:else>
                                 <span>${avg}</span>
@@ -221,10 +221,10 @@
                     <td>
                         <g:set var="avg" value="${((double) bench[2] / 1000).round(2)}" />
                         <g:if test="${avg >= 8}">
-                            <strong style="color:red"> ${avg} </strong>
+                            <strong class="sc_red"> ${avg} </strong>
                         </g:if>
                         <g:elseif test="${avg >= 4}">
-                            <strong style="color:orange"> ${avg} </strong>
+                            <strong class="sc_orange"> ${avg} </strong>
                         </g:elseif>
                         <g:else>
                             <span>${avg}</span>

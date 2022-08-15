@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.storage.RDStore; org.springframework.context.i18n.LocaleContextHolder; de.laser.Subscription; de.laser.IssueEntitlement; de.laser.stats.Counter4ApiSource; de.laser.stats.Counter4Report; de.laser.stats.Counter5Report" %>
+<%@ page import="de.laser.utils.DateUtils; de.laser.storage.RDStore; de.laser.Subscription; de.laser.SubscriptionPackage; de.laser.IssueEntitlement; de.laser.stats.Counter4ApiSource; de.laser.stats.Counter4Report; de.laser.stats.Counter5Report" %>
 <laser:htmlStart message="subscription.details.stats.label" serviceInjection="true"/>
 
 <g:set var="subjects" value="${controlledListService.getAllPossibleSubjectsBySub(subscription)}"/>
@@ -22,7 +22,7 @@
             <laser:render template="iconSubscriptionIsChild"/>
             ${subscription.name}
         </ui:h1HeaderWithIcon>
-        <ui:anualRings object="${subscription}" controller="subscription" action="show" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+        <ui:anualRings object="${subscription}" controller="subscription" action="stats" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
         <laser:render template="nav" />
 
@@ -65,9 +65,7 @@
                         <tr>
                             <td>
                                 <g:link action="stats" id="${row.memberSubId}">${row.memberName}
-                                    <g:set var="checkParams" value="${[max: 1, plat: subscribedPlatforms, refSubs: [row.memberSubId, subscription.id]]}"/>
-                                    <g:if test="${Counter4Report.executeQuery('select c4r.id from Counter4Report c4r join c4r.title tipp where c4r.platform in (:plat) and tipp.pkg in (select sp.pkg from SubscriptionPackage sp where sp.subscription.id in (:refSubs))', checkParams) ||
-                                            Counter5Report.executeQuery('select c5r.id from Counter5Report c5r join c5r.title tipp where c5r.platform in (:plat) and tipp.pkg in (select sp.pkg from SubscriptionPackage sp where sp.subscription.id in (:refSubs))', checkParams)}">
+                                    <g:if test="${subscriptionService.areStatsAvailable(subscribedPlatforms, subscription.packages.collect { SubscriptionPackage sp -> sp.pkg.id }, [row.memberId])}">
                                         <span class="la-popup-tooltip la-delay" data-content="${message(code: 'default.usage.statsAvailable')}"><i class="chart bar outline icon"></i></span>
                                     </g:if>
                                 </g:link>

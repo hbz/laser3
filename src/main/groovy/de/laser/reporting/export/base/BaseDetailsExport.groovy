@@ -25,9 +25,9 @@ import de.laser.reporting.export.myInstitution.PlatformExport
 import de.laser.reporting.export.myInstitution.SubscriptionExport as SubscriptionExportGlobal
 import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseConfig
+import de.laser.utils.LocaleUtils
 import groovy.util.logging.Slf4j
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 
 import java.time.Year
 
@@ -302,7 +302,7 @@ abstract class BaseDetailsExport {
         String msg = '[reporting.export.custom.' + token + ']'
         try {
             MessageSource messageSource = BeanStore.getMessageSource()
-            msg = messageSource.getMessage('reporting.export.custom.' + token, null, LocaleContextHolder.getLocale())
+            msg = messageSource.getMessage('reporting.export.custom.' + token, null, LocaleUtils.getCurrentLocale())
         }
         catch (Exception e) {
             log.error e.getMessage()

@@ -28,7 +28,7 @@
         <div class="field">
             <label for="licenseNote">${message(code:'default.note.label')}:</label>
 
-            <textarea id="licenseNote" name="licenseNote"></textarea>
+            <textarea class="la-textarea-resize-vertical" id="licenseNote" name="licenseNote"></textarea>
         </div>
 
         <button class="ui button" ${!editable ? 'disabled="disabled"' : ''} type="submit" name="processOption"
@@ -104,7 +104,7 @@
                         </td>
                     </g:if>
                     <g:if test="${controllerName == "myInstitution"}">
-                        <td>${sub.name} <b style="color: ${sub.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL ? 'blue' : ''}"> (${sub.type.getI10n('value')}) </b></td>
+                        <td>${sub.name} <span class="${sub.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL ? 'sc_blue' : ''}"> (${sub.type.getI10n('value')}) </span></td>
                     </g:if>
                     <td>
                         <laser:render template="/templates/notes/table"

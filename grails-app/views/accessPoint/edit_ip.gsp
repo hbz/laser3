@@ -147,7 +147,7 @@
                 <td>${accessPointData.ipInput}</td>
                 <td>
                     <g:set var="ipv6AdressRange" value="${accessPointData.ipRange.split('-')}"/>
-                    ${ipv6AdressRange[0]} -<br>
+                    ${ipv6AdressRange[0]} - <br/>
                     ${ipv6AdressRange.size() > 1 ? ipv6AdressRange[1] : ""}
                 </td>
                 <td>${accessPointData.ipCidr}</td>

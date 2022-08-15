@@ -41,6 +41,7 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.commons.collections.BidiMap
 import org.apache.commons.collections.bidimap.DualHashBidiMap
+import org.apache.http.HttpStatus
 import org.apache.poi.POIXMLProperties
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.FillPatternType
@@ -204,12 +205,12 @@ class MyInstitutionController  {
                     "where tipp.pkg = pkg and s.id in (:subIds) and p.gokbId in (:wekbIds)"
 
             qry3 += " and ((pkg.packageStatus is null) or (pkg.packageStatus != :pkgDeleted))"
-            qry3 += " and ((tipp.status is null) or (tipp.status != :tippDeleted))"
+            qry3 += " and ((tipp.status is null) or (tipp.status != :tippRemoved))"
 
             Map qryParams3 = [
                     subIds         : idsCurrentSubscriptions,
                     pkgDeleted     : RDStore.PACKAGE_STATUS_DELETED,
-                    tippDeleted    : RDStore.TIPP_STATUS_DELETED
+                    tippRemoved    : RDStore.TIPP_STATUS_REMOVED
             ]
 
             String esQuery = "?componentType=Platform"
@@ -649,7 +650,7 @@ class MyInstitutionController  {
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = message(code:'myinst.error.noMember', args:[result.institution.name]) as String
-            response.sendError(401)
+            response.sendError(HttpStatus.SC_FORBIDDEN)
             return;
         }
 
@@ -701,17 +702,17 @@ class MyInstitutionController  {
 
             if (! accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR')) {
                 flash.error = message(code:'myinst.error.noAdmin', args:[org.name]) as String
-                response.sendError(401)
-                // render(status: '401', text:"You do not have permission to access ${org.name}. Please request access on the profile page");
+                response.sendError(HttpStatus.SC_FORBIDDEN)
+                // render(status: '403', text:"You do not have permission to access ${org.name}. Please request access on the profile page");
                 return
             }
             License baseLicense = params.baselicense ? License.get(params.baselicense) : null
             //Nur wenn von Vorlage ist
             if (baseLicense) {
-                if (!baseLicense?.hasPerm("view", user)) {
-                    log.debug("return 401....")
+                if (! baseLicense.hasPerm("view", user)) {
+                    log.debug("return 403....")
                     flash.error = message(code: 'myinst.newLicense.error') as String
-                    response.sendError(401)
+                    response.sendError(HttpStatus.SC_FORBIDDEN)
                     return
                 }
                 else {
@@ -860,7 +861,7 @@ join sub.orgRelations or_sub where
             }
             catch (Exception e) {
                 log.error("Problem",e);
-                response.sendError(500)
+                response.sendError(HttpStatus.SC_INTERNAL_SERVER_ERROR)
                 return
             }
         }
@@ -1320,7 +1321,7 @@ join sub.orgRelations or_sub where
 
         Map<String,Object> qryParams = [
                 institution: result.institution,
-                ieStatus: [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED],
+                ieStatus: RDStore.TIPP_STATUS_REMOVED,
                 current: RDStore.SUBSCRIPTION_CURRENT,
                 orgRoles: orgRoles
         ]
@@ -1374,7 +1375,7 @@ join sub.orgRelations or_sub where
             orderByClause = 'order by tipp.sortname asc, tipp.name asc'
         }
 
-        String qryString = "select ie.id from IssueEntitlement ie join ie.tipp tipp join ie.subscription sub join sub.orgRelations oo where ie.status not in (:ieStatus) and sub.status = :current and oo.roleType in (:orgRoles) and oo.org = :institution "
+        String qryString = "select ie.id from IssueEntitlement ie join ie.tipp tipp join ie.subscription sub join sub.orgRelations oo where ie.status != :ieStatus and sub.status = :current and oo.roleType in (:orgRoles) and oo.org = :institution "
         if(queryFilter)
             qryString += ' and '+queryFilter.join(' and ')
 
@@ -1385,7 +1386,7 @@ join sub.orgRelations or_sub where
             if (filterPvd) {
                 currentIssueEntitlements.addAll(IssueEntitlement.executeQuery("select ie.id from IssueEntitlement ie join ie.tipp tipp join tipp.orgs oo where oo.roleType in (:cpRole) and oo.org.id in ("+filterPvd.join(", ")+") order by ie.sortname asc",[cpRole:[RDStore.OR_CONTENT_PROVIDER,RDStore.OR_PROVIDER,RDStore.OR_AGENCY,RDStore.OR_PUBLISHER]]))
             }
-            Set<TitleInstancePackagePlatform> allTitles = currentIssueEntitlements ? TitleInstancePackagePlatform.executeQuery('select tipp from IssueEntitlement ie join ie.tipp tipp where ie.id in (:ids) and ie.status not in (:ieStatus) '+orderByClause,[ieStatus: [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED], ids: currentIssueEntitlements.drop(result.offset).take(result.max)]) : []
+            Set<TitleInstancePackagePlatform> allTitles = currentIssueEntitlements ? TitleInstancePackagePlatform.executeQuery('select tipp from IssueEntitlement ie join ie.tipp tipp where ie.id in (:ids) and ie.status != :ieStatus '+orderByClause,[ieStatus: RDStore.TIPP_STATUS_REMOVED, ids: currentIssueEntitlements.drop(result.offset).take(result.max)]) : []
             result.subscriptions = Subscription.executeQuery('select sub from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo where oo.roleType in (:orgRoles) and oo.org = :institution and sub.status = :current '+instanceFilter+" order by sub.name asc",[
                     institution: result.institution,
                     current: RDStore.SUBSCRIPTION_CURRENT,
@@ -1542,7 +1543,7 @@ join sub.orgRelations or_sub where
             /*, [max:result.max, offset:result.offset])) */
             log.debug("after query: ${System.currentTimeMillis()-start}")
             packageSubscriptionList.eachWithIndex { entry, int i ->
-                log.debug("processing entry ${i} at: ${System.currentTimeMillis()-start}")
+                // log.debug("processing entry ${i} at: ${System.currentTimeMillis()-start}")
                 String key = 'package_' + entry[0].id
 
                 if (! result.subscriptionMap.containsKey(key)) {
@@ -1599,7 +1600,7 @@ join sub.orgRelations or_sub where
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = "You do not have permission to access ${result.institution.name} pages. Please request access on the profile page";
-            response.sendError(401)
+            response.sendError(HttpStatus.SC_FORBIDDEN)
             return;
         }
 
@@ -1627,91 +1628,6 @@ join sub.orgRelations or_sub where
         result.putAll(pendingChangeService.getChanges_old(pendingChangeConfigMap))
 
         result
-    }
-
-    //@DebugInfo(test = 'hasAffiliation("INST_USER")')
-    //@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
-    @Deprecated
-    @Secured(['ROLE_ADMIN'])
-    def announcements() {
-        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
-
-        result.itemsTimeWindow = 365
-        result.recentAnnouncements = Doc.executeQuery(
-                'select d from Doc d where d.type = :type and d.dateCreated >= :tsCheck order by d.dateCreated desc',
-                [type: RDStore.DOC_TYPE_ANNOUNCEMENT, tsCheck: DateUtils.localDateToSqlDate( LocalDate.now().minusDays(365) )]
-        )
-        result.num_announcements = result.recentAnnouncements.size()
-
-        result
-    }
-
-    @Deprecated
-    @Secured(['ROLE_YODA'])
-    def changeLog() {
-        Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
-        result.institutional_objects = []
-
-        if ( params.format == 'csv' ) {
-          result.max = 1000000;
-          result.offset = 0;
-        }
-        else {
-            SwissKnife.setPaginationParams(result, params, (User) result.user)
-        }
-
-        PendingChange.executeQuery('select distinct(pc.license) from PendingChange as pc where pc.owner = :owner', [owner: result.institution]).each {
-          result.institutional_objects.add([License.class.name + ':' + it.id, "${message(code:'license.label')}: " + it.reference])
-        }
-        PendingChange.executeQuery('select distinct(pc.subscription) from PendingChange as pc where pc.owner = :owner', [owner: result.institution]).each {
-          result.institutional_objects.add([Subscription.class.name + ':' + it.id, "${message(code:'subscription')}: " + it.name])
-        }
-
-        if ( params.restrict == 'ALL' )
-          params.restrict=null
-
-        String base_query = " from PendingChange as pc where owner = :o"
-        Map qry_params = [o: result.institution]
-        if ( ( params.restrict != null ) && ( params.restrict.trim().length() > 0 ) ) {
-          def o =  genericOIDService.resolveOID(params.restrict)
-          if ( o != null ) {
-            if ( o instanceof License ) {
-                base_query += ' and license = :l'
-                qry_params.put('l', o)
-            }
-            else {
-                base_query += ' and subscription = :s'
-                qry_params.put('s', o)
-            }
-          }
-        }
-
-        result.num_changes = PendingChange.executeQuery("select pc.id "+base_query, qry_params).size()
-
-
-        withFormat {
-            html {
-            result.changes = PendingChange.executeQuery("select pc "+base_query+"  order by ts desc", qry_params, [max: result.max, offset:result.offset])
-                result
-            }
-            csv {
-                SimpleDateFormat dateFormat = DateUtils.getLocalizedSDF_noTime()
-                List changes = PendingChange.executeQuery("select pc "+base_query+"  order by ts desc", qry_params)
-                response.setHeader("Content-disposition", "attachment; filename=\"${escapeService.escapeString(result.institution.name)}_changes.csv\"")
-                response.contentType = "text/csv"
-
-                ServletOutputStream out = response.outputStream
-                out.withWriter { w ->
-                  w.write('Date,ChangeId,Actor, SubscriptionId,LicenseId,Description\n')
-                  changes.each { c ->
-                    def line = "\"${dateFormat.format(c.ts)}\",\"${c.id}\",\"${c.user?.displayName?:''}\",\"${c.subscription?.id ?:''}\",\"${c.license?.id?:''}\",\"${c.desc}\"\n".toString()
-                    w.write(line)
-                  }
-                }
-                out.close()
-            }
-
-        }
     }
 
     /**
@@ -2545,11 +2461,9 @@ join sub.orgRelations or_sub where
         Map<String, Object> queryForFilter = filterService.getTaskQuery(params, sdFormat)
         int offset = params.offset ? Integer.parseInt(params.offset) : 0
         result.taskInstanceList = taskService.getTasksByResponsibles(result.user, result.institution, queryForFilter)
-        result.taskInstanceCount = result.taskInstanceList.size()
         result.taskInstanceList = taskService.chopOffForPageSize(result.taskInstanceList, result.user, offset)
 
         result.myTaskInstanceList = taskService.getTasksByCreator(result.user,  queryForFilter, null)
-        result.myTaskInstanceCount = result.myTaskInstanceList.size()
         result.myTaskInstanceList = taskService.chopOffForPageSize(result.myTaskInstanceList, result.user, offset)
 
         Map<String, Object> preCon = taskService.getPreconditions(result.institution)
@@ -3987,7 +3901,7 @@ join sub.orgRelations or_sub where
 
             if (! (accessService.checkMinUserOrgRole(result.user, result.institution, 'INST_EDITOR'))) {
                 flash.error = message(code:'license.permissionInfo.noPerms') as String
-                response.sendError(401)
+                response.sendError(HttpStatus.SC_FORBIDDEN)
                 return;
             }
 
@@ -3996,7 +3910,7 @@ join sub.orgRelations or_sub where
                 return
             }else {
                 flash.error = message(code:'license.permissionInfo.noPerms') as String
-                response.sendError(401)
+                response.sendError(HttpStatus.SC_FORBIDDEN)
                 return;
             }
         }

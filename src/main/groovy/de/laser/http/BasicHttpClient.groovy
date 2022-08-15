@@ -8,6 +8,7 @@ import groovy.xml.slurpersupport.GPathResult
 import io.micronaut.http.client.HttpClient
 import io.micronaut.http.HttpRequest
 import io.micronaut.http.HttpResponse
+import io.micronaut.http.client.HttpClientConfiguration
 import org.grails.web.json.JSONObject
 
 @Slf4j
@@ -43,6 +44,7 @@ class BasicHttpClient {
     static enum PostType {
         TEXT    ('text/plain'),
         JSON    ('application/json'),
+        SOAP    ('application/soap+xml'),
         URLENC  ('application/x-www-form-urlencoded')
 
         final String mineType
@@ -71,6 +73,28 @@ class BasicHttpClient {
         }
         this
     }
+
+    BasicHttpClient(String url, HttpClientConfiguration config) {
+        try {
+            this.url = url.toURL()
+            client = HttpClient.create(this.url, config)
+        }
+        catch(Exception e) {
+            log.error e.getMessage()
+        }
+        this
+    }
+
+    void close() {
+        try {
+            client.close()
+        }
+        catch(Exception e) {
+            log.error e.toString()
+        }
+    }
+
+    // --->
 
     HttpResponse get(ResponseType responseType) {
         get(null, responseType, null, null)
@@ -106,7 +130,7 @@ class BasicHttpClient {
             response = innerPOST(responseType, postType, body, customHeaders) 
         }
 
-        int sc = response ? response.code() : -1
+        int sc = response ? response.getStatus().getCode() : -1
         log.debug '[ request ] httpStatusCode: ' + sc
 
         if (sc >= 200 && sc < 300) {

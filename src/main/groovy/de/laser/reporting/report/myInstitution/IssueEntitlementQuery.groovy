@@ -12,9 +12,9 @@ import de.laser.storage.BeanStore
 import de.laser.storage.RDStore
 import de.laser.reporting.report.myInstitution.base.BaseFilter
 import de.laser.reporting.report.myInstitution.base.BaseQuery
+import de.laser.utils.LocaleUtils
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 
 // not ready for use
 @UnderDevelopment
@@ -26,7 +26,7 @@ class IssueEntitlementQuery extends BaseQuery {
 
         ContextService contextService = BeanStore.getContextService()
         MessageSource messageSource = BeanStore.getMessageSource()
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
 
         Map<String, Object> result = getEmptyResult( params.query, params.chart )
 

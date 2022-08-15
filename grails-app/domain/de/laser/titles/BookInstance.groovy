@@ -3,8 +3,8 @@ package de.laser.titles
 import de.laser.exceptions.CreationException
 import de.laser.storage.BeanStore
 import de.laser.storage.RDStore
+import de.laser.utils.LocaleUtils
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.dao.DuplicateKeyException
 
 /**
@@ -91,7 +91,7 @@ class BookInstance extends TitleInstance {
     String getEbookFirstAutorOrFirstEditor(){
 
         MessageSource messageSource = BeanStore.getMessageSource()
-        String label = messageSource.getMessage('title.firstAuthor.firstEditor.label',null, LocaleContextHolder.getLocale())
+        String label = messageSource.getMessage('title.firstAuthor.firstEditor.label',null, LocaleUtils.getCurrentLocale())
 
         if(firstEditor && firstAuthor) {
             return firstAuthor + ' ; ' + firstEditor + ' ' + label

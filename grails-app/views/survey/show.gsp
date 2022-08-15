@@ -233,10 +233,6 @@
 
     </div><!-- .twelve -->
 
-%{-- <aside class="four wide column la-sidekick">
-     <laser:render template="asideSurvey" model="${[ownobj: surveyInfo, owntp: 'survey']}"/>
- </aside><!-- .four -->
---}%
 </div><!-- .grid -->
 
 

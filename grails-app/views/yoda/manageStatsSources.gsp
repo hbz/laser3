@@ -20,6 +20,17 @@
             </thead>
             <tbody>
                 <g:each in="${platforms}" var="platform">
+                    <%
+                        String sushiURL = "", counterRevision = ""
+                        if(platformInstanceRecords[platform.gokbId].counterR5SushiApiSupported == 'Yes') {
+                            sushiURL = platformInstanceRecords[platform.gokbId].counterR5SushiServerUrl
+                            counterRevision = "r5"
+                        }
+                        else if(platformInstanceRecords[platform.gokbId].counterR5SushiApiSupported == 'No' && platformInstanceRecords[platform.gokbId].counterR4SushiApiSupported == 'Yes') {
+                            sushiURL = platformInstanceRecords[platform.gokbId].counterR4SushiServerUrl
+                            counterRevision = "r4"
+                        }
+                    %>
                     <tr>
                         <td>Plattform - ${platform.id}</td>
                         <td>${platform.org.name}</td>
@@ -33,12 +44,12 @@
                                     role="button"
                                     params="${[platform: platform.id, fullReset: false]}">Cursor zurücksetzen</g:link>
                             <g:link class="ui negative button js-open-confirm-modal"
-                                    data-confirm-tokenMsg="ACHTUNG! Sie sind im Begriff, alle Statistikdaten für ${platform.name} zurückzusetzen! Damit werden auch alle derzeit vorhandenen Daten verworfen und beim nächsten Synclauf neu geladen! Fortfahren?"
+                                    data-confirm-tokenMsg="ACHTUNG! Sie sind im Begriff, alle Statistikdaten für ${platform.name} zurückzusetzen! Damit werden auch alle derzeit vorhandenen Daten verworfen und direkt neu geladen! Fortfahren?"
                                     data-confirm-term-how="ok"
                                     controller="yoda"
                                     action="resetStatsData"
                                     role="button"
-                                    params="${[platform: platform.id, fullReset: true]}">Alle Statistik-Daten zu dieser Plattform löschen</g:link>
+                                    params="${[platform: platform.id, fullReset: true, sushiURL: sushiURL, counterRevision: counterRevision]}">Alle Statistik-Daten zu dieser Plattform löschen und neu laden</g:link>
                         </td>
                     </tr>
                 </g:each>

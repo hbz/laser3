@@ -136,9 +136,7 @@
     <survey:status object="${surveyConfig.surveyInfo}"/>
 </ui:h1HeaderWithIcon>
 
-<g:if test="${flash}">
     <ui:messages data="${flash}"/>
-</g:if>
 
 <div class="sixteen wide column">
     <div class="two fields">
@@ -392,16 +390,12 @@
 
 <g:if test="${usages}">
     <ui:paginate action="renewEntitlementsWithSurvey" controller="subscription" params="${params}"
-                    next="${message(code: 'default.paginate.next')}"
-                    prev="${message(code: 'default.paginate.prev')}" max="${max}"
-                    total="${total}"/>
+                    max="${max}" total="${total}"/>
 </g:if>
 
 <g:if test="${sourceIEs}">
     <ui:paginate action="renewEntitlementsWithSurvey" controller="subscription" params="${params}"
-                    next="${message(code: 'default.paginate.next')}"
-                    prev="${message(code: 'default.paginate.prev')}" max="${max}"
-                    total="${num_ies_rows}"/>
+                    max="${max}" total="${num_ies_rows}"/>
 </g:if>
 
 <laser:script file="${this.getGroovyPageFileName()}">
@@ -414,14 +408,27 @@
         }
 
         JSPC.app.updateSelectionCache = function (index,checked) {
+            let filterParams = {
+                filter: "${params.filter}",
+                pkgFilter: "${params.pkgfilter}",
+                coverageDepth: "${params.coverageDepth}",
+                series_names: ${params.list("series_names")},
+                subject_references: ${params.list("subject_references")},
+                ddcs: ${params.list("ddcs")},
+                languages: ${params.list("languages")},
+                yearsFirstOnline: ${params.list("yearsFirstOnline")},
+                identifier: "${params.identifier}",
+                medium: ${params.list("medium")},
+                title_types: ${params.list("title_types")},
+                publishers: ${params.list("pulishers")},
+                hasPerpetualAccess: "${params.hasPerpetualAccess}"
+            };
             $.ajax({
                 url: "<g:createLink controller="ajax" action="updateChecked" />",
                 data: {
                     sub: "${newSub.id}?${params.tab}",
                     index: index,
-                    <g:if test="${params.pkgfilter}">
-                        packages: ${params.pkgfilter},
-                    </g:if>
+                    filterParams: JSON.stringify(filterParams),
                     referer: "${actionName}",
                     checked: checked,
                     tab: "${params.tab}",

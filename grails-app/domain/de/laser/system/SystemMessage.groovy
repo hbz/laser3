@@ -2,7 +2,6 @@ package de.laser.system
 
 
 import de.laser.utils.LocaleUtils
-import org.springframework.context.i18n.LocaleContextHolder
 
 /**
  * This class represents - next to {@link SystemAnnouncement}s - a messaging channel to users. A system message has nonetheless different purposes and can be shown on different places:
@@ -72,7 +71,7 @@ class SystemMessage {
     }
 
     /**
-     * Delivers the content according to the specified locale. This locale is specified by the {@link LocaleContextHolder}
+     * Delivers the content according to the specified locale. This locale is specified by the {@link LocaleUtils}
      * @return the localized content of the system message (German or English)
      */
     String getLocalizedContent() {

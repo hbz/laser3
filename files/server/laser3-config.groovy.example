@@ -1,4 +1,4 @@
-println("/\/\ -- local config file found and loaded -- /\/\")
+println(" -- local config file found and loaded -- ")
 
 aggr_es_cluster   = 'laser3'
 aggr_es_hostname  = '127.0.0.1'
@@ -21,7 +21,10 @@ aggr_es_indices = [
 dataSource.url      = 'jdbc:postgresql://localhost:5432/laser'
 dataSource.username = 'laser'
 dataSource.password = 'laser'
-dataSource.dbCreate = 'none'
+
+dataSources.storage.url      = 'jdbc:postgresql://localhost:5432/laser_storage'
+dataSources.storage.username = 'laser'
+dataSources.storage.password = 'laser'
 
 deployBackupLocation 	= '/tmp/laserDeployBackups'    // database backups (before deploys)
 documentStorageLocation = '/tmp/laserDocumentStorage'  // uploaded documents
@@ -44,8 +47,6 @@ indexUpdateJobActive = false
 isSendEmailsForDueDatesOfAllUsers = false
 isUpdateDashboardTableInDatabase  = false
 
-laserStatsSyncJobActive = true
-
 laserSystemId = 'LAS:eR - 3.0'
 
 notifications.email.from = 'laser@local'
@@ -65,6 +66,7 @@ showStatsInfo  = true
 showSystemInfo = true
 
 statsApiUrl = 'https://sushi.xy.z'
+statsSyncJobActive = false
 
 systemEmail = 'laser@localhost'
 

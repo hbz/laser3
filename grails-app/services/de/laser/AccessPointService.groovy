@@ -4,10 +4,10 @@ package de.laser
 import de.laser.storage.RDStore
 import de.laser.oap.OrgAccessPoint
 import de.laser.oap.OrgAccessPointLink
+import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 
 /**
  * This service manages access point manipulations and exports
@@ -94,8 +94,9 @@ class AccessPointService {
     def exportAccessPoints(List<OrgAccessPoint> accessPoints, Org contextOrg) {
         List titles = []
 
-        titles.addAll([messageSource.getMessage('accessMethod.label', null, LocaleContextHolder.getLocale()),
-                       messageSource.getMessage('accessRule.plural', null, LocaleContextHolder.getLocale())])
+        Locale locale = LocaleUtils.getCurrentLocale()
+        titles.addAll([messageSource.getMessage('accessMethod.label', null, locale),
+                       messageSource.getMessage('accessRule.plural', null, locale)])
 
         Map sheetData = [:]
         accessPoints.each { accessPoint ->
@@ -172,7 +173,7 @@ class AccessPointService {
     def exportIPsOfOrgs(List<Org> orgs, boolean onlyMap = false) {
 
         List titles = []
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
 
         titles.addAll([messageSource.getMessage('org.sortname.label',null, locale),
                        'Name',
@@ -239,7 +240,7 @@ class AccessPointService {
     def exportProxysOfOrgs(List<Org> orgs, boolean onlyMap = false) {
 
         List titles = []
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
 
         titles.addAll([messageSource.getMessage('org.sortname.label',null, locale),
                        'Name',
@@ -305,7 +306,7 @@ class AccessPointService {
     def exportEZProxysOfOrgs(List<Org> orgs, boolean onlyMap = false) {
 
         List titles = []
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
 
         titles.addAll([messageSource.getMessage('org.sortname.label',null, locale),
                        'Name',
@@ -375,7 +376,7 @@ class AccessPointService {
     def exportShibbolethsOfOrgs(List<Org> orgs, boolean onlyMap = false) {
 
         List titles = []
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
 
         titles.addAll([messageSource.getMessage('org.sortname.label',null, locale),
                        'Name',
@@ -424,7 +425,7 @@ class AccessPointService {
     List availableOptions(Org org) {
 
         List availableLanguageKeys = ['accessPoint.option.remoteAccess', 'accessPoint.option.woRemoteAccess', 'accessPoint.option.vpn']
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
         Map localizedAccessPointNameSuggestions = [:]
         availableLanguageKeys.each { key ->
             localizedAccessPointNameSuggestions[messageSource.getMessage(key, null,locale)] = key

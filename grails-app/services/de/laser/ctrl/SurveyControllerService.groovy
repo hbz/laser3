@@ -2,6 +2,7 @@ package de.laser.ctrl
 
 import de.laser.AccessService
 import de.laser.ContextService
+import de.laser.DocstoreService
 import de.laser.License
 import de.laser.Org
 import de.laser.Subscription
@@ -11,10 +12,8 @@ import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyConfigProperties
 import de.laser.SurveyController
 import de.laser.survey.SurveyInfo
-import de.laser.survey.SurveyLinks
 import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyResult
-import de.laser.Task
 import de.laser.TaskService
 import de.laser.auth.User
 import de.laser.utils.LocaleUtils
@@ -34,6 +33,7 @@ class SurveyControllerService {
 
     AccessService accessService
     ContextService contextService
+    DocstoreService docstoreService
     SubscriptionService subscriptionService
     TaskService taskService
 
@@ -61,6 +61,12 @@ class SurveyControllerService {
         if (result.surveyConfig) {
             result.transferWorkflow = result.surveyConfig.transferWorkflow ? JSON.parse(result.surveyConfig.transferWorkflow) : null
         }
+
+        int tc1 = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.surveyConfig).size()
+        int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.surveyConfig).size()
+        result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
+
+        result.notesCount = docstoreService.getNotes(result.surveyConfig, result.contextOrg).size()
 
         result.subscription = result.surveyConfig.subscription ?: null
 
@@ -117,7 +123,7 @@ class SurveyControllerService {
              List<Subscription> childSubs = result.parentSubscription.getNonDeletedDerivedSubscriptions()
              if(childSubs) {
                  String localizedName
-                 switch(LocaleContextHolder.getLocale()) {
+                 switch(LocaleUtils.getCurrentLocale()) {
                      case Locale.GERMANY:
                      case Locale.GERMAN: localizedName = "name_de"
                          break
@@ -193,10 +199,10 @@ class SurveyControllerService {
                 newSurveyResult.sub = surveyResult.participantSubscription
                 if (result.properties) {
                     if (result.properties) {
-                        String locale = LocaleUtils.getCurrentLang()
+                        String lang = LocaleUtils.getCurrentLang()
                         //newSurveyResult.properties = SurveyResult.findAllByParticipantAndOwnerAndSurveyConfigAndTypeInList(surveyResult.participant, result.institution, result.surveyConfig, result.properties,[sort:type["value${locale}"],order:'asc'])
                         //in (:properties) throws for some unexplaniable reason a HQL syntax error whereas it is used in many other places without issues ... TODO
-                        String query = "select sr from SurveyResult sr join sr.type pd where pd in :properties and sr.participant = :participant and sr.owner = :context and sr.surveyConfig = :cfg order by pd.name_${locale} asc"
+                        String query = "select sr from SurveyResult sr join sr.type pd where pd in :properties and sr.participant = :participant and sr.owner = :context and sr.surveyConfig = :cfg order by pd.name_${lang} asc"
                         newSurveyResult.properties = SurveyResult.executeQuery(query, [participant: surveyResult.participant, context: result.institution, cfg: result.surveyConfig, properties: result.properties])
                     }
                 }
@@ -222,10 +228,10 @@ class SurveyControllerService {
                 newSurveyResult.resultOfParticipation = surveyResult
                 newSurveyResult.surveyConfig = result.surveyConfig
                 if (result.properties) {
-                    String locale = LocaleUtils.getCurrentLang()
+                    String lang = LocaleUtils.getCurrentLang()
                     //newSurveyResult.properties = SurveyResult.findAllByParticipantAndOwnerAndSurveyConfigAndTypeInList(surveyResult.participant, result.institution, result.surveyConfig, result.properties,[sort:type["value${locale}"],order:'asc'])
                     //in (:properties) throws for some unexplaniable reason a HQL syntax error whereas it is used in many other places without issues ... TODO
-                    String query = "select sr from SurveyResult sr join sr.type pd where pd in :properties and sr.participant = :participant and sr.owner = :context and sr.surveyConfig = :cfg order by pd.name_${locale} asc"
+                    String query = "select sr from SurveyResult sr join sr.type pd where pd in :properties and sr.participant = :participant and sr.owner = :context and sr.surveyConfig = :cfg order by pd.name_${lang} asc"
                     newSurveyResult.properties = SurveyResult.executeQuery(query, [participant: surveyResult.participant, context: result.institution, cfg: result.surveyConfig, properties: result.properties])
                 }
 
@@ -319,10 +325,10 @@ class SurveyControllerService {
                 newSurveyResult.resultOfParticipation = surveyResult
                 newSurveyResult.surveyConfig = result.surveyConfig
                 if (result.properties) {
-                    String locale = LocaleUtils.getCurrentLang()
+                    String lang = LocaleUtils.getCurrentLang()
                     //newSurveyResult.properties = SurveyResult.findAllByParticipantAndOwnerAndSurveyConfigAndTypeInList(it.participant, result.institution, result.surveyConfig, result.properties,[sort:type["value${locale}"],order:'asc'])
                     //in (:properties) throws for some unexplaniable reason a HQL syntax error whereas it is used in many other places without issues ... TODO
-                    String query = "select sr from SurveyResult sr join sr.type pd where pd in :properties and sr.participant = :participant and sr.owner = :context and sr.surveyConfig = :cfg order by pd.name_${locale} asc"
+                    String query = "select sr from SurveyResult sr join sr.type pd where pd in :properties and sr.participant = :participant and sr.owner = :context and sr.surveyConfig = :cfg order by pd.name_${lang} asc"
                     newSurveyResult.properties = SurveyResult.executeQuery(query, [participant: surveyResult.participant, context: result.institution, cfg: result.surveyConfig, properties: result.properties])
                 }
 

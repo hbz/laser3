@@ -24,6 +24,7 @@ import de.laser.system.SystemEvent
 import de.laser.utils.AppUtils
 import de.laser.config.ConfigMapper
 import de.laser.utils.DateUtils
+import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
 import grails.plugins.mail.MailService
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -31,7 +32,6 @@ import groovy.sql.Sql
 import groovy.time.TimeCategory
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 
 import java.nio.file.Files
 import java.nio.file.Path
@@ -166,7 +166,7 @@ class SurveyService {
         } else {
             log.error("Problem saving ${obj.errors}")
             Object[] args = [obj]
-            flash.error += messageSource.getMessage('default.save.error.message', args, LocaleContextHolder.getLocale())
+            flash.error += messageSource.getMessage('default.save.error.message', args, LocaleUtils.getCurrentLocale())
             return false
         }
     }
@@ -179,7 +179,7 @@ class SurveyService {
      */
     def exportSurveys(List<SurveyConfig> surveyConfigs, Org contextOrg) {
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
         Map sheetData = [:]
 
         surveyConfigs.each { surveyConfig ->
@@ -481,7 +481,7 @@ class SurveyService {
      */
     def exportSurveyCostItems(List<SurveyConfig> surveyConfigs, Org contextOrg) {
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
 
         Map sheetData = [:]
 
@@ -650,7 +650,7 @@ class SurveyService {
     def emailToSurveyOwnerbyParticipationFinish(SurveyInfo surveyInfo, Org participationFinish){
 
         if (ConfigMapper.getConfig('grails.mail.disabled', Boolean) == true) {
-            println 'surveyService.emailToSurveyOwnerbyParticipationFinish() failed due grails.mail.disabled = true'
+            log.debug 'surveyService.emailToSurveyOwnerbyParticipationFinish() failed due grails.mail.disabled = true'
             return false
         }
 
@@ -726,7 +726,7 @@ class SurveyService {
     def emailToSurveyParticipationByFinish(SurveyInfo surveyInfo, Org participationFinish){
 
         if (ConfigMapper.getConfig('grails.mail.disabled', Boolean) == true) {
-            println 'surveyService.emailToSurveyParticipationByFinish() failed due grails.mail.disabled = true'
+            log.debug 'surveyService.emailToSurveyParticipationByFinish() failed due grails.mail.disabled = true'
             return false
         }
 
@@ -823,7 +823,7 @@ class SurveyService {
      */
     def exportSurveysOfParticipant(List surveyConfigs, Org participant) {
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
 
         Map sheetData = [:]
             List titles = []
@@ -1024,7 +1024,7 @@ class SurveyService {
     private void _sendSurveyEmail(User user, Org org, List<SurveyInfo> surveyEntries, boolean reminderMail) {
 
         if (ConfigMapper.getConfig('grails.mail.disabled', Boolean) == true) {
-            println 'SurveyService.sendSurveyEmail() failed due grails.mail.disabled = true'
+            log.debug 'SurveyService.sendSurveyEmail() failed due grails.mail.disabled = true'
         }else {
 
             String emailReceiver = user.getEmail()
@@ -1733,7 +1733,7 @@ class SurveyService {
     }
 
     def exportPropertiesChanged(SurveyConfig surveyConfig, def participants, Org contextOrg) {
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
         Map sheetData = [:]
         List titles = [messageSource.getMessage('org.sortname.label', null, locale),
                        messageSource.getMessage('subscription.details.consortiaMembers.label', null, locale),

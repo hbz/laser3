@@ -19,7 +19,7 @@
                                 "${it}\" data-rdc=\"${it.refdataCategory}":
                                  "${it}"
                     }}"
-                    optionValue="${{ it.name_de }}"
+                    optionValue="${{ it.getI10n('name')}}"
                     noSelection="${message(code: 'default.select.choose.label')}" />
 </div>
 

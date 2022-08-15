@@ -1,4 +1,4 @@
-<%@ page import="de.laser.IssueEntitlement; de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.IssueEntitlement; de.laser.storage.RDStore; de.laser.Platform; de.laser.Subscription; de.laser.SubscriptionPackage;" %>
 <laser:serviceInjection />
 
 <ui:subNav actionName="${actionName}">
@@ -30,11 +30,25 @@
     <g:if test="${((contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM']) && subscription.instanceOf)}">
         <ui:securedSubNavItem orgPerm="ORG_CONSORTIUM" controller="subscription" action="surveys" counts="${currentSurveysCounts}" params="${[id:params.id]}" message="subscription.details.surveys.label" />
     </g:if>
-    <g:if test="${((contextService.getOrg().getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER']) || params.orgBasicMemberView)&& subscription?.type == de.laser.storage.RDStore.SUBSCRIPTION_TYPE_CONSORTIAL}">
+    <g:if test="${((contextService.getOrg().getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER']) || params.orgBasicMemberView)&& subscription?.type == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL}">
         <ui:securedSubNavItem orgPerm="ORG_BASIC_MEMBER" controller="subscription" action="surveys" counts="${currentSurveysCounts}" params="${[id:params.id]}" message="subscription.details.surveys.label" />
     </g:if>
     <g:if test="${subscription.packages}">
-        <ui:subNavItem controller="subscription" action="stats" params="${[id:params.id]}" message="default.stats.label" />
+        <%
+            Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: subscription])
+            if(!subscribedPlatforms) {
+                subscribedPlatforms = Platform.executeQuery("select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription", [subscription: subscription])
+            }
+            Set<Long> reportingInstitutions = [institution.id]
+            reportingInstitutions.addAll(Subscription.executeQuery('select oo.org.id from OrgRole oo join oo.sub s where s.instanceOf = :subscription and oo.roleType in (:roleTypes)', [subscription: subscription, roleTypes: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]))
+            boolean statsAvailable = subscriptionService.areStatsAvailable(subscribedPlatforms, subscription.packages.collect { SubscriptionPackage sp -> sp.pkg.id }, reportingInstitutions)
+        %>
+        <g:if test="${statsAvailable}">
+            <ui:subNavItem controller="subscription" action="stats" params="${[id:params.id]}" message="default.stats.label" />
+        </g:if>
+        <g:else>
+            <ui:subNavItem disabled="disabled" message="default.stats.label" tooltip="${message(code: 'default.stats.noStatsForSubscription')}"/>
+        </g:else>
     </g:if>
     <g:else>
         <ui:subNavItem disabled="disabled" message="default.stats.label" tooltip="${message(code: 'default.stats.noPackage')}"/>
@@ -50,15 +64,11 @@
         </g:if>
     </sec:ifAnyGranted>
 
-    <ui:securedSubNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="subscription" action="tasks" params="${[id:params.id]}" message="task.plural" />
+    <ui:securedSubNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="subscription" action="tasks" params="${[id:params.id]}" counts="${tasksCount}" message="task.plural" />
     <ui:securedSubNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="subscription" action="documents" params="${[id:params.id]}" message="default.documents.label" />
-    <ui:subNavItem controller="subscription" action="notes" params="${[id:params.id]}" message="default.notes.label" />
+    <ui:subNavItem controller="subscription" action="notes" params="${[id:params.id]}" counts="${notesCount}" message="default.notes.label" />
 
     <%--
     <ui:subNavItem controller="subscription" action="changes" params="${[id:params.id]}" message="license.nav.todo_history" />
-
-    <sec:ifAnyGranted roles="ROLE_ADMIN">
-        <ui:subNavItem controller="subscription" action="history" params="${[id:params.id]}" class="la-role-admin" message="license.nav.edit_history" />
-    </sec:ifAnyGranted>
     --%>
 </ui:subNav>

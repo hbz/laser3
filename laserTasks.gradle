@@ -7,6 +7,14 @@ task( 'dbm.createGormDiff', group: 'laser', type: Exec ) {
     // args '-c', './grailsw prod dbm-gorm-diff changelogs/' + date + '.groovy --add'
 }
 
+task( 'dbm.createGormDiff-storage', group: 'laser', type: Exec ) {
+    String grailsExe = (System.getProperty('GRAILS_HOME') ?: System.getenv('GRAILS_HOME') ?: '') + '/bin/grails'
+    String date = java.time.LocalDate.now().format('yyyy-MM-dd')
+    executable 'sh'
+    args '-c', grailsExe + ' prod dbm-gorm-diff changelogs/' + date + '-storage.groovy --dataSource=storage --add'
+    // args '-c', './grailsw prod dbm-gorm-diff changelogs/' + date + '-storage.groovy --dataSource=storage --add'
+}
+
 task( 'devtools.triggerRestart', group: 'laser' ) {
     doLast {
         System.gc()

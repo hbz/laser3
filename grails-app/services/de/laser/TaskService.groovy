@@ -5,11 +5,11 @@ import de.laser.auth.User
 import de.laser.utils.DateUtils
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
+import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.grails.web.util.WebUtils
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
 
@@ -50,10 +50,8 @@ class TaskService {
     Map<String, Object> getTasks(int offset, User user, Org contextOrg, object) {
         Map<String, Object> result = [:]
         result.taskInstanceList = getTasksByResponsiblesAndObject(user, contextOrg, object)
-        result.taskInstanceCount = result.taskInstanceList.size()
         result.taskInstanceList = chopOffForPageSize(result.taskInstanceList, user, offset)
         result.myTaskInstanceList = getTasksByCreatorAndObject(user,  object)
-        result.myTaskInstanceCount = result.myTaskInstanceList.size()
         result.myTaskInstanceList = chopOffForPageSize(result.myTaskInstanceList, user, offset)
         result
     }
@@ -438,7 +436,6 @@ class TaskService {
     Map<String, Object> getPreconditions(Org contextOrg) {
         Map<String, Object> result = [:]
 
-        result.taskCreator                  = contextService.getUser()
         result.validResponsibleOrgs         = contextOrg ? [contextOrg] : []
         result.validResponsibleUsers        = getUserDropdown(contextOrg)
         result.validPackages                = _getPackagesDropdown(contextOrg)
@@ -464,10 +461,10 @@ class TaskService {
      * @param contextOrg the institution whose affiliated users should be retrieved
      * @return a list of users
      */
-    List<User> getUserDropdown(Org contextOrg) {
-        List<User> validResponsibleUsers   = contextOrg ? User.executeQuery(
+    List<User> getUserDropdown(Org org) { // modal_create
+        List<User> validResponsibleUsers   = org ? User.executeQuery(
                 "select u from User as u where exists (select uo from UserOrg as uo where uo.user = u and uo.org = :org) order by lower(u.display)",
-                [org: contextOrg]) : []
+                [org: org]) : []
 
         validResponsibleUsers
     }
@@ -649,7 +646,7 @@ class TaskService {
             }
         }
 
-        String member = ' - ' +messageSource.getMessage('license.member', null, LocaleContextHolder.getLocale())
+        String member = ' - ' +messageSource.getMessage('license.member', null, LocaleUtils.getCurrentLocale())
         validLicensesDropdown = validLicensesMitInstanceOf?.collect{
 
             def optionKey = it[0]
@@ -671,21 +668,6 @@ class TaskService {
             validLicensesDropdown.sort { it.optionValue.toLowerCase() }
         }
         validLicensesDropdown
-    }
-
-    /**
-     * Gets a list of possible responsible users
-     * @param contextOrg the institution whose users should be retrieved
-     * @return a list of possible responsible users
-     */
-    Map<String, Object> getPreconditionsWithoutTargets(Org contextOrg) {
-        Map<String, Object> result = [:]
-        def validResponsibleUsers   = contextOrg ? User.executeQuery(
-                "select u from User as u where exists (select uo from UserOrg as uo where uo.user = u and uo.org = :org) order by lower(u.display)",
-                [org: contextOrg]) : []
-        result.taskCreator          = contextService.getUser()
-        result.validResponsibleUsers = validResponsibleUsers
-        result
     }
 
     /**

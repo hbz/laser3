@@ -3,8 +3,8 @@ package de.laser.reporting.export.local
 import de.laser.storage.BeanStore
 import de.laser.reporting.export.LocalExportHelper
 import de.laser.reporting.export.base.BaseQueryExport
+import de.laser.utils.LocaleUtils
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 
 class LocalQueryExport extends BaseQueryExport {
 
@@ -28,7 +28,7 @@ class LocalQueryExport extends BaseQueryExport {
 
         // todo --
         MessageSource messageSource = BeanStore.getMessageSource()
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
 
         if ( queryCache.labels.tooltip ) {
             result.cols.add( queryCache.labels.tooltip ) // simple

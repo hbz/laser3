@@ -9,11 +9,10 @@
 
     <ui:messages data="${flash}" />
 
-      <table class="ui sortable celled la-js-responsive-table la-table table">
+      <table class="ui sortable celled la-js-responsive-table la-table compact table">
         <thead>
           <tr>
             <g:sortableColumn property="title" title="${message(code: 'title.label')}" />
-            <th></th>
           </tr>
         </thead>
         <tbody>

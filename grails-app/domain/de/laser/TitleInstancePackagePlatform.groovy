@@ -8,8 +8,8 @@ import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.titles.TitleHistoryEvent
 import de.laser.utils.DateUtils
+import de.laser.utils.LocaleUtils
 import groovy.time.TimeCategory
-import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
 import java.text.Normalizer
@@ -285,28 +285,13 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
     result
   }
 
-    @Deprecated
-    private String _stringify(def obj) {
-      String result
-    if ( obj != null ) {
-      if ( obj instanceof Date ) {
-          SimpleDateFormat df = DateUtils.getSDF_yyyyMMdd()
-          result = df.format(obj)
-      }
-      else {
-        result = obj.toString()
-      }
-    }
-        result
-    }
-
     /**
      * Gets the first author and / or the first editor of the book instance
      * @return a concatenated string of the first author / first editor of the book
      */
     String getEbookFirstAutorOrFirstEditor(){
 
-        String label = BeanStore.getMessageSource().getMessage('title.firstAuthor.firstEditor.label',null, LocaleContextHolder.getLocale())
+        String label = BeanStore.getMessageSource().getMessage('title.firstAuthor.firstEditor.label',null, LocaleUtils.getCurrentLocale())
         if(firstEditor && firstAuthor) {
             return firstAuthor + ' ; ' + firstEditor + ' ' + label
         }

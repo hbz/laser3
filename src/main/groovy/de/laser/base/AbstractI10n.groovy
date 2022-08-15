@@ -2,7 +2,6 @@ package de.laser.base
 
 import de.laser.I10nTranslation
 import de.laser.utils.LocaleUtils
-import org.springframework.context.i18n.LocaleContextHolder
 
 /**
  * Abstract class to attach to translatable / internationalisable classes.
@@ -19,7 +18,7 @@ abstract class AbstractI10n {
      * @param property the property to which the localised string should be retrieved
      */
     String getI10n(String property) {
-        getI10n(property, LocaleContextHolder.getLocale().toString())
+        getI10n(property, LocaleUtils.getCurrentLocale())
     }
 
     /**

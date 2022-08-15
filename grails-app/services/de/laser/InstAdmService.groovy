@@ -6,11 +6,11 @@ import de.laser.auth.UserOrg
 import de.laser.utils.AppUtils
 import de.laser.config.ConfigMapper
 import de.laser.storage.RDStore
+import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
 import grails.plugins.mail.MailService
 import groovy.util.logging.Slf4j
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 
 /**
  * This service manages calls specific to institutional administrator (INST_ADM) matters
@@ -138,7 +138,7 @@ class InstAdmService {
     void createAffiliation(User user, Org org, Role formalRole, def flash) {
 
         try {
-            Locale loc = LocaleContextHolder.getLocale()
+            Locale loc = LocaleUtils.getCurrentLocale()
             UserOrg check = UserOrg.findByOrgAndUserAndFormalRole(org, user, formalRole)
 
             if (formalRole.roleType == 'user') {

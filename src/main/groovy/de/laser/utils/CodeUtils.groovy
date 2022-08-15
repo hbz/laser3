@@ -10,7 +10,6 @@ import org.grails.datastore.mapping.model.PersistentEntity
 /**
  * Util class for determining domain classes
  */
-@CompileStatic
 @Slf4j
 class CodeUtils {
 
@@ -56,7 +55,7 @@ class CodeUtils {
 
     static GrailsClass getDomainArtefactBySimpleName(String simpleName) {
         GrailsClass dc
-        List<String> namespaces = [ 'de.laser' ]
+        List<String> namespaces = getAllDomainClasses().packageName.unique()
 
         for (String ns : namespaces) {
             dc = Holders.grailsApplication.getArtefact('Domain', ns + '.' + simpleName)

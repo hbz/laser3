@@ -1,7 +1,7 @@
 <%@ page import="de.laser.utils.AppUtils" %>
 
 <laser:htmlStart message="serverCode.error.message1" serviceInjection="true">
-    <link rel="stylesheet" href="${resource(dir: 'css', file: '__errors.css')}" type="text/css">
+    <link rel="stylesheet" href="${resource(dir: 'css', file: 'onlyErrors.css')}" type="text/css">
 </laser:htmlStart>
 
 <br />
@@ -16,8 +16,7 @@
             ${message(code: 'serverCode.error.message1')}
         </h2>
 
-        <g:if test="${! flash.error}">
-            <div>
+        <div>
                 <p>${message(code: 'serverCode.error.message2')}</p>
                 <p><strong>${request.forwardURI}</strong></p>
 
@@ -33,10 +32,10 @@
 
                 <br />
                 <p>
-                    <button class="ui button" onclick="JSPC.helper.goBack()">${message(code: 'default.button.back')}</button>
+                    <button class="ui button la-js-dont-hide-button" onclick="JSPC.helper.goBack()">${message(code: 'default.button.back')}</button>
                 </p>
-            </div>
-        </g:if>
+        </div>
+
     </div>
 </div>
 

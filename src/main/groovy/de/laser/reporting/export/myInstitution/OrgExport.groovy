@@ -27,7 +27,6 @@ import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseDetails
 import org.grails.plugins.web.taglib.ApplicationTagLib
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 
 class OrgExport extends BaseDetailsExport {
 
@@ -199,7 +198,7 @@ class OrgExport extends BaseDetailsExport {
                         List<RefdataValue> addressTypes = Address.executeQuery( sql, [org: org] )
                         List addressList = []
 
-                        String pob = messageSource.getMessage('address.pob.label',null, LocaleContextHolder.getLocale())
+                        String pob = messageSource.getMessage('address.pob.label',null, LocaleUtils.getCurrentLocale())
 
                         addressTypes.each { at ->
                             List<Address> addresses = Address.executeQuery(

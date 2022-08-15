@@ -152,6 +152,7 @@ class MyInstitutionControllerService {
 
         result.user = user
         result.institution = org
+        result.contextOrg = org
         result.contextCustomerType = org.getCustomerType()
         result.showConsortiaFunctions = result.contextCustomerType == "ORG_CONSORTIUM"
         switch (params.action) {

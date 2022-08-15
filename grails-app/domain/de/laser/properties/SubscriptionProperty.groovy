@@ -7,10 +7,10 @@ import de.laser.PendingChange
 import de.laser.RefdataValue
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.storage.BeanStore
+import de.laser.utils.LocaleUtils
 import grails.converters.JSON
 import grails.plugins.orm.auditable.Auditable
 import org.grails.web.json.JSONElement
-import org.springframework.context.i18n.LocaleContextHolder
 
 /**
  * The class's name is what it does: a property (general / custom or private) to a {@link Subscription}.
@@ -133,7 +133,7 @@ class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated imp
 
         if (changeDocument.event.equalsIgnoreCase('SubscriptionProperty.updated')) {
 
-            Locale locale = LocaleContextHolder.getLocale()
+            Locale locale = LocaleUtils.getCurrentLocale()
             String description = BeanStore.getMessageSource().getMessage('default.accept.placeholder',null, locale)
 
             List<PendingChange> slavedPendingChanges = []

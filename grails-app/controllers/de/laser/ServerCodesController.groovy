@@ -1,7 +1,7 @@
 package de.laser
 
+import de.laser.annotations.Check404
 import de.laser.utils.AppUtils
-import de.laser.utils.CodeUtils
 import de.laser.config.ConfigMapper
 import de.laser.utils.DateUtils
 import grails.core.GrailsApplication
@@ -69,21 +69,38 @@ class ServerCodesController {
      * Shows the resource not found page, mapping for code 404
      */
     def notFound() {
-        Map<String, Object> result = [status: request.getAttribute('javax.servlet.error.status_code')]
+        Map<String, Object> result = [
+                status: request.getAttribute('javax.servlet.error.status_code'),
+                alternatives: [:]
+        ]
+        GrailsClass controller = getControllerClass()
 
-        UrlMappingData umd = (new DefaultUrlMappingParser()).parse( request.forwardURI )
-        GrailsClass controller = CodeUtils.getAllControllerArtefacts().find { it.logicalPropertyName == umd.tokens[0] }
         if (controller) {
-            result.alternatives = controller.clazz.declaredMethods.findAll{
-                it.getAnnotation(Action) && it.name in ['index', 'list', 'show']
-            }.collect{
-                if (it.name == 'show' && umd.tokens.size() == 3 && umd.tokens[2].isNumber()) {
-                    "${g.createLink(controller: controller.logicalPropertyName, action: it.name, params: [id: umd.tokens[2]], absolute: true)}"
-                } else {
-                    "${g.createLink(controller: controller.logicalPropertyName, action: it.name, absolute: true)}"
+            if (request.getAttribute('javax.servlet.error.message') == Check404.KEY) {
+                controller.clazz[ Check404.CHECK404_ALTERNATIVES ].each{ action, label ->
+                    if (action.contains('/')) {
+                        result.alternatives << [ (g.createLink(uri: (action.startsWith('/') ? action : '/' + action), absolute: true)) : message(code: label) ]
+                    } else {
+                        result.alternatives << [ (g.createLink(controller: controller.logicalPropertyName, action: action, absolute: true)) : message(code: label) ]
+                    }
+                }
+            }
+            else {
+                UrlMappingData umd = (new DefaultUrlMappingParser()).parse( request.forwardURI )
+
+                controller.clazz.declaredMethods.findAll {
+                    it.getAnnotation(Action) && it.name in ['show', 'list']
+                }.each {
+                    if (it.name == 'show' && umd.tokens.size() == 3 && umd.tokens[2].isNumber()) {
+                        result.alternatives << [ (g.createLink(controller: controller.logicalPropertyName, action: 'show', params: [id: umd.tokens[2]], absolute: true)) : '' ]
+                    }
+                    else {
+                        result.alternatives << [ (g.createLink(controller: controller.logicalPropertyName, action: it.name, absolute: true)) : '' ]
+                    }
                 }
             }
         }
+
         render view:'notFound', model: result
     }
 

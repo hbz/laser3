@@ -7,11 +7,11 @@ import de.laser.PendingChange
 import de.laser.RefdataValue
 import de.laser.base.AbstractPropertyWithCalculatedLastUpdated
 import de.laser.storage.BeanStore
+import de.laser.utils.LocaleUtils
 import grails.converters.JSON
 import grails.plugins.orm.auditable.Auditable
 import org.grails.web.json.JSONElement
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 
 /**
  * The class's name is what it does: a property (general / custom or private) to a {@link de.laser.License}.
@@ -152,7 +152,7 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
 
         if (changeDocument.event.equalsIgnoreCase('LicenseProperty.updated')) {
 
-            Locale locale = LocaleContextHolder.getLocale()
+            Locale locale = LocaleUtils.getCurrentLocale()
             String description = messageSource.getMessage('default.accept.placeholder',null, locale)
 
             def propName

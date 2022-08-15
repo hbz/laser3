@@ -33,6 +33,7 @@ class SearchController  {
 
         params.searchObjects = params.searchObjects ?: 'allObjects'
         result.contextOrg = contextService.getOrg()
+        result.flagContentElasticsearch = true // ESSearchService.search
 
         def query = params.q ?: null
         if (!query) {
@@ -63,16 +64,15 @@ class SearchController  {
             }
 
             params.actionName = actionName
-
             params.availableToOrgs = [contextService.getOrg().id]
             params.availableToUser = [result.user.id]
 
             result = ESSearchService.search(params)
 
             params.q = query
-
         }
         result.contextOrg = contextService.getOrg()
+
         result
     }
 
@@ -87,6 +87,8 @@ class SearchController  {
         String filtered
         String query = "${params.query}"
         result.user = contextService.getUser()
+        result.flagContentElasticsearch = true // ESSearchService.search
+
         params.max = 50
 
         if (!query) {

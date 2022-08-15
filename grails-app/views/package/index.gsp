@@ -13,18 +13,6 @@
     <laser:render template="/templates/filter/packageGokbFilter"/>
 </g:if>
 
-%{--<div class="ui icon info message">
-    <i class="exclamation triangle icon"></i>
-    <i class="close icon"></i>
-
-    <div class="content">
-        <div class="header">
-            ${message(code: 'message.attention')}
-        </div>
-
-        <p>${message(code: 'message.attention.needTime')}</p>
-    </div>
-</div>--}%
 <g:if test="${error}">
     <div class="ui icon info error message">
         <i class="exclamation triangle icon"></i>
@@ -156,9 +144,7 @@
 
 
             <ui:paginate action="index" controller="package" params="${params}"
-                            next="${message(code: 'default.paginate.next')}"
-                            prev="${message(code: 'default.paginate.prev')}" max="${max}"
-                            total="${recordsCount}"/>
+                            max="${max}" total="${recordsCount}"/>
 
         </g:if>
         <g:else>

@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.SqlDateUtils; de.laser.survey.SurveyInfo; de.laser.Person; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DueDateObject; org.springframework.context.i18n.LocaleContextHolder; de.laser.*; de.laser.DashboardDueDate" %>
+<%@ page import="de.laser.utils.LocaleUtils; de.laser.utils.SqlDateUtils; de.laser.survey.SurveyInfo; de.laser.Person; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DueDateObject; de.laser.*; de.laser.DashboardDueDate" %>
 <laser:serviceInjection />
 <table class="ui celled table la-js-responsive-table la-table">
     <thead>
@@ -19,12 +19,7 @@
                     <g:if test="${obj instanceof AbstractPropertyWithCalculatedLastUpdated}">
                         <i class="icon tags la-list-icon"></i>
                     </g:if>
-                    <g:if test="${Locale.GERMAN.getLanguage() == LocaleContextHolder.getLocale().getLanguage()}">
-                        ${dashDueDate.dueDateObject.attribute_value_de}
-                    </g:if>
-                    <g:else>
-                        ${dashDueDate.dueDateObject.attribute_value_en}
-                    </g:else>
+                    ${dashDueDate.dueDateObject[LocaleUtils.getLocalizedAttributeName('attribute_value')]}
                 </td>
                 <td>
                     <g:formatDate format="${message(code:'default.date.format.notime')}" date="${dashDueDate.dueDateObject.date}"/>

@@ -40,6 +40,19 @@ class CustomMigrationCallbacks {
 				println '--------------------------------------------------------------------------------'
 			}
 		}
+
+		int count4 = (sql.rows("select * from databasechangelog where id = 'changelog' and filename = 'changelog.groovy'")).size()
+
+		if (count4) {
+			sql.withTransaction {
+				println '--------------------------------------------------------------------------------'
+				println '-     Cleanup database migration table'
+				println '-        updating: ' + sql.executeUpdate("update databasechangelog set id = 'laser' where id = 'changelog' and filename = 'changelog.groovy'")
+
+				sql.commit()
+				println '--------------------------------------------------------------------------------'
+			}
+		}
 	}
 
 	void beforeStartMigration(Database database) {
@@ -54,16 +67,23 @@ class CustomMigrationCallbacks {
 		List diff   = allIds.minus(ranIds)
 
 		if (! diff.empty) {
+			Map dataSource = ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_DEFAULT, Map) as Map
+			String fileName = 'laser-backup'
+
+			if (database.connection.getURL() == ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_STORAGE + '.url', String)) {
+				dataSource = ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_STORAGE, Map) as Map
+				fileName = 'laser-storage-backup'
+			}
+
 			println '--------------------------------------------------------------------------------'
 			println '-     Database migration'
-			println '-        ' + diff.size() + ' relevant changesets found ..'
+			println '-        ' + diff.size() + ' relevant changeset/s found ..'
 			println '-        dumping current database ..'
 
-			def dataSource = ConfigMapper.getConfig('dataSource', Map)
 			URI uri = new URI(dataSource.url.substring(5))
 
 			String backupFile = (ConfigMapper.getDeployBackupLocation() ?: ConfigDefaults.DEPLOYBACKUP_LOCATION_FALLBACK) +
-					"/laser-backup-${(new SimpleDateFormat('yyyy-MM-dd-HH:mm:ss')).format(new Date())}.sql"
+					"/${fileName}-${(new SimpleDateFormat('yyyy-MM-dd-HH:mm:ss')).format(new Date())}.sql"
 
 			Map<String, String> config = [
 					dbname: "${uri.getScheme()}://${dataSource.username}:${dataSource.password}@${uri.getHost()}:${uri.getPort()}${uri.getRawPath()}",

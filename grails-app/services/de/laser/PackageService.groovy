@@ -3,12 +3,12 @@ package de.laser
 import de.laser.finance.CostItem
 import de.laser.storage.RDStore
 import de.laser.oap.OrgAccessPointLink
+import de.laser.utils.LocaleUtils
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.web.mapping.LinkGenerator
 import groovy.sql.Sql
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 
 /**
  * This service manages calls related to package management
@@ -32,7 +32,7 @@ class PackageService {
      * @return a list of conflicts, each of them a map naming the conflict details when unlinking
      */
     List listConflicts(de.laser.Package pkg,subscription,int numOfPCs,int numOfIEs,int numOfCIs) {
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
         Map<String,Object> conflict_item_pkg = [name: messageSource.getMessage("subscription.details.unlink.linkedPackage",null,locale),
                                                 details: [['link': grailsLinkGenerator.link(controller: 'package', action: 'show', id: pkg.id), 'text': pkg.name]],
                                                 action: [actionRequired: false, text: messageSource.getMessage("subscription.details.unlink.unlink.singular",null,locale)]]

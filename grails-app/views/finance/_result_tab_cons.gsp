@@ -1,5 +1,5 @@
 <!-- _result_tab_cons.gsp -->
-<%@ page import="org.springframework.context.i18n.LocaleContextHolder; de.laser.storage.RDStore; de.laser.finance.CostItemElementConfiguration;de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.FinanceController;de.laser.finance.CostItem" %>
+<%@ page import="de.laser.storage.RDStore; de.laser.finance.CostItemElementConfiguration;de.laser.OrgRole;de.laser.RefdataCategory;de.laser.RefdataValue;de.laser.properties.PropertyDefinition;de.laser.FinanceController;de.laser.finance.CostItem" %>
 
 <laser:serviceInjection />
 
@@ -402,14 +402,10 @@
 <g:if test="${data.costItems}">
     <g:if test="${fixedSubscription}">
         <ui:paginate mapping="subfinance" params="${params+[showView:showView]}"
-                        next="${message(code: 'default.paginate.next')}"
-                        prev="${message(code: 'default.paginate.prev')}"
                         max="${max}" offset="${offset}" total="${data.count}"/>
     </g:if>
     <g:else>
         <ui:paginate action="finance" controller="myInstitution" params="${params+[showView:showView]}"
-                        next="${message(code: 'default.paginate.next')}"
-                        prev="${message(code: 'default.paginate.prev')}"
                         max="${max}" offset="${offset}" total="${data.count}"/>
     </g:else>
 </g:if>

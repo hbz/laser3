@@ -1,9 +1,16 @@
 package de.laser
 
-
+import de.laser.AuditService
+import de.laser.ContextService
+import de.laser.GenericOIDService
+import de.laser.GokbService
+import de.laser.License
+import de.laser.RefdataValue
+import de.laser.SystemService
+import de.laser.UserSetting
+import de.laser.YodaService
 import de.laser.auth.User
 import de.laser.cache.SessionCacheWrapper
-import de.laser.remote.ApiSource
 import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
@@ -19,8 +26,6 @@ import org.springframework.context.MessageSource
 import org.springframework.web.servlet.support.RequestContextUtils
 
 import java.text.SimpleDateFormat
-
-// Semantic UI
 
 class UiTagLib {
 
@@ -188,56 +193,6 @@ class UiTagLib {
 
         out << '    </div>'
         out << '</div>'
-    }
-
-    def debugInfo = { attrs, body ->
-
-        if (yodaService.showDebugInfo()) {
-
-            out << '<a href="#debugInfo" id="showDebugInfo" role="dialog" aria-label="Debug Info" class="ui button icon" data-ui="modal">'
-            out << '<i aria-hidden="true" class="red bug icon"></i>'
-            out << '</a>'
-
-            out << '<div id="debugInfo" class="ui modal">'
-            out << '<h4 class="ui red header"> <i aria-hidden="true" class="bug icon"></i> DEBUG-INFORMATION</h4>'
-            out << '<div class="scrolling content">'
-            out << body()
-            out << '<br />'
-            out << '</div>'
-            out << '<div class="actions">'
-            out << '<a href="#" class="ui button" onclick="$(\'#debugInfo\').modal(\'hide\')">Schließen</a>'
-            out << '</div>'
-            out << '</div>'
-        }
-    }
-
-    def systemInfo = { attrs, body ->
-
-        Map<String, Object> systemChecks = systemService.serviceCheck()
-
-        if (systemChecks) {
-
-            out << '<a href="#systemInfo" id="showSystemInfo" role="dialog" aria-label="System Info" class="ui button icon" data-ui="modal">'
-            out << '<i aria-hidden="true" class="red exclamation triangle icon"></i>'
-            out << '</a>'
-
-            out << '<div id="systemInfo" class="ui modal">'
-            out << '<h4 class="ui red header"> <i aria-hidden="true" class="red exclamation triangle icon"></i> SYSTEM-INFORMATION</h4>'
-            out << '<div class="scrolling content">'
-            out << '<div class="ui list">'
-            systemChecks.each {systemCheck ->
-                out << '<div class="item">'
-                out << "<strong>${systemCheck.key}</strong>: ${systemCheck.value}"
-                out << '</div>'
-            }
-            out << '</div>'
-            out << '<br />'
-            out << '</div>'
-            out << '<div class="actions">'
-            out << '<a href="#" class="ui button" onclick="$(\'#systemInfo\').modal(\'hide\')">Schließen</a>'
-            out << '</div>'
-            out << '</div>'
-        }
     }
 
     def auditButton = { attrs, body ->
@@ -490,108 +445,6 @@ class UiTagLib {
         out << '</div>'
     }
 
-    //<ui:modal id="myModalDialog" text="${text}" message="local.string" hideSubmitButton="true" modalSize="large/small/tiny/mini" >
-    // CONTENT
-    // </ui:modal>
-
-    def modal = { attrs, body ->
-
-        def (text, message) = SwissKnife.getTextAndMessage(attrs)
-        String id           = attrs.id ? ' id="' + attrs.id + '" ' : ''
-        String modalSize    = attrs.modalSize ? attrs.modalSize  : ''
-        String title        = (text && message) ? text + " - " + message : text + message
-        String isEditModal  = attrs.isEditModal
-
-        String msgClose    = attrs.msgClose  ?: "${g.message(code:'default.button.close.label')}"
-        String msgSave     = attrs.msgSave   ?: (isEditModal ? "${g.message(code:'default.button.save_changes')}" : "${g.message(code:'default.button.create.label')}")
-        String msgDelete   = attrs.msgDelete ?: "${g.message(code:'default.button.delete.label')}"
-
-        out << '<div role="dialog" class="ui large modal ' + modalSize + '"' + id + ' aria-label="Modal">'
-        out << '<div class="header">' + title + '</div>'
-
-        if (attrs.contentClass) {
-            out << '<div class="content ' + attrs.contentClass + '">'
-        } else {
-            out << '<div class="content">'
-        }
-
-        out << body()
-        out << '</div>'
-        out << '<div class="actions">'
-        out << '<button class="ui button ' + attrs.id + '" onclick="$(\'#' + attrs.id + '\').modal(\'hide\')">' + msgClose + '</button>'
-
-        if (attrs.showDeleteButton) {
-
-            out << '<input type="submit" class="ui negative button" name="delete" value="' + msgDelete + '" onclick="'
-            out << "return confirm('${g.message(code:'default.button.delete.confirmDeletion.message')}')?"
-            out << '$(\'#' + attrs.id + '\').find(\'#' + attrs.deleteFormID + '\').submit():null'
-            out << '"/>'
-        }
-
-        if (attrs.hideSubmitButton == null) {
-            if (attrs.formID) {
-                out << '<input type="submit" class="ui button green" name="save" value="' + msgSave + '" onclick="event.preventDefault(); $(\'#' + attrs.id + '\').find(\'#' + attrs.formID + '\').submit()"/>'
-            } else {
-                out << '<input type="submit" class="ui button green" name="save" value="' + msgSave + '" onclick="event.preventDefault(); $(\'#' + attrs.id + '\').find(\'form\').submit()"/>'
-            }
-        }
-
-        out << '</div>'
-        out << '</div>'
-    }
-
-    //  <ui:infoModal> ${content} <ui:infoModal />
-
-    def infoModal = { attrs, body ->
-
-        String id        = attrs.id ? ' id="' + attrs.id + '" ' : ''
-        String modalSize = attrs.modalSize ? attrs.modalSize  : ''
-        String msgClose  = attrs.msgClose  ?: "${g.message(code:'default.button.merci.label')}"
-
-        out << '<div role="dialog" class="ui modal ' + modalSize + '"' + id + ' aria-label="Modal">'
-        out <<    '<div class="content ui items">'
-        out <<       '<div class="item">'
-        out <<          '<div class="image"><i class="ui icon huge circular question"></i></div>'
-        out <<          '<div class="content">'
-        out << body()
-        out <<          '</div>'
-        out <<       '</div>'
-        out <<    '</div>'
-        out <<    '<div class="actions">'
-        out <<       '<button class="ui button ' + attrs.id + '" onclick="$(\'#' + attrs.id + '\').modal(\'hide\')">' + msgClose + '</button>'
-        out <<    '</div>'
-        out << '</div>'
-    }
-
-    //  <ui:confirmationModal  />
-    // global included at semanticUI.gsp
-    // called by the specific delete button
-    //  - to send a form oridden
-    //        <g:form data-confirm-id="${person?.id.toString()+ '_form'}">
-    //        <div class="....... js-open-confirm-modal" data-confirm-term-what="diese Person" data-confirm-id="${person?.id}" >
-    //  - to call a link
-    //        <g:link class="..... js-open-confirm-modal" data-confirm-term-what="diese Kontaktdresse" ...... >
-    def confirmationModal = { attrs, body ->
-        String msgDelete = "Endgültig löschen"
-        String msgCancel = "Abbrechen"
-
-        out << '<div id="js-modal" class="ui tiny modal" role="dialog" aria-modal="true" tabindex="-1" aria-label="'+ "${message(code: 'wcag.label.confirmationModal')}" +'" >'
-        out << '<div class="header">'
-        out << '<span class="confirmation-term" id="js-confirmation-term"></span>'
-        out << '</div>'
-
-        out << '<div class="content confirmation-content" id="js-confirmation-content-term">'
-        out << '</div>'
-
-        out << '<div class="actions">'
-        out << '<button class="ui deny button">' + msgCancel + '</button>'
-        out << '<button id="js-confirmation-button" class="ui positive right labeled icon button">' + msgDelete
-        out << '    <i aria-hidden="true" class="trash alternate outline icon"></i>'
-        out << '</button>'
-        out << '</div>'
-        out << '</div>'
-    }
-
     //<ui:datepicker class="grid stuff here" label="" bean="${objInstance}" name="fieldname" value="" required="" modifiers="" />
 
     def datepicker = { attrs, body ->
@@ -682,16 +535,17 @@ class UiTagLib {
     }
 
     def anualRings = { attrs, body ->
-        def object = attrs.object
 
+        String ddf_notime = message(code: 'default.date.format.notime')
+
+        def object = attrs.object
         def prev = attrs.navPrev
         def next = attrs.navNext
-        def status = object.status?.value
-        String color
-        String tooltip
-        String startDate
-        String endDate
-        String dash
+        String color = ''
+        String tooltip = message(code: 'subscription.details.statusNotSet')
+        String startDate = ''
+        String endDate = ''
+        String dash = ''
 
         String prevStartDate
         String prevEndDate
@@ -709,20 +563,19 @@ class UiTagLib {
                 default: color = 'la-status-else'
                     break
             }
-        } else {
-            tooltip = message(code: 'subscription.details.statusNotSet')
         }
-        out << "<div class='ui large label la-annual-rings'>"
+        out << '<div class="ui large label la-annual-rings">'
+
         if (object.startDate) {
-            startDate = g.formatDate(date: object.startDate, format: message(code: 'default.date.format.notime'))
+            startDate = g.formatDate(date: object.startDate, format: ddf_notime)
         }
         if (object.endDate) {
             dash = '–'
-            endDate = g.formatDate(date: object.endDate, format: message(code: 'default.date.format.notime'))
+            endDate = g.formatDate(date: object.endDate, format: ddf_notime)
         }
         if (prev) {
-            if (prev?.size() == 1) {
-                prev?.each { p ->
+            if (prev.size() == 1) {
+                prev.each { p ->
                     if (attrs.mapping) {
                         out << g.link("<i class='arrow left icon'></i>", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: p.id], mapping: attrs.mapping)
 
@@ -732,17 +585,14 @@ class UiTagLib {
                 }
             } else {
 
-                out << "<div class='ui right pointing dropdown'>" +
-                        "<i class='arrow left icon'></i>" +
-                        "<div class='menu'>"
-                prev?.each { p ->
+                out << '<div class="ui right pointing dropdown"> <i class="arrow left icon"></i> <div class="menu">'
 
-
+                prev.each { p ->
                     if (p.startDate) {
-                        prevStartDate = g.formatDate(date: p.startDate, format: message(code: 'default.date.format.notime'))
+                        prevStartDate = g.formatDate(date: p.startDate, format: ddf_notime)
                     }
                     if (p.endDate) {
-                        prevEndDate = g.formatDate(date: p.endDate, format: message(code: 'default.date.format.notime'))
+                        prevEndDate = g.formatDate(date: p.endDate, format: ddf_notime)
                     }
                     if (attrs.mapping) {
                         out << g.link("<strong>${p instanceof License ? p.reference : p.name}:</strong> " + "${prevStartDate}" + "${dash}" + "${prevEndDate}", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: p.id], mapping: attrs.mapping)
@@ -750,26 +600,20 @@ class UiTagLib {
                         out << g.link("<strong>${p instanceof License ? p.reference : p.name}:</strong> " + "${prevStartDate}" + "${dash}" + "${prevEndDate}", controller: attrs.controller, action: attrs.action, class: "item", id: p.id)
                     }
                 }
-                out << "</div>" +
-                        "</div>"
+                out << '</div> </div>'
             }
         } else {
             out << '<i aria-hidden="true" class="arrow left icon disabled"></i>'
         }
-        out << "<span class='la-annual-rings-text'>"
-        out << startDate
-        out << dash
-        out << endDate
-        out << "</span>"
+        out << '<span class="la-annual-rings-text">' + startDate + dash + endDate + '</span>'
 
         out << "<a class='ui ${color} circular tiny label la-popup-tooltip la-delay'  data-variation='tiny' data-content='Status: ${tooltip}'>"
         out << '       &nbsp;'
         out << '</a>'
 
         if (next) {
-
-            if (next?.size() == 1) {
-                next?.each { n ->
+            if (next.size() == 1) {
+                next.each { n ->
                     if (attrs.mapping) {
                         out << g.link("<i class='arrow right icon'></i>", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: n.id], mapping: attrs.mapping)
 
@@ -778,16 +622,14 @@ class UiTagLib {
                     }
                 }
             } else {
-                out << "<div class='ui left pointing dropdown'>" +
-                        "<i class='arrow right icon'></i>" +
-                        "<div class='menu'>"
-                next?.each { n ->
+                out << '<div class="ui left pointing dropdown"> <i class="arrow right icon"></i> <div class="menu">'
 
+                next.each { n ->
                     if (n.startDate) {
-                        nextStartDate = g.formatDate(date: n.startDate, format: message(code: 'default.date.format.notime'))
+                        nextStartDate = g.formatDate(date: n.startDate, format: ddf_notime)
                     }
                     if (n.endDate) {
-                        nextEndDate = g.formatDate(date: n.endDate, format: message(code: 'default.date.format.notime'))
+                        nextEndDate = g.formatDate(date: n.endDate, format: ddf_notime)
                     }
                     if (attrs.mapping) {
                         out << g.link("<strong>${n instanceof License ? n.reference : n.name}:</strong> " + "${nextStartDate}" + "${dash}" + "${nextEndDate}", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: n.id], mapping: attrs.mapping)
@@ -795,8 +637,7 @@ class UiTagLib {
                         out << g.link("<strong>${n instanceof License ? n.reference : n.name}:</strong> " + "${nextStartDate}" + "${dash}" + "${nextEndDate}", controller: attrs.controller, action: attrs.action, class: "item", id: n.id)
                     }
                 }
-                out << "</div>" +
-                        "</div>"
+                out << '</div> </div>'
             }
         } else {
             out << '<i aria-hidden="true" class="arrow right icon disabled"></i>'
@@ -805,22 +646,22 @@ class UiTagLib {
     }
 
     def anualRingsModern = { attrs, body ->
-        def object = attrs.object
+        String ddf_notime = message(code: 'default.date.format.notime')
 
+        def object = attrs.object
         def prev = attrs.navPrev
         def next = attrs.navNext
-        def status = object.status?.value
-        def color
-        def tooltip
-        def startDate
-        def endDate
-        def dash
+        String color = ''
+        String tooltip = message(code: 'subscription.details.statusNotSet')
+        String startDate = ''
+        String endDate = ''
+        String dash = ''
 
-        def prevStartDate
-        def prevEndDate
+        String prevStartDate
+        String prevEndDate
 
-        def nextStartDate
-        def nextEndDate
+        String nextStartDate
+        String nextEndDate
 
         if (object.status) {
             tooltip = object.status.getI10n('value')
@@ -832,20 +673,19 @@ class UiTagLib {
                 default: color = 'la-status-else'
                     break
             }
-        } else {
-            tooltip = message(code: 'subscription.details.statusNotSet')
         }
-        out << "<div class='ui large label la-annual-rings-modern'>"
+        out << '<div class="ui large label la-annual-rings-modern">'
+
         if (object.startDate) {
-            startDate = g.formatDate(date: object.startDate, format: message(code: 'default.date.format.notime'))
+            startDate = g.formatDate(date: object.startDate, format: ddf_notime)
         }
         if (object.endDate) {
             dash = '–'
-            endDate = g.formatDate(date: object.endDate, format: message(code: 'default.date.format.notime'))
+            endDate = g.formatDate(date: object.endDate, format: ddf_notime)
         }
         if (prev) {
-            if (prev?.size() == 1) {
-                prev?.each { p ->
+            if (prev.size() == 1) {
+                prev.each { p ->
                     if (attrs.mapping) {
                         out << g.link("<i class='arrow left icon'></i>", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: p.id], mapping: attrs.mapping)
 
@@ -854,18 +694,14 @@ class UiTagLib {
                     }
                 }
             } else {
+                out << '<div class="ui right pointing dropdown"> <i class="arrow left icon"></i> <div class="menu">'
 
-                out << "<div class='ui right pointing dropdown'>" +
-                        "<i class='arrow left icon'></i>" +
-                        "<div class='menu'>"
-                prev?.each { p ->
-
-
+                prev.each { p ->
                     if (p.startDate) {
-                        prevStartDate = g.formatDate(date: p.startDate, format: message(code: 'default.date.format.notime'))
+                        prevStartDate = g.formatDate(date: p.startDate, format: ddf_notime)
                     }
                     if (p.endDate) {
-                        prevEndDate = g.formatDate(date: p.endDate, format: message(code: 'default.date.format.notime'))
+                        prevEndDate = g.formatDate(date: p.endDate, format: ddf_notime)
                     }
                     if (attrs.mapping) {
                         out << g.link("<strong>${p instanceof License ? p.reference : p.name}:</strong> " + "${prevStartDate}" + "${dash}" + "${prevEndDate}", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: p.id], mapping: attrs.mapping)
@@ -873,26 +709,20 @@ class UiTagLib {
                         out << g.link("<strong>${p instanceof License ? p.reference : p.name}:</strong> " + "${prevStartDate}" + "${dash}" + "${prevEndDate}", controller: attrs.controller, action: attrs.action, class: "item", id: p.id)
                     }
                 }
-                out << "</div>" +
-                        "</div>"
+                out << '</div> </div>'
             }
         } else {
             out << '<i aria-hidden="true" class="arrow left icon disabled"></i>'
         }
-        out << "<span class='la-annual-rings-text'>"
-        out << startDate
-        out << dash
-        out << endDate
-        out << "</span>"
+        out << '<span class="la-annual-rings-text">' + startDate + dash + endDate + '</span>'
 
         out << "<a class='ui ${color} circular tiny label la-popup-tooltip la-delay'  data-variation='tiny' data-content='Status: ${tooltip}'>"
         out << '       &nbsp;'
         out << '</a>'
 
         if (next) {
-
-            if (next?.size() == 1) {
-                next?.each { n ->
+            if (next.size() == 1) {
+                next.each { n ->
                     if (attrs.mapping) {
                         out << g.link("<i class='arrow right icon'></i>", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: n.id], mapping: attrs.mapping)
 
@@ -901,16 +731,14 @@ class UiTagLib {
                     }
                 }
             } else {
-                out << "<div class='ui left pointing dropdown'>" +
-                        "<i class='arrow right icon'></i>" +
-                        "<div class='menu'>"
-                next?.each { n ->
+                out << '<div class="ui left pointing dropdown"> <i class="arrow right icon"></i> <div class="menu">'
 
+                next.each { n ->
                     if (n.startDate) {
-                        nextStartDate = g.formatDate(date: n.startDate, format: message(code: 'default.date.format.notime'))
+                        nextStartDate = g.formatDate(date: n.startDate, format: ddf_notime)
                     }
                     if (n.endDate) {
-                        nextEndDate = g.formatDate(date: n.endDate, format: message(code: 'default.date.format.notime'))
+                        nextEndDate = g.formatDate(date: n.endDate, format: ddf_notime)
                     }
                     if (attrs.mapping) {
                         out << g.link("<strong>${n instanceof License ? n.reference : n.name}:</strong> " + "${nextStartDate}" + "${dash}" + "${nextEndDate}", controller: attrs.controller, action: attrs.action, class: "item", params: [sub: n.id], mapping: attrs.mapping)
@@ -918,8 +746,7 @@ class UiTagLib {
                         out << g.link("<strong>${n instanceof License ? n.reference : n.name}:</strong> " + "${nextStartDate}" + "${dash}" + "${nextEndDate}", controller: attrs.controller, action: attrs.action, class: "item", id: n.id)
                     }
                 }
-                out << "</div>" +
-                        "</div>"
+                out << '</div> </div>'
             }
         } else {
             out << '<i aria-hidden="true" class="arrow right icon disabled"></i>'
@@ -931,20 +758,16 @@ class UiTagLib {
         def total = attrs.total ?: 0
         def newClass = attrs.class ?: ''
 
-        out << '<span class="ui circular ' + newClass + ' label">'
-        out << total
-        out << '</span>'
+        out << '<span class="ui circular ' + newClass + ' label">' + total + '</span>'
     }
 
     def dateDevider = { attrs, body ->
-        out << "<span class='ui grey horizontal divider la-date-devider'>"
-        out << "        ${message(code:'default.to')}"
-        out << "</span>"
+
+        out << '<span class="ui grey horizontal divider la-date-devider">' + message(code:'default.to') + '</span>'
     }
 
     def tabs = { attrs, body ->
-        def newClass = attrs.class ?: ''
-        out << '<div class="ui top attached tabular ' + newClass + ' stackable menu">'
+        out << '<div class="ui top attached tabular stackable menu">'
         out << body()
         out << '</div>'
     }
@@ -953,7 +776,7 @@ class UiTagLib {
 
         def (text, message) = SwissKnife.getTextAndMessage(attrs)
         String linkBody = (text && message) ? text + " - " + message : text + message
-        String aClass = ((this.pageScope.variables?.actionName == attrs.action && (attrs.tab == params.tab || attrs.tab == params[attrs.subTab])) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
+        String cssClass = ((this.pageScope.variables?.actionName == attrs.action && (attrs.tab == params.tab || attrs.tab == params[attrs.subTab])) ? 'item active' : 'item') + (attrs.class ? ' ' + attrs.class : '')
 
         String counts = (attrs.counts >= 0) ? '<div class="ui '  + ' circular label">' + attrs.counts + '</div>' : null
 
@@ -961,27 +784,13 @@ class UiTagLib {
 
         if (attrs.controller) {
             out << g.link(linkBody,
-                    class: aClass,
+                    class: cssClass,
                     controller: attrs.controller,
                     action: attrs.action,
                     params: attrs.params
             )
         } else {
             out << linkBody
-        }
-    }
-
-    def gokbValue = { attrs, body ->
-
-        if(attrs.gokbId && attrs.field) {
-
-            ApiSource api = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-            String gokbId = "${attrs.gokbId}"
-            Map record = gokbService.getPackageMapWithUUID(api, gokbId)
-
-            if(record && record[attrs.field]){
-                out << ((record[attrs.field] instanceof List) ? record[attrs.field].join(', ') : record[attrs.field])
-            }
         }
     }
 

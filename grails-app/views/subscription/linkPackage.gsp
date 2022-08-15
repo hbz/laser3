@@ -15,12 +15,12 @@
 </ui:controlButtons>
 
 <ui:h1HeaderWithIcon text="${subscription.name}" />
-<br>
-<br>
+<br/>
+<br/>
 
 <h2 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'subscription.details.linkPackage.heading')}</h2>
-<br>
-<br>
+<br/>
+<br/>
 
 <h3 class="ui left floated aligned icon header la-clear-before">${message(code: 'package.plural')}
 <ui:totalNumber total="${recordsCount}"/>
@@ -175,9 +175,7 @@
 
 
     <ui:paginate action="linkPackage" controller="subscription" params="${params}"
-                    next="${message(code: 'default.paginate.next')}"
-                    prev="${message(code: 'default.paginate.prev')}" max="${max}"
-                    total="${recordsCount}"/>
+                    max="${max}" total="${recordsCount}"/>
 
 </g:if>
 <g:else>
@@ -226,8 +224,8 @@
                     </div>
                 </div>
 
-                <br>
-                <br>
+                <br/>
+                <br/>
 
                 <div class="field">
                     <h5 class="ui dividing header">
@@ -248,7 +246,7 @@
                         <g:set var="excludes"
                                value="${[PendingChangeConfiguration.PACKAGE_PROP,
                                          PendingChangeConfiguration.PACKAGE_DELETED]}"/>
-                        <g:each in="${PendingChangeConfiguration.SETTING_KEYS}" var="settingKey">
+                        <g:each in="${PendingChangeConfiguration.SETTING_KEYS-PendingChangeConfiguration.TITLE_REMOVED}" var="settingKey">
                             <tr>
                                 <td class="control-label">
                                     <g:message code="subscription.packages.${settingKey}"/>
@@ -305,8 +303,8 @@
                         </div>
                     </div>
 
-                    <br>
-                    <br>
+                    <br/>
+                    <br/>
 
                     <div class="field">
                         <h5 class="ui dividing header">

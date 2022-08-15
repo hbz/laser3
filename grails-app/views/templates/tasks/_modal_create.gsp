@@ -1,4 +1,4 @@
-<%@ page import="java.sql.Timestamp; org.springframework.context.i18n.LocaleContextHolder; de.laser.Org; de.laser.License; de.laser.Subscription; de.laser.Task; de.laser.storage.RDStore;de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.RefdataCategory" %>
+<%@ page import="java.sql.Timestamp; de.laser.Org; de.laser.License; de.laser.Subscription; de.laser.Task; de.laser.storage.RDStore;de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.RefdataCategory" %>
 <laser:serviceInjection />
 <ui:modal id="modalCreateTask" message="task.create.new">
 
@@ -32,28 +32,28 @@
                         <input id="generalradio" type="radio" value="general" name="linkto" tabindex="0" class="hidden" checked="">
                         <label for="generalradio">${message(code: 'task.general')}</label>
                     </div>
-                    &nbsp &nbsp
+                    &nbsp; &nbsp;
                     <div class="ui radio checkbox">
                         <input id="licenseradio" type="radio" value="license" name="linkto" tabindex="0" class="hidden">
                         <label for="licenseradio">
                             <g:message code="license.label" />
                         </label>
                     </div>
-                    &nbsp &nbsp
+                    &nbsp; &nbsp;
                     %{--<div class="ui radio checkbox">
                         <input id="pkgradio" type="radio" value="pkg" name="linkto" tabindex="0" class="hidden">
                         <label for="pkgradio">
                             <g:message code="package.label" />
                         </label>
                     </div>
-                    &nbsp &nbsp--}%
+                    &nbsp; &nbsp;--}%
                     <div class="ui radio checkbox">
                         <input id="subscriptionradio" type="radio" value="subscription" name="linkto" tabindex="0" class="hidden">
                         <label for="subscriptionradio">
                             <g:message code="default.subscription.label" />
                         </label>
                     </div>
-                    &nbsp &nbsp
+                    &nbsp; &nbsp;
                     <div class="ui radio checkbox">
                         <input id="orgradio" type="radio" value="org" name="linkto" tabindex="0" class="hidden">
                         <label for="orgradio">
@@ -160,7 +160,7 @@
                         <div class="field">
                             <div class="ui radio checkbox">
                                 <input id="radioresponsibleOrg" type="radio" value="Org" name="responsible" tabindex="0" class="hidden">
-                                <label for="radioresponsibleOrg">${message(code: 'task.responsibleOrg.label')} <strong>${contextService?.org?.getDesignation()}</strong> </label>
+                                <label for="radioresponsibleOrg">${message(code: 'task.responsibleOrg.label')} <strong>${contextOrg.getDesignation()}</strong> </label>
                             </div>
                         </div>
 
@@ -180,7 +180,7 @@
                     </label>
                     <g:select id="responsibleUserInput"
                               name="responsibleUser.id"
-                              from="${validResponsibleUsers}"
+                              from="${taskService.getUserDropdown(contextOrg)}"
                               optionKey="id"
                               optionValue="display"
                               value="${taskInstance?.responsibleUser?.id}"

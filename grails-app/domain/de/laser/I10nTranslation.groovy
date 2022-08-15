@@ -69,15 +69,15 @@ class I10nTranslation {
      * Gets the translation object for the given reference object's field in the given locale
      * @param reference the reference object to look for
      * @param referenceField the field to which internationalisation should be retrieved
-     * @param locale the locale to retrieve
+     * @param lang the locale to retrieve
      * @return the value string in the given language
      */
-    static String get(Object reference, String referenceField, String locale) {
+    static String get(Object reference, String referenceField, String lang) {
         reference = GrailsHibernateUtil.unwrapIfProxy(reference)
 
         I10nTranslation i10n = findByReferenceClassAndReferenceIdAndReferenceField(reference.getClass().getCanonicalName(), reference.getId(), referenceField)
 
-        switch(locale.toLowerCase()){
+        switch(lang.toLowerCase()){
             case 'de':
                 return i10n?.valueDe
                 break

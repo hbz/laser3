@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.LocaleUtils; de.laser.utils.DateUtils; de.laser.survey.SurveyConfig; de.laser.I10nTranslation; org.springframework.context.i18n.LocaleContextHolder; de.laser.RefdataValue; de.laser.DocContext;de.laser.storage.RDStore; java.text.SimpleDateFormat;" %>
+<%@ page import="de.laser.utils.LocaleUtils; de.laser.utils.DateUtils; de.laser.survey.SurveyConfig; de.laser.I10nTranslation; de.laser.RefdataValue; de.laser.DocContext;de.laser.storage.RDStore; java.text.SimpleDateFormat;" %>
 
 <laser:htmlStart message="search.advancedSearch" serviceInjection="true"/>
 
@@ -168,12 +168,7 @@
     </g:form>
 </div>
 
-
-
 <g:if test="${hits}">
-
-
-
         <br />
         <div class="ui stackable grid">
             <div class="four wide column">
@@ -847,9 +842,7 @@
                 </table>
 
                 <ui:paginate action="index" controller="search" params="${params}"
-                                next="${message(code: 'default.paginate.next')}"
-                                prev="${message(code: 'default.paginate.prev')}" max="${max}"
-                                total="${resultsTotal}"/>
+                                max="${max}" total="${resultsTotal}"/>
 
             </div>
         </div>

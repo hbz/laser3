@@ -1,8 +1,8 @@
 package de.laser
 
+import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
-import org.apache.commons.lang.StringUtils
-import org.springframework.context.i18n.LocaleContextHolder
+import org.apache.commons.lang3.StringUtils
 
 import java.text.DecimalFormat
 import java.text.DecimalFormatSymbols
@@ -66,7 +66,7 @@ class EscapeService {
      */
     String outputFinancialValue(input) {
         //workaround for the correct currency output but without currency symbol, according to https://stackoverflow.com/questions/8658205/format-currency-without-currency-symbol
-        NumberFormat nf = NumberFormat.getCurrencyInstance(LocaleContextHolder.getLocale())
+        NumberFormat nf = NumberFormat.getCurrencyInstance( LocaleUtils.getCurrentLocale() )
         DecimalFormatSymbols dcf = ((DecimalFormat) nf).getDecimalFormatSymbols()
         dcf.setCurrencySymbol("")
         ((DecimalFormat) nf).setDecimalFormatSymbols(dcf)

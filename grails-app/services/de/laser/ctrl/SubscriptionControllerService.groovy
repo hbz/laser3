@@ -38,9 +38,8 @@ import groovy.sql.BatchingStatementWrapper
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import groovy.time.TimeCategory
-import org.apache.commons.lang.StringEscapeUtils
+import org.apache.commons.lang3.StringEscapeUtils
 import org.apache.commons.lang3.RandomStringUtils
-import org.codehaus.groovy.grails.plugins.orm.auditable.AuditLogEvent
 import org.codehaus.groovy.runtime.InvokerHelper
 import org.hibernate.Session
 import org.hibernate.SessionFactory
@@ -48,7 +47,6 @@ import org.grails.orm.hibernate.cfg.GrailsDomainBinder
 import org.grails.orm.hibernate.cfg.PropertyConfig
 import org.hibernate.query.NativeQuery
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.multipart.MultipartFile
 
 import javax.sql.DataSource
@@ -70,6 +68,7 @@ class SubscriptionControllerService {
     AddressbookService addressbookService
     AuditService auditService
     ContextService contextService
+    DocstoreService docstoreService
     FactService factService
     EscapeService escapeService
     ExecutorService executorService
@@ -148,8 +147,7 @@ class SubscriptionControllerService {
             //def task_tasks = task {
             // tasks
             result.tasks = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.subscription)
-            Map<String,Object> preCon = taskService.getPreconditionsWithoutTargets(result.contextOrg)
-            result << preCon
+
             Set<Long> excludes = [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id]
             if(result.institution.getCustomerType() == "ORG_CONSORTIUM")
                 excludes << RDStore.OR_SUBSCRIPTION_CONSORTIA.id
@@ -321,28 +319,6 @@ class SubscriptionControllerService {
         }
     }
 
-    /**
-     * Reveals the inheritance history for the given subscription
-     * @param controller unused
-     * @param params the request parameter map
-     * @return a list of audit log events for the given subscription
-     */
-    Map<String,Object> history(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
-        if (!result) {
-            [result:null,status:STATUS_ERROR]
-        }
-        else {
-            SwissKnife.setPaginationParams(result, params, (User) result.user)
-            Map<String, Object> qry_params = [cname: result.subscription.class.name, poid: result.subscription.id.toString()] //persistentObjectId is of type String
-            Set<AuditLogEvent> historyLines = AuditLogEvent.executeQuery("select e from AuditLogEvent as e where className = :cname and persistedObjectId = :poid order by id desc", qry_params)
-            result.historyLinesTotal = historyLines.size()
-            result.historyLines = historyLines.drop(result.offset).take(result.max)
-
-            [result:result,status:STATUS_OK]
-        }
-    }
-
     @Deprecated
     Map<String,Object> changes(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
@@ -370,6 +346,8 @@ class SubscriptionControllerService {
      */
     Map<String, Object> stats(GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
+        result.flagContentGokb = true // gokbService.queryElasticsearch
+
         SwissKnife.setPaginationParams(result, params, result.user)
         if(!result)
             [result: null, status: STATUS_ERROR]
@@ -383,7 +361,7 @@ class SubscriptionControllerService {
             subscribedPlatforms.each { Platform platformInstance ->
                 Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/find?uuid=${platformInstance.gokbId}")
                 if (queryResult.error && queryResult.error == 404) {
-                    result.wekbServerUnavailable = messageSource.getMessage('wekb.error.404', null, LocaleContextHolder.getLocale())
+                    result.wekbServerUnavailable = messageSource.getMessage('wekb.error.404', null, LocaleUtils.getCurrentLocale())
                 }
                 else if (queryResult.warning) {
                     List records = queryResult.warning.records
@@ -518,7 +496,7 @@ class SubscriptionControllerService {
                     else result.metricType = params.metricType
                     filter += " and r.metricType = :metricType "
                     queryParams.metricType = result.metricType
-                    c5sums.addAll(Counter5Report.executeQuery('select new map(r.reportType as reportType, r.reportFrom as reportMonth, r.metricType as metricType, sum(r.reportCount) as reportCount) from Counter5Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription in (:refSubs) and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null)'+filter+dateRange+' group by r.reportFrom, r.metricType, r.reportType order by r.reportFrom asc, r.metricType asc', queryParams))
+                    c5sums.addAll(Counter5Report.executeQuery('select new map(r.reportType as reportType, r.reportFrom as reportMonth, r.metricType as metricType, sum(r.reportCount) as reportCount) from Counter5Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription in (:refSubs) and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null)'+filter+dateRange+' group by r.reportFrom, r.reportType, r.metricType order by r.reportFrom asc, r.metricType asc', queryParams))
                     c5usages.addAll(Counter5Report.executeQuery('select r from Counter5Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription in (:refSubs) and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null)'+filter+dateRange+' order by '+sort, queryParams, [max: result.max, offset: result.offset]))
                     result.total = Counter5Report.executeQuery('select count(r) from Counter5Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription in (:refSubs) and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null)'+filter+dateRange, queryParams).get(0)
                     result.sums = c5sums
@@ -1027,7 +1005,7 @@ class SubscriptionControllerService {
         if(!result)
             [result:null,status:STATUS_ERROR]
         else {
-            Locale locale = LocaleContextHolder.getLocale()
+            Locale locale = LocaleUtils.getCurrentLocale()
             params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
             //the following two are arguments for a g.message-call on the view which expects an Object[]
             result.superOrgType = [messageSource.getMessage('consortium.superOrgType',null,locale)]
@@ -1372,7 +1350,8 @@ class SubscriptionControllerService {
                 List<Long> toBeSelectedTippIDs = allTippIDs - selectedTippIDs
                 allQuery.query = allQuery.query.replace("where", "where ie.tipp.id in (:tippIds) and ")
                 allQuery.queryParams.tippIds = toBeSelectedTippIDs
-                sourceIEs = IssueEntitlement.executeQuery("select ie.id " + allQuery.query, allQuery.queryParams)
+                if(toBeSelectedTippIDs.size() > 0)
+                    sourceIEs = IssueEntitlement.executeQuery("select ie.id " + allQuery.query, allQuery.queryParams)
 
             }
 
@@ -1512,7 +1491,7 @@ class SubscriptionControllerService {
             Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
             threadArray.each { Thread thread ->
                 if (thread.name == 'PackageTransfer_'+result.subscription.id && !SubscriptionPackage.findBySubscriptionAndPkg(result.subscription,Package.findByGokbId(params.addUUID))) {
-                    result.message = messageSource.getMessage('subscription.details.linkPackage.thread.running',null,LocaleContextHolder.getLocale())
+                    result.message = messageSource.getMessage('subscription.details.linkPackage.thread.running',null, LocaleUtils.getCurrentLocale())
                     result.bulkProcessRunning = true
                 }
             }
@@ -1573,12 +1552,12 @@ class SubscriptionControllerService {
 
             if(params.provider) {
                 result.filterSet = true
-                esQuery += "&providerName=${params.provider}"
+                esQuery += "&provider=${params.provider.replaceAll('&','ampersand')}"
             }
 
             if(params.curatoryGroup) {
                 result.filterSet = true
-                esQuery += "&curatoryGroupExact=${params.curatoryGroup}"
+                esQuery += "&curatoryGroupExact=${params.curatoryGroup.replaceAll('&','ampersand')}"
             }
 
             if(params.resourceTyp) {
@@ -1607,9 +1586,11 @@ class SubscriptionControllerService {
             String max = params.max ? "&max=${params.max}": "&max=${result.max}"
             String offset = params.offset ? "&offset=${params.offset}": "&offset=${result.offset}"
 
+            result.flagContentGokb = true // gokbService.queryElasticsearch
+
             Map queryCuratoryGroups = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+'/groups')
             if(queryCuratoryGroups.error && queryCuratoryGroups.error == 404) {
-                result.error = messageSource.getMessage('wekb.error.404', null, LocaleContextHolder.getLocale())
+                result.error = messageSource.getMessage('wekb.error.404', null, LocaleUtils.getCurrentLocale())
                 [result:result, status: STATUS_ERROR]
             }
             else {
@@ -1721,7 +1702,7 @@ class SubscriptionControllerService {
     Map<String,Object> unlinkPackage(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
         result.package = Package.get(params.package)
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
         if(params.confirmed) {
             Set<Subscription> childSubs = Subscription.findAllByInstanceOf(result.subscription)
             boolean unlinkErrorChild = false
@@ -1780,7 +1761,7 @@ class SubscriptionControllerService {
         if(!result)
             [result:null,status:STATUS_ERROR]
         else {
-            Locale locale = LocaleContextHolder.getLocale()
+            Locale locale = LocaleUtils.getCurrentLocale()
             Set<Thread> threadSet = Thread.getAllStackTraces().keySet()
             Thread[] threadArray = threadSet.toArray(new Thread[threadSet.size()])
             threadArray.each {
@@ -1865,16 +1846,16 @@ class SubscriptionControllerService {
             [result:null,status:STATUS_ERROR]
         }
         else {
-            List<SubscriptionPackage> pkgList = []
+            Map<SubscriptionPackage, Set<String>> pkgSettingMap = [:]
             Set<String> pendingOrWithNotification = []
             Set subscriptionHistory = []
             Set<PendingChange> changesOfPage = []
             Set<String> excludes = PendingChangeConfiguration.GENERIC_EXCLUDES
-            excludes.remove(PendingChangeConfiguration.TITLE_REMOVED)
             result.subscription.packages.each { SubscriptionPackage sp ->
-                List<String> keysWithPendingOrNotification = sp.pendingChangeConfig.findAll { PendingChangeConfiguration pcc -> !(pcc.settingKey in excludes) && (pcc.settingValue == RDStore.PENDING_CHANGE_CONFIG_PROMPT || pcc.withNotification) }.collect{ PendingChangeConfiguration pcc -> pcc.settingKey }
+                Set<String> keysWithPendingOrNotification = sp.pendingChangeConfig.findAll { PendingChangeConfiguration pcc -> !(pcc.settingKey in excludes) && (pcc.settingValue == RDStore.PENDING_CHANGE_CONFIG_PROMPT || pcc.withNotification) }.collect{ PendingChangeConfiguration pcc -> pcc.settingKey }
+                keysWithPendingOrNotification << PendingChangeConfiguration.TITLE_REMOVED
                 if(keysWithPendingOrNotification) {
-                    pkgList << sp
+                    pkgSettingMap.put(sp, keysWithPendingOrNotification)
                     pendingOrWithNotification.addAll(keysWithPendingOrNotification)
                 }
             }
@@ -1903,37 +1884,39 @@ class SubscriptionControllerService {
             params.order = params.order ?: 'desc'
             params.eventType = params.eventType ?: PendingChangeConfiguration.TITLE_UPDATED
             String order = " order by pc.${params.sort} ${params.order}"
-            if(pkgList && pendingOrWithNotification) {
-                pkgList.each { SubscriptionPackage sp ->
+            if(pkgSettingMap && pendingOrWithNotification) {
+                pkgSettingMap.each { SubscriptionPackage sp, Set<String> settings ->
                     Package pkg = sp.pkg
                     Date entryDate = sp.dateCreated
                     String query1a = 'select pc.id from PendingChange pc join pc.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and pc.oid = :subOid and pc.status in (:pendingStatus)',
                            query2a = 'select pc.id from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and pc.oid = :subOid and pc.status in (:pendingStatus)'
                     //query3a = 'select pc.id,pc.priceItem from PendingChange pc join pc.priceItem.tipp.pkg pkg where pkg = :package and pc.oid = (:subOid) and pc.status in (:pendingStatus)',
                     String query1b, query1c
-                    if(params.eventType in [PendingChangeConfiguration.NEW_TITLE, PendingChangeConfiguration.TITLE_DELETED])
+                    if(params.eventType in [PendingChangeConfiguration.NEW_TITLE, PendingChangeConfiguration.TITLE_DELETED] && params.eventType in settings)
                         query1b = 'select pc.id from PendingChange pc join pc.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and not exists (select pca.id from PendingChange pca join pca.tipp tippA where tippA = pc.tipp and pca.oid = :subOid and pca.status in (:pendingStatus)) and pc.status = :packageHistory'
-                    else if(params.eventType == PendingChangeConfiguration.TITLE_UPDATED)
-                        query1b = 'select pc.id from PendingChange pc join pc.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and not exists (select pca.id from PendingChange pca join pca.tipp tippA where tippA = pc.tipp and pca.oid = :subOid and pca.newValue = pc.newValue and pca.status in (:pendingStatus)) and pc.status = :packageHistory'
-                    else if(params.eventType == PendingChangeConfiguration.TITLE_REMOVED)
-                        query1c = 'select pc.id from PendingChange pc join pc.tipp.pkg pkg where pkg = :package and pc.msgToken = :eventType and exists(select ie from IssueEntitlement ie where ie.tipp = pc.tipp and ie.subscription = :subscription and ie.status != :removed)'
+                    else if(params.eventType == PendingChangeConfiguration.TITLE_UPDATED && params.eventType in settings)
+                        query1b = 'select pc.id from PendingChange pc join pc.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and not exists (select pca.id from PendingChange pca join pca.tipp tippA where tippA = pc.tipp and pca.oid = :subOid and pca.newValue = pc.newValue and pca.status in (:pendingStatus)) and exists (select ie.id from IssueEntitlement ie where ie.tipp = pc.tipp and ie.status != :removed and ie.subscription = :subscription) and pc.status = :packageHistory'
+                    else if(params.eventType == PendingChangeConfiguration.TITLE_REMOVED && params.eventType in settings)
+                        query1c = 'select pc.id from PendingChange pc join pc.tipp tipp join tipp.pkg pkg where pkg = :package and pc.msgToken = :eventType and exists(select ie from IssueEntitlement ie where ie.tipp = tipp and ie.subscription = :subscription and ie.status != :removed)'
                     String query2b
-                    if(params.eventType in [PendingChangeConfiguration.NEW_COVERAGE, PendingChangeConfiguration.COVERAGE_DELETED])
-                        query2b = 'select pc.id from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and not exists (select pca.id from PendingChange pca join pca.tippCoverage tcA where tcA = pc.tippCoverage and pca.oid = :subOid and pc.status in (:pendingStatus)) and pc.status = :packageHistory'
-                    else if(params.eventType == PendingChangeConfiguration.COVERAGE_UPDATED)
-                        query2b = 'select pc.id from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and not exists (select pca.id from PendingChange pca join pca.tippCoverage tcA where tcA = pc.tippCoverage and pca.oid = :subOid and pca.newValue = pc.newValue and pca.status in (:pendingStatus)) and pc.status = :packageHistory'
+                    if(params.eventType in [PendingChangeConfiguration.NEW_COVERAGE, PendingChangeConfiguration.COVERAGE_DELETED] && params.eventType in settings)
+                        query2b = 'select pc.id from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and not exists (select pca.id from PendingChange pca join pca.tippCoverage tcA where tcA = pc.tippCoverage and pca.oid = :subOid and pc.status in (:pendingStatus)) and exists (select ie.id from IssueEntitlement ie where ie.tipp = pc.tippCoverage.tipp and ie.status != :removed and ie.subscription = :subscription) and pc.status = :packageHistory'
+                    else if(params.eventType == PendingChangeConfiguration.COVERAGE_UPDATED && params.eventType in settings)
+                        query2b = 'select pc.id from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and not exists (select pca.id from PendingChange pca join pca.tippCoverage tcA where tcA = pc.tippCoverage and pca.oid = :subOid and pca.newValue = pc.newValue and pca.status in (:pendingStatus)) and exists (select ie.id from IssueEntitlement ie where ie.tipp = pc.tippCoverage.tipp and ie.status != :removed and ie.subscription = :subscription) and pc.status = :packageHistory'
                     //query3b = 'select pc.id,pc.priceItem from PendingChange pc join pc.priceItem.tipp.pkg pkg where pkg = :package and pc.oid = (:subOid) and pc.status not in (:pendingStatus)',
                     String query1d = 'select pc.id from PendingChange pc where pc.subscription = :subscription and pc.msgToken = :eventType and pc.status not in (:pendingStatus)'
-                    if(params.eventType in [PendingChangeConfiguration.NEW_TITLE, PendingChangeConfiguration.TITLE_UPDATED, PendingChangeConfiguration.TITLE_DELETED])
+                    if(params.eventType in [PendingChangeConfiguration.NEW_TITLE, PendingChangeConfiguration.TITLE_UPDATED, PendingChangeConfiguration.TITLE_DELETED] && params.eventType in settings)
                         subscriptionHistory.addAll(PendingChange.executeQuery(query1a+order,[package: pkg, entryDate: entryDate, eventType: params.eventType, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription)]))
-                    else if(params.eventType in [PendingChangeConfiguration.NEW_COVERAGE, PendingChangeConfiguration.COVERAGE_UPDATED, PendingChangeConfiguration.COVERAGE_DELETED])
+                    else if(params.eventType in [PendingChangeConfiguration.NEW_COVERAGE, PendingChangeConfiguration.COVERAGE_UPDATED, PendingChangeConfiguration.COVERAGE_DELETED] && params.eventType in settings)
                         subscriptionHistory.addAll(PendingChange.executeQuery(query2a+order,[package: pkg, entryDate: entryDate, eventType: params.eventType, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription)]))
                     //subscriptionHistory.addAll(PendingChange.executeQuery(query3a,[package: pkg, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_HISTORY, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription)]))
-                    if(params.eventType in [PendingChangeConfiguration.NEW_TITLE, PendingChangeConfiguration.TITLE_UPDATED, PendingChangeConfiguration.TITLE_DELETED])
+                    if(params.eventType == PendingChangeConfiguration.NEW_TITLE && params.eventType in settings)
                         changesOfPage.addAll(PendingChange.executeQuery(query1b+order,[package: pkg, entryDate: entryDate, eventType: params.eventType, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription), packageHistory: RDStore.PENDING_CHANGE_HISTORY]))
-                    else if(params.eventType in [PendingChangeConfiguration.NEW_COVERAGE, PendingChangeConfiguration.COVERAGE_UPDATED, PendingChangeConfiguration.COVERAGE_DELETED])
-                        changesOfPage.addAll(PendingChange.executeQuery(query2b+order,[package: pkg, entryDate: entryDate, eventType: params.eventType, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription), packageHistory: RDStore.PENDING_CHANGE_HISTORY]))
-                    else if(params.eventType == PendingChangeConfiguration.TITLE_REMOVED)
+                    else if(params.eventType in [PendingChangeConfiguration.TITLE_UPDATED, PendingChangeConfiguration.TITLE_DELETED] && params.eventType in settings)
+                        changesOfPage.addAll(PendingChange.executeQuery(query1b+order,[package: pkg, entryDate: entryDate, eventType: params.eventType, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription), packageHistory: RDStore.PENDING_CHANGE_HISTORY, subscription: sp.subscription, removed: RDStore.TIPP_STATUS_REMOVED]))
+                    else if(params.eventType in [PendingChangeConfiguration.NEW_COVERAGE, PendingChangeConfiguration.COVERAGE_UPDATED, PendingChangeConfiguration.COVERAGE_DELETED] && params.eventType in settings)
+                        changesOfPage.addAll(PendingChange.executeQuery(query2b+order,[package: pkg, entryDate: entryDate, eventType: params.eventType, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription), packageHistory: RDStore.PENDING_CHANGE_HISTORY, subscription: sp.subscription, removed: RDStore.TIPP_STATUS_REMOVED]))
+                    else if(params.eventType == PendingChangeConfiguration.TITLE_REMOVED && params.eventType in settings)
                         changesOfPage.addAll(PendingChange.executeQuery(query1c+order,[package: pkg, eventType: params.eventType, subscription: sp.subscription, removed: RDStore.TIPP_STATUS_REMOVED]))
                     //changesOfPage.addAll(PendingChange.executeQuery(query3b,[packages: pkgList, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_HISTORY, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription)]))
                     changesOfPage.addAll(PendingChange.executeQuery(query1d+order,[pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], eventType: params.eventType, subscription: result.subscription]))
@@ -1944,7 +1927,7 @@ class SubscriptionControllerService {
             params.max = result.max
             params.offset = result.offset
 
-            result.putAll(pendingChangeService.getCountsForPackages(pkgList))
+            result.putAll(pendingChangeService.getCountsForPackages(pkgSettingMap))
 
             if(params.tab == 'changes') {
                 result.changes = changesOfPage ? PendingChange.executeQuery('select pc from PendingChange pc where pc.id in (:changesOfPage) order by '+params.sort+' '+params.order, [changesOfPage: changesOfPage.drop(result.offset).take(result.max)]) : []
@@ -1984,7 +1967,7 @@ class SubscriptionControllerService {
             [result:null,status:STATUS_ERROR]
         }
         else {
-            Locale locale = LocaleContextHolder.getLocale()
+            Locale locale = LocaleUtils.getCurrentLocale()
             result.preselectValues = params.preselectValues == 'on'
             result.preselectCoverageDates = params.preselectCoverageDates == 'on'
             result.uploadPriceInfo = params.uploadPriceInfo == 'on'
@@ -2001,7 +1984,6 @@ class SubscriptionControllerService {
             }
             SwissKnife.setPaginationParams(result, params, (User) result.user)
             RefdataValue tipp_current = RDStore.TIPP_STATUS_CURRENT
-            RefdataValue ie_deleted = RDStore.TIPP_STATUS_DELETED
             RefdataValue ie_current = RDStore.TIPP_STATUS_CURRENT
             RefdataValue ie_removed = RDStore.TIPP_STATUS_REMOVED
             List<Long> tippIDs = []
@@ -2015,7 +1997,7 @@ class SubscriptionControllerService {
                 sessionCache.put("/subscription/addEntitlements/${params.id}", [:])
                 checkedCache = sessionCache.get("/subscription/addEntitlements/${params.id}")
             }
-            Set<String> addedTipps = IssueEntitlement.executeQuery('select tipp.gokbId from IssueEntitlement ie join ie.tipp tipp where ie.status not in (:status) and ie.subscription = :sub',[status:[ie_deleted, ie_removed],sub:result.subscription])
+            Set<String> addedTipps = IssueEntitlement.executeQuery('select tipp.gokbId from IssueEntitlement ie join ie.tipp tipp where ie.status != :status and ie.subscription = :sub',[status:ie_removed,sub:result.subscription])
             /*result.subscription.issueEntitlements.each { ie ->
                 if(ie instanceof IssueEntitlement && ie.status != ie_deleted)
                     addedTipps[ie.tipp] = ie.tipp.gokbId
@@ -2267,7 +2249,7 @@ class SubscriptionControllerService {
                     result.issueEntitlementOverwrite = issueEntitlementOverwrite
                     selectedTippIds.removeAll(addedTipps)
                     selectedTippIds.each { String wekbId ->
-                        //println("located tipp: ${wekbId}")
+                        //log.debug("located tipp: ${wekbId}")
                         result.checked[wekbId] = "checked"
                     }
                     result.identifiers = identifiers
@@ -2276,7 +2258,8 @@ class SubscriptionControllerService {
                         String escapedFileName
                         try {
                             // escapedFileName = StringEscapeCategory.encodeAsHtml(result.identifiers.filename)
-                            escapedFileName = StringEscapeUtils.escapeHtml(result.identifiers.filename)
+                            // todo: check if it's needed and migrate to e.g. org.apache.commons.commons-text
+                            escapedFileName = StringEscapeUtils.escapeHtml4(result.identifiers.filename)
                         }
                         catch (Exception | Error e) {
                             log.error(e.printStackTrace())
@@ -2391,7 +2374,7 @@ class SubscriptionControllerService {
             [result:null,status:STATUS_ERROR]
         }
         else {
-            Locale locale = LocaleContextHolder.getLocale()
+            Locale locale = LocaleUtils.getCurrentLocale()
             SessionCacheWrapper sessionCache = contextService.getSessionCache()
             Map cache = sessionCache.get("/subscription/addEntitlements/${result.subscription.id}")
             Map issueEntitlementCandidates = cache && cache.containsKey('issueEntitlementCandidates') ? cache.get('issueEntitlementCandidates') : [:]
@@ -2490,13 +2473,13 @@ class SubscriptionControllerService {
                                             covColNames = GrailsDomainBinder.getMapping(IssueEntitlementCoverage).columns
                 sql.withTransaction {
                     //revert new titles
-                    //log.debug("update issue_entitlement set ie_status_rv_fk = ${RDStore.TIPP_STATUS_DELETED.id} where ie_tipp_fk in (select distinct pc_tipp_fk from pending_change join title_instance_package_platform on pc_tipp_fk = tipp_id join subscription on split_part(pc_oid, ':', 2)::bigint = sub_id where (sub_id = ${sp.subscription.id} or sub_parent_sub_fk = ${sp.subscription.id}) and pc_date_created > sub_end_date and tipp_pkg_fk = ${sp.pkg.id} and pc_status_rdv_fk = ${RDStore.PENDING_CHANGE_ACCEPTED.id} and (sub_id = ${sp.subscription.id} or sub_parent_sub_fk = ${sp.subscription.id}) and pc_tipp_fk is not null and pc_msg_token = ${PendingChangeConfiguration.NEW_TITLE}) and ie_subscription_fk in (select sub_id from subscription where sub_id = ${sp.subscription.id} or sub_parent_sub_fk = ${sp.subscription.id})")
-                    sql.executeUpdate("update issue_entitlement set ie_status_rv_fk = :deleted where ie_tipp_fk in (select distinct pc_tipp_fk from pending_change join title_instance_package_platform on pc_tipp_fk = tipp_id join subscription on split_part(pc_oid, ':', 2)::bigint = sub_id where (sub_id = :subId or sub_parent_sub_fk = :subId) and pc_date_created > sub_end_date and tipp_pkg_fk = :pkgId and pc_status_rdv_fk = :accepted and (sub_id = :subId or sub_parent_sub_fk = :subId) and pc_tipp_fk is not null and pc_msg_token = :newTipp) and ie_subscription_fk in (select sub_id from subscription where sub_id = :subId or sub_parent_sub_fk = :subId)", [subId: sp.subscription.id, pkgId: sp.pkg.id, accepted: RDStore.PENDING_CHANGE_ACCEPTED.id, deleted: RDStore.TIPP_STATUS_DELETED.id, newTipp: PendingChangeConfiguration.NEW_TITLE])
+                    //log.debug("update issue_entitlement set ie_status_rv_fk = ${RDStore.TIPP_STATUS_REMOVED.id} where ie_tipp_fk in (select distinct pc_tipp_fk from pending_change join title_instance_package_platform on pc_tipp_fk = tipp_id join subscription on split_part(pc_oid, ':', 2)::bigint = sub_id where (sub_id = ${sp.subscription.id} or sub_parent_sub_fk = ${sp.subscription.id}) and pc_date_created > sub_end_date and tipp_pkg_fk = ${sp.pkg.id} and pc_status_rdv_fk = ${RDStore.PENDING_CHANGE_ACCEPTED.id} and (sub_id = ${sp.subscription.id} or sub_parent_sub_fk = ${sp.subscription.id}) and pc_tipp_fk is not null and pc_msg_token = ${PendingChangeConfiguration.NEW_TITLE}) and ie_subscription_fk in (select sub_id from subscription where sub_id = ${sp.subscription.id} or sub_parent_sub_fk = ${sp.subscription.id})")
+                    sql.executeUpdate("update issue_entitlement set ie_status_rv_fk = :removed where ie_tipp_fk in (select distinct pc_tipp_fk from pending_change join title_instance_package_platform on pc_tipp_fk = tipp_id join subscription on split_part(pc_oid, ':', 2)::bigint = sub_id where (sub_id = :subId or sub_parent_sub_fk = :subId) and pc_date_created > sub_end_date and tipp_pkg_fk = :pkgId and pc_status_rdv_fk = :accepted and (sub_id = :subId or sub_parent_sub_fk = :subId) and pc_tipp_fk is not null and pc_msg_token = :newTipp) and ie_subscription_fk in (select sub_id from subscription where sub_id = :subId or sub_parent_sub_fk = :subId)", [subId: sp.subscription.id, pkgId: sp.pkg.id, accepted: RDStore.PENDING_CHANGE_ACCEPTED.id, deleted: RDStore.TIPP_STATUS_REMOVED.id, newTipp: PendingChangeConfiguration.NEW_TITLE])
                     //revert updated titles
                     List<GroovyRowResult> acceptedTitleUpdates = sql.rows("select distinct on (pc_date_created::date, pc_target_property) pc_tipp_fk, pc_old_value, pc_target_property, split_part(pc_oid, ':', 2) as sub_fk from pending_change join title_instance_package_platform on pc_tipp_fk = tipp_id join subscription on split_part(pc_oid, ':', 2)::bigint = sub_id where pc_date_created > sub_end_date and tipp_pkg_fk = :pkgId and pc_status_rdv_fk = :accepted and (sub_id = :subId or sub_parent_sub_fk = :subId) and pc_tipp_fk is not null and pc_msg_token = :tippUpdated order by pc_date_created::date", [subId: sp.subscription.id, pkgId: sp.pkg.id, tippUpdated: PendingChangeConfiguration.TITLE_UPDATED])
                     //need to revert changes one by one ... very ugly!
                     acceptedTitleUpdates.eachWithIndex { GroovyRowResult row, int i ->
-                        println "now processing record ${i} of ${acceptedTitleUpdates.size()} entries"
+                        log.debug "now processing record ${i} of ${acceptedTitleUpdates.size()} entries"
                         sql.executeUpdate("update issue_entitlement set ${ieColNames[row['pc_target_property']].column} = :oldValue where ie_tipp_fk = :tipp and ie_subscription_fk = :subscription", [oldValue: row['pc_old_value'], tipp: row['pc_tipp_fk'], subscription: row['sub_fk']])
                     }
                     //revert deleted titles
@@ -2509,7 +2492,7 @@ class SubscriptionControllerService {
                     List<GroovyRowResult> acceptedCoverageUpdates = sql.rows("select distinct on (pc_date_created::date, pc_target_property) tc_tipp_fk, pc_tc_fk, pc_msg_token, pc_old_value, pc_new_value, pc_target_property, split_part(pc_oid, ':', 2) as sub_fk from pending_change join tippcoverage on pc_tc_fk = tc_id join title_instance_package_platform on tc_tipp_fk = tipp_id join subscription on split_part(pc_oid, ':', 2)::bigint = sub_id where pc_date_created > sub_end_date and tipp_pkg_fk = :pkgId and pc_status_rdv_fk = :accepted and pc_oid in (select concat('${Subscription.class.name}:',sub_id) from subscription where sub_id = :subId or sub_parent_sub_fk = :subId) and pc_tc_fk is not null and pc_msg_token = :covUpdated order by pc_date_created::date", [subId: sp.subscription.id, accepted: RDStore.PENDING_CHANGE_ACCEPTED.id, pkgId: sp.pkg.id, covUpdated: PendingChangeConfiguration.COVERAGE_UPDATED])
                     Map<Long, Map<String, Object>> revertingChanges = [:]
                     acceptedCoverageUpdates.eachWithIndex { GroovyRowResult row, int idx ->
-                        println "now processing change ${idx} out of ${acceptedCoverageUpdates.size()} records"
+                        log.debug "now processing change ${idx} out of ${acceptedCoverageUpdates.size()} records"
                         Map<String, Object> revertingMap = revertingChanges.get(row['pc_tc_fk'])
                         if(!revertingMap)
                             revertingMap = [subscriptions: new HashSet<Long>(), changes: []]
@@ -2525,7 +2508,7 @@ class SubscriptionControllerService {
                     }
                     revertingChanges.eachWithIndex { Long tc, Map<String, Object> revertingMap, int i ->
                         revertingMap.subscriptions.eachWithIndex { Long subKey, int j ->
-                            println "now reverting change ${i} out of ${revertingChanges.size()} records at subscriptions ${j} out of ${revertingMap.subscriptions.size()} subscriptions"
+                            log.debug "now reverting change ${i} out of ${revertingChanges.size()} records at subscriptions ${j} out of ${revertingMap.subscriptions.size()} subscriptions"
                             List<GroovyRowResult> revertingRecords = sql.rows("select ic_id from issue_entitlement_coverage join issue_entitlement on ic_ie_fk = ie_id join tippcoverage on ie_tipp_fk = tc_tipp_fk where tc_id = :tc and ie_subscription_fk = :subscription order by ic_id limit 1", [tc: tc, subscription: subKey])
                             if(revertingRecords.size() == 1) {
                                 GroovyRowResult oldRec = revertingRecords.get(0)
@@ -2541,10 +2524,10 @@ class SubscriptionControllerService {
                     if(deletedCoverages) {
                         sql.withBatch("insert into issue_entitlement_coverage (ic_version, ic_ie_fk, ic_start_date, ic_start_volume, ic_start_issue, ic_end_date, ic_end_volume, ic_end_issue, ic_coverage_note, ic_coverage_depth, ic_embargo, ic_date_created, ic_last_updated) values (0, :ie, :startDate, :startVolume, :startIssue, :endDate, :endVolume, :endIssue, :note, :depth, :embargo, :dateCreated, :lastUpdated)") { BatchingStatementWrapper stmt ->
                             deletedCoverages.eachWithIndex { GroovyRowResult row, int i ->
-                                println "now restoring deleted coverage ${i}"
+                                log.debug "now restoring deleted coverage ${i}"
                                 Map<String, Object> oldCoverage = JSON.parse(row['pc_old_value'])
                                 //when migrating to dev: change deleted by removed
-                                List<Long> ie = IssueEntitlement.executeQuery("select ie.id from IssueEntitlement ie where ie.tipp.id = :tippId and ie.subscription.id = :subId and ie.status not in (:ieStatus)", [tippId: Integer.toUnsignedLong(oldCoverage.tipp.id), subId: Long.parseLong(row['sub_fk']), ieStatus: [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]])
+                                List<Long> ie = IssueEntitlement.executeQuery("select ie.id from IssueEntitlement ie where ie.tipp.id = :tippId and ie.subscription.id = :subId and ie.status != :ieStatus", [tippId: Integer.toUnsignedLong(oldCoverage.tipp.id), subId: Long.parseLong(row['sub_fk']), ieStatus: RDStore.TIPP_STATUS_REMOVED])
                                 if(ie) {
                                     Map<String, Object> ieCovMap = [ie: ie[0],
                                                                     dateCreated: new Timestamp(DateUtils.parseDateGeneric(oldCoverage.dateCreated).getTime()),
@@ -2681,7 +2664,7 @@ class SubscriptionControllerService {
                             }
                             else {
                                 log.debug("Updating ie ${ie.id} status to deleted")
-                                ie.status = RDStore.TIPP_STATUS_DELETED
+                                ie.status = RDStore.TIPP_STATUS_REMOVED
                             }
                             if (ie.save()) {
                                 if(params.bulkOperation == "removeWithChildren")
@@ -2709,7 +2692,7 @@ class SubscriptionControllerService {
      */
     Map<String,Object> addEmptyPriceItem(GrailsParameterMap params) {
         Map<String,Object> result = [:]
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
         if(params.ieid) {
             IssueEntitlement ie = IssueEntitlement.get(params.ieid)
             if(ie) {
@@ -2841,7 +2824,7 @@ class SubscriptionControllerService {
      */
     Map<String,Object> processCreateEntitlementGroup(SubscriptionController controller, GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW_AND_EDIT)
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
         if(!IssueEntitlementGroup.findBySubAndName(result.subscription, params.name)) {
             IssueEntitlementGroup issueEntitlementGroup = new IssueEntitlementGroup(name: params.name,
                     description: params.description ?: null,
@@ -2906,7 +2889,7 @@ class SubscriptionControllerService {
                 }
                 else {
                     Object[] args = [sp.pkg.name]
-                    result.message = messageSource.getMessage('subscription.details.renewEntitlements.submitSuccess',args,LocaleContextHolder.getLocale())
+                    result.message = messageSource.getMessage('subscription.details.renewEntitlements.submitSuccess',args, LocaleUtils.getCurrentLocale())
                 }
             }
             [result:result,status:STATUS_OK]
@@ -2925,7 +2908,7 @@ class SubscriptionControllerService {
             [result:null,status:STATUS_ERROR]
         }
         else {
-            Locale locale = LocaleContextHolder.getLocale()
+            Locale locale = LocaleUtils.getCurrentLocale()
             result.surveyConfig = SurveyConfig.get(params.surveyConfigID)
             result.editable = surveyService.isEditableSurvey(result.institution, result.surveyConfig.surveyInfo)
             if(!result.editable) {
@@ -3043,7 +3026,7 @@ class SubscriptionControllerService {
             [result:null,status:STATUS_ERROR]
         }
         else {
-            Locale locale = LocaleContextHolder.getLocale()
+            Locale locale = LocaleUtils.getCurrentLocale()
             List<Links> previousSubscriptions = Links.findAllByDestinationSubscriptionAndLinkType(result.subscription, RDStore.LINKTYPE_FOLLOWS)
             if (previousSubscriptions.size() > 0) {
                 result.error = messageSource.getMessage('subscription.renewSubExist',null,locale)
@@ -3129,7 +3112,7 @@ class SubscriptionControllerService {
         if(!result)
             [result:null,status:STATUS_ERROR]
         else {
-            Locale locale = LocaleContextHolder.getLocale()
+            Locale locale = LocaleUtils.getCurrentLocale()
             result.isConsortialObjects = (result.sourceObject?._getCalculatedType() == CalculatedType.TYPE_CONSORTIAL)
             result.copyObject = true
             if (params.name && !result.targetObject) {
@@ -3383,6 +3366,12 @@ class SubscriptionControllerService {
             }
             result.showConsortiaFunctions = subscriptionService.showConsortiaFunctions(result.contextOrg, result.subscription)
 
+            int tc1 = taskService.getTasksByResponsiblesAndObject(result.user, result.contextOrg, result.subscription).size()
+            int tc2 = taskService.getTasksByCreatorAndObject(result.user, result.subscription).size()
+            result.tasksCount = (tc1 || tc2) ? "${tc1}/${tc2}" : ''
+
+
+            result.notesCount = docstoreService.getNotes(result.subscription, result.contextOrg).size()
 
             result.workflowCount = WfWorkflow.executeQuery(
                     'select count(wf) from WfWorkflow wf where wf.subscription = :sub and wf.owner = :ctxOrg',
@@ -3417,7 +3406,7 @@ class SubscriptionControllerService {
 
         Map args = [:]
         if (result.consortialView) {
-            Locale locale = LocaleContextHolder.getLocale()
+            Locale locale = LocaleUtils.getCurrentLocale()
 
             args.superOrgType       = [messageSource.getMessage('consortium.superOrgType', null, locale)]
             args.memberTypeSingle   = [messageSource.getMessage('consortium.subscriber', null, locale)]

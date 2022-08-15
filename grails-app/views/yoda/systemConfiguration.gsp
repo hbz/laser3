@@ -62,7 +62,7 @@
                 <td>${key}</td>
                 <td>
                     <g:if test="${blacklist.contains(key)}">
-                        <span style="color:orange"> == C O N C E A L E D === </span>
+                        <span class="sc_orange"> == C O N C E A L E D === </span>
                     </g:if>
                     <g:else>
                         <g:if test="${key == 'java.class.path'}">

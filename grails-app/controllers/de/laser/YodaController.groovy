@@ -1,16 +1,18 @@
 package de.laser
 
-
+import de.laser.annotations.Check404
 import de.laser.annotations.DebugInfo
 import de.laser.auth.Role
 import de.laser.auth.UserRole
 import de.laser.base.AbstractJob
+import de.laser.config.ConfigDefaults
 import de.laser.finance.CostItem
 import de.laser.properties.LicenseProperty
 import de.laser.properties.OrgProperty
 import de.laser.properties.PersonProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.SubscriptionProperty
+import de.laser.remote.ApiSource
 import de.laser.remote.ElasticsearchSource
 import de.laser.remote.FTControl
 import de.laser.remote.GlobalRecordSource
@@ -66,6 +68,7 @@ class YodaController {
     ESWrapperService ESWrapperService
     FinanceService financeService
     FormService formService
+    GokbService gokbService
     GlobalSourceSyncService globalSourceSyncService
     def quartzScheduler
     StatsSyncService statsSyncService
@@ -96,7 +99,7 @@ class YodaController {
         Map result = [:]
 
         result.blacklist = [
-                'jira', 'dataSource', 'dataSource.password'
+                'jira', 'dataSource', ConfigDefaults.DATASOURCE_DEFAULT + '.password', ConfigDefaults.DATASOURCE_STORAGE + '.password'
         ]
         result.editable = true
         result.currentConfig = grails.util.Holders.config.findAll { ! it.key.matches("[A-Z|_]*") }
@@ -445,6 +448,10 @@ class YodaController {
                             }
                         }
 
+                        if (method.getAnnotation(Check404)) {
+                            mInfo.check404 = Check404.KEY
+                        }
+
                         if (method.getAnnotation(Secured)) {
                             mInfo.secured = method.getAnnotation(Secured)?.value()
                         }
@@ -602,7 +609,23 @@ class YodaController {
      */
     @Secured(['ROLE_YODA'])
     Map<String, Object> manageStatsSources() {
-        Map<String, Object> result = [platforms: Platform.executeQuery('select p from LaserStatsCursor lsc join lsc.platform p join p.org o where p.org is not null order by o.name, o.sortname, p.name') as Set<Platform>]
+        Set<Platform> platforms = Platform.executeQuery('select p from LaserStatsCursor lsc join lsc.platform p join p.org o where p.org is not null order by o.name, o.sortname, p.name') as Set<Platform>
+        Map<String, Object> result = [
+                platforms: platforms,
+                platformInstanceRecords: [:],
+                flagContentGokb : true // gokbService.queryElasticsearch
+        ]
+        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        platforms.each { Platform platformInstance ->
+            Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/find?uuid=${platformInstance.gokbId}")
+            if (queryResult.error && queryResult.error == 404) {
+                result.wekbServerUnavailable = message(code: 'wekb.error.404')
+            }
+            else if (queryResult.warning) {
+                List records = queryResult.warning.records
+                result.platformInstanceRecords[platformInstance.gokbId] = records ? records[0] : [:]
+            }
+        }
         result
     }
 
@@ -613,12 +636,15 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     def resetStatsData() {
         boolean fullReset = Boolean.valueOf(params.fullReset)
-        Long platform = params.long("platform")
+        Platform platform = Platform.get(params.platform)
+        LaserStatsCursor.executeUpdate('delete from LaserStatsCursor lsc where lsc.platform = :plat', [plat: platform])
         if(fullReset) {
-            Counter4Report.executeUpdate('delete from Counter4Report c4r where c4r.platform.id = :plat', [plat: platform])
-            Counter5Report.executeUpdate('delete from Counter5Report c5r where c5r.platform.id = :plat', [plat: platform])
+            if(params.counterRevision == 'r4')
+                Counter4Report.executeUpdate('delete from Counter4Report c4r where c4r.platform = :plat', [plat: platform])
+            else if(params.counterRevision == 'r5')
+                Counter5Report.executeUpdate('delete from Counter5Report c5r where c5r.platform = :plat', [plat: platform])
+            statsSyncService.doFetch(false, platform.gokbId, params.sushiURL, params.counterRevision)
         }
-        LaserStatsCursor.executeUpdate('delete from LaserStatsCursor lsc where lsc.platform.id = :plat', [plat: platform])
         redirect(action: 'manageStatsSources')
     }
 
@@ -668,10 +694,10 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     def esIndexUpdate() {
         log.debug("manual start full text index")
-        dataloadService.updateFTIndexes()
-        log.debug("redirecting to home ..")
+        dataloadService.updateFTIndices()
+        log.debug("redirect ..")
 
-        redirect controller: 'home'
+        redirect controller: 'yoda', action: 'index'
     }
 
     /**
@@ -680,10 +706,10 @@ class YodaController {
     @Secured(['ROLE_YODA'])
     def fullReset() {
        log.debug("Clear ES")
-       dataloadService.clearDownAndInitES()
-        log.debug("redirecting to home ..")
+       dataloadService.resetESIndices()
+        log.debug("redirect ..")
 
-        redirect controller:'home'
+        redirect controller: 'yoda', action: 'index'
     }
 
     /**
@@ -693,9 +719,9 @@ class YodaController {
     def killDataloadService() {
         log.debug("kill DataloadService")
         dataloadService.killDataloadService()
-        log.debug("redirecting to home ..")
+        log.debug("redirect ..")
 
-        redirect controller:'home'
+        redirect controller: 'yoda', action: 'index'
     }
 
     /**
@@ -706,9 +732,9 @@ class YodaController {
     def checkESElementswithDBElements() {
         log.debug("checkESElementswithDBElements")
         dataloadService.checkESElementswithDBElements()
-        log.debug("redirecting to home ..")
+        log.debug("redirect ..")
 
-        redirect controller: 'home'
+        redirect controller: 'yoda', action: 'index'
     }
 
     /**
@@ -817,17 +843,17 @@ class YodaController {
         Map<String, Object> result = [:]
         log.debug("manageFTControle ..")
         result.ftControls = FTControl.list([sort: 'domainClassName'])
-        result.dataloadService = [:]
-        result.dataloadService.lastIndexUpdate = dataloadService.lastIndexUpdate
-        result.dataloadService.update_running = dataloadService.update_running
-        result.dataloadService.lastIndexUpdate = dataloadService.lastIndexUpdate
+        result.dataload = [
+            running : dataloadService.update_running,
+            lastFTIndexUpdateInfo : dataloadService.getLastFTIndexUpdateInfo()
+        ]
         result.editable = true
 
         RestHighLevelClient esclient = ESWrapperService.getClient()
 
         result.indices = []
         Map es_indices = ESWrapperService.ES_Indices
-        es_indices.each{ def indice ->
+        es_indices.each{ indice ->
             Map indexInfo = [:]
             indexInfo.name = indice.value
             indexInfo.type = indice.key
@@ -839,7 +865,7 @@ class YodaController {
                 CountResponse countResponse = esclient.count(countRequest, RequestOptions.DEFAULT)
                 indexInfo.countIndex = countResponse ? countResponse.getCount().toInteger() : 0
             }else {
-                indexInfo.countIndex = ""
+                indexInfo.countIndex = "n/a"
             }
 
             String query = "select count(id) from ${indice.key}"
@@ -869,7 +895,7 @@ class YodaController {
         esIndicesNames.each { String indexName ->
             ESWrapperService.createIndex(indexName)
         }
-        dataloadService.updateFTIndexes()
+        dataloadService.updateFTIndices()
         redirect action: 'manageFTControl'
     }
 
@@ -882,7 +908,7 @@ class YodaController {
         if (indexName) {
            ESWrapperService.deleteIndex(indexName)
            ESWrapperService.createIndex(indexName)
-           dataloadService.updateFTIndexes()
+           dataloadService.updateFTIndices()
         }
 
         redirect(action: 'manageFTControl')
@@ -1201,7 +1227,7 @@ class YodaController {
                         deletionService.deleteSubscription(sub, false)
                     }
                 } catch (Exception e) {
-                    println e
+                    log.error e.getMessage()
                 }
                 sleep(1000)
             }
@@ -1218,7 +1244,7 @@ class YodaController {
                         deletionService.deleteLicense(lic, false)
                     }
                 } catch (Exception e) {
-                    println e
+                    log.error e.getMessage()
                 }
                 sleep(1000)
             }
@@ -1286,28 +1312,28 @@ class YodaController {
         )
 
         if (params.cmd == 'doIt') {
-            println opp.collect{ it.id }
+            //println opp.collect{ it.id }
             if (opp.size() > 0) {
                 OrgProperty.executeUpdate('DELETE FROM OrgProperty opp WHERE opp.id in :idList',
                         [idList: opp.collect { it.id }]
                 )
             }
 
-            println spp.collect{ it.id }
+            //println spp.collect{ it.id }
             if (spp.size() > 0) {
                 SubscriptionProperty.executeUpdate('DELETE FROM SubscriptionProperty spp WHERE spp.id in :idList',
                         [idList: spp.collect { it.id }]
                 )
             }
 
-            println lpp.collect{ it.id }
+            //println lpp.collect{ it.id }
             if (lpp.size() > 0) {
                 LicenseProperty.executeUpdate('DELETE FROM LicenseProperty lpp WHERE lpp.id in :idList',
                         [idList: lpp.collect { it.id }]
                 )
             }
 
-            println ppp.collect{ it.id }
+            //println ppp.collect{ it.id }
             if (ppp.size() > 0) {
                 PersonProperty.executeUpdate('DELETE FROM PersonProperty ppp WHERE ppp.id in :idList',
                         [idList: ppp.collect { it.id }]

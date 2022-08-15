@@ -27,10 +27,9 @@ import de.laser.utils.SwissKnife
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.annotation.Secured
-import grails.core.GrailsClass
+import org.apache.http.HttpStatus
 import org.grails.datastore.mapping.model.PersistentEntity
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
-import org.springframework.context.i18n.LocaleContextHolder
 import org.springframework.web.servlet.LocaleResolver
 import org.springframework.web.servlet.support.RequestContextUtils
 import de.laser.exceptions.ChangeAcceptException
@@ -188,8 +187,8 @@ class AjaxController {
     /**
      * This is the call route for processing an xEditable reference data or role change
      * @return the new value for display update in the xEditable field
-     * @see UiInplaceTagLib#xEditableRole
-     * @see UiInplaceTagLib#xEditableRefData
+     * @see XEditableTagLib#xEditableRole
+     * @see XEditableTagLib#xEditableRefData
      */
     @Secured(['ROLE_USER'])
     @Transactional
@@ -302,13 +301,13 @@ class AjaxController {
         boolean defaultOrder = true
 
         if (config == null) {
-            String locale = LocaleUtils.getCurrentLang()
+            String lang = LocaleUtils.getCurrentLang()
             defaultOrder = false
             // If we werent able to locate a specific config override, assume the ID is just a refdata key
             config = [
                 domain      :'RefdataValue',
                 countQry    :"select count(rdv) from RefdataValue as rdv where rdv.owner.desc='" + params.id + "'",
-                rowQry      :"select rdv from RefdataValue as rdv where rdv.owner.desc='" + params.id + "' order by rdv.order asc, rdv.value_" + locale,
+                rowQry      :"select rdv from RefdataValue as rdv where rdv.owner.desc='" + params.id + "' order by rdv.order asc, rdv.value_" + lang,
                 qryParams   :[],
                 cols        :['value'],
                 format      :'simple'
@@ -460,12 +459,13 @@ class AjaxController {
               if(params.tab == 'currentIEs') {
                   Map query = filterService.getIssueEntitlementQuery(params+[ieAcceptStatusFixed: true], previousSubscription)
                   List<IssueEntitlement> previousTipps = previousSubscription ? IssueEntitlement.executeQuery("select ie.tipp.id " + query.query, query.queryParams) : []
-                  sourceIEs = previousTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatusNotInList(TitleInstancePackagePlatform.findAllByIdInList(previousTipps), previousSubscription, [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]) : []
-                  sourceIEs = sourceIEs + (sourceTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatusNotInList(TitleInstancePackagePlatform.findAllByIdInList(targetIETipps), newSub, [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]) : [])
+                  sourceIEs = previousTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatusNotEqual(TitleInstancePackagePlatform.findAllByIdInList(previousTipps), previousSubscription, RDStore.TIPP_STATUS_REMOVED) : []
+                  sourceIEs = sourceIEs + (sourceTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatusNotEqual(TitleInstancePackagePlatform.findAllByIdInList(targetIETipps), newSub, RDStore.TIPP_STATUS_REMOVED) : [])
 
               }
 
-              if(params.tab == 'allIEs') {
+              //TODO @Moe please verify
+              if(params.tab in ['allIEs', 'toBeSelectedIEs']) {
                   Map query = filterService.getIssueEntitlementQuery(params, baseSub)
                   List<Long> allIETipps = IssueEntitlement.executeQuery("select ie.tipp.id " + query.query, query.queryParams)
                   sourceTipps = allIETipps
@@ -476,7 +476,7 @@ class AjaxController {
               if(params.tab == 'selectedIEs') {
                   sourceTipps = selectedIETipps
                   sourceTipps = sourceTipps.minus(targetIETipps)
-                  sourceIEs = sourceTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatusNotInList(TitleInstancePackagePlatform.findAllByIdInList(sourceTipps), newSub, [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]) : []
+                  sourceIEs = sourceTipps ? IssueEntitlement.findAllByTippInListAndSubscriptionAndStatusNotEqual(TitleInstancePackagePlatform.findAllByIdInList(sourceTipps), newSub, RDStore.TIPP_STATUS_REMOVED) : []
               }
 
               sourceIEs.each { IssueEntitlement ie ->
@@ -1527,7 +1527,7 @@ class AjaxController {
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = "You do not have permission to access ${contextService.getOrg().name} pages. Please request access on the profile page"
-            response.sendError(401)
+            response.sendError(HttpStatus.SC_FORBIDDEN)
             return
         }
 
@@ -1589,7 +1589,7 @@ class AjaxController {
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = "You do not have permission to access ${contextService.getOrg().name} pages. Please request access on the profile page"
-            response.sendError(401)
+            response.sendError(HttpStatus.SC_FORBIDDEN)
             return
         }
 
@@ -1838,9 +1838,9 @@ class AjaxController {
     /**
      * This is the call route for processing an xEditable change other than reference data or role
      * @return the new value for display update in the xEditable field
-     * @see UiInplaceTagLib#xEditable
-     * @see UiInplaceTagLib#xEditableAsIcon
-     * @see UiInplaceTagLib#xEditableBoolean
+     * @see XEditableTagLib#xEditable
+     * @see XEditableTagLib#xEditableAsIcon
+     * @see XEditableTagLib#xEditableBoolean
      */
     @Secured(['ROLE_USER'])
     @Transactional
@@ -1928,7 +1928,7 @@ class AjaxController {
 
 
                         if (target_object."${params.name}" instanceof BigDecimal) {
-                            result = NumberFormat.getInstance(LocaleContextHolder.getLocale()).format(target_object."${params.name}")
+                            result = NumberFormat.getInstance( LocaleUtils.getCurrentLocale() ).format(target_object."${params.name}")
                             //is for that German users do not cry about comma-dot-change
                         } else {
                             result = target_object."${params.name}"
@@ -2070,7 +2070,7 @@ class AjaxController {
 
         if (! accessService.checkUserIsMember(result.user, result.institution)) {
             flash.error = "You do not have permission to access ${contextService.getOrg().name} pages. Please request access on the profile page"
-            response.sendError(401)
+            response.sendError(HttpStatus.SC_FORBIDDEN)
             return
         }
 

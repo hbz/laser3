@@ -10,15 +10,15 @@
         <ui:xEditable owner="${license}" field="reference" id="reference"/>
     </ui:h1HeaderWithIcon>
 
-    <ui:anualRings object="${license}" controller="license" action="show" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
+    <ui:anualRings object="${license}" controller="license" action="tasks" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
 
     <laser:render template="nav" />
 
     <ui:messages data="${flash}" />
 
     <laser:render template="/templates/tasks/tables" model="${[
-            taskInstanceList: taskInstanceList,     taskInstanceCount: taskInstanceCount,
-            myTaskInstanceList: myTaskInstanceList, myTaskInstanceCount: myTaskInstanceCount
+            taskInstanceList: taskInstanceList,
+            myTaskInstanceList: myTaskInstanceList
     ]}"/>
 
 <laser:htmlEnd />

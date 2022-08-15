@@ -1,4 +1,4 @@
-<%@ page import="de.laser.PendingChangeConfiguration; de.laser.IssueEntitlement; de.laser.SubscriptionController; de.laser.storage.RDStore; de.laser.Person; de.laser.Subscription; de.laser.FormService; de.laser.storage.RDConstants; de.laser.RefdataCategory; org.springframework.context.i18n.LocaleContextHolder; de.laser.I10nTranslation" %>
+<%@ page import="de.laser.PendingChangeConfiguration; de.laser.IssueEntitlement; de.laser.SubscriptionController; de.laser.storage.RDStore; de.laser.Person; de.laser.Subscription; de.laser.FormService; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.I10nTranslation" %>
 <laser:serviceInjection/>
 
 <ui:form>
@@ -79,7 +79,7 @@
                                         <div class="ui list">
                                             <g:if test="${ies}">
                                                 <g:each in="${ies}" var="ie">
-                                                    <g:if test="${ie.tipp.status == RDStore.TIPP_STATUS_DELETED}">
+                                                    <g:if test="${ie.tipp.status == RDStore.TIPP_STATUS_REMOVED}">
                                                         <div class="item willBeReplaced willBeReplacedStrong">
                                                             <ui:listIcon hideTooltip="true" type="${ie.tipp.titleType}"/>
                                                             <strong><g:link controller="tipp" action="show" id="${ie.tipp.id}">${ie.name}</g:link></strong>

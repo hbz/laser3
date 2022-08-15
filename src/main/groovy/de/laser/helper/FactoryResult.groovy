@@ -1,9 +1,9 @@
 package de.laser.helper
 
 import de.laser.storage.BeanStore
+import de.laser.utils.LocaleUtils
 import grails.web.mvc.FlashScope
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 
 
 class FactoryResult {
@@ -28,7 +28,7 @@ class FactoryResult {
 
     void setFlashScopeByStatus(FlashScope flash) {
         MessageSource messageSource = BeanStore.getMessageSource()
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
 
         Object[] args = [result?.ns?.ns, result?.value]
 

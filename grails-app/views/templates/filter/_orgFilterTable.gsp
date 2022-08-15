@@ -87,7 +87,7 @@
                 <th class="la-th-wrap">${message(code: 'survey.active')}</th>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('identifier')}">
-                <th>Identifier</th>
+                <th>${message(code:'default.identifier.label')}</th>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('wibid')}">
                 <th>WIB</th>

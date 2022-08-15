@@ -47,7 +47,7 @@
                                 <div class="description">
                                     <laser:render template="/myInstitution/reporting/query/generic_filterLabels" model="${[filterLabels: GlobalExportHelper.getCachedFilterLabels(fhRCache.token), simple: true]}" />
                                 </div>
-                                <div class="footer" style="color:grey">
+                                <div class="footer sc_grey">
                                     <%= filterCache.result %>
                                 </div>
                             </div>

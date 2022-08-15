@@ -45,7 +45,7 @@ class ApiSource {
         lastUpdatedwithApi(nullable:true)
         fixToken(nullable:true, blank:false)
         variableToken(nullable:true, blank:false)
-        typ(nullable:true, blank:false)
+        typ         (nullable:true)
         principal(nullable:true, blank:false)
         credentials(nullable:true, blank:false)
         apikey      (nullable:true, blank:false)

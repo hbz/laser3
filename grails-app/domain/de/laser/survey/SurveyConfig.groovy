@@ -92,8 +92,8 @@ class SurveyConfig {
 
         header(nullable: true, blank: false)
         comment(nullable: true, blank: true)
-        documents(nullable: true, blank: false)
-        orgs(nullable: true, blank: false)
+        documents   (nullable: true)
+        orgs        (nullable: true)
         scheduledStartDate  (nullable: true)
         scheduledEndDate    (nullable: true)
         internalComment(nullable: true, blank: true)
@@ -103,7 +103,7 @@ class SurveyConfig {
         urlComment(nullable: true, blank: false)
         urlComment2(nullable: true, blank: false)
         urlComment3(nullable: true, blank: false)
-        propertySet(nullable: true, blank: false)
+        propertySet (nullable: true)
         transferWorkflow (nullable: true, blank: false)
     }
 
@@ -165,11 +165,11 @@ class SurveyConfig {
      * @return the translation for the given survey type
      */
     static getLocalizedValue(key) {
-        String locale = LocaleUtils.getCurrentLang()
+        String lang = LocaleUtils.getCurrentLang()
 
         //println locale
         if (SurveyConfig.validTypes.containsKey(key)) {
-            return (SurveyConfig.validTypes.get(key)."${locale}") ?: SurveyConfig.validTypes.get(key)
+            return (SurveyConfig.validTypes.get(key)."${lang}") ?: SurveyConfig.validTypes.get(key)
         } else {
             return null
         }
@@ -303,9 +303,9 @@ class SurveyConfig {
 
         SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(this, org)
 
-        if(surveyOrg.finishDate){
+        if (surveyOrg?.finishDate){
             return true
-        }else  if (this.subSurveyUseForTransfer && surveyOrg && surveyOrg.existsMultiYearTerm()) {
+        }else if (this.subSurveyUseForTransfer && surveyOrg?.existsMultiYearTerm()) {
             return true
         } else {
            return false

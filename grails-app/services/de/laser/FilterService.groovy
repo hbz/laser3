@@ -6,11 +6,11 @@ import de.laser.utils.DateUtils
 import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
 import de.laser.survey.SurveyConfig
+import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
 import groovy.sql.Sql
-import org.springframework.context.i18n.LocaleContextHolder
 
 import java.sql.Connection
 import java.sql.Timestamp
@@ -1069,7 +1069,7 @@ class FilterService {
      * @return the map containing the query and the prepared query parameters
      */
     Map<String,Object> generateBasePackageQuery(params, qry_params, showDeletedTipps, asAt, forBase) {
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
         String base_qry
         SimpleDateFormat sdf = new SimpleDateFormat(messageSource.getMessage('default.date.format.notime',null,locale))
         boolean filterSet = false
@@ -1084,8 +1084,8 @@ class FilterService {
             filterSet = true
         }
         else if (params.mode == 'advanced' && showDeletedTipps != true) {
-            base_qry += "and tipp.status != :tippStatusDeleted "
-            qry_params.tippStatusDeleted = RDStore.TIPP_STATUS_DELETED
+            base_qry += "and tipp.status != :tippStatusRemoved "
+            qry_params.tippStatusRemoved = RDStore.TIPP_STATUS_REMOVED
         }
 
         if (asAt != null) {
@@ -1217,8 +1217,8 @@ class FilterService {
             qry_params.current = RDStore.TIPP_STATUS_CURRENT
         }
         else {
-            base_qry += " and ie.status != :deleted "
-            qry_params.deleted = RDStore.TIPP_STATUS_DELETED
+            base_qry += " and ie.status != :removed "
+            qry_params.deleted = RDStore.TIPP_STATUS_REMOVED
         }*/
 
         if(params.ieAcceptStatusFixed) {
@@ -1563,7 +1563,7 @@ class FilterService {
         as defined in filterService.getTippQuery(), filterServie.getIssueEntitlementQuery()
         as defined in myInstitutionController.currentTitles()
          */
-        String query = "", join = "", where = "", orderClause = "", refdata_value_col = I10nTranslation.getRefdataValueColumn(LocaleContextHolder.getLocale())
+        String query = "", join = "", where = "", orderClause = "", refdata_value_col = I10nTranslation.getRefdataValueColumn(LocaleUtils.getCurrentLocale())
         Map<String, Object> params = [:]
         Connection connection = sql.dataSource.getConnection()
         //sql.withTransaction {

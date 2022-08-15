@@ -95,7 +95,6 @@
 
   <g:if test="${titlesList}">
       <ui:paginate action="${actionName}" controller="package" params="${params}"
-                      next="${message(code: 'default.paginate.next')}" prev="${message(code: 'default.paginate.prev')}"
                       maxsteps="${max}" total="${num_tipp_rows}"/>
   </g:if>
 

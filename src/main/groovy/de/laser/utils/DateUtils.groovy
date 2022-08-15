@@ -1,17 +1,14 @@
 package de.laser.utils
 
 import de.laser.storage.BeanStore
-import groovy.transform.CompileStatic
 import groovy.util.logging.Slf4j
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
 
-@CompileStatic
 @Slf4j
 class DateUtils {
 
@@ -24,7 +21,7 @@ class DateUtils {
 
     static SimpleDateFormat getLocalizedSDF_byToken(String token) {
         MessageSource messageSource = BeanStore.getMessageSource()
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
         String format = messageSource.getMessage(token, null, locale)
 
         if (format) {

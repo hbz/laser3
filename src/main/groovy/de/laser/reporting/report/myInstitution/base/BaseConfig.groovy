@@ -24,9 +24,9 @@ import de.laser.reporting.report.myInstitution.config.PackageXCfg
 import de.laser.reporting.report.myInstitution.config.PlatformXCfg
 import de.laser.reporting.report.myInstitution.config.SubscriptionConsCfg
 import de.laser.reporting.report.myInstitution.config.SubscriptionInstCfg
+import de.laser.utils.LocaleUtils
 import groovy.util.logging.Slf4j
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 
 
 import java.time.Year
@@ -196,7 +196,7 @@ class BaseConfig {
 
         // println 'BaseConfig.getCustomImplRefdata() -> ' + cfgClass + ' ' + key
 
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
         String ck = 'reporting.customImpl.'
 
         if (key == RDJT_GENERIC_ORG_TYPE) {
@@ -398,7 +398,7 @@ class BaseConfig {
 
         // println 'BaseConfig.getElasticSearchRefdata() ' + key
         MessageSource messageSource = BeanStore.getMessageSource()
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
 
         Map pkgMap = getCurrentConfigElasticsearchData(KEY_PACKAGE).get( KEY_PACKAGE + '-' + key ) as Map<String, Object>
         Map pltMap = getCurrentConfigElasticsearchData(KEY_PLATFORM).get( KEY_PLATFORM + '-' + key )  as Map<String, Object>
@@ -420,7 +420,7 @@ class BaseConfig {
     static String getLabel(String token) {
         //println 'getConfigLabel(): ' + key
         MessageSource messageSource = BeanStore.getMessageSource()
-        messageSource.getMessage(token, null, LocaleContextHolder.getLocale())
+        messageSource.getMessage(token, null, LocaleUtils.getCurrentLocale())
     }
 
     static String getConfigLabel(def token) {

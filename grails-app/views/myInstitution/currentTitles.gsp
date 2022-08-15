@@ -238,7 +238,7 @@
                                 String instanceFilter = ''
                                 if (institution.getCustomerType() == "ORG_CONSORTIUM")
                                     instanceFilter += ' and sub.instanceOf = null'
-                                Set<IssueEntitlement> title_coverage_info = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo where oo.org = :context and ie.tipp = :tipp and sub.status = :current and ie.status not in (:ieStatus)' + instanceFilter, [ieStatus:[RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED], context: institution, tipp: tipp, current: RDStore.SUBSCRIPTION_CURRENT])
+                                Set<IssueEntitlement> title_coverage_info = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo where oo.org = :context and ie.tipp = :tipp and sub.status = :current and ie.status != :ieStatus' + instanceFilter, [ieStatus: RDStore.TIPP_STATUS_REMOVED, context: institution, tipp: tipp, current: RDStore.SUBSCRIPTION_CURRENT])
                             %>
                             <td>
 
@@ -340,9 +340,7 @@
 
     <g:if test="${titles}">
         <ui:paginate action="currentTitles" controller="myInstitution" params="${params}"
-                        next="${message(code: 'default.paginate.next')}"
-                        prev="${message(code: 'default.paginate.prev')}" max="${max}"
-                        total="${num_ti_rows}"/>
+                        max="${max}" total="${num_ti_rows}"/>
     </g:if>
 
 </div>

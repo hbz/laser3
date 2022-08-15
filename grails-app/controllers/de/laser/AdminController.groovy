@@ -30,7 +30,6 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import grails.plugins.mail.MailService
 import groovy.sql.Sql
-import org.hibernate.Session
 import org.hibernate.SessionFactory
 import org.hibernate.query.NativeQuery
 import org.springframework.web.multipart.commons.CommonsMultipartFile
@@ -69,14 +68,20 @@ class AdminController  {
     @Secured(['ROLE_ADMIN'])
     @Transactional
     def index() {
-        List dbmQuery = (sessionFactory.currentSession.createSQLQuery(
-                'SELECT filename, id, dateexecuted from databasechangelog order by orderexecuted desc limit 1'
-        )).list()
 
         Map<String, Object> result = [
-                dbmVersion  : dbmQuery.size() > 0 ? dbmQuery.first() : ['unkown', 'unkown', 'unkown'],
-                events      : SystemEvent.list([max: 10, sort: 'created', order: 'desc']),
-                docStore    : AppUtils.getDocumentStorageInfo()
+            database: [
+                default: [
+                    dbName     : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_DEFAULT + '.url', String).split('/').last(),
+                    dbmVersion : GlobalService.obtainSqlConnection().firstRow('SELECT filename, id, dateexecuted from databasechangelog order by orderexecuted desc limit 1').collect { it.value }
+                ],
+                storage: [
+                    dbName     : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_STORAGE + '.url', String).split('/').last(),
+                    dbmVersion : GlobalService.obtainStorageSqlConnection().firstRow('SELECT filename, id, dateexecuted from databasechangelog order by orderexecuted desc limit 1').collect { it.value }
+                ]
+            ],
+            events      : SystemEvent.list([max: 10, sort: 'created', order: 'desc']),
+            docStore    : AppUtils.getDocumentStorageInfo()
         ]
 
         result
@@ -223,8 +228,8 @@ class AdminController  {
                 'Subscription',
                 'TitleInstance',
                 'TitleInstancePackagePlatform',
-                'Combo',
-                'Doc'
+                'Combo'
+                //'Doc'
         ]
         result.jobList = jobList
 
@@ -509,14 +514,7 @@ class AdminController  {
         result.events = SystemEvent.list([max: params.filter_limit, sort: 'created', order: 'desc'])
         result
     }
-
-    @Deprecated
-    @Secured(['ROLE_YODA'])
-    def dataCleanse() {
-        // Sets nominal platform
-        dataloadService.dataCleanse()
-    }
-
+    
     /**
      * Enumerates the database collations currently used in the tables
      */
@@ -589,23 +587,37 @@ class AdminController  {
 
     @Secured(['ROLE_ADMIN'])
     def databaseInfo() {
-        Map<String, Object> result = [:]
 
-        Session hibSess = sessionFactory.currentSession
-        List dbmQuery = (hibSess.createSQLQuery(
-                'SELECT filename, id, dateexecuted from databasechangelog order by orderexecuted desc limit 1'
-        )).list()
-        result.dbmVersion       = dbmQuery.size() > 0 ? dbmQuery.first() : ['unkown', 'unkown', 'unkown']
+        Map<String, Object> result = [
+            dbmUpdateOnStart : ConfigMapper.getPluginConfig('databasemigration.updateOnStart', Boolean),
 
-        result.defaultCollate   = DatabaseInfo.getDatabaseCollate()
-        result.dbConflicts      = DatabaseInfo.getDatabaseConflicts()
-        result.dbSize           = DatabaseInfo.getDatabaseSize()
-        result.dbStatistics     = DatabaseInfo.getDatabaseStatistics()
-        result.dbActivity       = DatabaseInfo.getDatabaseActivity()
-        result.dbUserFunctions  = DatabaseInfo.getDatabaseUserFunctions()
-        result.dbTableUsage     = DatabaseInfo.getAllTablesUsageInfo()
+            default: [
+                    dbName           : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_DEFAULT + '.url', String).split('/').last(),
+                    dbmDbCreate      : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_DEFAULT + '.dbCreate', String),
+                    defaultCollate   : DatabaseInfo.getDatabaseCollate(),
+                    dbConflicts      : DatabaseInfo.getDatabaseConflicts(),
+                    dbSize           : DatabaseInfo.getDatabaseSize(),
+                    dbStatistics     : DatabaseInfo.getDatabaseStatistics(),
+                    dbActivity       : DatabaseInfo.getDatabaseActivity(),
+                    dbUserFunctions  : DatabaseInfo.getDatabaseUserFunctions(),
+                    dbTableUsage     : DatabaseInfo.getAllTablesUsageInfo(),
+                    dbmVersion       : GlobalService.obtainSqlConnection().firstRow('SELECT filename, id, dateexecuted from databasechangelog order by orderexecuted desc limit 1').collect { it.value }
+            ],
+            storage: [
+                    dbName           : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_STORAGE + '.url', String).split('/').last(), // TODO
+                    dbmDbCreate      : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_STORAGE + '.dbCreate', String), // TODO
+                    defaultCollate   : DatabaseInfo.getDatabaseCollate( DatabaseInfo.DS_STORAGE ),
+                    dbConflicts      : DatabaseInfo.getDatabaseConflicts( DatabaseInfo.DS_STORAGE ),
+                    dbSize           : DatabaseInfo.getDatabaseSize( DatabaseInfo.DS_STORAGE ),
+                    dbStatistics     : DatabaseInfo.getDatabaseStatistics( DatabaseInfo.DS_STORAGE ),
+                    dbActivity       : DatabaseInfo.getDatabaseActivity( DatabaseInfo.DS_STORAGE ),
+                    dbUserFunctions  : DatabaseInfo.getDatabaseUserFunctions( DatabaseInfo.DS_STORAGE ),
+                    dbTableUsage     : DatabaseInfo.getAllTablesUsageInfo( DatabaseInfo.DS_STORAGE ),
+                    dbmVersion       : GlobalService.obtainStorageSqlConnection().firstRow('SELECT filename, id, dateexecuted from databasechangelog order by orderexecuted desc limit 1').collect { it.value }
+            ]
+        ]
 
-        result
+        [dbInfo: result]
     }
 
     /**
@@ -1296,105 +1308,6 @@ SELECT * FROM (
         ]
     }
 
-    @Deprecated
-    @Secured(['ROLE_ADMIN'])
-    @Transactional
-    def titleEnrichment() {
-        Map<String, Object> result = [:]
-
-        if(params.kbartPreselect) {
-            CommonsMultipartFile kbartFile = params.kbartPreselect
-            Integer count = 0
-            Integer countChanges = 0
-            InputStream stream = kbartFile.getInputStream()
-            ArrayList<String> rows = stream.text.split('\n')
-            Map<String,Integer> colMap = [publicationTitleCol:-1,zdbCol:-1, onlineIdentifierCol:-1, printIdentifierCol:-1, doiTitleCol:-1, seriesTitleCol:-1]
-            //read off first line of KBART file
-            rows[0].split('\t').eachWithIndex { headerCol, int c ->
-                switch(headerCol.toLowerCase().trim()) {
-                    case "zdb_id": colMap.zdbCol = c
-                        break
-                    case "print_identifier": colMap.printIdentifierCol = c
-                        break
-                    case "online_identifier": colMap.onlineIdentifierCol = c
-                        break
-                    case "publication_title": colMap.publicationTitleCol = c
-                        break
-                    case "series_name": colMap.seriesNameTitleCol = c
-                        break
-                    case "monograph_parent_collection_title": colMap.seriesNameTitleCol = c
-                        break
-                    case "subject_reference": colMap.subjectReferenceTitleCol = c
-                        break
-                    case "summary_of_content": colMap.summaryOfContentTitleCol = c
-                        break
-                    case "doi_identifier": colMap.doiTitleCol = c
-                        break
-                }
-            }
-            //after having read off the header row, pop the first row
-            rows.remove(0)
-            //now, assemble the identifiers available to highlight
-            Map<String,IdentifierNamespace> namespaces = [zdb:IdentifierNamespace.findByNs('zdb'),
-                                                          eissn:IdentifierNamespace.findByNs('eissn'),isbn:IdentifierNamespace.findByNs('isbn'),
-                                                          issn:IdentifierNamespace.findByNs('issn'),pisbn:IdentifierNamespace.findByNs('pisbn'),
-                                                          doi: IdentifierNamespace.findByNs('doi')]
-            rows.eachWithIndex { row, int i ->
-                log.debug("now processing entitlement ${i}")
-                ArrayList<String> cols = row.split('\t')
-                Map idCandidate
-                if(colMap.zdbCol >= 0 && cols[colMap.zdbCol]) {
-                    idCandidate = [namespaces:[namespaces.zdb],value:cols[colMap.zdbCol]]
-                }
-                if(colMap.onlineIdentifierCol >= 0 && cols[colMap.onlineIdentifierCol]) {
-                    idCandidate = [namespaces:[namespaces.eissn,namespaces.isbn],value:cols[colMap.onlineIdentifierCol]]
-                }
-                if(colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol]) {
-                    idCandidate = [namespaces:[namespaces.issn,namespaces.pisbn],value:cols[colMap.printIdentifierCol]]
-                }
-                if(colMap.doiTitleCol >= 0 && cols[colMap.doiTitleCol]) {
-                    idCandidate = [namespaces:[namespaces.doi],value:cols[colMap.doiTitleCol]]
-                }
-                if(((colMap.zdbCol >= 0 && cols[colMap.zdbCol].trim().isEmpty()) || colMap.zdbCol < 0) &&
-                        ((colMap.onlineIdentifierCol >= 0 && cols[colMap.onlineIdentifierCol].trim().isEmpty()) || colMap.onlineIdentifierCol < 0) &&
-                        ((colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol].trim().isEmpty()) || colMap.printIdentifierCol < 0)) {
-                }
-                else {
-                    List<TitleInstance> tiObj = TitleInstance.executeQuery('select ti from TitleInstance ti join ti.ids ident where ident.ns in :namespaces and ident.value = :value', [namespaces:idCandidate.namespaces, value:idCandidate.value])
-                    if(tiObj) {
-
-                        tiObj.each { titleInstance ->
-                            count++
-                            if(titleInstance instanceof BookInstance) {
-                                if(colMap.summaryOfContentTitleCol && (cols[colMap.summaryOfContentTitleCol] != null || cols[colMap.summaryOfContentTitleCol] != "") && (cols[colMap.summaryOfContentTitleCol].trim() != titleInstance.summaryOfContent) ){
-                                    countChanges++
-                                    titleInstance.summaryOfContent = cols[colMap.summaryOfContentTitleCol].trim()
-                                    titleInstance.save()
-                                }
-                            }
-
-                                if(colMap.seriesNameTitleCol && (cols[colMap.seriesNameTitleCol] != null || cols[colMap.seriesNameTitleCol] != "") && (cols[colMap.seriesNameTitleCol].trim() != titleInstance.seriesName) ){
-                                    countChanges++
-                                    titleInstance.seriesName = cols[colMap.seriesNameTitleCol].trim()
-                                    titleInstance.save()
-                                }
-
-                                if(colMap.subjectReferenceTitleCol && (cols[colMap.subjectReferenceTitleCol] != null || cols[colMap.subjectReferenceTitleCol] != "") && (cols[colMap.subjectReferenceTitleCol].trim() != titleInstance.subjectReference) ){
-                                    countChanges++
-                                    titleInstance.subjectReference = cols[colMap.subjectReferenceTitleCol].trim()
-                                    titleInstance.save()
-                                }
-                        }
-                    }
-                }
-            }
-
-            flash.message = "Verbearbeitet: ${count} /Geändert ${countChanges}"
-            params.remove("kbartPreselct")
-        }
-
-    }
-
     /**
      * Lists all system messages in the system
      * @see SystemMessage
@@ -1447,16 +1360,14 @@ SELECT * FROM (
                 docStore: AppUtils.getDocumentStorageInfo()
         ]
 
-        result.statsSyncService = [:]
-
-        result.globalSourceSyncService = [
+        result.globalSourceSync = [
                 running: globalSourceSyncService.running
                 ]
-        result.dataloadService = [
-                update_running: dataloadService.update_running,
-                lastIndexUpdate: dataloadService.lastIndexUpdate
+        result.dataload = [
+                running: dataloadService.update_running,
+                lastFTIndexUpdateInfo: dataloadService.getLastFTIndexUpdateInfo()
         ]
-        result.statsSyncService = [
+        result.statsSync = [
                 running: statsSyncService.running,
                 submitCount: statsSyncService.submitCount,
                 completedCount: statsSyncService.completedCount,
@@ -1468,12 +1379,24 @@ SELECT * FROM (
                 syncStartTime: statsSyncService.syncStartTime,
                 syncElapsed: statsSyncService.syncElapsed
                 ]
-        result.esinfos = FTControl.list()
+        result.ftcInfos = FTControl.list()
 
-        List dbmQuery = (sessionFactory.currentSession.createSQLQuery(
-                'SELECT filename, id, dateexecuted from databasechangelog order by orderexecuted desc limit 1'
-        )).list()
-        result.dbmVersion = dbmQuery.size() > 0 ? dbmQuery.first() : ['unkown', 'unkown', 'unkown']
+        result.dbInfo = [
+                dbmUpdateOnStart : ConfigMapper.getPluginConfig('databasemigration.updateOnStart', Boolean),
+
+                default: [
+                        dbName           : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_DEFAULT + '.url', String).split('/').last(),
+                        dbmDbCreate      : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_DEFAULT + '.dbCreate', String),
+                        defaultCollate   : DatabaseInfo.getDatabaseCollate(),
+                        dbmVersion       : GlobalService.obtainSqlConnection().firstRow('SELECT filename, id, dateexecuted from databasechangelog order by orderexecuted desc limit 1').collect { it.value }
+                ],
+                storage: [
+                        dbName           : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_STORAGE + '.url', String).split('/').last(), // TODO
+                        dbmDbCreate      : ConfigMapper.getConfig(ConfigDefaults.DATASOURCE_STORAGE + '.dbCreate', String), // TODO
+                        defaultCollate   : DatabaseInfo.getDatabaseCollate( DatabaseInfo.DS_STORAGE ),
+                        dbmVersion       : GlobalService.obtainStorageSqlConnection().firstRow('SELECT filename, id, dateexecuted from databasechangelog order by orderexecuted desc limit 1').collect { it.value }
+                ]
+        ]
 
         result
     }

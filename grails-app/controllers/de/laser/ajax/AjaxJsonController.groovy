@@ -787,8 +787,8 @@ class AjaxJsonController {
         else if(params.cat)
             rdc = RefdataCategory.getByDesc(params.cat)
         if (rdc) {
-            String locale = LocaleUtils.getCurrentLang()
-            String query = "select rdv from RefdataValue as rdv where rdv.owner.id='${rdc.id}' order by rdv.order, rdv.value_" + locale
+            String lang = LocaleUtils.getCurrentLang()
+            String query = "select rdv from RefdataValue as rdv where rdv.owner.id='${rdc.id}' order by rdv.order, rdv.value_" + lang
 
             List<RefdataValue> rq = RefdataValue.executeQuery(query, [], [max: params.iDisplayLength ?: 1000, offset: params.iDisplayStart ?: 0])
 

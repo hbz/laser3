@@ -51,18 +51,9 @@
                 </g:if>
             </td>
             <td>
-
-                <%
-                    String hql = "select oap from OrgAccessPoint oap " +
-                            "join oap.oapp as oapp where oap.org=:org and oapp.active = true and oapp.platform.id =${platformInstance.id} and oapp.subPkg is null order by LOWER(oap.name)"
-
-                    println hql
-
-//                    OrgAccessPoint.executeQuery(hql, ['org': contextOrg])
-                %>
-%{--                <g:each in="${platformInstance.getContextOrgAccessPoints(contextOrg)}" var="oap" >--}%
-%{--                    <g:link controller="accessPoint" action="edit_${oap.accessMethod}" id="${oap.id}">${oap.name} (${oap.accessMethod.getI10n('value')})</g:link> <br />--}%
-%{--                </g:each>--}%
+                <g:each in="${platformInstance.getContextOrgAccessPoints(contextOrg)}" var="oap" >
+                    <g:link controller="accessPoint" action="edit_${oap.accessMethod}" id="${oap.id}">${oap.name} (${oap.accessMethod.getI10n('value')})</g:link> <br />
+                </g:each>
             </td>
             <td>
                 <g:each in="${subscriptionMap.get('platform_' + platformInstance.id)}" var="sub">

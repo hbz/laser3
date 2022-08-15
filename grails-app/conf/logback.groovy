@@ -97,17 +97,12 @@ if (Environment.isDevelopmentMode() && targetDir != null) {
         }
     }
 
-    logger("StackTrace",    ERROR, ['FULL_STACKTRACE'], false)
-
-    logger("de.laser",      DEBUG, ['LOGFILE'], false)
-    logger("com.k_int",     DEBUG, ['LOGFILE'], false)
-
+    logger("StackTrace", ERROR, ['FULL_STACKTRACE'], false)
+    logger("de.laser", DEBUG, ['LOGFILE'], false)
     root(INFO, ['LOGFILE'])
 }
 
-logger("de.laser",      DEBUG, ['STDOUT'], false)
-logger("com.k_int",     DEBUG, ['STDOUT'], false)
-
+logger("de.laser", DEBUG, ['STDOUT'], false)
 root(INFO, ['STDOUT'])
 
 

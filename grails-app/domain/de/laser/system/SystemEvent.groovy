@@ -6,7 +6,6 @@ import de.laser.utils.LocaleUtils
 import grails.converters.JSON
 import groovy.util.logging.Slf4j
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 
 import javax.persistence.Transient
 import java.time.LocalDate
@@ -21,11 +20,12 @@ class SystemEvent {
     @Transient
     private String i18n
 
-    String    token        // i18n and more
-    String    payload      // json for object ids, etx
+    String    token                 // i18n and more
+    String    payload               // json for object ids, etx
     CATEGORY  category
     RELEVANCE relevance
     Date      created
+    boolean   hasChanged = false    // changeTo called
 
     /**
      * The event types which may be triggered
@@ -44,21 +44,15 @@ class SystemEvent {
             'DBDD_SERVICE_COMPLETE_1'       : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'DBDD_SERVICE_ERROR_1'          : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.ERROR],
             'DBDD_SERVICE_START_2'          : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
-            'DBDD_SERVICE_PROCESSING_2'     : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
-            'DBDD_SERVICE_START_COLLECT_DASHBOARD_DATA':    [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
-            'DBDD_SERVICE_END_COLLECT_DASHBOARD_DATA':      [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
-            'DBDD_SERVICE_START_TRANSACTION': [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
-            'DBDD_SERVICE_END_TRANSACTION'  : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
-            'DBDD_SERVICE_COMPLETE_2'       : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'DBDD_SERVICE_ERROR_2'          : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.ERROR],
             'DBDD_SERVICE_START_3'          : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
-            'DBDD_SERVICE_COMPLETE_3'       : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'DBDD_SERVICE_ERROR_3'          : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.ERROR],
             'DBM_SCRIPT_INFO'               : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'DBM_SCRIPT_ERROR'              : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.ERROR],
             'FT_INDEX_UPDATE_START'         : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
-            'FT_INDEX_UPDATE_END'           : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
+            'FT_INDEX_UPDATE_COMPLETE'      : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'FT_INDEX_UPDATE_ERROR'         : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.ERROR],
+            'FT_INDEX_UPDATE_KILLED'        : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.WARNING],
             'FT_INDEX_CLEANUP_ERROR'        : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.ERROR],
             'GD_SYNC_JOB_START'             : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
             'GD_SYNC_JOB_COMPLETE'          : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
@@ -84,9 +78,8 @@ class SystemEvent {
             'SYSANN_SENDING_OK'             : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO],
             'SYSANN_SENDING_ERROR'          : [category: CATEGORY.OTHER, relevance: RELEVANCE.ERROR],
             'YODA_ES_RESET_START'           : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO],
-            'YODA_ES_RESET_DROP_OK'         : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO],
-            'YODA_ES_RESET_CREATE_OK'       : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO],
-            'YODA_ES_RESET_END'             : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO]
+            'YODA_ES_RESET_DELETED'         : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO],
+            'YODA_ES_RESET_CREATED'         : [category: CATEGORY.OTHER, relevance: RELEVANCE.INFO]
     ]
 
     /**
@@ -125,9 +118,10 @@ class SystemEvent {
         id          column:'se_id'
         version     false
         token       column:'se_token'
-        payload     column:'se_payload',   type: 'text'
+        payload     column:'se_payload',    type: 'text'
         category    column:'se_category',   index: 'se_category_idx'
         relevance   column:'se_relevance',  index: 'se_relevance_idx'
+        hasChanged  column:'se_has_changed'
         created     column:'se_created'
     }
 
@@ -161,10 +155,10 @@ class SystemEvent {
         withTransaction {
             SystemEvent result
 
-            if (SystemEvent.DEFINED_EVENTS.containsKey(token)) {
+            if (DEFINED_EVENTS.containsKey(token)) {
                 result = new SystemEvent(
-                        category: SystemEvent.DEFINED_EVENTS.get(token).category,
-                        relevance: SystemEvent.DEFINED_EVENTS.get(token).relevance)
+                        category: DEFINED_EVENTS.get(token).category,
+                        relevance: DEFINED_EVENTS.get(token).relevance)
             } else {
                 result = new SystemEvent(category: CATEGORY.UNKNOWN, relevance: RELEVANCE.UNKNOWN)
             }
@@ -213,24 +207,44 @@ class SystemEvent {
         result.unique().sort()
     }
 
-    /**
-     * Cleans up recorded system events which are older than three years
-     * @return the count of deleted events
-     */
-    static int cleanUpOldEvents() {
-        executeUpdate('delete from SystemEvent se where se.created <= :limit', [limit: DateUtils.localDateToSqlDate( LocalDate.now().minusYears(3) )])
+    static SystemEvent getLastByToken(String token) {
+        find('from SystemEvent se where se.token = :token order by se.created desc', [token: token])
     }
 
-    // GETTER
+    void changeTo(String token, def payload) {
+        withTransaction {
+            if (DEFINED_EVENTS.containsKey(token)) {
+                log.info '> changed given SystemEvent (ID:' + this.id + ') from ' + this.token + ' to ' + token
+
+                this.token = token
+                this.category = DEFINED_EVENTS.get(token).category
+                this.relevance = DEFINED_EVENTS.get(token).relevance
+
+                this.hasChanged = true
+
+                if (payload) {
+                    this.payload = (new JSON(payload)).toString(false)
+                }
+                this.save()
+            }
+        }
+    }
 
     /**
      * This method is actually a getter. It gets the internationalised message by the system event token
      */
     private void _setInfo() {
         if (!i18n) {
-            i18n = BeanStore.getMessageSource().getMessage('se.' + (token ?: 'UNKNOWN'), null, LocaleContextHolder.locale)
+            try {
+                i18n = BeanStore.getMessageSource().getMessage('se.' + token, null, LocaleUtils.getCurrentLocale())
+            } catch (Exception e) {
+                log.warn '- missing locale for token: ' + token
+                i18n = BeanStore.getMessageSource().getMessage('se.UNKNOWN', null, LocaleUtils.getCurrentLocale())
+            }
         }
     }
+
+    // GETTER
 
     /**
      * Gets a certain part of the internationalised message string

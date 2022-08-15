@@ -14,10 +14,7 @@
 
 <laser:render template="nav"/>
 
-
-<g:if test="${flash}">
     <ui:messages data="${flash}"/>
-</g:if>
 
 <g:form name="renewEntitlements" id="${newSub.id}" action="processRenewEntitlements" class="ui form">
     <g:hiddenField id="tippsToAdd" name="tippsToAdd"/>

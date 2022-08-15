@@ -18,7 +18,6 @@ class StatusUpdateService extends AbstractLockableService {
     ContextService contextService
     GenericOIDService genericOIDService
     GlobalSourceSyncService globalSourceSyncService
-     //def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
 
     /**
      * Cronjob-triggered.
@@ -29,7 +28,7 @@ class StatusUpdateService extends AbstractLockableService {
     boolean subscriptionCheck() {
         if(!running) {
             running = true
-            println "processing all intended subscriptions ..."
+            log.debug "processing all intended subscriptions ..."
             Date currentDate = new Date()
             //Date currentDate = DateUtil.SDF_NoZ.parse("2020-05-30 03:00:00")
 
@@ -198,7 +197,7 @@ class StatusUpdateService extends AbstractLockableService {
     boolean licenseCheck() {
         if(!running) {
             running = true
-            println "processing all intended licenses ..."
+            log.debug "processing all intended licenses ..."
             Date currentDate = new Date()
 
             Map<String,Object> updatedObjs = [:]
@@ -308,11 +307,11 @@ class StatusUpdateService extends AbstractLockableService {
                 currentIEs.eachWithIndex { IssueEntitlement ieA, int index ->
                     Map<String,Object> changeMap = [target:ieA.subscription]
                     String changeDesc
-                    if(ieA.tipp.status != RDStore.TIPP_STATUS_DELETED) {
+                    if(ieA.tipp.status != RDStore.TIPP_STATUS_REMOVED) {
                         TitleInstancePackagePlatform tippB = TitleInstancePackagePlatform.get(ieA.tipp.id) //for session refresh
                         Set<Map<String,Object>> diffs = globalSourceSyncService.getTippDiff(ieA,tippB)
                         diffs.each { Map<String,Object> diff ->
-                            log.debug("now processing entry #${index}, payload: ${diff}")
+                            // log.debug("now processing entry #${index}, payload: ${diff}")
                             if(diff.prop == 'coverage') {
                                 //the city Coventry is beautiful, isn't it ... but here is the COVerageENTRY meant.
                                 diff.covDiffs.each { covEntry ->
@@ -373,14 +372,13 @@ class StatusUpdateService extends AbstractLockableService {
                     }
                 }
                 Set<TitleInstancePackagePlatform> currentTIPPs = sp.subscription.issueEntitlements.collect { IssueEntitlement ie -> ie.tipp }
-                Set<TitleInstancePackagePlatform> inexistentTIPPs = pkg.tipps.findAll { TitleInstancePackagePlatform tipp -> !currentTIPPs.contains(tipp) && tipp.status != RDStore.TIPP_STATUS_DELETED }
+                Set<TitleInstancePackagePlatform> inexistentTIPPs = pkg.tipps.findAll { TitleInstancePackagePlatform tipp -> !currentTIPPs.contains(tipp) && tipp.status != RDStore.TIPP_STATUS_REMOVED }
                 inexistentTIPPs.each { TitleInstancePackagePlatform tippB ->
                     log.debug("adding new TIPP ${tippB} to subscription ${sp.subscription.id}")
                     changeNotificationService.determinePendingChangeBehavior([target:sp.subscription,oid:genericOIDService.getOID(tippB)],PendingChangeConfiguration.NEW_TITLE,sp)
                 }
                 stat.flush()
                 //sess.clear()
-                // //propertyInstanceMap.get().clear()
             }
         }
     }

@@ -7,7 +7,7 @@ system = {
     },
 
     init: function () {
-        system.status()
+        // TODO system.status()
     },
 
     status: function () {

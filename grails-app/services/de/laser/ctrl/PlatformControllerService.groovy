@@ -5,10 +5,10 @@ import de.laser.Platform
 import de.laser.SubscriptionPackage
 import de.laser.oap.OrgAccessPoint
 import de.laser.oap.OrgAccessPointLink
+import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 
 /**
  * This service serves as mirror for the {@link de.laser.PlatformController}, containing its data manipulating
@@ -72,7 +72,7 @@ class PlatformControllerService {
      */
     Map<String,Object> checkDerivationParams(GrailsParameterMap params) {
         Map<String,Object> result = [:]
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
         if (!params.sp) {
             result.error = messageSource.getMessage('subscription.details.linkAccessPoint.missingSubPkg.message',null,locale)
         }

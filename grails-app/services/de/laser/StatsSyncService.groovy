@@ -2,6 +2,7 @@ package de.laser
 
 
 import de.laser.base.AbstractCounterApiSource
+import de.laser.http.BasicHttpClient
 import de.laser.config.ConfigMapper
 import de.laser.utils.DateUtils
 import de.laser.remote.ApiSource
@@ -20,18 +21,17 @@ import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.json.JsonOutput
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
-import groovy.xml.StreamingMarkupBuilder
 import groovy.xml.slurpersupport.GPathResult
+import groovy.xml.StreamingMarkupBuilder
 import groovyx.gpars.GParsPool
-import groovyx.net.http.ContentType
-import groovyx.net.http.HTTPBuilder
-import groovyx.net.http.Method
-import groovyx.net.http.RESTClient
-import groovyx.net.http.URIBuilder
+import io.micronaut.http.client.DefaultHttpClientConfiguration
+import io.micronaut.http.client.HttpClientConfiguration
+import org.grails.web.json.JSONArray
 
 import java.security.MessageDigest
 import java.sql.Timestamp
 import java.text.SimpleDateFormat
+import java.time.Duration
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.ZoneId
@@ -111,7 +111,6 @@ class StatsSyncService {
             "join ie.subscription.orgRelations as orgrel "+
             "join ie.tipp.ids as titleIdentifier "+
             "where titleIdentifier.ns.ns in ('zdb','doi') "+
-            "and ie.status.value <> '${RDStore.TIPP_STATUS_DELETED}' " +
             "and ie.status.value <> '${RDStore.TIPP_STATUS_REMOVED}' " +
             "and po.roleType.value in ('Provider','Content Provider') "+
             "and exists (select cp from pf.propertySet as cp where cp.type.name = 'NatStat Supplier ID')" +
@@ -153,14 +152,14 @@ class StatsSyncService {
      * and puts the process on a new thread
      * @param incremental should only new data being loaded or a full data reload done?
      */
-    void doFetch(boolean incremental) {
+    void doFetch(boolean incremental, String platformUUID = '', String source = '', String revision = '') {
         log.debug("fetching data from providers started")
         if (running) {
             log.debug("Skipping sync ... fetching task already running")
             return
         }
         running = true
-        executorService.execute({ internalDoFetch(incremental) })
+        executorService.execute({ internalDoFetch(incremental, platformUUID, source, revision) })
     }
 
     /**
@@ -207,17 +206,26 @@ class StatsSyncService {
      * Both COUNTER 4 and COUNTER 5 are being processed here
      * @param incremental should only newest data being fetched or a full data reload done?
      */
-    void internalDoFetch(boolean incremental) {
+    void internalDoFetch(boolean incremental, String platformUUID = '', String source = '', String revision = '') {
         //List<Counter4ApiSource> c4SushiSources = Counter4ApiSource.executeQuery("select c4as from Counter4ApiSource c4as where not exists (select c5as.id from Counter5ApiSource c5as where c5as.provider = c4as.provider and c5as.platform = c4as.platform)")//[]
         //List<Counter5ApiSource> c5SushiSources = Counter5ApiSource.findAll()
         ApiSource apiSource = ApiSource.findByActive(true)
         List<List> c4SushiSources = [], c5SushiSources = []
         //process each platform with a SUSHI API
+        BasicHttpClient http
         try {
-            HTTPBuilder http = new HTTPBuilder(apiSource.baseUrl+apiSource.fixToken+'/sushiSources')
-            http.request(Method.GET, ContentType.JSON) { req ->
-                response.success = { resp, json ->
-                    if(resp.status == 200) {
+            if(source && revision) {
+                if(revision == 'r4') {
+                    c4SushiSources.add([platformUUID, source])
+                }
+                else if(revision == 'r5') {
+                    c5SushiSources.add([platformUUID, source])
+                }
+            }
+            else {
+                http = new BasicHttpClient(apiSource.baseUrl+apiSource.fixToken+'/sushiSources')
+                Closure success = { resp, json ->
+                    if(resp.code() == 200) {
                         if(incremental) {
                             Calendar now = GregorianCalendar.getInstance()
                             json.counter4ApiSources.each { c4as ->
@@ -267,18 +275,22 @@ class StatsSyncService {
                         }
                     }
                     else {
-                        log.error("server response: ${resp.statusLine}")
+                        log.error("server response: ${resp.status()}")
                     }
                 }
-                response.failure = { resp, reader ->
-                    log.error("server response: ${resp.statusLine} - ${reader}")
+                Closure failure = { resp, reader ->
+                    log.error("server response: ${resp.status()} - ${reader}")
                 }
+                http.get(BasicHttpClient.ResponseType.JSON, success, failure)
             }
-            http.shutdown()
         }
         catch (Exception ignored) {
             log.error("we:kb unavailable ... postpone next run!")
         }
+        finally {
+            if (http) { http.close() }
+        }
+
         Set<Long> namespaces = [IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISSN, TitleInstancePackagePlatform.class.name).id, IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISSN, TitleInstancePackagePlatform.class.name).id, IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISBN, TitleInstancePackagePlatform.class.name).id, IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.PISBN, TitleInstancePackagePlatform.class.name).id, IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.DOI, TitleInstancePackagePlatform.class.name).id]
             //c4SushiSources.each { Counter4ApiSource c4as ->
             c4SushiSources.each { List c4as ->
@@ -314,12 +326,12 @@ class StatsSyncService {
                                                 currentYearEnd.add(Calendar.MONTH, 1)
                                             }
                                         }
-                                        log.debug("${Thread.currentThread().getName()} is starting ${reportID} for ${keyPair.customerName} at ${yyyyMMdd.format(startTime)}-${yyyyMMdd.format(currentYearEnd)}")
+                                        log.debug("${Thread.currentThread().getName()} is starting ${reportID} for ${keyPair.customerName} at ${yyyyMMdd.format(startTime.getTime())}-${yyyyMMdd.format(currentYearEnd.getTime())}")
                                         //LaserStatsCursor.withTransaction {
                                         //LaserStatsCursor lsc = LaserStatsCursor.construct([platform: c4as.platform, customer: keyPair.customer, reportID: reportID, latestFrom: calendarConfig.startDate, latestTo: calendarConfig.endNextRun])
                                         boolean more = true
                                         while (more) {
-                                            log.debug("${Thread.currentThread().getName()} is getting ${reportID} for ${keyPair.customerName} from ${yyyyMMdd.format(startTime)}-${yyyyMMdd.format(currentYearEnd)}")
+                                            log.debug("${Thread.currentThread().getName()} is getting ${reportID} for ${keyPair.customerName} from ${yyyyMMdd.format(startTime.getTime())}-${yyyyMMdd.format(currentYearEnd.getTime())}")
                                             Map<String, Object> result = performCounter4Request(sql, statsUrl, reportID, calendarConfig.now, startTime, currentYearEnd, c4asPlatform, keyPair, namespaces)
                                             if(result.error && result.error != true) {
                                                 notifyError(sql, [platform: c4asPlatform.name, uuid: c4asPlatform.gokbId, url: statsUrl, error: result, customer: keyPair.customerName, keyPair: "${keyPair.value}:${keyPair.requestorKey}"])
@@ -337,7 +349,7 @@ class StatsSyncService {
                                             else {*/
                                             startTime.add(Calendar.YEAR, 1)
                                             currentYearEnd.add(Calendar.YEAR, 1)
-                                            log.debug("${Thread.currentThread().getName()} is getting to ${yyyyMMdd.format(startTime)}-${yyyyMMdd.format(currentYearEnd)} for report ${reportID}")
+                                            log.debug("${Thread.currentThread().getName()} is getting to ${yyyyMMdd.format(startTime.getTime())}-${yyyyMMdd.format(currentYearEnd.getTime())} for report ${reportID}")
                                             if (calendarConfig.now.before(startTime)) {
                                                 more = false
                                                 log.debug("${Thread.currentThread().getName()} has finished current data fetching for report ${reportID}. Processing missing periods for ${keyPair.customerName}")
@@ -456,7 +468,7 @@ class StatsSyncService {
                                                 }
                                                 startTime.add(Calendar.YEAR, 1)
                                                 currentYearEnd.add(Calendar.YEAR, 1)
-                                                log.debug("${Thread.currentThread().getName()} is getting to ${yyyyMMdd.format(startTime)}-${yyyyMMdd.format(currentYearEnd)} for report ${reportId}")
+                                                log.debug("${Thread.currentThread().getName()} is getting to ${yyyyMMdd.format(startTime.getTime())}-${yyyyMMdd.format(currentYearEnd.getTime())} for report ${reportId}")
                                                 if(calendarConfig.now.before(startTime)) {
                                                     more = false
                                                     log.debug("${Thread.currentThread().getName()} has finished fetching running data for report ${reportId}. Processing missing periods for ${keyPair.customerName} ...")
@@ -523,8 +535,14 @@ class StatsSyncService {
      * @param result the request response containing details of the error circumstances
      */
     void notifyError(Sql sql, Map result) {
-        Map<String, Object> event = SystemEvent.DEFINED_EVENTS.STATS_SYNC_JOB_WARNING
-        sql.executeInsert('insert into system_event (se_category, se_created, se_payload, se_relevance, se_token) values (:cat, now(), :error, :rel, :token)', [cat: event.category.value, error: new JSON(result).toString(false), rel: event.relevance.value, token: 'STATS_SYNC_JOB_WARNING'])
+//        Map<String, Object> event = SystemEvent.DEFINED_EVENTS.STATS_SYNC_JOB_WARNING
+//        sql.executeInsert('insert into system_event (se_category, se_created, se_payload, se_relevance, se_token) values (:cat, now(), :error, :rel, :token)', [cat: event.category.value, error: new JSON(result).toString(false), rel: event.relevance.value, token: 'STATS_SYNC_JOB_WARNING'])
+
+        log.warn 'notifyError: ' + result.error?.toString()
+
+        Map payload = result.clone() as Map
+        payload.remove('error')
+        SystemEvent.createEvent('STATS_SYNC_JOB_WARNING', payload)
     }
 
     /**
@@ -552,7 +570,7 @@ class StatsSyncService {
             x.Envelope {
                 x.Header {}
                 x.Body {
-                    cou.ReportRequest(Created: DateUtils.getSDF_yyyyMMddTHHmmss().format(now), ID: '?') {
+                    cou.ReportRequest(Created: DateUtils.getSDF_yyyyMMddTHHmmss().format(now.getTime()), ID: '?') {
                         sus.Requestor {
                             sus.ID(keyPair.requestorKey)
                             sus.Name('?')
@@ -565,9 +583,9 @@ class StatsSyncService {
                         sus.ReportDefinition(Name: reportID, Release: 4) {
                             sus.Filters {
                                 sus.UsageDateRange {
-                                    sus.Begin(yyyyMMdd.format(startTime))
+                                    sus.Begin(yyyyMMdd.format(startTime.getTime()))
                                     //if (currentYearEnd.before(calendarConfig.now))
-                                    sus.End(yyyyMMdd.format(endTime))
+                                    sus.End(yyyyMMdd.format(endTime.getTime()))
                                     /*else {
                                         sus.End(calendarConfig.now.format("yyyy-MM-dd"))
                                     }*/
@@ -628,11 +646,6 @@ class StatsSyncService {
                                     configMap.reportInstitution = keyPair.customerId
                                     configMap.platform = c4asPlatform.id
                                     configMap.publisher = reportItem.'ns2:ItemPublisher'.text()
-                                    /*
-                                    SimpleDateFormat is not thread-safe, using thread-safe variant to parse date
-                                    configMap.reportFrom = Date.from(LocalDate.parse(performance.'ns2:Period'.'ns2:Begin'.text(), dateFormatter).atStartOfDay().atZone(ZoneId.of("UTC")).toInstant())
-                                    configMap.reportTo = Date.from(LocalDate.parse(performance.'ns2:Period'.'ns2:End'.text(), dateFormatter).atStartOfDay().atZone(ZoneId.of("UTC")).toInstant())
-                                    */
                                     configMap.reportFrom = new Timestamp(DateUtils.parseDateGeneric(performance.'ns2:Period'.'ns2:Begin'.text()).getTime())
                                     configMap.reportTo = new Timestamp(DateUtils.parseDateGeneric(performance.'ns2:Period'.'ns2:End'.text()).getTime())
                                     configMap.category = category
@@ -695,11 +708,6 @@ class StatsSyncService {
                                             configMap.title = title
                                             configMap.reportInstitution = keyPair.customerId
                                             configMap.platform = c4asPlatform.id
-                                            /*
-                                            SimpleDateFormat is not thread-safe, using thread-safe variant to parse date
-                                            configMap.reportFrom = Date.from(LocalDate.parse(performance.'ns2:Period'.'ns2:Begin'.text(), dateFormatter).atStartOfDay().atZone(ZoneId.of("UTC")).toInstant())
-                                            configMap.reportTo = Date.from(LocalDate.parse(performance.'ns2:Period'.'ns2:End'.text(), dateFormatter).atStartOfDay().atZone(ZoneId.of("UTC")).toInstant())
-                                            */
                                             configMap.reportFrom = new Timestamp(DateUtils.parseDateGeneric(performance.'ns2:Period'.'ns2:Begin'.text()).getTime())
                                             configMap.reportTo = new Timestamp(DateUtils.parseDateGeneric(performance.'ns2:Period'.'ns2:End'.text()).getTime())
                                             configMap.category = category
@@ -947,36 +955,40 @@ class StatsSyncService {
     Map<String, Object> fetchJSONData(String url, boolean requestList = false) {
         Map<String, Object> result = [:]
         try {
-            HTTPBuilder http = new HTTPBuilder(url)
-            http.request(Method.GET, ContentType.JSON) { req ->
-                response.success = { resp, json ->
-                    if(resp.status == 200) {
-                        if(json instanceof ArrayList) {
-                            result.list = json
-                        }
-                        else if(!json.containsKey("Exception") && !requestList) {
-                            result.header = json["Report_Header"]
-                            result.items = json["Report_Items"]
-                        }
-                        else {
-                            result.error = json["Exception"]["Message"]
-                        }
+            Closure success = { resp, json ->
+                if(resp.code() == 200) {
+                    if(json instanceof JSONArray) {
+                        result.list = json
                     }
-                    else if(json.containsKey("Report_Header")) {
+                    else if(json != null && !json.containsKey("Exception") && !requestList) {
                         result.header = json["Report_Header"]
+                        result.items = json["Report_Items"]
+                    }
+                    else if(json != null) {
+                        result.error = json["Exception"]["Message"]
                     }
                     else {
-                        result.error = "server response: ${resp.statusLine}"
+                        result.error = "invalid JSON returned, retry call"
                     }
                 }
-                response.failure = { resp, reader ->
-                    if(reader.containsKey("Report_Header"))
-                        result.header = reader["Report_Header"]
-                    else
-                        result.error = "server response: ${resp.statusLine} - ${reader}"
+                else if(json.containsKey("Report_Header")) {
+                    result.header = json["Report_Header"]
+                }
+                else {
+                    result.error = "server response: ${resp.status()}"
                 }
             }
-            http.shutdown()
+            Closure failure = { resp, reader ->
+                if(reader.containsKey("Report_Header"))
+                    result.header = reader["Report_Header"]
+                else
+                    result.error = "server response: ${resp.status()} - ${reader}"
+            }
+            HttpClientConfiguration config = new DefaultHttpClientConfiguration()
+            config.readTimeout = Duration.ofMinutes(1)
+            BasicHttpClient http = new BasicHttpClient(url, config)
+            http.get(BasicHttpClient.ResponseType.JSON, success, failure)
+            http.close()
         }
         catch (Exception e) {
             result.error = "invalid response returned for ${url} - ${e.getMessage()}!"
@@ -994,30 +1006,32 @@ class StatsSyncService {
      */
     def fetchXMLData(String url, requestBody) {
         def result = null
+
+        BasicHttpClient http
         try  {
-            HTTPBuilder http = new HTTPBuilder(url)
-            http.request(Method.POST, ContentType.XML) { req ->
-                headers."Content-Type" = "application/soap+xml; charset=utf-8"
-                headers."Accept" = "application/soap+xml; charset=utf-8"
-                body = requestBody.toString()
-                response.success = { resp, GPathResult xml ->
-                    if(resp.status == 200) {
-                        result = xml
-                    }
-                    else {
-                        result = [error: "server response: ${resp.statusLine}"]
-                    }
+            HttpClientConfiguration config = new DefaultHttpClientConfiguration()
+            config.readTimeout = Duration.ofMinutes(1)
+            http = new BasicHttpClient(url, config)
+            Closure success = { resp, GPathResult xml ->
+                if(resp.code() == 200) {
+                    result = xml
                 }
-                response.failure = { resp, reader ->
-                    result = [error: "server response: ${resp.statusLine} - ${reader}"]
+                else {
+                    result = [error: "server response: ${resp.status()}"]
                 }
             }
-            http.shutdown()
+            Closure failure = { resp, reader ->
+                result = [error: "server response: ${resp.status()} - ${reader}"]
+            }
+            http.post(["Accept": "application/soap+xml; charset=utf-8"], BasicHttpClient.ResponseType.XML, BasicHttpClient.PostType.SOAP, requestBody.toString(), success, failure)
         }
         catch (Exception e) {
             result = [error: "invalid response returned for ${url} - ${e.getMessage()}!"]
             log.error("stack trace: ", e)
             log.error("Request body was: ${requestBody}")
+        }
+        finally {
+            if (http) { http.close() }
         }
         result
     }
@@ -1074,38 +1088,29 @@ class StatsSyncService {
             log.debug('Return available NatStat reports from cache')
             return availableReportCache[queryParamsHash]
         }
+
+        BasicHttpClient http
         try {
-            URIBuilder uri = new URIBuilder(ConfigMapper.getStatsApiUrl())
-            String baseUrl = uri.getScheme() + "://" + uri.getHost()
-            String basePath = uri.getPath().endsWith('/') ? uri.getPath() : uri.getPath() + '/'
-            String path = basePath + 'Sushiservice/reports'
-
-            RESTClient v5Endpoint = new RESTClient(baseUrl)
-            def result = v5Endpoint.get(
-                path: path,
-                headers: ["Accept": "application/json"],
-                query: [
-                    apikey      : queryParams.apiKey,
-                    requestor_id: queryParams.requestor.toString(),
-                    customer_id : queryParams.customer,
-                    platform    : queryParams.platform,
-                ])
             List reportList = []
-            result.getData().each {it ->
-                if (it.code) {
-                    errors.add("SUSHI Error for ${queryParams.customer}|${queryParams.requestor}|${queryParams.platform}: ${it.code}-${it.message}\n")
+            http = new BasicHttpClient(ConfigMapper.getStatsApiUrl() + "Sushiservice/GetReport?apikey=${queryParams.apiKey}&requestor_id=${queryParams.requestor.toString()}&customer_id=${queryParams.customer}&platform=${queryParams.platform}")
+            Closure success = { resp, reader ->
+                if (resp.Report_ID && resp.Release) {
+                    reportList.add(resp.Report_ID + 'R' + resp.Release)
                 }
-                if (it.Report_ID && it.Release) {
-                    reportList.add(it.Report_ID + 'R' + it.Release)
-                }
-
             }
+            Closure failure = { resp, reader ->
+                errors.add("SUSHI Error for ${queryParams.customer}|${queryParams.requestor}|${queryParams.platform}: ${resp.code()}-${reader}\n")
+            }
+            http.get(BasicHttpClient.ResponseType.JSON, success, failure)
             availableReportCache[queryParamsHash] = reportList
         } catch (Exception e) {
             String message = "Error getting available Reports from NatStat API"
             log.error(message)
             errors.add(message)
             log.error(e.message)
+        }
+        finally {
+            if (http) { http.close() }
         }
     }
 
@@ -1645,7 +1650,7 @@ class StatsSyncService {
         cal.setTime(new Date())
         cal.add(Calendar.MONTH, -2)
         cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH))
-        return yyyyMMdd.format(cal)
+        return yyyyMMdd.format(cal.getTime())
     }
 
     /**

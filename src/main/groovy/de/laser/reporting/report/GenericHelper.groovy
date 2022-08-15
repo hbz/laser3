@@ -5,9 +5,9 @@ import de.laser.base.AbstractBase
 import de.laser.storage.BeanStore
 import de.laser.reporting.export.base.BaseDetailsExport
 import de.laser.reporting.report.myInstitution.base.BaseConfig
+import de.laser.utils.LocaleUtils
 import groovy.util.logging.Slf4j
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 
 import java.lang.reflect.Field
 
@@ -51,7 +51,7 @@ class GenericHelper {
         String type = field?.type
 
         MessageSource messageSource = BeanStore.getMessageSource()
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
 
         if (type in [BaseConfig.FIELD_TYPE_PROPERTY, BaseDetailsExport.FIELD_TYPE_PROPERTY] ) {
             // ReportingTagLib:filterProperty

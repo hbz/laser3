@@ -1,4 +1,4 @@
-<%@ page import="de.laser.finance.CostItem; de.laser.UserSetting; de.laser.storage.RDStore; de.laser.*; org.springframework.context.i18n.LocaleContextHolder; de.laser.finance.CostItemElementConfiguration;" %>
+<%@ page import="de.laser.finance.CostItem; de.laser.UserSetting; de.laser.storage.RDStore; de.laser.*; de.laser.finance.CostItemElementConfiguration;" %>
 <laser:serviceInjection/>
 
 <g:hiddenField name="shortcode" value="${contextService.getOrg().shortcode}"/>
@@ -150,7 +150,7 @@
         <fieldset class="sixteen wide field">
             <div class="field">
                 <label for="newDescription">${message(code: 'survey.costItemModal.descriptionfor', args: [surveyOrg ? surveyOrg.org.name : 'alle'])}</label>
-                <textarea name="newDescription" id="newDescription"
+                <textarea class="la-textarea-resize-vertical" name="newDescription" id="newDescription"
                           placeholder="${message(code: 'default.description.label')}">${costItem?.costDescription}</textarea>
             </div><!-- .field -->
         </fieldset>

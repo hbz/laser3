@@ -7,7 +7,7 @@
     <ui:crumb message="menu.admin.systemEvents" class="active"/>
 </ui:breadcrumbs>
 
-    <ui:h1HeaderWithIcon message="menu.admin.systemEvents" />
+    <ui:h1HeaderWithIcon message="menu.admin.systemEvents" total="${SystemEvent.count()}"/>
 
     <ui:filter>
         <form id="filter" class="ui form">
@@ -87,7 +87,6 @@
             <th>${message(code:'default.relevance.label')}</th>
             <th>${message(code:'default.source.label')}</th>
             <th>${message(code:'default.event.label')}</th>
-            <%--<th>Message</th>--%>
             <th>Payload</th>
             <th>${message(code:'default.date.label')}</th>
         </tr>
@@ -97,14 +96,13 @@
             <%
                 String tdClass = 'table-td-yoda-blue'
                 switch (el.relevance?.value?.toLowerCase()) {
-                    case 'info' :
-                        tdClass = 'table-td-yoda-blank'; break
-                    case 'ok' :
-                        tdClass = 'table-td-yoda-green'; break
-                    case 'warning' :
-                        tdClass = 'table-td-yoda-yellow'; break
-                    case 'error' :
-                        tdClass = 'table-td-yoda-red'; break
+                    case 'info'     : tdClass = 'table-td-yoda-blank'; break
+                    case 'ok'       : tdClass = 'table-td-yoda-green'; break
+                    case 'warning'  : tdClass = 'table-td-yoda-yellow'; break
+                    case 'error'    : tdClass = 'table-td-yoda-red'; break
+                }
+                if (el.hasChanged) {
+                    tdClass += ' sf_underline'
                 }
             %>
             <tr
@@ -123,14 +121,14 @@
                     ${el.relevance}
                 </td>
                 <td class="${tdClass}">
-                    ${el.source}
+                    ${el.getSource()}
                 </td>
                 <td class="${tdClass}">
-                    ${el.event}
+                    ${el.getEvent()}
+                    <g:if test="${el.getEvent() != el.getDescr()}">
+                        : ${el.getDescr()}
+                    </g:if>
                 </td>
-                <%--<td class="${tdClass}">
-                    ${el.descr}
-                </td>--%>
                 <td class="${tdClass}">
                     ${el.payload?.replaceAll(',', ', ')}
                 </td>

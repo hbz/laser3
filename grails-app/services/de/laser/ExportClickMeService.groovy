@@ -19,7 +19,6 @@ import de.laser.survey.SurveyResult
 import grails.gorm.transactions.Transactional
 import org.springframework.context.MessageSource
 import org.hibernate.Session
-import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
 
@@ -781,7 +780,7 @@ class ExportClickMeService {
     Map<String, Object> getExportRenewalFieldsForUI(SurveyConfig surveyConfig) {
 
         Map<String, Object> fields = EXPORT_RENEWAL_CONFIG as Map
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
 
         IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
@@ -894,7 +893,7 @@ class ExportClickMeService {
     Map<String, Object> getExportSubscriptionFields(Org institution) {
 
         Map<String, Object> exportFields = [:]
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
         String localizedName
         String localizedValue
         switch (locale) {
@@ -942,7 +941,7 @@ class ExportClickMeService {
     Map<String, Object> getExportSubscriptionFieldsForUI(Org institution) {
 
         Map<String, Object> fields = EXPORT_SUBSCRIPTION_CONFIG as Map
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
         String localizedName
         String localizedValue
         switch (locale) {
@@ -1147,7 +1146,7 @@ class ExportClickMeService {
     Map<String, Object> getExportSurveyEvaluationFieldsForUI(SurveyConfig surveyConfig) {
 
         Map<String, Object> fields = EXPORT_SURVEY_EVALUATION as Map
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
 
         IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
@@ -1313,7 +1312,7 @@ class ExportClickMeService {
      * @return an Excel worksheet containing the export
      */
     def exportRenewalResult(Map renewalResult, Map<String, Object> selectedFields) {
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
         Map<String, Object> selectedExportFields = [:]
 
         Map<String, Object> configFields = getExportRenewalFields(renewalResult.surveyConfig)
@@ -1421,7 +1420,7 @@ class ExportClickMeService {
      * @return an Excel worksheet containing the export
      */
     def exportSubscriptionMembers(List result, Map<String, Object> selectedFields, Subscription subscription, Org institution) {
-       Locale locale = LocaleContextHolder.getLocale()
+       Locale locale = LocaleUtils.getCurrentLocale()
 
         Map<String, Object> selectedExportFields = [:]
 
@@ -1487,7 +1486,7 @@ class ExportClickMeService {
      * @return an Excel worksheet containing the export
      */
     def exportSubscriptions(ArrayList<Subscription> result, Map<String, Object> selectedFields, Org institution) {
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
 
         Map<String, Object> selectedExportFields = [:]
 
@@ -1545,7 +1544,7 @@ class ExportClickMeService {
      * @return an Excel worksheet containing the export
      */
     def exportCostItems(Map result, Map<String, Object> selectedFields) {
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
 
         Map<String, Object> selectedExportFields = [:]
 
@@ -1593,7 +1592,7 @@ class ExportClickMeService {
      * @return an Excel worksheet containing the output
      */
     def exportOrgs(List<Org> result, Map<String, Object> selectedFields, String config) {
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
 
         String sheetTitle
 
@@ -1639,7 +1638,7 @@ class ExportClickMeService {
      * @return an Excel worksheet containing the export
      */
     def exportSurveyEvaluation(Map result, Map<String, Object> selectedFields) {
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
 
         Map<String, Object> selectedExportFields = [:]
 
@@ -1731,7 +1730,7 @@ class ExportClickMeService {
      * @return an Excel worksheet containing the export
      */
     def exportIssueEntitlements(ArrayList<IssueEntitlement> result, Map<String, Object> selectedFields) {
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
 
         Map<String, Object> selectedExportFields = [:]
 
@@ -1771,7 +1770,7 @@ class ExportClickMeService {
                     _setIeRow(rowData, selectedExportFields, exportData)
 
                 }
-                println("flushing after ${offset} ...")
+                log.debug("flushing after ${offset} ...")
                 sess.flush()
             }
         }
@@ -1789,7 +1788,7 @@ class ExportClickMeService {
      * @return an Excel worksheet containing the export
      */
     def exportTipps(ArrayList<TitleInstancePackagePlatform> result, Map<String, Object> selectedFields) {
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
 
         Map<String, Object> selectedExportFields = [:]
 
@@ -1829,7 +1828,7 @@ class ExportClickMeService {
                     _setTippRow(rowData, selectedExportFields, exportData)
 
                 }
-                println("flushing after ${offset} ...")
+                log.debug("flushing after ${offset} ...")
                 sess.flush()
             }
         }

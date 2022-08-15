@@ -8,9 +8,9 @@ import de.laser.reporting.report.GenericHelper
 import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.reporting.report.myInstitution.base.BaseFilter
 import de.laser.reporting.report.myInstitution.base.BaseQuery
+import de.laser.utils.LocaleUtils
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 
 class PlatformQuery extends BaseQuery {
 
@@ -20,7 +20,7 @@ class PlatformQuery extends BaseQuery {
 
         ContextService contextService = BeanStore.getContextService()
         MessageSource messageSource = BeanStore.getMessageSource()
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
 
         Map<String, Map> esdConfig  = BaseConfig.getCurrentConfigElasticsearchData( BaseConfig.KEY_PLATFORM )
 

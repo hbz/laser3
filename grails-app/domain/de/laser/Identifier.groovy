@@ -4,12 +4,12 @@ import de.laser.helper.FactoryResult
 import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.storage.BeanStore
 import de.laser.titles.TitleInstance
+import de.laser.utils.LocaleUtils
 import grails.converters.JSON
 import grails.plugins.orm.auditable.Auditable
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.util.logging.Slf4j
 import org.grails.web.json.JSONElement
-import org.springframework.context.i18n.LocaleContextHolder
 
 /**
  * A class to retain identifiers for objects. Identifiers may be for example ISBNs for books ISSNs for journals, ISILs for packages, VIAF or other normed tokens for organisations.
@@ -389,7 +389,7 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         log.debug("notifyDependencies(${changeDocument})")
         if (changeDocument.event.equalsIgnoreCase('Identifier.updated')) {
 
-            Locale locale = LocaleContextHolder.getLocale()
+            Locale locale = LocaleUtils.getCurrentLocale()
             String description = BeanStore.getMessageSource().getMessage('default.accept.placeholder',null, locale)
 
             List<PendingChange> slavedPendingChanges = []

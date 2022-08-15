@@ -1,5 +1,5 @@
 
-## Upgrade from Grails 3.3.11 to Grails 5.2.1
+## Upgrade from Grails 3.3.11 to Grails 5.2.2
 
 ### SpringBootDeveloperTools
 
@@ -12,7 +12,8 @@ Use the Gradle task **devtools.triggerRestart** to update this file and force a 
 
 ### Apache Commons Lang
 
-Two different versions are currently used. New code should always use *org.apache.commons.lang3*, not the previous version *org.apache.commons.lang*
+~~Two different versions are currently used.~~ New code should always use *org.apache.commons.lang3*, 
+not the previous version *org.apache.commons.lang* (which is still a dependency of 'org.grails.plugins:gsp')
 
 ### Configuration
 
@@ -48,10 +49,16 @@ To avoid confusion, the difference between localized and fixed usage in *de.lase
 
 The produktive branch has been renamed from *master* to *main*.
 
-### HTTPBuilder
+### ~~HTTPBuilder~~
 
-*org.codehaus.groovy.modules.http-builder:http-builder* is outdated.
-A migration to *de.laser.http.BasicHttpClient* should take place.
+~~*org.codehaus.groovy.modules.http-builder:http-builder* is outdated.
+A migration to *de.laser.http.BasicHttpClient* should take place.~~
+
+### HTTP Status Codes
+
+    401 Unauthorized            - authentication/login is required (only)
+    403 Forbidden               - missing permissions   
+    500 Internal Server Error   - processing failed due unexpected conditions
 
 ### Localization
 

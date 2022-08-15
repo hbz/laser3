@@ -14,7 +14,7 @@
             <thead>
                 <tr>
                     <th>Objekt</th>
-                    <th>Anzahl</th>
+                    <th>${message(code:'default.count.label')}</th>
                 </tr>
             </thead>
             <tbody>

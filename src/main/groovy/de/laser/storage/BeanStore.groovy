@@ -50,6 +50,9 @@ class BeanStore {
     static DataSource getDataSource() {
         Holders.grailsApplication.mainContext.getBean('dataSource') as DataSource
     }
+    static DataSource getStorageDataSource() {
+        Holders.grailsApplication.mainContext.getBean('dataSource_storage') as DataSource
+    }
     static PageRenderer getGroovyPageRenderer() {
         Holders.grailsApplication.mainContext.getBean('groovyPageRenderer') as PageRenderer
     }
@@ -59,13 +62,13 @@ class BeanStore {
         // in progress
 //        if (false) {
 //            messageSource.metaClass.getMessage = { String code ->
-//                getMessageSource().getMessage(code, null, code, org.springframework.context.i18n.LocaleContextHolder.getLocale())
+//                getMessageSource().getMessage(code, null, code, de.laser.utils.LocaleUtils.getCurrentLocale())
 //            }
 //            messageSource.metaClass.getMessage = { String code, Object[] args ->
-//                getMessageSource().getMessage(code, args, code, org.springframework.context.i18n.LocaleContextHolder.getLocale())
+//                getMessageSource().getMessage(code, args, code, de.laser.utils.LocaleUtils.getCurrentLocale())
 //            }
 //            messageSource.metaClass.getMessage = { MessageSourceResolvable resolvable ->
-//                getMessageSource().getMessage(resolvable, org.springframework.context.i18n.LocaleContextHolder.getLocale())
+//                getMessageSource().getMessage(resolvable, de.laser.utils.LocaleUtils.getCurrentLocale())
 //            }
 //        }
         messageSource

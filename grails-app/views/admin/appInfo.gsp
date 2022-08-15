@@ -14,13 +14,12 @@
             <tr><th class="seven wide">Application</th><th class="nine wide"></th></tr>
         </thead>
         <tbody>
-            <tr><td>App name</td><td> ${AppUtils.getMeta('info.app.name')}</td></tr>
-            <tr><td>App version</td><td> ${AppUtils.getMeta('info.app.version')}</td></tr>
+            <tr><td>App Id/Name/Version</td><td> ${ConfigMapper.getLaserSystemId()} / ${AppUtils.getMeta('info.app.name')} / ${AppUtils.getMeta('info.app.version')}</td></tr>
             <tr><td>Grails version</td><td> ${AppUtils.getMeta('info.app.grailsVersion')}</td></tr>
             <tr><td>Groovy (currently running)</td><td> ${GroovySystem.getVersion()}</td></tr>
             <tr><td>Java (currently running)</td><td> ${System.getProperty('java.version')}</td></tr>
             <tr><td>Configuration file</td><td> ${ConfigMapper.getCurrentConfigFile(this.applicationContext.getEnvironment()).name}</td></tr>
-            <tr><td>Environment</td><td> ${Metadata.getCurrent().getEnvironment()}</td></tr>
+            <tr><td>Environment/Server</td><td> ${Metadata.getCurrent().getEnvironment()} / ${AppUtils.getCurrentServer()}</td></tr>
             <tr><td>Session timeout</td><td> ${(session.getMaxInactiveInterval() / 60)} Minutes</td></tr>
             <tr><td>Last quartz heartbeat</td><td>${ConfigMapper.getQuartzHeartbeat()}</td></tr>
         </tbody>
@@ -40,31 +39,80 @@
 
     <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
         <thead>
-            <tr><th class="seven wide">Database</th><th class="nine wide"></th></tr>
+            <tr>
+                <th class="four wide">Database</th>
+                <th class="six wide"></th>
+                <th class="six wide"></th>
+            </tr>
         </thead>
         <tbody>
-            <tr><td>Database</td><td> ${ConfigMapper.getConfig('dataSource.url', String).split('/').last()}</td></tr>
-            <tr><td>DBM version</td><td> ${dbmVersion[0]} -> ${dbmVersion[1]} <br/> ${DateUtils.getLocalizedSDF_noZ().format(dbmVersion[2])}</td></tr>
-            <tr><td>DBM updateOnStart</td><td> ${ConfigMapper.getPluginConfig('databasemigration.updateOnStart', Boolean)}</td></tr>
-            <tr><td>Collations</td><td>
+            <tr>
+                <td>Database</td>
+                <td>${dbInfo.default.dbName}</td>
+                <td>${dbInfo.storage.dbName}</td>
+            </tr>
+            <tr>
+                <td>DBM version</td>
+                <td>${dbInfo.default.dbmVersion[0]} -> ${dbInfo.default.dbmVersion[1]} <br/> ${DateUtils.getLocalizedSDF_noZ().format(dbInfo.default.dbmVersion[2])}</td>
+                <td>${dbInfo.storage.dbmVersion[0]} -> ${dbInfo.storage.dbmVersion[1]} <br/> ${DateUtils.getLocalizedSDF_noZ().format(dbInfo.storage.dbmVersion[2])}</td>
+            </tr>
+            <tr>
+                <g:if test="${! dbInfo.dbmUpdateOnStart}">
+                    <td class="table-td-yoda-red">DBM updateOnStart</td>
+                    <td colspan="2" class="table-td-yoda-red">${dbInfo.dbmUpdateOnStart}</td>
+                </g:if>
+                <g:else>
+                    <td>DBM updateOnStart</td>
+                    <td>${dbInfo.dbmUpdateOnStart}</td>
+                    <td>${dbInfo.dbmUpdateOnStart}</td>
+                </g:else>
+            </tr>
+            <tr>
+                <td>Collations</td>
+                <td>
                 <%
-                    Set collations = []
+                    Set collations = [dbInfo.default.defaultCollate]
                     DatabaseInfo.getAllTablesCollationInfo().each { it ->
                         List c = it.value['collation'].findAll()
                         if (! c.isEmpty()) { collations.addAll(c) }
                     }
                     collations.each { print it + '<br/>' }
                 %>
-            </td></tr>
-            <tr><td>Postgresql server</td><td> ${DatabaseInfo.getServerInfo()}</td></tr>
+                <td>
+                    <%
+                        collations = [dbInfo.storage.defaultCollate]
+                        DatabaseInfo.getAllTablesCollationInfo( DatabaseInfo.DS_STORAGE ).each { it ->
+                            List c = it.value['collation'].findAll()
+                            if (! c.isEmpty()) { collations.addAll(c) }
+                        }
+                        collations.each { print it + '<br/>' }
+                    %>
+                </td>
+            </tr>
+            <tr>
+                <td>Postgresql server</td>
+                <td>${DatabaseInfo.getServerInfo()}</td>
+                <td>${DatabaseInfo.getServerInfo(DatabaseInfo.DS_STORAGE)}</td>
+            </tr>
         <tbody>
+    </table>
+
+    <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
+        <thead>
+            <tr><th class="seven wide">Files</th><th class="nine wide"></th></tr>
+        </thead>
+        <tbody>
+            <tr><td>Document storage</td><td> ${docStore.folderPath}</td></tr>
+            <tr><td>Files count</td><td> ${docStore.filesCount}</td></tr>
+            <tr><td>Storage size</td><td> ${docStore.folderSize} MB</td></tr>
+        </tbody>
     </table>
 
     <g:set var="ES_URL" value="${BeanStore.getESWrapperService().getUrl() ?: 'unbekannt'}" />
 
     <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
         <thead>
-            <tr><th class="seven wide">ES Index</th><th class="nine wide"></th></tr>
+            <tr><th class="seven wide">FTControl / ES Index</th><th class="nine wide"></th></tr>
         </thead>
         <tbody>
             <tr>
@@ -77,22 +125,42 @@
                     ${BeanStore.getESWrapperService().ES_Indices}
                 </td>
             </tr>
-            <tr><td>Currently running</td><td>${dataloadService.update_running}</td></tr>
-            <tr><td>Last update run</td><td>${dataloadService.lastIndexUpdate}</td></tr>
-            <g:each in="${esinfos}" var="es">
-                <tr><td>DomainClass: ${es.domainClassName}</td><td>DB Elements: ${es.dbElements}, ES Elements: ${es.esElements}<br /> Last Update: ${new Date(es.lastTimestamp)}</td></tr>
+            <tr>
+                <g:if test="${dataload.running}">
+                    <td class="table-td-yoda-green">Currently running</td><td class="table-td-yoda-green">${dataload.running}</td>
+                </g:if>
+                <g:else>
+                    <td>Currently running</td><td>${dataload.running}</td>
+                </g:else>
+            </tr>
+            <tr><td>Last doFTUpdate</td><td>${dataload.lastFTIndexUpdateInfo}</td></tr>
+            <g:each in="${ftcInfos}" var="ftc">
+                <tr>
+                    <td>
+                        - ${ftc.domainClassName}
+                        <g:if test="${! ftc.active}"><span class="sc_grey">(inaktiv)</span></g:if>
+                    </td>
+                    <td>
+                        <g:if test="${ftc.dbElements != ftc.esElements}">
+                            <span class="sc_red">
+                                Elements in DB: <g:formatNumber number="${ftc.dbElements}" format="${message(code:'default.decimal.format')}"/>,
+                                ES: <g:formatNumber number="${ftc.esElements}" format="${message(code:'default.decimal.format')}"/>
+                            </span>
+                        </g:if>
+                        <g:else>
+                            Elements in DB: <g:formatNumber number="${ftc.dbElements}" format="${message(code:'default.decimal.format')}"/>,
+                            ES: <g:formatNumber number="${ftc.esElements}" format="${message(code:'default.decimal.format')}"/>
+                        </g:else>
+                        <br />
+                        <g:if test="${ftc.lastTimestamp}">
+                            Last ftUpdate: ${DateUtils.getLocalizedSDF_noZ().format(new Date(ftc.lastTimestamp))}
+                        </g:if>
+                        <g:else>
+                            No last ftUpdate info
+                        </g:else>
+                    </td>
+                </tr>
             </g:each>
-        </tbody>
-    </table>
-
-    <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
-        <thead>
-        <tr><th class="seven wide">Files</th><th class="nine wide"></th></tr>
-        </thead>
-        <tbody>
-        <tr><td>Document storage</td><td> ${docStore.folderPath}</td></tr>
-        <tr><td>Files count</td><td> ${docStore.filesCount}</td></tr>
-        <tr><td>Storage size</td><td> ${docStore.folderSize} MB</td></tr>
         </tbody>
     </table>
 
@@ -101,7 +169,14 @@
             <tr><th class="seven wide">Global Data Sync</th><th class="nine wide"></th></tr>
         </thead>
         <tbody>
-            <tr><td>Currently running</td><td>${globalSourceSyncService.running}</td></tr>
+            <tr>
+                <g:if test="${globalSourceSync.running}">
+                    <td class="table-td-yoda-green">Currently running</td><td class="table-td-yoda-green">${globalSourceSync.running}</td>
+                </g:if>
+                <g:else>
+                    <td>Currently running</td><td>${globalSourceSync.running}</td>
+                </g:else>
+            </tr>
         </tbody>
     </table>
 
@@ -143,29 +218,36 @@
             <tr><th class="seven wide">STATS Sync Service</th><th class="nine wide"></th></tr>
         </thead>
         <tbody>
-            <tr><td>Currently running</td><td>${statsSyncService.running}</td></tr>
-            <tr><td>Completed count</td><td>${statsSyncService.completedCount}</td></tr>
-            <tr><td>New fact count</td><td>${statsSyncService.newFactCount}</td></tr>
-            <tr><td>Total time (all threads)</td><td>${statsSyncService.totalTime} (ms)</td></tr>
-            <tr><td>Total time elapsed</td><td>${statsSyncService.syncElapsed} (ms)</td></tr>
-            <tr><td>Thread pool size</td><td>${statsSyncService.threads}</td></tr>
+            <tr>
+                <g:if test="${statsSync.running}">
+                    <td class="table-td-yoda-green">Currently running</td><td class="table-td-yoda-green">${statsSync.running}</td>
+                </g:if>
+                <g:else>
+                    <td>Currently running</td><td>${statsSync.running}</td>
+                </g:else>
+            </tr>
+            <tr><td>Completed count</td><td>${statsSync.completedCount}</td></tr>
+            <tr><td>New fact count</td><td>${statsSync.newFactCount}</td></tr>
+            <tr><td>Total time (all threads)</td><td>${statsSync.totalTime} (ms)</td></tr>
+            <tr><td>Total time elapsed</td><td>${statsSync.syncElapsed} (ms)</td></tr>
+            <tr><td>Thread pool size</td><td>${statsSync.threads}</td></tr>
             <tr><td>Last start time</td>
             <td>
-                <g:if test="${statsSyncService.syncStartTime != 0}">
-                    <g:formatDate date="${new Date(statsSyncService.syncStartTime)}" format="yyyy-MM-dd hh:mm"/>
+                <g:if test="${statsSync.syncStartTime != 0}">
+                    <g:formatDate date="${new Date(statsSync.syncStartTime)}" format="yyyy-MM-dd hh:mm"/>
                 </g:if>
                 <g:else>
                     Not started yet
                 </g:else>
             </tr>
-            <tr><td>Initial query time</td><td>${statsSyncService.queryTime} (ms)</td></tr>
+            <tr><td>Initial query time</td><td>${statsSync.queryTime} (ms)</td></tr>
 
-            <g:if test="${((statsSyncService.completedCount != 0) && (statsSyncService.totalTime != 0))}">
-                <tr><td>Average time per STATS triple (current/last run)</td><td>${statsSyncService.totalTime/statsSyncService.completedCount} (ms)</td></tr>
+            <g:if test="${((statsSync.completedCount != 0) && (statsSync.totalTime != 0))}">
+                <tr><td>Average time per STATS triple (current/last run)</td><td>${statsSync.totalTime/statsSync.completedCount} (ms)</td></tr>
             </g:if>
             <tr><td>Activity histogram</td>
             <td>
-                <g:each in="${statsSyncService.activityHistogram}" var="ah">
+                <g:each in="${statsSync.activityHistogram}" var="ah">
                     ${ah.key}:${ah.value}<br />
                 </g:each>
             </td></tr>

@@ -2,6 +2,7 @@ package de.laser.reporting.export.base
 
 import de.laser.storage.BeanStore
 import de.laser.utils.DateUtils
+import de.laser.utils.LocaleUtils
 import org.apache.poi.ss.usermodel.Cell
 import org.apache.poi.ss.usermodel.CellStyle
 import org.apache.poi.ss.usermodel.CreationHelper
@@ -9,7 +10,6 @@ import org.apache.poi.ss.usermodel.VerticalAlignment
 import org.apache.poi.ss.usermodel.Workbook
 import org.apache.poi.xssf.usermodel.XSSFHyperlink
 import org.springframework.context.MessageSource
-import org.springframework.context.i18n.LocaleContextHolder
 
 import java.text.SimpleDateFormat
 import java.time.Year
@@ -30,7 +30,7 @@ class BaseExportHelper {
         int lineCount = 1
 
         CreationHelper createHelper = workbook.getCreationHelper()
-        Locale locale = LocaleContextHolder.getLocale()
+        Locale locale = LocaleUtils.getCurrentLocale()
         MessageSource messageSource = BeanStore.getMessageSource()
 
         short dateFormat = createHelper.createDataFormat().getFormat( messageSource.getMessage( DateUtils.DATE_FORMAT_NOTIME, null, locale ) )

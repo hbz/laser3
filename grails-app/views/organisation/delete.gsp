@@ -67,7 +67,7 @@
             <thead>
             <tr>
                 <th>Anhängende, bzw. referenzierte Objekte</th>
-                <th>Anzahl</th>
+                <th>${message(code:'default.count.label')}</th>
                 <th>Objekt-Ids</th>
             </tr>
             </thead>
