@@ -91,11 +91,11 @@
                 </td>
 
                 <td class="center aligned">
-                    <survey:finishIcon participant="${institution}" surveyConfig="${surveyConfig}"
+                    <uiSurvey:finishIcon participant="${institution}" surveyConfig="${surveyConfig}"
                                             surveyOwnerView="${false}"/>
                 </td>
                 <td class="center aligned">
-                    <survey:finishDate participant="${institution}" surveyConfig="${surveyConfig}"/>
+                    <uiSurvey:finishDate participant="${institution}" surveyConfig="${surveyConfig}"/>
                 </td>
                 <td class="x">
 

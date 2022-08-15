@@ -141,16 +141,16 @@
                         <g:each in="${tasks}" var="task" status="ti">
                             <g:if test="${task.child}">
                                 <div style="width:8px"></div>
-                                <workflow:task task="${task}" params="${[key: 'myInstitution:' + wf.id + ':' + WfTask.KEY + ':' + task.id]}" />
+                                <uiWorkflow:task task="${task}" params="${[key: 'myInstitution:' + wf.id + ':' + WfTask.KEY + ':' + task.id]}" />
 
                                 <g:set var="children" value="${task.child.getSequence()}" />
                                 <g:each in="${children}" var="child" status="ci">
-                                    <workflow:task task="${child}" params="${[key: 'myInstitution:' + wf.id + ':' + WfTask.KEY + ':' + child.id]}" />
+                                    <uiWorkflow:task task="${child}" params="${[key: 'myInstitution:' + wf.id + ':' + WfTask.KEY + ':' + child.id]}" />
                                 </g:each>
                                 <div style="width:8px"></div>
                             </g:if>
                             <g:else>
-                                <workflow:task task="${task}" params="${[key: 'myInstitution:' + wf.id + ':' + WfTask.KEY + ':' + task.id]}" />
+                                <uiWorkflow:task task="${task}" params="${[key: 'myInstitution:' + wf.id + ':' + WfTask.KEY + ':' + task.id]}" />
                             </g:else>
                         </g:each>
                     </div>

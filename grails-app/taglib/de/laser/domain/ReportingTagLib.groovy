@@ -16,7 +16,7 @@ import java.lang.reflect.Field
 
 class ReportingTagLib {
 
-    static namespace = 'reporting'
+    static namespace = 'uiReporting'
 
     def numberToString = { attrs, body ->
         String n = attrs.number
@@ -33,7 +33,7 @@ class ReportingTagLib {
     }
 
     def filterField = { attrs, body ->
-        //println '<reporting:filterField>   ' + attrs.key + ' ' + attrs.field
+        //println '<uiReporting:filterField>   ' + attrs.key + ' ' + attrs.field
         Map<String, Object> field = GenericHelper.getField(attrs.config, attrs.field)
 
         if (! field) {
@@ -138,7 +138,7 @@ class ReportingTagLib {
     }
 
     def filterCustomImpl = { attrs, body ->
-        //println '<reporting:filterCustomImpl>   ' + attrs.key + ' ' + attrs.refdata + ' ' + attrs.customImplRdv
+        //println '<uiReporting:filterCustomImpl>   ' + attrs.key + ' ' + attrs.refdata + ' ' + attrs.customImplRdv
 
         // TODO
         Map<String, Object> customRdv
@@ -217,7 +217,7 @@ class ReportingTagLib {
     }
 
     def detailsTableTD = { attrs, body ->
-        //println '<reporting:detailsTableTD> ' + attrs
+        //println '<uiReporting:detailsTableTD> ' + attrs
         Map<String, Boolean> config = attrs.config as Map
 
         if ( config.get( attrs.field )?.containsKey('dtc') ) {

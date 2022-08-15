@@ -13,8 +13,8 @@
 </ui:breadcrumbs>
 
 <ui:h1HeaderWithIcon type="Survey">
-<ui:xEditable owner="${surveyInfo}" field="name"/>
-<survey:status object="${surveyInfo}"/>
+    <ui:xEditable owner="${surveyInfo}" field="name"/>
+    <uiSurvey:status object="${surveyInfo}"/>
 </ui:h1HeaderWithIcon>
 
 <laser:render template="nav"/>

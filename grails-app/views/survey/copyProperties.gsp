@@ -13,7 +13,7 @@
 
 
 <ui:h1HeaderWithIcon text="${surveyInfo.name}" type="Survey">
-<survey:status object="${surveyInfo}"/>
+    <uiSurvey:status object="${surveyInfo}"/>
 </ui:h1HeaderWithIcon>
 
 <laser:render template="nav"/>

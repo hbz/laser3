@@ -49,169 +49,169 @@
                 <tr>
                     <td>${i + 1}.</td>
 
-                    <reporting:detailsTableTD config="${dtConfig}" field="name">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="name">
 
                         <g:link controller="platform" action="show" id="${plt.id}" target="_blank">${plt.name}</g:link>
-                    </reporting:detailsTableTD>
+                    </uiReporting:detailsTableTD>
 
-                    <reporting:detailsTableTD config="${dtConfig}" field="org">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="org">
 
                         <g:if test="${plt.org}">
                             <g:link controller="org" action="show" id="${plt.org.id}" target="_blank">${plt.org.sortname ?: plt.org.name}</g:link>
                         </g:if>
-                    </reporting:detailsTableTD>
+                    </uiReporting:detailsTableTD>
 
-                    <reporting:detailsTableTD config="${dtConfig}" field="primaryUrl">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="primaryUrl">
 
                         <g:if test="${plt.primaryUrl}">
                             <a href="${plt.primaryUrl}" target="_blank">${plt.primaryUrl}</a>
                         </g:if>
-                    </reporting:detailsTableTD>
+                    </uiReporting:detailsTableTD>
 
-                    <reporting:detailsTableTD config="${dtConfig}" field="serviceProvider">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="serviceProvider">
 
                         ${plt.serviceProvider?.getI10n('value')}
-                    </reporting:detailsTableTD>
+                    </uiReporting:detailsTableTD>
 
-                    <reporting:detailsTableTD config="${dtConfig}" field="softwareProvider">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="softwareProvider">
 
                         ${plt.softwareProvider?.getI10n('value')}
-                    </reporting:detailsTableTD>
+                    </uiReporting:detailsTableTD>
 
-                    <reporting:detailsTableTD config="${dtConfig}" field="status">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="status">
 
                         ${plt.status?.getI10n('value')}
-                    </reporting:detailsTableTD>
+                    </uiReporting:detailsTableTD>
 
-                    <reporting:detailsTableTD config="${dtConfig}" field="platform-ipAuthentication">
-
-                        <g:if test="${useLocalFields}">
-                            <reporting:detailsTableEsValue key="${key}" id="${plt.id}" field="ipAuthentication" records="${esRecords}" /> (we:kb)
-                        </g:if>
-                        <g:else>
-                            <reporting:detailsTableEsValue key="${key}" id="${plt.id}" field="ipAuthentication" records="${esRecords}" />
-                        </g:else>
-                    </reporting:detailsTableTD>
-
-                    <reporting:detailsTableTD config="${dtConfig}" field="platform-shibbolethAuthentication">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="platform-ipAuthentication">
 
                         <g:if test="${useLocalFields}">
-                            <reporting:objectProperties owner="${plt}" tenant="${contextService.getOrg()}" propDefId="${PropertyStore.PLA_SHIBBOLETH.id}" />
+                            <uiReporting:detailsTableEsValue key="${key}" id="${plt.id}" field="ipAuthentication" records="${esRecords}" /> (we:kb)
                         </g:if>
                         <g:else>
-                            <reporting:detailsTableEsValue key="${key}" id="${plt.id}" field="shibbolethAuthentication" records="${esRecords}" />
+                            <uiReporting:detailsTableEsValue key="${key}" id="${plt.id}" field="ipAuthentication" records="${esRecords}" />
                         </g:else>
-                    </reporting:detailsTableTD>
+                    </uiReporting:detailsTableTD>
 
-                    <reporting:detailsTableTD config="${dtConfig}" field="platform-passwordAuthentication">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="platform-shibbolethAuthentication">
 
                         <g:if test="${useLocalFields}">
-                            <reporting:detailsTableEsValue key="${key}" id="${plt.id}" field="passwordAuthentication" records="${esRecords}" /> (we:kb)
+                            <uiReporting:objectProperties owner="${plt}" tenant="${contextService.getOrg()}" propDefId="${PropertyStore.PLA_SHIBBOLETH.id}" />
                         </g:if>
                         <g:else>
-                            <reporting:detailsTableEsValue key="${key}" id="${plt.id}" field="passwordAuthentication" records="${esRecords}" />
+                            <uiReporting:detailsTableEsValue key="${key}" id="${plt.id}" field="shibbolethAuthentication" records="${esRecords}" />
                         </g:else>
-                    </reporting:detailsTableTD>
+                    </uiReporting:detailsTableTD>
 
-                    <reporting:detailsTableTD config="${dtConfig}" field="platform-proxySupported">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="platform-passwordAuthentication">
 
                         <g:if test="${useLocalFields}">
-                            <reporting:objectProperties owner="${plt}" tenant="${contextService.getOrg()}" propDefId="${PropertyStore.PLA_PROXY.id}" />
+                            <uiReporting:detailsTableEsValue key="${key}" id="${plt.id}" field="passwordAuthentication" records="${esRecords}" /> (we:kb)
                         </g:if>
                         <g:else>
-                            <reporting:detailsTableEsValue key="${key}" id="${plt.id}" field="proxySupported" records="${esRecords}" />
+                            <uiReporting:detailsTableEsValue key="${key}" id="${plt.id}" field="passwordAuthentication" records="${esRecords}" />
                         </g:else>
-                    </reporting:detailsTableTD>
+                    </uiReporting:detailsTableTD>
 
-                    <reporting:detailsTableTD config="${dtConfig}" field="platform-statisticsFormat">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="platform-proxySupported">
 
                         <g:if test="${useLocalFields}">
-                            <reporting:detailsTableEsValue key="${key}" id="${plt.id}" field="statisticsFormat" records="${esRecords}" /> (we:kb)
+                            <uiReporting:objectProperties owner="${plt}" tenant="${contextService.getOrg()}" propDefId="${PropertyStore.PLA_PROXY.id}" />
                         </g:if>
                         <g:else>
-                            <reporting:detailsTableEsValue key="${key}" id="${plt.id}" field="statisticsFormat" records="${esRecords}" />
+                            <uiReporting:detailsTableEsValue key="${key}" id="${plt.id}" field="proxySupported" records="${esRecords}" />
                         </g:else>
-                    </reporting:detailsTableTD>
+                    </uiReporting:detailsTableTD>
 
-                    <reporting:detailsTableTD config="${dtConfig}" field="platform-statisticsUpdate">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="platform-statisticsFormat">
 
                         <g:if test="${useLocalFields}">
-                            <reporting:detailsTableEsValue key="${key}" id="${plt.id}" field="statisticsUpdate" records="${esRecords}" /> (we:kb)
+                            <uiReporting:detailsTableEsValue key="${key}" id="${plt.id}" field="statisticsFormat" records="${esRecords}" /> (we:kb)
                         </g:if>
                         <g:else>
-                            <reporting:detailsTableEsValue key="${key}" id="${plt.id}" field="statisticsUpdate" records="${esRecords}" />
+                            <uiReporting:detailsTableEsValue key="${key}" id="${plt.id}" field="statisticsFormat" records="${esRecords}" />
                         </g:else>
-                    </reporting:detailsTableTD>
+                    </uiReporting:detailsTableTD>
 
-                    <reporting:detailsTableTD config="${dtConfig}" field="platform-counterCertified">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="platform-statisticsUpdate">
 
                         <g:if test="${useLocalFields}">
-                            <reporting:detailsTableEsValue key="${key}" id="${plt.id}" field="counterCertified" records="${esRecords}" /> (we:kb)
+                            <uiReporting:detailsTableEsValue key="${key}" id="${plt.id}" field="statisticsUpdate" records="${esRecords}" /> (we:kb)
                         </g:if>
                         <g:else>
-                            <reporting:detailsTableEsValue key="${key}" id="${plt.id}" field="counterCertified" records="${esRecords}" />
+                            <uiReporting:detailsTableEsValue key="${key}" id="${plt.id}" field="statisticsUpdate" records="${esRecords}" />
                         </g:else>
-                    </reporting:detailsTableTD>
+                    </uiReporting:detailsTableTD>
 
-                    <reporting:detailsTableTD config="${dtConfig}" field="platform-counterR3Supported">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="platform-counterCertified">
 
                         <g:if test="${useLocalFields}">
-                            <reporting:objectProperties owner="${plt}" tenant="${contextService.getOrg()}" propDefId="${PropertyStore.PLA_COUNTER_R3_REPORTS.id}" />
+                            <uiReporting:detailsTableEsValue key="${key}" id="${plt.id}" field="counterCertified" records="${esRecords}" /> (we:kb)
                         </g:if>
                         <g:else>
-                            <reporting:detailsTableEsValue key="${key}" id="${plt.id}" field="counterR3Supported" records="${esRecords}" />
+                            <uiReporting:detailsTableEsValue key="${key}" id="${plt.id}" field="counterCertified" records="${esRecords}" />
                         </g:else>
-                    </reporting:detailsTableTD>
+                    </uiReporting:detailsTableTD>
 
-                    <reporting:detailsTableTD config="${dtConfig}" field="platform-counterR4Supported">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="platform-counterR3Supported">
 
                         <g:if test="${useLocalFields}">
-                            <reporting:objectProperties owner="${plt}" tenant="${contextService.getOrg()}" propDefId="${PropertyStore.PLA_COUNTER_R4_REPORTS.id}" />
+                            <uiReporting:objectProperties owner="${plt}" tenant="${contextService.getOrg()}" propDefId="${PropertyStore.PLA_COUNTER_R3_REPORTS.id}" />
                         </g:if>
                         <g:else>
-                            <reporting:detailsTableEsValue key="${key}" id="${plt.id}" field="counterR4Supported" records="${esRecords}" />
+                            <uiReporting:detailsTableEsValue key="${key}" id="${plt.id}" field="counterR3Supported" records="${esRecords}" />
                         </g:else>
-                    </reporting:detailsTableTD>
+                    </uiReporting:detailsTableTD>
 
-                    <reporting:detailsTableTD config="${dtConfig}" field="platform-counterR5Supported">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="platform-counterR4Supported">
 
                         <g:if test="${useLocalFields}">
-                            <reporting:objectProperties owner="${plt}" tenant="${contextService.getOrg()}" propDefId="${PropertyStore.PLA_COUNTER_R5_REPORTS.id}" />
+                            <uiReporting:objectProperties owner="${plt}" tenant="${contextService.getOrg()}" propDefId="${PropertyStore.PLA_COUNTER_R4_REPORTS.id}" />
                         </g:if>
                         <g:else>
-                            <reporting:detailsTableEsValue key="${key}" id="${plt.id}" field="counterR5Supported" records="${esRecords}" />
+                            <uiReporting:detailsTableEsValue key="${key}" id="${plt.id}" field="counterR4Supported" records="${esRecords}" />
                         </g:else>
-                    </reporting:detailsTableTD>
+                    </uiReporting:detailsTableTD>
 
-                    <reporting:detailsTableTD config="${dtConfig}" field="platform-counterR4SushiApiSupported">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="platform-counterR5Supported">
 
                         <g:if test="${useLocalFields}">
-                            <reporting:objectProperties owner="${plt}" tenant="${contextService.getOrg()}" propDefId="${PropertyStore.PLA_COUNTER_R4_SUSHI_API.id}" />
+                            <uiReporting:objectProperties owner="${plt}" tenant="${contextService.getOrg()}" propDefId="${PropertyStore.PLA_COUNTER_R5_REPORTS.id}" />
                         </g:if>
                         <g:else>
-                            <reporting:detailsTableEsValue key="${key}" id="${plt.id}" field="counterR4SushiApiSupported" records="${esRecords}" />
+                            <uiReporting:detailsTableEsValue key="${key}" id="${plt.id}" field="counterR5Supported" records="${esRecords}" />
                         </g:else>
-                    </reporting:detailsTableTD>
+                    </uiReporting:detailsTableTD>
 
-                    <reporting:detailsTableTD config="${dtConfig}" field="platform-counterR5SushiApiSupported">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="platform-counterR4SushiApiSupported">
 
                         <g:if test="${useLocalFields}">
-                            <reporting:objectProperties owner="${plt}" tenant="${contextService.getOrg()}" propDefId="${PropertyStore.PLA_COUNTER_R5_SUSHI_API.id}" />
+                            <uiReporting:objectProperties owner="${plt}" tenant="${contextService.getOrg()}" propDefId="${PropertyStore.PLA_COUNTER_R4_SUSHI_API.id}" />
                         </g:if>
                         <g:else>
-                            <reporting:detailsTableEsValue key="${key}" id="${plt.id}" field="counterR5SushiApiSupported" records="${esRecords}" />
+                            <uiReporting:detailsTableEsValue key="${key}" id="${plt.id}" field="counterR4SushiApiSupported" records="${esRecords}" />
                         </g:else>
-                    </reporting:detailsTableTD>
+                    </uiReporting:detailsTableTD>
+
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="platform-counterR5SushiApiSupported">
+
+                        <g:if test="${useLocalFields}">
+                            <uiReporting:objectProperties owner="${plt}" tenant="${contextService.getOrg()}" propDefId="${PropertyStore.PLA_COUNTER_R5_SUSHI_API.id}" />
+                        </g:if>
+                        <g:else>
+                            <uiReporting:detailsTableEsValue key="${key}" id="${plt.id}" field="counterR5SushiApiSupported" records="${esRecords}" />
+                        </g:else>
+                    </uiReporting:detailsTableTD>
 
                     <g:if test="${dtConfig.containsKey('_?_propertyLocal')}">
-                        <reporting:detailsTableTD config="${dtConfig}" field="_?_propertyLocal">
+                        <uiReporting:detailsTableTD config="${dtConfig}" field="_?_propertyLocal">
 
-                            <reporting:objectProperties owner="${plt}" tenant="${contextService.getOrg()}" propDefId="${id}" />
+                            <uiReporting:objectProperties owner="${plt}" tenant="${contextService.getOrg()}" propDefId="${id}" />
 
-                        </reporting:detailsTableTD>
+                        </uiReporting:detailsTableTD>
                     </g:if>
 
-                    <reporting:detailsTableTD config="${dtConfig}" field="_+_lastUpdated">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="_+_lastUpdated">
 
                         <g:if test="${esRecordIds.contains(plt.id)}">
                             <g:formatDate format="${message(code:'default.date.format.notime')}" date="${DateUtils.parseDateGeneric(esRecords.getAt(plt.id.toString()).lastUpdatedDisplay)}" />
@@ -219,9 +219,9 @@
                         <g:else>
                             <g:formatDate format="${message(code:'default.date.format.notime')}" date="${plt._getCalculatedLastUpdated()}" />
                         </g:else>
-                    </reporting:detailsTableTD>
+                    </uiReporting:detailsTableTD>
 
-                    <reporting:detailsTableTD config="${dtConfig}" field="_+_wekb">
+                    <uiReporting:detailsTableTD config="${dtConfig}" field="_+_wekb">
 
                         <g:if test="${wekb?.baseUrl && plt.gokbId}">
                             <g:if test="${esRecordIds.contains(plt.id)}">
@@ -234,7 +234,7 @@
                                 </span>
                             </g:else>
                         </g:if>
-                    </reporting:detailsTableTD>
+                    </uiReporting:detailsTableTD>
                 </tr>
             </g:each>
         </tbody>
