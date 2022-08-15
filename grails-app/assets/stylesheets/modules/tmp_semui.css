@@ -255,6 +255,9 @@ main.ui.container.main {
     right: 0;
 }
 
+a.icon.button.wfModalLink { background-color: white; }
+a.icon.button.wfModalLink:hover { background-color: #eeeeee; }
+
 /* -- new header icons -- */
 
 h1.header.icon > i.dna {

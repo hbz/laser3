@@ -1,0 +1,15 @@
+{
+  "name": "fomantic",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "fomantic-ui": "^2.8.8",
+    "gulp": "^4.0.2"
+  }
+}

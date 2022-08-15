@@ -1,7 +1,7 @@
 <%@page import="de.laser.ReportingGlobalService;de.laser.Org;de.laser.Subscription;de.laser.reporting.report.myInstitution.base.BaseConfig" %>
 <laser:serviceInjection/>
 
-        <div class="menu ui top attached tabular">
+        <div class="menu ui top attached tabular la-tab-with-js">
             <a class="active item" data-tab="sub-filter-tab-1">${message(code:'subscription.plural')}</a>
             <g:if test="${BaseConfig.getCurrentConfig( BaseConfig.KEY_SUBSCRIPTION ).memberSubscription}">
                 <a class="item" data-tab="sub-filter-tab-2">${message(code:'subscriptionsManagement.subscriber')}</a>

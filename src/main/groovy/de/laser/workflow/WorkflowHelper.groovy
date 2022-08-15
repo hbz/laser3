@@ -8,8 +8,11 @@ class WorkflowHelper {
     static String getCssColorByStatus(RefdataValue status) {
 
         switch (status) {
-            case [ RDStore.WF_WORKFLOW_STATUS_OPEN, RDStore.WF_TASK_STATUS_OPEN ]:
+            case [ RDStore.WF_WORKFLOW_STATUS_OPEN ]:
                 return 'la-light-grey'
+                break
+            case [ RDStore.WF_TASK_STATUS_OPEN ]:
+                return 'sc_darkgrey'
                 break
             case [ RDStore.WF_WORKFLOW_STATUS_CANCELED, RDStore.WF_TASK_STATUS_CANCELED ]:
                 return 'orange'
@@ -30,7 +33,7 @@ class WorkflowHelper {
                 return 'tasks la-light-grey'
                 break
             case RDStore.WF_TASK_STATUS_OPEN:
-                return 'check circle outline la-light-grey'
+                return 'circle outline la-light-grey'
                 break
             case [ RDStore.WF_WORKFLOW_STATUS_CANCELED, RDStore.WF_TASK_STATUS_CANCELED ]:
                 return 'x icon orange'

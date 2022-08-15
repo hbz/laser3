@@ -1,7 +1,7 @@
 <%@page import="de.laser.reporting.report.myInstitution.base.BaseFilter; de.laser.reporting.report.myInstitution.base.BaseConfig" %>
 <laser:serviceInjection/>
 
-        <div class="menu ui top attached tabular">
+        <div class="menu ui top attached tabular la-tab-with-js">
             <a class="active item" data-tab="issueEntitlement-filter-tab-1">${message(code:'issueEntitlement.plural')}</a>
 %{--            <a class="item" data-tab="issueEntitlement-filter-tab-help"> ? <i class="icon question"></i></a>--}%
         </div><!-- .menu -->

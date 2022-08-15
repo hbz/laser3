@@ -8,15 +8,15 @@
       "themes": "src/themes/"
     },
     "output": {
-      "packaged"     : "temp/",
-      "uncompressed" : "temp/components/",
-      "compressed"   : "temp/components/",
-      "themes"       : "temp/themes/"
+      "packaged": "temp/",
+      "uncompressed": "temp/components/",
+      "compressed": "temp/components/",
+      "themes": "temp/themes/"
     },
-    "clean"        : "temp/"
+    "clean": "temp/"
   },
   "permission": false,
   "autoInstall": false,
   "rtl": false,
-  "version": "2.4.2"
+  "version": "2.8.8"
 }
