@@ -28,7 +28,7 @@
     <semui:totalNumber total="${totalCount}"/>
 </h1>
 
-<semui:anualRings object="${license}" controller="license" action="show" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
+<semui:anualRings object="${license}" controller="license" action="linkMemberLicensesToSubs" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
 
 <g:render template="nav" />
 

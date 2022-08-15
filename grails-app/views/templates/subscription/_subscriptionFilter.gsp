@@ -60,7 +60,7 @@
             */ %>
             <% /* 1-4 */ %>
             <div class="field">
-                <legend ><g:message code="default.status.label"/></legend>
+                <label ><g:message code="default.status.label"/></label>
                 <select id="status" name="status" multiple="" class="ui search selection fluid dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
@@ -104,7 +104,7 @@
                        --%>
             <% /* 2-3 */ %>
             <div class="field">
-                <legend ><g:message code="subscription.form.label"/></legend>
+                <label ><g:message code="subscription.form.label"/></label>
                 <select id="form" name="form" multiple="" class="ui search selection fluid dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
@@ -118,7 +118,7 @@
             </div>
             <% /* 2-4 */ %>
             <div class="field">
-                <legend ><g:message code="subscription.resource.label"/></legend>
+                <label ><g:message code="subscription.resource.label"/></label>
                 <select id="resource" name="resource" multiple="" class="ui search selection fluid dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
@@ -136,7 +136,7 @@
         <div class="four fields">
             <% /* 3-1 */ %>
             <div class="field">
-                <legend >${message(code: 'myinst.currentSubscriptions.subscription_kind')}</legend>
+                <label >${message(code: 'myinst.currentSubscriptions.subscription_kind')}</label>
                 <select id="subKinds" name="subKinds" multiple="" class="ui search selection fluid dropdown">
                     <option value="">${message(code: 'default.select.choose.label')}</option>
 
@@ -206,7 +206,7 @@
             <g:if test="${!accessService.checkPerm("ORG_CONSORTIUM") || institution.globalUID == Org.findByName('LAS:eR Backoffice').globalUID}">
                 <div class="field">
                     <fieldset id="subscritionType">
-                        <legend >${message(code: 'myinst.currentSubscriptions.subscription_type')}</legend>
+                        <label >${message(code: 'myinst.currentSubscriptions.subscription_type')}</label>
                         <div class="inline fields la-filter-inline">
                             <%
                                 List subTypes = RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_TYPE)

@@ -164,3 +164,7 @@ body[class*="platform"] .ui.icon.header .circular.icon.la-object:before {
   text-align: left;
   position: relative;
 }
+.ui.icon.header > .icons,
+.ui.icon.header > i.icon {
+  display: inline-block;
+}

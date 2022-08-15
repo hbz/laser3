@@ -519,7 +519,7 @@
                                  data-content="${message(code: 'search.advancedSearch.tooltip')}">
                             <i class="large icons">
                                 <i class="search icon"></i>
-                                <i class="top grey right corner cog icon "></i>
+                                <i class="top right grey corner cog icon "></i>
                             </i>
                         </semui:link>
 
