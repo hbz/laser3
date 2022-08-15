@@ -133,7 +133,7 @@
 </ui:controlButtons>
 
 <ui:h1HeaderWithIcon text="${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.name}">
-    <survey:status object="${surveyConfig.surveyInfo}"/>
+    <uiSurvey:status object="${surveyConfig.surveyInfo}"/>
 </ui:h1HeaderWithIcon>
 
     <ui:messages data="${flash}"/>

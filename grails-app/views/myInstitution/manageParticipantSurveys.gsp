@@ -223,11 +223,11 @@
                     </td>
 
                     <td class="center aligned">
-                        <survey:finishIcon participant="${Org.get(params.id)}" surveyConfig="${surveyConfig}" surveyOwnerView="${true}"/>
+                        <uiSurvey:finishIcon participant="${Org.get(params.id)}" surveyConfig="${surveyConfig}" surveyOwnerView="${true}"/>
                     </td>
                     <g:if test="${params.tab == 'finish'}">
                         <td class="center aligned">
-                            <survey:finishDate participant="${Org.get(params.id)}" surveyConfig="${surveyConfig}"/>
+                            <uiSurvey:finishDate participant="${Org.get(params.id)}" surveyConfig="${surveyConfig}"/>
                         </td>
                     </g:if>
                     <td>

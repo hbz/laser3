@@ -79,7 +79,7 @@
                                             <!-- -->
                                             <g:each in="${task.condition.getFields()}" var="field" status="fi">
                                                 <br />
-                                                <workflow:taskConditionField condition="${task.condition}" field="${field}" />
+                                                <uiWorkflow:taskConditionField condition="${task.condition}" field="${field}" />
                                             </g:each>
                                             <!-- -->
                                         </div>
@@ -127,7 +127,7 @@
                                                     <!-- -->
                                                     <g:each in="${child.condition.getFields()}" var="field" status="fi">
                                                         <br />
-                                                        <workflow:taskConditionField condition="${child.condition}" field="${field}" />
+                                                        <uiWorkflow:taskConditionField condition="${child.condition}" field="${field}" />
                                                     </g:each>
                                                     <!-- -->
                                                 </div>

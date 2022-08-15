@@ -75,7 +75,7 @@
 
                     <g:if test="${query == 'license-x-property'}">
                         <td>
-                            <reporting:objectProperties owner="${lic}" tenant="${contextService.getOrg()}" propDefId="${id}" />
+                            <uiReporting:objectProperties owner="${lic}" tenant="${contextService.getOrg()}" propDefId="${id}" />
                         </td>
                     </g:if>
 

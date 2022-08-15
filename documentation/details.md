@@ -13,7 +13,7 @@ Use the Gradle task **devtools.triggerRestart** to update this file and force a 
 ### Apache Commons Lang
 
 ~~Two different versions are currently used.~~ New code should always use *org.apache.commons.lang3*, 
-not the previous version *org.apache.commons.lang* (which is still a dependency of 'org.grails.plugins:gsp')
+not the previous version *org.apache.commons.lang* (which is still a dependency of _org.grails.plugins:gsp_)
 
 ### Configuration
 
@@ -24,7 +24,7 @@ Fallbacks and default values should be stored in *de.laser.config.ConfigDefaults
 ### Custom Tags
 
 Default namespace for custom tags has been changed from **semui** to **ui**. System related namespace is still **laser**. 
-Domain specific namespaces have been added.
+Domain specific namespaces have been added, e.g. _uiReporting_
 
 ### Database Migrations
 

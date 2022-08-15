@@ -304,8 +304,7 @@
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('finishedDate')}">
                         <td>
-                            <survey:finishDate participant="${participant}"
-                                                    surveyConfig="${surveyConfig}"/>
+                            <uiSurvey:finishDate participant="${participant}" surveyConfig="${surveyConfig}"/>
                         </td>
                     </g:if>
                 </g:each>
@@ -507,8 +506,7 @@
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('finishedDate')}">
                         <td>
-                            <survey:finishDate participant="${participant}"
-                                                    surveyConfig="${surveyConfig}"/>
+                            <uiSurvey:finishDate participant="${participant}" surveyConfig="${surveyConfig}"/>
                         </td>
                     </g:if>
 
