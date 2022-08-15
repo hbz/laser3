@@ -544,11 +544,13 @@
         <%
             Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: subscription])
             if(!subscribedPlatforms) {
-                subscribedPlatforms = Platform.executeQuery("select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription", [subscription: subscription])
+                subscribedPlatforms = Platform.executeQuery("select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription or ie.subscription = (select s.instanceOf from Subscription s where s = :subscription)", [subscription: subscription])
             }
             boolean areStatsAvailable = false
+            Set<Long> reportInstitutions = [institution.id]
+            reportInstitutions.addAll(Org.executeQuery('select oo.org.id from OrgRole oo where oo.sub.instanceOf = :subscription and oo.roleType in (:subscrTypes)', [subscription: subscription, subscrTypes: [RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER_CONS]]))
             if(subscription.packages.size() > 0)
-                areStatsAvailable = subscriptionService.areStatsAvailable(subscribedPlatforms, subscription.packages.collect { SubscriptionPackage sp -> sp.pkg.id }, Org.executeQuery('select oo.org.id from OrgRole oo where oo.sub.instanceOf = :subscription and oo.roleType in (:subscrTypes)', [subscription: subscription, subscrTypes: [RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER_CONS]]))
+                areStatsAvailable = subscriptionService.areStatsAvailable(subscribedPlatforms, subscription.packages.collect { SubscriptionPackage sp -> sp.pkg.id }, reportInstitutions)
         %>
         <g:if test="${subscription && subscribedPlatforms && areStatsAvailable}">
             <div class="ui card">
