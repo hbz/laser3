@@ -47,7 +47,7 @@
         </div>
     </div>
 
-    <div class="ui top attached stackable tabular menu">
+    <div class="ui top attached stackable tabular la-tab-with-js menu">
         <a class="active item" data-tab="IPv4">IPv4 <ui:totalNumber total="${accessPointDataList.ipv4Ranges.size()}"/></a>
         <a class="item" data-tab="IPv6">IPv6 <ui:totalNumber total="${accessPointDataList.ipv6Ranges.size()}"/></a>
     </div>

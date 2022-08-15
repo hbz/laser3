@@ -2,6 +2,6 @@
  * bundle: assets/stylesheets/laser.css
  *
  *= require base.css
- *= require /laser/semantic.min.css         //--> assets/themes
+ *= require /laser/semantic.css         //--> assets/themes
  *= require modules/tmp_semui.css
  */

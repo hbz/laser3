@@ -23,7 +23,7 @@
 </div>
 
 
-<div class="ui top attached stackable tabular menu">
+<div class="ui top attached stackable tabular la-tab-with-js menu">
     <a class="active item" data-tab="currentTitlesSelect"><g:message
             code="renewEntitlementsWithSurvey.currentTitlesSelect"/></a>
 

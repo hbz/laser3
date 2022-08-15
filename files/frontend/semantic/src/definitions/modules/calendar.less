@@ -1,6 +1,6 @@
 /*!
- * # Semantic UI - Calendar
- * http://github.com/semantic-org/semantic-ui/
+ * # Fomantic-UI - Calendar
+ * http://github.com/fomantic/Fomantic-UI/
  *
  *
  * Released under the MIT license
@@ -63,6 +63,10 @@
   min-width: 18em;
 }
 
+.ui.calendar .ui.table.day.andweek {
+  min-width: 22em;
+}
+
 .ui.calendar .ui.table.hour {
   min-width: 20em;
 }
@@ -77,11 +81,7 @@
   border-left: none;
 }
 
-.ui.calendar .ui.table tr th .icon {
-  margin: 0;
-}
-
-.ui.calendar .ui.table tr th .icon {
+.ui.calendar .ui.table tr th i.icon {
   margin: 0;
 }
 
@@ -121,9 +121,15 @@
   right: 0;
 }
 
-.ui.calendar .ui.table tr .disabled {
-  pointer-events: none;
+.ui.ui.calendar .ui.table tr .disabled {
+  pointer-events: auto;
+  cursor: default;
   color: @disabledTextColor;
+}
+
+.ui.calendar .ui.table tr .adjacent:not(.disabled):not(.active) {
+  color: @adjacentTextColor;
+  background: @adjacentBackground;
 }
 
 /*--------------
@@ -140,20 +146,50 @@
   box-shadow: @rangeBoxShadow;
 }
 
-.ui.calendar .ui.table.inverted tr td.range {
-  background: @rangeInvertedBackground;
-  color: @rangeInvertedTextColor;
-  box-shadow: @rangeInvertedBoxShadow;
-}
-
-.ui.calendar .calendar:focus .ui.table tbody tr td.focus,
-.ui.calendar .calendar.active .ui.table tbody tr td.focus {
+.ui.calendar:not(.disabled) .calendar:focus .ui.table tbody tr td.focus,
+.ui.calendar:not(.disabled) .calendar.active .ui.table tbody tr td.focus {
   box-shadow: @focusBoxShadow;
 }
 
-.ui.calendar .calendar:focus .ui.table.inverted tbody tr td.focus,
-.ui.calendar .calendar.active .ui.table.inverted tbody tr td.focus {
-  box-shadow: @focusInvertedBoxShadow;
+& when (@variationCalendarInverted) {
+  .ui.inverted.calendar .ui.table.inverted tr td.range {
+    background: @rangeInvertedBackground;
+    color: @rangeInvertedTextColor;
+    box-shadow: @rangeInvertedBoxShadow;
+  }
+
+  .ui.inverted.calendar:not(.disabled) .calendar:focus .ui.table.inverted tbody tr td.focus,
+  .ui.inverted.calendar:not(.disabled) .calendar.active .ui.table.inverted tbody tr td.focus {
+    box-shadow: @focusInvertedBoxShadow;
+  }
+  .ui.inverted.calendar .ui.inverted.table tr .disabled {
+    color: @invertedDisabledTextColor;
+  }
+
+  .ui.inverted.calendar .ui.inverted.table tr .adjacent:not(.disabled):not(.active) {
+    color: @adjacentInvertedTextColor;
+    background: @adjacentInvertedBackground;
+  }
 }
+
+/*******************************
+            States
+*******************************/
+
+& when (@variationCalendarDisabled) {
+  /*--------------------
+          Disabled
+  ---------------------*/
+
+  .ui.disabled.calendar {
+    opacity: @disabledOpacity;
+  }
+
+  .ui.disabled.calendar > .input,
+  .ui.disabled.calendar .ui.table tr .link {
+    pointer-events: none;
+  }
+}
+
 
 .loadUIOverrides();
