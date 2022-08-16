@@ -541,44 +541,48 @@
             <div id="ieInfos" class="la-inline-lists"></div>
         </g:if>
 
-        <%
-            Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: subscription])
-            if(!subscribedPlatforms) {
-                subscribedPlatforms = Platform.executeQuery("select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription", [subscription: subscription])
-            }
-            boolean areStatsAvailable = false
-            if(subscription.packages.size() > 0)
-                areStatsAvailable = subscriptionService.areStatsAvailable(subscribedPlatforms, subscription.packages.collect { SubscriptionPackage sp -> sp.pkg.id }, Org.executeQuery('select oo.org.id from OrgRole oo where oo.sub.instanceOf = :subscription and oo.roleType in (:subscrTypes)', [subscription: subscription, subscrTypes: [RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER_CONS]]))
-        %>
-        <g:if test="${subscription && subscribedPlatforms && areStatsAvailable}">
-            <div class="ui card">
-                <div class="content">
-                    <div id="statsInfos" class="ui accordion la-accordion-showMore js-subscription-info-accordion">
-                        <div class="item">
-                            <div class="title">
-                                <button
-                                        class="ui button icon blue la-modern-button la-delay right floated ">
-                                    <i class="ui angle double down large icon"></i>
-                                </button>
+        <g:if test="${subscription}">
+            <%
+                Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: subscription])
+                if(!subscribedPlatforms) {
+                    subscribedPlatforms = Platform.executeQuery("select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription or ie.subscription = (select s.instanceOf from Subscription s where s = :subscription)", [subscription: subscription])
+                }
+                boolean areStatsAvailable = false
+                Set<Long> reportInstitutions = [institution.id]
+                reportInstitutions.addAll(Org.executeQuery('select oo.org.id from OrgRole oo where oo.sub.instanceOf = :subscription and oo.roleType in (:subscrTypes)', [subscription: subscription, subscrTypes: [RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER_CONS]]))
+                if(subscription.packages.size() > 0)
+                    areStatsAvailable = subscriptionService.areStatsAvailable(subscribedPlatforms, subscription.packages.collect { SubscriptionPackage sp -> sp.pkg.id }, reportInstitutions)
+            %>
+            <g:if test="${subscribedPlatforms && areStatsAvailable}">
+                <div class="ui card">
+                    <div class="content">
+                        <div id="statsInfos" class="ui accordion la-accordion-showMore js-subscription-info-accordion">
+                            <div class="item">
+                                <div class="title">
+                                    <button
+                                            class="ui button icon blue la-modern-button la-delay right floated ">
+                                        <i class="ui angle double down large icon"></i>
+                                    </button>
 
-                                <i aria-hidden="true" class="circular chart bar green outline inverted icon"></i>
+                                    <i aria-hidden="true" class="circular chart bar green outline inverted icon"></i>
 
-                                <h2 class="ui icon header la-clear-before la-noMargin-top">
+                                    <h2 class="ui icon header la-clear-before la-noMargin-top">
+                                        <g:link controller="subscription" action="stats" target="_blank"
+                                                id="${subscription.id}"><g:message code="surveyConfigsInfo.stats.show"/></g:link>
+                                    </h2>
+                                </div>
+                                <div class="content">
                                     <g:link controller="subscription" action="stats" target="_blank"
-                                            id="${subscription.id}"><g:message code="surveyConfigsInfo.stats.show"/></g:link>
-                                </h2>
-                            </div>
-                            <div class="content">
-                                <g:link controller="subscription" action="stats" target="_blank"
-                                        id="${subscription.id}" class="ui button">
-                                    <g:message code="renewEntitlementsWithSurvey.stats.button"/>
-                                </g:link>
+                                            id="${subscription.id}" class="ui button">
+                                        <g:message code="renewEntitlementsWithSurvey.stats.button"/>
+                                    </g:link>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-            </div>
+                </div>
+            </g:if>
         </g:if>
 
     </div>

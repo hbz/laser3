@@ -29,7 +29,7 @@
 
                         <h2 class="ui icon header la-clear-before la-noMargin-top">
                             <g:link controller="package" action="show"
-                                    id="${pkgInfo.packageInstance.id}"><g:message code="surveyConfigsInfo.packageInfo.show"/></g:link>
+                                    id="${pkgInfo.packageInstance.id}">${pkgInfo.packageInstance.name}</g:link>
                         </h2>
                     </div>
                     <div class="content">
