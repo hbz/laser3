@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4229    15.08.2022  dev     3.0         Ingrid  Feature     Umstellen auf Fomantic UI
+
 4397    11.08.2022  rc-2.3  2.3.5       Andreas Bug         Fehler bei der Übertragung von Lizenzen behoben
 
 --      11.08.2022  rc-2.3  2.3.5       Andreas Bug         Statistik wird jetzt auch ohne Titel angezeigt
