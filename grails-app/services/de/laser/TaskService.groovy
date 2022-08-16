@@ -1,10 +1,9 @@
 package de.laser
 
-
 import de.laser.auth.User
-import de.laser.utils.DateUtils
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
+import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -19,13 +18,12 @@ import java.text.SimpleDateFormat
 @Transactional
 class TaskService {
 
-    final static WITHOUT_TENANT_ONLY = "WITHOUT_TENANT_ONLY"
-
     AccessService accessService
     ContextService contextService
     MessageSource messageSource
 
-    private static final String select_with_join = 'select t from Task t LEFT JOIN t.responsibleUser ru '
+    static final String SELECT_WITH_JOIN = 'select t from Task t LEFT JOIN t.responsibleUser ru '
+    static final String WITHOUT_TENANT_ONLY = "WITHOUT_TENANT_ONLY"
 
     /**
      * Called from view for edit override
@@ -47,7 +45,7 @@ class TaskService {
      * @param object the object to which the tasks are attached
      * @return a list of accessible tasks
      */
-    Map<String, Object> getTasks(int offset, User user, Org contextOrg, object) {
+    Map<String, Object> getTasks(int offset, User user, Org contextOrg, Object object) {
         Map<String, Object> result = [:]
         result.taskInstanceList = getTasksByResponsiblesAndObject(user, contextOrg, object)
         result.taskInstanceList = chopOffForPageSize(result.taskInstanceList, user, offset)
@@ -63,7 +61,7 @@ class TaskService {
      * @param object the object to which the tasks are attached
      * @return a list of accessible tasks
      */
-    Set<Task> getTasksForExport(User user, Org contextOrg, object) {
+    Set<Task> getTasksForExport(User user, Org contextOrg, Object object) {
         Set<Task> result = []
         result.addAll(getTasksByResponsiblesAndObject(user, contextOrg, object))
         result.addAll(getTasksByCreatorAndObject(user,  object))
@@ -75,23 +73,25 @@ class TaskService {
      * @param obj the object whose tasks should be retrieved
      * @return a list of tasks
      */
-    List<Task> getTasksByObject(obj) {
+    List<Task> getTasksByObject(Object obj) {
         List<Task> tasks = []
+        Map pparams = [order: "endDate"]
+
         switch (obj.getClass().getSimpleName()) {
             case 'License':
-                tasks.addAll(Task.findAllByLicense(obj,[order:"endDate"]))
+                tasks.addAll(Task.findAllByLicense(obj as License, pparams))
                 break
             case 'Org':
-                tasks.addAll(Task.findAllByOrg(obj,[order:"endDate"]))
+                tasks.addAll(Task.findAllByOrg(obj as Org, pparams))
                 break
             case 'Package':
-                tasks.addAll(Task.findAllByPkg(obj,[order:"endDate"]))
+                tasks.addAll(Task.findAllByPkg(obj as Package, pparams))
                 break
             case 'Subscription':
-                tasks.addAll(Task.findAllBySubscription(obj,[order:"endDate"]))
+                tasks.addAll(Task.findAllBySubscription(obj as Subscription, pparams))
                 break
             case 'SurveyConfig':
-                tasks.addAll(Task.findAllBySurveyConfig(obj,[order:"endDate"]))
+                tasks.addAll(Task.findAllBySurveyConfig(obj as SurveyConfig, pparams))
                 break
         }
         tasks
@@ -104,14 +104,14 @@ class TaskService {
      * @param flag should only tasks without tenant appear?
      * @return a list of tasks matching the given criteria
      */
-    List<Task> getTasksByCreator(User user, Map queryMap, flag) {
+    List<Task> getTasksByCreator(User user, Map queryMap, String flag) {
         List<Task> tasks = []
         if (user) {
             String query
             if (flag == WITHOUT_TENANT_ONLY) {
-                query = select_with_join + 'where t.creator = :user and ru is null and t.responsibleOrg is null'
+                query = SELECT_WITH_JOIN + 'where t.creator = :user and ru is null and t.responsibleOrg is null'
             } else {
-                query = select_with_join + 'where t.creator = :user'
+                query = SELECT_WITH_JOIN + 'where t.creator = :user'
             }
 
             Map<String, Object> params = [user : user]
@@ -123,61 +123,6 @@ class TaskService {
             tasks = Task.executeQuery(query, params)
         }
         tasks
-    }
-
-    /**
-     * Retrieves tasks the given user created for the given license, paginated by the given parameter map
-     * @param user the user whose tasks should be retrieved
-     * @param obj the license to which the tasks are attached
-     * @param params a pagination parameter map
-     * @return a paginated list of tasks
-     */
-    List<Task> getTasksByCreatorAndObject(User user, License obj,  Object params) {
-        (user && obj)? Task.findAllByCreatorAndLicense(user, obj, params) : []
-    }
-
-    /**
-     * Retrieves tasks the given user created for the given organisation, paginated by the given parameter map
-     * @param user the user whose tasks should be retrieved
-     * @param obj the organisation to which the tasks are attached
-     * @param params a pagination parameter map
-     * @return a paginated list of tasks
-     */
-    List<Task> getTasksByCreatorAndObject(User user, Org obj,  Object params) {
-        (user && obj) ?  Task.findAllByCreatorAndOrg(user, obj, params) : []
-    }
-
-    /**
-     * Retrieves tasks the given user created for the given package, paginated by the given parameter map
-     * @param user the user whose tasks should be retrieved
-     * @param obj the package to which the tasks are attached
-     * @param params a pagination parameter map
-     * @return a paginated list of tasks
-     */
-    List<Task> getTasksByCreatorAndObject(User user, Package obj,  Object params) {
-        (user && obj) ?  Task.findAllByCreatorAndPkg(user, obj, params) : []
-    }
-
-    /**
-     * Retrieves tasks the given user created for the given subscription, paginated by the given parameter map
-     * @param user the user whose tasks should be retrieved
-     * @param obj the subscription to which the tasks are attached
-     * @param params a pagination parameter map
-     * @return a paginated list of tasks
-     */
-    List<Task> getTasksByCreatorAndObject(User user, Subscription obj,  Object params) {
-        (user && obj) ?  Task.findAllByCreatorAndSubscription(user, obj, params) : []
-    }
-
-    /**
-     * Retrieves tasks the given user created for the given survey, paginated by the given parameter map
-     * @param user the user whose tasks should be retrieved
-     * @param obj the survey to which the tasks are attached
-     * @param params a pagination parameter map
-     * @return a paginated list of tasks
-     */
-    List<Task> getTasksByCreatorAndObject(User user, SurveyConfig obj, Object params) {
-        (user && obj) ?  Task.findAllByCreatorAndSurveyConfig(user, obj, params) : []
     }
 
     /**
@@ -259,7 +204,7 @@ class TaskService {
     List<Task> getTasksByResponsible(User user, Map queryMap) {
         List<Task> tasks = []
         if (user) {
-            String query  = select_with_join + 'where t.responsibleUser = :user' + queryMap.query
+            String query  = SELECT_WITH_JOIN + 'where t.responsibleUser = :user' + queryMap.query
             query = _addDefaultOrder("t", query)
 
             Map params = [user : user] << queryMap.queryParams
@@ -277,7 +222,7 @@ class TaskService {
     List<Task> getTasksByResponsible(Org org, Map queryMap) {
         List<Task> tasks = []
         if (org) {
-            String query  = select_with_join + 'where t.responsibleOrg = :org' + queryMap.query
+            String query  = SELECT_WITH_JOIN + 'where t.responsibleOrg = :org' + queryMap.query
             query = _addDefaultOrder("t", query)
 
             Map params = [org : org] << queryMap.queryParams
@@ -297,7 +242,7 @@ class TaskService {
         List<Task> tasks = []
 
         if (user && org) {
-            String query = select_with_join + 'where ( ru = :user or t.responsibleOrg = :org ) ' + queryMap.query
+            String query = SELECT_WITH_JOIN + 'where ( ru = :user or t.responsibleOrg = :org ) ' + queryMap.query
             query = _addDefaultOrder("t", query)
 
             Map<String, Object>  params = [user : user, org: org] << queryMap.queryParams
@@ -308,16 +253,6 @@ class TaskService {
             tasks = getTasksByResponsible(org, queryMap)
         }
         tasks
-    }
-
-    @Deprecated
-    List<Task> getTasksByResponsibleAndObject(User user, Object obj) {
-        getTasksByResponsibleAndObject(user, obj, [sort: 'endDate', order: 'asc'])
-    }
-
-    @Deprecated
-    List<Task> getTasksByResponsibleAndObject(Org org, Object obj) {
-        getTasksByResponsibleAndObject(org, obj, [sort: 'endDate', order: 'asc'])
     }
 
     List<Task> getTasksByResponsiblesAndObject(User user, Org org, Object obj) {
@@ -344,87 +279,6 @@ class TaskService {
             String query = "select distinct(t) from Task t where ${tableName}=:obj and (responsibleUser=:user or responsibleOrg=:org) order by endDate"
             tasks = Task.executeQuery( query, [user: user, org: org, obj: obj] )
         }
-        tasks
-    }
-
-    /**
-     * Gets tasks for the given object for which the given user is responsible, sorted by the given parameter map
-     * @param user the user responsible for the queried tasks
-     * @param obj the object to which the tasks are attached
-     * @param params the sorting parameter map
-     * @return a sorted list of tasks
-     */
-    List<Task> getTasksByResponsibleAndObject(User user, Object obj,  Map params) {
-        List<Task> tasks = []
-        params = _addDefaultOrder(null, params)
-        if (user && obj) {
-            switch (obj.getClass().getSimpleName()) {
-                case 'License':
-                    tasks = Task.findAllByResponsibleUserAndLicense(user, obj, params)
-                    break
-                case 'Org':
-                    tasks = Task.findAllByResponsibleUserAndOrg(user, obj, params)
-                    break
-                case 'Package':
-                    tasks = Task.findAllByResponsibleUserAndPkg(user, obj, params)
-                    break
-                case 'Subscription':
-                    tasks = Task.findAllByResponsibleUserAndSubscription(user, obj, params)
-                    break
-                case 'SurveyConfig':
-                    tasks = Task.findAllByResponsibleUserAndSurveyConfig(user, obj, params)
-                    break
-            }
-        }
-        tasks
-    }
-
-    /**
-     * Gets tasks for the given object for which the given institution is responsible, sorted by the given parameter map
-     * @param org the institution responsible for the queried tasks
-     * @param obj the object to which the tasks are attached
-     * @param params the sorting parameter map
-     * @return a sorted list of tasks
-     */
-    List<Task> getTasksByResponsibleAndObject(Org org, Object obj,  Object params) {
-        List<Task> tasks = []
-        params = _addDefaultOrder(null, params)
-        if (org && obj) {
-            switch (obj.getClass().getSimpleName()) {
-                case 'License':
-                    tasks = Task.findAllByResponsibleOrgAndLicense(org, obj, params)
-                    break
-                case 'Org':
-                    tasks = Task.findAllByResponsibleOrgAndOrg(org, obj, params)
-                    break
-                case 'Package':
-                    tasks = Task.findAllByResponsibleOrgAndPkg(org, obj, params)
-                    break
-                case 'Subscription':
-                    tasks = Task.findAllByResponsibleOrgAndSubscription(org, obj, params)
-                    break
-                case 'SurveyConfig':
-                    tasks = Task.findAllByResponsibleOrgAndSurveyConfig(org, obj, params)
-                    break
-            }
-        }
-        tasks
-    }
-
-    /**
-     * Gets tasks for the given object for which the given user or institution is responsible, sorted by the given parameter map
-     * @param user the user responsible for the queried tasks
-     * @param org the institution responsible for the queried tasks
-     * @param obj the object to which the tasks are attached
-     * @param params the sorting parameter map
-     * @return a sorted list of tasks
-     */
-    List<Task> getTasksByResponsiblesAndObject(User user, Org org, Object obj,  Object params) {
-        List<Task> tasks = []
-        List<Task> a = getTasksByResponsibleAndObject(user, obj, params)
-        List<Task> b = getTasksByResponsibleAndObject(org, obj, params)
-
-        tasks = a.plus(b).unique()
         tasks
     }
 

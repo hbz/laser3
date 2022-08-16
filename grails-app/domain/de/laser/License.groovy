@@ -381,37 +381,6 @@ class License extends AbstractBaseWithCalculatedLastUpdated
   }
 
     @Deprecated
-    DocContext getNote(String domain) {
-        DocContext.findByLicenseAndDomain(this, domain)
-    }
-
-    @Deprecated
-  void setNote(String domain, String note_content) {
-      withTransaction {
-          DocContext note = DocContext.findByLicenseAndDomain(this, domain)
-          if (note) {
-              log.debug("update existing note...")
-              if (note_content == '') {
-                  log.debug("Delete note doc ctx...")
-                  note.delete()
-                  note.owner.delete()
-              } else {
-                  note.owner.content = note_content
-                  note.owner.save()
-              }
-          } else {
-              log.debug("Create new note...")
-              if ((note_content) && (note_content.trim().length() > 0)) {
-                  Doc doc = new Doc(content: note_content, lastUpdated: new Date(), dateCreated: new Date())
-                  DocContext newctx = new DocContext(license: this, owner: doc, domain: domain)
-                  doc.save()
-                  newctx.save()
-              }
-          }
-      }
-  }
-
-    @Deprecated
     String getGenericLabel() {
         return reference
     }

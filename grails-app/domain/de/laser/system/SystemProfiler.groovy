@@ -10,8 +10,6 @@ import de.laser.storage.BeanStore
  */
 class SystemProfiler {
 
-    final static long THRESHOLD_MS = 1000
-
     String  uri
     String  params
     Org     context

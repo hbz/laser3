@@ -41,24 +41,24 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     /**
      * general property viewable by everyone if public flag is true
      */
-    final static String CUSTOM_PROPERTY  = "CUSTOM_PROPERTY"
+    public static final String CUSTOM_PROPERTY  = "CUSTOM_PROPERTY"
     /**
      * private property; view and use restricted to the tenant organisation
      */
-    final static String PRIVATE_PROPERTY = "PRIVATE_PROPERTY"
+    public static final String PRIVATE_PROPERTY = "PRIVATE_PROPERTY"
 
-    final static String LIC_PROP    = 'License Property'
-    final static String ORG_PROP    = 'Organisation Property'
-    final static String ORG_CONF    = 'Organisation Config'
-    final static String PRS_PROP    = 'Person Property'
-    final static String PLA_PROP    = 'Platform Property'
-    final static String SUB_PROP    = 'Subscription Property'
-    final static String SVY_PROP    = 'Survey Property'
+    public static final String LIC_PROP    = 'License Property'
+    public static final String ORG_PROP    = 'Organisation Property'
+    public static final String ORG_CONF    = 'Organisation Config'
+    public static final String PRS_PROP    = 'Person Property'
+    public static final String PLA_PROP    = 'Platform Property'
+    public static final String SUB_PROP    = 'Subscription Property'
+    public static final String SVY_PROP    = 'Survey Property'
 
     //sorting is for German terms for the next three arrays; I10n is todo for later
 
     @Transient
-    final static String[] AVAILABLE_CUSTOM_DESCR = [
+    public static final String[] AVAILABLE_CUSTOM_DESCR = [
             PRS_PROP,
             SUB_PROP,
             ORG_PROP,
@@ -67,7 +67,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
             LIC_PROP
     ]
     @Transient
-    final static String[] AVAILABLE_PRIVATE_DESCR = [
+    public static final String[] AVAILABLE_PRIVATE_DESCR = [
             PRS_PROP,
             SUB_PROP,
             ORG_PROP,
@@ -77,7 +77,7 @@ class PropertyDefinition extends AbstractI10n implements Serializable, Comparabl
     ]
 
     @Transient
-    final static String[] AVAILABLE_GROUPS_DESCR = [
+    public static final String[] AVAILABLE_GROUPS_DESCR = [
             ORG_PROP,
             SUB_PROP,
             PLA_PROP,

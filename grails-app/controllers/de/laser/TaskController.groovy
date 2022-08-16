@@ -24,7 +24,7 @@ class TaskController  {
 
 	static allowedMethods = [create: 'POST', edit: 'POST', delete: 'POST']
 
-	final static Map<String, String> CHECK404_ALTERNATIVES = [
+	static final Map<String, String> CHECK404_ALTERNATIVES = [
 			'myInstitution/tasks' : 'menu.institutions.tasks'
 	]
 
@@ -93,7 +93,7 @@ class TaskController  {
 	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
     def _modal_create() {
         Org contextOrg = contextService.getOrg()
-		Map result = taskService.getPreconditions(contextOrg)
+		Map<String, Object> result = taskService.getPreconditions(contextOrg)
 
 		result.validSubscriptionsList = new ArrayList()
 		result.validSubscriptions.each{

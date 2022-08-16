@@ -27,9 +27,9 @@ import de.laser.storage.RDConstants
 class PersonRole implements Comparable<PersonRole>{
     private static final String REFDATA_GENERAL_CONTACT_PRS = "General contact person"
 
-    static TYPE_FUNCTION        = 'functionType'
-    static TYPE_POSITION        = 'positionType'
-    static TYPE_RESPONSIBILITY  = 'responsibilityType'
+    public static final String TYPE_FUNCTION        = 'functionType'
+    public static final String TYPE_POSITION        = 'positionType'
+    public static final String TYPE_RESPONSIBILITY  = 'responsibilityType'
 
     /**
      * The person has a certain position at the given organisation. Is exclusive with other types

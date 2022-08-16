@@ -18,8 +18,8 @@ class WorkflowService {
     ContextService contextService
     GenericOIDService genericOIDService
 
-    static final String OP_STATUS_DONE  = 'OP_STATUS_DONE'
-    static final String OP_STATUS_ERROR = 'OP_STATUS_ERROR'
+    public static final String OP_STATUS_DONE  = 'OP_STATUS_DONE'
+    public static final String OP_STATUS_ERROR = 'OP_STATUS_ERROR'
 
     /**
      * Subclass to parse parameters

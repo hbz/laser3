@@ -18,11 +18,9 @@ import org.grails.web.json.JSONObject
 @Slf4j
 class ElasticSearchHelper {
 
-    static final int ELASTICSEARCH_CHUNKSIZE = 500
-
-    static final String ELASTICSEARCH_IS_NOT_REACHABLE = 'elasticSearchIsNotReachable'
-
-    static final String IGNORE_FILTER = 'ignoreFilter'
+    public static final int ELASTICSEARCH_CHUNKSIZE = 500
+    public static final String ELASTICSEARCH_IS_NOT_REACHABLE = 'elasticSearchIsNotReachable'
+    public static final String IGNORE_FILTER = 'ignoreFilter'
 
     static void handleEsRecords(String cfgKey, String cmbKey, List<Long> idList, Map<String, Object> filterResult, GrailsParameterMap params) {
 

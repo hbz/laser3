@@ -10,11 +10,11 @@ import javax.sql.DataSource
 @Slf4j
 class DatabaseInfo {
 
-    static final String DE_U_CO_PHONEBK_X_ICU   = "de-u-co-phonebk-x-icu"
-    static final String EN_US_U_VA_POSIX_X_ICU  = "en-US-u-va-posix-x-icu"
-    
-    static final String DS_DEFAULT = "DS_DEFAULT"
-    static final String DS_STORAGE = "DS_STORAGE"
+    public static final String DE_U_CO_PHONEBK_X_ICU   = "de-u-co-phonebk-x-icu"
+    public static final String EN_US_U_VA_POSIX_X_ICU  = "en-US-u-va-posix-x-icu"
+
+    public static final String DS_DEFAULT = "DS_DEFAULT"
+    public static final String DS_STORAGE = "DS_STORAGE"
 
     static DataSource getDataSource(String dsIdentifier = DS_DEFAULT) {
         if (dsIdentifier == DS_DEFAULT) {

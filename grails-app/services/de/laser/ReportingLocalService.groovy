@@ -19,8 +19,8 @@ class ReportingLocalService {
     FinanceControllerService financeControllerService
     FinanceService financeService
 
-    static final String TMPL_PATH_CHART = '/subscription/reporting/chart/'
-    static final String TMPL_PATH_DETAILS = '/subscription/reporting/details/'
+    public static final String TMPL_PATH_CHART   = '/subscription/reporting/chart/'
+    public static final String TMPL_PATH_DETAILS = '/subscription/reporting/details/'
 
     // ----- <X>Controller.reporting() -----
 
