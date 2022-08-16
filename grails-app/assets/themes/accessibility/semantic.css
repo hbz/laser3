@@ -51687,6 +51687,11 @@ legend {
 .ui.form .fields .field.la-more-margin {
   margin: 0 0 2em;
 }
+
+.la-textarea-resize-vertical {
+  resize: vertical!important;
+  /* user can resize vertically, but width is fixed */
+}
 /*!
  * # Fomantic-UI 2.8.8 - Grid
  * http://github.com/fomantic/Fomantic-UI/

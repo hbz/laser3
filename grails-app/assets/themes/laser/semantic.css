@@ -41421,6 +41421,10 @@ img.ui.bordered.image {
 /*******************************
          Theme Overrides
 *******************************/
+
+/*******************************
+         Theme Overrides
+*******************************/
 /*!
  * # Fomantic-UI 2.8.8 - Label
  * http://github.com/fomantic/Fomantic-UI/
@@ -51480,6 +51484,11 @@ legend {
 .ui.form .fields .field.la-more-margin {
   margin: 0 0 2em;
 }
+
+.la-textarea-resize-vertical {
+  resize: vertical!important;
+  /* user can resize vertically, but width is fixed */
+}
 /*!
  * # Fomantic-UI 2.8.8 - Grid
  * http://github.com/fomantic/Fomantic-UI/
@@ -54026,7 +54035,7 @@ legend {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  margin: 1rem 0;
+  margin: 0em 0em 1rem;
   font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
   background: #FFFFFF;
   font-weight: normal;
@@ -54096,7 +54105,7 @@ legend {
   background: none;
   padding: 0.92857143em 1.14285714em;
   text-transform: none;
-  color: #1B1C1D;
+  color: #004678;
   font-weight: normal;
   -webkit-transition: background 0.1s ease, color 0.1s ease, -webkit-box-shadow 0.1s ease;
   transition: background 0.1s ease, color 0.1s ease, -webkit-box-shadow 0.1s ease;
@@ -54730,7 +54739,7 @@ Floated Menu / Item
   border-right: 1px solid transparent;
   border-top: 2px solid transparent;
   padding: 0.92857143em 1.42857143em;
-  color: #1B1C1D;
+  color: #004678;
 }
 
 .ui.tabular.menu .item:before {
@@ -55094,8 +55103,8 @@ Floated Menu / Item
 }
 
 .ui.secondary.pointing.menu .item > .circular.label {
-  margin-top: -0.5em;
-  margin-bottom: -0.5em;
+  margin-top: -0.3em;
+  margin-bottom: -0.3em;
 }
 
 /* Item Types */
