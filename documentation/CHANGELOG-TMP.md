@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4400    16.08.2022  rc-2.3  2.3.7       Andreas Bug         eindeutigere Benennung eines Panels
+
 4402    15.08.2022  rc-2.3  2.3.7       Andreas Bug         Zugriffsfehler bei Überprüfung von Nutzungsstatistiken
 
 --      15.08.2022  rc-2.3  2.3.6       Andreas Bug         Fremdschlüsselverletzung bei Tilgen entfernter Titel beseitigt
