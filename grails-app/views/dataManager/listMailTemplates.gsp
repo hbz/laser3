@@ -18,7 +18,7 @@
 <ui:form>
     <g:if test="${mailTemplates?.size() > 0}">
 
-        <table class="ui celled sortable table table-tworow la-js-responsive-table la-table">
+        <table class="ui celled sortable table la-js-responsive-table la-table">
             <thead>
             <tr>
                 <th>${message(code: 'sidewide.number')}</th>

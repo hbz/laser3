@@ -7,20 +7,23 @@
         <table class="ui sortable celled la-js-responsive-table la-table table">
             <thead>
             <tr>
-                <th class="two wide">${message(code: 'task.endDate.label')}</th>
-                <th class="six wide">
+                <th class="two wide" rowspan="2" scope="col">${message(code: 'task.endDate.label')}</th>
+                <th class="six wide" rowspan="2" scope="col">
                     ${message(code: 'default.title.label')}
                     <g:if test="${controllerName == 'myInstitution'}">
                         / ${message(code: 'task.object.label')}
                     </g:if>
                 </th>
-                <th class="three wide">
+                <th class="three wide" rowspan="2" scope="col">
                     ${message(code: 'task.assignedTo.label')}
                 </th>
-                <th>${message(code: 'task.status.label')}</th>
-                <th class="two wide">${message(code: 'task.creator.label')}</th>
-                <th class="two wide">${message(code: 'task.createDate.label')}</th>
-                <th class="one wide la-action-info">${message(code:'default.actions.label')}</th>
+                <th rowspan="2" scope="col">${message(code: 'task.status.label')}</th>
+                <th class="two wide" rowspan="2" scope="col">${message(code: 'task.creator.label')}</th>
+                <th class="two wide la-smaller-table-head" scope="col">${message(code: 'default.lastUpdated.label')}</th>
+                <th class="one wide la-action-info" rowspan="2" scope="col">${message(code:'default.actions.label')}</th>
+            </tr>
+            <tr>
+                <th class="two wide la-smaller-table-head" scope="col">${message(code: 'default.dateCreated.label')}</th>
             </tr>
             </thead>
             <tbody>
@@ -68,7 +71,14 @@
                         </g:else>
                     </td>
 
-                    <td><g:formatDate format="${message(code:'default.date.format.notime')}" date="${taskInstance.createDate}"/></td>
+                    <td>
+                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${taskInstance.lastUpdated}"/>
+
+                        <g:if test="${taskInstance.dateCreated != taskInstance.lastUpdated}">
+                            <br />
+                            <span class="sc_darkgrey"><g:formatDate format="${message(code:'default.date.format.notime')}" date="${taskInstance.createDate}"/></span>
+                        </g:if>
+                    </td>
 
                     <td class="x">
                         <g:if test="${overwriteEditable}">

@@ -45,7 +45,7 @@
         }
     }
 %>
-<table id="costTable_${customerType}" class="ui celled monitor stackable sortable  table table-tworow la-js-responsive-table la-table la-ignore-fixed">
+<table id="costTable_${customerType}" class="ui celled monitor stackable sortable  table la-js-responsive-table la-table la-ignore-fixed">
     <thead>
         <tr>
             <g:if test="${tmplShowCheckbox && editable}">

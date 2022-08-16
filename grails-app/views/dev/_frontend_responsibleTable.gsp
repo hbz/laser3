@@ -12,7 +12,7 @@
         </p>
     </div>
 </div>
-<table class="ui celled sortable table table-tworow la-table la-js-responsive-table">
+<table class="ui celled sortable table la-table la-js-responsive-table">
     <thead>
     <tr>
 
@@ -157,7 +157,7 @@
 <div class="annotation transition visible" style="display: none;">
     <div class="ui instructive bottom attached segment">
         <pre aria-hidden="true">
-&lt;table class="ui celled sortable table table-tworow la-table <strong>la-js-responsive-table</strong>"&gt;
+&lt;table class="ui celled sortable table la-table <strong>la-js-responsive-table</strong>"&gt;
         .
         .
         .

@@ -36,7 +36,7 @@
 </g:if>
 <g:if test="${entries}">
     <g:set var="start" value="${System.currentTimeMillis()}"/>
-    <table class="ui celled sortable table table-tworow la-js-responsive-table la-table la-ignore-fixed">
+    <table class="ui celled sortable table la-js-responsive-table la-table la-ignore-fixed">
         <thead>
         <tr>
             <th rowspan="2" class="center aligned">${message(code:'sidewide.number')}</th>

@@ -9,7 +9,7 @@
         wideColspan = 9
     }
 %>
-<table id="costTable_${customerType}" class="ui celled sortable monitor stackable table table-tworow la-js-responsive-table la-table la-ignore-fixed">
+<table id="costTable_${customerType}" class="ui celled sortable monitor stackable table la-js-responsive-table la-table la-ignore-fixed">
     <thead>
         <tr>
             <g:if test="${!fixedSubscription}">
