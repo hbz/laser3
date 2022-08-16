@@ -85,8 +85,4 @@ beans = {
     securityContextPersistenceFilter( SecurityContextPersistenceFilter )
     // .. ]
 
-    //workaround for multi datasource bug, see https://github.com/grails/grails-database-migration/issues/157 (the PR is still open!)
-    springConfig.addAlias('sessionFactory_dataSource_storage', 'sessionFactory_storage')
-    springConfig.addAlias('transactionManager_dataSource_storage', 'transactionManager_storage')
-
 }
