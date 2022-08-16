@@ -31,9 +31,7 @@
 
 ## Build the semantic.min.css and semantic.min.js 
 
-     cd ..
-     cd node_modules/fomantic-ui
-     npx gulp build
+     gulp build
 
 ---
 
