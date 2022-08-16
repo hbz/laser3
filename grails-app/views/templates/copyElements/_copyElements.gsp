@@ -27,7 +27,7 @@
             </div>
         </g:if>
 
-        <table class="ui celled table table-tworow la-js-responsive-table la-table">
+        <table class="ui celled table la-js-responsive-table la-table">
             <thead>
             <tr>
                 <th class="six wide">

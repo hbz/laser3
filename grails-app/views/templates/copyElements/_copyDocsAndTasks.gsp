@@ -16,7 +16,7 @@
             params="[workFlowPart: workFlowPart, sourceObjectId: genericOIDService.getOID(sourceObject), targetObjectId: genericOIDService.getOID(targetObject), isRenewSub: isRenewSub, fromSurvey: fromSurvey, copyObject: copyObject]"
             method="post" class="ui form newLicence">
         <input type="hidden" name="${FormService.FORM_SERVICE_TOKEN}" value="${formService.getNewToken()}"/>
-        <table class="ui celled table table-tworow la-js-responsive-table la-table">
+        <table class="ui celled table la-js-responsive-table la-table">
             <thead>
             %{--DOCUMENTS:--}%
                 <tr>

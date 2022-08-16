@@ -25,22 +25,22 @@ import java.text.SimpleDateFormat
 @Slf4j
 class PendingChange {
 
-    final static Set<String> PRICE_FIELDS = ['listPrice']
-    final static Set<String> DATE_FIELDS = ['accessStartDate', 'accessEndDate', 'startDate', 'endDate']
-    final static Set<String> REFDATA_FIELDS = ['status', 'breakable', 'file', 'consistent', 'packageStatus', 'scope']
+    public static final Set<String> PRICE_FIELDS = ['listPrice']
+    public static final Set<String> DATE_FIELDS = ['accessStartDate', 'accessEndDate', 'startDate', 'endDate']
+    public static final Set<String> REFDATA_FIELDS = ['status', 'breakable', 'file', 'consistent', 'packageStatus', 'scope']
 
-    final static PROP_LICENSE = 'license'
-    final static PROP_PKG = 'pkg'
-    final static PROP_SUBSCRIPTION = 'subscription'
-    final static PROP_TIPP = 'tipp'
-    final static PROP_TIPP_COVERAGE = 'tippCoverage'
-    final static PROP_PRICE_ITEM = 'priceItem'
-    final static PROP_COST_ITEM = 'costItem'
+    public static final String PROP_LICENSE = 'license'
+    public static final String PROP_PKG = 'pkg'
+    public static final String PROP_SUBSCRIPTION = 'subscription'
+    public static final String PROP_TIPP = 'tipp'
+    public static final String PROP_TIPP_COVERAGE = 'tippCoverage'
+    public static final String PROP_PRICE_ITEM = 'priceItem'
+    public static final String PROP_COST_ITEM = 'costItem'
 
-    final static MSG_LI01 = 'pendingChange.message_LI01'
-    final static MSG_LI02 = 'pendingChange.message_LI02'
-    final static MSG_SU01 = 'pendingChange.message_SU01'
-    final static MSG_SU02 = 'pendingChange.message_SU02'
+    public static final String MSG_LI01 = 'pendingChange.message_LI01'
+    public static final String MSG_LI02 = 'pendingChange.message_LI02'
+    public static final String MSG_SU01 = 'pendingChange.message_SU01'
+    public static final String MSG_SU02 = 'pendingChange.message_SU02'
 
     Subscription subscription
     License license

@@ -1,7 +1,7 @@
 <%@page import="de.laser.reporting.report.myInstitution.base.BaseConfig" %>
 <laser:serviceInjection/>
 
-        <div class="menu ui top attached tabular">
+        <div class="menu ui top attached tabular la-tab-with-js">
             <a class="active item" data-tab="costItem-filter-tab-1">${message(code:'subscription.costItems.label')}</a>
         </div><!-- .menu -->
 

@@ -11,7 +11,7 @@
 
 <g:set var="tmplTab" value="${tab ?: 'prototypes'}" />
 
-<div class="ui secondary stackable pointing tabular menu">
+<div class="ui secondary stackable pointing tabular la-tab-with-js menu">
     <a data-tab="workflows" class="item <% if (tmplTab == 'workflows') { print 'active' } %>">${message(code:'workflow.plural')}</a>
     %{-- <a data-tab="templates" class="item <% if (tmplTab == 'templates') { print 'active' } %>">Templates</a> --}%
     <a data-tab="prototypes" class="item <% if (tmplTab == 'prototypes') { print 'active' } %>">${message(code:'default.prototype.plural')}</a>
@@ -31,6 +31,7 @@
             <div class="item">
                 <span>
                     <strong>${message(code:'default.priority.label')}:</strong>
+                    &nbsp;&nbsp;
                     <i class="icon circle large"></i>Normal
                     <i class="icon arrow alternate circle up large"></i>Wichtig
                     <i class="icon arrow alternate circle down large"></i>Optional
@@ -39,7 +40,8 @@
             <div class="item">
                 <span>
                     <strong>${message(code:'default.status.label')}:</strong>
-                    <i class="icon la-light-grey circle large"></i>Offen
+                    &nbsp;&nbsp;
+                    <i class="icon sc_darkgrey circle large"></i>Offen
                     <i class="icon green circle large"></i>Erledigt
                     <i class="icon orange circle large"></i>Abgebrochen
                 </span>

@@ -1,8 +1,8 @@
 package de.laser
 
 import de.laser.finance.CostItem
-import de.laser.storage.RDStore
 import de.laser.oap.OrgAccessPointLink
+import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional

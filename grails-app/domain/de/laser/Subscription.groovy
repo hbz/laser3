@@ -607,7 +607,8 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
      */
     Subscription _getCalculatedSuccessorForSurvey() {
         Set<Subscription> subscriptions = this._getCalculatedSuccessor()
-        subscriptions = subscriptions.findAll {it.type.id == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id}
+        //was: it.type.id == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id - MOE: check if indeed you meant to examine the "new" non-mandatory (!) type!
+        subscriptions = subscriptions.findAll { Subscription s -> s._getCalculatedType() == TYPE_CONSORTIAL}
 
         Subscription subscription = null
         if(subscriptions.size() == 1){

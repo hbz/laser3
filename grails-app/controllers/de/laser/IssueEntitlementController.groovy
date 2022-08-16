@@ -24,7 +24,7 @@ class IssueEntitlementController {
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
-    final static Map<String, String> CHECK404_ALTERNATIVES = [ : ]
+    public static final Map<String, String> CHECK404_ALTERNATIVES = [ : ]
 
     //-----
 

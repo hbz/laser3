@@ -19,9 +19,7 @@ import de.laser.storage.RDConstants
  */
 class OrgSetting {
 
-    final static SETTING_NOT_FOUND = "SETTING_NOT_FOUND"
-    //in order of display at ids.gsp, used there
-    final static SETTING_TABS = ['general', 'api', 'ezb', 'natstat', 'oamonitor']
+    public static final SETTING_NOT_FOUND = "SETTING_NOT_FOUND"
 
     /**
      * The settings for an {@link Org} which can be configured

@@ -57,7 +57,7 @@ class OrganisationController  {
 
     //-----
 
-    final static Map<String, String> CHECK404_ALTERNATIVES = [
+    public static final Map<String, String> CHECK404_ALTERNATIVES = [
             'list' : 'menu.public.all_orgs',
             'listInstitution' : 'menu.public.all_insts',
             'listProvider' : 'menu.public.all_providers'

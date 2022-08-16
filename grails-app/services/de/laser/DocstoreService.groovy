@@ -1,7 +1,7 @@
 package de.laser
 
-import de.laser.storage.RDStore
 import de.laser.interfaces.CalculatedType
+import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
 import grails.gorm.transactions.Transactional
 

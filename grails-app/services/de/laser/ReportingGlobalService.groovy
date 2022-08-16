@@ -17,8 +17,8 @@ class ReportingGlobalService {
 
     ContextService contextService
 
-    static final String TMPL_PATH_CHART = '/myInstitution/reporting/chart/'
-    static final String TMPL_PATH_DETAILS = '/myInstitution/reporting/details/'
+    public static final String TMPL_PATH_CHART   = '/myInstitution/reporting/chart/'
+    public static final String TMPL_PATH_DETAILS = '/myInstitution/reporting/details/'
 
     // ----- MyInstitutionController.reporting() -----
 

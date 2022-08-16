@@ -1,13 +1,12 @@
 package de.laser
 
-
-import de.laser.exceptions.SyncException
 import de.laser.config.ConfigMapper
+import de.laser.exceptions.SyncException
 import de.laser.http.BasicHttpClient
+import de.laser.oap.OrgAccessPointLink
 import de.laser.remote.GlobalRecordSource
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
-import de.laser.oap.OrgAccessPointLink
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import groovy.sql.GroovyRowResult

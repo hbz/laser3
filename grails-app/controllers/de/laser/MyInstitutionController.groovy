@@ -1604,7 +1604,7 @@ join sub.orgRelations or_sub where
             return;
         }
 
-        def preCon      = taskService.getPreconditions(result.institution)
+        Map<String, Object> preCon = taskService.getPreconditions(result.institution)
         result << preCon
 
         render template: '/templates/tasks/modal_create', model: result

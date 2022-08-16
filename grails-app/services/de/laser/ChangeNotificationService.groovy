@@ -1,9 +1,8 @@
 package de.laser
 
-import de.laser.auth.User
-import de.laser.storage.RDConstants
-import de.laser.storage.RDStore
+
 import de.laser.base.AbstractLockableService
+import de.laser.storage.RDStore
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import org.grails.web.json.JSONElement

@@ -12,7 +12,7 @@ class FormService {
 
     ContextService contextService
 
-    final static String FORM_SERVICE_TOKEN = 'FORM_SERVICE_TOKEN'
+    public static final String FORM_SERVICE_TOKEN = 'FORM_SERVICE_TOKEN'
 
     /**
      * Generates a new individual token to ensure unique form submission

@@ -12,3 +12,4 @@ out/
 .classpath
 .project
 .settings
+/files/fomantic/node_modules/

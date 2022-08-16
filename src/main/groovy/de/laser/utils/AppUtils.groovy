@@ -18,12 +18,12 @@ import java.nio.file.Paths
 @Slf4j
 class AppUtils {
 
-    public static final PROD    = 'PROD'
-    public static final QA      = 'QA'
-    public static final DEV     = 'DEV'
-    public static final LOCAL   = 'LOCAL'
+    public static final String PROD    = 'PROD'
+    public static final String QA      = 'QA'
+    public static final String DEV     = 'DEV'
+    public static final String LOCAL   = 'LOCAL'
 
-    final static String AU_S_DEBUGMODE = 'AppUtils/Session/DebugMode'
+    public static final String AU_S_DEBUGMODE = 'AppUtils/Session/DebugMode'
 
     // -- server
 

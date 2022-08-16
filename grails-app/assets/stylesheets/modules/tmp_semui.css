@@ -223,20 +223,20 @@ body.myInstitution_dashboard .ui.tab .item .header {
 
 #showSystemInfo {
     position: fixed;
-    bottom: 40px;
+    bottom: 45px;
     right: 10px;
 }
 
 #showDebugInfo {
     position: fixed;
-    bottom: 40px;
+    bottom: 45px;
     right: 55px;
 }
 
 #system-profiler {
     position: fixed;
-    bottom: 3px;
-    right: 1px;
+    bottom: 10px;
+    right: 10px;
 }
 
 /* -- 2021-01-06 -- */
@@ -254,6 +254,9 @@ main.ui.container.main {
     top: 0;
     right: 0;
 }
+
+a.icon.button.wfModalLink { background-color: white; }
+a.icon.button.wfModalLink:hover { background-color: #eeeeee; }
 
 /* -- new header icons -- */
 

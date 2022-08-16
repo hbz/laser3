@@ -4,7 +4,7 @@
             <label><g:message code="exportClickMe.fieldsToExport"/></label>
         </div>
 
-        <div class="ui top attached stackable tabular menu">
+        <div class="ui top attached stackable tabular la-tab-with-js menu">
             <g:each in="${formFields}" var="fields" status="i">
                 <a class="${("tab-${i}" == "tab-0") ? 'active' : ''}  item"
                    data-tab="tab-${i}">${fields.value.message ? message(code: fields.value.message) : fields.value.label}</a>

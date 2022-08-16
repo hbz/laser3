@@ -18,10 +18,10 @@ import org.springframework.web.socket.config.annotation.StompEndpointRegistry
 @EnableWebSocketMessageBroker
 class CustomWebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-    final static String WS_STOMP        = '/ws-socket'
-    final static String WS_APP          = '/ws-app'
-    final static String WS_TOPIC        = '/ws-topic'
-    final static String WS_TOPIC_STATUS = '/ws-topic/status'
+    public static final String WS_STOMP        = '/ws-socket'
+    public static final String WS_APP          = '/ws-app'
+    public static final String WS_TOPIC        = '/ws-topic'
+    public static final String WS_TOPIC_STATUS = '/ws-topic/status'
 
     @Override
     void configureMessageBroker(MessageBrokerRegistry messageBrokerRegistry) {
