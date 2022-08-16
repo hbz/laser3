@@ -292,7 +292,7 @@ class ProfileController {
     }
 
     //Error: EmailCCReminder without EmailReminder
-    if (user.getSetting(KEYS.IS_REMIND_BY_EMAIL, RDStore.YN_NO).equals(RDStore.YN_NO) && params.isRemindCCByEmail){
+    if (user.getSettingsValue(KEYS.IS_REMIND_BY_EMAIL, RDStore.YN_NO).equals(RDStore.YN_NO) && params.isRemindCCByEmail){
         flash.error += message(code:'profile.updateProfile.updated.isRemindCCByEmail.isRemindByEmailNotChecked')
     } else {
         if ( params.isRemindCCByEmail && ( ! params.remindCCEmailaddress) ) {
@@ -401,7 +401,7 @@ class ProfileController {
         }
 
         //Error: EmailCCReminder without EmailReminder
-        if (user.getSetting(KEYS.IS_NOTIFICATION_BY_EMAIL, RDStore.YN_NO).equals(RDStore.YN_NO) && params.isNotificationCCByEmail){
+        if (user.getSettingsValue(KEYS.IS_NOTIFICATION_BY_EMAIL, RDStore.YN_NO).equals(RDStore.YN_NO) && params.isNotificationCCByEmail){
             flash.error += message(code:'profile.updateProfile.updated.isNotificationCCByEmail.isNotificationByEmailNotChecked')
         } else {
             if ( params.isNotificationCCByEmail && ( ! params.notificationCCEmailaddress) ) {
@@ -532,30 +532,6 @@ class ProfileController {
             userSetting.setValue(newValue)
             flash.message += ( messageSuccess + "<br/>" )
         }
-    }
-
-    /**
-     * Checks if the user has submitted an email address before updating the reminder setting,
-     * updates the setting in case of success
-     * @return the updated profile view
-     */
-    @Secured(['ROLE_USER'])
-    @Transactional
-    def updateIsRemindByEmail() {
-        User user = contextService.getUser()
-
-        flash.message=""
-        def was_isRemindByEmail = user.getSetting(KEYS.IS_REMIND_BY_EMAIL, RDStore.YN_NO)
-        if ( was_isRemindByEmail != params.isRemindByEmail ) {
-            was_isRemindByEmail = params.isRemindByEmail
-            flash.message += message(code:'profile.updateProfile.updated.isRemindByEmail')
-            if ( ! user.email && was_isRemindByEmail.equals(RDStore.YN_YES)) {
-                flash.error = message(code:'profile.updateProfile.updated.isRemindByEmail.error') as String
-            }
-        }
-        user.save()
-
-        redirect(action: "index")
     }
 
     /**

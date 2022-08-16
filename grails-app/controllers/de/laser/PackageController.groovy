@@ -47,7 +47,7 @@ class PackageController {
 
     static allowedMethods = [create: ['GET', 'POST'], edit: ['GET', 'POST'], delete: 'POST']
 
-    final static Map<String, String> CHECK404_ALTERNATIVES = [
+    public static final Map<String, String> CHECK404_ALTERNATIVES = [
             'index' : 'package.show.all',
             'list' : 'myinst.packages',
             'myInstitution/currentPackages' : 'menu.my.packages'

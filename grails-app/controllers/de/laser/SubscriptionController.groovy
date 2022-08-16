@@ -43,7 +43,7 @@ class SubscriptionController {
 
     //-----
 
-    final static Map<String, String> CHECK404_ALTERNATIVES = [
+    public static final Map<String, String> CHECK404_ALTERNATIVES = [
             'myInstitution/currentSubscriptions' : 'myinst.currentSubscriptions.label'
     ]
 

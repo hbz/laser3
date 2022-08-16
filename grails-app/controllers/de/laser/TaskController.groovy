@@ -24,7 +24,7 @@ class TaskController  {
 
 	static allowedMethods = [create: 'POST', edit: 'POST', delete: 'POST']
 
-	static final Map<String, String> CHECK404_ALTERNATIVES = [
+	public static final Map<String, String> CHECK404_ALTERNATIVES = [
 			'myInstitution/tasks' : 'menu.institutions.tasks'
 	]
 

@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServletRequest
 @Slf4j
 class SwissKnife {
 
-    final static Map <String, String> NUMBER_AS_STRING = [
+    static final Map <String, String> NUMBER_AS_STRING = [
             '0' : 'zero',
             '1' : 'one',
             '2' : 'two',

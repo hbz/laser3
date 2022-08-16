@@ -12,7 +12,7 @@ import net.sf.ehcache.Cache
 @CompileStatic
 class EhcacheWrapper {
 
-    final static String SEPARATOR = '_'
+    public static final String SEPARATOR = '_'
 
     CacheService cacheService = BeanStore.getCacheService()
 

@@ -35,11 +35,11 @@ class GlobalSourceSyncService extends AbstractLockableService {
     ApiSource apiSource
     GlobalRecordSource source
 
-    final static long RECTYPE_PACKAGE = 0
-    final static long RECTYPE_TITLE = 1
-    final static long RECTYPE_ORG = 2
-    final static long RECTYPE_TIPP = 3
-    final static String PERMANENTLY_DELETED = "Permanently Deleted"
+    public static final long RECTYPE_PACKAGE = 0
+    public static final long RECTYPE_TITLE = 1
+    public static final long RECTYPE_ORG = 2
+    public static final long RECTYPE_TIPP = 3
+    public static final String PERMANENTLY_DELETED = "Permanently Deleted"
 
     Map<String, RefdataValue> titleMedium = [:],
             tippStatus = [:],

@@ -9,12 +9,12 @@ import java.util.regex.Pattern
 @CompileStatic
 class PasswordUtils {
 
-    static final String USER_PASSWORD_INFO =
+    public static final String USER_PASSWORD_INFO =
             "Das Passwort muss zwischen 8 und 20 Zeichen lang sein. " +
             "Es muss mindestens einen Großbuchstaben, einen Kleinbuchstaben, eine Zahl sowie ein Sonderzeichen aus der Liste ( !\$%&@#^+*~=:; ) enthalten. " +
             "Leerzeichen dürfen nicht vorkommen."
 
-    static final String USER_PASSWORD_REGEX =
+    public static final String USER_PASSWORD_REGEX =
             '^' +
             '(?=.*[A-Z])' +             // an upper case alphabet that must occur at least once
             '(?=.*[a-z])' +             // a lower case alphabet must occur at least once

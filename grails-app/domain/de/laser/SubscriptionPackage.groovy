@@ -26,7 +26,8 @@ class SubscriptionPackage implements Comparable {
   Date dateCreated
   Date lastUpdated
 
-  static final String FREEZE_HOLDING = "freezeHolding"
+  public static final String FREEZE_HOLDING = "freezeHolding"
+
   static transients = ['issueEntitlementsofPackage', 'IEandPackageSize', 'currentTippsofPkg', 'packageName'] // mark read-only accessor methods
 
   static mapping = {

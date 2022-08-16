@@ -25,7 +25,7 @@ import de.laser.storage.RDConstants
  * 3. the reference category {@link RDConstants#PERSON_RESPONSIBILITY}
  */
 class PersonRole implements Comparable<PersonRole>{
-    private static final String REFDATA_GENERAL_CONTACT_PRS = "General contact person"
+    public static final String REFDATA_GENERAL_CONTACT_PRS = "General contact person"
 
     public static final String TYPE_FUNCTION        = 'functionType'
     public static final String TYPE_POSITION        = 'positionType'

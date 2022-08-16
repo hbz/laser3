@@ -42,19 +42,18 @@ class PendingChangeService extends AbstractLockableService {
     MessageSource messageSource
     SubscriptionService subscriptionService
 
+    public static final String EVENT_OBJECT_NEW    = 'New Object'
+    public static final String EVENT_OBJECT_UPDATE = 'Update Object'
 
-    final static EVENT_OBJECT_NEW = 'New Object'
-    final static EVENT_OBJECT_UPDATE = 'Update Object'
+    public static final String EVENT_TIPP_ADD      = 'TIPPAdd'
+    public static final String EVENT_TIPP_EDIT     = 'TIPPEdit'
+    public static final String EVENT_TIPP_DELETE   = 'TIPPDeleted'
 
-    final static EVENT_TIPP_ADD = 'TIPPAdd'
-    final static EVENT_TIPP_EDIT = 'TIPPEdit'
-    final static EVENT_TIPP_DELETE = 'TIPPDeleted'
+    public static final String EVENT_COVERAGE_ADD    = 'CoverageAdd'
+    public static final String EVENT_COVERAGE_UPDATE = 'CoverageUpdate'
+    public static final String EVENT_COVERAGE_DELETE = 'CoverageDeleted'
 
-    final static EVENT_COVERAGE_ADD = 'CoverageAdd'
-    final static EVENT_COVERAGE_UPDATE = 'CoverageUpdate'
-    final static EVENT_COVERAGE_DELETE = 'CoverageDeleted'
-
-    final static EVENT_PROPERTY_CHANGE = 'PropertyChange'
+    public static final String EVENT_PROPERTY_CHANGE = 'PropertyChange'
 
     /*boolean performMultipleAcceptsForJob(List<PendingChange> subscriptionChanges, List<PendingChange> licenseChanges) {
         log.debug('performMultipleAcceptsFromJob()')

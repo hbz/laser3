@@ -16,7 +16,7 @@ class TippController  {
 
   //-----
 
-  final static Map<String, String> CHECK404_ALTERNATIVES = [
+  public static final Map<String, String> CHECK404_ALTERNATIVES = [
           'title/list': 'menu.public.all_titles',
           'myInstitution/currentTitles': 'myinst.currentTitles.label'
   ]
