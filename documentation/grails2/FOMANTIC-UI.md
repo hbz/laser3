@@ -1,4 +1,11 @@
-# Initial setup
+# Read this before you deal with Fomantic UI Build
+
+- do not install Fomantic UI from the scratch because we have some core changes
+    - in files/frontend/semantic/src/definitions/modules/dropdown.js because WCAG stuff
+    - in files/frontend/semantic/tasks/build.js because 2 themes
+
+---
+# Use the frontend build process but leave the Fomantic UI installation out of the picture
 
 ## install nodejs on Linux
 
@@ -17,23 +24,24 @@
 
     npm install -g gulp
 
-## installing fomantic-ui
+## update fomantic ui
 
-- is not needed
-- we put the all of the fomantic ui files in the repository
-- we needed to change some src files for accessibility reason
+    cd frontend/semantic
+    npm update fomantic-ui
 
-   
+## Build the semantic.min.css and semantic.min.js 
 
+     cd ..
+     cd node_modules/fomantic-ui
+     npx gulp build
 
-# How to update fomantic-ui
+---
 
+# Installing fomantic ui from scratch 
 
+- see https://fomantic-ui.com/introduction/getting-started.html
 
- 
-    
------------------------------------------------------
-
+---
 
 # How to customize CSS
 
