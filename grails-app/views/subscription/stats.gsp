@@ -1,4 +1,4 @@
-<%@ page import="java.time.format.DateTimeFormatter; de.laser.utils.DateUtils; de.laser.storage.RDStore; de.laser.Subscription; de.laser.SubscriptionPackage; de.laser.IssueEntitlement; de.laser.stats.Counter4ApiSource; de.laser.stats.Counter4Report; de.laser.stats.Counter5Report" %>
+<%@ page import="de.laser.utils.DateUtils; de.laser.storage.RDStore; de.laser.Subscription; de.laser.SubscriptionPackage; de.laser.IssueEntitlement; de.laser.stats.Counter4ApiSource; de.laser.stats.Counter4Report; de.laser.stats.Counter5Report" %>
 <laser:htmlStart message="subscription.details.stats.label" serviceInjection="true"/>
 
 <g:set var="subjects" value="${controlledListService.getAllPossibleSubjectsBySub(subscription)}"/>
@@ -215,7 +215,7 @@
             <ui:tabs class="la-overflowX-auto">
                 <ui:tabsItem controller="subscription" action="stats" params="${params + [tab: 'total']}" text="${message(code: 'default.usage.allUsageGrid.header')}" tab="total"/>
                 <g:each in="${monthsInRing}" var="month">
-                    <ui:tabsItem controller="subscription" action="stats" params="${params + [tab: month.format(DateTimeFormatter.ofPattern('yyyy-MM'))]}" text="${month.format(DateTimeFormatter.ofPattern('yyyy-MM'))}" tab="${month.format(DateTimeFormatter.ofPattern('yyyy-MM'))}"/>
+                    <ui:tabsItem controller="subscription" action="stats" params="${params + [tab: DateUtils.getSDF_yyyyMM().format(month)]}" text="${DateUtils.getSDF_yyyyMM().format(month)}" tab="${DateUtils.getSDF_yyyyMM().format(month)}"/>
                 </g:each>
             </ui:tabs>
             <div class="ui bottom attached tab active segment">
