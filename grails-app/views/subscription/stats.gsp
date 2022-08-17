@@ -61,11 +61,11 @@
                     <tr>
                         <th><g:message code="default.usage.consortiaTableHeader"/></th>
                     </tr>
-                    <g:each in="${Subscription.executeQuery('select new map(sub.id as memberSubId, org.sortname as memberName, org.id as memberId) from OrgRole oo join oo.org org join oo.sub sub where sub.instanceOf = :parent and oo.roleType in (:subscrRoles) and exists (select sp.id from SubscriptionPackage sp where sp.subscription = sub) order by org.sortname asc', [parent: subscription, subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])}" var="row">
+                    <g:each in="${Subscription.executeQuery('select new map(sub.id as memberSubId, org.sortname as memberName, org.globalUID as memberId) from OrgRole oo join oo.org org join oo.sub sub where sub.instanceOf = :parent and oo.roleType in (:subscrRoles) and exists (select sp.id from SubscriptionPackage sp where sp.subscription = sub) order by org.sortname asc', [parent: subscription, subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])}" var="row">
                         <tr>
                             <td>
                                 <g:link action="stats" id="${row.memberSubId}">${row.memberName}
-                                    <g:if test="${subscriptionService.areStatsAvailable(subscribedPlatforms, subscription.packages.collect { SubscriptionPackage sp -> sp.pkg.id }, [row.memberId])}">
+                                    <g:if test="${subscriptionService.areStatsAvailable(subscribedPlatforms, subscription.packages, [row.memberId])}">
                                         <span class="la-popup-tooltip la-delay" data-content="${message(code: 'default.usage.statsAvailable')}"><i class="chart bar outline icon"></i></span>
                                     </g:if>
                                 </g:link>
@@ -189,7 +189,7 @@
                         <div class="field">
                             <g:if test="${accessTypes}">
                                 <label for="accessType"><g:message code="default.usage.accessType"/></label>
-                                <select name="accessType" id="accessType" class="ui selection dropdown">
+                                <select name="accessType" id="accessType" class="ui search selection dropdown">
                                     <option value=""><g:message code="default.select.choose.label"/></option>
                                     <g:each in="${accessTypes}" var="accessType">
                                         <option <%=(params.accessType == accessType) ? 'selected="selected"' : ''%>
@@ -231,7 +231,7 @@
                             <g:each in="${sums}" var="row">
                                 <tr>
                                     <td><g:formatDate date="${row.reportMonth}" format="yyyy-MM"/></td>
-                                    <g:set var="reportType" value="${row.reportType in Counter4ApiSource.COUNTER_4_REPORTS ? row.reportType : row.reportType.toLowerCase()}"/>
+                                    <g:set var="reportType" value="${row.reportType in Counter4Report.COUNTER_4_REPORTS ? row.reportType : row.reportType.toLowerCase()}"/>
                                     <td><g:link action="stats" params="${params + [tab: DateUtils.getSDF_yyyyMM().format(row.reportMonth), reportType: reportType, metricType: row.metricType]}">${row.reportCount}</g:link></td>
                                 </tr>
                             </g:each>

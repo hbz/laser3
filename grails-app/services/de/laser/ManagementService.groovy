@@ -136,7 +136,7 @@ class ManagementService {
             [result:null,status:STATUS_ERROR]
         }
         else {
-            result.platforms = Platform.executeQuery('select plat from Platform plat where plat.org in (select oo.org from OrgRole oo where oo.pkg in (select sp.pkg from SubscriptionPackage sp where sp.subscription = :parentSub)) and plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :parentSub))', [parentSub: result.subscription]) as Set<Platform>
+            result.platforms = Platform.executeQuery('select plat from Platform plat where plat.org in (select oo.org from OrgRole oo where oo.pkg in (select sp.pkg from SubscriptionPackage sp where sp.subscription = :parentSub)) and plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :parentSub)', [parentSub: result.subscription]) as Set<Platform>
             if(!params.tabPlat && result.platforms)
                 result.tabPlat = result.platforms[0].id
             else result.tabPlat = params.long('tabPlat')

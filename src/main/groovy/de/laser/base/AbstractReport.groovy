@@ -9,13 +9,37 @@ import de.laser.TitleInstancePackagePlatform
  */
 abstract class AbstractReport {
 
-    TitleInstancePackagePlatform title
+    String titleUID
     String reportType
     String publisher
     String metricType
-    Platform platform
-    Org reportInstitution
+    String platformUID
+    String reportInstitutionUID
     Date reportFrom
     Date reportTo
     Integer reportCount
+
+    TitleInstancePackagePlatform getTitle() {
+        return titleUID ? TitleInstancePackagePlatform.findByGlobalUID(titleUID) : null
+    }
+
+    void setTitle(TitleInstancePackagePlatform title) {
+        this.titleUID = title.globalUID
+    }
+
+    Platform getPlatform() {
+        return platformUID ? Platform.findByGlobalUID(platformUID) : null
+    }
+
+    void setPlatform(Platform platform) {
+        this.platformUID = platform.globalUID
+    }
+
+    Org getReportInstitution() {
+        return reportInstitutionUID ? Org.findByGlobalUID(reportInstitutionUID) : null
+    }
+
+    void setReportInstitution(Org reportInstitution) {
+        this.reportInstitutionUID = reportInstitution.globalUID
+    }
 }
