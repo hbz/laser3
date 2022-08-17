@@ -37,7 +37,7 @@ databaseChangeLog = {
     include file: 'changelogs/2022-07-12.groovy'
     include file: 'changelogs/2022-07-15.groovy'
     include file: 'changelogs/2022-07-26.groovy'
-    //include file: 'changelogs/2022-07-28.groovy' //has to be executed after August 8th because of data migration - do not execute on server yet until I decided how to move existing data
+    include file: 'changelogs/2022-07-28.groovy'
     include file: 'changelogs/2022-08-01.groovy'
     include file: 'changelogs/2022-08-05.groovy'
     include file: 'changelogs/2022-08-10.groovy'

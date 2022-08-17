@@ -1,7 +1,5 @@
 databaseChangeLog = {
 
-    //execute these changesets ONLY AFTER migration of data to external databases!
-
     changeSet(author: "galffy (generated)", id: "1659013557968-3") {
         dropForeignKeyConstraint(baseTableName: "counter5report", constraintName: "FK31vd6v6su5u69nt51asgag1nn")
     }
@@ -40,5 +38,23 @@ databaseChangeLog = {
 
     changeSet(author: "galffy (generated)", id: "1659013557968-12") {
         dropTable(tableName: "counter5report")
+    }
+
+    changeSet(author: "galffy (hand-coded)", id: "1659013557968-13") {
+        grailsChange {
+            change {
+                sql.execute("truncate table laser_stats_cursor;")
+            }
+            rollback {}
+        }
+    }
+
+    changeSet(author: "galffy (hand-coded)", id: "1659013557968-14") {
+        grailsChange {
+            change {
+                sql.execute("truncate table stats_missing_period;")
+            }
+            rollback {}
+        }
     }
 }
