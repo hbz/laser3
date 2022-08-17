@@ -72,18 +72,18 @@
                     </g:link>
                 </td>
                 <td>
-                    <div class="ui buttons workflowOverrideCss">
+                    <div class="ui buttons">
                         <g:set var="tasks" value="${wf.getSequence()}" />
                         <g:each in="${tasks}" var="task" status="ti">
                             <g:if test="${task.child}">
-                                <div style="width:8px"></div>
+                                [
                                     <uiWorkflow:task task="${task}" params="${[key: 'subscription:' + subscription.id + ':' + WfTask.KEY + ':' + task.id]}" />
 
                                     <g:set var="children" value="${task.child.getSequence()}" />
                                     <g:each in="${children}" var="child" status="ci">
                                         <uiWorkflow:task task="${child}" params="${[key: 'subscription:' + subscription.id + ':' + WfTask.KEY + ':' + child.id]}" />
                                     </g:each>
-                                <div style="width:8px"></div>
+                                ]
                             </g:if>
                             <g:else>
                                 <uiWorkflow:task task="${task}" params="${[key: 'subscription:' + subscription.id + ':' + WfTask.KEY + ':' + task.id]}" />
@@ -123,9 +123,9 @@
             <table class="ui celled table la-js-responsive-table la-table">
                 <thead>
                     <tr>
-                        <th style="width:10%"></th>
-                        <th style="width:80%"></th>
-                        <th style="width:10%"></th>
+                        <th class="two wide"></th>
+                        <th class="twelve wide"></th>
+                        <th class="two wide"></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -150,8 +150,8 @@
                                         ${wf.comment}
                                     </div>
                                 </g:if>
-                                <div class="ui right aligned">
-                                    Zuletzt bearbeitet am: ${DateUtils.getLocalizedSDF_noTime().format(wfInfo.lastUpdated)}<br />
+                                <div class="ui right aligned sc_darkgrey">
+                                    Zuletzt bearbeitet: ${DateUtils.getLocalizedSDF_noTime().format(wf.lastUpdated)}<br />
                                     Erstellt am: ${DateUtils.getLocalizedSDF_noTime().format(wf.dateCreated)}
                                 </div>
                             </div>
@@ -190,6 +190,9 @@
                                             ${task.comment}
                                         </div>
                                     </g:if>
+                                    <div class="ui right aligned sc_darkgrey">
+                                        Zuletzt bearbeitet: ${DateUtils.getLocalizedSDF_noTime().format(task.lastUpdated)}
+                                    </div>
                                 </div>
                                 <g:if test="${task.condition}">
                                     <div style="margin:1.5em 0 0 5em">
@@ -204,6 +207,9 @@
                                                 <uiWorkflow:taskConditionField condition="${task.condition}" field="${field}" />
                                             </g:each>
                                             <!-- -->
+                                            <div class="ui right aligned sc_darkgrey">
+                                                Zuletzt bearbeitet: ${DateUtils.getLocalizedSDF_noTime().format(task.condition.lastUpdated)}
+                                            </div>
                                             <g:if test="${contextService.getUser().hasAffiliation('INST_ADM') || SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")}"><!-- TODO: reporting-permissions -->
                                                 <g:set var="cKey" value="subscription:${subscription.id}:${WfCondition.KEY}:${task.condition.id}" />
                                                 <span style="float:right">
@@ -243,7 +249,9 @@
                                     </td>
                                     <td>
                                         <div class="header">
+                                            <i class="icon paperclip"></i>
                                             <strong>${child.title}</strong>
+
                                             <span class="sc_darkgrey">
                                                 ( <i class="icon ${WorkflowHelper.getCssIconByTaskPriority(child.priority)}"></i> ${child.priority.getI10n('value')} )
                                             </span>
@@ -254,6 +262,9 @@
                                                     ${child.comment}
                                                 </div>
                                             </g:if>
+                                            <div class="ui right aligned sc_darkgrey">
+                                                Zuletzt bearbeitet: ${DateUtils.getLocalizedSDF_noTime().format(child.lastUpdated)}
+                                            </div>
                                         </div>
 
                                         <g:if test="${child.condition}">
@@ -269,6 +280,9 @@
                                                         <uiWorkflow:taskConditionField condition="${child.condition}" field="${field}" />
                                                     </g:each>
                                                     <!-- -->
+                                                    <div class="ui right aligned sc_darkgrey">
+                                                        Zuletzt bearbeitet: ${DateUtils.getLocalizedSDF_noTime().format(child.condition.lastUpdated)}
+                                                    </div>
                                                     <g:if test="${contextService.getUser().hasAffiliation('INST_ADM') || SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")}"><!-- TODO: reporting-permissions -->
                                                         <g:set var="cKey" value="subscription:${subscription.id}:${WfCondition.KEY}:${child.condition.id}" />
                                                         <span style="float:right">
@@ -311,16 +325,6 @@
     </g:each>
 
     <div id="wfModal" class="ui modal"></div>
-
-<style>
-.workflowOverrideCss .label {
-    margin-right: 3px !important;
-}
-.workflowOverrideCss .label .icon {
-    margin: 0 !important;
-    padding-top: 1px;
-}
-</style>
 
     <laser:script file="${this.getGroovyPageFileName()}">
         $('.wfModalLink').on('click', function(e) {

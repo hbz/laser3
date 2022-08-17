@@ -119,6 +119,7 @@ class WfWorkflow extends WfWorkflowBase {
                 }
             }
 
+            // TODO
             if (task.lastUpdated > info.lastUpdated) { info.lastUpdated = task.lastUpdated }
             if (task.condition && task.condition.lastUpdated > info.lastUpdated) { info.lastUpdated = task.condition.lastUpdated }
         }
