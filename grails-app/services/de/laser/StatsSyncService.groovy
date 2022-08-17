@@ -242,7 +242,7 @@ class StatsSyncService {
                                         break
                                 }
                                 if(add) {
-                                    //c4SushiSources.add(c4as)
+                                    c4SushiSources.add(c4as)
                                 }
                             }
                             json.counter5ApiSources.each { c5as ->
@@ -672,14 +672,14 @@ class StatsSyncService {
                                 identifiers << identifier.text()
                             }
                             int ctr = 0
-                            List<GroovyRowResult> rows = sql.rows("select tipp_id from title_instance_package_platform join identifier on id_tipp_fk = tipp_id where id_value = any(:identifiers) and id_ns_fk = any(:namespaces) and tipp_plat_fk = :platform and tipp_status_rv_fk != :removed", [identifiers: sql.connection.createArrayOf('varchar', identifiers as Object[]), namespaces: sql.connection.createArrayOf('bigint', namespaces as Object[]), platform: c4asPlatform.id, removed: RDStore.TIPP_STATUS_REMOVED.id])
+                            List<GroovyRowResult> rows = sql.rows("select tipp_guid from title_instance_package_platform join identifier on id_tipp_fk = tipp_id where id_value = any(:identifiers) and id_ns_fk = any(:namespaces) and tipp_plat_fk = :platform and tipp_status_rv_fk != :removed", [identifiers: sql.connection.createArrayOf('varchar', identifiers as Object[]), namespaces: sql.connection.createArrayOf('bigint', namespaces as Object[]), platform: c4asPlatform.id, removed: RDStore.TIPP_STATUS_REMOVED.id])
                             //Map row = titles.find { rowMap -> rowMap.identifier == reportItem.'ns2:ItemIdentifier'.'ns2:Value'.text() }
                             //GPathResult reportItem = reportItems.findAll { reportItem -> identifier == reportItem.'ns2:ItemIdentifier'.'ns2:Value'.text() }
                             if(rows) {
                                 //GroovyRowResult row = rows[0] //this was necessary because the same title may be available in different packages and we do not want duplicates! - ERROR! Unfortunately, I lose package context by filtering that out and Preselect let us pay that expensively ...
                                 t++
                                 rows.eachWithIndex { GroovyRowResult row, int ctx ->
-                                    Long title = row.get('tipp_id') as Long
+                                    String title = row.get('tipp_guid')
                                     reportItem.'ns2:ItemPerformance'.each { performance ->
                                         performance.'ns2:Instance'.each { instance ->
                                             //findAll seems to be less performant than loop processing
@@ -824,13 +824,13 @@ class StatsSyncService {
                                    issn = reportItem["Item_ID"].find { idData -> idData["Type"] == "ISSN" }?.Value
                              */
                             //Set<TitleInstancePackagePlatform> titles = TitleInstancePackagePlatform.executeQuery('select tipp from Identifier id join id.tipp tipp where ((id.value = :doi and id.ns.ns = :doiNs) or (id.value = :isbn and id.ns.ns = :isbnNs) or (id.value = :issn and id.ns.ns = :issnNs)) and tipp.platform = :plat and exists (select ie.id from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo where oo.org = :customer and ie.tipp = tipp)',[doi: doi, doiNs: IdentifierNamespace.DOI, isbn: isbn, isbnNs: IdentifierNamespace.ISBN, issn: issn, issnNs: IdentifierNamespace.EISSN, plat: c5as.platform, customer: keyPair.customer])
-                            List<GroovyRowResult> rows = sql.rows("select tipp_id from title_instance_package_platform join identifier on id_tipp_fk = tipp_id where id_value = any(:identifiers) and id_ns_fk = any(:namespaces) and tipp_plat_fk = :platform and tipp_status_rv_fk != :removed", [identifiers: sql.connection.createArrayOf('varchar', identifiers as Object[]), namespaces: sql.connection.createArrayOf('bigint', namespaces as Object[]), platform: c5asPlatform.id, removed: RDStore.TIPP_STATUS_REMOVED.id])
+                            List<GroovyRowResult> rows = sql.rows("select tipp_guid from title_instance_package_platform join identifier on id_tipp_fk = tipp_id where id_value = any(:identifiers) and id_ns_fk = any(:namespaces) and tipp_plat_fk = :platform and tipp_status_rv_fk != :removed", [identifiers: sql.connection.createArrayOf('varchar', identifiers as Object[]), namespaces: sql.connection.createArrayOf('bigint', namespaces as Object[]), platform: c5asPlatform.id, removed: RDStore.TIPP_STATUS_REMOVED.id])
                             List<Map> performances = reportItem.Performance as List<Map>
                             if(rows) {
                                 //GroovyRowResult row = rows[0] //this is necessary because the same title may be available in different packages and we do not want duplicates! ERROR! See COUNTER 4 - the package context is too important; I must save the usage data for each context
                                 t++
                                 rows.eachWithIndex { GroovyRowResult row, int ctx ->
-                                    Long title = row.get('tipp_id') as Long
+                                    String title = row.get('tipp_guid')
                                     performances.each { Map performance ->
                                         performance.Instance.each { Map instance ->
                                             log.debug("${Thread.currentThread().getName()} processes performance ${ctr} for title ${t} in context ${ctx}")

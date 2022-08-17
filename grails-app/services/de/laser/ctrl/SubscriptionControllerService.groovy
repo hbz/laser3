@@ -476,6 +476,7 @@ class SubscriptionControllerService {
                             result.usages = c5usages.drop(result.offset).take(result.max)
                         }
                         result.sums = c5sums
+                        result.monthsInRing = monthsInRing
                             /* ex
                             queryParams.reportType = result.reportType
                             Set availableMetricTypes = [], availableAccessTypes = []
@@ -551,6 +552,7 @@ class SubscriptionControllerService {
                             result.usages = c4usages.drop(result.offset).take(result.max)
                         }
                         result.sums = c4sums
+                        result.monthsInRing = monthsInRing
                             /* ex
                             Counter4Report.withTransaction {
                         if(count5check.size() == 0) {
