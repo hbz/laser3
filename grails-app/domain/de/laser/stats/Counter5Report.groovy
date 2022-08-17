@@ -129,25 +129,25 @@ class Counter5Report extends AbstractReport {
     String accessMethod
 
     static mapping = {
-        datasource          'storage'
-        id                  column: 'c5r_id'
-        version             column: 'c5r_version'
-        titleId             column: 'c5r_title_fk', index: 'c5r_title_idx, c5r_report_when_idx'
-        publisher           column: 'c5r_publisher', type: 'text'
-        platformId          column: 'c5r_platform_fk', index: 'c5r_plat_idx'
-        reportInstitutionId column: 'c5r_report_institution_fk', index: 'c5r_ri_idx, c5r_report_when_idx'
-        reportType          column: 'c5r_report_type', index: 'c5r_rt_idx, c5r_report_when_idx'
-        accessType          column: 'c5r_access_type', index: 'c5r_access_type_idx'
-        accessMethod        column: 'c5r_access_method', index: 'c5r_access_method_idx'
-        metricType          column: 'c5r_metric_type', index: 'c5r_metric_type_idx, c5r_report_when_idx'
-        reportFrom          column: 'c5r_report_from', index: 'c5r_report_from_idx, c5r_report_when_idx'
-        reportTo            column: 'c5r_report_to', index: 'c5r_report_to_idx, c5r_report_when_idx'
-        reportCount         column: 'c5r_report_count'
+        datasource           'storage'
+        id                   column: 'c5r_id'
+        version              column: 'c5r_version'
+        titleUID             column: 'c5r_title_guid', index: 'c5r_title_idx, c5r_report_when_idx'
+        publisher            column: 'c5r_publisher', type: 'text'
+        platformUID          column: 'c5r_platform_guid', index: 'c5r_plat_idx'
+        reportInstitutionUID column: 'c5r_report_institution_guid', index: 'c5r_ri_idx, c5r_report_when_idx'
+        reportType           column: 'c5r_report_type', index: 'c5r_rt_idx, c5r_report_when_idx'
+        accessType           column: 'c5r_access_type', index: 'c5r_access_type_idx'
+        accessMethod         column: 'c5r_access_method', index: 'c5r_access_method_idx'
+        metricType           column: 'c5r_metric_type', index: 'c5r_metric_type_idx, c5r_report_when_idx'
+        reportFrom           column: 'c5r_report_from', index: 'c5r_report_from_idx, c5r_report_when_idx'
+        reportTo             column: 'c5r_report_to', index: 'c5r_report_to_idx, c5r_report_when_idx'
+        reportCount          column: 'c5r_report_count'
     }
 
     static constraints = {
-        titleId             (nullable: true) //because of platform reports!
-        publisher         (nullable: true, blank: false) //because of platform reports!
+        titleUID            (nullable: true) //because of platform reports!
+        publisher           (nullable: true, blank: false) //because of platform reports!
         accessType          (nullable: true, blank: false)
         accessMethod        (nullable: true, blank: false)
         title(unique: ['platform', 'reportInstitution', 'metricType', 'reportFrom', 'reportTo', 'reportType'])
@@ -155,53 +155,4 @@ class Counter5Report extends AbstractReport {
 
     static transients = ['title', 'platform', 'reportInstitution']
 
-    /**
-     * Was implemented to create reports by GORM; as this has proven very unperformant, COUNTER reports are now inserted by native SQL. See StatsSyncService for that.
-     * @see de.laser.StatsSyncService
-     */
-    static Counter5Report construct(Map<String, Object> configMap) throws CreationException {
-        Counter5Report c5report
-        if(configMap.title)
-            c5report = Counter5Report.findByReportInstitutionAndTitleAndPlatformAndReportTypeAndReportFromAndReportToAndMetricType(
-                    configMap.reportInstitution, configMap.title, configMap.platform, configMap.reportType, configMap.reportFrom, configMap.reportTo, configMap.metricType
-            )
-        else c5report = Counter5Report.findByReportInstitutionAndPlatformAndReportTypeAndReportFromAndReportToAndMetricType(
-                configMap.reportInstitution, configMap.platform, configMap.reportType, configMap.reportFrom, configMap.reportTo, configMap.metricType
-        )
-        boolean changed = false
-        if(!c5report) {
-            c5report = new Counter5Report(configMap)
-            changed = true
-        }
-        if(c5report.publisher != configMap.publisher) {
-            c5report.publisher = configMap.publisher
-            changed = true
-        }
-        if(c5report.accessType != configMap.accessType) {
-            c5report.accessType = configMap.accessType
-            changed = true
-        }
-        if(c5report.accessMethod != configMap.accessMethod) {
-            c5report.accessMethod = configMap.accessMethod
-            changed = true
-        }
-        if(c5report.metricType != configMap.metricType) {
-            c5report.metricType = configMap.metricType
-            changed = true
-        }
-        if(c5report.reportCount != configMap.reportCount) {
-            c5report.reportCount = configMap.reportCount
-            changed = true
-        }
-        if(changed) {
-            if(!c5report.save()) {
-                throw new CreationException("error on creating counter 5 report: ${c5report.errors.getAllErrors().toListString()}")
-            }
-        }
-        else {
-            String entityName = c5report.title ? c5report.title.name : c5report.platform.name
-            log.debug("no change registered for ${c5report.reportInstitution}/${entityName}/${c5report.reportFrom}/${c5report.reportTo}")
-        }
-        c5report
-    }
 }

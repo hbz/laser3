@@ -1792,25 +1792,25 @@ class SubscriptionService {
                 [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE])
     }
 
-    boolean areStatsAvailable(Collection<Platform> subscribedPlatforms, Collection<Long> refPkgs, Collection<Long> reportInstitutions) {
+    boolean areStatsAvailable(Collection<Platform> subscribedPlatforms, Collection<SubscriptionPackage> refPkgs, Collection<String> reportInstitutions) {
         //withTransaction necessary because of different dataSource, cf. https://github.com/grails/grails-core/issues/10383
-        Set<Long> titleKeysInPackage = TitleInstancePackagePlatform.executeQuery('select tipp.id from TitleInstancePackagePlatform tipp where tipp.pkg in (select sp.pkg from SubscriptionPackage sp where sp.pkg.id in (:refPkgs)) and tipp.status != :removed', [removed: RDStore.TIPP_STATUS_REMOVED, refPkgs: refPkgs])
+        Set<String> titleKeysInPackage = TitleInstancePackagePlatform.executeQuery('select tipp.globalUID from TitleInstancePackagePlatform tipp where tipp.pkg in (select sp.pkg from SubscriptionPackage sp where sp.pkg.id in (:refPkgs)) and tipp.status != :removed', [removed: RDStore.TIPP_STATUS_REMOVED, refPkgs: refPkgs.collect { SubscriptionPackage sp -> sp.pkg.id }])
         int result = 0
         Counter4Report.withTransaction {
-            Map<String, Object> checkParams = [plat: subscribedPlatforms.collect { Platform plat -> plat.id }, reportInstitutions: reportInstitutions]
-            Set<Long> titleKeys = Counter4Report.executeQuery('select c4r.titleId from Counter4Report c4r where c4r.platformId in (:plat) and c4r.reportInstitutionId in (:reportInstitutions)', checkParams)
-            Set<Long> intersection = titleKeysInPackage.intersect(titleKeys)
+            Map<String, Object> checkParams = [plat: subscribedPlatforms.collect { Platform plat -> plat.globalUID }, reportInstitutions: reportInstitutions]
+            Set<String> titleKeys = Counter4Report.executeQuery('select c4r.titleUID from Counter4Report c4r where c4r.platformUID in (:plat) and c4r.reportInstitutionUID in (:reportInstitutions)', checkParams)
+            Set<String> intersection = titleKeysInPackage.intersect(titleKeys)
             //repeating of 0 checks necessary because of query plan - join result in sequence scans at large datasets (Postgres does not seek indices when > 10% of data is being retrieved)
             result = intersection.size()
             if(result == 0)
-                result = Counter4Report.executeQuery('select count(c4r.id) from Counter4Report c4r where c4r.platformId in (:plat) and c4r.reportType = :reportType and c4r.reportInstitutionId in (:reportInstitutions)', checkParams+[reportType: Counter4Report.PLATFORM_REPORT_1])[0]
+                result = Counter4Report.executeQuery('select count(c4r.id) from Counter4Report c4r where c4r.platformUID in (:plat) and c4r.reportType = :reportType and c4r.reportInstitutionUID in (:reportInstitutions)', checkParams+[reportType: Counter4Report.PLATFORM_REPORT_1])[0]
             if(result == 0) {
-                titleKeys = Counter5Report.executeQuery('select c5r.titleId from Counter5Report c5r where c5r.platformId in (:plat) and c5r.reportInstitutionId in (:reportInstitutions)', checkParams)
+                titleKeys = Counter5Report.executeQuery('select c5r.titleUID from Counter5Report c5r where c5r.platformUID in (:plat) and c5r.reportInstitutionUID in (:reportInstitutions)', checkParams)
                 intersection = titleKeysInPackage.intersect(titleKeys)
                 result = intersection.size()
             }
             if(result == 0)
-                result = Counter5Report.executeQuery('select count(c5r.id) from Counter5Report c5r where c5r.platformId in (:plat) and lower(c5r.reportType) in (:reportTypes) and c5r.reportInstitutionId in (:reportInstitutions)', checkParams + [reportTypes: [Counter5Report.PLATFORM_USAGE, Counter5Report.PLATFORM_MASTER_REPORT]])[0]
+                result = Counter5Report.executeQuery('select count(c5r.id) from Counter5Report c5r where c5r.platformUID in (:plat) and lower(c5r.reportType) in (:reportTypes) and c5r.reportInstitutionUID in (:reportInstitutions)', checkParams + [reportTypes: [Counter5Report.PLATFORM_USAGE, Counter5Report.PLATFORM_MASTER_REPORT]])[0]
         }
         result > 0
     }

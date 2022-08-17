@@ -641,12 +641,12 @@ class YodaController {
         if(fullReset) {
             if(params.counterRevision == 'r4') {
                 Counter4Report.withTransaction {
-                    Counter4Report.executeUpdate('delete from Counter4Report c4r where c4r.platformId = :plat', [plat: platform.id])
+                    Counter4Report.executeUpdate('delete from Counter4Report c4r where c4r.platformUID = :plat', [plat: platform.globalUID])
                 }
             }
             else if(params.counterRevision == 'r5') {
                 Counter5Report.withTransaction {
-                    Counter5Report.executeUpdate('delete from Counter5Report c5r where c5r.platformId = :plat', [plat: platform.id])
+                    Counter5Report.executeUpdate('delete from Counter5Report c5r where c5r.platformUID = :plat', [plat: platform.globalUID])
                 }
             }
             statsSyncService.doFetch(false, platform.gokbId, params.sushiURL, params.counterRevision)

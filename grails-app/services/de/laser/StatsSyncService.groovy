@@ -298,7 +298,7 @@ class StatsSyncService {
                 namespaces << propNamespace.id
             if(c4as[1] != null) {
                 String statsUrl = c4as[1] //.endsWith('/') ? c4as[1] : c4as[1]+'/' does not work with every platform!
-                List keyPairs = CustomerIdentifier.executeQuery('select new map(cust.id as customerId, cust.sortname as customerName, ci.value as value, ci.requestorKey as requestorKey) from CustomerIdentifier ci join ci.customer cust where ci.platform = :plat and ci.value != null and ci.requestorKey != null', [plat: c4asPlatform])
+                List keyPairs = CustomerIdentifier.executeQuery('select new map(cust.id as customerId, cust.globalUID as customerUID, cust.sortname as customerName, ci.value as value, ci.requestorKey as requestorKey) from CustomerIdentifier ci join ci.customer cust where ci.platform = :plat and ci.value != null and ci.requestorKey != null', [plat: c4asPlatform])
                 if(keyPairs) {
                     GParsPool.withPool(THREAD_POOL_SIZE) { pool ->
                         keyPairs.eachWithIndexParallel { Map keyPair, int i ->
@@ -410,7 +410,7 @@ class StatsSyncService {
                 namespaces << propNamespace.id
             if(c5as[1] != null) {
                 String statsUrl = c5as[1] //.endsWith('/') ? c5as[1] : c5as[1]+'/' does not work with every platform!
-                List keyPairs = CustomerIdentifier.executeQuery('select new map(cust.id as customerId, cust.sortname as customerName, ci.value as value, ci.requestorKey as requestorKey) from CustomerIdentifier ci join ci.customer cust where ci.platform = :plat and ci.value != null and ci.requestorKey != null', [plat: c5asPlatform])
+                List keyPairs = CustomerIdentifier.executeQuery('select new map(cust.id as customerId, cust.globalUID as customerUID, cust.sortname as customerName, ci.value as value, ci.requestorKey as requestorKey) from CustomerIdentifier ci join ci.customer cust where ci.platform = :plat and ci.value != null and ci.requestorKey != null', [plat: c5asPlatform])
                 if(keyPairs) {
                     GParsPool.withPool(THREAD_POOL_SIZE) { pool ->
                         keyPairs.eachWithIndexParallel { Map<String, Object> keyPair, int i ->
@@ -607,7 +607,7 @@ class StatsSyncService {
                 //lsc.missingPeriods.remove(wasMissing)
                 GPathResult reportItems = reportData.'ns2:Report'.'ns2:Customer'.'ns2:ReportItems'
                 if(reportID == Counter4Report.PLATFORM_REPORT_1) {
-                    int[] resultCount = statsSql.withBatch( "insert into counter4report (c4r_version, c4r_platform_fk, c4r_publisher, c4r_report_institution_fk, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count) " +
+                    int[] resultCount = statsSql.withBatch( "insert into counter4report (c4r_version, c4r_platform_guid, c4r_publisher, c4r_report_institution_guid, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count) " +
                             "values (:version, :platform, :publisher, :reportInstitution, :reportType, :category, :metricType, :reportFrom, :reportTo, :reportCount) " +
                             "on conflict on constraint unique_counter_4_report do " +
                             "update set c4r_report_count = :reportCount") { stmt ->
@@ -628,20 +628,20 @@ class StatsSyncService {
                                     String metricType = instance.'ns2:MetricType'.text()
                                     Integer count = Integer.parseInt(instance.'ns2:Count'.text())
                                     Map<String, Object> configMap = [reportType: reportData.'ns2:Report'.'@Name'.text(), version: 0]
-                                    configMap.reportInstitution = keyPair.customerId
-                                    configMap.platform = c4asPlatform.id
+                                    configMap.reportInstitution = keyPair.customerUID
+                                    configMap.platform = c4asPlatform.globalUID
                                     configMap.publisher = reportItem.'ns2:ItemPublisher'.text()
                                     configMap.reportFrom = new Timestamp(DateUtils.parseDateGeneric(performance.'ns2:Period'.'ns2:Begin'.text()).getTime())
                                     configMap.reportTo = new Timestamp(DateUtils.parseDateGeneric(performance.'ns2:Period'.'ns2:End'.text()).getTime())
                                     configMap.category = category
                                     configMap.metricType = metricType
                                     configMap.reportCount = count
-                                    //c4r_platform_fk, c4r_report_institution_fk, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count
+                                    //c4r_platform_guid, c4r_report_institution_guid, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count
                                     Map<String, Object> selMap = configMap.clone() as Map<String, Object> //simple assignment makes call by reference so modifies the actual object
                                     selMap.remove('version')
                                     selMap.remove('reportCount')
-                                    List<GroovyRowResult> existingKey = statsSql.rows('select c4r_id from counter4report where c4r_platform_fk = :platform ' +
-                                            'and c4r_report_institution_fk = :reportInstitution ' +
+                                    List<GroovyRowResult> existingKey = statsSql.rows('select c4r_id from counter4report where c4r_platform_guid = :platform ' +
+                                            'and c4r_report_institution_guid = :reportInstitution ' +
                                             'and c4r_report_type = :reportType ' +
                                             'and c4r_metric_type = :metricType ' +
                                             'and c4r_report_from = :reportFrom ' +
@@ -660,7 +660,7 @@ class StatsSyncService {
                     log.debug("${Thread.currentThread().getName()} reports success: ${resultCount.length}")
                 }
                 else {
-                    int[] resultCount = statsSql.withBatch( "insert into counter4report (c4r_version, c4r_title_fk, c4r_publisher, c4r_platform_fk, c4r_report_institution_fk, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count) " +
+                    int[] resultCount = statsSql.withBatch( "insert into counter4report (c4r_version, c4r_title_guid, c4r_publisher, c4r_platform_guid, c4r_report_institution_guid, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count) " +
                             "values (:version, :title, :publisher, :platform, :reportInstitution, :reportType, :category, :metricType, :reportFrom, :reportTo, :reportCount) " +
                             "on conflict on constraint unique_counter_4_report do " +
                             "update set c4r_report_count = :reportCount") { stmt ->
@@ -691,7 +691,7 @@ class StatsSyncService {
                                             Integer count = Integer.parseInt(instance.'ns2:Count'.text())
                                             Map<String, Object> configMap = [reportType: reportData.'ns2:Report'.'@Name'.text(), version: 0]
                                             configMap.title = title
-                                            configMap.reportInstitution = keyPair.customerId
+                                            configMap.reportInstitution = keyPair.customerUID
                                             configMap.platform = c4asPlatform.id
                                             configMap.reportFrom = new Timestamp(DateUtils.parseDateGeneric(performance.'ns2:Period'.'ns2:Begin'.text()).getTime())
                                             configMap.reportTo = new Timestamp(DateUtils.parseDateGeneric(performance.'ns2:Period'.'ns2:End'.text()).getTime())
@@ -699,7 +699,7 @@ class StatsSyncService {
                                             configMap.metricType = metricType
                                             configMap.publisher = publisher
                                             configMap.reportCount = count
-                                            //c4r_title_fk, c4r_publisher, c4r_platform_fk, c4r_report_institution_fk, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count
+                                            //c4r_title_guid, c4r_publisher, c4r_platform_guid, c4r_report_institution_guid, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count
                                             stmt.addBatch(configMap)
                                             /*
                                             try {
@@ -760,7 +760,7 @@ class StatsSyncService {
                 //if(wasMissing)
                 //lsc.missingPeriods.remove(wasMissing)
                 if(reportId in [Counter5Report.PLATFORM_MASTER_REPORT, Counter5Report.PLATFORM_USAGE]) {
-                    int[] resultCount = statsSql.withBatch( "insert into counter5report (c5r_version, c5r_publisher, c5r_platform_fk, c5r_report_institution_fk, c5r_report_type, c5r_metric_type, c5r_report_from, c5r_report_to, c5r_report_count) " +
+                    int[] resultCount = statsSql.withBatch( "insert into counter5report (c5r_version, c5r_publisher, c5r_platform_guid, c5r_report_institution_guid, c5r_report_type, c5r_metric_type, c5r_report_from, c5r_report_to, c5r_report_count) " +
                             "values (:version, :publisher, :platform, :reportInstitution, :reportType, :metricType, :reportFrom, :reportTo, :reportCount)") { stmt ->
                         report.items.each { Map reportItem ->
                             int ctr = 0
@@ -768,8 +768,8 @@ class StatsSyncService {
                                 performance.Instance.each { Map instance ->
                                     log.debug("${Thread.currentThread().getName()} processes performance ${ctr} for platform")
                                     Map<String, Object> configMap = [reportType: report.header.Report_ID, version: 0]
-                                    configMap.reportInstitution = keyPair.customerId
-                                    configMap.platform = c5asPlatform.id
+                                    configMap.reportInstitution = keyPair.customerUID
+                                    configMap.platform = c5asPlatform.globalUID
                                     configMap.publisher = reportItem.Publisher
                                     configMap.reportFrom = new Timestamp(DateUtils.parseDateGeneric(performance.Period.Begin_Date).getTime())
                                     configMap.reportTo = new Timestamp(DateUtils.parseDateGeneric(performance.Period.End_Date).getTime())
@@ -779,8 +779,8 @@ class StatsSyncService {
                                     selMap.remove('version')
                                     selMap.remove('reportCount')
                                     List<GroovyRowResult> existingKey = statsSql.rows('select c5r_id from counter5report where c5r_publisher = :publisher ' +
-                                            'and c5r_platform_fk = :platform ' +
-                                            'and c5r_report_institution_fk = :reportInstitution ' +
+                                            'and c5r_platform_guid = :platform ' +
+                                            'and c5r_report_institution_guid = :reportInstitution ' +
                                             'and c5r_report_type = :reportType ' +
                                             'and c5r_metric_type = :metricType ' +
                                             'and c5r_report_from = :reportFrom ' +
@@ -807,7 +807,7 @@ class StatsSyncService {
                     log.debug("${Thread.currentThread().getName()} reports success: ${resultCount.length}")
                 }
                 else {
-                    int[] resultCount = statsSql.withBatch( "insert into counter5report (c5r_version, c5r_title_fk, c5r_publisher, c5r_platform_fk, c5r_report_institution_fk, c5r_report_type, c5r_metric_type, c5r_access_type, c5r_access_method, c5r_report_from, c5r_report_to, c5r_report_count) " +
+                    int[] resultCount = statsSql.withBatch( "insert into counter5report (c5r_version, c5r_title_guid, c5r_publisher, c5r_platform_guid, c5r_report_institution_guid, c5r_report_type, c5r_metric_type, c5r_access_type, c5r_access_method, c5r_report_from, c5r_report_to, c5r_report_count) " +
                             "values (:version, :title, :publisher, :platform, :reportInstitution, :reportType, :metricType, :accessType, :accessMethod, :reportFrom, :reportTo, :reportCount) " +
                             "on conflict on constraint unique_counter_5_report do " +
                             "update set c5r_report_count = :reportCount, c5r_access_type = :accessType, c5r_access_method = :accessMethod") { stmt ->
@@ -836,8 +836,8 @@ class StatsSyncService {
                                             log.debug("${Thread.currentThread().getName()} processes performance ${ctr} for title ${t} in context ${ctx}")
                                             Map<String, Object> configMap = [reportType: report.header.Report_ID, version: 0]
                                             configMap.title = title
-                                            configMap.reportInstitution = keyPair.customerId
-                                            configMap.platform = c5asPlatform.id
+                                            configMap.reportInstitution = keyPair.customerUID
+                                            configMap.platform = c5asPlatform.globalUID
                                             configMap.publisher = reportItem.Publisher
                                             configMap.reportFrom = new Timestamp(DateUtils.parseDateGeneric(performance.Period.Begin_Date).getTime())
                                             configMap.reportTo = new Timestamp(DateUtils.parseDateGeneric(performance.Period.End_Date).getTime())

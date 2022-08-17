@@ -61,11 +61,11 @@
                     <tr>
                         <th><g:message code="default.usage.consortiaTableHeader"/></th>
                     </tr>
-                    <g:each in="${Subscription.executeQuery('select new map(sub.id as memberSubId, org.sortname as memberName, org.id as memberId) from OrgRole oo join oo.org org join oo.sub sub where sub.instanceOf = :parent and oo.roleType in (:subscrRoles) and exists (select sp.id from SubscriptionPackage sp where sp.subscription = sub) order by org.sortname asc', [parent: subscription, subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])}" var="row">
+                    <g:each in="${Subscription.executeQuery('select new map(sub.id as memberSubId, org.sortname as memberName, org.globalUID as memberId) from OrgRole oo join oo.org org join oo.sub sub where sub.instanceOf = :parent and oo.roleType in (:subscrRoles) and exists (select sp.id from SubscriptionPackage sp where sp.subscription = sub) order by org.sortname asc', [parent: subscription, subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])}" var="row">
                         <tr>
                             <td>
                                 <g:link action="stats" id="${row.memberSubId}">${row.memberName}
-                                    <g:if test="${subscriptionService.areStatsAvailable(subscribedPlatforms, subscription.packages.collect { SubscriptionPackage sp -> sp.pkg.id }, [row.memberId])}">
+                                    <g:if test="${subscriptionService.areStatsAvailable(subscribedPlatforms, subscription.packages, [row.memberId])}">
                                         <span class="la-popup-tooltip la-delay" data-content="${message(code: 'default.usage.statsAvailable')}"><i class="chart bar outline icon"></i></span>
                                     </g:if>
                                 </g:link>
