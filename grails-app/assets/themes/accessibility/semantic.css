@@ -61217,7 +61217,7 @@ Floated Menu / Item
   display: block;
   margin: '';
   font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
-  color: rgba(0, 0, 0, 0.85);
+  color: #767676;
 }
 
 /* Default Header Size */
@@ -61225,7 +61225,7 @@ Floated Menu / Item
 .ui.cards > .card > .content > .header:not(.ui),
 .ui.card > .content > .header:not(.ui) {
   font-weight: bold;
-  font-size: 1.28571429em;
+  font-size: 1rem;
   margin-top: -0.21425em;
   line-height: 1.28571429em;
 }
@@ -61362,7 +61362,7 @@ Floated Menu / Item
 
 .ui.cards > .card > .content > a.header,
 .ui.card > .content > a.header {
-  color: rgba(0, 0, 0, 0.85);
+  color: #767676;
 }
 
 .ui.cards > .card > .content > a.header:hover,
@@ -62613,8 +62613,8 @@ a.inverted.ui.card:hover,
 
 .ui.cards > .card > .content > .header,
 .ui.card > .content .header {
-  color: rgba(0, 0, 0, 0.85);
-  font-size: 1.28571429em;
+  color: #767676;
+  font-size: 1rem;
 }
 
 /* Default Header Size */
@@ -62622,7 +62622,7 @@ a.inverted.ui.card:hover,
 .ui.cards > .card > .content > .header:not(.ui),
 .ui.card > .content > .header:not(.ui) {
   font-weight: bold;
-  font-size: 1.28571429em;
+  font-size: 1rem;
   margin-top: -0.21425em;
   line-height: 1.28571429em;
 }

@@ -55146,7 +55146,7 @@ Floated Menu / Item
   background-color: transparent;
   -webkit-box-shadow: none;
   box-shadow: none;
-  border-color: currentColor;
+  border-color: #1B1C1D;
   font-weight: bold;
   color: rgba(0, 0, 0, 0.95);
 }
@@ -55154,7 +55154,7 @@ Floated Menu / Item
 /* Active Hover */
 
 .ui.secondary.pointing.menu .active.item:hover {
-  border-color: currentColor;
+  border-color: #1B1C1D;
   color: rgba(0, 0, 0, 0.95);
 }
 
@@ -55185,7 +55185,7 @@ Floated Menu / Item
 /* Vertical Active */
 
 .ui.secondary.vertical.pointing.menu .active.item {
-  border-color: currentColor;
+  border-color: #1B1C1D;
 }
 
 /* Inverted */
@@ -55206,7 +55206,7 @@ Floated Menu / Item
 
 .ui.secondary.inverted.pointing.menu .link.item:hover,
 .ui.secondary.inverted.pointing.menu a.item:hover {
-  color: #ffffff;
+  color: rgba(0, 0, 0, 0.95);
 }
 
 /* Active */
@@ -55519,84 +55519,98 @@ Floated Menu / Item
 .ui.ui.ui.menu .primary.active.item,
 .ui.ui.primary.menu .active.item:hover,
 .ui.ui.primary.menu .active.item {
+  border-color: #004678;
   color: #004678;
 }
 
 .ui.ui.ui.menu .red.active.item,
 .ui.ui.red.menu .active.item:hover,
 .ui.ui.red.menu .active.item {
+  border-color: #BB1600;
   color: #BB1600;
 }
 
 .ui.ui.ui.menu .orange.active.item,
 .ui.ui.orange.menu .active.item:hover,
 .ui.ui.orange.menu .active.item {
+  border-color: #fa820a;
   color: #fa820a;
 }
 
 .ui.ui.ui.menu .yellow.active.item,
 .ui.ui.yellow.menu .active.item:hover,
 .ui.ui.yellow.menu .active.item {
+  border-color: #FBBD08;
   color: #FBBD08;
 }
 
 .ui.ui.ui.menu .olive.active.item,
 .ui.ui.olive.menu .active.item:hover,
 .ui.ui.olive.menu .active.item {
+  border-color: #B5CC18;
   color: #B5CC18;
 }
 
 .ui.ui.ui.menu .green.active.item,
 .ui.ui.green.menu .active.item:hover,
 .ui.ui.green.menu .active.item {
+  border-color: #98B500;
   color: #98B500;
 }
 
 .ui.ui.ui.menu .teal.active.item,
 .ui.ui.teal.menu .active.item:hover,
 .ui.ui.teal.menu .active.item {
+  border-color: #00B5AD;
   color: #00B5AD;
 }
 
 .ui.ui.ui.menu .blue.active.item,
 .ui.ui.blue.menu .active.item:hover,
 .ui.ui.blue.menu .active.item {
+  border-color: #004678;
   color: #004678;
 }
 
 .ui.ui.ui.menu .violet.active.item,
 .ui.ui.violet.menu .active.item:hover,
 .ui.ui.violet.menu .active.item {
+  border-color: #76007A;
   color: #76007A;
 }
 
 .ui.ui.ui.menu .purple.active.item,
 .ui.ui.purple.menu .active.item:hover,
 .ui.ui.purple.menu .active.item {
+  border-color: #2185d0;
   color: #2185d0;
 }
 
 .ui.ui.ui.menu .pink.active.item,
 .ui.ui.pink.menu .active.item:hover,
 .ui.ui.pink.menu .active.item {
+  border-color: #E03997;
   color: #E03997;
 }
 
 .ui.ui.ui.menu .brown.active.item,
 .ui.ui.brown.menu .active.item:hover,
 .ui.ui.brown.menu .active.item {
+  border-color: #6b1d1d;
   color: #6b1d1d;
 }
 
 .ui.ui.ui.menu .grey.active.item,
 .ui.ui.grey.menu .active.item:hover,
 .ui.ui.grey.menu .active.item {
+  border-color: #767676;
   color: #767676;
 }
 
 .ui.ui.ui.menu .black.active.item,
 .ui.ui.black.menu .active.item:hover,
 .ui.ui.black.menu .active.item {
+  border-color: #1B1C1D;
   color: #1B1C1D;
 }
 
@@ -61079,7 +61093,7 @@ Floated Menu / Item
   display: block;
   margin: '';
   font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
-  color: rgba(0, 0, 0, 0.85);
+  color: #767676;
 }
 
 /* Default Header Size */
@@ -61087,7 +61101,7 @@ Floated Menu / Item
 .ui.cards > .card > .content > .header:not(.ui),
 .ui.card > .content > .header:not(.ui) {
   font-weight: bold;
-  font-size: 1.28571429em;
+  font-size: 1rem;
   margin-top: -0.21425em;
   line-height: 1.28571429em;
 }
@@ -61224,7 +61238,7 @@ Floated Menu / Item
 
 .ui.cards > .card > .content > a.header,
 .ui.card > .content > a.header {
-  color: rgba(0, 0, 0, 0.85);
+  color: #767676;
 }
 
 .ui.cards > .card > .content > a.header:hover,
@@ -62475,8 +62489,8 @@ a.inverted.ui.card:hover,
 
 .ui.cards > .card > .content > .header,
 .ui.card > .content .header {
-  color: rgba(0, 0, 0, 0.85);
-  font-size: 1.28571429em;
+  color: #767676;
+  font-size: 1rem;
 }
 
 /* Default Header Size */
@@ -62484,7 +62498,7 @@ a.inverted.ui.card:hover,
 .ui.cards > .card > .content > .header:not(.ui),
 .ui.card > .content > .header:not(.ui) {
   font-weight: bold;
-  font-size: 1.28571429em;
+  font-size: 1rem;
   margin-top: -0.21425em;
   line-height: 1.28571429em;
 }
