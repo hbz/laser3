@@ -7,3 +7,6 @@
 
 @border: 1px solid @laSecondaryColor;
 @zIndex: auto;
+
+@headerFontSize: 1rem;
+@headerColor: @grey;
