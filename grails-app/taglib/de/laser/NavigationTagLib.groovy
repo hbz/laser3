@@ -86,8 +86,8 @@ class NavigationTagLib {
         String action = (attrs.action ? attrs.action : (params.action ? params.action : "list"))
 
         int total    = Integer.valueOf( (attrs.total ?: 0) as String )
-        int offset   = Integer.valueOf( (attrs.offset ?: 0) as String )
-        int max      = Integer.valueOf( (attrs.max ?: 10) as String )
+        int offset   = Integer.valueOf( (attrs.offset ?: params.offset ?: 0) as String )
+        int max      = Integer.valueOf( (attrs.max ?: params.max ?: 10) as String )
         int maxsteps = Integer.valueOf( (attrs.maxsteps ?: 6) as String )
 
         if (total <= max) {

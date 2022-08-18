@@ -27,8 +27,6 @@ import java.text.SimpleDateFormat
 @Slf4j
 class RefdataValue extends AbstractI10n implements Comparable<RefdataValue> {
 
-    final static String CLASS = RefdataValue.class // introduced for refactoring -> RefdataValue.class.name
-
     String value
     String value_de
     String value_en

@@ -1,13 +1,15 @@
 <laser:serviceInjection/>
 <g:form id="delete_doc_form" url="${[controller: controllerName, action: 'deleteDocuments']}" method="post">
 
-    <table class="ui celled la-js-responsive-table la-table table license-documents">
+    <table class="ui celled sortable table la-table la-js-responsive-table">
         <thead>
         <tr>
-            <th class="ten wide">${message(code:'default.note.label')}</th>
-            <th class="two wide">${message(code:'default.lastUpdated.label')}</th>
-            <th class="two wide">${message(code:'default.dateCreated.label')}</th>
-            <th class="two wide">${message(code:'default.actions.label')}</th>
+            <th class="ten wide" rowspan="2" scope="col">${message(code:'default.note.label')}</th>
+            <th class="two wide la-smaller-table-head" scope="col">${message(code:'default.lastUpdated.label')}</th>
+            <th class="two wide" rowspan="2" scope="col">${message(code:'default.actions.label')}</th>
+        </tr>
+        <tr>
+            <th class="two wide la-smaller-table-head" scope="col">${message(code:'default.dateCreated.label')}</th>
         </tr>
         </thead>
         <tbody>
@@ -18,12 +20,12 @@
                         ${docctx.owner.content}
                     </td>
                     <td>
+                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${docctx.owner.lastUpdated}"/>
+
                         <g:if test="${docctx.owner.dateCreated != docctx.owner.lastUpdated}">
-                            <g:formatDate format="${message(code:'default.date.format.noZ')}" date="${docctx.owner.lastUpdated}"/>
+                            <br />
+                            <span class="sc_darkgrey"><g:formatDate format="${message(code:'default.date.format.notime')}" date="${docctx.owner.dateCreated}"/></span>
                         </g:if>
-                    </td>
-                    <td>
-                        <g:formatDate format="${message(code:'default.date.format.notime')}" date="${docctx.owner.dateCreated}"/>
                     </td>
                     <td class="x">
                         <g:if test="${docctx.sharedFrom}">

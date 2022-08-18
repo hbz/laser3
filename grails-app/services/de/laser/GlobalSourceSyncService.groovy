@@ -1,17 +1,17 @@
 package de.laser
 
+import de.laser.base.AbstractCoverage
+import de.laser.base.AbstractLockableService
+import de.laser.exceptions.SyncException
 import de.laser.finance.PriceItem
 import de.laser.http.BasicHttpClient
 import de.laser.remote.ApiSource
 import de.laser.remote.GlobalRecordSource
-import de.laser.system.SystemEvent
-import de.laser.base.AbstractCoverage
-import de.laser.exceptions.SyncException
-import de.laser.utils.DateUtils
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
-import de.laser.base.AbstractLockableService
+import de.laser.system.SystemEvent
 import de.laser.titles.TitleHistoryEvent
+import de.laser.utils.DateUtils
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
 import io.micronaut.http.HttpResponse
@@ -35,11 +35,11 @@ class GlobalSourceSyncService extends AbstractLockableService {
     ApiSource apiSource
     GlobalRecordSource source
 
-    final static long RECTYPE_PACKAGE = 0
-    final static long RECTYPE_TITLE = 1
-    final static long RECTYPE_ORG = 2
-    final static long RECTYPE_TIPP = 3
-    final static String PERMANENTLY_DELETED = "Permanently Deleted"
+    public static final long RECTYPE_PACKAGE = 0
+    public static final long RECTYPE_TITLE = 1
+    public static final long RECTYPE_ORG = 2
+    public static final long RECTYPE_TIPP = 3
+    public static final String PERMANENTLY_DELETED = "Permanently Deleted"
 
     Map<String, RefdataValue> titleMedium = [:],
             tippStatus = [:],

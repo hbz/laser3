@@ -10,7 +10,6 @@ import de.laser.system.SystemEvent
 import de.laser.storage.RDStore
 import de.laser.interfaces.CalculatedLastUpdated
 import de.laser.interfaces.CalculatedType
-import de.laser.titles.TitleInstance
 import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
 import grails.converters.JSON
@@ -42,9 +41,8 @@ class DataloadService {
 
     ESWrapperService ESWrapperService
     ExecutorService executorService
-    GlobalService globalService
 
-    final static int BULK_SIZE = 10000
+    static final int BULK_SIZE = 10000
 
     boolean update_running = false
     Future activeFuture

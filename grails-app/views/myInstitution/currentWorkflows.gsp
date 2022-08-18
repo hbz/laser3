@@ -86,15 +86,15 @@
 <table class="ui celled table la-js-responsive-table la-table">
     <thead>
         <tr>
-            <th rowspan="2">${message(code:'default.status.label')}</th>
-            <th rowspan="2">${message(code:'workflow.label')}</th>
-            <th rowspan="2">${message(code:'subscription.label')}</th>
-            <th rowspan="2">${message(code:'default.progress.label')}</th>
-            <th class="la-smaller-table-head">${message(code:'default.lastUpdated.label')}</th>
-            <th rowspan="2">${message(code:'default.actions.label')}</th>
+            <th class="one wide" rowspan="2">${message(code:'default.status.label')}</th>
+            <th class="four wide" rowspan="2">${message(code:'workflow.label')}</th>
+            <th class="four wide" rowspan="2">${message(code:'subscription.label')}</th>
+            <th class="four wide" rowspan="2">${message(code:'default.progress.label')}</th>
+            <th class="two wide la-smaller-table-head">${message(code:'default.lastUpdated.label')}</th>
+            <th class="one wide" rowspan="2">${message(code:'default.actions.label')}</th>
         </tr>
         <tr>
-            <th class="la-smaller-table-head">${message(code:'default.dateCreated.label')}</th>
+            <th class="two wide la-smaller-table-head">${message(code:'default.dateCreated.label')}</th>
         <tr>
     </thead>
     <tbody>
@@ -136,18 +136,18 @@
                     </div>
                 </td>
                 <td>
-                    <div class="ui buttons workflowOverrideCss">
+                    <div class="ui buttons">
                         <g:set var="tasks" value="${wf.getSequence()}" />
                         <g:each in="${tasks}" var="task" status="ti">
                             <g:if test="${task.child}">
-                                <div style="width:8px"></div>
+                                [
                                 <uiWorkflow:task task="${task}" params="${[key: 'myInstitution:' + wf.id + ':' + WfTask.KEY + ':' + task.id]}" />
 
                                 <g:set var="children" value="${task.child.getSequence()}" />
                                 <g:each in="${children}" var="child" status="ci">
                                     <uiWorkflow:task task="${child}" params="${[key: 'myInstitution:' + wf.id + ':' + WfTask.KEY + ':' + child.id]}" />
                                 </g:each>
-                                <div style="width:8px"></div>
+                                ]
                             </g:if>
                             <g:else>
                                 <uiWorkflow:task task="${task}" params="${[key: 'myInstitution:' + wf.id + ':' + WfTask.KEY + ':' + task.id]}" />
@@ -180,16 +180,6 @@
 <ui:paginate action="currentWorkflows" controller="myInstitution" total="${total}" max="${params.max}" />
 
 <div id="wfModal" class="ui modal"></div>
-
-<style>
-.workflowOverrideCss .label {
-    margin-right: 3px !important;
-}
-.workflowOverrideCss .label .icon {
-    margin: 0 !important;
-    padding-top: 1px;
-}
-</style>
 
 <laser:script file="${this.getGroovyPageFileName()}">
     $('.wfModalLink').on('click', function(e) {

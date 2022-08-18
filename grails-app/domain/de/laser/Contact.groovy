@@ -13,11 +13,11 @@ import groovy.util.logging.Slf4j
 @Slf4j
 class Contact implements Comparable<Contact>{
 
-    private static final String REFDATA_PHONE = "Phone"
-    private static final String REFDATA_FAX =   "Fax"
-    private static final String REFDATA_MAIL =  "Mail"
-    private static final String REFDATA_EMAIL = "E-Mail"
-    private static final String REFDATA_URL =   "Url"
+    public static final String REFDATA_PHONE = "Phone"
+    public static final String REFDATA_FAX =   "Fax"
+    public static final String REFDATA_MAIL =  "Mail"
+    public static final String REFDATA_EMAIL = "E-Mail"
+    public static final String REFDATA_URL =   "Url"
 
     String content
     Person prs            // person related contact; exclusive with org

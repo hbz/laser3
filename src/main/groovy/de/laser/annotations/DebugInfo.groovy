@@ -10,9 +10,9 @@ import java.lang.annotation.Target
 
 @interface DebugInfo {
 
-    static final int NOT_TRANSACTIONAL  = 0
-    static final int IN_BETWEEN         = 1
-    static final int WITH_TRANSACTION   = 2
+    public static final int NOT_TRANSACTIONAL  = 0
+    public static final int IN_BETWEEN         = 1
+    public static final int WITH_TRANSACTION   = 2
 
     String test() default ''
     String perm() default ''

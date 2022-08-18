@@ -12,8 +12,8 @@ class Profiler {
     ContextService contextService = BeanStore.getContextService()
     EhcacheWrapper benchCache
 
-    final static String SESSION_SYSTEMPROFILER = 'Profiler/Session/SystemProfiler'
-    final static String USER_BENCHMARK = 'Profiler/User/Benchmark'
+    public static final String SESSION_SYSTEMPROFILER = 'Profiler/Session/SystemProfiler'
+    public static final String USER_BENCHMARK = 'Profiler/User/Benchmark'
 
     // for global interceptors; object stored in session caches
     Profiler(String cacheKeyPrefix) {

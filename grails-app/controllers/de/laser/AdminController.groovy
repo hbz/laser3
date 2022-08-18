@@ -571,16 +571,16 @@ class AdminController  {
         ]
 
         String de_x_icu = DatabaseInfo.DE_U_CO_PHONEBK_X_ICU
-        result.examples['country'].putAt( de_x_icu, sql.rows( query1de + ' order by rdv.rdv_value_de COLLATE "' + de_x_icu + '" limit ' + limit ).collect{ it.rdv_value_de } )
-        result.examples[    'ddc'].putAt( de_x_icu, sql.rows( query2de + ' order by rdv.rdv_value_de COLLATE "' + de_x_icu + '" limit ' + limit ).collect{ it.rdv_value_de } )
-        result.examples[    'org'].putAt( de_x_icu, sql.rows( query3 + ' order by org_name COLLATE "' + de_x_icu + '" limit ' + limit ).collect{ it.org_name } )
-        result.examples[  'title'].putAt( de_x_icu, sql.rows( query4 + ' order by ti_title COLLATE "' + de_x_icu + '" limit ' + limit ).collect{ it.ti_title } )
+        result.examples['country'][de_x_icu] = sql.rows(query1de + ' order by rdv.rdv_value_de COLLATE "' + de_x_icu + '" limit ' + limit).collect { it.rdv_value_de }
+        result.examples['ddc'    ][de_x_icu] = sql.rows(query2de + ' order by rdv.rdv_value_de COLLATE "' + de_x_icu + '" limit ' + limit).collect { it.rdv_value_de }
+        result.examples['org'    ][de_x_icu] = sql.rows(query3 + ' order by org_name COLLATE "' + de_x_icu + '" limit ' + limit).collect { it.org_name }
+        result.examples['title'  ][de_x_icu] = sql.rows(query4 + ' order by ti_title COLLATE "' + de_x_icu + '" limit ' + limit).collect { it.ti_title }
 
         String en_x_icu = DatabaseInfo.EN_US_U_VA_POSIX_X_ICU
-        result.examples['country'].putAt( en_x_icu, sql.rows( query1en + ' order by rdv.rdv_value_en COLLATE "' + en_x_icu + '" limit ' + limit ).collect{ it.rdv_value_en } )
-        result.examples[    'ddc'].putAt( en_x_icu, sql.rows( query2en + ' order by rdv.rdv_value_en COLLATE "' + en_x_icu + '" limit ' + limit ).collect{ it.rdv_value_en } )
-        result.examples[    'org'].putAt( en_x_icu, sql.rows( query3 + ' order by org_name COLLATE "' + en_x_icu + '" limit ' + limit ).collect{ it.org_name } )
-        result.examples[  'title'].putAt( en_x_icu, sql.rows( query4 + ' order by ti_title COLLATE "' + en_x_icu + '" limit ' + limit ).collect{ it.ti_title } )
+        result.examples['country'][en_x_icu] = sql.rows(query1en + ' order by rdv.rdv_value_en COLLATE "' + en_x_icu + '" limit ' + limit).collect { it.rdv_value_en }
+        result.examples['ddc'    ][en_x_icu] = sql.rows(query2en + ' order by rdv.rdv_value_en COLLATE "' + en_x_icu + '" limit ' + limit).collect { it.rdv_value_en }
+        result.examples['org'    ][en_x_icu] = sql.rows(query3 + ' order by org_name COLLATE "' + en_x_icu + '" limit ' + limit).collect { it.org_name }
+        result.examples['title'  ][en_x_icu] = sql.rows(query4 + ' order by ti_title COLLATE "' + en_x_icu + '" limit ' + limit).collect { it.ti_title }
 
         result
     }
@@ -966,19 +966,19 @@ class AdminController  {
                 else if (params.cmd == 'details') {
 
                     if (idnsInstance) {
-                        detailsStats.putAt(g.createLink(controller:'license', action:'show'),
+                        detailsStats.putAt(g.createLink(controller:'license', action:'show') as String,
                                 IdentifierNamespace.executeQuery(
                                         "select i.value, i.lic.id from Identifier i join i.ns idns where idns = :idns and i.lic is not null order by i.value, i.lic.id", [idns: idnsInstance]))
-                        detailsStats.putAt(g.createLink(controller:'org', action:'show'),
+                        detailsStats.putAt(g.createLink(controller:'org', action:'show') as String,
                                 IdentifierNamespace.executeQuery(
                                         "select i.value, i.org.id from Identifier i join i.ns idns where idns = :idns and i.org is not null order by i.value, i.org.id", [idns: idnsInstance]))
-                        detailsStats.putAt(g.createLink(controller:'package', action:'show'),
+                        detailsStats.putAt(g.createLink(controller:'package', action:'show') as String,
                                 IdentifierNamespace.executeQuery(
                                         "select i.value, i.pkg.id from Identifier i join i.ns idns where idns = :idns and i.pkg is not null order by i.value, i.pkg.id", [idns: idnsInstance]))
-                        detailsStats.putAt(g.createLink(controller:'subscription', action:'show'),
+                        detailsStats.putAt(g.createLink(controller:'subscription', action:'show') as String,
                                 IdentifierNamespace.executeQuery(
                                         "select i.value, i.sub.id from Identifier i join i.ns idns where idns = :idns and i.sub is not null order by i.value, i.sub.id", [idns: idnsInstance]))
-                        detailsStats.putAt(g.createLink(controller:'tipp', action:'show'),
+                        detailsStats.putAt(g.createLink(controller:'tipp', action:'show') as String,
                                 IdentifierNamespace.executeQuery(
                                         "select i.value, i.tipp.id from Identifier i join i.ns idns where idns = :idns and i.tipp is not null order by i.value, i.tipp.id", [idns: idnsInstance]))
                     }

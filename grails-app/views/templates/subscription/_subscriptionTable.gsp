@@ -8,7 +8,7 @@
         <%--<input type="submit"
                    value="${message(code: 'license.linking.submit')}"
                    class="ui primary button"/>--%>
-            <table class="ui celled sortable table table-tworow la-table la-js-responsive-table">
+            <table class="ui celled sortable table la-table la-js-responsive-table">
                 <thead>
                     <tr>
                         <g:if test="${compare}">

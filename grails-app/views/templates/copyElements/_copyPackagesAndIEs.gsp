@@ -14,7 +14,7 @@
     <g:form controller="${controllerName}" action="${actionName}" id="${params.id}" data-confirm-id="copyElements_form"
             params="[workFlowPart: workFlowPart, sourceObjectId: genericOIDService.getOID(sourceObject), targetObjectId: genericOIDService.getOID(targetObject), isRenewSub: isRenewSub, fromSurvey: fromSurvey]"
             method="post" class="ui form newLicence">
-        <table class="ui celled table table-tworow la-js-responsive-table la-table">
+        <table class="ui celled table la-js-responsive-table la-table">
             <thead>
             <tr>
                 <th class="six wide">

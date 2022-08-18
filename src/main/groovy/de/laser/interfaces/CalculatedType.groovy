@@ -11,11 +11,11 @@ package de.laser.interfaces
  */
 interface CalculatedType {
 
-    final static TYPE_LOCAL          = 'Local'
-    final static TYPE_CONSORTIAL     = 'Consortial'
-    final static TYPE_ADMINISTRATIVE = 'Administrative'
-    final static TYPE_PARTICIPATION  = 'Participation'
-    final static TYPE_UNKOWN         = 'Unknown'
+    public static final String TYPE_LOCAL          = 'Local'
+    public static final String TYPE_CONSORTIAL     = 'Consortial'
+    public static final String TYPE_ADMINISTRATIVE = 'Administrative'
+    public static final String TYPE_PARTICIPATION  = 'Participation'
+    public static final String TYPE_UNKOWN         = 'Unknown'
 
     /**
      * Gets the calculated type (= internally evaluated type) of the given instance

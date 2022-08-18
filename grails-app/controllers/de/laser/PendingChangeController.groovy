@@ -149,7 +149,7 @@ class PendingChangeController  {
         log.debug("acceptAll - ${params}")
         if(params.OID) {
             def owner = genericOIDService.resolveOID(params.OID)
-            Collection<PendingChange> pendingChanges = owner?.pendingChanges.findAll {
+            Collection<PendingChange> pendingChanges = owner?.pendingChanges?.findAll {
                 (it.status == RDStore.PENDING_CHANGE_PENDING) || it.status == null
             }
             executorWrapperService.processClosure({
@@ -170,7 +170,7 @@ class PendingChangeController  {
         log.debug("rejectAll ${params}")
         if(params.OID) {
             def owner = genericOIDService.resolveOID(params.OID)
-            Collection<PendingChange> pendingChanges = owner?.pendingChanges.findAll {
+            Collection<PendingChange> pendingChanges = owner?.pendingChanges?.findAll {
                 (it.status == RDStore.PENDING_CHANGE_PENDING) || it.status == null
             }
             executorWrapperService.processClosure({

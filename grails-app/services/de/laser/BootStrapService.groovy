@@ -1,21 +1,24 @@
 package de.laser
 
-import de.laser.config.ConfigDefaults
-import de.laser.utils.DateUtils
-import liquibase.repackaged.com.opencsv.*
 import de.laser.auth.*
-import de.laser.utils.AppUtils
+import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper
-import de.laser.utils.PasswordUtils
-import de.laser.storage.RDConstants
 import de.laser.properties.PropertyDefinition
+import de.laser.storage.RDConstants
 import de.laser.system.SystemEvent
 import de.laser.system.SystemSetting
+import de.laser.utils.AppUtils
+import de.laser.utils.DateUtils
+import de.laser.utils.PasswordUtils
 import grails.converters.JSON
 import grails.core.GrailsApplication
 import grails.gorm.transactions.Transactional
 import grails.util.Environment
 import groovy.sql.Sql
+import liquibase.repackaged.com.opencsv.CSVParser
+import liquibase.repackaged.com.opencsv.CSVReader
+import liquibase.repackaged.com.opencsv.CSVReaderBuilder
+import liquibase.repackaged.com.opencsv.ICSVParser
 import org.hibernate.SessionFactory
 import org.hibernate.query.NativeQuery
 import org.hibernate.type.TextType
@@ -36,7 +39,7 @@ class BootStrapService {
     SessionFactory sessionFactory
     UserService userService
 
-    final static BOOTSTRAP = true   // indicates this object is created via bootstrap (= is hard-coded in system, persists database resets and instances)
+    static final BOOTSTRAP = true   // indicates this object is created via bootstrap (= is hard-coded in system, persists database resets and instances)
 
     /**
      * Runs initialisation and triggers other startup methods

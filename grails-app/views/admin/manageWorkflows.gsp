@@ -25,7 +25,7 @@
             <div class="item">
                 <span>
                     <i class="icon circle large"></i>
-                    <strong>${message(code: 'workflow.task.label')}</strong> - ${message(code: 'workflow.condition.label')}
+                    <strong>${message(code: 'workflow.task.label')}</strong> &rarr; ( ${message(code: 'workflow.condition.label')} )
                 </span>
             </div>
             <div class="item">
@@ -84,10 +84,12 @@
             </g:link>
         </div>
 
-        <div class="ui segment attached">
-        <div class="ui mini steps">
-            <g:set var="tasks" value="${wf.getSequence()}" />
-            <g:each in="${tasks}" var="task">
+        <g:set var="tasks" value="${wf.getSequence()}" />
+        <g:if test="${tasks}">
+
+            <div class="ui segment attached">
+                <div class="ui mini steps">
+                <g:each in="${tasks}" var="task">
                 <div class="step">
                     <g:if test="${! task.child}">
                         <div class="content">
@@ -98,7 +100,7 @@
                                     ${task.title}
                                 </g:link>
                                 <g:if test="${task.condition}">
-                                    ( <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfCondition.KEY + ':' + task.condition.id, tab: 'workflows']}">
+                                    &rarr; ( <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfCondition.KEY + ':' + task.condition.id, tab: 'workflows']}">
                                         ${task.condition.title}
                                     </g:link> )
                                 </g:if>
@@ -145,9 +147,10 @@
                         </g:if>
                     </g:else>
                 </div>
-            </g:each>
-        </div>
-        </div>
+                </g:each>
+                </div>
+            </div>
+        </g:if>
 
         <div class="ui segment attached bottom" style="background-color: #f9fafb;">
 
@@ -184,7 +187,7 @@
             </g:link>
 
             <br />
-            Bearbeitet: ${DateUtils.getLocalizedSDF_noTime().format(wfInfo.lastUpdated)} - Erstellt: ${DateUtils.getLocalizedSDF_noTime().format(wf.dateCreated)}
+            Zuletzt bearbeitet: ${DateUtils.getLocalizedSDF_noTime().format(wfInfo.lastUpdated)} - Erstellt: ${DateUtils.getLocalizedSDF_noTime().format(wf.dateCreated)}
         </div>
 
         <br />

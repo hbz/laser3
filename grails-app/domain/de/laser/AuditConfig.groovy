@@ -15,7 +15,7 @@ import groovy.util.logging.Slf4j
 @Slf4j
 class AuditConfig {
 
-    final static COMPLETE_OBJECT = 'COMPLETE_OBJECT'
+    public static final String COMPLETE_OBJECT = 'COMPLETE_OBJECT'
 
     Long   referenceId
     String referenceClass

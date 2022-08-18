@@ -15,8 +15,8 @@ import de.laser.storage.RDConstants
  */
 class UserSetting {
 
-    final static SETTING_NOT_FOUND = "SETTING_NOT_FOUND"
-    final static DEFAULT_REMINDER_PERIOD = 14
+    public static final SETTING_NOT_FOUND = "SETTING_NOT_FOUND"
+    public static final DEFAULT_REMINDER_PERIOD = 14
 
     /**
      * The settings for an {@link User} which can be configured

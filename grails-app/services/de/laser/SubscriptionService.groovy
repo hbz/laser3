@@ -1795,7 +1795,7 @@ class SubscriptionService {
     }
 
     boolean areStatsAvailable(Collection<Platform> subscribedPlatforms, Collection<Long> refPkgs, Collection<Long> reportInstitutions) {
-        Map<String, Object> checkParams = [max: 1, plat: subscribedPlatforms, reportInstitutions: reportInstitutions]
+        Map<String, Object> checkParams = [plat: subscribedPlatforms, reportInstitutions: reportInstitutions]
         //repeating of 0 checks necessary because of query plan - join result in sequence scans at large datasets (Postgres does not seek indices when > 10% of data is being retrieved)
         int result = Counter4Report.executeQuery('select count(c4r.id) from Counter4Report c4r join c4r.title tipp where c4r.platform in (:plat) and tipp.pkg.id in (:refPkgs) and c4r.reportInstitution.id in (:reportInstitutions)', checkParams+[refPkgs: refPkgs])[0]
         if(result == 0)
@@ -1803,7 +1803,7 @@ class SubscriptionService {
         if(result == 0)
             result = Counter5Report.executeQuery('select count(c5r.id) from Counter5Report c5r join c5r.title tipp where c5r.platform in (:plat) and tipp.pkg.id in (:refPkgs) and c5r.reportInstitution.id in (:reportInstitutions)', checkParams+[refPkgs: refPkgs])[0]
         if(result == 0)
-            result = Counter5Report.executeQuery('select count(c5r.id) from Counter5Report c5r where c5r.platform in (:plat) and c5r.reportType in (:reportTypes) and c5r.reportInstitution.id in (:reportInstitutions)', checkParams + [reportTypes: [Counter5ApiSource.PLATFORM_USAGE, Counter5ApiSource.PLATFORM_MASTER_REPORT]])[0]
+            result = Counter5Report.executeQuery('select count(c5r.id) from Counter5Report c5r where c5r.platform in (:plat) and lower(c5r.reportType) in (:reportTypes) and c5r.reportInstitution.id in (:reportInstitutions)', checkParams + [reportTypes: [Counter5ApiSource.PLATFORM_USAGE, Counter5ApiSource.PLATFORM_MASTER_REPORT]])[0]
         result > 0
     }
 

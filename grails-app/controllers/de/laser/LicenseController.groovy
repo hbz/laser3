@@ -55,7 +55,7 @@ class LicenseController {
 
     //-----
 
-    final static Map<String, String> CHECK404_ALTERNATIVES = [
+    public static final Map<String, String> CHECK404_ALTERNATIVES = [
              'myInstitution/currentLicenses' : 'license.current'
     ]
 

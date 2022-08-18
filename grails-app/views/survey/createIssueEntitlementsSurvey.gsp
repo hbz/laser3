@@ -115,7 +115,7 @@
 
 <div class="subscription-results">
     <g:if test="${subscriptions}">
-        <table class="ui celled sortable table table-tworow la-js-responsive-table la-table">
+        <table class="ui celled sortable table la-js-responsive-table la-table">
             <thead>
             <tr>
                 <th rowspan="2" class="center aligned">

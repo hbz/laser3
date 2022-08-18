@@ -76,7 +76,7 @@ class SurveyController {
 
     //-----
 
-    final static Map<String, String> CHECK404_ALTERNATIVES = [
+    public static final Map<String, String> CHECK404_ALTERNATIVES = [
             'myInstitution/currentSurveys' : 'currentSurveys.label'
     ]
 
@@ -3396,10 +3396,10 @@ class SurveyController {
                                  sub_name     : subscription.name,
                                  sub_id       : subscription.id,
                                  sub_status   : RDStore.SUBSCRIPTION_INTENDED.id.toString(),
-                                 sub_type     : subscription.type?.id.toString(),
-                                 sub_form     : subscription.form?.id.toString(),
-                                 sub_resource : subscription.resource?.id.toString(),
-                                 sub_kind     : subscription.kind?.id.toString(),
+                                 sub_type     : subscription.type?.id?.toString(),
+                                 sub_form     : subscription.form?.id?.toString(),
+                                 sub_resource : subscription.resource?.id?.toString(),
+                                 sub_kind     : subscription.kind?.id?.toString(),
                                  sub_isPublicForApi : subscription.isPublicForApi ? RDStore.YN_YES.id.toString() : RDStore.YN_NO.id.toString(),
                                  //sub_hasPerpetualAccess : subscription.hasPerpetualAccess,
                                  sub_hasPerpetualAccess : subscription.hasPerpetualAccess ? RDStore.YN_YES.id.toString() : RDStore.YN_NO.id.toString(),

@@ -9,8 +9,10 @@
         <g:set var="prefixOverride" value="${WfWorkflow.KEY}" />
 
         <div class="field">
-            <p><strong>${workflow.title}</strong></p>
-            <p>${workflow.description}</p>
+%{--            <p><strong>${workflow.title}</strong></p>--}%
+            <g:if test="${workflow.description}">
+                <p>${workflow.description}</p>
+            </g:if>
             <p>
                 <div class="ui la-flexbox">
                     <i class="icon clipboard la-list-icon"></i>
@@ -44,8 +46,11 @@
 
             <div class="ui segment internally celled grid">
                 <g:set var="tasks" value="${workflow.getSequence()}" />
+                <% int openTasksCount = 0 %>
+
                 <g:each in="${tasks}" var="task" status="ti">
                     <g:if test="${task.status == RDStore.WF_TASK_STATUS_OPEN}">
+                        <% openTasksCount++ %>
                         <div class="row">
                             <div class="sixteen wide column">
                                 <div class="content">
@@ -94,11 +99,13 @@
                     <g:if test="${task.child}">
                         <g:each in="${task.child.getSequence()}" var="child" status="ci">
                             <g:if test="${task.child.status == RDStore.WF_TASK_STATUS_OPEN}">
+                                <% openTasksCount++ %>
                                 <div class="row">
                                     <div class="sixteen wide column">
                                         <div class="content">
                                             <div class="header">
                                                 %{-- <i class="icon ${WorkflowHelper.getCssIconAndColorByStatus(child.status)}"></i> --}%
+                                                <p><i class="icon paperclip"></i>
                                                 <strong>${child.title}</strong>
                                                 <span class="sc_darkgrey">
                                                 ( <i class="icon ${WorkflowHelper.getCssIconByTaskPriority(child.priority)}"></i> ${child.priority.getI10n('value')} )
@@ -141,6 +148,19 @@
                         </g:each>
                     </g:if>
                 </g:each>
+
+                <g:if test="${openTasksCount == 0}">
+                    <div class="row">
+                        <div class="sixteen wide column">
+                            <g:if test="${tasks}">
+                                <i class="icon check"></i> Es sind keine offenen Aufgaben mehr vorhanden.
+                            </g:if>
+                            <g:else>
+                                Es sind keine Aufgaben vorhanden.
+                            </g:else>
+                        </div>
+                    </div>
+                </g:if>
             </div>
 
         </div>
@@ -159,12 +179,17 @@
         <g:set var="prefixOverride" value="${WfTask.KEY}" />
 
         <div class="field">
-            <p><strong>${task.title}</strong></p>
-            <p>${task.description}</p>
+%{--            <p><strong>${task.title}</strong></p>--}%
+            <g:if test="${task.description}">
+                <p>${task.description}</p>
+            </g:if>
             <p>
                 <i class="icon ${WorkflowHelper.getCssIconByTaskPriority(task.priority)} sc_darkgrey"></i>
                 ${task.priority.getI10n('value')}
             </p>
+%{--            <g:if test="${task.getParent()}"> <!-- TODO -->--}%
+%{--                <p><i class="icon paperclip"></i> Ist eine Unteraufgabe von: ${task.getParent().title}</p>--}%
+%{--            </g:if>--}%
         </div>
 
         <div class="field">
@@ -185,11 +210,12 @@
             <g:set var="prefixOverride" value="${WfCondition.KEY}" />
 
             <div class="field">
-                <label>${message(code:'workflow.condition.label')}</label>
+%{--                <label>${message(code:'workflow.condition.label')}</label>--}%
+                <label>${task.condition.title}</label>
 
                 <div class="ui segment" style="background-color:#f9fafb; margin-top:0;">
                     <div class="field">
-                        <p><strong>${task.condition.title}</strong></p>
+%{--                        <p><strong>${task.condition.title}</strong></p>--}%
                         <p>${task.condition.description}</p>
                     </div>
 

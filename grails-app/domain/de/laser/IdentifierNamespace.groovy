@@ -61,7 +61,7 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
      * Set of identifiers every institution (!) must have; this does not count for providers and agencies.
      * They get identifiers, too, but are set to empty value and are never shown
      */
-    final static List<String> CORE_ORG_NS = [
+    public static final List<String> CORE_ORG_NS = [
             ISIL,
             WIBID,
             GND_ORG_NR,
@@ -78,11 +78,11 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
      * Set of identifiers which are common to most {@link TitleInstancePackagePlatform}s; they are KBART headers and need all to be processed.
      * EBooks do not have ZDB IDs, EZB IDs nor ISSNs
      */
-    final static List<String> CORE_TITLE_NS = [
+    public static final List<String> CORE_TITLE_NS = [
             ZDB, ZDB_PPN, DOI, ISSN, EISSN, PISBN, ISBN, ISIL_PAKETSIGEL, ISCI, EZB_ANCHOR, EZB_COLLECTION_ID
     ]
 
-    final static String[] AVAILABLE_NSTYPES = [
+    public static final String[] AVAILABLE_NSTYPES = [
             NS_ORGANISATION,
             NS_LICENSE,
             NS_SUBSCRIPTION,
