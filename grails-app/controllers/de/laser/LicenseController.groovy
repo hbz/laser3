@@ -548,6 +548,10 @@ class LicenseController {
             params.license = params.id
             def tmpQ = subscriptionsQueryService.myInstitutionCurrentSubscriptionsBaseQuery(params, contextService.getOrg())
             Set<Subscription> subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] )
+            //HQL does not support sorting on subquery results nor limits
+            if(params.sort == 'providerAgency') {
+                subscriptions = Subscription.executeQuery("select oo.sub from OrgRole oo join oo.org providerAgency where oo.sub.id in (:subscriptions) and oo.roleType in (:providerAgency) order by providerAgency.name "+params.order, [subscriptions: subscriptions.id, providerAgency: [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]])
+            }
             if(params.subscription) {
                 result.subscriptions = []
                 List subIds = params.list("subscription")
