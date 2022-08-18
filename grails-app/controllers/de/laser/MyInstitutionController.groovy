@@ -2457,6 +2457,9 @@ join sub.orgRelations or_sub where
             params.sort = "t.endDate"
             params.order = "asc"
         }
+        if ( ! params.ctrlFilterSend) {
+            params.taskStatus = RDStore.TASK_STATUS_OPEN.id as String
+        }
         SimpleDateFormat sdFormat = DateUtils.getLocalizedSDF_noTime()
         Map<String, Object> queryForFilter = filterService.getTaskQuery(params, sdFormat)
         int offset = params.offset ? Integer.parseInt(params.offset) : 0
