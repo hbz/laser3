@@ -197,4 +197,36 @@ databaseChangeLog = {
             }
         }
     }
+
+    changeSet(author: "klober (generated)", id: "1660730198939-28") {
+        addColumn(tableName: "wf_condition") {
+            column(name: "wfc_file2", type: "int8")
+        }
+    }
+
+    changeSet(author: "klober (generated)", id: "1660730198939-29") {
+        addColumn(tableName: "wf_condition") {
+            column(name: "wfc_file2_title", type: "varchar(255)")
+        }
+    }
+
+    changeSet(author: "klober (generated)", id: "1660730198939-30") {
+        addColumn(tableName: "wf_condition_prototype") {
+            column(name: "wfcp_file2", type: "int8")
+        }
+    }
+
+    changeSet(author: "klober (generated)", id: "1660730198939-31") {
+        addColumn(tableName: "wf_condition_prototype") {
+            column(name: "wfcp_file2_title", type: "varchar(255)")
+        }
+    }
+
+    changeSet(author: "klober (generated)", id: "1660730198939-32") {
+        addForeignKeyConstraint(baseColumnNames: "wfc_file2", baseTableName: "wf_condition", constraintName: "FKid9rpybbo1rflva40ram4wqeb", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "dc_id", referencedTableName: "doc_context", validate: "true")
+    }
+
+    changeSet(author: "klober (generated)", id: "1660730198939-33") {
+        addForeignKeyConstraint(baseColumnNames: "wfcp_file2", baseTableName: "wf_condition_prototype", constraintName: "FKnb4lb6iehcsxmu6axkvxv0sh", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "dc_id", referencedTableName: "doc_context", validate: "true")
+    }
 }

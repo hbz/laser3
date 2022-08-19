@@ -374,7 +374,7 @@ class WorkflowService {
                 wfc['date' + i] = null
                 wfc['date' + i + '_title'] = null
 
-                if (i<=1) {
+                if (i<=2) {
                     wfc['file' + i] = null
                     wfc['file' + i + '_title'] = null
                 }
@@ -388,7 +388,7 @@ class WorkflowService {
                 wfc['checkbox' + i + '_isTrigger']  = ph.getString('checkbox' + i + '_isTrigger') == 'on'
                 wfc['date' + i + '_title']          = ph.getString('date' + i + '_title')
 
-                if (i<=1) {
+                if (i<=2) {
                     wfc['file' + i + '_title']      = ph.getString('file' + i + '_title')
                 }
             }
@@ -426,7 +426,7 @@ class WorkflowService {
                     condition['checkbox' + i]   = ph.getString('checkbox' + i) == 'on'
                     condition['date' + i]       = ph.getDate('date' + i)
 
-                    if (i<=1) {
+                    if (i<=2) {
                         condition['file' + i]   = ph.getDocContext('file' + i)
                     }
                 }
@@ -610,61 +610,72 @@ class WorkflowService {
                         }
                     }
 
-                    // TODO
-                    if (params.get('wfUploadFile-placeholder')) {
+                    for(int i=1; i<=2; i++) {
+                        String fileId = 'file' + i
 
-                        def file = WebUtils.retrieveGrailsWebRequest().getCurrentRequest().getFile("wfUploadFile")
-                        if (file) {
-                            Doc.withTransaction { TransactionStatus ts ->
-                                try {
-                                    Doc doc = new Doc(
-                                        contentType:    Doc.CONTENT_TYPE_FILE,
-                                        filename:       file.originalFilename,
-                                        mimeType:       file.contentType,
-                                        title:          params.wfUploadTitle ?: file.originalFilename,
-                                        type:           RefdataValue.get(params.wfUploadDoctype),
-                                        creator:        contextService.getUser(),
-                                        owner:          contextService.getOrg()
-                                    )
-                                    doc.save()
+                        if (params.get('wfUploadFile_placeholder_' + fileId)) {
 
-                                    String fPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
-                                    String fName = doc.uuid
+                            def file = WebUtils.retrieveGrailsWebRequest().getCurrentRequest().getFile('wfUploadFile_file_' + fileId)
+                            if (file) {
+                                Doc.withTransaction { TransactionStatus ts ->
+                                    try {
 
-                                    File folder = new File("${fPath}")
-                                    if (!folder.exists()) {
-                                        folder.mkdirs()
+                                        String uploadTitle         = params.get('wfUploadTitle_' + fileId) ?: file.originalFilename
+                                        String uploadOwner         = params.get('wfUploadOwner_' + fileId)
+                                        RefdataValue uploadDoctype = RefdataValue.get(params.get('wfUploadDoctype_' + fileId) as Serializable)
+
+                                        Doc doc = new Doc(
+                                                contentType: Doc.CONTENT_TYPE_FILE,
+                                                filename: file.originalFilename,
+                                                mimeType: file.contentType,
+                                                title: uploadTitle,
+                                                type: uploadDoctype,
+                                                creator: contextService.getUser(),
+                                                owner: contextService.getOrg()
+                                        )
+                                        doc.save()
+
+                                        String fPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
+                                        String fName = doc.uuid
+
+                                        File folder = new File("${fPath}")
+                                        if (!folder.exists()) {
+                                            folder.mkdirs()
+                                        }
+                                        File newFile = new File("${fPath}/${fName}")
+                                        file.transferTo(newFile)
+
+                                        Subscription sub = genericOIDService.resolveOID( uploadOwner ) as Subscription
+
+                                        DocContext docctx = new DocContext(
+                                                subscription: sub,
+                                                owner: doc,
+                                                doctype: uploadDoctype
+                                        )
+                                        docctx.save()
+
+                                        condition['file' + i] = docctx
+                                        cChanged = true
                                     }
-                                    File newFile = new File("${fPath}/${fName}")
-                                    file.transferTo(newFile)
+                                    catch (Exception e) {
+                                        cChanged = false
+                                        result.status = OP_STATUS_ERROR
 
-                                    Subscription sub = genericOIDService.resolveOID(params.wfUploadOwner) as Subscription
-
-                                    DocContext docctx = new DocContext(
-                                        subscription: sub,
-                                        owner: doc,
-                                        doctype: RefdataValue.get(params.wfUploadDoctype)
-                                    )
-                                    docctx.save()
-
-                                    condition.file1 = docctx
-                                    cChanged = true
-                                }
-                                catch (Exception e) {
-                                    cChanged = false
-                                    result.status = OP_STATUS_ERROR
-
-                                    e.printStackTrace()
-                                    ts.setRollbackOnly()
+                                        e.printStackTrace()
+                                        ts.setRollbackOnly()
+                                    }
                                 }
                             }
                         }
-                    }
-                    else if (cFields.contains('file1')) {
-                        DocContext file1 = ph.getDocContext('file1')
-                        if (file1 != condition.file1) {
-                            condition.file1 = file1
-                            cChanged = true
+
+                        else {
+                            if (cFields.contains('file' + i)) {
+                                DocContext file = ph.getDocContext('file' + i)
+                                if (file != condition['file' + i]) {
+                                    condition['file' + i] = file
+                                    cChanged = true
+                                }
+                            }
                         }
                     }
                     if (cChanged) {
@@ -680,7 +691,7 @@ class WorkflowService {
             result.status = OP_STATUS_ERROR
 
             if (params.subId && params.workflowId) {
-                GrailsParameterMap clone = params.clone()
+                GrailsParameterMap clone = params.clone() as GrailsParameterMap
                 clone.setProperty( 'cmd', params.cmd + ':' + params.workflowId )
 
                 result = instantiateCompleteWorkflow( clone )

@@ -13,8 +13,8 @@
 
 <div class="ui secondary stackable pointing tabular la-tab-with-js menu">
     <a data-tab="workflows" class="item <% if (tmplTab == 'workflows') { print 'active' } %>">${message(code:'workflow.plural')}</a>
-    %{-- <a data-tab="templates" class="item <% if (tmplTab == 'templates') { print 'active' } %>">Templates</a> --}%
     <a data-tab="prototypes" class="item <% if (tmplTab == 'prototypes') { print 'active' } %>">${message(code:'default.prototype.plural')}</a>
+    <a data-tab="templates" class="item <% if (tmplTab == 'templates') { print 'active' } %>">Templates</a>
     <a data-tab="help" class="item <% if (tmplTab == 'help') { print 'active' } %>">?</a>
 </div>
 
@@ -25,7 +25,7 @@
             <div class="item">
                 <span>
                     <i class="icon circle large"></i>
-                    <strong>${message(code: 'workflow.task.label')}</strong> &rarr; ( ${message(code: 'workflow.condition.label')} )
+                    <strong>${message(code: 'workflow.task.label')}</strong> &rArr; ( ${message(code: 'workflow.condition.label')} )
                 </span>
             </div>
             <div class="item">
@@ -33,8 +33,8 @@
                     <strong>${message(code:'default.priority.label')}:</strong>
                     &nbsp;&nbsp;
                     <i class="icon circle large"></i>Normal
-                    <i class="icon arrow alternate circle up large"></i>Wichtig
-                    <i class="icon arrow alternate circle down large"></i>Optional
+                    <i class="icon arrow circle up large"></i>Wichtig
+                    <i class="icon arrow circle down large"></i>Optional
                 </span>
             </div>
             <div class="item">
@@ -100,7 +100,7 @@
                                     ${task.title}
                                 </g:link>
                                 <g:if test="${task.condition}">
-                                    &rarr; ( <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfCondition.KEY + ':' + task.condition.id, tab: 'workflows']}">
+                                    &rArr; ( <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfCondition.KEY + ':' + task.condition.id, tab: 'workflows']}">
                                         ${task.condition.title}
                                     </g:link> )
                                 </g:if>
@@ -195,26 +195,18 @@
 
 </div><!-- .workflows -->
 
-%{-- <div data-tab="templates" class="ui bottom attached tab <% if (tmplTab == 'templates') { print 'active' } %>" style="margin-top:2em;"> --}%
 <div data-tab="prototypes" class="ui bottom attached tab <% if (tmplTab == 'prototypes') { print 'active' } %>" style="margin-top:2em;">
 
     <ui:msg class="info" noClose="true">
         <div class="ui list">
             <div class="item">
-                <span class="ui brown circular label">id</span>
-                &nbsp; ${message(code: 'workflow.object.' + WfWorkflowPrototype.KEY)}
+                <span class="ui brown circular label">id</span> &nbsp; ${message(code: 'workflow.object.' + WfWorkflowPrototype.KEY)}
             </div>
             <div class="item">
-                <span class="ui blue circular label">id</span>
-                &nbsp; ${message(code: 'workflow.object.' + WfTaskPrototype.KEY)}
-                , Priorität:
-                <span class="ui blue circular label"><i class="icon circle"></i>Normal&nbsp;</span>
-                <span class="ui blue circular label"><i class="icon arrow alternate circle up"></i>Wichtig&nbsp;</span>
-                <span class="ui blue circular label"><i class="icon arrow alternate circle down"></i>Optional&nbsp;</span>
+                <span class="ui blue circular label">id</span> &nbsp; ${message(code: 'workflow.object.' + WfTaskPrototype.KEY)}
             </div>
             <div class="item">
-                <span class="ui teal circular label">id</span>
-                &nbsp; ${message(code: 'workflow.object.' + WfConditionPrototype.KEY)}
+                <span class="ui teal circular label">id</span> &nbsp; ${message(code: 'workflow.object.' + WfConditionPrototype.KEY)}
             </div>
         </div>
     </ui:msg>
@@ -451,11 +443,27 @@
 
     <g:link class="wfModalLink ui button" controller="ajaxHtml" action="createWfXModal" params="${[key: WfConditionPrototype.KEY, tab: 'prototypes']}">${message(code: 'workflow.object.' + WfConditionPrototype.KEY)} erstellen</g:link>
 
-    <!-- .templates -->
+</div><!-- .prototypes -->
 
-    <br />
-    <br />
-    <div class="ui divider"></div>
+<div data-tab="templates" class="ui bottom attached tab <% if (tmplTab == 'templates') { print 'active' } %>" style="margin-top:2em;">
+
+    <ui:msg class="info" noClose="true">
+        <div class="ui list">
+            <div class="item">
+                <span class="ui brown circular label">id</span> &nbsp; ${message(code: 'workflow.object.' + WfWorkflowPrototype.KEY)}
+            </div>
+            <div class="item">
+                <span class="ui blue circular label">id</span> &nbsp; ${message(code: 'workflow.object.' + WfTaskPrototype.KEY)}
+                , Priorität:
+                <span class="ui blue circular label"><i class="icon circle"></i>Normal&nbsp;</span>
+                <span class="ui blue circular label"><i class="icon arrow circle up"></i>Wichtig&nbsp;</span>
+                <span class="ui blue circular label"><i class="icon arrow circle down"></i>Optional&nbsp;</span>
+            </div>
+            <div class="item">
+                <span class="ui teal circular label">id</span> &nbsp; ${message(code: 'workflow.object.' + WfConditionPrototype.KEY)}
+            </div>
+        </div>
+    </ui:msg>
 
     <g:set var="workflowTemplates" value="${WfWorkflowPrototype.executeQuery('select wfwp from WfWorkflowPrototype wfwp order by wfwp.id desc')}" />
 
@@ -556,7 +564,7 @@
         </g:if>
     </g:each>
 
-</div><!-- .prototypes -->
+</div><!-- .templates -->
 
 <div data-tab="help" class="ui bottom attached tab <% if (tmplTab == 'help') { print 'active' } %>" style="margin-top:2em;">
 

@@ -138,7 +138,7 @@
                                 </div>
                             </g:if>
                             <g:else>
-                                <input type="text" name="${prefix}_${field}" id="${prefix}_${field}" readonly="readonly" value="<Link zur Datei>" />
+                                <input type="text" name="${prefix}_${field}" id="${prefix}_${field}" readonly="readonly" value="Dieses Feld kann hier nicht bearbeitet werden." />
                                 %{-- TODO
 
                                 <g:select class="ui dropdown" id="${prefixOverride}_${field}" name="${prefixOverride}_${field}"

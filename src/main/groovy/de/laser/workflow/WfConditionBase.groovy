@@ -11,19 +11,22 @@ import grails.gorm.dirty.checking.DirtyCheck
 @DirtyCheck
 class WfConditionBase {
 
+
     public static final String[] TYPES = [
-            '1_0_0',    // 1 Checkbox,1 Checkbox
-            '2_0_0',    // 2 Checkboxen,2 Checkboxes
-            '3_0_0',    // 3 Checkboxen,3 Checkboxes
-            '4_0_0',    // 4 Checkboxen,4 Checkboxes
-            '1_1_0',    // 1 Checkbox und 1 Datum,1 Checkbox and 1 Date
-            '2_2_0',    // 2 Checkboxen und 2 Daten,2 Checkboxes and 2 Dates
-            '3_3_0',    // 3 Checkboxen und 3 Daten,3 Checkboxes and 3 Dates
-            '4_4_0',    // 4 Checkboxen und 4 Daten,4 Checkboxes and 4 Dates
-            '1_0_1',    // 1 Checkbox und 1 Datei,1 Checkbox and 1 File
-            '1_1_1',    // 1 Checkbox und 1 Datum und 1 Datei,1 Checkbox and 1 Date and 1 File
-            '2_2_1',    // 2 Checkboxen und 2 Daten und 1 Datei,2 Checkboxes and 2 Dates and 1 File
-            '0_0_1',    // 1 Datei,1 File
+            '1_0_0',
+            '2_0_0',
+            '3_0_0',
+            '4_0_0',
+            '1_1_0',
+            '2_2_0',
+            '3_3_0',
+            '4_4_0',
+            '1_0_1',
+            '2_0_2',
+            '1_1_1', // Checkboxes_Dates_Files
+            '2_2_2',
+            '0_0_1',
+            '0_0_2'
     ]
 
     String type
@@ -62,10 +65,10 @@ class WfConditionBase {
     String  date4_title
 
     DocContext  file1
-//    DocContext  file2
+    DocContext  file2
 
     String      file1_title
-//    String      file2_title
+    String      file2_title
 
     // --
 

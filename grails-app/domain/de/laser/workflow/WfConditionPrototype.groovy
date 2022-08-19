@@ -34,9 +34,9 @@ class WfConditionPrototype extends WfConditionBase {
             date3_title column: 'wfcp_date3_title'
             date4_title column: 'wfcp_date4_title'
                   file1 column: 'wfcp_file1'
-//                  file2 column: 'wfcp_file2'
+                  file2 column: 'wfcp_file2'
             file1_title column: 'wfcp_file1_title'
-//            file2_title column: 'wfcp_file2_title'
+            file2_title column: 'wfcp_file2_title'
             dateCreated column: 'wfcp_date_created'
             lastUpdated column: 'wfcp_last_updated'
     }
@@ -57,9 +57,9 @@ class WfConditionPrototype extends WfConditionBase {
         date3_title     (nullable: true)
         date4_title     (nullable: true)
         file1           (nullable: true)
-//        file2           (nullable: true)
+        file2           (nullable: true)
         file1_title     (nullable: true)
-//        file2_title     (nullable: true)
+        file2_title     (nullable: true)
     }
 
     /**
@@ -103,7 +103,9 @@ class WfConditionPrototype extends WfConditionBase {
                 date3_title:            this.date3_title,
                 date4_title:            this.date4_title,
                 file1:                  this.file1,
+                file2:                  this.file2,
                 file1_title:            this.file1_title,
+                file2_title:            this.file2_title,
         )
         if (! condition.validate()) {
             log.debug( '[ ' + this.id + ' ].instantiate() : ' + condition.getErrors().toString() )

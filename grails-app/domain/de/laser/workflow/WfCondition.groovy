@@ -37,9 +37,9 @@ class WfCondition extends WfConditionBase {
             date3_title column: 'wfc_date3_title'
             date4_title column: 'wfc_date4_title'
                   file1 column: 'wfc_file1'
-//                  file2 column: 'wfc_file2'
+                  file2 column: 'wfc_file2'
             file1_title column: 'wfc_file1_title'
-//            file2_title column: 'wfc_file2_title'
+            file2_title column: 'wfc_file2_title'
 
             dateCreated column: 'wfc_date_created'
             lastUpdated column: 'wfc_last_updated'
@@ -61,9 +61,9 @@ class WfCondition extends WfConditionBase {
         date3_title     (nullable: true)
         date4_title     (nullable: true)
         file1           (nullable: true)
-//        file2           (nullable: true)
+        file2           (nullable: true)
         file1_title     (nullable: true)
-//        file2_title     (nullable: true)
+        file2_title     (nullable: true)
     }
 
     /**
