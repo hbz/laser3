@@ -360,7 +360,7 @@ class SubscriptionControllerService {
                 subscribedPlatforms = Platform.executeQuery("select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription", [subscription: result.subscription])
             }
             result.platformInstanceRecords = [:]
-            result.subscribedPlatforms = subscribedPlatforms
+            result.platforms = subscribedPlatforms
             subscribedPlatforms.each { Platform platformInstance ->
                 Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/find?uuid=${platformInstance.gokbId}")
                 if (queryResult.error && queryResult.error == 404) {
@@ -385,12 +385,12 @@ class SubscriptionControllerService {
             else refSubs = [result.subscription.instanceOf]
             Set<Counter4Report> c4usages = []
             Set<Counter5Report> c5usages = []
-            List count4check = [], c4sums = [], count5check = [], c5sums = []
-            Set monthsInRing = []
+            List c4sums = [], c5sums = []
+            SortedSet monthsInRing = new TreeSet()
             if(!params.tab)
                 params.tab = 'total'
-            List<GroovyRowResult> statistics = []
-            String sort
+            String sort, customerUID = result.subscription.getSubscriber().globalUID
+            result.customer = customerUID
             if(params.sort && params.sort != "title.name" && !params.exportXLS) {
                 String secondarySort
                 switch(params.sort) {
@@ -410,12 +410,16 @@ class SubscriptionControllerService {
                 Set refTitles = fetchTitles(params, refSubs)
                 Map<String, Object> dateRanges = getDateRange(params, result.subscription)
                 String filter = ""
+                Set<String> platforms = subscribedPlatforms.globalUID
+                result.platformsJSON = platforms as JSON
                 Set allAvailableReports = []
                 Counter5Report.withTransaction {
-                    Map<String, Object> queryParams = [customer: result.subscription.getSubscriber().globalUID, platforms: subscribedPlatforms.globalUID]+dateRanges.dateRangeParams
+                    Map<String, Object> queryParams = [customer: customerUID, platforms: platforms]
+                    monthsInRing.addAll(Counter5Report.executeQuery('select r.reportFrom from Counter5Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms) and r.reportFrom >= :startDate and r.reportTo <= :endDate group by r.reportFrom', queryParams+[startDate: dateRanges.monthsInRing.first(), endDate: dateRanges.monthsInRing.last()]))
+                    queryParams << dateRanges.dateRangeParams
                     allAvailableReports.addAll(Counter5Report.executeQuery('select new map(lower(r.reportType) as reportType, r.accessType as accessType, r.metricType as metricType, r.accessMethod as accessMethod) from Counter5Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms) and r.reportFrom >= :startDate and r.reportTo <= :endDate group by r.reportType, r.accessType, r.metricType, r.accessMethod', queryParams))
                     if(allAvailableReports.size() > 0) {
-                        SortedSet<String> reportTypes = new TreeSet<String>(), metricTypes = new TreeSet<String>(), accessTypes = new TreeSet<String>(), accessMethods = new TreeSet<String>()
+                        Set<String> reportTypes = [], metricTypes = [], accessTypes = [], accessMethods = []
                         allAvailableReports.each { row ->
                             if(row.reportType)
                                 reportTypes << row.reportType
@@ -467,7 +471,6 @@ class SubscriptionControllerService {
                                     if(ctr >= result.offset && c5usages.size() < result.max) {
                                         c5usages << r
                                     }
-                                    monthsInRing << r.reportFrom
                                 }
                             }
                             result.usages = c5usages
@@ -477,33 +480,13 @@ class SubscriptionControllerService {
                         }
                         result.sums = c5sums
                         result.monthsInRing = monthsInRing
-                            /* ex
-                            queryParams.reportType = result.reportType
-                            Set availableMetricTypes = [], availableAccessTypes = []
-                            List metricAccessRows = Counter5Report.executeQuery('select r.metricType, r.accessType from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms) and lower(r.reportType) in (:reportType)'+dateRange, allAvaliableStatsParams+[reportType: result.reportType])
-                            metricAccessRows.each { rows ->
-                                availableMetricTypes << rows[0]
-                                availableAccessTypes << rows[1]
-                            }
-                            result.metricTypes = availableMetricTypes
-                            result.accessTypes = availableAccessTypes
-
-                            queryParams.metricType = result.metricType
-                            c5sums.addAll(Counter5Report.executeQuery('select new map(r.reportType as reportType, r.reportFrom as reportMonth, r.metricType as metricType, sum(r.reportCount) as reportCount) from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms)'+filter+dateRange+' group by r.reportFrom, r.reportType, r.metricType order by r.reportFrom asc, r.metricType asc', queryParams))
-                            c5usages.addAll(Counter5Report.executeQuery('select r from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms)'+filter+dateRange+' order by '+sort, queryParams, [max: result.max, offset: result.offset]))
-                            result.total = Counter5Report.executeQuery('select count(r) from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms)'+filter+dateRange, queryParams).get(0)
-                            result.sums = c5sums
-                            result.usages = c5usages
-                            Map<String, Object> monthQueryParams = queryParams.clone()
-                            monthQueryParams.remove('startDate')
-                            monthQueryParams.remove('endDate')
-                            monthQueryParams.monthsInRing = monthsInRing
-                            result.monthsInRing = Counter5Report.executeQuery('select r.reportFrom from Counter5Report r where r.reportInstitution = :customer and r.platform in (:platforms) and r.reportFrom in (:monthsInRing)'+filter+' group by r.reportFrom, r.metricType, r.reportType order by r.reportFrom asc, r.metricType asc', monthQueryParams) as Set
-                             */
-                        }
+                    }
                     else {
+                        queryParams = [customer: customerUID, platforms: platforms]
+                        monthsInRing.addAll(Counter5Report.executeQuery('select r.reportFrom from Counter5Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms) and r.reportFrom >= :startDate and r.reportTo <= :endDate group by r.reportFrom', queryParams+[startDate: dateRanges.monthsInRing.first(), endDate: dateRanges.monthsInRing.last()]))
+                        queryParams << dateRanges.dateRangeParams
                         allAvailableReports.addAll(Counter4Report.executeQuery('select new map(r.reportType as reportType, r.metricType as metricType) from Counter4Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms) and r.reportFrom >= :startDate and r.reportTo <= :endDate group by r.reportType, r.metricType order by r.reportType', queryParams))
-                        SortedSet<String> reportTypes = new TreeSet<String>(), metricTypes = new TreeSet<String>()
+                        Set<String> reportTypes = [], metricTypes = []
                         allAvailableReports.each { row ->
                             if (row.reportType)
                                 reportTypes << row.reportType
@@ -543,7 +526,6 @@ class SubscriptionControllerService {
                                     if(ctr >= result.offset && c4usages.size() < result.max) {
                                         c4usages << r
                                     }
-                                    monthsInRing << r.reportFrom
                                 }
                             }
                             result.usages = c4usages
@@ -553,27 +535,6 @@ class SubscriptionControllerService {
                         }
                         result.sums = c4sums
                         result.monthsInRing = monthsInRing
-                            /* ex
-                            Counter4Report.withTransaction {
-                        if(count5check.size() == 0) {
-                            Set availableReportTypes = Counter4Report.executeQuery('select r.reportType from Counter4Report r where r.reportInstitution = :customer and r.platform in (:platforms)'+dateRange+' order by r.reportType asc', allAvaliableStatsParams)
-                            result.reportTypes = availableReportTypes
-
-                            Set availableMetricTypes = Counter4Report.executeQuery('select r.metricType from Counter4Report r where r.reportInstitution = :customer and r.platform in (:platforms) and r.reportType in (:reportType)'+dateRange, allAvaliableStatsParams+[reportType: result.reportType])
-
-                            c4sums.addAll(Counter4Report.executeQuery('select new map(r.reportType as reportType, r.reportFrom as reportMonth, r.metricType as metricType, r.category as reportCategory, sum(r.reportCount) as reportCount) from Counter4Report r where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription in (:refSubs) and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null)'+filter+dateRange+' group by r.reportFrom, r.metricType, r.reportType, r.category order by r.reportFrom asc, r.metricType asc', queryParams))
-                            c4usages.addAll(Counter4Report.executeQuery('select r from Counter4Report r where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription in (:refSubs) and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null)'+filter+dateRange+' order by '+sort, queryParams, [max: result.max, offset: result.offset]))
-                            count4check.addAll(Counter4Report.executeQuery('select count(r.id) from Counter4Report r where r.reportInstitution = :customer and r.platform in (:platforms) and (r.title.id in (select ie.tipp.id from IssueEntitlement ie where ie.subscription in (:refSubs) and ie.acceptStatus = :acceptStatus and ie.status = :current and ie.tipp.status = :current) or r.title is null)'+filter+dateRange, queryParams))
-                            result.total = count4check.get(0)
-                            result.sums = c4sums
-                            result.usages = c4usages
-                            Map<String, Object> monthQueryParams = queryParams.clone()
-                            monthQueryParams.remove('startDate')
-                            monthQueryParams.remove('endDate')
-                            monthQueryParams.monthsInRing = monthsInRing
-                            result.monthsInRing = Counter4Report.executeQuery('select r.reportFrom from Counter4Report r left join r.title title where r.reportInstitution = :customer and r.platform in (:platforms) and r.reportFrom in (:monthsInRing)'+filter+' group by r.reportFrom, r.metricType, r.reportType order by r.reportFrom asc, r.metricType asc', monthQueryParams) as Set
-                        }
-                         */
                     }
                 }
             }
@@ -581,6 +542,7 @@ class SubscriptionControllerService {
                 result.metricTypes = []
                 result.reportTypes = []
                 result.monthsInRing = []
+                result.platforms = [] as JSON
             }
             [result: result, status: STATUS_OK]
         }
@@ -743,11 +705,11 @@ class SubscriptionControllerService {
             endTime = now.with(TemporalAdjusters.lastDayOfYear())
         }
         if(params.tab && params.tab != 'total' && params.exportXLS && params.data != 'fetchAll') {
-            monthsInRing << LocalDate.parse(params.tab+'-01', DateTimeFormatter.ofPattern('yyyy-MM-dd'))
+            monthsInRing << DateUtils.getSDF_yyyyMM(params.tab)
         }
         else {
             while(startTime.isBefore(endTime)) {
-                monthsInRing << startTime
+                monthsInRing << Date.from(startTime.atStartOfDay(ZoneId.systemDefault()).toInstant())
                 startTime = startTime.plusMonths(1)
             }
         }

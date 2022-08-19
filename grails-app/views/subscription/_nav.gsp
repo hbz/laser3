@@ -41,7 +41,7 @@
             }
             Set<String> reportingInstitutions = [institution.globalUID]
             reportingInstitutions.addAll(Subscription.executeQuery('select oo.org.globalUID from OrgRole oo join oo.sub s where s.instanceOf = :subscription and oo.roleType in (:roleTypes)', [subscription: subscription, roleTypes: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]))
-            boolean statsAvailable = subscriptionService.areStatsAvailable(subscribedPlatforms, subscription.packages, reportingInstitutions)
+            boolean statsAvailable = subscriptionService.areStatsAvailable(subscribedPlatforms, subscription.packages, reportingInstitutions, [startDate: subscription.startDate, endDate: subscription.endDate])
         %>
         <g:if test="${statsAvailable}">
             <ui:subNavItem controller="subscription" action="stats" params="${[id:params.id]}" message="default.stats.label" />
