@@ -30,8 +30,8 @@
             </div>
         </div>
         <div class="field la-field-right-aligned">
-            <a href="/laser/myInstitution/tasks" class="ui reset primary button">Filter zurücksetzen</a>
-            <input type="submit" class="ui secondary button" value="Filtern">
+            <a href="/laser/myInstitution/tasks" class="ui reset secondary button">Filter zurücksetzen</a>
+            <input type="submit" class="ui primary button" value="Filtern">
         </div>
     </form>--}%
 </div>

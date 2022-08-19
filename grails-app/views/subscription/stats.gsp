@@ -205,8 +205,8 @@
                         </div>
 
                         <div class="field la-field-right-aligned">
-                            <g:link action="stats" id="${subscription.id}" class="ui reset primary button">${message(code: 'default.button.reset.label')}</g:link>
-                            <input type="submit" class="ui secondary button"
+                            <g:link action="stats" id="${subscription.id}" class="ui reset secondary button">${message(code: 'default.button.reset.label')}</g:link>
+                            <input type="submit" class="ui primary button"
                                    value="${message(code: 'default.button.filter.label')}"/>
                         </div>
                     </div>

@@ -313,7 +313,7 @@
                     </div>
 
                     <div class="field">
-                        <input type="submit" class="ui secondary button"
+                        <input type="submit" class="ui primary button"
                                value="${message(code: 'default.button.submit.label')}">
                     </div>
 

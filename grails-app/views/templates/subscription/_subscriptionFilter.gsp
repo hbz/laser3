@@ -247,8 +247,8 @@
                 </div>
             </g:if>
             <div class="field la-field-right-aligned">
-                <a href="${createLink(controller:controllerName,action:actionName,params:[id:params.id,resetFilter:true, tab: params.tab])}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
-                <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label')}">
+                <a href="${createLink(controller:controllerName,action:actionName,params:[id:params.id,resetFilter:true, tab: params.tab])}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
+                <input type="submit" class="ui primary button" value="${message(code:'default.button.filter.label')}">
             </div>
 
         </div>

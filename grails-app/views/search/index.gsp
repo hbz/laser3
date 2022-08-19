@@ -158,8 +158,8 @@
 
             <div class="field la-field-right-aligned">
                 <a href="${request.forwardURI}"
-                   class="ui reset primary button">${message(code: 'default.button.searchreset.label')}</a>
-                <button name="search" type="submit" value="true" class="ui secondary button">
+                   class="ui reset secondary button">${message(code: 'default.button.searchreset.label')}</a>
+                <button name="search" type="submit" value="true" class="ui primary button">
                     <g:message code="search.button" />
                 </button>
             </div>

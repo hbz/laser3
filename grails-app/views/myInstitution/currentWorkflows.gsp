@@ -60,8 +60,8 @@
             </div>
         </div>
         <div class="field la-field-right-aligned">
-            <g:link controller="myInstitution" action="currentWorkflows" params="${[filter: false]}" class="ui reset primary button">${message(code:'default.button.reset.label')}</g:link>
-            <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label')}" />
+            <g:link controller="myInstitution" action="currentWorkflows" params="${[filter: false]}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</g:link>
+            <input type="submit" class="ui primary button" value="${message(code:'default.button.filter.label')}" />
         </div>
     </form>
 </ui:filter>

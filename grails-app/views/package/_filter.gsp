@@ -32,8 +32,8 @@
             </div>
             <div class="field la-field-right-aligned">
 
-                <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
-                <input type="submit" class="ui secondary button" value="${message(code:'package.compare.filter.submit.label')}" />
+                <a href="${request.forwardURI}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
+                <input type="submit" class="ui primary button" value="${message(code:'package.compare.filter.submit.label')}" />
             </div>
         </div>
     </g:form>

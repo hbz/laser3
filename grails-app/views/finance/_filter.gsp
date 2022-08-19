@@ -263,9 +263,9 @@
                               noSelection="${['':message(code:'default.select.all.label')]}"/>
                 </div>
                 <div class="field la-field-right-aligned">
-                    <a href="${request.forwardURI}?reset=true" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
+                    <a href="${request.forwardURI}?reset=true" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
                     <g:hiddenField name="showView" value="${showView}"/>
-                    <input type="submit" name="submit" class="ui secondary button" value="${message(code:'default.button.filter.label')}">
+                    <input type="submit" name="submit" class="ui primary button" value="${message(code:'default.button.filter.label')}">
                 </div>
             </div>
 

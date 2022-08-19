@@ -20,8 +20,8 @@
             <g:select class="ui dropdown" id="filter" name="filter" from="${[[key:'name',value:"${message(code: 'default.title.label')}"],[key:'publishers',value:"${message(code:'tipp.publisher')}"],[key:'',value:"${message(code: 'default.all')}"]]}" optionKey="key" optionValue="value" value="${params.filter}"/>
           </div>
             <div class="field la-field-right-aligned">
-              <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
-              <button class="ui secondary button" type="submit" name="search" value="yes">${message(code: 'default.button.filter.label')}</button>
+              <a href="${request.forwardURI}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
+              <button class="ui primary button" type="submit" name="search" value="yes">${message(code: 'default.button.filter.label')}</button>
             </div>
         </div>
       </g:form>
