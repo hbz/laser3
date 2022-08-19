@@ -84,8 +84,8 @@
                                 <dt>
                                     <g:set var="ceKey" value="${element.getObjectKey() instanceof String ? element.getObjectKey() : element.getObjectKey().id}" />
                                     ${ceKey} -
-                                    creation: ${DateUtils.getLocalizedSDF_onlyTime().format(element.getCreationTime())},
-                                    lastAccess: ${DateUtils.getLocalizedSDF_onlyTime().format(element.getLastAccessTime())},
+                                    creation: ${DateUtils.getSDF_onlyTime().format(element.getCreationTime())},
+                                    lastAccess: ${DateUtils.getSDF_onlyTime().format(element.getLastAccessTime())},
                                     version: ${element.version},
                                     hitCount: ${element.hitCount}
                                 </dt>

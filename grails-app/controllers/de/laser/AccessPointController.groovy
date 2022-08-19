@@ -261,7 +261,7 @@ class AccessPointController  {
         boolean inContextOrg = (orgId == contextOrg.id)
         if (params.exportXLSX) {
             SXSSFWorkbook wb
-            SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTimeNoPoint()
+            SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
             String datetoday = sdf.format(new Date())
             String filename = "${datetoday}_" + escapeService.escapeString(orgAccessPoint.name)
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""

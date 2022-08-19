@@ -12,12 +12,10 @@ import java.time.ZoneId
 @Slf4j
 class DateUtils {
 
-    public static final String DATE_FORMAT_NOTIME_NOPOINT   = 'default.date.format.notimenopoint'
-    public static final String DATE_FORMAT_NOTIME           = 'default.date.format.notime'
-    public static final String DATE_FORMAT_NOZ              = 'default.date.format.noZ'
-    public static final String DATE_FORMAT_ONLYTIME         = 'default.date.format.onlytime'
+    public static final String DATE_FORMAT_NOTIME           = 'default.date.format.notime'          // yyyy-MM-dd --- dd.MM.yyyy
+    public static final String DATE_FORMAT_NOZ              = 'default.date.format.noZ'             // yyyy-MM-dd HH:mm:ss --- dd.MM.yyyy HH:mm:ss
 
-    // -- localized
+    // -- localized pattern
 
     static SimpleDateFormat getLocalizedSDF_byToken(String token) {
         MessageSource messageSource = BeanStore.getMessageSource()
@@ -33,23 +31,19 @@ class DateUtils {
         return null
     }
 
-    static SimpleDateFormat getLocalizedSDF_noTime(){
-        getLocalizedSDF_byToken(DATE_FORMAT_NOTIME)
+    static SimpleDateFormat getLocalizedSDF_MMMyyyy(){
+        return new SimpleDateFormat('MMM-yyyy')
     }
 
-    static SimpleDateFormat getLocalizedSDF_noTimeNoPoint(){
-        getLocalizedSDF_byToken(DATE_FORMAT_NOTIME_NOPOINT)
+    static SimpleDateFormat getLocalizedSDF_noTime(){
+        getLocalizedSDF_byToken(DATE_FORMAT_NOTIME)
     }
 
     static SimpleDateFormat getLocalizedSDF_noZ(){
         getLocalizedSDF_byToken(DATE_FORMAT_NOZ)
     }
 
-    static SimpleDateFormat getLocalizedSDF_onlyTime(){
-        getLocalizedSDF_byToken(DATE_FORMAT_ONLYTIME)
-    }
-
-    // -- fixed: no localization
+    // -- fixed pattern #1: no localization
 
     static SimpleDateFormat getSDF_ddMMyyy(){
         return new SimpleDateFormat('dd.MM.yyy')
@@ -57,10 +51,6 @@ class DateUtils {
 
     static SimpleDateFormat getSDF_ddMMyyyy(){
         return new SimpleDateFormat('dd.MM.yyyy')
-    }
-
-    static SimpleDateFormat getSDF_MMMyyyy(){
-        return new SimpleDateFormat('MMM-yyyy')
     }
 
     static SimpleDateFormat getSDF_yy(){
@@ -103,19 +93,25 @@ class DateUtils {
         return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
     }
 
-    // --
+    // -- fixed pattern #2: no localization
 
     static SimpleDateFormat getSDF_forFilename(){
         return new SimpleDateFormat('yyyyMMdd-HHmm')
     }
 
-    // --
+    static SimpleDateFormat getSDF_noTimeNoPoint(){
+        return new SimpleDateFormat('yyyyMMdd')
+    }
+
+    static SimpleDateFormat getSDF_onlyTime(){
+        return new SimpleDateFormat('HH:mm:ss')
+    }
+
+    // -- other stuff ..
 
     static int getYearAsInteger(Date date) {
         date ? getSDF_yyyy().format(date).toInteger() : null
     }
-
-    // --
 
     static Date parseDateGeneric(String value) {
         Date parsed_date = null

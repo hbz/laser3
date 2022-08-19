@@ -42,7 +42,7 @@
                         <td>
                             <div class="content">
                                 <div class="header">
-                                    <strong>${BaseConfig.getFilterLabel(meta.filter.toString())}</strong> - ${DateUtils.getLocalizedSDF_onlyTime().format(meta.timestamp)}
+                                    <strong>${BaseConfig.getFilterLabel(meta.filter.toString())}</strong> - ${DateUtils.getSDF_onlyTime().format(meta.timestamp)}
                                 </div>
                                 <div class="description">
                                     <laser:render template="/myInstitution/reporting/query/generic_filterLabels" model="${[filterLabels: GlobalExportHelper.getCachedFilterLabels(fhRCache.token), simple: true]}" />

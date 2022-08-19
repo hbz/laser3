@@ -135,7 +135,7 @@
                                         <h2 class="ui header">
                                             <g:formatDate date="${sa.lastPublishingDate}" formatName="default.date.format.notime"/>
                                         </h2>
-                                        <g:formatDate date="${sa.lastPublishingDate}" formatName="default.date.format.onlytime"/>
+                                        ${DateUtils.getSDF_onlyTime().format(sa.lastPublishingDate)}
                                     </div><!-- .column -->
                                     <div class="one wide column">
                                         <i class="arrow right small icon"></i>

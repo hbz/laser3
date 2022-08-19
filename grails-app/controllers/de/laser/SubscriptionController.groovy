@@ -655,7 +655,7 @@ class SubscriptionController {
             }
         }
         else {
-            String filename = "${escapeService.escapeString(ctrlResult.result.subscription.dropdownNamingConvention())}_${DateUtils.getLocalizedSDF_noTimeNoPoint().format(new Date())}"
+            String filename = "${escapeService.escapeString(ctrlResult.result.subscription.dropdownNamingConvention())}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
             if (params.exportKBart) {
                 response.setHeader("Content-disposition", "attachment; filename=${filename}.tsv")
                 response.contentType = "text/tab-separated-values"
@@ -763,7 +763,7 @@ class SubscriptionController {
             }
         }
         else {
-            String filename = "${escapeService.escapeString(ctrlResult.result.subscription.dropdownNamingConvention())}_${DateUtils.getLocalizedSDF_noTimeNoPoint().format(new Date())}"
+            String filename = "${escapeService.escapeString(ctrlResult.result.subscription.dropdownNamingConvention())}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
             Map<String, Object> configMap = [:]
             configMap.putAll(params)
             configMap.remove("subscription")

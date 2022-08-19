@@ -199,7 +199,7 @@ class OrganisationController  {
         result.orgListTotal = orgListTotal.size()
         result.orgList = orgListTotal.drop((int) result.offset).take((int) result.max)
 
-        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTimeNoPoint()
+        SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
         String datetoday = sdf.format(new Date())
         String message = message(code: 'export.all.orgs') as String
         // Write the output to a file
@@ -1484,7 +1484,7 @@ class OrganisationController  {
         if (params.exportXLSX) {
 
             SXSSFWorkbook wb
-            SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTimeNoPoint()
+            SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
             String datetoday = sdf.format(new Date())
             String filename = "${datetoday}_" + g.message(code: "org.nav.accessPoints")
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
