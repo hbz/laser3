@@ -366,38 +366,38 @@ class WorkflowService {
 
         Closure resetValuesAndMeta = { WfConditionBase wfc ->
 
-            wfc.checkbox1 = false
-            wfc.checkbox2 = false
-            wfc.checkbox1_isTrigger = false
-            wfc.checkbox2_isTrigger = false
+            for(int i=1; i<=4; i++) {
+                wfc['checkbox' + i] = false
+                wfc['checkbox' + i + '_isTrigger'] = false
+                wfc['checkbox' + i + '_title'] = null
 
-            wfc.date1 = null
-            wfc.date2 = null
-            wfc.file1 = null
+                wfc['date' + i] = null
+                wfc['date' + i + '_title'] = null
 
-            wfc.checkbox1_title = null
-            wfc.checkbox2_title = null
-            wfc.date1_title = null
-            wfc.date2_title = null
-            wfc.file1_title = null
+                if (i<=2) {
+                    wfc['file' + i] = null
+                    wfc['file' + i + '_title'] = null
+                }
+            }
         }
 
         Closure setValuesAndMeta = { WfConditionBase wfc ->
 
-            wfc.checkbox1_title = ph.getString('checkbox1_title')
-            wfc.checkbox2_title = ph.getString('checkbox2_title')
-            wfc.date1_title     = ph.getString('date1_title')
-            wfc.date2_title     = ph.getString('date2_title')
-            wfc.file1_title     = ph.getString('file1_title')
+            for(int i=1; i<=4; i++) {
+                wfc['checkbox' + i + '_title']      = ph.getString('checkbox' + i + '_title')
+                wfc['checkbox' + i + '_isTrigger']  = ph.getString('checkbox' + i + '_isTrigger') == 'on'
+                wfc['date' + i + '_title']          = ph.getString('date' + i + '_title')
 
-            wfc.checkbox1_isTrigger = ph.getString('checkbox1_isTrigger') == 'on'
-            wfc.checkbox2_isTrigger = ph.getString('checkbox2_isTrigger') == 'on'
+                if (i<=2) {
+                    wfc['file' + i + '_title']      = ph.getString('file' + i + '_title')
+                }
+            }
         }
 
         if (cmd[1] == WfConditionPrototype.KEY) {
             condition = condition as WfConditionPrototype
 
-            if (ph.getInt('type') && ph.getInt('type') != condition.type) {
+            if (ph.getString('type') && ph.getString('type') != condition.type) {
                 resetValuesAndMeta(condition)
             }
             else {
@@ -410,28 +410,31 @@ class WorkflowService {
 
             condition.title         = ph.getString('title')
             condition.description   = ph.getString('description')
-            condition.type          = ph.getInt('type') ?: 0
+            condition.type          = ph.getString('type') ?: '0_0_0'
         }
         else if (cmd[1] == WfCondition.KEY) {
             condition = condition as WfCondition
 
-            if (ph.getInt('type') && ph.getInt('type') != condition.type) {
+            if (ph.getString('type') && ph.getString('type') != condition.type) {
                 resetValuesAndMeta(condition)
             }
             else {
                 setValuesAndMeta(condition)
 
                 // values
-                condition.checkbox1 = ph.getString('checkbox1') == 'on'
-                condition.checkbox2 = ph.getString('checkbox2') == 'on'
-                condition.date1     = ph.getDate('date1')
-                condition.date2     = ph.getDate('date2')
-                condition.file1     = ph.getDocContext('file1')
+                for(int i=1; i<=4; i++) {
+                    condition['checkbox' + i]   = ph.getString('checkbox' + i) == 'on'
+                    condition['date' + i]       = ph.getDate('date' + i)
+
+                    if (i<=2) {
+                        condition['file' + i]   = ph.getDocContext('file' + i)
+                    }
+                }
             }
 
             condition.title         = ph.getString('title')
             condition.description   = ph.getString('description')
-            condition.type          = ph.getInt('type') ?: 0
+            condition.type          = ph.getString('type') ?: '0_0_0'
         }
 
         Map<String, Object> result = [ condition: condition, cmd: cmd[0], key: cmd[1] ]
@@ -590,89 +593,89 @@ class WorkflowService {
                     List<String> cFields = condition.getFields()
                     boolean cChanged
 
-                    if (cFields.contains('checkbox1')) {
-                        String checkbox1 = ph.getString('checkbox1')
-                        if ((checkbox1 == 'on') != condition.checkbox1) {
-                            condition.checkbox1 = (checkbox1 == 'on')
-                            cChanged = true
+                    for(int i=1; i<=4; i++) {
+                        if (cFields.contains('checkbox' + i)) {
+                            String value = ph.getString('checkbox' + i)
+                            if ((value == 'on') != condition['checkbox' + i]) {
+                                condition['checkbox' + i] = (value == 'on')
+                                cChanged = true
+                            }
                         }
-                    }
-                    if (cFields.contains('checkbox2')) {
-                        String checkbox2 = ph.getString('checkbox2')
-                        if ((checkbox2 == 'on') != condition.checkbox2) {
-                            condition.checkbox2 = (checkbox2 == 'on')
-                            cChanged = true
-                        }
-                    }
-                    if (cFields.contains('date1')) {
-                        Date date1 = ph.getDate('date1')
-                        if (date1 != condition.date1) {
-                            condition.date1 = date1
-                            cChanged = true
-                        }
-                    }
-                    if (cFields.contains('date2')) {
-                        Date date2 = ph.getDate('date2')
-                        if (date2 != condition.date2) {
-                            condition.date2 = date2
-                            cChanged = true
-                        }
-                    }
-
-                    if (params.get('wfUploadFile-placeholder')) {
-
-                        def file = WebUtils.retrieveGrailsWebRequest().getCurrentRequest().getFile("wfUploadFile")
-                        if (file) {
-                            Doc.withTransaction { TransactionStatus ts ->
-                                try {
-                                    Doc doc = new Doc(
-                                        contentType:    Doc.CONTENT_TYPE_FILE,
-                                        filename:       file.originalFilename,
-                                        mimeType:       file.contentType,
-                                        title:          params.wfUploadTitle ?: file.originalFilename,
-                                        type:           RefdataValue.get(params.wfUploadDoctype),
-                                        creator:        contextService.getUser(),
-                                        owner:          contextService.getOrg()
-                                    )
-                                    doc.save()
-
-                                    String fPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
-                                    String fName = doc.uuid
-
-                                    File folder = new File("${fPath}")
-                                    if (!folder.exists()) {
-                                        folder.mkdirs()
-                                    }
-                                    File newFile = new File("${fPath}/${fName}")
-                                    file.transferTo(newFile)
-
-                                    Subscription sub = genericOIDService.resolveOID(params.wfUploadOwner) as Subscription
-
-                                    DocContext docctx = new DocContext(
-                                        subscription: sub,
-                                        owner: doc,
-                                        doctype: RefdataValue.get(params.wfUploadDoctype)
-                                    )
-                                    docctx.save()
-
-                                    condition.file1 = docctx
-                                    cChanged = true
-                                }
-                                catch (Exception e) {
-                                    cChanged = false
-                                    result.status = OP_STATUS_ERROR
-
-                                    e.printStackTrace()
-                                    ts.setRollbackOnly()
-                                }
+                        if (cFields.contains('date' + i)) {
+                            Date value = ph.getDate('date' + i)
+                            if (value != condition['date' + i]) {
+                                condition['date' + i] = value
+                                cChanged = true
                             }
                         }
                     }
-                    else if (cFields.contains('file1')) {
-                        DocContext file1 = ph.getDocContext('file1')
-                        if (file1 != condition.file1) {
-                            condition.file1 = file1
-                            cChanged = true
+
+                    for(int i=1; i<=2; i++) {
+                        String fileId = 'file' + i
+
+                        if (params.get('wfUploadFile_placeholder_' + fileId)) {
+
+                            def file = WebUtils.retrieveGrailsWebRequest().getCurrentRequest().getFile('wfUploadFile_file_' + fileId)
+                            if (file) {
+                                Doc.withTransaction { TransactionStatus ts ->
+                                    try {
+
+                                        String uploadTitle         = params.get('wfUploadTitle_' + fileId) ?: file.originalFilename
+                                        String uploadOwner         = params.get('wfUploadOwner_' + fileId)
+                                        RefdataValue uploadDoctype = RefdataValue.get(params.get('wfUploadDoctype_' + fileId) as Serializable)
+
+                                        Doc doc = new Doc(
+                                                contentType: Doc.CONTENT_TYPE_FILE,
+                                                filename: file.originalFilename,
+                                                mimeType: file.contentType,
+                                                title: uploadTitle,
+                                                type: uploadDoctype,
+                                                creator: contextService.getUser(),
+                                                owner: contextService.getOrg()
+                                        )
+                                        doc.save()
+
+                                        String fPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
+                                        String fName = doc.uuid
+
+                                        File folder = new File("${fPath}")
+                                        if (!folder.exists()) {
+                                            folder.mkdirs()
+                                        }
+                                        File newFile = new File("${fPath}/${fName}")
+                                        file.transferTo(newFile)
+
+                                        Subscription sub = genericOIDService.resolveOID( uploadOwner ) as Subscription
+
+                                        DocContext docctx = new DocContext(
+                                                subscription: sub,
+                                                owner: doc,
+                                                doctype: uploadDoctype
+                                        )
+                                        docctx.save()
+
+                                        condition['file' + i] = docctx
+                                        cChanged = true
+                                    }
+                                    catch (Exception e) {
+                                        cChanged = false
+                                        result.status = OP_STATUS_ERROR
+
+                                        e.printStackTrace()
+                                        ts.setRollbackOnly()
+                                    }
+                                }
+                            }
+                        }
+
+                        else {
+                            if (cFields.contains('file' + i)) {
+                                DocContext file = ph.getDocContext('file' + i)
+                                if (file != condition['file' + i]) {
+                                    condition['file' + i] = file
+                                    cChanged = true
+                                }
+                            }
                         }
                     }
                     if (cChanged) {
@@ -688,7 +691,7 @@ class WorkflowService {
             result.status = OP_STATUS_ERROR
 
             if (params.subId && params.workflowId) {
-                GrailsParameterMap clone = params.clone()
+                GrailsParameterMap clone = params.clone() as GrailsParameterMap
                 clone.setProperty( 'cmd', params.cmd + ':' + params.workflowId )
 
                 result = instantiateCompleteWorkflow( clone )

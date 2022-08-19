@@ -13,20 +13,30 @@ class WfConditionPrototype extends WfConditionBase {
                   type  column: 'wfcp_type'
                   title column: 'wfcp_title'
             description column: 'wfcp_description', type: 'text'
-
               checkbox1 column: 'wfcp_checkbox1'
-        checkbox1_title column: 'wfcp_checkbox1_title'
-    checkbox1_isTrigger column: 'wfcp_checkbox1_is_trigger'
               checkbox2 column: 'wfcp_checkbox2'
+              checkbox3 column: 'wfcp_checkbox3'
+              checkbox4 column: 'wfcp_checkbox4'
+        checkbox1_title column: 'wfcp_checkbox1_title'
         checkbox2_title column: 'wfcp_checkbox2_title'
+        checkbox3_title column: 'wfcp_checkbox3_title'
+        checkbox4_title column: 'wfcp_checkbox4_title'
+    checkbox1_isTrigger column: 'wfcp_checkbox1_is_trigger'
     checkbox2_isTrigger column: 'wfcp_checkbox2_is_trigger'
+    checkbox3_isTrigger column: 'wfcp_checkbox3_is_trigger'
+    checkbox4_isTrigger column: 'wfcp_checkbox4_is_trigger'
                   date1 column: 'wfcp_date1'
-            date1_title column: 'wfcp_date1_title'
                   date2 column: 'wfcp_date2'
+                  date3 column: 'wfcp_date3'
+                  date4 column: 'wfcp_date4'
+            date1_title column: 'wfcp_date1_title'
             date2_title column: 'wfcp_date2_title'
+            date3_title column: 'wfcp_date3_title'
+            date4_title column: 'wfcp_date4_title'
                   file1 column: 'wfcp_file1'
+                  file2 column: 'wfcp_file2'
             file1_title column: 'wfcp_file1_title'
-
+            file2_title column: 'wfcp_file2_title'
             dateCreated column: 'wfcp_date_created'
             lastUpdated column: 'wfcp_last_updated'
     }
@@ -36,12 +46,20 @@ class WfConditionPrototype extends WfConditionBase {
         description     (nullable: true)
         checkbox1_title (nullable: true)
         checkbox2_title (nullable: true)
+        checkbox3_title (nullable: true)
+        checkbox4_title (nullable: true)
         date1           (nullable: true)
-        date1_title     (nullable: true)
         date2           (nullable: true)
+        date3           (nullable: true)
+        date4           (nullable: true)
+        date1_title     (nullable: true)
         date2_title     (nullable: true)
+        date3_title     (nullable: true)
+        date4_title     (nullable: true)
         file1           (nullable: true)
+        file2           (nullable: true)
         file1_title     (nullable: true)
+        file2_title     (nullable: true)
     }
 
     /**
@@ -65,17 +83,29 @@ class WfConditionPrototype extends WfConditionBase {
                 // status:             RDStore.WF_CONDITION_STATUS_OPEN,
                 type:               this.type,
                 checkbox1:              this.checkbox1,
-                checkbox1_title:        this.checkbox1_title,
-                checkbox1_isTrigger:    this.checkbox1_isTrigger,
                 checkbox2:              this.checkbox2,
+                checkbox3:              this.checkbox3,
+                checkbox4:              this.checkbox4,
+                checkbox1_title:        this.checkbox1_title,
                 checkbox2_title:        this.checkbox2_title,
+                checkbox3_title:        this.checkbox3_title,
+                checkbox4_title:        this.checkbox4_title,
+                checkbox1_isTrigger:    this.checkbox1_isTrigger,
                 checkbox2_isTrigger:    this.checkbox2_isTrigger,
+                checkbox3_isTrigger:    this.checkbox3_isTrigger,
+                checkbox4_isTrigger:    this.checkbox4_isTrigger,
                 date1:                  this.date1,
-                date1_title:            this.date1_title,
                 date2:                  this.date2,
+                date3:                  this.date3,
+                date4:                  this.date4,
+                date1_title:            this.date1_title,
                 date2_title:            this.date2_title,
+                date3_title:            this.date3_title,
+                date4_title:            this.date4_title,
                 file1:                  this.file1,
+                file2:                  this.file2,
                 file1_title:            this.file1_title,
+                file2_title:            this.file2_title,
         )
         if (! condition.validate()) {
             log.debug( '[ ' + this.id + ' ].instantiate() : ' + condition.getErrors().toString() )

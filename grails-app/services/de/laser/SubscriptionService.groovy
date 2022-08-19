@@ -14,9 +14,7 @@ import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
-import de.laser.stats.Counter4ApiSource
 import de.laser.stats.Counter4Report
-import de.laser.stats.Counter5ApiSource
 import de.laser.stats.Counter5Report
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
@@ -1794,16 +1792,42 @@ class SubscriptionService {
                 [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE])
     }
 
-    boolean areStatsAvailable(Collection<Platform> subscribedPlatforms, Collection<Long> refPkgs, Collection<Long> reportInstitutions) {
-        Map<String, Object> checkParams = [plat: subscribedPlatforms, reportInstitutions: reportInstitutions]
-        //repeating of 0 checks necessary because of query plan - join result in sequence scans at large datasets (Postgres does not seek indices when > 10% of data is being retrieved)
-        int result = Counter4Report.executeQuery('select count(c4r.id) from Counter4Report c4r join c4r.title tipp where c4r.platform in (:plat) and tipp.pkg.id in (:refPkgs) and c4r.reportInstitution.id in (:reportInstitutions)', checkParams+[refPkgs: refPkgs])[0]
-        if(result == 0)
-            result = Counter4Report.executeQuery('select count(c4r.id) from Counter4Report c4r where c4r.platform in (:plat) and c4r.reportType = :reportType and c4r.reportInstitution.id in (:reportInstitutions)', checkParams+[reportType: Counter4ApiSource.PLATFORM_REPORT_1])[0]
-        if(result == 0)
-            result = Counter5Report.executeQuery('select count(c5r.id) from Counter5Report c5r join c5r.title tipp where c5r.platform in (:plat) and tipp.pkg.id in (:refPkgs) and c5r.reportInstitution.id in (:reportInstitutions)', checkParams+[refPkgs: refPkgs])[0]
-        if(result == 0)
-            result = Counter5Report.executeQuery('select count(c5r.id) from Counter5Report c5r where c5r.platform in (:plat) and lower(c5r.reportType) in (:reportTypes) and c5r.reportInstitution.id in (:reportInstitutions)', checkParams + [reportTypes: [Counter5ApiSource.PLATFORM_USAGE, Counter5ApiSource.PLATFORM_MASTER_REPORT]])[0]
+    boolean areStatsAvailable(Collection<Platform> subscribedPlatforms, Collection<SubscriptionPackage> refPkgs, Collection<String> reportInstitutions, Map dateConfig) {
+        //withTransaction necessary because of different dataSource, cf. https://github.com/grails/grails-core/issues/10383
+        Set<String> titleKeysInPackage = TitleInstancePackagePlatform.executeQuery('select tipp.globalUID from TitleInstancePackagePlatform tipp where tipp.pkg in (select sp.pkg from SubscriptionPackage sp where sp.pkg.id in (:refPkgs)) and tipp.status != :removed', [removed: RDStore.TIPP_STATUS_REMOVED, refPkgs: refPkgs.collect { SubscriptionPackage sp -> sp.pkg.id }])
+        int result = 0
+        Map<String, Object> checkParams = [plat: subscribedPlatforms.collect { Platform plat -> plat.globalUID }, reportInstitutions: reportInstitutions]
+        String dateFilter, startFilter, endFilter
+        if(dateConfig.startDate != null) {
+            startFilter = " and r.reportFrom >= :startDate"
+            checkParams.startDate = dateConfig.startDate
+        }
+        else {
+            startFilter = ""
+        }
+        if(dateConfig.endDate != null) {
+            endFilter = " and r.reportTo <= :endDate"
+            checkParams.endDate = dateConfig.endDate
+        }
+        else {
+            endFilter = ""
+        }
+        dateFilter = startFilter + endFilter
+        Counter4Report.withTransaction {
+            Set<String> titleKeys = Counter4Report.executeQuery('select r.titleUID from Counter4Report r where r.platformUID in (:plat) and r.reportInstitutionUID in (:reportInstitutions)'+dateFilter, checkParams)
+            Set<String> intersection = titleKeysInPackage.intersect(titleKeys)
+            //repeating of 0 checks necessary because of query plan - join result in sequence scans at large datasets (Postgres does not seek indices when > 10% of data is being retrieved)
+            result = intersection.size()
+            if(result == 0)
+                result = Counter4Report.executeQuery('select count(r.id) from Counter4Report r where r.platformUID in (:plat) and r.reportType = :reportType and r.reportInstitutionUID in (:reportInstitutions)'+dateFilter, checkParams+[reportType: Counter4Report.PLATFORM_REPORT_1])[0]
+            if(result == 0) {
+                titleKeys = Counter5Report.executeQuery('select r.titleUID from Counter5Report r where r.platformUID in (:plat) and r.reportInstitutionUID in (:reportInstitutions)'+dateFilter, checkParams)
+                intersection = titleKeysInPackage.intersect(titleKeys)
+                result = intersection.size()
+            }
+            if(result == 0)
+                result = Counter5Report.executeQuery('select count(r.id) from Counter5Report r where r.platformUID in (:plat) and lower(r.reportType) in (:reportTypes) and r.reportInstitutionUID in (:reportInstitutions)'+dateFilter, checkParams + [reportTypes: [Counter5Report.PLATFORM_USAGE, Counter5Report.PLATFORM_MASTER_REPORT]])[0]
+        }
         result > 0
     }
 

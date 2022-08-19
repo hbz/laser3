@@ -249,14 +249,14 @@
                         <g:elseif test="${field.startsWith('file')}">
                             <div class="field">
                                 <label for="${prefixOverride}_${field}">${task.condition.getProperty(field + '_title') ?: message(code:'workflow.field.noTitle.label')}
-                                    <a id="fileUploadWrapper_toggle" href="#" style="float:right">
-                                        <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'workflow.condition.file.info')}">
-                                            <span class="ui active label">${message(code:'default.select.label')}</span>
-                                        </span> &hArr;
-                                        <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code:'workflow.condition.fileUpload.info')}">
-                                            <span class="ui label">${message(code:'default.newFile.label')}</span>
+                                    <div id="fileUploadWrapper_toggle_${field}" class="ui small buttons" style="float:right; margin-right:10px">
+                                        <span data-position="top right" class="ui left attached button active la-popup-tooltip la-delay" data-content="${message(code:'workflow.condition.file.info')}">
+                                            <i class="icon level down alternate"></i> &nbsp;
                                         </span>
-                                    </a>
+                                        <span data-position="top right" class="ui right attached button la-popup-tooltip la-delay" data-content="${message(code:'workflow.condition.fileUpload.info')}">
+                                            &nbsp; <i class="icon paperclip"></i>
+                                        </span>
+                                    </div>
                                 </label>
                                 <g:set var="docctx" value="${task.condition.getProperty(field)}" />
                                 %{-- <g:if test="${docctx}">
@@ -264,79 +264,57 @@
                                         <i class="icon file"></i>
                                     </g:link>
                                 </g:if> --}%
-                                <div id="fileUploadWrapper_dropdown" class="fileUploadWrapper field">
-                                    <g:if test="${workflow}"> %{-- currentWorkflows --}%
-                                        <g:select class="ui dropdown" id="${prefixOverride}_${field}" name="${prefixOverride}_${field}"
-                                                  noSelection="${['' : message(code:'default.select.choose.label')]}"
-                                                  from="${workflow.subscription.documents}"
-                                                  value="${task.condition.getProperty(field)?.id}"
-                                                  optionKey="id"
-                                                  optionValue="${{ (it.owner?.title ? it.owner.title : it.owner?.filename ? it.owner.filename : message(code:'template.documents.missing')) + ' (' + it.owner?.type?.getI10n("value") + ')' }}" />
-                                    </g:if>
-                                    <g:else>
-                                        <g:select class="ui dropdown" id="${prefixOverride}_${field}" name="${prefixOverride}_${field}"
-                                                  noSelection="${['' : message(code:'default.select.choose.label')]}"
-                                                  from="${subscription.documents}"
-                                                  value="${task.condition.getProperty(field)?.id}"
-                                                  optionKey="id"
-                                                  optionValue="${{ (it.owner?.title ? it.owner.title : it.owner?.filename ? it.owner.filename : message(code:'template.documents.missing')) + ' (' + it.owner?.type?.getI10n("value") + ')' }}" />
+                                <div id="fileUploadWrapper_dropdown_${field}" class="ui segment">
+                                    <div class="field">
+                                        <g:if test="${workflow}"> %{-- currentWorkflows --}%
+                                            <g:select class="ui dropdown" id="${prefixOverride}_${field}" name="${prefixOverride}_${field}"
+                                                      noSelection="${['' : message(code:'default.select.choose.label')]}"
+                                                      from="${workflow.subscription.documents}"
+                                                      value="${task.condition.getProperty(field)?.id}"
+                                                      optionKey="id"
+                                                      optionValue="${{ (it.owner?.title ? it.owner.title : it.owner?.filename ? it.owner.filename : message(code:'template.documents.missing')) + ' (' + it.owner?.type?.getI10n("value") + ')' }}" />
+                                        </g:if>
+                                        <g:else>
+                                            <g:select class="ui dropdown" id="${prefixOverride}_${field}" name="${prefixOverride}_${field}"
+                                                      noSelection="${['' : message(code:'default.select.choose.label')]}"
+                                                      from="${subscription.documents}"
+                                                      value="${task.condition.getProperty(field)?.id}"
+                                                      optionKey="id"
+                                                      optionValue="${{ (it.owner?.title ? it.owner.title : it.owner?.filename ? it.owner.filename : message(code:'template.documents.missing')) + ' (' + it.owner?.type?.getI10n("value") + ')' }}" />
 
-                                    </g:else>
+                                        </g:else>
+                                    </div>
                                 </div>
-                                <div id="fileUploadWrapper_upload" class="fileUploadWrapper ui segment" style="margin:8px 0 0 0; display:none;">
+                                <div id="fileUploadWrapper_upload_${field}" class="ui segment" style="display:none;">
                                     %{--<g:form class="ui form" url="${formUrl}" method="post" enctype="multipart/form-data">--}%
 
                                     <g:if test="${workflow}"> %{-- currentWorkflows --}%
-                                        <input type="hidden" name="wfUploadOwner" value="${workflow.subscription.class.name}:${workflow.subscription.id}"/>
+                                        <input type="hidden" name="wfUploadOwner_${field}" value="${workflow.subscription.class.name}:${workflow.subscription.id}"/>
                                     </g:if>
                                     <g:else>
-                                        <input type="hidden" name="wfUploadOwner" value="${subscription.class.name}:${subscription.id}"/>
+                                        <input type="hidden" name="wfUploadOwner_${field}" value="${subscription.class.name}:${subscription.id}"/>
                                     </g:else>
-                                        <label for="wfUploadTitle" >${message(code: 'template.addDocument.name')}:</label>
-                                        <input type="text" id="wfUploadTitle" name="wfUploadTitle" />
+                                        <label for="wfUploadTitle_${field}" >${message(code: 'template.addDocument.name')}:</label>
+                                        <input type="text" id="wfUploadTitle_${field}" name="wfUploadTitle_${field}" />
 
                                         <label>${message(code: 'template.addDocument.type')}:</label>
                                         <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.DOCUMENT_TYPE) - [RDStore.DOC_TYPE_NOTE, RDStore.DOC_TYPE_ANNOUNCEMENT, RDStore.DOC_TYPE_ONIXPL]}"
                                                   class="ui dropdown fluid"
                                                   optionKey="id"
                                                   optionValue="${{ it.getI10n('value') }}"
-                                                  name="wfUploadDoctype"
+                                                  name="wfUploadDoctype_${field}"
                                                   />
 
-                                        <label for="wfUploadFile-placeholder">${message(code: 'template.addDocument.file')}:</label>
+                                        <label for="wfUploadFile_placeholder-${field}">${message(code: 'template.addDocument.file')}:</label>
 
                                         <div class="ui fluid action input">
-                                            <input type="text" id="wfUploadFile-placeholder" name="wfUploadFile-placeholder" readonly="readonly" placeholder="${message(code:'template.addDocument.selectFile')}">
-                                            <input type="file" id="wfUploadFile" name="wfUploadFile" style="display: none;">
-                                            <div id="wfUploadFile-button" class="ui icon button" style="padding-left:30px; padding-right:30px">
+                                            <input type="text" id="wfUploadFile_placeholder_${field}" name="wfUploadFile_placeholder_${field}" readonly="readonly" placeholder="${message(code:'template.addDocument.selectFile')}">
+                                            <input type="file" id="wfUploadFile_file_${field}" name="wfUploadFile_file_${field}" style="display: none;">
+                                            <div id="wfUploadFile_button_${field}" class="ui icon button" style="padding-left:30px; padding-right:30px">
                                                 <i class="attach icon"></i>
                                             </div>
                                         </div>
 
-                                        <laser:script file="${this.getGroovyPageFileName()}">
-                                            $('#fileUploadWrapper_toggle').click( function(e) {
-                                                e.preventDefault();
-                                                $('.fileUploadWrapper').toggle();
-                                                $('#fileUploadWrapper_toggle .label').toggleClass('active');
-                                            });
-                                            $('#wfUploadFile').on('change', function(e) {
-                                                var name = e.target.files[0].name;
-                                                $('#wfUploadTitle').val(name);
-                                                $('#wfUploadFile-placeholder').val(name);
-                                            });
-                                            $('#wfUploadFile-button').click( function() {
-                                                $('#wfUploadFile').click();
-                                            });
-                                            $('#wfForm').on('submit', function(e) {
-                                                if ( $('#fileUploadWrapper_dropdown').css('display') == 'none' ) {
-                                                    $('#fileUploadWrapper_dropdown').remove();
-                                                    $(this).attr('enctype', 'multipart/form-data')
-                                                }
-                                                if ( $('#fileUploadWrapper_upload').css('display') == 'none' ) {
-                                                    $('#fileUploadWrapper_upload').remove();
-                                                }
-                                            });
-                                        </laser:script>
                                     %{--</g:form>--}%
                                 </div>
                             </div>
@@ -349,6 +327,41 @@
                     </g:each>
                 </div>
             </div>
+
+            <laser:script file="${this.getGroovyPageFileName()}">
+                $('[id^=fileUploadWrapper_toggle]').click( function(e) {
+                    e.preventDefault();
+                    var id = $(this).attr('id').split('_')[2];
+                    $('#fileUploadWrapper_upload_' + id + ', #fileUploadWrapper_dropdown_' + id).toggle();
+                    $('#fileUploadWrapper_toggle_' + id+ ' .button').toggleClass('active');
+                });
+                $('[id^=wfUploadFile]').on('change', function(e) {
+                    var id = $(this).attr('id').split('_')[2];
+                    var name = e.target.files[0].name;
+                    $('#wfUploadTitle_' + id).val(name);
+                    $('#wfUploadFile_placeholder_' + id).val(name);
+                });
+                $('[id^=wfUploadFile_button]').click( function() {
+                    var id = $(this).attr('id').split('_')[2];
+                    $('#wfUploadFile_file_' + id).click();
+                });
+                $('#wfForm').on('submit', function(e) {
+                    if ( $('#fileUploadWrapper_dropdown_file1').css('display') == 'none' ) {
+                        $('#fileUploadWrapper_dropdown_file1').remove();
+                        $(this).attr('enctype', 'multipart/form-data')
+                    }
+                    if ( $('#fileUploadWrapper_upload_file1').css('display') == 'none' ) {
+                        $('#fileUploadWrapper_upload_file1').remove();
+                    }
+                    if ( $('#fileUploadWrapper_dropdown_file2').css('display') == 'none' ) {
+                        $('#fileUploadWrapper_dropdown_file2').remove();
+                        $(this).attr('enctype', 'multipart/form-data')
+                    }
+                    if ( $('#fileUploadWrapper_upload_file2').css('display') == 'none' ) {
+                        $('#fileUploadWrapper_upload_file2').remove();
+                    }
+                });
+            </laser:script>
         </g:if>
 
         <g:if test="${info}">
