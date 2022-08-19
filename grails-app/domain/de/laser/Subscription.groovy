@@ -23,6 +23,7 @@ import grails.web.servlet.mvc.GrailsParameterMap
 import javax.persistence.Transient
 import java.text.SimpleDateFormat
 import java.time.LocalDate
+import static java.time.temporal.ChronoUnit.DAYS
 
 /**
  * <p>This is the most central of all the domains and the turning point of everything: the subscription.</p>
@@ -638,7 +639,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
         LocalDate endDate = DateUtils.dateToLocalDate(this.endDate)
         // TODO Moe - date.minusDays()
-        return (this.isMultiYearSubscription() && endDate && (endDate.minus(LocalDate.now()) > 366))
+        return (this.isMultiYearSubscription() && endDate && (DAYS.between(LocalDate.now(), endDate) > 366))
     }
 
     /**
@@ -652,7 +653,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
         LocalDate endDate = DateUtils.dateToLocalDate(this.endDate)
         // TODO Moe - date.minusDays()
-        return (this.isMultiYear && endDate && (endDate.minus(LocalDate.now()) > 366))
+        return (this.isMultiYear && endDate && (DAYS.between(LocalDate.now(), endDate) > 366))
     }
 
     boolean isCurrentMultiYearSubscriptionToParentSub() {
@@ -660,7 +661,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
 
         LocalDate endDate = DateUtils.dateToLocalDate(this.endDate)
         // TODO Moe - date.minusDays()
-        return (this.isMultiYear && endDate && this.instanceOf && (endDate.minus(DateUtils.dateToLocalDate(this.instanceOf.startDate)) > 366))
+        return (this.isMultiYear && endDate && this.instanceOf && DAYS.between(DateUtils.dateToLocalDate(this.instanceOf.startDate), endDate) > 366)
     }
 
     @Deprecated
@@ -670,7 +671,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         LocalDate endDate = DateUtils.dateToLocalDate(this.endDate)
         LocalDate startDate = DateUtils.dateToLocalDate(this.startDate)
         // TODO Moe - date.minusDays()
-        return (endDate && (endDate.minus(startDate) > 366 && endDate.minus(startDate) < 728))
+        return (endDate && (DAYS.between(startDate, endDate) > 366 && DAYS.between(startDate, endDate) < 728))
     }
 
     /**
@@ -683,7 +684,7 @@ class Subscription extends AbstractBaseWithCalculatedLastUpdated
         LocalDate endDate = DateUtils.dateToLocalDate(this.endDate)
         LocalDate startDate = DateUtils.dateToLocalDate(this.startDate)
         // TODO Moe - date.minusDays()
-        return (this.type == RDStore.SUBSCRIPTION_TYPE_LOCAL && startDate && endDate && (endDate.minus(startDate) > 363) && (endDate.minus(startDate) < 367))
+        return (this.type == RDStore.SUBSCRIPTION_TYPE_LOCAL && startDate && endDate && (DAYS.between(startDate, endDate) > 363) && (DAYS.between(startDate, endDate) < 367))
     }
 
     /**

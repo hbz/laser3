@@ -338,7 +338,7 @@
         <g:if test="${params.tab in ['allIEsStats', 'holdingIEsStats']}">
             <g:if test="${usages}">
                 <laser:render template="/templates/survey/entitlementTableSurveyWithStats"
-                          model="${[stats: usages, showPackage: true, showPlattform: true]}"/>
+                          model="${[stats: usages, sumsByTitle: sumsByTitle, showPackage: true, showPlattform: true]}"/>
             </g:if>
             <g:else>
                 <g:message code="renewEntitlementsWithSurvey.noIEsStats"/>

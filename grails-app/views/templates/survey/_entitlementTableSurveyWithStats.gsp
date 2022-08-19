@@ -1,4 +1,4 @@
-<%@ page import="de.laser.IssueEntitlement; de.laser.storage.RDStore; de.laser.remote.ApiSource; de.laser.TitleInstancePackagePlatform; de.laser.base.AbstractReport" %>
+<%@ page import="de.laser.utils.DateUtils; de.laser.IssueEntitlement; de.laser.storage.RDStore; de.laser.remote.ApiSource; de.laser.TitleInstancePackagePlatform; de.laser.base.AbstractReport" %>
 <div class="sixteen wide column">
     <g:set var="counter" value="${offset + 1}"/>
 
@@ -24,85 +24,101 @@
         </thead>
         <tbody>
 
-        <g:each in="${stats.findAll { AbstractReport rep -> rep.title != null }}" var="stat">
-            <g:set var="tipp" value="${TitleInstancePackagePlatform.get(stat.title.id)}"/>
-            <g:set var="ie" value="${IssueEntitlement.findByTippAndSubscriptionAndStatusAndAcceptStatus(stat.title, subscription, RDStore.TIPP_STATUS_CURRENT, RDStore.IE_ACCEPT_STATUS_FIXED)}"/>
-            <g:set var="ieInNewSub"
-                   value="${surveyService.titleContainedBySubscription(newSub, tipp)}"/>
-            <g:if test="${surveyConfig.pickAndChoosePerpetualAccess}">
-                <g:set var="participantPerpetualAccessToTitle"
-                       value="${surveyService.hasParticipantPerpetualAccessToTitle(subscriberSubs, tipp)}"/>
-                <g:set var="allowedToSelect"
-                       value="${!(participantPerpetualAccessToTitle) && (!ieInNewSub || (ieInNewSub && ieInNewSub.acceptStatus == RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION))}"/>
-            </g:if>
-            <g:else>
-                <g:set var="allowedToSelect"
-                       value="${!ieInNewSub || (ieInNewSub && ieInNewSub.acceptStatus == RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION)}"/>
-            </g:else>
-            <tr data-gokbId="${tipp.gokbId}" data-tippId="${tipp.id}" data-ieId="${ie?.id}" data-index="${counter}" class="${checkedCache ? (checkedCache[ie?.id.toString()] ? 'positive' : '') : ''}">
-                <td>
+        <g:if test="${params.tabStat == 'total' || !params.tabStat}">
+            <g:each in="${sumsByTitle}" var="sum">
+                <g:set var="tipp" value="${TitleInstancePackagePlatform.findByGlobalUID(sum.titleUID)}"/>
+                <tr>
+                    <td></td>
+                    <td>${ DateUtils.getSDF_yyyyMM().format(sum.reportMonth)}</td>
+                    <td>${tipp.name}</td>
+                    <td>${sum.metricType}</td>
+                    <td>${sum.reportCount}</td>
+                    <td></td>
+                </tr>
+            </g:each>
+        </g:if>
+        <g:else>
+            <g:each in="${stats.findAll { AbstractReport rep -> rep.title != null }}" var="stat">
+                <g:set var="tipp" value="${stat.title}"/>
+                <g:set var="ie" value="${IssueEntitlement.findByTippAndSubscriptionAndStatusAndAcceptStatus(stat.title, subscription, RDStore.TIPP_STATUS_CURRENT, RDStore.IE_ACCEPT_STATUS_FIXED)}"/>
+                <g:set var="ieInNewSub"
+                       value="${surveyService.titleContainedBySubscription(newSub, tipp)}"/>
+                <g:if test="${surveyConfig.pickAndChoosePerpetualAccess}">
+                    <g:set var="participantPerpetualAccessToTitle"
+                           value="${surveyService.hasParticipantPerpetualAccessToTitle(subscriberSubs, tipp)}"/>
+                    <g:set var="allowedToSelect"
+                           value="${!(participantPerpetualAccessToTitle) && (!ieInNewSub || (ieInNewSub && ieInNewSub.acceptStatus == RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION))}"/>
+                </g:if>
+                <g:else>
+                    <g:set var="allowedToSelect"
+                           value="${!ieInNewSub || (ieInNewSub && ieInNewSub.acceptStatus == RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION)}"/>
+                </g:else>
+                <tr data-gokbId="${tipp.gokbId}" data-tippId="${tipp.id}" data-ieId="${ie?.id}" data-index="${counter}" class="${checkedCache ? (checkedCache[ie?.id.toString()] ? 'positive' : '') : ''}">
+                    <td>
 
-                    <g:if test="${(params.tab in ['allIEsStats', 'holdingIEsStats']) && (editable && !ieInNewSub && allowedToSelect)}">
-                        <input type="checkbox" name="bulkflag" class="bulkcheck" ${checkedCache ? checkedCache[ie?.id.toString()] : ''}>
-                    </g:if>
+                        <g:if test="${(params.tab in ['allIEsStats', 'holdingIEsStats']) && (editable && !ieInNewSub && allowedToSelect)}">
+                            <input type="checkbox" name="bulkflag" class="bulkcheck" ${checkedCache ? checkedCache[ie?.id.toString()] : ''}>
+                        </g:if>
 
-                </td>
-                <td>${counter++}</td>
-                <td class="titleCell">
+                    </td>
+                    <td>${counter++}</td>
+                    <td class="titleCell">
 
-                    <g:if test="${ieInNewSub && ieInNewSub.acceptStatus == RDStore.IE_ACCEPT_STATUS_FIXED}">
-                        <div class="la-inline-flexbox la-popup-tooltip la-delay" data-content="${message(code: 'renewEntitlementsWithSurvey.ie.existsInSub')}" data-position="left center" data-variation="tiny">
-                            <i class="icon redo alternate yellow"></i>
-                        </div>
-                    </g:if>
+                        <g:if test="${ieInNewSub && ieInNewSub.acceptStatus == RDStore.IE_ACCEPT_STATUS_FIXED}">
+                            <div class="la-inline-flexbox la-popup-tooltip la-delay" data-content="${message(code: 'renewEntitlementsWithSurvey.ie.existsInSub')}" data-position="left center" data-variation="tiny">
+                                <i class="icon redo alternate yellow"></i>
+                            </div>
+                        </g:if>
 
-                    <g:if test="${participantPerpetualAccessToTitle}">
-                        <div class="la-inline-flexbox la-popup-tooltip la-delay" data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')}" data-position="left center" data-variation="tiny">
-                            <i class="icon redo alternate red"></i>
-                        </div>
-                    </g:if>
+                        <g:if test="${participantPerpetualAccessToTitle}">
+                            <div class="la-inline-flexbox la-popup-tooltip la-delay" data-content="${message(code: 'renewEntitlementsWithSurvey.ie.participantPerpetualAccessToTitle')}" data-position="left center" data-variation="tiny">
+                                <i class="icon redo alternate red"></i>
+                            </div>
+                        </g:if>
 
-                    <g:if test="${!participantPerpetualAccessToTitle && previousSubscription && surveyService.titleContainedBySubscription(previousSubscription, tipp)?.acceptStatus == RDStore.IE_ACCEPT_STATUS_FIXED}">
-                        <div class="la-inline-flexbox la-popup-tooltip la-delay" data-content="${message(code: 'renewEntitlementsWithSurvey.ie.existsInPreviousSubscription')}" data-position="left center" data-variation="tiny">
-                            <i class="icon redo alternate orange"></i>
-                        </div>
-                    </g:if>
+                        <g:if test="${!participantPerpetualAccessToTitle && previousSubscription && surveyService.titleContainedBySubscription(previousSubscription, tipp)?.acceptStatus == RDStore.IE_ACCEPT_STATUS_FIXED}">
+                            <div class="la-inline-flexbox la-popup-tooltip la-delay" data-content="${message(code: 'renewEntitlementsWithSurvey.ie.existsInPreviousSubscription')}" data-position="left center" data-variation="tiny">
+                                <i class="icon redo alternate orange"></i>
+                            </div>
+                        </g:if>
 
-                    <g:if test="${ieInNewSub}">
-                        <ui:ieAcceptStatusIcon status="${ieInNewSub.acceptStatus}"/>
-                    </g:if>
+                        <g:if test="${ieInNewSub}">
+                            <ui:ieAcceptStatusIcon status="${ieInNewSub.acceptStatus}"/>
+                        </g:if>
 
                     <!-- START TEMPLATE -->
                         <laser:render template="/templates/title_short"
-                                  model="${[ie: ie, tipp: tipp,
-                                            showPackage: showPackage, showPlattform: showPlattform, showCompact: true, showEmptyFields: false, overwriteEditable: false, participantPerpetualAccessToTitle: participantPerpetualAccessToTitle]}"/>
+                                      model="${[ie: ie, tipp: tipp,
+                                                showPackage: showPackage, showPlattform: showPlattform, showCompact: true, showEmptyFields: false, overwriteEditable: false, participantPerpetualAccessToTitle: participantPerpetualAccessToTitle]}"/>
                     <!-- END TEMPLATE -->
-                </td>
-                <td>${stat.metricType}</td>
-                <td>${stat.reportCount}</td>
-                <td>
-                    <g:if test="${(params.tab in ['allIEsStats', 'holdingIEsStats']) && editable && ieInNewSub && allowedToSelect}">
-                        <g:link class="ui icon positive check button la-popup-tooltip la-delay"
-                                action="processRemoveIssueEntitlementsSurvey"
-                                params="${[id: newSub.id, singleTitle: ieInNewSub.id, packageId: packageId, surveyConfigID: surveyConfig?.id]}"
-                                data-content="${message(code: 'subscription.details.addEntitlements.remove_now')}">
-                            <i class="minus icon"></i>
-                        </g:link>
-                    </g:if>
+                    </td>
+                    <td>${stat.metricType}</td>
+                    <td>${stat.reportCount}</td>
+                    <td>
+                        <g:if test="${(params.tab in ['allIEsStats', 'holdingIEsStats']) && editable && ieInNewSub && allowedToSelect}">
+                            <g:link class="ui icon positive check button la-popup-tooltip la-delay"
+                                    action="processRemoveIssueEntitlementsSurvey"
+                                    params="${[id: newSub.id, singleTitle: ieInNewSub.id, packageId: packageId, surveyConfigID: surveyConfig?.id]}"
+                                    data-content="${message(code: 'subscription.details.addEntitlements.remove_now')}">
+                                <i class="minus icon"></i>
+                            </g:link>
+                        </g:if>
 
 
-                    <g:if test="${(params.tab in ['allIEsStats', 'holdingIEsStats']) && editable && !ieInNewSub && allowedToSelect }">
-                        <g:link class="ui icon button blue la-modern-button la-popup-tooltip la-delay"
-                                action="processAddIssueEntitlementsSurvey"
-                                params="${[id: newSub.id, singleTitle: ie?.id, surveyConfigID: surveyConfig?.id]}"
-                                data-content="${message(code: 'subscription.details.addEntitlements.add_now')}">
-                            <i class="plus icon"></i>
-                        </g:link>
-                    </g:if>
-                </td>
-            </tr>
+                        <g:if test="${(params.tab in ['allIEsStats', 'holdingIEsStats']) && editable && !ieInNewSub && allowedToSelect }">
+                            <g:link class="ui icon button blue la-modern-button la-popup-tooltip la-delay"
+                                    action="processAddIssueEntitlementsSurvey"
+                                    params="${[id: newSub.id, singleTitle: ie?.id, surveyConfigID: surveyConfig?.id]}"
+                                    data-content="${message(code: 'subscription.details.addEntitlements.add_now')}">
+                                <i class="plus icon"></i>
+                            </g:link>
+                        </g:if>
+                    </td>
+                </tr>
 
-        </g:each>
+            </g:each>
+        </g:else>
+
         </tbody>
     </table>
 </div>
