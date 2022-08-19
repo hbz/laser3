@@ -551,7 +551,7 @@
                 Set<String> reportInstitutions = [institution.globalUID]
                 reportInstitutions.addAll(Org.executeQuery('select oo.org.globalUID from OrgRole oo where oo.sub.instanceOf = :subscription and oo.roleType in (:subscrTypes)', [subscription: subscription, subscrTypes: [RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER_CONS]]))
                 if(subscription.packages.size() > 0)
-                    areStatsAvailable = subscriptionService.areStatsAvailable(subscribedPlatforms, subscription.packages, reportInstitutions)
+                    areStatsAvailable = subscriptionService.areStatsAvailable(subscribedPlatforms, subscription.packages, reportInstitutions, [startDate: subscription.startDate, endDate: subscription.endDate])
             %>
             <g:if test="${subscribedPlatforms && areStatsAvailable}">
                 <div class="ui card">
