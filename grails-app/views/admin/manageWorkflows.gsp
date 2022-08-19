@@ -187,7 +187,13 @@
             </g:link>
 
             <br />
-            Zuletzt bearbeitet: ${DateUtils.getLocalizedSDF_noTime().format(wfInfo.lastUpdated)} - Erstellt: ${DateUtils.getLocalizedSDF_noTime().format(wf.dateCreated)}
+            <span>
+                Zuletzt bearbeitet: ${DateUtils.getLocalizedSDF_noTime().format(wfInfo.lastUpdated)}
+                - Erstellt: ${DateUtils.getLocalizedSDF_noTime().format(wf.dateCreated)}
+                <span class="${wf.prototypeVersion == wf.getPrototype().prototypeVersion ? '' : 'sc_darkgrey'}">
+                    - Version: ${wf.prototypeVersion}
+                </span>
+            </span>
         </div>
 
         <br />
@@ -222,10 +228,11 @@
     <table class="ui celled la-js-responsive-table la-table compact table">
         <thead>
             <tr>
-                <th>${message(code:'workflow.label')}</th>
-                <th>${message(code:'workflow.task.label')} &darr;</th>
-                <th>Zustand</th>
-                <th></th>
+                <th class="seven wide">${message(code:'workflow.label')}</th>
+                <th class="five wide">${message(code:'workflow.task.label')}</th>
+                <th class="two wide">Zustand</th>
+                <th class="one wide">${message(code:'default.version.label')}</th>
+                <th class="one wide"></th>
             </tr>
         </thead>
         <tbody>
@@ -248,6 +255,9 @@
                     </td>
                     <td>
                         ${wfp.state?.getI10n('value')}
+                    </td>
+                    <td>
+                        ${wfp.prototypeVersion}
                     </td>
                     <td class="x">
                         <g:if test="${! wfp.inUse()}">
@@ -284,16 +294,16 @@
     <table class="ui celled la-js-responsive-table la-table compact table">
         <thead>
             <tr>
-                <th>${message(code:'workflow.task.label')}</th>
-                <th>${message(code:'workflow.condition.label')} &darr;</th>
-                <th>${message(code:'workflow.label')} &uarr;</th>
+                <th class="seven wide">${message(code:'workflow.task.label')}</th>
+                <th class="two wide">${message(code:'workflow.condition.label')}</th>
+                <th class="one wide">Priorität</th>
+                <th class="one wide">&uarr;&uarr;&uarr;</th>
                 %{-- <th>${message(code:'default.type.label')}</th> --}%
-                <th>Nachfolger &rarr;</th>
-                <th>Child &darr;</th>
-                <th>Priorität</th>
-                <th>Vorgänger &larr;</th>
-                <th>Parent &uarr;</th>
-                <th></th>
+                <th class="one wide">&rarr;&rarr;</th>
+                <th class="one wide">&darr;&darr;</th>
+                <th class="one wide">&larr;</th>
+                <th class="one wide">&uarr;</th>
+                <th class="one wide"></th>
             </tr>
         </thead>
         <tbody>
@@ -313,6 +323,9 @@
                                 </g:link>
                             </span>
                         </g:if>
+                    </td>
+                    <td>
+                        ${tp.priority?.getI10n('value')}
                     </td>
                     <td>
                         <g:each in="${WfWorkflowPrototype.executeQuery('select wp from WfWorkflowPrototype wp where wp.task = :tp order by id', [tp: tp])}" var="wfp">
@@ -343,9 +356,6 @@
                                 </g:link>
                             </span>
                         </g:if>
-                    </td>
-                    <td>
-                        ${tp.priority?.getI10n('value')}
                     </td>
                     <td>
                         <g:each in="${WfTaskPrototype.findByNext(tp)}" var="prev">
@@ -397,10 +407,10 @@
     <table class="ui celled la-js-responsive-table la-table compact table">
         <thead>
         <tr>
-            <th>${message(code:'workflow.condition.label')}</th>
-            <th>${message(code:'workflow.task.label')} &uarr;</th>
-            <th>${message(code:'default.type.label')}</th>
-            <th></th>
+            <th class="seven wide">${message(code:'workflow.condition.label')}</th>
+            <th class="two wide">${message(code:'workflow.task.label')}</th>
+            <th class="six wide">${message(code:'default.type.label')}</th>
+            <th class="one wide"></th>
         </tr>
         </thead>
         <tbody>
@@ -451,10 +461,13 @@
         <div class="ui list">
             <div class="item">
                 <span class="ui brown circular label">id</span> &nbsp; ${message(code: 'workflow.object.' + WfWorkflowPrototype.KEY)}
+                , <strong>Zustand:</strong>
+                <span><i class="icon check circle green"></i>Ready to use </span>
+                <span><i class="icon minus circle red"></i>Test only </span>
             </div>
             <div class="item">
                 <span class="ui blue circular label">id</span> &nbsp; ${message(code: 'workflow.object.' + WfTaskPrototype.KEY)}
-                , Priorität:
+                , <strong>Priorität:</strong>
                 <span class="ui blue circular label"><i class="icon circle"></i>Normal&nbsp;</span>
                 <span class="ui blue circular label"><i class="icon arrow circle up"></i>Wichtig&nbsp;</span>
                 <span class="ui blue circular label"><i class="icon arrow circle down"></i>Optional&nbsp;</span>
@@ -472,17 +485,31 @@
     </p>
 
     <g:each in="${workflowTemplates}" var="wfwp">
-        <p><strong>
-            <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfWorkflowPrototype.KEY + ':' + wfwp.id, tab: 'prototypes']}">
-                <span class="ui brown circular label" data-wfwp="${wfwp.id}">${wfpIdTable[wfwp.id] ?: '?'}</span>
-                ${wfwp.title}
-            </g:link>
-        </strong></p>
+
+        <p style="padding-left:10px">
+            <g:if test="${wfwp.state == RDStore.WF_WORKFLOW_STATE_ACTIVE}">
+                <i class="icon check circle large green"></i>
+            </g:if>
+            <g:else>
+                <i class="icon minus circle large red"></i>
+            </g:else>
+            <strong>${wfwp.title}</strong>
+            <span class="sc_grey">(${message(code:'default.version.label')} ${wfwp.prototypeVersion})</span>
+        </p>
 
         <g:set var="tasks" value="${wfwp.getSequence()}" />
-        <g:if test="${tasks}">
 
         <div class="ui mini steps">
+            <div class="step">
+                <div class="content">
+                    <div class="title">
+                        <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfWorkflowPrototype.KEY + ':' + wfwp.id, tab: 'prototypes']}">
+                            <span class="ui brown circular label" data-wfwp="${wfwp.id}">${wfpIdTable[wfwp.id] ?: '?'}</span>
+                        </g:link>
+                    </div>
+                </div>
+            </div>
+
             <g:each in="${tasks}" var="wftp">
                 <div class="step">
                     <g:if test="${! wftp.child}">
@@ -561,7 +588,6 @@
             </g:each>
         </div>
 
-        </g:if>
     </g:each>
 
 </div><!-- .templates -->

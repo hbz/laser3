@@ -22,8 +22,9 @@ class WfWorkflowPrototype extends WfWorkflowBase {
     WfTaskPrototype task
 
     static mapping = {
-                 id column: 'wfwp_id'
-            version column: 'wfwp_version'
+                      id column: 'wfwp_id'
+                 version column: 'wfwp_version'
+        prototypeVersion column: 'wfwp_prototype_version'
               state column: 'wfwp_state_rv_fk'
                task column: 'wfwp_task_fk'
               title column: 'wfwp_title'
@@ -34,9 +35,10 @@ class WfWorkflowPrototype extends WfWorkflowBase {
     }
 
     static constraints = {
-        title       (blank: false)
-        task        (nullable: true)
-        description (nullable: true)
+        prototypeVersion (blank: false)
+        title            (blank: false)
+        task             (nullable: true)
+        description      (nullable: true)
     }
 
     /**
@@ -65,12 +67,14 @@ class WfWorkflowPrototype extends WfWorkflowBase {
     WfWorkflow instantiate(Long subId) throws Exception {
 
         WfWorkflow workflow = new WfWorkflow(
-                title:       this.title,
-                description: this.description,
-                prototype:   this,
-                owner:       BeanStore.getContextService().getOrg(),
-                status:      RDStore.WF_WORKFLOW_STATUS_OPEN,
-                subscription: Subscription.get(subId)
+                title:              this.title,
+                description:        this.description,
+                prototype:              this,
+                prototypeVersion:       this.prototypeVersion,
+                prototypeLastUpdated:   this.getInfo().lastUpdated as Date,
+                owner:              BeanStore.getContextService().getOrg(),
+                status:             RDStore.WF_WORKFLOW_STATUS_OPEN,
+                subscription:       Subscription.get(subId)
         )
         if (this.task) {
             workflow.task = this.task.instantiate()
@@ -80,5 +84,29 @@ class WfWorkflowPrototype extends WfWorkflowBase {
         }
 
         workflow
+    }
+
+    Map<String, Object> getInfo() {
+
+        Map<String, Object> info = [
+            lastUpdated: lastUpdated
+        ]
+
+        List<WfTaskPrototype> sequence = []
+
+        getSequence().each{ task ->
+            sequence.add(task)
+            if (task.child) {
+                sequence.addAll( task.child.getSequence() )
+            }
+        }
+
+        sequence.each{task ->
+            // TODO
+            if (task.lastUpdated > info.lastUpdated) { info.lastUpdated = task.lastUpdated }
+            if (task.condition && task.condition.lastUpdated > info.lastUpdated) { info.lastUpdated = task.condition.lastUpdated }
+        }
+
+        info
     }
 }

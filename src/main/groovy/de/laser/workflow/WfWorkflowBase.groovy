@@ -10,6 +10,8 @@ class WfWorkflowBase {
 
     WfTaskBase task
 
+    String prototypeVersion
+
     String title
     String description
 

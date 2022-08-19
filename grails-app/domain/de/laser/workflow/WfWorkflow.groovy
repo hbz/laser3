@@ -29,13 +29,16 @@ class WfWorkflow extends WfWorkflowBase {
     Subscription subscription
     Org owner
 
+    Date prototypeLastUpdated
     String comment
 
     static mapping = {
-                 id column: 'wfw_id'
-            version column: 'wfw_version'
-             status column: 'wfw_status_rv_fk'
-          prototype column: 'wfw_prototype_fk'
+                           id column: 'wfw_id'
+                      version column: 'wfw_version'
+                       status column: 'wfw_status_rv_fk'
+                    prototype column: 'wfw_prototype_fk'
+             prototypeVersion column: 'wfw_prototype_version'
+         prototypeLastUpdated column: 'wfw_prototype_last_updated'
                task column: 'wfw_task_fk'
        subscription column: 'wfw_subscription_fk'
               owner column: 'wfw_owner_fk'
@@ -48,10 +51,11 @@ class WfWorkflow extends WfWorkflowBase {
     }
 
     static constraints = {
-        title       (blank: false)
-        task        (nullable: true)
-        description (nullable: true)
-        comment     (nullable: true)
+        prototypeVersion (blank: false)
+        title            (blank: false)
+        task             (nullable: true)
+        description      (nullable: true)
+        comment          (nullable: true)
     }
 
     /**
