@@ -14,19 +14,25 @@
 
     <g:if test="${prefix == WfWorkflowPrototype.KEY}">
 
-        <div class="field required">
-            <label for="${prefix}_type>">State</label>
-            <ui:select class="ui dropdown la-not-clearable" id="${prefix}_state" name="${prefix}_state"
-                          required="required"
-                          noSelection="${['' : message(code:'default.select.choose.label')]}"
-                          from="${RefdataCategory.getAllRefdataValues( RDConstants.WF_WORKFLOW_STATE )}"
-                          value="${workflow?.state?.id}"
-                          optionKey="id"
-                          optionValue="value" />
+        <div class="fields">
+            <div class="field eleven wide required">
+                <label for="${prefix}_type>">State</label>
+                <ui:select class="ui dropdown la-not-clearable" id="${prefix}_state" name="${prefix}_state"
+                              required="required"
+                              noSelection="${['' : message(code:'default.select.choose.label')]}"
+                              from="${RefdataCategory.getAllRefdataValues( RDConstants.WF_WORKFLOW_STATE )}"
+                              value="${workflow?.state?.id}"
+                              optionKey="id"
+                              optionValue="value" />
+            </div>
+            <div class="field five wide required">
+                <label for="${prefix}_prototypeVersion>">Version</label>
+                <input type="text" name="${prefix}_prototypeVersion" id="${prefix}_prototypeVersion" value="${workflow?.prototypeVersion}" />
+            </div>
         </div>
 
         <div class="field">
-            <label for="${prefix}_task">${message(code: 'workflow.object.' + WfTaskPrototype.KEY)} &darr;</label>
+            <label for="${prefix}_task">${message(code: 'workflow.object.' + WfTaskPrototype.KEY)}</label>
             <g:select class="ui dropdown" id="${prefix}_task" name="${prefix}_task"
                       noSelection="${['' : message(code:'default.select.choose.label')]}"
                       from="${dd_taskList}"
@@ -88,19 +94,19 @@
         </div>
         --}%
 
-        <div class="field">
-            <label for="${prefix}_prototype">${message(code:'default.prototype.label')}</label>
-            <p>
-                <g:if test="${workflow?.prototype}">
-                    <div class="ui la-flexbox">
-                        <i class="icon clone outline la-list-icon"></i>
-                        <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfWorkflowPrototype.KEY + ':' + workflow.prototype.id]}">
-                             ${workflow.prototype.title}
-                        </g:link>
-                    </div>
-                </g:if>
-            </p>
-        </div>
+%{--        <div class="field">--}%
+%{--            <label for="${prefix}_prototype">${message(code:'default.prototype.label')}</label>--}%
+%{--            <p>--}%
+%{--                <g:if test="${workflow?.prototype}">--}%
+%{--                    <div class="ui la-flexbox">--}%
+%{--                        <i class="icon clone outline la-list-icon"></i>--}%
+%{--                        <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfWorkflowPrototype.KEY + ':' + workflow.prototype.id]}">--}%
+%{--                             ${workflow.prototype.title} ????? <span class="sc_grey">(${message(code:'default.version.label')} ${workflow.prototype.prototypeVersion})</span>--}%
+%{--                        </g:link>--}%
+%{--                    </div>--}%
+%{--                </g:if>--}%
+%{--            </p>--}%
+%{--        </div>--}%
 
     </g:if>
 

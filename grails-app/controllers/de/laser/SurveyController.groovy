@@ -127,7 +127,7 @@ class SurveyController {
         result.surveyYears = SurveyInfo.executeQuery("select Year(startDate) from SurveyInfo where owner = :org and startDate != null group by YEAR(startDate) order by YEAR(startDate)", [org: result.institution]) ?: []
 
         if (params.validOnYear == null || params.validOnYear == '') {
-            SimpleDateFormat sdfyear = DateUtils.getLocalizedSDF_byToken('default.date.format.onlyYear')
+            SimpleDateFormat sdfyear = DateUtils.getSDF_yyyy()
             String newYear = sdfyear.format(new Date())
 
             if(!(newYear in result.surveyYears)){
@@ -150,7 +150,7 @@ class SurveyController {
 
             SXSSFWorkbook wb
             if ( params.surveyCostItems ) {
-                SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTimeNoPoint()
+                SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
                 String datetoday = sdf.format(new Date())
                 String filename = "${datetoday}_" + g.message(code: "surveyCostItems.label")
                 //if(wb instanceof XSSFWorkbook) file += "x";
@@ -158,7 +158,7 @@ class SurveyController {
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 wb = (SXSSFWorkbook) surveyService.exportSurveyCostItems(result.surveys.collect {it[1]}, result.institution)
             }else{
-                SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTimeNoPoint()
+                SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
                 String datetoday = sdf.format(new Date())
                 String filename = "${datetoday}_" + g.message(code: "survey.plural")
                 //if(wb instanceof XSSFWorkbook) file += "x";
@@ -207,7 +207,7 @@ class SurveyController {
         result.surveyYears = SurveyInfo.executeQuery("select Year(startDate) from SurveyInfo where owner = :org and startDate != null group by YEAR(startDate) order by YEAR(startDate)", [org: result.institution]) ?: []
 
         if (params.validOnYear == null || params.validOnYear == '') {
-            SimpleDateFormat sdfyear = DateUtils.getLocalizedSDF_byToken('default.date.format.onlyYear')
+            SimpleDateFormat sdfyear = DateUtils.getSDF_yyyy()
             String newYear = sdfyear.format(new Date())
 
             if(!(newYear in result.surveyYears)){
@@ -230,7 +230,7 @@ class SurveyController {
         result.surveys = SurveyInfo.executeQuery(fsq.query, fsq.queryParams, params)
 
         if ( params.exportXLSX ) {
-            SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTimeNoPoint()
+            SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
             String datetoday = sdf.format(new Date())
             String filename = "${datetoday}_" + g.message(code: "survey.plural")
             //if(wb instanceof XSSFWorkbook) file += "x";
@@ -839,7 +839,7 @@ class SurveyController {
 
             SXSSFWorkbook wb
             if ( params.surveyCostItems ) {
-                SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTimeNoPoint()
+                SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
                 String datetoday = sdf.format(new Date())
                 String filename = "${datetoday}_" + g.message(code: "survey.label")
                 //if(wb instanceof XSSFWorkbook) file += "x";
@@ -847,7 +847,7 @@ class SurveyController {
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 wb = (SXSSFWorkbook) surveyService.exportSurveyCostItems([result.surveyConfig], result.institution)
             }else{
-                SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTimeNoPoint()
+                SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
                 String datetoday = sdf.format(new Date())
                 String filename = "${datetoday}_" + g.message(code: "survey.label")
                 //if(wb instanceof XSSFWorkbook) file += "x";
@@ -1367,7 +1367,7 @@ class SurveyController {
         if ( params.exportXLSX ) {
             SXSSFWorkbook wb
             if ( params.surveyCostItems ) {
-                SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTimeNoPoint()
+                SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
                 String datetoday = sdf.format(new Date())
                 String filename = "${datetoday}_" + g.message(code: "survey.label")
                 //if(wb instanceof XSSFWorkbook) file += "x";
@@ -1375,7 +1375,7 @@ class SurveyController {
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 wb = (SXSSFWorkbook) surveyService.exportSurveyCostItems([result.surveyConfig], result.institution)
             }else {
-                SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTimeNoPoint()
+                SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
                 String datetoday = sdf.format(new Date())
                 String filename = "${datetoday}_" + g.message(code: "survey.label")
                 //if(wb instanceof XSSFWorkbook) file += "x";
@@ -3096,7 +3096,7 @@ class SurveyController {
             response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
-        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTimeNoPoint()
+        SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
         String datetoday = sdf.format(new Date(System.currentTimeMillis()))
         String filename = "${datetoday}_" + g.message(code: "renewalEvaluation.propertiesChanged")
 
@@ -3531,7 +3531,7 @@ class SurveyController {
            def surveyConfig = SurveyConfig.findByIdAndSurveyInfo(params.surveyConfigID, surveyInfo)*/
 
         if (params.exportXLSX) {
-            SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTimeNoPoint()
+            SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
             String datetoday = sdf.format(new Date())
             String filename = "${datetoday}_" + g.message(code: "survey.exportSurveyCostItems")
             //if(wb instanceof XSSFWorkbook) file += "x";

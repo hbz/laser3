@@ -12,7 +12,7 @@
                     from="${WfWorkflowPrototype.findAllByState( RDStore.WF_WORKFLOW_STATE_ACTIVE )}"
                     optionKey="id"
                     optionValue="title"
-                    optionExpl="description" />
+                    optionExpl="${{ it.description + ' (Version: ' + it.prototypeVersion + ')'}}" />
         </div>
 
         <input type="hidden" name="cmd" value="instantiate:${WfWorkflowPrototype.KEY}" />

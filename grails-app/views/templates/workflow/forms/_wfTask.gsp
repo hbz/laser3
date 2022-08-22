@@ -40,7 +40,7 @@
         <div class="field">
             <div class="fields two">
                 <div class="field">
-                    <label for="${prefix}_next">Nachfolger &rarr;</label>
+                    <label for="${prefix}_next">Nachfolger &rarr;&rarr;</label>
                     <g:select class="ui dropdown" id="${prefix}_next" name="${prefix}_next"
                               noSelection="${['' : message(code:'default.select.choose.label')]}"
                               from="${dd_nextList}"
@@ -49,7 +49,7 @@
                               optionValue="${{ (tpIdTable && tpIdTable[it.id]) ? ('(' + tpIdTable[it.id] + ') ' + it.title) : it.title }}" />
                 </div>
                 <div class="field">
-                    <label for="${prefix}_child">Child &darr;</label>
+                    <label for="${prefix}_child">Child &darr;&darr;</label>
                     <g:select class="ui dropdown" id="${prefix}_child" name="${prefix}_child"
                               noSelection="${['' : message(code:'default.select.choose.label')]}"
                               from="${dd_childList}"
@@ -172,10 +172,12 @@
             <div class="field">
                 <div class="fields two">
                     <div class="field">
-                        <label for="${prefix}_workflow">${message(code:'workflow.label')} &uarr;</label> %{-- TODO --}%
+                        <label for="${prefix}_workflow">${message(code:'workflow.label')} &uarr;&uarr;&uarr;</label> %{-- TODO --}%
                         <p>
                             <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfWorkflowPrototype.KEY + ':' + task.getWorkflow().id]}">
-                                <i class="icon circle brown"></i> ${task.getWorkflow().title}
+                                <i class="icon circle brown"></i>
+                                ${task.getWorkflow().title}
+                                <span class="sc_grey">(${message(code:'default.version.label')} ${task.getWorkflow().prototypeVersion})</span>
                             </g:link>
                         </p>
                     </div>

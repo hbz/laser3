@@ -59,7 +59,6 @@ import org.springframework.web.multipart.MultipartFile
 import javax.servlet.ServletOutputStream
 import java.text.DateFormat
 import java.text.SimpleDateFormat
-import java.time.LocalDate
 
 /**
  * This is one of the central controllers as it manages every call related to the context institution.
@@ -526,7 +525,7 @@ class MyInstitutionController  {
 		List bm = prf.stopBenchmark()
 		result.benchMark = bm
 
-        SimpleDateFormat sdfNoPoint = DateUtils.getLocalizedSDF_noTimeNoPoint()
+        SimpleDateFormat sdfNoPoint = DateUtils.getSDF_noTimeNoPoint()
         String filename = "${sdfNoPoint.format(new Date())}_${g.message(code: 'export.my.currentLicenses')}"
         List titles = [
                 g.message(code:'license.details.reference'),
@@ -917,7 +916,7 @@ join sub.orgRelations or_sub where
         result.compare = params.compare ?: ''
 
         // Write the output to a file
-        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTimeNoPoint()
+        SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
         String datetoday = sdf.format(new Date())
         String filename = "${datetoday}_" + g.message(code: "export.my.currentSubscriptions")
 
@@ -1402,7 +1401,7 @@ join sub.orgRelations or_sub where
             result.filterSet = params.filterSet || defaultSet
         }
 
-        String filename = "${message(code:'export.my.currentTitles')}_${DateUtils.getLocalizedSDF_noTimeNoPoint().format(new Date())}"
+        String filename = "${message(code:'export.my.currentTitles')}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
 
 		List bm = prf.stopBenchmark()
 		result.benchMark = bm
@@ -1799,7 +1798,7 @@ join sub.orgRelations or_sub where
         }
 
         if (params.validOnYear == null || params.validOnYear == '') {
-            SimpleDateFormat sdfyear = DateUtils.getLocalizedSDF_byToken('default.date.format.onlyYear')
+            SimpleDateFormat sdfyear = DateUtils.getSDF_yyyy()
             String newYear = sdfyear.format(new Date())
 
             if(!(newYear in result.surveyYears)){
@@ -1835,7 +1834,7 @@ join sub.orgRelations or_sub where
             SXSSFWorkbook wb
             List surveyConfigsforExport = result.surveyResults.collect {it[1]}
             if ( params.surveyCostItems ) {
-                SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTimeNoPoint()
+                SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
                 String datetoday = sdf.format(new Date())
                 String filename = "${datetoday}_" + g.message(code: "surveyCostItems.label")
                 //if(wb instanceof XSSFWorkbook) file += "x";
@@ -1843,7 +1842,7 @@ join sub.orgRelations or_sub where
                 response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                 wb = (SXSSFWorkbook) surveyService.exportSurveyCostItems(surveyConfigsforExport, result.institution)
             }else {
-                SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTimeNoPoint()
+                SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
                 String datetoday = sdf.format(new Date())
                 String filename = "${datetoday}_" + g.message(code: "survey.plural")
                 //if(wb instanceof XSSFWorkbook) file += "x";
@@ -1969,7 +1968,7 @@ join sub.orgRelations or_sub where
         }
 
         if ( params.exportXLSX ) {
-            SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTimeNoPoint()
+            SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
             String datetoday = sdf.format(new Date())
             String filename = "${datetoday}_" + g.message(code: "survey.label")
             //if(wb instanceof XSSFWorkbook) file += "x";
@@ -2834,7 +2833,7 @@ join sub.orgRelations or_sub where
 
         header = message(code: 'menu.my.insts')
         exportHeader = message(code: 'export.my.consortia')
-        SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTimeNoPoint()
+        SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
         // Write the output to a file
         String file = "${sdf.format(new Date())}_"+exportHeader
 
@@ -3119,7 +3118,7 @@ join sub.orgRelations or_sub where
                     log.error("Null value in column ${i}")
                 }
             }
-            String filename = "${DateUtils.getLocalizedSDF_noTimeNoPoint().format(new Date())}_${g.message(code:'export.my.consortiaSubscriptions')}.xlsx"
+            String filename = "${DateUtils.getSDF_noTimeNoPoint().format(new Date())}_${g.message(code:'export.my.consortiaSubscriptions')}.xlsx"
             response.setHeader("Content-disposition","attachment; filename=\"${filename}\"")
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             workbook.write(response.outputStream)
@@ -3259,7 +3258,7 @@ join sub.orgRelations or_sub where
                         row.add("${entry.value} ${entry.key}")
                         columnData.add(row)
                     }
-                    String filename = "${DateUtils.getLocalizedSDF_noTimeNoPoint().format(new Date())}_${g.message(code: 'export.my.consortiaSubscriptions')}.csv"
+                    String filename = "${DateUtils.getSDF_noTimeNoPoint().format(new Date())}_${g.message(code: 'export.my.consortiaSubscriptions')}.csv"
                     response.setHeader("Content-disposition", "attachment; filename=\"${filename}\"")
                     response.contentType = "text/csv"
                     response.outputStream.withWriter { writer ->
@@ -3298,7 +3297,7 @@ join sub.orgRelations or_sub where
         }
 
         /*if (params.validOnYear == null || params.validOnYear == '') {
-            def sdfyear = new java.text.SimpleDateFormat(message(code: 'default.date.format.onlyYear'))
+            def sdfyear = DateUtils.getSDF_yyyy()
             params.validOnYear = sdfyear.format(new Date())
         }*/
 
@@ -3313,7 +3312,7 @@ join sub.orgRelations or_sub where
         if ( params.exportXLSX ) {
 
             SXSSFWorkbook wb
-            SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTimeNoPoint()
+            SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
             String datetoday = sdf.format(new Date())
             String filename = "${datetoday}_" + g.message(code: "survey.plural")
             //if(wb instanceof XSSFWorkbook) file += "x";

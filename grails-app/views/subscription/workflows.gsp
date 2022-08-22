@@ -152,7 +152,8 @@
                                 </g:if>
                                 <div class="ui right aligned sc_darkgrey">
                                     Zuletzt bearbeitet: ${DateUtils.getLocalizedSDF_noTime().format(wf.lastUpdated)}<br />
-                                    Erstellt am: ${DateUtils.getLocalizedSDF_noTime().format(wf.dateCreated)}
+                                    Erstellt am: ${DateUtils.getLocalizedSDF_noTime().format(wf.dateCreated)}<br />
+                                    Version: ${wf.prototypeVersion}
                                 </div>
                             </div>
                         </td>

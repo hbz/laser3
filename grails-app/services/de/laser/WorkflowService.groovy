@@ -285,6 +285,7 @@ class WorkflowService {
             wf.description  = ph.getString('description')
             wf.task         = WfTaskPrototype.get(ph.getLong('task'))
             wf.state        = RefdataValue.get(ph.getLong('state'))
+            wf.prototypeVersion = ph.getString('prototypeVersion')
         }
         else if (cmd[1] == WfWorkflow.KEY) {
             wf = wf as WfWorkflow

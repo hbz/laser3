@@ -238,9 +238,9 @@ class YodaController {
 
             slots.each { hour ->
                 activity[dayKey].add([
-                        (DateUtils.getLocalizedSDF_onlyTime()).format(new Date(hour[0].getTime())),   // time.start
-                        (DateUtils.getLocalizedSDF_onlyTime()).format(new Date(hour[1].getTime())),   // time.min
-                        (DateUtils.getLocalizedSDF_onlyTime()).format(new Date(hour[2].getTime())),   // time.max
+                        (DateUtils.getSDF_onlyTime()).format(new Date(hour[0].getTime())),   // time.start
+                        (DateUtils.getSDF_onlyTime()).format(new Date(hour[1].getTime())),   // time.min
+                        (DateUtils.getSDF_onlyTime()).format(new Date(hour[2].getTime())),   // time.max
                         hour[3],    // user.min
                         hour[4],    // user.max
                         hour[5]     // user.avg

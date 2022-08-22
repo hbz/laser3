@@ -485,7 +485,7 @@ class PackageController {
 
         List<Long> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
 
-        String filename = "${escapeService.escapeString(packageInstance.name + '_' + message(code: 'package.show.nav.current'))}_${DateUtils.getLocalizedSDF_noTimeNoPoint().format(new Date())}"
+        String filename = "${escapeService.escapeString(packageInstance.name + '_' + message(code: 'package.show.nav.current'))}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
 
         result.filename = filename
 
@@ -628,13 +628,13 @@ class PackageController {
 
         if (func == "planned") {
             params.status = RDStore.TIPP_STATUS_EXPECTED.id
-            filename = "${escapeService.escapeString(packageInstance.name + '_' + message(code: 'package.show.nav.planned'))}_${DateUtils.getLocalizedSDF_noTimeNoPoint().format(new Date())}"
+            filename = "${escapeService.escapeString(packageInstance.name + '_' + message(code: 'package.show.nav.planned'))}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
         } else if (func == "expired") {
             params.status = RDStore.TIPP_STATUS_RETIRED.id
-            filename = "${escapeService.escapeString(packageInstance.name + '_' + message(code: 'package.show.nav.expired'))}_${DateUtils.getLocalizedSDF_noTimeNoPoint().format(new Date())}"
+            filename = "${escapeService.escapeString(packageInstance.name + '_' + message(code: 'package.show.nav.expired'))}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
         } else if (func == "deleted") {
             params.status = RDStore.TIPP_STATUS_DELETED.id
-            filename = "${escapeService.escapeString(packageInstance.name + '_' + message(code: 'package.show.nav.deleted'))}_${DateUtils.getLocalizedSDF_noTimeNoPoint().format(new Date())}"
+            filename = "${escapeService.escapeString(packageInstance.name + '_' + message(code: 'package.show.nav.deleted'))}_${DateUtils.getSDF_noTimeNoPoint().format(new Date())}"
         }
 
         Map<String, Object> query = filterService.getTippQuery(params, [packageInstance])

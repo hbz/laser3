@@ -491,7 +491,7 @@ class ExportService {
 		if(!contextOrg)
 			contextOrg = contextService.getOrg()
 		List cells = []
-		SimpleDateFormat sdf = DateUtils.getLocalizedSDF_byToken('default.date.format.notime')
+		SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
 		propertyDefinitions.each { PropertyDefinition pd ->
 			Set<String> value = []
 			target.propertySet.each{ AbstractPropertyWithCalculatedLastUpdated prop ->
@@ -833,7 +833,7 @@ class ExportService {
 				headerRow = sheet.createRow(12) //the 13th row is mandatory empty
 				cell = headerRow.createCell(0)
 				cell.setCellValue("")
-				columnHeaders.addAll(data.monthsInRing.collect { Date month -> DateUtils.getSDF_MMMyyyy().format(month) })
+				columnHeaders.addAll(data.monthsInRing.collect { Date month -> DateUtils.getLocalizedSDF_MMMyyyy().format(month) })
 				if(showPriceDate) {
 					columnHeaders.addAll(["List Price EUR", "List Price GBP", "List Price USD"])
 				}
@@ -861,7 +861,7 @@ class ExportService {
 						metricRow.put('Metric_Type', r.metricType)
 						periodTotal += r.reportCount
 						metricRow.put('Reporting_Period_Total', periodTotal)
-						metricRow.put(DateUtils.getSDF_MMMyyyy().format(r.reportFrom), r.reportCount)
+						metricRow.put(DateUtils.getLocalizedSDF_MMMyyyy().format(r.reportFrom), r.reportCount)
 						metricRows.put(r.metricType, metricRow)
 					}
 					metricRows.eachWithIndex{ String metricType, Map metricRow, int i ->
@@ -1009,7 +1009,7 @@ class ExportService {
 							break
 					}
 					titleRow.put("Reporting_Period_Total", periodTotal)
-					titleRow.put(DateUtils.getSDF_MMMyyyy().format(report.reportFrom), report.reportCount)
+					titleRow.put(DateUtils.getLocalizedSDF_MMMyyyy().format(report.reportFrom), report.reportCount)
 					if (showPriceDate && report.title.priceItems) {
 						//listprice_eur
 						titleRow.put("List Price EUR", report.title.priceItems.find { it.listCurrency == RDStore.CURRENCY_EUR }?.listPrice ?: ' ')
