@@ -73,8 +73,8 @@
                     </div>
 
                     <div class="field la-field-right-aligned ">
-                        <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
-                        <input type="submit" class="ui secondary button" value="${message(code:'default.button.search.label')}">
+                        <a href="${request.forwardURI}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
+                        <input type="submit" class="ui primary button" value="${message(code:'default.button.search.label')}">
                     </div>
 
                 </g:form>
@@ -108,7 +108,7 @@
             $('.js-alliancelicence').on('click', JSPC.app.toggleFilterPart)
             $('.js-consortiallicence').on('click', JSPC.app.toggleFilterPart)
             JSPC.app.toggleTableHeading()
-            $('.ui secondary button').on('click', JSPC.app.toggleTableHeading)
+            $('.ui primary button').on('click', JSPC.app.toggleTableHeading)
 
     </laser:script>
 

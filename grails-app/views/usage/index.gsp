@@ -39,7 +39,7 @@
                     <g:actionSubmit action="fetchSelection" class="ui primary button" value="${message(code: 'default.usage.adminPage.button.fetchSelection')}" onclick="return confirm('${message(code:'confirm.start.StatsSync')}')"/>
                 </div>
                 <div class="field">
-                    <g:actionSubmit action="deleteSelection" class="ui secondary button" value="${message(code: 'default.usage.adminPage.button.deleteSelection')}" onclick="return confirm('${message(code:'confirm.start.StatsDeleteSelection')}')"/>
+                    <g:actionSubmit action="deleteSelection" class="ui primary button" value="${message(code: 'default.usage.adminPage.button.deleteSelection')}" onclick="return confirm('${message(code:'confirm.start.StatsDeleteSelection')}')"/>
                 </div>
                 <div class="field">
                     <g:actionSubmit action="deleteAll" value="${message(code: 'default.usage.adminPage.button.deleteAll')}" class="ui button red" onclick="return confirm('${message(code:'confirm.start.StatsDelete')}')"/>
@@ -105,8 +105,8 @@
 
         <div class="field">
             <div class="field la-filter-search">
-                <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
-                <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label')}">
+                <a href="${request.forwardURI}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
+                <input type="submit" class="ui primary button" value="${message(code:'default.button.filter.label')}">
             </div>
         </div>
     </g:form>

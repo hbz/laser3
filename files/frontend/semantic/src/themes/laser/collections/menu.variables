@@ -25,3 +25,21 @@
 @descriptionFontSize: @relativeSmall;
 @descriptionFontWeight: @normal;
 @descriptionColor: @textColor;
+
+@itemTextColor: @blue;
+@circularLabelVerticalPadding: 0.3em; /* has to be equal to @circularPadding from label.less */
+
+@verticalMargin: @medium;
+@horizontalMargin: 0em;
+@topMargin: 0em;
+@margin: @topMargin @horizontalMargin @verticalMargin ;
+@secondaryPointingActiveBorderColor: @black;
+@secondaryPointingInvertedItemHoverTextColor: @selectedTextColor;
+
+@itemTextColor: @blue;
+@circularLabelVerticalPadding: 0.3em; /* has to be equal to @circularPadding from label.less */
+
+@verticalMargin: @medium;
+@horizontalMargin: 0em;
+@topMargin: 0em;
+@margin: @topMargin @horizontalMargin @verticalMargin ;

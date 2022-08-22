@@ -18,7 +18,7 @@
 
                                 <div class="field la-field-noLabel" >
                                     <input type="submit" value="${message(code: 'template.orgLinksModal.select')}"
-                                           class="ui secondary button"/>
+                                           class="ui primary button"/>
                                 </div>
                             </div>
                         </g:form>
@@ -33,7 +33,7 @@
 
                                 <div class="field la-field-noLabel">
                                     <input type="submit" value="${message(code: 'template.orgLinksModal.select')}"
-                                           class="ui secondary button"/>
+                                           class="ui primary button"/>
                                 </div>
                             </div>
                         </g:form>
@@ -54,7 +54,7 @@
 
                     <div class="field la-field-noLabel">
                         <input type="submit" value="${message(code: 'template.orgLinksModal.select')}"
-                               class="ui secondary button"/>
+                               class="ui primary button"/>
                     </div>
                 </div>
             </g:form>

@@ -39,9 +39,9 @@
 
                 <div class="field">
                     <label>&nbsp;</label>
-                    <a href="${request.forwardURI}" class="ui reset primary primary button">${message(code:'default.button.reset.label')}</a>
+                    <a href="${request.forwardURI}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
 
-                    <input type="submit" class="ui secondary button" value="${message(code:'default.button.filter.label')}" />
+                    <input type="submit" class="ui primary button" value="${message(code:'default.button.filter.label')}" />
                 </div>
 
             </div>

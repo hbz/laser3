@@ -164,8 +164,8 @@
 
             <div class="field la-field-right-aligned">
                 <g:link controller="survey" action="currentSurveysConsortia"
-                        class="ui reset primary button">${message(code: 'default.button.reset.label')}</g:link>
-                <input type="submit" class="ui secondary button"
+                        class="ui reset secondary button">${message(code: 'default.button.reset.label')}</g:link>
+                <input type="submit" class="ui primary button"
                        value="${message(code: 'default.button.filter.label')}">
             </div>
 

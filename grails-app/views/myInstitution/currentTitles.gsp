@@ -138,9 +138,9 @@
 
             <div class="field la-field-right-aligned">
                 <a href="${request.forwardURI}"
-                   class="ui reset primary button">${message(code: 'default.button.reset.label')}</a>
+                   class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>
                 <input type="hidden" name="filterSet" value="true"/>
-                <input type="submit" class="ui secondary button"
+                <input type="submit" class="ui primary button"
                        value="${message(code: 'default.button.filter.label')}"/>
             </div>
 

@@ -119,9 +119,9 @@
                   </select>
               </div>
               <div class="field la-field-right-aligned">
-                  <g:link action="currentLicenses" params="[resetFilter:true]" class="ui reset primary primary button">${message(code:'default.button.reset.label')}</g:link>
+                  <g:link action="currentLicenses" params="[resetFilter:true]" class="ui reset secondary button">${message(code:'default.button.reset.label')}</g:link>
                   <input type="hidden" name="filterSet" value="true">
-                  <input type="submit" name="filterSubmit" class="ui secondary button" value="${message(code:'default.button.filter.label')}">
+                  <input type="submit" name="filterSubmit" class="ui primary button" value="${message(code:'default.button.filter.label')}">
               </div>
           </div>
       </form>

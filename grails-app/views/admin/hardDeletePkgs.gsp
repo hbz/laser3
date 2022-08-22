@@ -18,7 +18,7 @@
                     <input name="pkg_name" placeholder="Partial terms accepted" value="${params.pkg_name}"/>
                 </div>
                 <div class="field">
-                    <button type="submit" name="search" value="yes" class="ui secondary button">Search</button>
+                    <button type="submit" name="search" value="yes" class="ui primary button">Search</button>
                 </div>
             </g:form>
         </ui:filter>

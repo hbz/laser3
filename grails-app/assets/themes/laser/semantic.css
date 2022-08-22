@@ -3442,7 +3442,7 @@ i.icon.la-list-icon:before {
 
 .ui.secondary.buttons .button,
 .ui.secondary.button {
-  background-color: #1B1C1D;
+  background-color: #545454;
   color: #FFFFFF;
   text-shadow: none;
   background-image: none;
@@ -3455,21 +3455,21 @@ i.icon.la-list-icon:before {
 
 .ui.secondary.buttons .button:hover,
 .ui.secondary.button:hover {
-  background-color: #27292a;
+  background-color: #616161;
   color: #FFFFFF;
   text-shadow: none;
 }
 
 .ui.secondary.buttons .button:focus,
 .ui.secondary.button:focus {
-  background-color: #2e3032;
+  background-color: #686868;
   color: #FFFFFF;
   text-shadow: none;
 }
 
 .ui.secondary.buttons .button:active,
 .ui.secondary.button:active {
-  background-color: #343637;
+  background-color: #6e6e6e;
   color: #FFFFFF;
   text-shadow: none;
 }
@@ -3478,7 +3478,7 @@ i.icon.la-list-icon:before {
 .ui.secondary.buttons .active.button:active,
 .ui.secondary.active.button,
 .ui.secondary.button .active.button:active {
-  background-color: #27292a;
+  background-color: #616161;
   color: #FFFFFF;
   text-shadow: none;
 }
@@ -3488,40 +3488,40 @@ i.icon.la-list-icon:before {
 .ui.basic.secondary.buttons .button,
 .ui.basic.secondary.button {
   background: transparent;
-  -webkit-box-shadow: 0 0 0 1px #1B1C1D inset;
-  box-shadow: 0 0 0 1px #1B1C1D inset;
-  color: #1B1C1D;
+  -webkit-box-shadow: 0 0 0 1px #545454 inset;
+  box-shadow: 0 0 0 1px #545454 inset;
+  color: #545454;
 }
 
 .ui.basic.secondary.buttons .button:hover,
 .ui.basic.secondary.button:hover {
   background: transparent;
-  -webkit-box-shadow: 0 0 0 1px #27292a inset;
-  box-shadow: 0 0 0 1px #27292a inset;
-  color: #27292a;
+  -webkit-box-shadow: 0 0 0 1px #616161 inset;
+  box-shadow: 0 0 0 1px #616161 inset;
+  color: #616161;
 }
 
 .ui.basic.secondary.buttons .button:focus,
 .ui.basic.secondary.button:focus {
   background: transparent;
-  -webkit-box-shadow: 0 0 0 1px #2e3032 inset;
-  box-shadow: 0 0 0 1px #2e3032 inset;
-  color: #27292a;
+  -webkit-box-shadow: 0 0 0 1px #686868 inset;
+  box-shadow: 0 0 0 1px #686868 inset;
+  color: #616161;
 }
 
 .ui.basic.secondary.buttons .active.button,
 .ui.basic.secondary.active.button {
   background: transparent;
-  -webkit-box-shadow: 0 0 0 1px #27292a inset;
-  box-shadow: 0 0 0 1px #27292a inset;
-  color: #343637;
+  -webkit-box-shadow: 0 0 0 1px #616161 inset;
+  box-shadow: 0 0 0 1px #616161 inset;
+  color: #6e6e6e;
 }
 
 .ui.basic.secondary.buttons .button:active,
 .ui.basic.secondary.button:active {
-  -webkit-box-shadow: 0 0 0 1px #343637 inset;
-  box-shadow: 0 0 0 1px #343637 inset;
-  color: #343637;
+  -webkit-box-shadow: 0 0 0 1px #6e6e6e inset;
+  box-shadow: 0 0 0 1px #6e6e6e inset;
+  color: #6e6e6e;
 }
 
 .ui.buttons:not(.vertical) > .basic.secondary.button:not(:first-child) {
@@ -3622,23 +3622,23 @@ i.icon.la-list-icon:before {
   background: transparent;
   -webkit-box-shadow: none;
   box-shadow: none;
-  color: #1B1C1D;
+  color: #545454;
 }
 
 .ui.tertiary.secondary.buttons .button:hover,
 .ui.tertiary.secondary.buttons button:hover,
 .ui.tertiary.secondary.button:hover {
-  -webkit-box-shadow: inset 0 -0.2em 0 #292929;
-  box-shadow: inset 0 -0.2em 0 #292929;
-  color: #292929;
+  -webkit-box-shadow: inset 0 -0.2em 0 #616161;
+  box-shadow: inset 0 -0.2em 0 #616161;
+  color: #616161;
 }
 
 .ui.tertiary.secondary.buttons .button:focus,
 .ui.tertiary.secondary.buttons .tertiary.button:focus,
 .ui.tertiary.secondary.button:focus {
-  -webkit-box-shadow: inset 0 -0.2em 0 #303030;
-  box-shadow: inset 0 -0.2em 0 #303030;
-  color: #303030;
+  -webkit-box-shadow: inset 0 -0.2em 0 #686868;
+  box-shadow: inset 0 -0.2em 0 #686868;
+  color: #686868;
 }
 
 .ui.tertiary.secondary.buttons .active.button,
@@ -3647,9 +3647,9 @@ i.icon.la-list-icon:before {
 .ui.tertiary.secondary.buttons .button:active,
 .ui.tertiary.secondary.buttons .tertiary.button:active,
 .ui.tertiary.secondary.button:active {
-  -webkit-box-shadow: inset 0 -0.2em 0 #1f2933;
-  box-shadow: inset 0 -0.2em 0 #1f2933;
-  color: #27292a;
+  -webkit-box-shadow: inset 0 -0.2em 0 #744d4d;
+  box-shadow: inset 0 -0.2em 0 #744d4d;
+  color: #616161;
 }
 
 .ui.red.buttons .button,
@@ -24479,15 +24479,15 @@ a.ui.inverted.primary.header.header.header:hover {
 }
 
 .ui.secondary.header {
-  color: #1B1C1D;
+  color: #545454;
 }
 
 a.ui.secondary.header:hover {
-  color: #27292a;
+  color: #616161;
 }
 
 .ui.secondary.dividing.header {
-  border-bottom: 2px solid #1B1C1D;
+  border-bottom: 2px solid #545454;
 }
 
 .ui.inverted.secondary.header.header.header {
@@ -25537,7 +25537,7 @@ i.inverted.circular.primary.icons {
 }
 
 i.secondary.icon.icon.icon.icon.icon {
-  color: #1B1C1D;
+  color: #545454;
 }
 
 i.inverted.secondary.icon.icon.icon.icon.icon {
@@ -25548,7 +25548,7 @@ i.inverted.bordered.secondary.icon.icon.icon.icon.icon,
 i.inverted.circular.secondary.icon.icon.icon.icon.icon,
 i.inverted.bordered.secondary.icons,
 i.inverted.circular.secondary.icons {
-  background-color: #1B1C1D;
+  background-color: #545454;
   color: #FFFFFF;
 }
 
@@ -41421,6 +41421,10 @@ img.ui.bordered.image {
 /*******************************
          Theme Overrides
 *******************************/
+
+/*******************************
+         Theme Overrides
+*******************************/
 /*!
  * # Fomantic-UI 2.8.8 - Label
  * http://github.com/fomantic/Fomantic-UI/
@@ -42250,8 +42254,8 @@ a.ui.ui.ui.inverted.basic.primary.label:hover {
 
 .ui.secondary.labels .label,
 .ui.ui.ui.secondary.label {
-  background-color: #1B1C1D;
-  border-color: #1B1C1D;
+  background-color: #545454;
+  border-color: #545454;
   color: rgba(255, 255, 255, 0.9);
 }
 
@@ -42259,15 +42263,15 @@ a.ui.ui.ui.inverted.basic.primary.label:hover {
 
 .ui.secondary.labels a.label:hover,
 a.ui.ui.ui.secondary.label:hover {
-  background-color: #27292a;
-  border-color: #27292a;
+  background-color: #616161;
+  border-color: #616161;
   color: #FFFFFF;
 }
 
 /* Ribbon */
 
 .ui.ui.ui.secondary.ribbon.label {
-  border-color: #020203;
+  border-color: #3b3b3b;
 }
 
 /* Basic */
@@ -42275,15 +42279,15 @@ a.ui.ui.ui.secondary.label:hover {
 .ui.basic.labels .secondary.label,
 .ui.ui.ui.basic.secondary.label {
   background: none #FFFFFF;
-  border-color: #1B1C1D;
-  color: #1B1C1D;
+  border-color: #545454;
+  color: #545454;
 }
 
 .ui.basic.labels a.secondary.label:hover,
 a.ui.ui.ui.basic.secondary.label:hover {
   background: none #FFFFFF;
-  border-color: #27292a;
-  color: #27292a;
+  border-color: #616161;
+  color: #616161;
 }
 
 /* Inverted */
@@ -45717,7 +45721,7 @@ dd {
 .ui.secondary.loading.loading.loading.loading .input > i.icon:after,
 .ui.secondary.loading.loading.loading.loading > i.icon:after,
 .ui.secondary.loader.loader.loader:after {
-  color: #1B1C1D;
+  color: #545454;
 }
 
 .ui.inverted.secondary.elastic.loader:before,
@@ -49000,7 +49004,7 @@ span.ui.inverted.primary.text {
 }
 
 span.ui.secondary.text {
-  color: #1B1C1D;
+  color: #545454;
 }
 
 span.ui.inverted.secondary.text {
@@ -51480,6 +51484,11 @@ legend {
 .ui.form .fields .field.la-more-margin {
   margin: 0 0 2em;
 }
+
+.la-textarea-resize-vertical {
+  resize: vertical!important;
+  /* user can resize vertically, but width is fixed */
+}
 /*!
  * # Fomantic-UI 2.8.8 - Grid
  * http://github.com/fomantic/Fomantic-UI/
@@ -52999,7 +53008,7 @@ legend {
 .ui.grid > .secondary.row,
 .ui.grid > .secondary.column,
 .ui.grid > .row > .secondary.column {
-  background-color: #1B1C1D;
+  background-color: #545454;
   color: #FFFFFF;
 }
 
@@ -54026,7 +54035,7 @@ legend {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  margin: 1rem 0;
+  margin: 0em 0em 1rem;
   font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
   background: #FFFFFF;
   font-weight: normal;
@@ -54096,7 +54105,7 @@ legend {
   background: none;
   padding: 0.92857143em 1.14285714em;
   text-transform: none;
-  color: #1B1C1D;
+  color: #004678;
   font-weight: normal;
   -webkit-transition: background 0.1s ease, color 0.1s ease, -webkit-box-shadow 0.1s ease;
   transition: background 0.1s ease, color 0.1s ease, -webkit-box-shadow 0.1s ease;
@@ -54730,7 +54739,7 @@ Floated Menu / Item
   border-right: 1px solid transparent;
   border-top: 2px solid transparent;
   padding: 0.92857143em 1.42857143em;
-  color: #1B1C1D;
+  color: #004678;
 }
 
 .ui.tabular.menu .item:before {
@@ -55094,8 +55103,8 @@ Floated Menu / Item
 }
 
 .ui.secondary.pointing.menu .item > .circular.label {
-  margin-top: -0.5em;
-  margin-bottom: -0.5em;
+  margin-top: -0.3em;
+  margin-bottom: -0.3em;
 }
 
 /* Item Types */
@@ -55137,7 +55146,7 @@ Floated Menu / Item
   background-color: transparent;
   -webkit-box-shadow: none;
   box-shadow: none;
-  border-color: currentColor;
+  border-color: #1B1C1D;
   font-weight: bold;
   color: rgba(0, 0, 0, 0.95);
 }
@@ -55145,7 +55154,7 @@ Floated Menu / Item
 /* Active Hover */
 
 .ui.secondary.pointing.menu .active.item:hover {
-  border-color: currentColor;
+  border-color: #1B1C1D;
   color: rgba(0, 0, 0, 0.95);
 }
 
@@ -55176,7 +55185,7 @@ Floated Menu / Item
 /* Vertical Active */
 
 .ui.secondary.vertical.pointing.menu .active.item {
-  border-color: currentColor;
+  border-color: #1B1C1D;
 }
 
 /* Inverted */
@@ -55197,7 +55206,7 @@ Floated Menu / Item
 
 .ui.secondary.inverted.pointing.menu .link.item:hover,
 .ui.secondary.inverted.pointing.menu a.item:hover {
-  color: #ffffff;
+  color: rgba(0, 0, 0, 0.95);
 }
 
 /* Active */
@@ -55510,84 +55519,98 @@ Floated Menu / Item
 .ui.ui.ui.menu .primary.active.item,
 .ui.ui.primary.menu .active.item:hover,
 .ui.ui.primary.menu .active.item {
+  border-color: #004678;
   color: #004678;
 }
 
 .ui.ui.ui.menu .red.active.item,
 .ui.ui.red.menu .active.item:hover,
 .ui.ui.red.menu .active.item {
+  border-color: #BB1600;
   color: #BB1600;
 }
 
 .ui.ui.ui.menu .orange.active.item,
 .ui.ui.orange.menu .active.item:hover,
 .ui.ui.orange.menu .active.item {
+  border-color: #fa820a;
   color: #fa820a;
 }
 
 .ui.ui.ui.menu .yellow.active.item,
 .ui.ui.yellow.menu .active.item:hover,
 .ui.ui.yellow.menu .active.item {
+  border-color: #FBBD08;
   color: #FBBD08;
 }
 
 .ui.ui.ui.menu .olive.active.item,
 .ui.ui.olive.menu .active.item:hover,
 .ui.ui.olive.menu .active.item {
+  border-color: #B5CC18;
   color: #B5CC18;
 }
 
 .ui.ui.ui.menu .green.active.item,
 .ui.ui.green.menu .active.item:hover,
 .ui.ui.green.menu .active.item {
+  border-color: #98B500;
   color: #98B500;
 }
 
 .ui.ui.ui.menu .teal.active.item,
 .ui.ui.teal.menu .active.item:hover,
 .ui.ui.teal.menu .active.item {
+  border-color: #00B5AD;
   color: #00B5AD;
 }
 
 .ui.ui.ui.menu .blue.active.item,
 .ui.ui.blue.menu .active.item:hover,
 .ui.ui.blue.menu .active.item {
+  border-color: #004678;
   color: #004678;
 }
 
 .ui.ui.ui.menu .violet.active.item,
 .ui.ui.violet.menu .active.item:hover,
 .ui.ui.violet.menu .active.item {
+  border-color: #76007A;
   color: #76007A;
 }
 
 .ui.ui.ui.menu .purple.active.item,
 .ui.ui.purple.menu .active.item:hover,
 .ui.ui.purple.menu .active.item {
+  border-color: #2185d0;
   color: #2185d0;
 }
 
 .ui.ui.ui.menu .pink.active.item,
 .ui.ui.pink.menu .active.item:hover,
 .ui.ui.pink.menu .active.item {
+  border-color: #E03997;
   color: #E03997;
 }
 
 .ui.ui.ui.menu .brown.active.item,
 .ui.ui.brown.menu .active.item:hover,
 .ui.ui.brown.menu .active.item {
+  border-color: #6b1d1d;
   color: #6b1d1d;
 }
 
 .ui.ui.ui.menu .grey.active.item,
 .ui.ui.grey.menu .active.item:hover,
 .ui.ui.grey.menu .active.item {
+  border-color: #767676;
   color: #767676;
 }
 
 .ui.ui.ui.menu .black.active.item,
 .ui.ui.black.menu .active.item:hover,
 .ui.ui.black.menu .active.item {
+  border-color: #1B1C1D;
   color: #1B1C1D;
 }
 
@@ -56273,7 +56296,7 @@ Floated Menu / Item
 }
 
 .ui.inverted.pointing.menu .secondary.active.item:after {
-  background-color: #1B1C1D;
+  background-color: #545454;
 }
 
 .ui.inverted.pointing.menu .red.active.item:after {
@@ -57246,13 +57269,13 @@ Floated Menu / Item
 
 .ui.secondary.message,
 .ui.attached.secondary.message {
-  -webkit-box-shadow: 0 0 0 1px #1B1C1D inset, 0 0 0 0 rgba(0, 0, 0, 0);
-  box-shadow: 0 0 0 1px #1B1C1D inset, 0 0 0 0 rgba(0, 0, 0, 0);
+  -webkit-box-shadow: 0 0 0 1px #545454 inset, 0 0 0 0 rgba(0, 0, 0, 0);
+  box-shadow: 0 0 0 1px #545454 inset, 0 0 0 0 rgba(0, 0, 0, 0);
 }
 
 .ui.floating.secondary.message {
-  -webkit-box-shadow: 0 0 0 1px #1B1C1D inset, 0 2px 4px 0 rgba(34, 36, 38, 0.12), 0 2px 10px 0 rgba(34, 36, 38, 0.15);
-  box-shadow: 0 0 0 1px #1B1C1D inset, 0 2px 4px 0 rgba(34, 36, 38, 0.12), 0 2px 10px 0 rgba(34, 36, 38, 0.15);
+  -webkit-box-shadow: 0 0 0 1px #545454 inset, 0 2px 4px 0 rgba(34, 36, 38, 0.12), 0 2px 10px 0 rgba(34, 36, 38, 0.15);
+  box-shadow: 0 0 0 1px #545454 inset, 0 2px 4px 0 rgba(34, 36, 38, 0.12), 0 2px 10px 0 rgba(34, 36, 38, 0.15);
 }
 
 .ui.secondary.message .header {
@@ -57852,13 +57875,13 @@ Floated Menu / Item
   }
 
   .ui.ui.ui.ui.table:not(.unstackable) tr.marked.secondary.left {
-    -webkit-box-shadow: 0px -1px 0px 0px rgba(0, 0, 0, 0.1) inset, 0.2em 0 0 0 #1B1C1D inset !important;
-    box-shadow: 0px -1px 0px 0px rgba(0, 0, 0, 0.1) inset, 0.2em 0 0 0 #1B1C1D inset !important;
+    -webkit-box-shadow: 0px -1px 0px 0px rgba(0, 0, 0, 0.1) inset, 0.2em 0 0 0 #545454 inset !important;
+    box-shadow: 0px -1px 0px 0px rgba(0, 0, 0, 0.1) inset, 0.2em 0 0 0 #545454 inset !important;
   }
 
   .ui.ui.ui.ui.table:not(.unstackable) tr.marked.secondary.right {
-    -webkit-box-shadow: 0px -1px 0px 0px rgba(0, 0, 0, 0.1) inset, -0.2em 0 0 0 #1B1C1D inset !important;
-    box-shadow: 0px -1px 0px 0px rgba(0, 0, 0, 0.1) inset, -0.2em 0 0 0 #1B1C1D inset !important;
+    -webkit-box-shadow: 0px -1px 0px 0px rgba(0, 0, 0, 0.1) inset, -0.2em 0 0 0 #545454 inset !important;
+    box-shadow: 0px -1px 0px 0px rgba(0, 0, 0, 0.1) inset, -0.2em 0 0 0 #545454 inset !important;
   }
 
   .ui.ui.ui.ui.inverted.table:not(.unstackable) tr.marked.secondary.left {
@@ -58415,13 +58438,13 @@ Floated Menu / Item
 }
 
 .ui.ui.ui.ui[class*="tablet stackable"].table tr.marked.secondary.left {
-  -webkit-box-shadow: 0px -1px 0px 0px rgba(0, 0, 0, 0.1) inset, 0.2em 0 0 0 #1B1C1D inset !important;
-  box-shadow: 0px -1px 0px 0px rgba(0, 0, 0, 0.1) inset, 0.2em 0 0 0 #1B1C1D inset !important;
+  -webkit-box-shadow: 0px -1px 0px 0px rgba(0, 0, 0, 0.1) inset, 0.2em 0 0 0 #545454 inset !important;
+  box-shadow: 0px -1px 0px 0px rgba(0, 0, 0, 0.1) inset, 0.2em 0 0 0 #545454 inset !important;
 }
 
 .ui.ui.ui.ui[class*="tablet stackable"].table tr.marked.secondary.right {
-  -webkit-box-shadow: 0px -1px 0px 0px rgba(0, 0, 0, 0.1) inset, -0.2em 0 0 0 #1B1C1D inset !important;
-  box-shadow: 0px -1px 0px 0px rgba(0, 0, 0, 0.1) inset, -0.2em 0 0 0 #1B1C1D inset !important;
+  -webkit-box-shadow: 0px -1px 0px 0px rgba(0, 0, 0, 0.1) inset, -0.2em 0 0 0 #545454 inset !important;
+  box-shadow: 0px -1px 0px 0px rgba(0, 0, 0, 0.1) inset, -0.2em 0 0 0 #545454 inset !important;
 }
 
 .ui.ui.ui.ui[class*="tablet stackable"].inverted.table tr.marked.secondary.left {
@@ -58965,11 +58988,11 @@ Floated Menu / Item
 }
 
 .ui.secondary.table {
-  border-top: 0.2em solid #1B1C1D;
+  border-top: 0.2em solid #545454;
 }
 
 .ui.inverted.secondary.table {
-  background-color: #1B1C1D;
+  background-color: #545454;
   color: #FFFFFF;
 }
 
@@ -58988,14 +59011,14 @@ Floated Menu / Item
 
 .ui.table td.marked.secondary.left,
 .ui.table tr.marked.secondary.left {
-  -webkit-box-shadow: 0.2em 0 0 0 #1B1C1D inset;
-  box-shadow: 0.2em 0 0 0 #1B1C1D inset;
+  -webkit-box-shadow: 0.2em 0 0 0 #545454 inset;
+  box-shadow: 0.2em 0 0 0 #545454 inset;
 }
 
 .ui.table td.marked.secondary.right,
 .ui.table tr.marked.secondary.right {
-  -webkit-box-shadow: -0.2em 0 0 0 #1B1C1D inset;
-  box-shadow: -0.2em 0 0 0 #1B1C1D inset;
+  -webkit-box-shadow: -0.2em 0 0 0 #545454 inset;
+  box-shadow: -0.2em 0 0 0 #545454 inset;
 }
 
 .ui.inverted.table td.marked.secondary.left,
@@ -61070,7 +61093,7 @@ Floated Menu / Item
   display: block;
   margin: '';
   font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif;
-  color: rgba(0, 0, 0, 0.85);
+  color: #767676;
 }
 
 /* Default Header Size */
@@ -61078,7 +61101,7 @@ Floated Menu / Item
 .ui.cards > .card > .content > .header:not(.ui),
 .ui.card > .content > .header:not(.ui) {
   font-weight: bold;
-  font-size: 1.28571429em;
+  font-size: 1rem;
   margin-top: -0.21425em;
   line-height: 1.28571429em;
 }
@@ -61215,7 +61238,7 @@ Floated Menu / Item
 
 .ui.cards > .card > .content > a.header,
 .ui.card > .content > a.header {
-  color: rgba(0, 0, 0, 0.85);
+  color: #767676;
 }
 
 .ui.cards > .card > .content > a.header:hover,
@@ -61572,15 +61595,15 @@ a.ui.card:hover,
 .ui.secondary.cards > .card,
 .ui.cards > .secondary.card,
 .ui.secondary.card {
-  -webkit-box-shadow: 0 0 0 1px #D4D4D5, 0 2px 0 0 #1B1C1D, 0 1px 3px 0 #D4D4D5;
-  box-shadow: 0 0 0 1px #D4D4D5, 0 2px 0 0 #1B1C1D, 0 1px 3px 0 #D4D4D5;
+  -webkit-box-shadow: 0 0 0 1px #D4D4D5, 0 2px 0 0 #545454, 0 1px 3px 0 #D4D4D5;
+  box-shadow: 0 0 0 1px #D4D4D5, 0 2px 0 0 #545454, 0 1px 3px 0 #D4D4D5;
 }
 
 .ui.secondary.cards > .card:hover,
 .ui.cards > .secondary.card:hover,
 .ui.secondary.card:hover {
-  -webkit-box-shadow: 0 0 0 1px #D4D4D5, 0 2px 0 0 #27292a, 0 1px 3px 0 #BCBDBD;
-  box-shadow: 0 0 0 1px #D4D4D5, 0 2px 0 0 #27292a, 0 1px 3px 0 #BCBDBD;
+  -webkit-box-shadow: 0 0 0 1px #D4D4D5, 0 2px 0 0 #616161, 0 1px 3px 0 #BCBDBD;
+  box-shadow: 0 0 0 1px #D4D4D5, 0 2px 0 0 #616161, 0 1px 3px 0 #BCBDBD;
 }
 
 .ui.inverted.secondary.cards > .card,
@@ -62466,8 +62489,8 @@ a.inverted.ui.card:hover,
 
 .ui.cards > .card > .content > .header,
 .ui.card > .content .header {
-  color: rgba(0, 0, 0, 0.85);
-  font-size: 1.28571429em;
+  color: #767676;
+  font-size: 1rem;
 }
 
 /* Default Header Size */
@@ -62475,7 +62498,7 @@ a.inverted.ui.card:hover,
 .ui.cards > .card > .content > .header:not(.ui),
 .ui.card > .content > .header:not(.ui) {
   font-weight: bold;
-  font-size: 1.28571429em;
+  font-size: 1rem;
   margin-top: -0.21425em;
   line-height: 1.28571429em;
 }
@@ -64338,7 +64361,7 @@ a.inverted.ui.card:hover,
 .ui.secondary.statistics .statistic > .value,
 .ui.statistics .secondary.statistic > .value,
 .ui.secondary.statistic > .value {
-  color: #1B1C1D;
+  color: #545454;
 }
 
 .ui.inverted.secondary.statistics .statistic > .value,
@@ -70362,7 +70385,7 @@ a.ui.nag {
 }
 
 .ui.secondary.nag {
-  background-color: #1B1C1D;
+  background-color: #545454;
 }
 
 .ui.inverted.secondary.nag {
@@ -71959,7 +71982,7 @@ a.ui.nag {
 .ui.indeterminate.secondary.progress .bar::before,
 .ui.secondary.progress .bar,
 .ui.progress .secondary.bar {
-  background-color: #1B1C1D;
+  background-color: #545454;
 }
 
 .ui.inverted.indeterminate.secondary.progress .bar::before,
@@ -72732,7 +72755,7 @@ a.ui.nag {
 /* Standard */
 
 .ui.secondary.slider .inner .track-fill {
-  background-color: #1B1C1D;
+  background-color: #545454;
 }
 
 .ui.secondary.inverted.slider .inner .track-fill {
@@ -72742,12 +72765,12 @@ a.ui.nag {
 /* Basic */
 
 .ui.secondary.slider.basic .inner .thumb {
-  background-color: #1B1C1D;
+  background-color: #545454;
 }
 
 .ui.secondary.slider.basic .inner .thumb:hover,
 .ui.secondary.slider.basic:focus .inner .thumb {
-  background-color: #27292a;
+  background-color: #616161;
 }
 
 /* Basic Inverted */
@@ -73471,7 +73494,7 @@ a.ui.nag {
 
 .ui.secondary.rating .active.icon {
   color: #545454;
-  text-shadow: 0px -1px 0px #1B1C1D, -1px 0px 0px #1B1C1D, 0px 1px 0px #1B1C1D, 1px 0px 0px #1B1C1D;
+  text-shadow: 0px -1px 0px #545454, -1px 0px 0px #545454, 0px 1px 0px #545454, 1px 0px 0px #545454;
 }
 
 .ui.secondary.rating .icon.selected,
@@ -73479,7 +73502,7 @@ a.ui.nag {
 .ui.secondary.rating .icon.selected.partial.active {
   background: inherit;
   color: #6e6e6e;
-  text-shadow: 0px -1px 0px #27292a, -1px 0px 0px #27292a, 0px 1px 0px #27292a, 1px 0px 0px #27292a;
+  text-shadow: 0px -1px 0px #616161, -1px 0px 0px #616161, 0px 1px 0px #616161, 1px 0px 0px #616161;
   -webkit-text-stroke: unset;
   background-clip: unset;
 }
@@ -73489,7 +73512,7 @@ a.ui.nag {
   background: -webkit-linear-gradient(left, #545454 0% var(--full), rgba(0, 0, 0, 0.15) var(--full) 100%);
   background: linear-gradient(to right, #545454 0% var(--full), rgba(0, 0, 0, 0.15) var(--full) 100%);
   text-shadow: none;
-  -webkit-text-stroke: #1B1C1D 0.78px;
+  -webkit-text-stroke: #545454 0.78px;
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -76179,7 +76202,7 @@ body.pushable > .pusher {
 }
 
 .ui.secondary.toast {
-  background-color: #1B1C1D;
+  background-color: #545454;
   color: rgba(255, 255, 255, 0.9);
 }
 

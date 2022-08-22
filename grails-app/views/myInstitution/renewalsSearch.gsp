@@ -19,7 +19,7 @@
             </div>
 
             <div class="field">
-                <button class="ui secondary button" type="submit" name="search"
+                <button class="ui primary button" type="submit" name="search"
                         value="yes">${message(code: 'default.button.search.label')}</button>
                 <g:if test="${params.search == 'yes'}">
                     <button class="ui button" type="submit" name="searchreset"

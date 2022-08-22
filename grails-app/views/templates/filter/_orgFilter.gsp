@@ -260,11 +260,11 @@
 
 <div class="field la-field-right-aligned">
 
-        <a href="${request.forwardURI}" class="ui reset primary button">${message(code:'default.button.reset.label')}</a>
+        <a href="${request.forwardURI}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</a>
 
         <input name="filterSet" type="hidden" value="true">
         <g:if test="${tmplConfigFormFilter}">
-            <input type="submit" value="${message(code:'default.button.filter.label')}" class="ui secondary button" onclick="JSPC.app.formFilter(event)" />
+            <input type="submit" value="${message(code:'default.button.filter.label')}" class="ui primary button" onclick="JSPC.app.formFilter(event)" />
             <laser:script file="${this.getGroovyPageFileName()}">
                 JSPC.app.formFilter = function (e) {
                     e.preventDefault()
@@ -279,7 +279,7 @@
             </laser:script>
         </g:if>
         <g:else>
-            <input type="submit" value="${message(code:'default.button.filter.label')}" class="ui secondary button"/>
+            <input type="submit" value="${message(code:'default.button.filter.label')}" class="ui primary button"/>
         </g:else>
 
 </div>

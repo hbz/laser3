@@ -5,7 +5,6 @@
     #example .example .column .icon {
         opacity: 1;
         height: 1em;
-        color: #333333;
         display: block;
         margin: 0em auto 0.25em;
         font-size: 2em;
@@ -52,19 +51,12 @@
 
 </laser:htmlStart> %{-- </head><body>--}%
 
-<div class="ui top attached tabular la-tab-with-js menu">
-    <div class="item active">Tab 1</div>
-    <div class="item">Tab 2</div>
-    <div class="item">Tab 3</div>
-</div>
 
-<div class="ui bottom attached tab segment">
-    <p></p>
-    <p></p>
-</div>
 %{-- help sidebar --}%
 <laser:render template="/templates/help/help_subscription_show"/>
 <section id="example">
+    %{-- COLORS  --}%
+    <laser:render template="frontend_colors" />
     %{-- ICONS  --}%
     <laser:render template="frontend_icons" />
     %{-- DROPDOWNS --}%
