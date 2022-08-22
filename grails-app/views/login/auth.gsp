@@ -4,16 +4,6 @@
 
 <div id='login' class="container">
     <div class='inner'>
-
-        <div class='header'>
-            <g:if test="${Environment.isDevelopmentMode()}">
-                <ui:h1HeaderWithIcon message="springSecurity.login.header" />
-            </g:if>
-            <g:else>
-                <h1 class="ui header">Das System ist noch NICHT einsatzbereit!</h1>
-            </g:else>
-        </div>
-
         <ui:messages data="${flash}" />
 
     <ui:card >
