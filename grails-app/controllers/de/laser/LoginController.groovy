@@ -126,6 +126,8 @@ class LoginController {
       }
     }
 
+      log.warn '! Login failed for ' + request.getRemoteAddr() + ' -> ' + msg
+
     if (springSecurityService.isAjax(request)) {
       render([error: msg] as JSON)
     }

@@ -3,7 +3,6 @@ package de.laser.domain
 import de.laser.ContextService
 import de.laser.LinksGenerationService
 import de.laser.RefdataValue
-import de.laser.utils.SwissKnife
 import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyOrg
 

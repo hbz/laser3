@@ -41,23 +41,23 @@ class ReportingTagLib {
             return
         }
         else if (field.type == BaseConfig.FIELD_TYPE_PROPERTY) {
-            out << reporting.filterProperty(config: attrs.config, key: attrs.key, property: attrs.field)
+            out << uiReporting.filterProperty(config: attrs.config, key: attrs.key, property: attrs.field)
         }
         else if (field.type == BaseConfig.FIELD_TYPE_REFDATA) {
-            out << reporting.filterRefdata(config: attrs.config, key: attrs.key, refdata: attrs.field)
+            out << uiReporting.filterRefdata(config: attrs.config, key: attrs.key, refdata: attrs.field)
         }
         else if (field.type == BaseConfig.FIELD_TYPE_REFDATA_JOINTABLE) {
-            out << reporting.filterCustomImpl(config: attrs.config, key: attrs.key, refdata: attrs.field)
+            out << uiReporting.filterCustomImpl(config: attrs.config, key: attrs.key, refdata: attrs.field)
         }
         else if (field.type == BaseConfig.FIELD_TYPE_CUSTOM_IMPL) {
             if (field.customImplRdv) {
-                out << reporting.filterCustomImpl(config: attrs.config, key: attrs.key, refdata: attrs.field, customImplRdv: field.customImplRdv)
+                out << uiReporting.filterCustomImpl(config: attrs.config, key: attrs.key, refdata: attrs.field, customImplRdv: field.customImplRdv)
             } else {
-                out << reporting.filterCustomImpl(config: attrs.config, key: attrs.key, refdata: attrs.field)
+                out << uiReporting.filterCustomImpl(config: attrs.config, key: attrs.key, refdata: attrs.field)
             }
         }
         else if (field.type == BaseConfig.FIELD_TYPE_ELASTICSEARCH) {
-            out << reporting.filterCustomImpl(config: attrs.config, key: attrs.key, refdata: attrs.field)
+            out << uiReporting.filterCustomImpl(config: attrs.config, key: attrs.key, refdata: attrs.field)
         }
     }
 
