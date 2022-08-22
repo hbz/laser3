@@ -16,39 +16,38 @@ class DateUtils {
     public static final String DATE_FORMAT_NOTIME_SHORT     = 'default.date.format.notimeShort'     // yy-MM-dd --- dd.MM.yy
     public static final String DATE_FORMAT_NOZ              = 'default.date.format.noZ'             // yyyy-MM-dd HH:mm:ss --- dd.MM.yyyy HH:mm:ss
 
-    // -- localized pattern/output
+    // -- localized (current locale or DateUtils.getLocaleXY()) pattern/output
 
-    static SimpleDateFormat getLocalizedSDF_byToken(String token) {
-        MessageSource messageSource = BeanStore.getMessageSource()
-        Locale locale = LocaleUtils.getCurrentLocale()
-        String format = messageSource.getMessage(token, null, locale)
+    static SimpleDateFormat getLocalizedSDF_byTokenAndLocale(String token, Locale locale) {
+        try {
+            MessageSource messageSource = BeanStore.getMessageSource()
+            String format = messageSource.getMessage(token, null, locale)
 
-        if (format) {
             return new SimpleDateFormat(format)
-        }
-        else {
-            log.warn("No localized date format/pattern found for ( ${token}, ${locale} )")
+        } catch (Exception e) {
+            log.warn "No localized date format/pattern found for ( ${token}, ${locale} )"
+            log.warn e.getMessage()
         }
         return null
     }
 
-    static SimpleDateFormat getLocalizedSDF_MMMyyyy(){
-        return new SimpleDateFormat('MMM-yyyy')
+    static SimpleDateFormat getLocalizedSDF_MMMyyyy(Locale locale = null){
+        return new SimpleDateFormat('MMM-yyyy', locale ?: LocaleUtils.getCurrentLocale())
     }
 
-    static SimpleDateFormat getLocalizedSDF_noTime(){
-        getLocalizedSDF_byToken(DATE_FORMAT_NOTIME)
+    static SimpleDateFormat getLocalizedSDF_noTime(Locale locale = null){
+        getLocalizedSDF_byTokenAndLocale(DATE_FORMAT_NOTIME, locale ?: LocaleUtils.getCurrentLocale())
     }
 
-    static SimpleDateFormat getLocalizedSDF_noTimeShort(){
-        getLocalizedSDF_byToken(DATE_FORMAT_NOTIME_SHORT)
+    static SimpleDateFormat getLocalizedSDF_noTimeShort(Locale locale = null){
+        getLocalizedSDF_byTokenAndLocale(DATE_FORMAT_NOTIME_SHORT, locale ?: LocaleUtils.getCurrentLocale())
     }
 
-    static SimpleDateFormat getLocalizedSDF_noZ(){
-        getLocalizedSDF_byToken(DATE_FORMAT_NOZ)
+    static SimpleDateFormat getLocalizedSDF_noZ(Locale locale = null){
+        getLocalizedSDF_byTokenAndLocale(DATE_FORMAT_NOZ, locale ?: LocaleUtils.getCurrentLocale())
     }
 
-    // -- fixed pattern/output #1
+    // -- fixed pattern/output
 
     static SimpleDateFormat getSDF_ddMMyyy(){
         return new SimpleDateFormat('dd.MM.yyy')
@@ -93,8 +92,6 @@ class DateUtils {
     static SimpleDateFormat getSDF_yyyyMMddTHHmmssZ(){
         return new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
     }
-
-    // -- fixed pattern/output #2
 
     static SimpleDateFormat getSDF_forFilename(){
         return new SimpleDateFormat('yyyyMMdd-HHmm')

@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4229    19.08.2022  dev     3.0         David   Feature     Migration auf Grails 5
+
 4229    15.08.2022  dev     3.0         Ingrid  Feature     Umstellen auf Fomantic UI
 
 4329    17.08.2022  rc-2.3  3.0         Andreas Bug         falschen Bezeichner korrigiert
