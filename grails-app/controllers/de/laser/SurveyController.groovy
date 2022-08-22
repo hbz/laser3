@@ -127,7 +127,7 @@ class SurveyController {
         result.surveyYears = SurveyInfo.executeQuery("select Year(startDate) from SurveyInfo where owner = :org and startDate != null group by YEAR(startDate) order by YEAR(startDate)", [org: result.institution]) ?: []
 
         if (params.validOnYear == null || params.validOnYear == '') {
-            SimpleDateFormat sdfyear = DateUtils.getLocalizedSDF_byToken('default.date.format.onlyYear')
+            SimpleDateFormat sdfyear = DateUtils.getSDF_yyyy()
             String newYear = sdfyear.format(new Date())
 
             if(!(newYear in result.surveyYears)){
@@ -207,7 +207,7 @@ class SurveyController {
         result.surveyYears = SurveyInfo.executeQuery("select Year(startDate) from SurveyInfo where owner = :org and startDate != null group by YEAR(startDate) order by YEAR(startDate)", [org: result.institution]) ?: []
 
         if (params.validOnYear == null || params.validOnYear == '') {
-            SimpleDateFormat sdfyear = DateUtils.getLocalizedSDF_byToken('default.date.format.onlyYear')
+            SimpleDateFormat sdfyear = DateUtils.getSDF_yyyy()
             String newYear = sdfyear.format(new Date())
 
             if(!(newYear in result.surveyYears)){

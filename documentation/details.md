@@ -33,7 +33,7 @@ A new naming scheme should be used. See [database-migration.md](./database-migra
 ### DateUtils
 
 *Date.parse()* is **deprecated**, *Date.format()* has been **removed** in Java 11. New code should use e.g. SimpleDateFormat to format dates.
-To avoid confusion, the difference between localized and fixed usage in *de.laser.utils.DateUtils* is reflected in a new naming scheme.
+To avoid confusion, *de.laser.utils.DateUtils* reflects the difference between localized and fixed pattern/output in a new naming scheme.
 
 ### ExecutorGrailsPlugin
 

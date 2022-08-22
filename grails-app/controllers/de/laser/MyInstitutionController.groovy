@@ -1798,7 +1798,7 @@ join sub.orgRelations or_sub where
         }
 
         if (params.validOnYear == null || params.validOnYear == '') {
-            SimpleDateFormat sdfyear = DateUtils.getLocalizedSDF_byToken('default.date.format.onlyYear')
+            SimpleDateFormat sdfyear = DateUtils.getSDF_yyyy()
             String newYear = sdfyear.format(new Date())
 
             if(!(newYear in result.surveyYears)){
@@ -3297,7 +3297,7 @@ join sub.orgRelations or_sub where
         }
 
         /*if (params.validOnYear == null || params.validOnYear == '') {
-            def sdfyear = new java.text.SimpleDateFormat(message(code: 'default.date.format.onlyYear'))
+            def sdfyear = DateUtils.getSDF_yyyy()
             params.validOnYear = sdfyear.format(new Date())
         }*/
 

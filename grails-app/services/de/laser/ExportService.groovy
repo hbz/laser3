@@ -491,7 +491,7 @@ class ExportService {
 		if(!contextOrg)
 			contextOrg = contextService.getOrg()
 		List cells = []
-		SimpleDateFormat sdf = DateUtils.getLocalizedSDF_byToken('default.date.format.notime')
+		SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
 		propertyDefinitions.each { PropertyDefinition pd ->
 			Set<String> value = []
 			target.propertySet.each{ AbstractPropertyWithCalculatedLastUpdated prop ->
