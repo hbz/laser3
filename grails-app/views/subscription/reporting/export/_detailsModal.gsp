@@ -38,7 +38,7 @@
                 <div class="field">
                     <label>${message(code: 'reporting.modal.export.todoFields')}</label>
                 </div>
-                <div class="fields">
+                <div class="fields inline" style="margin-top:1em">%{-- css workaround - fomantic upgrade --}%
 
                     <g:each in="${BaseExportHelper.reorderFieldsForUI( formFields.findAll { !BaseDetailsExport.isFieldMultiple( it.key ) } )}" var="field" status="fc">
                         <div class="wide eight field">
@@ -60,7 +60,7 @@
 
                         <g:if test="${fc%2 == 1}">
                             </div>
-                            <div class="fields">
+                            <div class="fields inline" style="margin-top:1em">%{-- css workaround - fomantic upgrade --}%
                         </g:if>
                     </g:each>
 

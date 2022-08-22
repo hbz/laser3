@@ -7,7 +7,7 @@
     </span>
 
     <div class="ui form" style="margin-top: 3em !important;">
-        <div class="fields three">
+        <div class="fields three inline">%{-- css workaround - fomantic upgrade --}%
             <%
 
                 // TODO : localDB-Merkmal anzeigen, falls Verteilung -> Merkmal
