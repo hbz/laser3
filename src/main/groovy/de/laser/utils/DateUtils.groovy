@@ -173,6 +173,13 @@ class DateUtils {
         return false
     }
 
+    static boolean isDateToday(Date date) {
+        if (date) {
+            return getSDF_noTimeNoPoint().format(date) == getSDF_noTimeNoPoint().format(new Date())
+        }
+        false
+    }
+
     // --
 
     static LocalDate dateToLocalDate(Date date) {

@@ -113,8 +113,337 @@
         </tbody>
     </table>
 
+<br />
+<br />
 
-    <g:each in="${workflows}" var="wf"> %{-- TMP : TODO --}%
+    <g:each in="${workflows}" var="wf">
+
+        <div data-wfId="${wf.id}" style="margin-top:5em; margin-bottom:5em; position:relative; display:none;">
+
+            <div class="ui piled segments wf-details">
+
+                <div class="ui segment" style="padding-top:2em; padding-bottom:2em;">
+                    <div class="ui grid">
+                        <div class="row">
+                            <div class="two wide column wf-centered">
+
+                                <i class="icon big ${WorkflowHelper.getCssIconAndColorByStatus(wf.status)}"></i>
+
+                            </div>
+                            <div class="ten wide column">
+
+                                <div class="ui header">${wf.title}</div>
+                                <div class="description">
+                                    ${wf.description}
+                                    <br />
+                                    <br />
+                                    <div class="ui la-flexbox">
+                                        <i class="icon clipboard la-list-icon"></i>
+                                        <g:link controller="subscription" action="show" params="${[id: wf.subscription.id]}">
+                                            ${wf.subscription.name}
+                                        </g:link>
+                                    </div>
+                                    <g:if test="${wf.comment}">
+                                        <div style="margin: 1em 2em; padding: 0.1em 0.5em; border-bottom: 1px dashed #BBBBBB">
+                                            ${wf.comment}
+                                        </div>
+                                    </g:if>
+                                </div>
+
+                            </div>
+                            <div class="two wide column wf-centered">
+
+                                <div class="${DateUtils.isDateToday(wf.lastUpdated) ? '' : 'sc_darkgrey'}" style="text-align: right">
+                                    ${DateUtils.getLocalizedSDF_noTime().format(wf.lastUpdated)}<br />
+                                    ${DateUtils.getLocalizedSDF_noTime().format(wf.dateCreated)}<br />
+                                    Version: ${wf.prototypeVersion}
+                                </div>
+
+                            </div>
+                            <div class="two wide column wf-centered">
+
+                                <g:set var="wfKey" value="subscription:${subscription.id}:${WfWorkflow.KEY}:${wf.id}" />
+                                <g:if test="${contextService.getUser().hasAffiliation('INST_ADM') || SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")}"><!-- TODO: reporting-permissions -->
+                                    <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code: 'workflow.edit.ext.perms')}">
+                                        <g:link class="wfModalLink ui icon button blue compact la-modern-button" controller="ajaxHtml" action="editWfXModal" params="${[key: wfKey, info: wfKey]}">
+                                            <i class="icon cogs"></i>
+                                        </g:link>
+                                    </span>
+                                </g:if>
+                                <g:link class="wfModalLink ui icon button blue compact la-modern-button" controller="ajaxHtml" action="useWfXModal" params="${[key: wfKey, info: wfKey]}">
+                                    <i class="icon pencil"></i>
+                                </g:link>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <g:set var="tasks" value="${wf.getSequence()}" />
+                <g:each in="${tasks}" var="task" status="ti">
+
+                    <div class="ui segment">
+                        <div class="ui grid">
+                            <div class="row">
+                                <div class="two wide column wf-centered">
+
+                                    <i class="icon large ${WorkflowHelper.getCssIconAndColorByStatus(task.status)}"></i>
+
+                                </div>
+                                <div class="ten wide column">
+
+                                    <div class="header">
+                                        <strong>${task.title}</strong>
+                                        <span class="sc_darkgrey">
+                                            ( <i class="icon ${WorkflowHelper.getCssIconByTaskPriority(task.priority)}"></i> ${task.priority.getI10n('value')} )
+                                        </span>
+                                    </div>
+                                    <div class="description">${task.description}
+                                        <g:if test="${task.comment}">
+                                            <div style="margin: 1em 2em; padding: 0.1em 0.5em; border-bottom: 1px dashed #BBBBBB">
+                                                ${task.comment}
+                                            </div>
+                                        </g:if>
+                                    </div>
+
+                                </div>
+                                <div class="two wide column wf-centered">
+
+                                    <div class="${DateUtils.isDateToday(task.lastUpdated) ? '' : 'sc_darkgrey'}" style="text-align: right">
+                                        ${DateUtils.getLocalizedSDF_noTime().format(task.lastUpdated)}
+                                    </div>
+
+                                </div>
+                                <div class="two wide column wf-centered">
+
+                                    <g:set var="tKey" value="subscription:${subscription.id}:${WfTask.KEY}:${task.id}" />
+                                    <g:if test="${contextService.getUser().hasAffiliation('INST_ADM') || SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")}"><!-- TODO: reporting-permissions -->
+                                        <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code: 'workflow.edit.ext.perms')}">
+                                            <g:link class="wfModalLink ui icon button blue compact la-modern-button" controller="ajaxHtml" action="editWfXModal" params="${[key: tKey, info: wfKey]}">
+                                                <i class="icon cogs"></i>
+                                            </g:link>
+                                        </span>
+                                    </g:if>
+                                    <g:link class="wfModalLink ui icon button blue compact la-modern-button" controller="ajaxHtml" action="useWfXModal" params="${[key: tKey, info: wfKey]}">
+                                        <i class="icon pencil"></i>
+                                    </g:link>
+
+                                </div>
+                            </div>
+
+                            <g:if test="${task.condition}">
+                                <div class="row">
+                                    <div class="two wide column wf-centered">
+
+                                    </div>
+                                    <div class="one wide column">
+
+                                    </div>
+                                    <div class="nine wide column">
+
+                                        <div class="header"><strong>${task.condition.title}</strong></div>
+                                        <div class="description">
+                                            <g:if test="${task.condition.description}">
+                                                ${task.condition.description}
+                                            </g:if>
+                                            <br />
+                                        <!-- -->
+                                            <div class="ui list">
+                                                <g:each in="${task.condition.getFields()}" var="field" status="fi">
+                                                    <uiWorkflow:taskConditionField condition="${task.condition}" field="${field}" isListItem="true"/>
+                                                </g:each>
+                                            </div>
+                                        <!-- -->
+                                            <g:if test="${contextService.getUser().hasAffiliation('INST_ADM') || SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")}"><!-- TODO: reporting-permissions -->
+                                                <g:set var="cKey" value="subscription:${subscription.id}:${WfCondition.KEY}:${task.condition.id}" />
+                                                <span style="float:right">
+                                                    <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code: 'workflow.edit.ext.perms')}">
+                                                        <g:link class="wfModalLink ui icon button blue compact la-modern-button" controller="ajaxHtml" action="editWfXModal" params="${[key: cKey, info: wfKey]}">
+                                                            <i class="icon cogs"></i>
+                                                        </g:link>
+                                                    </span>
+                                                </span>
+                                            </g:if>
+                                        </div>
+                                    </div>
+                                    <div class="two wide column wf-centered">
+
+                                        <div class="${DateUtils.isDateToday(task.condition.lastUpdated) ? '' : 'sc_darkgrey'}" style="text-align: right">
+                                            ${DateUtils.getLocalizedSDF_noTime().format(task.condition.lastUpdated)}
+                                        </div>
+
+                                    </div>
+                                    <div class="two wide column wf-centered">
+
+                                    </div>
+                                </div>
+                            </g:if>
+
+                        </div>
+                    </div>
+
+                    <g:if test="${task.child}">
+                        <g:each in="${task.child.getSequence()}" var="child" status="ci">
+
+                            <div class="ui segment">
+                                <div class="ui grid">
+                                    <div class="row">
+                                        <div class="two wide column wf-centered">
+
+                                            <i class="icon large ${WorkflowHelper.getCssIconAndColorByStatus(child.status)}"></i>
+
+                                        </div>
+                                        <div class="ten wide column">
+
+                                            <div class="header">
+                                                <i class="icon minus"></i> <strong>${child.title}</strong>
+                                                <span class="sc_darkgrey">
+                                                    ( <i class="icon ${WorkflowHelper.getCssIconByTaskPriority(child.priority)}"></i> ${child.priority.getI10n('value')} )
+                                                </span>
+                                            </div>
+                                            <div class="description">${child.description}
+                                                <g:if test="${child.comment}">
+                                                    <div style="margin: 1em 2em; padding: 0.1em 0.5em; border-bottom: 1px dashed #BBBBBB">
+                                                        ${child.comment}
+                                                    </div>
+                                                </g:if>
+                                            </div>
+
+                                        </div>
+                                        <div class="two wide column wf-centered">
+
+                                            <div class="${DateUtils.isDateToday(child.lastUpdated) ? '' : 'sc_darkgrey'}" style="text-align: right">
+                                                ${DateUtils.getLocalizedSDF_noTime().format(child.lastUpdated)}
+                                            </div>
+
+                                        </div>
+                                        <div class="two wide column wf-centered">
+
+                                            <g:set var="tKey" value="subscription:${subscription.id}:${WfTask.KEY}:${child.id}" />
+                                            <g:if test="${contextService.getUser().hasAffiliation('INST_ADM') || SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")}"><!-- TODO: reporting-permissions -->
+                                                <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code: 'workflow.edit.ext.perms')}">
+                                                    <g:link class="wfModalLink ui icon button blue compact la-modern-button" controller="ajaxHtml" action="editWfXModal" params="${[key: tKey, info: wfKey]}">
+                                                        <i class="icon cogs"></i>
+                                                    </g:link>
+                                                </span>
+                                            </g:if>
+                                            <g:link class="wfModalLink ui icon button blue compact la-modern-button" controller="ajaxHtml" action="useWfXModal" params="${[key: tKey, info: wfKey]}">
+                                                <i class="icon pencil"></i>
+                                            </g:link>
+
+                                        </div>
+                                    </div>
+
+                                    <g:if test="${task.condition}">
+                                        <div class="row">
+                                            <div class="two wide column wf-centered">
+
+                                            </div>
+                                            <div class="one wide column">
+
+                                            </div>
+                                            <div class="nine wide column">
+
+                                                <div class="header"><strong>${child.condition.title}</strong></div>
+                                                <div class="description">
+                                                    <g:if test="${child.condition.description}">
+                                                        ${child.condition.description}
+                                                    </g:if>
+                                                    <br />
+                                                <!-- -->
+                                                    <div class="ui list">
+                                                        <g:each in="${child.condition.getFields()}" var="field" status="fi">
+                                                            <uiWorkflow:taskConditionField condition="${child.condition}" field="${field}" isListItem="true"/>
+                                                        </g:each>
+                                                    </div>
+                                                <!-- -->
+                                                    <g:if test="${contextService.getUser().hasAffiliation('INST_ADM') || SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")}"><!-- TODO: reporting-permissions -->
+                                                        <g:set var="cKey" value="subscription:${subscription.id}:${WfCondition.KEY}:${child.condition.id}" />
+                                                        <span style="float:right">
+                                                            <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code: 'workflow.edit.ext.perms')}">
+                                                                <g:link class="wfModalLink ui icon button blue compact la-modern-button" controller="ajaxHtml" action="editWfXModal" params="${[key: cKey, info: wfKey]}">
+                                                                    <i class="icon cogs"></i>
+                                                                </g:link>
+                                                            </span>
+                                                        </span>
+                                                    </g:if>
+                                                </div>
+                                            </div>
+                                            <div class="two wide column wf-centered">
+
+                                                <div class="${DateUtils.isDateToday(child.condition.lastUpdated) ? '' : 'sc_darkgrey'}" style="text-align: right">
+                                                    ${DateUtils.getLocalizedSDF_noTime().format(child.condition.lastUpdated)}
+                                                </div>
+
+                                            </div>
+                                            <div class="two wide column wf-centered">
+
+                                            </div>
+                                        </div>
+                                    </g:if>
+
+                                </div>
+                            </div>
+                        </g:each>
+                    </g:if>
+
+                </g:each>
+
+            </div>
+
+            %{--
+            <div class="ui segment">
+                <div class="ui grid">
+                    <div class="row">
+                        <div class="two wide column wf-centered">
+                        </div>
+                        <div class="twelve wide column">
+                        </div>
+                        <div class="two wide column wf-centered">
+
+                            <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.workflow", args: [wf.title])}"
+                                    data-confirm-term-how="delete"
+                                    controller="subscription" action="workflows" id="${subscription.id}" params="${[cmd:"delete:${WfWorkflow.KEY}:${wf.id}"]}"
+                                    role="button"
+                                    aria-label="${message(code: 'ariaLabel.delete.universal')}">
+                                <i class="trash alternate outline icon"></i>
+                            </g:link>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            --}%
+
+            %{--
+            <div class="ui segment bottom attached">
+                <div class="ui grid">
+                    <div class="row">
+                        <div class="two wide column">
+
+                        </div>
+                        <div class="twelve wide column">
+
+                        </div>
+                        <div class="two wide column">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            --}%
+
+        </div>
+
+    </g:each>
+
+%{--
+        <br />
+        <br />
+        <br />
+
+    <g:each in="${workflows}" var="wf">
 
         <div data-wfId="${wf.id}" style="margin-top:5em; margin-bottom:5em; position:relative; display:none;">
 
@@ -324,6 +653,8 @@
         </div>
 
     </g:each>
+
+--}%
 
     <div id="wfModal" class="ui modal"></div>
 

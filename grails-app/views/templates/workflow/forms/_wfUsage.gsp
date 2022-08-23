@@ -251,7 +251,7 @@
                                 <label for="${prefixOverride}_${field}">${task.condition.getProperty(field + '_title') ?: message(code:'workflow.field.noTitle.label')}
                                     <div id="fileUploadWrapper_toggle_${field}" class="ui small buttons" style="float:right; margin-right:10px">
                                         <span data-position="top right" class="ui left attached button active la-popup-tooltip la-delay" data-content="${message(code:'workflow.condition.file.info')}">
-                                            <i class="icon level down alternate"></i> &nbsp;
+                                            <i class="icon file"></i> &nbsp;
                                         </span>
                                         <span data-position="top right" class="ui right attached button la-popup-tooltip la-delay" data-content="${message(code:'workflow.condition.fileUpload.info')}">
                                             &nbsp; <i class="icon paperclip"></i>

@@ -74,28 +74,35 @@ class WorkflowTagLib {
         String field = attrs.field
         WfCondition condition = attrs.condition as WfCondition
 
+        boolean isListItem = attrs.isListItem == 'true'
+
         if (field && condition) {
             String pTitle = (condition.getProperty(field + '_title') ?: message(code:'workflow.field.noTitle.label'))
+
+            out << (isListItem ? '<div class="item">' : '')
 
             if (field.startsWith('checkbox')) {
                 if (condition.getProperty(field + '_isTrigger')) {
                     pTitle = '<u>' + pTitle + '</u>'
                 }
                 if (condition.getProperty(field) == true) {
-                    out << '<i class="icon check square outline"></i> ' + pTitle
+                    out << '<i class="icon ' + (isListItem ? '' : '') + 'check square outline"></i>'
                 }
                 else {
-                    out << '<i class="icon square outline la-light-grey"></i> ' + pTitle
+                    out << '<i class="icon ' + (isListItem ? '' : '') + 'square outline la-light-grey"></i>'
                 }
+                out << (isListItem ? '<div class="middle aligned content">' : '') + pTitle + (isListItem ? '</div> ' : '')
             }
             else if (field.startsWith('date')) {
                 if (condition.getProperty(field)) {
-                    out << '<i class="icon calendar alternate outline"></i> ' + pTitle
-                    out << ': ' + DateUtils.getLocalizedSDF_noTime().format(condition.getProperty(field))
+                    out << '<i class="icon ' + (isListItem ? '' : '') + 'calendar alternate outline"></i>'
+                    out << (isListItem ? '<div class="middle aligned content">' : '')
+                    out << pTitle + ': ' + DateUtils.getLocalizedSDF_noTime().format(condition.getProperty(field))
                 }
                 else {
-                    out << '<i class="icon calendar alternate outline la-light-grey"></i> ' + pTitle
+                    out << '<i class="icon ' + (isListItem ? '' : '') + ' calendar alternate outline la-light-grey"></i>' + (isListItem ? '<div class="content">' : '') + pTitle
                 }
+                out << (isListItem ? '</div> ' : '')
             }
             else if (field.startsWith('file')) {
                 DocContext docctx = condition.getProperty(field) as DocContext
@@ -107,13 +114,19 @@ class WorkflowTagLib {
                     else if (docctx.owner?.filename) {
                         linkBody = docctx.owner.filename
                     }
-                    out << '<i class="icon file"></i> ' + pTitle
-                    out << ': ' + g.link( [controller: 'docstore', id: docctx.owner.uuid], linkBody + ' (' + docctx.owner?.type?.getI10n('value') + ')')
+                    out << '<i class="icon ' + (isListItem ? '' : '') + 'file"></i>'
+                    out << (isListItem ? '<div class="middle aligned content">' : '')
+                    out << pTitle + ': ' + g.link( [controller: 'docstore', id: docctx.owner.uuid], linkBody + ' (' + docctx.owner?.type?.getI10n('value') + ')')
                 }
                 else {
-                    out << '<i class="icon file la-light-grey"></i> ' + pTitle
+                    out << '<i class="icon ' + (isListItem ? '' : '') + 'file la-light-grey"></i>' + (isListItem ? '<div class="content">' : '') + pTitle
                 }
+                out << (isListItem ? '</div> ' : '')
             }
+            else {
+                out << '[workflow:conditionField ' + field.toString() + '_' + condition.toString() + ']'
+            }
+            out << (isListItem ? '</div> ' : '')
         }
         else {
             out << '[workflow:conditionField]'

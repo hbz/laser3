@@ -45,7 +45,7 @@ class IconTagLib {
                 icon = 'hdd'
                 break
             case 'yoda':
-                icon = 'dna'
+                icon = 'tools'
                 break
         }
         }

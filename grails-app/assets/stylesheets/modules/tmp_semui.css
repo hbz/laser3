@@ -255,12 +255,20 @@ main.ui.container.main {
     right: 0;
 }
 
+/* -- workflows -- */
+
 a.icon.button.wfModalLink { background-color: white; }
 a.icon.button.wfModalLink:hover { background-color: #eeeeee; }
 
+div.column.wf-centered {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+}
+
 /* -- new header icons -- */
 
-h1.header.icon > i.dna {
+h1.header.icon > i.tools {
     background-color:#d12e34; border-color:#d12e34; color:white;
 }
 h1.header.icon > i.hdd {

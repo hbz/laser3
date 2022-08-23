@@ -56,7 +56,7 @@
 
                                         <g:if test="${pd.isUsedForLogic}">
                                             <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'default.isUsedForLogic.tooltip')}">
-                                                <i class="ui icon orange cube"></i>
+                                                <i class="ui icon red cube"></i>
                                             </span>
                                         </g:if>
                                     </td>
