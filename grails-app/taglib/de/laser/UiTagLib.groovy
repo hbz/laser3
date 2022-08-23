@@ -46,7 +46,7 @@ class UiTagLib {
 
     def h1HeaderWithIcon = { attrs, body ->
         if (attrs.floated && attrs.floated != 'false') {
-            out << '<h1 class="ui icon header la-clear-before left floated aligned">'
+            out << '<h1 class="ui icon header la-clear-before left floated aligned la-positionRelative">'
         } else {
             out << '<h1 class="ui icon header la-clear-before la-noMargin-top">'
         }
