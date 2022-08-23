@@ -1,5 +1,5 @@
 <%@ page import="de.laser.Package" %>
-
+<laser:htmlStart message="" />
       <ui:breadcrumbs>
           <ui:crumb controller="package" action="index" text="${message(code:'package.show.all')}" />
           <ui:crumb text="${packageInstance.name}" id="${packageInstance.id}" class="active"/>
@@ -115,4 +115,5 @@
         }
       }
     </laser:script>
+<laser:htmlEnd />
 
