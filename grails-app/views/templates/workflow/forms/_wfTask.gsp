@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.workflow.*;" %>
+<%@ page import="de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.workflow.*;" %>
 
 <g:form url="${formUrl}" method="POST" class="ui form">
 
@@ -19,7 +19,7 @@
                           required="required"
                           noSelection="${['' : message(code:'default.select.choose.label')]}"
                           from="${RefdataCategory.getAllRefdataValues( RDConstants.WF_TASK_PRIORITY )}"
-                          value="${task?.priority?.id}"
+                          value="${task?.priority?.id ?: RDStore.WF_TASK_PRIORITY_NORMAL.id}"
                           optionKey="id"
                           optionValue="value" />
         </div>

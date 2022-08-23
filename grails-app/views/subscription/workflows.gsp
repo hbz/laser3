@@ -51,8 +51,6 @@
             <g:set var="wfInfo" value="${wf.getInfo()}" />
             <tr>
                 <td>
-                    <i class="icon large ${WorkflowHelper.getCssIconAndColorByStatus(wf.status)}"></i>
-
                     <g:if test="${wf.status == RDStore.WF_WORKFLOW_STATUS_DONE}">
                         <g:if test="${wfInfo.tasksImportantBlocking}">
                             <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'workflow.blockingTasks.important')}">
@@ -65,6 +63,8 @@
                             </span>
                         </g:elseif>
                     </g:if>
+
+                    <i class="icon large ${WorkflowHelper.getCssIconAndColorByStatus(wf.status)}"></i>
                 </td>
                 <td>
                     <g:link class="wfModalLink" controller="ajaxHtml" action="useWfXModal" params="${[key: 'subscription:' + subscription.id + ':' + WfWorkflow.KEY + ':' + wf.id]}">
@@ -76,14 +76,14 @@
                         <g:set var="tasks" value="${wf.getSequence()}" />
                         <g:each in="${tasks}" var="task" status="ti">
                             <g:if test="${task.child}">
-                                [
+                                <div class="ui buttons wf-buttonGroup">
                                     <uiWorkflow:task task="${task}" params="${[key: 'subscription:' + subscription.id + ':' + WfTask.KEY + ':' + task.id]}" />
 
                                     <g:set var="children" value="${task.child.getSequence()}" />
                                     <g:each in="${children}" var="child" status="ci">
                                         <uiWorkflow:task task="${child}" params="${[key: 'subscription:' + subscription.id + ':' + WfTask.KEY + ':' + child.id]}" />
                                     </g:each>
-                                ]
+                                </div>
                             </g:if>
                             <g:else>
                                 <uiWorkflow:task task="${task}" params="${[key: 'subscription:' + subscription.id + ':' + WfTask.KEY + ':' + task.id]}" />
@@ -122,7 +122,7 @@
 
             <div class="ui piled segments wf-details">
 
-                <div class="ui segment" style="padding-top:2em; padding-bottom:2em;">
+                <div class="ui segment">
                     <div class="ui grid">
                         <div class="row">
                             <div class="two wide column wf-centered">
@@ -246,9 +246,8 @@
                                             <g:if test="${task.condition.description}">
                                                 ${task.condition.description}
                                             </g:if>
-                                            <br />
                                         <!-- -->
-                                            <div class="ui list">
+                                            <div class="ui list" style="margin-top:1em">
                                                 <g:each in="${task.condition.getFields()}" var="field" status="fi">
                                                     <uiWorkflow:taskConditionField condition="${task.condition}" field="${field}" isListItem="true"/>
                                                 </g:each>
@@ -285,7 +284,7 @@
                     <g:if test="${task.child}">
                         <g:each in="${task.child.getSequence()}" var="child" status="ci">
 
-                            <div class="ui segment">
+                            <div class="ui segment" style="border-top:1px dashed rgba(34, 36, 38, 0.15)">
                                 <div class="ui grid">
                                     <div class="row">
                                         <div class="two wide column wf-centered">
@@ -296,7 +295,7 @@
                                         <div class="ten wide column">
 
                                             <div class="header">
-                                                <i class="icon minus"></i> <strong>${child.title}</strong>
+                                                <strong>${child.title}</strong>
                                                 <span class="sc_darkgrey">
                                                     ( <i class="icon ${WorkflowHelper.getCssIconByTaskPriority(child.priority)}"></i> ${child.priority.getI10n('value')} )
                                                 </span>
@@ -349,9 +348,8 @@
                                                     <g:if test="${child.condition.description}">
                                                         ${child.condition.description}
                                                     </g:if>
-                                                    <br />
                                                 <!-- -->
-                                                    <div class="ui list">
+                                                    <div class="ui list" style="margin-top:1em">
                                                         <g:each in="${child.condition.getFields()}" var="field" status="fi">
                                                             <uiWorkflow:taskConditionField condition="${child.condition}" field="${field}" isListItem="true"/>
                                                         </g:each>

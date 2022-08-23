@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.workflow.*;" %>
+<%@ page import="de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.workflow.*;" %>
 
 <g:form url="${formUrl}" method="POST" class="ui form">
 
@@ -21,13 +21,13 @@
                               required="required"
                               noSelection="${['' : message(code:'default.select.choose.label')]}"
                               from="${RefdataCategory.getAllRefdataValues( RDConstants.WF_WORKFLOW_STATE )}"
-                              value="${workflow?.state?.id}"
+                              value="${workflow?.state?.id ?: RDStore.WF_WORKFLOW_STATE_TEST.id}"
                               optionKey="id"
                               optionValue="value" />
             </div>
             <div class="field five wide required">
                 <label for="${prefix}_prototypeVersion>">Version</label>
-                <input type="text" name="${prefix}_prototypeVersion" id="${prefix}_prototypeVersion" value="${workflow?.prototypeVersion}" />
+                <input type="text" name="${prefix}_prototypeVersion" id="${prefix}_prototypeVersion" value="${workflow?.prototypeVersion ?: '1'}" />
             </div>
         </div>
 

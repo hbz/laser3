@@ -257,6 +257,7 @@ class RDStore {
     public final static RefdataValue WF_TASK_STATUS_DONE         = getRefdataValue('done', RDConstants.WF_TASK_STATUS)
 
     public final static RefdataValue WF_WORKFLOW_STATE_ACTIVE    = getRefdataValue('active', RDConstants.WF_WORKFLOW_STATE)
+    public final static RefdataValue WF_WORKFLOW_STATE_TEST      = getRefdataValue('test', RDConstants.WF_WORKFLOW_STATE)
 
     public final static RefdataValue WF_WORKFLOW_STATUS_OPEN     = getRefdataValue('open', RDConstants.WF_WORKFLOW_STATUS)
     public final static RefdataValue WF_WORKFLOW_STATUS_CANCELED = getRefdataValue('canceled', RDConstants.WF_WORKFLOW_STATUS)

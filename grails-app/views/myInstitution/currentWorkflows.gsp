@@ -140,14 +140,14 @@
                         <g:set var="tasks" value="${wf.getSequence()}" />
                         <g:each in="${tasks}" var="task" status="ti">
                             <g:if test="${task.child}">
-                                [
-                                <uiWorkflow:task task="${task}" params="${[key: 'myInstitution:' + wf.id + ':' + WfTask.KEY + ':' + task.id]}" />
+                                <div class="ui buttons wf-buttonGroup">
+                                    <uiWorkflow:task task="${task}" params="${[key: 'myInstitution:' + wf.id + ':' + WfTask.KEY + ':' + task.id]}" />
 
-                                <g:set var="children" value="${task.child.getSequence()}" />
-                                <g:each in="${children}" var="child" status="ci">
-                                    <uiWorkflow:task task="${child}" params="${[key: 'myInstitution:' + wf.id + ':' + WfTask.KEY + ':' + child.id]}" />
-                                </g:each>
-                                ]
+                                    <g:set var="children" value="${task.child.getSequence()}" />
+                                    <g:each in="${children}" var="child" status="ci">
+                                        <uiWorkflow:task task="${child}" params="${[key: 'myInstitution:' + wf.id + ':' + WfTask.KEY + ':' + child.id]}" />
+                                    </g:each>
+                                </div>
                             </g:if>
                             <g:else>
                                 <uiWorkflow:task task="${task}" params="${[key: 'myInstitution:' + wf.id + ':' + WfTask.KEY + ':' + task.id]}" />

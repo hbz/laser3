@@ -135,6 +135,7 @@
                                         </g:else>
                                         (${docctx.owner?.type?.getI10n("value")})
                                     </g:link>
+                                    <input type="hidden" name="${prefix}_${field}" value="${docctx.id}" />
                                 </div>
                             </g:if>
                             <g:else>

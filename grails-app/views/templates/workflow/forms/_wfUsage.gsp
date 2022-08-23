@@ -98,14 +98,13 @@
 
                     <g:if test="${task.child}">
                         <g:each in="${task.child.getSequence()}" var="child" status="ci">
-                            <g:if test="${task.child.status == RDStore.WF_TASK_STATUS_OPEN}">
+                            <g:if test="${child.status == RDStore.WF_TASK_STATUS_OPEN}">
                                 <% openTasksCount++ %>
                                 <div class="row">
                                     <div class="sixteen wide column">
                                         <div class="content">
                                             <div class="header">
                                                 %{-- <i class="icon ${WorkflowHelper.getCssIconAndColorByStatus(child.status)}"></i> --}%
-                                                <p><i class="icon paperclip"></i>
                                                 <strong>${child.title}</strong>
                                                 <span class="sc_darkgrey">
                                                 ( <i class="icon ${WorkflowHelper.getCssIconByTaskPriority(child.priority)}"></i> ${child.priority.getI10n('value')} )
