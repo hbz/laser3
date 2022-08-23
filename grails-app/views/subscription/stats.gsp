@@ -229,11 +229,16 @@
                         </thead>
                         <tbody>
                             <g:each in="${sums}" var="row">
-                                <tr>
-                                    <td><g:formatDate date="${row.reportMonth}" format="yyyy-MM"/></td>
-                                    <g:set var="reportType" value="${row.reportType in Counter4Report.COUNTER_4_REPORTS ? row.reportType : row.reportType.toLowerCase()}"/>
-                                    <td><g:link action="stats" params="${params + [tab: DateUtils.getSDF_yyyyMM().format(row.reportMonth), reportType: reportType, metricType: row.metricType]}">${row.reportCount}</g:link></td>
-                                </tr>
+                                <g:set var="reportMonth" value="${row.getKey()}"/>
+                                <g:set var="sumsByReport" value="${row.getValue()}"/>
+                                <g:each in="${sumsByReport}" var="sumByReport">
+                                    <g:set var="sum" value="${sumByReport.getValue()}"/>
+                                    <tr>
+                                        <td><g:formatDate date="${reportMonth}" format="yyyy-MM"/></td>
+                                        <g:set var="reportType" value="${sumByReport.getKey() in Counter4Report.COUNTER_4_REPORTS ? sumByReport.getKey() : sumByReport.getKey().toLowerCase()}"/>
+                                        <td><g:link action="stats" params="${params + [tab: DateUtils.getSDF_yyyyMM().format(reportMonth), reportType: reportType, metricType: params.metricType]}">${sum}</g:link></td>
+                                    </tr>
+                                </g:each>
                             </g:each>
                         </tbody>
                     </table>

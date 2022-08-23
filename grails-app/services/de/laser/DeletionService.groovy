@@ -895,10 +895,23 @@ class DeletionService {
      */
     boolean deleteTIPPsCascaded(Collection<TitleInstancePackagePlatform> tippsToDelete) {
         log.debug "processing tipps (${tippsToDelete.collect { TitleInstancePackagePlatform tipp -> tipp.id}})"
+        Map<String,Collection<TitleInstancePackagePlatform>> toDelete = [toDelete:tippsToDelete]
+        Map<String,Collection<IssueEntitlement>> delIssueEntitlements = [toDelete:IssueEntitlement.findAllByTippInListAndStatus(tippsToDelete, RDStore.TIPP_STATUS_REMOVED)]
+        Counter4Report.withTransaction { status ->
+            try {
+                log.info("${Counter4Report.executeUpdate('delete from Counter4Report c4r where c4r.titleUID in (:toDelete)', [toDelete: tippsToDelete.globalUID])} COUNTER 4 reports deleted")
+                log.info("${Counter5Report.executeUpdate('delete from Counter5Report c5r where c5r.titleUID in (:toDelete)', [toDelete: tippsToDelete.globalUID])} COUNTER 5 reports deleted")
+                return true
+            }
+            catch (Exception e) {
+                log.error 'error while deleting tipp usage stats ' + tippsToDelete + ' .. rollback: ' + e.message
+                e.printStackTrace()
+                status.setRollbackOnly()
+                return false
+            }
+        }
         TitleInstancePackagePlatform.withTransaction { status ->
             try {
-                Map<String,Collection<TitleInstancePackagePlatform>> toDelete = [toDelete:tippsToDelete]
-                Map<String,Collection<IssueEntitlement>> delIssueEntitlements = [toDelete:IssueEntitlement.findAllByTippInListAndStatus(tippsToDelete, RDStore.TIPP_STATUS_REMOVED)]
                 log.info("${PendingChange.executeUpdate('delete from PendingChange pc where pc.tippCoverage in (select tc from TIPPCoverage tc where tc.tipp in (:toDelete))',toDelete)} coverage pending changes deleted")
                 log.info("${PendingChange.executeUpdate('delete from PendingChange pc where pc.priceItem in (select pi from PriceItem pi where pi.tipp in (:toDelete))',toDelete)} price item pending changes deleted")
                 log.info("${TIPPCoverage.executeUpdate('delete from TIPPCoverage tc where tc.tipp in (:toDelete)',toDelete)} coverages deleted")
@@ -908,8 +921,6 @@ class DeletionService {
                 log.info("${TitleHistoryEventParticipant.executeUpdate('delete from TitleHistoryEventParticipant thep where thep.participant in (:toDelete)', toDelete)} title history event participants deleted")
                 log.info("${TitleHistoryEvent.executeUpdate('delete from TitleHistoryEvent the where the.tipp in (:toDelete)', toDelete)} title history events deleted")
                 log.info("${Fact.executeUpdate('delete from Fact f where f.relatedTitle in (:toDelete)', toDelete)} facts deleted")
-                log.info("${Counter4Report.executeUpdate('delete from Counter4Report c4r where c4r.title in (:toDelete)', toDelete)} COUNTER 4 reports deleted")
-                log.info("${Counter5Report.executeUpdate('delete from Counter5Report c5r where c5r.title in (:toDelete)', toDelete)} COUNTER 5 reports deleted")
                 log.info("${PendingChange.executeUpdate('delete from PendingChange pc where pc.tipp in (:toDelete)', toDelete)} pending changes deleted")
                 log.info("${Language.executeUpdate('delete from Language l where l.tipp in (:toDelete)', toDelete)} language entries deleted")
                 log.info("${DeweyDecimalClassification.executeUpdate('delete from DeweyDecimalClassification ddc where ddc.tipp in (:toDelete)', toDelete)} DDC entrie deleted")
