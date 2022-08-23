@@ -9,6 +9,12 @@
 
 4425    23.08.2022  dev     3.0         Andreas Feature     Bereinigungsmethode entfernt markierter Titel erweitert
 
+4419    23.08.2022  dev     3.0         Andreas Bug         SQL-Befehle auf veränderte Spaltennamen angepasst
+
+4420    23.08.2022  dev     3.0         Andreas Bug         SQL-Befehle auf veränderte Spaltennamen angepasst
+
+4421    23.08.2022  dev     3.0         Andreas Bug         Tippfehler bei Löschbefehlen behoben
+
 4229    19.08.2022  dev     3.0         David   Feature     Migration auf Grails 5
 
 4229    15.08.2022  dev     3.0         Ingrid  Feature     Umstellen auf Fomantic UI
