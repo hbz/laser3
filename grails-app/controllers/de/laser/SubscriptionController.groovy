@@ -116,12 +116,9 @@ class SubscriptionController {
     def stats() {
         Map<String,Object> ctrlResult
         SXSSFWorkbook wb
+        ctrlResult = subscriptionControllerService.stats(params)
         if(params.exportXLS) {
-            ctrlResult = subscriptionControllerService.statsForExport(params)
             wb = exportService.exportReport(params, ctrlResult.result)
-        }
-        else {
-            ctrlResult = subscriptionControllerService.stats(params)
         }
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             if (!ctrlResult.result) {

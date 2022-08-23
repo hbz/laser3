@@ -11,9 +11,7 @@ import de.laser.properties.PropertyDefinitionGroup
 import de.laser.base.AbstractCoverage
 import de.laser.utils.DateUtils
 import de.laser.storage.RDStore
-import de.laser.stats.Counter4ApiSource
 import de.laser.stats.Counter4Report
-import de.laser.stats.Counter5ApiSource
 import de.laser.stats.Counter5Report
 import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
@@ -559,8 +557,7 @@ class ExportService {
 				params.metricType = 'ft_total'
 			else params.metricType = data.metricTypes[0]
 		}
-		//IMMENSELY UGLY WORKAROUND, TODO [ticket=3814]
-		Set<IdentifierNamespace> propIdNamespaces = IdentifierNamespace.findAllByIsFromLaserAndNsNotInList(false, IdentifierNamespace.CORE_TITLE_NS)
+		Set<IdentifierNamespace> propIdNamespaces = IdentifierNamespace.findAllByNsInList(data.platforms.titleNamespace)
 		reportTypes.each { String reportType ->
 			SXSSFSheet sheet = wb.createSheet(reportType)
 			sheet.flushRows(10)
@@ -612,10 +609,10 @@ class ExportService {
 				}
 				row = sheet.createRow(8)
 				switch(reportType) {
-					case Counter4ApiSource.JOURNAL_REPORT_1:
-					case Counter4ApiSource.JOURNAL_REPORT_1_GOA:
-					case Counter4ApiSource.BOOK_REPORT_1:
-					case Counter4ApiSource.BOOK_REPORT_2: cell = row.createCell(0)
+					case Counter4Report.JOURNAL_REPORT_1:
+					case Counter4Report.JOURNAL_REPORT_1_GOA:
+					case Counter4Report.BOOK_REPORT_1:
+					case Counter4Report.BOOK_REPORT_2: cell = row.createCell(0)
 						cell.setCellValue("Total for all titles")
 						for(int i = 1; i < 7; i++) {
 							cell = row.createCell(i)
@@ -638,9 +635,9 @@ class ExportService {
 						titleRows = prepareTitleRows(data.usages, propIdNamespaces, reportType, showPriceDate, showMetricType, showOtherData, params.metricType)
 						rowno = 8
 						break
-					case Counter4ApiSource.JOURNAL_REPORT_2:
-					case Counter4ApiSource.BOOK_REPORT_3:
-					case Counter4ApiSource.BOOK_REPORT_4:
+					case Counter4Report.JOURNAL_REPORT_2:
+					case Counter4Report.BOOK_REPORT_3:
+					case Counter4Report.BOOK_REPORT_4:
 						Map<String, Set<Map>> categoryRows = [:]
 						data.sums.findAll { Map report -> report.reportType == reportType }.each { Map sumRow ->
 							Set<Map> categoryRow = categoryRows.get(sumRow.category)
@@ -666,8 +663,8 @@ class ExportService {
 						titleRows = prepareTitleRows(data.usages, propIdNamespaces, reportType, showPriceDate, showMetricType, showOtherData, params.metricType)
 						rowno = 8
 						break
-					case Counter4ApiSource.JOURNAL_REPORT_5:
-					case Counter4ApiSource.BOOK_REPORT_5:
+					case Counter4Report.JOURNAL_REPORT_5:
+					case Counter4Report.BOOK_REPORT_5:
 						Map<String, Set<Map>> metricRows = [:]
 						rowno = 8
 						data.sums.findAll { Map report -> report.reportType == reportType }.each { Map sumRow ->
@@ -693,7 +690,7 @@ class ExportService {
 						}
 						titleRows = prepareTitleRows(data.usages, propIdNamespaces, reportType, showPriceDate, showMetricType, showOtherData, params.metricType)
 						break
-					case Counter4ApiSource.DATABASE_REPORT_1:
+					case Counter4Report.DATABASE_REPORT_1:
 						Map<String, Set<Map>> metricRows = [:]
 						rowno = 8
 						data.sums.findAll { Map report -> report.reportType == reportType }.each { Map sumRow ->
@@ -729,7 +726,7 @@ class ExportService {
 							row = sheet.createRow(rowno)
 						}
 						break
-					case Counter4ApiSource.PLATFORM_REPORT_1:
+					case Counter4Report.PLATFORM_REPORT_1:
 						Map<String, Set<Map>> metricRows = [:]
 						rowno = 8
 						data.sums.findAll { Map report -> report.reportType == reportType }.each { Map sumRow ->
@@ -819,7 +816,7 @@ class ExportService {
 				cell = headerRow.createCell(0)
 				cell.setCellValue("Reporting_Period")
 				cell = headerRow.createCell(1)
-				cell.setCellValue("Begin_Date:${DateUtils.getSDF_yyyyMMdd().format(data.startDate)}; End_Date=${DateUtils.getSDF_yyyyMMdd().format(data.endDate)}")
+				cell.setCellValue("Begin_Date:${DateUtils.getSDF_yyyyMMdd().format(data.dateRangeParams.startDate)}; End_Date=${DateUtils.getSDF_yyyyMMdd().format(data.dateRangeParams.endDate)}")
 				headerRow = sheet.createRow(10)
 				cell = headerRow.createCell(0)
 				cell.setCellValue("Created")
@@ -833,7 +830,7 @@ class ExportService {
 				headerRow = sheet.createRow(12) //the 13th row is mandatory empty
 				cell = headerRow.createCell(0)
 				cell.setCellValue("")
-				columnHeaders.addAll(data.monthsInRing.collect { Date month -> DateUtils.getLocalizedSDF_MMMyyyy().format(month) })
+				columnHeaders.addAll(data.monthsInRing.collect { Date month -> DateUtils.getLocalizedSDF_MMMyyyy(LocaleUtils.getLocaleEN()).format(month) })
 				if(showPriceDate) {
 					columnHeaders.addAll(["List Price EUR", "List Price GBP", "List Price USD"])
 				}
@@ -848,9 +845,9 @@ class ExportService {
 					cell.setCellValue(colHeader)
 				}
 				rowno = 14
-				if(reportType.toLowerCase() in [Counter5ApiSource.PLATFORM_MASTER_REPORT, Counter5ApiSource.PLATFORM_USAGE]) {
+				if(reportType.toLowerCase() in Counter5Report.COUNTER_5_PLATFORM_REPORTS) {
 					Map<String, Map> metricRows = [:]
-					data.usages.findAll{ Counter5Report r -> r.reportType == reportType }.each { Counter5Report r ->
+					data.usages.findAll{ Counter5Report r -> r.reportType.toLowerCase() == reportType }.each { Counter5Report r ->
 						Map<String, Object> metricRow = metricRows.get(r.metricType)
 						int periodTotal = 0
 						if(!metricRow) {
@@ -861,7 +858,7 @@ class ExportService {
 						metricRow.put('Metric_Type', r.metricType)
 						periodTotal += r.reportCount
 						metricRow.put('Reporting_Period_Total', periodTotal)
-						metricRow.put(DateUtils.getLocalizedSDF_MMMyyyy().format(r.reportFrom), r.reportCount)
+						metricRow.put(DateUtils.getLocalizedSDF_MMMyyyy(LocaleUtils.getLocaleEN()).format(r.reportFrom), r.reportCount)
 						metricRows.put(r.metricType, metricRow)
 					}
 					metricRows.eachWithIndex{ String metricType, Map metricRow, int i ->
@@ -909,8 +906,8 @@ class ExportService {
 		//inconsistent storage of the report type makes that necessary
 		usages.findAll { AbstractReport report -> report.reportType in [reportType, reportType.toLowerCase(), reportType.toUpperCase()] }.each { AbstractReport report ->
 			if((showMetricType) ||
-					!(reportType in [Counter4ApiSource.BOOK_REPORT_1, Counter4ApiSource.BOOK_REPORT_2, Counter4ApiSource.JOURNAL_REPORT_1, Counter4ApiSource.JOURNAL_REPORT_1_GOA, Counter4ApiSource.JOURNAL_REPORT_2, Counter4ApiSource.JOURNAL_REPORT_5]) ||
-					((reportType in [Counter4ApiSource.BOOK_REPORT_1, Counter4ApiSource.BOOK_REPORT_2, Counter4ApiSource.JOURNAL_REPORT_1, Counter4ApiSource.JOURNAL_REPORT_1_GOA, Counter4ApiSource.JOURNAL_REPORT_2, Counter4ApiSource.JOURNAL_REPORT_5]) && report.metricType == metricType)) {
+					!(reportType in Counter4Report.COUNTER_4_TITLE_REPORTS) ||
+					((reportType in Counter4Report.COUNTER_4_TITLE_REPORTS) && report.metricType == metricType)) {
 				Map<String, Map> titleMetrics = titleRows.get(report.title)
 				if(!titleMetrics)
 					titleMetrics = [:]
@@ -929,7 +926,7 @@ class ExportService {
 					}
 					else periodTotal = titleRow.get("Reporting Period Total") as int
 					periodTotal += report.reportCount
-					if(reportType in [Counter4ApiSource.JOURNAL_REPORT_5, Counter4ApiSource.BOOK_REPORT_5])
+					if(reportType in [Counter4Report.JOURNAL_REPORT_5, Counter4Report.BOOK_REPORT_5])
 						titleRow.put("User activity", report.metricType == 'search_reg' ? "Regular Searches" : "Searches: federated and automated")
 					titleRow.put("Reporting Period Total", periodTotal)
 					titleRow.put(DateUtils.getSDF_yyyyMM().format(report.reportFrom), report.reportCount)
@@ -961,21 +958,21 @@ class ExportService {
 					else periodTotal = titleRow.get("Reporting_Period_Total") as int
 					periodTotal += report.reportCount
 					switch(reportType.toLowerCase()) {
-						case Counter5ApiSource.TITLE_MASTER_REPORT:
+						case Counter5Report.TITLE_MASTER_REPORT:
 							titleRow.put("DOI", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.DOI }?.value)
 							titleRow.put("Print_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISSN }?.value)
 							titleRow.put("Online_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.EISSN }?.value)
 							titleRow.put("URI", report.title.hostPlatformURL)
 							break
-						case Counter5ApiSource.BOOK_REQUESTS:
-						case Counter5ApiSource.BOOK_ACCESS_DENIED: titleRow.put("DOI", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.DOI }?.value)
+						case Counter5Report.BOOK_REQUESTS:
+						case Counter5Report.BOOK_ACCESS_DENIED: titleRow.put("DOI", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.DOI }?.value)
 							titleRow.put("Print_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISSN }?.value)
 							titleRow.put("Online_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.EISSN }?.value)
 							titleRow.put("URI", report.title.hostPlatformURL)
 							titleRow.put("YOP", report.title.dateFirstOnline?.format("YYYY"))
 							titleRow.put("ISBN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISBN }?.value)
 							break
-						case Counter5ApiSource.BOOK_USAGE_BY_ACCESS_TYPE: titleRow.put("DOI", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.DOI }?.value)
+						case Counter5Report.BOOK_USAGE_BY_ACCESS_TYPE: titleRow.put("DOI", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.DOI }?.value)
 							titleRow.put("ISBN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISBN }?.value)
 							titleRow.put("Print_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISSN }?.value)
 							titleRow.put("Online_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.EISSN }?.value)
@@ -983,25 +980,25 @@ class ExportService {
 							titleRow.put("YOP", report.title.dateFirstOnline?.format("YYYY"))
 							titleRow.put("Access_Type", report.accessType)
 							break
-						case Counter5ApiSource.JOURNAL_REQUESTS:
-						case Counter5ApiSource.JOURNAL_ACCESS_DENIED: titleRow.put("DOI", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.DOI }?.value)
+						case Counter5Report.JOURNAL_REQUESTS:
+						case Counter5Report.JOURNAL_ACCESS_DENIED: titleRow.put("DOI", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.DOI }?.value)
 							titleRow.put("Print_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISSN }?.value)
 							titleRow.put("Online_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.EISSN }?.value)
 							titleRow.put("URI", report.title.hostPlatformURL)
 							break
-						case Counter5ApiSource.JOURNAL_USAGE_BY_ACCESS_TYPE: titleRow.put("DOI", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.DOI }?.value)
+						case Counter5Report.JOURNAL_USAGE_BY_ACCESS_TYPE: titleRow.put("DOI", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.DOI }?.value)
 							titleRow.put("Print_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISSN }?.value)
 							titleRow.put("Online_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.EISSN }?.value)
 							titleRow.put("URI", report.title.hostPlatformURL)
 							titleRow.put("Access_Type", report.accessType)
 							break
-						case Counter5ApiSource.JOURNAL_REQUESTS_BY_YOP: titleRow.put("DOI", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.DOI }?.value)
+						case Counter5Report.JOURNAL_REQUESTS_BY_YOP: titleRow.put("DOI", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.DOI }?.value)
 							titleRow.put("Print_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISSN }?.value)
 							titleRow.put("Online_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.EISSN }?.value)
 							titleRow.put("URI", report.title.hostPlatformURL)
 							titleRow.put("YOP", report.title.dateFirstOnline?.format("YYYY"))
 							break
-						case Counter5ApiSource.ITEM_MASTER_REPORT: titleRow.put("DOI", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.DOI }?.value)
+						case Counter5Report.ITEM_MASTER_REPORT: titleRow.put("DOI", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.DOI }?.value)
 							titleRow.put("ISBN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISBN }?.value)
 							titleRow.put("Print_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISSN }?.value)
 							titleRow.put("Online_ISSN", report.title.ids.find { Identifier id -> id.ns.ns == IdentifierNamespace.EISSN }?.value)
@@ -1009,7 +1006,7 @@ class ExportService {
 							break
 					}
 					titleRow.put("Reporting_Period_Total", periodTotal)
-					titleRow.put(DateUtils.getLocalizedSDF_MMMyyyy().format(report.reportFrom), report.reportCount)
+					titleRow.put(DateUtils.getLocalizedSDF_MMMyyyy(LocaleUtils.getLocaleEN()).format(report.reportFrom), report.reportCount)
 					if (showPriceDate && report.title.priceItems) {
 						//listprice_eur
 						titleRow.put("List Price EUR", report.title.priceItems.find { it.listCurrency == RDStore.CURRENCY_EUR }?.listPrice ?: ' ')
@@ -2432,7 +2429,7 @@ class ExportService {
 			!(coreTitleNS in [IdentifierNamespace.ISBN, IdentifierNamespace.PISBN, IdentifierNamespace.ISSN, IdentifierNamespace.EISSN])
 		}
 		if(entitlementInstance == TitleInstancePackagePlatform.class.name) {
-			identifiers = sql.rows("select id_tipp_fk, id_value, idns_ns from identifier join identifier_namespace on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id ${queryData.join} where ${queryData.where}", queryData.params)
+			identifiers = sql.rows("select tipp_global_uid, id_value, idns_ns from identifier join identifier_namespace on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id ${queryData.join} where ${queryData.where}", queryData.params)
 			coverages = sql.rows("select tc_tipp_fk, tc_start_date as startDate, tc_start_volume as startVolume, tc_start_issue as startIssue, tc_end_date as endDate, tc_end_volume as endIssue, tc_end_issue as endIssue, tc_coverage_note as coverageNote, tc_coverage_depth as coverageDepth, tc_embargo as embargo from tippcoverage join title_instance_package_platform on tc_tipp_fk = tipp_id ${queryData.join} where ${queryData.where}", queryData.params)
 			priceItems = sql.rows("select pi_tipp_fk, pi_list_price, (select rdv_value from refdata_value where rdv_id = pi_list_currency_rv_fk) as pi_list_currency, pi_local_price, (select rdv_value from refdata_value where rdv_id = pi_local_currency_rv_fk) as pi_local_currency from price_item join title_instance_package_platform on pi_tipp_fk = tipp_id ${queryData.join} where ${queryData.where}", queryData.params)
 			coreTitleIdentifierNamespaces = sql.rows("select distinct idns_ns from identifier_namespace join identifier on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id ${queryData.join} where idns_ns in ('${coreTitleNSrestricted.join("','")}') and ${queryData.where}", queryData.params)
@@ -2442,7 +2439,7 @@ class ExportService {
 			priceItemMap.putAll(preprocessPriceItemRows(priceItems, 'pi_tipp_fk'))
 		}
 		else if(entitlementInstance == IssueEntitlement.class.name) {
-			identifiers = sql.rows("select id_tipp_fk, id_value, idns_ns from identifier join identifier_namespace on id_ns_fk = idns_id join issue_entitlement on ie_tipp_fk = id_tipp_fk join title_instance_package_platform on ie_tipp_fk = tipp_id where ${queryData.where}", queryData.params)
+			identifiers = sql.rows("select tipp_global_uid, id_value, idns_ns from identifier join identifier_namespace on id_ns_fk = idns_id join issue_entitlement on ie_tipp_fk = id_tipp_fk join title_instance_package_platform on ie_tipp_fk = tipp_id where ${queryData.where}", queryData.params)
 			coverages = sql.rows("select ic_ie_fk, ic_start_date as startDate, ic_start_volume as startVolume, ic_start_issue as startIssue, ic_end_date as endDate, ic_end_volume as endVolume, ic_end_issue as endIssue, ic_coverage_note as coverageNote, ic_coverage_depth as coverageDepth, ic_embargo as embargo from issue_entitlement_coverage join issue_entitlement on ic_ie_fk = ie_id join title_instance_package_platform on ie_tipp_fk = tipp_id where ${queryData.where}", queryData.params)
 			priceItems = sql.rows("select pi_ie_fk, pi_list_price, (select rdv_value from refdata_value where rdv_id = pi_list_currency_rv_fk) as pi_list_currency, pi_local_price, (select rdv_value from refdata_value where rdv_id = pi_local_currency_rv_fk) as pi_local_currency from price_item join issue_entitlement on pi_ie_fk = ie_id join title_instance_package_platform on ie_tipp_fk = tipp_id where ${queryData.where}", queryData.params)
 			coreTitleIdentifierNamespaces = sql.rows("select distinct idns_ns from identifier_namespace join identifier on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id join issue_entitlement on ie_tipp_fk = tipp_id where idns_ns in ('${coreTitleNSrestricted.join("','")}') and ${queryData.where}", queryData.params)
@@ -2460,10 +2457,10 @@ class ExportService {
 				filterTime.set(Calendar.DATE, filterTime.getActualMaximum(Calendar.DAY_OF_MONTH))
 				Timestamp endDate = new Timestamp(filterTime.getTime().getTime())
 				List<Map<Date, GroovyRowResult>> counterReportRows
-				counterReportRows = sql.rows('select c5r_title_fk as title, c5r_report_from as report_from, c5r_report_to as report_to, c5r_report_count as report_count from counter5report join title_instance_package_platform on c5r_title_fk = tipp_id join issue_entitlement on ie_tipp_fk = c5r_title_fk where c5r_report_institution_fk = :customer and lower(c5r_report_type) = :defaultReport and c5r_metric_type = :defaultMetric and c5r_report_from >= :startDate and c5r_report_to <= :endDate and '+queryData.where, queryData.params+[customer: subscriber.id, startDate: startDate, endDate: endDate, defaultReport: Counter5ApiSource.TITLE_MASTER_REPORT, defaultMetric: 'Unique_Title_Requests'])
+				counterReportRows = sql.rows('select c5r_title_guid as title, c5r_report_from as report_from, c5r_report_to as report_to, c5r_report_count as report_count from counter5report where c5r_report_institution_guid = :customer and lower(c5r_report_type) = :defaultReport and c5r_metric_type = :defaultMetric and c5r_report_from >= :startDate and c5r_report_to <= :endDate and '+queryData.where, queryData.params+[customer: subscriber.id, startDate: startDate, endDate: endDate, defaultReport: Counter5Report.TITLE_MASTER_REPORT, defaultMetric: 'Unique_Title_Requests'])
 				if(!counterReportRows) {
-					List<Object> defaultReports = [Counter4ApiSource.BOOK_REPORT_1, Counter4ApiSource.JOURNAL_REPORT_1]
-					counterReportRows = Counter4Report.executeQuery('select c4r_title_fk as title, c4r_report_from as report_from, c4r_report_to as report_to, c4r_report_count as report_count from counter4report join title_instance_package_platform on c4r_title_fk = tipp_id join issue_entitlement on ie_tipp_fk = c4r_title_fk where c4r_report_institution_fk = :customer and c4r_report_type = any(:defaultReports) and c4r_metric_type = :defaultMetric and c4r_report_from >= :startDate and c4r_report_to <= :endDate and ' + queryData.where, queryData.params + [customer: subscriber.id, startDate: startDate, endDate: endDate, defaultReports: connection.createArrayOf('varchar', defaultReports.toArray()), defaultMetric: 'ft_total'])
+					List<Object> defaultReports = [Counter4Report.BOOK_REPORT_1, Counter4Report.JOURNAL_REPORT_1]
+					counterReportRows = Counter4Report.executeQuery('select c4r_title_guid as title, c4r_report_from as report_from, c4r_report_to as report_to, c4r_report_count as report_count from counter4report where c4r_report_institution_guid = :customer and c4r_report_type = any(:defaultReports) and c4r_metric_type = :defaultMetric and c4r_report_from >= :startDate and c4r_report_to <= :endDate and ' + queryData.where, queryData.params + [customer: subscriber.id, startDate: startDate, endDate: endDate, defaultReports: connection.createArrayOf('varchar', defaultReports.toArray()), defaultMetric: 'ft_total'])
 				}
 				counterReportRows.each { GroovyRowResult reportRow ->
 					Map<Date, GroovyRowResult> usageMap = reportMap.get(reportRow['title'])

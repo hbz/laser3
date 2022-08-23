@@ -312,7 +312,7 @@ class StatsSyncService {
                                 Map<String, Object> calendarConfig = initCalendarConfig(onlyNewest)
                                 //DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
                                 Calendar startTime = GregorianCalendar.getInstance(), currentYearEnd = GregorianCalendar.getInstance()
-                                log.debug("${Thread.currentThread().getName()} is now processing key pair ${i}, requesting data for ${keyPair.customerName}:${keyPair.value}:${keyPair.requestorKey}")
+                                //log.debug("${Thread.currentThread().getName()} is now processing key pair ${i}, requesting data for ${keyPair.customerName}:${keyPair.value}:${keyPair.requestorKey}")
                                 Counter4Report.COUNTER_4_REPORTS.each { String reportID ->
                                     startTime.setTime(calendarConfig.startDate)
                                     currentYearEnd.setTime(calendarConfig.endNextRun)
@@ -325,12 +325,12 @@ class StatsSyncService {
                                             currentYearEnd.add(Calendar.MONTH, 1)
                                         }
                                     }
-                                    log.debug("${Thread.currentThread().getName()} is starting ${reportID} for ${keyPair.customerName} at ${yyyyMMdd.format(startTime.getTime())}-${yyyyMMdd.format(currentYearEnd.getTime())}")
+                                    //log.debug("${Thread.currentThread().getName()} is starting ${reportID} for ${keyPair.customerName} at ${yyyyMMdd.format(startTime.getTime())}-${yyyyMMdd.format(currentYearEnd.getTime())}")
                                     //LaserStatsCursor.withTransaction {
                                     //LaserStatsCursor lsc = LaserStatsCursor.construct([platform: c4as.platform, customer: keyPair.customer, reportID: reportID, latestFrom: calendarConfig.startDate, latestTo: calendarConfig.endNextRun])
                                     boolean more = true
                                     while (more) {
-                                        log.debug("${Thread.currentThread().getName()} is getting ${reportID} for ${keyPair.customerName} from ${yyyyMMdd.format(startTime.getTime())}-${yyyyMMdd.format(currentYearEnd.getTime())}")
+                                        //log.debug("${Thread.currentThread().getName()} is getting ${reportID} for ${keyPair.customerName} from ${yyyyMMdd.format(startTime.getTime())}-${yyyyMMdd.format(currentYearEnd.getTime())}")
                                         Map<String, Object> result = performCounter4Request(sql, statsSql, statsUrl, reportID, calendarConfig.now, startTime, currentYearEnd, c4asPlatform, keyPair, namespaces)
                                         if(result.error && result.error != true) {
                                             notifyError(sql, [platform: c4asPlatform.name, uuid: c4asPlatform.gokbId, url: statsUrl, error: result, customer: keyPair.customerName, keyPair: "${keyPair.value}:${keyPair.requestorKey}"])
@@ -348,10 +348,10 @@ class StatsSyncService {
                                         else {*/
                                         startTime.add(Calendar.YEAR, 1)
                                         currentYearEnd.add(Calendar.YEAR, 1)
-                                        log.debug("${Thread.currentThread().getName()} is getting to ${yyyyMMdd.format(startTime.getTime())}-${yyyyMMdd.format(currentYearEnd.getTime())} for report ${reportID}")
+                                        //log.debug("${Thread.currentThread().getName()} is getting to ${yyyyMMdd.format(startTime.getTime())}-${yyyyMMdd.format(currentYearEnd.getTime())} for report ${reportID}")
                                         if (calendarConfig.now.before(startTime)) {
                                             more = false
-                                            log.debug("${Thread.currentThread().getName()} has finished current data fetching for report ${reportID}. Processing missing periods for ${keyPair.customerName}")
+                                            //log.debug("${Thread.currentThread().getName()} has finished current data fetching for report ${reportID}. Processing missing periods for ${keyPair.customerName}")
                                             Map<String, Object> missingParams = [customer: keyPair.customerId, platform: c4asPlatform.id, report: reportID]
                                             List<GroovyRowResult> currentMissingPeriods = sql.rows('select smp_id, smp_from_date, smp_to_date from stats_missing_period where smp_customer_fk = :customer and smp_platform_fk = :platform and smp_report_id = :report', missingParams)
                                             List<Object> donePeriods = []
@@ -368,10 +368,10 @@ class StatsSyncService {
                                                 }
                                             }
                                             if(donePeriods.size() > 0) {
-                                                log.debug("${Thread.currentThread().getName()} has fetched missing data, removing rows ${donePeriods.toListString()}")
+                                                //log.debug("${Thread.currentThread().getName()} has fetched missing data, removing rows ${donePeriods.toListString()}")
                                                 sql.execute('delete from stats_missing_period where smp_id = any(:periodIds)', [periodIds: sql.connection.createArrayOf('bigint', donePeriods.toArray())])
                                             }
-                                            log.debug("${Thread.currentThread().getName()} has finished report ${reportID} and gets next report for ${keyPair.customerName}")
+                                            //log.debug("${Thread.currentThread().getName()} has finished report ${reportID} and gets next report for ${keyPair.customerName}")
                                         }
                                     }
                                     Calendar lastMonth = GregorianCalendar.getInstance()
@@ -424,7 +424,7 @@ class StatsSyncService {
                                 Calendar startTime = GregorianCalendar.getInstance(), currentYearEnd = GregorianCalendar.getInstance()
                                 SimpleDateFormat monthFormatter = DateUtils.getSDF_yyyyMM()
                                 //TitleInstancePackagePlatform.withNewTransaction {
-                                log.debug("${Thread.currentThread().getName()} now processing key pair ${i}, requesting data for ${keyPair.customerName}:${keyPair.value}:${keyPair.requestorKey}")
+                                //log.debug("${Thread.currentThread().getName()} now processing key pair ${i}, requesting data for ${keyPair.customerName}:${keyPair.value}:${keyPair.requestorKey}")
                                 String params = "?customer_id=${keyPair.value}&requestor_id=${keyPair.requestorKey}&api_key=${keyPair.requestorKey}"
                                 Map<String, Object> availableReports = fetchJSONData(statsUrl+params, true)
                                 if(availableReports && availableReports.list) {
@@ -453,10 +453,10 @@ class StatsSyncService {
                                             }
                                             startTime.add(Calendar.YEAR, 1)
                                             currentYearEnd.add(Calendar.YEAR, 1)
-                                            log.debug("${Thread.currentThread().getName()} is getting to ${yyyyMMdd.format(startTime.getTime())}-${yyyyMMdd.format(currentYearEnd.getTime())} for report ${reportId}")
+                                            //log.debug("${Thread.currentThread().getName()} is getting to ${yyyyMMdd.format(startTime.getTime())}-${yyyyMMdd.format(currentYearEnd.getTime())} for report ${reportId}")
                                             if(calendarConfig.now.before(startTime)) {
                                                 more = false
-                                                log.debug("${Thread.currentThread().getName()} has finished fetching running data for report ${reportId}. Processing missing periods for ${keyPair.customerName} ...")
+                                                //log.debug("${Thread.currentThread().getName()} has finished fetching running data for report ${reportId}. Processing missing periods for ${keyPair.customerName} ...")
                                                 Map<String, Object> missingParams = [customer: keyPair.customerId, platform: c5asPlatform.id, report: reportId]
                                                 List<GroovyRowResult> currentMissingPeriods = sql.rows('select smp_id, smp_from_date, smp_to_date from stats_missing_period where smp_customer_fk = :customer and smp_platform_fk = :platform and smp_report_id = :report', missingParams)
                                                 List<Object> donePeriods = []
@@ -471,10 +471,10 @@ class StatsSyncService {
                                                     }
                                                 }
                                                 if(donePeriods.size() > 0) {
-                                                    log.debug("${Thread.currentThread().getName()} has fetched missing data, removing rows ${donePeriods.toListString()}")
+                                                    //log.debug("${Thread.currentThread().getName()} has fetched missing data, removing rows ${donePeriods.toListString()}")
                                                     sql.execute('delete from stats_missing_period where smp_id = any(:periodIds)', [periodIds: sql.connection.createArrayOf('bigint', donePeriods.toArray())])
                                                 }
-                                                log.debug("${Thread.currentThread().getName()} has finished report ${reportId} and gets next report for ${keyPair.customerName}")
+                                                //log.debug("${Thread.currentThread().getName()} has finished report ${reportId} and gets next report for ${keyPair.customerName}")
                                             }
                                             //}
                                         }
@@ -623,7 +623,7 @@ class StatsSyncService {
                                 performance.'ns2:Instance'.each { instance ->
                                     //findAll seems to be less performant than loop processing
                                     //if (instance.'ns2:MetricType'.text() == "ft_total") {
-                                    log.debug("${Thread.currentThread().getName()} processes performance ${ctr} for platform")
+                                    //log.debug("${Thread.currentThread().getName()} processes performance ${ctr} for platform")
                                     String category = performance.'ns2:Category'.text()
                                     String metricType = instance.'ns2:MetricType'.text()
                                     Integer count = Integer.parseInt(instance.'ns2:Count'.text())
@@ -684,7 +684,7 @@ class StatsSyncService {
                                         performance.'ns2:Instance'.each { instance ->
                                             //findAll seems to be less performant than loop processing
                                             //if (instance.'ns2:MetricType'.text() == "ft_total") {
-                                            log.debug("${Thread.currentThread().getName()} processes performance ${ctr} for title ${t} in context ${ctx}")
+                                            //log.debug("${Thread.currentThread().getName()} processes performance ${ctr} for title ${t} in context ${ctx}")
                                             String category = performance.'ns2:Category'.text()
                                             String metricType = instance.'ns2:MetricType'.text()
                                             String publisher = reportItem.'ns2:ItemPublisher'.text()
@@ -766,7 +766,7 @@ class StatsSyncService {
                             int ctr = 0
                             reportItem.Performance.each { Map performance ->
                                 performance.Instance.each { Map instance ->
-                                    log.debug("${Thread.currentThread().getName()} processes performance ${ctr} for platform")
+                                    //log.debug("${Thread.currentThread().getName()} processes performance ${ctr} for platform")
                                     Map<String, Object> configMap = [reportType: report.header.Report_ID, version: 0]
                                     configMap.reportInstitution = keyPair.customerUID
                                     configMap.platform = c5asPlatform.globalUID
@@ -833,7 +833,7 @@ class StatsSyncService {
                                     String title = row.get('tipp_guid')
                                     performances.each { Map performance ->
                                         performance.Instance.each { Map instance ->
-                                            log.debug("${Thread.currentThread().getName()} processes performance ${ctr} for title ${t} in context ${ctx}")
+                                            //log.debug("${Thread.currentThread().getName()} processes performance ${ctr} for title ${t} in context ${ctx}")
                                             Map<String, Object> configMap = [reportType: report.header.Report_ID, version: 0]
                                             configMap.title = title
                                             configMap.reportInstitution = keyPair.customerUID

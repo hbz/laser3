@@ -176,7 +176,15 @@ class PendingChange {
             if (targetClass) {
                 if (configMap.msgToken in SETTING_KEYS) {
                     pc = checkPendingChangeExistsForSync(configMap, targetClass)
-                } else {
+                }
+                else if(configMap.msgToken == PendingChangeConfiguration.TITLE_REMOVED) {
+                    Map<String, Object> changeParams = [target: configMap.target, msgToken: configMap.msgToken]
+                    List<PendingChange> pendingChangeCheck = executeQuery('select pc from PendingChange pc where pc.status in (:processed) and pc.' + targetClass + ' = :target and pc.msgToken = :msgToken', changeParams + [processed: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_PENDING, RDStore.PENDING_CHANGE_HISTORY]])
+                    if (pendingChangeCheck)
+                        return pendingChangeCheck[0]
+                    else pc = new PendingChange()
+                }
+                else {
                     if (configMap.prop) {
                         Map<String, Object> changeParams = [target: configMap.target, prop: configMap.prop]
                         if (!configMap.oid) {
