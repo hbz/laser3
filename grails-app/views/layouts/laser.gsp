@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.Profiler; de.laser.utils.AppUtils; grails.util.Environment; de.laser.system.SystemActivityProfiler; de.laser.FormService; de.laser.system.SystemSetting; de.laser.UserSetting; de.laser.RefdataValue; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.Org;de.laser.auth.User;de.laser.system.SystemMessage" %>
+<%@ page import="de.laser.helper.Profiler; de.laser.utils.AppUtils; grails.util.Environment; de.laser.system.SystemActivityProfiler; de.laser.FormService; de.laser.system.SystemSetting; de.laser.UserSetting; de.laser.RefdataValue; de.laser.storage.RDStore;de.laser.storage.RDConstants;de.laser.Org;de.laser.auth.User;de.laser.system.SystemMessage; org.grails.orm.hibernate.cfg.GrailsHibernateUtil" %>
 <!doctype html>
 
 <laser:serviceInjection />
@@ -480,7 +480,8 @@
 
                                     <g:set var="usaf" value="${contextUser.getAffiliationOrgs()}" />
                                     <g:if test="${usaf && usaf.size() > 0}">
-                                        <g:each in="${usaf}" var="org">
+                                        <g:each in="${usaf}" var="orgRaw">
+                                            <g:set var="org" value="${(Org) GrailsHibernateUtil.unwrapIfProxy(orgRaw)}"></g:set>
                                             <g:if test="${org.id == contextOrg?.id}">
                                                 <ui:link generateElementId="true" class="item active" role="menuitem" controller="myInstitution" action="switchContext" params="${[oid:"${org.class.name}:${org.id}"]}">${org.name}</ui:link>
                                             </g:if>

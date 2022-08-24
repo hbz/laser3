@@ -82,12 +82,16 @@ class ExportClickMeService {
                                     'participant.exportShibboleths' : [field: null, label: 'Export Shibboleths', message: 'subscriptionDetails.members.exportShibboleths', separateSheet: 'true'],
                             ]
                     ],
-                    participantIdentifiersCustomerIdentifier : [
-                            label: 'Identifiers/Customer Identifier',
-                            message: 'exportClickMe.participantIdentifiersCustomerIdentifier',
-                            fields: [
-                                    'participant.customerIdentifier' : [field: null, label: 'customerIdentifier', message: 'org.customerIdentifier.plural'],
-                            ],
+                    participantIdentifiers : [
+                            label: 'Identifiers',
+                            message: 'exportClickMe.participantIdentifiers',
+                            fields: [:],
+
+                    ],
+                    participantCustomerIdentifiers : [
+                            label: 'Customer Identifier',
+                            message: 'exportClickMe.participantCustomerIdentifiers',
+                            fields: [:],
 
                     ],
 
@@ -160,12 +164,15 @@ class ExportClickMeService {
                             'participant.exportShibboleths' : [field: null, label: 'Export Shibboleths', message: 'subscriptionDetails.members.exportShibboleths', separateSheet: 'true'],
                     ]
             ],
-            participantIdentifiersCustomerIdentifier : [
-                    label: 'Identifiers/Customer Identifier',
-                    message: 'exportClickMe.participantIdentifiersCustomerIdentifier',
-                    fields: [
-                            'participant.customerIdentifier' : [field: null, label: 'customerIdentifier', message: 'org.customerIdentifier.plural'],
-                    ]
+            participantIdentifiers : [
+                    label: 'Identifiers',
+                    message: 'exportClickMe.participantIdentifiers',
+                    fields: [:]
+            ],
+            participantCustomerIdentifiers : [
+                    label: 'Customer Identifiers',
+                    message: 'exportClickMe.participantCustomerIdentifiers',
+                    fields: [:]
             ],
 
             participantSubProperties : [
@@ -376,12 +383,16 @@ class ExportClickMeService {
                             'subscription.uuid'                         : [field: 'sub.globalUID', label: 'Laser-UUID',  message: null],
                     ]
             ],
-            participantIdentifiersCustomerIdentifier : [
-                    label: 'Identifiers/Customer Identifier',
-                    message: 'exportClickMe.participantIdentifiersCustomerIdentifier',
+            participantIdentifiers : [
+                    label: 'Identifiers',
+                    message: 'exportClickMe.participantIdentifiers',
                     fields: [:]
             ],
-
+            participantCustomerIdentifiers : [
+                    label: 'Customer Identifiers',
+                    message: 'exportClickMe.participantCustomerIdentifiers',
+                    fields: [:]
+            ]
     ]
 
     static Map<String, Object> EXPORT_ORG_CONFIG = [
@@ -415,9 +426,14 @@ class ExportClickMeService {
                             'participant.exportShibboleths' : [field: null, label: 'Export Shibboleths', message: 'subscriptionDetails.members.exportShibboleths', separateSheet: 'true'],
                     ]
             ],
-            participantIdentifiersCustomerIdentifier : [
-                    label: 'Identifiers/Customer Identifier',
-                    message: 'exportClickMe.participantIdentifiersCustomerIdentifier',
+            participantIdentifiers : [
+                    label: 'Identifiers',
+                    message: 'exportClickMe.participantIdentifiers',
+                    fields: [:]
+            ],
+            participantCustomerIdentifiers : [
+                    label: 'Customer Identifiers',
+                    message: 'exportClickMe.participantCustomerIdentifiers',
                     fields: [:]
             ],
             participantProperties : [
@@ -446,8 +462,13 @@ class ExportClickMeService {
                     ]
             ],
             providerIdentifiers : [
-                    label: 'Identifiers/Customer Identifier',
-                    message: 'exportClickMe.participantIdentifiersCustomerIdentifier',
+                    label: 'Identifiers',
+                    message: 'exportClickMe.participantIdentifiers',
+                    fields: [:]
+            ],
+            providerCustomerIdentifiers : [
+                    label: 'Customer Identifiers',
+                    message: 'exportClickMe.participantCustomerIdentifiers',
                     fields: [:]
             ],
             providerProperties : [
@@ -498,12 +519,16 @@ class ExportClickMeService {
                             'participant.exportShibboleths' : [field: null, label: 'Export Shibboleths', message: 'subscriptionDetails.members.exportShibboleths', separateSheet: 'true'],
                     ]
             ],
-            participantIdentifiersCustomerIdentifier : [
-                    label: 'Identifiers/Customer Identifier',
-                    message: 'exportClickMe.participantIdentifiersCustomerIdentifier',
-                    fields: [
-                            'participant.customerIdentifier' : [field: null, label: 'customerIdentifier', message: 'org.customerIdentifier.plural'],
-                    ],
+            participantIdentifiers : [
+                    label: 'Identifiers',
+                    message: 'exportClickMe.participantIdentifiers',
+                    fields: [:],
+
+            ],
+            participantCustomerIdentifiers : [
+                    label: 'Customer Identifiers',
+                    message: 'exportClickMe.participantCustomerIdentifiers',
+                    fields: [:],
 
             ],
 
@@ -742,8 +767,11 @@ class ExportClickMeService {
             }
         }
 
-        IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
+        IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
             exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
+        }
+        Platform.executeQuery('select distinct(ci.platform) from CustomerIdentifier ci').each { Platform plat ->
+            exportFields.put("participantCustomerIdentifiers."+plat.id, [field: null, label: plat.name])
         }
 
         def removeSurveyProperties = exportFields.keySet().findAll { it.startsWith('surveyProperty.') }
@@ -783,8 +811,11 @@ class ExportClickMeService {
         Locale locale = LocaleUtils.getCurrentLocale()
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
 
-        IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
-            fields.participantIdentifiersCustomerIdentifier.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
+        IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
+            fields.participantIdentifiers.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
+        }
+        Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat order by plat.name').each { Platform plat ->
+            fields.participantCustomerIdentifiers.fields << ["participantCustomerIdentifiers.${plat.id}":[field: null, label: plat.name]]
         }
 
         def removeSurveyProperties = fields.survey.fields.keySet().findAll { it.startsWith('surveyProperty.') }
@@ -829,8 +860,11 @@ class ExportClickMeService {
             }
         }
 
-        IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
+        IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
             exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
+        }
+        Platform.executeQuery('select distinct(ci.platform) from CustomerIdentifier ci').each { Platform plat ->
+            exportFields.put("participantCustomerIdentifiers."+plat.id, [field: null, label: plat.name])
         }
         List<Subscription> childSubs = subscription.getNonDeletedDerivedSubscriptions()
         if(childSubs) {
@@ -861,8 +895,11 @@ class ExportClickMeService {
         Map<String, Object> fields = EXPORT_SUBSCRIPTION_MEMBERS_CONFIG as Map
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
 
-        IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
-            fields.participantIdentifiersCustomerIdentifier.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
+        IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
+            fields.participantIdentifiers.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
+        }
+        Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat order by plat.name').each { Platform plat ->
+            fields.participantCustomerIdentifiers.fields << ["participantCustomerIdentifiers.${plat.id}":[field: null, label: plat.name]]
         }
 
         fields.participantSubProperties.fields.clear()
@@ -912,8 +949,11 @@ class ExportClickMeService {
             }
         }
 
-        IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
+        IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
             exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
+        }
+        Platform.executeQuery('select distinct(ci.platform) from CustomerIdentifier ci').each { Platform plat ->
+            exportFields.put("participantCustomerIdentifiers."+plat.id, [field: null, label: plat.name])
         }
 
         Set<PropertyDefinition> propList = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd where pd.descr in (:availableTypes) and (pd.tenant = null or pd.tenant = :ctx) order by pd."+localizedName+" asc",
@@ -988,8 +1028,11 @@ class ExportClickMeService {
             }
         }
 
-        IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
+        IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
             exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
+        }
+        Platform.executeQuery('select distinct(ci.platform) from CustomerIdentifier ci').each { Platform plat ->
+            exportFields.put("participantCustomerIdentifiers."+plat.id, [field: null, label: plat.name])
         }
 
         exportFields
@@ -1004,8 +1047,11 @@ class ExportClickMeService {
         Map<String, Object> fields = EXPORT_COST_ITEM_CONFIG as Map
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
 
-        IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
-            fields.participantIdentifiersCustomerIdentifier.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
+        IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
+            fields.participantIdentifiers.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
+        }
+        Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat order by plat.name').each { Platform plat ->
+            fields.participantCustomerIdentifiers.fields << ["participantCustomerIdentifiers.${plat.id}":[field: null, label: plat.name]]
         }
 
         fields
@@ -1030,8 +1076,12 @@ class ExportClickMeService {
                     }
                 }
 
-                IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
+                IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
                     exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
+                }
+
+                Platform.executeQuery('select distinct(ci.platform) from CustomerIdentifier ci').each { Platform plat ->
+                    exportFields.put("participantCustomerIdentifiers."+plat.id, [field: null, label: plat.name])
                 }
 
                 PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg()).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
@@ -1045,8 +1095,12 @@ class ExportClickMeService {
                     }
                 }
 
-                IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
+                IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
                     exportFields.put("providerIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
+                }
+
+                Platform.executeQuery('select distinct(ci.platform) from CustomerIdentifier ci').each { Platform plat ->
+                    exportFields.put("providerCustomerIdentifiers."+plat.id, [field: null, label: plat.name])
                 }
 
                 PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg()).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
@@ -1071,8 +1125,11 @@ class ExportClickMeService {
 
         switch(orgType) {
             case 'institution': fields = EXPORT_ORG_CONFIG as Map
-                IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
-                    fields.participantIdentifiersCustomerIdentifier.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
+                IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
+                    fields.participantIdentifiers.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
+                }
+                Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where ci.value != null order by plat.name').each { Platform plat ->
+                    fields.participantCustomerIdentifiers.fields << ["participantCustomerIdentifiers.${plat.id}":[field: null, label: plat.name]]
                 }
                 fields.participantProperties.fields.clear()
                 PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg()).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
@@ -1082,6 +1139,9 @@ class ExportClickMeService {
             case 'provider': fields = EXPORT_PROVIDER_CONFIG as Map
                 IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
                     fields.providerIdentifiers.fields << ["providerIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
+                }
+                Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat order by plat.name').each { Platform plat ->
+                    fields.participantCustomerIdentifiers.fields << ["participantCustomerIdentifiers.${plat.id}":[field: null, label: plat.name]]
                 }
                 fields.providerProperties.fields.clear()
                 PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg()).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
@@ -1119,8 +1179,11 @@ class ExportClickMeService {
             }
         }
 
-        IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
+        IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
             exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
+        }
+        Platform.executeQuery('select distinct(ci.platform) from CustomerIdentifier ci').each { Platform plat ->
+            exportFields.put("participantCustomerIdentifiers."+plat.id, [field: null, label: plat.name])
         }
 
         def removeSurveyProperties = exportFields.keySet().findAll { it.startsWith('surveyProperty.') }
@@ -1149,8 +1212,11 @@ class ExportClickMeService {
         Locale locale = LocaleUtils.getCurrentLocale()
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
 
-        IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
-            fields.participantIdentifiersCustomerIdentifier.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
+        IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
+            fields.participantIdentifiers.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
+        }
+        Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat order by plat.name').each { Platform plat ->
+            fields.participantCustomerIdentifiers.fields << ["participantCustomerIdentifiers.${plat.id}":[field: null, label: plat.name]]
         }
 
         def removeSurveyProperties = fields.survey.fields.keySet().findAll { it.startsWith('surveyProperty.') }
@@ -1259,7 +1325,7 @@ class ExportClickMeService {
             }
         }
 
-        IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
+        IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
             exportFields.put("issueEntitlementIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
         }
 
@@ -1298,7 +1364,7 @@ class ExportClickMeService {
             }
         }
 
-        IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
+        IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
             exportFields.put("tippIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
         }
 
@@ -1907,7 +1973,7 @@ class ExportClickMeService {
                 }else if (fieldKey == 'participant.postAdress') {
                     _setOrgFurtherInformation(participantResult.participant, row, fieldKey)
                 }
-                else if (fieldKey == 'participant.customerIdentifier') {
+                else if (fieldKey.startsWith('participantCustomerIdentifiers.')) {
                     _setOrgFurtherInformation(participantResult.participant, row, fieldKey, participantResult.sub)
                 }else if (fieldKey == 'participant.readerNumbers') {
                     _setOrgFurtherInformation(participantResult.participant, row, fieldKey)
@@ -1969,7 +2035,7 @@ class ExportClickMeService {
                 else if (fieldKey == 'participant.postAdress') {
                     _setOrgFurtherInformation(result.orgs, row, fieldKey)
                 }
-                else if (fieldKey == 'participant.customerIdentifier') {
+                else if (fieldKey.startsWith('participantCustomerIdentifiers.')) {
                     _setOrgFurtherInformation(result.orgs, row, fieldKey, subscription)
                 }else if (fieldKey == 'participant.readerNumbers') {
                     _setOrgFurtherInformation(result.orgs, row, fieldKey)
@@ -2039,7 +2105,7 @@ class ExportClickMeService {
                 else if (fieldKey == 'participant.postAdress') {
                     _setOrgFurtherInformation(org, row, fieldKey)
                 }
-                else if (fieldKey == 'participant.customerIdentifier') {
+                else if (fieldKey.startsWith('participantCustomerIdentifiers.')) {
                     _setOrgFurtherInformation(org, row, fieldKey, costItem.sub)
                 }else if (fieldKey == 'participant.readerNumbers') {
                     _setOrgFurtherInformation(org, row, fieldKey)
@@ -2087,6 +2153,8 @@ class ExportClickMeService {
                 else if (fieldKey == 'participant.readerNumbers') {
                     _setOrgFurtherInformation(result, row, fieldKey)
                 }else if (fieldKey.startsWith('participantIdentifiers.') || fieldKey.startsWith('providerIdentifiers.')) {
+                    _setOrgFurtherInformation(result, row, fieldKey)
+                }else if (fieldKey.startsWith('participantCustomerIdentifiers.') || fieldKey.startsWith('providerCustomerIdentifiers.')) {
                     _setOrgFurtherInformation(result, row, fieldKey)
                 }else if (fieldKey.startsWith('participantProperty.') || fieldKey.startsWith('providerProperty.')) {
                     _setOrgFurtherInformation(result, row, fieldKey)
@@ -2140,11 +2208,13 @@ class ExportClickMeService {
                 }else if (fieldKey == 'participant.postAdress') {
                     _setOrgFurtherInformation(participantResult.participant, row, fieldKey)
                 }
-                else if (fieldKey == 'participant.customerIdentifier') {
+                else if (fieldKey.startsWith('participantCustomerIdentifiers.')) {
                     _setOrgFurtherInformation(participantResult.participant, row, fieldKey, participantResult.sub)
                 }else if (fieldKey == 'participant.readerNumbers') {
                     _setOrgFurtherInformation(participantResult.participant, row, fieldKey)
                 }else if (fieldKey.startsWith('participantIdentifiers.')) {
+                    _setOrgFurtherInformation(participantResult.participant, row, fieldKey)
+                }else if (fieldKey.startsWith('participantCustomerIdentifiers.')) {
                     _setOrgFurtherInformation(participantResult.participant, row, fieldKey)
                 }else if (fieldKey == 'participantSurveyCostItem') {
                     if(participantResult.surveyCostItem){
@@ -2554,16 +2624,11 @@ class ExportClickMeService {
             } else {
                 row.add([field: '', style: null])
             }
-        } else if (fieldKey == 'participant.customerIdentifier') {
+        } else if (fieldKey.startsWith('participantCustomerIdentifiers.') || fieldKey.startsWith('providerCustomerIdentifiers.')) {
             if (org) {
-                if (subscription && subscription.packages) {
-                    List<Platform> platformList = Platform.executeQuery('select distinct tipp.platform from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg', [pkg: subscription.packages.pkg])
-                    List<CustomerIdentifier> customerIdentifierList = CustomerIdentifier.findAllByCustomerAndIsPublicAndPlatformInList(org, false, platformList)
-                    if (customerIdentifierList) {
-                        row.add([field: customerIdentifierList.value.join(";"), style: null])
-                    } else {
-                        row.add([field: '', style: null])
-                    }
+                CustomerIdentifier customerIdentifier = CustomerIdentifier.findByCustomerAndPlatform(org, Platform.get(fieldKey.split("\\.")[1]))
+                if (customerIdentifier) {
+                    row.add([field: customerIdentifier.value, style: null])
                 } else {
                     row.add([field: '', style: null])
                 }

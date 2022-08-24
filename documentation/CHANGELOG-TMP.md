@@ -7,13 +7,17 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4414    24.08.2022  dev     3.0         Andreas Feature     Trennung von Identifikatoren und Kundennummern im Click-Mich-Excel-Export
+
+--      24.08.2022  dev     3.0         Andreas Bug         Umschalten von Kontexten wieder möglich
+
 4425    23.08.2022  dev     3.0         Andreas Feature     Bereinigungsmethode entfernt markierter Titel erweitert
 
-4419    23.08.2022  dev     3.0         Andreas Bug         SQL-Befehle auf veränderte Spaltennamen angepasst
+4421    23.08.2022  dev     3.0         Andreas Bug         Tippfehler bei Löschbefehlen behoben
 
 4420    23.08.2022  dev     3.0         Andreas Bug         SQL-Befehle auf veränderte Spaltennamen angepasst
 
-4421    23.08.2022  dev     3.0         Andreas Bug         Tippfehler bei Löschbefehlen behoben
+4419    23.08.2022  dev     3.0         Andreas Bug         SQL-Befehle auf veränderte Spaltennamen angepasst
 
 4229    19.08.2022  dev     3.0         David   Feature     Migration auf Grails 5
 

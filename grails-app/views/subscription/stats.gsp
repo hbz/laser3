@@ -65,9 +65,10 @@
                         <tr>
                             <td>
                                 <g:link action="stats" id="${row.memberSubId}">${row.memberName}
+                                    <%-- not necessary any more (tabs are greyed out if no stats are available) and above that immensely time consuming
                                     <g:if test="${subscriptionService.areStatsAvailable(platforms, subscription.packages, [row.memberId], [startDate: row.startDate, endDate: row.endDate])}">
                                         <span class="la-popup-tooltip la-delay" data-content="${message(code: 'default.usage.statsAvailable')}"><i class="chart bar outline icon"></i></span>
-                                    </g:if>
+                                    </g:if>--%>
                                 </g:link>
                             </td>
                         </tr>
