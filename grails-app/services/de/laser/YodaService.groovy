@@ -12,6 +12,9 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
 import groovy.xml.slurpersupport.GPathResult
+import groovyx.gpars.GParsPool
+import io.micronaut.http.client.DefaultHttpClientConfiguration
+import io.micronaut.http.client.HttpClientConfiguration
 
 /**
  * This service handles bulk and cleanup operations, testing areas and debug information
@@ -145,7 +148,9 @@ class YodaService {
         Map<String, Object> result = [:]
         Map<String, String> wekbUuids = [:]
         Set<Map> titles = []
-        BasicHttpClient http = new BasicHttpClient(grs.uri+'/find') //we presume that the count will never get beyond 10000
+        HttpClientConfiguration config = new DefaultHttpClientConfiguration()
+        config.maxContentLength = 1024 * 1024 * 20
+        BasicHttpClient http = new BasicHttpClient(grs.uri+'/find', config) //we presume that the count will never get beyond 10000
         Closure success = { resp, json ->
             if(resp.code() == 200) {
                 json.records.each{ Map record ->
@@ -168,15 +173,64 @@ class YodaService {
                                            max: 10000,
                                            status: ['Removed', GlobalSourceSyncService.PERMANENTLY_DELETED]]
         http.post(BasicHttpClient.ResponseType.JSON, BasicHttpClient.PostType.URLENC, queryParams, success, failure)
+        BasicHttpClient httpScroll = new BasicHttpClient(grs.uri+'/scroll', config)
+        //invert: check if non-deleted TIPPs still exist in we:kb instance
+        GParsPool.withPool(2) {
+            Package.findAllByPackageStatusNotEqual(RDStore.PACKAGE_STATUS_DELETED).eachWithIndexParallel { Package pkg, int i ->
+                Package.withTransaction {
+                    Set<TitleInstancePackagePlatform> tipps = TitleInstancePackagePlatform.findAllByPkg(pkg)
+                    queryParams = [pkg: pkg.gokbId, status: ['Current', 'Expected', 'Retired', 'Deleted', 'Removed', GlobalSourceSyncService.PERMANENTLY_DELETED], max: 10000]
+                    Set<String> wekbPkgTipps = []
+                    boolean more = true
+                    Closure checkSuccess
+                    checkSuccess = { resp, json ->
+                        if(resp.code() == 200) {
+                            if(json.size == 0) {
+                                tipps.each { TitleInstancePackagePlatform tipp ->
+                                    wekbUuids.put(tipp.gokbId, 'inexistent')
+                                }
+                                //because of parallel process; session mismatch when accessing via GORM
+                                Package.executeUpdate('update Package pkg set pkg.packageStatus = :deleted where pkg = :pkg',[deleted: RDStore.PACKAGE_STATUS_DELETED, pkg: pkg])
+                            }
+                            else {
+                                wekbPkgTipps.addAll(json.records.collect { Map record -> record.uuid }.toSet())
+                                more = Boolean.valueOf(json.hasMoreRecords)
+                                if(more) {
+                                    queryParams.scrollId = json.scrollId
+                                    httpScroll.post(BasicHttpClient.ResponseType.JSON, BasicHttpClient.PostType.URLENC, queryParams, checkSuccess, failure)
+                                }
+                            }
+                        }
+                        else {
+                            throw new SyncException("erroneous response")
+                        }
+                    }
+                    if (tipps.size() > 10000) {
+                        queryParams.component_type = 'TitleInstancePackagePlatform'
+                        httpScroll.post(BasicHttpClient.ResponseType.JSON, BasicHttpClient.PostType.URLENC, queryParams, checkSuccess, failure)
+                    } else {
+                        queryParams.componentType = 'TitleInstancePackagePlatform'
+                        http.post(BasicHttpClient.ResponseType.JSON, BasicHttpClient.PostType.URLENC, queryParams, checkSuccess, failure)
+                    }
+                    tipps.each { TitleInstancePackagePlatform tipp ->
+                        if (!wekbPkgTipps.contains(tipp.gokbId))
+                            wekbUuids.put(tipp.gokbId, 'inexistent')
+                    }
+                }
+            }
+        }
         http.close()
+        httpScroll.close()
 
         if(wekbUuids) {
-            wekbUuids.each { String key, String status ->
-                TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbId(key)
-                if(tipp) {
-                    tipp.status = RDStore.TIPP_STATUS_REMOVED
-                    PendingChange.construct([msgToken:PendingChangeConfiguration.TITLE_REMOVED,target:tipp,status:RDStore.PENDING_CHANGE_HISTORY])
-                    tipp.save()
+            if(!doIt) {
+                wekbUuids.each { String key, String status ->
+                    TitleInstancePackagePlatform tipp = TitleInstancePackagePlatform.findByGokbId(key)
+                    if (tipp) {
+                        tipp.status = RDStore.TIPP_STATUS_REMOVED
+                        PendingChange.construct([msgToken: PendingChangeConfiguration.TITLE_REMOVED, target: tipp, status: RDStore.PENDING_CHANGE_HISTORY])
+                        tipp.save()
+                    }
                 }
             }
             List deletedLaserTIPPs = TitleInstancePackagePlatform.executeQuery('select new map(tipp.id as tippId, tipp.gokbId as wekbId, tipp.status as laserStatus, tipp.name as title) from TitleInstancePackagePlatform tipp where tipp.status = :removed or tipp.gokbId in (:deletedWekbIDs)', [removed: RDStore.TIPP_STATUS_REMOVED, deletedWekbIDs: wekbUuids.keySet()])
