@@ -57,6 +57,10 @@ class DateUtils {
         return new SimpleDateFormat('dd.MM.yyyy')
     }
 
+    static SimpleDateFormat getSDF_MM(){
+        return new SimpleDateFormat('MM')
+    }
+
     static SimpleDateFormat getSDF_yy(){
         return new SimpleDateFormat('yy')
     }

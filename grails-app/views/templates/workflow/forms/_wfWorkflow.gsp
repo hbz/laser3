@@ -1,4 +1,4 @@
-<%@ page import="de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.workflow.*;" %>
+<%@ page import="de.laser.utils.DateUtils; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.workflow.*;" %>
 
 <g:form url="${formUrl}" method="POST" class="ui form">
 
@@ -28,7 +28,8 @@
             </div>
             <div class="field five wide required">
                 <label for="${prefix}_prototypeVersion>">Version</label>
-                <input type="text" name="${prefix}_prototypeVersion" id="${prefix}_prototypeVersion" value="${workflow?.prototypeVersion ?: '1'}" />
+                <g:set var="defaultVersion" value="${DateUtils.getSDF_yyyy().format(new Date()) + '/' + DateUtils.getSDF_MM().format(new Date())}" />
+                <input type="text" name="${prefix}_prototypeVersion" id="${prefix}_prototypeVersion" value="${workflow?.prototypeVersion ?: defaultVersion}" />
             </div>
         </div>
         </div>
@@ -43,6 +44,15 @@
                       optionValue="${{ (tpIdTable && tpIdTable[it.id]) ? ('(' + tpIdTable[it.id] + ') ' + it.title) : it.title }}" />
         </div>
 
+        <g:if test="${workflow}">
+            <div class="field">
+                <div class="field">
+                    <label>${message(code:'default.lastUpdated.label')}</label>
+                    <p>${DateUtils.getLocalizedSDF_noTime().format(workflow.lastUpdated)}</p>
+    %{--                ${message(code:'default.dateCreated.label')}: ${DateUtils.getLocalizedSDF_noTime().format(workflow.dateCreated)}--}%
+                </div>
+            </div>
+        </g:if>
     </g:if>
     <g:if test="${prefix == WfWorkflow.KEY}">
 

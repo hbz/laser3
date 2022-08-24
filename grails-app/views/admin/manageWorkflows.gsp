@@ -188,8 +188,8 @@
 
             <br />
             <span>
-                Zuletzt bearbeitet: ${DateUtils.getLocalizedSDF_noTime().format(wfInfo.lastUpdated)}
-                - Erstellt: ${DateUtils.getLocalizedSDF_noTime().format(wf.dateCreated)}
+                ${message(code:'default.lastUpdated.label')}: ${DateUtils.getLocalizedSDF_noTime().format(wfInfo.lastUpdated)}
+                - ${message(code:'default.dateCreated.label')}: ${DateUtils.getLocalizedSDF_noTime().format(wf.dateCreated)}
                 <span class="${wf.prototypeVersion == wf.getPrototype().prototypeVersion ? '' : 'sc_darkgrey'}">
                     - Version: ${wf.prototypeVersion}
                 </span>

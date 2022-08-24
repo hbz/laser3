@@ -185,6 +185,16 @@
                 --}%
             </div>
         </g:if>
+
+        <g:if test="${condition}">
+            <div class="field">
+                <div class="field">
+                    <label>${message(code:'default.lastUpdated.label')}</label>
+                    <p>${DateUtils.getLocalizedSDF_noTime().format(condition.lastUpdated)}</p>
+    %{--                ${message(code:'default.dateCreated.label')}: ${DateUtils.getLocalizedSDF_noTime().format(condition.dateCreated)}--}%
+                </div>
+            </div>
+        </g:if>
     </g:if>
 
     <g:if test="${prefix == WfCondition.KEY}">
