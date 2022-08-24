@@ -9,8 +9,7 @@ import grails.gorm.dirty.checking.DirtyCheck
  * This class represents the different condition types for a workflow task condition
  */
 @DirtyCheck
-class WfConditionBase {
-
+abstract class WfConditionBase {
 
     public static final String[] TYPES = [
             '1_0_0',

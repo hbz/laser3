@@ -6,9 +6,9 @@ import grails.gorm.dirty.checking.DirtyCheck
  * The base class for workflows and workflow prototypes
  */
 @DirtyCheck
-class WfWorkflowBase {
+abstract class WfWorkflowBase {
 
-    WfTaskBase task
+//    WfTaskBase task
 
     String prototypeVersion
 

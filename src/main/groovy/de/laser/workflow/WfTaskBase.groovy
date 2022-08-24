@@ -9,18 +9,15 @@ import grails.gorm.dirty.checking.DirtyCheck
  * This is the base class for a workflow task
  */
 @DirtyCheck
-class WfTaskBase {
+abstract class WfTaskBase {
 
     @RefdataInfo(cat = RDConstants.WF_TASK_PRIORITY)
     RefdataValue priority
 
-    //@RefdataInfo(cat = RDConstants.WF_TASK_TYPE)
-    //RefdataValue type
+//    WfConditionBase condition
 
-    WfConditionBase condition
-
-    WfTaskBase child
-    WfTaskBase next
+//    WfTaskBase child
+//    WfTaskBase next
 
     String title
     String description
