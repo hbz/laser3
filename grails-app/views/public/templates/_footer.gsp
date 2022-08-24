@@ -69,7 +69,7 @@
                     $('#spanYear').html(new Date().getFullYear());
                 </laser:script>
                 <p>
-                    ©<span id="spanYear"></span>&nbsp;Hochschulbibliothekszentrum des Landes Nordrhein-Westfalen (hbz) &#8231; Jülicher Straße 6 &#8231; 50674 Köln &#8231; +49 221 400 75-0
+                    ©<span id="spanYear"></span>&nbsp;Hochschulbibliothekszentrum des Landes Nordrhein-Westfalen (hbz) &#8231; Jülicher Straße 6 &#8231; 50674 Köln <br>+49 221 400 75-0
                 </p>
             </div>
 

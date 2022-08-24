@@ -168,3 +168,6 @@ body[class*="platform"] .ui.icon.header .circular.icon.la-object:before {
 .ui.icon.header > i.icon {
   display: inline-block;
 }
+.la-positionRelative {
+  position: relative;
+}
