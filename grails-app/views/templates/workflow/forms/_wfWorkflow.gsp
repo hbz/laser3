@@ -14,7 +14,8 @@
 
     <g:if test="${prefix == WfWorkflowPrototype.KEY}">
 
-        <div class="fields">
+        <div class="field">
+        <div class="two fields">
             <div class="field eleven wide required">
                 <label for="${prefix}_type>">State</label>
                 <ui:select class="ui dropdown la-not-clearable" id="${prefix}_state" name="${prefix}_state"
@@ -29,6 +30,7 @@
                 <label for="${prefix}_prototypeVersion>">Version</label>
                 <input type="text" name="${prefix}_prototypeVersion" id="${prefix}_prototypeVersion" value="${workflow?.prototypeVersion ?: '1'}" />
             </div>
+        </div>
         </div>
 
         <div class="field">

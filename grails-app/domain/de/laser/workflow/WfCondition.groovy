@@ -89,6 +89,11 @@ class WfCondition extends WfConditionBase {
      * @return the associated {@link WfTask}
      */
     WfTask getTask() {
-        WfTask.findByCondition( this )
+        List<WfTask> result = WfTask.findAllByCondition(this, [sort: 'id'])
+
+        if (result.size() > 1) {
+            log.debug('Multiple matches for WfCondition.getTask() ' + this.id + ' -> ' + result.collect{ it.id })
+        }
+        return result ? result.first() : null
     }
 }

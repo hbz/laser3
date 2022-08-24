@@ -164,26 +164,27 @@
     </g:if>
 
     <g:if test="${prefix == WfConditionPrototype.KEY}">
-
-        <div class="field">
-            <label for="${prefix}_task">${message(code: 'workflow.object.' + WfTaskPrototype.KEY)}</label>
-            <p>
-                <g:if test="${condition?.task}">
-                    <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY + ':' + condition.task.id]}">
-                        <i class="icon circle blue"></i> ${condition.task.title}
-                    </g:link>
-                </g:if>
-            </p>
-            %{--
-            <g:select class="ui dropdown disabled" id="${prefix}_task" name="${prefix}_task"
-                      noSelection="${['' : message(code:'default.select.choose.label')]}"
-                      from="${dd_taskList}"
-                      value="${condition?.task?.id}"
-                      optionKey="id"
-                      optionValue="${{'(' + it.id + ') ' + it.title}}" />
-            --}%
-        </div>
-
+        <g:if test="${condition}">
+            <div class="field">
+                <label for="${prefix}_task">${message(code: 'workflow.object.' + WfTaskPrototype.KEY)}</label>
+                <p>
+                    <g:each in="${WfTaskPrototype.findAllByCondition(condition, [sort: 'id'])}" var="task">
+                        <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY + ':' + task.id]}">
+                            <i class="icon circle blue"></i> ${task.title}
+                        </g:link>
+                        &nbsp;&nbsp;&nbsp;
+                    </g:each>
+                </p>
+                %{--
+                <g:select class="ui dropdown disabled" id="${prefix}_task" name="${prefix}_task"
+                          noSelection="${['' : message(code:'default.select.choose.label')]}"
+                          from="${dd_taskList}"
+                          value="${condition?.task?.id}"
+                          optionKey="id"
+                          optionValue="${{'(' + it.id + ') ' + it.title}}" />
+                --}%
+            </div>
+        </g:if>
     </g:if>
 
     <g:if test="${prefix == WfCondition.KEY}">

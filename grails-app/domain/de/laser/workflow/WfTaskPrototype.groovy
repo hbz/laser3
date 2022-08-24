@@ -95,14 +95,12 @@ class WfTaskPrototype extends WfTaskBase {
      * @return the associated {@link WfWorkflowPrototype}
      */
     WfWorkflowPrototype getWorkflow() {
-        List<WfWorkflowPrototype> result = WfWorkflowPrototype.executeQuery('select wp from WfWorkflowPrototype wp where task = :current order by id', [current: this] )
+        List<WfWorkflowPrototype> result = WfWorkflowPrototype.findAllByTask(this, [sort: 'id'])
 
         if (result.size() > 1) {
-            log.warn( 'MULTIPLE MATCHES - getWorkflow()')
+            log.debug('Multiple matches for WfTaskPrototype.getWorkflow() ' + this.id + ' -> ' + result.collect{ it.id })
         }
-        if (result) {
-            return result.first() as WfWorkflowPrototype
-        }
+        return result ? result.first() : null
     }
 
     /**
@@ -110,14 +108,12 @@ class WfTaskPrototype extends WfTaskBase {
      * @return the prototype of which this is a child (the parent prototype), the first match if there are multiple matches (ordered by id)
      */
     WfTaskPrototype getParent() {
-        List<WfTaskPrototype> result = WfTaskPrototype.executeQuery('select tp from WfTaskPrototype tp where child = :current order by id', [current: this] )
+        List<WfTaskPrototype> result = WfTaskPrototype.findAllByChild(this, [sort: 'id'])
 
         if (result.size() > 1) {
-            log.warn( 'MULTIPLE MATCHES - getParent()')
+            log.debug('Multiple matches for WfTaskPrototype.getParent() ' + this.id + ' -> ' + result.collect{ it.id })
         }
-        if (result) {
-            return result.first() as WfTaskPrototype
-        }
+        return result ? result.first() : null
     }
 
     /**
@@ -125,13 +121,11 @@ class WfTaskPrototype extends WfTaskBase {
      * @return the prototype which this is following (the preceding prototype), the first match if there are multiple macthes (ordered by id)
      */
     WfTaskPrototype getPrevious() {
-        List<WfTaskPrototype> result = WfTaskPrototype.executeQuery('select tp from WfTaskPrototype tp where next = :current order by id', [current: this] )
+        List<WfTaskPrototype> result = WfTaskPrototype.findAllByNext(this, [sort: 'id'])
 
         if (result.size() > 1) {
-            log.warn( 'MULTIPLE MATCHES - getPrevious()')
+            log.debug('Multiple matches for WfTaskPrototype.getPrevious() ' + this.id + ' -> ' + result.collect{ it.id })
         }
-        if (result) {
-            return result.first() as WfTaskPrototype
-        }
+        return result ? result.first() : null
     }
 }

@@ -1,6 +1,5 @@
 package de.laser.system
 
-import de.laser.utils.DateUtils
 import de.laser.storage.BeanStore
 import de.laser.utils.LocaleUtils
 import grails.converters.JSON
@@ -8,7 +7,6 @@ import groovy.util.logging.Slf4j
 import org.springframework.context.MessageSource
 
 import javax.persistence.Transient
-import java.time.LocalDate
 
 /**
  * This class reflects cronjob-related event records and serves to mark events. Depending on the relevance of the event, this event appears in a mail reminder sent to all developers (every morning at 7 o'clock AM;

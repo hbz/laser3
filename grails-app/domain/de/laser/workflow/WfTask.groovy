@@ -100,7 +100,12 @@ class WfTask extends WfTaskBase {
      * @return the {@link WfWorkflow}
      */
     WfWorkflow getWorkflow() {
-        WfWorkflow.findByTask( this )
+        List<WfWorkflow> result = WfWorkflow.findAllByTask(this, [sort: 'id'])
+
+        if (result.size() > 1) {
+            log.debug('Multiple matches for WfTask.getWorkflow() ' + this.id + ' -> ' + result.collect{ it.id })
+        }
+        return result ? result.first() : null
     }
 
     /**
@@ -108,7 +113,12 @@ class WfTask extends WfTaskBase {
      * @return the task of which this is a child (the parent task)
      */
     WfTask getParent() {
-        WfTask.findByChild( this )
+        List<WfTask> result = WfTask.findAllByChild(this, [sort: 'id'])
+
+        if (result.size() > 1) {
+            log.debug('Multiple matches for WfTask.getParent() ' + this.id + ' -> ' + result.collect{ it.id })
+        }
+        return result ? result.first() : null
     }
 
     /**
@@ -116,6 +126,11 @@ class WfTask extends WfTaskBase {
      * @return the task to which this task is following (the preceding task)
      */
     WfTask getPrevious() {
-        WfTask.findByNext( this )
+        List<WfTask> result = WfTask.findAllByNext(this, [sort: 'id'])
+
+        if (result.size() > 1) {
+            log.debug('Multiple matches for WfTask.getPrevious() ' + this.id + ' -> ' + result.collect{ it.id })
+        }
+        return result ? result.first() : null
     }
 }

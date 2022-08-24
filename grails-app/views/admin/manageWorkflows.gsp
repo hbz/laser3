@@ -228,10 +228,10 @@
     <table class="ui celled la-js-responsive-table la-table compact table">
         <thead>
             <tr>
-                <th class="seven wide">${message(code:'workflow.label')}</th>
-                <th class="five wide">${message(code:'workflow.task.label')}</th>
+                <th class="eight wide">${message(code:'workflow.label')}</th>
+                <th class="two wide">${message(code:'workflow.task.label')}</th>
                 <th class="two wide">Zustand</th>
-                <th class="one wide">${message(code:'default.version.label')}</th>
+                <th class="three wide">${message(code:'default.version.label')}</th>
                 <th class="one wide"></th>
             </tr>
         </thead>
@@ -294,15 +294,15 @@
     <table class="ui celled la-js-responsive-table la-table compact table">
         <thead>
             <tr>
-                <th class="seven wide">${message(code:'workflow.task.label')}</th>
+                <th class="eight wide">${message(code:'workflow.task.label')}</th>
                 <th class="two wide">${message(code:'workflow.condition.label')}</th>
-                <th class="one wide">Priorität</th>
-                <th class="one wide">&uarr;&uarr;&uarr;</th>
+                <th class="two wide">Priorität</th>
+                <th class="one wide center aligned"><i class="icon angle up"></i></th>
                 %{-- <th>${message(code:'default.type.label')}</th> --}%
-                <th class="one wide">&rarr;&rarr;</th>
-                <th class="one wide">&darr;&darr;</th>
-                <th class="one wide">&larr;</th>
-                <th class="one wide">&uarr;</th>
+                <th class="one wide center aligned"><i class="icon angle right"></i></th>
+%{--                <th class="one wide">&darr;&darr;</th>--}%
+                <th class="one wide center aligned"><i class="icon angle left"></i></th>
+%{--                <th class="one wide">&uarr;</th>--}%
                 <th class="one wide"></th>
             </tr>
         </thead>
@@ -327,7 +327,7 @@
                     <td>
                         ${tp.priority?.getI10n('value')}
                     </td>
-                    <td>
+                    <td class="center aligned">
                         <g:each in="${WfWorkflowPrototype.executeQuery('select wp from WfWorkflowPrototype wp where wp.task = :tp order by id', [tp: tp])}" var="wfp">
                             <span data-position="top center" class="la-popup-tooltip la-delay" data-content="${wfp.title}">
                                 <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfWorkflowPrototype.KEY + ':' + wfp.id, tab: 'prototypes']}">
@@ -339,7 +339,7 @@
                     %{-- <td>
                         ${tp.type?.getI10n('value')}
                     </td> --}%
-                    <td>
+                    <td class="center aligned">
                         <g:if test="${tp.next}">
                             <span data-position="top center" class="la-popup-tooltip la-delay" data-content="${tp.next.title} (${tp.next.priority.getI10n('value')})">
                                 <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY + ':' + tp.next.id, tab: 'prototypes']}">
@@ -348,17 +348,17 @@
                             </span>
                         </g:if>
                     </td>
-                    <td>
-                        <g:if test="${tp.child}">
-                            <span data-position="top center" class="la-popup-tooltip la-delay" data-content="${tp.child.title} (${tp.child.priority.getI10n('value')})">
-                                <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY + ':' + tp.child.id, tab: 'prototypes']}">
-                                    <span class="ui blue circular label" data-wftp="${tp.child.id}">${tpIdTable[tp.child.id] ?: '?'}</span>
-                                </g:link>
-                            </span>
-                        </g:if>
-                    </td>
-                    <td>
-                        <g:each in="${WfTaskPrototype.findByNext(tp)}" var="prev">
+%{--                    <td>--}%
+%{--                        <g:if test="${tp.child}">--}%
+%{--                            <span data-position="top center" class="la-popup-tooltip la-delay" data-content="${tp.child.title} (${tp.child.priority.getI10n('value')})">--}%
+%{--                                <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY + ':' + tp.child.id, tab: 'prototypes']}">--}%
+%{--                                    <span class="ui blue circular label" data-wftp="${tp.child.id}">${tpIdTable[tp.child.id] ?: '?'}</span>--}%
+%{--                                </g:link>--}%
+%{--                            </span>--}%
+%{--                        </g:if>--}%
+%{--                    </td>--}%
+                    <td class="center aligned">
+                        <g:each in="${WfTaskPrototype.findAllByNext(tp, [sort: 'id'])}" var="prev">
                             <span data-position="top center" class="la-popup-tooltip la-delay" data-content="${prev.title} (${prev.priority.getI10n('value')})">
                                 <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY + ':' + prev.id, tab: 'prototypes']}">
                                     <span class="ui blue circular label" data-wftp="${prev.id}">${tpIdTable[prev.id] ?: '?'}</span>
@@ -366,15 +366,15 @@
                             </span>
                         </g:each>
                     </td>
-                    <td>
-                        <g:each in="${WfTaskPrototype.findByChild(tp)}" var="sup">
-                            <span data-position="top center" class="la-popup-tooltip la-delay" data-content="${sup.title} (${sup.priority.getI10n('value')})">
-                                <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY + ':' + sup.id, tab: 'prototypes']}">
-                                    <span class="ui blue circular label" data-wftp="${sup.id}">${tpIdTable[sup.id] ?: '?'}</span>
-                                </g:link>
-                            </span>
-                        </g:each>
-                    </td>
+%{--                    <td>--}%
+%{--                        <g:each in="${WfTaskPrototype.findByChild(tp)}" var="sup">--}%
+%{--                            <span data-position="top center" class="la-popup-tooltip la-delay" data-content="${sup.title} (${sup.priority.getI10n('value')})">--}%
+%{--                                <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfTaskPrototype.KEY + ':' + sup.id, tab: 'prototypes']}">--}%
+%{--                                    <span class="ui blue circular label" data-wftp="${sup.id}">${tpIdTable[sup.id] ?: '?'}</span>--}%
+%{--                                </g:link>--}%
+%{--                            </span>--}%
+%{--                        </g:each>--}%
+%{--                    </td>--}%
                     <td class="x">
                         <g:if test="${! tp.inUse()}">
                             <g:link class="ui small icon negative button la-modern-button js-open-confirm-modal"
@@ -407,9 +407,9 @@
     <table class="ui celled la-js-responsive-table la-table compact table">
         <thead>
         <tr>
-            <th class="seven wide">${message(code:'workflow.condition.label')}</th>
+            <th class="eight wide">${message(code:'workflow.condition.label')}</th>
             <th class="two wide">${message(code:'workflow.task.label')}</th>
-            <th class="six wide">${message(code:'default.type.label')}</th>
+            <th class="five wide">${message(code:'default.type.label')}</th>
             <th class="one wide"></th>
         </tr>
         </thead>
@@ -483,6 +483,7 @@
     <p class="ui header">
         ${message(code: 'workflow.template.plural')} <ui:totalNumber total="${workflowTemplates.size()}"/>
     </p>
+    <br />
 
     <g:each in="${workflowTemplates}" var="wfwp">
 

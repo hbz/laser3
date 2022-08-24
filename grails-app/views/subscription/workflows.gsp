@@ -144,7 +144,7 @@
                                         </g:link>
                                     </div>
                                     <g:if test="${wf.comment}">
-                                        <div style="margin: 1em 2em; padding: 0.1em 0.5em; border-bottom: 1px dashed #BBBBBB">
+                                        <div style="margin:1em 2em 1em 3em; padding-left:1em; border-left:5px solid #E0E0E0">
                                             ${wf.comment}
                                         </div>
                                     </g:if>
@@ -200,7 +200,7 @@
                                     </div>
                                     <div class="description">${task.description}
                                         <g:if test="${task.comment}">
-                                            <div style="margin: 1em 2em; padding: 0.1em 0.5em; border-bottom: 1px dashed #BBBBBB">
+                                            <div style="margin:1em 2em 1em 3em; padding-left:1em; border-left:5px solid #E0E0E0">
                                                 ${task.comment}
                                             </div>
                                         </g:if>
@@ -302,7 +302,7 @@
                                             </div>
                                             <div class="description">${child.description}
                                                 <g:if test="${child.comment}">
-                                                    <div style="margin: 1em 2em; padding: 0.1em 0.5em; border-bottom: 1px dashed #BBBBBB">
+                                                    <div style="margin:1em 2em 1em 3em; padding-left:1em; border-left:5px solid #E0E0E0">
                                                         ${child.comment}
                                                     </div>
                                                 </g:if>
@@ -473,7 +473,7 @@
                                     </g:link>
                                 </div>
                                 <g:if test="${wf.comment}">
-                                    <div style="margin: 1em 2em; padding: 0.1em 0.5em; border-bottom: 1px dashed #BBBBBB">
+                                    <div style="margin:1em 2em 1em 3em; padding-left:1em; border-left:5px solid #E0E0E0">
                                         ${wf.comment}
                                     </div>
                                 </g:if>
@@ -514,7 +514,7 @@
                                 </div>
                                 <div class="description">${task.description}
                                     <g:if test="${task.comment}">
-                                        <div style="margin: 1em 2em; padding: 0.1em 0.5em; border-bottom: 1px dashed #BBBBBB">
+                                        <div style="margin:1em 2em 1em 3em; padding-left:1em; border-left:5px solid #E0E0E0">
                                             ${task.comment}
                                         </div>
                                     </g:if>
@@ -586,7 +586,7 @@
                                         </div>
                                         <div class="description">${child.description}
                                             <g:if test="${child.comment}">
-                                                <div style="margin: 1em 2em; padding: 0.1em 0.5em; border-bottom: 1px dashed #BBBBBB">
+                                                <div style="margin:1em 2em 1em 3em; padding-left:1em; border-left:5px solid #E0E0E0">
                                                     ${child.comment}
                                                 </div>
                                             </g:if>

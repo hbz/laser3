@@ -119,13 +119,11 @@ class WfConditionPrototype extends WfConditionBase {
      * @return the associated {@link WfTaskPrototype}
      */
     WfTaskPrototype getTask() {
-        List<WfTaskPrototype> result = WfTaskPrototype.executeQuery('select tp from WfTaskPrototype tp where condition = :current order by id', [current: this] )
+        List<WfTaskPrototype> result = WfTaskPrototype.findAllByCondition(this, [sort: 'id'])
 
         if (result.size() > 1) {
-            log.warn( 'MULTIPLE MATCHES - getWorkflow()')
+            log.debug('Multiple matches for WfConditionPrototype.getTask() ' + this.id + ' -> ' + result.collect{ it.id })
         }
-        if (result) {
-            return result.first() as WfTaskPrototype
-        }
+        return result ? result.first() : null
     }
 }
