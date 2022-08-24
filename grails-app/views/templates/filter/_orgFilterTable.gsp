@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.survey.SurveyResult; de.laser.Subscription; de.laser.PersonRole; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.Contact; de.laser.auth.User; de.laser.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.storage.RDConstants; de.laser.storage.RDStore; java.text.SimpleDateFormat; de.laser.License; de.laser.Org; de.laser.OrgRole; de.laser.OrgSetting; de.laser.remote.ApiSource" %>
+<%@ page import="java.time.temporal.ChronoUnit; de.laser.utils.DateUtils; de.laser.survey.SurveyOrg; de.laser.survey.SurveyResult; de.laser.Subscription; de.laser.PersonRole; de.laser.RefdataValue; de.laser.finance.CostItem; de.laser.ReaderNumber; de.laser.Contact; de.laser.auth.User; de.laser.auth.Role; grails.plugin.springsecurity.SpringSecurityUtils; de.laser.SubscriptionsQueryService; de.laser.storage.RDConstants; de.laser.storage.RDStore; java.text.SimpleDateFormat; de.laser.License; de.laser.Org; de.laser.OrgRole; de.laser.OrgSetting; de.laser.remote.ApiSource" %>
 <laser:serviceInjection/>
 <g:if test="${'surveySubCostItem' in tmplConfigShow}">
     <g:set var="oldCostItem" value="${0.0}"/>
@@ -809,7 +809,7 @@
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItem') && surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
                 %{-- // TODO Moe - date.minusDays() --}%
-                <td class="x" style="${(existSubforOrg && orgSub && orgSub.endDate && DateUtils.dateToLocalDate(orgSub.endDate).minus(DateUtils.dateToLocalDate(orgSub.startDate)) < 364) ? 'background: #FFBF00 !important;' : ''}">
+                <td class="x" style="${(existSubforOrg && orgSub && orgSub.endDate && ChronoUnit.DAYS.between(DateUtils.dateToLocalDate(orgSub.startDate), DateUtils.dateToLocalDate(orgSub.endDate)) < 364) ? 'background: #FFBF00 !important;' : ''}">
 
                     <g:if test="${surveyConfig.subSurveyUseForTransfer && orgSub && orgSub.isCurrentMultiYearSubscriptionNew()}">
                         <g:message code="surveyOrg.perennialTerm.available"/>

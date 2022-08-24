@@ -86,8 +86,8 @@ class SurveyTagLib {
         String startDate = ''
         String endDate = ''
         String dash = ''
-        String prev
-        String next
+        SurveyConfig prev
+        SurveyConfig next
 
         if(surveyConfig.subSurveyUseForTransfer){
             LinkedHashMap<String, List> links = linksGenerationService.generateNavigation(surveyConfig.subscription)
