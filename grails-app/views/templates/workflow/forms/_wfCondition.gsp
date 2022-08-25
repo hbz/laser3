@@ -144,7 +144,7 @@
 
                                 <g:select class="ui dropdown" id="${prefixOverride}_${field}" name="${prefixOverride}_${field}"
                                           noSelection="${['' : message(code:'default.select.choose.label')]}"
-                                          from="${subscription.documents}"
+                                          from="${targetObject.documents}"
                                           value="${task.condition.getProperty(field)?.id}"
                                           optionKey="id"
                                           optionValue="${{ (it.owner?.title ? it.owner.title : it.owner?.filename ? it.owner.filename : message(code:'template.documents.missing')) + ' (' + it.owner?.type?.getI10n("value") + ')' }}" />

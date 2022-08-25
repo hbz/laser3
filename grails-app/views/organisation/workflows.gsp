@@ -1,23 +1,22 @@
 <laser:htmlStart message="workflow.plural" serviceInjection="true" />
 
-    <laser:render template="breadcrumb" model="${[ subscription:subscription, params:params ]}"/>
-
+    <ui:breadcrumbs>
+        <g:if test="${!inContextOrg}">
+            <ui:crumb text="${orgInstance.getDesignation()}" class="active"/>
+        </g:if>
+    </ui:breadcrumbs>
     <ui:controlButtons>
-        <laser:render template="actions" />
+        <laser:render template="actions" model="${[org:org]}"/>
     </ui:controlButtons>
 
-    <ui:h1HeaderWithIcon>
-        <laser:render template="iconSubscriptionIsChild"/>
-        <ui:xEditable owner="${subscription}" field="name" />
-    </ui:h1HeaderWithIcon>
-    <ui:anualRings object="${subscription}" controller="subscription" action="workflows" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+    <ui:h1HeaderWithIcon text="${orgInstance.name}" />
 
     <laser:render template="nav" />
-    <laser:render template="message"/>
+    <ui:messages data="${flash}" />
 
-    <laser:render template="/templates/workflow/table" model="${[target: subscription]}"/>
+    <laser:render template="/templates/workflow/table" model="${[target: orgInstance]}"/>
 
-    <laser:render template="/templates/workflow/details" model="${[target: subscription, workflows: workflows]}"/>
+    <laser:render template="/templates/workflow/details" model="${[target: orgInstance, workflows: workflows]}"/>
 
 %{--    <div id="wfModal" class="ui modal"></div>--}%
 

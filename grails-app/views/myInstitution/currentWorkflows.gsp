@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.workflow.*; de.laser.WorkflowService; de.laser.workflow.WorkflowHelper" %>
+<%@ page import="de.laser.License; de.laser.Subscription; de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.storage.*; de.laser.RefdataCategory; de.laser.workflow.*; de.laser.WorkflowService" %>
 
 <laser:htmlStart message="menu.my.workflows" serviceInjection="true"/>
 
@@ -39,7 +39,7 @@
                   noSelection="${['' : message(code:'default.select.choose.label')]}"/>
             </div>
         </div>
-        <div class="three fields">
+%{--        <div class="three fields">
             <div class="field">
                 <label>${message(code: 'default.provider.label')}</label>
                 <g:select class="ui dropdown" name="filterProvider"
@@ -58,7 +58,7 @@
                           value="${params.filterSubscription}"
                           noSelection="${['' : message(code:'default.select.choose.label')]}"/>
             </div>
-        </div>
+        </div>--}%
         <div class="field la-field-right-aligned">
             <g:link controller="myInstitution" action="currentWorkflows" params="${[filter: false]}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</g:link>
             <input type="submit" class="ui primary button" value="${message(code:'default.button.filter.label')}" />
@@ -88,7 +88,7 @@
         <tr>
             <th class="one wide" rowspan="2">${message(code:'default.status.label')}</th>
             <th class="four wide" rowspan="2">${message(code:'workflow.label')}</th>
-            <th class="four wide" rowspan="2">${message(code:'subscription.label')}</th>
+            <th class="four wide" rowspan="2">${message(code:'default.relation.label')}</th>
             <th class="four wide" rowspan="2">${message(code:'default.progress.label')}</th>
             <th class="two wide la-smaller-table-head">${message(code:'default.lastUpdated.label')}</th>
             <th class="one wide" rowspan="2">${message(code:'default.actions.label')}</th>
@@ -124,13 +124,15 @@
                 </td>
                 <td>
                     <div class="la-flexbox">
-                        <i class="ui icon clipboard la-list-icon"></i>
-                        <g:link controller="subscription" action="show" params="${[id: wf.subscription.id]}">
-                            ${wf.subscription.name}
+                        <i class="ui icon ${wfInfo.targetIcon} la-list-icon"></i>
+                        <g:link controller="${wfInfo.targetController}" action="show" params="${[id: wfInfo.target.id]}">
+                            ${wfInfo.targetName}
                             <br/>
-                            <g:if test="${wf.subscription.startDate || wf.subscription.endDate}">
-                                (${wf.subscription.startDate ? DateUtils.getLocalizedSDF_noTime().format(wf.subscription.startDate) : ''} -
-                                ${wf.subscription.endDate ? DateUtils.getLocalizedSDF_noTime().format(wf.subscription.endDate) : ''})
+                            <g:if test="${wfInfo.target instanceof Subscription || wfInfo.target instanceof License}">
+                                <g:if test="${wfInfo.target.startDate || wfInfo.target.endDate}">
+                                    (${wfInfo.target.startDate ? DateUtils.getLocalizedSDF_noTime().format(wfInfo.target.startDate) : ''} -
+                                    ${wfInfo.target.endDate ? DateUtils.getLocalizedSDF_noTime().format(wfInfo.target.endDate) : ''})
+                                </g:if>
                             </g:if>
                         </g:link>
                     </div>
@@ -161,7 +163,7 @@
                     ${DateUtils.getLocalizedSDF_noTime().format(wf.dateCreated)}
                 </td>
                 <td class="x">
-                    <g:link class="ui blue icon button la-modern-button" controller="subscription" action="workflows" id="${wf.subscription.id}" params="${[info: 'subscription:' + wf.subscription.id + ':' + WfWorkflow.KEY + ':' + wf.id]}"><i class="icon edit"></i></g:link>
+                    <g:link class="ui blue icon button la-modern-button" controller="${wfInfo.targetController}" action="workflows" id="${wfInfo.target.id}" params="${[info: '' + wfInfo.target.class.name + ':' + wfInfo.target.id + ':' + WfWorkflow.KEY + ':' + wf.id]}"><i class="icon edit"></i></g:link>
                     %{-- <button class="ui small icon button" onclick="alert('Editierfunktion für Einrichtungsadministratoren. Noch nicht implementiert.')"><i class="icon cogs"></i></button> --}%
                     <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.workflow", args: [wf.title])}"

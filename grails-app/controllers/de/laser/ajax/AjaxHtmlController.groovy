@@ -984,7 +984,7 @@ class AjaxHtmlController {
     def createWfXModal() {
         Map<String, Object> result = [
                 tmplCmd: 'create',
-                tmplModalTitle: g.message(code: 'default.create.label', args: [ g.message(code: 'workflow.object.' + params.key) ]),
+                tmplModalTitle: g.message(code: 'default.create.label', args: [ g.message(code: 'workflow.object.' + params.key) ]) as String,
                 tmplFormUrl: createLink(controller: 'admin', action: 'manageWorkflows'),
                 prefix: params.key
         ]
@@ -1002,6 +1002,7 @@ class AjaxHtmlController {
         }
         else if (params.key in [WfWorkflowPrototype.KEY]) {
             result.tmpl = '/templates/workflow/forms/wfWorkflow'
+            result.tmplModalTitle = '<i class="icon tasks"></i> ' + result.tmplModalTitle
 
             // not: * used as tp.next * used as tp.child
             result.dd_taskList = WfTaskPrototype.executeQuery(
@@ -1013,6 +1014,7 @@ class AjaxHtmlController {
         }
         else if (params.key in [WfTaskPrototype.KEY]) {
             result.tmpl = '/templates/workflow/forms/wfTask'
+            result.tmplModalTitle = '<i class="icon check circle outline"></i> ' + result.tmplModalTitle
 
             // not: * used as tp.child * used as wp.task
             result.dd_nextList = WfTaskPrototype.executeQuery(
@@ -1033,6 +1035,7 @@ class AjaxHtmlController {
         }
         else if (params.key in [WfConditionPrototype.KEY]) {
             result.tmpl = '/templates/workflow/forms/wfCondition'
+            result.tmplModalTitle = '<i class="icon bullseye"></i> ' + result.tmplModalTitle
         }
         render template: '/templates/workflow/forms/modalWrapper', model: result
     }
@@ -1052,9 +1055,21 @@ class AjaxHtmlController {
 
             result.prefix = key[2]
 
-            if (key[0] == 'subscription') {
-                result.subscription = Subscription.get( key[1] )
-                result.tmplFormUrl  = createLink(controller: 'subscription', action: 'workflows', id: key[1])
+            // subscription:id:WF_X:id
+            if (key[0] in [License.class.name, Org.class.name, Subscription.class.name]) {
+
+                if (key[0] == License.class.name) {
+                    result.targetObject = License.get( key[1] )
+                    result.tmplFormUrl  = createLink(controller: 'lic', action: 'workflows', id: key[1])
+                }
+                else if (key[0] == Subscription.class.name) {
+                    result.targetObject = Subscription.get( key[1] )
+                    result.tmplFormUrl  = createLink(controller: 'subscription', action: 'workflows', id: key[1])
+                }
+                else {
+                    result.targetObject = Org.get( key[1] )
+                    result.tmplFormUrl  = createLink(controller: 'org', action: 'workflows', id: key[1])
+                }
             }
             else if (key[0] == 'myInstitution') {
                 result.workflow = WfWorkflow.get (key[1] ) // TODO
@@ -1105,18 +1120,28 @@ class AjaxHtmlController {
             Long wfObjId = key[1] as Long
 
             // subscription:id:WF_X:id
-            if (prefix == 'subscription') {
+            if (prefix in [License.class.name, Subscription.class.name, Org.class.name]) {
+
+                if (prefix == License.class.name) {
+                    result.tmplFormUrl = createLink(controller: 'lic', action: 'workflows', id: key[1])
+                }
+                else if (prefix == Subscription.class.name) {
+                    result.tmplFormUrl = createLink(controller: 'subscription', action: 'workflows', id: key[1])
+                }
+                else (prefix == Org.class.name) {
+                    result.tmplFormUrl = createLink(controller: 'org', action: 'workflows', id: key[1])
+                }
                 prefix = key[2]
                 wfObjId = key[3] as Long
-                result.tmplFormUrl = createLink(controller: 'subscription', action: 'workflows', id: key[1])
             }
 
             result.prefix = prefix
-            result.tmplModalTitle = '<i class="icon cogs"></i> ' + g.message(code: 'default.edit.label', args: [ g.message(code: 'workflow.object.' + result.prefix) ])
+            result.tmplModalTitle = g.message(code: 'default.edit.label', args: [ g.message(code: 'workflow.object.' + result.prefix) ]) as String
 
             if (result.prefix == WfWorkflowPrototype.KEY) {
                 result.workflow       = WfWorkflowPrototype.get( wfObjId )
                 result.tmpl           = '/templates/workflow/forms/wfWorkflow'
+                result.tmplModalTitle = '<i class="icon tasks"></i> ' + result.tmplModalTitle
 
                 if (result.workflow) {
                     // not: * used as tp.next * used as tp.child
@@ -1131,6 +1156,7 @@ class AjaxHtmlController {
             else if (result.prefix == WfWorkflow.KEY) {
                 result.workflow       = WfWorkflow.get( wfObjId )
                 result.tmpl           = '/templates/workflow/forms/wfWorkflow'
+                result.tmplModalTitle = '<i class="icon cog"></i> ' + result.tmplModalTitle
                 //result.tmplModalTitle = result.tmplModalTitle + result.workflow.title
 
 //                if (result.workflow) {
@@ -1142,6 +1168,7 @@ class AjaxHtmlController {
             else if (result.prefix == WfTaskPrototype.KEY) {
                 result.task           = WfTaskPrototype.get( wfObjId )
                 result.tmpl           = '/templates/workflow/forms/wfTask'
+                result.tmplModalTitle = '<i class="icon check circle outline"></i> ' + result.tmplModalTitle
                 //result.tmplModalTitle = result.tmplModalTitle + result.task.title
 
                 if (result.task) {
@@ -1171,6 +1198,7 @@ class AjaxHtmlController {
             else if (result.prefix == WfTask.KEY) {
                 result.task           = WfTask.get( wfObjId )
                 result.tmpl           = '/templates/workflow/forms/wfTask'
+                result.tmplModalTitle = '<i class="icon cog"></i> ' + result.tmplModalTitle
                 //result.tmplModalTitle = result.tmplModalTitle + result.task.title
 
                 if (result.task) {
@@ -1190,6 +1218,7 @@ class AjaxHtmlController {
             else if (result.prefix == WfConditionPrototype.KEY) {
                 result.condition      = WfConditionPrototype.get( wfObjId )
                 result.tmpl           = '/templates/workflow/forms/wfCondition'
+                result.tmplModalTitle = '<i class="icon bullseye"></i> ' + result.tmplModalTitle
                 //result.tmplModalTitle = result.tmplModalTitle + result.condition.title
 
 //                if (result.condition) {
@@ -1199,6 +1228,7 @@ class AjaxHtmlController {
             else if (result.prefix == WfCondition.KEY) {
                 result.condition      = WfCondition.get( wfObjId )
                 result.tmpl           = '/templates/workflow/forms/wfCondition'
+                result.tmplModalTitle = '<i class="icon cog"></i> ' + result.tmplModalTitle
                 //result.tmplModalTitle = result.tmplModalTitle + result.condition.title
 
 //                if (result.condition) {

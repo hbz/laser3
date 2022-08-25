@@ -78,7 +78,7 @@
         <ui:actionsDropdownItem message="template.addNote" data-ui="modal" href="#modalCreateNote" />
         <div class="divider"></div>
         <g:if test="${editable}">
-            <sec:ifAnyGranted roles="ROLE_ADMIN"><!-- TODO: reporting-permissions -->
+            <sec:ifAnyGranted roles="ROLE_ADMIN"><!-- TODO: workflows-permissions -->
                 <g:if test="${contextCustomerType == "ORG_CONSORTIUM"}">
                     <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalInstantiateWorkflow" />
                     <div class="divider"></div>
@@ -206,8 +206,8 @@
 <g:if test="${accessService.checkMinUserOrgRole(user,contextOrg,'INST_EDITOR')}">
     <laser:render template="/templates/notes/modal_create" model="${[ownobj: subscription, owntp: 'subscription']}"/>
 </g:if>
-<sec:ifAnyGranted roles="ROLE_ADMIN"><!-- TODO: reporting-permissions -->
+<sec:ifAnyGranted roles="ROLE_ADMIN"><!-- TODO: workflows-permissions -->
     <g:if test="${contextCustomerType == "ORG_CONSORTIUM"}">
-        <laser:render template="/templates/workflow/instantiate" model="${[subscription: subscription]}"/>
+        <laser:render template="/templates/workflow/instantiate" model="${[cmd: RDStore.WF_WORKFLOW_TARGET_TYPE_SUBSCRIPTION, target: subscription]}"/>
     </g:if>
 </sec:ifAnyGranted>
