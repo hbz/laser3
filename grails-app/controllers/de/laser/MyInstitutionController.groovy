@@ -1254,7 +1254,12 @@ join sub.orgRelations or_sub where
 
         docstoreService.unifiedDeleteDocuments(params)
 
-        redirect controller: 'myInstitution', action: 'documents' /*, fragment: 'docstab' */
+        String redir
+        if(params.redirectAction == 'subscriptionsManagement') {
+            redir = 'subscriptionsManagement'
+        }
+
+        redirect controller: 'myInstitution', action: redir ?: 'documents', params: redir == 'subscriptionsManagement' ? [tab: 'documents'] : null /*, fragment: 'docstab' */
     }
 
     /**
