@@ -285,7 +285,7 @@
                                         <div class="la-flexbox">
                                             <i class="ui icon ${wfInfo.targetIcon} la-list-icon"></i>
                                             <g:link controller="${wfInfo.targetController}" action="show" params="${[id: wfInfo.target.id]}">
-                                                ${wfInfo.targetTitle}
+                                                ${wfInfo.targetName}
                                                 <g:if test="${wfInfo.target instanceof Subscription || wfInfo.target instanceof License}">
                                                     <g:if test="${wfInfo.target.startDate || wfInfo.target.endDate}">
                                                         (${wfInfo.target.startDate ? DateUtils.getLocalizedSDF_noTime().format(wfInfo.target.startDate) : ''} -

@@ -5,8 +5,11 @@ import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.annotations.RefdataInfo
+import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
+import de.laser.utils.LocaleUtils
+import org.springframework.context.MessageSource
 
 /**
  * Represents a workflow. It is based on a {@link WfWorkflowPrototype} and may contain several {@link WfTask}s. A workflow is linked to a {@link Subscription} to which tasks should be done in an ordered way and owned by an
@@ -96,8 +99,12 @@ class WfWorkflow extends WfWorkflowBase {
      */
     Map<String, Object> getInfo() {
 
+        MessageSource ms = BeanStore.getMessageSource()
+        Locale locale = LocaleUtils.getCurrentLocale()
+
         Map<String, Object> info = [
             target: null,
+            targetName: '',
             targetTitle: '',
             targetIcon: '',
             targetController: '',
@@ -114,19 +121,22 @@ class WfWorkflow extends WfWorkflowBase {
 
         if (org) {
             info.target = org
-            info.targetTitle = org.name
+            info.targetName = org.name
+            info.targetTitle = ms.getMessage('org.institution.label', null, locale) + '/' + ms.getMessage('default.provider.label', null, locale)
             info.targetIcon = 'university'
             info.targetController = 'org'
         }
         else if (license) {
             info.target = license
-            info.targetTitle = license.reference
+            info.targetName = license.reference
+            info.targetTitle = ms.getMessage('license.label', null, locale)
             info.targetIcon = 'balance scale'
             info.targetController = 'lic'
         }
         else if (subscription) {
             info.target = subscription
-            info.targetTitle = subscription.name
+            info.targetName = subscription.name
+            info.targetTitle = ms.getMessage('subscription.label', null, locale)
             info.targetIcon = 'clipboard'
             info.targetController = 'subscription'
         }

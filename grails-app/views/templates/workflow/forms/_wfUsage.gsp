@@ -18,7 +18,7 @@
                 <div class="ui la-flexbox">
                     <i class="icon ${wfInfo.targetIcon} la-list-icon"></i>
                     <g:link controller="${wfInfo.targetController}" action="show" params="${[id: wfInfo.target.id]}">
-                        ${wfInfo.targetTitle}
+                        ${wfInfo.targetName}
                     </g:link>
                 </div>
             </p>
