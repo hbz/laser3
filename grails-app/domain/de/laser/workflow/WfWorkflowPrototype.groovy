@@ -30,6 +30,9 @@ class WfWorkflowPrototype extends WfWorkflowBase {
               title column: 'wfwp_title'
         description column: 'wfwp_description', type: 'text'
 
+         targetType column: 'wfwp_target_type_rv_fk'
+         targetRole column: 'wfwp_target_role_rv_fk'
+
         dateCreated column: 'wfwp_date_created'
         lastUpdated column: 'wfwp_last_updated'
     }
@@ -64,7 +67,7 @@ class WfWorkflowPrototype extends WfWorkflowBase {
      * @return the instantiated complete {@link WfWorkflow} object
      * @throws Exception
      */
-    WfWorkflow instantiate(Long subId) throws Exception {
+    WfWorkflow instantiate(Long subId) throws Exception { // TODO
 
         WfWorkflow workflow = new WfWorkflow(
                 title:              this.title,
@@ -74,7 +77,7 @@ class WfWorkflowPrototype extends WfWorkflowBase {
                 prototypeLastUpdated:   this.getInfo().lastUpdated as Date,
                 owner:              BeanStore.getContextService().getOrg(),
                 status:             RDStore.WF_WORKFLOW_STATUS_OPEN,
-                subscription:       Subscription.get(subId)
+                subscription:       Subscription.get(subId)  // TODO
         )
         if (this.task) {
             workflow.task = this.task.instantiate()

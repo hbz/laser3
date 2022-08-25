@@ -1,5 +1,6 @@
 package de.laser.workflow
 
+import de.laser.License
 import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.Subscription
@@ -26,8 +27,11 @@ class WfWorkflow extends WfWorkflowBase {
 
     WfWorkflowPrototype prototype
     WfTask task
-    Subscription subscription
     Org owner
+
+    Subscription subscription
+    License license
+    Org org
 
     Date prototypeLastUpdated
     String comment
@@ -39,9 +43,16 @@ class WfWorkflow extends WfWorkflowBase {
                     prototype column: 'wfw_prototype_fk'
              prototypeVersion column: 'wfw_prototype_version'
          prototypeLastUpdated column: 'wfw_prototype_last_updated'
-               task column: 'wfw_task_fk'
+                         task column: 'wfw_task_fk'
+                        owner column: 'wfw_owner_fk'
+
+         targetType column: 'wfw_target_type_rv_fk'
+         targetRole column: 'wfw_target_role_rv_fk'
+
        subscription column: 'wfw_subscription_fk'
-              owner column: 'wfw_owner_fk'
+            license column: 'wfw_license_fk'
+                org column: 'wfw_org_fk'
+
               title column: 'wfw_title'
         description column: 'wfw_description', type: 'text'
             comment column: 'wfw_comment', type: 'text'
@@ -53,6 +64,11 @@ class WfWorkflow extends WfWorkflowBase {
     static constraints = {
         prototypeVersion (blank: false)
         title            (blank: false)
+
+        subscription     (nullable: true)
+        license          (nullable: true)
+        org              (nullable: true)
+
         task             (nullable: true)
         description      (nullable: true)
         comment          (nullable: true)
