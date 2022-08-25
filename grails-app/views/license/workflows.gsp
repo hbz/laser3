@@ -1,23 +1,22 @@
 <laser:htmlStart message="workflow.plural" serviceInjection="true" />
 
-    <laser:render template="breadcrumb" model="${[ subscription:subscription, params:params ]}"/>
+    <laser:render template="breadcrumb" model="${[ license:license, params:params ]}"/>
 
     <ui:controlButtons>
         <laser:render template="actions" />
     </ui:controlButtons>
 
     <ui:h1HeaderWithIcon>
-        <laser:render template="iconSubscriptionIsChild"/>
-        <ui:xEditable owner="${subscription}" field="name" />
+        <ui:xEditable owner="${license}" field="reference" id="reference"/>
     </ui:h1HeaderWithIcon>
-    <ui:anualRings object="${subscription}" controller="subscription" action="workflows" navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+    <ui:anualRings object="${license}" controller="license" action="workflows" navNext="${navNextLicense}" navPrev="${navPrevLicense}"/>
 
     <laser:render template="nav" />
-    <laser:render template="message"/>
+    <ui:messages data="${flash}" />
 
-%{--    <laser:render template="/templates/workflow/table" model="${[target: subscription, targetKey: 'subscription']}"/>--}%
+%{--    <laser:render template="/templates/workflow/table" model="${[target: license, targetKey: 'license']}"/>--}%
 
-%{--    <laser:render template="/templates/workflow/details" model="${[target: subscription, targetKey: 'subscription', workflows: workflows]}"/>--}%
+%{--    <laser:render template="/templates/workflow/details" model="${[target: license, targetKey: 'license', workflows: workflows]}"/>--}%
 
 %{--    <div id="wfModal" class="ui modal"></div>--}%
 

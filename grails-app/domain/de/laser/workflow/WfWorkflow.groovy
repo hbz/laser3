@@ -46,9 +46,6 @@ class WfWorkflow extends WfWorkflowBase {
                          task column: 'wfw_task_fk'
                         owner column: 'wfw_owner_fk'
 
-         targetType column: 'wfw_target_type_rv_fk'
-         targetRole column: 'wfw_target_role_rv_fk'
-
        subscription column: 'wfw_subscription_fk'
             license column: 'wfw_license_fk'
                 org column: 'wfw_org_fk'

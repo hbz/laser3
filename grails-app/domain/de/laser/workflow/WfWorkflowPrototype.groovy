@@ -1,5 +1,7 @@
 package de.laser.workflow
 
+import de.laser.License
+import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.annotations.RefdataInfo
@@ -15,6 +17,12 @@ import de.laser.storage.RDStore
 class WfWorkflowPrototype extends WfWorkflowBase {
 
     static final String KEY = 'WF_WORKFLOW_PROTOTYPE'
+
+    @RefdataInfo(cat = RDConstants.WF_WORKFLOW_TARGET_TYPE)
+    RefdataValue targetType
+
+    @RefdataInfo(cat = RDConstants.WF_WORKFLOW_TARGET_ROLE)
+    RefdataValue targetRole
 
     @RefdataInfo(cat = RDConstants.WF_WORKFLOW_STATE)
     RefdataValue state
@@ -67,7 +75,7 @@ class WfWorkflowPrototype extends WfWorkflowBase {
      * @return the instantiated complete {@link WfWorkflow} object
      * @throws Exception
      */
-    WfWorkflow instantiate(Long subId) throws Exception { // TODO
+    WfWorkflow instantiate(Object target) throws Exception {
 
         WfWorkflow workflow = new WfWorkflow(
                 title:              this.title,
@@ -77,13 +85,15 @@ class WfWorkflowPrototype extends WfWorkflowBase {
                 prototypeLastUpdated:   this.getInfo().lastUpdated as Date,
                 owner:              BeanStore.getContextService().getOrg(),
                 status:             RDStore.WF_WORKFLOW_STATUS_OPEN,
-                subscription:       Subscription.get(subId)  // TODO
+                org:                target instanceof Org ? target : null,
+                license:            target instanceof License ? target : null,
+                subscription:       target instanceof Subscription ? target : null,
         )
         if (this.task) {
             workflow.task = this.task.instantiate()
         }
         if (! workflow.validate()) {
-            log.debug( '[ ' + this.id + ' ].instantiate(' + subId + ') : ' + workflow.getErrors().toString() )
+            log.debug( '[ ' + this.id + ' ].instantiate(' + target + ') : ' + workflow.getErrors().toString() )
         }
 
         workflow
