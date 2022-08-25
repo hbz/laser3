@@ -4,6 +4,7 @@ package de.laser
 import de.laser.auth.User
 import de.laser.ctrl.DocstoreControllerService
 import de.laser.config.ConfigDefaults
+import de.laser.interfaces.ShareSupport
 import de.laser.utils.CodeUtils
 import de.laser.config.ConfigMapper
 import de.laser.annotations.DebugInfo
@@ -121,8 +122,14 @@ class DocstoreController  {
                         //set sharing settings (counts iff document is linked to an Org, are null otherwise)
                         doc_context.shareConf = RefdataValue.get(params.shareConf) ?: null
                         doc_context.targetOrg = params.targetOrg ? Org.get(params.targetOrg) : null
-
+                        //set sharing setting for license or subscription documents
+                        if(params.setSharing) {
+                            doc_context.isShared = true
+                        }
                         doc_context.save()
+                        if(doc_context.isShared) {
+                            ((ShareSupport) instance).updateShare(doc_context)
+                        }
 
                         //attach document to all survey participants (= SurveyConfigs)
                         //docForAllSurveyConfigs

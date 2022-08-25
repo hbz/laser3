@@ -56,6 +56,13 @@
                       value=""/>
         </div>
 
+        <g:if test="${showConsortiaFunctions}">
+            <div class="field">
+                <label for="setSharing">${message(code: 'template.addDocument.setSharing')}</label>
+                <g:checkBox name="setSharing" class="ui checkbox"/>
+            </div>
+        </g:if>
+
         <button class="ui button" ${!editable ? 'disabled="disabled"' : ''} type="submit" name="processOption"
                 value="newDoc">${message(code: 'default.button.create.label')}</button>
 

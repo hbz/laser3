@@ -6,6 +6,7 @@ import de.laser.ctrl.SubscriptionControllerService
 import de.laser.finance.CostItem
 import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper
+import de.laser.interfaces.ShareSupport
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.storage.RDConstants
@@ -846,10 +847,14 @@ class ManagementService {
                                     DocContext doc_context = new DocContext(
                                             subscription: subscription,
                                             owner: doc_content,
-                                            doctype: RefdataValue.getByValueAndCategory(params.doctype, RDConstants.DOCUMENT_TYPE)
+                                            doctype: RefdataValue.getByValueAndCategory(params.doctype, RDConstants.DOCUMENT_TYPE),
+                                            isShared: params.setSharing == 'on'
                                     )
 
                                     doc_context.save()
+                                    if(doc_context.isShared) {
+                                        ((ShareSupport) subscription).updateShare(doc_context)
+                                    }
                                 }
 
                             }
