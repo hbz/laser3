@@ -95,7 +95,7 @@
             </a>
         </g:if>
 
-        <sec:ifAnyGranted roles="ROLE_ADMIN"><!-- TODO: reporting-permissions -->
+        <sec:ifAnyGranted roles="ROLE_ADMIN"><!-- TODO: workflows-permissions -->
             <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
                 <a class="${us_dashboard_tab.value == 'Workflows' ? 'active item':'item'}" data-tab="workflows">
                     <i class="tasks icon large"></i>
@@ -249,7 +249,7 @@
             </div>
         </div>
 
-        <sec:ifAnyGranted roles="ROLE_ADMIN"><!-- TODO: reporting-permissions -->
+        <sec:ifAnyGranted roles="ROLE_ADMIN"><!-- TODO: workflows-permissions -->
         <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
             <div class="ui bottom attached tab ${us_dashboard_tab.value == 'Workflows' ? 'active':''}" data-tab="workflows">
                 <div>

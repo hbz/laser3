@@ -3498,6 +3498,8 @@ class SubscriptionControllerService {
         result
     }
 
+    //--------------------------------------------- reporting -------------------------------------------------
+
     /**
      * Initialises the reporting index for the given subscription
      * @param params the request parameter map
@@ -3513,6 +3515,8 @@ class SubscriptionControllerService {
 
         [result: result, status: (result ? STATUS_OK : STATUS_ERROR)]
     }
+
+    //--------------------------------------------- workflows -------------------------------------------------
 
     /**
      * Gets the workflows linked to the given subscription
@@ -3535,10 +3539,7 @@ class SubscriptionControllerService {
             result.info = params.info // @ currentWorkflows @ dashboard
         }
 
-        result.workflows = WfWorkflow.executeQuery(
-                'select wf from WfWorkflow wf where wf.subscription = :sub and wf.owner = :ctxOrg order by wf.id desc',
-                [sub: result.subscription, ctxOrg: result.contextOrg]
-        )
+        result.workflows = WfWorkflow.findAllBySubscriptionAndOwner(result.subscription as Subscription, result.contextOrg as Org, [sort: 'id', order: 'desc'])
         result.workflowCount = result.workflows.size()
 
         [result: result, status: (result ? STATUS_OK : STATUS_ERROR)]

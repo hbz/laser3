@@ -7,6 +7,7 @@ import de.laser.remote.ApiSource
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.utils.LocaleUtils
+import de.laser.workflow.WfWorkflow
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.web.servlet.mvc.GrailsParameterMap
@@ -31,6 +32,7 @@ class OrganisationControllerService {
     LinksGenerationService linksGenerationService
     MessageSource messageSource
     TaskService taskService
+    WorkflowService workflowService
 
     //---------------------------------------- linking section -------------------------------------------------
 
@@ -147,6 +149,30 @@ class OrganisationControllerService {
                 break
         }
         [result:result, status:STATUS_OK]
+    }
+
+    //--------------------------------------------- workflows -------------------------------------------------
+
+    Map<String,Object> workflows(OrganisationController controller, GrailsParameterMap params) {
+        Map<String, Object> result = getResultGenericsAndCheckAccess(controller, params)
+
+        if (params.cmd) {
+            String[] cmd = params.cmd.split(':')
+            if (cmd[0] in ['edit']) {
+                result.putAll( workflowService.cmd(params) ) // @ workflows
+            }
+            else {
+                result.putAll( workflowService.usage(params) ) // @ workflows
+            }
+        }
+        if (params.info) {
+            result.info = params.info // @ currentWorkflows @ dashboard
+        }
+
+        result.workflows = WfWorkflow.findAllByOrgAndOwner(result.orgInstance as Org, result.contextOrg as Org, [sort: 'id', order: 'desc'])
+        result.workflowCount = result.workflows.size()
+
+        [result: result, status: (result ? STATUS_OK : STATUS_ERROR)]
     }
 
     //--------------------------------------------- identifier section -------------------------------------------------

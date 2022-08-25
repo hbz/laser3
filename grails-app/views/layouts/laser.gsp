@@ -108,7 +108,7 @@
 
                                 <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
 
-                                    <sec:ifAnyGranted roles="ROLE_ADMIN"><!-- TODO: reporting-permissions -->
+                                    <sec:ifAnyGranted roles="ROLE_ADMIN"><!-- TODO: workflows-permissions -->
                                         <div class="divider"></div>
                                         <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentWorkflows" message="menu.my.workflows" />
                                     </sec:ifAnyGranted>
@@ -266,7 +266,7 @@
                                 </div>
                                 <div class="divider"></div>
 
-                                <sec:ifAnyGranted roles="ROLE_ADMIN"><!-- TODO: reporting-permissions -->
+                                <sec:ifAnyGranted roles="ROLE_ADMIN"><!-- TODO: workflows-permissions -->
                                     <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="manageWorkflows">${message(code:'menu.admin.manageWorkflows')}</ui:link>
                                 </sec:ifAnyGranted>
 
