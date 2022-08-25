@@ -2,6 +2,7 @@ package de.laser.domain
 
 import de.laser.ContextService
 import de.laser.LinksGenerationService
+import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyOrg
@@ -78,7 +79,7 @@ class SurveyTagLib {
 
     def statusWithRings = { attrs, body ->
         def object = attrs.object
-        SurveyConfig surveyConfig = attrs.surveyConfig
+        SurveyConfig surveyConfig = attrs.surveyConfig as SurveyConfig
 
         String statusType = object.status?.owner?.desc
         String color = ''
@@ -160,8 +161,8 @@ class SurveyTagLib {
     }
 
     def finishIcon = { attrs, body ->
-        def surveyConfig = attrs.surveyConfig
-        def participant = attrs.participant
+        SurveyConfig surveyConfig = attrs.surveyConfig as SurveyConfig
+        Org participant = attrs.participant as Org
         def surveyOwnerView = attrs.surveyOwnerView
 
             def finishDate = SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant).finishDate
@@ -190,8 +191,8 @@ class SurveyTagLib {
     }
 
     def finishDate = { attrs, body ->
-        def surveyConfig = attrs.surveyConfig
-        def participant = attrs.participant
+        SurveyConfig surveyConfig = attrs.surveyConfig as SurveyConfig
+        Org participant = attrs.participant as Org
 
         def finishDate = SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, participant).finishDate
         if (finishDate) {
