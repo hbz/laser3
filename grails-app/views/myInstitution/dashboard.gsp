@@ -260,7 +260,7 @@
                         <thead>
                             <tr>
                                 <th rowspan="2">${message(code:'workflow.label')}</th>
-                                <th rowspan="2">${message(code:'subscription.label')}</th>
+                                <th rowspan="2">${message(code:'default.relation.label')}</th>
                                 <th rowspan="2">${message(code:'default.progress.label')}</th>
                                 <th class="la-smaller-table-head">${message(code:'default.lastUpdated.label')}</th>
                                 <th rowspan="2"></th>
@@ -276,19 +276,21 @@
                                     <td>
                                         <div class="la-flexbox">
                                             <i class="ui icon tasks la-list-icon"></i>
-                                            <g:link class="wfModalLink" controller="ajaxHtml" action="useWfXModal" params="${[key: 'dashboard:' + wf.subscription.id + ':' + WfWorkflow.KEY + ':' + wf.id]}">
+                                            <g:link class="wfModalLink" controller="ajaxHtml" action="useWfXModal" params="${[key: 'dashboard:' + wfInfo.target.id + ':' + WfWorkflow.KEY + ':' + wf.id]}">
                                                 <strong>${wf.title}</strong>
                                             </g:link>
                                         </div>
                                     </td>
                                     <td>
                                         <div class="la-flexbox">
-                                            <i class="ui icon clipboard la-list-icon"></i>
-                                            <g:link controller="subscription" action="show" params="${[id: wf.subscription.id]}">
-                                                ${wf.subscription.name}
-                                                <g:if test="${wf.subscription.startDate || wf.subscription.endDate}">
-                                                    (${wf.subscription.startDate ? DateUtils.getLocalizedSDF_noTime().format(wf.subscription.startDate) : ''} -
-                                                    ${wf.subscription.endDate ? DateUtils.getLocalizedSDF_noTime().format(wf.subscription.endDate) : ''})
+                                            <i class="ui icon ${wfInfo.targetIcon} la-list-icon"></i>
+                                            <g:link controller="${wfInfo.targetController}" action="show" params="${[id: wfInfo.target.id]}">
+                                                ${wfInfo.targetTitle}
+                                                <g:if test="${wfInfo.target instanceof Subscription || wfInfo.target instanceof License}">
+                                                    <g:if test="${wfInfo.target.startDate || wfInfo.target.endDate}">
+                                                        (${wfInfo.target.startDate ? DateUtils.getLocalizedSDF_noTime().format(wfInfo.target.startDate) : ''} -
+                                                        ${wfInfo.target.endDate ? DateUtils.getLocalizedSDF_noTime().format(wfInfo.target.endDate) : ''})
+                                                    </g:if>
                                                 </g:if>
                                             </g:link>
                                         </div>
@@ -310,9 +312,9 @@
                                         ${DateUtils.getLocalizedSDF_noTime().format(wf.dateCreated)}
                                     </td>
                                     <td class="x">
-                                        <g:link controller="subscription" action="workflows" id="${wf.subscription.id}"
+                                        <g:link controller="${wfInfo.targetController}" action="workflows" id="${wfInfo.target.id}"
                                                 class="ui icon button blue la-modern-button"
-                                                params="${[info: 'subscription:' + wf.subscription.id + ':' + WfWorkflow.KEY + ':' + wf.id]}">
+                                                params="${[info: '' + wfInfo.target.class.name + ':' + wfInfo.target.id + ':' + WfWorkflow.KEY + ':' + wf.id]}">
                                             <i class="icon edit"></i>
                                         </g:link>
                                     </td>

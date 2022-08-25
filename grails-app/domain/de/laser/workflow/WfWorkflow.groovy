@@ -97,6 +97,10 @@ class WfWorkflow extends WfWorkflowBase {
     Map<String, Object> getInfo() {
 
         Map<String, Object> info = [
+            target: null,
+            targetTitle: '',
+            targetIcon: '',
+            targetController: '',
             tasksOpen: 0,
             tasksCanceled: 0,
             tasksDone: 0,
@@ -107,6 +111,25 @@ class WfWorkflow extends WfWorkflowBase {
             tasksImportantBlocking: 0,
             lastUpdated: lastUpdated
         ]
+
+        if (org) {
+            info.target = org
+            info.targetTitle = org.name
+            info.targetIcon = 'university'
+            info.targetController = 'org'
+        }
+        else if (license) {
+            info.target = license
+            info.targetTitle = license.reference
+            info.targetIcon = 'balance scale'
+            info.targetController = 'lic'
+        }
+        else if (subscription) {
+            info.target = subscription
+            info.targetTitle = subscription.name
+            info.targetIcon = 'clipboard'
+            info.targetController = 'subscription'
+        }
 
         List<WfTask> sequence = []
 

@@ -7,6 +7,7 @@
 
     <g:if test="${prefix == WfWorkflow.KEY}">
         <g:set var="prefixOverride" value="${WfWorkflow.KEY}" />
+        <g:set var="wfInfo" value="${workflow.getInfo()}" />
 
         <div class="field">
 %{--            <p><strong>${workflow.title}</strong></p>--}%
@@ -15,9 +16,9 @@
             </g:if>
             <p>
                 <div class="ui la-flexbox">
-                    <i class="icon clipboard la-list-icon"></i>
-                    <g:link controller="subscription" action="show" params="${[id: workflow.subscription.id]}">
-                        ${workflow.subscription.name}
+                    <i class="icon ${wfInfo.targetIcon} la-list-icon"></i>
+                    <g:link controller="${wfInfo.targetController}" action="show" params="${[id: wfInfo.target.id]}">
+                        ${wfInfo.targetTitle}
                     </g:link>
                 </div>
             </p>
@@ -268,7 +269,7 @@
                                         <g:if test="${workflow}"> %{-- currentWorkflows --}%
                                             <g:select class="ui dropdown" id="${prefixOverride}_${field}" name="${prefixOverride}_${field}"
                                                       noSelection="${['' : message(code:'default.select.choose.label')]}"
-                                                      from="${workflow.subscription.documents}"
+                                                      from="${wfInfo.target.documents}"
                                                       value="${task.condition.getProperty(field)?.id}"
                                                       optionKey="id"
                                                       optionValue="${{ (it.owner?.title ? it.owner.title : it.owner?.filename ? it.owner.filename : message(code:'template.documents.missing')) + ' (' + it.owner?.type?.getI10n("value") + ')' }}" />
@@ -288,7 +289,7 @@
                                     %{--<g:form class="ui form" url="${formUrl}" method="post" enctype="multipart/form-data">--}%
 
                                     <g:if test="${workflow}"> %{-- currentWorkflows --}%
-                                        <input type="hidden" name="wfUploadOwner_${field}" value="${workflow.subscription.class.name}:${workflow.subscription.id}"/>
+                                        <input type="hidden" name="wfUploadOwner_${field}" value="${wfInfo.target.class.name}:${wfInfo.target.id}"/>
                                     </g:if>
                                     <g:else>
                                         <input type="hidden" name="wfUploadOwner_${field}" value="${subscription.class.name}:${subscription.id}"/>
