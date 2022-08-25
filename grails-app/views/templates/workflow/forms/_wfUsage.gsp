@@ -40,7 +40,7 @@
             </div>
         </div>
 
-        %{-- <g:if test="${! subscription}"> currentWorkflows --}%
+        %{-- <g:if test="${! targetObject}"> currentWorkflows --}%
 
         <div class="field">
             <label>Offene Aufgaben</label>
@@ -277,7 +277,7 @@
                                         <g:else>
                                             <g:select class="ui dropdown" id="${prefixOverride}_${field}" name="${prefixOverride}_${field}"
                                                       noSelection="${['' : message(code:'default.select.choose.label')]}"
-                                                      from="${subscription.documents}"
+                                                      from="${targetObject.documents}"
                                                       value="${task.condition.getProperty(field)?.id}"
                                                       optionKey="id"
                                                       optionValue="${{ (it.owner?.title ? it.owner.title : it.owner?.filename ? it.owner.filename : message(code:'template.documents.missing')) + ' (' + it.owner?.type?.getI10n("value") + ')' }}" />
@@ -292,7 +292,7 @@
                                         <input type="hidden" name="wfUploadOwner_${field}" value="${wfInfo.target.class.name}:${wfInfo.target.id}"/>
                                     </g:if>
                                     <g:else>
-                                        <input type="hidden" name="wfUploadOwner_${field}" value="${subscription.class.name}:${subscription.id}"/>
+                                        <input type="hidden" name="wfUploadOwner_${field}" value="${targetObject.class.name}:${targetObject.id}"/>
                                     </g:else>
                                         <label for="wfUploadTitle_${field}" >${message(code: 'template.addDocument.name')}:</label>
                                         <input type="text" id="wfUploadTitle_${field}" name="wfUploadTitle_${field}" />

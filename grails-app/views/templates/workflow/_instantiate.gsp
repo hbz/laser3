@@ -1,6 +1,8 @@
 <%@ page import="de.laser.storage.RDStore; de.laser.workflow.*; de.laser.WorkflowService" %>
 
 <%
+    // TODO
+    
     String targetText = '?'
     String targetController = '?'
     
@@ -8,13 +10,13 @@
         targetText = target.name
         targetController = 'org'
     }
-    else if (cmd == RDStore.WF_WORKFLOW_TARGET_TYPE_LICENSE) {
-        targetText = target.reference
-        targetController = 'license'
-    }
     else if (cmd == RDStore.WF_WORKFLOW_TARGET_TYPE_PROVIDER) {
         targetText = target.name
         targetController = 'org'
+    }
+    else if (cmd == RDStore.WF_WORKFLOW_TARGET_TYPE_LICENSE) {
+        targetText = target.reference
+        targetController = 'license'
     }
     else if (cmd == RDStore.WF_WORKFLOW_TARGET_TYPE_SUBSCRIPTION) {
         targetText = target.name
