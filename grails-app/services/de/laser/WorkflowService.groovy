@@ -285,7 +285,7 @@ class WorkflowService {
             wf.description  = ph.getString('description')
             wf.task         = WfTaskPrototype.get(ph.getLong('task'))
             wf.state        = RefdataValue.get(ph.getLong('state'))
-            wf.prototypeVersion = ph.getString('prototypeVersion')
+            wf.variant      = ph.getString('variant')
             wf.targetType   = RefdataValue.get(ph.getLong('targetType'))
             wf.targetRole   = RefdataValue.get(ph.getLong('targetRole'))
         }
@@ -658,13 +658,30 @@ class WorkflowService {
                                         File newFile = new File("${fPath}/${fName}")
                                         file.transferTo(newFile)
 
-                                        Subscription sub = genericOIDService.resolveOID( uploadOwner ) as Subscription
+                                        // TODO
 
                                         DocContext docctx = new DocContext(
-                                                subscription: sub,
                                                 owner: doc,
                                                 doctype: uploadDoctype
                                         )
+                                        Object owner = genericOIDService.resolveOID( uploadOwner )
+
+                                        if (owner instanceof Org) {
+                                            docctx.org = owner
+
+                                            if (params.get('wfUploadShareConf_' + fileId)) {
+                                                docctx.shareConf = RefdataValue.get(params.get('wfUploadShareConf_' + fileId) as Serializable)
+                                            }
+                                        }
+                                        else if (owner instanceof License) {
+                                            docctx.license = owner
+                                        }
+                                        else if (owner instanceof Subscription) {
+                                            docctx.subscription = owner
+                                        }
+                                        else {
+                                            throw new Exception('Invalid owner for workflow document upload.')
+                                        }
                                         docctx.save()
 
                                         condition['file' + i] = docctx

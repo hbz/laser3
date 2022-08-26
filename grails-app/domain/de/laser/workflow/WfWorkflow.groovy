@@ -28,7 +28,6 @@ class WfWorkflow extends WfWorkflowBase {
     @RefdataInfo(cat = RDConstants.WF_WORKFLOW_STATUS)
     RefdataValue status
 
-    WfWorkflowPrototype prototype
     WfTask task
     Org owner
 
@@ -36,15 +35,20 @@ class WfWorkflow extends WfWorkflowBase {
     License license
     Org org
 
-    Date prototypeLastUpdated
     String comment
+
+    WfWorkflowPrototype prototype
+    String              prototypeTitle
+    String              prototypeVariant
+    Date                prototypeLastUpdated
 
     static mapping = {
                            id column: 'wfw_id'
                       version column: 'wfw_version'
                        status column: 'wfw_status_rv_fk'
                     prototype column: 'wfw_prototype_fk'
-             prototypeVersion column: 'wfw_prototype_version'
+               prototypeTitle column: 'wfw_prototype_title'
+             prototypeVariant column: 'wfw_prototype_variant'
          prototypeLastUpdated column: 'wfw_prototype_last_updated'
                          task column: 'wfw_task_fk'
                         owner column: 'wfw_owner_fk'
@@ -62,8 +66,9 @@ class WfWorkflow extends WfWorkflowBase {
     }
 
     static constraints = {
-        prototypeVersion (blank: false)
         title            (blank: false)
+        prototypeVariant (blank: false)
+        prototypeTitle   (blank: false)
 
         subscription     (nullable: true)
         license          (nullable: true)
