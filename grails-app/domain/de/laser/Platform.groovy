@@ -37,6 +37,8 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
   Date dateCreated
   Date lastUpdated
   Date lastUpdatedCascading
+  Date counter4LastRun
+  Date counter5LastRun
 
   Org org
 
@@ -70,6 +72,8 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
              dateCreated column: 'plat_date_created'
              lastUpdated column: 'plat_last_updated'
     lastUpdatedCascading column: 'plat_last_updated_cascading'
+    counter4LastRun column: 'plat_c4_last_run'
+    counter5LastRun column: 'plat_c5_last_run'
              tipps batchSize: 10
             oapp batchSize: 10
     propertySet sort:'type', order:'desc', batchSize: 10
@@ -85,6 +89,8 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
     gokbId (blank:false, unique: true, maxSize:511)
     org             (nullable:true)
     lastUpdatedCascading (nullable: true)
+    counter4LastRun (nullable: true)
+    counter5LastRun (nullable: true)
   }
 
   @Override

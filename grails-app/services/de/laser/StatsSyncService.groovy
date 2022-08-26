@@ -16,7 +16,6 @@ import de.laser.system.SystemEvent
 import de.laser.usage.StatsSyncServiceOptions
 import de.laser.usage.SushiClient
 import grails.gorm.transactions.Transactional
-import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.json.JsonOutput
 import groovy.sql.GroovyRowResult
 import groovy.sql.Sql
@@ -35,6 +34,8 @@ import java.time.LocalDate
 import java.time.YearMonth
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import static java.time.temporal.ChronoUnit.DAYS
+
 import static java.time.temporal.TemporalAdjusters.firstDayOfYear
 import java.util.concurrent.ExecutorService
 
@@ -232,7 +233,13 @@ class StatsSyncService {
                                         break
                                     case 'Weekly': add = now.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY
                                         break
-                                    case 'Monthly': add = now.get(Calendar.DAY_OF_MONTH) == MONTH_DUE_DATE
+                                    case 'Monthly': Platform plat = Platform.findByGokbId(c4as[0] as String)
+                                        if(!plat.counter4LastRun) {
+                                            add = c4SushiSources.findAll { List added -> added[2] == 'Monthly' }.size() < 1
+                                        }
+                                        else if(DAYS.between(LocalDate.now(), DateUtils.dateToLocalDate(plat.counter4LastRun)) == 28) {
+                                            add = true
+                                        }
                                         break
                                     case 'Quarterly': add = now.get(Calendar.DAY_OF_MONTH) == MONTH_DUE_DATE && now.get(Calendar.MONTH) in QUARTERLY_MONTHS
                                         break
@@ -252,7 +259,13 @@ class StatsSyncService {
                                         break
                                     case 'Weekly': add = now.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY
                                         break
-                                    case 'Monthly': add = now.get(Calendar.DAY_OF_MONTH) == MONTH_DUE_DATE
+                                    case 'Monthly': Platform plat = Platform.findByGokbId(c5as[0] as String)
+                                        if(!plat.counter5LastRun) {
+                                            add = c5SushiSources.findAll { List added -> added[2] == 'Monthly' }.size() < 1
+                                        }
+                                        else if(DAYS.between(LocalDate.now(), DateUtils.dateToLocalDate(plat.counter5LastRun)) == 28) {
+                                            add = true
+                                        }
                                         break
                                     case 'Quarterly': add = now.get(Calendar.DAY_OF_MONTH) == MONTH_DUE_DATE && now.get(Calendar.MONTH) in QUARTERLY_MONTHS
                                         break
@@ -393,6 +406,8 @@ class StatsSyncService {
                             }
                         }
                     }
+                    c4asPlatform.counter4LastRun = new Date()
+                    c4asPlatform.save()
                 }
                 else {
                     log.info("no valid customer value / requestor key pairs recorded for COUNTER 4 source ${statsUrl}")
@@ -500,6 +515,8 @@ class StatsSyncService {
                             }
                         }
                     }
+                    c5asPlatform.counter5LastRun = new Date()
+                    c5asPlatform.save()
                 }
                 else {
                     log.info("no valid customer value / key pairs recorded for this COUNTER 5 source: ${statsUrl}")
@@ -804,7 +821,7 @@ class StatsSyncService {
                             }
                         }
                     }
-                    log.debug("${Thread.currentThread().getName()} reports success: ${resultCount.length}")
+                    //log.debug("${Thread.currentThread().getName()} reports success: ${resultCount.length}")
                 }
                 else {
                     int[] resultCount = statsSql.withBatch( "insert into counter5report (c5r_version, c5r_title_guid, c5r_publisher, c5r_platform_guid, c5r_report_institution_guid, c5r_report_type, c5r_metric_type, c5r_access_type, c5r_access_method, c5r_report_from, c5r_report_to, c5r_report_count) " +
@@ -864,7 +881,7 @@ class StatsSyncService {
                             else log.error("no matching titles determined for ${identifiers}")
                         }
                     }
-                    log.debug("${Thread.currentThread().getName()} reports success: ${resultCount.length}")
+                    //log.debug("${Thread.currentThread().getName()} reports success: ${resultCount.length}")
                 }
             }
             [success: true]
