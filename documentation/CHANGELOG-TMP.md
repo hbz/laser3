@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4427    26.08.2022  dev     3.0         Ingrid  Feature     Modal mit Tabs scrollbar machen, Dokumentation im Bereich Developer/Frontend
+
 4414    24.08.2022  dev     3.0         Andreas Feature     Trennung von Identifikatoren und Kundennummern im Click-Mich-Excel-Export
 
 --      24.08.2022  dev     3.0         Andreas Bug         Umschalten von Kontexten wieder möglich

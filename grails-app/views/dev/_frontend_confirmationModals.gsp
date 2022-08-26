@@ -24,7 +24,7 @@
     </ul>
     <br/>
 </div>
-<div class="annotation transition visible" style="display: none;">
+<div class="annotation transition visible">
     <div class="ui instructive bottom attached segment">
         <pre aria-hidden="true">
             &lt;td&gt;
