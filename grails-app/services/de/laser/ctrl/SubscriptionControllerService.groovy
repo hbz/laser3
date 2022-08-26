@@ -369,7 +369,10 @@ class SubscriptionControllerService {
                 }
                 else if (queryResult.warning) {
                     List records = queryResult.warning.records
-                    result.platformInstanceRecords[platformInstance.gokbId] = records ? records[0] : [:]
+                    if(records[0]) {
+                        records[0].lastRun = platformInstance.counter5LastRun ?: platformInstance.counter4LastRun
+                        result.platformInstanceRecords[platformInstance.gokbId] = records[0]
+                    }
                 }
             }
             //at this point, we should be sure that at least the parent subscription has a holding!

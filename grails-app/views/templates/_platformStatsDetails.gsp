@@ -99,3 +99,10 @@
         </g:else>
     </dd>
 </dl>
+<dl>
+    <dt><g:message code="platform.stats.counter.lastRun"/></dt>
+    <dd>
+        <%-- lastRun comes from LAS:eR, not from we:kb! --%>
+        <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${platformInstanceRecord.lastRun}"/>
+    </dd>
+</dl>
