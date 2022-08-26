@@ -259,11 +259,11 @@
                     <table class="ui celled table la-js-responsive-table la-table">
                         <thead>
                             <tr>
-                                <th rowspan="2">${message(code:'workflow.label')}</th>
-                                <th rowspan="2">${message(code:'default.relation.label')}</th>
-                                <th rowspan="2">${message(code:'default.progress.label')}</th>
-                                <th class="la-smaller-table-head">${message(code:'default.lastUpdated.label')}</th>
-                                <th rowspan="2"></th>
+                                <th class="five wide" rowspan="2">${message(code:'workflow.label')}</th>
+                                <th class="five wide" rowspan="2">${message(code:'default.relation.label')}</th>
+                                <th class="two wide"  rowspan="2">${message(code:'default.progress.label')}</th>
+                                <th class="three wide"  class="la-smaller-table-head">${message(code:'default.lastUpdated.label')}</th>
+                                <th class="one wide"  rowspan="2"></th>
                             </tr>
                             <tr>
                                 <th class="la-smaller-table-head">${message(code:'default.dateCreated.label')}</th>

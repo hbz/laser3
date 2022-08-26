@@ -51,10 +51,11 @@
                     <ui:select class="ui dropdown la-not-clearable" id="${fieldName}" name="${fieldName}"
                                required="required"
                                noSelection="${['' : message(code:'default.select.choose.label')]}"
-                               from="${RefdataCategory.getAllRefdataValues( RDConstants.WF_WORKFLOW_TARGET_ROLE )}"
+                               from="${[ RDStore.WF_WORKFLOW_TARGET_ROLE_CONSORTIUM ]}"
                                value="${workflow?.targetRole?.id ?: RDStore.WF_WORKFLOW_TARGET_ROLE_CONSORTIUM.id}"
                                optionKey="id"
                                optionValue="value" />
+%{--                    from="${RefdataCategory.getAllRefdataValues( RDConstants.WF_WORKFLOW_TARGET_ROLE )}"--}%
                 </div>
                 <div class="field eight wide required">
                     <g:set var="fieldName" value="${prefix}_prototypeVersion" />
@@ -111,15 +112,13 @@
         <g:if test="${wfInfo?.target}">
             <div class="field">
                 <g:set var="fieldName" value="${prefix}_target" />
-                <label for="${fieldName}">${wfInfo.targetTitle}</label>
-                <p>
-                    <div class="ui la-flexbox">
-                        <i class="icon ${wfInfo.targetIcon} la-list-icon"></i>
-                        <g:link controller="${wfInfo.targetController}" action="show" params="${[id: wfInfo.target.id]}">
-                            ${wfInfo.targetName}
-                        </g:link>
-                    </div>
-                </p>
+                <label for="${fieldName}">${message(code:'default.relation.label')} ${wfInfo.targetTitle}</label>
+                <div class="ui la-flexbox">
+                    <i class="icon ${wfInfo.targetIcon} la-list-icon"></i>
+                    <g:link controller="${wfInfo.targetController}" action="show" params="${[id: wfInfo.target.id]}">
+                        ${wfInfo.targetName}
+                    </g:link>
+                </div>
             </div>
         </g:if>
             %{--

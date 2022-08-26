@@ -270,10 +270,10 @@ div.wf-details div.ui.segment {
     padding-top:1.5em;
     padding-bottom:1.5em;
 }
-div.wf-details .ui.list > .item.positive {
+div.wf-details .ui.list > .item.positive .icon.plus {
     color: #b5c334;
 }
-div.wf-details .ui.list > .item.negative {
+div.wf-details .ui.list > .item.negative .icon.minus {
     color: #d12e34;
 }
 div.wf-buttonGroup {

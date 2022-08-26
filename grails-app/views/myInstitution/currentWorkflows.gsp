@@ -21,6 +21,17 @@
                           noSelection="${['' : message(code:'default.select.choose.label')]}"/>
             </div>
             <div class="field">
+                <label>${message(code:'default.relation.label')}</label>
+                <ui:select class="ui dropdown la-not-clearable" name="filterTargetType"
+                           required="required"
+                           noSelection="${['' : message(code:'default.select.choose.label')]}"
+                           from="${RefdataCategory.getAllRefdataValues( RDConstants.WF_WORKFLOW_TARGET_TYPE )}"
+                           value="${params.filterTargetType}"
+                           optionKey="id"
+                           optionValue="value" />
+
+            </div>
+            %{--<div class="field">
                 <label>${message(code: 'default.priority.label')}</label>
                 <ui:select class="ui dropdown" name="filterPriority"
                               from="${ RefdataCategory.getAllRefdataValues(RDConstants.WF_TASK_PRIORITY) }"
@@ -28,7 +39,7 @@
                               optionValue="value"
                               value="${params.filterPriority}"
                               noSelection="${['' : message(code:'default.select.choose.label')]}"/>
-            </div>
+            </div>--}%
             <div class="field">
                 <label>${message(code: 'default.status.label')}</label>
                 <ui:select class="ui dropdown" name="filterStatus"
@@ -39,6 +50,30 @@
                   noSelection="${['' : message(code:'default.select.choose.label')]}"/>
             </div>
         </div>
+%{--        <div class="three fields">
+            <div class="field">
+                <label>${message(code:'default.relation.label')}</label>
+                <ui:select class="ui dropdown la-not-clearable" name="filterTargetType"
+                           required="required"
+                           noSelection="${['' : message(code:'default.select.choose.label')]}"
+                           from="${RefdataCategory.getAllRefdataValues( RDConstants.WF_WORKFLOW_TARGET_TYPE )}"
+                           value="${params.filterTargetType}"
+                           optionKey="id"
+                           optionValue="value" />
+
+            </div>
+            <div class="field">
+                <label>${RefdataCategory.findByDesc(RDConstants.WF_WORKFLOW_TARGET_ROLE).getI10n('desc')}</label>
+                <ui:select class="ui dropdown la-not-clearable" name="filterTargetRole"
+                           required="required"
+                           noSelection="${['' : message(code:'default.select.choose.label')]}"
+                           from="${RefdataCategory.getAllRefdataValues( RDConstants.WF_WORKFLOW_TARGET_ROLE )}"
+                           value="${params.filterTargetRole}"
+                           optionKey="id"
+                           optionValue="value" />
+            </div>
+        </div>--}%
+
 %{--        <div class="three fields">
             <div class="field">
                 <label>${message(code: 'default.provider.label')}</label>
@@ -102,20 +137,7 @@
             <g:set var="wfInfo" value="${wf.getInfo()}" />
             <tr>
                 <td>
-                    <i class="ui icon large ${WorkflowHelper.getCssIconAndColorByStatus(wf.status)}"></i>
-
-                    <g:if test="${wf.status == RDStore.WF_WORKFLOW_STATUS_DONE}">
-                        <g:if test="${wfInfo.tasksImportantBlocking}">
-                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'workflow.blockingTasks.important')}">
-                                <i class="ui icon red exclamation triangle"></i>
-                            </span>
-                        </g:if>
-                        <g:elseif test="${wfInfo.tasksNormalBlocking}">
-                            <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'workflow.blockingTasks.normal')}">
-                                <i class="ui icon red exclamation triangle"></i>
-                            </span>
-                        </g:elseif>
-                    </g:if>
+                    <uiWorkflow:statusIcon workflow="${wf}" size="large" />
                 </td>
                 <td>
                     <g:link class="wfModalLink" controller="ajaxHtml" action="useWfXModal" params="${[key: 'myInstitution:' + wf.id + ':' + WfWorkflow.KEY + ':' + wf.id]}">

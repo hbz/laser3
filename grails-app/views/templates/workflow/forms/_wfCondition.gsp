@@ -87,7 +87,7 @@
                     </g:if>
                 </g:each>
             </div>
-            <div class="ui bottom attached segment" style="background-color: #f9fafb;">
+            <div class="ui bottom attached segment" style="background-color:#f9fafb;">
                 <g:each in="${condition.getFields()}" var="field" status="fi">
                     <g:if test="${fi == 0 || fi%2 == 0}">
                         <div class="field">

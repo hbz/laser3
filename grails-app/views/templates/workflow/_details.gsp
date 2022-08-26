@@ -10,11 +10,17 @@
         <div class="ui piled segments wf-details">
 
             <div class="ui segment">
+                <p style="text-align: center">
+                    <strong>Detailansicht</strong>
+                </p>
+            </div>
+
+            <div class="ui segment">
                 <div class="ui grid">
                     <div class="row">
                         <div class="two wide column wf-centered">
 
-                            <i class="icon big ${WorkflowHelper.getCssIconAndColorByStatus(wf.status)}"></i>
+                            <uiWorkflow:statusIcon workflow="${wf}" size="big" />
 
                         </div>
                         <div class="ten wide column">
@@ -23,7 +29,8 @@
                             <div class="description">
                                 ${wf.description}
                                 <br />
-                                <br />
+                                <g:if test="${wf.description}"><br /></g:if>
+
                                 <div class="ui la-flexbox">
                                     <i class="icon ${wfInfo.targetIcon} la-list-icon"></i>
                                     <g:link controller="${wfInfo.targetController}" action="show" params="${[id: wfInfo.target.id]}">
@@ -31,7 +38,7 @@
                                     </g:link>
                                 </div>
                                 <g:if test="${wf.comment}">
-                                    <div style="margin:1em 2em 1em 3em; padding-left:1em; border-left:5px solid #E0E0E0">
+                                    <div style="margin:1em 2em 0 2em; padding-left:1em; border-left:5px solid #E0E0E0">
                                         ${wf.comment}
                                     </div>
                                 </g:if>
@@ -87,7 +94,7 @@
                                 </div>
                                 <div class="description">${task.description}
                                     <g:if test="${task.comment}">
-                                        <div style="margin:1em 2em 1em 3em; padding-left:1em; border-left:5px solid #E0E0E0">
+                                        <div style="margin:1em 2em 0 2em; padding-left:1em; border-left:5px solid #E0E0E0">
                                             ${task.comment}
                                         </div>
                                     </g:if>
@@ -187,7 +194,7 @@
                                         </div>
                                         <div class="description">${child.description}
                                             <g:if test="${child.comment}">
-                                                <div style="margin:1em 2em 1em 3em; padding-left:1em; border-left:5px solid #E0E0E0">
+                                                <div style="margin:1em 2em 0 2em; padding-left:1em; border-left:5px solid #E0E0E0">
                                                     ${child.comment}
                                                 </div>
                                             </g:if>

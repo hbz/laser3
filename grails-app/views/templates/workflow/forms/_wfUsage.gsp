@@ -14,14 +14,15 @@
             <g:if test="${workflow.description}">
                 <p>${workflow.description}</p>
             </g:if>
-            <p>
-                <div class="ui la-flexbox">
-                    <i class="icon ${wfInfo.targetIcon} la-list-icon"></i>
-                    <g:link controller="${wfInfo.targetController}" action="show" params="${[id: wfInfo.target.id]}">
-                        ${wfInfo.targetName}
-                    </g:link>
-                </div>
-            </p>
+        </div>
+        <div class="field">
+            <label>${message(code:'default.relation.label')}</label>
+            <div class="ui la-flexbox">
+                <i class="icon ${wfInfo.targetIcon} la-list-icon"></i>
+                <g:link controller="${wfInfo.targetController}" action="show" params="${[id: wfInfo.target.id]}">
+                    ${wfInfo.targetName}
+                </g:link>
+            </div>
         </div>
 
         <div class="field">
@@ -45,7 +46,7 @@
         <div class="field">
             <label>Offene Aufgaben</label>
 
-            <div class="ui segment internally celled grid">
+            <div class="ui segment vertically divided grid" style="box-shadow:none">
                 <g:set var="tasks" value="${workflow.getSequence()}" />
                 <% int openTasksCount = 0 %>
 
@@ -53,20 +54,21 @@
                     <g:if test="${task.status == RDStore.WF_TASK_STATUS_OPEN}">
                         <% openTasksCount++ %>
                         <div class="row">
-                            <div class="sixteen wide column">
+                            <div class="one wide column wf-centered">
+                                <span class="sc_darkgrey">
+                                    <i class="icon ${WorkflowHelper.getCssIconByTaskPriority(task.priority)}"></i>
+                                </span>
+                            </div>
+                            <div class="fifteen wide column">
                                 <div class="content">
                                     <div class="header">
-                                        %{-- <i class="icon ${WorkflowHelper.getCssIconAndColorByStatus(task.status)}"></i> --}%
                                         <strong>${task.title}</strong>
-                                        <span class="sc_darkgrey">
-                                        ( <i class="icon ${WorkflowHelper.getCssIconByTaskPriority(task.priority)}"></i> ${task.priority.getI10n('value')} )
-                                    </span>
                                     </div>
                                     <div class="description" style="margin:1em 0 0 0">
                                         ${task.description}
                                     </div>
                                     <g:if test="${task.comment}">
-                                        <div style="margin: 1em; padding-left: 1em; border-left: 5px solid #E0E0E0; font-style: italic;">
+                                        <div style="margin: 1em 1em 0 1em; padding-left: 1em; border-left: 5px solid #E0E0E0; font-style: italic;">
                                             ${task.comment}
                                         </div>
                                     </g:if>
@@ -102,20 +104,21 @@
                             <g:if test="${child.status == RDStore.WF_TASK_STATUS_OPEN}">
                                 <% openTasksCount++ %>
                                 <div class="row">
-                                    <div class="sixteen wide column">
+                                    <div class="one wide column wf-centered">
+                                        <span class="sc_darkgrey">
+                                            <i class="icon ${WorkflowHelper.getCssIconByTaskPriority(child.priority)}"></i>
+                                        </span>
+                                    </div>
+                                    <div class="fifteen wide column">
                                         <div class="content">
                                             <div class="header">
-                                                %{-- <i class="icon ${WorkflowHelper.getCssIconAndColorByStatus(child.status)}"></i> --}%
                                                 <strong>${child.title}</strong>
-                                                <span class="sc_darkgrey">
-                                                ( <i class="icon ${WorkflowHelper.getCssIconByTaskPriority(child.priority)}"></i> ${child.priority.getI10n('value')} )
-                                            </span>
                                             </div>
                                             <div class="description" style="margin:1em 0 0 0">
                                                 ${child.description}
                                             </div>
                                             <g:if test="${child.comment}">
-                                                <div style="margin: 1em; padding-left: 1em; border-left: 5px solid #E0E0E0; font-style: italic;">
+                                                <div style="margin: 1em 1em 0 1em; padding-left: 1em; border-left: 5px solid #E0E0E0; font-style: italic;">
                                                     ${child.comment}
                                                 </div>
                                             </g:if>
@@ -213,7 +216,7 @@
 %{--                <label>${message(code:'workflow.condition.label')}</label>--}%
                 <label>${task.condition.title}</label>
 
-                <div class="ui segment" style="background-color:#f9fafb; margin-top:0;">
+                <div class="ui segment" style="background-color:#f9fafb; margin-top:0; box-shadow:none;">
                     <div class="field">
 %{--                        <p><strong>${task.condition.title}</strong></p>--}%
                         <p>${task.condition.description}</p>
@@ -264,7 +267,7 @@
                                         <i class="icon file"></i>
                                     </g:link>
                                 </g:if> --}%
-                                <div id="fileUploadWrapper_dropdown_${field}" class="ui segment">
+                                <div id="fileUploadWrapper_dropdown_${field}" class="ui segment" style="box-shadow:none">
                                     <div class="field">
                                         <g:if test="${workflow}"> %{-- currentWorkflows --}%
                                             <g:select class="ui dropdown" id="${prefixOverride}_${field}" name="${prefixOverride}_${field}"
@@ -285,7 +288,7 @@
                                         </g:else>
                                     </div>
                                 </div>
-                                <div id="fileUploadWrapper_upload_${field}" class="ui segment" style="display:none;">
+                                <div id="fileUploadWrapper_upload_${field}" class="ui segment" style="box-shadow:none;display:none">
                                     %{--<g:form class="ui form" url="${formUrl}" method="post" enctype="multipart/form-data">--}%
 
                                     <g:if test="${workflow}"> %{-- currentWorkflows --}%

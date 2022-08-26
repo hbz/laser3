@@ -36,20 +36,7 @@
         <g:set var="wfInfo" value="${wf.getInfo()}" />
         <tr>
             <td>
-                <g:if test="${wf.status == RDStore.WF_WORKFLOW_STATUS_DONE}">
-                    <g:if test="${wfInfo.tasksImportantBlocking}">
-                        <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'workflow.blockingTasks.important')}">
-                            <i class="ui icon red exclamation triangle"></i>
-                        </span>
-                    </g:if>
-                    <g:elseif test="${wfInfo.tasksNormalBlocking}">
-                        <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'workflow.blockingTasks.normal')}">
-                            <i class="ui icon red exclamation triangle"></i>
-                        </span>
-                    </g:elseif>
-                </g:if>
-
-                <i class="icon large ${WorkflowHelper.getCssIconAndColorByStatus(wf.status)}"></i>
+                <uiWorkflow:statusIcon workflow="${wf}" size="large" />
             </td>
             <td>
                 <g:link class="wfModalLink" controller="ajaxHtml" action="useWfXModal" params="${[key: '' + wfInfo.target.class.name + ':' + wfInfo.target.id + ':' + WfWorkflow.KEY + ':' + wf.id]}">

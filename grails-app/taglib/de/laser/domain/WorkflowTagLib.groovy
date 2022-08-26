@@ -1,7 +1,9 @@
 package de.laser.domain
 
 import de.laser.DocContext
+import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
+import de.laser.workflow.WfWorkflow
 import de.laser.workflow.WorkflowHelper
 import de.laser.workflow.WfCondition
 import de.laser.workflow.WfTask
@@ -9,6 +11,27 @@ import de.laser.workflow.WfTask
 class WorkflowTagLib {
 
     static namespace = 'uiWorkflow'
+
+    def statusIcon = { attrs, body ->
+
+        WfWorkflow workflow = attrs.workflow as WfWorkflow
+        Map<String, Object> wfInfo = workflow.getInfo()
+        String iconSize = attrs.get('size') ?: 'large'
+
+        if (workflow.status == RDStore.WF_WORKFLOW_STATUS_DONE) {
+            if (wfInfo.tasksImportantBlocking) {
+                out << '<span data-position="top left" class="la-popup-tooltip la-delay" data-content="' + message(code:'workflow.blockingTasks.important') + '">'
+                out << '<i class="icon ' + iconSize + ' red frown outline"></i>'
+                out << '</span>'
+            }
+            else if (wfInfo.tasksNormalBlocking) {
+                out << '<span data-position="top left" class="la-popup-tooltip la-delay" data-content="' + message(code:'workflow.blockingTasks.normal') + '">'
+                out << '<i class="icon ' + iconSize + ' yellow frown outline"></i>'
+                out << '</span>'
+            }
+        }
+        out << '<i class="icon ' + iconSize + ' ' + WorkflowHelper.getCssIconAndColorByStatus(workflow.status) + '"></i>'
+    }
 
     def task = { attrs, body ->
 
@@ -78,27 +101,29 @@ class WorkflowTagLib {
 
         if (field && condition) {
             String pTitle = (condition.getProperty(field + '_title') ?: message(code:'workflow.field.noTitle.label'))
+            String posMark = '<div class="item positive"><i class="icon plus"></i> '
+            String negMark = '<div class="item negative"><i class="icon minus"></i> '
 
             if (field.startsWith('checkbox')) {
                 if (condition.getProperty(field + '_isTrigger')) {
                     pTitle = '<u>' + pTitle + '</u>'
                 }
                 if (condition.getProperty(field) == true) {
-                    out << (isListItem ? '<div class="item positive">' : '') + '<i class="icon check square outline"></i>'
+                    out << (isListItem ? posMark : '') + '<i class="icon check square outline"></i>'
                 }
                 else {
-                    out << (isListItem ? '<div class="item negative"><i class="icon square outline"></i>' : '<i class="icon square outline la-light-grey"></i>')
+                    out << (isListItem ? negMark + '<i class="icon square outline"></i>' : '<i class="icon square outline la-light-grey"></i>')
                 }
                 out << (isListItem ? '<div class="middle aligned content">' : '') + pTitle + (isListItem ? '</div></div>' : '')
             }
             else if (field.startsWith('date')) {
                 if (condition.getProperty(field)) {
-                    out << (isListItem ? '<div class="item positive">' : '') + '<i class="icon calendar alternate outline"></i>'
+                    out << (isListItem ? posMark : '') + '<i class="icon calendar alternate outline"></i>'
                     out << (isListItem ? '<div class="middle aligned content">' : '')
                     out << pTitle + ': ' + DateUtils.getLocalizedSDF_noTime().format(condition.getProperty(field))
                 }
                 else {
-                    out << (isListItem ? '<div class="item negative"><i class="icon calendar alternate outline"></i>' : '<i class="icon calendar alternate outline la-light-grey"></i>')
+                    out << (isListItem ? negMark + '<i class="icon calendar alternate outline"></i>' : '<i class="icon calendar alternate outline la-light-grey"></i>')
                     out << (isListItem ? '<div class="content">' : '') + pTitle
                 }
                 out << (isListItem ? '</div></div>' : '')
@@ -113,12 +138,12 @@ class WorkflowTagLib {
                     else if (docctx.owner?.filename) {
                         linkBody = docctx.owner.filename
                     }
-                    out << (isListItem ? '<div class="item positive">' : '') + '<i class="icon file"></i>'
+                    out << (isListItem ? posMark : '') + '<i class="icon file"></i>'
                     out << (isListItem ? '<div class="middle aligned content">' : '')
                     out << pTitle + ': ' + g.link( [controller: 'docstore', id: docctx.owner.uuid], linkBody + ' (' + docctx.owner?.type?.getI10n('value') + ')')
                 }
                 else {
-                    out << (isListItem ? '<div class="item negative"><i class="icon file"></i>' : '<i class="icon file la-light-grey"></i>')
+                    out << (isListItem ? negMark + '<i class="icon file"></i>' : '<i class="icon file la-light-grey"></i>')
                     out << (isListItem ? '<div class="content">' : '') + pTitle
                 }
                 out << (isListItem ? '</div></div>' : '')

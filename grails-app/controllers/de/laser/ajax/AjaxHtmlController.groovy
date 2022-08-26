@@ -1002,7 +1002,7 @@ class AjaxHtmlController {
         }
         else if (params.key in [WfWorkflowPrototype.KEY]) {
             result.tmpl = '/templates/workflow/forms/wfWorkflow'
-            result.tmplModalTitle = '<i class="icon tasks"></i> ' + result.tmplModalTitle
+            result.tmplModalTitle = '<i class="icon task sc_darkgrey"></i> ' + result.tmplModalTitle
 
             // not: * used as tp.next * used as tp.child
             result.dd_taskList = WfTaskPrototype.executeQuery(
@@ -1014,7 +1014,7 @@ class AjaxHtmlController {
         }
         else if (params.key in [WfTaskPrototype.KEY]) {
             result.tmpl = '/templates/workflow/forms/wfTask'
-            result.tmplModalTitle = '<i class="icon check circle outline"></i> ' + result.tmplModalTitle
+            result.tmplModalTitle = '<i class="icon check circle outline sc_darkgrey"></i> ' + result.tmplModalTitle
 
             // not: * used as tp.child * used as wp.task
             result.dd_nextList = WfTaskPrototype.executeQuery(
@@ -1035,7 +1035,7 @@ class AjaxHtmlController {
         }
         else if (params.key in [WfConditionPrototype.KEY]) {
             result.tmpl = '/templates/workflow/forms/wfCondition'
-            result.tmplModalTitle = '<i class="icon bullseye"></i> ' + result.tmplModalTitle
+            result.tmplModalTitle = '<i class="icon key sc_darkgrey"></i> ' + result.tmplModalTitle
         }
         render template: '/templates/workflow/forms/modalWrapper', model: result
     }
@@ -1081,13 +1081,15 @@ class AjaxHtmlController {
 
             if (result.prefix == WfWorkflow.KEY) {
                 result.workflow       = WfWorkflow.get( key[3] )
-                result.tmplModalTitle = '<i class="icon tasks"></i> ' + result.workflow.title
+                //result.tmplModalTitle = '<i class="icon tasks"></i> ' + result.workflow.title
+                result.tmplModalTitle = g.message(code:'workflow.label') + ': ' + result.workflow.title
                 //g.message(code: 'default.edit.label', args: [g.message(code:'workflow.label')])
 
             }
             else if (result.prefix == WfTask.KEY) {
                 result.task           = WfTask.get( key[3] )
-                result.tmplModalTitle = '<i class="icon check circle outline"></i> ' + result.task.title
+                //result.tmplModalTitle = '<i class="icon check circle outline"></i> ' + result.task.title
+                result.tmplModalTitle = g.message(code:'task.label') + ': ' +  result.task.title
                 //g.message(code: 'default.edit.label', args: [g.message(code:'task.label')])
             }
         }
@@ -1141,7 +1143,7 @@ class AjaxHtmlController {
             if (result.prefix == WfWorkflowPrototype.KEY) {
                 result.workflow       = WfWorkflowPrototype.get( wfObjId )
                 result.tmpl           = '/templates/workflow/forms/wfWorkflow'
-                result.tmplModalTitle = '<i class="icon tasks"></i> ' + result.tmplModalTitle
+                result.tmplModalTitle = '<i class="icon tasks sc_darkgrey"></i> ' + result.tmplModalTitle
 
                 if (result.workflow) {
                     // not: * used as tp.next * used as tp.child
@@ -1156,7 +1158,7 @@ class AjaxHtmlController {
             else if (result.prefix == WfWorkflow.KEY) {
                 result.workflow       = WfWorkflow.get( wfObjId )
                 result.tmpl           = '/templates/workflow/forms/wfWorkflow'
-                result.tmplModalTitle = '<i class="icon cog"></i> ' + result.tmplModalTitle
+                result.tmplModalTitle = '<i class="icon cog sc_darkgrey"></i> ' + result.tmplModalTitle
                 //result.tmplModalTitle = result.tmplModalTitle + result.workflow.title
 
 //                if (result.workflow) {
@@ -1168,7 +1170,7 @@ class AjaxHtmlController {
             else if (result.prefix == WfTaskPrototype.KEY) {
                 result.task           = WfTaskPrototype.get( wfObjId )
                 result.tmpl           = '/templates/workflow/forms/wfTask'
-                result.tmplModalTitle = '<i class="icon check circle outline"></i> ' + result.tmplModalTitle
+                result.tmplModalTitle = '<i class="icon check circle outline sc_darkgrey"></i> ' + result.tmplModalTitle
                 //result.tmplModalTitle = result.tmplModalTitle + result.task.title
 
                 if (result.task) {
@@ -1198,7 +1200,7 @@ class AjaxHtmlController {
             else if (result.prefix == WfTask.KEY) {
                 result.task           = WfTask.get( wfObjId )
                 result.tmpl           = '/templates/workflow/forms/wfTask'
-                result.tmplModalTitle = '<i class="icon cog"></i> ' + result.tmplModalTitle
+                result.tmplModalTitle = '<i class="icon cog sc_darkgrey"></i> ' + result.tmplModalTitle
                 //result.tmplModalTitle = result.tmplModalTitle + result.task.title
 
                 if (result.task) {
@@ -1218,7 +1220,7 @@ class AjaxHtmlController {
             else if (result.prefix == WfConditionPrototype.KEY) {
                 result.condition      = WfConditionPrototype.get( wfObjId )
                 result.tmpl           = '/templates/workflow/forms/wfCondition'
-                result.tmplModalTitle = '<i class="icon bullseye"></i> ' + result.tmplModalTitle
+                result.tmplModalTitle = '<i class="icon key sc_darkgrey"></i> ' + result.tmplModalTitle
                 //result.tmplModalTitle = result.tmplModalTitle + result.condition.title
 
 //                if (result.condition) {
@@ -1228,7 +1230,7 @@ class AjaxHtmlController {
             else if (result.prefix == WfCondition.KEY) {
                 result.condition      = WfCondition.get( wfObjId )
                 result.tmpl           = '/templates/workflow/forms/wfCondition'
-                result.tmplModalTitle = '<i class="icon cog"></i> ' + result.tmplModalTitle
+                result.tmplModalTitle = '<i class="icon cog sc_darkgrey"></i> ' + result.tmplModalTitle
                 //result.tmplModalTitle = result.tmplModalTitle + result.condition.title
 
 //                if (result.condition) {

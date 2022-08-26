@@ -12,9 +12,9 @@
 <g:set var="tmplTab" value="${tab ?: 'prototypes'}" />
 
 <div class="ui secondary stackable pointing tabular la-tab-with-js menu">
-    <a data-tab="workflows" class="item <% if (tmplTab == 'workflows') { print 'active' } %>">${message(code:'workflow.plural')}</a>
     <a data-tab="prototypes" class="item <% if (tmplTab == 'prototypes') { print 'active' } %>">${message(code:'default.prototype.plural')}</a>
     <a data-tab="templates" class="item <% if (tmplTab == 'templates') { print 'active' } %>">Templates</a>
+    <a data-tab="workflows" class="item <% if (tmplTab == 'workflows') { print 'active' } %>">${message(code:'workflow.plural')}</a>
     <a data-tab="help" class="item <% if (tmplTab == 'help') { print 'active' } %>">?</a>
 </div>
 
@@ -64,20 +64,7 @@
         <g:set var="wfInfo" value="${wf.getInfo()}" />
 
         <div class="ui segment attached top">
-            <i class="ui icon large ${WorkflowHelper.getCssIconAndColorByStatus(wf.status)}"></i>
-
-            <g:if test="${wf.status == RDStore.WF_WORKFLOW_STATUS_DONE}">
-                <g:if test="${wfInfo.tasksImportantBlocking}">
-                    <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'workflow.blockingTasks.important')}">
-                        <i class="ui icon red exclamation triangle"></i>
-                    </span>
-                </g:if>
-                <g:elseif test="${wfInfo.tasksNormalBlocking}">
-                    <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'workflow.blockingTasks.normal')}">
-                        <i class="ui icon red exclamation triangle"></i>
-                    </span>
-                </g:elseif>
-            </g:if>
+            <uiWorkflow:statusIcon workflow="${wf}" size="large" />
 
             <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfWorkflow.KEY + ':' + wf.id, tab: 'workflows']}">
                 <strong>${wf.title}</strong>
@@ -603,6 +590,13 @@
 
 <div data-tab="help" class="ui bottom attached tab <% if (tmplTab == 'help') { print 'active' } %>" style="margin-top:2em;">
 
+    <div class="ui icon message info">
+        <i class="icon info"></i>
+        <div class="content">
+            <div class="header">Hinweis zur Version 3.0</div>
+            <p>Das Anlegen von verschachtelten Aufgaben (Childs) wurde vorerst deaktiviert.</p>
+        </div>
+    </div>
     <div class="ui segment">
         <div class="field">
             <div style="text-align:center; padding:2em 0">
