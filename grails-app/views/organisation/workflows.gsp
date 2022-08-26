@@ -6,7 +6,9 @@
         </g:if>
     </ui:breadcrumbs>
     <ui:controlButtons>
-        <laser:render template="actions" model="${[org:org]}"/>
+        <g:if test="${institutionalView || isProviderOrAgency}">
+            <laser:render template="actions" model="${[org:org]}"/>
+        </g:if>
     </ui:controlButtons>
 
     <ui:h1HeaderWithIcon text="${orgInstance.name}" />
