@@ -120,6 +120,14 @@
                     </dd>
                 </dl>
             </g:if>
+            <g:elseif test="${showConsortiaFunctions}">
+                <dl>
+                    <dt>
+                        <label>${message(code:'template.addDocument.setSharing')}</label>
+                    </dt>
+                    <dd><g:checkBox name="setSharing" class="ui checkbox" value="${docctx?.isShared}"/></dd>
+                </dl>
+            </g:elseif>
         <g:if test="${docForAll}">
             <dl>
                 <dt>

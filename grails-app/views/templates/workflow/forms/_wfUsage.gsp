@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.storage.RDStore; de.laser.Subscription; de.laser.workflow.WorkflowHelper; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.workflow.*;" %>
+<%@ page import="de.laser.Doc; de.laser.Org; de.laser.utils.DateUtils; de.laser.storage.RDStore; de.laser.Subscription; de.laser.workflow.WorkflowHelper; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.workflow.*;" %>
 
 <g:form id="wfForm" url="${formUrl}" method="POST" class="ui form">
 
@@ -7,20 +7,22 @@
 
     <g:if test="${prefix == WfWorkflow.KEY}">
         <g:set var="prefixOverride" value="${WfWorkflow.KEY}" />
+        <g:set var="wfInfo" value="${workflow.getInfo()}" />
 
         <div class="field">
 %{--            <p><strong>${workflow.title}</strong></p>--}%
             <g:if test="${workflow.description}">
                 <p>${workflow.description}</p>
             </g:if>
-            <p>
-                <div class="ui la-flexbox">
-                    <i class="icon clipboard la-list-icon"></i>
-                    <g:link controller="subscription" action="show" params="${[id: workflow.subscription.id]}">
-                        ${workflow.subscription.name}
-                    </g:link>
-                </div>
-            </p>
+        </div>
+        <div class="field">
+            <label>${message(code:'default.relation.label')}</label>
+            <div class="ui la-flexbox">
+                <i class="icon ${wfInfo.targetIcon} la-list-icon"></i>
+                <g:link controller="${wfInfo.targetController}" action="show" params="${[id: wfInfo.target.id]}">
+                    ${wfInfo.targetName}
+                </g:link>
+            </div>
         </div>
 
         <div class="field">
@@ -39,12 +41,12 @@
             </div>
         </div>
 
-        %{-- <g:if test="${! subscription}"> currentWorkflows --}%
+        %{-- <g:if test="${! targetObject}"> currentWorkflows --}%
 
         <div class="field">
             <label>Offene Aufgaben</label>
 
-            <div class="ui segment internally celled grid">
+            <div class="ui segment vertically divided grid" style="box-shadow:none">
                 <g:set var="tasks" value="${workflow.getSequence()}" />
                 <% int openTasksCount = 0 %>
 
@@ -52,20 +54,21 @@
                     <g:if test="${task.status == RDStore.WF_TASK_STATUS_OPEN}">
                         <% openTasksCount++ %>
                         <div class="row">
-                            <div class="sixteen wide column">
+                            <div class="one wide column wf-centered">
+                                <span class="sc_darkgrey">
+                                    <i class="icon ${WorkflowHelper.getCssIconByTaskPriority(task.priority)}"></i>
+                                </span>
+                            </div>
+                            <div class="fifteen wide column">
                                 <div class="content">
                                     <div class="header">
-                                        %{-- <i class="icon ${WorkflowHelper.getCssIconAndColorByStatus(task.status)}"></i> --}%
                                         <strong>${task.title}</strong>
-                                        <span class="sc_darkgrey">
-                                        ( <i class="icon ${WorkflowHelper.getCssIconByTaskPriority(task.priority)}"></i> ${task.priority.getI10n('value')} )
-                                    </span>
                                     </div>
                                     <div class="description" style="margin:1em 0 0 0">
                                         ${task.description}
                                     </div>
                                     <g:if test="${task.comment}">
-                                        <div style="margin: 1em; padding-left: 1em; border-left: 5px solid #E0E0E0; font-style: italic;">
+                                        <div style="margin: 1em 1em 0 1em; padding-left: 1em; border-left: 5px solid #E0E0E0; font-style: italic;">
                                             ${task.comment}
                                         </div>
                                     </g:if>
@@ -101,20 +104,21 @@
                             <g:if test="${child.status == RDStore.WF_TASK_STATUS_OPEN}">
                                 <% openTasksCount++ %>
                                 <div class="row">
-                                    <div class="sixteen wide column">
+                                    <div class="one wide column wf-centered">
+                                        <span class="sc_darkgrey">
+                                            <i class="icon ${WorkflowHelper.getCssIconByTaskPriority(child.priority)}"></i>
+                                        </span>
+                                    </div>
+                                    <div class="fifteen wide column">
                                         <div class="content">
                                             <div class="header">
-                                                %{-- <i class="icon ${WorkflowHelper.getCssIconAndColorByStatus(child.status)}"></i> --}%
                                                 <strong>${child.title}</strong>
-                                                <span class="sc_darkgrey">
-                                                ( <i class="icon ${WorkflowHelper.getCssIconByTaskPriority(child.priority)}"></i> ${child.priority.getI10n('value')} )
-                                            </span>
                                             </div>
                                             <div class="description" style="margin:1em 0 0 0">
                                                 ${child.description}
                                             </div>
                                             <g:if test="${child.comment}">
-                                                <div style="margin: 1em; padding-left: 1em; border-left: 5px solid #E0E0E0; font-style: italic;">
+                                                <div style="margin: 1em 1em 0 1em; padding-left: 1em; border-left: 5px solid #E0E0E0; font-style: italic;">
                                                     ${child.comment}
                                                 </div>
                                             </g:if>
@@ -174,8 +178,9 @@
     %{-- TASK --}%
     %{-- TASK --}%
 
-    <g:if test="${prefix == WfTask.KEY}">
+    <g:elseif test="${prefix == WfTask.KEY}">
         <g:set var="prefixOverride" value="${WfTask.KEY}" />
+        <g:set var="wfInfo" value="${task.getWorkflow().getInfo()}" />
 
         <div class="field">
 %{--            <p><strong>${task.title}</strong></p>--}%
@@ -212,7 +217,7 @@
 %{--                <label>${message(code:'workflow.condition.label')}</label>--}%
                 <label>${task.condition.title}</label>
 
-                <div class="ui segment" style="background-color:#f9fafb; margin-top:0;">
+                <div class="ui segment" style="background-color:#f9fafb; margin-top:0; box-shadow:none;">
                     <div class="field">
 %{--                        <p><strong>${task.condition.title}</strong></p>--}%
                         <p>${task.condition.description}</p>
@@ -263,35 +268,37 @@
                                         <i class="icon file"></i>
                                     </g:link>
                                 </g:if> --}%
-                                <div id="fileUploadWrapper_dropdown_${field}" class="ui segment">
+                                <div id="fileUploadWrapper_dropdown_${field}" class="ui segment" style="box-shadow:none">
                                     <div class="field">
                                         <g:if test="${workflow}"> %{-- currentWorkflows --}%
+                                            <g:set var="targetDocuments" value="${wfInfo.target.documents.findAll{ it.status != RDStore.DOC_CTX_STATUS_DELETED && it.owner.contentType == Doc.CONTENT_TYPE_FILE }}" />
                                             <g:select class="ui dropdown" id="${prefixOverride}_${field}" name="${prefixOverride}_${field}"
                                                       noSelection="${['' : message(code:'default.select.choose.label')]}"
-                                                      from="${workflow.subscription.documents}"
+                                                      from="${targetDocuments}"
                                                       value="${task.condition.getProperty(field)?.id}"
-                                                      optionKey="id"
+                                                      optionKey="${{it.id}}"
                                                       optionValue="${{ (it.owner?.title ? it.owner.title : it.owner?.filename ? it.owner.filename : message(code:'template.documents.missing')) + ' (' + it.owner?.type?.getI10n("value") + ')' }}" />
                                         </g:if>
                                         <g:else>
+                                            <g:set var="targetDocuments" value="${targetObject.documents.findAll{ it.status != RDStore.DOC_CTX_STATUS_DELETED && it.owner.contentType == Doc.CONTENT_TYPE_FILE }}" />
                                             <g:select class="ui dropdown" id="${prefixOverride}_${field}" name="${prefixOverride}_${field}"
                                                       noSelection="${['' : message(code:'default.select.choose.label')]}"
-                                                      from="${subscription.documents}"
+                                                      from="${targetDocuments}"
                                                       value="${task.condition.getProperty(field)?.id}"
-                                                      optionKey="id"
+                                                      optionKey="${{it.id}}"
                                                       optionValue="${{ (it.owner?.title ? it.owner.title : it.owner?.filename ? it.owner.filename : message(code:'template.documents.missing')) + ' (' + it.owner?.type?.getI10n("value") + ')' }}" />
 
                                         </g:else>
                                     </div>
                                 </div>
-                                <div id="fileUploadWrapper_upload_${field}" class="ui segment" style="display:none;">
+                                <div id="fileUploadWrapper_upload_${field}" class="ui segment" style="box-shadow:none;display:none">
                                     %{--<g:form class="ui form" url="${formUrl}" method="post" enctype="multipart/form-data">--}%
 
                                     <g:if test="${workflow}"> %{-- currentWorkflows --}%
-                                        <input type="hidden" name="wfUploadOwner_${field}" value="${workflow.subscription.class.name}:${workflow.subscription.id}"/>
+                                        <input type="hidden" name="wfUploadOwner_${field}" value="${wfInfo.target.class.name}:${wfInfo.target.id}"/>
                                     </g:if>
                                     <g:else>
-                                        <input type="hidden" name="wfUploadOwner_${field}" value="${subscription.class.name}:${subscription.id}"/>
+                                        <input type="hidden" name="wfUploadOwner_${field}" value="${targetObject.class.name}:${targetObject.id}"/>
                                     </g:else>
                                         <label for="wfUploadTitle_${field}" >${message(code: 'template.addDocument.name')}:</label>
                                         <input type="text" id="wfUploadTitle_${field}" name="wfUploadTitle_${field}" />
@@ -304,8 +311,17 @@
                                                   name="wfUploadDoctype_${field}"
                                                   />
 
-                                        <label for="wfUploadFile_placeholder-${field}">${message(code: 'template.addDocument.file')}:</label>
+                                        <g:if test="${(workflow && wfInfo.target instanceof Org) || (targetObject && targetObject instanceof Org)}">
+                                            <label>${message(code:'template.addDocument.shareConf')}</label>
+                                            <g:select from="${[RDStore.SHARE_CONF_UPLOADER_ORG, RDStore.SHARE_CONF_UPLOADER_AND_TARGET, RDStore.SHARE_CONF_ALL]}"
+                                                      class="ui dropdown fluid la-not-clearable"
+                                                      optionKey="id"
+                                                      optionValue="${{ it.getI10n('value') }}"
+                                                      name="wfUploadShareConf_${field}"
+                                            />
+                                        </g:if>
 
+                                        <label for="wfUploadFile_placeholder_${field}">${message(code: 'template.addDocument.file')}:</label>
                                         <div class="ui fluid action input">
                                             <input type="text" id="wfUploadFile_placeholder_${field}" name="wfUploadFile_placeholder_${field}" readonly="readonly" placeholder="${message(code:'template.addDocument.selectFile')}">
                                             <input type="file" id="wfUploadFile_file_${field}" name="wfUploadFile_file_${field}" style="display: none;">
@@ -367,7 +383,7 @@
             <input type="hidden" name="info" value="${info}" />
         </g:if>
         <input type="hidden" name="cmd" value="usage:${prefix}:${task.id}" />
-    </g:if>
+    </g:elseif>
  </g:form>
 
 

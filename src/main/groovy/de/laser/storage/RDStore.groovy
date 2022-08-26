@@ -259,6 +259,15 @@ class RDStore {
     public final static RefdataValue WF_WORKFLOW_STATE_ACTIVE    = getRefdataValue('active', RDConstants.WF_WORKFLOW_STATE)
     public final static RefdataValue WF_WORKFLOW_STATE_TEST      = getRefdataValue('test', RDConstants.WF_WORKFLOW_STATE)
 
+    public final static RefdataValue WF_WORKFLOW_TARGET_ROLE_ALL            = getRefdataValue('all', RDConstants.WF_WORKFLOW_TARGET_ROLE)
+    public final static RefdataValue WF_WORKFLOW_TARGET_ROLE_CONSORTIUM     = getRefdataValue('consortium', RDConstants.WF_WORKFLOW_TARGET_ROLE)
+    public final static RefdataValue WF_WORKFLOW_TARGET_ROLE_INSTITUTION    = getRefdataValue('institution', RDConstants.WF_WORKFLOW_TARGET_ROLE)
+
+    public final static RefdataValue WF_WORKFLOW_TARGET_TYPE_INSTITUTION    = getRefdataValue('institution', RDConstants.WF_WORKFLOW_TARGET_TYPE)
+    public final static RefdataValue WF_WORKFLOW_TARGET_TYPE_LICENSE        = getRefdataValue('license', RDConstants.WF_WORKFLOW_TARGET_TYPE)
+    public final static RefdataValue WF_WORKFLOW_TARGET_TYPE_PROVIDER       = getRefdataValue('provider', RDConstants.WF_WORKFLOW_TARGET_TYPE)
+    public final static RefdataValue WF_WORKFLOW_TARGET_TYPE_SUBSCRIPTION   = getRefdataValue('subscription', RDConstants.WF_WORKFLOW_TARGET_TYPE)
+
     public final static RefdataValue WF_WORKFLOW_STATUS_OPEN     = getRefdataValue('open', RDConstants.WF_WORKFLOW_STATUS)
     public final static RefdataValue WF_WORKFLOW_STATUS_CANCELED = getRefdataValue('canceled', RDConstants.WF_WORKFLOW_STATUS)
     public final static RefdataValue WF_WORKFLOW_STATUS_DONE     = getRefdataValue('done', RDConstants.WF_WORKFLOW_STATUS)

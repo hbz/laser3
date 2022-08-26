@@ -142,10 +142,11 @@ class UiTagLib {
             attrs.bean.errors.allErrors.each { e ->
                 if (e in org.springframework.validation.FieldError) {
                     out << '<li data-field-id="${error.field}">'
+                    out << BeanStore.getMessageSource().getMessage(e, LocaleUtils.getCurrentLocale())
+                    out << '</li>'
                 } else {
-                    out << '<li>'
+                    out << '<li>' + g.message(error: "${e}") + '</li>'
                 }
-                out << g.message(error: "${e}") + '</li>'
             }
             out << '</ul>'
             out << '</div>'

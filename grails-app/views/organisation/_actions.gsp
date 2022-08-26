@@ -1,3 +1,4 @@
+<%@ page import="de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
 
 <g:if test="${accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN,ROLE_ORG_EDITOR')}">
@@ -16,6 +17,18 @@
                 <ui:actionsDropdownItem data-ui="modal" href="#modalCreateTask" message="task.create.new"/>
                 <ui:actionsDropdownItem data-ui="modal" href="#modalCreateDocument" message="template.documents.add"/>
                 <ui:actionsDropdownItem data-ui="modal" href="#modalCreateNote" message="template.notes.add"/>
+
+                <div class="divider"></div>
+
+                <sec:ifAnyGranted roles="ROLE_ADMIN"><!-- TODO: workflows-permissions -->
+                    <g:if test="${contextCustomerType == "ORG_CONSORTIUM"}">
+                        <g:if test="${institutionalView || isProviderOrAgency}">
+                            <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalInstantiateWorkflow" />
+                            <div class="divider"></div>
+                        </g:if>
+                    </g:if>
+                </sec:ifAnyGranted>
+
                 <ui:actionsDropdownItem data-ui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />
                 <g:set var="createModal" value="${true}"/>
             </g:if>
@@ -38,7 +51,15 @@
             <g:if test="${actionName == 'users'}">
                 <ui:actionsDropdownItem controller="user" action="create" message="user.create_new.label" params="[org: orgInstance.id]" />
             </g:if>
-
+            <g:if test="${actionName == 'workflows'}">
+                <sec:ifAnyGranted roles="ROLE_ADMIN"><!-- TODO: workflows-permissions -->
+                    <g:if test="${contextCustomerType == "ORG_CONSORTIUM"}">
+                        <g:if test="${institutionalView || isProviderOrAgency}">
+                            <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalInstantiateWorkflow" />
+                        </g:if>
+                    </g:if>
+                </sec:ifAnyGranted>
+            </g:if>
             <g:if test="${actionName == 'readerNumber'}">
                 <ui:actionsDropdownItem data-ui="modal" href="#newForUni" message="readerNumber.createForUni.label" />
                 <ui:actionsDropdownItem data-ui="modal" href="#newForPublic" message="readerNumber.createForPublic.label" />
@@ -120,4 +141,15 @@
         <laser:render template="/templates/notes/modal_create" model="${[ownobj: orgInstance, owntp: 'org']}"/>
     </g:if>
 </g:if>
+
+<sec:ifAnyGranted roles="ROLE_ADMIN"><!-- TODO: workflows-permissions -->
+    <g:if test="${contextCustomerType == "ORG_CONSORTIUM"}">
+        <g:if test="${institutionalView}">
+            <laser:render template="/templates/workflow/instantiate" model="${[cmd: RDStore.WF_WORKFLOW_TARGET_TYPE_INSTITUTION, target: orgInstance]}"/>
+        </g:if>
+        <g:if test="${isProviderOrAgency}">
+            <laser:render template="/templates/workflow/instantiate" model="${[cmd: RDStore.WF_WORKFLOW_TARGET_TYPE_PROVIDER, target: orgInstance]}"/>
+        </g:if>
+    </g:if>
+</sec:ifAnyGranted>
 

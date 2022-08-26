@@ -1,5 +1,8 @@
 package de.laser.workflow
 
+import de.laser.RefdataValue
+import de.laser.annotations.RefdataInfo
+import de.laser.storage.RDConstants
 import grails.gorm.dirty.checking.DirtyCheck
 
 /**
@@ -9,8 +12,6 @@ import grails.gorm.dirty.checking.DirtyCheck
 abstract class WfWorkflowBase {
 
 //    WfTaskBase task
-
-    String prototypeVersion
 
     String title
     String description

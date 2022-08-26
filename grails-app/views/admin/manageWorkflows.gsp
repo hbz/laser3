@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.workflow.WorkflowHelper; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.workflow.*; de.laser.WorkflowService" %>
+<%@ page import="de.laser.utils.DateUtils; de.laser.License; de.laser.Subscription; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.workflow.*; de.laser.WorkflowService" %>
 
 <laser:htmlStart message="menu.admin.manageWorkflows" />
 
@@ -12,9 +12,9 @@
 <g:set var="tmplTab" value="${tab ?: 'prototypes'}" />
 
 <div class="ui secondary stackable pointing tabular la-tab-with-js menu">
-    <a data-tab="workflows" class="item <% if (tmplTab == 'workflows') { print 'active' } %>">${message(code:'workflow.plural')}</a>
     <a data-tab="prototypes" class="item <% if (tmplTab == 'prototypes') { print 'active' } %>">${message(code:'default.prototype.plural')}</a>
     <a data-tab="templates" class="item <% if (tmplTab == 'templates') { print 'active' } %>">Templates</a>
+    <a data-tab="workflows" class="item <% if (tmplTab == 'workflows') { print 'active' } %>">${message(code:'workflow.plural')}</a>
     <a data-tab="help" class="item <% if (tmplTab == 'help') { print 'active' } %>">?</a>
 </div>
 
@@ -31,19 +31,19 @@
             <div class="item">
                 <span>
                     <strong>${message(code:'default.priority.label')}:</strong>
-                    &nbsp;&nbsp;
-                    <i class="icon circle large"></i>Normal
-                    <i class="icon arrow circle up large"></i>Wichtig
-                    <i class="icon arrow circle down large"></i>Optional
+                    &nbsp;
+                    <i class="icon circle"></i>Normal
+                    <i class="icon arrow circle up"></i>Wichtig
+                    <i class="icon arrow circle down"></i>Optional
                 </span>
             </div>
             <div class="item">
                 <span>
                     <strong>${message(code:'default.status.label')}:</strong>
-                    &nbsp;&nbsp;
-                    <i class="icon sc_darkgrey circle large"></i>Offen
-                    <i class="icon green circle large"></i>Erledigt
-                    <i class="icon orange circle large"></i>Abgebrochen
+                    &nbsp;
+                    <i class="icon sc_darkgrey circle"></i>Offen
+                    <i class="icon green circle"></i>Erledigt
+                    <i class="icon orange circle"></i>Abgebrochen
                 </span>
             </div>
         </div>
@@ -64,20 +64,7 @@
         <g:set var="wfInfo" value="${wf.getInfo()}" />
 
         <div class="ui segment attached top">
-            <i class="ui icon large ${WorkflowHelper.getCssIconAndColorByStatus(wf.status)}"></i>
-
-            <g:if test="${wf.status == RDStore.WF_WORKFLOW_STATUS_DONE}">
-                <g:if test="${wfInfo.tasksImportantBlocking}">
-                    <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'workflow.blockingTasks.important')}">
-                        <i class="ui icon red exclamation triangle"></i>
-                    </span>
-                </g:if>
-                <g:elseif test="${wfInfo.tasksNormalBlocking}">
-                    <span data-position="top left" class="la-popup-tooltip la-delay" data-content="${message(code:'workflow.blockingTasks.normal')}">
-                        <i class="ui icon red exclamation triangle"></i>
-                    </span>
-                </g:elseif>
-            </g:if>
+            <uiWorkflow:statusIcon workflow="${wf}" size="large" />
 
             <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfWorkflow.KEY + ':' + wf.id, tab: 'workflows']}">
                 <strong>${wf.title}</strong>
@@ -155,12 +142,14 @@
         <div class="ui segment attached bottom" style="background-color: #f9fafb;">
 
             <div class="la-flexbox">
-                <i class="icon clipboard la-list-icon"></i>
-                <g:link controller="subscription" action="show" params="${[id: wf.subscription.id]}">
-                    ${wf.subscription}
-                    <g:if test="${wf.subscription.startDate || wf.subscription.endDate}">
-                        (${wf.subscription.startDate ? DateUtils.getLocalizedSDF_noTime().format(wf.subscription.startDate) : ''} -
-                        ${wf.subscription.endDate ? DateUtils.getLocalizedSDF_noTime().format(wf.subscription.endDate) : ''})
+                <i class="icon ${wfInfo.targetIcon} la-list-icon"></i>
+                <g:link controller="${wfInfo.targetController}" action="show" params="${[id: wfInfo.target.id]}">
+                    ${wfInfo.targetName}
+                    <g:if test="${wfInfo.target instanceof Subscription || wfInfo.target instanceof License}">
+                        <g:if test="${wfInfo.target.startDate || wfInfo.target.endDate}">
+                            (${wfInfo.target.startDate ? DateUtils.getLocalizedSDF_noTime().format(wfInfo.target.startDate) : ''} -
+                            ${wfInfo.target.endDate ? DateUtils.getLocalizedSDF_noTime().format(wfInfo.target.endDate) : ''})
+                        </g:if>
                     </g:if>
                 </g:link>
             </div>
@@ -181,8 +170,8 @@
             </g:link>
 
             <g:link class="ui small icon blue button right floated la-modern-button"
-                    controller="subscription" action="workflows" id="${wf.subscription.id}"
-                    params="${[info: 'subscription:' + wf.subscription.id + ':' + WfWorkflow.KEY + ':' + wf.id]}">
+                    controller="${wfInfo.targetController}" action="workflows" id="${wfInfo.target.id}"
+                    params="${[info: '' + wfInfo.target.class.name + ':' + wfInfo.target.id + ':' + WfWorkflow.KEY + ':' + wf.id]}">
                 <i class="icon edit"></i>
             </g:link>
 
@@ -190,8 +179,8 @@
             <span>
                 ${message(code:'default.lastUpdated.label')}: ${DateUtils.getLocalizedSDF_noTime().format(wfInfo.lastUpdated)}
                 - ${message(code:'default.dateCreated.label')}: ${DateUtils.getLocalizedSDF_noTime().format(wf.dateCreated)}
-                <span class="${wf.prototypeVersion == wf.getPrototype().prototypeVersion ? '' : 'sc_darkgrey'}">
-                    - Version: ${wf.prototypeVersion}
+                <span class="${wf.prototypeVariant == wf.getPrototype().variant ? '' : 'sc_darkgrey'}">
+                    - Version: ${wf.prototypeVariant}
                 </span>
             </span>
         </div>
@@ -206,7 +195,10 @@
     <ui:msg class="info" noClose="true">
         <div class="ui list">
             <div class="item">
-                <span class="ui brown circular label">id</span> &nbsp; ${message(code: 'workflow.object.' + WfWorkflowPrototype.KEY)}
+                <span class="ui brown circular label">id</span> &nbsp; ${message(code: 'workflow.object.' + WfWorkflowPrototype.KEY)} ,
+                <strong>${RefdataCategory.findByDesc(RDConstants.WF_WORKFLOW_STATE).getI10n('desc')}:</strong>
+                <span><i class="icon check circle green"></i>${RDStore.WF_WORKFLOW_STATE_ACTIVE.getI10n('value')}</span>
+                <span><i class="icon minus circle red"></i>${RDStore.WF_WORKFLOW_STATE_TEST.getI10n('value')}</span>
             </div>
             <div class="item">
                 <span class="ui blue circular label">id</span> &nbsp; ${message(code: 'workflow.object.' + WfTaskPrototype.KEY)}
@@ -230,8 +222,9 @@
             <tr>
                 <th class="eight wide">${message(code:'workflow.label')}</th>
                 <th class="two wide">${message(code:'workflow.task.label')}</th>
-                <th class="two wide">Zustand</th>
-                <th class="three wide">${message(code:'default.version.label')}</th>
+                <th class="five wide">
+                    Details
+                </th>
                 <th class="one wide"></th>
             </tr>
         </thead>
@@ -254,10 +247,15 @@
                         </g:if>
                     </td>
                     <td>
-                        ${wfp.state?.getI10n('value')}
-                    </td>
-                    <td>
-                        ${wfp.prototypeVersion}
+                        <g:if test="${wfp.state == RDStore.WF_WORKFLOW_STATE_ACTIVE}">
+                            <i class="icon check circle green"></i>
+                        </g:if>
+                        <g:else>
+                            <i class="icon minus circle red"></i>
+                        </g:else>
+                        ${wfp.targetType.getI10n('value')} -
+                        ${wfp.targetRole.getI10n('value')} -
+                        ${wfp.variant}
                     </td>
                     <td class="x">
                         <g:if test="${! wfp.inUse()}">
@@ -269,9 +267,6 @@
                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                 <i class="trash alternate outline icon"></i>
                             </g:link>
-                        </g:if>
-                        <g:if test="${wfp.state == RDStore.WF_WORKFLOW_STATE_ACTIVE}">
-                            <g:link class="ui green icon small button tmpJSPrompt la-modern-button" controller="admin" action="manageWorkflows" params="${[cmd: "instantiate:${WfWorkflowPrototype.KEY}:${wfp.id}", tab: 'prototypes']}"><i class="step forward icon"></i></g:link>
                         </g:if>
                     </td>
                 </tr>
@@ -460,17 +455,17 @@
     <ui:msg class="info" noClose="true">
         <div class="ui list">
             <div class="item">
-                <span class="ui brown circular label">id</span> &nbsp; ${message(code: 'workflow.object.' + WfWorkflowPrototype.KEY)}
-                , <strong>Zustand:</strong>
-                <span><i class="icon check circle green"></i>Ready to use </span>
-                <span><i class="icon minus circle red"></i>Test only </span>
+                <span class="ui brown circular label">id</span> &nbsp; ${message(code: 'workflow.object.' + WfWorkflowPrototype.KEY)} ,
+                <strong>${RefdataCategory.findByDesc(RDConstants.WF_WORKFLOW_STATE).getI10n('desc')}:</strong>
+                <span><i class="icon check circle green"></i>${RDStore.WF_WORKFLOW_STATE_ACTIVE.getI10n('value')}</span>
+                <span><i class="icon minus circle red"></i>${RDStore.WF_WORKFLOW_STATE_TEST.getI10n('value')}</span>
             </div>
             <div class="item">
-                <span class="ui blue circular label">id</span> &nbsp; ${message(code: 'workflow.object.' + WfTaskPrototype.KEY)}
-                , <strong>Priorität:</strong>
-                <span class="ui blue circular label"><i class="icon circle"></i>Normal&nbsp;</span>
-                <span class="ui blue circular label"><i class="icon arrow circle up"></i>Wichtig&nbsp;</span>
-                <span class="ui blue circular label"><i class="icon arrow circle down"></i>Optional&nbsp;</span>
+                <span class="ui blue circular label">id</span> &nbsp; ${message(code: 'workflow.object.' + WfTaskPrototype.KEY)} ,
+                <strong>Priorität:</strong>
+                <span><i class="icon circle"></i>Normal&nbsp;</span>
+                <span><i class="icon arrow circle up"></i>Wichtig&nbsp;</span>
+                <span><i class="icon arrow circle down"></i>Optional&nbsp;</span>
             </div>
             <div class="item">
                 <span class="ui teal circular label">id</span> &nbsp; ${message(code: 'workflow.object.' + WfConditionPrototype.KEY)}
@@ -489,13 +484,13 @@
 
         <p style="padding-left:10px">
             <g:if test="${wfwp.state == RDStore.WF_WORKFLOW_STATE_ACTIVE}">
-                <i class="icon check circle large green"></i>
+                <i class="icon check circle green"></i>
             </g:if>
             <g:else>
-                <i class="icon minus circle large red"></i>
+                <i class="icon minus circle red"></i>
             </g:else>
             <strong>${wfwp.title}</strong>
-            <span class="sc_grey">(${message(code:'default.version.label')} ${wfwp.prototypeVersion})</span>
+            <span class="sc_grey">(${message(code:'default.version.label')} ${wfwp.variant})</span>
         </p>
 
         <g:set var="tasks" value="${wfwp.getSequence()}" />
@@ -595,6 +590,13 @@
 
 <div data-tab="help" class="ui bottom attached tab <% if (tmplTab == 'help') { print 'active' } %>" style="margin-top:2em;">
 
+    <div class="ui icon message info">
+        <i class="icon info"></i>
+        <div class="content">
+            <div class="header">Hinweis zur Version 3.0</div>
+            <p>Das Anlegen von verschachtelten Aufgaben (Childs) wurde vorerst deaktiviert.</p>
+        </div>
+    </div>
     <div class="ui segment">
         <div class="field">
             <div style="text-align:center; padding:2em 0">
@@ -615,14 +617,6 @@
         e.preventDefault();
         var func = bb8.ajax4SimpleModalFunction("#wfModal", $(e.currentTarget).attr('href'), false);
         func();
-    });
-
-    $('.tmpJSPrompt').on('click', function(e) {
-        e.preventDefault();
-        var subId = prompt('Subscription-ID ?')
-        if (subId) {
-            window.location = $(this).attr('href') + '&subId=' + subId;
-        }
     });
 </laser:script>
 

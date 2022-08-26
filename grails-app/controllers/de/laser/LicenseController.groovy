@@ -688,6 +688,15 @@ class LicenseController {
         redirect controller: 'license', action:params.redirectAction, id:params.instanceId /*, fragment:'docstab' */
     }
 
+    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER") })
+    @Check404()
+    def workflows() {
+        Map<String,Object> ctrlResult = licenseControllerService.workflows( this, params )
+
+        render view: 'workflows', model: ctrlResult.result
+    }
+
     /**
      * Entry point for copying a license
      */
