@@ -105,6 +105,11 @@ class LicenseControllerService {
 
         result.notesCount = docstoreService.getNotes(result.license, result.contextOrg).size()
 
+        result.workflowCount = WfWorkflow.executeQuery(
+                'select count(wf) from WfWorkflow wf where wf.license = :lic and wf.owner = :ctxOrg',
+                [lic: result.license, ctxOrg: result.contextOrg]
+        )[0]
+
         SwissKnife.setPaginationParams(result, params, (User) result.user)
 
         if (checkOption in [AccessService.CHECK_VIEW, AccessService.CHECK_VIEW_AND_EDIT]) {

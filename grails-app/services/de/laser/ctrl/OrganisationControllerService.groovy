@@ -277,6 +277,11 @@ class OrganisationControllerService {
 
         result.notesCount = docstoreService.getNotes(result.orgInstance, result.contextOrg).size()
 
+        result.workflowCount = WfWorkflow.executeQuery(
+                'select count(wf) from WfWorkflow wf where wf.org = :org and wf.owner = :ctxOrg',
+                [org: result.orgInstance, ctxOrg: result.contextOrg]
+        )[0]
+
         result.links = linksGenerationService.getOrgLinks(result.orgInstance)
         result.targetCustomerType = result.orgInstance.getCustomerType()
         result.allOrgTypeIds = result.orgInstance.getAllOrgTypeIds()
