@@ -27,12 +27,14 @@ class WfWorkflowPrototype extends WfWorkflowBase {
     @RefdataInfo(cat = RDConstants.WF_WORKFLOW_STATE)
     RefdataValue state
 
+    String variant
+
     WfTaskPrototype task
 
     static mapping = {
                       id column: 'wfwp_id'
                  version column: 'wfwp_version'
-        prototypeVersion column: 'wfwp_prototype_version'
+            variant column: 'wfwp_variant'
               state column: 'wfwp_state_rv_fk'
                task column: 'wfwp_task_fk'
               title column: 'wfwp_title'
@@ -46,7 +48,7 @@ class WfWorkflowPrototype extends WfWorkflowBase {
     }
 
     static constraints = {
-        prototypeVersion (blank: false)
+        variant          (blank: false)
         title            (blank: false)
         task             (nullable: true)
         description      (nullable: true)
@@ -81,7 +83,8 @@ class WfWorkflowPrototype extends WfWorkflowBase {
                 title:              this.title,
                 description:        this.description,
                 prototype:              this,
-                prototypeVersion:       this.prototypeVersion,
+                prototypeTitle:         this.title,
+                prototypeVariant:       this.variant,
                 prototypeLastUpdated:   this.getInfo().lastUpdated as Date,
                 owner:              BeanStore.getContextService().getOrg(),
                 status:             RDStore.WF_WORKFLOW_STATUS_OPEN,

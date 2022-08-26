@@ -179,8 +179,8 @@
             <span>
                 ${message(code:'default.lastUpdated.label')}: ${DateUtils.getLocalizedSDF_noTime().format(wfInfo.lastUpdated)}
                 - ${message(code:'default.dateCreated.label')}: ${DateUtils.getLocalizedSDF_noTime().format(wf.dateCreated)}
-                <span class="${wf.prototypeVersion == wf.getPrototype().prototypeVersion ? '' : 'sc_darkgrey'}">
-                    - Version: ${wf.prototypeVersion}
+                <span class="${wf.prototypeVariant == wf.getPrototype().variant ? '' : 'sc_darkgrey'}">
+                    - Version: ${wf.prototypeVariant}
                 </span>
             </span>
         </div>
@@ -255,7 +255,7 @@
                         </g:else>
                         ${wfp.targetType.getI10n('value')} -
                         ${wfp.targetRole.getI10n('value')} -
-                        ${wfp.prototypeVersion}
+                        ${wfp.variant}
                     </td>
                     <td class="x">
                         <g:if test="${! wfp.inUse()}">
@@ -490,7 +490,7 @@
                 <i class="icon minus circle red"></i>
             </g:else>
             <strong>${wfwp.title}</strong>
-            <span class="sc_grey">(${message(code:'default.version.label')} ${wfwp.prototypeVersion})</span>
+            <span class="sc_grey">(${message(code:'default.version.label')} ${wfwp.variant})</span>
         </p>
 
         <g:set var="tasks" value="${wfwp.getSequence()}" />

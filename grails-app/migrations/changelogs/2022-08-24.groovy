@@ -1,3 +1,5 @@
+package changelogs
+
 databaseChangeLog = {
 
     changeSet(author: "klober (generated)", id: "1661345644379-1") {
@@ -46,5 +48,31 @@ databaseChangeLog = {
 
     changeSet(author: "klober (generated)", id: "1661345644379-9") {
         dropNotNullConstraint(columnDataType: "bigint", columnName: "wfw_subscription_fk", tableName: "wf_workflow")
+    }
+
+    changeSet(author: "klober (generated)", id: "1661345644379-10") {
+        addColumn(tableName: "wf_workflow") {
+            column(name: "wfw_prototype_title", type: "varchar(255)") {
+                constraints(nullable: "false")
+            }
+        }
+    }
+
+    changeSet(author: "klober (modified)", id: "1661345644379-11") {
+        grailsChange {
+            change {
+                sql.execute('alter table wf_workflow rename column wfw_prototype_version to wfw_prototype_variant')
+            }
+            rollback {}
+        }
+    }
+
+    changeSet(author: "klober (modified)", id: "1661345644379-12") {
+        grailsChange {
+            change {
+                sql.execute('alter table wf_workflow_prototype rename column wfwp_prototype_version to wfwp_variant')
+            }
+            rollback {}
+        }
     }
 }

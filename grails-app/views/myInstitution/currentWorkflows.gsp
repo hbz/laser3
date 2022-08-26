@@ -12,12 +12,12 @@
     <form class="ui form">
         <div class="three fields">
             <div class="field">
-                <label>${message(code: 'workflow.label')}</label>
-                <g:select class="ui dropdown" name="filterPrototype"
+                <label>Basierend auf ${message(code: 'workflow.label')}</label>
+                <g:select class="ui dropdown" name="filterPrototypeMeta"
                           from="${ currentPrototypes }"
-                          optionKey="id"
-                          optionValue="title"
-                          value="${params.filterPrototype}"
+                          optionKey="${{it.hash}}"
+                          optionValue="${{it.title + ' - ' + it.variant}}"
+                          value="${params.filterPrototypeMeta}"
                           noSelection="${['' : message(code:'default.select.choose.label')]}"/>
             </div>
             <div class="field">
@@ -25,7 +25,7 @@
                 <ui:select class="ui dropdown la-not-clearable" name="filterTargetType"
                            required="required"
                            noSelection="${['' : message(code:'default.select.choose.label')]}"
-                           from="${RefdataCategory.getAllRefdataValues( RDConstants.WF_WORKFLOW_TARGET_TYPE )}"
+                           from="${RefdataCategory.getAllRefdataValues(RDConstants.WF_WORKFLOW_TARGET_TYPE)}"
                            value="${params.filterTargetType}"
                            optionKey="id"
                            optionValue="value" />

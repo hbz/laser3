@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.storage.RDStore; de.laser.Subscription; de.laser.workflow.WorkflowHelper; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.workflow.*;" %>
+<%@ page import="de.laser.Doc; de.laser.Org; de.laser.utils.DateUtils; de.laser.storage.RDStore; de.laser.Subscription; de.laser.workflow.WorkflowHelper; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.workflow.*;" %>
 
 <g:form id="wfForm" url="${formUrl}" method="POST" class="ui form">
 
@@ -178,8 +178,9 @@
     %{-- TASK --}%
     %{-- TASK --}%
 
-    <g:if test="${prefix == WfTask.KEY}">
+    <g:elseif test="${prefix == WfTask.KEY}">
         <g:set var="prefixOverride" value="${WfTask.KEY}" />
+        <g:set var="wfInfo" value="${task.getWorkflow().getInfo()}" />
 
         <div class="field">
 %{--            <p><strong>${task.title}</strong></p>--}%
@@ -270,19 +271,21 @@
                                 <div id="fileUploadWrapper_dropdown_${field}" class="ui segment" style="box-shadow:none">
                                     <div class="field">
                                         <g:if test="${workflow}"> %{-- currentWorkflows --}%
+                                            <g:set var="targetDocuments" value="${wfInfo.target.documents.findAll{ it.status != RDStore.DOC_CTX_STATUS_DELETED && it.owner.contentType == Doc.CONTENT_TYPE_FILE }}" />
                                             <g:select class="ui dropdown" id="${prefixOverride}_${field}" name="${prefixOverride}_${field}"
                                                       noSelection="${['' : message(code:'default.select.choose.label')]}"
-                                                      from="${wfInfo.target.documents}"
+                                                      from="${targetDocuments}"
                                                       value="${task.condition.getProperty(field)?.id}"
-                                                      optionKey="id"
+                                                      optionKey="${{it.id}}"
                                                       optionValue="${{ (it.owner?.title ? it.owner.title : it.owner?.filename ? it.owner.filename : message(code:'template.documents.missing')) + ' (' + it.owner?.type?.getI10n("value") + ')' }}" />
                                         </g:if>
                                         <g:else>
+                                            <g:set var="targetDocuments" value="${targetObject.documents.findAll{ it.status != RDStore.DOC_CTX_STATUS_DELETED && it.owner.contentType == Doc.CONTENT_TYPE_FILE }}" />
                                             <g:select class="ui dropdown" id="${prefixOverride}_${field}" name="${prefixOverride}_${field}"
                                                       noSelection="${['' : message(code:'default.select.choose.label')]}"
-                                                      from="${targetObject.documents}"
+                                                      from="${targetDocuments}"
                                                       value="${task.condition.getProperty(field)?.id}"
-                                                      optionKey="id"
+                                                      optionKey="${{it.id}}"
                                                       optionValue="${{ (it.owner?.title ? it.owner.title : it.owner?.filename ? it.owner.filename : message(code:'template.documents.missing')) + ' (' + it.owner?.type?.getI10n("value") + ')' }}" />
 
                                         </g:else>
@@ -308,8 +311,17 @@
                                                   name="wfUploadDoctype_${field}"
                                                   />
 
-                                        <label for="wfUploadFile_placeholder-${field}">${message(code: 'template.addDocument.file')}:</label>
+                                        <g:if test="${(workflow && wfInfo.target instanceof Org) || (targetObject && targetObject instanceof Org)}">
+                                            <label>${message(code:'template.addDocument.shareConf')}</label>
+                                            <g:select from="${[RDStore.SHARE_CONF_UPLOADER_ORG, RDStore.SHARE_CONF_UPLOADER_AND_TARGET, RDStore.SHARE_CONF_ALL]}"
+                                                      class="ui dropdown fluid la-not-clearable"
+                                                      optionKey="id"
+                                                      optionValue="${{ it.getI10n('value') }}"
+                                                      name="wfUploadShareConf_${field}"
+                                            />
+                                        </g:if>
 
+                                        <label for="wfUploadFile_placeholder_${field}">${message(code: 'template.addDocument.file')}:</label>
                                         <div class="ui fluid action input">
                                             <input type="text" id="wfUploadFile_placeholder_${field}" name="wfUploadFile_placeholder_${field}" readonly="readonly" placeholder="${message(code:'template.addDocument.selectFile')}">
                                             <input type="file" id="wfUploadFile_file_${field}" name="wfUploadFile_file_${field}" style="display: none;">
@@ -371,7 +383,7 @@
             <input type="hidden" name="info" value="${info}" />
         </g:if>
         <input type="hidden" name="cmd" value="usage:${prefix}:${task.id}" />
-    </g:if>
+    </g:elseif>
  </g:form>
 
 

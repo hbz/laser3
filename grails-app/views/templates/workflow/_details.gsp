@@ -50,7 +50,7 @@
                             <div class="${DateUtils.isDateToday(wf.lastUpdated) ? '' : 'sc_darkgrey'}" style="text-align: right">
                                 ${DateUtils.getLocalizedSDF_noTime().format(wf.lastUpdated)}<br />
                                 ${DateUtils.getLocalizedSDF_noTime().format(wf.dateCreated)}<br />
-                                Version: ${wf.prototypeVersion}
+                                Version: ${wf.prototypeVariant}
                             </div>
 
                         </div>
@@ -277,6 +277,8 @@
 
             </g:each>
 
+            <div class="ui segment">
+            </div>
         </div>
 
     </div>

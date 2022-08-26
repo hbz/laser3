@@ -1056,7 +1056,7 @@ class AjaxHtmlController {
             result.prefix = key[2]
 
             // subscription:id:WF_X:id
-            if (key[0] in [License.class.name, Org.class.name, Subscription.class.name]) {
+            if (key[0] in [License.class.name, Subscription.class.name, Org.class.name]) {
 
                 if (key[0] == License.class.name) {
                     result.targetObject = License.get( key[1] )
@@ -1130,7 +1130,7 @@ class AjaxHtmlController {
                 else if (prefix == Subscription.class.name) {
                     result.tmplFormUrl = createLink(controller: 'subscription', action: 'workflows', id: key[1])
                 }
-                else (prefix == Org.class.name) {
+                else {
                     result.tmplFormUrl = createLink(controller: 'org', action: 'workflows', id: key[1])
                 }
                 prefix = key[2]
