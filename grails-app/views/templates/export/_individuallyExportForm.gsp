@@ -1,3 +1,4 @@
+
     <div class="ui form">
         <div class="field">
             <label><g:message code="exportClickMe.fieldsToExport"/></label>
@@ -14,7 +15,7 @@
             <div class="ui bottom attached ${("tab-${i}" == "tab-0") ? 'active' : ''} tab segment"
                  data-tab="tab-${i}">
                 <div class="ui form">
-                <div class="fields">
+                <div class="inline fields">
                     <g:each in="${fields.value.fields}" var="field" status="fc">
 
                         <g:if test="${field.key == 'costItemsElements'}">
@@ -23,7 +24,7 @@
 
                             <label for="${field.key}"><g:message
                                     code="exportClickMe.costItemsElements.selectCostItems"/></label>
-                            <div class="fields">
+                            <div class="inline fields">
                             <g:each in="${field.value}" var="costItemsElements" status="gc">
                                 <div class="wide eight field">
 
@@ -38,7 +39,7 @@
                                 <g:if test="${gc % 2 == 1}">
                                     <g:set var="newFieldsDiv" value="${true}"/>
                                     </div>
-                                    <div class="fields">
+                                    <div class="inline fields">
                                 </g:if>
                                 <g:else>
                                     <g:set var="newFieldsDiv" value="${false}"/>
@@ -47,7 +48,7 @@
                             <g:if test="${!newFieldsDiv}">
                                 </div>
                                 <div class="ui divider"></div>
-                                <div class="fields">
+                                <div class="inline fields">
                             </g:if>
                             <g:else>
                                 <div class="ui divider"></div>
@@ -68,7 +69,7 @@
 
                         <g:if test="${fc % 2 == 1}">
                             </div>
-                            <div class="fields">
+                            <div class="inline fields">
                         </g:if>
 
                     </g:each>
