@@ -14,7 +14,6 @@
         <g:each in="${formFields}" var="fields" status="i">
             <div class="ui bottom attached ${("tab-${i}" == "tab-0") ? 'active' : ''} tab segment"
                  data-tab="tab-${i}">
-                <div class="ui form">
                 <div class="inline fields">
                     <g:each in="${fields.value.fields}" var="field" status="fc">
 
@@ -73,7 +72,6 @@
                         </g:if>
 
                     </g:each>
-                </div>
                 </div>
             </div>
         </g:each>
