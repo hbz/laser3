@@ -1030,6 +1030,15 @@ class OrganisationController  {
         result
     }
 
+    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_USER")
+    @Secured(closure = { ctx.accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER") })
+    @Check404()
+    def workflows() {
+        Map<String,Object> ctrlResult = organisationControllerService.workflows( this, params )
+
+        render view: 'workflows', model: ctrlResult.result
+    }
+
     /**
      * Shows the documents attached to the given organisation. Important:
      * Displayed here are those documents which have been *attached* to the given object.

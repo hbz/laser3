@@ -2593,29 +2593,46 @@ join sub.orgRelations or_sub where
         String query = 'select wf from WfWorkflow wf where wf.owner = :ctxOrg'
         Map<String, Object> queryParams = [ctxOrg: contextService.getOrg()]
 
-        result.currentSubscriptions = WfWorkflow.executeQuery(
-                'select distinct sub from WfWorkflow wf join wf.subscription sub where wf.owner = :ctxOrg order by sub.name', queryParams
-        )
-        result.currentPrototypes = WfWorkflow.executeQuery(
-                'select distinct wf.prototype from WfWorkflow wf where wf.owner = :ctxOrg', queryParams
-        )
-        result.currentProviders = result.currentSubscriptions ? Org.executeQuery(
-                'select distinct ooo.org from OrgRole ooo where ooo.sub in (:subscriptions) and ooo.roleType = :provider',
-                [subscriptions: result.currentSubscriptions, provider: RDStore.OR_PROVIDER]
-        ) : []
+//        result.currentSubscriptions = WfWorkflow.executeQuery(
+//                'select distinct sub from WfWorkflow wf join wf.subscription sub where wf.owner = :ctxOrg order by sub.name', queryParams
+//        )
+//        result.currentProviders = result.currentSubscriptions ? Org.executeQuery(
+//                'select distinct ooo.org from OrgRole ooo where ooo.sub in (:subscriptions) and ooo.roleType = :provider',
+//                [subscriptions: result.currentSubscriptions, provider: RDStore.OR_PROVIDER]
+//        ) : []
 
-        if (params.filterPrototype) {
-            query = query + ' and wf.prototype = :prototype'
-            queryParams.put('prototype', WfWorkflowPrototype.get(params.filterPrototype))
+        result.currentPrototypes = WfWorkflow.executeQuery(
+                'select distinct wf.prototype.id, wf.prototypeTitle, wf.prototypeVariant from WfWorkflow wf where wf.owner = :ctxOrg order by wf.prototypeTitle, wf.prototypeVariant', queryParams
+        ).collect{ it ->
+            String hash = ((it[0]).toString() + it[1] + it[2]).md5()
+
+            return [hash: hash, id: it[0], title: it[1], variant: it[2]]
+        }
+
+        if (params.filterPrototypeMeta) {
+            Map<String, Object> match = result.currentPrototypes.find{ it.hash == params.filterPrototypeMeta } as Map
+            if (match) {
+                println match
+                query = query + ' and wf.prototype.id = :fpId and wf.prototypeTitle = :fpTitle and wf.prototypeVariant = :fpVariant'
+                queryParams.put('fpId', match.id)
+                queryParams.put('fpTitle', match.title)
+                queryParams.put('fpVariant', match.variant)
+            } else {
+                query = query + ' and wf.prototype is null' // always false
+            }
+        }
+        if (params.filterTargetType) {
+            query = query + ' and wf.prototype.targetType = :targetType'
+            queryParams.put('targetType', RefdataValue.get(params.filterTargetType))
+        }
+        if (params.filterStatus) {
+            query = query + ' and wf.status = :status'
+            queryParams.put('status', RefdataValue.get(params.filterStatus))
         }
         if (params.filterProvider) {
             query = query + ' and exists (select ooo from OrgRole ooo join ooo.sub sub where ooo.org = :provider and ooo.roleType = :roleType and sub = wf.subscription)'
             queryParams.put('roleType', RDStore.OR_PROVIDER)
             queryParams.put('provider', Org.get(params.filterProvider))
-        }
-        if (params.filterStatus) {
-            query = query + ' and wf.status = :status'
-            queryParams.put('status', RefdataValue.get(params.filterStatus))
         }
         if (params.filterSubscription) {
             query = query + ' and wf.subscription = :subscription'

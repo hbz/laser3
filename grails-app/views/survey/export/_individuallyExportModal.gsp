@@ -6,7 +6,7 @@
 
 <ui:modal id="${modalID}" text="Excel-Export" hideSubmitButton="true">
 
-    <g:form controller="survey" action="surveyEvaluation" id="${surveyInfo.id}"
+    <g:form controller="survey" action="surveyEvaluation" refreshModal="true" id="${surveyInfo.id}"
             params="[surveyConfigID: surveyConfig.id, exportClickMeExcel: true]">
 
         <laser:render template="/templates/export/individuallyExportForm" model="${[formFields: formFields, exportFileName: escapeService.escapeString(surveyConfig.getSurveyName()) + "_" + message(code:'surveyResult.label')]}"/>

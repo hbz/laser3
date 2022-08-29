@@ -1,4 +1,3 @@
-<div class="scrolling content">
     <div class="ui form">
         <div class="field">
             <label><g:message code="exportClickMe.fieldsToExport"/></label>
@@ -95,4 +94,3 @@
 
         </div><!-- .fields -->
     </div><!-- .form -->
-</div>

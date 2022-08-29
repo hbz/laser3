@@ -549,7 +549,14 @@ r2d2 = {
 
 
         // tabs
-        $(ctxSel + ' .la-tab-with-js .item').tab();
+        $(ctxSel + ' .la-tab-with-js .item').tab({
+            onVisible: function(){
+                var longerModal = $('.longer.modal');
+                if (longerModal.length != 0) {
+                    longerModal.modal('refresh');
+                }
+            }
+        });
 
         // checkboxes
         $(ctxSel + ' .ui.checkbox').not('#la-advanced').checkbox();

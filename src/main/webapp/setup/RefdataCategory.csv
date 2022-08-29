@@ -178,8 +178,10 @@ user.setting.theme,Theme,Theme
 workflow.condition.type,Typ,Type
 workflow.task.priority,Priorität,Priority
 workflow.task.status,Status,Status
-workflow.workflow.state,Zustand,State
+workflow.workflow.state,Verfügbarkeit,Availability
 workflow.workflow.status,Status,Status
+workflow.workflow.target.role,Verfügbar für folgende Nutzer,Usable by customer type
+workflow.workflow.target.type,Verfügbar für folgende Objekte,Usable for object type
 y.n,Ja/Nein,Yes/No
 y.n.l,Ja/Nein/Eingeschränkt/Keine Angaben,Yes/No/limited/no statement
 y.n.o,Ja/Nein/Anderes,Yes/No/Others

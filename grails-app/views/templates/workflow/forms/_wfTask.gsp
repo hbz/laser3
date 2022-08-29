@@ -130,7 +130,7 @@
                         <g:link class="wfModalLink" controller="ajaxHtml" action="editWfXModal" params="${[key: WfWorkflowPrototype.KEY + ':' + workflow.id]}">
                             <i class="icon circle brown"></i>
                             ${workflow.title}
-                            <span class="sc_grey">(${message(code:'default.version.label')} ${workflow.prototypeVersion})</span>
+                            <span class="sc_grey">(${message(code:'default.version.label')} ${workflow.variant})</span>
                         </g:link>
                         &nbsp;&nbsp;&nbsp;
                     </g:each>

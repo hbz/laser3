@@ -84,7 +84,12 @@ class WorkflowService {
             String[] cmd = (params.cmd as String).split(':')
             String wfObjKey = cmd[1]
 
-            if (cmd[0] == 'create') {
+            if (cmd[0] == 'instantiate') {
+                if (wfObjKey == WfWorkflowPrototype.KEY) {
+                    result = instantiateCompleteWorkflow(params)
+                }
+            }
+            else if (cmd[0] == 'create') {
                 if (wfObjKey == WfWorkflowPrototype.KEY) {
                     WfWorkflowPrototype wf = new WfWorkflowPrototype()
                     result = internalEditWorkflow(wf, params)
@@ -147,11 +152,6 @@ class WorkflowService {
                 }
                 else if (wfObjKey in [ WfConditionPrototype.KEY, WfCondition.KEY ]) {
                     result = deleteCondition(params)
-                }
-            }
-            else if (cmd[0] == 'instantiate') {
-                if (wfObjKey == WfWorkflowPrototype.KEY) {
-                    result = instantiateCompleteWorkflow(params)
                 }
             }
         }
@@ -285,7 +285,9 @@ class WorkflowService {
             wf.description  = ph.getString('description')
             wf.task         = WfTaskPrototype.get(ph.getLong('task'))
             wf.state        = RefdataValue.get(ph.getLong('state'))
-            wf.prototypeVersion = ph.getString('prototypeVersion')
+            wf.variant      = ph.getString('variant')
+            wf.targetType   = RefdataValue.get(ph.getLong('targetType'))
+            wf.targetRole   = RefdataValue.get(ph.getLong('targetRole'))
         }
         else if (cmd[1] == WfWorkflow.KEY) {
             wf = wf as WfWorkflow
@@ -461,7 +463,7 @@ class WorkflowService {
 
                 try {
                     result.prototype    = WfWorkflowPrototype.get( cmd[2] )
-                    result.workflow     = result.prototype.instantiate( params.long('subId') ) // TODO
+                    result.workflow     = result.prototype.instantiate( genericOIDService.resolveOID(params.target)  )
 
                     if (! result.workflow.save()) {
                         result.status = OP_STATUS_ERROR
@@ -547,7 +549,17 @@ class WorkflowService {
 
         Map<String, Object> result = [ cmd: cmd[0], key: cmd[1] ]
 
-        if (cmd[0] == 'usage') {  // TODO return msg
+        if (cmd[0] == 'instantiate') {
+            result.status = OP_STATUS_ERROR
+
+            if (params.target && params.workflowId) {
+                GrailsParameterMap clone = params.clone() as GrailsParameterMap
+                clone.setProperty( 'cmd', params.cmd + ':' + params.workflowId )
+
+                result = instantiateCompleteWorkflow( clone )
+            }
+        }
+        else if (cmd[0] == 'usage') {  // TODO return msg
 
             ParamsHelper ph = getNewParamsHelper( cmd[1], params )
 
@@ -646,13 +658,30 @@ class WorkflowService {
                                         File newFile = new File("${fPath}/${fName}")
                                         file.transferTo(newFile)
 
-                                        Subscription sub = genericOIDService.resolveOID( uploadOwner ) as Subscription
+                                        // TODO
 
                                         DocContext docctx = new DocContext(
-                                                subscription: sub,
                                                 owner: doc,
                                                 doctype: uploadDoctype
                                         )
+                                        Object owner = genericOIDService.resolveOID( uploadOwner )
+
+                                        if (owner instanceof Org) {
+                                            docctx.org = owner
+
+                                            if (params.get('wfUploadShareConf_' + fileId)) {
+                                                docctx.shareConf = RefdataValue.get(params.get('wfUploadShareConf_' + fileId) as Serializable)
+                                            }
+                                        }
+                                        else if (owner instanceof License) {
+                                            docctx.license = owner
+                                        }
+                                        else if (owner instanceof Subscription) {
+                                            docctx.subscription = owner
+                                        }
+                                        else {
+                                            throw new Exception('Invalid owner for workflow document upload.')
+                                        }
                                         docctx.save()
 
                                         condition['file' + i] = docctx
@@ -687,16 +716,6 @@ class WorkflowService {
         }
         else if (cmd[0] == 'delete') {
             result.putAll( removeCompleteWorkflow( params ) )
-        }
-        else if (cmd[0] == 'instantiate') {
-            result.status = OP_STATUS_ERROR
-
-            if (params.subId && params.workflowId) {
-                GrailsParameterMap clone = params.clone() as GrailsParameterMap
-                clone.setProperty( 'cmd', params.cmd + ':' + params.workflowId )
-
-                result = instantiateCompleteWorkflow( clone )
-            }
         }
 
         result

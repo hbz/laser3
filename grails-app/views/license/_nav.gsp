@@ -11,6 +11,11 @@
             <ui:subNavItem controller="license" action="pendingChanges" params="${[id:params.id]}" message="pendingChange.plural" />
         </sec:ifAnyGranted>
     </g:if>
+    <sec:ifAnyGranted roles="ROLE_ADMIN"><!-- TODO: workflows-permissions -->
+        <g:if test="${contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM']}">
+            <ui:subNavItem controller="license" action="workflows" counts="${workflowCount}" params="${[id:params.id]}" message="workflow.plural" />
+        </g:if>
+    </sec:ifAnyGranted>
     <ui:securedSubNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="license" action="tasks" params="${[id:params.id]}" counts="${tasksCount}" message="task.plural" />
     <ui:securedSubNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="license" action="documents" params="${[id:params.id]}" message="license.nav.docs" />
     <ui:subNavItem controller="license" action="notes" params="${[id:params.id]}" counts="${notesCount}" message="license.nav.notes" />
