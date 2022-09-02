@@ -1814,6 +1814,7 @@ class SubscriptionService {
         }
         dateFilter = startFilter + endFilter
         Counter4Report.withTransaction {
+            println "where c4r_plat_uid = any('{127}') and c4r_report_institution_uid = any('{${reportInstitutions.join(",")}}')"
             Set<String> titleKeys = Counter4Report.executeQuery('select r.titleUID from Counter4Report r where r.platformUID in (:plat) and r.reportInstitutionUID in (:reportInstitutions)'+dateFilter, checkParams)
             Set<String> intersection = titleKeysInPackage.intersect(titleKeys)
             //repeating of 0 checks necessary because of query plan - join result in sequence scans at large datasets (Postgres does not seek indices when > 10% of data is being retrieved)
@@ -1932,6 +1933,8 @@ class SubscriptionService {
                 case "vertrag":
                 case "license": colMap.licenses = c
                     break
+                case "elternlizenz / konsortiallizenz":
+                case "parent subscription / consortial subscription":
                 case "elternlizenz":
                 case "konsortiallizenz":
                 case "parent subscription":
