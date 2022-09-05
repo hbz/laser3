@@ -1052,7 +1052,7 @@ class SubscriptionController {
         if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
             flash.error = ctrlResult.result.error
         }
-            redirect action: 'index', id: params.id, params: params
+            redirect action: 'index', id: ctrlResult.result.subId, params: params
     }
 
     /**
