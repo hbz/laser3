@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4447    05.09.2022  dev     3.0         Andreas Bug         inkorrekter Redirect nach Hinzufügen einer Abdeckung
+
 4361    25.08.2022  dev     3.0         Andreas Feature     Beim Hochladen von Dokumenten wird Teilungsoption direkt mit angeboten
 
 4414    24.08.2022  dev     3.0         Andreas Feature     Trennung von Identifikatoren und Kundennummern im Click-Mich-Excel-Export

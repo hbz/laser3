@@ -17,28 +17,28 @@
 <g:elseif test="${tipp.titleType == "Journal"}">
     <g:if test="${ie}">
         <div class="ui cards">
+            <%
+                Map<String, Object> paramData = [:]
+                if(params.sort && params.order) {
+                    paramData.sort = params.sort
+                    paramData.order = params.order
+                }
+                if(params.max && params.offset) {
+                    paramData.max = params.max
+                    paramData.offset = params.offset
+                }
+                paramData.putAll(params)
+            %>
             <g:each in="${ie.coverages}" var="covStmt">
                 <div class="ui card">
-                    <laser:render template="/templates/tipps/coverageStatement" model="${[covStmt: covStmt]}"/>
+                    <laser:render template="/templates/tipps/coverageStatement" model="${[covStmt: covStmt, paramData: paramData]}"/>
                 </div>
             </g:each>
 
 
             <g:if test="${editable}">
                 <br/>
-
-                <%
-                    Map<String, Object> paramData = [issueEntitlement: ie.id]
-                    if (params.sort && params.order) {
-                        paramData.sort = params.sort
-                        paramData.order = params.order
-                    }
-                    if (params.max && params.offset) {
-                        paramData.max = params.max
-                        paramData.offset = params.offset
-                    }
-                %>
-                <g:link action="addCoverage" params="${paramData}"
+                <g:link action="addCoverage" params="${paramData+[issueEntitlement: ie.id]}"
                         class="ui compact icon button positive tiny"><i class="ui icon plus"
                                                                         data-content="${message(code: 'subscription.details.addCoverage')}"></i></g:link>
             </g:if>
