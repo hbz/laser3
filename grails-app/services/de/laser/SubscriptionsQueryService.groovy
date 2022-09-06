@@ -48,18 +48,8 @@ class SubscriptionsQueryService {
         // ORG: def base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:roleTypes) AND o.org = :activeInst ) ) ) ) AND ( s.status.value != 'Deleted' ) "
         // ORG: def qry_params = ['roleTypes':roleTypes, 'activeInst':contextOrg]
 
-        String base_qry = ''
-        //test
-        String providerSort
-        Map qry_params
-        if(params.sort == "providerAgency") {
-            providerSort = ', (select oo.org.name from OrgRole oo where oo.sub = s and oo.roleType = :provider order by oo.org.name) as sortname1, (select oo.org.name from OrgRole oo where oo.sub = s and oo.roleType = :agency order by oo.org.name) as sortname2'
-            qry_params = [provider:RDStore.OR_PROVIDER, agency: RDStore.OR_AGENCY]
-        }
-        else {
-            providerSort = ""
-            qry_params = [:]
-        }
+        String base_qry
+        Map qry_params = [:]
 
         if (! params.orgRole) {
             if (accessService.checkPerm(contextOrg,'ORG_CONSORTIUM')) {
@@ -72,22 +62,22 @@ class SubscriptionsQueryService {
 
         if (params.orgRole == 'Subscriber') {
 
-            base_qry = "${providerSort} from Subscription as s ${joinQuery} where (exists ( select o from s.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType in (:roleType2) ) AND o.org = :activeInst ) ) AND (( not exists ( select o from s.orgRelations as o where o.roleType in (:scRoleType) ) ) or ( ( exists ( select o from s.orgRelations as o where o.roleType in (:scRoleType) ) ) AND ( s.instanceOf is not null) ) ) )"
+            base_qry = " from Subscription as s ${joinQuery} where (exists ( select o from s.orgRelations as o where ( ( o.roleType = :roleType1 or o.roleType in (:roleType2) ) AND o.org = :activeInst ) ) AND (( not exists ( select o from s.orgRelations as o where o.roleType in (:scRoleType) ) ) or ( ( exists ( select o from s.orgRelations as o where o.roleType in (:scRoleType) ) ) AND ( s.instanceOf is not null) ) ) )"
 
             qry_params << ['roleType1':role_sub, 'roleType2':[role_subCons], 'activeInst':contextOrg, 'scRoleType':[role_sub_consortia]]
         }
 
         if (params.orgRole == 'Subscription Consortia') {
             if (params.actionName == 'manageMembers') {
-                base_qry =  "${providerSort} from Subscription as s ${joinQuery} where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
+                base_qry =  " from Subscription as s ${joinQuery} where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
                             " AND s.instanceOf is not null "
                 qry_params << ['roleType':role_sub_consortia, 'activeInst':contextOrg]
             } else {
                 if (params.showParentsAndChildsSubs) {
-                    base_qry =  "${providerSort} from Subscription as s ${joinQuery} where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) "
+                    base_qry =  " from Subscription as s ${joinQuery} where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) "
                     qry_params << ['roleType':role_sub_consortia, 'activeInst':contextOrg]
                 } else {//nur Parents
-                    base_qry =  "${providerSort} from Subscription as s ${joinQuery} where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
+                    base_qry =  " from Subscription as s ${joinQuery} where ( exists ( select o from s.orgRelations as o where ( o.roleType = :roleType AND o.org = :activeInst ) ) ) " +
                                 " AND s.instanceOf is null "
                     qry_params << ['roleType':role_sub_consortia, 'activeInst':contextOrg]
                 }
@@ -326,9 +316,7 @@ class SubscriptionsQueryService {
         }
 
         if ((params.sort != null) && (params.sort.length() > 0)) {
-            if(params.sort == "providerAgency")
-                base_qry += " order by sortname1 ${params.order}, sortname2 ${params.order}"
-            else
+            if(params.sort != "providerAgency")
                 base_qry += (params.sort=="s.name") ? " order by LOWER(${params.sort}) ${params.order}":" order by ${params.sort} ${params.order}"
         } else {
             base_qry += " order by lower(trim(s.name)) asc, s.startDate, s.endDate, s.instanceOf desc"

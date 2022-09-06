@@ -5,6 +5,7 @@ import de.laser.properties.SubscriptionProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.config.ConfigMapper
 import de.laser.storage.RDStore
+import de.laser.utils.AppUtils
 import grails.plugin.springsecurity.annotation.Secured
 import grails.plugins.mail.MailService
 
@@ -17,6 +18,21 @@ class PublicController {
     EscapeService escapeService
     GenericOIDService genericOIDService
     MailService mailService
+
+    /**
+    *
+    */
+    @Secured(['permitAll'])
+    def robots() {
+        if (AppUtils.getCurrentServer() != AppUtils.SERVER_PROD) {
+            def text = "User-agent: *\n" +
+                    "Disallow: / \n"
+
+            render(text: text, contentType: "text/plain", encoding: "UTF-8")
+        } else {
+            render(status: 404, text: 'Failed to load robots.txt')
+        }
+    }
 
     /**
      * Displays the WCAG statement
