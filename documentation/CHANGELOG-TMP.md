@@ -9,6 +9,8 @@
 
 4449    06.09.2022  dev     3.0         Andreas Feature     neues allgemeines Lizenzmerkmal "Preiskategorie Bautechnik digital"
 
+4445    06.09.2022  rc-2.3  2.3.8       Andreas Feature     Absicherung der Entwicklungsinstanzen gegen Indizierung durch Suchmaschinen
+
 4447    05.09.2022  dev     3.0         Andreas Bug         inkorrekter Redirect nach Hinzufügen einer Abdeckung
 
 4361    25.08.2022  dev     3.0         Andreas Feature     Beim Hochladen von Dokumenten wird Teilungsoption direkt mit angeboten
@@ -27,11 +29,13 @@
 
 4229    19.08.2022  dev     3.0         David   Feature     Migration auf Grails 5
 
-4229    15.08.2022  dev     3.0         Ingrid  Feature     Umstellen auf Fomantic UI
+4413    18.08.2022  rc-2.3  2.3.8       Andreas Bug         Sortierung bei Lizenzabfrage umstrukturiert (nach ERMS-4391)
 
 4329    17.08.2022  rc-2.3  3.0         Andreas Bug         falschen Bezeichner korrigiert
 
 4400    16.08.2022  rc-2.3  2.3.7       Andreas Bug         eindeutigere Benennung eines Panels
+
+4229    15.08.2022  dev     3.0         Ingrid  Feature     Umstellen auf Fomantic UI
 
 4402    15.08.2022  rc-2.3  2.3.7       Andreas Bug         Zugriffsfehler bei Überprüfung von Nutzungsstatistiken
 
