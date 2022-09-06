@@ -5,6 +5,7 @@ class UrlMappings {
         "/"         (controller: 'public', action: 'index')
         "/gasco"    (controller: 'public', action: 'gasco')
         "/ebooks"   (controller: 'ebookCatalogue', action: 'index')
+        "/robots.txt" (controller: 'public', action: 'robots')
 
         // ajax
 

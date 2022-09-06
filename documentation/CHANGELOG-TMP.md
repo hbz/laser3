@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4445    06.09.2022  rc-2.3  2.3.8       Andreas Feature     Absicherung der Entwicklungsinstanzen gegen Indizierung durch Suchmaschinen 
+
 4413    18.08.2022  rc-2.3  2.3.8       Andreas Bug         Sortierung bei Lizenzabfrage umstrukturiert (nach ERMS-4391)
 
 4400    16.08.2022  rc-2.3  2.3.7       Andreas Bug         eindeutigere Benennung eines Panels
