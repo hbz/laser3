@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.helper.ServerUtils
 import de.laser.properties.SubscriptionProperty
 import de.laser.properties.PropertyDefinition
 import de.laser.helper.ConfigUtils
@@ -15,6 +16,21 @@ class PublicController {
     def genericOIDService
     def mailService
     EscapeService escapeService
+
+    /**
+    *
+    */
+    @Secured(['permitAll'])
+    def robots() {
+        if (ServerUtils.getCurrentServer() != ServerUtils.SERVER_PROD) {
+            def text = "User-agent: *\n" +
+                    "Disallow: / \n"
+
+            render(text: text, contentType: "text/plain", encoding: "UTF-8")
+        } else {
+            render(status: 404, text: 'Failed to load robots.txt')
+        }
+    }
 
     /**
      * Displays the WCAG statement
