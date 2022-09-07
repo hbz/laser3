@@ -24,7 +24,7 @@ class PublicController {
     */
     @Secured(['permitAll'])
     def robots() {
-        if (AppUtils.getCurrentServer() != AppUtils.SERVER_PROD) {
+        if (AppUtils.getCurrentServer() != AppUtils.PROD) {
             def text = "User-agent: *\n" +
                     "Disallow: / \n"
 
