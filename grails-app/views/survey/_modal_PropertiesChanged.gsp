@@ -17,7 +17,7 @@
                 <td class="center aligned">
                     ${i + 1}
                 </td>
-                <td>${changedProperty.participant}</td>
+                <td><g:link controller="organisation" action="show" id="${changedProperty.participant.id}">${changedProperty.participant.sortname}</g:link></td>
                 <td>
                     ${propertyDefinition.getI10n('name')}
                 </td>
