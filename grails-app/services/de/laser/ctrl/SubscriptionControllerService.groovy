@@ -1096,7 +1096,16 @@ class SubscriptionControllerService {
             result.members_disabled = Subscription.executeQuery("select oo.org.id from OrgRole oo join oo.sub s where s.instanceOf = :io",[io: result.subscription])
             result.validPackages = result.subscription.packages?.sort { it.pkg.name }
             result.memberLicenses = License.executeQuery("select l from License l where l.instanceOf in (select li.sourceLicense from Links li where li.destinationSubscription = :subscription and li.linkType = :linkType)",[subscription:result.subscription, linkType:RDStore.LINKTYPE_LICENSE])
+            if(result.subscription._getCalculatedType() in [CalculatedType.TYPE_ADMINISTRATIVE,CalculatedType.TYPE_CONSORTIAL]) {
+                List<Subscription> childSubs = result.subscription.getNonDeletedDerivedSubscriptions()
+                if(childSubs) {
+                    String localizedName = LocaleUtils.getLocalizedAttributeName('name')
+                    String query = "select sp.type from SubscriptionProperty sp where sp.owner in (:subscriptionSet) and sp.tenant = :context and sp.instanceOf = null order by sp.type.${localizedName} asc"
+                    Set<PropertyDefinition> memberProperties = PropertyDefinition.executeQuery(query, [subscriptionSet:childSubs, context:result.institution] )
 
+                    result.memberProperties = memberProperties
+                }
+            }
             [result:result,status:STATUS_OK]
         }
     }
@@ -1224,6 +1233,14 @@ class SubscriptionControllerService {
                             licensesToProcess.each { License lic ->
                                 subscriptionService.setOrgLicRole(memberSub,lic,false)
                             }
+                            params.list('propRow').each { String rowKey ->
+                                PropertyDefinition propDef = PropertyDefinition.get(params["propId${rowKey}"])
+                                String propValue = params["propValue${rowKey}"] as String
+                                if(propDef.isRefdataValueType())
+                                    propValue = RefdataValue.class.name+':'+propValue
+                                subscriptionService.createProperty(propDef, memberSub, (Org) result.institution, propValue, params["propNote${rowKey}"] as String)
+                            }
+
                             memberSubs << memberSub
                         }
                                 //}
