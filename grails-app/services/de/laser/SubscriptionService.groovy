@@ -1795,7 +1795,7 @@ class SubscriptionService {
         //withTransaction necessary because of different dataSource, cf. https://github.com/grails/grails-core/issues/10383
         Set<String> titleKeysInPackage = TitleInstancePackagePlatform.executeQuery('select tipp.globalUID from TitleInstancePackagePlatform tipp where tipp.pkg in (select sp.pkg from SubscriptionPackage sp where sp.pkg.id in (:refPkgs)) and tipp.status != :removed', [removed: RDStore.TIPP_STATUS_REMOVED, refPkgs: refPkgs.collect { SubscriptionPackage sp -> sp.pkg.id }])
         int result = 0
-        Map<String, Object> checkParams = [plat: subscribedPlatforms.collect { Platform plat -> plat.globalUID }, reportInstitutions: reportInstitutions]
+        Map<String, Object> checkParams = [plat: subscribedPlatforms.collect { Platform plat -> plat.globalUID }]
         String dateFilter, startFilter, endFilter
         if(dateConfig.startDate != null) {
             startFilter = " and r.reportFrom >= :startDate"
@@ -1813,20 +1813,11 @@ class SubscriptionService {
         }
         dateFilter = startFilter + endFilter
         Counter4Report.withTransaction {
-            println "where c4r_plat_uid = any('{127}') and c4r_report_institution_uid = any('{${reportInstitutions.join(",")}}')"
-            Set<String> titleKeys = Counter4Report.executeQuery('select r.titleUID from Counter4Report r where r.platformUID in (:plat) and r.reportInstitutionUID in (:reportInstitutions)'+dateFilter, checkParams)
-            Set<String> intersection = titleKeysInPackage.intersect(titleKeys)
-            //repeating of 0 checks necessary because of query plan - join result in sequence scans at large datasets (Postgres does not seek indices when > 10% of data is being retrieved)
-            result = intersection.size()
-            if(result == 0)
-                result = Counter4Report.executeQuery('select count(r.id) from Counter4Report r where r.platformUID in (:plat) and r.reportType = :reportType and r.reportInstitutionUID in (:reportInstitutions)'+dateFilter, checkParams+[reportType: Counter4Report.PLATFORM_REPORT_1])[0]
-            if(result == 0) {
-                titleKeys = Counter5Report.executeQuery('select r.titleUID from Counter5Report r where r.platformUID in (:plat) and r.reportInstitutionUID in (:reportInstitutions)'+dateFilter, checkParams)
-                intersection = titleKeysInPackage.intersect(titleKeys)
-                result = intersection.size()
+            for(int i = 0; (i < reportInstitutions.size() && result == 0); i++) {
+                result = Counter4Report.executeQuery('select count(r.id) from Counter4Report r where r.platformUID in (:plat) and r.reportInstitutionUID = :reportInstitution'+dateFilter, checkParams+[reportInstitution: reportInstitutions[i]])[0]
+                if(result == 0)
+                    result = Counter5Report.executeQuery('select count(r.id) from Counter5Report r where r.platformUID in (:plat) and r.reportInstitutionUID = :reportInstitution'+dateFilter, checkParams+[reportInstitution: reportInstitutions[i]])[0]
             }
-            if(result == 0)
-                result = Counter5Report.executeQuery('select count(r.id) from Counter5Report r where r.platformUID in (:plat) and lower(r.reportType) in (:reportTypes) and r.reportInstitutionUID in (:reportInstitutions)'+dateFilter, checkParams + [reportTypes: [Counter5Report.PLATFORM_USAGE, Counter5Report.PLATFORM_MASTER_REPORT]])[0]
         }
         result > 0
     }
