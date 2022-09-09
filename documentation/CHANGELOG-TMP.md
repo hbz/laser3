@@ -9,6 +9,8 @@
 
 4460    09.09.2022  dev     3.0         Andreas Feature     nicht vererbte Merkmale direkt bei Hinzufügen von Teilnehmern mitschicken
 
+4431    09.09.2022  dev     3.0         Andreas Feature     Umstellung der Statistik-Laderoutinen
+
 4455    08.09.2022  dev     3.0         Andreas Bug         Anzeige der Coverages behoben
 
 4450    07.09.2022  dev     3.0         Andreas Feature     Name der Einrichtung auf Sortiername + Link umgestellt
