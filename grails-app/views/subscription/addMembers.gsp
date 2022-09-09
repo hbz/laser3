@@ -1,7 +1,10 @@
-<%@ page import="de.laser.*;de.laser.interfaces.CalculatedType;de.laser.storage.RDConstants;de.laser.FormService" %>
+<%@ page import="de.laser.*;de.laser.interfaces.CalculatedType;de.laser.storage.RDConstants;de.laser.FormService;de.laser.utils.LocaleUtils" %>
 
 <laser:htmlStart text="${message(code: 'subscription.details.addMembers.label', args: memberType)}" serviceInjection="true"/>
-
+<%
+    String lang = LocaleUtils.getCurrentLang()
+    String getAllRefDataValuesForCategoryQuery = "select rdv from RefdataValue as rdv where rdv.owner.desc=:category order by rdv.order, rdv.value_" + lang
+%>
 <ui:breadcrumbs>
     <ui:crumb controller="myInstitution" action="currentSubscriptions"
                  text="${message(code: 'myinst.currentSubscriptions.label')}"/>
@@ -46,101 +49,143 @@
                   ]"/>
 
         <g:if test="${members}">
-            <div class="ui two fields">
-                <div class="field">
-                    <label for="subStatus"><g:message code="myinst.copySubscription"/></label>
-
-                    <g:set value="${RefdataCategory.getByDesc(RDConstants.SUBSCRIPTION_STATUS)}" var="rdcSubStatus"/>
-
-                    <br />
-                    <br />
-
-                    <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}" class="ui dropdown"
-                              optionKey="id"
-                              optionValue="${{ it.getI10n('value') }}"
-                              name="subStatus"
-                              id="subStatus"
-                              value="${Subscription.get(params.id).status?.id.toString()}"/>
-                </div>
-
-                <div class="field">
-                    <label><g:message code="myinst.copyLicense"/></label>
-                    <g:if test="${memberLicenses}">
-                        <div class="ui radio checkbox">
-                            <input class="hidden" type="radio" id="generateSlavedLics" name="generateSlavedLics" value="no">
-                            <label for="generateSlavedLics">${message(code: 'myinst.separate_lics_no')}</label>
-                        </div>
-                        <br />
-                        <div class="ui radio checkbox">
-                            <input class="hidden" type="radio" id="generateSlavedLics1" name="generateSlavedLics" value="all" checked="checked">
-                            <label for="generateSlavedLics1">${message(code: 'myinst.separate_lics_all')}</label>
-                        </div>
-                        <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code:'myinst.separate_lics_all.expl')}">
-                            <i class="question circle icon la-popup"></i>
-                        </span>
-                        <br />
-                        <div class="ui radio checkbox">
-                            <input class="hidden" type="radio" id="generateSlavedLics2" name="generateSlavedLics" value="partial">
-                            <label for="generateSlavedLics2">${message(code: 'myinst.separate_lics_partial')}</label>
-                        </div>
-                        <div class="generateSlavedLicsReference-wrapper hidden">
-                            <br />
-                            <g:select from="${memberLicenses}"
-                                      class="ui fluid search multiple dropdown hide"
-                                      optionKey="${{ License.class.name + ':' + it.id }}"
-                                      optionValue="${{ it.reference }}"
-                                      noSelection="${['' : message(code:'default.select.all.label')]}"
-                                      name="generateSlavedLicsReference"/>
-                        </div>
-                        <laser:script file="${this.getGroovyPageFileName()}">
-                            $('*[name=generateSlavedLics]').change(function () {
-                                $('*[name=generateSlavedLics][value=partial]').prop('checked') ? $('.generateSlavedLicsReference-wrapper').removeClass('hidden') : $('.generateSlavedLicsReference-wrapper').addClass('hidden');
-                            })
-                            $('*[name=generateSlavedLics]').trigger('change')
-                        </laser:script>
-                    </g:if>
-                    <g:else>
-                        <ui:msg class="info" message="myinst.noSubscriptionOwner"/>
-                    </g:else>
-                </div>
-            </div>
-            <div class="two fields">
-                <div class="field">
-                    <label><g:message code="myinst.addMembers.linkPackages"/></label>
+            <br/>
+            <div class="ui grid">
+                <div class="ui eight wide column">
                     <div class="field">
-                        <g:if test="${validPackages}">
-                            <div class="ui checkbox">
-                                <input type="checkbox" id="linkAllPackages" name="linkAllPackages">
-                                <label for="linkAllPackages"><g:message code="myinst.addMembers.linkAllPackages" args="${superOrgType}"/></label>
+                        <label for="subStatus"><g:message code="subscription.status.label"/></label>
+                        <g:set value="${RefdataCategory.getByDesc(RDConstants.SUBSCRIPTION_STATUS)}" var="rdcSubStatus"/>
+                        <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS)}" class="ui dropdown"
+                                  optionKey="id"
+                                  optionValue="${{ it.getI10n('value') }}"
+                                  name="subStatus"
+                                  id="subStatus"
+                                  value="${Subscription.get(params.id).status?.id.toString()}"/>
+                    </div>
+                    <div class="field">
+                        <label><g:message code="myinst.copyLicense"/></label>
+                        <g:if test="${memberLicenses}">
+                            <div class="grouped fields">
+                                <div class="field">
+                                    <div class="ui radio checkbox">
+                                        <input class="hidden" type="radio" id="generateSlavedLics" name="generateSlavedLics" value="no">
+                                        <label for="generateSlavedLics">${message(code: 'myinst.separate_lics_no')}</label>
+                                    </div>
+                                </div>
+                                <div class="field">
+                                    <div class="ui radio checkbox">
+                                        <input class="hidden" type="radio" id="generateSlavedLics1" name="generateSlavedLics" value="all" checked="checked">
+                                        <label for="generateSlavedLics1">${message(code: 'myinst.separate_lics_all')}</label>
+                                    </div>
+                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code:'myinst.separate_lics_all.expl')}">
+                                        <i class="question circle icon la-popup"></i>
+                                    </span>
+                                </div>
+                                <div class="field">
+                                    <div class="ui radio checkbox">
+                                        <input class="hidden" type="radio" id="generateSlavedLics2" name="generateSlavedLics" value="partial">
+                                        <label for="generateSlavedLics2">${message(code: 'myinst.separate_lics_partial')}</label>
+                                    </div>
+                                    <div class="generateSlavedLicsReference-wrapper hidden">
+                                        <g:select from="${memberLicenses}"
+                                                  class="ui fluid search multiple dropdown hide"
+                                                  optionKey="${{ License.class.name + ':' + it.id }}"
+                                                  optionValue="${{ it.reference }}"
+                                                  noSelection="${['' : message(code:'default.select.all.label')]}"
+                                                  name="generateSlavedLicsReference"/>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="ui checkbox">
-                                <input type="checkbox" id="linkWithEntitlements" name="linkWithEntitlements">
-                                <label for="linkWithEntitlements"><g:message code="myinst.addMembers.withEntitlements"/></label>
-                            </div>
-                            <g:select class="ui search multiple dropdown"
-                                      optionKey="id" optionValue="${{ it.getPackageName() }}"
-                                      from="${validPackages}" name="packageSelection" value=""
-                                      noSelection='["": "${message(code: 'subscriptionsManagement.noSelection.package')}"]'/>
+                            <laser:script file="${this.getGroovyPageFileName()}">
+                                $('*[name=generateSlavedLics]').change(function () {
+                                    $('*[name=generateSlavedLics][value=partial]').prop('checked') ? $('.generateSlavedLicsReference-wrapper').removeClass('hidden') : $('.generateSlavedLicsReference-wrapper').addClass('hidden');
+                                })
+                                $('*[name=generateSlavedLics]').trigger('change')
+                            </laser:script>
                         </g:if>
                         <g:else>
-                            <g:message code="subscriptionsManagement.noValidPackages" args="${superOrgType}"/>
+                            <g:message code="myinst.noSubscriptionOwner"/>
                         </g:else>
                     </div>
-                </div>
-                <div class="field">
-                    <ui:datepicker label="subscription.startDate.label" id="valid_from" name="valid_from" value="" />
-
-                    <ui:datepicker label="subscription.endDate.label" id="valid_to" name="valid_to" value="" />
-                </div>
-            </div>
-            <div class="two fields">
-                <div class="field">
-                    <label><g:message code="myinst.currentSubscriptions.subscription.runTime"/></label>
-                    <div class="ui checkbox">
+                    <div class="field">
+                        <label><g:message code="myinst.addMembers.linkPackages"/></label>
+                        <div class="field">
+                            <g:if test="${validPackages}">
+                                <div class="grouped fields">
+                                    <div class="field">
+                                        <div class="ui checkbox">
+                                            <input type="checkbox" id="linkAllPackages" name="linkAllPackages">
+                                            <label for="linkAllPackages"><g:message code="myinst.addMembers.linkAllPackages"/></label>
+                                        </div>
+                                    </div>
+                                    <div class="field">
+                                        <div class="ui checkbox">
+                                            <input type="checkbox" id="linkWithEntitlements" name="linkWithEntitlements">
+                                            <label for="linkWithEntitlements"><g:message code="myinst.addMembers.withEntitlements"/></label>
+                                        </div>
+                                        <g:select class="ui search multiple dropdown"
+                                                  optionKey="id" optionValue="${{ it.getPackageName() }}"
+                                                  from="${validPackages}" name="packageSelection" value=""
+                                                  noSelection='["": "${message(code: 'subscriptionsManagement.noSelection.package')}"]'/>
+                                    </div>
+                                </div>
+                            </g:if>
+                            <g:else>
+                                <g:message code="subscriptionsManagement.noValidPackages"/>
+                            </g:else>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <ui:datepicker label="subscription.startDate.label" id="valid_from" name="valid_from" value="" />
+                        <ui:datepicker label="subscription.endDate.label" id="valid_to" name="valid_to" value="" />
+                    </div>
+                    <div class="field">
+                        <label><g:message code="myinst.currentSubscriptions.subscription.runTime"/></label>
+                        <div class="ui checkbox">
                             <input type="checkbox" id="checkSubRunTimeMultiYear" name="checkSubRunTimeMultiYear">
                             <label for="checkSubRunTimeMultiYear"><g:message code="subscription.isMultiYear.label"/></label>
+                        </div>
                     </div>
                 </div>
+                <g:if test="${memberProperties}">
+                    <div class="ui field eight wide column">
+                        <label><g:message code="subscription.properties.consortium"/></label>
+                        <table class="ui table striped">
+                            <g:each in="${memberProperties}" var="prop" status="i">
+                                <tr>
+                                    <g:hiddenField name="propRow" value="${i}"/>
+                                    <g:hiddenField name="propId${i}" value="${prop.id}"/>
+                                    <td>${prop.getI10n('name')}</td>
+                                    <td>
+                                        <g:if test="${prop.isIntegerType()}">
+                                            <input type="number" name="propValue${i}" placeholder="${message(code:'default.value.label')}"/>
+                                        </g:if>
+                                        <g:if test="${prop.isBigDecimalType()}">
+                                            <input type="number" name="propValue${i}" step="0.001" placeholder="${message(code:'default.value.label')}"/>
+                                        </g:if>
+                                        <g:elseif test="${prop.isDateType()}">
+                                            <input type="date" name="propValue${i}" placeholder="${message(code:'default.value.label')}"/>
+                                        </g:elseif>
+                                        <g:elseif test="${prop.isURLType()}">
+                                            <input type="url" name="propValue${i}" placeholder="${message(code:'default.value.label')}"/>
+                                        </g:elseif>
+                                        <g:elseif test="${prop.isRefdataValueType()}">
+                                            <ui:select class="ui dropdown search" name="propValue${i}"
+                                                       from="${RefdataValue.executeQuery(getAllRefDataValuesForCategoryQuery, [category: prop.refdataCategory])}"
+                                                       optionKey="id"
+                                                       optionValue="value"
+                                                       noSelection="${['':message(code:'default.value.label')]}"/>
+                                        </g:elseif>
+                                        <g:else>
+                                            <g:textField name="propValue${i}" placeholder="${message(code:'default.value.label')}" size="10"/>
+                                        </g:else>
+                                    </td>
+                                    <td><g:textArea name="propNote${i}" placeholder="${message(code:'property.table.notes')}"/></td>
+                                </tr>
+                            </g:each>
+                        </table>
+                    </div>
+                </g:if>
             </div>
         </g:if>
 
