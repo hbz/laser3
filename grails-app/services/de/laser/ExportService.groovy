@@ -585,7 +585,7 @@ class ExportService {
 				cell.setCellValue('Period covered by Report:')
 				headerRow = sheet.createRow(4)
 				cell = headerRow.createCell(0)
-				cell.setCellValue("${DateUtils.getSDF_yyyyMMdd().format(data.startDate)} to ${DateUtils.getSDF_yyyyMMdd().format(data.endDate)}")
+				cell.setCellValue("${DateUtils.getSDF_yyyyMMdd().format(data.dateRangeParams.startDate)} to ${DateUtils.getSDF_yyyyMMdd().format(data.dateRangeParams.endDate)}")
 				headerRow = sheet.createRow(5)
 				cell = headerRow.createCell(0)
 				cell.setCellValue("Date run:")
@@ -618,20 +618,15 @@ class ExportService {
 							cell = row.createCell(i)
 							cell.setCellValue("")
 						}
-						cell = row.createCell(7)
-						if(data.total) {
-							int totalCount = 0
-							if(data.total.find { Map totalRow -> totalRow.reportType == reportType && totalRow.metricType == params.metricType })
-								totalCount = data.total.find { Map totalRow -> totalRow.reportType == reportType && totalRow.metricType == params.metricType }.reportCount
-							else if(data.total.find { Map totalRow -> totalRow.reportType == reportType })
-								totalCount = data.total.find { Map totalRow -> totalRow.reportType == reportType }.reportCount
-							cell.setCellValue(totalCount)
-						}
-						else cell.setCellValue(0)
-						data.sums.findAll { Map totalRow -> totalRow.metricType == params.metricType && totalRow.reportType == reportType }.eachWithIndex { Map totalRow, int i ->
+						Cell totalCell = row.createCell(7)
+						int total = 0
+						data.sums.findAll { Date month, Map totalRow -> totalRow.metricType == params.metricType && totalRow.reportType == reportType }.eachWithIndex { Date month, Map totalRow, int i ->
 							cell = row.createCell(i+8)
-							cell.setCellValue(totalRow.reportCount ?: 0)
+							int monthCount = totalRow.reportCount ?: 0
+							cell.setCellValue(monthCount)
+							total += monthCount
 						}
+						totalCell.setCellValue(total)
 						titleRows = prepareTitleRows(data.usages, propIdNamespaces, reportType, showPriceDate, showMetricType, showOtherData, params.metricType)
 						rowno = 8
 						break
