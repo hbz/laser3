@@ -1350,9 +1350,9 @@ class FilterService {
 
         if ((params.sort != null) && (params.sort.length() > 0)) {
             if(params.sort == 'startDate')
-                base_qry += "order by ic.startDate ${params.order}, lower(tipp.sortname) asc "
+                base_qry += "order by ic.startDate ${params.order}, lower(ie.sortname), lower(tipp.sortname) "
             else if(params.sort == 'endDate')
-                base_qry += "order by ic.endDate ${params.order}, lower(tipp.sortname) asc "
+                base_qry += "order by ic.endDate ${params.order}, lower(ie.sortname), lower(tipp.sortname) "
             else
                 base_qry += "order by ie.${params.sort} ${params.order} "
         }
