@@ -20,7 +20,6 @@ concurrent.access,SimUser,Concurrent Access
 confidentiality,Vertraulichkeit Auswahl,Confidentiality Choice
 contact.content.type,Kontakttyp,Type of Contact
 contact.type,Art des Kontaktes,Contact Type
-core.status,Kerntitel-Status,Core Status
 cost.configuration,Kostenkonfiguration,Cost configuration
 cost.item.category,CostItemCategory,CostItemCategory
 cost.item.element,CostItemElement,CostItemElement

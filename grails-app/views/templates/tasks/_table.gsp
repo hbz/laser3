@@ -54,7 +54,7 @@
                     </td>
                     <td>
                         <g:if test="${taskInstance.responsibleOrg?.id == contextService.getOrg().id || taskInstance.responsibleUser?.id == contextService.getUser().id}">
-                            <i class="icon hand point right"></i>
+                            <i class="icon hand point right sc_grey"></i>
                         </g:if>
                         <g:if test="${taskInstance.responsibleOrg}"> ${taskInstance.responsibleOrg.name} <br /> </g:if>
                         <g:if test="${taskInstance.responsibleUser}"> ${taskInstance.responsibleUser.display} </g:if>
@@ -64,7 +64,7 @@
                     </td>
                     <td>
                         <g:if test="${taskInstance.creator?.id == contextService.getUser().id}">
-                            <i class="icon hand point right"></i>${taskInstance.creator.display}
+                            <i class="icon hand point right sc_grey"></i>${taskInstance.creator.display}
                         </g:if>
                         <g:else>
                             ${taskInstance.creator.display}

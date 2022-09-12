@@ -58,8 +58,6 @@
 <div class="ui bottom attached tab segment ${params.tab == 'contacts' ? 'active' : ''}" data-tab="contacts">
 
     <laser:render template="/templates/copyFilteredEmailAddresses" model="[emailAddresses: emailAddresses]"/>
-    <br/>
-
 
     <ui:filter>
         <g:form action="${actionName}" controller="organisation" method="get" params="${params}" class="ui small form">
@@ -187,9 +185,6 @@
 
 %{--------------------}%
 <div class="ui bottom attached tab segment ${params.tab == 'addresses' ? 'active' : ''}" data-tab="addresses">
-
-    <br/>
-
 
     <laser:render template="/templates/cpa/address_table" model="${[
             hideAddressType     : true,

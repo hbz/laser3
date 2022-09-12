@@ -6,7 +6,8 @@
 </ui:breadcrumbs>
 
 <ui:h1HeaderWithIcon message="menu.user.help" />
-
+<br />
+<br />
 <h2 class="ui icon header la-clear-before la-noMargin-top"><g:message code="help.contentHelp"/></h2>
 
 <div class="ui accordion styled fluid la-clear-before">

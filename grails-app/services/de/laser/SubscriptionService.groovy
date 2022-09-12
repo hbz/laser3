@@ -697,9 +697,6 @@ class SubscriptionService {
             } else {
                 date_filter = new Date()
             }
-            // We dont want this filter to reach SQL query as it will break it.
-            boolean core_status_filter = params.sort == 'core_status'
-            if (core_status_filter) params.remove('sort');
 
             if (params.filter) {
                 base_qry = " from IssueEntitlement as ie where ie.subscription = :subscription "
