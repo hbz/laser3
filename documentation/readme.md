@@ -1,5 +1,5 @@
 
-## Upgrade to Grails 5.2.2
+## Upgrade to Grails 5.2.3
 
 #### Updated core and dependencies
 
