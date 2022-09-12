@@ -307,11 +307,9 @@ class AjaxHtmlController {
      */
     @Secured(['ROLE_USER'])
     def createTask() {
-        long backendStart = System.currentTimeMillis()
         Org contextOrg = contextService.getOrg()
         Map<String, Object> result = taskService.getPreconditions(contextOrg)
-
-        result.backendStart = backendStart
+        result.contextOrg = contextOrg
 
         render template: "/templates/tasks/modal_create", model: result
     }
