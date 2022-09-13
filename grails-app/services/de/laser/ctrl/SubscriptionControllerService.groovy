@@ -1234,11 +1234,13 @@ class SubscriptionControllerService {
                                 subscriptionService.setOrgLicRole(memberSub,lic,false)
                             }
                             params.list('propRow').each { String rowKey ->
-                                PropertyDefinition propDef = PropertyDefinition.get(params["propId${rowKey}"])
-                                String propValue = params["propValue${rowKey}"] as String
-                                if(propDef.isRefdataValueType())
-                                    propValue = RefdataValue.class.name+':'+propValue
-                                subscriptionService.createProperty(propDef, memberSub, (Org) result.institution, propValue, params["propNote${rowKey}"] as String)
+                                if(params.containsKey('propValue'+rowKey) && params["propValue${rowKey}"] != "") {
+                                    PropertyDefinition propDef = PropertyDefinition.get(params["propId${rowKey}"])
+                                    String propValue = params["propValue${rowKey}"] as String
+                                    if(propDef.isRefdataValueType())
+                                        propValue = RefdataValue.class.name+':'+propValue
+                                    subscriptionService.createProperty(propDef, memberSub, (Org) result.institution, propValue, params["propNote${rowKey}"] as String)
+                                }
                             }
 
                             memberSubs << memberSub
