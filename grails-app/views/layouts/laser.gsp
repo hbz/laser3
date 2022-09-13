@@ -380,7 +380,7 @@
                                         </div>
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="manageGlobalSources">${message(code:'menu.yoda.manageGlobalSources')}</ui:link>
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="getTIPPsWithoutGOKBId">${message(code:'menu.yoda.purgeTIPPsWithoutGOKBID')}</ui:link>
-                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="expungeRemovedTIPPs">${message(code:'menu.yoda.expungeRemovedTIPPs')}</ui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="expungeRemovedTIPPs" onclick="return confirm('${message(code:'confirmation.content.deleteTIPPsWithoutGOKBId')}')">${message(code:'menu.yoda.expungeRemovedTIPPs')}</ui:link>
                                         <%--<ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="matchPackageHoldings">${message(code:'menu.admin.bulkOps.matchPackageHoldings')}</ui:link>--%>
                                     </div>
                                 </div>
