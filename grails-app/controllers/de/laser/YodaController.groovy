@@ -573,7 +573,8 @@ class YodaController {
      */
     @Secured(['ROLE_YODA'])
     Map<String, Object> expungeRemovedTIPPs() {
-        yodaService.expungeRemovedTIPPs(Boolean.valueOf(params.doIt))
+        yodaService.expungeRemovedTIPPs()
+        redirect controller: 'home'
     }
 
     @Deprecated
