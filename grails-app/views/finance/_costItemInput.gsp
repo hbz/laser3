@@ -438,6 +438,7 @@
         calc: $(".calc"),
         newSubscription: $("#newSubscription_${idSuffix}"),
         isVisibleForSubscriber: $("#newIsVisibleForSubscriber_${idSuffix}"),
+        elementChangeable: false,
         costItemElementConfigurations: {
         <%
             costItemElements.eachWithIndex { CostItemElementConfiguration ciec, int i ->
@@ -472,7 +473,7 @@
         },
         updateTitleDropdowns: function() {
             $(".newCISelect").each(function(k,v){
-                console.log(JSPC.app.finance${idSuffix}.selLinks[$(this).attr("id")]);
+                //console.log(JSPC.app.finance${idSuffix}.selLinks[$(this).attr("id")]);
                 $(this).dropdown({
                     apiSettings: {
                         url: JSPC.app.finance${idSuffix}.selLinks[$(this).attr("id")],
@@ -558,7 +559,7 @@
         },
         checkValues: function () {
             if ( (JSPC.app.finance${idSuffix}.convertDouble(JSPC.app.finance${idSuffix}.costBillingCurrency.val()) * JSPC.app.finance${idSuffix}.costCurrencyRate.val()).toFixed(2) !== JSPC.app.finance${idSuffix}.convertDouble(JSPC.app.finance${idSuffix}.costLocalCurrency.val()).toFixed(2) ) {
-                console.log("inserted values are: "+JSPC.app.finance${idSuffix}.convertDouble(JSPC.app.finance${idSuffix}.costBillingCurrency.val())+" * "+JSPC.app.finance${idSuffix}.costCurrencyRate.val()+" = "+JSPC.app.finance${idSuffix}.convertDouble(JSPC.app.finance${idSuffix}.costLocalCurrency.val()).toFixed(2)+", correct would be: "+(JSPC.app.finance${idSuffix}.convertDouble(JSPC.app.finance${idSuffix}.costBillingCurrency.val()) * JSPC.app.finance${idSuffix}.costCurrencyRate.val()).toFixed(2));
+                //console.log("inserted values are: "+JSPC.app.finance${idSuffix}.convertDouble(JSPC.app.finance${idSuffix}.costBillingCurrency.val())+" * "+JSPC.app.finance${idSuffix}.costCurrencyRate.val()+" = "+JSPC.app.finance${idSuffix}.convertDouble(JSPC.app.finance${idSuffix}.costLocalCurrency.val()).toFixed(2)+", correct would be: "+(JSPC.app.finance${idSuffix}.convertDouble(JSPC.app.finance${idSuffix}.costBillingCurrency.val()) * JSPC.app.finance${idSuffix}.costCurrencyRate.val()).toFixed(2));
                 JSPC.app.finance${idSuffix}.costElems.parent('.field').addClass('error');
                 return false;
             }
@@ -578,8 +579,8 @@
             let localCurrencyAfterRounding = roundB ? Math.round(parsedLocalCurrency) : JSPC.app.finance${idSuffix}.convertDouble(parsedLocalCurrency)
             JSPC.app.finance${idSuffix}.costBillingCurrency.val(JSPC.app.finance${idSuffix}.outputValue(billingCurrencyAfterRounding));
             JSPC.app.finance${idSuffix}.costLocalCurrency.val(JSPC.app.finance${idSuffix}.outputValue(localCurrencyAfterRounding));
-            let billingAfterTax = roundF ? Math.round(billingCurrencyAfterRounding * taxF) : JSPC.app.finance${idSuffix}.convertDouble(billingCurrencyAfterRounding * taxF)
-            let localAfterTax = roundF ? Math.round(localCurrencyAfterRounding * taxF ) : JSPC.app.finance${idSuffix}.convertDouble(localCurrencyAfterRounding * taxF)
+            let billingAfterTax = roundF ? Math.round(billingCurrencyAfterRounding * taxF) : JSPC.app.finance${idSuffix}.convertDouble(billingCurrencyAfterRounding * taxF);
+            let localAfterTax = roundF ? Math.round(localCurrencyAfterRounding * taxF ) : JSPC.app.finance${idSuffix}.convertDouble(localCurrencyAfterRounding * taxF);
             JSPC.app.finance${idSuffix}.costBillingCurrencyAfterTax.val(
                  JSPC.app.finance${idSuffix}.outputValue(billingAfterTax)
             );
@@ -592,7 +593,7 @@
             //determine locale from server
             if(typeof(input) === 'number') {
                 output = input.toFixed(2);
-                console.log("input: "+input+", typeof: "+typeof(input));
+                //console.log("input: "+input+", typeof: "+typeof(input));
             }
             else if(typeof(input) === 'string') {
                 output = 0.0;
@@ -604,7 +605,7 @@
                         output = parseFloat(input.replace(/\./g,"").replace(/,/g,"."));
                     else if(input.match(/(\d+,?)*\d+(\.\d{2})?/g))
                         output = parseFloat(input.replace(/,/g, ""));
-                    else console.log("Please check over regex!");
+                    //else console.log("Please check over regex!");
                 }
                 //console.log("string input parsed, output is: "+output);
             }
@@ -678,28 +679,56 @@
                 }
             });
             this.costBillingCurrency.change( function(){
-                if(JSPC.app.finance${idSuffix}.costCurrency.val() == JSPC.app.finance${idSuffix}.eurVal) {
-                    JSPC.app.finance${idSuffix}.calculateLocalCurrency.click();
+                if(!JSPC.app.finance${idSuffix}.costElems.hasClass("focused")) {
+                    if(JSPC.app.finance${idSuffix}.costCurrency.val() == JSPC.app.finance${idSuffix}.eurVal) {
+                        JSPC.app.finance${idSuffix}.calculateLocalCurrency.click();
+                    }
                 }
             });
             this.costItemElement.change(function() {
-                console.log(JSPC.app.finance${idSuffix}.ciec);
+                //console.log(JSPC.app.finance${idSuffix}.ciec);
                 if(typeof(JSPC.app.finance${idSuffix}.costItemElementConfigurations[JSPC.app.finance${idSuffix}.costItemElement.val()]) !== 'undefined')
                     JSPC.app.finance${idSuffix}.ciec.dropdown('set selected', JSPC.app.finance${idSuffix}.costItemElementConfigurations[JSPC.app.finance${idSuffix}.costItemElement.val()]);
                 else
                     JSPC.app.finance${idSuffix}.ciec.dropdown('set selected','null');
             });
-            this.calc.change( function() {
-                if('${idSuffix}' !== 'bulk')
+            this.costElems.focus(function(e) {
+                JSPC.app.finance${idSuffix}.costElems.addClass('focused');
+                JSPC.app.finance${idSuffix}.elementChangeable = false;
+            });
+            this.costElems.blur(function(e) {
+                if(JSPC.app.finance${idSuffix}.elementChangeable === true){
+                    JSPC.app.finance${idSuffix}.costElems.removeClass('focused');
+                    JSPC.app.finance${idSuffix}.calculateLocalCurrency.click();
                     JSPC.app.finance${idSuffix}.calcTaxResults();
+                }
+            });
+            this.costElems.keydown(function(e) {
+                if(e.keyCode === 27 || e.keyCode === 9) {
+                    JSPC.app.finance${idSuffix}.elementChangeable = true;
+                    JSPC.app.finance${idSuffix}.costElems.blur();
+                }
+            });
+            $('html').mousedown(function(e) {
+                JSPC.app.finance${idSuffix}.elementChangeable = true;
+                window.setTimeout(function() {
+                    JSPC.app.finance${idSuffix}.elementChangeable = false;
+                }, 10);
+            });
+            this.calc.change( function() {
+                if('${idSuffix}' !== 'bulk' && !$(this).hasClass("focused")) {
+                    JSPC.app.finance${idSuffix}.calcTaxResults();
+                }
             });
             this.costElems.change(function(){
-                JSPC.app.finance${idSuffix}.checkValues();
-                if(JSPC.app.finance${idSuffix}.costCurrency.val() != 0) {
-                    JSPC.app.finance${idSuffix}.costCurrency.parent(".field").removeClass("error");
-                }
-                else {
-                    JSPC.app.finance${idSuffix}.costCurrency.parent(".field").addClass("error");
+                if(!$(this).hasClass("focused")) {
+                    JSPC.app.finance${idSuffix}.checkValues();
+                    if(JSPC.app.finance${idSuffix}.costCurrency.val() != 0) {
+                        JSPC.app.finance${idSuffix}.costCurrency.parent(".field").removeClass("error");
+                    }
+                    else {
+                        JSPC.app.finance${idSuffix}.costCurrency.parent(".field").addClass("error");
+                    }
                 }
             });
             this.costCurrency.change(function(){
@@ -774,7 +803,7 @@
     }
     JSPC.app.finance${idSuffix}.init();
     JSPC.app.setupCalendar = function () {
-        console.log($("#newFinancialYear_${idSuffix}").parents(".datepicker").calendar());
+        //console.log($("#newFinancialYear_${idSuffix}").parents(".datepicker").calendar());
         $("#newFinancialYear_${idSuffix}").parents(".datepicker").calendar({
             type: 'year',
             minDate: new Date('1582-10-15'),

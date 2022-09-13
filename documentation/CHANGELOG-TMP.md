@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4466    13.09.2022  dev     3.0         Andreas Feature     Wenn der Browsertab gewechselt wird, wird der Wert nicht mehr verändert
+
 4460    09.09.2022  dev     3.0         Andreas Feature     nicht vererbte Merkmale direkt bei Hinzufügen von Teilnehmern mitschicken
 
 4431    09.09.2022  dev     3.0         Andreas Feature     Umstellung der Statistik-Laderoutinen

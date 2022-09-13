@@ -173,17 +173,18 @@
         costElems: $("#newCostInBillingCurrency_${idSuffix}"),
         calc: $(".calc"),
         percentOnOldPrice: $("#percentOnOldPrice"),
+        elementChangeable: false,
         costItemElementConfigurations: {
-    <%
-        costItemElements.eachWithIndex { CostItemElementConfiguration ciec, int i ->
-            String tmp = "${ciec.costItemElement.id}: ${ciec.elementSign.id}"
-            if(i < costItemElements.size() - 1)
-                tmp += ','
-            println tmp
-        }
-    %>
-    },
-    eurVal: "${RDStore.CURRENCY_EUR.id}",
+        <%
+            costItemElements.eachWithIndex { CostItemElementConfiguration ciec, int i ->
+                String tmp = "${ciec.costItemElement.id}: ${ciec.elementSign.id}"
+                if(i < costItemElements.size() - 1)
+                    tmp += ','
+                println tmp
+            }
+        %>
+        },
+        eurVal: "${RDStore.CURRENCY_EUR.id}",
         isError: function(elem)  {
             if (elem.val().length <= 0 || elem.val() < 0) {
                 $(".la-account-currency").children(".field").removeClass("error");
@@ -198,12 +199,11 @@
             //console.log(taxRate.val());
             let taxF = 1.0 + (0.01 * JSPC.app.finance${idSuffix}.taxRate.val().split("§")[1]);
             let parsedBillingCurrency = JSPC.app.finance${idSuffix}.convertDouble(JSPC.app.finance${idSuffix}.costBillingCurrency.val().trim());
-            let billingCurrencyAfterRounding = roundB ? Math.round(parsedBillingCurrency) : JSPC.app.finance${idSuffix}.convertDouble(parsedBillingCurrency)
+            let billingCurrencyAfterRounding = roundB ? Math.round(parsedBillingCurrency) : JSPC.app.finance${idSuffix}.convertDouble(parsedBillingCurrency);
             JSPC.app.finance${idSuffix}.costBillingCurrency.val(JSPC.app.finance${idSuffix}.outputValue(billingCurrencyAfterRounding));
-            let billingAfterTax = roundF ? Math.round(billingCurrencyAfterRounding * taxF) : JSPC.app.finance${idSuffix}.convertDouble(billingCurrencyAfterRounding * taxF)
-
+            let billingAfterTax = roundF ? Math.round(billingCurrencyAfterRounding * taxF) : JSPC.app.finance${idSuffix}.convertDouble(billingCurrencyAfterRounding * taxF);
             JSPC.app.finance${idSuffix}.costBillingCurrencyAfterTax.val(
-                 JSPC.app.finance${idSuffix}.outputValue(billingAfterTax)
+                JSPC.app.finance${idSuffix}.outputValue(billingAfterTax)
             );
         },
         convertDouble: function (input) {
@@ -211,7 +211,7 @@
             //determine locale from server
             if(typeof(input) === 'number') {
                 output = input.toFixed(2);
-                console.log("input: "+input+", typeof: "+typeof(input));
+                //console.log("input: "+input+", typeof: "+typeof(input));
             }
             else if(typeof(input) === 'string') {
                 output = 0.0;
@@ -223,7 +223,7 @@
                         output = parseFloat(input.replace(/\./g,"").replace(/,/g,"."));
                     else if(input.match(/(\d+,?)*\d+(\.\d{2})?/g))
                         output = parseFloat(input.replace(/,/g, ""));
-                    else console.log("Please check over regex!");
+                    //else console.log("Please check over regex!");
                 }
                 //console.log("string input parsed, output is: "+output);
             }
@@ -248,15 +248,39 @@
                     JSPC.app.finance${idSuffix}.ciec.dropdown('set selected','null');
             });
             this.calc.change( function() {
-                if('${idSuffix}' !== 'bulk')
+                if('${idSuffix}' !== 'bulk' && !$(this).hasClass("focused"))
                     JSPC.app.finance${idSuffix}.calcTaxResults();
             });
-            this.costElems.change(function(){
-                if(JSPC.app.finance${idSuffix}.costCurrency.val() != 0) {
-                    JSPC.app.finance${idSuffix}.costCurrency.parent(".field").removeClass("error");
+            this.costElems.focus(function(e) {
+                JSPC.app.finance${idSuffix}.costElems.addClass('focused');
+                JSPC.app.finance${idSuffix}.elementChangeable = false;
+            });
+            this.costElems.blur(function(e) {
+                if(JSPC.app.finance${idSuffix}.elementChangeable === true){
+                    JSPC.app.finance${idSuffix}.costElems.removeClass('focused');
+                    JSPC.app.finance${idSuffix}.calcTaxResults();
                 }
-                else {
-                    JSPC.app.finance${idSuffix}.costCurrency.parent(".field").addClass("error");
+            });
+            this.costElems.keydown(function(e) {
+                if(e.keyCode === 27 || e.keyCode === 9) {
+                    JSPC.app.finance${idSuffix}.elementChangeable = true;
+                    JSPC.app.finance${idSuffix}.costElems.blur();
+                }
+            });
+            $('html').mousedown(function(e) {
+                JSPC.app.finance${idSuffix}.elementChangeable = true;
+                window.setTimeout(function() {
+                    JSPC.app.finance${idSuffix}.elementChangeable = false;
+                }, 10);
+            });
+            this.costElems.change(function(){
+                if(!$(this).hasClass("focused")) {
+                    if(JSPC.app.finance${idSuffix}.costCurrency.val() != 0) {
+                        JSPC.app.finance${idSuffix}.costCurrency.parent(".field").removeClass("error");
+                    }
+                    else {
+                        JSPC.app.finance${idSuffix}.costCurrency.parent(".field").addClass("error");
+                    }
                 }
             });
             this.currentForm.submit(function(e){
