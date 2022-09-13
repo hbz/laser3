@@ -28,7 +28,6 @@ class RDConstants {
     public static final String CONFIDENTIALITY        = 'confidentiality'
     public static final String CONTACT_CONTENT_TYPE   = 'contact.content.type'
     public static final String CONTACT_TYPE           = 'contact.type'
-    public static final String CORE_STATUS            = 'core.status'
     public static final String COST_CONFIGURATION     = 'cost.configuration'
     public static final String COST_ITEM_TYPE         = 'cost.item.type'
     public static final String COST_ITEM_CATEGORY     = 'cost.item.category'

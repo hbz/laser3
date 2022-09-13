@@ -32,8 +32,7 @@
         <div class="ui bottom attached tab active segment">
 
                 <div class="la-inline-lists">
-
-                    <div class="ui card la-dl-no-table la-js-hideable">
+                    <div class="ui ${params.tab == 'general' ? 'card ' : ''}la-dl-no-table la-js-hideable">
                         <div class="content">
 
                             <table class="ui la-js-responsive-table la-table table">

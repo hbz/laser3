@@ -86,23 +86,6 @@ class TaskController  {
     }
 
 	/**
-	 * Call to create a new task
-	 * @return the task creation modal
-	 */
-	@DebugInfo(test='hasAffiliation("INST_EDITOR")')
-	@Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
-    def _modal_create() {
-        Org contextOrg = contextService.getOrg()
-		Map<String, Object> result = taskService.getPreconditions(contextOrg)
-
-		result.validSubscriptionsList = new ArrayList()
-		result.validSubscriptions.each{
-			result.validSubscriptionsList.add([it.id, it.dropdownNamingConvention(contextService.getOrg())])
-		}
-		render template: "/templates/tasks/modal_create", model: result
-    }
-
-	/**
 	 * Processes the submitted input and updates the given task instance with the given parameters
 	 * @return a redirect to the referer
 	 */

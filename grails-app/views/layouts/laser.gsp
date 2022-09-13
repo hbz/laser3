@@ -234,7 +234,7 @@
                                 </div>
 
                                 <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="systemMessages"><i class="icon exclamation circle"></i>${message(code: 'menu.admin.systemMessage')}</ui:link>
-                                <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="systemAnnouncements"><i class="icon envelope"></i>${message(code:'menu.admin.announcements')}</ui:link>
+                                <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="systemAnnouncements"><i class="icon flag"></i>${message(code:'menu.admin.announcements')}</ui:link>
 
                                 <div class="divider"></div>
 

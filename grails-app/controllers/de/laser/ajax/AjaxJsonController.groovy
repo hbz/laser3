@@ -40,13 +40,10 @@ import de.laser.storage.RDStore
 import de.laser.properties.PropertyDefinition
 import de.laser.reporting.report.ReportingCache
 import de.laser.reporting.report.myInstitution.base.BaseConfig
-import de.laser.stats.Counter4ApiSource
 import de.laser.stats.Counter4Report
-import de.laser.stats.Counter5ApiSource
 import de.laser.stats.Counter5Report
 import grails.converters.JSON
 import grails.plugin.springsecurity.annotation.Secured
-import grails.core.GrailsClass
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 import java.text.SimpleDateFormat

@@ -28,10 +28,10 @@ import grails.gsp.PageRenderer
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugins.mail.MailService
 import grails.util.Holders
+import grails.web.mapping.UrlMappingsHolder
 import groovy.transform.CompileStatic
 import org.grails.plugins.web.taglib.ApplicationTagLib
 import org.springframework.context.MessageSource
-import org.springframework.context.MessageSourceResolvable
 
 import javax.sql.DataSource
 
@@ -75,6 +75,9 @@ class BeanStore {
     }
     static SpringSecurityService getSpringSecurityService() {
         Holders.grailsApplication.mainContext.getBean('springSecurityService') as SpringSecurityService
+    }
+    static UrlMappingsHolder getUrlMappingsHolder() {
+        Holders.grailsApplication.mainContext.getBean('grailsUrlMappingsHolder') as UrlMappingsHolder
     }
 
     // -- Laser --

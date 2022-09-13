@@ -62,6 +62,7 @@ class SystemEvent {
             'GSSS_JSON_COMPLETE'            : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.INFO],
             'GSSS_JSON_ERROR'               : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.ERROR],
             'GSSS_JSON_WARNING'             : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.WARNING],
+            'LOGIN_WARNING'                 : [category: CATEGORY.SYSTEM, relevance: RELEVANCE.WARNING],
             'STATS_SYNC_JOB_START'          : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],
             'STATS_SYNC_JOB_WARNING'        : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.WARNING],
             'STATS_SYNC_JOB_COMPLETE'       : [category: CATEGORY.CRONJOB, relevance: RELEVANCE.INFO],

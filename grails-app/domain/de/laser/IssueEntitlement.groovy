@@ -48,10 +48,6 @@ class IssueEntitlement extends AbstractBase implements Comparable {
     RefdataValue status
 
     @Deprecated
-    @RefdataInfo(cat = RDConstants.CORE_STATUS)
-    RefdataValue coreStatus // core Status is really core Medium.. dont ask
-
-    @Deprecated
     @RefdataInfo(cat = RDConstants.TITLE_MEDIUM)
     RefdataValue medium // legacy; was distinguished back then; I see no reason why I should still do so. Is legacy.
 
@@ -114,7 +110,6 @@ class IssueEntitlement extends AbstractBase implements Comparable {
         medium         (nullable:true)
         accessStartDate(nullable:true)
         accessEndDate  (nullable:true)
-        coreStatus     (nullable:true)
         acceptStatus   (nullable:true)
 
         // Nullable is true, because values are already in the database

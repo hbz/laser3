@@ -1,12 +1,19 @@
 package de.laser
 
 import de.laser.auth.User
+import de.laser.storage.BeanStore
+import de.laser.system.SystemEvent
+import de.laser.utils.CodeUtils
 import de.laser.utils.PasswordUtils
 import grails.converters.JSON
+import grails.core.GrailsClass
 import grails.gorm.transactions.Transactional
 import grails.plugin.springsecurity.SpringSecurityService
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.core.GrailsApplication
+import grails.web.Action
+import grails.web.mapping.UrlMappingInfo
+import grails.web.mapping.UrlMappingsHolder
 import org.apache.http.HttpStatus
 import org.springframework.security.access.annotation.Secured
 import org.springframework.security.authentication.AccountExpiredException
@@ -15,8 +22,8 @@ import org.springframework.security.authentication.DisabledException
 import org.springframework.security.authentication.LockedException
 import org.springframework.security.core.context.SecurityContextHolder as SCH
 import org.springframework.security.web.WebAttributes
+import org.springframework.security.web.savedrequest.DefaultSavedRequest
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache
-import org.springframework.security.web.savedrequest.SavedRequest
 
 /**
  * The controller manages authentication handling
@@ -26,9 +33,9 @@ class LoginController {
 
   def authenticationTrustResolver
 
-  GrailsApplication grailsApplication
-  InstAdmService instAdmService
-  SpringSecurityService springSecurityService
+    GrailsApplication grailsApplication
+    InstAdmService instAdmService
+    SpringSecurityService springSecurityService
 
   /**
    * Default action; redirects to 'defaultTargetUrl' if logged in, /login/auth otherwise.
@@ -45,27 +52,40 @@ class LoginController {
   /**
    * Show the login page.
    */
-  def auth = {
-    log.debug("auth session:${request.session.id}")
+    def auth = {
+        log.debug 'Auth session: ' + request.session.id
 
-    ConfigObject config = SpringSecurityUtils.securityConfig
+        ConfigObject config = SpringSecurityUtils.securityConfig
 
-    if (springSecurityService.isLoggedIn()) {
-      log.debug("already logged in");
-      redirect uri: config.successHandler.defaultTargetUrl
-      return
+        if (springSecurityService.isLoggedIn()) {
+            log.debug 'Already logged in'
+            redirect uri: config.successHandler.defaultTargetUrl
+            return
+        }
+        log.debug 'Attempting login'
+
+        DefaultSavedRequest savedRequest = new HttpSessionRequestCache().getRequest(request, response) as DefaultSavedRequest
+        if (savedRequest) {
+            log.debug 'The original request was saved as: ' + savedRequest.getRequestURL()
+
+            boolean fuzzyCheck = _fuzzyCheck(savedRequest)
+            if (!fuzzyCheck) {
+                String url = savedRequest.getRequestURL() + (savedRequest.getQueryString() ? '?' + savedRequest.getQueryString() : '')
+                log.warn 'Login failed from ' + request.getRemoteAddr() + ' for ' + url + ' ---> noted in system events'
+
+                SystemEvent.createEvent('LOGIN_WARNING', [
+                        url: url,
+                        remote: request.getRemoteAddr(),
+                        headers: savedRequest.getHeaderNames().findAll{
+                          it in ['host', 'referer', 'cookie', 'user-agent']
+                        }.collect{it + ': ' + savedRequest.getHeaderValues( it ).join(', ')}
+                ])
+            }
+        }
+        String postUrl = "${request.contextPath}${config.apf.filterProcessesUrl}"
+
+        render view: 'auth', model: [postUrl: postUrl, rememberMeParameter: config.rememberMe.parameter]
     }
-    else {
-      log.debug("Attempting login");
-    }
-
-    String postUrl = "${request.contextPath}${config.apf.filterProcessesUrl}"
-
-    SavedRequest savedRequest = new HttpSessionRequestCache().getRequest(request, response)
-    log.debug("auth action - the original request was for: " + savedRequest?.requestURL)
-
-    render view: 'auth', model: [postUrl: postUrl, rememberMeParameter: config.rememberMe.parameter]
-  }
 
   /**
    * The redirect action for Ajax requests.
@@ -102,9 +122,8 @@ class LoginController {
    * Callback after a failed login. Redirects to the auth page with a warning message.
    */
   def authfail = {
-
     //def username = session[UsernamePasswordAuthenticationFilter.SPRING_SECURITY_LAST_USERNAME_KEY]
-    def username = session[SpringSecurityUtils.SPRING_SECURITY_LAST_USERNAME_KEY]
+    //def username = session[SpringSecurityUtils.SPRING_SECURITY_LAST_USERNAME_KEY]
 
     String msg = ''
     def exception = session[WebAttributes.AUTHENTICATION_EXCEPTION]
@@ -125,8 +144,7 @@ class LoginController {
         msg = g.message(code: "springSecurity.errors.login.fail")
       }
     }
-
-      log.warn '! Login failed for ' + request.getRemoteAddr() + ' -> ' + msg
+    log.warn 'Login failed from ' + request.getRemoteAddr() + (msg ? ' ---> ' + msg : '')
 
     if (springSecurityService.isAjax(request)) {
       render([error: msg] as JSON)
@@ -174,4 +192,27 @@ class LoginController {
     }
     redirect action: 'auth'
   }
+
+    private boolean _fuzzyCheck(DefaultSavedRequest savedRequest) {
+
+        if (!savedRequest) {
+            return true
+        }
+        boolean validRequest = false
+
+        UrlMappingsHolder urlMappingsHolder = BeanStore.getUrlMappingsHolder()
+        List<UrlMappingInfo> mappingInfo = urlMappingsHolder.matchAll(savedRequest.getRequestURI())
+
+        if (mappingInfo) {
+            GrailsClass controller = CodeUtils.getAllControllerArtefacts().find {
+                it.clazz.simpleName == mappingInfo.first().getControllerName().capitalize() + 'Controller'
+            }
+            if (controller) {
+                if (controller.clazz.declaredMethods.find { it.getAnnotation(Action) && it.name == mappingInfo.first().getActionName() }) {
+                    validRequest = true
+                }
+            }
+        }
+        validRequest
+    }
 }

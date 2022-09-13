@@ -79,7 +79,7 @@
         </a>
 
         <a class="${us_dashboard_tab.value == 'Announcements' ? 'active item':'item'}" data-tab="news" id="jsFallbackAnnouncements">
-            <i class="bullhorn icon large"></i>
+            <i class="flag icon large"></i>
             ${systemAnnouncements.size()} ${message(code:'announcement.plural')}
         </a>
 
@@ -122,7 +122,10 @@
 
             <g:message code="profile.dashboardSysAnnTimeWindow"
                        args="${user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)}" />
+
             <g:if test="${systemAnnouncements.size() > 0 }">
+                <br /><br /><br />
+
                 <div class="ui segment la-timeLineSegment-announcement">
                     <div class="la-timeLineGrid">
                         <div class="ui grid stackable">

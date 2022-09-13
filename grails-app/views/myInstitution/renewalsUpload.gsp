@@ -82,10 +82,6 @@
                         <th>${message(code:'tipp.endVolume')}</th>
                         <th>${message(code: 'tipp.startIssue')}</th>
                         <th>${message(code:'tipp.endIssue')}</th>
-
-
-
-                        <th>${message(code:'subscription.details.core_medium')}</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -94,7 +90,6 @@
                         <tr>
                             <td>${++index}</td>
                             <td><input type="hidden" name="entitlements.${++counter}.tipp_id" value="${e.base_entitlement.id}"/>
-                                <input type="hidden" name="entitlements.${counter}.core_status" value="${e.core_status}"/>
                                 <input type="hidden" name="entitlements.${counter}.start_date" value="${e.start_date}"/>
                                 <input type="hidden" name="entitlements.${counter}.end_date" value="${e.end_date}"/>
                                 <input type="hidden" name="entitlements.${counter}.coverage" value="${e.coverage}"/>
@@ -109,7 +104,6 @@
                             <td>${e.base_entitlement.endVolume}</td>
                             <td>${e.base_entitlement.startIssue}</td>
                             <td>${e.base_entitlement.endIssue}</td>
-                            <td>${e.core_status?:'N'}</td>
                         </tr>
                     </g:each>
                     </tbody>
