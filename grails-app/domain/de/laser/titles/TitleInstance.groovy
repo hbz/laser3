@@ -166,51 +166,6 @@ class TitleInstance extends AbstractBaseWithCalculatedLastUpdated {
     result
   }
 
-  /**
-   * Attempt to look up a title instance which has any of the listed identifiers
-   * @param candidate_identifiers A list of maps containing identifiers and namespaces [ { namespace:'ISSN', value:'Xnnnn-nnnn' }, {namespace:'ISSN', value:'Xnnnn-nnnn'} ]
-   * @return a {@link List} of matches, empty if no results are found
-   */
-    @Deprecated
-  static def findByIdentifier(candidate_identifiers) {
-    List matched = []
-    candidate_identifiers.each { i ->
-      List<Identifier> identifiers = Identifier.executeQuery('select ident from Identifier ident where ident.ns = :namespace and ident.value = :value', [namespace:i.namespace, value:i.value])
-      if(identifiers.size() > 0) {
-        Identifier ident = identifiers.get(0)
-        if ( ( ident != null ) && ( ident.ti != null ) ) {
-          if (! matched.contains(ident.ti) ) {
-            matched.add(ident.ti)
-          }
-        }
-      }
-    }
-
-    // Didn't match anything - see if we can match based on identifier without namespace [In case of duff supplier data - or duff code like this legacy shit...]
-    if ( matched.size() == 0 ) {
-      candidate_identifiers.each { i ->
-        List<Identifier> id1 = Identifier.executeQuery('select ident from Identifier as ident where ident.value = :val', [val: i.value])
-        id1.each {
-          if ( it.ti != null ) {
-            if ( ! matched.contains(it.ti) ) {
-              matched.add(it.ti)
-            }
-          }
-        }
-      }
-    }
-
-    def result = null;
-    if ( matched.size() == 1 ) {
-      result = matched.get(0);
-    }
-    else if ( matched.size() > 1 ) {
-      throw new Exception("Identifier set ${candidate_identifiers} matched multiple titles");
-    }
-
-    result
-  }
-
     /**
      * Gets the first, the last and a list of {@link IssueEntitlement}s of the given institution
      * @param institution the {@link Org} whose entitlements should be retrieved
