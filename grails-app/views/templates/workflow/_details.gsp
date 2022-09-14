@@ -60,7 +60,7 @@
                             <g:if test="${contextService.getUser().hasAffiliation('INST_ADM') || SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")}"><!-- TODO: workflows-permissions -->
                                 <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code: 'workflow.edit.ext.perms')}">
                                     <g:link class="wfModalLink ui icon button blue compact la-modern-button" controller="ajaxHtml" action="editWfXModal" params="${[key: wfKey, info: wfKey]}">
-                                        <i class="icon cog"></i>
+                                        <i class="icon wrench"></i>
                                     </g:link>
                                 </span>
                             </g:if>
@@ -114,7 +114,7 @@
                                 <g:if test="${contextService.getUser().hasAffiliation('INST_ADM') || SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")}"><!-- TODO: workflows-permissions -->
                                     <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code: 'workflow.edit.ext.perms')}">
                                         <g:link class="wfModalLink ui icon button blue compact la-modern-button" controller="ajaxHtml" action="editWfXModal" params="${[key: tKey, info: wfKey]}">
-                                            <i class="icon cog"></i>
+                                            <i class="icon wrench"></i>
                                         </g:link>
                                     </span>
                                 </g:if>
@@ -161,7 +161,7 @@
                                         <g:set var="cKey" value="${wfInfo.target.class.name}:${wfInfo.target.id}:${WfCondition.KEY}:${task.condition.id}" />
                                         <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code: 'workflow.edit.ext.perms')}">
                                             <g:link class="wfModalLink ui icon button blue compact la-modern-button" controller="ajaxHtml" action="editWfXModal" params="${[key: cKey, info: wfKey]}">
-                                                <i class="icon cog"></i>
+                                                <i class="icon wrench"></i>
                                             </g:link>
                                         </span>
                                     </g:if>
@@ -214,7 +214,7 @@
                                         <g:if test="${contextService.getUser().hasAffiliation('INST_ADM') || SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")}"><!-- TODO: workflows-permissions -->
                                             <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code: 'workflow.edit.ext.perms')}">
                                                 <g:link class="wfModalLink ui icon button blue compact la-modern-button" controller="ajaxHtml" action="editWfXModal" params="${[key: tKey, info: wfKey]}">
-                                                    <i class="icon cog"></i>
+                                                    <i class="icon wrench"></i>
                                                 </g:link>
                                             </span>
                                         </g:if>
@@ -261,7 +261,7 @@
                                                 <g:set var="cKey" value="${wfInfo.target.class.name}:${wfInfo.target.id}:${WfCondition.KEY}:${child.condition.id}" />
                                                 <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code: 'workflow.edit.ext.perms')}">
                                                     <g:link class="wfModalLink ui icon button blue compact la-modern-button" controller="ajaxHtml" action="editWfXModal" params="${[key: cKey, info: wfKey]}">
-                                                        <i class="icon cog"></i>
+                                                        <i class="icon wrench"></i>
                                                     </g:link>
                                                 </span>
                                             </g:if>

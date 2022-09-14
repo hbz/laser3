@@ -180,7 +180,7 @@
 
     <g:elseif test="${prefix == WfTask.KEY}">
         <g:set var="prefixOverride" value="${WfTask.KEY}" />
-        <g:set var="wfInfo" value="${task.getWorkflow().getInfo()}" />
+        <g:set var="wfInfo" value="${task.getWorkflow()?.getInfo()}" />
 
         <div class="field">
 %{--            <p><strong>${task.title}</strong></p>--}%

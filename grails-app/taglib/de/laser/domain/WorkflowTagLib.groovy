@@ -101,7 +101,7 @@ class WorkflowTagLib {
 
         if (field && condition) {
             String pTitle = (condition.getProperty(field + '_title') ?: message(code:'workflow.field.noTitle.label'))
-            String posMark = '<div class="item positive"><i class="icon plus"></i> '
+            String posMark = '<div class="item positive"><i class="icon check"></i> '
             String negMark = '<div class="item negative"><i class="icon minus"></i> '
 
             if (field.startsWith('checkbox')) {

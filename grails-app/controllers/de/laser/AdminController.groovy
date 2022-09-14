@@ -80,7 +80,7 @@ class AdminController  {
                     dbmVersion : GlobalService.obtainStorageSqlConnection().firstRow('SELECT filename, id, dateexecuted from databasechangelog order by orderexecuted desc limit 1').collect { it.value }
                 ]
             ],
-            events      : SystemEvent.list([max: 10, sort: 'created', order: 'desc']),
+            events      : SystemEvent.list([max: 15, sort: 'created', order: 'desc']),
             docStore    : AppUtils.getDocumentStorageInfo()
         ]
 
