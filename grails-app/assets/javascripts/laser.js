@@ -12,6 +12,7 @@
 //= require modules/jstk.js
 //= require modules/verticalNavi.js
 //= require modules/responsiveTables.js
+//= require modules/setTextareaHeight.js
 //= require modules/system.js
 //= require spring-websocket.js
 
@@ -27,6 +28,7 @@ $(function () {
     a11yIcon.go();
     verticalNavi.go();
     responsiveTables.go();
+    setTextareaHeight.go();
     system.go();
 
     $('main.ui.main').removeClass('hidden');
