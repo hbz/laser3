@@ -1000,7 +1000,7 @@ class AjaxHtmlController {
         }
         else if (params.key in [WfWorkflowPrototype.KEY]) {
             result.tmpl = '/templates/workflow/forms/wfWorkflow'
-            result.tmplModalTitle = '<i class="icon task sc_darkgrey"></i> ' + result.tmplModalTitle
+            result.tmplModalTitle = '<i class="icon tasks sc_darkgrey"></i> ' + result.tmplModalTitle
 
             // not: * used as tp.next * used as tp.child
             result.dd_taskList = WfTaskPrototype.executeQuery(
@@ -1033,7 +1033,7 @@ class AjaxHtmlController {
         }
         else if (params.key in [WfConditionPrototype.KEY]) {
             result.tmpl = '/templates/workflow/forms/wfCondition'
-            result.tmplModalTitle = '<i class="icon key sc_darkgrey"></i> ' + result.tmplModalTitle
+            result.tmplModalTitle = '<i class="icon check double sc_darkgrey"></i> ' + result.tmplModalTitle
         }
         render template: '/templates/workflow/forms/modalWrapper', model: result
     }
@@ -1156,7 +1156,7 @@ class AjaxHtmlController {
             else if (result.prefix == WfWorkflow.KEY) {
                 result.workflow       = WfWorkflow.get( wfObjId )
                 result.tmpl           = '/templates/workflow/forms/wfWorkflow'
-                result.tmplModalTitle = '<i class="icon cog sc_darkgrey"></i> ' + result.tmplModalTitle
+                result.tmplModalTitle = '<i class="icon wrench sc_darkgrey"></i> ' + result.tmplModalTitle
                 //result.tmplModalTitle = result.tmplModalTitle + result.workflow.title
 
 //                if (result.workflow) {
@@ -1198,7 +1198,7 @@ class AjaxHtmlController {
             else if (result.prefix == WfTask.KEY) {
                 result.task           = WfTask.get( wfObjId )
                 result.tmpl           = '/templates/workflow/forms/wfTask'
-                result.tmplModalTitle = '<i class="icon cog sc_darkgrey"></i> ' + result.tmplModalTitle
+                result.tmplModalTitle = '<i class="icon wrench sc_darkgrey"></i> ' + result.tmplModalTitle
                 //result.tmplModalTitle = result.tmplModalTitle + result.task.title
 
                 if (result.task) {
@@ -1218,7 +1218,7 @@ class AjaxHtmlController {
             else if (result.prefix == WfConditionPrototype.KEY) {
                 result.condition      = WfConditionPrototype.get( wfObjId )
                 result.tmpl           = '/templates/workflow/forms/wfCondition'
-                result.tmplModalTitle = '<i class="icon key sc_darkgrey"></i> ' + result.tmplModalTitle
+                result.tmplModalTitle = '<i class="icon check double sc_darkgrey"></i> ' + result.tmplModalTitle
                 //result.tmplModalTitle = result.tmplModalTitle + result.condition.title
 
 //                if (result.condition) {
@@ -1228,7 +1228,7 @@ class AjaxHtmlController {
             else if (result.prefix == WfCondition.KEY) {
                 result.condition      = WfCondition.get( wfObjId )
                 result.tmpl           = '/templates/workflow/forms/wfCondition'
-                result.tmplModalTitle = '<i class="icon cog sc_darkgrey"></i> ' + result.tmplModalTitle
+                result.tmplModalTitle = '<i class="icon wrench sc_darkgrey"></i> ' + result.tmplModalTitle
                 //result.tmplModalTitle = result.tmplModalTitle + result.condition.title
 
 //                if (result.condition) {
