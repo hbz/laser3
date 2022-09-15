@@ -86,8 +86,8 @@
                                         <g:link controller="ajax" action="removeUserRole" params='${[user:"${user.class.name}:${user.id}",role:"${rl.role.class.name}:${rl.role.id}"]}'
                                                 class="ui icon negative button la-modern-button js-open-confirm-modal"
                                                 role="button"
-                                                data-confirm-tokenMsg="${message(code:'default.button.confirm.delete')}"
-                                                data-confirm-term-how="delete"
+                                                data-confirm-tokenMsg="${message(code:'confirm.dialog.unlink.user.role')}"
+                                                data-confirm-term-how="unlink"
                                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                             <i class="trash alternate outline icon"></i>
                                         </g:link>

@@ -1141,7 +1141,7 @@ class ExportClickMeService {
                     fields.providerIdentifiers.fields << ["providerIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
                 }
                 Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat order by plat.name').each { Platform plat ->
-                    fields.participantCustomerIdentifiers.fields << ["participantCustomerIdentifiers.${plat.id}":[field: null, label: plat.name]]
+                    fields.providerCustomerIdentifiers.fields << ["providerCustomerIdentifiers.${plat.id}":[field: null, label: plat.name]]
                 }
                 fields.providerProperties.fields.clear()
                 PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg()).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->

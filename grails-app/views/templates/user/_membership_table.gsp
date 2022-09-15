@@ -47,7 +47,10 @@
                         <td class="x">
                             <g:if test="${! instAdmService.isUserLastInstAdminForOrg(userInstance, aff.org)}">
                                     <g:link controller="ajax" action="deleteThrough" params='${[contextOid:"${userInstance.class.name}:${userInstance.id}",contextProperty:"affiliations",targetOid:"${aff.class.name}:${aff.id}"]}'
-                                            class="ui icon negative button la-modern-button">
+                                            class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                            data-confirm-tokenMsg="${message(code:'confirm.dialog.unlink.user.affiliation')}"
+                                            data-confirm-term-how="unlink"
+                                            aria-label="${message(code: 'ariaLabel.delete.universal')}">
                                         <i class="unlink icon"></i>
                                     </g:link>
                             </g:if>
