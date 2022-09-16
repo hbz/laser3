@@ -168,6 +168,27 @@ class DropdownTagLib {
         out << '<div class="divider"></div>'
     }
 
+    def sortingDropdown = { attrs, body ->
+        if (!attrs.containsKey('from')) {
+            throwTagError("Tag [ui:sortingDropdown] is missing required attribute [from]")
+        }
+        String cssClass     = attrs.class ?: ''
+        String noSelection  = attrs.noSelection ?: ''
+        out << '<select class="ui fluid search selection dropdown sorting' + cssClass + '">'
+        out <<     '<option class="default text">' + noSelection + '</option>'
+        attrs.from.eachWithIndex { sortKey, sortValue, i ->
+            String selectedAsc = attrs.sort == sortKey && attrs.order == 'asc' ? 'selected' : ''
+            String selectedDesc = attrs.sort == sortKey && attrs.order == 'desc' ? 'selected' : ''
+            out << '<option class="item" data-value="' + sortKey + '" data-order="asc" '+selectedAsc+'>'
+            out <<    sortValue + ' (aufsteigend)'
+            out << '</option>'
+            out << '<option class="item" data-value="' + sortKey + '" data-order="desc" '+selectedDesc+'>'
+            out <<    sortValue + ' (absteigend)'
+            out << '</option>'
+        }
+        out << '</select>'
+    }
+
     def dropdown = { attrs, body ->
         if (!attrs.name) {
             throwTagError("Tag [ui:dropdown] is missing required attribute [name]")
