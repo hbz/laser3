@@ -604,7 +604,7 @@ class WorkflowService {
                     ph = getNewParamsHelper( WfCondition.KEY, params )
 
                     WfCondition condition = task.condition
-                    List<String> cFields = condition.getFields()
+                    List<String> cFields = condition.getFields( WfConditionBase.FIELD_STRUCT_FORM )
                     boolean cChanged
 
                     for(int i=1; i<=4; i++) {

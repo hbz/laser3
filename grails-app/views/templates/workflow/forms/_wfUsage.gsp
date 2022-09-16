@@ -223,7 +223,7 @@
                         <p>${task.condition.description}</p>
                     </div>
 
-                    <g:each in="${task.condition.getFields()}" var="field" status="fi">
+                    <g:each in="${task.condition.getFields( WfConditionBase.FIELD_STRUCT_FORM )}" var="field" status="fi">
                         <g:if test="${fi == 0 || fi%2 == 0}">
                             <div class="field">
                                 <div class="fields two">
@@ -335,7 +335,7 @@
                             </div>
                         </g:elseif>
 
-                        <g:if test="${fi + 1 == task.condition.getFields().size() || fi%2 == 1}">
+                        <g:if test="${fi + 1 == task.condition.getFields( WfConditionBase.FIELD_STRUCT_FORM ).size() || fi%2 == 1}">
                                 </div>
                             </div>
                         </g:if>
