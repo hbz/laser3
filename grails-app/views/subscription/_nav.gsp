@@ -58,11 +58,9 @@
     <g:if test="${contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM', 'ORG_INST']}">
         <ui:subNavItem controller="subscription" action="reporting" params="${[id:params.id]}" message="myinst.reporting" />
     </g:if>
-    <sec:ifAnyGranted roles="ROLE_ADMIN"><!-- TODO: workflows-permissions -->
-        <g:if test="${contextService.getOrg().getCustomerType() in ['ORG_CONSORTIUM']}">
-            <ui:subNavItem controller="subscription" action="workflows" counts="${workflowCount}" params="${[id:params.id]}" message="workflow.plural" />
-        </g:if>
-    </sec:ifAnyGranted>
+    <g:if test="${workflowService.isAccessibleForCurrentUser()}"><!-- TODO: workflows-permissions -->
+        <ui:subNavItem controller="subscription" action="workflows" counts="${workflowCount}" params="${[id:params.id]}" message="workflow.plural" />
+    </g:if>
 
     <ui:securedSubNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="subscription" action="tasks" params="${[id:params.id]}" counts="${tasksCount}" message="task.plural" />
     <ui:securedSubNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="subscription" action="documents" params="${[id:params.id]}" message="default.documents.label" />

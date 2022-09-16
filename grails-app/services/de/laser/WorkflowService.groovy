@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.auth.User
 import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper
 import de.laser.utils.DateUtils
@@ -719,5 +720,41 @@ class WorkflowService {
         }
 
         result
+    }
+
+    boolean isAccessibleForCurrentUser() {
+        User user = contextService.getUser()
+        if (user.isAdmin() || user.isYoda()) {
+            return true
+        }
+        Org ctxOrg = contextService.getOrg()
+        if (ctxOrg.getCustomerType() in ['ORG_CONSORTIUM'] && user.hasAffiliationForForeignOrg('INST_USER', ctxOrg)) {
+            return true
+        }
+        false
+    }
+
+    boolean isEditableForCurrentUser() {
+        User user = contextService.getUser()
+        if (user.isAdmin() || user.isYoda()) {
+            return true
+        }
+        Org ctxOrg = contextService.getOrg()
+        if (ctxOrg.getCustomerType() in ['ORG_CONSORTIUM'] && user.hasAffiliationForForeignOrg('INST_ADM', ctxOrg)) {
+            return true
+        }
+        false
+    }
+
+    boolean isInstantiableForCurrentUser() {
+        User user = contextService.getUser()
+        if (user.isAdmin() || user.isYoda()) {
+            return true
+        }
+        Org ctxOrg = contextService.getOrg()
+        if (ctxOrg.getCustomerType() in ['ORG_CONSORTIUM'] && user.hasAffiliationForForeignOrg('INST_ADM', ctxOrg)) {
+            return true
+        }
+        false
     }
 }

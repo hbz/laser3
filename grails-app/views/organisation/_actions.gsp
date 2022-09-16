@@ -20,14 +20,12 @@
 
                 <div class="divider"></div>
 
-                <sec:ifAnyGranted roles="ROLE_ADMIN"><!-- TODO: workflows-permissions -->
-                    <g:if test="${contextCustomerType == "ORG_CONSORTIUM"}">
-                        <g:if test="${institutionalView || isProviderOrAgency}">
-                            <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalInstantiateWorkflow" />
-                            <div class="divider"></div>
-                        </g:if>
+                <g:if test="${workflowService.isInstantiableForCurrentUser()}"><!-- TODO: workflows-permissions -->
+                    <g:if test="${institutionalView || isProviderOrAgency}">
+                        <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalInstantiateWorkflow" />
+                        <div class="divider"></div>
                     </g:if>
-                </sec:ifAnyGranted>
+                </g:if>
 
                 <ui:actionsDropdownItem data-ui="modal" href="#propDefGroupBindings" message="menu.institutions.configure_prop_groups" />
                 <g:set var="createModal" value="${true}"/>
@@ -52,13 +50,11 @@
                 <ui:actionsDropdownItem controller="user" action="create" message="user.create_new.label" params="[org: orgInstance.id]" />
             </g:if>
             <g:if test="${actionName == 'workflows'}">
-                <sec:ifAnyGranted roles="ROLE_ADMIN"><!-- TODO: workflows-permissions -->
-                    <g:if test="${contextCustomerType == "ORG_CONSORTIUM"}">
-                        <g:if test="${institutionalView || isProviderOrAgency}">
-                            <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalInstantiateWorkflow" />
-                        </g:if>
+                <g:if test="${workflowService.isInstantiableForCurrentUser()}"><!-- TODO: workflows-permissions -->
+                    <g:if test="${institutionalView || isProviderOrAgency}">
+                        <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalInstantiateWorkflow" />
                     </g:if>
-                </sec:ifAnyGranted>
+                </g:if>
             </g:if>
             <g:if test="${actionName == 'readerNumber'}">
                 <ui:actionsDropdownItem data-ui="modal" href="#newForUni" message="readerNumber.createForUni.label" />
@@ -142,14 +138,12 @@
     </g:if>
 </g:if>
 
-<sec:ifAnyGranted roles="ROLE_ADMIN"><!-- TODO: workflows-permissions -->
-    <g:if test="${contextCustomerType == "ORG_CONSORTIUM"}">
-        <g:if test="${institutionalView}">
-            <laser:render template="/templates/workflow/instantiate" model="${[cmd: RDStore.WF_WORKFLOW_TARGET_TYPE_INSTITUTION, target: orgInstance]}"/>
-        </g:if>
-        <g:if test="${isProviderOrAgency}">
-            <laser:render template="/templates/workflow/instantiate" model="${[cmd: RDStore.WF_WORKFLOW_TARGET_TYPE_PROVIDER, target: orgInstance]}"/>
-        </g:if>
+<g:if test="${workflowService.isInstantiableForCurrentUser()}"><!-- TODO: workflows-permissions -->
+    <g:if test="${institutionalView}">
+        <laser:render template="/templates/workflow/instantiate" model="${[cmd: RDStore.WF_WORKFLOW_TARGET_TYPE_INSTITUTION, target: orgInstance]}"/>
     </g:if>
-</sec:ifAnyGranted>
+    <g:if test="${isProviderOrAgency}">
+        <laser:render template="/templates/workflow/instantiate" model="${[cmd: RDStore.WF_WORKFLOW_TARGET_TYPE_PROVIDER, target: orgInstance]}"/>
+    </g:if>
+</g:if>
 
