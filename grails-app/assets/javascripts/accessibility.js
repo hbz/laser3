@@ -27,4 +27,5 @@ $(function () {
     $('main.ui.main').removeClass('hidden');
     verticalNavi.go();
     responsiveTables.go();
+    setTextareaHeight.go();
 })
