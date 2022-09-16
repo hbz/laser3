@@ -127,7 +127,7 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
         if (intValue != null) { return intValue.toString() }
         if (decValue != null) { return decValue.toString() }
         if (refValue)         { return refValue.getI10n('value') }
-        if (dateValue)        { return dateValue.getDateString() }
+        if (dateValue)        { return DateUtils.getLocalizedSDF_noTime().format(dateValue) }
         if (urlValue)         { return urlValue.toString() }
     }
 
@@ -141,7 +141,7 @@ abstract class AbstractPropertyWithCalculatedLastUpdated
         if (intValue != null) { return intValue.toString() }
         if (decValue != null) { return decValue.toString() }
         if (refValue)         { return refValue.toString() }
-        if (dateValue)        { return dateValue.getDateString() }
+        if (dateValue)        { return DateUtils.getLocalizedSDF_noTime().format(dateValue) }
         if (urlValue)         { return urlValue.toString() }
     }
 

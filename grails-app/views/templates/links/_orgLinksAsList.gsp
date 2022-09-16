@@ -51,7 +51,7 @@
                             <span class="la-popup-tooltip la-delay" data-content="${message(code:'subscription.details.unlinkProviderAgency')}">
                                 <g:link class="ui negative icon button la-modern-button la-selectable-button js-open-confirm-modal" controller="ajax" action="delOrgRole" id="${role.id}"
                                     data-confirm-tokenMsg = "${message(code:'confirm.dialog.unlink.provider-agency.subscription')}"
-                                    data-confirm-how = "unlink"
+                                    data-confirm-term-how = "unlink"
                                     role="button"
                                     aria-label="${message(code:'ariaLabel.unlink.provider-agency.subscription')}">
                                     <i class="unlink icon"></i>

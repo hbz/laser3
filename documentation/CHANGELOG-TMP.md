@@ -7,6 +7,14 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4476    15.09.2022  dev     3.0         Andreas Bug         Sicherheitsabfrage beim Entknüpfen von Nutzerzugehörigkeiten eingebaut
+
+4475    15.09.2022  dev     3.0         Andreas Bug         Anbieterlisten waren nicht erreichbar
+
+4474    15.09.2022  dev     3.0         Andreas Bug         Export eines Vertrages scheiterte
+
+4473    15.09.2022  dev     3.0         Andreas Bug         Date.getDateString() migriert
+
 --      13.09.2022  dev     3.0         Andreas Bug         Tausendertrennzeichen wurde beim Finanzimport nicht korrekt verarbeitet
 
 4466    13.09.2022  dev     3.0         Andreas Feature     Wenn der Browsertab gewechselt wird, wird der Wert nicht mehr verändert
