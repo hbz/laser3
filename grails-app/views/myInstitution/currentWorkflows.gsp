@@ -187,14 +187,16 @@
                 <td class="x">
                     <g:link class="ui blue icon button la-modern-button" controller="${wfInfo.targetController}" action="workflows" id="${wfInfo.target.id}" params="${[info: '' + wfInfo.target.class.name + ':' + wfInfo.target.id + ':' + WfWorkflow.KEY + ':' + wf.id]}"><i class="icon edit"></i></g:link>
                     %{-- <button class="ui small icon button" onclick="alert('Editierfunktion für Einrichtungsadministratoren. Noch nicht implementiert.')"><i class="icon cogs"></i></button> --}%
-                    <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
-                            data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.workflow", args: [wf.title])}"
-                            data-confirm-term-how="delete"
-                            controller="myInstitution" action="currentWorkflows" params="${[cmd:"delete:${WfWorkflow.KEY}:${wf.id}"]}"
-                            role="button"
-                            aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                        <i class="trash alternate outline icon"></i>
-                    </g:link>
+                    <g:if test="${workflowService.isEditableForCurrentUser()}"><!-- TODO: workflows-permissions -->
+                        <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.workflow", args: [wf.title])}"
+                                data-confirm-term-how="delete"
+                                controller="myInstitution" action="currentWorkflows" params="${[cmd:"delete:${WfWorkflow.KEY}:${wf.id}"]}"
+                                role="button"
+                                aria-label="${message(code: 'ariaLabel.delete.universal')}">
+                            <i class="trash alternate outline icon"></i>
+                        </g:link>
+                    </g:if>
                 </td>
             </tr>
         </g:each>

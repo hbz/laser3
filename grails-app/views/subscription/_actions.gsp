@@ -78,12 +78,10 @@
         <ui:actionsDropdownItem message="template.addNote" data-ui="modal" href="#modalCreateNote" />
         <div class="divider"></div>
         <g:if test="${editable}">
-            <sec:ifAnyGranted roles="ROLE_ADMIN"><!-- TODO: workflows-permissions -->
-                <g:if test="${contextCustomerType == "ORG_CONSORTIUM"}">
-                    <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalInstantiateWorkflow" />
-                    <div class="divider"></div>
-                </g:if>
-            </sec:ifAnyGranted>
+            <g:if test="${workflowService.isInstantiableForCurrentUser()}"><!-- TODO: workflows-permissions -->
+                <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalInstantiateWorkflow" />
+                <div class="divider"></div>
+            </g:if>
         <g:if test="${(contextCustomerType == 'ORG_INST' && subscription._getCalculatedType() == Subscription.TYPE_LOCAL) || (contextCustomerType == "ORG_CONSORTIUM" && subscription._getCalculatedType() == Subscription.TYPE_CONSORTIAL)}">
                 <ui:actionsDropdownItem controller="subscription" action="copySubscription" params="${[sourceObjectId: genericOIDService.getOID(subscription), copyObject: true]}" message="myinst.copySubscription" />
             </g:if>
@@ -206,8 +204,6 @@
 <g:if test="${accessService.checkMinUserOrgRole(user,contextOrg,'INST_EDITOR')}">
     <laser:render template="/templates/notes/modal_create" model="${[ownobj: subscription, owntp: 'subscription']}"/>
 </g:if>
-<sec:ifAnyGranted roles="ROLE_ADMIN"><!-- TODO: workflows-permissions -->
-    <g:if test="${contextCustomerType == "ORG_CONSORTIUM"}">
-        <laser:render template="/templates/workflow/instantiate" model="${[cmd: RDStore.WF_WORKFLOW_TARGET_TYPE_SUBSCRIPTION, target: subscription]}"/>
-    </g:if>
-</sec:ifAnyGranted>
+<g:if test="${workflowService.isInstantiableForCurrentUser()}"><!-- TODO: workflows-permissions -->
+    <laser:render template="/templates/workflow/instantiate" model="${[cmd: RDStore.WF_WORKFLOW_TARGET_TYPE_SUBSCRIPTION, target: subscription]}"/>
+</g:if>

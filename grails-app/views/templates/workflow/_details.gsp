@@ -57,7 +57,7 @@
                         <div class="two wide column wf-centered">
 
                             <g:set var="wfKey" value="${wfInfo.target.class.name}:${wfInfo.target.id}:${WfWorkflow.KEY}:${wf.id}" />
-                            <g:if test="${contextService.getUser().hasAffiliation('INST_ADM') || SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")}"><!-- TODO: workflows-permissions -->
+                            <g:if test="${workflowService.isEditableForCurrentUser()}"><!-- TODO: workflows-permissions -->
                                 <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code: 'workflow.edit.ext.perms')}">
                                     <g:link class="wfModalLink ui icon button blue compact la-modern-button" controller="ajaxHtml" action="editWfXModal" params="${[key: wfKey, info: wfKey]}">
                                         <i class="icon wrench"></i>
@@ -111,7 +111,7 @@
                             <div class="two wide column wf-centered">
 
                                 <g:set var="tKey" value="${wfInfo.target.class.name}:${wfInfo.target.id}:${WfTask.KEY}:${task.id}" />
-                                <g:if test="${contextService.getUser().hasAffiliation('INST_ADM') || SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")}"><!-- TODO: workflows-permissions -->
+                                <g:if test="${workflowService.isEditableForCurrentUser()}"><!-- TODO: workflows-permissions -->
                                     <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code: 'workflow.edit.ext.perms')}">
                                         <g:link class="wfModalLink ui icon button blue compact la-modern-button" controller="ajaxHtml" action="editWfXModal" params="${[key: tKey, info: wfKey]}">
                                             <i class="icon wrench"></i>
@@ -142,7 +142,7 @@
                                         </g:if>
                                         <!-- -->
                                         <div class="ui list" style="margin-top:1em">
-                                            <g:each in="${task.condition.getFields()}" var="field" status="fi">
+                                            <g:each in="${task.condition.getFields( WfConditionBase.FIELD_STRUCT_TAGLIB )}" var="field" status="fi">
                                                 <uiWorkflow:taskConditionField condition="${task.condition}" field="${field}" isListItem="true"/>
                                             </g:each>
                                         </div>
@@ -157,7 +157,7 @@
                                 </div>
                                 <div class="two wide column wf-centered">
 
-                                    <g:if test="${contextService.getUser().hasAffiliation('INST_ADM') || SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")}"><!-- TODO: workflows-permissions -->
+                                    <g:if test="${workflowService.isEditableForCurrentUser()}"><!-- TODO: workflows-permissions -->
                                         <g:set var="cKey" value="${wfInfo.target.class.name}:${wfInfo.target.id}:${WfCondition.KEY}:${task.condition.id}" />
                                         <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code: 'workflow.edit.ext.perms')}">
                                             <g:link class="wfModalLink ui icon button blue compact la-modern-button" controller="ajaxHtml" action="editWfXModal" params="${[key: cKey, info: wfKey]}">
@@ -173,107 +173,107 @@
                     </div>
                 </div>
 
-                <g:if test="${task.child}">
-                    <g:each in="${task.child.getSequence()}" var="child" status="ci">
+%{--                <g:if test="${task.child}">--}%
+%{--                    <g:each in="${task.child.getSequence()}" var="child" status="ci">--}%
 
-                        <div class="ui segment" style="border-top:1px dashed rgba(34, 36, 38, 0.15)">
-                            <div class="ui grid">
-                                <div class="row">
-                                    <div class="two wide column wf-centered">
+%{--                        <div class="ui segment" style="border-top:1px dashed rgba(34, 36, 38, 0.15)">--}%
+%{--                            <div class="ui grid">--}%
+%{--                                <div class="row">--}%
+%{--                                    <div class="two wide column wf-centered">--}%
 
-                                        <i class="icon large ${WorkflowHelper.getCssIconAndColorByStatus(child.status)}"></i>
+%{--                                        <i class="icon large ${WorkflowHelper.getCssIconAndColorByStatus(child.status)}"></i>--}%
 
-                                    </div>
-                                    <div class="ten wide column">
+%{--                                    </div>--}%
+%{--                                    <div class="ten wide column">--}%
 
-                                        <div class="header">
-                                            <strong>${child.title}</strong>
-                                            <span class="sc_darkgrey">
-                                                ( <i class="icon ${WorkflowHelper.getCssIconByTaskPriority(child.priority)}"></i> ${child.priority.getI10n('value')} )
-                                            </span>
-                                        </div>
-                                        <div class="description">${child.description}
-                                            <g:if test="${child.comment}">
-                                                <div style="margin:1em 2em 0 2em; padding-left:1em; border-left:5px solid #E0E0E0">
-                                                    ${child.comment}
-                                                </div>
-                                            </g:if>
-                                        </div>
+%{--                                        <div class="header">--}%
+%{--                                            <strong>${child.title}</strong>--}%
+%{--                                            <span class="sc_darkgrey">--}%
+%{--                                                ( <i class="icon ${WorkflowHelper.getCssIconByTaskPriority(child.priority)}"></i> ${child.priority.getI10n('value')} )--}%
+%{--                                            </span>--}%
+%{--                                        </div>--}%
+%{--                                        <div class="description">${child.description}--}%
+%{--                                            <g:if test="${child.comment}">--}%
+%{--                                                <div style="margin:1em 2em 0 2em; padding-left:1em; border-left:5px solid #E0E0E0">--}%
+%{--                                                    ${child.comment}--}%
+%{--                                                </div>--}%
+%{--                                            </g:if>--}%
+%{--                                        </div>--}%
 
-                                    </div>
-                                    <div class="two wide column wf-centered">
+%{--                                    </div>--}%
+%{--                                    <div class="two wide column wf-centered">--}%
 
-                                        <div class="${DateUtils.isDateToday(child.lastUpdated) ? '' : 'sc_darkgrey'}" style="text-align: right">
-                                            ${DateUtils.getLocalizedSDF_noTime().format(child.lastUpdated)}
-                                        </div>
+%{--                                        <div class="${DateUtils.isDateToday(child.lastUpdated) ? '' : 'sc_darkgrey'}" style="text-align: right">--}%
+%{--                                            ${DateUtils.getLocalizedSDF_noTime().format(child.lastUpdated)}--}%
+%{--                                        </div>--}%
 
-                                    </div>
-                                    <div class="two wide column wf-centered">
+%{--                                    </div>--}%
+%{--                                    <div class="two wide column wf-centered">--}%
 
-                                        <g:set var="tKey" value="${wfInfo.target.class.name}:${wfInfo.target.id}:${WfTask.KEY}:${child.id}" />
-                                        <g:if test="${contextService.getUser().hasAffiliation('INST_ADM') || SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")}"><!-- TODO: workflows-permissions -->
-                                            <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code: 'workflow.edit.ext.perms')}">
-                                                <g:link class="wfModalLink ui icon button blue compact la-modern-button" controller="ajaxHtml" action="editWfXModal" params="${[key: tKey, info: wfKey]}">
-                                                    <i class="icon wrench"></i>
-                                                </g:link>
-                                            </span>
-                                        </g:if>
-                                        <g:link class="wfModalLink ui icon button blue compact la-modern-button" controller="ajaxHtml" action="useWfXModal" params="${[key: tKey, info: wfKey]}">
-                                            <i class="icon pencil"></i>
-                                        </g:link>
+%{--                                        <g:set var="tKey" value="${wfInfo.target.class.name}:${wfInfo.target.id}:${WfTask.KEY}:${child.id}" />--}%
+%{--                                        <g:if test="${workflowService.isEditableForCurrentUser()}"><!-- TODO: workflows-permissions -->--}%
+%{--                                            <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code: 'workflow.edit.ext.perms')}">--}%
+%{--                                                <g:link class="wfModalLink ui icon button blue compact la-modern-button" controller="ajaxHtml" action="editWfXModal" params="${[key: tKey, info: wfKey]}">--}%
+%{--                                                    <i class="icon wrench"></i>--}%
+%{--                                                </g:link>--}%
+%{--                                            </span>--}%
+%{--                                        </g:if>--}%
+%{--                                        <g:link class="wfModalLink ui icon button blue compact la-modern-button" controller="ajaxHtml" action="useWfXModal" params="${[key: tKey, info: wfKey]}">--}%
+%{--                                            <i class="icon pencil"></i>--}%
+%{--                                        </g:link>--}%
 
-                                    </div>
-                                </div>
+%{--                                    </div>--}%
+%{--                                </div>--}%
 
-                                <g:if test="${task.condition}">
-                                    <div class="row">
-                                        <div class="two wide column wf-centered">
+%{--                                <g:if test="${task.condition}">--}%
+%{--                                    <div class="row">--}%
+%{--                                        <div class="two wide column wf-centered">--}%
 
-                                        </div>
-                                        <div class="one wide column">
+%{--                                        </div>--}%
+%{--                                        <div class="one wide column">--}%
 
-                                        </div>
-                                        <div class="nine wide column">
+%{--                                        </div>--}%
+%{--                                        <div class="nine wide column">--}%
 
-                                            <div class="header"><strong>${child.condition.title}</strong></div>
-                                            <div class="description">
-                                                <g:if test="${child.condition.description}">
-                                                    ${child.condition.description}
-                                                </g:if>
-                                                <!-- -->
-                                                <div class="ui list" style="margin-top:1em">
-                                                    <g:each in="${child.condition.getFields()}" var="field" status="fi">
-                                                        <uiWorkflow:taskConditionField condition="${child.condition}" field="${field}" isListItem="true"/>
-                                                    </g:each>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="two wide column wf-centered">
+%{--                                            <div class="header"><strong>${child.condition.title}</strong></div>--}%
+%{--                                            <div class="description">--}%
+%{--                                                <g:if test="${child.condition.description}">--}%
+%{--                                                    ${child.condition.description}--}%
+%{--                                                </g:if>--}%
+%{--                                                <!-- -->--}%
+%{--                                                <div class="ui list" style="margin-top:1em">--}%
+%{--                                                    <g:each in="${child.condition.getFields( WfConditionBase.FIELD_STRUCT_TAGLIB )}" var="field" status="fi">--}%
+%{--                                                        <uiWorkflow:taskConditionField condition="${child.condition}" field="${field}" isListItem="true"/>--}%
+%{--                                                    </g:each>--}%
+%{--                                                </div>--}%
+%{--                                            </div>--}%
+%{--                                        </div>--}%
+%{--                                        <div class="two wide column wf-centered">--}%
 
-                                            <div class="${DateUtils.isDateToday(child.condition.lastUpdated) ? '' : 'sc_darkgrey'}" style="text-align: right">
-                                                ${DateUtils.getLocalizedSDF_noTime().format(child.condition.lastUpdated)}
-                                            </div>
+%{--                                            <div class="${DateUtils.isDateToday(child.condition.lastUpdated) ? '' : 'sc_darkgrey'}" style="text-align: right">--}%
+%{--                                                ${DateUtils.getLocalizedSDF_noTime().format(child.condition.lastUpdated)}--}%
+%{--                                            </div>--}%
 
-                                        </div>
-                                        <div class="two wide column wf-centered">
+%{--                                        </div>--}%
+%{--                                        <div class="two wide column wf-centered">--}%
 
-                                            <g:if test="${contextService.getUser().hasAffiliation('INST_ADM') || SpringSecurityUtils.ifAllGranted("ROLE_ADMIN")}"><!-- TODO: workflows-permissions -->
-                                                <g:set var="cKey" value="${wfInfo.target.class.name}:${wfInfo.target.id}:${WfCondition.KEY}:${child.condition.id}" />
-                                                <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code: 'workflow.edit.ext.perms')}">
-                                                    <g:link class="wfModalLink ui icon button blue compact la-modern-button" controller="ajaxHtml" action="editWfXModal" params="${[key: cKey, info: wfKey]}">
-                                                        <i class="icon wrench"></i>
-                                                    </g:link>
-                                                </span>
-                                            </g:if>
+%{--                                            <g:if test="${workflowService.isEditableForCurrentUser()}"><!-- TODO: workflows-permissions -->--}%
+%{--                                                <g:set var="cKey" value="${wfInfo.target.class.name}:${wfInfo.target.id}:${WfCondition.KEY}:${child.condition.id}" />--}%
+%{--                                                <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code: 'workflow.edit.ext.perms')}">--}%
+%{--                                                    <g:link class="wfModalLink ui icon button blue compact la-modern-button" controller="ajaxHtml" action="editWfXModal" params="${[key: cKey, info: wfKey]}">--}%
+%{--                                                        <i class="icon wrench"></i>--}%
+%{--                                                    </g:link>--}%
+%{--                                                </span>--}%
+%{--                                            </g:if>--}%
 
-                                        </div>
-                                    </div>
-                                </g:if>
+%{--                                        </div>--}%
+%{--                                    </div>--}%
+%{--                                </g:if>--}%
 
-                            </div>
-                        </div>
-                    </g:each>
-                </g:if>
+%{--                            </div>--}%
+%{--                        </div>--}%
+%{--                    </g:each>--}%
+%{--                </g:if>--}%
 
             </g:each>
 

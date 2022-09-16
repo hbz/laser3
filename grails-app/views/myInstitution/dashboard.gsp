@@ -95,14 +95,12 @@
             </a>
         </g:if>
 
-        <sec:ifAnyGranted roles="ROLE_ADMIN"><!-- TODO: workflows-permissions -->
-            <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
-                <a class="${us_dashboard_tab.value == 'Workflows' ? 'active item':'item'}" data-tab="workflows">
-                    <i class="tasks icon large"></i>
-                    ${currentWorkflowsCount} ${message(code:'workflow.plural')}
-                </a>
-            </g:if>
-        </sec:ifAnyGranted>
+        <g:if test="${workflowService.isAccessibleForCurrentUser()}"><!-- TODO: workflows-permissions -->
+            <a class="${us_dashboard_tab.value == 'Workflows' ? 'active item':'item'}" data-tab="workflows">
+                <i class="tasks icon large"></i>
+                ${currentWorkflowsCount} ${message(code:'workflow.plural')}
+            </a>
+        </g:if>
 
     </div><!-- secondary -->
         <div class="ui bottom attached tab ${us_dashboard_tab.value == 'Due Dates' ? 'active':''}" data-tab="duedates">
@@ -252,8 +250,7 @@
             </div>
         </div>
 
-        <sec:ifAnyGranted roles="ROLE_ADMIN"><!-- TODO: workflows-permissions -->
-        <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
+        <g:if test="${workflowService.isAccessibleForCurrentUser()}"><!-- TODO: workflows-permissions -->
             <div class="ui bottom attached tab ${us_dashboard_tab.value == 'Workflows' ? 'active':''}" data-tab="workflows">
                 <div>
                     <g:if test="${currentWorkflows.size() != currentWorkflowsCount}">
@@ -330,7 +327,6 @@
 
             <div id="wfModal" class="ui modal"></div>
         </g:if>
-        </sec:ifAnyGranted>
 
     <laser:script file="${this.getGroovyPageFileName()}">
 

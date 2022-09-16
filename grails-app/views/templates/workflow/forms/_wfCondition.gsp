@@ -41,17 +41,20 @@
 
     </g:if> --}%
 
-    <g:if test="${condition?.getFields()}">
+    <g:if test="${condition?.getFields( WfConditionBase.FIELD_STRUCT_FORM )}">
 
             <div class="ui top attached header" style="background-color: #f9fafb;">
                 Typabhängige Datenfelder - Definition / Vorschau
             </div>
             <div class="ui attached segment">
-                <g:each in="${condition.getFields()}" var="field">
+                <g:each in="${condition.getFields( WfConditionBase.FIELD_STRUCT_FORM )}" var="field" status="fi">
                     <g:if test="${field.startsWith('checkbox')}">
                         <div class="fields two" style="margin-bottom:0;">
                             <div class="field">
-                                <label for="${prefix}_${field}_title">Titel für ${condition.getFieldLabel(field)}</label>
+                                <label for="${prefix}_${field}_title">
+                                    Titel für ${condition.getFieldLabel(field)}
+                                    ${condition.getProperty(field + '_title') ? '' : ' #' + (1 + fi)}
+                                </label>
                                 <input type="text" name="${prefix}_${field}_title" id="${prefix}_${field}_title" value="${condition.getProperty(field + '_title')}" />
                             </div>
                             <div class="field">
@@ -60,7 +63,7 @@
                                     <input type="checkbox" name="${prefix}_${field}_isTrigger" id="${prefix}_${field}_isTrigger"
                                         <% if (condition?.getProperty(field + '_isTrigger')) { print 'checked="checked"' } %>
                                     />
-                                    <label>Soll den Aufgaben-Status auf 'Erledigt' setzen</label>
+                                    <label>Setzt den Aufgaben-Status auf 'Erledigt' (unidirektional)</label>
                                 </div>
                             </div>
                         </div>
@@ -68,7 +71,10 @@
                     <g:if test="${field.startsWith('date')}">
                         <div class="fields two" style="margin-bottom:0;">
                             <div class="field">
-                                <label for="${prefix}_${field}_title">Titel für ${condition.getFieldLabel(field)}</label>
+                                <label for="${prefix}_${field}_title">
+                                    Titel für ${condition.getFieldLabel(field)}
+                                    ${condition.getProperty(field + '_title') ? '' : ' #' + (1 + fi)}
+                                </label>
                                 <input type="text" name="${prefix}_${field}_title" id="${prefix}_${field}_title" value="${condition.getProperty(field + '_title')}" />
                             </div>
                             <div class="field">
@@ -78,7 +84,10 @@
                     <g:if test="${field.startsWith('file')}">
                         <div class="fields two" style="margin-bottom:0;">
                             <div class="field">
-                                <label for="${prefix}_${field}_title">Titel für ${condition.getFieldLabel(field)}</label>
+                                <label for="${prefix}_${field}_title">
+                                    Titel für ${condition.getFieldLabel(field)}
+                                    ${condition.getProperty(field + '_title') ? '' : ' #' + (1 + fi)}
+                                </label>
                                 <input type="text" name="${prefix}_${field}_title" id="${prefix}_${field}_title" value="${condition.getProperty(field + '_title')}" />
                             </div>
                             <div class="field">
@@ -88,7 +97,7 @@
                 </g:each>
             </div>
             <div class="ui bottom attached segment" style="background-color:#f9fafb;">
-                <g:each in="${condition.getFields()}" var="field" status="fi">
+                <g:each in="${condition.getFields( WfConditionBase.FIELD_STRUCT_FORM )}" var="field" status="fi">
                     <g:if test="${fi == 0 || fi%2 == 0}">
                         <div class="field">
                             <div class="fields two">
@@ -96,7 +105,7 @@
 
                     <g:if test="${field.startsWith('checkbox')}">
                         <div class="field">
-                            <label for="${prefix}_${field}">${condition.getProperty(field + '_title') ?: message(code:'workflow.field.noTitle.label')}</label>
+                            <label for="${prefix}_${field}">${condition.getProperty(field + '_title') ?: ' #' + (1 + fi)}</label>
                             <div class="ui checkbox">
                                 <input type="checkbox" name="${prefix}_${field}" id="${prefix}_${field}"
                                     <% print condition.getProperty(field) == true ? 'checked="checked"' : '' %>
@@ -109,7 +118,7 @@
                     </g:if>
                     <g:if test="${field.startsWith('date')}">
                         <div class="field">
-                            <label for="${prefix}_${field}">${condition.getProperty(field + '_title') ?: message(code:'workflow.field.noTitle.label')}</label>
+                            <label for="${prefix}_${field}">${condition.getProperty(field + '_title') ?: ' #' + (1 + fi)}</label>
                             <input type="date" name="${prefix}_${field}" id="${prefix}_${field}"
                                 <% print condition.getProperty(field) ? 'value="' + DateUtils.getSDF_yyyyMMdd().format(condition.getProperty(field)) + '"' : '' %>
                             />
@@ -117,7 +126,7 @@
                     </g:if>
                     <g:if test="${field.startsWith('file')}">
                         <div class="field">
-                            <label for="${prefix}_${field}">${condition.getProperty(field + '_title') ?: message(code:'workflow.field.noTitle.label')}</label>
+                            <label for="${prefix}_${field}">${condition.getProperty(field + '_title') ?: ' #'+ (1 + fi)}</label>
 
                             <g:set var="docctx" value="${condition.getProperty(field)}" />
                             <g:if test="${docctx}">
@@ -154,7 +163,7 @@
                         </div>
                     </g:if>
 
-                    <g:if test="${fi + 1 == condition.getFields().size() || fi%2 == 1}">
+                    <g:if test="${fi + 1 == condition.getFields( WfConditionBase.FIELD_STRUCT_FORM ).size() || fi%2 == 1}">
                             </div>
                         </div>
                     </g:if>

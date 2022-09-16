@@ -3,6 +3,7 @@ package de.laser.domain
 import de.laser.DocContext
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
+import de.laser.workflow.WfConditionBase
 import de.laser.workflow.WfWorkflow
 import de.laser.workflow.WorkflowHelper
 import de.laser.workflow.WfCondition
@@ -45,7 +46,7 @@ class WorkflowTagLib {
 
             if (cnd.type != 0) {
                 List<String> fields = []
-                cnd.getFields().each { f ->
+                cnd.getFields( WfConditionBase.FIELD_STRUCT_TAGLIB ).each { f ->
                     String fstr = (cnd.getProperty( f + '_title') ?: message(code:'workflow.field.noTitle.label'))
 
                     if (f.startsWith('checkbox')) {

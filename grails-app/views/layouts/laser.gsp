@@ -108,10 +108,10 @@
 
                                 <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
 
-                                    <sec:ifAnyGranted roles="ROLE_ADMIN"><!-- TODO: workflows-permissions -->
+                                    <g:if test="${workflowService.isAccessibleForCurrentUser()}"><!-- TODO: workflows-permissions -->
                                         <div class="divider"></div>
                                         <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentWorkflows" message="menu.my.workflows" />
-                                    </sec:ifAnyGranted>
+                                    </g:if>
 
                                     <div class="divider"></div>
                                     <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="survey" action="workflowsSurveysConsortia" message="menu.my.surveys" />

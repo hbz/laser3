@@ -28,6 +28,10 @@ abstract class WfConditionBase {
             '0_0_2'
     ]
 
+
+    public final static String FIELD_STRUCT_FORM    = 'FIELD_STRUCT_FORM'    // tmp layout workaround - will be removed
+    public final static String FIELD_STRUCT_TAGLIB  = 'FIELD_STRUCT_TAGLIB'  // tmp layout workaround - will be removed
+
     String type
 
     String title
@@ -75,24 +79,41 @@ abstract class WfConditionBase {
      * Returns the list of fields depending on the condition type
      * @return a {@link List} of fields to display
      */
-    List<String> getFields() {
+    List<String> getFields(String struct) {
         List<String> fields = []
         int[] types = type.split('_').collect{ Integer.parseInt(it)}
 
-        types.eachWithIndex{v, i ->
-            for(int j=1; j<=v; j++) {
-                if (i == 0) {
-                    fields.add('checkbox' + j)
-                }
-                else if (i == 1) {
-                    fields.add('date' + j)
-                }
-                else if (i == 2) {
-                    fields.add('file' + j)
+        if (struct == WfConditionBase.FIELD_STRUCT_FORM) {
+            types.eachWithIndex{v, i ->
+                for(int j=1; j<=v; j++) {
+                    if (i == 0) {
+                        fields.add('checkbox' + j)
+                    }
+                    else if (i == 1) {
+                        fields.add('date' + j)
+                    }
+                    else if (i == 2) {
+                        fields.add('file' + j)
+                    }
                 }
             }
         }
-        // println type + ' >> ' + fields
+        else if (struct == WfConditionBase.FIELD_STRUCT_TAGLIB) {
+            for (int i = 0; i < 4; i++) {
+                if (types[0] > i) {
+                    fields.add('checkbox' + (i + 1))
+                }
+                if (types[1] > i) {
+                    fields.add('date' + (i + 1))
+                }
+                if (types[2] > i) {
+                    fields.add('file' + (i + 1))
+                }
+            }
+        }
+        else {
+            println 'WfConditionBase.getFields( ' + struct + ' ) failed' // - will be removed
+        }
         fields
     }
 
