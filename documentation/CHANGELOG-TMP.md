@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4478    16.09.2022  dev     3.0         Andreas Feature     neue Taglib sortableDropdown eingeführt
+
 4476    15.09.2022  dev     3.0         Andreas Bug         Sicherheitsabfrage beim Entknüpfen von Nutzerzugehörigkeiten eingebaut
 
 4475    15.09.2022  dev     3.0         Andreas Bug         Anbieterlisten waren nicht erreichbar

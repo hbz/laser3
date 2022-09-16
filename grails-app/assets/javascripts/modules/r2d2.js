@@ -313,6 +313,22 @@ r2d2 = {
                 $("html").css("cursor", "wait");
             }
         }
+
+        $('.dropdown.sorting').on('change', function(e) {
+            //console.log($(this).find('option:contains("'+$(this).val()+'")').attr('data-value'));
+            let url = new URL(window.location.href)
+            let urlParams = new URLSearchParams(url.search)
+            if(urlParams.has('sort'))
+                urlParams.set('sort', $(this).find('option:contains("'+$(this).val()+'")').attr('data-value'));
+            else
+                urlParams.append('sort', $(this).find('option:contains("'+$(this).val()+'")').attr('data-value'));
+            if(urlParams.has('order'))
+                urlParams.set('order', $(this).find('option:contains("'+$(this).val()+'")').attr('data-order'));
+            else
+                urlParams.append('order', $(this).find('option:contains("'+$(this).val()+'")').attr('data-order'));
+            url.search = urlParams.toString()
+            window.location.href = url.toString()
+        });
     },
 
 

@@ -182,8 +182,23 @@
     <div class="row">
         <div class="column">
 
-            <div class="ui blue large label"><g:message code="title.plural"/>: <div class="detail">${num_ies_rows}</div>
+            <div class="ui blue large label">
+                <g:message code="title.plural"/>: <div class="detail">${num_ies_rows}</div>
             </div>
+            <%
+                Map<String, String> sortFieldMap = ['tipp.sortname': message(code: 'title.label')]
+                if(journalsOnly) {
+                    sortFieldMap['startDate'] = message(code: 'default.from')
+                    sortFieldMap['endDate'] = message(code: 'default.to')
+                }
+                else {
+                    sortFieldMap['tipp.dateFirstInPrint'] = message(code: 'tipp.dateFirstInPrint')
+                    sortFieldMap['tipp.dateFirstOnline'] = message(code: 'tipp.dateFirstOnline')
+                }
+                sortFieldMap['tipp.accessStartDate'] = message(code: 'default.from')
+                sortFieldMap['tipp.accessEndDate'] = message(code: 'default.to')
+            %>
+            <ui:sortingDropdown from="${sortFieldMap}" sort="${params.sort}" order="${params.order}"/>
 
             <g:form action="subscriptionBatchUpdate" params="${[id: subscription.id]}" class="ui form">
                 <g:set var="counter" value="${offset + 1}"/>
@@ -197,8 +212,9 @@
                     <tr>
                         <th></th>
                         <th>${message(code: 'sidewide.number')}</th>
-                        <g:sortableColumn class="eight wide" params="${params}" property="tipp.sortname"
-                                          title="${message(code: 'title.label')}"/>
+                        <%--<g:sortableColumn class="eight wide" params="${params}" property="tipp.sortname"
+                                          title=""/>--%>
+                        <th class="eight wide">${message(code: 'title.label')}</th>
                         <%-- legacy ??? <th class="one wide">${message(code: 'subscription.details.print-electronic')}</th>--%>
                         <th class="four wide">${message(code: 'default.date.label')}</th>
                         <th class="two wide">${message(code: 'subscription.details.access_dates')}</th>
@@ -211,28 +227,34 @@
                     <tr>
                         <th rowspan="2" colspan="3"></th>
                         <g:if test="${journalsOnly}">
-                            <g:sortableColumn class="la-smaller-table-head" params="${params}" property="startDate"
-                                              title="${message(code: 'default.from')}"/>
+                            <%--<g:sortableColumn class="la-smaller-table-head" params="${params}" property="startDate"
+                                              title=""/>--%>
+                            <th class="la-smaller-table-head">${message(code: 'default.from')}</th>
                         </g:if>
                         <g:else>
-                            <g:sortableColumn class="la-smaller-table-head" params="${params}" property="tipp.dateFirstInPrint"
-                                              title="${message(code: 'tipp.dateFirstInPrint')}"/>
+                            <%--<g:sortableColumn class="la-smaller-table-head" params="${params}" property="tipp.dateFirstInPrint"
+                                              title=""/>--%>
+                            <th class="la-smaller-table-head">${message(code: 'tipp.dateFirstInPrint')}</th>
                         </g:else>
-                        <g:sortableColumn class="la-smaller-table-head" params="${params}" property="tipp.accessStartDate"
-                                          title="${message(code: 'default.from')}"/>
+                        <%--<g:sortableColumn class="la-smaller-table-head" params="${params}" property="tipp.accessStartDate"
+                                          title=""/>--%>
+                        <th class="la-smaller-table-head">${message(code: 'default.from')}</th>
                         <th rowspan="2" colspan="2"></th>
                     </tr>
                     <tr>
                         <g:if test="${journalsOnly}">
-                            <g:sortableColumn class="la-smaller-table-head" params="${params}" property="endDate"
-                                              title="${message(code: 'default.to')}"/>
+                            <%--<g:sortableColumn class="la-smaller-table-head" params="${params}" property="endDate"
+                                              title=""/>--%>
+                            <th class="la-smaller-table-head">${message(code: 'default.to')}</th>
                         </g:if>
                         <g:else>
-                            <g:sortableColumn class="la-smaller-table-head" params="${params}" property="tipp.dateFirstOnline"
-                                              title="${message(code: 'tipp.dateFirstOnline')}"/>
+                            <%--<g:sortableColumn class="la-smaller-table-head" params="${params}" property="tipp.dateFirstOnline"
+                                              title=""/>--%>
+                            <th class="la-smaller-table-head">${message(code: 'tipp.dateFirstOnline')}</th>
                         </g:else>
-                        <g:sortableColumn class="la-smaller-table-head" params="${params}" property="tipp.accessEndDate"
-                                          title="${message(code: 'default.to')}"/>
+                        <%--<g:sortableColumn class="la-smaller-table-head" params="${params}" property="tipp.accessEndDate"
+                                          title=""/>--%>
+                        <th class="la-smaller-table-head">${message(code: 'default.to')}</th>
                     </tr>
                     <tr>
                         <g:if test="${editable}">
