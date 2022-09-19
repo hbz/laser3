@@ -109,15 +109,10 @@ class WfWorkflowPrototype extends WfWorkflowBase {
         ]
 
         List<WfTaskPrototype> sequence = []
-
-        getSequence().each{ task ->
+        getSequence().each { task ->
             sequence.add(task)
-            if (task.child) {
-                sequence.addAll( task.child.getSequence() )
-            }
         }
-
-        sequence.each{task ->
+        sequence.each {task ->
             // TODO
             if (task.lastUpdated > info.lastUpdated) { info.lastUpdated = task.lastUpdated }
             if (task.condition && task.condition.lastUpdated > info.lastUpdated) { info.lastUpdated = task.condition.lastUpdated }

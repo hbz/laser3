@@ -150,9 +150,6 @@ class WfWorkflow extends WfWorkflowBase {
 
         getSequence().each{ task ->
             sequence.add(task)
-            if (task.child) {
-                sequence.addAll( task.child.getSequence() )
-            }
         }
 
         sequence.each{task ->

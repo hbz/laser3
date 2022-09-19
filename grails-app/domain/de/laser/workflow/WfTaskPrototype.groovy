@@ -12,17 +12,13 @@ class WfTaskPrototype extends WfTaskBase {
     static final String KEY = 'WF_TASK_PROTOTYPE'
 
     WfConditionPrototype condition
-
-    WfTaskPrototype child
     WfTaskPrototype next
 
     static mapping = {
                  id column: 'wftp_id'
             version column: 'wftp_version'
            priority column: 'wftp_priority_rv_fk'
-               //type column: 'wftp_type_rv_fk'
           condition column: 'wftp_condition_fk'
-              child column: 'wftp_child_fk'
                next column: 'wftp_next_fk'
               title column: 'wftp_title'
         description column: 'wftp_description', type: 'text'
@@ -35,7 +31,6 @@ class WfTaskPrototype extends WfTaskBase {
         title       (blank: false)
         description (nullable: true)
         condition   (nullable: true)
-        child       (nullable: true)
         next        (nullable: true)
     }
 
@@ -44,7 +39,7 @@ class WfTaskPrototype extends WfTaskBase {
      * @return is there any association pointing to this prototype?
      */
     boolean inUse() {
-        return child != null || next != null || getWorkflow() || getParent() || getPrevious()
+        return next != null || getWorkflow() || getPrevious()
     }
 
     /**
@@ -56,7 +51,19 @@ class WfTaskPrototype extends WfTaskBase {
 
         WfTaskPrototype t = this
         while (t) {
-            sequence.add( t ); t = t.next
+            if (sequence.contains(t)) {
+                log.debug 'Invalid data: Circular relationship found! ' + t + ' @ ' + this
+
+                WfWorkflowPrototype.findAllByTask(this, [sort: 'id']).each {
+                    log.debug 'Changed state of ' + it + ' to ' + RDStore.WF_WORKFLOW_STATE_TEST
+                    it.state = RDStore.WF_WORKFLOW_STATE_TEST
+                    it.save()
+                }
+                throw new Exception('Invalid data: Circular relationship found! ' + t + ' @ ' + this)
+            }
+            else {
+                sequence.add( t ); t = t.next
+            }
         }
         sequence
     }
@@ -74,9 +81,6 @@ class WfTaskPrototype extends WfTaskBase {
                 priority:    this.priority,
                 status:      RDStore.WF_TASK_STATUS_OPEN
         )
-        if (this.child) {
-            task.child = this.child.instantiate()
-        }
         if (this.next) {
             task.next = this.next.instantiate()
         }
@@ -99,19 +103,6 @@ class WfTaskPrototype extends WfTaskBase {
 
         if (result.size() > 1) {
             log.debug('Multiple matches for WfTaskPrototype.getWorkflow() ' + this.id + ' -> ' + result.collect{ it.id })
-        }
-        return result ? result.first() : null
-    }
-
-    /**
-     * Returns the parent prototype of this task prototype
-     * @return the prototype of which this is a child (the parent prototype), the first match if there are multiple matches (ordered by id)
-     */
-    WfTaskPrototype getParent() {
-        List<WfTaskPrototype> result = WfTaskPrototype.findAllByChild(this, [sort: 'id'])
-
-        if (result.size() > 1) {
-            log.debug('Multiple matches for WfTaskPrototype.getParent() ' + this.id + ' -> ' + result.collect{ it.id })
         }
         return result ? result.first() : null
     }

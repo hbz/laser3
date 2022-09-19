@@ -329,7 +329,6 @@ class WorkflowService {
             task.description    = ph.getString('description')
             task.priority       = RefdataValue.get(ph.getLong('priority'))
             task.condition      = WfConditionPrototype.get(ph.getLong('condition'))
-            task.child          = WfTaskPrototype.get(ph.getLong('child'))
             task.next           = WfTaskPrototype.get(ph.getLong('next'))
 
         }
@@ -343,7 +342,6 @@ class WorkflowService {
             task.status         = RefdataValue.get(ph.getLong('status'))
 
             // task.condition      = WfCondition.get(ph.getLong('condition'))
-            // task.child          = WfTask.get(ph.getLong('child'))
             // task.next           = WfTask.get(ph.getLong('next'))
             // task.prototype      = WfTaskPrototype.get(ph.getLong('prototype'))
         }

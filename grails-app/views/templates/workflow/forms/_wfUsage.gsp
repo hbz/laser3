@@ -98,58 +98,6 @@
                             --}%
                         </div>
                     </g:if>
-
-                    <g:if test="${task.child}">
-                        <g:each in="${task.child.getSequence()}" var="child" status="ci">
-                            <g:if test="${child.status == RDStore.WF_TASK_STATUS_OPEN}">
-                                <% openTasksCount++ %>
-                                <div class="row">
-                                    <div class="one wide column wf-centered">
-                                        <span class="sc_darkgrey">
-                                            <i class="icon ${WorkflowHelper.getCssIconByTaskPriority(child.priority)}"></i>
-                                        </span>
-                                    </div>
-                                    <div class="fifteen wide column">
-                                        <div class="content">
-                                            <div class="header">
-                                                <strong>${child.title}</strong>
-                                            </div>
-                                            <div class="description" style="margin:1em 0 0 0">
-                                                ${child.description}
-                                            </div>
-                                            <g:if test="${child.comment}">
-                                                <div style="margin: 1em 1em 0 1em; padding-left: 1em; border-left: 5px solid #E0E0E0; font-style: italic;">
-                                                    ${child.comment}
-                                                </div>
-                                            </g:if>
-                                        </div>
-                                    </div>
-                                    %{--
-                                    <div class="eight wide column">
-                                        <g:if test="${child.condition}">
-
-                                            <div class="content">
-                                                <div class="header">
-                                                    <strong>${child.condition.title}</strong>
-                                                </div>
-                                                <div class="description">
-                                                    ${child.condition.description} <br />
-                                                    <!-- -->
-                                                    <g:each in="${child.condition.getFields()}" var="field" status="fi">
-                                                        <br />
-                                                        <uiWorkflow:taskConditionField condition="${child.condition}" field="${field}" />
-                                                    </g:each>
-                                                    <!-- -->
-                                                </div>
-                                            </div>
-
-                                        </g:if>
-                                    </div>
-                                    --}%
-                                </div>
-                            </g:if>
-                        </g:each>
-                    </g:if>
                 </g:each>
 
                 <g:if test="${openTasksCount == 0}">

@@ -2651,15 +2651,6 @@ join sub.orgRelations or_sub where
                     if (t.priority == priority) {
                         match = true
                     }
-                    else {
-                        if (t.child) {
-                            t.child.getSequence().each { c ->
-                                if (c.priority == priority) {
-                                    match = true
-                                }
-                            }
-                        }
-                    }
                 }
                 if (match) {
                     matches.add(wf)

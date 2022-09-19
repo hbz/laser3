@@ -26,8 +26,6 @@ class WfTask extends WfTaskBase {
     RefdataValue status
 
     WfCondition condition
-
-    WfTask child
     WfTask next
 
     String comment
@@ -39,12 +37,10 @@ class WfTask extends WfTaskBase {
             version column: 'wft_version'
            priority column: 'wft_priority_rv_fk'
              status column: 'wft_status_rv_fk'
-               //type column: 'wft_type_rv_fk'
               title column: 'wft_title'
         description column: 'wft_description', type: 'text'
             comment column: 'wft_comment', type: 'text'
           condition column: 'wft_condition_fk'
-              child column: 'wft_child_fk'
                next column: 'wft_next_fk'
 
         dateCreated column: 'wft_date_created'
@@ -55,7 +51,6 @@ class WfTask extends WfTaskBase {
         title       (blank: false)
         description (nullable: true)
         condition   (nullable: true)
-        child       (nullable: true)
         next        (nullable: true)
         comment     (nullable: true)
     }
@@ -79,9 +74,6 @@ class WfTask extends WfTaskBase {
      * @throws Exception
      */
     void remove() throws Exception {
-        if (this.child) {
-            this.child.remove()
-        }
         if (this.next) {
             this.next.remove()
         }
@@ -104,19 +96,6 @@ class WfTask extends WfTaskBase {
 
         if (result.size() > 1) {
             log.debug('Multiple matches for WfTask.getWorkflow() ' + this.id + ' -> ' + result.collect{ it.id })
-        }
-        return result ? result.first() : null
-    }
-
-    /**
-     * Retrieves the parent task of this task
-     * @return the task of which this is a child (the parent task)
-     */
-    WfTask getParent() {
-        List<WfTask> result = WfTask.findAllByChild(this, [sort: 'id'])
-
-        if (result.size() > 1) {
-            log.debug('Multiple matches for WfTask.getParent() ' + this.id + ' -> ' + result.collect{ it.id })
         }
         return result ? result.first() : null
     }
