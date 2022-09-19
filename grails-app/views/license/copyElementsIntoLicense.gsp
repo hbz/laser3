@@ -52,7 +52,7 @@ if (targetObjectId) params << [targetObjectId: genericOIDService.getOID(targetOb
             <div class="description">
                 <i class="file outline icon"></i>${message(code: 'default.documents.label')}
                 <i class="sticky note outline icon"></i>${message(code: 'default.notes.label')}
-                <i class="checked calendar icon"></i>${message(code: 'menu.institutions.tasks')}
+                <i class="calendar check outline icon"></i>${message(code: 'menu.institutions.tasks')}
             </div>
         </div>
     </ui:complexSubNavItem>

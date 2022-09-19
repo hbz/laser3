@@ -63,7 +63,7 @@
     %>
     <div class="ui secondary stackable pointing tabular la-tab-with-js menu">
         <a class="${us_dashboard_tab.value == 'Due Dates' ? 'active item':'item'}" data-tab="duedates">
-            <i class="checked alarm end icon large"></i>
+            <i class="bell icon large"></i>
             ${dueDatesCount} ${message(code:'myinst.dash.due_dates.label')}
         </a>
 
@@ -90,7 +90,7 @@
 
         <g:if test="${accessService.checkPerm('ORG_INST,ORG_CONSORTIUM')}">
             <a class="${us_dashboard_tab.value == 'Tasks' ? 'active item':'item'}" data-tab="tasks">
-                <i class="checked calendar icon large"></i>
+                <i class="calendar check outline icon large"></i>
                 ${tasksCount} ${message(code:'myinst.dash.task.label')}
             </a>
         </g:if>
@@ -224,7 +224,7 @@
                                 </g:each>
                             </g:if>
                             <g:else>
-                                <i class="checked calendar icon"></i>
+                                <i class="calendar check outline icon"></i>
                                 ${message(code: 'task.general')}
                             </g:else>
                         </div>

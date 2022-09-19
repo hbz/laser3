@@ -46,7 +46,7 @@ class WorkflowTagLib {
 
             if (cnd.type != 0) {
                 List<String> fields = []
-                cnd.getFields( WfConditionBase.FIELD_STRUCT_TAGLIB ).each { f ->
+                cnd.getFields().each { f ->
                     String fstr = (cnd.getProperty( f + '_title') ?: message(code:'workflow.field.noTitle.label'))
 
                     if (f.startsWith('checkbox')) {

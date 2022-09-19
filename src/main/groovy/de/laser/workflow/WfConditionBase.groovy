@@ -11,26 +11,24 @@ import grails.gorm.dirty.checking.DirtyCheck
 @DirtyCheck
 abstract class WfConditionBase {
 
-    public static final String[] TYPES = [
-            '1_0_0',
-            '2_0_0',
-            '3_0_0',
-            '4_0_0',
-            '1_1_0',
-            '2_2_0',
-            '3_3_0',
-            '4_4_0',
-            '1_0_1',
-            '2_0_2',
-            '1_1_1', // Checkboxes_Dates_Files
-            '2_2_2',
-            '0_0_1',
-            '0_0_2'
+    // fields: checkboxes_dates_files
+
+    public static final List[] TYPES = [
+            ['1_0_0', 1, 'down'],
+            ['2_0_0', 1, 'down'],
+            ['3_0_0', 2, 'down'],
+            ['4_0_0', 2, 'down'],
+            ['1_1_0', 1, 'down'],
+            ['2_2_0', 2, 'down'],
+            ['3_3_0', 2, 'down'],
+            ['4_4_0', 2, 'down'],
+            ['1_0_1', 1, 'down'],
+            ['2_0_2', 2, 'down'],
+            ['1_1_1', 1, 'down'],
+            ['2_2_2', 2, 'down'],
+            ['0_0_1', 1, 'down'],
+            ['0_0_2', 2, 'down']
     ]
-
-
-    public final static String FIELD_STRUCT_FORM    = 'FIELD_STRUCT_FORM'    // tmp layout workaround - will be removed
-    public final static String FIELD_STRUCT_TAGLIB  = 'FIELD_STRUCT_TAGLIB'  // tmp layout workaround - will be removed
 
     String type
 
@@ -79,42 +77,47 @@ abstract class WfConditionBase {
      * Returns the list of fields depending on the condition type
      * @return a {@link List} of fields to display
      */
-    List<String> getFields(String struct) {
+    List<String> getFields(String layout = '') {
         List<String> fields = []
         int[] types = type.split('_').collect{ Integer.parseInt(it)}
 
-        if (struct == WfConditionBase.FIELD_STRUCT_FORM) {
-            types.eachWithIndex{v, i ->
-                for(int j=1; j<=v; j++) {
-                    if (i == 0) {
-                        fields.add('checkbox' + j)
+        for (int i = 0; i < 4; i++) {
+            if (types[0] > i) {
+                fields.add('checkbox' + (i + 1))
+            }
+            if (types[1] > i) {
+                fields.add('date' + (i + 1))
+            }
+            if (types[2] > i) {
+                fields.add('file' + (i + 1))
+            }
+        }
+
+        if (layout == 'table') {
+            if (getUIFieldColumns() == 2) {
+                if (getUIFieldOrder() == 'down') {
+                    int s = Math.round( fields.size() / 2 )
+                    List<String> reordered = []
+
+                    for(int i=0; i<s; i++) {
+                        reordered.add(fields[i])
+                        if (fields[i + s]) {
+                            reordered.add(fields[i + s])
+                        }
                     }
-                    else if (i == 1) {
-                        fields.add('date' + j)
-                    }
-                    else if (i == 2) {
-                        fields.add('file' + j)
-                    }
+                    fields = reordered
                 }
             }
         }
-        else if (struct == WfConditionBase.FIELD_STRUCT_TAGLIB) {
-            for (int i = 0; i < 4; i++) {
-                if (types[0] > i) {
-                    fields.add('checkbox' + (i + 1))
-                }
-                if (types[1] > i) {
-                    fields.add('date' + (i + 1))
-                }
-                if (types[2] > i) {
-                    fields.add('file' + (i + 1))
-                }
-            }
-        }
-        else {
-            println 'WfConditionBase.getFields( ' + struct + ' ) failed' // - will be removed
-        }
+
         fields
+    }
+
+    int getUIFieldColumns() {
+        TYPES.find{ it[0] == type }[1]
+    }
+    String getUIFieldOrder() {
+        TYPES.find{ it[0] == type }[2]
     }
 
     /**

@@ -142,7 +142,7 @@
                                         </g:if>
                                         <!-- -->
                                         <div class="ui list" style="margin-top:1em">
-                                            <g:each in="${task.condition.getFields( WfConditionBase.FIELD_STRUCT_TAGLIB )}" var="field" status="fi">
+                                            <g:each in="${task.condition.getFields()}" var="field" status="fi">
                                                 <uiWorkflow:taskConditionField condition="${task.condition}" field="${field}" isListItem="true"/>
                                             </g:each>
                                         </div>
