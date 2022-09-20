@@ -218,6 +218,11 @@
                         <g:else>
                             <i class="icon minus circle red"></i>
                         </g:else>
+                        <g:if test="${wfp.hasCircularReferences()}">
+                            <span data-position="top center" class="la-popup-tooltip la-delay" data-content="${message(code:'workflow.error.circularReferences')}">
+                                <i class="icon exclamation triangle orange"></i>
+                            </span>
+                        </g:if>
                     </td>
                     <td class="x">
                         <g:if test="${! wfp.inUse()}">
@@ -433,6 +438,11 @@
             <g:else>
                 <i class="icon minus circle red"></i>
             </g:else>
+            <g:if test="${wfwp.hasCircularReferences()}">
+                <span data-position="top center" class="la-popup-tooltip la-delay" data-content="${message(code:'workflow.error.circularReferences')}">
+                    <i class="icon exclamation triangle orange"></i>
+                </span>
+            </g:if>
             <strong>${wfwp.title}</strong>
             <span class="sc_grey" style="padding-left:0.5em;">
                 (<g:formatDate date="${wfwp.getInfo().lastUpdated}" format="${message(code:'default.date.format.notime')}"/>)

@@ -41,33 +41,7 @@ class WfTaskPrototype extends WfTaskBase {
     boolean inUse() {
         return next != null || getWorkflow() || getPrevious()
     }
-
-    /**
-     * Gets a sequence of prototypes, starting from the current object
-     * @return a {@link List} of {@link WfTaskPrototype}
-     */
-    List<WfTaskPrototype> getSequence() {
-        List<WfTaskPrototype> sequence = []
-
-        WfTaskPrototype t = this
-        while (t) {
-            if (sequence.contains(t)) {
-                log.debug 'Invalid data: Circular relationship found! ' + t + ' @ ' + this
-
-                WfWorkflowPrototype.findAllByTask(this, [sort: 'id']).each {
-                    log.debug 'Changed state of ' + it + ' to ' + RDStore.WF_WORKFLOW_STATE_TEST
-                    it.state = RDStore.WF_WORKFLOW_STATE_TEST
-                    it.save()
-                }
-                throw new Exception('Invalid data: Circular relationship found! ' + t + ' @ ' + this)
-            }
-            else {
-                sequence.add( t ); t = t.next
-            }
-        }
-        sequence
-    }
-
+    
     /**
      * Instantiates a new {@link WfTask} based on this prototype. If there are linked objects to this prototype, the linked objects will be instantiated as well
      * @return the complete task object

@@ -329,8 +329,23 @@ class WorkflowService {
             task.description    = ph.getString('description')
             task.priority       = RefdataValue.get(ph.getLong('priority'))
             task.condition      = WfConditionPrototype.get(ph.getLong('condition'))
-            task.next           = WfTaskPrototype.get(ph.getLong('next'))
 
+            // TODO - check for circular references
+
+            WfTaskPrototype tNext = WfTaskPrototype.get(ph.getLong('next'))
+            boolean circularReference= false
+            while (tNext) {
+                if (tNext.id == task.id) {
+                    circularReference = true; break
+                }
+                tNext = tNext.next
+            }
+            if (!circularReference) {
+                task.next = WfTaskPrototype.get(ph.getLong('next'))
+            }
+            else {
+                return [ task: task, cmd: cmd[0], key: cmd[1], status: OP_STATUS_ERROR ]
+            }
         }
         else if (cmd[1] == WfTask.KEY) {
             task = task as WfTask

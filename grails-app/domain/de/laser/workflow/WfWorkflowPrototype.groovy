@@ -67,7 +67,39 @@ class WfWorkflowPrototype extends WfWorkflowBase {
      * @return a {@link List} of {@link WfTaskPrototype}s, ordered in intellectualy set order (defined by {@link WfTaskPrototype#next})
      */
     List<WfTaskPrototype> getSequence() {
-        task ? task.getSequence() : []
+        List<WfTaskPrototype> sequence = []
+
+        if (task) {
+            if (hasCircularReferences()) {
+                return sequence
+            }
+            WfTaskPrototype t = task
+
+            while (t) {
+                sequence.add( t ); t = t.next
+            }
+        }
+        sequence
+    }
+
+    boolean hasCircularReferences() {
+        List<WfTaskPrototype> sequence = []
+        boolean hasCircularReferences = false
+
+        if (task) {
+            WfTaskPrototype t = task
+
+            while (t && !hasCircularReferences) {
+                if (sequence.contains(t)) {
+                    log.debug 'Invalid data: Circular reference found! ' + t + ' @ ' + task
+                    hasCircularReferences = true
+                }
+                else {
+                    sequence.add( t ); t = t.next
+                }
+            }
+        }
+        hasCircularReferences
     }
 
     /**

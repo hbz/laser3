@@ -56,20 +56,6 @@ class WfTask extends WfTaskBase {
     }
 
     /**
-     * Gets the sequence of tasks, beginning from the current one
-     * @return a {@link List} of tasks, ordered by sequence
-     */
-    List<WfTask> getSequence() {
-        List<WfTask> sequence = []
-
-        WfTask t = this
-        while (t) {
-            sequence.add( t ); t = t.next
-        }
-        sequence
-    }
-
-    /**
      * Removes this task and the associated objects to it
      * @throws Exception
      */

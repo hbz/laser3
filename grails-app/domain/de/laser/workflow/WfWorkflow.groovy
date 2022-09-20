@@ -84,7 +84,16 @@ class WfWorkflow extends WfWorkflowBase {
      * @return the {@link List} of {@link WfTask}s in this workflow
      */
     List<WfTask> getSequence() {
-        task ? task.getSequence() : []
+        List<WfTask> sequence = []
+
+        if (task) {
+            WfTask t = task
+
+            while (t) {
+                sequence.add( t ); t = t.next
+            }
+        }
+        sequence
     }
 
     /**
