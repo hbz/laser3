@@ -3,7 +3,17 @@
 *******************************/
 
 
-@backgroundColor: #d3dae3;
+
+@backgroundColor: @blue;
+@textColor: @white;
+
+@hoverBackgroundColor: #00375f;
+@activeBackgroundColor: #00375f;
+@focusBackgroundColor: #00375f;
+
+@hoverColor: @primaryHoverTextColor;
+@activeColor: @primaryHoverTextColor;
+@focusColor: @primaryHoverTextColor;
 
 
 @la-verticalGroupOffset: 1rem 0.8rem;

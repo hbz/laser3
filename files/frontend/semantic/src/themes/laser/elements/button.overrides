@@ -187,3 +187,13 @@
     color: @white;
   }
 }
+
+
+.ui.la-menue-button.button.la-modern-button {
+  color: #00000099;
+  background-color: transparent;
+  &:hover {
+    background-color: #00000099;
+    color: @white;
+  }
+}
