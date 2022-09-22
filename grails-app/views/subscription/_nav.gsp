@@ -39,9 +39,7 @@
             if(!subscribedPlatforms) {
                 subscribedPlatforms = Platform.executeQuery("select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription or ie.subscription = (select s.instanceOf from Subscription s where s = :subscription)", [subscription: subscription])
             }
-            Set<String> reportingInstitutions = [institution.globalUID]
-            reportingInstitutions.addAll(Subscription.executeQuery('select oo.org.globalUID from OrgRole oo join oo.sub s where s.instanceOf = :subscription and oo.roleType in (:roleTypes)', [subscription: subscription, roleTypes: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]]))
-            boolean statsAvailable = subscriptionService.areStatsAvailable(subscribedPlatforms, subscription.packages, reportingInstitutions, [startDate: subscription.startDate, endDate: subscription.endDate])
+            boolean statsAvailable = subscriptionService.areStatsAvailable(subscribedPlatforms)
         %>
         <g:if test="${statsAvailable}">
             <ui:subNavItem controller="subscription" action="stats" params="${[id:params.id]}" message="default.stats.label" />

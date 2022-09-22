@@ -132,9 +132,9 @@
                         </td>
                         <sec:ifAllGranted roles="ROLE_YODA">
                             <td>
-                                <g:link class="ui button" controller="yoda" action="retriggerPendingChanges"
+                                <g:link class="ui button" controller="yoda" action="reloadPackage"
                                         params="${[packageUUID: record.uuid]}"><g:message
-                                        code="menu.yoda.retriggerPendingChanges"/></g:link>
+                                        code="menu.yoda.reloadPackage"/></g:link>
                             </td>
                         </sec:ifAllGranted>
                     </tr>

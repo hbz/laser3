@@ -40,9 +40,9 @@ class Language implements CalculatedLastUpdated, Comparable {
     static mapping = {
         id                    column: 'lang_id'
         version               column: 'lang_version'
-        language              column: 'lang_rv_fk'
-        tipp                  column: 'lang_tipp_fk'
-        pkg                   column: 'lang_pkg_fk'
+        language              column: 'lang_rv_fk', index: 'lang_rv_idx, lang_tipp_rv_idx'
+        tipp                  column: 'lang_tipp_fk', index: 'lang_tipp_idx, lang_tipp_rv_idx'
+        pkg                   column: 'lang_pkg_fk', index: 'lang_pkg_idx'
         dateCreated           column: 'lang_date_created'
         lastUpdated           column: 'lang_last_updated'
         lastUpdatedCascading  column: 'lang_last_updated_cascading'
