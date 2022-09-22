@@ -107,7 +107,7 @@ dependencies {
 }
 
 bootRun {
-    jvmArgs('-Dspring.output.ansi.enabled=always','-Xms1G','-Xmx8G')
+    jvmArgs('-Dspring.output.ansi.enabled=always')
     addResources = true
     String springProfilesActive = 'spring.profiles.active'
     systemProperty springProfilesActive, System.getProperty(springProfilesActive)
