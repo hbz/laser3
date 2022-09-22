@@ -43,9 +43,9 @@ class DeweyDecimalClassification implements CalculatedLastUpdated, Comparable{
     static mapping = {
         id                    column: 'ddc_id'
         version               column: 'ddc_version'
-        ddc                   column: 'ddc_rv_fk'
-        tipp                  column: 'ddc_tipp_fk'
-        pkg                   column: 'ddc_pkg_fk'
+        ddc                   column: 'ddc_rv_fk', index: 'ddc_rv_idx, ddc_tipp_rv_idx'
+        tipp                  column: 'ddc_tipp_fk', index: 'ddc_tipp_idx, ddc_tipp_rv_idx'
+        pkg                   column: 'ddc_pkg_fk', index: 'ddc_pkg_idx'
         dateCreated           column: 'ddc_date_created'
         lastUpdated           column: 'ddc_last_updated'
         lastUpdatedCascading  column: 'ddc_last_updated_cascading'
