@@ -1,4 +1,4 @@
-<%@ page import="de.laser.helper.RDStore; org.springframework.context.i18n.LocaleContextHolder; de.laser.Subscription; de.laser.SubscriptionPackage; de.laser.IssueEntitlement; de.laser.stats.Counter4ApiSource; de.laser.stats.Counter4Report; de.laser.stats.Counter5Report" %>
+<%@ page import="de.laser.helper.RDStore; org.springframework.context.i18n.LocaleContextHolder; de.laser.Subscription; de.laser.SubscriptionPackage; de.laser.IssueEntitlement; de.laser.stats.Counter4ApiSource; de.laser.stats.Counter4Report; de.laser.stats.Counter5Report; de.laser.interfaces.CalculatedType"%>
 <laser:serviceInjection />
 <%-- r:require module="annotations" / --%>
 <g:set var="subjects" value="${controlledListService.getAllPossibleSubjectsBySub(subscription)}"/>
@@ -47,7 +47,7 @@
                 ${wekbServerUnavailable}
             </div>
         </g:if>
-        <g:else>
+        <g:elseif test="${subscription._getCalculatedType() in [CalculatedType.TYPE_LOCAL, CalculatedType.TYPE_PARTICIPATION]}">
             <aside class="ui segment la-metabox accordion">
                 <div class="title">
                     <g:message code="default.usage.platformMetadataHeader"/><i class="dropdown icon la-dropdown-accordion"></i>
@@ -62,26 +62,29 @@
                 </div>
             </aside>
             <div class="la-metabox-spacer"></div>
-        </g:else>
+        </g:elseif>
         <g:if test="${showConsortiaFunctions && !subscription.instanceOf}">
-            <div class="ui segment">
-                <table class="ui celled table">
-                    <tr>
-                        <th><g:message code="default.usage.consortiaTableHeader"/></th>
-                    </tr>
-                    <g:each in="${Subscription.executeQuery('select new map(sub.id as memberSubId, org.sortname as memberName, org.id as memberId) from OrgRole oo join oo.org org join oo.sub sub where sub.instanceOf = :parent and oo.roleType in (:subscrRoles) and exists (select sp.id from SubscriptionPackage sp where sp.subscription = sub) order by org.sortname asc', [parent: subscription, subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])}" var="row">
+            <g:each in="${platformInstanceRecords.values()}" var="platformInstanceRecord">
+                <div class="ui segment">
+                    <g:render template="/templates/platformStatsDetails" model="[platformInstanceRecord: platformInstanceRecord]"/>
+                </div>
+            </g:each>
+            <g:if test="${platformInstanceRecords.values().statisticsFormat.contains('COUNTER')}">
+                <div class="ui segment">
+                    <table class="ui celled table">
                         <tr>
-                            <td>
-                                <g:link action="stats" id="${row.memberSubId}">${row.memberName}
-                                    <g:if test="${subscriptionService.areStatsAvailable(subscribedPlatforms, subscription.packages.collect { SubscriptionPackage sp -> sp.pkg.id }, [row.memberId])}">
-                                        <span class="la-popup-tooltip la-delay" data-content="${message(code: 'default.usage.statsAvailable')}"><i class="chart bar outline icon"></i></span>
-                                    </g:if>
-                                </g:link>
-                            </td>
+                            <th><g:message code="default.usage.consortiaTableHeader"/></th>
                         </tr>
-                    </g:each>
-                </table>
-            </div>
+                        <g:each in="${Subscription.executeQuery('select new map(sub.id as memberSubId, org.sortname as memberName, org.id as memberId) from OrgRole oo join oo.org org join oo.sub sub where sub.instanceOf = :parent and oo.roleType in (:subscrRoles) and exists (select sp.id from SubscriptionPackage sp where sp.subscription = sub) order by org.sortname asc', [parent: subscription, subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN]])}" var="row">
+                            <tr>
+                                <td>
+                                    <g:link action="stats" id="${row.memberSubId}">${row.memberName}</g:link>
+                                </td>
+                            </tr>
+                        </g:each>
+                    </table>
+                </div>
+            </g:if>
         </g:if>
         <g:else>
             <g:render template="/templates/filter/javascript"/>
