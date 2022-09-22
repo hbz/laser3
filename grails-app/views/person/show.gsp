@@ -269,7 +269,7 @@
                                                         <i class="ui icon balance scale la-list-icon"></i>
                                                     </span>
                                                 </g:if>
-                                                <g:if test="${link.title}">
+                                                <g:if test="${link.tipp}">
                                                     <span class="la-popup-tooltip la-delay" data-content="${message(code:'title.label')}" data-position="top right" data-variation="tiny">
                                                         <i class="ui icon book la-list-icon"></i>
                                                     </span>
@@ -291,7 +291,7 @@
                                                     <g:if test="${link.lic}">
                                                         <g:link controller="license" action="show" id="${link.lic.id}">${link.lic}</g:link>
                                                     </g:if>
-                                                    <g:if test="${link.title}">
+                                                    <g:if test="${link.tipp}">
                                                         <g:link controller="title" action="show" id="${link.title.id}">${link.title.title}</g:link>
                                                     </g:if>
                                                 </div>

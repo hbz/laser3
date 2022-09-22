@@ -14,6 +14,7 @@ import de.laser.interfaces.CalculatedType
 import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
+import de.laser.remote.ApiSource
 import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5Report
 import de.laser.storage.RDConstants
@@ -48,6 +49,7 @@ class SubscriptionService {
     PropertyService propertyService
     RefdataService refdataService
     SubscriptionsQueryService subscriptionsQueryService
+    GokbService gokbService
 
     /**
      * ex MyInstitutionController.currentSubscriptions()
@@ -1788,35 +1790,22 @@ class SubscriptionService {
                 [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE])
     }
 
-    boolean areStatsAvailable(Collection<Platform> subscribedPlatforms, Collection<SubscriptionPackage> refPkgs, Collection<String> reportInstitutions, Map dateConfig) {
-        //withTransaction necessary because of different dataSource, cf. https://github.com/grails/grails-core/issues/10383
-        Set<String> titleKeysInPackage = TitleInstancePackagePlatform.executeQuery('select tipp.globalUID from TitleInstancePackagePlatform tipp where tipp.pkg in (select sp.pkg from SubscriptionPackage sp where sp.pkg.id in (:refPkgs)) and tipp.status != :removed', [removed: RDStore.TIPP_STATUS_REMOVED, refPkgs: refPkgs.collect { SubscriptionPackage sp -> sp.pkg.id }])
-        int result = 0
-        Map<String, Object> checkParams = [plat: subscribedPlatforms.collect { Platform plat -> plat.globalUID }]
-        String dateFilter, startFilter, endFilter
-        if(dateConfig.startDate != null) {
-            startFilter = " and r.reportFrom >= :startDate"
-            checkParams.startDate = dateConfig.startDate
-        }
-        else {
-            startFilter = ""
-        }
-        if(dateConfig.endDate != null) {
-            endFilter = " and r.reportTo <= :endDate"
-            checkParams.endDate = dateConfig.endDate
-        }
-        else {
-            endFilter = ""
-        }
-        dateFilter = startFilter + endFilter
-        Counter4Report.withTransaction {
-            for(int i = 0; (i < reportInstitutions.size() && result == 0); i++) {
-                result = Counter4Report.executeQuery('select count(r.id) from Counter4Report r where r.platformUID in (:plat) and r.reportInstitutionUID = :reportInstitution'+dateFilter, checkParams+[reportInstitution: reportInstitutions[i]])[0]
-                if(result == 0)
-                    result = Counter5Report.executeQuery('select count(r.id) from Counter5Report r where r.platformUID in (:plat) and r.reportInstitutionUID = :reportInstitution'+dateFilter, checkParams+[reportInstitution: reportInstitutions[i]])[0]
+    boolean areStatsAvailable(Collection<Platform> subscribedPlatforms) {
+        ApiSource wekbSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        boolean result = false
+        subscribedPlatforms.each { Platform platformInstance ->
+            if(!result) {
+                Map queryResult = gokbService.queryElasticsearch(wekbSource.baseUrl + wekbSource.fixToken + "/find?uuid=${platformInstance.gokbId}")
+                if (queryResult.warning) {
+                    List records = queryResult.warning.records
+                    if(records) {
+                        if(records[0].statisticsFormat != null)
+                            result = true
+                    }
+                }
             }
         }
-        result > 0
+        result
     }
 
     /**

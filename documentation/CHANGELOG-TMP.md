@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      21.09.2022  rc-2.3  2.3.8       Andreas Bug         Fehler bei Titelsynchronisation behoben
+
+4490    21.09.2022  rc-2.3  2.3.8       Andreas Bug         500er bei Lizenzaufruf behoben, Statistiküberprüfung umgebaut
+
+4488    21.09.2022  rc-2.3  2.3.8       Andreas Feature     neuer Referenzwert Video für Medientyp aufgenommen
+
 4478    16.09.2022  dev     3.0         Andreas Feature     neue Taglib sortableDropdown eingeführt
 
 4476    15.09.2022  dev     3.0         Andreas Bug         Sicherheitsabfrage beim Entknüpfen von Nutzerzugehörigkeiten eingebaut
