@@ -2042,7 +2042,7 @@ class SurveyController {
 
                 if (result.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT) {
 
-                    result.previousSubscription = result.subscription._getCalculatedSuccessorForSurvey()
+                    result.previousSubscription = result.subscription._getCalculatedPreviousForSurvey()
 
                     /*result.previousIesListPriceSum = 0
                    if(result.previousSubscription){
@@ -3876,7 +3876,7 @@ class SurveyController {
             newMap.sortname = org.sortname
             newMap.name = org.name
             newMap.newSub = sub
-            newMap.oldSub = sub._getCalculatedSuccessorForSurvey()
+            newMap.oldSub = sub._getCalculatedPreviousForSurvey()
 
             newMap.surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(result.surveyConfig, org)
             newMap.surveyCostItem =newMap.surveyOrg ? CostItem.findBySurveyOrgAndCostItemStatusNotEqual(newMap.surveyOrg,RDStore.COST_ITEM_DELETED) : null
@@ -4114,7 +4114,7 @@ class SurveyController {
                 newMap.sortname = org.sortname
                 newMap.name = org.name
                 newMap.newSub = sub
-                newMap.oldSub = result.surveyConfig.subSurveyUseForTransfer ? sub._getCalculatedSuccessorForSurvey() : result.parentSubscription.getDerivedSubscriptionBySubscribers(org)
+                newMap.oldSub = result.surveyConfig.subSurveyUseForTransfer ? sub._getCalculatedPreviousForSurvey() : result.parentSubscription.getDerivedSubscriptionBySubscribers(org)
 
                 //println("new: ${newMap.newSub}, old: ${newMap.oldSub}")
 
@@ -4222,7 +4222,7 @@ class SurveyController {
                     if (Long.parseLong(subID) in result.parentSuccessorSubChilds.id) {
                         Subscription sub = Subscription.get(Long.parseLong(subID))
                         Org org = sub.getSubscriber()
-                        Subscription oldSub = sub._getCalculatedSuccessorForSurvey()
+                        Subscription oldSub = sub._getCalculatedPreviousForSurvey()
 
                         AbstractPropertyWithCalculatedLastUpdated copyProperty
                         if (params.tab == 'surveyProperties') {

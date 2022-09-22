@@ -569,19 +569,6 @@ class YodaController {
     }
 
     /**
-     * Is one of the dangerous methods: retriggers the change processing on title level and hands eventual differences
-     * to the local holdings; if necessary, pending changes are being generated
-     * @see PendingChange
-     */
-    @Secured(['ROLE_YODA'])
-    def retriggerPendingChanges() {
-        log.debug("match IssueEntitlements to TIPPs ...")
-        flash.message = "Pakete werden nachgehalten ..."
-        statusUpdateService.retriggerPendingChanges(params.packageUUID)
-        redirect controller: 'home', action: 'index'
-    }
-
-    /**
      * Another one of the dangerous calls: creates missing titles for packages where auto-accept has been
      * configured for new titles. Concerned are only those packages where the setting for new titles is set to "accept"
      */
@@ -835,6 +822,25 @@ class YodaController {
         else {
             log.debug("process running, lock is set!")
         }
+        redirect controller: 'package'
+    }
+
+    /**
+     * Is one of the dangerous methods: retriggers the change processing on title level and hands eventual differences
+     * to the local holdings; if necessary, pending changes are being generated
+     * @see PendingChange
+     */
+    @Secured(['ROLE_YODA'])
+    def reloadPackage() {
+        if(!globalSourceSyncService.running) {
+            log.debug("match IssueEntitlements to TIPPs ...")
+            globalSourceSyncService.doSingleSync(params.packageUUID)
+        }
+        else {
+            log.debug("process running, lock is set!")
+        }
+        flash.message = "Pakete werden nachgehalten ..."
+
         redirect controller: 'package'
     }
 

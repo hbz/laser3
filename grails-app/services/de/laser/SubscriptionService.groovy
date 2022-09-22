@@ -47,6 +47,7 @@ class SubscriptionService {
     LinksGenerationService linksGenerationService
     ComparisonService comparisonService
     PackageService packageService
+    GokbService gokbService
 
     /**
      * ex MyInstitutionController.currentSubscriptions()
@@ -125,11 +126,10 @@ class SubscriptionService {
         result.filterSet = tmpQ[2]
         List<Subscription> subscriptions
         pu.setBenchmark('fetch subscription data')
+        subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] ) //,[max: result.max, offset: result.offset]
+        //candidate for ugliest bugfix ever ...
         if(params.sort == "providerAgency") {
-            subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] ).collect{ row -> row[0] }
-        }
-        else {
-            subscriptions = Subscription.executeQuery( "select s " + tmpQ[0], tmpQ[1] ) //,[max: result.max, offset: result.offset]
+            subscriptions = Subscription.executeQuery("select oo.sub from OrgRole oo join oo.org providerAgency where oo.sub.id in (:subscriptions) and oo.roleType in (:providerAgency) order by providerAgency.name "+params.order, [subscriptions: subscriptions.id, providerAgency: [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]])
         }
         result.allSubscriptions = subscriptions
         if(!params.exportXLS)
@@ -1794,17 +1794,22 @@ class SubscriptionService {
                 [CalculatedType.TYPE_CONSORTIAL, CalculatedType.TYPE_ADMINISTRATIVE])
     }
 
-    boolean areStatsAvailable(Collection<Platform> subscribedPlatforms, Collection<Long> refPkgs, Collection<Long> reportInstitutions) {
-        Map<String, Object> checkParams = [plat: subscribedPlatforms, reportInstitutions: reportInstitutions]
-        //repeating of 0 checks necessary because of query plan - join result in sequence scans at large datasets (Postgres does not seek indices when > 10% of data is being retrieved)
-        int result = Counter4Report.executeQuery('select count(c4r.id) from Counter4Report c4r join c4r.title tipp where c4r.platform in (:plat) and tipp.pkg.id in (:refPkgs) and c4r.reportInstitution.id in (:reportInstitutions)', checkParams+[refPkgs: refPkgs])[0]
-        if(result == 0)
-            result = Counter4Report.executeQuery('select count(c4r.id) from Counter4Report c4r where c4r.platform in (:plat) and c4r.reportType = :reportType and c4r.reportInstitution.id in (:reportInstitutions)', checkParams+[reportType: Counter4ApiSource.PLATFORM_REPORT_1])[0]
-        if(result == 0)
-            result = Counter5Report.executeQuery('select count(c5r.id) from Counter5Report c5r join c5r.title tipp where c5r.platform in (:plat) and tipp.pkg.id in (:refPkgs) and c5r.reportInstitution.id in (:reportInstitutions)', checkParams+[refPkgs: refPkgs])[0]
-        if(result == 0)
-            result = Counter5Report.executeQuery('select count(c5r.id) from Counter5Report c5r where c5r.platform in (:plat) and lower(c5r.reportType) in (:reportTypes) and c5r.reportInstitution.id in (:reportInstitutions)', checkParams + [reportTypes: [Counter5ApiSource.PLATFORM_USAGE, Counter5ApiSource.PLATFORM_MASTER_REPORT]])[0]
-        result > 0
+    boolean areStatsAvailable(Collection<Platform> subscribedPlatforms) {
+        ApiSource wekbSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        boolean result = false
+        subscribedPlatforms.each { Platform platformInstance ->
+            if(!result) {
+                Map queryResult = gokbService.queryElasticsearch(wekbSource.baseUrl + wekbSource.fixToken + "/find?uuid=${platformInstance.gokbId}")
+                if (queryResult.warning) {
+                    List records = queryResult.warning.records
+                    if(records) {
+                        if(records[0].statisticsFormat != null)
+                            result = true
+                    }
+                }
+            }
+        }
+        result
     }
 
     /**
