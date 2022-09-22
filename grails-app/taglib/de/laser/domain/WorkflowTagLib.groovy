@@ -3,6 +3,7 @@ package de.laser.domain
 import de.laser.DocContext
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
+import de.laser.workflow.WfConditionBase
 import de.laser.workflow.WfWorkflow
 import de.laser.workflow.WorkflowHelper
 import de.laser.workflow.WfCondition

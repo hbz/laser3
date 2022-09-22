@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.auth.User
 import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper
 import de.laser.utils.DateUtils
@@ -328,9 +329,23 @@ class WorkflowService {
             task.description    = ph.getString('description')
             task.priority       = RefdataValue.get(ph.getLong('priority'))
             task.condition      = WfConditionPrototype.get(ph.getLong('condition'))
-            task.child          = WfTaskPrototype.get(ph.getLong('child'))
-            task.next           = WfTaskPrototype.get(ph.getLong('next'))
 
+            // TODO - check for circular references
+
+            WfTaskPrototype tNext = WfTaskPrototype.get(ph.getLong('next'))
+            boolean circularReference= false
+            while (tNext) {
+                if (tNext.id == task.id) {
+                    circularReference = true; break
+                }
+                tNext = tNext.next
+            }
+            if (!circularReference) {
+                task.next = WfTaskPrototype.get(ph.getLong('next'))
+            }
+            else {
+                return [ task: task, cmd: cmd[0], key: cmd[1], status: OP_STATUS_ERROR ]
+            }
         }
         else if (cmd[1] == WfTask.KEY) {
             task = task as WfTask
@@ -342,7 +357,6 @@ class WorkflowService {
             task.status         = RefdataValue.get(ph.getLong('status'))
 
             // task.condition      = WfCondition.get(ph.getLong('condition'))
-            // task.child          = WfTask.get(ph.getLong('child'))
             // task.next           = WfTask.get(ph.getLong('next'))
             // task.prototype      = WfTaskPrototype.get(ph.getLong('prototype'))
         }
@@ -719,5 +733,41 @@ class WorkflowService {
         }
 
         result
+    }
+
+    boolean isAccessibleForCurrentUser() {
+        User user = contextService.getUser()
+        if (user.isAdmin() || user.isYoda()) {
+            return true
+        }
+        Org ctxOrg = contextService.getOrg()
+        if (ctxOrg.getCustomerType() in ['ORG_CONSORTIUM'] && user.hasAffiliationForForeignOrg('INST_USER', ctxOrg)) {
+            return true
+        }
+        false
+    }
+
+    boolean isEditableForCurrentUser() {
+        User user = contextService.getUser()
+        if (user.isAdmin() || user.isYoda()) {
+            return true
+        }
+        Org ctxOrg = contextService.getOrg()
+        if (ctxOrg.getCustomerType() in ['ORG_CONSORTIUM'] && user.hasAffiliationForForeignOrg('INST_ADM', ctxOrg)) {
+            return true
+        }
+        false
+    }
+
+    boolean isInstantiableForCurrentUser() {
+        User user = contextService.getUser()
+        if (user.isAdmin() || user.isYoda()) {
+            return true
+        }
+        Org ctxOrg = contextService.getOrg()
+        if (ctxOrg.getCustomerType() in ['ORG_CONSORTIUM'] && user.hasAffiliationForForeignOrg('INST_ADM', ctxOrg)) {
+            return true
+        }
+        false
     }
 }

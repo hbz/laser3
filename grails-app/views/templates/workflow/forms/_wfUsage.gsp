@@ -54,12 +54,12 @@
                     <g:if test="${task.status == RDStore.WF_TASK_STATUS_OPEN}">
                         <% openTasksCount++ %>
                         <div class="row">
-                            <div class="one wide column wf-centered">
+                            <div class="one wide column wf-centered" style="margin:0">
                                 <span class="sc_darkgrey">
                                     <i class="icon ${WorkflowHelper.getCssIconByTaskPriority(task.priority)}"></i>
                                 </span>
                             </div>
-                            <div class="fifteen wide column">
+                            <div class="fifteen wide column" style="margin:0">
                                 <div class="content">
                                     <div class="header">
                                         <strong>${task.title}</strong>
@@ -97,58 +97,6 @@
                             </div>
                             --}%
                         </div>
-                    </g:if>
-
-                    <g:if test="${task.child}">
-                        <g:each in="${task.child.getSequence()}" var="child" status="ci">
-                            <g:if test="${child.status == RDStore.WF_TASK_STATUS_OPEN}">
-                                <% openTasksCount++ %>
-                                <div class="row">
-                                    <div class="one wide column wf-centered">
-                                        <span class="sc_darkgrey">
-                                            <i class="icon ${WorkflowHelper.getCssIconByTaskPriority(child.priority)}"></i>
-                                        </span>
-                                    </div>
-                                    <div class="fifteen wide column">
-                                        <div class="content">
-                                            <div class="header">
-                                                <strong>${child.title}</strong>
-                                            </div>
-                                            <div class="description" style="margin:1em 0 0 0">
-                                                ${child.description}
-                                            </div>
-                                            <g:if test="${child.comment}">
-                                                <div style="margin: 1em 1em 0 1em; padding-left: 1em; border-left: 5px solid #E0E0E0; font-style: italic;">
-                                                    ${child.comment}
-                                                </div>
-                                            </g:if>
-                                        </div>
-                                    </div>
-                                    %{--
-                                    <div class="eight wide column">
-                                        <g:if test="${child.condition}">
-
-                                            <div class="content">
-                                                <div class="header">
-                                                    <strong>${child.condition.title}</strong>
-                                                </div>
-                                                <div class="description">
-                                                    ${child.condition.description} <br />
-                                                    <!-- -->
-                                                    <g:each in="${child.condition.getFields()}" var="field" status="fi">
-                                                        <br />
-                                                        <uiWorkflow:taskConditionField condition="${child.condition}" field="${field}" />
-                                                    </g:each>
-                                                    <!-- -->
-                                                </div>
-                                            </div>
-
-                                        </g:if>
-                                    </div>
-                                    --}%
-                                </div>
-                            </g:if>
-                        </g:each>
                     </g:if>
                 </g:each>
 
@@ -223,10 +171,12 @@
                         <p>${task.condition.description}</p>
                     </div>
 
-                    <g:each in="${task.condition.getFields()}" var="field" status="fi">
+                    <g:each in="${task.condition.getFields('table')}" var="field" status="fi">
                         <g:if test="${fi == 0 || fi%2 == 0}">
                             <div class="field">
+                            <g:if test="${task.condition.getUIFieldColumns() == 2}">
                                 <div class="fields two">
+                            </g:if>
                         </g:if>
 
                         <g:if test="${field.startsWith('checkbox')}">
@@ -237,7 +187,7 @@
                                         <% print task.condition.getProperty(field) == true ? 'checked="checked"' : '' %>
                                     />
                                     <g:if test="${task.condition.getProperty(field + '_isTrigger')}">
-                                        <label><sup>*</sup>erledigt die Aufgabe</label>
+                                        <label><sup>*</sup>ändert den Aufgaben-Status</label>
                                     </g:if>
                                 </div>
                             </div>
@@ -245,9 +195,12 @@
                         <g:elseif test="${field.startsWith('date')}">
                             <div class="field">
                                 <label for="${prefixOverride}_${field}">${task.condition.getProperty(field + '_title') ?: message(code:'workflow.field.noTitle.label')}</label>
-                                <input type="date" name="${prefixOverride}_${field}" id="${prefixOverride}_${field}"
-                                    <% print task.condition.getProperty(field) ? 'value="' + DateUtils.getSDF_yyyyMMdd().format(task.condition.getProperty(field)) + '"' : '' %>
-                                />
+%{--                                <input type="date" name="${prefixOverride}_${field}" id="${prefixOverride}_${field}"--}%
+%{--                                    <% print task.condition.getProperty(field) ? 'value="' + DateUtils.getSDF_yyyyMMdd().format(task.condition.getProperty(field)) + '"' : '' %>--}%
+%{--                                />--}%
+                                <ui:datepicker hideLabel="true" id="${prefixOverride}_${field}" name="${prefixOverride}_${field}"
+                                               value="${task.condition.getProperty(field) ? DateUtils.getSDF_yyyyMMdd().format(task.condition.getProperty(field)) : ''}">
+                                </ui:datepicker>
                             </div>
                         </g:elseif>
                         <g:elseif test="${field.startsWith('file')}">
@@ -336,7 +289,9 @@
                         </g:elseif>
 
                         <g:if test="${fi + 1 == task.condition.getFields().size() || fi%2 == 1}">
+                            <g:if test="${task.condition.getUIFieldColumns() == 2}">
                                 </div>
+                            </g:if>
                             </div>
                         </g:if>
                     </g:each>

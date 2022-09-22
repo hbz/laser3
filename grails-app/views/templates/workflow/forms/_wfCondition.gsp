@@ -20,7 +20,7 @@
         <g:select class="ui dropdown la-not-clearable" id="${prefix}_type" name="${prefix}_type"
                       noSelection="${['' : message(code:'default.select.choose.label')]}"
                       required="required"
-                      from="${WfConditionBase.TYPES}"
+                      from="${WfConditionBase.TYPES.collect{ it[0] }}"
                       value="${condition?.type}"
                       optionKey="${{ it }}"
                       optionValue="${{ RefdataValue.findByOwnerAndValue( RefdataCategory.findByDesc('workflow.condition.type'), 'type_' + it).getI10n('value') }}" />
@@ -47,11 +47,14 @@
                 Typabhängige Datenfelder - Definition / Vorschau
             </div>
             <div class="ui attached segment">
-                <g:each in="${condition.getFields()}" var="field">
+                <g:each in="${condition.getFields()}" var="field" status="fi">
                     <g:if test="${field.startsWith('checkbox')}">
                         <div class="fields two" style="margin-bottom:0;">
                             <div class="field">
-                                <label for="${prefix}_${field}_title">Titel für ${condition.getFieldLabel(field)}</label>
+                                <label for="${prefix}_${field}_title">
+                                    Titel für ${condition.getFieldLabel(field)}
+                                    ${condition.getProperty(field + '_title') ? '' : ' #' + field.reverse().take(1)}
+                                </label>
                                 <input type="text" name="${prefix}_${field}_title" id="${prefix}_${field}_title" value="${condition.getProperty(field + '_title')}" />
                             </div>
                             <div class="field">
@@ -60,7 +63,7 @@
                                     <input type="checkbox" name="${prefix}_${field}_isTrigger" id="${prefix}_${field}_isTrigger"
                                         <% if (condition?.getProperty(field + '_isTrigger')) { print 'checked="checked"' } %>
                                     />
-                                    <label>Soll den Aufgaben-Status auf 'Erledigt' setzen</label>
+                                    <label>Setzt den Aufgaben-Status auf 'Erledigt' (unidirektional)</label>
                                 </div>
                             </div>
                         </div>
@@ -68,7 +71,10 @@
                     <g:if test="${field.startsWith('date')}">
                         <div class="fields two" style="margin-bottom:0;">
                             <div class="field">
-                                <label for="${prefix}_${field}_title">Titel für ${condition.getFieldLabel(field)}</label>
+                                <label for="${prefix}_${field}_title">
+                                    Titel für ${condition.getFieldLabel(field)}
+                                    ${condition.getProperty(field + '_title') ? '' : ' #' + field.reverse().take(1)}
+                                </label>
                                 <input type="text" name="${prefix}_${field}_title" id="${prefix}_${field}_title" value="${condition.getProperty(field + '_title')}" />
                             </div>
                             <div class="field">
@@ -78,7 +84,10 @@
                     <g:if test="${field.startsWith('file')}">
                         <div class="fields two" style="margin-bottom:0;">
                             <div class="field">
-                                <label for="${prefix}_${field}_title">Titel für ${condition.getFieldLabel(field)}</label>
+                                <label for="${prefix}_${field}_title">
+                                    Titel für ${condition.getFieldLabel(field)}
+                                    ${condition.getProperty(field + '_title') ? '' : ' #' + field.reverse().take(1)}
+                                </label>
                                 <input type="text" name="${prefix}_${field}_title" id="${prefix}_${field}_title" value="${condition.getProperty(field + '_title')}" />
                             </div>
                             <div class="field">
@@ -88,36 +97,41 @@
                 </g:each>
             </div>
             <div class="ui bottom attached segment" style="background-color:#f9fafb;">
-                <g:each in="${condition.getFields()}" var="field" status="fi">
+                <g:each in="${condition.getFields('table')}" var="field" status="fi">
                     <g:if test="${fi == 0 || fi%2 == 0}">
                         <div class="field">
-                            <div class="fields two">
+                            <g:if test="${condition.getUIFieldColumns() == 2}">
+                                <div class="fields two">
+                            </g:if>
                     </g:if>
 
                     <g:if test="${field.startsWith('checkbox')}">
                         <div class="field">
-                            <label for="${prefix}_${field}">${condition.getProperty(field + '_title') ?: message(code:'workflow.field.noTitle.label')}</label>
+                            <label for="${prefix}_${field}">${condition.getProperty(field + '_title') ?: ' #' + field.reverse().take(1)}</label>
                             <div class="ui checkbox">
                                 <input type="checkbox" name="${prefix}_${field}" id="${prefix}_${field}"
                                     <% print condition.getProperty(field) == true ? 'checked="checked"' : '' %>
                                 />
                                 <g:if test="${condition.getProperty(field + '_isTrigger')}">
-                                    <label><sup>*</sup>erledigt die Aufgabe</label>
+                                    <label><sup>*</sup>ändert den Aufgaben-Status</label>
                                 </g:if>
                             </div>
                         </div>
                     </g:if>
                     <g:if test="${field.startsWith('date')}">
                         <div class="field">
-                            <label for="${prefix}_${field}">${condition.getProperty(field + '_title') ?: message(code:'workflow.field.noTitle.label')}</label>
-                            <input type="date" name="${prefix}_${field}" id="${prefix}_${field}"
-                                <% print condition.getProperty(field) ? 'value="' + DateUtils.getSDF_yyyyMMdd().format(condition.getProperty(field)) + '"' : '' %>
-                            />
+                            <label for="${prefix}_${field}">${condition.getProperty(field + '_title') ?: ' #' + field.reverse().take(1)}</label>
+%{--                            <input type="date" name="${prefix}_${field}" id="${prefix}_${field}"--}%
+%{--                                <% print condition.getProperty(field) ? 'value="' + DateUtils.getSDF_yyyyMMdd().format(condition.getProperty(field)) + '"' : '' %>--}%
+%{--                            />--}%
+                            <ui:datepicker hideLabel="true" id="${prefix}_${field}" name="${prefix}_${field}"
+                                           value="${condition.getProperty(field) ? DateUtils.getSDF_yyyyMMdd().format(condition.getProperty(field)) : ''}">
+                            </ui:datepicker>
                         </div>
                     </g:if>
                     <g:if test="${field.startsWith('file')}">
                         <div class="field">
-                            <label for="${prefix}_${field}">${condition.getProperty(field + '_title') ?: message(code:'workflow.field.noTitle.label')}</label>
+                            <label for="${prefix}_${field}">${condition.getProperty(field + '_title') ?: ' #' + field.reverse().take(1)}</label>
 
                             <g:set var="docctx" value="${condition.getProperty(field)}" />
                             <g:if test="${docctx}">
@@ -155,7 +169,9 @@
                     </g:if>
 
                     <g:if test="${fi + 1 == condition.getFields().size() || fi%2 == 1}">
+                        <g:if test="${condition.getUIFieldColumns() == 2}">
                             </div>
+                        </g:if>
                         </div>
                     </g:if>
                 </g:each>

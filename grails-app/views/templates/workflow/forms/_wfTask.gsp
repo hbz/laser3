@@ -46,15 +46,6 @@
                       optionKey="id"
                       optionValue="${{ (tpIdTable && tpIdTable[it.id]) ? ('(' + tpIdTable[it.id] + ') ' + it.title) : it.title }}" />
         </div>
-                %{--<div class="field">
-                    <label for="${prefix}_child">Child &darr;&darr;</label>
-                    <g:select class="ui dropdown" id="${prefix}_child" name="${prefix}_child"
-                              noSelection="${['' : message(code:'default.select.choose.label')]}"
-                              from="${dd_childList}"
-                              value="${task?.child?.id}"
-                              optionKey="id"
-                              optionValue="${{ (tpIdTable && tpIdTable[it.id]) ? ('(' + tpIdTable[it.id] + ') ' + it.title) : it.title }}" />
-                </div>--}%
     </g:if>
 
 %{-- <div class="field">
@@ -107,13 +98,6 @@
                               optionValue="${{'(' + it.id + ') ' + it.title}}" />
                 </div>
                 <div class="field">
-                    <label for="${prefix}_child">Kind &darr;</label>
-                    <g:select class="ui dropdown disabled" id="${prefix}_child" name="${prefix}_child"
-                              noSelection="${['' : message(code:'default.select.choose.label')]}"
-                              from="${dd_childList}"
-                              value="${task?.child?.id}"
-                              optionKey="id"
-                              optionValue="${{'(' + it.id + ') ' + it.title}}" />
                 </div>
             </div>
         </div>

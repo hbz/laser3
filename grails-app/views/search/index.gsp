@@ -662,7 +662,7 @@
                                 <td>
                                     <span data-position="top right" class="la-popup-tooltip la-delay"
                                           data-content="${message(code: "facet.so.rectype.${hit.getSourceAsMap().rectype.toLowerCase()}")}">
-                                        <i class="circular icon inverted green checked calendar"></i>
+                                        <i class="circular icon inverted green calendar check outline"></i>
                                     </span>
 
                                     <g:link controller="myInstitution" action="tasks"

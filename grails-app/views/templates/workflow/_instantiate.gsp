@@ -33,7 +33,7 @@
             <ui:dropdownWithI18nExplanations class="ui dropdown la-not-clearable"
                     name="workflowId" id="workflowId"
                     noSelection="${message(code:'default.select.choose.label')}"
-                    from="${WfWorkflowPrototype.findAllByStateAndTargetType( RDStore.WF_WORKFLOW_STATE_ACTIVE, cmd )}"
+                    from="${WfWorkflowPrototype.findAllByStateAndTargetType( RDStore.WF_WORKFLOW_STATE_ACTIVE, cmd ).findAll{ !it.hasCircularReferences() }}"
                     optionKey="id"
                     optionValue="title"
                     optionExpl="${{ it.description + ' (Version: ' + it.variant + ')'}}" />

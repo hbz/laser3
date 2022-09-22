@@ -12,17 +12,13 @@ class WfTaskPrototype extends WfTaskBase {
     static final String KEY = 'WF_TASK_PROTOTYPE'
 
     WfConditionPrototype condition
-
-    WfTaskPrototype child
     WfTaskPrototype next
 
     static mapping = {
                  id column: 'wftp_id'
             version column: 'wftp_version'
            priority column: 'wftp_priority_rv_fk'
-               //type column: 'wftp_type_rv_fk'
           condition column: 'wftp_condition_fk'
-              child column: 'wftp_child_fk'
                next column: 'wftp_next_fk'
               title column: 'wftp_title'
         description column: 'wftp_description', type: 'text'
@@ -35,7 +31,6 @@ class WfTaskPrototype extends WfTaskBase {
         title       (blank: false)
         description (nullable: true)
         condition   (nullable: true)
-        child       (nullable: true)
         next        (nullable: true)
     }
 
@@ -44,23 +39,9 @@ class WfTaskPrototype extends WfTaskBase {
      * @return is there any association pointing to this prototype?
      */
     boolean inUse() {
-        return child != null || next != null || getWorkflow() || getParent() || getPrevious()
+        return next != null || getWorkflow() || getPrevious()
     }
-
-    /**
-     * Gets a sequence of prototypes, starting from the current object
-     * @return a {@link List} of {@link WfTaskPrototype}
-     */
-    List<WfTaskPrototype> getSequence() {
-        List<WfTaskPrototype> sequence = []
-
-        WfTaskPrototype t = this
-        while (t) {
-            sequence.add( t ); t = t.next
-        }
-        sequence
-    }
-
+    
     /**
      * Instantiates a new {@link WfTask} based on this prototype. If there are linked objects to this prototype, the linked objects will be instantiated as well
      * @return the complete task object
@@ -74,9 +55,6 @@ class WfTaskPrototype extends WfTaskBase {
                 priority:    this.priority,
                 status:      RDStore.WF_TASK_STATUS_OPEN
         )
-        if (this.child) {
-            task.child = this.child.instantiate()
-        }
         if (this.next) {
             task.next = this.next.instantiate()
         }
@@ -99,19 +77,6 @@ class WfTaskPrototype extends WfTaskBase {
 
         if (result.size() > 1) {
             log.debug('Multiple matches for WfTaskPrototype.getWorkflow() ' + this.id + ' -> ' + result.collect{ it.id })
-        }
-        return result ? result.first() : null
-    }
-
-    /**
-     * Returns the parent prototype of this task prototype
-     * @return the prototype of which this is a child (the parent prototype), the first match if there are multiple matches (ordered by id)
-     */
-    WfTaskPrototype getParent() {
-        List<WfTaskPrototype> result = WfTaskPrototype.findAllByChild(this, [sort: 'id'])
-
-        if (result.size() > 1) {
-            log.debug('Multiple matches for WfTaskPrototype.getParent() ' + this.id + ' -> ' + result.collect{ it.id })
         }
         return result ? result.first() : null
     }

@@ -15,8 +15,6 @@ abstract class WfTaskBase {
     RefdataValue priority
 
 //    WfConditionBase condition
-
-//    WfTaskBase child
 //    WfTaskBase next
 
     String title

@@ -1002,11 +1002,10 @@ class AjaxHtmlController {
             result.tmpl = '/templates/workflow/forms/wfWorkflow'
             result.tmplModalTitle = '<i class="icon tasks sc_darkgrey"></i> ' + result.tmplModalTitle
 
-            // not: * used as tp.next * used as tp.child
+            // not: * used as tp.next
             result.dd_taskList = WfTaskPrototype.executeQuery(
                     'select wftp from WfTaskPrototype wftp where ' +
                             'wftp not in (select tp.next from WfTaskPrototype tp) ' +
-                            'and wftp not in (select tp.child from WfTaskPrototype tp) ' +
                             'order by id'
             )
         }
@@ -1014,17 +1013,9 @@ class AjaxHtmlController {
             result.tmpl = '/templates/workflow/forms/wfTask'
             result.tmplModalTitle = '<i class="icon check circle outline sc_darkgrey"></i> ' + result.tmplModalTitle
 
-            // not: * used as tp.child * used as wp.task
+            // not: * used as wp.task
             result.dd_nextList = WfTaskPrototype.executeQuery(
                     'select wftp from WfTaskPrototype wftp where ' +
-                            'wftp not in (select tp.child from WfTaskPrototype tp) ' +
-                            'and wftp not in (select wp.task from WfWorkflowPrototype wp) ' +
-                            'order by id'
-            )
-            // not: * used as tp.next * used as wp.task
-            result.dd_childList = WfTaskPrototype.executeQuery(
-                    'select wftp from WfTaskPrototype wftp where ' +
-                            'wftp not in (select tp.next from WfTaskPrototype tp) ' +
                             'and wftp not in (select wp.task from WfWorkflowPrototype wp) ' +
                             'order by id'
             )
@@ -1144,11 +1135,10 @@ class AjaxHtmlController {
                 result.tmplModalTitle = '<i class="icon tasks sc_darkgrey"></i> ' + result.tmplModalTitle
 
                 if (result.workflow) {
-                    // not: * used as tp.next * used as tp.child
+                    // not: * used as tp.next
                     result.dd_taskList = WfTaskPrototype.executeQuery(
                             'select wftp from WfTaskPrototype wftp where ' +
                             'wftp not in (select tp.next from WfTaskPrototype tp) ' +
-                            'and wftp not in (select tp.child from WfTaskPrototype tp) ' +
                             'order by id'
                     )
                 }
@@ -1175,17 +1165,9 @@ class AjaxHtmlController {
 //                    String sql = 'select wftp from WfTaskPrototype wftp where id != :id order by id'
                     Map<String, Object> sqlParams = [id: wfObjId]
 
-                    // not: * self * used as tp.child * used as wp.task
+                    // not: * self * used as wp.task
                     result.dd_nextList = WfTaskPrototype.executeQuery(
                             'select wftp from WfTaskPrototype wftp where id != :id ' +
-                            'and wftp not in (select tp.child from WfTaskPrototype tp) ' +
-                            'and wftp not in (select wp.task from WfWorkflowPrototype wp) ' +
-                            'order by id', sqlParams
-                    )
-                    // not: * self * used as tp.next * used as wp.task
-                    result.dd_childList = WfTaskPrototype.executeQuery(
-                            'select wftp from WfTaskPrototype wftp where id != :id ' +
-                            'and wftp not in (select tp.next from WfTaskPrototype tp) ' +
                             'and wftp not in (select wp.task from WfWorkflowPrototype wp) ' +
                             'order by id', sqlParams
                     )
@@ -1204,7 +1186,6 @@ class AjaxHtmlController {
                 if (result.task) {
 
                     result.dd_nextList      = result.task.next ? [ result.task.next ] : []
-                    result.dd_childList     = result.task.child ? [ result.task.child ] : []
                     result.dd_conditionList = result.task.condition ? [ result.task.condition ] : []
 //                    result.dd_prototypeList = result.task.prototype ? [ result.task.prototype ] : []
 

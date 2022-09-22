@@ -47,19 +47,7 @@
                 <div class="ui buttons">
                     <g:set var="tasks" value="${wf.getSequence()}" />
                     <g:each in="${tasks}" var="task" status="ti">
-                        <g:if test="${task.child}">
-                            <div class="ui buttons wf-buttonGroup">
-                                <uiWorkflow:task task="${task}" params="${[key: '' + wfInfo.target.class.name + ':' + wfInfo.target.id + ':' + WfTask.KEY + ':' + task.id]}" />
-
-                                <g:set var="children" value="${task.child.getSequence()}" />
-                                <g:each in="${children}" var="child" status="ci">
-                                    <uiWorkflow:task task="${child}" params="${[key: '' + wfInfo.target.class.name + ':' + wfInfo.target.id + ':' + WfTask.KEY + ':' + child.id]}" />
-                                </g:each>
-                            </div>
-                        </g:if>
-                        <g:else>
-                            <uiWorkflow:task task="${task}" params="${[key: '' + wfInfo.target.class.name + ':' + wfInfo.target.id + ':' + WfTask.KEY + ':' + task.id]}" />
-                        </g:else>
+                        <uiWorkflow:task task="${task}" params="${[key: '' + wfInfo.target.class.name + ':' + wfInfo.target.id + ':' + WfTask.KEY + ':' + task.id]}" />
                     </g:each>
                 </div>
             </td>
@@ -71,14 +59,16 @@
             <td class="x">
                 <button class="ui icon button blue la-modern-button" data-wfId="${wf.id}"><i class="icon edit"></i></button>
             %{-- <button class="ui small icon button" onclick="alert('Editierfunktion für Einrichtungsadministratoren. Noch nicht implementiert.')"><i class="icon cogs"></i></button> --}%
-                <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
-                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.workflow", args: [wf.title])}"
-                        data-confirm-term-how="delete"
-                        controller="${wfInfo.targetController}" action="workflows" id="${wfInfo.target.id}" params="${[cmd:"delete:${WfWorkflow.KEY}:${wf.id}"]}"
-                        role="button"
-                        aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                    <i class="trash alternate outline icon"></i>
-                </g:link>
+                <g:if test="${workflowService.isEditableForCurrentUser()}"><!-- TODO: workflows-permissions -->
+                    <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
+                            data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.workflow", args: [wf.title])}"
+                            data-confirm-term-how="delete"
+                            controller="${wfInfo.targetController}" action="workflows" id="${wfInfo.target.id}" params="${[cmd:"delete:${WfWorkflow.KEY}:${wf.id}"]}"
+                            role="button"
+                            aria-label="${message(code: 'ariaLabel.delete.universal')}">
+                        <i class="trash alternate outline icon"></i>
+                    </g:link>
+                </g:if>
             </td>
         </tr>
     </g:each>

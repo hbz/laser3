@@ -32,11 +32,9 @@
                 </g:if>
             </g:if>
 
-            <sec:ifAnyGranted roles="ROLE_ADMIN"><!-- TODO: workflows-permissions -->
-                <g:if test="${contextCustomerType == "ORG_CONSORTIUM"}">
-                    <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalInstantiateWorkflow" />
-                </g:if>
-            </sec:ifAnyGranted>
+            <g:if test="${workflowService.isInstantiableForCurrentUser()}"><!-- TODO: workflows-permissions -->
+                <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalInstantiateWorkflow" />
+            </g:if>
 
             <div class="divider"></div>
 
@@ -85,8 +83,6 @@
     <laser:render template="/templates/notes/modal_create" model="${[ownobj: license, owntp: 'license']}"/>
 </g:if>
 
-<sec:ifAnyGranted roles="ROLE_ADMIN"><!-- TODO: workflows-permissions -->
-    <g:if test="${contextCustomerType == "ORG_CONSORTIUM"}">
-        <laser:render template="/templates/workflow/instantiate" model="${[cmd: RDStore.WF_WORKFLOW_TARGET_TYPE_LICENSE, target: license]}"/>
-    </g:if>
-</sec:ifAnyGranted>
+<g:if test="${workflowService.isInstantiableForCurrentUser()}"><!-- TODO: workflows-permissions -->
+    <laser:render template="/templates/workflow/instantiate" model="${[cmd: RDStore.WF_WORKFLOW_TARGET_TYPE_LICENSE, target: license]}"/>
+</g:if>

@@ -266,7 +266,7 @@
                 %{--TASKS:--}%
                 <tr>
                     <td name="copyObject.takeTasks.source">
-                        <strong><i class="checked calendar icon"></i>&nbsp${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.takeTasks")}:</strong><br />
+                        <strong><i class="calendar check outline icon"></i>&nbsp${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.takeTasks")}:</strong><br />
                         <g:each in="${sourceTasks}" var="tsk">
                             <div data-id="${tsk?.id}" class="la-element">
                                 <label>
@@ -292,7 +292,7 @@
                     <td></td>
                     <g:if test="${!copyObject && targetObject}">
                                 <td  name="copyObject.takeTasks.target">
-                                    <strong><i class="checked calendar icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeTasks")}:</strong><br />
+                                    <strong><i class="calendar check outline icon"></i>&nbsp${message(code: "${targetObject.getClass().getSimpleName().toLowerCase()}.takeTasks")}:</strong><br />
                                     <g:each in="${targetTasks}" var="tsk">
                                         <div data-id="${tsk?.id}" class="la-element">
                                         <strong>${tsk?.title}</strong> (${message(code: 'task.endDate.label')}
