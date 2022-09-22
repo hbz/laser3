@@ -199,6 +199,80 @@ class GlobalSourceSyncService extends AbstractLockableService {
     }
 
     /**
+     * Updates the data for a single package, using the global update mechanism
+     */
+    void doSingleSync(String packageUUID) {
+        running = true
+        defineMapFields()
+        //we need to consider that there may be several sources per instance
+        List<GlobalRecordSource> jobs = GlobalRecordSource.findAllByActive(true)
+        jobs.each { GlobalRecordSource source ->
+            this.source = source
+            try {
+                Thread.currentThread().setName("PackageReload")
+                this.apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI,true)
+                String componentType = 'TitleInstancePackagePlatform'
+                /*
+                    structure:
+                    { packageUUID: [
+                        diffs of tipp 1 concerned,
+                        diffs of tipp 2 concerned,
+                        ...
+                        diffs of tipp n concerned
+                        ]
+                    }
+                */
+                //do prequest: are we needing the scroll api?
+                Map<String,Object> result = fetchRecordJSON(false,[componentType:componentType,pkg:packageUUID,max:5000])
+                if(result.error == 404) {
+                    log.error("we:kb server is down")
+                }
+                else {
+                    if(result) {
+                        processScrollPage(result, componentType, null, packageUUID)
+                    }
+                    else {
+                        log.info("no records updated - leaving everything as is ...")
+                    }
+                    if(packagesToNotify.keySet().size() > 0) {
+                        log.info("notifying subscriptions ...")
+                        Map<String, Set<PendingChange>> packagePendingChanges = trackPackageHistory()
+                        //get subscription packages and their respective holders, parent level only!
+                        packagePendingChanges.each { String packageKey, Set<PendingChange> packageChanges ->
+                            String query = 'select oo.org,sp from SubscriptionPackage sp join sp.pkg pkg ' +
+                                    'join sp.subscription s ' +
+                                    'join s.orgRelations oo ' +
+                                    'where s.instanceOf = null and pkg.gokbId = :packageKey ' +
+                                    'and oo.roleType in (:roleTypes)'
+                            List subPkgHolders = SubscriptionPackage.executeQuery(query,[packageKey:packageKey,roleTypes:[RDStore.OR_SUBSCRIPTION_CONSORTIA,RDStore.OR_SUBSCRIBER]])
+                            log.info("getting subscription package holders for ${packageKey}: ${subPkgHolders.toListString()}")
+                            subPkgHolders.each { row ->
+                                log.debug("processing ${row[1]}")
+                                Org org = (Org) row[0]
+                                SubscriptionPackage sp = (SubscriptionPackage) row[1]
+                                autoAcceptPendingChanges(org, sp, packageChanges)
+                                //nonAutoAcceptPendingChanges(org, sp)
+                            }
+                        }
+                        log.info("end notifying subscriptions")
+                        log.info("clearing removed titles")
+                        packageService.clearRemovedTitles()
+                        log.info("end clearing titles")
+                    }
+                    else {
+                        log.info("no diffs recorded ...")
+                    }
+                    log.info("package reload finished")
+                }
+            }
+            catch (Exception e) {
+                log.error("package reload has failed, please consult stacktrace as follows: ",e)
+            }
+        }
+        running = false
+    }
+
+    /**
      * Reloads all data of the given component type from the connected we:kb instance connected by {@link GlobalRecordSource}
      * @param componentType the component type (one of Org, TitleInstancePackagePlatform) to update
      */
@@ -1039,12 +1113,42 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 List<String> typeNames = contactTypes.values().collect { RefdataValue cct -> cct.getI10n("value") }
                 typeNames.addAll(contactTypes.keySet())
                 List<Person> oldPersons = Person.executeQuery('select p from Person p where p.tenant = :provider and p.isPublic = true and p.last_name in (:contactTypes)',[provider: provider, contactTypes: typeNames])
-                if(oldPersons) {
-                    PersonRole.executeUpdate('delete from PersonRole pr where pr.org = :provider and pr.prs in (:oldPersons) and pr.functionType.id in (:funcTypes)', [provider: provider, oldPersons: oldPersons, funcTypes: contactTypes.values().collect { RefdataValue cct -> cct.id }])
-                    Contact.executeUpdate('delete from Contact c where c.prs in (:oldPersons)', [oldPersons: oldPersons])
-                    Person.executeUpdate('delete from Person p where p in (:oldPersons)', [oldPersons: oldPersons])
+                Map<RefdataValue, Person> contactsToUpdate = [:]
+                List newContacts = providerRecord.contacts.findAll{ Map<String, String> cParams -> cParams.content != null }
+                oldPersons.each { Person oldPerson ->
+                    oldPerson.roleLinks.each { PersonRole role ->
+                        switch(role.functionType) {
+                            case RDStore.PRS_FUNC_METADATA: Map<String, String> newContact = newContacts.find { Map<String, String> cParams -> cParams.type == 'Metadata Contact' }
+                                if(newContact)
+                                    contactsToUpdate.put(RDStore.PRS_FUNC_METADATA, oldPerson)
+                                else {
+                                    PersonRole.executeUpdate('delete from PersonRole pr where pr.org = :provider and pr.prs = :oldPerson and pr.functionType.id = :funcType', [provider: provider, oldPerson: oldPerson, funcType: RDStore.PRS_FUNC_METADATA])
+                                    Contact.executeUpdate('delete from Contact c where c.prs = :oldPerson', [oldPerson: oldPerson])
+                                    Person.executeUpdate('delete from Person p where p = :oldPerson', [oldPerson: oldPerson])
+                                }
+                                break
+                            case RDStore.PRS_FUNC_SERVICE_SUPPORT: Map<String, String> newContact = newContacts.find { Map<String, String> cParams -> cParams.type == 'Service Support' }
+                                if(newContact)
+                                    contactsToUpdate.put(RDStore.PRS_FUNC_SERVICE_SUPPORT, oldPerson)
+                                else {
+                                    PersonRole.executeUpdate('delete from PersonRole pr where pr.org = :provider and pr.prs = :oldPerson and pr.functionType.id = :funcType', [provider: provider, oldPerson: oldPerson, funcType: RDStore.PRS_FUNC_SERVICE_SUPPORT])
+                                    Contact.executeUpdate('delete from Contact c where c.prs = :oldPerson', [oldPerson: oldPerson])
+                                    Person.executeUpdate('delete from Person p where p = :oldPerson', [oldPerson: oldPerson])
+                                }
+                                break
+                            case RDStore.PRS_FUNC_TECHNICAL_SUPPORT: Map<String, String> newContact = newContacts.find { Map<String, String> cParams -> cParams.type == 'Technical Support' }
+                                if(newContact)
+                                    contactsToUpdate.put(RDStore.PRS_FUNC_TECHNICAL_SUPPORT, oldPerson)
+                                else {
+                                    PersonRole.executeUpdate('delete from PersonRole pr where pr.org = :provider and pr.prs = :oldPerson and pr.functionType.id = :funcType', [provider: provider, oldPerson: oldPerson, funcType: RDStore.PRS_FUNC_TECHNICAL_SUPPORT])
+                                    Contact.executeUpdate('delete from Contact c where c.prs = :oldPerson', [oldPerson: oldPerson])
+                                    Person.executeUpdate('delete from Person p where p = :oldPerson', [oldPerson: oldPerson])
+                                }
+                                break
+                        }
+                    }
                 }
-                providerRecord.contacts.findAll{ Map<String, String> cParams -> cParams.content != null }.each { contact ->
+                newContacts.each { contact ->
                     switch(contact.type) {
                         case "Metadata Contact":
                             contact.rdType = RDStore.PRS_FUNC_METADATA
@@ -1059,7 +1163,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             break
                     }
                     if(contact.rdType && contact.contentType != null) {
-                        createOrUpdateSupport(provider, contact)
+                        createOrUpdateSupport(provider, contact, contactsToUpdate.get(contact.rdType))
                     }
                     else log.warn("contact submitted without content type, rejecting contact")
                 }
@@ -1171,8 +1275,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * @param supportProps the configuration {@link Map} containing the support address properties
      * @throws SyncException
      */
-    void createOrUpdateSupport(Org provider, Map<String, String> supportProps) throws SyncException {
-        Person personInstance = Person.findByTenantAndIsPublicAndLast_name(provider, true, supportProps.rdType.getI10n("value"))
+    void createOrUpdateSupport(Org provider, Map<String, String> supportProps, Person personInstance = null) throws SyncException {
         if(!personInstance) {
             personInstance = new Person(tenant: provider, isPublic: true, last_name: supportProps.rdType.getI10n("value"))
             if(!personInstance.save()) {
@@ -1240,14 +1343,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
             if(platform.save()) {
                 //update platforms
                 Map<String, Object> packagesOfPlatform = fetchRecordJSON(false, [componentType: 'Package', platform: platformRecord.uuid])
-                if(packagesOfPlatform) {
-                    packagesOfPlatform.records.each { pkgRecord ->
-                        Package pkg = Package.findByGokbId(pkgRecord.uuid)
-                        if(pkg) {
-                            pkg.nominalPlatform = platform
-                            pkg.save()
-                        }
-                    }
+                if(packagesOfPlatform && packagesOfPlatform.count > 0) {
+                    Package.executeUpdate('update Package pkg set pkg.nominalPlatform = :plat where pkg.gokbId in (:uuids)', [uuids: packagesOfPlatform.records.uuid, plat: platform])
                 }
                 platform
             }
@@ -1358,11 +1455,11 @@ class GlobalSourceSyncService extends AbstractLockableService {
             tippA.seriesName = tippB.seriesName
             tippA.subjectReference = tippB.subjectReference
             tippA.volume = tippB.volume
-            tippA.medium = titleMedium.get(tippB.medium)
             tippA.accessType = accessType.get(tippB.accessType)
             tippA.openAccess = openAccess.get(tippB.openAccess)
             if(!tippA.save())
                 throw new SyncException("Error on updating base title data: ${tippA.errors}")
+            TitleInstancePackagePlatform.executeUpdate('update TitleInstancePackagePlatform tipp set tipp.medium = :medium where tipp = :tipp', [tipp:tippA, medium: titleMedium.get(tippB.medium)])
             if(tippB.titlePublishers) {
                 if(tippA.publishers) {
                     OrgRole.executeUpdate('delete from OrgRole oo where oo.tipp = :tippA',[tippA:tippA])

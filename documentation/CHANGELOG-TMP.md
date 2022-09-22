@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      21.09.2022  rc-2.3  2.3.8       Andreas Bug         Fehler bei Titelsynchronisation behoben
+
+4490    21.09.2022  rc-2.3  2.3.8       Andreas Bug         500er bei Lizenzaufruf behoben, Statistiküberprüfung umgebaut
+
+4488    21.09.2022  rc-2.3  2.3.8       Andreas Feature     neuer Referenzwert Video für Medientyp aufgenommen
+
 4445    06.09.2022  rc-2.3  2.3.8       Andreas Feature     Absicherung der Entwicklungsinstanzen gegen Indizierung durch Suchmaschinen 
 
 4413    18.08.2022  rc-2.3  2.3.8       Andreas Bug         Sortierung bei Lizenzabfrage umstrukturiert (nach ERMS-4391)
