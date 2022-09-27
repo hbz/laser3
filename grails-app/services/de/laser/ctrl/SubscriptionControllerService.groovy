@@ -1880,12 +1880,12 @@ class SubscriptionControllerService {
             params.ieAcceptStatusFixed = true
             Map query = filterService.getIssueEntitlementQuery(params, result.subscription)
             result.filterSet = query.filterSet
-            Set<Long> entitlements = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
+            Set entitlements = IssueEntitlement.executeQuery("select new map(ie.id as id, ie.tipp.sortname as sortname) " + query.query, query.queryParams)
             result.entitlementIDs = entitlements
             if(params.kbartPreselect) {
                 MultipartFile kbartFile = params.kbartPreselect
                 InputStream stream = kbartFile.getInputStream()
-                result.enrichmentProcess = subscriptionService.issueEntitlementEnrichment(stream, entitlements, result.subscription, (params.uploadCoverageDates == 'on'), (params.uploadPriceInfo == 'on'))
+                result.enrichmentProcess = subscriptionService.issueEntitlementEnrichment(stream, entitlements.id, result.subscription, (params.uploadCoverageDates == 'on'), (params.uploadPriceInfo == 'on'))
                 params.remove("kbartPreselect")
                 params.remove("uploadCoverageDates")
                 params.remove("uploadPriceInfo")
@@ -1899,16 +1899,21 @@ class SubscriptionControllerService {
             }
             result.num_ies_rows = entitlements.size()
             if(entitlements) {
-                String orderClause = 'order by ie.sortname, tipp.sortname'
+                String orderClause = 'order by ie.sortname, ie.name, tipp.sortname, tipp.name'
                 if(params.sort){
                     if(params.sort == 'startDate')
                         orderClause = "order by ic.startDate ${params.order}, lower(ie.sortname), lower(ie.tipp.sortname) "
                     else if(params.sort == 'endDate')
                         orderClause = "order by ic.endDate ${params.order}, lower(ie.sortname), lower(ie.tipp.sortname) "
-                    else
-                        orderClause = "order by ${params.sort} ${params.order} "
+                    else {
+                        if(params.sort.contains('sortname'))
+                            orderClause = "order by ie.sortname ${params.order}, ie.name ${params.order}, tipp.sortname ${params.order}, tipp.name ${params.order} "
+                        else
+                            orderClause = "order by ${params.sort} ${params.order} "
+                    }
                 }
-                result.entitlements = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.tipp tipp left join ie.coverages ic where ie.id in (:entIDs) '+orderClause,[entIDs:entitlements.drop(result.offset).take(result.max)]).toSet()
+                Set filteredIDs = entitlements.drop(result.offset).take(result.max)
+                result.entitlements = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie join ie.tipp tipp left join ie.coverages ic where ie.id in (:entIDs) '+orderClause,[entIDs:filteredIDs.id])
                 result.journalsOnly = result.entitlements.find { IssueEntitlement ie -> ie.tipp.titleType != RDStore.TITLE_TYPE_JOURNAL.value } == null
             }
             else result.entitlements = []
