@@ -195,8 +195,8 @@
                     sortFieldMap['tipp.dateFirstInPrint'] = message(code: 'tipp.dateFirstInPrint')
                     sortFieldMap['tipp.dateFirstOnline'] = message(code: 'tipp.dateFirstOnline')
                 }
-                sortFieldMap['tipp.accessStartDate'] = message(code: 'default.from')
-                sortFieldMap['tipp.accessEndDate'] = message(code: 'default.to')
+                sortFieldMap['tipp.accessStartDate'] = "${message(code: 'subscription.details.access_dates')} ${message(code: 'default.from')}"
+                sortFieldMap['tipp.accessEndDate'] = "${message(code: 'subscription.details.access_dates')} ${message(code: 'default.to')}"
             %>
             <ui:sortingDropdown from="${sortFieldMap}" sort="${params.sort}" order="${params.order}"/>
 
