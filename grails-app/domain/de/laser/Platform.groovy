@@ -53,7 +53,7 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
           altnames   : AlternativeName
   ]
 
-  static transients = ['currentTipps', 'calculatedPropDefGroups'] // mark read-only accessor methods
+  static transients = ['currentTipps', 'calculatedPropDefGroups', 'viewName'] // mark read-only accessor methods
 
   static mapping = {
                 id column:'plat_id'
@@ -118,6 +118,10 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
   @Override
   def beforeDelete() {
     super.beforeDeleteHandler()
+  }
+
+  String getViewName() {
+    globalUID.replaceAll("[:-]","_")
   }
 
   /**
