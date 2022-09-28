@@ -46,7 +46,13 @@
                                     </g:else>
                                 </a>
                             </g:else>
+
                             <br />
+                            <g:if test="${! docctx.owner.content}">
+                                <span class="sc_darkgrey">( ${message(code:'template.notes.noContent')} )</span>
+                                <br />
+                            </g:if>
+
                             <g:if test="${docctx.owner.dateCreated == docctx.owner.lastUpdated}">
                                 ${message(code:'template.notes.created')}
                             </g:if>
@@ -54,7 +60,6 @@
                                 ${message(code:'template.notes.updated')}
                             </g:else>
                             <g:formatDate format="${message(code:'default.date.format.notime')}" date="${docctx.owner.lastUpdated}"/>
-
                         </div>
                         <div class="right aligned six wide column la-column-left-lessPadding">
                             <%-- START First Button --%>
@@ -135,6 +140,11 @@
 %{--                                (${docctx.owner.type.getI10n("value")})--}%
 
                                 <br />
+                                <g:if test="${! docctx.owner.content}">
+                                    <span class="sc_darkgrey">( ${message(code:'template.notes.noContent')} )</span>
+                                    <br />
+                                </g:if>
+
                                 <g:if test="${docctx.owner.dateCreated == docctx.owner.lastUpdated}">
                                     ${message(code:'template.notes.created')}
                                 </g:if>
