@@ -1,5 +1,27 @@
 package de.laser
 
+import de.laser.AlternativeName
+import de.laser.Contact
+import de.laser.DeweyDecimalClassification
+import de.laser.EscapeService
+import de.laser.GlobalService
+import de.laser.Identifier
+import de.laser.IssueEntitlement
+import de.laser.Language
+import de.laser.Org
+import de.laser.OrgRole
+import de.laser.Package
+import de.laser.PendingChange
+import de.laser.Person
+import de.laser.PersonRole
+import de.laser.Platform
+import de.laser.RefdataCategory
+import de.laser.RefdataValue
+import de.laser.Subscription
+import de.laser.SubscriptionPackage
+import de.laser.TitleInstancePackagePlatform
+import de.laser.finance.PriceItem
+import de.laser.system.SystemEvent
 import de.laser.base.AbstractCoverage
 import de.laser.base.AbstractLockableService
 import de.laser.exceptions.SyncException
@@ -30,6 +52,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
     EscapeService escapeService
     ExecutorService executorService
     GenericOIDService genericOIDService
+    GlobalService globalService
     PendingChangeService pendingChangeService
     PackageService packageService
     ApiSource apiSource
@@ -182,7 +205,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         running = true
         defineMapFields()
         //we need to consider that there may be several sources per instance
-        List<GlobalRecordSource> jobs = GlobalRecordSource.findAllByActive(true)
+        List<GlobalRecordSource> jobs = GlobalRecordSource.findAllByActiveAndRectype(true, RECTYPE_TIPP)
         jobs.each { GlobalRecordSource source ->
             this.source = source
             try {
@@ -232,9 +255,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             }
                         }
                         log.info("end notifying subscriptions")
-                        log.info("clearing removed titles")
-                        packageService.clearRemovedTitles()
-                        log.info("end clearing titles")
                     }
                     else {
                         log.info("no diffs recorded ...")
@@ -529,6 +549,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }
                     if(result.hasMoreRecords) {
                         scrollId = result.scrollId
+                        //flush after 100000 records ... seems that Grails 3 onwards fills memory, too!
+                        if(offset % 100000 && offset > 0) {
+                            globalService.cleanUpGorm()
+                        }
                         offset += max
                     }
                     else {
@@ -630,23 +654,23 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     titleType: tipp.titleType,
                     name: tipp.name,
                     altnames: [],
-                    packageUUID: tipp.tippPackageUuid ?: null,
-                    platformUUID: tipp.hostPlatformUuid ?: null,
+                    packageUUID: tipp.tippPackageUuid?.trim() ?: null,
+                    platformUUID: tipp.hostPlatformUuid?.trim() ?: null,
                     titlePublishers: [],
                     publisherName: tipp.publisherName,
-                    firstAuthor: tipp.firstAuthor ?: null,
-                    firstEditor: tipp.firstEditor ?: null,
-                    editionStatement: tipp.editionStatement ?: null,
+                    firstAuthor: tipp.firstAuthor?.trim() ?: null,
+                    firstEditor: tipp.firstEditor?.trim() ?: null,
+                    editionStatement: tipp.editionStatement?.trim() ?: null,
                     dateFirstInPrint: tipp.dateFirstInPrint ? DateUtils.parseDateGeneric(tipp.dateFirstInPrint) : null,
                     dateFirstOnline: tipp.dateFirstOnline ? DateUtils.parseDateGeneric(tipp.dateFirstOnline) : null,
-                    imprint: tipp.titleImprint ?: null,
+                    imprint: tipp.titleImprint?.trim() ?: null,
                     status: tipp.status,
-                    seriesName: tipp.series ?: null,
-                    subjectReference: tipp.subjectArea ?: null,
-                    volume: tipp.volumeNumber ?: null,
+                    seriesName: tipp.series?.trim() ?: null,
+                    subjectReference: tipp.subjectArea?.trim() ?: null,
+                    volume: tipp.volumeNumber?.trim() ?: null,
                     coverages: [],
                     priceItems: [],
-                    hostPlatformURL: tipp.url ?: null,
+                    hostPlatformURL: tipp.url?.trim() ?: null,
                     identifiers: [],
                     ddcs: [],
                     languages: [],
@@ -663,13 +687,13 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         updatedTIPP.coverages << [
                                 startDate: cov.startDate ? DateUtils.parseDateGeneric(cov.startDate) : null,
                                 endDate: cov.endDate ? DateUtils.parseDateGeneric(cov.endDate) : null,
-                                startVolume: cov.startVolume ?: null,
-                                endVolume: cov.endVolume ?: null,
-                                startIssue: cov.startIssue ?: null,
-                                endIssue: cov.endIssue ?: null,
-                                coverageDepth: cov.coverageDepth ?: null,
-                                coverageNote: cov.coverageNote ?: null,
-                                embargo: cov.embargo ?: null
+                                startVolume: cov.startVolume?.trim() ?: null,
+                                endVolume: cov.endVolume?.trim() ?: null,
+                                startIssue: cov.startIssue?.trim() ?: null,
+                                endIssue: cov.endIssue?.trim() ?: null,
+                                coverageDepth: cov.coverageDepth?.trim() ?: null,
+                                coverageNote: cov.coverageNote?.trim() ?: null,
+                                embargo: cov.embargo?.trim() ?: null
                         ]
                     }
                     updatedTIPP.coverages = updatedTIPP.coverages.toSorted { a, b -> a.startDate <=> b.startDate }
@@ -942,18 +966,20 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             pkgPropDiffsContainer.put(packageUUID, [event: "pkgPropUpdate", diffs: pkgPropDiffs, target: result])
                         }
 
+                        /* not used
                         if(!initialPackagesCounter.get(packageUUID))
                             initialPackagesCounter.put(packageUUID,TitleInstancePackagePlatform.executeQuery('select count(tipp.id) from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg',[pkg:result])[0] as Integer)
+                         */
                     }
                 }
                 else {
                     result = new Package(gokbId: packageRecord.uuid)
                 }
                 result.name = packageRecord.name
-                result.packageStatus = packageStatus
-                result.contentType = contentType
-                result.scope = scope
-                result.file = file
+                result.packageStatus?.id = packageStatus?.id
+                result.contentType?.id = contentType?.id
+                result.scope?.id = scope?.id
+                result.file?.id = file?.id
                 if(result.save()) {
                     if(packageRecord.nominalPlatformUuid) {
                         Platform nominalPlatform = Platform.findByGokbId(packageRecord.nominalPlatformUuid)
@@ -1430,12 +1456,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
             tippA.dateFirstOnline = (Date) tippB.dateFirstOnline
             tippA.seriesName = tippB.seriesName
             tippA.subjectReference = tippB.subjectReference
+            tippA.medium?.id = titleMedium.get(tippB.medium)?.id
             tippA.volume = tippB.volume
-            tippA.accessType = accessType.get(tippB.accessType)
-            tippA.openAccess = openAccess.get(tippB.openAccess)
+            tippA.accessType?.id = accessType.get(tippB.accessType)?.id
+            tippA.openAccess?.id = openAccess.get(tippB.openAccess)?.id
             if(!tippA.save())
                 throw new SyncException("Error on updating base title data: ${tippA.errors}")
-            TitleInstancePackagePlatform.executeUpdate('update TitleInstancePackagePlatform tipp set tipp.medium = :medium where tipp = :tipp', [tipp:tippA, medium: titleMedium.get(tippB.medium)])
             if(tippB.titlePublishers) {
                 if(tippA.publishers) {
                     OrgRole.executeUpdate('delete from OrgRole oo where oo.tipp = :tippA',[tippA:tippA])
@@ -2066,18 +2092,14 @@ class GlobalSourceSyncService extends AbstractLockableService {
         contactTypes.put(RDStore.PRS_FUNC_TECHNICAL_SUPPORT.value,RDStore.PRS_FUNC_TECHNICAL_SUPPORT)
         contactTypes.put(RDStore.PRS_FUNC_SERVICE_SUPPORT.value,RDStore.PRS_FUNC_SERVICE_SUPPORT)
         //this complicated way is necessary because of static in order to avoid a NonUniqueObjectException
-        List<RefdataValue> staticMediumTypes = [RDStore.TITLE_TYPE_DATABASE,RDStore.TITLE_TYPE_EBOOK,RDStore.TITLE_TYPE_JOURNAL]
-        RefdataValue.findAllByIdNotInListAndOwner(staticMediumTypes.collect { RefdataValue rdv -> rdv.id }, RefdataCategory.findByDesc(RDConstants.TITLE_MEDIUM)).each { RefdataValue rdv ->
+        titleMedium.put(RDStore.TITLE_TYPE_DATABASE.value, RDStore.TITLE_TYPE_DATABASE)
+        titleMedium.put(RDStore.TITLE_TYPE_EBOOK.value, RDStore.TITLE_TYPE_EBOOK)
+        titleMedium.put(RDStore.TITLE_TYPE_JOURNAL.value, RDStore.TITLE_TYPE_JOURNAL)
+        RefdataValue.findAllByIdNotInListAndOwner(titleMedium.values().collect { RefdataValue rdv -> rdv.id }, RefdataCategory.findByDesc(RDConstants.TITLE_MEDIUM)).each { RefdataValue rdv ->
             titleMedium.put(rdv.value, rdv)
         }
-        staticMediumTypes.each { RefdataValue rdv ->
-            titleMedium.put(rdv.value, rdv)
-        }
-        List<RefdataValue> staticPackageStatus = [RDStore.PACKAGE_STATUS_DELETED]
-        RefdataValue.findAllByIdNotInListAndOwner(staticPackageStatus.collect { RefdataValue rdv -> rdv.id }, RefdataCategory.findByDesc(RDConstants.PACKAGE_STATUS)).each { RefdataValue rdv ->
-            packageStatus.put(rdv.value, rdv)
-        }
-        staticPackageStatus.each { RefdataValue rdv ->
+        packageStatus.put(RDStore.PACKAGE_STATUS_DELETED.value, RDStore.PACKAGE_STATUS_DELETED)
+        RefdataValue.findAllByIdNotInListAndOwner(packageStatus.values().collect { RefdataValue rdv -> rdv.id }, RefdataCategory.findByDesc(RDConstants.PACKAGE_STATUS)).each { RefdataValue rdv ->
             packageStatus.put(rdv.value, rdv)
         }
         packageStatus.put(PERMANENTLY_DELETED, RDStore.PACKAGE_STATUS_DELETED)
