@@ -258,7 +258,7 @@ class DataloadService {
                 result.startDate = pkg.startDate
                 result.endDate = pkg.endDate
 
-                result.titleCountCurrent = pkg.getCurrentTipps().size()?:0
+                result.titleCountCurrent = TitleInstancePackagePlatform.countByPkgAndStatus(pkg, RDStore.TIPP_STATUS_CURRENT)
 
                 result.identifiers = []
                 pkg.ids?.each { ident ->
@@ -292,7 +292,7 @@ class DataloadService {
                 result.primaryUrl = plat.primaryUrl
                 result.orgId = plat.org?.id
                 result.orgName = plat.org?.name
-                result.titleCountCurrent = plat.getCurrentTipps().size()?:0
+                result.titleCountCurrent = TitleInstancePackagePlatform.countByPlatformAndStatus(plat, RDStore.TIPP_STATUS_CURRENT)
 
                 result.dateCreated = plat.dateCreated
                 result.lastUpdated = plat.lastUpdated
@@ -313,11 +313,11 @@ class DataloadService {
 
             switch(lic._getCalculatedType()) {
                 case CalculatedType.TYPE_CONSORTIAL:
-                    result.availableToOrgs = lic.orgRelations.findAll{ OrgRole oo ->oo.roleType.value in [RDStore.OR_LICENSING_CONSORTIUM.value]}?.org?.id
-                    result.membersCount = License.findAllByInstanceOf(lic).size()?:0
+                    result.availableToOrgs = Org.executeQuery('select oo.id from OrgRole oo where oo.lic = :lic and oo.roleType = :roleType', [lic: lic, roleType: RDStore.OR_LICENSING_CONSORTIUM])
+                    result.membersCount = License.countByInstanceOf(lic)
                     break
                 case CalculatedType.TYPE_PARTICIPATION:
-                    List orgs = lic.orgRelations.findAll{ OrgRole oo -> oo.roleType.value in [RDStore.OR_LICENSEE_CONS.value]}?.org
+                    List orgs = Org.executeQuery('select oo from OrgRole oo where oo.lic = :lic and oo.roleType = :roleType', [lic: lic, roleType: RDStore.OR_LICENSEE_CONS])
                     result.availableToOrgs = orgs.collect{ Org org -> org.id }
                     result.consortiaID = lic.getLicensingConsortium()?.id
                     result.consortiaName = lic.getLicensingConsortium()?.name
@@ -328,7 +328,7 @@ class DataloadService {
                     }
                     break
                 case CalculatedType.TYPE_LOCAL:
-                    result.availableToOrgs = lic.orgRelations.findAll{ OrgRole oo -> oo.roleType.value in [RDStore.OR_LICENSEE.value]}?.org?.id
+                    result.availableToOrgs = Org.executeQuery('select oo.id from OrgRole oo where oo.lic = :lic and oo.roleType = :roleType', [lic: lic, roleType: RDStore.OR_LICENSEE])
                     break
             }
 
@@ -377,11 +377,11 @@ class DataloadService {
 
                 switch (sub._getCalculatedType()) {
                     case CalculatedType.TYPE_CONSORTIAL:
-                        result.availableToOrgs = sub.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIPTION_CONSORTIA.value]}?.org?.id
-                        result.membersCount = Subscription.findAllByInstanceOf(sub).size() ?:0
+                        result.availableToOrgs = Org.executeQuery('select oo.id from OrgRole oo where oo.sub = :sub and oo.roleType = :roleType', [sub: sub, roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA])
+                        result.membersCount = Subscription.countByInstanceOf(sub)
                         break
                     case CalculatedType.TYPE_PARTICIPATION:
-                        List orgs = sub.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value]}?.org
+                        List orgs = Org.executeQuery('select oo from OrgRole oo where oo.sub = :sub and oo.roleType = :roleType', [sub: sub, roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA])
                         result.availableToOrgs = orgs?.id
                         result.consortiaID = sub.getConsortia()?.id
                         result.consortiaName = sub.getConsortia()?.name
@@ -395,7 +395,7 @@ class DataloadService {
                                   result.availableToOrgs = sub.orgRelations.findAll {it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value]}?.org?.id
                                   break*/
                     case CalculatedType.TYPE_LOCAL:
-                        result.availableToOrgs = sub.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIBER.value]}?.org?.id
+                        result.availableToOrgs = Org.executeQuery('select oo.id from OrgRole oo where oo.sub = :sub and oo.roleType = :roleType', [sub: sub, roleType: RDStore.OR_SUBSCRIBER])
                         break
                 }
 
@@ -619,16 +619,16 @@ class DataloadService {
 
             switch (ie.subscription._getCalculatedType()) {
                 case CalculatedType.TYPE_CONSORTIAL:
-                    result.availableToOrgs = ie.subscription.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIPTION_CONSORTIA.value]}?.org?.id
+                    result.availableToOrgs = Org.executeQuery('select oo.id from OrgRole oo where oo.sub = :sub and oo.roleType = :roleType', [sub: ie.subscription, roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA])
                     break
                 case CalculatedType.TYPE_PARTICIPATION:
-                    result.availableToOrgs = ie.subscription.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value]}?.org?.id
+                    result.availableToOrgs = Org.executeQuery('select oo.id from OrgRole oo where oo.sub = :sub and oo.roleType = :roleType', [sub: ie.subscription, roleType: RDStore.OR_SUBSCRIBER_CONS])
                     break
             /*              case CalculatedType.TYPE_ADMINISTRATIVE:
                               result.availableToOrgs = sub.orgRelations.findAll {it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value]}?.org?.id
                               break*/
                 case CalculatedType.TYPE_LOCAL:
-                    result.availableToOrgs = ie.subscription.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIBER.value]}?.org?.id
+                    result.availableToOrgs = Org.executeQuery('select oo.id from OrgRole oo where oo.sub = :sub and oo.roleType = :roleType', [sub: ie.subscription, roleType: RDStore.OR_SUBSCRIBER])
                     break
             }
 
@@ -691,16 +691,16 @@ class DataloadService {
             if(subProp.isPublic) {
                 switch (subProp.owner._getCalculatedType()) {
                     case CalculatedType.TYPE_CONSORTIAL:
-                        result.availableToOrgs = subProp.owner.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIPTION_CONSORTIA.value]}?.org?.id
+                        result.availableToOrgs = Org.executeQuery('select oo.id from OrgRole oo where oo.sub = :sub and oo.roleType = :roleType', [sub: subProp.owner, roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA])
                         break
                     case CalculatedType.TYPE_PARTICIPATION:
-                        result.availableToOrgs = subProp.owner.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value]}?.org?.id
+                        result.availableToOrgs = Org.executeQuery('select oo.id from OrgRole oo where oo.sub = :sub and oo.roleType = :roleType', [sub: subProp.owner, roleType: RDStore.OR_SUBSCRIBER_CONS])
                         break
                 /*              case CalculatedType.TYPE_ADMINISTRATIVE:
                                   result.availableToOrgs = sub.orgRelations.findAll {it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value]}?.org?.id
                                   break*/
                     case CalculatedType.TYPE_LOCAL:
-                        result.availableToOrgs = subProp.owner.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIBER.value]}?.org?.id
+                        result.availableToOrgs = Org.executeQuery('select oo.id from OrgRole oo where oo.sub = :sub and oo.roleType = :roleType', [sub: subProp.owner, roleType: RDStore.OR_SUBSCRIBER])
                         break
                 }
             }
@@ -800,13 +800,13 @@ class DataloadService {
             if(licProp.isPublic) {
                 switch(licProp.owner._getCalculatedType()) {
                     case CalculatedType.TYPE_CONSORTIAL:
-                        result.availableToOrgs = licProp.owner.orgRelations.findAll{it.roleType?.value in [RDStore.OR_LICENSING_CONSORTIUM.value]}?.org?.id
+                        result.availableToOrgs = Org.executeQuery('select oo.id from OrgRole oo where oo.lic = :lic and oo.roleType = :roleType', [lic: licProp.owner, roleType: RDStore.OR_LICENSING_CONSORTIUM])
                         break
                     case CalculatedType.TYPE_PARTICIPATION:
-                        result.availableToOrgs = licProp.owner.orgRelations.findAll{it.roleType?.value in [RDStore.OR_LICENSEE_CONS.value]}?.org?.id
+                        result.availableToOrgs = Org.executeQuery('select oo.id from OrgRole oo where oo.lic = :lic and oo.roleType = :roleType', [lic: licProp.owner, roleType: RDStore.OR_LICENSEE_CONS])
                         break
                     case CalculatedType.TYPE_LOCAL:
-                        result.availableToOrgs = licProp.owner.orgRelations.findAll{it.roleType?.value in [RDStore.OR_LICENSEE.value]}?.org?.id
+                        result.availableToOrgs = Org.executeQuery('select oo.id from OrgRole oo where oo.lic = :lic and oo.roleType = :roleType', [lic: licProp.owner, roleType: RDStore.OR_LICENSEE])
                         break
                 }
             }
@@ -1013,7 +1013,7 @@ class DataloadService {
                                     log.debug("processed ${total} records (${domain.name})")
                                     latest_ft_record.lastTimestamp = highest_timestamp
                                     latest_ft_record.save()
-                                    //session.flush()
+                                    bulkRequest = new BulkRequest()
                                 }
                             }
 
@@ -1273,7 +1273,7 @@ class DataloadService {
                         }
 
                         FTControl.withTransaction {
-                            ftControl.dbElements = domainClass.findAll().size()
+                            ftControl.dbElements = domainClass.count()
                             ftControl.esElements = countIndex
 
                             //println(ft.dbElements +' , '+ ft.esElements)
@@ -1336,7 +1336,7 @@ class DataloadService {
                         }
 
                         FTControl.withTransaction {
-                            ft.dbElements = domainClass.findAll().size()
+                            ft.dbElements = domainClass.count()
                             ft.esElements = countIndex
 
                             //println(ft.dbElements +' , '+ ft.esElements)
