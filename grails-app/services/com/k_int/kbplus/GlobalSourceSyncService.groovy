@@ -553,7 +553,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     if(result.hasMoreRecords) {
                         scrollId = result.scrollId
                         //flush after 100000 records ... seems that Grails 3 onwards fills memory, too!
-                        if(offset % 100000 && offset > 0) {
+                        if(offset % 100000 == 0 && offset > 0) {
                             globalService.cleanUpGorm()
                         }
                         offset += max
