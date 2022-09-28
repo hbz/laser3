@@ -9,6 +9,8 @@
 
 4507    28.09.2022  rc-2.3  2.3.9       Andreas Bug         Budgetcodefilterung funktionierte nicht
 
+4443    27.09.2022  dev     3.0         Andreas Feature     Korrektur im Lizenzimporttemplate
+
 --      21.09.2022  rc-2.3  2.3.8       Andreas Bug         Fehler bei Titelsynchronisation behoben
 
 4490    21.09.2022  rc-2.3  2.3.8       Andreas Bug         500er bei Lizenzaufruf behoben, Statistiküberprüfung umgebaut

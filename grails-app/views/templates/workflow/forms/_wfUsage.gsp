@@ -128,7 +128,7 @@
 
     <g:elseif test="${prefix == WfTask.KEY}">
         <g:set var="prefixOverride" value="${WfTask.KEY}" />
-        <g:set var="wfInfo" value="${task.getWorkflow()?.getInfo()}" />
+        <g:set var="wfInfo" value="${task.getWorkflowX()?.getInfo()}" />
 
         <div class="field">
 %{--            <p><strong>${task.title}</strong></p>--}%
@@ -223,7 +223,7 @@
                                 </g:if> --}%
                                 <div id="fileUploadWrapper_dropdown_${field}" class="ui segment" style="box-shadow:none">
                                     <div class="field">
-                                        <g:if test="${workflow}"> %{-- currentWorkflows --}%
+                                        <g:if test="${wfInfo}"> %{-- currentWorkflows --}%
                                             <g:set var="targetDocuments" value="${wfInfo.target.documents.findAll{ it.status != RDStore.DOC_CTX_STATUS_DELETED && it.owner.contentType == Doc.CONTENT_TYPE_FILE }}" />
                                             <g:select class="ui dropdown" id="${prefixOverride}_${field}" name="${prefixOverride}_${field}"
                                                       noSelection="${['' : message(code:'default.select.choose.label')]}"
@@ -247,7 +247,7 @@
                                 <div id="fileUploadWrapper_upload_${field}" class="ui segment" style="box-shadow:none;display:none">
                                     %{--<g:form class="ui form" url="${formUrl}" method="post" enctype="multipart/form-data">--}%
 
-                                    <g:if test="${workflow}"> %{-- currentWorkflows --}%
+                                    <g:if test="${wfInfo}"> %{-- currentWorkflows --}%
                                         <input type="hidden" name="wfUploadOwner_${field}" value="${wfInfo.target.class.name}:${wfInfo.target.id}"/>
                                     </g:if>
                                     <g:else>

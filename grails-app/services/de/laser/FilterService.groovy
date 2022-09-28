@@ -1353,8 +1353,11 @@ class FilterService {
                 base_qry += "order by ic.startDate ${params.order}, lower(ie.sortname), lower(tipp.sortname) "
             else if(params.sort == 'endDate')
                 base_qry += "order by ic.endDate ${params.order}, lower(ie.sortname), lower(tipp.sortname) "
-            else
-                base_qry += "order by ie.${params.sort} ${params.order} "
+            else {
+                if(params.sort.contains("sortname"))
+                    base_qry += "order by ie.sortname ${params.order}, ie.name ${params.order}, tipp.sortname ${params.order}, tipp.name ${params.order}"
+                else base_qry += "order by ie.${params.sort} ${params.order} "
+            }
         }
         else if(!params.forCount){
             base_qry += "order by ie.sortname, tipp.sortname"
