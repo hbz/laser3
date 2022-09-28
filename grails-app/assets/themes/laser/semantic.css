@@ -64991,7 +64991,7 @@ a.inverted.ui.card:hover,
   content: '\f0da' ;
 }
 
-.ui.accordion.la-accordion-showMore .item .active.title .angle.double.icon {
+.ui.accordion.la-accordion-showMore .active.title .angle.double.icon {
   -webkit-transform: rotate(-180deg);
   transform: rotate(-180deg);
 }
