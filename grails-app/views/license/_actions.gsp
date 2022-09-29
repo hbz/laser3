@@ -32,7 +32,7 @@
                 </g:if>
             </g:if>
 
-            <g:if test="${workflowService.isInstantiableForCurrentUser()}"><!-- TODO: workflows-permissions -->
+            <g:if test="${workflowService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
                 <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalInstantiateWorkflow" />
             </g:if>
 
@@ -83,6 +83,6 @@
     <laser:render template="/templates/notes/modal_create" model="${[ownobj: license, owntp: 'license']}"/>
 </g:if>
 
-<g:if test="${workflowService.isInstantiableForCurrentUser()}"><!-- TODO: workflows-permissions -->
+<g:if test="${workflowService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
     <laser:render template="/templates/workflow/instantiate" model="${[cmd: RDStore.WF_WORKFLOW_TARGET_TYPE_LICENSE, target: license]}"/>
 </g:if>

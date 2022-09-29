@@ -78,7 +78,7 @@
         <ui:actionsDropdownItem message="template.addNote" data-ui="modal" href="#modalCreateNote" />
         <div class="divider"></div>
         <g:if test="${editable}">
-            <g:if test="${workflowService.isInstantiableForCurrentUser()}"><!-- TODO: workflows-permissions -->
+            <g:if test="${workflowService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
                 <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalInstantiateWorkflow" />
                 <div class="divider"></div>
             </g:if>
@@ -204,6 +204,6 @@
 <g:if test="${accessService.checkMinUserOrgRole(user,contextOrg,'INST_EDITOR')}">
     <laser:render template="/templates/notes/modal_create" model="${[ownobj: subscription, owntp: 'subscription']}"/>
 </g:if>
-<g:if test="${workflowService.isInstantiableForCurrentUser()}"><!-- TODO: workflows-permissions -->
+<g:if test="${workflowService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
     <laser:render template="/templates/workflow/instantiate" model="${[cmd: RDStore.WF_WORKFLOW_TARGET_TYPE_SUBSCRIPTION, target: subscription]}"/>
 </g:if>

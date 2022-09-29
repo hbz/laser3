@@ -735,37 +735,29 @@ class WorkflowService {
         result
     }
 
-    boolean isAccessibleForCurrentUser() {
-        User user = contextService.getUser()
-        if (user.isAdmin() || user.isYoda()) {
-            return true
-        }
-        Org ctxOrg = contextService.getOrg()
-        if (ctxOrg.getCustomerType() in ['ORG_CONSORTIUM'] && user.hasAffiliationForForeignOrg('INST_USER', ctxOrg)) {
-            return true
-        }
-        false
+    boolean hasUserPerm_read() {
+        _innerPermissionCheck('INST_USER')
     }
 
-    boolean isEditableForCurrentUser() {
-        User user = contextService.getUser()
-        if (user.isAdmin() || user.isYoda()) {
-            return true
-        }
-        Org ctxOrg = contextService.getOrg()
-        if (ctxOrg.getCustomerType() in ['ORG_CONSORTIUM'] && user.hasAffiliationForForeignOrg('INST_ADM', ctxOrg)) {
-            return true
-        }
-        false
+    boolean hasUserPerm_init() {
+        _innerPermissionCheck('INST_EDITOR')
     }
 
-    boolean isInstantiableForCurrentUser() {
+    boolean hasUserPerm_edit() {
+        _innerPermissionCheck('INST_EDITOR')
+    }
+
+    boolean hasUserPerm_wrench() {
+        _innerPermissionCheck('INST_ADM')
+    }
+
+    private boolean _innerPermissionCheck(String userRoleName) {
         User user = contextService.getUser()
         if (user.isAdmin() || user.isYoda()) {
             return true
         }
         Org ctxOrg = contextService.getOrg()
-        if (ctxOrg.getCustomerType() in ['ORG_CONSORTIUM'] && user.hasAffiliationForForeignOrg('INST_ADM', ctxOrg)) {
+        if (userRoleName && ctxOrg.getCustomerType() in ['ORG_CONSORTIUM'] && user.hasAffiliationForForeignOrg(userRoleName, ctxOrg)) {
             return true
         }
         false
