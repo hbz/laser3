@@ -7,6 +7,14 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4511    29.09.2022  dev     3.0         David   Feature     Bessere Rückmeldung im modalen Dialog
+
+4510    29.09.2022  dev     3.0         David   Feature     Redakteure sollen Workflows verknüpfen dürfen
+
+4508    28.09.2022  dev     3.0         David   Bug         Löschen eines Workflows führt zu 500er
+
+4503    28.09.2022  dev     3.0         David   Bug         500er "Meine Workflows"
+
 4443    27.09.2022  dev     3.0         Andreas Feature     Korrektur im Lizenzimporttemplate
 
 --      21.09.2022  rc-2.3  2.3.8       Andreas Bug         Fehler bei Titelsynchronisation behoben

@@ -529,7 +529,7 @@ class WorkflowService {
 
                         log.debug( 'removeCompleteWorkflow() -> ' + result.workflow.getErrors().toString() )
 
-                        log.debug( 'TransactionStatus.setRollbackOnly()' )
+                        log.debug( 'TransactionStatus.setRollbackOnly(A)' )
                         ts.setRollbackOnly()
                     }
                     else {
@@ -543,7 +543,7 @@ class WorkflowService {
                     log.debug( 'removeCompleteWorkflow() -> ' + e.getMessage() )
                     e.printStackTrace()
 
-                    log.debug( 'TransactionStatus.setRollbackOnly()' )
+                    log.debug( 'TransactionStatus.setRollbackOnly(B)' )
                     ts.setRollbackOnly()
                 }
             }
