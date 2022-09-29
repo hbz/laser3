@@ -56771,16 +56771,16 @@ Floated Menu / Item
   top: 50px;
   z-index: 101;
   background-color: #004678;
-  color: white;
+  color: #FFFFFF;
 }
 
 .ui.menu.la-contextBar .item {
+  color: #FFFFFF;
   padding: 0;
 }
 
 .ui.menu.la-contextBar .la-context-org {
   font-size: 0.87em;
-  color: white;
   -webkit-box-flex: 0;
   -ms-flex: 0 0 200px;
   flex: 0 0 200px;

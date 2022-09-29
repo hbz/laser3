@@ -533,26 +533,20 @@
                 <div class="right menu la-advanced-view">
                     <div class="item">
                         <g:if test="${flagContentCache}">
-                            <span class="ui icon button la-popup-tooltip la-delay" data-content="${message(code:'statusbar.flagContentCache.tooltip')}" data-position="bottom right" data-variation="tiny">
-                                <i class="hourglass end icon"></i>
-                            </span>
+                                <i class="hourglass end icon la-popup-tooltip la-delay" data-content="${message(code:'statusbar.flagContentCache.tooltip')}" data-position="bottom right" data-variation="tiny"></i>
                         </g:if>
                         <g:if test="${flagContentGokb}">
-                            <span class="ui icon button la-popup-tooltip la-delay" data-content="${message(code:'statusbar.flagContentGokb.tooltip')}" data-position="bottom right" data-variation="tiny">
-                                <i class="cloud icon"></i>
-                            </span>
+                                <i class="cloud icon la-popup-tooltip la-delay" data-content="${message(code:'statusbar.flagContentGokb.tooltip')}" data-position="bottom right" data-variation="tiny"></i>
                         </g:if>
                         <g:if test="${flagContentElasticsearch}">
-                            <span class="ui icon button la-popup-tooltip la-delay" data-content="${message(code:'statusbar.flagContentElasticsearch.tooltip')}" data-position="bottom right" data-variation="tiny">
-                                <i class="cloud icon"></i>
-                            </span>
+                                <i class="cloud icon la-popup-tooltip la-delay" data-content="${message(code:'statusbar.flagContentElasticsearch.tooltip')}" data-position="bottom right" data-variation="tiny"></i>
                         </g:if>
                     </div>
 
                         <g:if test="${(controllerName=='dev' && actionName=='frontend' ) || (controllerName=='subscription'|| controllerName=='license') && actionName=='show' && (editable || accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN'))}">
                             <div class="item">
                                 <g:if test="${user?.getSettingsValue(UserSetting.KEYS.SHOW_EDIT_MODE, RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N))?.value=='Yes'}">
-                                    <button class="ui icon toggle active  button la-toggle-controls la-popup-tooltip la-delay" data-content="${message(code:'statusbar.showButtons.tooltip')}" data-position="bottom right">
+                                    <button class="ui icon toggle active blue button la-modern-button  la-toggle-controls la-popup-tooltip la-delay" data-content="${message(code:'statusbar.showButtons.tooltip')}" data-position="bottom right">
                                         <i class="pencil alternate icon"></i>
                                     </button>
                                 </g:if>
@@ -568,12 +562,12 @@
                         <g:if test="${(params.mode)}">
                             <div class="item">
                                 <g:if test="${params.mode=='advanced'}">
-                                    <div class="ui toggle la-toggle-advanced button la-popup-tooltip la-delay" data-content="${message(code:'statusbar.showAdvancedView.tooltip')}" data-position="bottom right">
+                                    <div class="ui toggle la-toggle-advanced blue button la-modern-button la-popup-tooltip la-delay" data-content="${message(code:'statusbar.showAdvancedView.tooltip')}" data-position="bottom right">
                                         <i class="icon plus square"></i>
                                     </div>
                                 </g:if>
                                 <g:else>
-                                    <div class="ui toggle la-toggle-advanced button la-popup-tooltip la-delay" data-content="${message(code:'statusbar.showBasicView.tooltip')}" data-position="bottom right">
+                                    <div class="ui toggle la-toggle-advanced blue button la-modern-button la-popup-tooltip la-delay" data-content="${message(code:'statusbar.showBasicView.tooltip')}" data-position="bottom right">
                                         <i class="icon plus square green slash"></i>
                                     </div>
                                 </g:else>
@@ -611,12 +605,12 @@
                         <g:if test="${controllerName == 'survey' && (actionName == 'currentSurveysConsortia' || actionName == 'workflowsSurveysConsortia')}">
                             <div class="item">
                                 <g:if test="${actionName == 'workflowsSurveysConsortia'}">
-                                    <g:link action="currentSurveysConsortia" controller="survey" class="ui button la-popup-tooltip la-delay" data-content="${message(code:'statusbar.change.currentSurveysConsortiaView.tooltip')}" data-position="bottom right">
+                                    <g:link action="currentSurveysConsortia" controller="survey" class="ui blue button la-modern-button la-popup-tooltip la-delay" data-content="${message(code:'statusbar.change.currentSurveysConsortiaView.tooltip')}" data-position="bottom right">
                                         <i class="exchange icon"></i>
                                     </g:link>
                                 </g:if>
                                 <g:else>
-                                    <g:link action="workflowsSurveysConsortia" controller="survey" class="ui button la-popup-tooltip la-delay" data-content="${message(code:'statusbar.change.workflowsSurveysConsortiaView.tooltip')}" data-position="bottom right">
+                                    <g:link action="workflowsSurveysConsortia" controller="survey" class="ui blue button la-modern-button la-popup-tooltip la-delay" data-content="${message(code:'statusbar.change.workflowsSurveysConsortiaView.tooltip')}" data-position="bottom right">
                                         <i class="exchange icon"></i>
                                     </g:link>
                                 </g:else>
