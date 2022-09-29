@@ -64,9 +64,11 @@
                                     </g:link>
                                 </span>
                             </g:if>
-                            <g:link class="wfModalLink ui icon button blue compact la-modern-button" controller="ajaxHtml" action="useWfXModal" params="${[key: wfKey, info: wfKey]}">
-                                <i class="icon pencil"></i>
-                            </g:link>
+                            <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
+                                <g:link class="wfModalLink ui icon button blue compact la-modern-button" controller="ajaxHtml" action="useWfXModal" params="${[key: wfKey, info: wfKey]}">
+                                    <i class="icon pencil"></i>
+                                </g:link>
+                            </g:if>
 
                         </div>
                     </div>
@@ -118,9 +120,11 @@
                                         </g:link>
                                     </span>
                                 </g:if>
-                                <g:link class="wfModalLink ui icon button blue compact la-modern-button" controller="ajaxHtml" action="useWfXModal" params="${[key: tKey, info: wfKey]}">
-                                    <i class="icon pencil"></i>
-                                </g:link>
+                                <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
+                                    <g:link class="wfModalLink ui icon button blue compact la-modern-button" controller="ajaxHtml" action="useWfXModal" params="${[key: tKey, info: wfKey]}">
+                                        <i class="icon pencil"></i>
+                                    </g:link>
+                                </g:if>
 
                             </div>
                         </div>

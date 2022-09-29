@@ -1,7 +1,18 @@
+<laser:serviceInjection />
+
 <g:if test="${tmplCmd == 'usage'}">
-    <ui:modal id="wfModal" text="${tmplModalTitle}" isEditModal="true">
-        <laser:render template="/templates/workflow/forms/wfUsage" model="${[formUrl: "${tmplFormUrl}"]}"/>
-    </ui:modal>
+    <g:set var="wfEditPerm" value="${workflowService.hasUserPerm_edit()}" />
+
+    <g:if test="${wfEditPerm}">
+        <ui:modal id="wfModal" text="${tmplModalTitle}" isEditModal="true">
+            <laser:render template="/templates/workflow/forms/wfUsage" model="${[formUrl: "${tmplFormUrl}"]}"/>
+        </ui:modal>
+    </g:if>
+    <g:else>
+        <ui:modal id="wfModal" text="${tmplModalTitle}" hideSubmitButton="true">
+            <laser:render template="/templates/workflow/forms/wfUsage" model="${[formUrl: "${tmplFormUrl}"]}"/>
+        </ui:modal>
+    </g:else>
 </g:if>
 <g:elseif test="${tmplCmd == 'create'}">
     <ui:modal id="wfModal" text="${tmplModalTitle}">

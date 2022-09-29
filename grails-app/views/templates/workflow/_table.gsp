@@ -57,9 +57,15 @@
                 ${DateUtils.getLocalizedSDF_noTime().format(wf.dateCreated)}
             </td>
             <td class="x">
-                <button class="ui icon button blue la-modern-button" data-wfId="${wf.id}"><i class="icon edit"></i></button>
-            %{-- <button class="ui small icon button" onclick="alert('Editierfunktion für Einrichtungsadministratoren. Noch nicht implementiert.')"><i class="icon cogs"></i></button> --}%
-                <g:if test="${workflowService.isEditableForCurrentUser()}"><!-- TODO: workflows-permissions -->
+                <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
+                    <button class="ui icon button blue la-modern-button" data-wfId="${wf.id}"><i class="icon edit"></i></button>
+                    %{-- <button class="ui small icon button" onclick="alert('Editierfunktion für Einrichtungsadministratoren. Noch nicht implementiert.')"><i class="icon cogs"></i></button> --}%
+                </g:if>
+                <g:elseif test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
+                    <button class="ui icon button blue la-modern-button" data-wfId="${wf.id}"><i class="ellipsis horizontal icon"></i></button>
+                    %{-- <button class="ui small icon button" onclick="alert('Editierfunktion für Einrichtungsadministratoren. Noch nicht implementiert.')"><i class="icon cogs"></i></button> --}%
+                </g:elseif>
+                <g:if test="${workflowService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
                     <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.workflow", args: [wf.title])}"
                             data-confirm-term-how="delete"

@@ -1,4 +1,6 @@
 <%@ page import="de.laser.Doc; de.laser.Org; de.laser.utils.DateUtils; de.laser.storage.RDStore; de.laser.Subscription; de.laser.workflow.WorkflowHelper; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.RefdataValue; de.laser.workflow.*;" %>
+<laser:serviceInjection />
+<g:set var="wfEditPerm" value="${workflowService.hasUserPerm_edit()}" />
 
 <g:form id="wfForm" url="${formUrl}" method="POST" class="ui form">
 
@@ -27,17 +29,28 @@
 
         <div class="field">
             <label for="${prefixOverride}_comment">${message(code:'default.comment.label')}</label>
-            <textarea id="${prefixOverride}_comment" name="${prefixOverride}_comment" rows="2">${workflow.comment}</textarea>
+            <g:if test="${wfEditPerm}">
+                <textarea id="${prefixOverride}_comment" name="${prefixOverride}_comment" rows="2">${workflow.comment}</textarea>
+            </g:if>
+            <g:else>
+                <p id="${prefixOverride}_comment">${workflow.comment ?: '-'}</p>
+            </g:else>
         </div>
 
         <div class="field">
             <div class="field">
                 <label for="${prefixOverride}_status">${message(code:'default.status.label')}</label>
-                <ui:select class="ui dropdown la-not-clearable" id="${prefixOverride}_status" name="${prefixOverride}_status"
-                              from="${RefdataCategory.getAllRefdataValues( RDConstants.WF_WORKFLOW_STATUS )}"
-                              value="${workflow.status?.id}"
-                              optionKey="id"
-                              optionValue="value" />
+                <g:if test="${wfEditPerm}">
+                    <ui:select class="ui dropdown la-not-clearable" id="${prefixOverride}_status" name="${prefixOverride}_status"
+                               from="${RefdataCategory.getAllRefdataValues( RDConstants.WF_WORKFLOW_STATUS )}"
+                               value="${workflow.status?.id}"
+                               optionKey="id"
+                               optionValue="value"
+                    />
+                </g:if>
+                <g:else>
+                    <p id="${prefixOverride}_status">${workflow.status.getI10n('value')}</p>
+                </g:else>
             </div>
         </div>
 
@@ -74,28 +87,6 @@
                                     </g:if>
                                 </div>
                             </div>
-                            %{--
-                            <div class="eight wide column">
-                                <g:if test="${task.condition}">
-
-                                    <div class="content">
-                                        <div class="header">
-                                            <strong>${task.condition.title}</strong>
-                                        </div>
-                                        <div class="description">
-                                            ${task.condition.description} <br />
-                                            <!-- -->
-                                            <g:each in="${task.condition.getFields()}" var="field" status="fi">
-                                                <br />
-                                                <uiWorkflow:taskConditionField condition="${task.condition}" field="${field}" />
-                                            </g:each>
-                                            <!-- -->
-                                        </div>
-                                    </div>
-
-                                </g:if>
-                            </div>
-                            --}%
                         </div>
                     </g:if>
                 </g:each>
@@ -146,16 +137,26 @@
 
         <div class="field">
             <label for="${prefixOverride}_comment">${message(code:'default.comment.label')}</label>
-            <textarea id="${prefixOverride}_comment" name="${prefixOverride}_comment" rows="2">${task.comment}</textarea>
+            <g:if test="${wfEditPerm}">
+                <textarea id="${prefixOverride}_comment" name="${prefixOverride}_comment" rows="2">${task.comment}</textarea>
+            </g:if>
+            <g:else>
+                <p id="${prefixOverride}_comment">${task.comment ?: '-'}</p>
+            </g:else>
         </div>
 
         <div class="field">
             <label for="${prefixOverride}_status">${message(code:'default.status.label')}</label>
-            <ui:select class="ui dropdown la-not-clearable" id="${prefixOverride}_status" name="${prefixOverride}_status"
-                          from="${RefdataCategory.getAllRefdataValues( RDConstants.WF_TASK_STATUS )}"
-                          value="${task.status?.id}"
-                          optionKey="id"
-                          optionValue="value" />
+            <g:if test="${wfEditPerm}">
+                <ui:select class="ui dropdown la-not-clearable" id="${prefixOverride}_status" name="${prefixOverride}_status"
+                           from="${RefdataCategory.getAllRefdataValues( RDConstants.WF_TASK_STATUS )}"
+                           value="${task.status?.id}"
+                           optionKey="id"
+                           optionValue="value" />
+            </g:if>
+            <g:else>
+                <p id="${prefixOverride}_status">${task.status.getI10n('value')}</p>
+            </g:else>
         </div>
 
         <g:if test="${task.condition}">
@@ -182,12 +183,12 @@
                         <g:if test="${field.startsWith('checkbox')}">
                             <div class="field">
                                 <label for="${prefixOverride}_${field}">${task.condition.getProperty(field + '_title') ?: message(code:'workflow.field.noTitle.label')}</label>
-                                <div class="ui checkbox">
+                                <div class="ui checkbox ${wfEditPerm ? '' : 'read-only'}">
                                     <input type="checkbox" name="${prefixOverride}_${field}" id="${prefixOverride}_${field}"
                                         <% print task.condition.getProperty(field) == true ? 'checked="checked"' : '' %>
                                     />
                                     <g:if test="${task.condition.getProperty(field + '_isTrigger')}">
-                                        <label><sup>*</sup>ändert den Aufgaben-Status</label>
+                                        <label>&larr; ändert den Aufgaben-Status</label>
                                     </g:if>
                                 </div>
                             </div>
@@ -195,56 +196,59 @@
                         <g:elseif test="${field.startsWith('date')}">
                             <div class="field">
                                 <label for="${prefixOverride}_${field}">${task.condition.getProperty(field + '_title') ?: message(code:'workflow.field.noTitle.label')}</label>
-%{--                                <input type="date" name="${prefixOverride}_${field}" id="${prefixOverride}_${field}"--}%
-%{--                                    <% print task.condition.getProperty(field) ? 'value="' + DateUtils.getSDF_yyyyMMdd().format(task.condition.getProperty(field)) + '"' : '' %>--}%
-%{--                                />--}%
-                                <ui:datepicker hideLabel="true" id="${prefixOverride}_${field}" name="${prefixOverride}_${field}"
+                                <g:if test="${wfEditPerm}">
+                                    <ui:datepicker hideLabel="true" id="${prefixOverride}_${field}" name="${prefixOverride}_${field}" class="${wfEditPerm_disabledSwitch}"
                                                value="${task.condition.getProperty(field) ? DateUtils.getSDF_yyyyMMdd().format(task.condition.getProperty(field)) : ''}">
-                                </ui:datepicker>
+                                    </ui:datepicker>
+                                </g:if>
+                                <g:else>
+                                    <input type="text" id="${prefixOverride}_${field}" readonly="readonly" value="${task.condition.getProperty(field) ? DateUtils.getLocalizedSDF_noTime().format(task.condition.getProperty(field)) : ''}" />
+                                </g:else>
                             </div>
                         </g:elseif>
                         <g:elseif test="${field.startsWith('file')}">
                             <div class="field">
-                                <label for="${prefixOverride}_${field}">${task.condition.getProperty(field + '_title') ?: message(code:'workflow.field.noTitle.label')}
-                                    <div id="fileUploadWrapper_toggle_${field}" class="ui small buttons" style="float:right; margin-right:10px">
-                                        <span data-position="top right" class="ui left attached button active la-popup-tooltip la-delay" data-content="${message(code:'workflow.condition.file.info')}">
-                                            <i class="icon file"></i> &nbsp;
-                                        </span>
-                                        <span data-position="top right" class="ui right attached button la-popup-tooltip la-delay" data-content="${message(code:'workflow.condition.fileUpload.info')}">
-                                            &nbsp; <i class="icon paperclip"></i>
-                                        </span>
-                                    </div>
-                                </label>
-                                <g:set var="docctx" value="${task.condition.getProperty(field)}" />
-                                %{-- <g:if test="${docctx}">
-                                    <g:link controller="docstore" id="${docctx.owner.uuid}">
-                                        <i class="icon file"></i>
-                                    </g:link>
-                                </g:if> --}%
-                                <div id="fileUploadWrapper_dropdown_${field}" class="ui segment" style="box-shadow:none">
-                                    <div class="field">
-                                        <g:if test="${wfInfo}"> %{-- currentWorkflows --}%
-                                            <g:set var="targetDocuments" value="${wfInfo.target.documents.findAll{ it.status != RDStore.DOC_CTX_STATUS_DELETED && it.owner.contentType == Doc.CONTENT_TYPE_FILE }}" />
-                                            <g:select class="ui dropdown" id="${prefixOverride}_${field}" name="${prefixOverride}_${field}"
-                                                      noSelection="${['' : message(code:'default.select.choose.label')]}"
-                                                      from="${targetDocuments}"
-                                                      value="${task.condition.getProperty(field)?.id}"
-                                                      optionKey="${{it.id}}"
-                                                      optionValue="${{ (it.owner?.title ? it.owner.title : it.owner?.filename ? it.owner.filename : message(code:'template.documents.missing')) + ' (' + it.owner?.type?.getI10n("value") + ')' }}" />
-                                        </g:if>
-                                        <g:else>
-                                            <g:set var="targetDocuments" value="${targetObject.documents.findAll{ it.status != RDStore.DOC_CTX_STATUS_DELETED && it.owner.contentType == Doc.CONTENT_TYPE_FILE }}" />
-                                            <g:select class="ui dropdown" id="${prefixOverride}_${field}" name="${prefixOverride}_${field}"
-                                                      noSelection="${['' : message(code:'default.select.choose.label')]}"
-                                                      from="${targetDocuments}"
-                                                      value="${task.condition.getProperty(field)?.id}"
-                                                      optionKey="${{it.id}}"
-                                                      optionValue="${{ (it.owner?.title ? it.owner.title : it.owner?.filename ? it.owner.filename : message(code:'template.documents.missing')) + ' (' + it.owner?.type?.getI10n("value") + ')' }}" />
+                                <g:if test="${wfEditPerm}">
+                                    <label for="${prefixOverride}_${field}">${task.condition.getProperty(field + '_title') ?: message(code:'workflow.field.noTitle.label')}
+                                        <div id="fileUploadWrapper_toggle_${field}" class="ui small buttons" style="float:right; margin-right:10px">
+                                            <span data-position="top right" class="ui left attached button active la-popup-tooltip la-delay" data-content="${message(code:'workflow.condition.file.info')}">
+                                                <i class="icon file"></i> &nbsp;
+                                            </span>
+                                            <span data-position="top right" class="ui right attached button la-popup-tooltip la-delay" data-content="${message(code:'workflow.condition.fileUpload.info')}">
+                                                &nbsp; <i class="icon paperclip"></i>
+                                            </span>
+                                        </div>
+                                    </label>
+                                    <g:set var="docctx" value="${task.condition.getProperty(field)}" />
+                                    %{-- <g:if test="${docctx}">
+                                        <g:link controller="docstore" id="${docctx.owner.uuid}">
+                                            <i class="icon file"></i>
+                                        </g:link>
+                                    </g:if> --}%
+                                    <div id="fileUploadWrapper_dropdown_${field}" class="ui segment" style="box-shadow:none">
+                                        <div class="field">
+                                            <g:if test="${wfInfo}"> %{-- currentWorkflows --}%
+                                                <g:set var="targetDocuments" value="${wfInfo.target.documents.findAll{ it.status != RDStore.DOC_CTX_STATUS_DELETED && it.owner.contentType == Doc.CONTENT_TYPE_FILE }}" />
+                                                <g:select class="ui dropdown" id="${prefixOverride}_${field}" name="${prefixOverride}_${field}"
+                                                          noSelection="${['' : message(code:'default.select.choose.label')]}"
+                                                          from="${targetDocuments}"
+                                                          value="${task.condition.getProperty(field)?.id}"
+                                                          optionKey="${{it.id}}"
+                                                          optionValue="${{ (it.owner?.title ? it.owner.title : it.owner?.filename ? it.owner.filename : message(code:'template.documents.missing')) + ' (' + it.owner?.type?.getI10n("value") + ')' }}" />
+                                            </g:if>
+                                            <g:else>
+                                                <g:set var="targetDocuments" value="${targetObject.documents.findAll{ it.status != RDStore.DOC_CTX_STATUS_DELETED && it.owner.contentType == Doc.CONTENT_TYPE_FILE }}" />
+                                                <g:select class="ui dropdown" id="${prefixOverride}_${field}" name="${prefixOverride}_${field}"
+                                                          noSelection="${['' : message(code:'default.select.choose.label')]}"
+                                                          from="${targetDocuments}"
+                                                          value="${task.condition.getProperty(field)?.id}"
+                                                          optionKey="${{it.id}}"
+                                                          optionValue="${{ (it.owner?.title ? it.owner.title : it.owner?.filename ? it.owner.filename : message(code:'template.documents.missing')) + ' (' + it.owner?.type?.getI10n("value") + ')' }}" />
 
-                                        </g:else>
+                                            </g:else>
+                                        </div>
                                     </div>
-                                </div>
-                                <div id="fileUploadWrapper_upload_${field}" class="ui segment" style="box-shadow:none;display:none">
+                                    <div id="fileUploadWrapper_upload_${field}" class="ui segment" style="box-shadow:none;display:none">
                                     %{--<g:form class="ui form" url="${formUrl}" method="post" enctype="multipart/form-data">--}%
 
                                     <g:if test="${wfInfo}"> %{-- currentWorkflows --}%
@@ -284,7 +288,12 @@
                                         </div>
 
                                     %{--</g:form>--}%
-                                </div>
+                                    </div>
+                                </g:if>
+                                <g:else>
+                                    <label for="${prefixOverride}_${field}">${task.condition.getProperty(field + '_title') ?: message(code:'workflow.field.noTitle.label')}</label>
+                                    <input type="text" id="${prefixOverride}_${field}" readonly="readonly" value="${task.condition.getProperty(field)?.owner?.filename}" />
+                                </g:else>
                             </div>
                         </g:elseif>
 
