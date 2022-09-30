@@ -180,6 +180,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         }
                     }
                     if(maxTimestamp+1000 > source.haveUpTo.getTime()) {
+                        source.refresh()
                         log.debug("old ${sdf.format(source.haveUpTo)}")
                         source.haveUpTo = new Date(maxTimestamp + 1000)
                         log.debug("new ${sdf.format(source.haveUpTo)}")
