@@ -68,3 +68,17 @@ aside.la-metabox + .la-metabox-spacer {
   margin: 1rem 0;
   padding: 1em 0;
 }
+// Accordion for 'see more content'
+.ui.segments.la-accordion-segments {
+  border-bottom: 1px solid @laSecondaryColor;
+  &:last-child {
+    border-bottom:none;
+  }
+  .ui.segment:nth-child(2).content {
+    .ui.table thead tr:first-child > th,
+    .ui.table thead tr:nth-child(2) > th{
+      background: @white;
+    }
+    background:@laAlternativeBackground;
+  }
+}

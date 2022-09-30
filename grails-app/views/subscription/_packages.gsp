@@ -10,7 +10,7 @@
             if(sp.pendingChangeConfig.size() > 0) {
                 buttonColor = "green"
             }%>
-            <div class="ui raised segments la-laser-segments ">
+            <div class="ui raised segments la-accordion-segments">
                 <div class="ui fluid segment  title">
                     <div class="ui stackable equal width grid">
                         <div class="twelve wide column">
@@ -46,7 +46,7 @@
                             <g:if test="${editmode}">
                                 <button class="ui icon blue button la-modern-button ${buttonColor} la-js-dont-hide-button la-popup-tooltip la-delay"
                                         data-content="${message(code:'subscription.packages.config.header')}">
-                                    <i class="ui angle double down large icon"></i>
+                                    <i class="ui angle double down icon"></i>
                                 </button>
                                 <laser:script file="${this.getGroovyPageFileName()}">
 %{--                                    $("#pendingChangeConfigurationToggle${sp.id}").on('click', function() {
@@ -110,7 +110,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="ui fluid segment content la-laser-segment-2level">
+                <div class="ui fluid segment content">
                         <h5 class="ui header">
                             <g:message code="subscription.packages.config.label" args="${[sp.pkg.name]}"/>
                         </h5>
@@ -248,7 +248,7 @@
                                                     }
                                                 %>
                                                 <g:if test="${!disabled}">
-                                                    <g:link controller="subscription" action="resetHoldingToSubEnd" class="ui button negative la-modern-button js-open-confirm-modal la-popup-tooltip la-delay"
+                                                    <g:link controller="subscription" action="resetHoldingToSubEnd" class="ui button negative js-open-confirm-modal la-popup-tooltip la-delay"
                                                             params="[id: subscription.id, subPkg: sp.id]"
                                                             data-confirm-tokenMsg="${message(code: "confirm.dialog.resetSubToEndDate")}"
                                                             data-confirm-term-how="ok">
@@ -256,7 +256,7 @@
                                                     </g:link>
                                                 </g:if>
                                                 <g:else>
-                                                    <g:link class="ui disabled button negative la-modern-button la-popup-tooltip la-delay"
+                                                    <g:link class="ui disabled button negative la-popup-tooltip la-delay"
                                                             data-content="${message(code: 'subscription.packages.resetToSubEnd.threadRunning')}">
                                                         <g:message code="subscription.packages.resetToSubEnd.label"/>
                                                     </g:link>
