@@ -13,7 +13,7 @@
 
 <div class="ui secondary stackable pointing tabular la-tab-with-js menu">
     <a data-tab="prototypes" class="item <% if (tmplTab == 'prototypes') { print 'active' } %>">${message(code:'default.prototype.plural')}</a>
-    <a data-tab="templates" class="item <% if (tmplTab == 'templates') { print 'active' } %>">Templates</a>
+    <a data-tab="templates" class="item <% if (tmplTab == 'templates') { print 'active' } %>">${message(code: 'workflow.template.plural')}</a>
     <a data-tab="workflows" class="item <% if (tmplTab == 'workflows') { print 'active' } %>">${message(code:'workflow.plural')}</a>
     <a data-tab="help" class="item <% if (tmplTab == 'help') { print 'active' } %>">?</a>
 </div>
@@ -49,6 +49,12 @@
         </div>
     </ui:msg>
 
+    <g:set var="currentWorkflows" value="${WfWorkflow.executeQuery('select wfw from WfWorkflow wfw order by wfw.id desc').sort{ a,b -> b.getInfo().lastUpdated <=> a.getInfo().lastUpdated }}" />
+    <p class="ui header">
+        * Workflows insgesamt: <ui:totalNumber total="${currentWorkflows.size()}"/>
+    </p>
+    <br />
+
     <g:if test="${key == WfWorkflow.KEY}">
         <laser:render template="/templates/workflow/opResult" model="${[key:key, cmd:cmd, status:status, obj:workflow]}" />
     </g:if>
@@ -59,7 +65,7 @@
         <laser:render template="/templates/workflow/opResult" model="${[key:key, cmd:cmd, status:status, obj:condition]}" />
     </g:elseif>
 
-    <g:each in="${WfWorkflow.executeQuery('select wfw from WfWorkflow wfw order by wfw.id desc').sort{ a,b -> b.getInfo().lastUpdated <=> a.getInfo().lastUpdated }}" var="wf">
+    <g:each in="${currentWorkflows}" var="wf">
 
         <g:set var="wfInfo" value="${wf.getInfo()}" />
 
@@ -134,6 +140,11 @@
                 <i class="icon edit"></i>
             </g:link>
 
+            <g:link class="ui small icon blue button right floated la-modern-button wfModalLink"
+                    controller="ajaxHtml" action="editWfXModal" params="${[key: WfWorkflow.KEY + ':' + wf.id, tab: 'workflows']}">
+                <i class="icon expand"></i>
+            </g:link>
+
             <br />
             <span>
                 ${message(code:'default.lastUpdated.label')}: ${DateUtils.getLocalizedSDF_noTime().format(wfInfo.lastUpdated)}
@@ -167,6 +178,11 @@
             </div>
         </div>
     </ui:msg>
+
+    <p class="ui header">
+        * Elemente für Workflow-${message(code: 'workflow.template.plural')}: <ui:totalNumber total="${WfWorkflowPrototype.count() + WfTaskPrototype.count() + WfConditionPrototype.count()}"/>
+    </p>
+    <br />
 
     <p class="ui header">
         ${message(code: 'workflow.object.' + WfWorkflowPrototype.KEY)} <ui:totalNumber total="${WfWorkflowPrototype.count()}"/>
@@ -425,7 +441,7 @@
     <g:set var="workflowTemplates" value="${WfWorkflowPrototype.executeQuery('select wfwp from WfWorkflowPrototype wfwp order by wfwp.id desc')}" />
 
     <p class="ui header">
-        ${message(code: 'workflow.template.plural')} <ui:totalNumber total="${workflowTemplates.size()}"/>
+        * Workflow-${message(code: 'workflow.template.plural')}: <ui:totalNumber total="${workflowTemplates.size()}"/>
     </p>
     <br />
 
