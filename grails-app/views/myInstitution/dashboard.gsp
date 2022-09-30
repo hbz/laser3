@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.workflow.WorkflowHelper; de.laser.workflow.WfWorkflow; de.laser.UserSetting; de.laser.system.SystemAnnouncement; de.laser.storage.RDConstants; de.laser.AccessService; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DashboardDueDate" %>
+<%@ page import="de.laser.storage.RDStore; de.laser.utils.DateUtils; de.laser.workflow.WorkflowHelper; de.laser.workflow.WfWorkflow; de.laser.UserSetting; de.laser.system.SystemAnnouncement; de.laser.storage.RDConstants; de.laser.AccessService; de.laser.*; de.laser.base.AbstractPropertyWithCalculatedLastUpdated; de.laser.DashboardDueDate" %>
 
 <laser:htmlStart message="menu.institutions.dash" serviceInjection="true"/>
 
@@ -95,7 +95,7 @@
             </a>
         </g:if>
 
-        <g:if test="${workflowService.isAccessibleForCurrentUser()}"><!-- TODO: workflows-permissions -->
+        <g:if test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
             <a class="${us_dashboard_tab.value == 'Workflows' ? 'active item':'item'}" data-tab="workflows">
                 <i class="tasks icon large"></i>
                 ${currentWorkflowsCount} ${message(code:'workflow.plural')}
@@ -250,8 +250,14 @@
             </div>
         </div>
 
-        <g:if test="${workflowService.isAccessibleForCurrentUser()}"><!-- TODO: workflows-permissions -->
+        <g:if test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
             <div class="ui bottom attached tab ${us_dashboard_tab.value == 'Workflows' ? 'active':''}" data-tab="workflows">
+
+                <ui:msg class="info">
+                    Angezeigt werden Ihre noch offenen Workflows.
+                    Eine vollständige Übersicht finden sie unter <g:link controller="myInstitution" action="currentWorkflows">${message(code:'menu.my.workflows')}</g:link>.
+                </ui:msg>
+
                 <div>
                     <g:if test="${currentWorkflows.size() != currentWorkflowsCount}">
                         <ui:msg class="info" text="${message(code:'workflow.dashboard.msg.more', args:[currentWorkflows.size(), currentWorkflowsCount, g.createLink(controller:'myInstitution', action:'currentWorkflows', params:[max:200])])}" />
@@ -272,11 +278,14 @@
                         <tbody>
                             <g:each in="${currentWorkflows}" var="wf">
                                 <g:set var="wfInfo" value="${wf.getInfo()}" />
+                                <g:set var="wfLinkParamPart" value="${wfInfo.target.id + ':' + WfWorkflow.KEY + ':' + wf.id}" />
+
                                 <tr>
                                     <td>
                                         <div class="la-flexbox">
                                             <i class="ui icon tasks la-list-icon"></i>
-                                            <g:link class="wfModalLink" controller="ajaxHtml" action="useWfXModal" params="${[key: 'dashboard:' + wfInfo.target.id + ':' + WfWorkflow.KEY + ':' + wf.id]}">
+                                            <g:link controller="${wfInfo.targetController}" action="workflows" id="${wfInfo.target.id}"
+                                                    params="${[info: '' + wfInfo.target.class.name + ':' + wfLinkParamPart]}">
                                                 <strong>${wf.title}</strong>
                                             </g:link>
                                         </div>
@@ -312,11 +321,29 @@
                                         ${DateUtils.getLocalizedSDF_noTime().format(wf.dateCreated)}
                                     </td>
                                     <td class="x">
-                                        <g:link controller="${wfInfo.targetController}" action="workflows" id="${wfInfo.target.id}"
-                                                class="ui icon button blue la-modern-button"
-                                                params="${[info: '' + wfInfo.target.class.name + ':' + wfInfo.target.id + ':' + WfWorkflow.KEY + ':' + wf.id]}">
-                                            <i class="icon edit"></i>
-                                        </g:link>
+                                        <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
+                                            <g:link class="ui icon button blue la-modern-button wfModalLink" controller="ajaxHtml" action="useWfXModal"
+                                                    params="${[key: 'dashboard:' + wfLinkParamPart]}">
+                                                <i class="icon expand"></i>
+                                            </g:link>
+                                        </g:if>
+                                        <g:elseif test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
+                                            <g:link class="ui icon button blue la-modern-button wfModalLink" controller="ajaxHtml" action="useWfXModal"
+                                                    params="${[key: 'dashboard:' + wfLinkParamPart]}">
+                                                <i class="icon expand"></i>
+                                            </g:link>
+                                        </g:elseif>
+                                        <g:if test="${workflowService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
+%{--                                            <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"--}%
+%{--                                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.workflow", args: [wfInfo.target.title])}"--}%
+%{--                                                    data-confirm-term-how="delete"--}%
+%{--                                                    controller="myInstitution" action="dashboard" params="${[cmd:"delete:${WfWorkflow.KEY}:${wfInfo.target.id}"]}"--}%
+%{--                                                    role="button"--}%
+%{--                                                    aria-label="${message(code: 'ariaLabel.delete.universal')}">--}%
+%{--                                                <i class="trash alternate outline icon"></i>--}%
+%{--                                            </g:link>--}%
+                                        </g:if>
+
                                     </td>
                                 </tr>
                             </g:each>

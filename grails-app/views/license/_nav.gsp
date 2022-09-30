@@ -11,7 +11,7 @@
             <ui:subNavItem controller="license" action="pendingChanges" params="${[id:params.id]}" message="pendingChange.plural" />
         </sec:ifAnyGranted>
     </g:if>
-    <g:if test="${workflowService.isAccessibleForCurrentUser()}"><!-- TODO: workflows-permissions -->
+    <g:if test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
         <ui:subNavItem controller="license" action="workflows" counts="${workflowCount}" params="${[id:params.id]}" message="workflow.plural" />
     </g:if>
     <ui:securedSubNavItem orgPerm="ORG_INST,ORG_CONSORTIUM" controller="license" action="tasks" params="${[id:params.id]}" counts="${tasksCount}" message="task.plural" />

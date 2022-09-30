@@ -135,12 +135,13 @@
     <tbody>
         <g:each in="${currentWorkflows}" var="wf">
             <g:set var="wfInfo" value="${wf.getInfo()}" />
+
             <tr>
                 <td>
                     <uiWorkflow:statusIcon workflow="${wf}" size="large" />
                 </td>
                 <td>
-                    <g:link class="wfModalLink" controller="ajaxHtml" action="useWfXModal" params="${[key: 'myInstitution:' + wf.id + ':' + WfWorkflow.KEY + ':' + wf.id]}">
+                    <g:link controller="${wfInfo.targetController}" action="workflows" id="${wfInfo.target.id}" params="${[info: '' + wfInfo.target.class.name + ':' + wfInfo.target.id + ':' + WfWorkflow.KEY + ':' + wf.id]}">
                         <strong>${wf.title}</strong>
                     </g:link>
                 </td>
@@ -173,9 +174,17 @@
                     ${DateUtils.getLocalizedSDF_noTime().format(wf.dateCreated)}
                 </td>
                 <td class="x">
-                    <g:link class="ui blue icon button la-modern-button" controller="${wfInfo.targetController}" action="workflows" id="${wfInfo.target.id}" params="${[info: '' + wfInfo.target.class.name + ':' + wfInfo.target.id + ':' + WfWorkflow.KEY + ':' + wf.id]}"><i class="icon edit"></i></g:link>
-                    %{-- <button class="ui small icon button" onclick="alert('Editierfunktion für Einrichtungsadministratoren. Noch nicht implementiert.')"><i class="icon cogs"></i></button> --}%
-                    <g:if test="${workflowService.isEditableForCurrentUser()}"><!-- TODO: workflows-permissions -->
+                    <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
+                        <g:link class="ui blue icon button la-modern-button wfModalLink" controller="ajaxHtml" action="useWfXModal" params="${[key: 'myInstitution:' + wf.id + ':' + WfWorkflow.KEY + ':' + wf.id]}">
+                            <i class="icon expand"></i>
+                        </g:link>
+                    </g:if>
+                    <g:elseif test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
+                        <g:link class="ui blue icon button la-modern-button wfModalLink" controller="ajaxHtml" action="useWfXModal" params="${[key: 'myInstitution:' + wf.id + ':' + WfWorkflow.KEY + ':' + wf.id]}">
+                            <i class="icon expand"></i>
+                        </g:link>
+                    </g:elseif>
+                    <g:if test="${workflowService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
                         <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
                                 data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.workflow", args: [wf.title])}"
                                 data-confirm-term-how="delete"
