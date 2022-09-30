@@ -28,8 +28,8 @@ $(function () {
     a11yIcon.go();
     verticalNavi.go();
     responsiveTables.go();
-    setTextareaHeight.go();
     system.go();
 
     $('main.ui.main').removeClass('hidden');
 })
+setTextareaHeight.go();
