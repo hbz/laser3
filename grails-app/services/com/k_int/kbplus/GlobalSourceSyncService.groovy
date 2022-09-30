@@ -139,7 +139,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 }
                 //do prequest: are we needing the scroll api?
                 //5000 records because of local testing ability
-                Map<String,Object> result = fetchRecordJSON(false,[componentType:componentType,changedSince:sdf.format(oldDate),changedBefore:'2022-09-27 00:00:00',max:5000])
+                Map<String,Object> result = fetchRecordJSON(false,[componentType:componentType,changedSince:sdf.format(oldDate),max:5000]) //changedBefore:'2022-09-27 00:00:00',
                 if(result.error == 404) {
                     log.error("we:kb server is down")
                     SystemEvent.createEvent('GSSS_JSON_ERROR',['jobId':source.id])
@@ -788,8 +788,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                                 }
                                                 break
                                             case 'delete': JSON oldMap = covEntry.target.properties as JSON
-                                                covEntry.targetParent.refr
-                                                esh() //to prevent eventual session mismatches
+                                                covEntry.targetParent.refresh() //to prevent eventual session mismatches
                                                 packagePendingChanges << PendingChange.construct([msgToken:PendingChangeConfiguration.COVERAGE_DELETED, target:covEntry.targetParent, oldValue: oldMap.toString() , status:RDStore.PENDING_CHANGE_HISTORY])
                                                 break
                                         }
