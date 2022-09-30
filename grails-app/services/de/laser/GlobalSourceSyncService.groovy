@@ -1542,8 +1542,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                             throw new SyncException("Error on adding coverage statement for TIPP ${tippA.gokbId}: ${entry.target.errors}")
                                         break
                                     case 'delete': PendingChange.executeUpdate('delete from PendingChange pc where pc.tippCoverage = :toDelete',[toDelete:entry.target])
-                                        TIPPCoverage.executeUpdate('delete from TIPPCoverage tc where tc.id = :id',[id:entry.target.id])
-                                        entry.targetParent.refresh() //to prevent session mismatches
+                                        //TIPPCoverage.executeUpdate('delete from TIPPCoverage tc where tc.id = :id',[id:entry.target.id])
+                                        tippA.removeFromCoverages(entry.target)
+                                        entry.target.delete()
+                                        tippA.save()
                                         break
                                     case 'update': entry.diffs.each { covDiff ->
                                         entry.target[covDiff.prop] = covDiff.newValue
