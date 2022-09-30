@@ -57,16 +57,18 @@
                         <div class="two wide column wf-centered">
 
                             <g:set var="wfKey" value="${wfInfo.target.class.name}:${wfInfo.target.id}:${WfWorkflow.KEY}:${wf.id}" />
-                            <g:if test="${workflowService.isEditableForCurrentUser()}"><!-- TODO: workflows-permissions -->
+                            <g:if test="${workflowService.hasUserPerm_wrench()}"><!-- TODO: workflows-permissions -->
                                 <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code: 'workflow.edit.ext.perms')}">
                                     <g:link class="wfModalLink ui icon button blue compact la-modern-button" controller="ajaxHtml" action="editWfXModal" params="${[key: wfKey, info: wfKey]}">
                                         <i class="icon wrench"></i>
                                     </g:link>
                                 </span>
                             </g:if>
-                            <g:link class="wfModalLink ui icon button blue compact la-modern-button" controller="ajaxHtml" action="useWfXModal" params="${[key: wfKey, info: wfKey]}">
-                                <i class="icon pencil"></i>
-                            </g:link>
+                            <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
+                                <g:link class="wfModalLink ui icon button blue compact la-modern-button" controller="ajaxHtml" action="useWfXModal" params="${[key: wfKey, info: wfKey]}">
+                                    <i class="icon pencil"></i>
+                                </g:link>
+                            </g:if>
 
                         </div>
                     </div>
@@ -111,16 +113,18 @@
                             <div class="two wide column wf-centered">
 
                                 <g:set var="tKey" value="${wfInfo.target.class.name}:${wfInfo.target.id}:${WfTask.KEY}:${task.id}" />
-                                <g:if test="${workflowService.isEditableForCurrentUser()}"><!-- TODO: workflows-permissions -->
+                                <g:if test="${workflowService.hasUserPerm_wrench()}"><!-- TODO: workflows-permissions -->
                                     <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code: 'workflow.edit.ext.perms')}">
                                         <g:link class="wfModalLink ui icon button blue compact la-modern-button" controller="ajaxHtml" action="editWfXModal" params="${[key: tKey, info: wfKey]}">
                                             <i class="icon wrench"></i>
                                         </g:link>
                                     </span>
                                 </g:if>
-                                <g:link class="wfModalLink ui icon button blue compact la-modern-button" controller="ajaxHtml" action="useWfXModal" params="${[key: tKey, info: wfKey]}">
-                                    <i class="icon pencil"></i>
-                                </g:link>
+                                <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
+                                    <g:link class="wfModalLink ui icon button blue compact la-modern-button" controller="ajaxHtml" action="useWfXModal" params="${[key: tKey, info: wfKey]}">
+                                        <i class="icon pencil"></i>
+                                    </g:link>
+                                </g:if>
 
                             </div>
                         </div>
@@ -157,7 +161,7 @@
                                 </div>
                                 <div class="two wide column wf-centered">
 
-                                    <g:if test="${workflowService.isEditableForCurrentUser()}"><!-- TODO: workflows-permissions -->
+                                    <g:if test="${workflowService.hasUserPerm_wrench()}"><!-- TODO: workflows-permissions -->
                                         <g:set var="cKey" value="${wfInfo.target.class.name}:${wfInfo.target.id}:${WfCondition.KEY}:${task.condition.id}" />
                                         <span data-position="top right" class="la-popup-tooltip la-delay" data-content="${message(code: 'workflow.edit.ext.perms')}">
                                             <g:link class="wfModalLink ui icon button blue compact la-modern-button" controller="ajaxHtml" action="editWfXModal" params="${[key: cKey, info: wfKey]}">

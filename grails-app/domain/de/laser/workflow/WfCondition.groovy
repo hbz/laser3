@@ -77,7 +77,7 @@ class WfCondition extends WfConditionBase {
     def afterUpdate() {
         if ((checkbox1_isTrigger && checkbox1) || (checkbox2_isTrigger && checkbox2)) {
             WfTask task = getTask()
-            if (task.status == RDStore.WF_TASK_STATUS_OPEN) {
+            if (task && task.status == RDStore.WF_TASK_STATUS_OPEN) { // check if workflow.remove() is called
                 task.status = RDStore.WF_TASK_STATUS_DONE
                 task.save()
             }

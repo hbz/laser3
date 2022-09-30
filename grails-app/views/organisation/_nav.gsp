@@ -28,7 +28,7 @@
             <ui:securedSubNavItem affiliation="INST_USER" controller="organisation" action="accessPoints" params="${[id: orgInstance.id]}" message="org.nav.accessPoints"/>
         </g:else>
     </g:if>
-    <g:if test="${workflowService.isAccessibleForCurrentUser()}"><!-- TODO: workflows-permissions -->
+    <g:if test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
         <ui:subNavItem controller="organisation" action="workflows" counts="${workflowCount}" params="${[id:params.id]}" message="workflow.plural" />
     </g:if>
 

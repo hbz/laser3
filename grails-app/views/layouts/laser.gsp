@@ -108,7 +108,7 @@
 
                                 <g:if test="${accessService.checkPerm('ORG_CONSORTIUM')}">
 
-                                    <g:if test="${workflowService.isAccessibleForCurrentUser()}"><!-- TODO: workflows-permissions -->
+                                    <g:if test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
                                         <div class="divider"></div>
                                         <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" action="currentWorkflows" message="menu.my.workflows" />
                                     </g:if>

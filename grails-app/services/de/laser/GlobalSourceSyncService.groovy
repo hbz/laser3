@@ -137,7 +137,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 }
                 //do prequest: are we needing the scroll api?
                 //5000 records because of local testing ability
-                Map<String,Object> result = fetchRecordJSON(false,[componentType:componentType,changedSince:sdf.format(oldDate),max:5000])
+                Map<String,Object> result = fetchRecordJSON(false,[componentType:componentType,changedSince:sdf.format(oldDate),max:5000]) //changedBefore:'2022-09-27 00:00:00',
                 if(result.error == 404) {
                     log.error("we:kb server is down")
                     SystemEvent.createEvent('GSSS_JSON_ERROR',['jobId':source.id])
@@ -180,6 +180,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         }
                     }
                     if(maxTimestamp+1000 > source.haveUpTo.getTime()) {
+                        source.refresh()
                         log.debug("old ${sdf.format(source.haveUpTo)}")
                         source.haveUpTo = new Date(maxTimestamp + 1000)
                         log.debug("new ${sdf.format(source.haveUpTo)}")
@@ -510,8 +511,10 @@ class GlobalSourceSyncService extends AbstractLockableService {
         if(result.count >= 5000) {
             int offset = 0, max = 5000
             Map<String, Object> queryParams = [component_type: componentType, max: max]
-            if(changedSince)
+            if(changedSince) {
                 queryParams.changedSince = changedSince
+                //queryParams.changedBefore = "2022-09-27 00:00:00" //debug only
+            }
             if(pkgFilter)
                 queryParams.pkg = pkgFilter
             String scrollId
@@ -549,11 +552,11 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }
                     if(result.hasMoreRecords) {
                         scrollId = result.scrollId
-                        //flush after 100000 records ... seems that Grails 3 onwards fills memory, too!
-                        if(offset % 100000 == 0 && offset > 0) {
+                        //flush after 50000 records ... seems that Grails 3 onwards fills memory, too!
+                        offset += max
+                        if(offset % 50000 == 0 && offset > 0) {
                             globalService.cleanUpGorm()
                         }
-                        offset += max
                     }
                     else {
                         more = false
@@ -783,6 +786,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                                 }
                                                 break
                                             case 'delete': JSON oldMap = covEntry.target.properties as JSON
+                                                covEntry.targetParent.refresh() //to prevent eventual session mismatches
                                                 packagePendingChanges << PendingChange.construct([msgToken:PendingChangeConfiguration.COVERAGE_DELETED, target:covEntry.targetParent, oldValue: oldMap.toString() , status:RDStore.PENDING_CHANGE_HISTORY])
                                                 break
                                         }
