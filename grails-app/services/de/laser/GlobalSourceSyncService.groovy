@@ -786,7 +786,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                                 }
                                                 break
                                             case 'delete': JSON oldMap = covEntry.target.properties as JSON
-                                                covEntry.targetParent.refresh() //to prevent eventual session mismatches
                                                 packagePendingChanges << PendingChange.construct([msgToken:PendingChangeConfiguration.COVERAGE_DELETED, target:covEntry.targetParent, oldValue: oldMap.toString() , status:RDStore.PENDING_CHANGE_HISTORY])
                                                 break
                                         }
@@ -1544,6 +1543,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                         break
                                     case 'delete': PendingChange.executeUpdate('delete from PendingChange pc where pc.tippCoverage = :toDelete',[toDelete:entry.target])
                                         TIPPCoverage.executeUpdate('delete from TIPPCoverage tc where tc.id = :id',[id:entry.target.id])
+                                        entry.targetParent.refresh() //to prevent session mismatches
                                         break
                                     case 'update': entry.diffs.each { covDiff ->
                                         entry.target[covDiff.prop] = covDiff.newValue
