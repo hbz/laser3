@@ -39,7 +39,7 @@ class FilterService {
         Map<String, Object> queryParams = ["orgStatus" : RDStore.ORG_STATUS_DELETED]
 
         if (params.orgNameContains?.length() > 0) {
-            query << "(genfunc_filter_matcher(o.name, :orgNameContains) = true or genfunc_filter_matcher(o.shortname, :orgNameContains) = true or genfunc_filter_matcher(o.sortname, :orgNameContains) = true) or exists(select alt.id from AlternativeName alt where alt.org = o and genfunc_filter_matcher(alt.name, :orgNameContains) = true) "
+            query << "((genfunc_filter_matcher(o.name, :orgNameContains) = true or genfunc_filter_matcher(o.shortname, :orgNameContains) = true or genfunc_filter_matcher(o.sortname, :orgNameContains) = true) or exists(select alt.id from AlternativeName alt where alt.org = o and genfunc_filter_matcher(alt.name, :orgNameContains) = true) )"
              queryParams << [orgNameContains : "${params.orgNameContains}"]
         }
         if (params.orgType) {
