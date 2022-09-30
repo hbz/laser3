@@ -1411,6 +1411,8 @@ class SubscriptionControllerService {
                 if (subscriptions) {
                     result.subscriberSubs = subscriptions.toList()
                 }
+            }else {
+                subscriptions << previousSubscription
             }
 
             if (params.hasPerpetualAccess) {
@@ -1462,7 +1464,7 @@ class SubscriptionControllerService {
             if (result.surveyConfig.pickAndChoosePerpetualAccess) {
                 result.countCurrentIEs = surveyService.countPerpetualAccessTitlesBySub(result.subscription)
             } else {
-                result.countCurrentIEs = (result.previousSubscription ? subscriptionService.countIssueEntitlementsFixed(result.previousSubscription) : 0) + subscriptionService.countIssueEntitlementsFixed(result.subscription)
+                result.countCurrentIEs = (previousSubscription ? subscriptionService.countIssueEntitlementsFixed(previousSubscription) : 0) + subscriptionService.countIssueEntitlementsFixed(result.subscription)
             }
             result.countAllIEs = subscriptionService.countIssueEntitlementsFixed(baseSub)
             result.toBeSelectedIEs = result.countAllIEs - result.countSelectedIEs
