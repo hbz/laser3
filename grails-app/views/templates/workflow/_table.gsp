@@ -63,13 +63,13 @@
                     <g:link class="ui icon button blue la-modern-button wfModalLink" controller="ajaxHtml" action="useWfXModal" params="${[key: wfLinkParam]}">
                         <i class="icon expand"></i>
                     </g:link>
-                    <button class="ui icon button blue la-modern-button" data-wfId="${wf.id}"><i class="icon edit"></i></button>
+                    <button class="ui icon button blue la-modern-button" data-wfId="${wf.id}"><i class="icon pencil"></i></button>
                 </g:if>
                 <g:elseif test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
                     <g:link class="ui icon button blue la-modern-button wfModalLink" controller="ajaxHtml" action="useWfXModal" params="${[key: wfLinkParam]}">
                         <i class="icon expand"></i>
                     </g:link>
-                    <button class="ui icon button blue la-modern-button" data-wfId="${wf.id}"><i class="icon edit"></i></button>
+                    <button class="ui icon button blue la-modern-button" data-wfId="${wf.id}"><i class="icon pencil"></i></button>
                 </g:elseif>
                 <g:if test="${workflowService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
                     <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"

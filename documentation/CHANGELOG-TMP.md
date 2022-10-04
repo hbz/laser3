@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4514    30.09.2022  dev     3.0         David   Feature     Workflow: Stift-Icon vereinheitlichen
+
+4515    30.09.2022  dev     3.0         David   Feature     Filter "Meine Workflows"
+
+4523    30.09.2022  dev     3.0         David   Feature     Workflow: Schließen und speichern
+
 4511    29.09.2022  dev     3.0         David   Feature     Bessere Rückmeldung im modalen Dialog
 
 4510    29.09.2022  dev     3.0         David   Feature     Redakteure sollen Workflows verknüpfen dürfen
