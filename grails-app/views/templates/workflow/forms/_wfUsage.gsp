@@ -54,58 +54,70 @@
             </div>
         </div>
 
+        <div class="field">
+            <label for="${prefixOverride}_user">${message(code:'task.responsible.label')}</label>
+            <g:select id="${prefixOverride}_user"
+                      name="${prefixOverride}_user"
+                      from="${taskService.getUserDropdown(contextService.getOrg())}"
+                      optionKey="id"
+                      optionValue="display"
+                      value="${workflow.user?.id}"
+                      class="ui dropdown search la-not-clearable"
+            />
+        </div>
+
         %{-- <g:if test="${! targetObject}"> currentWorkflows --}%
 
-        <div class="field">
-            <label>Offene Aufgaben</label>
+%{--        <div class="field">--}%
+%{--            <label>Offene Aufgaben</label>--}%
 
-            <div class="ui segment vertically divided grid" style="box-shadow:none">
-                <g:set var="tasks" value="${workflow.getSequence()}" />
-                <% int openTasksCount = 0 %>
+%{--            <div class="ui segment vertically divided grid" style="box-shadow:none">--}%
+%{--                <g:set var="tasks" value="${workflow.getSequence()}" />--}%
+%{--                <% int openTasksCount = 0 %>--}%
 
-                <g:each in="${tasks}" var="task" status="ti">
-                    <g:if test="${task.status == RDStore.WF_TASK_STATUS_OPEN}">
-                        <% openTasksCount++ %>
-                        <div class="row">
-                            <div class="one wide column wf-centered" style="margin:0">
-                                <span class="sc_darkgrey">
-                                    <i class="icon ${WorkflowHelper.getCssIconByTaskPriority(task.priority)}"></i>
-                                </span>
-                            </div>
-                            <div class="fifteen wide column" style="margin:0">
-                                <div class="content">
-                                    <div class="header">
-                                        <strong>${task.title}</strong>
-                                    </div>
-                                    <div class="description" style="margin:1em 0 0 0">
-                                        ${task.description}
-                                    </div>
-                                    <g:if test="${task.comment}">
-                                        <div style="margin: 1em 1em 0 1em; padding-left: 1em; border-left: 5px solid #E0E0E0; font-style: italic;">
-                                            ${task.comment}
-                                        </div>
-                                    </g:if>
-                                </div>
-                            </div>
-                        </div>
-                    </g:if>
-                </g:each>
+%{--                <g:each in="${tasks}" var="task" status="ti">--}%
+%{--                    <g:if test="${task.status == RDStore.WF_TASK_STATUS_OPEN}">--}%
+%{--                        <% openTasksCount++ %>--}%
+%{--                        <div class="row">--}%
+%{--                            <div class="one wide column wf-centered" style="margin:0">--}%
+%{--                                <span class="sc_darkgrey">--}%
+%{--                                    <i class="icon ${WorkflowHelper.getCssIconByTaskPriority(task.priority)}"></i>--}%
+%{--                                </span>--}%
+%{--                            </div>--}%
+%{--                            <div class="fifteen wide column" style="margin:0">--}%
+%{--                                <div class="content">--}%
+%{--                                    <div class="header">--}%
+%{--                                        <strong>${task.title}</strong>--}%
+%{--                                    </div>--}%
+%{--                                    <div class="description" style="margin:1em 0 0 0">--}%
+%{--                                        ${task.description}--}%
+%{--                                    </div>--}%
+%{--                                    <g:if test="${task.comment}">--}%
+%{--                                        <div style="margin: 1em 1em 0 1em; padding-left: 1em; border-left: 5px solid #E0E0E0; font-style: italic;">--}%
+%{--                                            ${task.comment}--}%
+%{--                                        </div>--}%
+%{--                                    </g:if>--}%
+%{--                                </div>--}%
+%{--                            </div>--}%
+%{--                        </div>--}%
+%{--                    </g:if>--}%
+%{--                </g:each>--}%
 
-                <g:if test="${openTasksCount == 0}">
-                    <div class="row">
-                        <div class="sixteen wide column">
-                            <g:if test="${tasks}">
-                                <i class="icon check"></i> Es sind keine offenen Aufgaben mehr vorhanden.
-                            </g:if>
-                            <g:else>
-                                Es sind keine Aufgaben vorhanden.
-                            </g:else>
-                        </div>
-                    </div>
-                </g:if>
-            </div>
+%{--                <g:if test="${openTasksCount == 0}">--}%
+%{--                    <div class="row">--}%
+%{--                        <div class="sixteen wide column">--}%
+%{--                            <g:if test="${tasks}">--}%
+%{--                                <i class="icon check"></i> Es sind keine offenen Aufgaben mehr vorhanden.--}%
+%{--                            </g:if>--}%
+%{--                            <g:else>--}%
+%{--                                Es sind keine Aufgaben vorhanden.--}%
+%{--                            </g:else>--}%
+%{--                        </div>--}%
+%{--                    </div>--}%
+%{--                </g:if>--}%
+%{--            </div>--}%
 
-        </div>
+%{--        </div>--}%
         %{--</g:if>--}%
         <g:if test="${info}">
             <input type="hidden" name="info" value="${info}" />

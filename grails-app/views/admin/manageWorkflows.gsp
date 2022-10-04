@@ -124,6 +124,15 @@
                     ${wf.owner}
                 </g:link>
             </div>
+            <div class="la-flexbox">
+                <i class="icon user la-list-icon"></i>
+                <g:if test="${wf.user}">
+                    ${wf.user?.display}
+                </g:if>
+                <g:else>
+                    Kein verantwortlicher Nutzer zugewiesen. (todo: wird entfernt)
+                </g:else>
+            </div>
 
             <g:link class="ui small icon negative button right floated la-modern-button js-open-confirm-modal"
                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.workflow", args: [wf.title])}"

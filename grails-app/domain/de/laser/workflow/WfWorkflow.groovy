@@ -5,6 +5,7 @@ import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.Subscription
 import de.laser.annotations.RefdataInfo
+import de.laser.auth.User
 import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
@@ -30,6 +31,7 @@ class WfWorkflow extends WfWorkflowBase {
 
     WfTask task
     Org owner
+    User user
 
     Subscription subscription
     License license
@@ -52,6 +54,7 @@ class WfWorkflow extends WfWorkflowBase {
          prototypeLastUpdated column: 'wfw_prototype_last_updated'
                          task column: 'wfw_task_fk'
                         owner column: 'wfw_owner_fk'
+                         user column: 'wfw_user_fk'
 
        subscription column: 'wfw_subscription_fk'
             license column: 'wfw_license_fk'

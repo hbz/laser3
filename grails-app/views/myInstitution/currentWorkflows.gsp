@@ -12,13 +12,16 @@
     <form class="ui form">
         <div class="three fields">
             <div class="field">
-                <label>Basierend auf ${message(code: 'workflow.label')}</label>
-                <g:select class="ui dropdown" name="filterPrototypeMeta"
-                          from="${ currentPrototypes }"
-                          optionKey="${{it.hash}}"
-                          optionValue="${{it.title + ' - ' + it.variant}}"
-                          value="${params.filterPrototypeMeta}"
-                          noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+                <label>${message(code:'task.responsible.label')}</label>
+                <g:select id="filterUser"
+                          name="filterUser"
+                          from="${taskService.getUserDropdown(contextService.getOrg())}"
+                          optionKey="id"
+                          optionValue="display"
+                          value="${params.filterUser}"
+                          class="ui dropdown search"
+                          noSelection="${['' : message(code:'default.select.choose.label')]}"
+                />
             </div>
             <div class="field">
                 <label>${message(code:'default.relation.label')}</label>
@@ -31,6 +34,15 @@
                            optionValue="value" />
 
             </div>
+            <div class="field">
+                <label>Basierend auf ${message(code: 'workflow.label')}</label>
+                <g:select class="ui dropdown" name="filterPrototypeMeta"
+                          from="${ currentPrototypes }"
+                          optionKey="${{it.hash}}"
+                          optionValue="${{it.title + ' - ' + it.variant}}"
+                          value="${params.filterPrototypeMeta}"
+                          noSelection="${['' : message(code:'default.select.choose.label')]}"/>
+            </div>
             %{--<div class="field">
                 <label>${message(code: 'default.priority.label')}</label>
                 <ui:select class="ui dropdown" name="filterPriority"
@@ -40,15 +52,16 @@
                               value="${params.filterPriority}"
                               noSelection="${['' : message(code:'default.select.choose.label')]}"/>
             </div>--}%
-            <div class="field">
-                <label>${message(code: 'default.status.label')}</label>
-                <ui:select class="ui dropdown" name="filterStatus"
-                  from="${ RefdataCategory.getAllRefdataValues(RDConstants.WF_WORKFLOW_STATUS) }"
-                  optionKey="id"
-                  optionValue="value"
-                  value="${params.filterStatus}"
-                  noSelection="${['' : message(code:'default.select.choose.label')]}"/>
-            </div>
+%{--            <div class="field">--}%
+%{--                <label>${message(code: 'default.status.label')}</label>--}%
+%{--                <ui:select class="ui dropdown" name="filterStatus"--}%
+%{--                  from="${ RefdataCategory.getAllRefdataValues(RDConstants.WF_WORKFLOW_STATUS) }"--}%
+%{--                  optionKey="id"--}%
+%{--                  optionValue="value"--}%
+%{--                  value="${params.filterStatus}"--}%
+%{--                  noSelection="${['' : message(code:'default.select.choose.label')]}"/>--}%
+%{--            </div>--}%
+
         </div>
 %{--        <div class="three fields">
             <div class="field">

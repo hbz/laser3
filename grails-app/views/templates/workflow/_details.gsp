@@ -31,11 +31,20 @@
                                 <br />
                                 <g:if test="${wf.description}"><br /></g:if>
 
-                                <div class="ui la-flexbox">
+                                <div class="la-flexbox">
                                     <i class="icon ${wfInfo.targetIcon} la-list-icon"></i>
                                     <g:link controller="${wfInfo.targetController}" action="show" params="${[id: wfInfo.target.id]}">
                                         ${wfInfo.targetName}
                                     </g:link>
+                                </div>
+                                <div class="la-flexbox">
+                                    <i class="icon user la-list-icon"></i>
+                                    <g:if test="${wf.user}">
+                                        ${wf.user?.display}
+                                    </g:if>
+                                    <g:else>
+                                        Kein verantwortlicher Nutzer zugewiesen. (todo: wird entfernt)
+                                    </g:else>
                                 </div>
                                 <g:if test="${wf.comment}">
                                     <div style="margin:1em 2em 0 2em; padding-left:1em; border-left:5px solid #E0E0E0">

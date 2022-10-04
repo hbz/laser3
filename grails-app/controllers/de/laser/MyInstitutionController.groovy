@@ -2629,6 +2629,10 @@ join sub.orgRelations or_sub where
             query = query + ' and wf.status = :status'
             queryParams.put('status', RefdataValue.get(params.filterStatus))
         }
+        if (params.filterUser) {
+            query = query + ' and wf.user = :user'
+            queryParams.put('user', User.get(params.filterUser))
+        }
         if (params.filterProvider) {
             query = query + ' and exists (select ooo from OrgRole ooo join ooo.sub sub where ooo.org = :provider and ooo.roleType = :roleType and sub = wf.subscription)'
             queryParams.put('roleType', RDStore.OR_PROVIDER)

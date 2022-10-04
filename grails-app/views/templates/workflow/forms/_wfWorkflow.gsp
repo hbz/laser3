@@ -1,4 +1,5 @@
 <%@ page import="de.laser.utils.DateUtils; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.workflow.*;" %>
+<laser:serviceInjection />
 
 <g:form url="${formUrl}" method="POST" class="ui form">
 
@@ -107,6 +108,18 @@
                           value="${workflow?.status?.id}"
                           optionKey="id"
                           optionValue="value" />
+        </div>
+
+        <div class="field">
+            <label for="${prefix}_user">${message(code:'task.responsible.label')}</label>
+            <g:select id="${prefix}_user"
+                      name="${prefix}_user"
+                      from="${taskService.getUserDropdown(contextService.getOrg())}"
+                      optionKey="id"
+                      optionValue="display"
+                      value="${workflow?.user?.id}"
+                      class="ui dropdown search la-not-clearable"
+            />
         </div>
 
         <g:if test="${wfInfo?.target}">
