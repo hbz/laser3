@@ -85,12 +85,12 @@ class WorkflowService {
             String[] cmd = (params.cmd as String).split(':')
             String wfObjKey = cmd[1]
 
-            if (cmd[0] == 'instantiate') {
+            /* if (cmd[0] == 'instantiate') {
                 if (wfObjKey == WfWorkflowPrototype.KEY) {
                     result = instantiateCompleteWorkflow(params)
                 }
             }
-            else if (cmd[0] == 'create') {
+            else */ if (cmd[0] == 'create') {
                 if (wfObjKey == WfWorkflowPrototype.KEY) {
                     WfWorkflowPrototype wf = new WfWorkflowPrototype()
                     result = internalEditWorkflow(wf, params)
@@ -465,7 +465,7 @@ class WorkflowService {
      * @param params the request parameter map
      * @return a result map with the execution status
      */
-    Map<String, Object> instantiateCompleteWorkflow(GrailsParameterMap params) {
+    Map<String, Object> instantiateCompleteWorkflow(GrailsParameterMap params, String title) {
         log.debug('instantiateCompleteWorkflow() ' + params)
         String[] cmd = (params.cmd as String).split(':')
 
@@ -478,6 +478,10 @@ class WorkflowService {
                 try {
                     result.prototype    = WfWorkflowPrototype.get( cmd[2] )
                     result.workflow     = result.prototype.instantiate( genericOIDService.resolveOID(params.target)  )
+
+                    if (title) {
+                        result.workflow.title = title
+                    }
 
                     if (! result.workflow.save()) {
                         result.status = OP_STATUS_ERROR
@@ -570,7 +574,7 @@ class WorkflowService {
                 GrailsParameterMap clone = params.clone() as GrailsParameterMap
                 clone.setProperty( 'cmd', params.cmd + ':' + params.workflowId )
 
-                result = instantiateCompleteWorkflow( clone )
+                result = instantiateCompleteWorkflow( clone, params.workflowName )
             }
         }
         else if (cmd[0] == 'usage') {  // TODO return msg
