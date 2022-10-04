@@ -258,7 +258,7 @@ class DataloadService {
                 result.startDate = pkg.startDate
                 result.endDate = pkg.endDate
 
-                result.titleCountCurrent = pkg.getCurrentTipps().size()?:0
+                result.titleCountCurrent = TitleInstancePackagePlatform.countByPkgAndStatus(pkg, RDStore.TIPP_STATUS_CURRENT)
 
                 result.identifiers = []
                 pkg.ids?.each { ident ->
@@ -292,7 +292,7 @@ class DataloadService {
                 result.primaryUrl = plat.primaryUrl
                 result.orgId = plat.org?.id
                 result.orgName = plat.org?.name
-                result.titleCountCurrent = plat.getCurrentTipps().size()?:0
+                result.titleCountCurrent = TitleInstancePackagePlatform.countByPlatformAndStatus(plat, RDStore.TIPP_STATUS_CURRENT)
 
                 result.dateCreated = plat.dateCreated
                 result.lastUpdated = plat.lastUpdated
@@ -313,11 +313,11 @@ class DataloadService {
 
             switch(lic._getCalculatedType()) {
                 case CalculatedType.TYPE_CONSORTIAL:
-                    result.availableToOrgs = lic.orgRelations.findAll{ OrgRole oo ->oo.roleType.value in [RDStore.OR_LICENSING_CONSORTIUM.value]}?.org?.id
-                    result.membersCount = License.findAllByInstanceOf(lic).size()?:0
+                    result.availableToOrgs = Org.executeQuery('select oo.id from OrgRole oo where oo.lic = :lic and oo.roleType = :roleType', [lic: lic, roleType: RDStore.OR_LICENSING_CONSORTIUM])
+                    result.membersCount = License.countByInstanceOf(lic)
                     break
                 case CalculatedType.TYPE_PARTICIPATION:
-                    List orgs = lic.orgRelations.findAll{ OrgRole oo -> oo.roleType.value in [RDStore.OR_LICENSEE_CONS.value]}?.org
+                    List orgs = Org.executeQuery('select oo from OrgRole oo where oo.lic = :lic and oo.roleType = :roleType', [lic: lic, roleType: RDStore.OR_LICENSEE_CONS])
                     result.availableToOrgs = orgs.collect{ Org org -> org.id }
                     result.consortiaID = lic.getLicensingConsortium()?.id
                     result.consortiaName = lic.getLicensingConsortium()?.name
@@ -328,7 +328,7 @@ class DataloadService {
                     }
                     break
                 case CalculatedType.TYPE_LOCAL:
-                    result.availableToOrgs = lic.orgRelations.findAll{ OrgRole oo -> oo.roleType.value in [RDStore.OR_LICENSEE.value]}?.org?.id
+                    result.availableToOrgs = Org.executeQuery('select oo.id from OrgRole oo where oo.lic = :lic and oo.roleType = :roleType', [lic: lic, roleType: RDStore.OR_LICENSEE])
                     break
             }
 
@@ -377,11 +377,11 @@ class DataloadService {
 
                 switch (sub._getCalculatedType()) {
                     case CalculatedType.TYPE_CONSORTIAL:
-                        result.availableToOrgs = sub.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIPTION_CONSORTIA.value]}?.org?.id
-                        result.membersCount = Subscription.findAllByInstanceOf(sub).size() ?:0
+                        result.availableToOrgs = Org.executeQuery('select oo.id from OrgRole oo where oo.sub = :sub and oo.roleType = :roleType', [sub: sub, roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA])
+                        result.membersCount = Subscription.countByInstanceOf(sub)
                         break
                     case CalculatedType.TYPE_PARTICIPATION:
-                        List orgs = sub.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value]}?.org
+                        List orgs = Org.executeQuery('select oo from OrgRole oo where oo.sub = :sub and oo.roleType = :roleType', [sub: sub, roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA])
                         result.availableToOrgs = orgs?.id
                         result.consortiaID = sub.getConsortia()?.id
                         result.consortiaName = sub.getConsortia()?.name
@@ -395,7 +395,7 @@ class DataloadService {
                                   result.availableToOrgs = sub.orgRelations.findAll {it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value]}?.org?.id
                                   break*/
                     case CalculatedType.TYPE_LOCAL:
-                        result.availableToOrgs = sub.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIBER.value]}?.org?.id
+                        result.availableToOrgs = Org.executeQuery('select oo.id from OrgRole oo where oo.sub = :sub and oo.roleType = :roleType', [sub: sub, roleType: RDStore.OR_SUBSCRIBER])
                         break
                 }
 
@@ -619,16 +619,16 @@ class DataloadService {
 
             switch (ie.subscription._getCalculatedType()) {
                 case CalculatedType.TYPE_CONSORTIAL:
-                    result.availableToOrgs = ie.subscription.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIPTION_CONSORTIA.value]}?.org?.id
+                    result.availableToOrgs = Org.executeQuery('select oo.id from OrgRole oo where oo.sub = :sub and oo.roleType = :roleType', [sub: ie.subscription, roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA])
                     break
                 case CalculatedType.TYPE_PARTICIPATION:
-                    result.availableToOrgs = ie.subscription.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value]}?.org?.id
+                    result.availableToOrgs = Org.executeQuery('select oo.id from OrgRole oo where oo.sub = :sub and oo.roleType = :roleType', [sub: ie.subscription, roleType: RDStore.OR_SUBSCRIBER_CONS])
                     break
             /*              case CalculatedType.TYPE_ADMINISTRATIVE:
                               result.availableToOrgs = sub.orgRelations.findAll {it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value]}?.org?.id
                               break*/
                 case CalculatedType.TYPE_LOCAL:
-                    result.availableToOrgs = ie.subscription.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIBER.value]}?.org?.id
+                    result.availableToOrgs = Org.executeQuery('select oo.id from OrgRole oo where oo.sub = :sub and oo.roleType = :roleType', [sub: ie.subscription, roleType: RDStore.OR_SUBSCRIBER])
                     break
             }
 
@@ -691,16 +691,16 @@ class DataloadService {
             if(subProp.isPublic) {
                 switch (subProp.owner._getCalculatedType()) {
                     case CalculatedType.TYPE_CONSORTIAL:
-                        result.availableToOrgs = subProp.owner.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIPTION_CONSORTIA.value]}?.org?.id
+                        result.availableToOrgs = Org.executeQuery('select oo.id from OrgRole oo where oo.sub = :sub and oo.roleType = :roleType', [sub: subProp.owner, roleType: RDStore.OR_SUBSCRIPTION_CONSORTIA])
                         break
                     case CalculatedType.TYPE_PARTICIPATION:
-                        result.availableToOrgs = subProp.owner.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value]}?.org?.id
+                        result.availableToOrgs = Org.executeQuery('select oo.id from OrgRole oo where oo.sub = :sub and oo.roleType = :roleType', [sub: subProp.owner, roleType: RDStore.OR_SUBSCRIBER_CONS])
                         break
                 /*              case CalculatedType.TYPE_ADMINISTRATIVE:
                                   result.availableToOrgs = sub.orgRelations.findAll {it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value]}?.org?.id
                                   break*/
                     case CalculatedType.TYPE_LOCAL:
-                        result.availableToOrgs = subProp.owner.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIBER.value]}?.org?.id
+                        result.availableToOrgs = Org.executeQuery('select oo.id from OrgRole oo where oo.sub = :sub and oo.roleType = :roleType', [sub: subProp.owner, roleType: RDStore.OR_SUBSCRIBER])
                         break
                 }
             }
@@ -800,13 +800,13 @@ class DataloadService {
             if(licProp.isPublic) {
                 switch(licProp.owner._getCalculatedType()) {
                     case CalculatedType.TYPE_CONSORTIAL:
-                        result.availableToOrgs = licProp.owner.orgRelations.findAll{it.roleType?.value in [RDStore.OR_LICENSING_CONSORTIUM.value]}?.org?.id
+                        result.availableToOrgs = Org.executeQuery('select oo.id from OrgRole oo where oo.lic = :lic and oo.roleType = :roleType', [lic: licProp.owner, roleType: RDStore.OR_LICENSING_CONSORTIUM])
                         break
                     case CalculatedType.TYPE_PARTICIPATION:
-                        result.availableToOrgs = licProp.owner.orgRelations.findAll{it.roleType?.value in [RDStore.OR_LICENSEE_CONS.value]}?.org?.id
+                        result.availableToOrgs = Org.executeQuery('select oo.id from OrgRole oo where oo.lic = :lic and oo.roleType = :roleType', [lic: licProp.owner, roleType: RDStore.OR_LICENSEE_CONS])
                         break
                     case CalculatedType.TYPE_LOCAL:
-                        result.availableToOrgs = licProp.owner.orgRelations.findAll{it.roleType?.value in [RDStore.OR_LICENSEE.value]}?.org?.id
+                        result.availableToOrgs = Org.executeQuery('select oo.id from OrgRole oo where oo.lic = :lic and oo.roleType = :roleType', [lic: licProp.owner, roleType: RDStore.OR_LICENSEE])
                         break
                 }
             }
@@ -894,13 +894,13 @@ class DataloadService {
     RestHighLevelClient esclient = ESWrapperService.getClient()
     def esIndices = ESWrapperService.es_indices
 
-        def count = 0;
+        //def count = 0;
         def total = 0;
 
         def highest_timestamp = 0;
         def highest_id = 0;
 
-        FTControl.withTransaction {
+        FTControl.withSession {
 
             def latest_ft_record = FTControl.findByDomainClassNameAndActivity(domain.name, 'ESIndex')
 
@@ -925,12 +925,13 @@ class DataloadService {
                         // def qry = domain.findAllByLastUpdatedGreaterThan(from,[sort:'lastUpdated'])
 
                         def query
+                        int allDBObjects = 0
 
                         Class domainClass = grailsApplication.getDomainClass(domain.name).clazz
                         if (org.apache.commons.lang.ClassUtils.getAllInterfaces(domainClass).contains(CalculatedLastUpdated)) {
-                            query = domain.executeQuery("select d.id from " + domain.name + " as d where (d.lastUpdatedCascading is not null and d.lastUpdatedCascading > :from) or (d.lastUpdated > :from) or (d.dateCreated > :from and d.lastUpdated is null) order by d.lastUpdated asc, d.id", [from: from], [readonly: true])
+                            allDBObjects = domain.executeQuery("select count(d.id) from " + domain.name + " as d where (d.lastUpdatedCascading is not null and d.lastUpdatedCascading > :from) or (d.lastUpdated > :from) or (d.dateCreated > :from and d.lastUpdated is null)", [from: from], [readonly: true])[0]
                         } else {
-                            query = domain.executeQuery("select d.id from " + domain.name + " as d where (d.lastUpdated > :from) or (d.dateCreated > :from and d.lastUpdated is null) order by d.lastUpdated asc, d.id", [from: from], [readonly: true]);
+                            allDBObjects = domain.executeQuery("select count(d.id) from " + domain.name + " as d where (d.lastUpdated > :from) or (d.dateCreated > :from and d.lastUpdated is null)", [from: from], [readonly: true])[0]
                         }
 
                         //log.debug("Query completed .. processing rows ..")
@@ -940,106 +941,109 @@ class DataloadService {
                         //BulkRequest bulkRequest = new BulkRequest()
                         BulkRequest bulkRequest = new BulkRequest();
 
-                        FTControl.withNewSession { Session session ->
-                            for (domain_id in query) {
-                                Object r = domain.get(domain_id)
-                                def idx_record = recgen_closure(r)
-                                def future
-                                if (idx_record['_id'] == null) {
-                                    log.error("******** Record without an ID: ${idx_record} Obj:${r} ******** ")
-                                    continue
+                            for (int count = 0; count < allDBObjects; count+=100) {
+                                if (org.apache.commons.lang.ClassUtils.getAllInterfaces(domainClass).contains(CalculatedLastUpdated)) {
+                                    query = domain.executeQuery("select d.id from " + domain.name + " as d where (d.lastUpdatedCascading is not null and d.lastUpdatedCascading > :from) or (d.lastUpdated > :from) or (d.dateCreated > :from and d.lastUpdated is null) order by d.lastUpdated asc, d.id", [from: from], [max: 100, offset: count, readonly: true])
+                                } else {
+                                    query = domain.executeQuery("select d.id from " + domain.name + " as d where (d.lastUpdated > :from) or (d.dateCreated > :from and d.lastUpdated is null) order by d.lastUpdated asc, d.id", [from: from], [max: 100, offset: count, readonly: true])
                                 }
-
-                                def recid = idx_record['_id'].toString()
-                                idx_record.remove('_id');
-
-                                IndexRequest request = new IndexRequest(esIndices.get(domain.simpleName));
-                                request.id(recid);
-                                String jsonString = idx_record as JSON
-                                //String jsonString = JsonOutput.toJson(idx_record)
-                                //println(jsonString)
-                                request.source(jsonString, XContentType.JSON)
-
-                                bulkRequest.add(request)
-
-                                //bulkRequest.add(request)
-
-                                //println(request)
-                                /*IndexResponse indexResponse = esclient.index(request, RequestOptions.DEFAULT);
-
-                        String index = indexResponse.getIndex();
-                        String id = indexResponse.getId();
-                        if (indexResponse.getResult() == DocWriteResponse.Result.CREATED) {
-                            //log.debug("CREATED ${domain.name}")
-                        } else if (indexResponse.getResult() == DocWriteResponse.Result.UPDATED) {
-                            //log.debug("UPDATED ${domain.name}")
-                        } else {
-                            log.debug("ELSE ${domain.name}: ${indexResponse.getResult()}")
-                        }
-                        ReplicationResponse.ShardInfo shardInfo = indexResponse.getShardInfo();
-                        if (shardInfo.getTotal() != shardInfo.getSuccessful()) {
-
-                        }
-                        if (shardInfo.getFailed() > 0) {
-                            for (ReplicationResponse.ShardInfo.Failure failure : shardInfo.getFailures()) {
-                                String reason = failure.reason()
-                                println(reason)
-                            }
-                        }*/
-
-                                //latest_ft_record.lastTimestamp = r.lastUpdated?.getTime()
-                                if (r.lastUpdated?.getTime() > highest_timestamp) {
-                                    highest_timestamp = r.lastUpdated?.getTime();
-                                }
-
-                                //println(count)
-                                //println(total)
-                                count++
-                                total++
-                                if (count == 100) {
-                                    count = 0;
-
-                                    BulkResponse bulkResponse = esclient.bulk(bulkRequest, RequestOptions.DEFAULT)
-
-                                    if (bulkResponse.hasFailures()) {
-                                        for (BulkItemResponse bulkItemResponse : bulkResponse) {
-                                            if (bulkItemResponse.isFailed()) {
-                                                BulkItemResponse.Failure failure = bulkItemResponse.getFailure()
-                                                log.debug("updateES ${domain.name}: ES Bulk operation has failure -> ${failure}")
-                                            }
-                                        }
+                                for (domain_id in query) {
+                                    Object r = domain.get(domain_id)
+                                    def idx_record = recgen_closure(r)
+                                    def future
+                                    if (idx_record['_id'] == null) {
+                                        log.error("******** Record without an ID: ${idx_record} Obj:${r} ******** ")
+                                        continue
                                     }
 
-                                    log.debug("processed ${total} records (${domain.name})")
-                                    latest_ft_record.lastTimestamp = highest_timestamp
-                                    latest_ft_record.save()
-                                    //session.flush()
-                                }
-                            }
+                                    def recid = idx_record['_id'].toString()
+                                    idx_record.remove('_id');
 
-                            if (count > 0) {
+                                    IndexRequest request = new IndexRequest(esIndices.get(domain.simpleName));
+                                    request.id(recid);
+                                    String jsonString = idx_record as JSON
+                                    //String jsonString = JsonOutput.toJson(idx_record)
+                                    //println(jsonString)
+                                    request.source(jsonString, XContentType.JSON)
+
+                                    bulkRequest.add(request)
+
+                                    //bulkRequest.add(request)
+
+                                    //println(request)
+                                    /*IndexResponse indexResponse = esclient.index(request, RequestOptions.DEFAULT);
+
+                            String index = indexResponse.getIndex();
+                            String id = indexResponse.getId();
+                            if (indexResponse.getResult() == DocWriteResponse.Result.CREATED) {
+                                //log.debug("CREATED ${domain.name}")
+                            } else if (indexResponse.getResult() == DocWriteResponse.Result.UPDATED) {
+                                //log.debug("UPDATED ${domain.name}")
+                            } else {
+                                log.debug("ELSE ${domain.name}: ${indexResponse.getResult()}")
+                            }
+                            ReplicationResponse.ShardInfo shardInfo = indexResponse.getShardInfo();
+                            if (shardInfo.getTotal() != shardInfo.getSuccessful()) {
+
+                            }
+                            if (shardInfo.getFailed() > 0) {
+                                for (ReplicationResponse.ShardInfo.Failure failure : shardInfo.getFailures()) {
+                                    String reason = failure.reason()
+                                    println(reason)
+                                }
+                            }*/
+
+                                    //latest_ft_record.lastTimestamp = r.lastUpdated?.getTime()
+                                    if (r.lastUpdated?.getTime() > highest_timestamp) {
+                                        highest_timestamp = r.lastUpdated?.getTime();
+                                    }
+
+                                    //println(count)
+                                    //println(total)
+                                    //count++
+                                    total++
+                                    //if (count == 100) {
+                                    //count = 0
+                                    //latest_ft_record.lastTimestamp = highest_timestamp
+                                    //latest_ft_record.save()
+                                    //}
+                                }
+
                                 BulkResponse bulkResponse = esclient.bulk(bulkRequest, RequestOptions.DEFAULT)
 
                                 if (bulkResponse.hasFailures()) {
                                     for (BulkItemResponse bulkItemResponse : bulkResponse) {
                                         if (bulkItemResponse.isFailed()) {
-                                            BulkItemResponse.Failure failure =
-                                                    bulkItemResponse.getFailure()
-                                            println("ES Bulk operation has failure: " + failure)
+                                            BulkItemResponse.Failure failure = bulkItemResponse.getFailure()
+                                            log.debug("updateES ${domain.name}: ES Bulk operation has failure -> ${failure}")
                                         }
                                     }
                                 }
-                                session.flush()
+
+                                log.debug("processed ${total} records (${domain.name})")
+
+                                /*if (count > 0) {
+                                    BulkResponse bulkResponse = esclient.bulk(bulkRequest, RequestOptions.DEFAULT)
+
+                                    if (bulkResponse.hasFailures()) {
+                                        for (BulkItemResponse bulkItemResponse : bulkResponse) {
+                                            if (bulkItemResponse.isFailed()) {
+                                                BulkItemResponse.Failure failure =
+                                                        bulkItemResponse.getFailure()
+                                                println("ES Bulk operation has failure: " + failure)
+                                            }
+                                        }
+                                    }
+                                    session.flush()
+                                }*/
+
+                                log.debug("Processed ${total} records for ${domain.name}")
+
+                                // update timestamp
+                                latest_ft_record.lastTimestamp = highest_timestamp
+                                latest_ft_record.save()
+                                bulkRequest = new BulkRequest()
                             }
-
-                            log.debug("Processed ${total} records for ${domain.name}")
-
-                            // update timestamp
-                            latest_ft_record.lastTimestamp = highest_timestamp
-                            latest_ft_record.save()
-                            session.flush()
-                            session.clear()
-                        }
                     } else {
                         latest_ft_record.save()
                         log.debug("updateES ${domain.name}: Fail -> ESWrapperService.testConnection() && esIndices && esIndices.get(domain.simpleName)")
@@ -1273,7 +1277,7 @@ class DataloadService {
                         }
 
                         FTControl.withTransaction {
-                            ftControl.dbElements = domainClass.findAll().size()
+                            ftControl.dbElements = domainClass.count()
                             ftControl.esElements = countIndex
 
                             //println(ft.dbElements +' , '+ ft.esElements)
@@ -1336,7 +1340,7 @@ class DataloadService {
                         }
 
                         FTControl.withTransaction {
-                            ft.dbElements = domainClass.findAll().size()
+                            ft.dbElements = domainClass.count()
                             ft.esElements = countIndex
 
                             //println(ft.dbElements +' , '+ ft.esElements)

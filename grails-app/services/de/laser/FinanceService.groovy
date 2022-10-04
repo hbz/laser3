@@ -813,7 +813,7 @@ class FinanceService {
             if(params.filterCISub) {
                 costItemFilterQuery += " and sub in (:filterCISub) "
                 List<Subscription> filterSubs = []
-                String[] subscriptions = params.filterCISub.split(',')
+                String[] subscriptions = params.list('filterCISub')
                 subscriptions.each { String sub ->
                     filterSubs.add((Subscription) genericOIDService.resolveOID(sub))
                 }
@@ -823,7 +823,7 @@ class FinanceService {
             if(params.filterCISPkg) {
                 costItemFilterQuery += " and ci.subPkg in (:filterCISPkg) "
                 List<SubscriptionPackage> filterSubPackages = []
-                String[] subscriptionPackages = params."filterCISPkg".split(',')
+                String[] subscriptionPackages = params.list('filterCISPkg')
                 subscriptionPackages.each { String subPkg ->
                     filterSubPackages.add((SubscriptionPackage) genericOIDService.resolveOID(subPkg))
                 }
@@ -833,7 +833,7 @@ class FinanceService {
             if(params.filterCIBudgetCode) {
                 costItemFilterQuery += " and ci in (select cig.costItem from CostItemGroup cig where cig.budgetCode in (:filterCIBudgetCode)) "
                 List<BudgetCode> filterBudgetCodes = []
-                String[] budgetCodes = params."filterCIBudgetCode".split(',')
+                String[] budgetCodes = params.list('filterCIBudgetCode')
                 budgetCodes.each { String bc ->
                     filterBudgetCodes.add(BudgetCode.get(Long.parseLong(bc)))
                 }
@@ -842,14 +842,14 @@ class FinanceService {
             //reference/code
             if(params.filterCIReference) {
                 costItemFilterQuery += " and ci.reference in (:filterCIReference) "
-                List<String> filterReferences = params."filterCIReference".split(',')
+                List<String> filterReferences = params.list('filterCIReference')
                 queryParams.filterCIReference = filterReferences
             }
             //invoice number
             if(params.filterCIInvoiceNumber) {
                 costItemFilterQuery += " and ci.invoice.invoiceNumber in (:filterCIInvoiceNumber) "
                 List<String> filterInvoiceNumbers = []
-                String[] invoiceNumbers = params."filterCIInvoiceNumber".split(',')
+                String[] invoiceNumbers = params.list('filterCIInvoiceNumber')
                 invoiceNumbers.each { String invNum ->
                     filterInvoiceNumbers.add(invNum)
                 }
@@ -859,7 +859,7 @@ class FinanceService {
             if(params.filterCIOrderNumber) {
                 costItemFilterQuery += " and ci.order.orderNumber in (:filterCIOrderNumber) "
                 List<String> filterOrderNumbers = []
-                String[] orderNumbers = params."filterCIOrderNumber".split(',')
+                String[] orderNumbers = params.list('filterCIOrderNumber')
                 orderNumbers.each { String orderNum ->
                     filterOrderNumbers.add(orderNum)
                 }
