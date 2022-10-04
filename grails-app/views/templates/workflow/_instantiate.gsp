@@ -36,7 +36,11 @@
 
         <g:form controller="${targetController}" action="workflows" id="${target.id}" method="POST" class="ui form">
             <div class="field">
-                <label for="workflowId">${message(code:'workflow.label')}</label>
+                <label for="workflowName">${message(code:'default.title.label')}</label>
+                <input id="workflowName" name="workflowName" type="text" value="Mein neuer Workflow">
+            </div>
+            <div class="field">
+                <label for="workflowId">${message(code:'workflow.template')}</label>
 
                 <ui:dropdownWithI18nExplanations class="ui dropdown la-not-clearable"
                                                  name="workflowId" id="workflowId"

@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4512    30.09.2022  dev     3.0         David   Feature     Erstellen eines Workflows: Name und Label
+
 4514    30.09.2022  dev     3.0         David   Feature     Workflow: Stift-Icon vereinheitlichen
 
 4515    30.09.2022  dev     3.0         David   Feature     Filter "Meine Workflows"

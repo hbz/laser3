@@ -42,6 +42,10 @@
                                         ${wf.comment}
                                     </div>
                                 </g:if>
+
+                                <div class="sc_darkgrey" style="margin:1em 0 0 0; text-align:right;">
+                                    Vorlage: ${wf.prototypeTitle} (${wf.prototypeVariant})
+                                </div>
                             </div>
 
                         </div>
@@ -49,8 +53,7 @@
 
                             <div class="${DateUtils.isDateToday(wf.lastUpdated) ? '' : 'sc_darkgrey'}" style="text-align: right">
                                 ${DateUtils.getLocalizedSDF_noTime().format(wf.lastUpdated)}<br />
-                                ${DateUtils.getLocalizedSDF_noTime().format(wf.dateCreated)}<br />
-                                Version: ${wf.prototypeVariant}
+                                ${DateUtils.getLocalizedSDF_noTime().format(wf.dateCreated)}
                             </div>
 
                         </div>
