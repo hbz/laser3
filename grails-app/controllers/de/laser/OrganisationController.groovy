@@ -21,6 +21,7 @@ import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.http.HttpStatus
 import org.apache.poi.xssf.streaming.SXSSFWorkbook
+import org.springframework.validation.FieldError
 
 import javax.servlet.ServletOutputStream
 import java.text.SimpleDateFormat
@@ -606,6 +607,9 @@ class OrganisationController  {
         identifier.value = params.value.trim()
         identifier.note = params.note?.trim()
         identifier.save()
+        identifier.errors.getFieldErrors().each { FieldError fe ->
+            flash.error = message(code: 'identifier.edit.err.wrongValue', args: [fe.rejectedValue]) as String
+        }
 
         redirect(url: request.getHeader('referer'))
     }

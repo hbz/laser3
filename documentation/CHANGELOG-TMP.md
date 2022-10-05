@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4504    05.10.2022  dev     3.0         Andreas Feature     Bereinigung und Validierung von WIBIDs, Entfernen von Dubletten bei VAT und WIBID
+
 4512    30.09.2022  dev     3.0         David   Feature     Erstellen eines Workflows: Name und Label
 
 4514    30.09.2022  dev     3.0         David   Feature     Workflow: Stift-Icon vereinheitlichen
