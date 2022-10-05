@@ -40,6 +40,9 @@
                     <input type="text" name="leitID3" value="${leitID.leitID3}" placeholder="${message(code: 'identifier.leitID.leitID3.info')} (${message(code: 'default.mandatory.tooltip')})" minlength="2" maxlength="2" pattern="[0-9]{2,2}" required>
                 </div>
             </g:if>
+            <g:elseif test="${identifier.ns.ns == IdentifierNamespace.WIBID}">
+                <input type="text" id="value" name="value" value="${identifier?.value == IdentifierNamespace.UNKNOWN ? '' : identifier?.value}" placeholder="${message(code: 'identifier.wibid.info')}" pattern="WIB\d{4}" required/>
+            </g:elseif>
             <g:else>
                 <input type="text" id="value" name="value" value="${identifier?.value == IdentifierNamespace.UNKNOWN ? '' : identifier?.value}" required/>
             </g:else>

@@ -2615,7 +2615,7 @@ class ExportClickMeService {
         } else if (fieldKey.startsWith('participantIdentifiers.') || fieldKey.startsWith('providerIdentifiers.')) {
             if (org) {
                 Long id = Long.parseLong(fieldKey.split("\\.")[1])
-                List<Identifier> identifierList = Identifier.executeQuery("select ident from Identifier ident where ident.org = :org and ident.ns.id in (:namespaces)", [org: org, namespaces: [id]])
+                List<Identifier> identifierList = Identifier.executeQuery("select ident from Identifier ident where ident.org = :org and ident.ns.id in (:namespaces) and ident.value != :unknown and ident.value != ''", [org: org, namespaces: [id], unknown: IdentifierNamespace.UNKNOWN])
                 if (identifierList) {
                     row.add([field: identifierList.value.join(";"), style: null])
                 } else {
