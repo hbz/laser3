@@ -1016,7 +1016,7 @@ class AjaxHtmlController {
             // not: * used as wp.task
             result.dd_nextList = WfTaskPrototype.executeQuery(
                     'select wftp from WfTaskPrototype wftp where ' +
-                            'and wftp not in (select wp.task from WfWorkflowPrototype wp) ' +
+                            'wftp not in (select wp.task from WfWorkflowPrototype wp) ' +
                             'order by id'
             )
 

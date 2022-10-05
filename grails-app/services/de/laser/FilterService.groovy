@@ -41,7 +41,7 @@ class FilterService {
         Map<String, Object> queryParams = ["orgStatus" : RDStore.ORG_STATUS_DELETED]
 
         if (params.orgNameContains?.length() > 0) {
-            query << "(genfunc_filter_matcher(o.name, :orgNameContains) = true or genfunc_filter_matcher(o.shortname, :orgNameContains) = true or genfunc_filter_matcher(o.sortname, :orgNameContains) = true) or exists(select alt.id from AlternativeName alt where alt.org = o and genfunc_filter_matcher(alt.name, :orgNameContains) = true) "
+            query << "((genfunc_filter_matcher(o.name, :orgNameContains) = true or genfunc_filter_matcher(o.shortname, :orgNameContains) = true or genfunc_filter_matcher(o.sortname, :orgNameContains) = true) or exists(select alt.id from AlternativeName alt where alt.org = o and genfunc_filter_matcher(alt.name, :orgNameContains) = true) )"
              queryParams << [orgNameContains : "${params.orgNameContains}"]
         }
         if (params.orgType) {
@@ -1353,8 +1353,11 @@ class FilterService {
                 base_qry += "order by ic.startDate ${params.order}, lower(ie.sortname), lower(tipp.sortname) "
             else if(params.sort == 'endDate')
                 base_qry += "order by ic.endDate ${params.order}, lower(ie.sortname), lower(tipp.sortname) "
-            else
-                base_qry += "order by ie.${params.sort} ${params.order} "
+            else {
+                if(params.sort.contains("sortname"))
+                    base_qry += "order by ie.sortname ${params.order}, ie.name ${params.order}, tipp.sortname ${params.order}, tipp.name ${params.order}"
+                else base_qry += "order by ie.${params.sort} ${params.order} "
+            }
         }
         else if(!params.forCount){
             base_qry += "order by ie.sortname, tipp.sortname"
