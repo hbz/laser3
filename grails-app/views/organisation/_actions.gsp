@@ -20,7 +20,7 @@
 
                 <div class="divider"></div>
 
-                <g:if test="${workflowService.isInstantiableForCurrentUser()}"><!-- TODO: workflows-permissions -->
+                <g:if test="${workflowService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
                     <g:if test="${institutionalView || isProviderOrAgency}">
                         <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalInstantiateWorkflow" />
                         <div class="divider"></div>
@@ -50,7 +50,7 @@
                 <ui:actionsDropdownItem controller="user" action="create" message="user.create_new.label" params="[org: orgInstance.id]" />
             </g:if>
             <g:if test="${actionName == 'workflows'}">
-                <g:if test="${workflowService.isInstantiableForCurrentUser()}"><!-- TODO: workflows-permissions -->
+                <g:if test="${workflowService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
                     <g:if test="${institutionalView || isProviderOrAgency}">
                         <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalInstantiateWorkflow" />
                     </g:if>
@@ -138,7 +138,7 @@
     </g:if>
 </g:if>
 
-<g:if test="${workflowService.isInstantiableForCurrentUser()}"><!-- TODO: workflows-permissions -->
+<g:if test="${workflowService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
     <g:if test="${institutionalView}">
         <laser:render template="/templates/workflow/instantiate" model="${[cmd: RDStore.WF_WORKFLOW_TARGET_TYPE_INSTITUTION, target: orgInstance]}"/>
     </g:if>

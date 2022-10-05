@@ -48,6 +48,7 @@ import java.lang.reflect.Method
 import java.lang.reflect.Modifier
 import java.sql.Timestamp
 import java.time.LocalDate
+import java.util.concurrent.ExecutorService
 
 /**
  * This controller is a buddy-for-everything controller and handles thus all sorts of global management
@@ -66,6 +67,7 @@ class YodaController {
     DataloadService dataloadService
     DeletionService deletionService
     ESWrapperService ESWrapperService
+    ExecutorService executorService
     FinanceService financeService
     FormService formService
     GokbService gokbService
@@ -792,7 +794,10 @@ class YodaController {
     def reloadPackage() {
         if(!globalSourceSyncService.running) {
             log.debug("match IssueEntitlements to TIPPs ...")
-            globalSourceSyncService.doSingleSync(params.packageUUID)
+            String uuid = params.packageUUID
+            executorService.execute({
+                globalSourceSyncService.doSingleSync(uuid)
+            })
         }
         else {
             log.debug("process running, lock is set!")

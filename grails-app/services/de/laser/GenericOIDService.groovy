@@ -31,6 +31,14 @@ class GenericOIDService {
     if (oid) {
       String[] parts = oid.toString().split(':')
       String domainClass = parts[0].trim()
+
+      // proxy fallback
+      if (domainClass.contains('$HibernateProxy$')) {
+        String realDC = domainClass.split('\\$')[0]
+        log.debug 'got HibernateProxy; trying to resolve ' + domainClass + ' -> ' + realDC
+        domainClass = realDC
+      }
+
       Class cls = CodeUtils.getDomainClass(domainClass) ?: CodeUtils.getDomainClassBySimpleName(domainClass)
       if (cls)  {
         result = cls.get(parts[1].trim())

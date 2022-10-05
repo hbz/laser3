@@ -7,6 +7,28 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4504    05.10.2022  dev     3.0         Andreas Feature     Bereinigung und Validierung von WIBIDs, Entfernen von Dubletten bei VAT und WIBID
+
+4512    30.09.2022  dev     3.0         David   Feature     Erstellen eines Workflows: Name und Label
+
+4514    30.09.2022  dev     3.0         David   Feature     Workflow: Stift-Icon vereinheitlichen
+
+4515    30.09.2022  dev     3.0         David   Feature     Filter "Meine Workflows"
+
+4523    30.09.2022  dev     3.0         David   Feature     Workflow: Schließen und speichern
+
+4511    29.09.2022  dev     3.0         David   Feature     Bessere Rückmeldung im modalen Dialog
+
+4510    29.09.2022  dev     3.0         David   Feature     Redakteure sollen Workflows verknüpfen dürfen
+
+4508    28.09.2022  dev     3.0         David   Bug         Löschen eines Workflows führt zu 500er
+
+4503    28.09.2022  dev     3.0         David   Bug         500er "Meine Workflows"
+
+4507    28.09.2022  rc-2.3  2.3.9       Andreas Bug         Budgetcodefilterung funktionierte nicht
+
+4443    27.09.2022  dev     3.0         Andreas Feature     Korrektur im Lizenzimporttemplate
+
 --      21.09.2022  rc-2.3  2.3.8       Andreas Bug         Fehler bei Titelsynchronisation behoben
 
 4490    21.09.2022  rc-2.3  2.3.8       Andreas Bug         500er bei Lizenzaufruf behoben, Statistiküberprüfung umgebaut

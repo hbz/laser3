@@ -77,11 +77,20 @@ class WfTask extends WfTaskBase {
      * Retrieves the {@link WfWorkflow} to which this task is associated
      * @return the {@link WfWorkflow}
      */
-    WfWorkflow getWorkflow() {
-        List<WfWorkflow> result = WfWorkflow.findAllByTask(this, [sort: 'id'])
+    WfWorkflow getWorkflowX() {
+        List<WfWorkflow> result = []
+        WfTask t = this
 
+        while (t) {
+            if (t.getPrevious()) {
+                t = t.getPrevious()
+            } else {
+                result = WfWorkflow.findAllByTask(t, [sort: 'id'])
+                t = null
+            }
+        }
         if (result.size() > 1) {
-            log.debug('Multiple matches for WfTask.getWorkflow() ' + this.id + ' -> ' + result.collect{ it.id })
+            log.debug('Multiple matches for WfTask.getWorkflowX() ' + this.id + ' -> ' + result.collect{ it.id })
         }
         return result ? result.first() : null
     }
