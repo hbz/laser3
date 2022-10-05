@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4517    05.10.2022  dev     3.0         David   Feature     Meine Workflows: Sortierung ändern
+
 4512    30.09.2022  dev     3.0         David   Feature     Erstellen eines Workflows: Name und Label
 
 4514    30.09.2022  dev     3.0         David   Feature     Workflow: Stift-Icon vereinheitlichen

@@ -9,7 +9,7 @@
 <ui:h1HeaderWithIcon message="menu.my.workflows" type="Workflow" total="${total}" floated="true" />
 
 <ui:filter showFilterButton="true" addFilterJs="true">
-    <form class="ui form">
+    <form id="wfFilterForm" class="ui form">
         <div class="three fields">
             <div class="field">
                 <label>${message(code:'task.responsible.label')}</label>
@@ -43,15 +43,6 @@
                           value="${params.filterPrototypeMeta}"
                           noSelection="${['' : message(code:'default.select.choose.label')]}"/>
             </div>
-            %{--<div class="field">
-                <label>${message(code: 'default.priority.label')}</label>
-                <ui:select class="ui dropdown" name="filterPriority"
-                              from="${ RefdataCategory.getAllRefdataValues(RDConstants.WF_TASK_PRIORITY) }"
-                              optionKey="id"
-                              optionValue="value"
-                              value="${params.filterPriority}"
-                              noSelection="${['' : message(code:'default.select.choose.label')]}"/>
-            </div>--}%
 %{--            <div class="field">--}%
 %{--                <label>${message(code: 'default.status.label')}</label>--}%
 %{--                <ui:select class="ui dropdown" name="filterStatus"--}%
@@ -108,9 +99,10 @@
             </div>
         </div>--}%
         <div class="field la-field-right-aligned">
-            <g:link controller="myInstitution" action="currentWorkflows" params="${[filter: false]}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</g:link>
+            <g:link controller="myInstitution" action="currentWorkflows" params="${[filter: 'reset']}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</g:link>
             <input type="submit" class="ui primary button" value="${message(code:'default.button.filter.label')}" />
         </div>
+        <input type="hidden" name="filterTab" value="${params.filterTab}" />
     </form>
 </ui:filter>
 
@@ -131,10 +123,29 @@
     </g:else>
 </g:elseif>
 
+%{--+++ ${[offset: params.offset, max: params.max]}--}%
+%{--+++ ${params}--}%
+<div id="wfTabs" class="ui secondary stackable pointing tabular la-tab-with-js menu" style="margin-top:2em;">
+    <a class="${params.filterTab == 'open' ? 'active item':'item'}" data-tab="open">
+        ${RDStore.WF_WORKFLOW_STATUS_OPEN.getI10n('value')} <div class="ui  circular label">${currentWorkflowIds_open.size()}</div>
+    </a>
+    <a class="${params.filterTab == 'canceled'  ? 'active item':'item'}" data-tab="canceled">
+        ${RDStore.WF_WORKFLOW_STATUS_CANCELED.getI10n('value')} <div class="ui  circular label">${currentWorkflowIds_canceled.size()}</div>
+    </a>
+    <a class="${params.filterTab == 'done'  ? 'active item':'item'}" data-tab="done">
+        ${RDStore.WF_WORKFLOW_STATUS_DONE.getI10n('value')} <div class="ui  circular label">${currentWorkflowIds_done.size()}</div>
+    </a>
+</div>
+
+<g:each in="${['open', 'canceled', 'done']}" var="tabStatus">
+
+    <div class="ui bottom attached tab ${params.filterTab == tabStatus ? 'active':''}" data-tab="${tabStatus}">
+        <div>
+
 <table class="ui celled table la-js-responsive-table la-table">
     <thead>
         <tr>
-            <th class="one wide" rowspan="2">${message(code:'default.status.label')}</th>
+            <th class="one wide" rowspan="2">${message(code:'sidewide.number')}</th>
             <th class="four wide" rowspan="2">${message(code:'workflow.label')}</th>
             <th class="four wide" rowspan="2">${message(code:'default.relation.label')}</th>
             <th class="four wide" rowspan="2">${message(code:'default.progress.label')}</th>
@@ -146,14 +157,24 @@
         <tr>
     </thead>
     <tbody>
-        <g:each in="${currentWorkflows}" var="wf">
+
+        <%
+            List<Long> currentWorkflowIds     = (tabStatus == 'open' ? currentWorkflowIds_open : tabStatus == 'canceled' ? currentWorkflowIds_canceled : currentWorkflowIds_done)
+//            List<WfWorkflow> currentWorkflows = WfWorkflow.executeQuery('select wf from WfWorkflow wf where wf.id in (:idList)', [idList: currentWorkflowIds], [offset: pagination['offset_' + tabStatus], max: pagination['max_' + tabStatus]])
+            List<WfWorkflow> currentWorkflows = WfWorkflow.executeQuery('select wf from WfWorkflow wf where wf.id in (:idList)', [idList: currentWorkflowIds])
+        %>
+
+        <g:each in="${currentWorkflows}" var="wf" status="wfi">
             <g:set var="wfInfo" value="${wf.getInfo()}" />
 
             <tr>
-                <td>
-                    <uiWorkflow:statusIcon workflow="${wf}" size="large" />
+                <td class="center aligned">
+                    ${wfi+1}
                 </td>
                 <td>
+                    <g:if test="${tabStatus != 'open'}">
+                        <uiWorkflow:statusIcon workflow="${wf}" size="normal" />
+                    </g:if>
                     <g:link controller="${wfInfo.targetController}" action="workflows" id="${wfInfo.target.id}" params="${[info: '' + wfInfo.target.class.name + ':' + wfInfo.target.id + ':' + WfWorkflow.KEY + ':' + wf.id]}">
                         <strong>${wf.title}</strong>
                     </g:link>
@@ -188,14 +209,10 @@
                 </td>
                 <td class="x">
                     <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
-                        <g:link class="ui blue icon button la-modern-button wfModalLink" controller="ajaxHtml" action="useWfXModal" params="${[key: 'myInstitution:' + wf.id + ':' + WfWorkflow.KEY + ':' + wf.id]}">
-                            <i class="icon expand"></i>
-                        </g:link>
+                        <uiWorkflow:usageIconLinkButton workflow="${wf}" params="${[key: 'myInstitution:' + wf.id + ':' + WfWorkflow.KEY + ':' + wf.id]}" />
                     </g:if>
                     <g:elseif test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
-                        <g:link class="ui blue icon button la-modern-button wfModalLink" controller="ajaxHtml" action="useWfXModal" params="${[key: 'myInstitution:' + wf.id + ':' + WfWorkflow.KEY + ':' + wf.id]}">
-                            <i class="icon expand"></i>
-                        </g:link>
+                        <uiWorkflow:usageIconLinkButton workflow="${wf}" params="${[key: 'myInstitution:' + wf.id + ':' + WfWorkflow.KEY + ':' + wf.id]}" />
                     </g:elseif>
                     <g:if test="${workflowService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
                         <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"
@@ -213,7 +230,15 @@
     </tbody>
 </table>
 
-<ui:paginate action="currentWorkflows" controller="myInstitution" total="${total}" max="${params.max}" />
+        </div>
+
+%{--        <ui:paginate action="currentWorkflows" controller="myInstitution"--}%
+%{--                     total="${currentWorkflowIds.size()}"--}%
+%{--                     max="${pagination['max_' + tabStatus]}" offset="${pagination['offset_' + tabStatus]}"--}%
+%{--                     params="${params + [filterTab: tabStatus]}" />--}%
+    </div>
+
+</g:each>
 
 <div id="wfModal" class="ui modal"></div>
 
@@ -223,6 +248,9 @@
         var func = bb8.ajax4SimpleModalFunction("#wfModal", $(e.currentTarget).attr('href'), false);
         func();
     });
+    $('#wfTabs .item').on('click', function() {
+        $('#wfFilterForm input[name=filterTab]').attr('value', $(this).attr('data-tab'))
+    })
 </laser:script>
 
 

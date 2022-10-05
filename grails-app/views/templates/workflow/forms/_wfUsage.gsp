@@ -30,7 +30,7 @@
         <div class="field">
             <label for="${prefixOverride}_comment">${message(code:'default.comment.label')}</label>
             <g:if test="${wfEditPerm}">
-                <textarea id="${prefixOverride}_comment" name="${prefixOverride}_comment" rows="2">${workflow.comment}</textarea>
+                <textarea id="${prefixOverride}_comment" name="${prefixOverride}_comment" rows="4">${workflow.comment}</textarea>
             </g:if>
             <g:else>
                 <p id="${prefixOverride}_comment">${workflow.comment ?: '-'}</p>
@@ -150,7 +150,7 @@
         <div class="field">
             <label for="${prefixOverride}_comment">${message(code:'default.comment.label')}</label>
             <g:if test="${wfEditPerm}">
-                <textarea id="${prefixOverride}_comment" name="${prefixOverride}_comment" rows="2">${task.comment}</textarea>
+                <textarea id="${prefixOverride}_comment" name="${prefixOverride}_comment" rows="4">${task.comment}</textarea>
             </g:if>
             <g:else>
                 <p id="${prefixOverride}_comment">${task.comment ?: '-'}</p>

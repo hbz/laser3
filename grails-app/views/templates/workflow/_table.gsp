@@ -37,8 +37,8 @@
         <g:set var="wfLinkParam" value="${wfInfo.target.class.name + ':' + wfInfo.target.id + ':' + WfWorkflow.KEY + ':' + wf.id}" />
 
         <tr>
-            <td>
-                <uiWorkflow:statusIcon workflow="${wf}" size="large" />
+            <td class="center aligned">
+                <uiWorkflow:statusIcon workflow="${wf}" size="normal" />
             </td>
             <td>
                 <g:link controller="${wfInfo.targetController}" action="workflows" id="${wfInfo.target.id}" params="${[info: wfLinkParam]}">
@@ -60,15 +60,11 @@
             </td>
             <td class="x">
                 <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
-                    <g:link class="ui icon button blue la-modern-button wfModalLink" controller="ajaxHtml" action="useWfXModal" params="${[key: wfLinkParam]}">
-                        <i class="icon expand"></i>
-                    </g:link>
+                    <uiWorkflow:usageIconLinkButton workflow="${wf}" params="${[key: wfLinkParam]}" />
                     <button class="ui icon button blue la-modern-button" data-wfId="${wf.id}"><i class="icon pencil"></i></button>
                 </g:if>
                 <g:elseif test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
-                    <g:link class="ui icon button blue la-modern-button wfModalLink" controller="ajaxHtml" action="useWfXModal" params="${[key: wfLinkParam]}">
-                        <i class="icon expand"></i>
-                    </g:link>
+                    <uiWorkflow:usageIconLinkButton workflow="${wf}" params="${[key: wfLinkParam]}" />
                     <button class="ui icon button blue la-modern-button" data-wfId="${wf.id}"><i class="icon pencil"></i></button>
                 </g:elseif>
                 <g:if test="${workflowService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->

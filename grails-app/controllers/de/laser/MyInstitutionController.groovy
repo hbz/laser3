@@ -2549,48 +2549,64 @@ join sub.orgRelations or_sub where
 
         Map<String, Object> filterMap = params.findAll{ it.key.startsWith('filter') }
 
+//        int max     = params['max'] ? params.int('max') : contextService.getUser().getPageSizeOrDefault()
+//        int offset  = params['offset'] ? params.int('offset') : 0
+
+        params.remove('max')        // remove native pagination
+        params.remove('offset')
+        params.remove('filter')     // remove reset flag
+
         if (cache) {
             if (request.getHeader('referer')) {
                 try {
                     URL url = URI.create(request.getHeader('referer')).toURL()
                     if (! url.getPath().endsWith(urlKey)) {
-                        cache.put(fmKey, [ filterStatus: RDStore.WF_WORKFLOW_STATUS_OPEN.id ])
                         cache.remove(pmKey)
                     }
                 } catch (Exception e) { }
             }
-            if (filterMap.get('filter') == 'false') {
-                cache.put(fmKey, [ filterStatus: RDStore.WF_WORKFLOW_STATUS_OPEN.id ])
+
+            if (filterMap.get('filter') == 'reset') {
+                cache.remove(fmKey)
                 cache.remove(pmKey)
             }
             else {
                 if (filterMap) {
                     cache.put(fmKey, filterMap)
-                    cache.remove(pmKey)
-                }
-                if (! cache.get(pmKey) || params.max || params.offset) {
-                    cache.put(pmKey, [
-                            max:    params.max ? params.int('max') : contextService.getUser().getPageSizeOrDefault(),
-                            offset: params.offset ? params.int('offset') : 0
-                    ])
+                    if (filterMap.containsKey('filterTab') && filterMap.size() > 1) {
+                        cache.remove(pmKey)
+                    }
                 }
             }
+
+//            Map pagination = [
+//                    max_open:       contextService.getUser().getPageSizeOrDefault(),
+//                    max_canceled:   contextService.getUser().getPageSizeOrDefault(),
+//                    max_done:       contextService.getUser().getPageSizeOrDefault(),
+//                    offset_open:    0,
+//                    offset_canceled:0,
+//                    offset_done:    0
+//            ]
+//
+//            if (cache.get(pmKey)) {
+//                pagination = cache.get(pmKey) as Map
+//            }
+//
+//            if (params.containsKey('filterTab')) {
+//                pagination['max_' + params.filterTab] = max
+//                pagination['offset_' + params.filterTab] = offset
+//            }
+//
+//            cache.put(pmKey, pagination)
 
             if (cache.get(fmKey)) {
                 params.putAll( cache.get(fmKey) as Map )
             }
-            if (cache.get(pmKey)) {
-                params.putAll( cache.get(pmKey) as Map )
-            }
-            else {
-                params.putAll( [
-                        max: contextService.getUser().getPageSizeOrDefault(),
-                        offset: 0
-                ] )
-            }
+//            if (cache.get(pmKey)) {
+//                result.pagination = cache.get(pmKey) as Map
+//            }
         }
-
-        String query = 'select wf from WfWorkflow wf where wf.owner = :ctxOrg'
+        String idQuery = 'select wf.id from WfWorkflow wf where wf.owner = :ctxOrg'
         Map<String, Object> queryParams = [ctxOrg: contextService.getOrg()]
 
 //        result.currentSubscriptions = WfWorkflow.executeQuery(
@@ -2613,58 +2629,57 @@ join sub.orgRelations or_sub where
             Map<String, Object> match = result.currentPrototypes.find{ it.hash == params.filterPrototypeMeta } as Map
             if (match) {
                 println match
-                query = query + ' and wf.prototype.id = :fpId and wf.prototypeTitle = :fpTitle and wf.prototypeVariant = :fpVariant'
+                idQuery = idQuery + ' and wf.prototype.id = :fpId and wf.prototypeTitle = :fpTitle and wf.prototypeVariant = :fpVariant'
                 queryParams.put('fpId', match.id)
                 queryParams.put('fpTitle', match.title)
                 queryParams.put('fpVariant', match.variant)
             } else {
-                query = query + ' and wf.prototype is null' // always false
+                idQuery = idQuery + ' and wf.prototype is null' // always false
             }
         }
         if (params.filterTargetType) {
-            query = query + ' and wf.prototype.targetType = :targetType'
+            if (params.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_INSTITUTION.id) {
+                idQuery = idQuery + ' and wf.org is not null'
+            }
+            else if (params.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_LICENSE.id) {
+                idQuery = idQuery + ' and wf.license is not null'
+            }
+            else if (params.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_PROVIDER.id) {
+                idQuery = idQuery + ' and wf.org is not null'
+            }
+            if (params.filterTargetType == RDStore.WF_WORKFLOW_TARGET_TYPE_SUBSCRIPTION.id) {
+                idQuery = idQuery + ' and wf.subscription is not null'
+            }
+            idQuery = idQuery + ' and wf.prototype.targetType = :targetType'
             queryParams.put('targetType', RefdataValue.get(params.filterTargetType))
         }
         if (params.filterStatus) {
-            query = query + ' and wf.status = :status'
+            idQuery = idQuery + ' and wf.status = :status'
             queryParams.put('status', RefdataValue.get(params.filterStatus))
         }
         if (params.filterUser) {
-            query = query + ' and wf.user = :user'
+            idQuery = idQuery + ' and wf.user = :user'
             queryParams.put('user', User.get(params.filterUser))
         }
         if (params.filterProvider) {
-            query = query + ' and exists (select ooo from OrgRole ooo join ooo.sub sub where ooo.org = :provider and ooo.roleType = :roleType and sub = wf.subscription)'
+            idQuery = idQuery + ' and exists (select ooo from OrgRole ooo join ooo.sub sub where ooo.org = :provider and ooo.roleType = :roleType and sub = wf.subscription)'
             queryParams.put('roleType', RDStore.OR_PROVIDER)
             queryParams.put('provider', Org.get(params.filterProvider))
         }
         if (params.filterSubscription) {
-            query = query + ' and wf.subscription = :subscription'
+            idQuery = idQuery + ' and wf.subscription = :subscription'
             queryParams.put('subscription', Subscription.get(params.filterSubscription))
         }
 
-        result.currentWorkflows = WfWorkflow.executeQuery(query + ' order by wf.id desc', queryParams)
+        List<Long> workflowIds = WfWorkflow.executeQuery(idQuery + ' order by wf.id desc', queryParams)
 
-        if (params.filterPriority) {
-            List<WfWorkflow> matches = []
-            RefdataValue priority = RefdataValue.get(params.filterPriority)
+        String query = 'select wf.id from WfWorkflow wf where wf.id in (:idList) and wf.status = :status'
 
-            result.currentWorkflows.each{ wf ->
-                boolean match = false
-                wf.getSequence().each { t ->
-                    if (t.priority == priority) {
-                        match = true
-                    }
-                }
-                if (match) {
-                    matches.add(wf)
-                }
-                result.currentWorkflows = matches
-            }
-        }
+        result.currentWorkflowIds_open     = WfWorkflow.executeQuery(query, [idList: workflowIds, status: RDStore.WF_WORKFLOW_STATUS_OPEN])
+        result.currentWorkflowIds_canceled = WfWorkflow.executeQuery(query, [idList: workflowIds, status: RDStore.WF_WORKFLOW_STATUS_CANCELED])
+        result.currentWorkflowIds_done     = WfWorkflow.executeQuery(query, [idList: workflowIds, status: RDStore.WF_WORKFLOW_STATUS_DONE])
 
-        result.total = result.currentWorkflows.size()
-        result.currentWorkflows = result.currentWorkflows.drop(params.offset).take(params.max)
+        result.total = workflowIds.size()
 
         result
     }

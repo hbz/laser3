@@ -1,15 +1,18 @@
 package de.laser.domain
 
+import de.laser.ContextService
 import de.laser.DocContext
+import de.laser.auth.User
 import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
-import de.laser.workflow.WfConditionBase
 import de.laser.workflow.WfWorkflow
 import de.laser.workflow.WorkflowHelper
 import de.laser.workflow.WfCondition
 import de.laser.workflow.WfTask
 
 class WorkflowTagLib {
+
+    ContextService contextService
 
     static namespace = 'uiWorkflow'
 
@@ -18,6 +21,8 @@ class WorkflowTagLib {
         WfWorkflow workflow = attrs.workflow as WfWorkflow
         Map<String, Object> wfInfo = workflow.getInfo()
         String iconSize = attrs.get('size') ?: 'large'
+
+        out << '<i class="icon ' + iconSize + ' ' + WorkflowHelper.getCssIconAndColorByStatus(workflow.status) + '"></i>'
 
         if (workflow.status == RDStore.WF_WORKFLOW_STATUS_DONE) {
             if (wfInfo.tasksImportantBlocking) {
@@ -31,7 +36,30 @@ class WorkflowTagLib {
                 out << '</span>'
             }
         }
-        out << '<i class="icon ' + iconSize + ' ' + WorkflowHelper.getCssIconAndColorByStatus(workflow.status) + '"></i>'
+    }
+
+    def usageIconLinkButton = { attrs, body ->
+
+        WfWorkflow workflow = attrs.workflow as WfWorkflow
+        User user           = contextService.getUser()
+        String link         = g.createLink(controller: 'ajaxHtml', action: 'useWfXModal', params: attrs.params)
+
+        boolean isUser = workflow.user.id == user.id
+
+        if (isUser) {
+            //out <<  '<a href="' + link + '" class="ui icon button blue la-modern-button la-popup-tooltip la-delay wfModalLink" '
+            out <<  '<a href="' + link + '" class="ui icon button blue la-modern-button wfModalLink">'
+
+            out <<      '<i class="icon user"></i>'
+            out <<  '</a>'
+        }
+        else {
+            out <<  '<a href="' + link + '" class="ui icon button gray la-modern-button la-popup-tooltip la-delay wfModalLink" '
+//            out <<  '<a href="' + link + '" class="ui icon button gray la-modern-button wfModalLink">'
+            out <<          'data-position="top right" data-content="' + message(code:'workflow.user.currentUser', args: [workflow.user.displayName]) + '">'
+            out <<      '<i class="icon user outline"></i>'
+            out <<  '</a>'
+        }
     }
 
     def task = { attrs, body ->
