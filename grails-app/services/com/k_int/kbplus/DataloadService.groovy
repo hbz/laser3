@@ -894,13 +894,13 @@ class DataloadService {
     RestHighLevelClient esclient = ESWrapperService.getClient()
     def esIndices = ESWrapperService.es_indices
 
-        def count = 0;
+        //def count = 0;
         def total = 0;
 
         def highest_timestamp = 0;
         def highest_id = 0;
 
-        FTControl.withTransaction {
+        FTControl.withSession {
 
             def latest_ft_record = FTControl.findByDomainClassNameAndActivity(domain.name, 'ESIndex')
 
@@ -925,12 +925,13 @@ class DataloadService {
                         // def qry = domain.findAllByLastUpdatedGreaterThan(from,[sort:'lastUpdated'])
 
                         def query
+                        int allDBObjects = 0
 
                         Class domainClass = grailsApplication.getDomainClass(domain.name).clazz
                         if (org.apache.commons.lang.ClassUtils.getAllInterfaces(domainClass).contains(CalculatedLastUpdated)) {
-                            query = domain.executeQuery("select d.id from " + domain.name + " as d where (d.lastUpdatedCascading is not null and d.lastUpdatedCascading > :from) or (d.lastUpdated > :from) or (d.dateCreated > :from and d.lastUpdated is null) order by d.lastUpdated asc, d.id", [from: from], [readonly: true])
+                            allDBObjects = domain.executeQuery("select count(d.id) from " + domain.name + " as d where (d.lastUpdatedCascading is not null and d.lastUpdatedCascading > :from) or (d.lastUpdated > :from) or (d.dateCreated > :from and d.lastUpdated is null)", [from: from], [readonly: true])[0]
                         } else {
-                            query = domain.executeQuery("select d.id from " + domain.name + " as d where (d.lastUpdated > :from) or (d.dateCreated > :from and d.lastUpdated is null) order by d.lastUpdated asc, d.id", [from: from], [readonly: true]);
+                            allDBObjects = domain.executeQuery("select count(d.id) from " + domain.name + " as d where (d.lastUpdated > :from) or (d.dateCreated > :from and d.lastUpdated is null)", [from: from], [readonly: true])[0]
                         }
 
                         //log.debug("Query completed .. processing rows ..")
@@ -940,106 +941,109 @@ class DataloadService {
                         //BulkRequest bulkRequest = new BulkRequest()
                         BulkRequest bulkRequest = new BulkRequest();
 
-                        FTControl.withNewSession { Session session ->
-                            for (domain_id in query) {
-                                Object r = domain.get(domain_id)
-                                def idx_record = recgen_closure(r)
-                                def future
-                                if (idx_record['_id'] == null) {
-                                    log.error("******** Record without an ID: ${idx_record} Obj:${r} ******** ")
-                                    continue
+                            for (int count = 0; count < allDBObjects; count+=100) {
+                                if (org.apache.commons.lang.ClassUtils.getAllInterfaces(domainClass).contains(CalculatedLastUpdated)) {
+                                    query = domain.executeQuery("select d.id from " + domain.name + " as d where (d.lastUpdatedCascading is not null and d.lastUpdatedCascading > :from) or (d.lastUpdated > :from) or (d.dateCreated > :from and d.lastUpdated is null) order by d.lastUpdated asc, d.id", [from: from], [max: 100, offset: count, readonly: true])
+                                } else {
+                                    query = domain.executeQuery("select d.id from " + domain.name + " as d where (d.lastUpdated > :from) or (d.dateCreated > :from and d.lastUpdated is null) order by d.lastUpdated asc, d.id", [from: from], [max: 100, offset: count, readonly: true])
                                 }
-
-                                def recid = idx_record['_id'].toString()
-                                idx_record.remove('_id');
-
-                                IndexRequest request = new IndexRequest(esIndices.get(domain.simpleName));
-                                request.id(recid);
-                                String jsonString = idx_record as JSON
-                                //String jsonString = JsonOutput.toJson(idx_record)
-                                //println(jsonString)
-                                request.source(jsonString, XContentType.JSON)
-
-                                bulkRequest.add(request)
-
-                                //bulkRequest.add(request)
-
-                                //println(request)
-                                /*IndexResponse indexResponse = esclient.index(request, RequestOptions.DEFAULT);
-
-                        String index = indexResponse.getIndex();
-                        String id = indexResponse.getId();
-                        if (indexResponse.getResult() == DocWriteResponse.Result.CREATED) {
-                            //log.debug("CREATED ${domain.name}")
-                        } else if (indexResponse.getResult() == DocWriteResponse.Result.UPDATED) {
-                            //log.debug("UPDATED ${domain.name}")
-                        } else {
-                            log.debug("ELSE ${domain.name}: ${indexResponse.getResult()}")
-                        }
-                        ReplicationResponse.ShardInfo shardInfo = indexResponse.getShardInfo();
-                        if (shardInfo.getTotal() != shardInfo.getSuccessful()) {
-
-                        }
-                        if (shardInfo.getFailed() > 0) {
-                            for (ReplicationResponse.ShardInfo.Failure failure : shardInfo.getFailures()) {
-                                String reason = failure.reason()
-                                println(reason)
-                            }
-                        }*/
-
-                                //latest_ft_record.lastTimestamp = r.lastUpdated?.getTime()
-                                if (r.lastUpdated?.getTime() > highest_timestamp) {
-                                    highest_timestamp = r.lastUpdated?.getTime();
-                                }
-
-                                //println(count)
-                                //println(total)
-                                count++
-                                total++
-                                if (count == 100) {
-                                    count = 0;
-
-                                    BulkResponse bulkResponse = esclient.bulk(bulkRequest, RequestOptions.DEFAULT)
-
-                                    if (bulkResponse.hasFailures()) {
-                                        for (BulkItemResponse bulkItemResponse : bulkResponse) {
-                                            if (bulkItemResponse.isFailed()) {
-                                                BulkItemResponse.Failure failure = bulkItemResponse.getFailure()
-                                                log.debug("updateES ${domain.name}: ES Bulk operation has failure -> ${failure}")
-                                            }
-                                        }
+                                for (domain_id in query) {
+                                    Object r = domain.get(domain_id)
+                                    def idx_record = recgen_closure(r)
+                                    def future
+                                    if (idx_record['_id'] == null) {
+                                        log.error("******** Record without an ID: ${idx_record} Obj:${r} ******** ")
+                                        continue
                                     }
 
-                                    log.debug("processed ${total} records (${domain.name})")
-                                    latest_ft_record.lastTimestamp = highest_timestamp
-                                    latest_ft_record.save()
-                                    bulkRequest = new BulkRequest()
-                                }
-                            }
+                                    def recid = idx_record['_id'].toString()
+                                    idx_record.remove('_id');
 
-                            if (count > 0) {
+                                    IndexRequest request = new IndexRequest(esIndices.get(domain.simpleName));
+                                    request.id(recid);
+                                    String jsonString = idx_record as JSON
+                                    //String jsonString = JsonOutput.toJson(idx_record)
+                                    //println(jsonString)
+                                    request.source(jsonString, XContentType.JSON)
+
+                                    bulkRequest.add(request)
+
+                                    //bulkRequest.add(request)
+
+                                    //println(request)
+                                    /*IndexResponse indexResponse = esclient.index(request, RequestOptions.DEFAULT);
+
+                            String index = indexResponse.getIndex();
+                            String id = indexResponse.getId();
+                            if (indexResponse.getResult() == DocWriteResponse.Result.CREATED) {
+                                //log.debug("CREATED ${domain.name}")
+                            } else if (indexResponse.getResult() == DocWriteResponse.Result.UPDATED) {
+                                //log.debug("UPDATED ${domain.name}")
+                            } else {
+                                log.debug("ELSE ${domain.name}: ${indexResponse.getResult()}")
+                            }
+                            ReplicationResponse.ShardInfo shardInfo = indexResponse.getShardInfo();
+                            if (shardInfo.getTotal() != shardInfo.getSuccessful()) {
+
+                            }
+                            if (shardInfo.getFailed() > 0) {
+                                for (ReplicationResponse.ShardInfo.Failure failure : shardInfo.getFailures()) {
+                                    String reason = failure.reason()
+                                    println(reason)
+                                }
+                            }*/
+
+                                    //latest_ft_record.lastTimestamp = r.lastUpdated?.getTime()
+                                    if (r.lastUpdated?.getTime() > highest_timestamp) {
+                                        highest_timestamp = r.lastUpdated?.getTime();
+                                    }
+
+                                    //println(count)
+                                    //println(total)
+                                    //count++
+                                    total++
+                                    //if (count == 100) {
+                                    //count = 0
+                                    //latest_ft_record.lastTimestamp = highest_timestamp
+                                    //latest_ft_record.save()
+                                    //}
+                                }
+
                                 BulkResponse bulkResponse = esclient.bulk(bulkRequest, RequestOptions.DEFAULT)
 
                                 if (bulkResponse.hasFailures()) {
                                     for (BulkItemResponse bulkItemResponse : bulkResponse) {
                                         if (bulkItemResponse.isFailed()) {
-                                            BulkItemResponse.Failure failure =
-                                                    bulkItemResponse.getFailure()
-                                            println("ES Bulk operation has failure: " + failure)
+                                            BulkItemResponse.Failure failure = bulkItemResponse.getFailure()
+                                            log.debug("updateES ${domain.name}: ES Bulk operation has failure -> ${failure}")
                                         }
                                     }
                                 }
-                                session.flush()
+
+                                log.debug("processed ${total} records (${domain.name})")
+
+                                /*if (count > 0) {
+                                    BulkResponse bulkResponse = esclient.bulk(bulkRequest, RequestOptions.DEFAULT)
+
+                                    if (bulkResponse.hasFailures()) {
+                                        for (BulkItemResponse bulkItemResponse : bulkResponse) {
+                                            if (bulkItemResponse.isFailed()) {
+                                                BulkItemResponse.Failure failure =
+                                                        bulkItemResponse.getFailure()
+                                                println("ES Bulk operation has failure: " + failure)
+                                            }
+                                        }
+                                    }
+                                    session.flush()
+                                }*/
+
+                                log.debug("Processed ${total} records for ${domain.name}")
+
+                                // update timestamp
+                                latest_ft_record.lastTimestamp = highest_timestamp
+                                latest_ft_record.save()
+                                bulkRequest = new BulkRequest()
                             }
-
-                            log.debug("Processed ${total} records for ${domain.name}")
-
-                            // update timestamp
-                            latest_ft_record.lastTimestamp = highest_timestamp
-                            latest_ft_record.save()
-                            session.flush()
-                            session.clear()
-                        }
                     } else {
                         latest_ft_record.save()
                         log.debug("updateES ${domain.name}: Fail -> ESWrapperService.testConnection() && esIndices && esIndices.get(domain.simpleName)")
