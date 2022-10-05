@@ -169,7 +169,7 @@ class OrganisationControllerService {
             result.info = params.info // @ currentWorkflows @ dashboard
         }
 
-        result.workflows = WfWorkflow.findAllByOrgAndOwner(result.orgInstance as Org, result.contextOrg as Org, [sort: 'id', order: 'desc'])
+        result.workflows = workflowService.sortByLastUpdated( WfWorkflow.findAllByOrgAndOwner(result.orgInstance as Org, result.contextOrg as Org) )
         result.workflowCount = result.workflows.size()
 
         [result: result, status: (result ? STATUS_OK : STATUS_ERROR)]

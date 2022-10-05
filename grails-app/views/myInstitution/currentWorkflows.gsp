@@ -161,7 +161,7 @@
         <%
             List<Long> currentWorkflowIds     = (tabStatus == 'open' ? currentWorkflowIds_open : tabStatus == 'canceled' ? currentWorkflowIds_canceled : currentWorkflowIds_done)
 //            List<WfWorkflow> currentWorkflows = WfWorkflow.executeQuery('select wf from WfWorkflow wf where wf.id in (:idList)', [idList: currentWorkflowIds], [offset: pagination['offset_' + tabStatus], max: pagination['max_' + tabStatus]])
-            List<WfWorkflow> currentWorkflows = WfWorkflow.executeQuery('select wf from WfWorkflow wf where wf.id in (:idList)', [idList: currentWorkflowIds])
+            List<WfWorkflow> currentWorkflows = workflowService.sortByLastUpdated( WfWorkflow.executeQuery('select wf from WfWorkflow wf where wf.id in (:idList)', [idList: currentWorkflowIds]) )
         %>
 
         <g:each in="${currentWorkflows}" var="wf" status="wfi">

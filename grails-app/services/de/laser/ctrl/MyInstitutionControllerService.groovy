@@ -100,7 +100,7 @@ class MyInstitutionControllerService {
                  status: RDStore.SURVEY_SURVEY_STARTED])
         */
 
-        if (accessService.checkPerm('ORG_CONSORTIUM')){
+        if (workflowService.hasUserPerm_read()){
             /*activeSurveyConfigs = SurveyConfig.executeQuery("from SurveyConfig surConfig where surConfig.surveyInfo.status = :status  and surConfig.surveyInfo.owner = :org " +
                     " order by surConfig.surveyInfo.endDate",
                     [org: result.institution,
@@ -110,9 +110,9 @@ class MyInstitutionControllerService {
                 workflowService.usage(params)
             }
 
-            List<WfWorkflow> workflows = WfWorkflow.executeQuery(
-                    'select wf from WfWorkflow wf where wf.owner = :ctxOrg and wf.status = :status order by wf.id desc',
-                    [ctxOrg: result.institution, status: RDStore.WF_WORKFLOW_STATUS_OPEN] )
+            List<WfWorkflow> workflows = workflowService.sortByLastUpdated(
+                    WfWorkflow.findAllByOwnerAndStatus(result.institution as Org, RDStore.WF_WORKFLOW_STATUS_OPEN)
+            )
 
             result.currentWorkflowsCount = workflows.size()
             result.currentWorkflows = workflows.take(contextService.getUser().getPageSizeOrDefault())

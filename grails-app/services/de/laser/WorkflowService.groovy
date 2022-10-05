@@ -742,6 +742,10 @@ class WorkflowService {
         result
     }
 
+    List<WfWorkflow> sortByLastUpdated(List<WfWorkflow> wfList) {
+        wfList.sort{ a,b -> b.getInfo().lastUpdated <=> a.getInfo().lastUpdated }
+    }
+
     boolean hasUserPerm_read() {
         _innerPermissionCheck('INST_USER')
     }

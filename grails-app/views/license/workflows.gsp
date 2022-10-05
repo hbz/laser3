@@ -14,7 +14,7 @@
     <laser:render template="nav" />
     <ui:messages data="${flash}" />
 
-    <laser:render template="/templates/workflow/table" model="${[target: license]}"/>
+    <laser:render template="/templates/workflow/table" model="${[target: license, workflows: workflows]}"/>
 
     <laser:render template="/templates/workflow/details" model="${[target: license, workflows: workflows]}"/>
 

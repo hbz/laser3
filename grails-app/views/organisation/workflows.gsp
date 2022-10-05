@@ -16,7 +16,7 @@
     <laser:render template="nav" />
     <ui:messages data="${flash}" />
 
-    <laser:render template="/templates/workflow/table" model="${[target: orgInstance]}"/>
+    <laser:render template="/templates/workflow/table" model="${[target: orgInstance, workflows: workflows]}"/>
 
     <laser:render template="/templates/workflow/details" model="${[target: orgInstance, workflows: workflows]}"/>
 
