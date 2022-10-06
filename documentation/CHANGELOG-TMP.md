@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4534    06.10.2022  dev     3.0         Andreas Bug         Schreibrechte gingen beim Vertragstext privater Vertragsmerkmale verloren
+
+4496    06.10.2022  dev     3.0         Andreas Feature     Mouseover bei Mehrjahreslaufzeit-Icon angepasst
+
 4517    05.10.2022  dev     3.0         David   Feature     Meine Workflows: Sortierung ändern
 
 4504    05.10.2022  dev     3.0         Andreas Feature     Bereinigung und Validierung von WIBIDs, Entfernen von Dubletten bei VAT und WIBID
