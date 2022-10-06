@@ -17,8 +17,8 @@ class ModalTagLib {
 
         if (yodaService.showDebugInfo()) {
 
-            out << '<a href="#debugInfo" id="showDebugInfo" role="dialog" aria-label="Debug Info" class="ui button icon" data-ui="modal">'
-            out << '<i aria-hidden="true" class="red bug icon"></i>'
+            out << '<a href="#debugInfo" id="showDebugInfo" role="dialog" aria-label="Debug Info" class="ui secondary button icon" data-ui="modal">'
+            out << '<i aria-hidden="true" class="bug icon"></i>'
             out << '</a>'
 
             out << '<div id="debugInfo" class="ui modal">'
@@ -40,8 +40,8 @@ class ModalTagLib {
 
         if (systemChecks) {
 
-            out << '<a href="#systemInfo" id="showSystemInfo" role="dialog" aria-label="System Info" class="ui button icon" data-ui="modal">'
-            out << '<i aria-hidden="true" class="red exclamation triangle icon"></i>'
+            out << '<a href="#systemInfo" id="showSystemInfo" role="dialog" aria-label="System Info" class="ui secondary button icon" data-ui="modal">'
+            out << '<i aria-hidden="true" class="exclamation triangle icon"></i>'
             out << '</a>'
 
             out << '<div id="systemInfo" class="ui modal">'

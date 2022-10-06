@@ -67,8 +67,8 @@
 
 
 /*.ui.green.button {
-  -webkit-box-shadow: 0 0 0 0 #d3dae3 inset;
-  box-shadow: 0 0 0 0 #d3dae3 inset;
+  -webkit-box-shadow: 0 0 0 0 @laDecorationColor inset;
+  box-shadow: 0 0 0 0 @laDecorationColor inset;
 }
 .ui.green.button, .ui.green.buttons .button {
   background-color: #98b500;
@@ -184,6 +184,16 @@
   background-color: transparent;
   &:hover {
     background-color: @yellow;
+    color: @white;
+  }
+}
+
+
+.ui.la-menue-button.button.la-modern-button {
+  color: #00000099;
+  background-color: transparent;
+  &:hover {
+    background-color: #00000099;
     color: @white;
   }
 }

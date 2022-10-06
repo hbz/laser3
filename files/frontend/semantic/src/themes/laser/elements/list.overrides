@@ -56,7 +56,7 @@
 }
 
 td .la-list-border-around {
-     border: 1px solid @laSecondaryColor;
+     border: 1px solid @laDecorationColor;
 }
 
 .ui.item.person-details:hover {

@@ -226,13 +226,15 @@
                         </td>
                             <td>
                                 <g:link controller="subscription" action="members" params="${[id: s.id]}">
-                                    ${childSubIds.size()}
+                                    <div class="ui blue circular label">${childSubIds.size()}</div>
                                 </g:link>
                             </td>
                             <td>
                                 <g:link mapping="subfinance" controller="finance" action="index"
                                         params="${[sub: s.id]}">
-                                    ${childSubIds.isEmpty() ? 0 : CostItem.executeQuery('select count(ci.id) from CostItem ci where ci.sub.id in (:subs) and ci.owner = :context and ci.costItemStatus != :deleted',[subs:childSubIds, context:institution, deleted:RDStore.COST_ITEM_DELETED])[0]}
+                                    <div class="ui blue circular label">
+                                        ${childSubIds.isEmpty() ? 0 : CostItem.executeQuery('select count(ci.id) from CostItem ci where ci.sub.id in (:subs) and ci.owner = :context and ci.costItemStatus != :deleted',[subs:childSubIds, context:institution, deleted:RDStore.COST_ITEM_DELETED])[0]}
+                                    </div>
                                 </g:link>
                             </td>
 

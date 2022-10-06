@@ -249,7 +249,7 @@
     height: 53px;
 }
 .la-border-left {
-    border-left: 1px solid #d3dae3!important;
+    border-left: 1px solid @laDecorationColor!important;
 }
 
 .ui.table.la-noSticky thead tr:first-child>th,

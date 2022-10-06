@@ -28,6 +28,6 @@
 }
 
 // for the accordions in card e.g. showing all infos in surveys like packages and subscription
-.ui.accordion.la-accordion-showMore .item .active.title  .angle.double.icon {
+.ui.accordion.la-accordion-showMore  .active.title  .angle.double.icon {
   transform: rotate(-180deg);
 }
