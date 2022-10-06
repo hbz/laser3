@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4525    06.10.2022  dev     3.0         David   Feature     Workflow: Umgestaltung Dokumente hochladen
+
+4519    06.10.2022  dev     3.0         David   Feature     Workflow: Änderungen "Dokumentenprüfung"
+
+4518    06.10.2022  dev     3.0         David   Feature     Workflow: Änderungen an Schritt 1 "Dokument einhängen"
+
 4517    05.10.2022  dev     3.0         David   Feature     Meine Workflows: Sortierung ändern
 
 4504    05.10.2022  dev     3.0         Andreas Feature     Bereinigung und Validierung von WIBIDs, Entfernen von Dubletten bei VAT und WIBID

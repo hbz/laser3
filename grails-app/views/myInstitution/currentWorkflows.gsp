@@ -15,7 +15,7 @@
                 <label>${message(code:'task.responsible.label')}</label>
                 <g:select id="filterUser"
                           name="filterUser"
-                          from="${taskService.getUserDropdown(contextService.getOrg())}"
+                          from="${ WfWorkflow.executeQuery('select distinct(wf.user) from WfWorkflow wf where wf.owner = :ctxOrg order by wf.user.display', [ctxOrg: contextService.getOrg()]) }"
                           optionKey="id"
                           optionValue="display"
                           value="${params.filterUser}"
