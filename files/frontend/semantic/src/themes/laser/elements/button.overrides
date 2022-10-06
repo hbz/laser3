@@ -67,8 +67,8 @@
 
 
 /*.ui.green.button {
-  -webkit-box-shadow: 0 0 0 0 #d3dae3 inset;
-  box-shadow: 0 0 0 0 #d3dae3 inset;
+  -webkit-box-shadow: 0 0 0 0 @laDecorationColor inset;
+  box-shadow: 0 0 0 0 @laDecorationColor inset;
 }
 .ui.green.button, .ui.green.buttons .button {
   background-color: #98b500;

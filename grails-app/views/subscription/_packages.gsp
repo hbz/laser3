@@ -21,7 +21,7 @@
                             </g:if>
                             <div class="ui list">
                                 <div class="item">
-                                    <i class="cloud icon"></i>
+                                    <i aria-hidden="true"  class="grey cloud icon"></i>
                                     <div class="content">
                                         <div class="header">${message(code: 'platform.label')}: </div>
                                         <div class="description">
@@ -48,16 +48,6 @@
                                         data-content="${message(code:'subscription.packages.config.header')}">
                                     <i class="ui angle double down icon"></i>
                                 </button>
-                                <laser:script file="${this.getGroovyPageFileName()}">
-%{--                                    $("#pendingChangeConfigurationToggle${sp.id}").on('click', function() {
-                                $("#pendingChangeConfiguration${sp.id}").transition('slide down');
-                                if ($("#pendingChangeConfiguration${sp.id}").hasClass('visible')) {
-                                    $(this).html('<i class="ui angle double down icon"></i>');
-                                } else {
-                                    $(this).html('<i class="ui angle double up icon"></i>');
-                                }
-                            })--}%
-                                </laser:script>
                                 <%
                                     String confirmMsg = message(code: "confirm.dialog.unlink.subscription.package", args: [sp.pkg.name])
                                     String unlinkDisabled = '', unlinkDisabledTooltip = null

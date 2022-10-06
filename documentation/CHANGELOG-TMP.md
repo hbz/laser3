@@ -17,7 +17,7 @@
 
 4511    29.09.2022  dev     3.0         David   Feature     Bessere Rückmeldung im modalen Dialog
 
-4510    29.09.2022  dev     3.0         David   Feature     Redakteure sollen Workflows verknüpfen dürfen
+4510    29.09.2022  dev     3.0         David   Feature     Redakteure sollen Workflows verknüpfen dürfenmodal
 
 4508    28.09.2022  dev     3.0         David   Bug         Löschen eines Workflows führt zu 500er
 
@@ -790,6 +790,8 @@
 3786    09.09.2021  dev     2.2         David   Feature     'Meine Workflows' überarbeiten
 
 3785    09.09.2021  dev     2.2         Andreas Feature     Zurücksetzen der Statistikdaten implementiert
+
+4427    08.09.2021  dev     3.0         Ingrid  Feature     Modal nicht scrollbar, wenn zu viele Inhalte eingeladen werden
 
 3784    08.09.2021  dev     2.2         Andreas Bug         fehlende Kontrollstruktur bei ungültigem Schlüsselpaar nachgereicht
 

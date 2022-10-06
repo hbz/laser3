@@ -42,7 +42,7 @@
 
 /* Grey */
 .ui.grey.segment:not(.inverted) {
-  border-top: 1px solid #d3dae3 !important;
+  border-top: 1px solid @laDecorationColor !important;
 }
 /***********************************
         Footer Segment
@@ -70,7 +70,7 @@ aside.la-metabox + .la-metabox-spacer {
 }
 // Accordion for 'see more content'
 .ui.segments.la-accordion-segments {
-  border-bottom: 1px solid @laSecondaryColor;
+  border-bottom: 1px solid @laDecorationColor;
   &:last-child {
     border-bottom:none;
   }

@@ -13,3 +13,4 @@
 @groupedBoxShadow: 	none;
 @groupedBorder: none;
 @groupedSegmentDivider: none;
+@background: transparent;

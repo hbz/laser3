@@ -26,7 +26,7 @@
 .ui.menu.la-contextBar {
   top: 50px;
   z-index:101;
-  background-color: #d3dae3;
+  background-color: @laDecorationColor;
   .item {
     color: @grey;
     padding:0;
