@@ -16,11 +16,11 @@ abstract class WfConditionBase {
     public static final List[] TYPES = [
             ['1_0_0', 1, 'down'],
             ['2_0_0', 1, 'down'],
-            ['3_0_0', 2, 'down'],
+            //['3_0_0', 2, 'down'],
             ['4_0_0', 2, 'down'],
             ['1_1_0', 1, 'down'],
             ['2_2_0', 2, 'down'],
-            ['3_3_0', 2, 'down'],
+            // ['3_3_0', 2, 'down'],
             ['4_4_0', 2, 'down'],
             ['1_0_1', 1, 'down'],
             ['2_0_2', 2, 'down'],
@@ -82,21 +82,21 @@ abstract class WfConditionBase {
         int[] types = type.split('_').collect{ Integer.parseInt(it)}
 
         for (int i = 0; i < 4; i++) {
+            if (types[2] > i) {
+                fields.add('file' + (i + 1))
+            }
             if (types[0] > i) {
                 fields.add('checkbox' + (i + 1))
             }
             if (types[1] > i) {
                 fields.add('date' + (i + 1))
             }
-            if (types[2] > i) {
-                fields.add('file' + (i + 1))
-            }
         }
 
         if (layout == 'table') {
             if (getUIFieldColumns() == 2) {
                 if (getUIFieldOrder() == 'down') {
-                    int s = Math.round( fields.size() / 2 )
+                    long s = Math.round( fields.size() / 2 )
                     List<String> reordered = []
 
                     for(int i=0; i<s; i++) {

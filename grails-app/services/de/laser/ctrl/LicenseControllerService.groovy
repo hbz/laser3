@@ -43,7 +43,7 @@ class LicenseControllerService {
             result.info = params.info // @ currentWorkflows @ dashboard
         }
 
-        result.workflows = WfWorkflow.findAllByLicenseAndOwner(result.license as License, result.contextOrg as Org, [sort: 'id', order: 'desc'])
+        result.workflows = workflowService.sortByLastUpdated( WfWorkflow.findAllByLicenseAndOwner(result.license as License, result.contextOrg as Org) )
         result.workflowCount = result.workflows.size()
 
         [result: result, status: (result ? STATUS_OK : STATUS_ERROR)]

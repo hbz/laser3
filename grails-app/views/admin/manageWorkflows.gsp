@@ -1,6 +1,6 @@
 <%@ page import="de.laser.utils.DateUtils; de.laser.License; de.laser.Subscription; de.laser.RefdataValue; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.workflow.*; de.laser.WorkflowService" %>
 
-<laser:htmlStart message="menu.admin.manageWorkflows" />
+<laser:htmlStart message="menu.admin.manageWorkflows" serviceInjection="true" />
 
 <ui:breadcrumbs>
     <ui:crumb message="menu.admin" controller="admin" action="index"/>
@@ -49,7 +49,7 @@
         </div>
     </ui:msg>
 
-    <g:set var="currentWorkflows" value="${WfWorkflow.executeQuery('select wfw from WfWorkflow wfw order by wfw.id desc').sort{ a,b -> b.getInfo().lastUpdated <=> a.getInfo().lastUpdated }}" />
+    <g:set var="currentWorkflows" value="${workflowService.sortByLastUpdated( WfWorkflow.findAll() )}" />
     <p class="ui header">
         * Workflows insgesamt: <ui:totalNumber total="${currentWorkflows.size()}"/>
     </p>
@@ -123,6 +123,15 @@
                 <g:link controller="organisation" action="show" params="${[id: wf.owner.id]}">
                     ${wf.owner}
                 </g:link>
+            </div>
+            <div class="la-flexbox">
+                <i class="icon user la-list-icon"></i>
+                <g:if test="${wf.user}">
+                    ${wf.user?.display}
+                </g:if>
+                <g:else>
+                    Kein verantwortlicher Nutzer zugewiesen. (todo: wird entfernt)
+                </g:else>
             </div>
 
             <g:link class="ui small icon negative button right floated la-modern-button js-open-confirm-modal"

@@ -253,14 +253,9 @@
         <g:if test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
             <div class="ui bottom attached tab ${us_dashboard_tab.value == 'Workflows' ? 'active':''}" data-tab="workflows">
 
-                <ui:msg class="info">
-                    Angezeigt werden Ihre noch offenen Workflows.
-                    Eine vollständige Übersicht finden sie unter <g:link controller="myInstitution" action="currentWorkflows">${message(code:'menu.my.workflows')}</g:link>.
-                </ui:msg>
-
                 <div>
                     <g:if test="${currentWorkflows.size() != currentWorkflowsCount}">
-                        <ui:msg class="info" text="${message(code:'workflow.dashboard.msg.more', args:[currentWorkflows.size(), currentWorkflowsCount, g.createLink(controller:'myInstitution', action:'currentWorkflows', params:[max:200])])}" />
+                        <ui:msg class="info" text="${message(code:'workflow.dashboard.msg.more', args:[currentWorkflows.size(), currentWorkflowsCount, g.createLink(controller:'myInstitution', action:'currentWorkflows', params:[filter:'reset',max:200])])}" />
                     </g:if>
                     <table class="ui celled table la-js-responsive-table la-table">
                         <thead>
@@ -322,16 +317,10 @@
                                     </td>
                                     <td class="x">
                                         <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
-                                            <g:link class="ui icon button blue la-modern-button wfModalLink" controller="ajaxHtml" action="useWfXModal"
-                                                    params="${[key: 'dashboard:' + wfLinkParamPart]}">
-                                                <i class="icon expand"></i>
-                                            </g:link>
+                                            <uiWorkflow:usageIconLinkButton workflow="${wf}" params="${[key: 'dashboard:' + wfLinkParamPart]}" />
                                         </g:if>
                                         <g:elseif test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
-                                            <g:link class="ui icon button blue la-modern-button wfModalLink" controller="ajaxHtml" action="useWfXModal"
-                                                    params="${[key: 'dashboard:' + wfLinkParamPart]}">
-                                                <i class="icon expand"></i>
-                                            </g:link>
+                                            <uiWorkflow:usageIconLinkButton workflow="${wf}" params="${[key: 'dashboard:' + wfLinkParamPart]}" />
                                         </g:elseif>
                                         <g:if test="${workflowService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
 %{--                                            <g:link class="ui icon negative button la-modern-button js-open-confirm-modal"--}%

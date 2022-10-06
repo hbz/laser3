@@ -3565,7 +3565,7 @@ class SubscriptionControllerService {
             result.info = params.info // @ currentWorkflows @ dashboard
         }
 
-        result.workflows = WfWorkflow.findAllBySubscriptionAndOwner(result.subscription as Subscription, result.contextOrg as Org, [sort: 'id', order: 'desc'])
+        result.workflows = workflowService.sortByLastUpdated( WfWorkflow.findAllBySubscriptionAndOwner(result.subscription as Subscription, result.contextOrg as Org) )
         result.workflowCount = result.workflows.size()
 
         [result: result, status: (result ? STATUS_OK : STATUS_ERROR)]

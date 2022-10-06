@@ -273,8 +273,7 @@ class WorkflowService {
      * @return a result map with the execution status
      */
     Map<String, Object> internalEditWorkflow(WfWorkflowBase wf, GrailsParameterMap params) {
-
-        log.debug( wf.toString() )
+        log.debug( 'internalEditWorkflow() ' + wf.toString() )
         String[] cmd = (params.cmd as String).split(':')
 
         ParamsHelper ph = new ParamsHelper( cmd[1], params )
@@ -297,6 +296,7 @@ class WorkflowService {
             wf.description  = ph.getString('description')
             wf.comment      = ph.getString('comment')
             wf.status       = RefdataValue.get(ph.getLong('status'))
+            wf.user         = User.get(ph.getLong('user'))
 
             // wf.task         = WfTask.get(ph.getLong('task'))
             // wf.prototype    = WfWorkflowPrototype.get(ph.getLong('prototype'))
@@ -316,8 +316,7 @@ class WorkflowService {
      * @return a result map with the execution status
      */
     Map<String, Object> internalEditTask(WfTaskBase task, GrailsParameterMap params) {
-
-        log.debug( task.toString() )
+        log.debug( 'internalEditTask() ' + task.toString() )
         String[] cmd = (params.cmd as String).split(':')
 
         ParamsHelper ph = new ParamsHelper( cmd[1], params )
@@ -375,8 +374,7 @@ class WorkflowService {
      * @return a result map with the execution status
      */
     Map<String, Object> internalEditCondition(WfConditionBase condition, GrailsParameterMap params) {
-
-        log.debug( condition.toString() )
+        log.debug( 'internalEditCondition() ' + condition.toString() )
         String[] cmd = (params.cmd as String).split(':')
 
         ParamsHelper ph = new ParamsHelper( cmd[1], params )
@@ -595,6 +593,11 @@ class WorkflowService {
                     workflow.status = status
                     wChanged = true
                 }
+                User user = User.get(ph.getLong('user'))
+                if (user != workflow.user) {
+                    workflow.user = user
+                    wChanged = true
+                }
                 if (wChanged) {
                     result.status = workflow.save() ? OP_STATUS_DONE : OP_STATUS_ERROR
                 }
@@ -737,6 +740,10 @@ class WorkflowService {
         }
 
         result
+    }
+
+    List<WfWorkflow> sortByLastUpdated(List<WfWorkflow> wfList) {
+        wfList.sort{ a,b -> b.getInfo().lastUpdated <=> a.getInfo().lastUpdated }
     }
 
     boolean hasUserPerm_read() {

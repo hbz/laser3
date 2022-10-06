@@ -119,6 +119,7 @@ class WfWorkflowPrototype extends WfWorkflowBase {
                 prototypeVariant:       this.variant,
                 prototypeLastUpdated:   this.getInfo().lastUpdated as Date,
                 owner:              BeanStore.getContextService().getOrg(),
+                user:               BeanStore.getContextService().getUser(),
                 status:             RDStore.WF_WORKFLOW_STATUS_OPEN,
                 org:                target instanceof Org ? target : null,
                 license:            target instanceof License ? target : null,
