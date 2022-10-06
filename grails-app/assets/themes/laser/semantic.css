@@ -6775,8 +6775,8 @@ i.icon.la-list-icon:before {
 }
 
 /*.ui.green.button {
-  -webkit-box-shadow: 0 0 0 0 #d3dae3 inset;
-  box-shadow: 0 0 0 0 #d3dae3 inset;
+  -webkit-box-shadow: 0 0 0 0 @laDecorationColor inset;
+  box-shadow: 0 0 0 0 @laDecorationColor inset;
 }
 .ui.green.button, .ui.green.buttons .button {
   background-color: #98b500;
@@ -41458,7 +41458,7 @@ img.ui.bordered.image {
   line-height: 1;
   vertical-align: baseline;
   margin: 0 0.14285714em;
-  background-color: #E8E8E8;
+  background-color: #d3dae3;
   background-image: none;
   padding: 0.5833em 0.833em;
   color: rgba(0, 0, 0, 0.6);
@@ -41647,7 +41647,7 @@ a.ui.label {
   max-width: 9999px;
   vertical-align: baseline;
   text-transform: none;
-  background: #E8E8E8;
+  background: #d3dae3;
   padding: 0.5833em 0.833em 0.5833em 0.5em;
   border-radius: 0.28571429rem;
   -webkit-box-shadow: none;
@@ -41754,7 +41754,7 @@ a.ui.label {
   margin: 0;
   padding: 0;
   text-align: center;
-  border-color: #E8E8E8;
+  border-color: #d3dae3;
   width: 4em;
   height: 4em;
   z-index: 1;
@@ -42144,15 +42144,15 @@ a.ui.basic.label:hover {
 .ui.inverted.labels .label,
 .ui.inverted.label {
   color: rgba(255, 255, 255, 0.9);
-  background-color: #b5b5b5;
+  background-color: #95a6bb;
 }
 
 .ui.inverted.corner.label {
-  border-color: #b5b5b5;
+  border-color: #95a6bb;
 }
 
 .ui.inverted.corner.label:hover {
-  border-color: #E8E8E8;
+  border-color: #d3dae3;
   -webkit-transition: none;
   transition: none;
 }
@@ -47139,7 +47139,7 @@ dd {
 
 .ui.segment {
   position: relative;
-  background: #FFFFFF;
+  background: transparent;
   -webkit-box-shadow: 0 1px 2px 0 rgba(34, 36, 38, 0.15);
   box-shadow: 0 1px 2px 0 rgba(34, 36, 38, 0.15);
   margin: 1rem 0;
@@ -47226,7 +47226,7 @@ dd {
 /* Table */
 
 .ui.basic.table.segment {
-  background: #FFFFFF;
+  background: transparent;
   border: 1px solid rgba(34, 36, 38, 0.15);
   -webkit-box-shadow: 0 1px 2px 0 rgba(34, 36, 38, 0.15);
   box-shadow: 0 1px 2px 0 rgba(34, 36, 38, 0.15);

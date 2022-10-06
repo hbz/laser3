@@ -493,7 +493,7 @@ i.icon.la-list-icon{
             box-shadow @defaultDuration @defaultEasing
 ;
     @checkboxBackground: @white;
-    @hoveredTextColor: #d3dae3;
+    @hoveredTextColor: @laDecorationColor;
     /*-------------------
         States
 --------------------*/

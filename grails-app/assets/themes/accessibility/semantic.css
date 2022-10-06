@@ -1768,7 +1768,7 @@ i.icon.la-list-icon:before {
 
 .la-filter .ui.checkbox label:hover,
 .la-filter .ui.checkbox + label:hover {
-  color: #d3dae3;
+  color: #004678;
 }
 
 .la-filter .ui.checkbox .box:active::before,
@@ -1783,7 +1783,7 @@ i.icon.la-list-icon:before {
 }
 
 .la-filter .ui.checkbox input:active ~ label {
-  color: #d3dae3;
+  color: #004678;
 }
 
 .la-filter .ui.checkbox input:focus ~ .box:before,
@@ -41626,7 +41626,7 @@ img.ui.bordered.image {
   line-height: 1;
   vertical-align: baseline;
   margin: 0 0.14285714em;
-  background-color: #E8E8E8;
+  background-color: #004678;
   background-image: none;
   padding: 0.5833em 0.833em;
   color: rgba(0, 0, 0, 0.6);
@@ -41815,7 +41815,7 @@ a.ui.label {
   max-width: 9999px;
   vertical-align: baseline;
   text-transform: none;
-  background: #E8E8E8;
+  background: #004678;
   padding: 0.5833em 0.833em 0.5833em 0.5em;
   border-radius: 0.28571429rem;
   -webkit-box-shadow: none;
@@ -41922,7 +41922,7 @@ a.ui.label {
   margin: 0;
   padding: 0;
   text-align: center;
-  border-color: #E8E8E8;
+  border-color: #004678;
   width: 4em;
   height: 4em;
   z-index: 1;
@@ -42312,15 +42312,15 @@ a.ui.basic.label:hover {
 .ui.inverted.labels .label,
 .ui.inverted.label {
   color: rgba(255, 255, 255, 0.9);
-  background-color: #b5b5b5;
+  background-color: #000a12;
 }
 
 .ui.inverted.corner.label {
-  border-color: #b5b5b5;
+  border-color: #000a12;
 }
 
 .ui.inverted.corner.label:hover {
-  border-color: #E8E8E8;
+  border-color: #004678;
   -webkit-transition: none;
   transition: none;
 }
@@ -44030,7 +44030,7 @@ a.ui.ui.ui.inverted.basic.black.label:hover {
   padding-right: 0.2em;
   margin-bottom: 1.2em;
   background-color: #fffaf5;
-  border: 1px solid #d3dae3;
+  border: 1px solid #004678;
   vertical-align: super;
   margin: 0 1.142857em;
 }
@@ -44273,7 +44273,7 @@ a.ui.ui.ui.inverted.basic.black.label:hover {
 }
 
 .ui.label.la-advanced-label {
-  background-color: #d3dae3;
+  background-color: #004678;
 }
 
 /* label what server */
@@ -47307,7 +47307,7 @@ dd {
 
 .ui.segment {
   position: relative;
-  background: #FFFFFF;
+  background: transparent;
   -webkit-box-shadow: 0;
   box-shadow: 0;
   margin: 1rem 0em;
@@ -47394,7 +47394,7 @@ dd {
 /* Table */
 
 .ui.basic.table.segment {
-  background: #FFFFFF;
+  background: transparent;
   border: 1px solid rgba(34, 36, 38, 0.15);
   -webkit-box-shadow: 0;
   box-shadow: 0;
@@ -48318,7 +48318,7 @@ dd {
 /* Grey */
 
 .ui.grey.segment:not(.inverted) {
-  border-top: 1px solid #d3dae3 !important;
+  border-top: 1px solid #004678 !important;
 }
 
 /***********************************
@@ -60584,7 +60584,7 @@ Floated Menu / Item
 }
 
 .la-border-left {
-  border-left: 1px solid #d3dae3 !important;
+  border-left: 1px solid #004678 !important;
 }
 
 .ui.table.la-noSticky thead tr:first-child > th,
@@ -66251,8 +66251,8 @@ a.inverted.ui.card:hover,
   left: 25px !important;
   background-color: white !important;
   border-radius: 500rem;
-  -webkit-box-shadow: 0 2px 3px 0 #d3dae3;
-  box-shadow: 0 2px 3px 0 #d3dae3;
+  -webkit-box-shadow: 0 2px 3px 0 #004678;
+  box-shadow: 0 2px 3px 0 #004678;
   /*
   content: "\f00c" !important;
   font-family: Icons !important;
