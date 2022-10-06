@@ -17,7 +17,7 @@
 
 4511    29.09.2022  dev     3.0         David   Feature     Bessere Rückmeldung im modalen Dialog
 
-4510    29.09.2022  dev     3.0         David   Feature     Redakteure sollen Workflows verknüpfen dürfenmodal
+4510    29.09.2022  dev     3.0         David   Feature     Redakteure sollen Workflows verknüpfen dürfen
 
 4508    28.09.2022  dev     3.0         David   Bug         Löschen eines Workflows führt zu 500er
 

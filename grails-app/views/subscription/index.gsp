@@ -207,30 +207,6 @@
                     <g:hiddenField name="${key}" value="${params[key]}"/>
                 </g:each>
 
-                <g:if test="${entitlements}">
-                    <div class="ui accordion">
-                    <g:each in="${entitlements}" var="ie">
-                        <div class="ui fluid segment">
-                            <div class="ui content title">
-                                <a class="header">Kristy</a>
-                                <div class="meta">
-                                    <span class="date">Joined in 2013</span>
-                                </div>
-                                <div class="description">
-                                    Kristy is an art director living in New York.
-                                </div>
-                            </div>
-                            <div class="ui extra content">
-                                <a>
-                                    <i class="user icon"></i>
-                                    22 Friends
-                                </a>
-                            </div>
-                        </div>
-                    </g:each>
-                    </div>
-                </g:if>
-
                 <table class="ui sortable celled la-js-responsive-table la-table table la-ignore-fixed la-bulk-header">
                     <thead>
                     <tr>
