@@ -91,7 +91,7 @@
                     </td>
                     <g:if test="${ownobj instanceof License}">
                         <td>
-                            <ui:xEditable owner="${prop}" type="textarea" field="paragraph" class="la-dont-break-out"/>
+                            <ui:xEditable owner="${prop}" type="textarea" field="paragraph" overwriteEditable="${overwriteEditable}" class="la-dont-break-out"/>
                         </td>
                     </g:if>
                     <td>

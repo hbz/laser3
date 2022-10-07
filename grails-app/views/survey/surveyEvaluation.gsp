@@ -75,21 +75,21 @@
             controller="survey" action="surveyEvaluation"
             params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsViewAllFinish']">
         ${message(code: 'surveyEvaluation.participantsViewAllFinish')}
-        <div class="ui floating circular label">${participantsFinishTotal}</div>
+        <div class="ui floating blue circular label">${participantsFinishTotal}</div>
     </g:link>
 
     <g:link class="item ${params.tab == 'participantsViewAllNotFinish' ? 'active' : ''}"
             controller="survey" action="surveyEvaluation"
             params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsViewAllNotFinish']">
         ${message(code: 'surveyEvaluation.participantsViewAllNotFinish')}
-        <div class="ui floating circular label">${participantsNotFinishTotal}</div>
+        <div class="ui floating blue circular label">${participantsNotFinishTotal}</div>
     </g:link>
 
     <g:link class="item ${params.tab == 'participantsView' ? 'active' : ''}"
             controller="survey" action="surveyEvaluation"
             params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsView']">
         ${message(code: 'surveyEvaluation.participantsView')}
-        <div class="ui floating circular label">${participantsTotal}</div>
+        <div class="ui floating blue circular label">${participantsTotal}</div>
     </g:link>
 
 </div>

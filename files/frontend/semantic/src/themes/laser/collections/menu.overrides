@@ -26,13 +26,13 @@
 .ui.menu.la-contextBar {
   top: 50px;
   z-index:101;
-  background-color: #d3dae3;
+  background-color: @laDecorationColor;
   .item {
+    color: @grey;
     padding:0;
   }
   .la-context-org {
     font-size: 0.87em;
-    color: @grey;
     flex: 0 0 200px;
   }
   .ui.sub.header.item {
