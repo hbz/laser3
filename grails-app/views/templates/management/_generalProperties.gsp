@@ -214,7 +214,7 @@
                     </g:if>
                     <th class="la-no-uppercase">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                              data-content="${message(code: 'subscription.isMultiYear.consortial.label')}">
+                              data-content="${message(code: 'subscription.isMultiYear.label')}">
                             <i class="map orange icon"></i>
                         </span>
                     </th>

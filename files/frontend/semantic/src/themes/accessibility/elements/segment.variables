@@ -6,7 +6,7 @@
        Element
 --------------------*/
 
-@background: @white;
+@background: transparent;
 @borderWidth: 1px;
 @border: @borderWidth solid @borderColor;
 
@@ -25,14 +25,14 @@
 --------------------*/
 
 @groupedMargin: @margin;
-@groupedBorder: @border;
+@groupedBorder: none;
 @groupedBoxShadow: @boxShadow;
 @groupedBorderRadius: @borderRadius;
 
 @nestedGroupMargin: @verticalMargin @verticalMargin;
 
 @groupedSegmentBorder: none;
-@groupedSegmentDivider: @border;
+@groupedSegmentDivider: none;
 @groupedSegmentMargin: 0em;
 @groupedSegmentWidth: auto;
 @groupedSegmentBoxShadow: none;
@@ -78,7 +78,7 @@
 @tallStackedPadding: @verticalPadding + (0.8em);
 
 /* Raised */
-@raisedBoxShadow: @floatingShadow;
+@raisedBoxShadow: 0;
 
 /* Padded */
 @paddedSegmentPadding: 1.5em;
@@ -137,3 +137,13 @@
   )
 ;
 @tertiaryInvertedColor: @invertedMutedTextColor;
+
+
+/*******************************
+            Segment
+*******************************/
+
+
+/*******************************
+            Variations
+*******************************/

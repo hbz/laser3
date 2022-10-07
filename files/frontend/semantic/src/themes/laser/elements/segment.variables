@@ -1,0 +1,16 @@
+/*******************************
+            Segment
+*******************************/
+
+
+/*******************************
+            Variations
+*******************************/
+
+
+/* Raised */
+@raisedBoxShadow: 0;
+@groupedBoxShadow: 	none;
+@groupedBorder: none;
+@groupedSegmentDivider: none;
+@background: transparent;

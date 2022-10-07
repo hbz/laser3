@@ -207,7 +207,7 @@
             <div class="fields">
 
                 <div class="field six wide required">
-                    <label class="property-label" for="pd_descr">${message(code:'default.description.label')} <g:message code="messageRequiredField" /></label>
+                    <label class="property-label" for="pd_descr">${message(code:'propertyDefinitionGroup.editModal.category')} <g:message code="messageRequiredField" /></label>
                     <%
                         Map<String,Object> availablePrivateDescr = [:]
                         Set<String> availablePrivDescs = PropertyDefinition.AVAILABLE_PRIVATE_DESCR
