@@ -245,74 +245,79 @@ r2d2 = {
             }
         });
 
-        //Pagination: Custom Input Page Number
-        $(".la-pagination-custom-link").on( "click", function(e) {
-            validateInput(e);
+        // ----- pagination -----
 
-        });
+        $('nav.pagination').each (function () {
+            const $pagination = $(this)
 
-        $('.la-pagination-custom-input input').bind('keypress', function(e) {
-            if(e.keyCode==13){
-                validateInput(e);
-                if (isValid == 1) {
-                    location.href = $('.la-pagination-custom-link').attr('href');
-                    $("html").css("cursor", "wait");
-                }
-            }
-        });
+            const $input      = $pagination.find('.la-pagination-custom-input');
+            const $inputInput = $pagination.find('.la-pagination-custom-input input');
+            const $inputForm  = $pagination.find('.la-pagination-custom-input .ui.form');
+            const $link       = $pagination.find('.la-pagination-custom-link');
 
-        function validateInput(e){
-            $.fn.form.settings.rules.smallerEqualThanTotal = function (inputValue) {
-                let inputValueNumber = parseInt(inputValue);
-                return inputValueNumber <= Math.round(Math.ceil($('.la-pagination-custom-input').data('total')/10));
-            } ;
+            let stepsValue = $input.attr('data-steps');
+            let baseHref   = $link.attr('href');
+
+            $.fn.form.settings.rules.smallerEqualThanTotal = function (inputValue, validationValue) {
+                return parseInt(inputValue) <= validationValue;
+            };
             $.fn.form.settings.rules.biggerThan = function (inputValue, validationValue) {
-                let inputValueNumber = parseInt(inputValue);
-                return inputValueNumber > validationValue;
-            } ;
-            $(".la-pagination-custom-input .ui.form").form({
-                inline: true,
-                fields: {
-                    paginationCustomInput: {
-                        identifier: "paginationCustomInput",
-                        rules: [
-                            {
-                                type: "empty",
-                                prompt: JSPC.dict.get('pagination.keyboardInput.validation.integer', JSPC.currLanguage)
-                            },
-                            {
-                                type: "integer",
-                                prompt: JSPC.dict.get('pagination.keyboardInput.validation.integer', JSPC.currLanguage)
-                            },
-                            {
-                                type: "smallerEqualThanTotal",
-                                prompt: JSPC.dict.get('pagination.keyboardInput.validation.smaller', JSPC.currLanguage)
-                            },
-                            {
-                                type: "biggerThan[0]",
-                                prompt: JSPC.dict.get('pagination.keyboardInput.validation.biggerZero', JSPC.currLanguage)
-                            }
-                        ]
+                return parseInt(inputValue) > validationValue;
+            };
+
+            $inputInput
+                .on ('input', function() {
+                    let newOffset = ($(this).val() - 1) * $input.attr('data-max');
+                    $link.attr('href', baseHref + '&offset=' + newOffset);
+                })
+                .bind ('keypress', function(event) {
+                    if (event.keyCode === 13){
+                        if ( validateInput() ) {
+                            $('html').css('cursor', 'wait');
+                            location.href = $link.attr('href');
+                        }
+                        else { event.preventDefault(); }
                     }
-                },
-                onInvalid: function() {
-                    return (isValid = 0);
-                },
-                onValid: function() {
-                    return (isValid = 1);
+                });
+
+            $link.on ('click', function(event) {
+                if ( validateInput() ) {
+                    $('html').css('cursor', 'wait');
                 }
+                else { event.preventDefault(); }
             });
 
-            $(".la-pagination-custom-input .ui.form").form("validate form");
+            let validateInput = function() {
+                $inputForm.form({
+                    inline: true,
+                    fields: {
+                        paginationCustomInput: {
+                            identifier: $inputInput.attr('data-validate'),
+                            rules: [
+                                {
+                                    type: "empty", prompt: JSPC.dict.get('pagination.keyboardInput.validation.integer', JSPC.currLanguage)
+                                },
+                                {
+                                    type: "integer", prompt: JSPC.dict.get('pagination.keyboardInput.validation.integer', JSPC.currLanguage)
+                                },
+                                {
+                                    type: "smallerEqualThanTotal[" + stepsValue + "]", prompt: JSPC.dict.get('pagination.keyboardInput.validation.smaller', JSPC.currLanguage)
+                                },
+                                {
+                                    type: "biggerThan[0]", prompt: JSPC.dict.get('pagination.keyboardInput.validation.biggerZero', JSPC.currLanguage)
+                                }
+                            ]
+                        }
+                    },
+                    onInvalid: function() { return false; },
+                    onValid: function()   { return true; }
+                });
 
+                return $inputForm.form('validate form');
+            }
+        })
 
-            if (isValid == 0) {
-                e.preventDefault();
-            }
-            else {
-                $("html").css("cursor", "wait");
-            }
-        }
+        // ----- other stuff -----
 
         $('.dropdown.sorting').on('change', function(e) {
             //console.log($(this).find('option:contains("'+$(this).val()+'")').attr('data-value'));

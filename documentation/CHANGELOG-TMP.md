@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4540    07.10.2022  dev     3.0         David   Feature     Pagination - Javascript fehlerhaft
+
 4525    06.10.2022  dev     3.0         David   Feature     Workflow: Umgestaltung Dokumente hochladen
 
 4519    06.10.2022  dev     3.0         David   Feature     Workflow: Änderungen "Dokumentenprüfung"
