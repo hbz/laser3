@@ -1,7 +1,5 @@
 package de.laser
 
-import de.laser.AccessService
-import de.laser.ContextService
 import de.laser.utils.SwissKnife
 import de.laser.storage.BeanStore
 import org.springframework.context.MessageSource
@@ -241,7 +239,7 @@ class NavigationTagLib {
         customInputAttrs.params = new LinkedHashMap<String, Object>()
         customInputAttrs.params.putAll(linkTagAttrs.params)
         allLinkAttrs.putAt('title', messageSource.getMessage('default.paginate.all', null, locale))
-        if(total <= 200) {
+        if (total <= 200) {
             allLinkAttrs.class = "item"
             allLinkAttrs.params.remove('offset')
             allLinkAttrs.params.max = 200
@@ -250,11 +248,13 @@ class NavigationTagLib {
         else {
             out << '<div class="disabled item la-popup-tooltip" data-content="'+messageSource.getMessage('default.paginate.listTooLong',null,locale)+'"><i class="list icon"></i></div>'
         }
+
         // Custom Input
-        out << '<div class="item la-pagination-custom-input"  data-total="'+ total +'" data-max="'+ max +'">'
+
+        out << '<div class="item la-pagination-custom-input" data-max="' + max + '" data-steps="' + laststep + '">'
         out << '    <div class="ui mini form">'
         out << '            <div class="field">'
-        out << '                <input autocomplete="off"  id="myInput" name="paginationCustomInput" maxlength="6" placeholder="' + message(code:'pagination.keyboardInput.placeholder') + '" type="text">'
+        out << '                <input autocomplete="off" data-validate="pagination-custom-validate" maxlength="6" placeholder="' + message(code:'pagination.keyboardInput.placeholder') + '" type="text">'
         customInputAttrs.params.remove('offset')
         customInputAttrs.params.remove('class')
         customInputAttrs.class= "la-pagination-custom-link js-no-wait-wheel"
@@ -265,8 +265,6 @@ class NavigationTagLib {
         out << '</div>'
         out << '</nav>'
         out << '</div><!--.pagination-->'
-
-        out << render( template: '/templates/pagination/js', model: [max: max])
     }
 
     def securedMainNavItem = { attrs, body ->
