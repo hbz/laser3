@@ -291,7 +291,7 @@ r2d2 = {
                 $inputForm.form({
                     inline: true,
                     fields: {
-                        paginationCustomInput: {
+                        paginationCustomValidation: {
                             identifier: $inputInput.attr('data-validate'),
                             rules: [
                                 {
