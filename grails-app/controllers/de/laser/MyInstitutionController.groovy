@@ -2552,7 +2552,7 @@ join sub.orgRelations or_sub where
 
         params.remove('filter') // remove reset or control flag
 
-        // fallback ..
+        // fallback .. pagination defaults
         if (! params.tab)    { params.tab    = pagination.tab }
         if (! params.offset) { params.offset = pagination.offset }
         if (! params.max)    { params.max    = pagination.max }
@@ -2560,30 +2560,31 @@ join sub.orgRelations or_sub where
         if (cache) {
             if (params.cmd) {
                 // modal cmd - remove modal form params
-                params.removeAll { ! cache.get(fmKey).keySet().contains( it.key ) }
-            }
-            else if (filter.get('filter') == 'reset') {
-                cache.remove(fmKey)
+                if (cache.get(fmKey)) {
+                    params.removeAll { ! cache.get(fmKey).keySet().contains( it.key ) }
+                }
             }
             else {
-                pagination.put('tab', params.tab ?: pagination.tab)
-
-                if (filter.get('filter') == 'true') {
-                    // remove control flag
-                    filter.remove('filter')
-                    // remember tab, reset pagination
+                if (filter.get('filter') == 'reset') {
+                    cache.remove(fmKey)
                 }
                 else {
-                    if (cache.get(pmKey) && cache.get(pmKey)['tab'] != params.tab) {
-                        // switched tab, reset tab and pagination
-                        cache.remove(pmKey)
+                    pagination.put('tab', params.tab ?: pagination.tab)
+
+                    if (filter.get('filter') == 'true') {
+                        filter.remove('filter') // remove control flag - remember tab, reset pagination
                     }
                     else {
-                        pagination.put('offset', params.offset ?: pagination.offset)
-                        pagination.put('max',    params.max ?: pagination.max)
+                        if (cache.get(pmKey) && cache.get(pmKey)['tab'] != params.tab) {
+                            cache.remove(pmKey) // switched tab, reset tab and pagination
+                        }
+                        else {
+                            pagination.put('offset', params.offset ?: pagination.offset)
+                            pagination.put('max',    params.max ?: pagination.max)
+                        }
                     }
+                    cache.put(fmKey, filter)
                 }
-                cache.put(fmKey, filter)
                 cache.put(pmKey, pagination)
             }
 
