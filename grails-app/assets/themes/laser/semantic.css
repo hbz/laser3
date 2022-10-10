@@ -40692,16 +40692,16 @@ img.ui.bordered.image {
 /* browsers require these rules separate */
 
 .ui.input > input::-webkit-input-placeholder {
-  color: #dadbdd;
+  color: #585c5f;
 }
 
 .ui.input > input::-moz-placeholder {
-  color: #dadbdd;
+  color: #585c5f;
   opacity: 1;
 }
 
 .ui.input > input:-ms-input-placeholder {
-  color: #dadbdd;
+  color: #585c5f;
 }
 
 /*******************************
@@ -49753,15 +49753,15 @@ span.ui.massive.text {
 /* browsers require these rules separate */
 
 .ui.form ::-webkit-input-placeholder {
-  color: #dadbdd;
+  color: #585c5f;
 }
 
 .ui.form :-ms-input-placeholder {
-  color: #dadbdd !important;
+  color: #585c5f !important;
 }
 
 .ui.form ::-moz-placeholder {
-  color: #dadbdd;
+  color: #585c5f;
   opacity: 1;
 }
 
@@ -67891,7 +67891,7 @@ select.ui.dropdown {
 
 .ui.dropdown:not(.button) > .default.text,
 .ui.default.dropdown:not(.button) > .text {
-  color: #dadbdd;
+  color: #585c5f;
 }
 
 .ui.dropdown:not(.button) > input:focus ~ .default.text,

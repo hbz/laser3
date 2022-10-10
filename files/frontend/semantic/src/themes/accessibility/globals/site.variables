@@ -1522,4 +1522,6 @@
 @inputWarningPlaceholderColor: lighten(@formWarningColor, 40);
 @inputWarningPlaceholderFocusColor: lighten(@formWarningColor, 30);
 
+@inputPlaceholderColor: #585c5f;
+
 

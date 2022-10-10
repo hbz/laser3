@@ -40860,16 +40860,16 @@ img.ui.bordered.image {
 /* browsers require these rules separate */
 
 .ui.input > input::-webkit-input-placeholder {
-  color: #dadbdd;
+  color: #585c5f;
 }
 
 .ui.input > input::-moz-placeholder {
-  color: #dadbdd;
+  color: #585c5f;
   opacity: 1;
 }
 
 .ui.input > input:-ms-input-placeholder {
-  color: #dadbdd;
+  color: #585c5f;
 }
 
 /*******************************
@@ -41626,7 +41626,7 @@ img.ui.bordered.image {
   line-height: 1;
   vertical-align: baseline;
   margin: 0 0.14285714em;
-  background-color: #004678;
+  background-color: #d3dae3;
   background-image: none;
   padding: 0.5833em 0.833em;
   color: rgba(0, 0, 0, 0.6);
@@ -41815,7 +41815,7 @@ a.ui.label {
   max-width: 9999px;
   vertical-align: baseline;
   text-transform: none;
-  background: #004678;
+  background: #d3dae3;
   padding: 0.5833em 0.833em 0.5833em 0.5em;
   border-radius: 0.28571429rem;
   -webkit-box-shadow: none;
@@ -41922,7 +41922,7 @@ a.ui.label {
   margin: 0;
   padding: 0;
   text-align: center;
-  border-color: #004678;
+  border-color: #d3dae3;
   width: 4em;
   height: 4em;
   z-index: 1;
@@ -42312,15 +42312,15 @@ a.ui.basic.label:hover {
 .ui.inverted.labels .label,
 .ui.inverted.label {
   color: rgba(255, 255, 255, 0.9);
-  background-color: #000a12;
+  background-color: #95a6bb;
 }
 
 .ui.inverted.corner.label {
-  border-color: #000a12;
+  border-color: #95a6bb;
 }
 
 .ui.inverted.corner.label:hover {
-  border-color: #004678;
+  border-color: #d3dae3;
   -webkit-transition: none;
   transition: none;
 }
@@ -44003,327 +44003,6 @@ a.ui.ui.ui.inverted.basic.black.label:hover {
 /*******************************
          Theme Overrides
 *******************************/
-
-.finance_index .ui.ribbon.label,
-.finance_subFinancialData .ui.ribbon.label {
-  left: calc(-1rem - 1.8em);
-  top: -22px;
-}
-
-.ui.modal > .content.la-twoSided-ribbon {
-  padding: 0 1.5rem 0 1.5rem;
-}
-
-.finance_index .ui.right.ribbon.label,
-.finance_subFinancialData .ui.right.ribbon.label {
-  left: calc(104.2%);
-  top: -22px;
-}
-
-.ui.card .ui.label {
-  margin: 0;
-}
-
-.ui.label.la-annual-rings {
-  position: relative;
-  padding-left: 0.2em;
-  padding-right: 0.2em;
-  margin-bottom: 1.2em;
-  background-color: #fffaf5;
-  border: 1px solid #004678;
-  vertical-align: super;
-  margin: 0 1.142857em;
-}
-
-.ui.label.la-annual-rings .ui.tiny.label {
-  font-size: 0.45rem;
-}
-
-.ui.label.la-annual-rings .icon {
-  font-size: 1em;
-  width: auto;
-  margin: 0em 0.75em 0em 0.75em;
-  vertical-align: sub;
-}
-
-.ui.label.la-annual-rings > a {
-  opacity: 0.7;
-  text-decoration: none;
-}
-
-.ui.label.la-annual-rings i.disabled.icon {
-  opacity: 0!important;
-  margin: 0 0 0 0.1em;
-}
-
-.ui.label.la-annual-rings .la-status-active {
-  background-color: #98B500;
-  opacity: 1;
-  font-weight: bolder;
-  color: white;
-}
-
-.ui.label.la-annual-rings .la-status-inactive {
-  background-color: #BB1600;
-  opacity: 1;
-  font-weight: bolder;
-  color: white;
-}
-
-.ui.label.la-annual-rings .la-status-else {
-  background-color: #FBBD08;
-  opacity: 1;
-  font-weight: bolder;
-  color: white;
-}
-
-.ui.label.la-annual-rings .la-annual-rings-text {
-  vertical-align: sub;
-  padding-right: 0.5em;
-}
-
-.ui.la-annual-rings-modern {
-  display: -webkit-inline-box;
-  display: -ms-inline-flexbox;
-  display: inline-flex;
-  padding-left: 0.2em;
-  padding-right: 0.2em;
-  margin-bottom: 1.2em;
-  background-color: transparent;
-  border: none;
-  vertical-align: super;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-}
-
-.ui.la-annual-rings-modern > a {
-  opacity: 1;
-  text-decoration: none;
-  display: inline-block;
-  width: 2.1em;
-}
-
-.ui.la-annual-rings-modern > a:hover {
-  -webkit-filter: brightness(0.85);
-  filter: brightness(0.85);
-}
-
-.ui.la-annual-rings-modern i.disabled.icon {
-  opacity: 0!important;
-}
-
-.ui.la-annual-rings-modern .la-status-active {
-  color: #98B500;
-  opacity: 1;
-}
-
-.ui.la-annual-rings-modern .la-status-inactive {
-  color: #BB1600;
-  opacity: 1;
-}
-
-.ui.la-annual-rings-modern .la-status-else {
-  color: #FBBD08;
-  opacity: 1;
-}
-
-.ui.la-annual-rings-modern .la-annual-rings-text {
-  padding: 3px;
-  margin-top: 0.3rem;
-  margin-right: -0.3em;
-  color: rgba(0, 0, 0, 0.6);
-  letter-spacing: 0.05em;
-  font-weight: 700;
-}
-
-.ui.left-tag.labels .label,
-.ui.left-tag.label {
-  margin-left: 1em;
-  position: relative;
-  padding-left: 1.5em;
-  padding-right: 1.5em;
-  border-radius: 0em 0.28571429rem 0.28571429rem 0em;
-  -webkit-transition: none;
-  transition: none;
-}
-
-.ui.left-tag.labels .label:before,
-.ui.left-tag.label:before {
-  position: absolute;
-  -webkit-transform: translateY(-50%) translateX(50%) rotate(-45deg);
-  transform: translateY(-50%) translateX(50%) rotate(-45deg);
-  top: 50%;
-  right: 100%;
-  content: '';
-  background-color: inherit;
-  background-image: none;
-  width: 1.56em;
-  height: 1.56em;
-  -webkit-transition: none;
-  transition: none;
-}
-
-.ui.right-tag.labels .label,
-.ui.right-tag.label {
-  margin-left: 1em;
-  position: relative;
-  padding-left: 1.5em;
-  padding-right: 1.5em;
-  border-radius: 0em 0.28571429rem 0.28571429rem 0em;
-  -webkit-transition: none;
-  transition: none;
-}
-
-.ui.right-tag.labels .label:after,
-.ui.right-tag.label:after {
-  position: absolute;
-  -webkit-transform: translateY(-50%) translateX(50%) rotate(-45deg);
-  transform: translateY(-50%) translateX(50%) rotate(-45deg);
-  top: 50%;
-  content: '';
-  background-color: inherit;
-  background-image: none;
-  width: 1.56em;
-  height: 1.56em;
-  -webkit-transition: none;
-  transition: none;
-}
-
-.confirmation-term span {
-  margin: 0 0.5em 0 0;
-  padding: 0.4em 0.833em;
-  min-width: 3em;
-  text-align: center;
-  font-size: 0.85714286rem;
-  display: inline-block;
-  line-height: 1;
-  vertical-align: baseline;
-  background-color: #e8e8e8;
-  background-image: none;
-  color: rgba(0, 0, 0, 0.6);
-  text-transform: none;
-  font-weight: 700;
-  border: 0 solid transparent;
-  border-radius: 0;
-  white-space: nowrap;
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
-}
-
-#js-confirmation-term-where-detail {
-  margin: 0 0.5em 0 0;
-  padding: 0.4em 0.833em;
-  min-width: 3em;
-  text-align: center;
-  font-size: 0.85714286rem;
-  display: inline-block;
-  line-height: 1;
-  vertical-align: baseline;
-  background-color: #e8e8e8;
-  background-image: none;
-  color: rgba(0, 0, 0, 0.6);
-  text-transform: none;
-  font-weight: 700;
-  border: 0 solid transparent;
-  border-radius: 0;
-  white-space: nowrap;
-  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
-}
-
-.confirmation-content {
-  padding-top: 0!important;
-  padding-bottom: 0!important;
-}
-
-.confirmation-content li:nth-child(n+2) {
-  padding-top: 0.5rem;
-}
-
-.confirmation-content span {
-  min-width: 2em;
-  min-height: 2em;
-  padding: 0.5em !important;
-  text-align: center;
-  border-radius: 500rem;
-  display: inline-block;
-  line-height: 1em;
-  vertical-align: baseline;
-  margin: 0 0.14285714em;
-  background-color: #e8e8e8;
-  background-image: none;
-  color: rgba(0, 0, 0, 0.6);
-  text-transform: none;
-  font-weight: 700;
-  border: 0 solid transparent;
-  -webkit-transition: background 0.1s ease;
-  transition: background 0.1s ease;
-}
-
-/*******************************
-             Types
-*******************************/
-
-.ui.image.label {
-  margin-top: 5px;
-}
-
-.ui.image.label .detail a {
-  color: white;
-  text-decoration: underline;
-}
-
-.ui.label.la-advanced-label {
-  background-color: #004678;
-}
-
-/* label what server */
-
-.ui.label.la-server-label {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  top: 0;
-  margin: 0 !important;
-  border-radius: 0 !important;
-  z-index: 999;
-  padding: 0.2em;
-  font-size: 2.5rem;
-}
-
-/* Label for survey types */
-
-.ui.label.survey-renewal,
-.ui.label.survey-interest,
-.ui.label.survey-selection,
-.ui.label.survey-subscription {
-  vertical-align: super;
-  min-width: 150px!important;
-  text-align: center;
-  border-radius: 5px;
-}
-
-.ui.label.survey-renewal {
-  background-color: #ebff82;
-}
-
-.ui.label.survey-interest {
-  background-color: #ff9688;
-}
-
-.ui.label.survey-selection {
-  background-color: #45b2ff;
-}
-
-.ui.label.survey-subscription {
-  background-color: #fee8d2;
-}
-
-a .ui.circular.label:hover,
-a .ui.circular.label:focus {
-  border-radius: 0;
-  -webkit-transition: border-radius;
-  transition: border-radius;
-}
 /*!
  * # Fomantic-UI 2.8.8 - List
  * http://github.com/fomantic/Fomantic-UI/
@@ -49946,15 +49625,15 @@ span.ui.massive.text {
 /* browsers require these rules separate */
 
 .ui.form ::-webkit-input-placeholder {
-  color: #dadbdd;
+  color: #585c5f;
 }
 
 .ui.form :-ms-input-placeholder {
-  color: #dadbdd !important;
+  color: #585c5f !important;
 }
 
 .ui.form ::-moz-placeholder {
-  color: #dadbdd;
+  color: #585c5f;
   opacity: 1;
 }
 
@@ -67971,7 +67650,7 @@ select.ui.dropdown {
 
 .ui.dropdown:not(.button) > .default.text,
 .ui.default.dropdown:not(.button) > .text {
-  color: #dadbdd;
+  color: #585c5f;
 }
 
 .ui.dropdown:not(.button) > input:focus ~ .default.text,
