@@ -102,7 +102,11 @@
             <g:link controller="myInstitution" action="currentWorkflows" params="${[filter: 'reset']}" class="ui reset secondary button">${message(code:'default.button.reset.label')}</g:link>
             <input type="submit" class="ui primary button" value="${message(code:'default.button.filter.label')}" />
         </div>
-        <input type="hidden" name="filterTab" value="${params.filterTab}" />
+        <input type="hidden" name="filter" value="true" />
+
+        <input type="hidden" name="tab" value="${params.tab}" />
+        <input type="hidden" name="offset" value="${params.offset}" />
+        <input type="hidden" name="max" value="${params.max}" />
     </form>
 </ui:filter>
 
@@ -123,23 +127,23 @@
     </g:else>
 </g:elseif>
 
-%{--+++ ${[offset: params.offset, max: params.max]}--}%
-%{--+++ ${params}--}%
 <div id="wfTabs" class="ui secondary stackable pointing tabular la-tab-with-js menu" style="margin-top:2em;">
-    <a class="${params.filterTab == 'open' ? 'active item':'item'}" data-tab="open">
+    <a class="${params.tab == 'open' ? 'active item':'item'}" data-tab="open">
         ${RDStore.WF_WORKFLOW_STATUS_OPEN.getI10n('value')} <div class="ui  circular label">${currentWorkflowIds_open.size()}</div>
     </a>
-    <a class="${params.filterTab == 'canceled'  ? 'active item':'item'}" data-tab="canceled">
+    <a class="${params.tab == 'canceled'  ? 'active item':'item'}" data-tab="canceled">
         ${RDStore.WF_WORKFLOW_STATUS_CANCELED.getI10n('value')} <div class="ui  circular label">${currentWorkflowIds_canceled.size()}</div>
     </a>
-    <a class="${params.filterTab == 'done'  ? 'active item':'item'}" data-tab="done">
+    <a class="${params.tab == 'done'  ? 'active item':'item'}" data-tab="done">
         ${RDStore.WF_WORKFLOW_STATUS_DONE.getI10n('value')} <div class="ui  circular label">${currentWorkflowIds_done.size()}</div>
     </a>
 </div>
 
-<g:each in="${['open', 'canceled', 'done']}" var="tabStatus">
+<g:each in="${['open', 'canceled', 'done']}" var="currentTab">
 
-    <div class="ui bottom attached tab ${params.filterTab == tabStatus ? 'active':''}" data-tab="${tabStatus}">
+    <div class="ui bottom attached tab ${params.tab == currentTab ? 'active':''}" data-tab="${currentTab}">
+    <g:if test="${params.tab == currentTab}">
+
         <div>
 
 <table class="ui celled table la-js-responsive-table la-table">
@@ -157,13 +161,6 @@
         <tr>
     </thead>
     <tbody>
-
-        <%
-            List<Long> currentWorkflowIds     = (tabStatus == 'open' ? currentWorkflowIds_open : tabStatus == 'canceled' ? currentWorkflowIds_canceled : currentWorkflowIds_done)
-//            List<WfWorkflow> currentWorkflows = WfWorkflow.executeQuery('select wf from WfWorkflow wf where wf.id in (:idList)', [idList: currentWorkflowIds], [offset: pagination['offset_' + tabStatus], max: pagination['max_' + tabStatus]])
-            List<WfWorkflow> currentWorkflows = workflowService.sortByLastUpdated( WfWorkflow.executeQuery('select wf from WfWorkflow wf where wf.id in (:idList)', [idList: currentWorkflowIds]) )
-        %>
-
         <g:each in="${currentWorkflows}" var="wf" status="wfi">
             <g:set var="wfInfo" value="${wf.getInfo()}" />
 
@@ -172,7 +169,7 @@
                     ${wfi+1}
                 </td>
                 <td>
-                    <g:if test="${tabStatus != 'open'}">
+                    <g:if test="${currentTab != 'open'}">
                         <uiWorkflow:statusIcon workflow="${wf}" size="normal" />
                     </g:if>
                     <g:link controller="${wfInfo.targetController}" action="workflows" id="${wfInfo.target.id}" params="${[info: '' + wfInfo.target.class.name + ':' + wfInfo.target.id + ':' + WfWorkflow.KEY + ':' + wf.id]}">
@@ -232,10 +229,12 @@
 
         </div>
 
-%{--        <ui:paginate action="currentWorkflows" controller="myInstitution"--}%
-%{--                     total="${currentWorkflowIds.size()}"--}%
-%{--                     max="${pagination['max_' + tabStatus]}" offset="${pagination['offset_' + tabStatus]}"--}%
-%{--                     params="${params + [filterTab: tabStatus]}" />--}%
+        <ui:paginate action="currentWorkflows" controller="myInstitution"
+                     max="${params.max}" offset="${params.offset}"
+                     total="${(currentTab == 'open' ? currentWorkflowIds_open.size() : currentTab == 'canceled' ? currentWorkflowIds_canceled.size() : currentWorkflowIds_done.size())}"
+                     params="${params + [tab: currentTab]}" />
+
+    </g:if>
     </div>
 
 </g:each>
@@ -248,8 +247,10 @@
         var func = bb8.ajax4SimpleModalFunction("#wfModal", $(e.currentTarget).attr('href'), false);
         func();
     });
-    $('#wfTabs .item').on('click', function() {
-        $('#wfFilterForm input[name=filterTab]').attr('value', $(this).attr('data-tab'))
+    $('#wfTabs .item').off('click').on('click', function(e) {
+        $(this).addClass('active');
+        $('#wfFilterForm input[name=tab]').attr('value', $(this).attr('data-tab'));
+        $('#wfFilterForm').submit();
     })
 </laser:script>
 

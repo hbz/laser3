@@ -2545,67 +2545,57 @@ join sub.orgRelations or_sub where
         SessionCacheWrapper cache = contextService.getSessionCache()
         String urlKey = 'myInstitution/currentWorkflows'
         String fmKey = urlKey + '/_filterMap'
-        String pmKey = urlKey + '/_paginationMap'
 
         Map<String, Object> filterMap = params.findAll{ it.key.startsWith('filter') }
 
-//        int max     = params['max'] ? params.int('max') : contextService.getUser().getPageSizeOrDefault()
-//        int offset  = params['offset'] ? params.int('offset') : 0
+        params.remove('filter') // remove reset or control flag
 
-        params.remove('max')        // remove native pagination
-        params.remove('offset')
-        params.remove('filter')     // remove reset flag
+        Map paginationDefaults = [
+                tab: 'open',
+                offset: 0,
+                max: contextService.getUser().getPageSizeOrDefault()
+        ]
+
+        // fallback ..
+        if (! params.tab)    { params.tab    = paginationDefaults.tab }
+        if (! params.offset) { params.offset = paginationDefaults.offset }
+        if (! params.max)    { params.max    = paginationDefaults.max }
 
         if (cache) {
-            if (request.getHeader('referer')) {
-                try {
-                    URL url = URI.create(request.getHeader('referer')).toURL()
-                    if (! url.getPath().endsWith(urlKey)) {
-                        cache.remove(pmKey)
-                    }
-                } catch (Exception e) { }
+            if (params.cmd) {
+                // modal cmd - using cache
+                params.removeAll { ! cache.get(fmKey).keySet().contains( it.key ) }
             }
-
-            if (filterMap.get('filter') == 'reset') {
+            else if (filterMap.get('filter') == 'reset') {
                 cache.remove(fmKey)
-                cache.remove(pmKey)
             }
             else {
-                if (filterMap) {
-                    cache.put(fmKey, filterMap)
-                    if (filterMap.containsKey('filterTab') && filterMap.size() > 1) {
-                        cache.remove(pmKey)
+                filterMap.put('tab',    params.tab)
+                filterMap.put('offset', paginationDefaults.offset)
+                filterMap.put('max',    paginationDefaults.max)
+
+                if (filterMap.get('filter') == 'true') {
+                    filterMap.remove('filter') // remove control flag
+                }
+                else {
+                    if (cache.get(fmKey) && cache.get(fmKey)['tab'] != params.tab) {
+                        // switched tab
+                    }
+                    else {
+                        filterMap.put('offset', params.offset)
+                        filterMap.put('max',    params.max)
                     }
                 }
+                cache.put(fmKey, filterMap)
             }
-
-//            Map pagination = [
-//                    max_open:       contextService.getUser().getPageSizeOrDefault(),
-//                    max_canceled:   contextService.getUser().getPageSizeOrDefault(),
-//                    max_done:       contextService.getUser().getPageSizeOrDefault(),
-//                    offset_open:    0,
-//                    offset_canceled:0,
-//                    offset_done:    0
-//            ]
-//
-//            if (cache.get(pmKey)) {
-//                pagination = cache.get(pmKey) as Map
-//            }
-//
-//            if (params.containsKey('filterTab')) {
-//                pagination['max_' + params.filterTab] = max
-//                pagination['offset_' + params.filterTab] = offset
-//            }
-//
-//            cache.put(pmKey, pagination)
 
             if (cache.get(fmKey)) {
                 params.putAll( cache.get(fmKey) as Map )
             }
-//            if (cache.get(pmKey)) {
-//                result.pagination = cache.get(pmKey) as Map
-//            }
         }
+
+//        println cache.get(fmKey)
+
         String idQuery = 'select wf.id from WfWorkflow wf where wf.owner = :ctxOrg'
         Map<String, Object> queryParams = [ctxOrg: contextService.getOrg()]
 
@@ -2673,12 +2663,25 @@ join sub.orgRelations or_sub where
 
         List<Long> workflowIds = WfWorkflow.executeQuery(idQuery + ' order by wf.id desc', queryParams)
 
-        String query = 'select wf.id from WfWorkflow wf where wf.id in (:idList) and wf.status = :status'
+        String statusQuery = 'select wf.id from WfWorkflow wf where wf.id in (:idList) and wf.status = :status'
+        String resultQuery = 'select wf from WfWorkflow wf where wf.id in (:idList)'
 
-        result.currentWorkflowIds_open     = WfWorkflow.executeQuery(query, [idList: workflowIds, status: RDStore.WF_WORKFLOW_STATUS_OPEN])
-        result.currentWorkflowIds_canceled = WfWorkflow.executeQuery(query, [idList: workflowIds, status: RDStore.WF_WORKFLOW_STATUS_CANCELED])
-        result.currentWorkflowIds_done     = WfWorkflow.executeQuery(query, [idList: workflowIds, status: RDStore.WF_WORKFLOW_STATUS_DONE])
+        result.currentWorkflowIds_open     = WfWorkflow.executeQuery(statusQuery, [idList: workflowIds, status: RDStore.WF_WORKFLOW_STATUS_OPEN])
+        result.currentWorkflowIds_canceled = WfWorkflow.executeQuery(statusQuery, [idList: workflowIds, status: RDStore.WF_WORKFLOW_STATUS_CANCELED])
+        result.currentWorkflowIds_done     = WfWorkflow.executeQuery(statusQuery, [idList: workflowIds, status: RDStore.WF_WORKFLOW_STATUS_DONE])
 
+        int offset  = params.int('offset')
+        int max     = params.int('max')
+
+        if (params.tab == 'open') {
+            result.currentWorkflows = workflowService.sortByLastUpdated( WfWorkflow.executeQuery(resultQuery, [idList: result.currentWorkflowIds_open]) ).drop(offset).take(max)
+        }
+        else if (params.tab == 'canceled') {
+            result.currentWorkflows = workflowService.sortByLastUpdated( WfWorkflow.executeQuery(resultQuery, [idList: result.currentWorkflowIds_canceled]) ).drop(offset).take(max)
+        }
+        else if (params.tab == 'done') {
+            result.currentWorkflows = workflowService.sortByLastUpdated( WfWorkflow.executeQuery(resultQuery, [idList: result.currentWorkflowIds_done]) ).drop(offset).take(max)
+        }
         result.total = workflowIds.size()
 
         result
