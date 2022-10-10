@@ -80,7 +80,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
     Map<String,Integer> initialPackagesCounter
     Map<String,Set<Map<String,Object>>> pkgPropDiffsContainer
     Map<String,Set<Map<String,Object>>> packagesToNotify
-    Set<PendingChange> titlesToRemove
 
     boolean running = false
 
@@ -172,6 +171,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                     //nonAutoAcceptPendingChanges(org, sp)
                                 }
                             }
+                            globalService.cleanUpGorm()
                             log.info("end notifying subscriptions")
                             log.info("clearing removed titles")
                             packageService.clearRemovedTitles()
@@ -611,7 +611,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
      */
     void updateRecords(List<Map> rawRecords, int offset) {
         //necessary filter for DEV database
-        List<Map> records = rawRecords.findAll { Map tipp -> tipp.containsKey("hostPlatformUuid") && tipp.containsKey("tippPackageUuid") }
+        List<Map> records = rawRecords.findAll { Map tipp -> (tipp.containsKey("hostPlatformUuid") && tipp.containsKey("tippPackageUuid") || tipp.status == PERMANENTLY_DELETED) }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
         Set<String> platformUUIDs = records.collect { Map tipp -> tipp.hostPlatformUuid } as Set<String>
         log.debug("found platform UUIDs: ${platformUUIDs.toListString()}")
@@ -742,6 +742,20 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }//test with set, otherwise make check
                     packagesToNotify.put(updatedTIPP.packageUUID,diffsOfPackage)
                 }
+                else if(updatedTIPP.status == PERMANENTLY_DELETED) {
+                    TitleInstancePackagePlatform tippA = TitleInstancePackagePlatform.findByGokbIdAndStatusNotEqual(updatedTIPP.uuid, RDStore.TIPP_STATUS_REMOVED)
+                    if(tippA) {
+                        log.info("TIPP with UUID ${tippA.gokbId} has been permanently deleted")
+                        tippA.status = RDStore.TIPP_STATUS_REMOVED
+                        tippA.save()
+                        Set<Map<String,Object>> diffsOfPackage = packagesToNotify.get(tippA.pkg.gokbId)
+                        if(!diffsOfPackage) {
+                            diffsOfPackage = []
+                        }
+                        diffsOfPackage << [event: "remove", target: tippA]
+                        packagesToNotify.put(tippA.pkg.gokbId,diffsOfPackage)
+                    }
+                }
                 else if(!(updatedTIPP.status in [RDStore.TIPP_STATUS_DELETED.value, RDStore.TIPP_STATUS_REMOVED.value, PERMANENTLY_DELETED])) {
                     Package pkg = packagesOnPage.get(updatedTIPP.packageUUID)
                     if(pkg)
@@ -820,7 +834,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             break
                         case 'delete': packagePendingChanges << PendingChange.construct([msgToken:PendingChangeConfiguration.TITLE_DELETED,target:diff.target,oldValue:diff.oldValue,status:RDStore.PENDING_CHANGE_HISTORY])
                             break
-                        case 'remove': titlesToRemove << PendingChange.construct([msgToken:PendingChangeConfiguration.TITLE_REMOVED,target:diff.target,status:RDStore.PENDING_CHANGE_HISTORY]) //dealt elsewhere!
+                        case 'remove': PendingChange.construct([msgToken:PendingChangeConfiguration.TITLE_REMOVED,target:diff.target,status:RDStore.PENDING_CHANGE_HISTORY]) //dealt elsewhere!
                             break
                         case 'pkgPropDiffs':
                             diff.diffs.each { pkgPropDiff ->
@@ -2102,7 +2116,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         //define map fields
         tippStatus.put(RDStore.TIPP_STATUS_CURRENT.value,RDStore.TIPP_STATUS_CURRENT)
         tippStatus.put(RDStore.TIPP_STATUS_DELETED.value,RDStore.TIPP_STATUS_DELETED)
-        tippStatus.put(PERMANENTLY_DELETED,RDStore.TIPP_STATUS_DELETED)
+        tippStatus.put(PERMANENTLY_DELETED,RDStore.TIPP_STATUS_REMOVED)
         tippStatus.put(RDStore.TIPP_STATUS_RETIRED.value,RDStore.TIPP_STATUS_RETIRED)
         tippStatus.put(RDStore.TIPP_STATUS_EXPECTED.value,RDStore.TIPP_STATUS_EXPECTED)
         tippStatus.put(RDStore.TIPP_STATUS_REMOVED.value,RDStore.TIPP_STATUS_REMOVED)
@@ -2145,7 +2159,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
         initialPackagesCounter = [:]
         pkgPropDiffsContainer = [:]
         packagesToNotify = [:]
-        titlesToRemove = []
     }
 
     /**
