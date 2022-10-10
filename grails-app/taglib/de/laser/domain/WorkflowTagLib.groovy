@@ -54,7 +54,7 @@ class WorkflowTagLib {
             out <<  '</a>'
         }
         else {
-            out <<  '<a href="' + link + '" class="ui icon button gray la-modern-button la-popup-tooltip la-delay wfModalLink" '
+            out <<  '<a href="' + link + '" class="ui icon button blue la-modern-button la-popup-tooltip la-delay wfModalLink" '
 //            out <<  '<a href="' + link + '" class="ui icon button gray la-modern-button wfModalLink">'
             out <<          'data-position="top right" data-content="' + message(code:'workflow.user.currentUser', args: [workflow.user.displayName]) + '">'
             out <<      '<i class="icon user outline"></i>'

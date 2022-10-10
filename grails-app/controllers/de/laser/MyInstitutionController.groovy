@@ -2544,57 +2544,52 @@ join sub.orgRelations or_sub where
 
         SessionCacheWrapper cache = contextService.getSessionCache()
         String urlKey = 'myInstitution/currentWorkflows'
-        String fmKey = urlKey + '/_filterMap'
+        String fmKey  = urlKey + '/_filterMap'
+        String pmKey  = urlKey + '/_paginationMap'
 
-        Map<String, Object> filterMap = params.findAll{ it.key.startsWith('filter') }
+        Map filter     = params.findAll{ it.key.startsWith('filter') }
+        Map pagination = [ tab: 'open', offset: 0, max: contextService.getUser().getPageSizeOrDefault() ]
 
         params.remove('filter') // remove reset or control flag
 
-        Map paginationDefaults = [
-                tab: 'open',
-                offset: 0,
-                max: contextService.getUser().getPageSizeOrDefault()
-        ]
-
         // fallback ..
-        if (! params.tab)    { params.tab    = paginationDefaults.tab }
-        if (! params.offset) { params.offset = paginationDefaults.offset }
-        if (! params.max)    { params.max    = paginationDefaults.max }
+        if (! params.tab)    { params.tab    = pagination.tab }
+        if (! params.offset) { params.offset = pagination.offset }
+        if (! params.max)    { params.max    = pagination.max }
 
         if (cache) {
             if (params.cmd) {
-                // modal cmd - using cache
+                // modal cmd - remove modal form params
                 params.removeAll { ! cache.get(fmKey).keySet().contains( it.key ) }
             }
-            else if (filterMap.get('filter') == 'reset') {
+            else if (filter.get('filter') == 'reset') {
                 cache.remove(fmKey)
             }
             else {
-                filterMap.put('tab',    params.tab)
-                filterMap.put('offset', paginationDefaults.offset)
-                filterMap.put('max',    paginationDefaults.max)
+                pagination.put('tab', params.tab ?: pagination.tab)
 
-                if (filterMap.get('filter') == 'true') {
-                    filterMap.remove('filter') // remove control flag
+                if (filter.get('filter') == 'true') {
+                    // remove control flag
+                    filter.remove('filter')
+                    // remember tab, reset pagination
                 }
                 else {
-                    if (cache.get(fmKey) && cache.get(fmKey)['tab'] != params.tab) {
-                        // switched tab
+                    if (cache.get(pmKey) && cache.get(pmKey)['tab'] != params.tab) {
+                        // switched tab, reset tab and pagination
+                        cache.remove(pmKey)
                     }
                     else {
-                        filterMap.put('offset', params.offset)
-                        filterMap.put('max',    params.max)
+                        pagination.put('offset', params.offset ?: pagination.offset)
+                        pagination.put('max',    params.max ?: pagination.max)
                     }
                 }
-                cache.put(fmKey, filterMap)
+                cache.put(fmKey, filter)
+                cache.put(pmKey, pagination)
             }
 
-            if (cache.get(fmKey)) {
-                params.putAll( cache.get(fmKey) as Map )
-            }
+            if (cache.get(fmKey)) { params.putAll( cache.get(fmKey) as Map ) }
+            if (cache.get(pmKey)) { params.putAll( cache.get(pmKey) as Map ) }
         }
-
-//        println cache.get(fmKey)
 
         String idQuery = 'select wf.id from WfWorkflow wf where wf.owner = :ctxOrg'
         Map<String, Object> queryParams = [ctxOrg: contextService.getOrg()]
