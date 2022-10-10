@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      10.10.2022  rc-2.3  2.3.10      Andreas Bug         Löschkaskade behoben
+
 --      30.09.2022  rc-2.3  2.3.10      Andreas Bug         weitere Titelsynchronisationsfehler beseitigt
 
 4507    28.09.2022  rc-2.3  2.3.9       Andreas Bug         Budgetcodefilterung funktionierte nicht
