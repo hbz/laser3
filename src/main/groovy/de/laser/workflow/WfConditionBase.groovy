@@ -85,11 +85,11 @@ abstract class WfConditionBase {
             if (types[2] > i) {
                 fields.add('file' + (i + 1))
             }
-            if (types[0] > i) {
-                fields.add('checkbox' + (i + 1))
-            }
             if (types[1] > i) {
                 fields.add('date' + (i + 1))
+            }
+            if (types[0] > i) {
+                fields.add('checkbox' + (i + 1))
             }
         }
 

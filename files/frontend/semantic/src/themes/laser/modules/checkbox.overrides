@@ -71,7 +71,7 @@
   left: 25px !important;
   background-color: white !important;
   border-radius: 500rem;
-  box-shadow: 0 2px 3px 0 #d3dae3;
+  box-shadow: 0 2px 3px 0 @laDecorationColor;
  /*
   content: "\f00c" !important;
   font-family: Icons !important;

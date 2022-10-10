@@ -5,7 +5,7 @@
 
 @width: 290px;
 
-@border: 1px solid @laSecondaryColor;
+@border: 1px solid @laDecorationColor;
 @zIndex: auto;
 
 @headerFontSize: 1rem;

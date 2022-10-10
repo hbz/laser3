@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4540    07.10.2022  dev     3.0         David   Feature     Pagination - Javascript fehlerhaft
+
 4534    06.10.2022  dev     3.0         Andreas Bug         Schreibrechte gingen beim Vertragstext privater Vertragsmerkmale verloren
 
 4525    06.10.2022  dev     3.0         David   Feature     Workflow: Umgestaltung Dokumente hochladen
@@ -804,6 +806,8 @@
 3786    09.09.2021  dev     2.2         David   Feature     'Meine Workflows' überarbeiten
 
 3785    09.09.2021  dev     2.2         Andreas Feature     Zurücksetzen der Statistikdaten implementiert
+
+4427    08.09.2021  dev     3.0         Ingrid  Feature     Modal nicht scrollbar, wenn zu viele Inhalte eingeladen werden
 
 3784    08.09.2021  dev     2.2         Andreas Bug         fehlende Kontrollstruktur bei ungültigem Schlüsselpaar nachgereicht
 

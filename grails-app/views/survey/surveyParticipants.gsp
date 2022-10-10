@@ -53,7 +53,7 @@
                             id="${surveyConfig.surveyInfo.id}"
                             params="[surveyConfigID: surveyConfig.id, tab: 'selectedSubParticipants']">
                         ${message(code: 'surveyParticipants.selectedSubParticipants')}
-                        <div class="ui floating circular label">${selectedSubParticipants.size() ?: 0}</div>
+                        <div class="ui floating blue circular label">${selectedSubParticipants.size() ?: 0}</div>
                     </g:link>
                 </g:if>
 
@@ -63,7 +63,7 @@
                             id="${surveyConfig.surveyInfo.id}"
                             params="[surveyConfigID: surveyConfig.id, tab: 'selectedParticipants']">
                         ${surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT] ? message(code: 'surveyParticipants.selectedParticipants') : message(code: 'surveyParticipants.selectedParticipants2')}
-                        <div class="ui floating circular label">${selectedParticipants.size() ?: 0}</div></g:link>
+                        <div class="ui floating blue circular label">${selectedParticipants.size() ?: 0}</div></g:link>
                 </g:if>
 
                 <g:if test="${surveyInfo.status in [RDStore.SURVEY_IN_PROCESSING, RDStore.SURVEY_READY, RDStore.SURVEY_SURVEY_STARTED]}">
@@ -72,7 +72,7 @@
                             id="${surveyConfig.surveyInfo.id}"
                             params="[surveyConfigID: surveyConfig.id, tab: 'consortiaMembers']">
                         ${message(code: 'surveyParticipants.consortiaMembers')}
-                        <div class="ui floating circular label">${consortiaMembers.size() ?: 0}</div>
+                        <div class="ui floating blue circular label">${consortiaMembers.size() ?: 0}</div>
                     </g:link>
                 </g:if>
             </div>

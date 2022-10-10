@@ -28,13 +28,13 @@
   top: 50px;
   z-index:101;
   background-color: #004678;
-  color: white;
+  color: @white;
   .item {
+    color: @white;
     padding:0;
   }
   .la-context-org {
     font-size: 0.87em;
-    color: white;
     flex: 0 0 200px;
   }
   .ui.sub.header.item {

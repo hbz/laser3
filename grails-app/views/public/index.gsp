@@ -57,7 +57,7 @@
                                 ${message(code: 'landingpage.hero.h2')}
                             </h2>
 
-                            <a href="mailto:laser@hbz-nrw.de" class="ui huge button">
+                            <a href="mailto:laser@hbz-nrw.de" class="ui huge secondary button">
                                 ${message(code: 'landingpage.hero.button')}<i class="right arrow icon"></i>
                             </a>
                         </div>
@@ -143,7 +143,7 @@
             </div>--}%
 
             <div class="ui center aligned segment">
-                <a href="mailto:laser@hbz-nrw.de" class="ui huge blue button">
+                <a href="mailto:laser@hbz-nrw.de" class="ui huge secondary button">
                     ${message(code: 'landingpage.feature.button')}<i class="right arrow icon"></i>
                 </a>
                 <g:link controller="home" action="index" class="ui huge blue button">

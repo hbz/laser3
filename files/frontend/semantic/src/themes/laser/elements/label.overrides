@@ -13,7 +13,7 @@
 }
 .ui.card .ui.label {
   margin: 0;
-  //background-color: #d3dae3;
+  //background-color: @laDecorationColor;
 }
 // annual rings
 
@@ -23,7 +23,7 @@
   padding-right: 0.2em;
   margin-bottom: 1.2em;
   background-color: @laSecondaryBackground;
-  border: 1px solid #d3dae3;
+  border: 1px solid @laDecorationColor;
   vertical-align: super;
   margin: 0 1.142857em;
   .ui.tiny.label {
@@ -255,7 +255,7 @@
   }
 }
 .ui.label.la-advanced-label {
-  background-color: #d3dae3;
+  background-color: @laDecorationColor;
 }
 /* label what server */
 
