@@ -904,5 +904,9 @@ r2d2 = {
                 $('.la-js-filterButton i').addClass('hidden');
             }
         });
+    },
+
+    clearGlobalModalsContainer : function() {
+        $( '.ui.dimmer.modals.page' ).empty();
     }
 }

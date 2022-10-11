@@ -1,9 +1,13 @@
 package de.laser.ajax
 
+import de.laser.DocContext
+import de.laser.DocstoreService
 import de.laser.GenericOIDService
 import de.laser.PendingChangeService
 import de.laser.AccessService
 import de.laser.AddressbookService
+import de.laser.config.ConfigDefaults
+import de.laser.config.ConfigMapper
 import de.laser.remote.ApiSource
 import de.laser.CacheService
 import de.laser.ContextService
@@ -1245,5 +1249,72 @@ class AjaxHtmlController {
 
         render template: "/templates/title_modal", model: result
 
+    }
+
+    @Secured(['ROLE_USER'])
+    def documentPreview() {
+        Map<String, Object> result = [:]
+
+        try {
+            if (params.key) {
+                String[] keys = params.key.split(':')
+
+                Doc doc = Doc.findByUuid(keys[0])
+                DocContext docCtx = DocContext.findByIdAndOwner(Long.parseLong(keys[1]), doc)
+
+                if (doc && docCtx) {
+                    result.doc = doc
+                    result.docCtx = docCtx
+
+                    Closure checkPermission = {
+                        // logic based on /views/templates/documents/card
+
+                        boolean check = false
+                        long ctxOrgId = contextService.getOrg().id
+
+                        if ( doc.owner.id == ctxOrgId ) {
+                            check = true
+                        }
+                        else if ( docCtx.isShared ) {
+                            if ( docCtx.shareConf == RDStore.SHARE_CONF_UPLOADER_ORG ) {
+                                check = (doc.owner.id == ctxOrgId)
+                            }
+                            if ( docCtx.shareConf == RDStore.SHARE_CONF_UPLOADER_AND_TARGET ) {
+                                check = (doc.owner.id == ctxOrgId) || (docCtx.targetOrg.id == ctxOrgId)
+                            }
+                            if ( docCtx.shareConf == RDStore.SHARE_CONF_CONSORTIUM || docCtx.shareConf == RDStore.SHARE_CONF_ALL ) {
+                                // context based restrictions must be applied
+                                check = true
+                            }
+                        }
+                        return check
+                    }
+
+                    if (checkPermission()) {
+                        if (Doc.getPreviewMimeTypes().contains(doc.mimeType)) {
+                            String fPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
+                            File f = new File(fPath + '/' +  doc.uuid)
+                            if (f.exists()) {
+                                result.docBase64 = (new File(fPath + '/' + doc.uuid)).getBytes().encodeBase64()
+                            }
+                            else {
+                                result.error = message(code: 'template.documents.preview.fileNotFound') as String
+                            }
+                        }
+                        else {
+                            result.error = message(code: 'template.documents.preview.unsupportedMimeType') as String
+                        }
+                    }
+                    else {
+                        result.info = message(code: 'template.documents.preview.forbidden') as String
+                    }
+                }
+            }
+        }
+        catch (Exception e) {
+            log.error e.getMessage()
+        }
+
+        render template: '/templates/documents/preview', model: result
     }
 }

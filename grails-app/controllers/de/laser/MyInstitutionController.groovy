@@ -2544,68 +2544,54 @@ join sub.orgRelations or_sub where
 
         SessionCacheWrapper cache = contextService.getSessionCache()
         String urlKey = 'myInstitution/currentWorkflows'
-        String fmKey = urlKey + '/_filterMap'
-        String pmKey = urlKey + '/_paginationMap'
+        String fmKey  = urlKey + '/_filterMap'
+        String pmKey  = urlKey + '/_paginationMap'
 
-        Map<String, Object> filterMap = params.findAll{ it.key.startsWith('filter') }
+        Map filter     = params.findAll{ it.key.startsWith('filter') }
+        Map pagination = [ tab: 'open', offset: 0, max: contextService.getUser().getPageSizeOrDefault() ]
 
-//        int max     = params['max'] ? params.int('max') : contextService.getUser().getPageSizeOrDefault()
-//        int offset  = params['offset'] ? params.int('offset') : 0
+        params.remove('filter') // remove reset or control flag
 
-        params.remove('max')        // remove native pagination
-        params.remove('offset')
-        params.remove('filter')     // remove reset flag
+        // fallback .. pagination defaults
+        if (! params.tab)    { params.tab    = pagination.tab }
+        if (! params.offset) { params.offset = pagination.offset }
+        if (! params.max)    { params.max    = pagination.max }
 
         if (cache) {
-            if (request.getHeader('referer')) {
-                try {
-                    URL url = URI.create(request.getHeader('referer')).toURL()
-                    if (! url.getPath().endsWith(urlKey)) {
-                        cache.remove(pmKey)
-                    }
-                } catch (Exception e) { }
-            }
-
-            if (filterMap.get('filter') == 'reset') {
-                cache.remove(fmKey)
-                cache.remove(pmKey)
-            }
-            else {
-                if (filterMap) {
-                    cache.put(fmKey, filterMap)
-                    if (filterMap.containsKey('filterTab') && filterMap.size() > 1) {
-                        cache.remove(pmKey)
-                    }
+            if (params.cmd) {
+                // modal cmd - remove modal form params
+                if (cache.get(fmKey)) {
+                    params.removeAll { ! cache.get(fmKey).keySet().contains( it.key ) }
                 }
             }
+            else {
+                if (filter.get('filter') == 'reset') {
+                    cache.remove(fmKey)
+                }
+                else {
+                    pagination.put('tab', params.tab ?: pagination.tab)
 
-//            Map pagination = [
-//                    max_open:       contextService.getUser().getPageSizeOrDefault(),
-//                    max_canceled:   contextService.getUser().getPageSizeOrDefault(),
-//                    max_done:       contextService.getUser().getPageSizeOrDefault(),
-//                    offset_open:    0,
-//                    offset_canceled:0,
-//                    offset_done:    0
-//            ]
-//
-//            if (cache.get(pmKey)) {
-//                pagination = cache.get(pmKey) as Map
-//            }
-//
-//            if (params.containsKey('filterTab')) {
-//                pagination['max_' + params.filterTab] = max
-//                pagination['offset_' + params.filterTab] = offset
-//            }
-//
-//            cache.put(pmKey, pagination)
-
-            if (cache.get(fmKey)) {
-                params.putAll( cache.get(fmKey) as Map )
+                    if (filter.get('filter') == 'true') {
+                        filter.remove('filter') // remove control flag - remember tab, reset pagination
+                    }
+                    else {
+                        if (cache.get(pmKey) && cache.get(pmKey)['tab'] != params.tab) {
+                            cache.remove(pmKey) // switched tab, reset tab and pagination
+                        }
+                        else {
+                            pagination.put('offset', params.offset ?: pagination.offset)
+                            pagination.put('max',    params.max ?: pagination.max)
+                        }
+                    }
+                    cache.put(fmKey, filter)
+                }
+                cache.put(pmKey, pagination)
             }
-//            if (cache.get(pmKey)) {
-//                result.pagination = cache.get(pmKey) as Map
-//            }
+
+            if (cache.get(fmKey)) { params.putAll( cache.get(fmKey) as Map ) }
+            if (cache.get(pmKey)) { params.putAll( cache.get(pmKey) as Map ) }
         }
+
         String idQuery = 'select wf.id from WfWorkflow wf where wf.owner = :ctxOrg'
         Map<String, Object> queryParams = [ctxOrg: contextService.getOrg()]
 
@@ -2673,12 +2659,25 @@ join sub.orgRelations or_sub where
 
         List<Long> workflowIds = WfWorkflow.executeQuery(idQuery + ' order by wf.id desc', queryParams)
 
-        String query = 'select wf.id from WfWorkflow wf where wf.id in (:idList) and wf.status = :status'
+        String statusQuery = 'select wf.id from WfWorkflow wf where wf.id in (:idList) and wf.status = :status'
+        String resultQuery = 'select wf from WfWorkflow wf where wf.id in (:idList)'
 
-        result.currentWorkflowIds_open     = WfWorkflow.executeQuery(query, [idList: workflowIds, status: RDStore.WF_WORKFLOW_STATUS_OPEN])
-        result.currentWorkflowIds_canceled = WfWorkflow.executeQuery(query, [idList: workflowIds, status: RDStore.WF_WORKFLOW_STATUS_CANCELED])
-        result.currentWorkflowIds_done     = WfWorkflow.executeQuery(query, [idList: workflowIds, status: RDStore.WF_WORKFLOW_STATUS_DONE])
+        result.currentWorkflowIds_open     = WfWorkflow.executeQuery(statusQuery, [idList: workflowIds, status: RDStore.WF_WORKFLOW_STATUS_OPEN])
+        result.currentWorkflowIds_canceled = WfWorkflow.executeQuery(statusQuery, [idList: workflowIds, status: RDStore.WF_WORKFLOW_STATUS_CANCELED])
+        result.currentWorkflowIds_done     = WfWorkflow.executeQuery(statusQuery, [idList: workflowIds, status: RDStore.WF_WORKFLOW_STATUS_DONE])
 
+        int offset  = params.int('offset')
+        int max     = params.int('max')
+
+        if (params.tab == 'open') {
+            result.currentWorkflows = workflowService.sortByLastUpdated( WfWorkflow.executeQuery(resultQuery, [idList: result.currentWorkflowIds_open]) ).drop(offset).take(max)
+        }
+        else if (params.tab == 'canceled') {
+            result.currentWorkflows = workflowService.sortByLastUpdated( WfWorkflow.executeQuery(resultQuery, [idList: result.currentWorkflowIds_canceled]) ).drop(offset).take(max)
+        }
+        else if (params.tab == 'done') {
+            result.currentWorkflows = workflowService.sortByLastUpdated( WfWorkflow.executeQuery(resultQuery, [idList: result.currentWorkflowIds_done]) ).drop(offset).take(max)
+        }
         result.total = workflowIds.size()
 
         result
