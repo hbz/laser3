@@ -70,20 +70,38 @@
                 <div class="ui small feed content la-js-dont-hide-this-card">
                     <div class="ui grid summary">
                         <div class="eight wide column la-column-right-lessPadding">
-                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="js-no-wait-wheel la-break-all" target="_blank">
-                                <g:if test="${docctx.owner?.title}">
-                                    ${docctx.owner.title}
-                                </g:if>
-                                <g:elseif test="${docctx.owner?.filename}">
-                                    ${docctx.owner?.filename}
-                                </g:elseif>
-                                <g:else>
-                                    ${message(code:'template.documents.missing')}
-                                </g:else>
-                            </g:link>(${docctx.owner?.type?.getI10n("value")})
+
+                            <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().contains(docctx.owner.mimeType)}" />
+                            <g:if test="${supportedMimeType}">
+                                <a href="#documentPreview" data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title}</a>
+                            </g:if>
+                            <g:else>
+                                ${docctx.owner.title}
+                            </g:else>
+                            (${docctx.owner?.type?.getI10n("value")})
+
+%{--                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="js-no-wait-wheel la-break-all" target="_blank">--}%
+%{--                                <g:if test="${docctx.owner?.title}">--}%
+%{--                                    ${docctx.owner.title}--}%
+%{--                                </g:if>--}%
+%{--                                <g:elseif test="${docctx.owner?.filename}">--}%
+%{--                                    ${docctx.owner?.filename}--}%
+%{--                                </g:elseif>--}%
+%{--                                <g:else>--}%
+%{--                                    ${message(code:'template.documents.missing')}--}%
+%{--                                </g:else>--}%
+%{--                            </g:link>(${docctx.owner?.type?.getI10n("value")})--}%
                         </div>
                         <div class="right aligned eight wide column la-column-left-lessPadding">
                             <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
+
+%{--                                <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().contains(docctx.owner.mimeType)}" />--}%
+%{--                                <button class="ui icon blue button la-modern-button${supportedMimeType ? '' : ' la-hidden disabled'}"--}%
+%{--                                        data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">--}%
+%{--                                    <i class="search icon"></i>--}%
+%{--                                </button>--}%
+                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i class="download icon"></i></g:link>
+
                                 <%-- START First Button --%>
                                 <laser:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />
                                 <button type="button" class="ui icon blue button la-modern-button editable-cancel"
@@ -159,6 +177,25 @@
             </g:if>
         </g:each>
     </ui:card>
+
+    <laser:script file="${this.getGroovyPageFileName()}">
+        $('a[data-documentKey]').on('click', function(e) {
+            e.preventDefault();
+            let docKey = $(this).attr('data-documentKey')
+            let previewModalId = '#document-preview-' + docKey.split(':')[0]
+
+            $.ajax({
+                url: '${g.createLink(controller: 'ajaxHtml', action: 'documentPreview')}?key=' + docKey
+            }).done( function (data) {
+                $( '#dynamicModalContainer' ).html(data)
+                $( previewModalId ).modal({
+                        onVisible: function() { },
+                        onApprove: function() { return false; },
+                        onHidden:  function() { $(previewModalId).remove() }
+                }).modal('show')
+            })
+        })
+    </laser:script>
 </g:if>
 <g:if test="${sharedItems}">
     <ui:card message="license.documents.shared" class="documents la-js-hideable ${css_class}" editable="${editable}">
@@ -167,29 +204,42 @@
                 <div class="ui small feed content la-js-dont-hide-this-card">
 
                     <div class="ui grid summary">
-                        <div class="twelve wide column">
-                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="js-no-wait-wheel" target="_blank">
-                                <g:if test="${docctx.owner?.title}">
-                                    ${docctx.owner.title}
-                                </g:if>
-                                <g:elseif test="${docctx.owner?.filename}">
-                                    ${docctx.owner.filename}
-                                </g:elseif>
-                                <g:else>
-                                    ${message(code:'template.documents.missing')}
-                                </g:else>
+                        <div class="eleven wide column">
+%{--                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="js-no-wait-wheel" target="_blank">--}%
+%{--                                <g:if test="${docctx.owner?.title}">--}%
+%{--                                    ${docctx.owner.title}--}%
+%{--                                </g:if>--}%
+%{--                                <g:elseif test="${docctx.owner?.filename}">--}%
+%{--                                    ${docctx.owner.filename}--}%
+%{--                                </g:elseif>--}%
+%{--                                <g:else>--}%
+%{--                                    ${message(code:'template.documents.missing')}--}%
+%{--                                </g:else>--}%
 
-                            </g:link>(${docctx.owner?.type?.getI10n("value")})
+%{--                            </g:link>(${docctx.owner?.type?.getI10n("value")})--}%
+
+                            <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().contains(docctx.owner.mimeType)}" />
+                            <g:if test="${supportedMimeType}">
+                                <a href="#documentPreview" data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title}</a>
+                            </g:if>
+                            <g:else>
+                                ${docctx.owner.title}
+                            </g:else>
+                            (${docctx.owner?.type?.getI10n("value")})
                         </div>
-                        <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
-                            <div class="two wide column">
+
+                        <div class="five wide right aligned column">
+                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i class="download icon"></i></g:link>
+
+                            <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                 <laser:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />
                                 <button type="button" class="ui icon blue button la-modern-button editable-cancel" data-ui="modal"
                                         data-href="#modalEditDocument_${docctx.id}"
                                         aria-label="${message(code: 'ariaLabel.change.universal')}">
                                 <i class="pencil icon"></i></button>
-                            </div>
-                        </g:if>
+                            </g:if>
+                        </div>
+
                     </div>
                 </div>
             </g:if>

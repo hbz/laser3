@@ -169,7 +169,11 @@ class WorkflowTagLib {
                     }
                     out << (isListItem ? posMark : '') + '<i class="icon file"></i>'
                     out << (isListItem ? '<div class="middle aligned content">' : '')
-                    out << pTitle + ': ' + g.link( [controller: 'docstore', id: docctx.owner.uuid], linkBody + ' (' + docctx.owner?.type?.getI10n('value') + ')')
+                    out << pTitle + ': <a href="#documentPreview" data-documentKey="' + docctx.owner.uuid + ':' + docctx.id + '">' + linkBody + '</a> (' + docctx.owner?.type?.getI10n('value') + ')'
+                    out << ' &nbsp; [ <a href="docstore/index/' + docctx.owner.uuid + '" target="_blank">' + message(code:'template.documents.download') + '</a> ]'
+
+//                    out << pTitle + ': ' + g.link( [controller: 'docstore', id: docctx.owner.uuid], linkBody + ' (' + docctx.owner?.type?.getI10n('value') + ')')
+//                    out << ' &nbsp; <a href="docstore/index/' + docctx.owner.uuid + '" class="ui icon small blue button la-modern-button" target="_blank"><i class="download icon"></i></a>'
                 }
                 else {
                     out << (isListItem ? negMark + '<i class="icon file"></i>' : '<i class="icon file la-light-grey"></i>')

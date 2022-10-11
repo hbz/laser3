@@ -90,8 +90,14 @@
                 %>
                 <g:if test="${(((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3)) && visible && docctx.status != RDStore.DOC_CTX_STATUS_DELETED)}">
                     <tr>
-                        <th scope="row" class="la-th-column la-main-object" >
-                            ${docctx.owner.title}
+                        <th scope="row" class="la-th-column la-main-object">
+                            <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().contains(docctx.owner.mimeType)}" />
+                            <g:if test="${docctx.owner.contentType == Doc.CONTENT_TYPE_FILE && visible && supportedMimeType}">
+                                <a href="#documentPreview" data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title}</a>
+                            </g:if>
+                            <g:else>
+                                ${docctx.owner.title}
+                            </g:else>
                         </th>
                         <td>
                             ${docctx.owner.filename}
@@ -127,7 +133,7 @@
                             <g:if test="${((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3))}">
                                 <g:if test="${instance?.respondsTo('showUIShareButton')}">
                                     <g:if test="${docctx.sharedFrom}">
-                                        <span  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
+                                        <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
                                             <i class="grey alternate share icon"></i>
                                         </span>
                                     </g:if>
@@ -150,6 +156,14 @@
                                         </g:else>
                                     </g:if>
                                 </g:if>
+%{--                                <g:if test="${docctx.owner.contentType == Doc.CONTENT_TYPE_FILE && docctx.owner.owner.id == contextService.getOrg().id}">--}%
+%{--                                    <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().contains(docctx.owner.mimeType)}" />--}%
+%{--                                    <button class="ui icon blue button la-modern-button${supportedMimeType ? '' : ' la-hidden disabled'}"--}%
+%{--                                            data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">--}%
+%{--                                        <i class="search icon"></i>--}%
+%{--                                    </button>--}%
+%{--                                </g:if>--}%
+
                                 <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i class="download icon"></i></g:link>
                                 <g:if test="${accessService.checkMinUserOrgRole(user,docctx.owner.owner,"INST_EDITOR") && inOwnerOrg}">
                                     <button type="button" class="ui icon blue button la-modern-button la-popup-tooltip la-delay" data-ui="modal" data-href="#modalEditDocument_${docctx.id}" data-content="${message(code:"template.documents.edit")}"><i class="pencil icon"></i></button>
@@ -172,6 +186,26 @@
         </tbody>
     </table>
 </g:form>
+
+<laser:script file="${this.getGroovyPageFileName()}">
+    $('a[data-documentKey]').on('click', function(e) {
+        e.preventDefault();
+        let docKey = $(this).attr('data-documentKey')
+        let previewModalId = '#document-preview-' + docKey.split(':')[0]
+
+        $.ajax({
+            url: '${g.createLink(controller: 'ajaxHtml', action: 'documentPreview')}?key=' + docKey
+        }).done( function (data) {
+            $( '#dynamicModalContainer' ).html(data)
+            $( previewModalId ).modal({
+                    onVisible: function() { },
+                    onApprove: function() { return false; },
+                    onHidden:  function() { $(previewModalId).remove() }
+            }).modal('show')
+        })
+    })
+</laser:script>
+
 <%-- a form within a form is not permitted --%>
 <g:each in="${instance.documents}" var="docctx">
     <laser:render template="/templates/documents/modal" model="${[ownobj: instance, owntp: owntp, docctx: docctx, doc: docctx.owner]}"/>
