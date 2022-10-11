@@ -16,8 +16,12 @@
         <g:each in="${docstoreService.getNotes(instance, contextService.getOrg())}" var="docctx">
             <tr>
                     <td>
-                        <strong>${docctx.owner.title}</strong> <br />
-                        ${docctx.owner.content}
+                        <div style="margin-bottom:1em; border-bottom:1px dashed darkgrey">
+                            <strong>${docctx.owner.title}</strong>
+                        </div>
+                        <article class="trumbowyg-editor trumbowyg-reset-css">
+                            ${raw(docctx.owner.content)}
+                        </article>
                     </td>
                     <td>
                         <g:formatDate format="${message(code:'default.date.format.notime')}" date="${docctx.owner.lastUpdated}"/>
