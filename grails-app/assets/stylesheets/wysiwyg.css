@@ -1,0 +1,6 @@
+/*
+ * bundle: assets/stylesheets/wysiwyg.css
+ *
+ *= require /trumbowyg/ui/trumbowyg-base.css        //--> assets/vendor
+ *= require /trumbowyg/ui/trumbowyg-reset.css       //--> assets/vendor
+ */

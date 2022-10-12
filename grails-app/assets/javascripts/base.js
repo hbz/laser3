@@ -3,11 +3,8 @@
 //= require libs/jquery-3.6.0.js
 //= require libs/jquery.poshytip.js
 //= require libs/jquery-editable-poshytip.js
-//= require libs/purify.js
 //= require libs/moment-with-locales-modified.js
 //= require libs/readmore.js
 //= require /select2/js/select2.js      //--> assets/vendor
-//= require /trumbowyg/trumbowyg.js     //--> assets/vendor
-//= require /trumbowyg/langs/de.js      //--> assets/vendor
 
 console.log('+ base.js')
