@@ -16,14 +16,15 @@ wysiwyg = {
         let btns = [
             // ['viewHTML'],
             ['formatting'],
-            ['strong', 'em', 'del'],
+            ['strong', 'em', 'underline', 'del'],
             ['superscript', 'subscript'],
             // ['link'], // -- TODO: unsecure
             // ['insertImage'],
             // ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'], // -- TODO: markup
             ['unorderedList', 'orderedList'],
             // ['horizontalRule'],
-            ['removeformat'],
+            ['removeformat'], // -- TODO
+            ['historyUndo', 'historyRedo'],
             ['fullscreen']
         ];
 
@@ -40,7 +41,7 @@ wysiwyg = {
 
         $wrapper.trumbowyg ({
             btns: btns,
-            lang: 'de',
+            lang: JSPC.vars.locale,
             svgPath: '/assets/trumbowyg/ui/icons.svg',
             resetCss: true,
             removeformatPasted: false,  // if false -> fallback
@@ -51,9 +52,7 @@ wysiwyg = {
             wysiwyg.sanitize($wrapper);
         })
         .on ('tbwblur', function () {
-            // if (! $submit[0]) {
-                wysiwyg.sanitize($wrapper);
-            // }
+            wysiwyg.sanitize($wrapper);
         });
         //.on('tbwinit',   function(){ console.log('init'); })
         //.on('tbwfocus',  function(){ console.log('focus'); })
@@ -73,7 +72,7 @@ wysiwyg = {
                 'h1', 'h2', 'h3', 'h4',
                 'p', 'blockquote',
                 'li', 'ol', 'ul',
-                'em', 'del', 'strong', 'sub', 'sub'
+                'em', 'del', 'strong', 'u', 'sub', 'sub'
             ],
             ALLOWED_ATTR: [ /* 'style', 'href', 'target', 'title' */ ], // -- TODO
             ALLOW_ARIA_ATTR: false,

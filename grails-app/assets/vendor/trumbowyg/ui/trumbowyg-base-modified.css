@@ -38,7 +38,7 @@
 .trumbowyg-editor {
   display: block;
   position: relative;
-  border: 1px solid #DDD;
+  border: 1px solid #dedede;
   width: 100%;
   min-height: 300px; }
 
@@ -129,7 +129,7 @@
 .trumbowyg-button-pane {
   width: 100%;
   min-height: 36px;
-  background: #ecf0f1;
+  background: #f4f8f9;
   border-bottom: 1px solid #d7e0e2;
   margin: 0;
   padding: 0 5px;
@@ -197,7 +197,7 @@
   .trumbowyg-button-pane button:not(.trumbowyg-disable):hover,
   .trumbowyg-button-pane button:not(.trumbowyg-disable):focus,
   .trumbowyg-button-pane button.trumbowyg-active {
-    background-color: #FFF;
+    background-color: #e3e9eb;
     outline: none; }
   .trumbowyg-button-pane .trumbowyg-open-dropdown::after {
     display: block;
@@ -249,7 +249,7 @@
     -o-transition: all 150ms;
     transition: all 150ms; }
     .trumbowyg-dropdown button:hover, .trumbowyg-dropdown button:focus {
-      background: #ecf0f1; }
+      background: #e3e9eb; }
     .trumbowyg-dropdown button svg {
       float: left;
       margin-right: 14px; }
