@@ -88,18 +88,18 @@
       padding: 0 !important;
       font-weight: bold; }
     .trumbowyg-editor.trumbowyg-reset-css h1 {
-      font-size: 32px !important;
-      line-height: 38px !important;
-      margin-bottom: 20px !important; }
-    .trumbowyg-editor.trumbowyg-reset-css h2 {
       font-size: 26px !important;
       line-height: 34px !important;
       margin-bottom: 15px !important; }
-    .trumbowyg-editor.trumbowyg-reset-css h3 {
+    .trumbowyg-editor.trumbowyg-reset-css h2 {
       font-size: 22px !important;
       line-height: 28px !important;
       margin-bottom: 7px !important; }
-    .trumbowyg-editor.trumbowyg-reset-css h4 {
+    .trumbowyg-editor.trumbowyg-reset-css h3 {
       font-size: 16px !important;
       line-height: 22px !important;
+      margin-bottom: 7px !important; }
+    .trumbowyg-editor.trumbowyg-reset-css h4 {
+      font-size: 14px !important;
+      line-height: 20px !important;
       margin-bottom: 7px !important; }

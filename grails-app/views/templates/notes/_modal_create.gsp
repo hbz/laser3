@@ -20,49 +20,7 @@
             <div id="licenseNote"></div>
 
             <laser:script file="${this.getGroovyPageFileName()}">
-                let sanitize = function ($elem) {
-                    let raw = $elem.trumbowyg('html');
-                    let clean = DOMPurify.sanitize( raw, {
-                            ALLOWED_TAGS: [
-                                    'h1', 'h2', 'h3', 'h4',
-                                    'p', 'blockquote',
-                                    'li', 'ol', 'ul',
-                                    'em', 'del', 'strong', 'sub', 'sub'
-                                ],
-                            ALLOWED_ATTR: [ /* 'style' */ ], // -- TODO
-                            ALLOW_ARIA_ATTR: false,
-                            ALLOW_DATA_ATTR: false
-                        });
-
-                    $elem.trumbowyg('html', clean);
-                };
-
-                $('#licenseNote').trumbowyg ({
-                    btns: [
-                        // ['viewHTML'],
-                        ['formatting'],
-                        ['strong', 'em', 'del'],
-                        ['superscript', 'subscript'],
-                        // ['link'], -- TODO
-                        // ['insertImage'],
-                        // ['justifyLeft', 'justifyCenter', 'justifyRight', 'justifyFull'], -- TODO
-                        ['unorderedList', 'orderedList'],
-                        // ['horizontalRule'],
-                        ['removeformat'],
-                        ['fullscreen']
-                    ],
-                    lang: 'de',
-                    svgPath: '/assets/trumbowyg/ui/icons.svg',
-                    resetCss: true,
-                    removeformatPasted: true,
-                    tagsToKeep: [],
-                })
-                .on('tbwpaste',  function(){ console.log('paste'); sanitize($('#licenseNote')); })
-                .on('tbwblur',   function(){ console.log('blur'); sanitize($('#licenseNote')); });
-            %{--                    .on('tbwinit',   function(){ console.log('init'); })--}%
-            %{--                    .on('tbwfocus',  function(){ console.log('focus'); })--}%
-            %{--                    .on('tbwchange', function(){ console.log('change'); })--}%
-
+                wysiwyg.initEditor('#licenseNote', '#modalCreateNote');
             </laser:script>
         </div>
     </g:form>

@@ -43,6 +43,12 @@
   min-height: 300px; }
 
 .trumbowyg-box .trumbowyg-editor {
+  max-height: 500px; }
+
+.trumbowyg-fullscreen .trumbowyg-editor {
+  max-height: initial; }
+
+.trumbowyg-box .trumbowyg-editor {
   margin: 0 auto; }
 
 .trumbowyg-box.trumbowyg-fullscreen {

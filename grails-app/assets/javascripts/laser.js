@@ -15,6 +15,7 @@
 //= require modules/setTextareaHeight.js
 //= require modules/system.js
 //= require wysiwyg.js                          //--> bundle
+//= require modules/wysiwyg.js
 //= require spring-websocket.js                 //--> bundle
 
 console.log('+ laser.js')
