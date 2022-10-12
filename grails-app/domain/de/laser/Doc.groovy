@@ -88,4 +88,28 @@ class Doc {
             log.info('generating new uuid: '+ uuid)
         }
     }
+
+    static List<String> getPreviewMimeTypes() {
+        return [
+                'application/json',
+                'application/pdf',
+                'application/rtf',
+                'application/xml',
+                'application/rtf',
+                'image/gif',
+                'image/jpeg',
+                'image/png',
+                'image/svg+xml',
+                'text/calendar',
+                'text/csv',
+                'text/html',
+                'text/javascript',
+                'text/markdown',
+                'text/plain',
+                'text/richtext',
+                'text/rtf',
+                'text/tab-separated-values',
+                'text/xml'
+        ]
+    }
 }

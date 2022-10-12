@@ -14,7 +14,9 @@
 //= require modules/responsiveTables.js
 //= require modules/setTextareaHeight.js
 //= require modules/system.js
-//= require spring-websocket.js
+//= require wysiwyg.js                          //--> bundle
+//= require modules/wysiwyg.js
+//= require spring-websocket.js                 //--> bundle
 
 console.log('+ laser.js')
 
