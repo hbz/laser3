@@ -1,0 +1,105 @@
+/**
+ * Trumbowyg v2.25.2 - A lightweight WYSIWYG editor
+ * Default stylesheet for Trumbowyg editor
+ * ------------------------
+ * @link http://alex-d.github.io/Trumbowyg
+ * @license MIT
+ * @author Alexandre Demode (Alex-D)
+ *         Twitter : @AlexandreDemode
+ *         Website : alex-d.fr
+ */
+
+/* moved from x-base.css */
+
+.trumbowyg-editor {
+  /*
+     * lset for resetCss option
+     */ }
+  .trumbowyg-editor object,
+  .trumbowyg-editor embed,
+  .trumbowyg-editor video,
+  .trumbowyg-editor img {
+    max-width: 100%; }
+  .trumbowyg-editor video,
+  .trumbowyg-editor img {
+    height: auto; }
+  .trumbowyg-editor img {
+    cursor: move; }
+  .trumbowyg-editor canvas:focus {
+    outline: none; }
+  .trumbowyg-editor.trumbowyg-reset-css {
+    background: #FEFEFE !important;
+    font-family: "Trebuchet MS", Helvetica, Verdana, sans-serif !important;
+    font-size: 14px !important;
+    line-height: 1.45em !important;
+    color: #333; }
+    .trumbowyg-editor.trumbowyg-reset-css a {
+      color: #15c !important;
+      text-decoration: underline !important; }
+    .trumbowyg-editor.trumbowyg-reset-css div,
+    .trumbowyg-editor.trumbowyg-reset-css p,
+    .trumbowyg-editor.trumbowyg-reset-css ul,
+    .trumbowyg-editor.trumbowyg-reset-css ol,
+    .trumbowyg-editor.trumbowyg-reset-css blockquote {
+      -webkit-box-shadow: none !important;
+              box-shadow: none !important;
+      background: none !important;
+      margin: 0 !important;
+      margin-bottom: 15px !important;
+      line-height: 1.4em !important;
+      font-family: "Trebuchet MS", Helvetica, Verdana, sans-serif !important;
+      font-size: 14px !important;
+      border: none; }
+    .trumbowyg-editor.trumbowyg-reset-css iframe,
+    .trumbowyg-editor.trumbowyg-reset-css object,
+    .trumbowyg-editor.trumbowyg-reset-css hr {
+      margin-bottom: 15px !important; }
+    .trumbowyg-editor.trumbowyg-reset-css blockquote {
+      margin-left: 32px !important;
+      font-style: italic !important;
+      color: #555; }
+    .trumbowyg-editor.trumbowyg-reset-css ul {
+      list-style: disc; }
+    .trumbowyg-editor.trumbowyg-reset-css ol {
+      list-style: decimal; }
+    .trumbowyg-editor.trumbowyg-reset-css ul,
+    .trumbowyg-editor.trumbowyg-reset-css ol {
+      padding-left: 20px !important; }
+    .trumbowyg-editor.trumbowyg-reset-css ul ul,
+    .trumbowyg-editor.trumbowyg-reset-css ol ol,
+    .trumbowyg-editor.trumbowyg-reset-css ul ol,
+    .trumbowyg-editor.trumbowyg-reset-css ol ul {
+      border: none;
+      margin: 2px !important;
+      padding: 0 !important;
+      padding-left: 24px !important; }
+    .trumbowyg-editor.trumbowyg-reset-css hr {
+      display: block;
+      height: 1px;
+      border: none;
+      border-top: 1px solid #CCC; }
+    .trumbowyg-editor.trumbowyg-reset-css h1,
+    .trumbowyg-editor.trumbowyg-reset-css h2,
+    .trumbowyg-editor.trumbowyg-reset-css h3,
+    .trumbowyg-editor.trumbowyg-reset-css h4 {
+      color: #111;
+      background: none;
+      margin: 0 !important;
+      padding: 0 !important;
+      font-weight: bold; }
+    .trumbowyg-editor.trumbowyg-reset-css h1 {
+      font-size: 26px !important;
+      line-height: 34px !important;
+      margin-bottom: 15px !important; }
+    .trumbowyg-editor.trumbowyg-reset-css h2 {
+      font-size: 22px !important;
+      line-height: 28px !important;
+      margin-bottom: 7px !important; }
+    .trumbowyg-editor.trumbowyg-reset-css h3 {
+      font-size: 16px !important;
+      line-height: 22px !important;
+      margin-bottom: 7px !important; }
+    .trumbowyg-editor.trumbowyg-reset-css h4 {
+      font-size: 14px !important;
+      line-height: 20px !important;
+      margin-bottom: 7px !important; }

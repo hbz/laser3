@@ -2567,6 +2567,9 @@ join sub.orgRelations or_sub where
             else {
                 if (filter.get('filter') == 'reset') {
                     cache.remove(fmKey)
+                    if (cache.get(pmKey) && cache.get(pmKey)['tab']) {
+                        pagination.put('tab', cache.get(pmKey)['tab'] as String) // remember tab
+                    }
                 }
                 else {
                     pagination.put('tab', params.tab ?: pagination.tab)
