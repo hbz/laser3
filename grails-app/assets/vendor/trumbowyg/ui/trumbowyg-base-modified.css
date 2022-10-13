@@ -42,11 +42,14 @@
   width: 100%;
   min-height: 300px; }
 
-.trumbowyg-box .trumbowyg-editor {
-  max-height: 500px; }
+.trumbowyg-box.trumbowyg-editor-visible .trumbowyg-editor {
+  max-height: 500px; } /* .. normal mode */
 
-.trumbowyg-fullscreen .trumbowyg-editor {
-  max-height: initial; }
+.trumbowyg-box.trumbowyg-editor-visible.trumbowyg-fullscreen .trumbowyg-editor {
+  max-height: initial; }  /* .. fullscreen mode */
+
+article.trumbowyg-editor {
+  min-height: initial; } /* ../x/notes */
 
 .trumbowyg-box .trumbowyg-editor {
   margin: 0 auto; }

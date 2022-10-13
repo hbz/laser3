@@ -15,13 +15,16 @@
         <tbody>
         <g:each in="${docstoreService.getNotes(instance, contextService.getOrg())}" var="docctx">
             <tr>
-                    <td>
+                    <td id="note-wrapper-${docctx.owner.id}">
                         <div style="margin-bottom:1em; border-bottom:1px dashed darkgrey">
-                            <strong>${docctx.owner.title}</strong>
+                            <strong>${docctx.owner.title ?: message(code: 'license.notes.noTitle')}</strong>
                         </div>
-                        <article class="trumbowyg-editor trumbowyg-reset-css">
+                        <article id="note-${docctx.owner.id}" class="trumbowyg-editor trumbowyg-reset-css">
                             ${raw(docctx.owner.content)}
                         </article>
+                        <laser:script file="${this.getGroovyPageFileName()}">
+                            wysiwyg.analyzeNote_TMP( $("#note-${docctx.owner.id}"), $("#note-wrapper-${docctx.owner.id}"), true );
+                        </laser:script>
                     </td>
                     <td>
                         <g:formatDate format="${message(code:'default.date.format.notime')}" date="${docctx.owner.lastUpdated}"/>
