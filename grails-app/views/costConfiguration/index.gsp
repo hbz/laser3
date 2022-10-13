@@ -9,7 +9,7 @@
 
         <ui:messages data="${flash}"/>
 
-        <ui:msg class="warning" header="${message(code: 'message.information')}" message="costConfiguration.preset" />
+        <ui:msg icon="ui info icon" class="warning" message="costConfiguration.preset" noClose="true" />
 
         <g:if test="${editable}">
             <div class="content ui form">
@@ -28,6 +28,7 @@
                     <tr>
                         <th><g:message code="financials.costItemElement"/></th>
                         <th><g:message code="financials.costItemConfiguration"/></th>
+                        <th><g:message code="costConfiguration.useForCostItems"/></th>
                         <g:if test="${editable}">
                             <th><g:message code="financials.setAll"/></th>
                             <th><g:message code="default.actions.label"/></th>
@@ -41,6 +42,7 @@
                             <td>
                                 <ui:xEditableRefData owner="${ciec}" field="elementSign" emptytext="${message(code:'financials.costItemConfiguration.notSet')}" config="${de.laser.storage.RDConstants.COST_CONFIGURATION}"/>
                             </td>
+                            <td><ui:xEditableBoolean owner="${ciec}" field="useForCostPerUse"/></td>
                             <g:if test="${editable}">
                                 <td>
                                     <g:link class="button js-open-confirm-modal"

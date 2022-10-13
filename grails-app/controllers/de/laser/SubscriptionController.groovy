@@ -5,6 +5,9 @@ import de.laser.annotations.DebugInfo
 import de.laser.ctrl.SubscriptionControllerService
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.interfaces.CalculatedType
+import de.laser.remote.ApiSource
+import de.laser.stats.Counter4Report
+import de.laser.stats.Counter5Report
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
 import de.laser.survey.SurveyOrg
@@ -36,6 +39,7 @@ class SubscriptionController {
     ExportClickMeService exportClickMeService
     ExportService exportService
     GenericOIDService genericOIDService
+    GokbService gokbService
     ManagementService managementService
     SubscriptionControllerService subscriptionControllerService
     SubscriptionService subscriptionService
@@ -107,16 +111,87 @@ class SubscriptionController {
     }
 
     /**
-     * Call to fetch the usage data for the given subscription
-     * @return the (filtered) usage data view for the given subscription, rendered as HTML or as Excel worksheet
+     * Call to prepare the usage data form for the given subscription
+     * @return the filter for the given subscription
      */
-    @DebugInfo(test = 'hasAffiliation("INST_USER")', ctrlService = DebugInfo.WITH_TRANSACTION)
+    @DebugInfo(test = 'hasAffiliation("INST_USER")', wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     @Check404()
     def stats() {
-        Map<String,Object> ctrlResult
+        Map<String, Object> result = subscriptionControllerService.getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
+        ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+        result.flagContentGokb = true // gokbService.queryElasticsearch
+        Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: result.subscription])
+        if(!subscribedPlatforms) {
+            subscribedPlatforms = Platform.executeQuery("select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription", [subscription: result.subscription])
+        }
+        result.platformInstanceRecords = [:]
+        result.platforms = subscribedPlatforms
+        result.platformsJSON = subscribedPlatforms.globalUID as JSON
+        subscribedPlatforms.each { Platform platformInstance ->
+            Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/find?uuid=${platformInstance.gokbId}")
+            if (queryResult.error && queryResult.error == 404) {
+                result.wekbServerUnavailable = message(code: 'wekb.error.404')
+            }
+            else if (queryResult.warning) {
+                List records = queryResult.warning.records
+                if(records[0]) {
+                    records[0].lastRun = platformInstance.counter5LastRun ?: platformInstance.counter4LastRun
+                    result.platformInstanceRecords[platformInstance.gokbId] = records[0]
+                }
+            }
+        }
+        Map<String, Object> queryParamsBound = [customer: result.subscription.getSubscriber().globalUID, platforms: subscribedPlatforms.globalUID]+subscriptionControllerService.getDateRange(params, result.subscription).dateRangeParams
+        Counter5Report.withTransaction {
+            Set allAvailableReports = []
+            allAvailableReports.addAll(Counter5Report.executeQuery('select new map(lower(r.reportType) as reportType, r.accessType as accessType, r.metricType as metricType, r.accessMethod as accessMethod) from Counter5Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms) and r.reportFrom >= :startDate and r.reportTo <= :endDate group by r.reportType, r.accessType, r.metricType, r.accessMethod', queryParamsBound))
+            if(allAvailableReports.size() > 0) {
+                Set<String> reportTypes = [], metricTypes = [], accessTypes = [], accessMethods = []
+                allAvailableReports.each { row ->
+                    if(!params.loadFor || (params.loadFor && !(row.reportType in Counter5Report.COUNTER_5_PLATFORM_REPORTS))) {
+                        if (row.reportType)
+                            reportTypes << row.reportType
+                        if (row.metricType)
+                            metricTypes << row.metricType
+                        if (row.accessMethod)
+                            accessMethods << row.accessMethod
+                        if (row.accessType)
+                            accessTypes << row.accessType
+                    }
+                }
+                result.reportTypes = reportTypes
+                result.metricTypes = metricTypes
+                result.accessTypes = accessTypes
+                result.accessMethods = accessMethods
+            }
+            else {
+                allAvailableReports.addAll(Counter4Report.executeQuery('select new map(r.reportType as reportType, r.metricType as metricType) from Counter4Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms) and r.reportFrom >= :startDate and r.reportTo <= :endDate group by r.reportType, r.metricType order by r.reportType', queryParamsBound))
+                Set<String> reportTypes = [], metricTypes = []
+                allAvailableReports.each { row ->
+                    if(!params.loadFor || (params.loadFor && row.reportType != Counter4Report.PLATFORM_REPORT_1)) {
+                        if (row.reportType)
+                            reportTypes << row.reportType
+                        if (row.metricType)
+                            metricTypes << row.metricType
+                    }
+                }
+                result.reportTypes = reportTypes
+                result.metricTypes = metricTypes
+            }
+        }
+        result
+    }
+
+    /**
+     * Call to fetch the usage data for the given subscription
+     * @return the (filtered) usage data view for the given subscription, rendered as Excel worksheet
+     */
+    @DebugInfo(test = 'hasAffiliation("INST_USER")', ctrlService = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
+    def generateReport() {
         SXSSFWorkbook wb
-        ctrlResult = subscriptionControllerService.stats(params)
+        Map<String,Object> ctrlResult
+        ctrlResult = subscriptionControllerService.getStatsData(params)
         if(params.exportXLS) {
             wb = exportService.exportReport(params, ctrlResult.result)
         }
@@ -127,20 +202,13 @@ class SubscriptionController {
             }
         }
         else {
-            if(params.exportXLS) {
-                if(wb) {
-                    response.setHeader "Content-disposition", "attachment; filename=report_${DateUtils.getSDF_yyyyMMdd().format(ctrlResult.result.dateRun)}.xlsx"
-                    response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                    wb.write(response.outputStream)
-                    response.outputStream.flush()
-                    response.outputStream.close()
-                    wb.dispose()
-                }
-            }
-            else {
-                params.metricType = ctrlResult.result.metricType
-                params.reportType = ctrlResult.result.reportType
-                ctrlResult.result
+            if(wb) {
+                response.setHeader "Content-disposition", "attachment; filename=report_${DateUtils.getSDF_yyyyMMdd().format(ctrlResult.result.dateRun)}.xlsx"
+                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                wb.write(response.outputStream)
+                response.outputStream.flush()
+                response.outputStream.close()
+                wb.dispose()
             }
         }
     }
