@@ -31,6 +31,7 @@ currency,Währung,Currency
 customer.identifier.type,Kategorie der Kundennummer,Customer Identifier Type
 delivery.edit.status,Status Bearbeitung,Delivery edit status
 delivery.status,Status Lieferungen,Delivery status
+document.confidentiality,Vertraulichkeit,Confidentiality
 document.context.status,Document Context Status,Document Context Status
 document.type,Dokumenttyp,Document Type
 dbs.subject.group,DBS Fächergruppe,DBS Subject Group

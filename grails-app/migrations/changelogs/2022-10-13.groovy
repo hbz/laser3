@@ -13,4 +13,14 @@ databaseChangeLog = {
             column(name: "ie_status_rv_fk")
         }
     }
+
+    changeSet(author: "klober (generated)", id: "1665655512553-2") {
+        addColumn(tableName: "doc") {
+            column(name: "doc_confidentiality_rv_fk", type: "int8")
+        }
+    }
+
+    changeSet(author: "klober (generated)", id: "1665655512553-3") {
+        addForeignKeyConstraint(baseColumnNames: "doc_confidentiality_rv_fk", baseTableName: "doc", constraintName: "FKmpmjh0epusbfipg6tyk6ejn3n", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "rdv_id", referencedTableName: "refdata_value", validate: "true")
+    }
 }

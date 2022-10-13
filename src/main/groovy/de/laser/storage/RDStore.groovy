@@ -56,6 +56,9 @@ class RDStore {
     public final static RefdataValue CURRENCY_GBP   = getRefdataValue('GBP', RDConstants.CURRENCY)
     public final static RefdataValue CURRENCY_USD   = getRefdataValue('USD', RDConstants.CURRENCY)
 
+    public final static RefdataValue DOC_CONF_PUBLIC            = getRefdataValue('public', RDConstants.DOCUMENT_CONFIDENTIALITY)
+    public final static RefdataValue DOC_CONF_INTERNAL          = getRefdataValue('internal', RDConstants.DOCUMENT_CONFIDENTIALITY)
+    public final static RefdataValue DOC_CONF_STRICTLY          = getRefdataValue('strictly_confidential', RDConstants.DOCUMENT_CONFIDENTIALITY)
     public final static RefdataValue DOC_CTX_STATUS_DELETED     = getRefdataValue('Deleted', RDConstants.DOCUMENT_CONTEXT_STATUS)
     public final static RefdataValue DOC_TYPE_ANNOUNCEMENT      = getRefdataValue('Announcement', RDConstants.DOCUMENT_TYPE)
     public final static RefdataValue DOC_TYPE_NOTE              = getRefdataValue('Note', RDConstants.DOCUMENT_TYPE)
