@@ -47139,7 +47139,7 @@ dd {
 
 .ui.segment {
   position: relative;
-  background: transparent;
+  background: #FFFFFF;
   -webkit-box-shadow: 0 1px 2px 0 rgba(34, 36, 38, 0.15);
   box-shadow: 0 1px 2px 0 rgba(34, 36, 38, 0.15);
   margin: 1rem 0;
@@ -47226,7 +47226,7 @@ dd {
 /* Table */
 
 .ui.basic.table.segment {
-  background: transparent;
+  background: #FFFFFF;
   border: 1px solid rgba(34, 36, 38, 0.15);
   -webkit-box-shadow: 0 1px 2px 0 rgba(34, 36, 38, 0.15);
   box-shadow: 0 1px 2px 0 rgba(34, 36, 38, 0.15);
