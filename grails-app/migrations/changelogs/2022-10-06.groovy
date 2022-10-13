@@ -15,16 +15,7 @@ databaseChangeLog = {
         }
     }
 
-    changeSet(author: "galffy (hand-coded)", id: "1665032822993-3") {
-        grailsChange {
-            change {
-                sql.execute('ALTER TABLE cost_item_element_configuration ALTER COLUMN ciec_use_for_cost_per_use SET DEFAULT false;')
-            }
-            rollback {}
-        }
-    }
-
-    changeSet(author: "galffy (modified)", id: "1665032822993-4") {
+    changeSet(author: "galffy (modified)", id: "1665032822993-3") {
         addNotNullConstraint(columnDataType: "boolean", columnName: "ciec_use_for_cost_per_use", tableName: "cost_item_element_configuration", validate: "true")
     }
 
