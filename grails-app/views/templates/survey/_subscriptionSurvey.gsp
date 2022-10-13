@@ -275,11 +275,11 @@
                             <div class="ui accordion la-accordion-showMore js-propertiesCompareInfo-accordion">
                                 <div class="item">
                                     <div class="title">
-                                        <button
+                                        <div
                                                 class="ui button icon blue la-modern-button la-popup-tooltip la-delay right floated "
                                                 data-content="<g:message code="survey.subscription.propertiesChange.show"/>">
                                             <i class="ui angle double down large icon"></i>
-                                        </button>
+                                        </div>
                                         <laser:script file="${this.getGroovyPageFileName()}">
                                             $('.js-propertiesCompareInfo-accordion')
                                               .accordion({
@@ -336,10 +336,10 @@
                     <div class="ui accordion la-accordion-showMore js-subscription-info-accordion">
                         <div class="item">
                             <div class="title">
-                                <button
+                                <div
                                         class="ui button icon blue la-modern-button la-delay right floated">
                                     <i class="ui angle double down large icon"></i>
-                                </button>
+                                </div>
                                 <laser:script file="${this.getGroovyPageFileName()}">
                                     $('.js-subscription-info-accordion')
                                       .accordion({
@@ -494,11 +494,11 @@
                                                         </td>
                                                         <td class="right aligned">
                                                             <g:if test="${pair.propertySet}">
-                                                                <button id="derived-license-properties-toggle${link.id}"
+                                                                <div id="derived-license-properties-toggle${link.id}"
                                                                         class="ui icon blue button la-modern-button la-js-dont-hide-button la-popup-tooltip la-delay"
                                                                         data-content="${message(code: 'subscription.details.viewLicenseProperties')}">
                                                                     <i class="ui angle double down icon"></i>
-                                                                </button>
+                                                                </div>
                                                                 <laser:script file="${this.getGroovyPageFileName()}">
                                                                     $("#derived-license-properties-toggle${link.id}").on('click', function() {
                                                         $("#derived-license-properties${link.id}").transition('slide down');
@@ -555,10 +555,10 @@
                         <div id="statsInfos" class="ui accordion la-accordion-showMore js-subscription-info-accordion">
                             <div class="item">
                                 <div class="title">
-                                    <button
+                                    <div
                                             class="ui button icon blue la-modern-button la-delay right floated ">
                                         <i class="ui angle double down large icon"></i>
-                                    </button>
+                                    </div>
 
                                     <i aria-hidden="true" class="circular chart bar green outline inverted icon"></i>
 

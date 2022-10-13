@@ -14,13 +14,13 @@
         class="ui left floated aligned icon header la-clear-before"><ui:headerIcon/>${message(code: 'subscription.details.snapshot', args: [params.asAt])}</h1></g:if>
 
 <ui:h1HeaderWithIcon>
-<g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
-    <laser:render template="iconSubscriptionIsChild"/>
-</g:if>
-<ui:xEditable owner="${subscription}" field="name"/>
+    <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">
+        <laser:render template="iconSubscriptionIsChild"/>
+    </g:if>
+    <ui:xEditable owner="${subscription}" field="name"/>
 </ui:h1HeaderWithIcon>
 <ui:anualRings object="${subscription}" controller="subscription" action="index"
-                  navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
+               navNext="${navNextSubscription}" navPrev="${navPrevSubscription}"/>
 
 <laser:render template="nav"/>
 
@@ -29,10 +29,10 @@
 </g:if>
 
 <g:if test="${enrichmentProcess}">
-        <ui:msg class="positive" header="${message(code:'subscription.details.issueEntitlementEnrichment.label')}">
-            <g:message code="subscription.details.issueEntitlementEnrichment.enrichmentProcess"
-                       args="[enrichmentProcess.issueEntitlements, enrichmentProcess.processCount, enrichmentProcess.processCountChangesCoverageDates, enrichmentProcess.processCountChangesPrice]"/>
-        </ui:msg>
+    <ui:msg class="positive" header="${message(code: 'subscription.details.issueEntitlementEnrichment.label')}">
+        <g:message code="subscription.details.issueEntitlementEnrichment.enrichmentProcess"
+                   args="[enrichmentProcess.issueEntitlements, enrichmentProcess.processCount, enrichmentProcess.processCountChangesCoverageDates, enrichmentProcess.processCountChangesPrice]"/>
+    </ui:msg>
 </g:if>
 
 <g:if test="${deletedSPs}">
@@ -52,7 +52,8 @@
         <i class="exclamation icon"></i>
         <ul class="list">
             <g:each in="${frozenHoldings}" var="sp">
-                <li><g:message code="subscription.details.frozenHoldings.header" args="${[sp.name]}"/> ${message(code: "subscription.details.frozenHoldings.entry")}</li>
+                <li><g:message code="subscription.details.frozenHoldings.header"
+                               args="${[sp.name]}"/> ${message(code: "subscription.details.frozenHoldings.entry")}</li>
             </g:each>
         </ul>
     </div>
@@ -90,7 +91,7 @@
                     <h4 class="ui header"><g:message code="subscription.details.issueEntitlementEnrichment.label"/></h4>
 
                     <ui:msg class="warning" header="${message(code: "message.attention")}"
-                               message="subscription.details.addEntitlements.warning"/>
+                            message="subscription.details.addEntitlements.warning"/>
                     <g:form class="ui form" controller="subscription" action="index"
                             params="${[sort: params.sort, order: params.order, filter: params.filter, pkgFilter: params.pkgfilter, startsBefore: params.startsBefore, endsAfter: params.endAfter, id: subscription.id]}"
                             method="post" enctype="multipart/form-data">
@@ -187,11 +188,10 @@
             </div>
             <%
                 Map<String, String> sortFieldMap = ['tipp.sortname': message(code: 'title.label')]
-                if(journalsOnly) {
+                if (journalsOnly) {
                     sortFieldMap['startDate'] = message(code: 'default.from')
                     sortFieldMap['endDate'] = message(code: 'default.to')
-                }
-                else {
+                } else {
                     sortFieldMap['tipp.dateFirstInPrint'] = message(code: 'tipp.dateFirstInPrint')
                     sortFieldMap['tipp.dateFirstOnline'] = message(code: 'tipp.dateFirstOnline')
                 }
@@ -206,6 +206,333 @@
                 <g:each in="${considerInBatch}" var="key">
                     <g:hiddenField name="${key}" value="${params[key]}"/>
                 </g:each>
+
+                <g:if test="${entitlements}">
+                    <div class="ui fluid card">
+                        <div class="content">
+                            <div class="ui accordion la-accordion-showMore">
+                                <g:each in="${entitlements}" var="ie">
+                                    <div class="ui raised segments la-accordion-segments">
+                                        <div class="ui fluid segment title">
+                                            <div class="ui stackable equal width grid">
+                                                <div class="one wide column la-js-show-hide">
+                                                    <g:if test="${editable}"><input type="checkbox"
+                                                                                    name="_bulkflag.${ie.id}"
+                                                                                    class="bulkcheck"/></g:if>
+                                                </div>
+
+                                                <div class="one wide column">
+                                                    ${counter++}
+                                                </div>
+
+                                                <div class="column">
+                                                    <div class="ui list">
+                                                        <div class="item">
+                                                            <!-- START TEMPLATE -->
+                                                            <laser:render
+                                                                    template="/templates/title_short_accordion"
+                                                                    model="${[ie         : ie, tipp: ie.tipp,
+                                                                              showPackage: true, showPlattform: true, showCompact: true, showEmptyFields: false]}"/>
+                                                            <!-- END TEMPLATE -->
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="column">
+                                                    <div class="ui list">
+                                                        <div class="item">
+                                                            <div class="content">
+                                                                <div class="ui label">${message(code: 'tipp.dateFirstInPrint')}</div>
+
+                                                                <div class="description coverageStatements"
+                                                                     data-entitlement="${ie.id}">
+
+                                                                    <laser:render
+                                                                            template="/templates/tipps/coverages_accordion"
+                                                                            model="${[ie: ie, tipp: ie.tipp]}"/>
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="column">
+                                                    <div class="ui list">
+                                                        <div class="item">
+                                                            <div class="content">
+
+                                                                <div class="ui label">${message(code: 'subscription.details.access_dates')} ${message(code: 'default.from')}</div>
+
+                                                                <div class="description">
+                                                                <!-- von --->
+                                                                    <g:if test="${editable}">
+                                                                        <ui:xEditable owner="${ie}" type="date"
+                                                                                      field="accessStartDate"/>
+                                                                        <i class="grey question circle icon la-popup-tooltip la-delay"
+                                                                           data-content="${message(code: 'subscription.details.access_start.note')}"></i>
+                                                                    </g:if>
+                                                                    <g:else>
+                                                                        <g:formatDate
+                                                                                format="${message(code: 'default.date.format.notime')}"
+                                                                                date="${ie.accessStartDate}"/>
+                                                                    </g:else>
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="item">
+                                                            <div class="content">
+                                                                <div class="ui label">${message(code: 'subscription.details.access_dates')} ${message(code: 'default.to')}</div>
+
+                                                                <div class="description">
+                                                                <!-- bis -->
+                                                                    <g:if test="${editable}">
+                                                                        <ui:xEditable owner="${ie}" type="date"
+                                                                                      field="accessEndDate"/>
+                                                                        <i class="grey question circle icon la-popup-tooltip la-delay"
+                                                                           data-content="${message(code: 'subscription.details.access_end.note')}"></i>
+                                                                    </g:if>
+                                                                    <g:else>
+                                                                        <g:formatDate
+                                                                                format="${message(code: 'default.date.format.notime')}"
+                                                                                date="${ie.accessEndDate}"/>
+                                                                    </g:else>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="two wide column">
+                                                    <div class="ui right floated buttons">
+                                                        <div class="ui icon blue button la-modern-button "><i
+                                                                class="ui angle double down icon"></i>
+                                                        </div>
+                                                        <g:if test="${editable}">
+                                                            <g:if test="${subscription.ieGroups.size() > 0}">
+                                                                <g:link action="removeEntitlementWithIEGroups"
+                                                                        class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                                                        params="${[ieid: ie.id, sub: subscription.id]}"
+                                                                        role="button"
+                                                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.entitlementWithIEGroups", args: [ie.name])}"
+                                                                        data-confirm-term-how="delete"
+                                                                        aria-label="${message(code: 'ariaLabel.delete.universal')}">
+                                                                    <i class="trash alternate outline icon"></i>
+                                                                </g:link>
+                                                            </g:if>
+                                                            <g:else>
+                                                                <g:link action="removeEntitlement"
+                                                                        class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                                                        params="${[ieid: ie.id, sub: subscription.id]}"
+                                                                        role="button"
+                                                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.entitlement", args: [ie.name])}"
+                                                                        data-confirm-term-how="delete"
+                                                                        aria-label="${message(code: 'ariaLabel.delete.universal')}">
+                                                                    <i class="trash alternate outline icon"></i>
+                                                                </g:link>
+                                                            </g:else>
+                                                        </g:if>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="ui fluid segment content">
+                                            <div class="ui stackable grid">
+                                                <div class="four wide column">
+                                                    <div class="ui list">
+                                                        <div class="item">
+                                                            <span class="ui small basic  image label">
+                                                                herdt: <div class="detail">AC34534541</div>
+                                                            </span>
+                                                            <span class="ui small basic  image label">
+                                                                pisbn: <div
+                                                                    class="detail">9354345345-3453453452</div>
+                                                            </span>
+                                                        </div>
+
+                                                        <div class="item">
+                                                            <i class="icon user circle"></i>
+
+                                                            <div class="content">
+                                                                <div class="header">Autor:</div>
+
+                                                                <div class="description">Kommer</div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="item">
+                                                            <i aria-hidden="true"
+                                                               class="icon database la-list-icon"></i>
+
+                                                            <div class="content">
+                                                                <div class="header">Datenbank-Titel:</div>
+
+                                                                <div class="description">Database</div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="item">
+                                                            <i class="grey medium icon la-popup-tooltip la-delay"
+                                                               data-content="Medium" aria-label="Medium"></i>
+
+                                                            <div class="content">
+                                                                <div class="header">Medium:</div>
+
+                                                                <div class="description">Volltextdatenbank</div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="item">
+                                                            <i class="grey key icon la-popup-tooltip la-delay"
+                                                               data-content="Status" aria-label="Status"></i>
+
+                                                            <div class="content">
+                                                                <div class="header">Status:</div>
+
+                                                                <div class="description">Aktuell</div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="item">
+                                                            <i class="grey icon gift scale la-popup-tooltip la-delay"
+                                                               data-content="Paket" aria-label="Paket"></i>
+
+                                                            <div class="content">
+                                                                <div class="header">Paket:</div>
+
+                                                                <div class="description"><a
+                                                                        href="">Taschenbuch der Mathematik (Bronstein)</a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="item">
+                                                            <i class="grey icon cloud la-popup-tooltip la-delay"
+                                                               data-content="Plattform" aria-label="Plattform"></i>
+
+                                                            <div class="content">
+                                                                <div class="header">Plattform:</div>
+
+                                                                <div class="description"><a
+                                                                        href="">Europa-Lehrmittel</a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="four wide column">
+                                                    <div class="ui list">
+                                                        <div class="item">
+                                                            <i class="users icon"></i>
+
+                                                            <div class="content">
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="item">
+                                                            <i class="marker icon"></i>
+
+                                                            <div class="content">
+                                                                New York, NY
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="item">
+                                                            <i class="mail icon"></i>
+
+                                                            <div class="content">
+                                                                <a href="mailto:jack@semantic-ui.com">jack@semantic-ui.com</a>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="item">
+                                                            <i class="linkify icon"></i>
+
+                                                            <div class="content">
+                                                                <a href="http://www.semantic-ui.com">semantic-ui.com</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="four wide column">
+                                                    <div class="ui list">
+                                                        <div class="item">
+                                                            <i class="users icon"></i>
+
+                                                            <div class="content">
+                                                                Semantic UI
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="item">
+                                                            <i class="marker icon"></i>
+
+                                                            <div class="content">
+                                                                New York, NY
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="item">
+                                                            <i class="mail icon"></i>
+
+                                                            <div class="content">
+                                                                <a href="mailto:jack@semantic-ui.com">jack@semantic-ui.com</a>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="item">
+                                                            <i class="linkify icon"></i>
+
+                                                            <div class="content">
+                                                                <a href="http://www.semantic-ui.com">semantic-ui.com</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="four wide column">
+                                                    <div class="ui inverted segment">
+                                                        <div class="ui inverted list">
+                                                            <div class="item">
+                                                                <i class=" save icon la-popup-tooltip la-delay"
+                                                                   data-content="Dauerhafter Kauf"
+                                                                   aria-label="Dauerhafter Kauf"
+                                                                   aria-hidden="true" data-jstk-id="jstk-1221"></i>
+
+                                                                <div class="content">
+                                                                    <div class="header">Dauerhafter Zugriff</div>
+
+                                                                    <div class="description">nein</div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="item">
+                                                                <i class="money icon la-popup-tooltip la-delay"></i>
+
+                                                                <div class="content">
+                                                                    <div class="header">Mein verhandelter Preis:</div>
+
+                                                                    <div class="description">2232 Euro<div>
+                                                                    </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </g:each>
+                            </div>
+                        </div>
+                    </div>
+                </g:if>
 
                 <table class="ui sortable celled la-js-responsive-table la-table table la-ignore-fixed la-bulk-header">
                     <thead>
@@ -227,33 +554,33 @@
                     <tr>
                         <th rowspan="2" colspan="3"></th>
                         <g:if test="${journalsOnly}">
-                            <%--<g:sortableColumn class="la-smaller-table-head" params="${params}" property="startDate"
-                                              title=""/>--%>
+                        <%--<g:sortableColumn class="la-smaller-table-head" params="${params}" property="startDate"
+                                          title=""/>--%>
                             <th class="la-smaller-table-head">${message(code: 'default.from')}</th>
                         </g:if>
                         <g:else>
-                            <%--<g:sortableColumn class="la-smaller-table-head" params="${params}" property="tipp.dateFirstInPrint"
-                                              title=""/>--%>
+                        <%--<g:sortableColumn class="la-smaller-table-head" params="${params}" property="tipp.dateFirstInPrint"
+                                          title=""/>--%>
                             <th class="la-smaller-table-head">${message(code: 'tipp.dateFirstInPrint')}</th>
                         </g:else>
-                        <%--<g:sortableColumn class="la-smaller-table-head" params="${params}" property="tipp.accessStartDate"
-                                          title=""/>--%>
+                    <%--<g:sortableColumn class="la-smaller-table-head" params="${params}" property="tipp.accessStartDate"
+                                      title=""/>--%>
                         <th class="la-smaller-table-head">${message(code: 'default.from')}</th>
                         <th rowspan="2" colspan="2"></th>
                     </tr>
                     <tr>
                         <g:if test="${journalsOnly}">
-                            <%--<g:sortableColumn class="la-smaller-table-head" params="${params}" property="endDate"
-                                              title=""/>--%>
+                        <%--<g:sortableColumn class="la-smaller-table-head" params="${params}" property="endDate"
+                                          title=""/>--%>
                             <th class="la-smaller-table-head">${message(code: 'default.to')}</th>
                         </g:if>
                         <g:else>
-                            <%--<g:sortableColumn class="la-smaller-table-head" params="${params}" property="tipp.dateFirstOnline"
-                                              title=""/>--%>
+                        <%--<g:sortableColumn class="la-smaller-table-head" params="${params}" property="tipp.dateFirstOnline"
+                                          title=""/>--%>
                             <th class="la-smaller-table-head">${message(code: 'tipp.dateFirstOnline')}</th>
                         </g:else>
-                        <%--<g:sortableColumn class="la-smaller-table-head" params="${params}" property="tipp.accessEndDate"
-                                          title=""/>--%>
+                    <%--<g:sortableColumn class="la-smaller-table-head" params="${params}" property="tipp.accessEndDate"
+                                      title=""/>--%>
                         <th class="la-smaller-table-head">${message(code: 'default.to')}</th>
                     </tr>
                     <tr>
@@ -270,10 +597,14 @@
                                     <div class="default text">${message(code: 'default.select.choose.label')}</div>
 
                                     <div class="menu">
-                                        <div class="item" data-value="edit">${message(code: 'default.edit.label', args: [selected_label])}</div>
-                                        <div class="item" data-value="remove">${message(code: 'default.remove.label', args: [selected_label])}</div>
+                                        <div class="item"
+                                             data-value="edit">${message(code: 'default.edit.label', args: [selected_label])}</div>
+
+                                        <div class="item"
+                                             data-value="remove">${message(code: 'default.remove.label', args: [selected_label])}</div>
                                         <g:if test="${institution.getCustomerType() == 'ORG_CONSORTIUM'}">
-                                            <div class="item" data-value="removeWithChildren">${message(code: 'subscription.details.remove.withChildren.label')}</div>
+                                            <div class="item"
+                                                 data-value="removeWithChildren">${message(code: 'subscription.details.remove.withChildren.label')}</div>
                                         </g:if>
                                     </div>
                                 </div>
@@ -284,11 +615,11 @@
                                 </select>
                                 -->
                             </th>
-                            <%-- legacy??
-                            <th>
-                                <ui:simpleHiddenValue id="bulk_medium2" name="bulk_medium2" type="refdata"
-                                                         category="${RDConstants.IE_MEDIUM}"/>
-                            </th>--%>
+                        <%-- legacy??
+                        <th>
+                            <ui:simpleHiddenValue id="bulk_medium2" name="bulk_medium2" type="refdata"
+                                                     category="${RDConstants.IE_MEDIUM}"/>
+                        </th>--%>
                             <th>
                                 <%--<ui:datepicker hideLabel="true"
                                                   placeholder="${message(code: 'default.from')}"
@@ -303,15 +634,15 @@
                             </th>
                             <th>
                                 <ui:datepicker hideLabel="true"
-                                                  placeholder="${message(code: 'default.from')}"
-                                                  inputCssClass="la-input-small" id="bulk_access_start_date"
-                                                  name="bulk_access_start_date"/>
+                                               placeholder="${message(code: 'default.from')}"
+                                               inputCssClass="la-input-small" id="bulk_access_start_date"
+                                               name="bulk_access_start_date"/>
 
 
                                 <ui:datepicker hideLabel="true"
-                                                  placeholder="${message(code: 'default.to')}"
-                                                  inputCssClass="la-input-small" id="bulk_access_end_date"
-                                                  name="bulk_access_end_date"/>
+                                               placeholder="${message(code: 'default.to')}"
+                                               inputCssClass="la-input-small" id="bulk_access_end_date"
+                                               name="bulk_access_end_date"/>
                             </th>
                             <th>
 
@@ -358,8 +689,8 @@
                                 <td>
                                     <!-- START TEMPLATE -->
                                     <laser:render template="/templates/title_short"
-                                              model="${[ie: ie, tipp: ie.tipp,
-                                                        showPackage: true, showPlattform: true, showCompact: true, showEmptyFields: false]}"/>
+                                                  model="${[ie         : ie, tipp: ie.tipp,
+                                                            showPackage: true, showPlattform: true, showCompact: true, showEmptyFields: false]}"/>
                                     <!-- END TEMPLATE -->
                                 </td>
                                 <%-- legacy???
@@ -369,7 +700,8 @@
                                 --%>
                                 <td class="coverageStatements la-tableCard" data-entitlement="${ie.id}">
 
-                                    <laser:render template="/templates/tipps/coverages" model="${[ie: ie, tipp: ie.tipp]}"/>
+                                    <laser:render template="/templates/tipps/coverages"
+                                                  model="${[ie: ie, tipp: ie.tipp]}"/>
 
                                 </td>
                                 <td>
@@ -398,12 +730,12 @@
                                 <td>
                                     <g:each in="${ie.priceItems}" var="priceItem" status="i">
                                         <g:message code="tipp.price.listPrice"/>: <ui:xEditable field="listPrice"
-                                                                                             owner="${priceItem}"
-                                                                                             format=""/> <ui:xEditableRefData
+                                                                                                owner="${priceItem}"
+                                                                                                format=""/> <ui:xEditableRefData
                                             field="listCurrency" owner="${priceItem}"
                                             config="Currency"/> <%--<g:formatNumber number="${priceItem.listPrice}" type="currency" currencyCode="${priceItem.listCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%><br/>
                                         <g:message code="tipp.price.localPrice"/>: <ui:xEditable field="localPrice"
-                                                                                              owner="${priceItem}"/> <ui:xEditableRefData
+                                                                                                 owner="${priceItem}"/> <ui:xEditableRefData
                                             field="localCurrency" owner="${priceItem}"
                                             config="Currency"/> <%--<g:formatNumber number="${priceItem.localPrice}" type="currency" currencyCode="${priceItem.localCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%>
                                     <%--<ui:xEditable field="startDate" type="date"
@@ -412,13 +744,17 @@
                                         owner="${priceItem}"/>  <g:formatDate format="${message(code:'default.date.format.notime')}" date="${priceItem.startDate}"/>--%>
 
                                         <g:if test="${editable}">
-                                            <span class="right floated" >
-                                                <g:link controller="subscription" action="removePriceItem" params="${[priceItem: priceItem.id, id: subscription.id]}" class="ui compact icon button negative tiny"><i class="ui icon minus" data-content="Preis entfernen"></i></g:link>
+                                            <span class="right floated">
+                                                <g:link controller="subscription" action="removePriceItem"
+                                                        params="${[priceItem: priceItem.id, id: subscription.id]}"
+                                                        class="ui compact icon button negative tiny"><i
+                                                        class="ui icon minus"
+                                                        data-content="Preis entfernen"></i></g:link>
                                             </span>
                                         </g:if>
                                         <g:if test="${i < ie.priceItems.size() - 1}"><hr></g:if>
                                     </g:each>
-                                    <g:if test="${editable && ie.priceItems.size() < 1 }">
+                                    <g:if test="${editable && ie.priceItems.size() < 1}">
                                         <g:link action="addEmptyPriceItem" class="ui icon blue button la-modern-button"
                                                 params="${[ieid: ie.id, id: subscription.id]}">
                                             <i class="money icon la-popup-tooltip la-delay"
@@ -460,7 +796,8 @@
                                 <td class="x">
                                     <g:if test="${editable}">
                                         <g:if test="${subscription.ieGroups.size() > 0}">
-                                            <g:link action="removeEntitlementWithIEGroups" class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                            <g:link action="removeEntitlementWithIEGroups"
+                                                    class="ui icon negative button la-modern-button js-open-confirm-modal"
                                                     params="${[ieid: ie.id, sub: subscription.id]}"
                                                     role="button"
                                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.entitlementWithIEGroups", args: [ie.name])}"
@@ -470,7 +807,8 @@
                                             </g:link>
                                         </g:if>
                                         <g:else>
-                                            <g:link action="removeEntitlement" class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                            <g:link action="removeEntitlement"
+                                                    class="ui icon negative button la-modern-button js-open-confirm-modal"
                                                     params="${[ieid: ie.id, sub: subscription.id]}"
                                                     role="button"
                                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.entitlement", args: [ie.name])}"
@@ -498,14 +836,14 @@
 
 <g:if test="${entitlements}">
     <ui:paginate action="index" controller="subscription" params="${params}"
-                    max="${max}" total="${num_ies_rows}"/>
+                 max="${max}" total="${num_ies_rows}"/>
 </g:if>
 
 
 <div id="magicArea">
 </div>
 
-<laser:render template="export/individuallyExportIEsModal" model="[modalID: 'individuallyExportIEsModal']" />
+<laser:render template="export/individuallyExportIEsModal" model="[modalID: 'individuallyExportIEsModal']"/>
 
 <ui:modal id="showPackagesModal" message="subscription.packages.label" hideSubmitButton="true">
     <div class="ui ordered list">
@@ -591,4 +929,4 @@
 
     <g:if test="${params.asAt && params.asAt.length() > 0}">$(function() { document.body.style.background = "#fcf8e3"; });</g:if>
 </laser:script>
-<laser:htmlEnd />
+<laser:htmlEnd/>

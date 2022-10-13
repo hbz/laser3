@@ -8,10 +8,10 @@
             <div class="ui accordion la-accordion-showMore js-package-info-accordion">
                 <div class="item">
                     <div class="title">
-                        <button
+                        <div
                                 class="ui button icon blue la-modern-button la-delay right floated ">
                             <i class="ui angle double down large icon"></i>
-                        </button>
+                        </div>
                         <laser:script file="${this.getGroovyPageFileName()}">
                             $('.js-package-info-accordion')
                               .accordion({
