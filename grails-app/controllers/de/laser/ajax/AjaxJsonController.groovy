@@ -263,15 +263,15 @@ class AjaxJsonController {
      */
     @Secured(['ROLE_USER'])
     def adjustMetricList() {
-        Map<String, Object> result = [:], queryParams = [reportTypes: params.list("reportTypes[]"), platforms: params.list("platforms[]"), customer: params.customer]
-        if(queryParams.reportTypes.any { String reportType -> reportType in Counter4Report.COUNTER_4_REPORTS }) {
+        Map<String, Object> result = [:], queryParams = [reportType: params.reportType, platforms: params.list("platforms[]"), customer: params.customer]
+        if(queryParams.reportType in Counter4Report.COUNTER_4_REPORTS) {
             Counter4Report.withTransaction {
-                result.metricTypes = Counter4Report.executeQuery('select r.metricType from Counter4Report r where r.reportType in (:reportTypes) and r.platformUID in (:platforms) and r.reportInstitutionUID = :customer', queryParams) as SortedSet<String>
+                result.metricTypes = Counter4Report.executeQuery('select r.metricType from Counter4Report r where r.reportType = :reportType and r.platformUID in (:platforms) and r.reportInstitutionUID = :customer', queryParams) as SortedSet<String>
             }
         }
-        else if(queryParams.reportTypes.any { String reportType -> reportType in Counter5Report.COUNTER_5_REPORTS }) {
+        else if(queryParams.reportType in Counter5Report.COUNTER_5_REPORTS) {
             Counter5Report.withTransaction {
-                result.metricTypes = Counter5Report.executeQuery('select r.metricType from Counter5Report r where lower(r.reportType) in (:reportTypes) and r.platformUID in (:platforms) and r.reportInstitutionUID = :customer', queryParams) as SortedSet<String>
+                result.metricTypes = Counter5Report.executeQuery('select r.metricType from Counter5Report r where lower(r.reportType) = :reportType and r.platformUID in (:platforms) and r.reportInstitutionUID = :customer', queryParams) as SortedSet<String>
             }
         }
         render result as JSON

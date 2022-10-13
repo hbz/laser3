@@ -1,21 +1,11 @@
-<%@ page import="grails.converters.JSON; de.laser.utils.DateUtils; de.laser.storage.RDStore; de.laser.Subscription; de.laser.SubscriptionPackage; de.laser.IssueEntitlement; de.laser.stats.Counter4ApiSource; de.laser.stats.Counter4Report; de.laser.stats.Counter5Report; de.laser.interfaces.CalculatedType" %>
+<%@ page import="grails.converters.JSON; de.laser.storage.RDStore; de.laser.Subscription; de.laser.SubscriptionPackage; de.laser.IssueEntitlement; de.laser.stats.Counter4ApiSource; de.laser.stats.Counter4Report; de.laser.stats.Counter5Report; de.laser.interfaces.CalculatedType" %>
 <laser:htmlStart message="subscription.details.stats.label" serviceInjection="true"/>
-
-<g:set var="subjects" value="${controlledListService.getAllPossibleSubjectsBySub(subscription)}"/>
-<g:set var="ddcs" value="${controlledListService.getAllPossibleDdcsBySub(subscription)}"/>
-<g:set var="languages" value="${controlledListService.getAllPossibleLanguagesBySub(subscription)}"/>
 
         <ui:debugInfo>
             <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]" />
         </ui:debugInfo>
         <laser:render template="breadcrumb" model="${[ params:params ]}"/>
         <ui:controlButtons>
-            <ui:exportDropdown>
-                <ui:exportDropdownItem>
-                    <g:link class="item" action="stats" params="${params+[exportXLS:true, data: 'fetchAll']}">${message(code:'default.usage.exports.all')}</g:link>
-                    <g:link class="item" action="stats" params="${params+[exportXLS:true, data: 'fetchFiltered']}">${message(code:'default.usage.exports.filtered')}</g:link>
-                </ui:exportDropdownItem>
-            </ui:exportDropdown>
             <laser:render template="actions" />
         </ui:controlButtons>
         <ui:h1HeaderWithIcon>
@@ -40,19 +30,12 @@
             </div>
         </g:if>
         <g:elseif test="${subscription._getCalculatedType() in [CalculatedType.TYPE_LOCAL, CalculatedType.TYPE_PARTICIPATION]}">
-            <aside class="ui segment la-metabox accordion">
-                <div class="title">
-                    <g:message code="default.usage.platformMetadataHeader"/><i class="dropdown icon la-dropdown-accordion"></i>
-                </div>
-                <div class="content">
-                    <g:each in="${platformInstanceRecords.values()}" var="platformInstanceRecord">
-                        <h4>
-                            ${platformInstanceRecord.name}
-                        </h4>
-                        <laser:render template="/templates/platformStatsDetails" model="[platformInstanceRecord: platformInstanceRecord]"/>
-                    </g:each>
-                </div>
-            </aside>
+            <g:each in="${platformInstanceRecords.values()}" var="platformInstanceRecord">
+                <h4>
+                    ${platformInstanceRecord.name}
+                </h4>
+                <laser:render template="/templates/platformStatsDetails" model="[platformInstanceRecord: platformInstanceRecord]"/>
+            </g:each>
             <div class="la-metabox-spacer"></div>
         </g:elseif>
         <g:if test="${showConsortiaFunctions && !subscription.instanceOf}">
@@ -80,89 +63,15 @@
         </g:if>
         <g:else>
             <ui:filter showFilterButton="true" addFilterJs="true">
-                <g:form action="stats" class="ui form" method="get">
-                    <g:hiddenField name="tab" value="${params.tab}"/>
+                <g:form action="generateReport" name="stats" class="ui form" method="get">
                     <g:hiddenField name="id" value="${subscription.id}"/>
-                    <g:hiddenField name="sort" value="${params.sort}"/>
-                    <g:hiddenField name="order" value="${params.order}"/>
-                    <div class="four fields">
-                        <div class="field">
-                            <label for="series_names">${message(code: 'titleInstance.seriesName.label')}</label>
-
-                            <select name="series_names" id="series_names" multiple=""
-                                    class="ui search selection dropdown">
-                                <option value="">${message(code: 'default.select.choose.label')}</option>
-
-                                <g:each in="${controlledListService.getAllPossibleSeriesBySub(subscription)}" var="seriesName">
-                                    <option <%=(params.list('series_names')?.contains(seriesName)) ? 'selected="selected"' : ''%>
-                                            value="${seriesName}">
-                                        ${seriesName}
-                                    </option>
-                                </g:each>
-                            </select>
-                        </div>
-
-                        <div class="field">
-                            <label for="subject_reference">${message(code: 'titleInstance.subjectReference.label')}</label>
-
-                            <select name="subject_references" id="subject_reference" multiple=""
-                                    class="ui search selection dropdown">
-                                <option value="">${message(code: 'default.select.choose.label')}</option>
-
-                                <g:each in="${subjects}" var="subject">
-                                    <option <%=(params.list('subject_references')?.contains(subject)) ? 'selected="selected"' : ''%>
-                                            value="${subject}">
-                                        ${subject}
-                                    </option>
-                                </g:each>
-                            </select>
-                        </div>
-
-                        <div class="field">
-                            <label for="ddc">${message(code: 'titleInstance.ddc.label')}</label>
-
-                            <select name="ddcs" id="ddc" multiple=""
-                                    class="ui search selection dropdown">
-                                <option value="">${message(code: 'default.select.choose.label')}</option>
-
-                                <g:each in="${ddcs}" var="ddc">
-                                    <option <%=(params.list('ddcs')?.contains(ddc.id.toString())) ? 'selected="selected"' : ''%>
-                                            value="${ddc.id}">
-                                        ${ddc.value} - ${ddc.getI10n("value")}
-                                    </option>
-                                </g:each>
-                                <g:if test="${ddcs.size() == 0}">
-                                    <option value="<g:message code="titleInstance.noDdc.label" />"><g:message code="titleInstance.noDdc.label" /></option>
-                                </g:if>
-                            </select>
-                        </div>
-
-                        <div class="field">
-                            <label for="language">${message(code: 'titleInstance.language.label')}</label>
-
-                            <select name="languages" id="language" multiple="multiple"
-                                    class="ui search selection dropdown">
-                                <option value="">${message(code: 'default.select.choose.label')}</option>
-
-                                <g:each in="${languages}" var="language">
-                                    <option <%=(params.list('languages')?.contains(language.id.toString())) ? 'selected="selected"' : ''%>
-                                            value="${language.id}">
-                                        ${language.getI10n("value")}
-                                    </option>
-                                </g:each>
-                                <g:if test="${languages.size() == 0}">
-                                    <option value="<g:message code="titleInstance.noLanguage.label" />"><g:message code="titleInstance.noLanguage.label" /></option>
-                                </g:if>
-                            </select>
-                        </div>
-                    </div>
                     <div class="four fields">
                         <div class="field">
                             <label for="reportType"><g:message code="default.usage.reportType"/></label>
-                            <select name="reportType" id="reportType" multiple="multiple" class="ui search selection dropdown">
+                            <select name="reportType" id="reportType" class="ui search selection dropdown">
                                 <option value=""><g:message code="default.select.choose.label"/></option>
                                 <g:each in="${reportTypes}" var="reportType">
-                                    <option <%=(params.list('reportType')?.contains(reportType)) ? 'selected="selected"' : ''%>
+                                    <option <%=(params.reportType == reportType) ? 'selected="selected"' : ''%>
                                             value="${reportType}">
                                         <g:message code="default.usage.${reportType}"/>
                                     </option>
@@ -175,10 +84,10 @@
 
                         <div class="field">
                             <label for="metricType"><g:message code="default.usage.metricType"/></label>
-                            <select name="metricType" id="metricType" class="ui search selection dropdown">
+                            <select name="metricType" id="metricType" multiple="multiple" class="ui search selection dropdown">
                                 <option value=""><g:message code="default.select.choose.label"/></option>
                                 <g:each in="${metricTypes}" var="metricType">
-                                    <option <%=(params.metricType == metricType) ? 'selected="selected"' : ''%>
+                                    <option <%=(params.list('metricType')?.contains(metricType)) ? 'selected="selected"' : ''%>
                                             value="${metricType}">
                                         ${metricType}
                                     </option>
@@ -208,72 +117,16 @@
                         </div>
 
                         <div class="field la-field-right-aligned">
-                            <g:link action="stats" id="${subscription.id}" class="ui reset secondary button">${message(code: 'default.button.reset.label')}</g:link>
-                            <input type="submit" class="ui primary button"
-                                   value="${message(code: 'default.button.filter.label')}"/>
+                            <input id="generateCostPerUse" type="button" class="ui secondary button" value="${message(code: 'default.stats.generateCostPerUse')}"/>
+                            <input type="submit" class="ui primary button" value="${message(code: 'default.stats.generateReport')}"/>
                         </div>
                     </div>
                 </g:form>
             </ui:filter>
-            <ui:tabs class="la-overflowX-auto">
-                <ui:tabsItem controller="subscription" action="stats" params="${params + [tab: 'total']}" text="${message(code: 'default.usage.allUsageGrid.header')}" tab="total"/>
-                <g:each in="${monthsInRing}" var="month">
-                    <ui:tabsItem controller="subscription" action="stats" params="${params + [tab: DateUtils.getSDF_yyyyMM().format(month)]}" text="${DateUtils.getSDF_yyyyMM().format(month)}" tab="${DateUtils.getSDF_yyyyMM().format(month)}"/>
-                </g:each>
-            </ui:tabs>
-            <div class="ui bottom attached tab active segment">
-                <g:if test="${params.tab == 'total'}">
-                    <table class="ui celled la-js-responsive-table la-table table">
-                        <thead>
-                            <tr>
-                                <th><g:message code="default.date.label"/></th>
-                                <th><g:message code="default.count.label"/></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <g:each in="${sums}" var="row">
-                                <g:set var="reportMonth" value="${row.getKey()}"/>
-                                <g:set var="sumsByReport" value="${row.getValue()}"/>
-                                <g:each in="${sumsByReport}" var="sumByReport">
-                                    <tr>
-                                        <td><g:formatDate date="${reportMonth}" format="yyyy-MM"/></td>
-                                        <g:set var="reportType" value="${sumByReport.getKey() in Counter4Report.COUNTER_4_REPORTS ? sumByReport.getKey() : sumByReport.getKey().toLowerCase()}"/>
-                                        <td><g:link action="stats" params="${params + [tab: DateUtils.getSDF_yyyyMM().format(reportMonth), reportType: reportType, metricType: params.metricType]}">${sumByReport.getValue()}</g:link></td>
-                                    </tr>
-                                </g:each>
-                            </g:each>
-                        </tbody>
-                    </table>
-                </g:if>
-                <g:else>
-                    <table class="ui sortable celled la-js-responsive-table la-table table">
-                        <thead>
-                            <tr>
-                                <g:if test="${usages && usages[0].title}">
-                                    <g:sortableColumn title="${message(code:"default.title.label")}" property="title.name" params="${params}"/>
-                                </g:if>
-                                <g:sortableColumn title="${message(code:"default.count.label")}" property="r.reportCount" params="${params}"/>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <g:each in="${usages}" var="row">
-                                <tr>
-                                    <g:if test="${row.title}">
-                                        <td>
-                                            <g:link controller="tipp" action="show" id="${row.title.id}">${row.title.name}</g:link>
-                                        </td>
-                                    </g:if>
-                                    <td>${row.reportCount}</td>
-                                </tr>
-                            </g:each>
-                        </tbody>
-                    </table>
-                    <ui:paginate total="${total}" params="${params}" max="${max}" offset="${offset}"/>
-                </g:else>
+            <div class="ui segment" id="costPerUse">
             </div>
         </g:else>
         <laser:script file="${this.getGroovyPageFileName()}">
-
             $("#reportType").on('change', function() {
                 <g:applyCodec encodeAs="none">
                     let platforms = ${platformsJSON};
@@ -294,6 +147,19 @@
                             dropdown += '<option value="'+response.metricTypes[i]+'">'+response.metricTypes[i]+'</option>';
                     }
                     $("#metricType").html(dropdown);
+                });
+            });
+            $("#generateCostPerUse").on('click', function() {
+                let fd = new FormData($('#stats')[0]);
+                console.log($('#stats')[0]);
+                $.ajax({
+                    url: "<g:createLink controller="ajaxHtml" action="generateCostPerUse"/>",
+                    data: fd,
+                    type: 'POST',
+                    processData: false,
+                    contentType: false
+                }).done(function(response){
+                    $("#costPerUse").html(response);
                 });
             });
         </laser:script>

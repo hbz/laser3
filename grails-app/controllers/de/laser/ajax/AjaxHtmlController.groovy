@@ -8,6 +8,7 @@ import de.laser.AccessService
 import de.laser.AddressbookService
 import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper
+import de.laser.ctrl.SubscriptionControllerService
 import de.laser.remote.ApiSource
 import de.laser.CacheService
 import de.laser.ContextService
@@ -92,6 +93,7 @@ class AjaxHtmlController {
     ReportingGlobalService reportingGlobalService
     ReportingLocalService reportingLocalService
     SubscriptionService subscriptionService
+    SubscriptionControllerService subscriptionControllerService
     LicenseControllerService licenseControllerService
     CustomWkhtmltoxService wkhtmltoxService // custom
     GokbService gokbService
@@ -280,6 +282,12 @@ class AjaxHtmlController {
                                                             institution: contextOrg,
                                                             editable: license.isEditableBy(user)]
         }
+    }
+
+    @Secured(['ROLE_USER'])
+    def generateCostPerUse() {
+        Map<String, Object> ctrlResult = subscriptionControllerService.getStatsData(params)
+        render template: "/subscription/costPerUse", model: ctrlResult.result
     }
 
     /**

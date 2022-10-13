@@ -1652,8 +1652,9 @@ class FinanceService {
      */
     void processConfigurationCreation(GrailsParameterMap params) {
         CostItemElementConfiguration ciec = new CostItemElementConfiguration()
-        ciec.costItemElement = genericOIDService.resolveOID(params.cie)
-        ciec.elementSign = genericOIDService.resolveOID(params.sign)
+        ciec.costItemElement = RefdataValue.get(params.cie)
+        ciec.elementSign = RefdataValue.get(params.sign)
+        ciec.useForCostPerUse = params.useForCostPerUse == 'on'
         ciec.forOrganisation = (Org) contextService.getOrg()
         if(!ciec.validate()) {
             ciec.errors.allErrors.collect {
