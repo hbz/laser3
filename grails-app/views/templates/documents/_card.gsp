@@ -73,10 +73,10 @@
 
                             <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().contains(docctx.owner.mimeType)}" />
                             <g:if test="${supportedMimeType}">
-                                <a href="#documentPreview" data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title}</a>
+                                <a href="#documentPreview" data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title ?: docctx.owner.filename}</a>
                             </g:if>
                             <g:else>
-                                ${docctx.owner.title}
+                                ${docctx.owner.title ?: docctx.owner.filename}
                             </g:else>
                             (${docctx.owner?.type?.getI10n("value")})
 
