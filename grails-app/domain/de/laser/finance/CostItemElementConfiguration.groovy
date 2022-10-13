@@ -21,6 +21,7 @@ class CostItemElementConfiguration extends AbstractBase {
     Org  forOrganisation
     Date dateCreated
     Date lastUpdated
+    boolean useForCostPerUse = false
 
     static mapping = {
         id                  column: 'ciec_id'
@@ -31,6 +32,7 @@ class CostItemElementConfiguration extends AbstractBase {
         forOrganisation     column: 'ciec_org_fk'
         dateCreated         column: 'ciec_date_created'
         lastUpdated         column: 'ciec_last_updated'
+        useForCostPerUse    column: 'ciec_use_for_cost_per_use'
         autoTimestamp true
     }
 
