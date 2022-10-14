@@ -910,3 +910,5 @@ r2d2 = {
         $( '.ui.dimmer.modals.page' ).empty();
     }
 }
+
+JSPC.modules.add( r2d2, 'r2d2' );

@@ -23,13 +23,13 @@
         <thead>
             <tr>
                 <%--<g:if test="${editable}"><th>${message(code:'default.select.label')}</th></g:if> : REMOVED BULK--%>
-                <th>${message(code:'default.title.label')}</th>
-                <th>${message(code:'license.docs.table.fileName')}</th>
+                <th>${message(code:'template.addDocument.name')} / ${message(code:'license.docs.table.fileName')}</th>
                 <th>${message(code:'license.docs.table.type')}</th>
+                <th>${message(code:'template.addDocument.confidentiality')}</th>
                 <%--<th>${message(code:'org.docs.table.ownerOrg')}</th>--%>
                 <g:if test="${controllerName == 'myInstitution'}">
-                    <th>${message(code:'org.docs.table.targetBy')}</th>
                     <th>${message(code:'org.docs.table.shareConf')}</th>
+                    <th>${message(code:'org.docs.table.targetBy')}</th>
                 </g:if>
                 <%--<g:elseif test="${controllerName == 'organisation'}">
                     <th>${message(code:'org.docs.table.targetFor')}</th>
@@ -90,22 +90,41 @@
                 %>
                 <g:if test="${(((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3)) && visible && docctx.status != RDStore.DOC_CTX_STATUS_DELETED)}">
                     <tr>
-                        <th scope="row" class="la-th-column la-main-object">
-                            <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().contains(docctx.owner.mimeType)}" />
-                            <g:if test="${docctx.owner.contentType == Doc.CONTENT_TYPE_FILE && visible && supportedMimeType}">
-                                <a href="#documentPreview" data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title}</a>
-                            </g:if>
-                            <g:else>
-                                ${docctx.owner.title}
-                            </g:else>
-                        </th>
+%{--                        <th scope="row" class="la-th-column la-main-object">--}%
                         <td>
+                            <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().contains(docctx.owner.mimeType)}" />
+                            <strong>
+                                <g:if test="${docctx.owner.contentType == Doc.CONTENT_TYPE_FILE && visible && supportedMimeType}">
+                                    <a href="#documentPreview" data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title}</a>
+                                </g:if>
+                                <g:else>
+                                    ${docctx.owner.title}
+                                </g:else>
+                            </strong>
+                            <br />
                             ${docctx.owner.filename}
                         </td>
                         <td>
                             ${docctx.owner?.type?.getI10n('value')}
                         </td>
+                        <td>
+                            <g:if test="${docctx.owner?.confidentiality}">
+                                <g:if test="${docctx.owner?.confidentiality == RDStore.DOC_CONF_PUBLIC}">
+                                    <i class="ui icon grin olive"></i>
+                                </g:if>
+                                <g:elseif test="${docctx.owner?.confidentiality == RDStore.DOC_CONF_INTERNAL}">
+                                    <i class="ui icon unlock yellow"></i>
+                                </g:elseif>
+                                <g:elseif test="${docctx.owner?.confidentiality == RDStore.DOC_CONF_STRICTLY}">
+                                    <i class="ui icon lock orange"></i>
+                                </g:elseif>
+                                ${docctx.owner.confidentiality.getI10n('value')}
+                            </g:if>
+                        </td>
                         <g:if test="${controllerName == 'myInstitution'}">
+                            <td>
+                                ${docctx.shareConf?.getI10n("value")}
+                            </td>
                             <td>
                                 ${inTargetOrg ? docctx.owner?.owner?.sortname :  docctx.targetOrg?.sortname}
                             </td>
@@ -125,9 +144,6 @@
                                 </g:elseif>
                             </td>
                         --%>
-                            <td>
-                                ${docctx.shareConf?.getI10n("value")}
-                            </td>
                         </g:if>
                         <td class="x">
                             <g:if test="${((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3))}">
@@ -188,22 +204,7 @@
 </g:form>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-    $('a[data-documentKey]').on('click', function(e) {
-        e.preventDefault();
-        let docKey = $(this).attr('data-documentKey')
-        let previewModalId = '#document-preview-' + docKey.split(':')[0]
-
-        $.ajax({
-            url: '${g.createLink(controller: 'ajaxHtml', action: 'documentPreview')}?key=' + docKey
-        }).done( function (data) {
-            $( '#dynamicModalContainer' ).html(data)
-            $( previewModalId ).modal({
-                    onVisible: function() { },
-                    onApprove: function() { return false; },
-                    onHidden:  function() { $(previewModalId).remove() }
-            }).modal('show')
-        })
-    })
+    docs.init('#delete_doc_form'); /* TODO --form */
 </laser:script>
 
 <%-- a form within a form is not permitted --%>

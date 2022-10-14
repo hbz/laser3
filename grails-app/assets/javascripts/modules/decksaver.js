@@ -158,3 +158,5 @@ deckSaver = {
         }
     }
 }
+
+JSPC.modules.add( deckSaver, 'deckSaver' );

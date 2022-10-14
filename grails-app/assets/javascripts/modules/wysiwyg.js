@@ -2,10 +2,6 @@
 
 wysiwyg = {
 
-    go: function () {
-        console.log('wysiwyg -\> loaded')
-    },
-
     initEditor: function (cssSel, modalSel) {
         console.log('wysiwyg.initEditor( ' + cssSel + ', ' + modalSel + ')')
 
@@ -102,4 +98,6 @@ wysiwyg = {
         return result;
     }
 }
+
+JSPC.modules.add( wysiwyg, 'wysiwyg' );
 

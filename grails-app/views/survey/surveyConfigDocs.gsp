@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyConfig;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.Doc; de.laser.survey.SurveyConfig;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;" %>
 <laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyConfigDocs.label')})" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -89,7 +89,7 @@
                     <th>${message(code: 'default.title.label')}</th>
                     <th>${message(code: 'surveyConfigDocs.docs.table.fileName')}</th>
                     <th>${message(code: 'surveyConfigDocs.docs.table.type')}</th>
-                    <th>${message(code: 'property.share.tooltip.sharedFrom')}</th>
+                    <th>%{--${message(code: 'property.share.tooltip.sharedFrom')}--}%</th>
                     <th>${message(code: 'default.actions.label')}</th>
                 </tr>
                 </thead>
@@ -98,7 +98,14 @@
                     <tr>
                         <td>${i + 1}</td>
                         <td>
-                            ${docctx.owner.title}
+                            %{--ERMS-4524--}%
+                            <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().contains(docctx.owner.mimeType)}" />
+                            <g:if test="${docctx.owner.contentType == Doc.CONTENT_TYPE_FILE && supportedMimeType}">
+                                <a href="#documentPreview" data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title}</a>
+                            </g:if>
+                            <g:else>
+                                ${docctx.owner.title}
+                            </g:else>
                         </td>
                         <td>
                             ${docctx.owner.filename}
@@ -111,6 +118,21 @@
                             <span class="la-popup-tooltip la-delay" data-content="${message(code: 'property.share.tooltip.on')}">
                                 <i class="green alternate share icon"></i>
                             </span>
+                            %{--ERMS-4529--}%
+                            <g:if test="${docctx.owner?.confidentiality}">
+                                <span class="la-popup-tooltip la-delay" data-content="${message(code: 'template.addDocument.confidentiality')}: ${docctx.owner.confidentiality.getI10n('value')}">
+                                    <g:if test="${docctx.owner?.confidentiality == RDStore.DOC_CONF_PUBLIC}">
+                                        <i class="ui icon grin olive"></i>
+                                    </g:if>
+                                    <g:elseif test="${docctx.owner?.confidentiality == RDStore.DOC_CONF_INTERNAL}">
+                                        <i class="ui icon unlock yellow"></i>
+                                    </g:elseif>
+                                    <g:elseif test="${docctx.owner?.confidentiality == RDStore.DOC_CONF_STRICTLY}">
+                                        <i class="ui icon lock orange"></i>
+                                    </g:elseif>
+                                </span>
+                            </g:if>
+
                         </td>
                         <td class="x">
                             <g:if test="${((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3))}">
@@ -146,6 +168,10 @@
             </g:each>
         </ui:form>
     </div>
+
+    <laser:script file="${this.getGroovyPageFileName()}">
+        docs.init('.main table'); %{--ERMS-4524--}%
+    </laser:script>
 
 </g:if>
 

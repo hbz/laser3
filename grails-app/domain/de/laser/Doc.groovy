@@ -19,6 +19,9 @@ class Doc {
     @RefdataInfo(cat = RDConstants.DOCUMENT_TYPE)
     RefdataValue type
 
+    @RefdataInfo(cat = RDConstants.DOCUMENT_CONFIDENTIALITY)
+    RefdataValue confidentiality
+
   String title
   String filename
   String mimeType
@@ -34,6 +37,7 @@ class Doc {
                 id column:'doc_id'
            version column:'doc_version'
               type column:'doc_type_rv_fk', index:'doc_type_idx'
+   confidentiality column:'doc_confidentiality_rv_fk'
        contentType column:'doc_content_type'
               uuid column:'doc_docstore_uuid', index:'doc_uuid_idx'
              title column:'doc_title'
@@ -47,7 +51,8 @@ class Doc {
   }
 
   static constraints = {
-    type      (nullable:true)
+            type      (nullable:true)
+      confidentiality (nullable:true)
     content   (nullable:true, blank:false)
     uuid      (nullable:true, blank:false)
     contentType(nullable:true)

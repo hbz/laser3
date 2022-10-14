@@ -12,7 +12,7 @@ jstk = {
     el_idCounter: 0,
 
     go: function () {
-        console.log('jstk -> go')
+        console.log('jstk.go()')
 
         jstk._checkIds()
 
@@ -205,6 +205,8 @@ jstk = {
         })
     }
 }
+
+JSPC.modules.add( jstk, 'jstk' );
 
 /* shortcuts */
 

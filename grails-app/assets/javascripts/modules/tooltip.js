@@ -3,8 +3,6 @@
 tooltip = {
 
     go : function() {
-        // console.log('tooltip.go()')
-
         tooltip.initDynamicPopups('body')
         tooltip.initDynamicAccessViaKeys('body')
     },
@@ -96,3 +94,5 @@ tooltip = {
         })
     },
 }
+
+JSPC.modules.add( tooltip, 'tooltip' );

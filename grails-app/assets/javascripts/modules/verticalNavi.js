@@ -93,3 +93,5 @@ verticalNavi = {
         });
     }
 }
+
+JSPC.modules.add( verticalNavi, 'verticalNavi' );

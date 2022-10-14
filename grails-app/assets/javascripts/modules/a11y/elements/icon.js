@@ -3,7 +3,6 @@
 a11yIcon = {
 
     go: function () {
-        // console.log('a11yIcon.go()')
         a11yIcon.init('body')
     },
 
@@ -21,3 +20,5 @@ a11yIcon = {
         });
     }
 }
+
+JSPC.modules.add( a11yIcon, 'a11yIcon' );
