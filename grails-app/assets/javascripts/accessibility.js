@@ -13,7 +13,7 @@
 //= require modules/verticalNavi.js
 //= require modules/responsiveTables.js
 
-console.log('+ accessibility.js')
+console.log('+ bundle: accessibility.js')
 
 // here we go ..
 

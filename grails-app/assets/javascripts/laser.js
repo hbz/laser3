@@ -19,7 +19,7 @@
 //= require modules/wysiwyg.js
 //= require spring-websocket.js                 //--> bundle
 
-console.log('+ laser.js')
+console.log('+ bundle: laser.js')
 
 // here we go ..
 
