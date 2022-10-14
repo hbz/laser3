@@ -2,10 +2,6 @@
 
 docs = {
 
-    go: function () {
-        console.log('docs -\> loaded')
-    },
-
     init: function (cssSel) {
         console.log('docs.init( ' + cssSel + ')')
 
@@ -33,4 +29,6 @@ docs = {
         });
     }
 }
+
+JSPC.modules.add( docs, 'docs' );
 

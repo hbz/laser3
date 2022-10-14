@@ -18,3 +18,5 @@ setTextareaHeight = {
         });
     }
 }
+
+JSPC.modules.add( setTextareaHeight, 'setTextareaHeight' );

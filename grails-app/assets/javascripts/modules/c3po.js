@@ -126,3 +126,5 @@ c3po = {
         });
     }
 }
+
+JSPC.modules.add( c3po, 'c3po' );

@@ -51,3 +51,5 @@ system = {
         })
     }
 }
+
+JSPC.modules.add( system, 'system' );

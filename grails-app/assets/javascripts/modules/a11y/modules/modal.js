@@ -6,7 +6,6 @@ a11yModal = {
         a11yModal._loopFocus(config)
     },
 
-
     /**
      * Source https://medium.com/@im_rahul/focus-trapping-looping-b3ee658e5177
      *
@@ -77,3 +76,5 @@ a11yModal = {
         };
     }
 }
+
+JSPC.modules.add( a11yModal, 'a11yModal' );
