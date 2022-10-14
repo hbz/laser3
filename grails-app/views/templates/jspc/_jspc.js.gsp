@@ -10,7 +10,8 @@ JSPC = {
         ajax: {
             openMessages: "<g:createLink controller='ajaxOpen' action='messages'/>",
             openProfiler: "<g:createLink controller='ajaxOpen' action='profiler'/>",
-            openJsonLookup: "<g:createLink controller='ajaxJson' action='lookup'/>"
+            openJsonLookup: "<g:createLink controller='ajaxJson' action='lookup'/>",
+            htmlDocumentPreview: "<g:createLink controller='ajaxHtml' action='documentPreview'/>"
         },
         ws: {
             stompUrl: "${createLink(uri: de.laser.custom.CustomWebSocketConfig.WS_STOMP)}",

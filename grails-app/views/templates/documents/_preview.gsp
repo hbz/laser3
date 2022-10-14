@@ -14,7 +14,7 @@
             </ui:msg>
         </g:if>
         <g:if test="${error}">
-            <ui:msg class="error" noClose="true">
+            <ui:msg class="error" icon="question circle outline" noClose="true">
                 ${error}
             </ui:msg>
         </g:if>

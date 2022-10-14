@@ -204,22 +204,7 @@
 </g:form>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-    $('a[data-documentKey]').on('click', function(e) {
-        e.preventDefault();
-        let docKey = $(this).attr('data-documentKey')
-        let previewModalId = '#document-preview-' + docKey.split(':')[0]
-
-        $.ajax({
-            url: '${g.createLink(controller: 'ajaxHtml', action: 'documentPreview')}?key=' + docKey
-        }).done( function (data) {
-            $( '#dynamicModalContainer' ).html(data)
-            $( previewModalId ).modal({
-                    onVisible: function() { },
-                    onApprove: function() { return false; },
-                    onHidden:  function() { $(previewModalId).remove() }
-            }).modal('show')
-        })
-    })
+    docs.init('#delete_doc_form'); /* TODO --form */
 </laser:script>
 
 <%-- a form within a form is not permitted --%>

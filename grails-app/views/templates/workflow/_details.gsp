@@ -5,7 +5,7 @@
 
     <g:set var="wfInfo" value="${wf.getInfo()}" />
 
-    <div data-wfId="${wf.id}" style="margin-top:5em; margin-bottom:5em; position:relative; display:none;">
+    <div data-wfId="${wf.id}" class="workflow-details" style="margin-top:5em; margin-bottom:5em; position:relative; display:none;">
 
         <div class="ui piled segments wf-details">
 
@@ -200,20 +200,5 @@
 </g:each>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-    $('a[data-documentKey]').on('click', function(e) {
-        e.preventDefault();
-        let docKey = $(this).attr('data-documentKey')
-        let previewModalId = '#document-preview-' + docKey.split(':')[0]
-
-        $.ajax({
-            url: '${g.createLink(controller: 'ajaxHtml', action: 'documentPreview')}?key=' + docKey
-            }).done( function (data) {
-                $( '#dynamicModalContainer' ).html(data)
-                $( previewModalId ).modal({
-                        onVisible: function() { },
-                        onApprove: function() { return false; },
-                        onHidden:  function() { $(previewModalId).remove() }
-                }).modal('show')
-            })
-        })
+    docs.init('.workflow-details');
 </laser:script>

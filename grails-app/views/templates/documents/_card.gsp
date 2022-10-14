@@ -177,25 +177,6 @@
             </g:if>
         </g:each>
     </ui:card>
-
-    <laser:script file="${this.getGroovyPageFileName()}">
-        $('a[data-documentKey]').on('click', function(e) {
-            e.preventDefault();
-            let docKey = $(this).attr('data-documentKey')
-            let previewModalId = '#document-preview-' + docKey.split(':')[0]
-
-            $.ajax({
-                url: '${g.createLink(controller: 'ajaxHtml', action: 'documentPreview')}?key=' + docKey
-            }).done( function (data) {
-                $( '#dynamicModalContainer' ).html(data)
-                $( previewModalId ).modal({
-                        onVisible: function() { },
-                        onApprove: function() { return false; },
-                        onHidden:  function() { $(previewModalId).remove() }
-                }).modal('show')
-            })
-        })
-    </laser:script>
 </g:if>
 <g:if test="${sharedItems}">
     <ui:card message="license.documents.shared" class="documents la-js-hideable ${css_class}" editable="${editable}">
@@ -248,3 +229,6 @@
     </ui:card>
 </g:if>
 
+<laser:script file="${this.getGroovyPageFileName()}">
+    docs.init('#container-documents');
+</laser:script>
