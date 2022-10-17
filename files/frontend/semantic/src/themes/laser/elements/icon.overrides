@@ -1793,6 +1793,14 @@ i.icon.la-redo.slash {
 i.icon.la-exchange.slash {
   font-family: 'icomoon';
 }
+i.icon.la-copy.open {
+  font-family: @outlineFontName;
+}
+i.icon.la-copy {
+  font-family: Icons;
+}
+i.icon.la-copy.open:before { content: "\f24d"; }
+i.icon.la-copy:before { content: "\f24d"; }
 // to turn off all the buttons on a side
 // the other part of the button is the SEMANTIC UI Icon: 'hand pointer outline'
 

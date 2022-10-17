@@ -1686,6 +1686,14 @@ i.icon.la-list-icon:before {
   font-style: normal;
   font-weight: 400;
 }
+
+/****************************************
+        Copy E-Mail and ID numbers
+*****************************************/
+
+.js-copyTrigger:hover {
+  cursor: pointer;
+}
 /*!
  * # Fomantic-UI 2.8.8 - Button
  * http://github.com/fomantic/Fomantic-UI/
@@ -39991,6 +39999,22 @@ i.icon.la-redo.slash {
 
 i.icon.la-exchange.slash {
   font-family: 'icomoon';
+}
+
+i.icon.la-copy.open {
+  font-family: 'outline-icons';
+}
+
+i.icon.la-copy {
+  font-family: Icons;
+}
+
+i.icon.la-copy.open:before {
+  content: "\f24d";
+}
+
+i.icon.la-copy:before {
+  content: "\f24d";
 }
 
 i.icon.hand.pointer.outline.slash:before {

@@ -425,38 +425,12 @@
                                                 </div>
 
                                                 <div class="four wide column">
-                                                    <div class="ui list">
-                                                        <div class="item">
-                                                            <i class="users icon"></i>
 
-                                                            <div class="content">
-                                                            </div>
-                                                        </div>
+                                                        <!-- START TEMPLATE -->
+                                                        <laser:render template="/templates/identifier"
+                                                                      model="${[ie         : ie, tipp: ie.tipp]}"/>
+                                                        <!-- END TEMPLATE -->
 
-                                                        <div class="item">
-                                                            <i class="marker icon"></i>
-
-                                                            <div class="content">
-                                                                New York, NY
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="item">
-                                                            <i class="mail icon"></i>
-
-                                                            <div class="content">
-                                                                <a href="mailto:jack@semantic-ui.com">jack@semantic-ui.com</a>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="item">
-                                                            <i class="linkify icon"></i>
-
-                                                            <div class="content">
-                                                                <a href="http://www.semantic-ui.com">semantic-ui.com</a>
-                                                            </div>
-                                                        </div>
-                                                    </div>
                                                 </div>
 
                                                 <div class="four wide column">
