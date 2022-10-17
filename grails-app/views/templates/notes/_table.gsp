@@ -1,5 +1,4 @@
 <laser:serviceInjection/>
-<g:form id="delete_doc_form" url="${[controller: controllerName, action: 'deleteDocuments']}" method="post">
 
     <table class="ui celled sortable table la-table la-js-responsive-table">
         <thead>
@@ -80,8 +79,6 @@
         </g:each>
         </tbody>
     </table>
-</g:form>
-
 
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.app.noteedit = function (id) {

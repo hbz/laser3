@@ -82,7 +82,7 @@
             <br /><br />
 
 
-            <table class="ui celled la-js-responsive-table la-table table license-documents">
+            <table class="ui celled la-js-responsive-table la-table table documents-table">
                 <thead>
                 <tr>
                     <th>${message(code:'sidewide.number')}</th>
@@ -170,7 +170,7 @@
     </div>
 
     <laser:script file="${this.getGroovyPageFileName()}">
-        docs.init('.main table'); %{--ERMS-4524--}%
+        docs.init('.documents-table'); %{--ERMS-4524--}%
     </laser:script>
 
 </g:if>

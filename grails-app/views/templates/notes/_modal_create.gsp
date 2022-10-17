@@ -11,10 +11,6 @@
             <label for="licenseNoteTitle">${message(code:'default.title.label')}:</label>
             <input type="text" id="licenseNoteTitle" name="licenseNoteTitle" />
         </div>
-%{--        <div class="field">--}%
-%{--            <label for="licenseNote">${message(code:'default.note.label')}:</label>--}%
-%{--            <textarea class="la-textarea-resize-vertical" id="licenseNote" name="licenseNote"></textarea>--}%
-%{--        </div>--}%
         <div class="field">
             <label for="licenseNote">${message(code:'default.content.label')}:</label>
             <div id="licenseNote"></div>

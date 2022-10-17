@@ -94,7 +94,7 @@
             </dl>
             <dl>
                 <dt>
-                    <label for="confidentiality-${labelId}">${message(code: 'template.addDocument.confidentiality')} (* Kennzeichnung):</label>
+                    <label for="confidentiality-${labelId}">${message(code: 'template.addDocument.confidentiality')}:</label>
                 </dt>
                 <dd>
                     <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.DOCUMENT_CONFIDENTIALITY)}"
