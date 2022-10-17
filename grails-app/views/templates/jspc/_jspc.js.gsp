@@ -21,15 +21,19 @@ JSPC = {
 
     modules : { // -- module registry
         add : function (module, label) {
-            if (! JSPC.modules.registry.includes (module) ) {
+            if (! JSPC.modules.registry.get (label) ) {
                 console.log ('  module ' + label + ' loaded ..');
-                JSPC.modules.registry.push (module);
+                JSPC.modules.registry.set (label, module);
             }
         },
         go : function () {
-            JSPC.modules.registry.forEach (function (module) { module.go() });
+            for (let module of JSPC.modules.registry.values()) {
+                if (module.hasOwnProperty ('go')) {
+                    module.go();
+                }
+            }
         },
-        registry : []
+        registry : new Map()
     },
 
     app : { // -- logic container

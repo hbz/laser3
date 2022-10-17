@@ -17,9 +17,7 @@
     }
 %>
 
-<g:form id="delete_doc_form" url="${[controller:"${controllerName}" ,action:'deleteDocuments']}" method="post">
-
-    <table class="ui celled la-js-responsive-table la-table table license-documents">
+    <table class="ui celled la-js-responsive-table la-table table documents-table">
         <thead>
             <tr>
                 <%--<g:if test="${editable}"><th>${message(code:'default.select.label')}</th></g:if> : REMOVED BULK--%>
@@ -110,7 +108,7 @@
                         <td>
                             <g:if test="${docctx.owner?.confidentiality}">
                                 <g:if test="${docctx.owner?.confidentiality == RDStore.DOC_CONF_PUBLIC}">
-                                    <i class="ui icon grin olive"></i>
+                                    <i class="ui icon circle olive"></i>
                                 </g:if>
                                 <g:elseif test="${docctx.owner?.confidentiality == RDStore.DOC_CONF_INTERNAL}">
                                     <i class="ui icon unlock yellow"></i>
@@ -201,10 +199,9 @@
             </g:each>
         </tbody>
     </table>
-</g:form>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-    docs.init('#delete_doc_form'); /* TODO --form */
+    docs.init('.documents-table');
 </laser:script>
 
 <%-- a form within a form is not permitted --%>

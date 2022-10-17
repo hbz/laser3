@@ -7,4 +7,4 @@
 //= require libs/readmore.js
 //= require /select2/js/select2.js      //--> assets/vendor
 
-console.log('+ base.js')
+console.log('+ bundle: base.js')

@@ -82,7 +82,7 @@
             <br /><br />
 
 
-            <table class="ui celled la-js-responsive-table la-table table license-documents">
+            <table class="ui celled la-js-responsive-table la-table table documents-table">
                 <thead>
                 <tr>
                     <th>${message(code:'sidewide.number')}</th>
@@ -122,7 +122,7 @@
                             <g:if test="${docctx.owner?.confidentiality}">
                                 <span class="la-popup-tooltip la-delay" data-content="${message(code: 'template.addDocument.confidentiality')}: ${docctx.owner.confidentiality.getI10n('value')}">
                                     <g:if test="${docctx.owner?.confidentiality == RDStore.DOC_CONF_PUBLIC}">
-                                        <i class="ui icon grin olive"></i>
+                                        <i class="ui icon circle olive"></i>
                                     </g:if>
                                     <g:elseif test="${docctx.owner?.confidentiality == RDStore.DOC_CONF_INTERNAL}">
                                         <i class="ui icon unlock yellow"></i>
@@ -170,7 +170,7 @@
     </div>
 
     <laser:script file="${this.getGroovyPageFileName()}">
-        docs.init('.main table'); %{--ERMS-4524--}%
+        docs.init('.documents-table'); %{--ERMS-4524--}%
     </laser:script>
 
 </g:if>
