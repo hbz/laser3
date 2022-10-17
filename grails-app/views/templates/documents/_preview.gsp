@@ -1,5 +1,5 @@
 <laser:serviceInjection/>
-<ui:modal id="document-preview-${doc.uuid}" text="${doc.title}" hideSubmitButton="true">
+<ui:modal id="document-preview-${doc.uuid}" text="${doc.title}" contentClass="scrolling" hideSubmitButton="true">
 
     <g:if test="${docBase64}">
         <div style="margin-bottom:1em;">
