@@ -166,7 +166,7 @@
 
             <tr>
                 <td class="center aligned">
-                    ${wfi+1}
+                    ${wfi + 1 + params.int('offset')}
                 </td>
                 <td>
                     <g:if test="${currentTab != 'open'}">

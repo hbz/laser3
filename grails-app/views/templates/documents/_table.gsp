@@ -106,18 +106,7 @@
                             ${docctx.owner?.type?.getI10n('value')}
                         </td>
                         <td>
-                            <g:if test="${docctx.owner?.confidentiality}">
-                                <g:if test="${docctx.owner?.confidentiality == RDStore.DOC_CONF_PUBLIC}">
-                                    <i class="ui icon circle olive"></i>
-                                </g:if>
-                                <g:elseif test="${docctx.owner?.confidentiality == RDStore.DOC_CONF_INTERNAL}">
-                                    <i class="ui icon unlock yellow"></i>
-                                </g:elseif>
-                                <g:elseif test="${docctx.owner?.confidentiality == RDStore.DOC_CONF_STRICTLY}">
-                                    <i class="ui icon lock orange"></i>
-                                </g:elseif>
-                                ${docctx.owner.confidentiality.getI10n('value')}
-                            </g:if>
+                            <ui:documentIcon doc="${docctx.owner}" showText="true" showTooltip="false"/>
                         </td>
                         <g:if test="${controllerName == 'myInstitution'}">
                             <td>

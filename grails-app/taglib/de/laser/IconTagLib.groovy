@@ -1,5 +1,6 @@
 package de.laser
 
+import de.laser.storage.RDStore
 import de.laser.titles.BookInstance
 import de.laser.titles.DatabaseInstance
 import de.laser.titles.JournalInstance
@@ -223,5 +224,42 @@ class IconTagLib {
         out << '<i aria-hidden="true" class="share square icon"></i>'
         out << '</a>'
         out << '</span>'
+    }
+
+    def documentIcon = { attrs, body ->
+        if (attrs.doc) {
+            Doc doc = attrs.doc as Doc
+
+            if (doc && doc.confidentiality) {
+                String markup = ''
+                String conf = doc.confidentiality.getI10n('value')
+                boolean showTooltip = 'true'.equalsIgnoreCase(attrs.showTooltip as String)
+                boolean showText = 'true'.equalsIgnoreCase(attrs.showText as String)
+
+                if (showTooltip) {
+                    markup = '<span class="la-popup-tooltip la-delay" data-content="' + message(code: 'template.addDocument.confidentiality') + ': ' + conf + '"'
+                    markup = markup + ' style="padding:3px;">'
+                }
+
+                switch (doc.confidentiality) {
+                    case RDStore.DOC_CONF_PUBLIC:
+                        markup = markup + '<i class="ui icon circle olive"></i> '
+                        break;
+                    case RDStore.DOC_CONF_INTERNAL:
+                        markup = markup + '<i class="ui icon unlock yellow"></i> '
+                        break;
+                    case RDStore.DOC_CONF_STRICTLY:
+                        markup = markup + '<i class="ui icon lock orange"></i> '
+                        break;
+                    default:
+                        markup = markup + ''
+                }
+
+                if (showTooltip) { markup = markup + '</span>' }
+                if (showText)    { markup = markup + conf }
+
+                out << markup
+            }
+        }
     }
 }

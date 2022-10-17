@@ -2673,13 +2673,13 @@ join sub.orgRelations or_sub where
         int max     = params.int('max')
 
         if (params.tab == 'open') {
-            result.currentWorkflows = workflowService.sortByLastUpdated( WfWorkflow.executeQuery(resultQuery, [idList: result.currentWorkflowIds_open]) ).drop(offset).take(max)
+            result.currentWorkflows = /* workflowService.sortByLastUpdated( */ WfWorkflow.executeQuery(resultQuery, [idList: result.currentWorkflowIds_open]).drop(offset).take(max) // ).drop(offset).take(max)
         }
         else if (params.tab == 'canceled') {
-            result.currentWorkflows = workflowService.sortByLastUpdated( WfWorkflow.executeQuery(resultQuery, [idList: result.currentWorkflowIds_canceled]) ).drop(offset).take(max)
+            result.currentWorkflows = /* workflowService.sortByLastUpdated( */ WfWorkflow.executeQuery(resultQuery, [idList: result.currentWorkflowIds_canceled]).drop(offset).take(max) // ).drop(offset).take(max)
         }
         else if (params.tab == 'done') {
-            result.currentWorkflows = workflowService.sortByLastUpdated( WfWorkflow.executeQuery(resultQuery, [idList: result.currentWorkflowIds_done]) ).drop(offset).take(max)
+            result.currentWorkflows = /* workflowService.sortByLastUpdated( */ WfWorkflow.executeQuery(resultQuery, [idList: result.currentWorkflowIds_done]).drop(offset).take(max) // ).drop(offset).take(max)
         }
         result.total = workflowIds.size()
 

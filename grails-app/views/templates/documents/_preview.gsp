@@ -26,7 +26,7 @@
             <div class="item"> <strong>${message(code:'license.docs.table.type')}:</strong> ${doc.type.getI10n('value')} </div>
 %{--            <div class="item"> <strong>MIME-Typ:</strong> ${doc.mimeType} </div>--}%
             <g:if test="${doc.confidentiality}">
-                <div class="item"> <strong>${message(code:'template.addDocument.confidentiality')}:</strong> ${doc.confidentiality?.getI10n('value')} </div>
+                <div class="item"> <strong>${message(code:'template.addDocument.confidentiality')}:</strong> ${doc.confidentiality.getI10n('value')} </div>
             </g:if>
             <div class="item"> <strong>${message(code:'license.docs.table.creator')}:</strong> <g:link controller="org" action="show" id="${doc.owner.id}">${doc.owner}</g:link> </div>
         </div>
