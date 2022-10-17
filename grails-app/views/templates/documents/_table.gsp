@@ -108,7 +108,7 @@
                         <td>
                             <g:if test="${docctx.owner?.confidentiality}">
                                 <g:if test="${docctx.owner?.confidentiality == RDStore.DOC_CONF_PUBLIC}">
-                                    <i class="ui icon grin olive"></i>
+                                    <i class="ui icon circle olive"></i>
                                 </g:if>
                                 <g:elseif test="${docctx.owner?.confidentiality == RDStore.DOC_CONF_INTERNAL}">
                                     <i class="ui icon unlock yellow"></i>
