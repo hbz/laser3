@@ -1158,8 +1158,7 @@ class AjaxHtmlController {
             else if (result.prefix == WfWorkflow.KEY) {
                 result.workflow       = WfWorkflow.get( wfObjId )
                 result.tmpl           = '/templates/workflow/forms/wfWorkflow'
-                result.tmplModalTitle = '<i class="icon wrench sc_darkgrey"></i> ' + result.tmplModalTitle
-                //result.tmplModalTitle = result.tmplModalTitle + result.workflow.title
+                result.tmplModalTitle = result.tmplModalTitle + ' - ' + message(code: 'workflow.edit.ext.perms')
 
 //                if (result.workflow) {
 //                    result.dd_taskList          = result.workflow.task ? [ result.workflow.task ] : []
@@ -1192,8 +1191,7 @@ class AjaxHtmlController {
             else if (result.prefix == WfTask.KEY) {
                 result.task           = WfTask.get( wfObjId )
                 result.tmpl           = '/templates/workflow/forms/wfTask'
-                result.tmplModalTitle = '<i class="icon wrench sc_darkgrey"></i> ' + result.tmplModalTitle
-                //result.tmplModalTitle = result.tmplModalTitle + result.task.title
+                result.tmplModalTitle = result.tmplModalTitle + ' - ' + message(code: 'workflow.edit.ext.perms')
 
                 if (result.task) {
 
@@ -1221,8 +1219,7 @@ class AjaxHtmlController {
             else if (result.prefix == WfCondition.KEY) {
                 result.condition      = WfCondition.get( wfObjId )
                 result.tmpl           = '/templates/workflow/forms/wfCondition'
-                result.tmplModalTitle = '<i class="icon wrench sc_darkgrey"></i> ' + result.tmplModalTitle
-                //result.tmplModalTitle = result.tmplModalTitle + result.condition.title
+                result.tmplModalTitle = result.tmplModalTitle + ' - ' + message(code: 'workflow.edit.ext.perms')
 
 //                if (result.condition) {
 //                    result.dd_taskList = WfTask.executeQuery( 'select wft from WfTask wft' )

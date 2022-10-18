@@ -12,10 +12,11 @@
     <form id="wfFilterForm" class="ui form">
         <div class="three fields">
             <div class="field">
+                <g:set var="filterUserList" value="${ WfWorkflow.executeQuery('select distinct(wf.user) from WfWorkflow wf where wf.owner = :ctxOrg order by wf.user.display', [ctxOrg: contextService.getOrg()]) }" />
                 <label>${message(code:'task.responsible.label')}</label>
                 <g:select id="filterUser"
                           name="filterUser"
-                          from="${ WfWorkflow.executeQuery('select distinct(wf.user) from WfWorkflow wf where wf.owner = :ctxOrg order by wf.user.display', [ctxOrg: contextService.getOrg()]) }"
+                          from="${ filterUserList + [id:'all', display:message(code:'workflow.user.noCurrentUser')] }"
                           optionKey="id"
                           optionValue="display"
                           value="${filterUser}"

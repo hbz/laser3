@@ -1,6 +1,10 @@
 <%@ page import="de.laser.utils.DateUtils; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.RefdataCategory; de.laser.workflow.*;" %>
 <laser:serviceInjection />
 
+<g:if test="${workflow && workflow instanceof WfWorkflow}">
+    <ui:msg text="${message(code:'workflow.edit.ext.perms.info')}" class="negative" icon="exclamation" noClose="true"/>
+</g:if>
+
 <g:form url="${formUrl}" method="POST" class="ui form">
 
     <div class="field required">

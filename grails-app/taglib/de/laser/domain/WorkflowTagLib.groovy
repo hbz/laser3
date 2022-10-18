@@ -44,20 +44,21 @@ class WorkflowTagLib {
         User user           = contextService.getUser()
         String link         = g.createLink(controller: 'ajaxHtml', action: 'useWfXModal', params: attrs.params)
 
-        boolean isUser = workflow.user.id == user.id
-
-        if (isUser) {
-            //out <<  '<a href="' + link + '" class="ui icon button blue la-modern-button la-popup-tooltip la-delay wfModalLink" '
-            out <<  '<a href="' + link + '" class="ui icon button blue la-modern-button wfModalLink">'
-
-            out <<      '<i class="icon user"></i>'
-            out <<  '</a>'
+        if (workflow.user) {
+            if (workflow.user.id == user.id) {
+                out <<  '<a href="' + link + '" class="ui icon button blue la-modern-button wfModalLink"><i class="icon user"></i></a>'
+            }
+            else {
+                out <<  '<a href="' + link + '" class="ui icon button blue la-modern-button la-popup-tooltip la-delay wfModalLink" '
+                out <<          'data-position="top right" data-content="' + message(code:'workflow.user.currentUser', args: [workflow.user.displayName]) + '">'
+                out <<      '<i class="icon user outline"></i>'
+                out <<  '</a>'
+            }
         }
         else {
             out <<  '<a href="' + link + '" class="ui icon button blue la-modern-button la-popup-tooltip la-delay wfModalLink" '
-//            out <<  '<a href="' + link + '" class="ui icon button gray la-modern-button wfModalLink">'
-            out <<          'data-position="top right" data-content="' + message(code:'workflow.user.currentUser', args: [workflow.user.displayName]) + '">'
-            out <<      '<i class="icon user outline"></i>'
+            out <<          'data-position="top right" data-content="' + message(code:'workflow.user.noCurrentUser') + '">'
+            out <<      '<i class="icon users"></i>'
             out <<  '</a>'
         }
     }

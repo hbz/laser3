@@ -761,7 +761,7 @@ class WorkflowService {
     }
 
     boolean hasUserPerm_wrench() {
-        _innerPermissionCheck('INST_ADM')
+        _innerPermissionCheck('INST_EDITOR')
     }
 
     private boolean _innerPermissionCheck(String userRoleName) {
