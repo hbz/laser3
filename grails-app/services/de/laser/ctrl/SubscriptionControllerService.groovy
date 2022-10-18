@@ -7,6 +7,7 @@ import de.laser.cache.SessionCacheWrapper
 import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
 import de.laser.finance.CostItem
+import de.laser.finance.CostItemElementConfiguration
 import de.laser.finance.PriceItem
 import de.laser.helper.*
 import de.laser.interfaces.CalculatedType
@@ -46,6 +47,7 @@ import org.springframework.context.MessageSource
 import org.springframework.web.multipart.MultipartFile
 
 import javax.sql.DataSource
+import java.math.RoundingMode
 import java.sql.Timestamp
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
@@ -388,6 +390,7 @@ class SubscriptionControllerService {
                     isCounter5 = Counter5Report.countByReportInstitutionUIDAndPlatformUIDAndReportFromGreaterThanEqualsAndReportToLessThanEquals(customerUID, platforms, dateRanges.dateRangeParams.startDate, dateRanges.dateRangeParams.endDate) > 0
                     if(isCounter5) {
                         result.revision = 'counter5'
+                        baseQueryAllYears = 'select new map(r.reportType as reportType, r.metricType as metricType, year(r.reportFrom) as year, sum(r.reportCount) as count) from Counter5Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms) '
                         //reportFrom is correct at end-date because first of months are being passed!
                         monthsInRing.addAll(Counter5Report.executeQuery('select r.reportFrom from Counter5Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms) and r.reportFrom >= :startDate and r.reportFrom <= :endDate group by r.reportFrom', queryParams+[startDate: dateRanges.monthsInRing.first(), endDate: dateRanges.monthsInRing.last()]))
                         baseQuery = 'select new map(r.reportType as reportType, r.metricType as metricType, r.reportFrom as reportMonth, sum(r.reportCount) as count) from Counter5Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms) '
@@ -520,6 +523,64 @@ class SubscriptionControllerService {
             result.sumsByTitle = sumsByTitle
             [result: result, status: STATUS_OK]
         }
+    }
+
+    Map<String, Object> calculateCostPerUse(Map<String, Object> statsData, String config) {
+        Map<String, BigDecimal> costPerMetric = [:]
+        /*
+        cf. https://www.o-bib.de/bib/article/view/5521/7935
+        legacy COUNTER 4 metric types: https://www.niso.org/schemas/sushi/counterElements4_1.xsd
+        There are calculated:
+        price/download -> metrics ft_epub, ft_html, ft_pdf, ft_ps, ft_total, sectioned_html, data_set, audio, video, image, multimedia, podcast (COUNTER 4) resp. Total_XYZ_Requests (COUNTER 5)
+        price/search -> metrics search_reg, search_fed (COUNTER 4) resp. Searches_Regular, Searches_Platform (COUNTER 5)
+        price/click -> metrics result_click (COUNTER 4) resp. ??? (COUNTER 5)
+        price/view -> metrics record_view, toc, abstract, reference (COUNTER 4) resp. XYZ_Investigations (COUNTER 5)
+        Questions:
+        1. use all clicks or unique clicks? -> use for each metric a separate cost per use
+        2. the 100% encompasses everything. If I select several metrics, how should I calculate cost per use? Distribute equally?
+           response: I need to take the 100% of all clicks as well (i.e. of all metrics); the cost per use has thus to be calculated by the amount of clicks. So all clicks of all metrics altogether give the complete sum. I need to calculate the percentage of the metric first and divide by that.
+         */
+        Set<CostItem> costItems = []
+        if(config == "own") {
+            Set<RefdataValue> elementsToUse = CostItemElementConfiguration.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :institution and ciec.useForCostPerUse = true', [institution: statsData.contextOrg])
+            costItems = CostItem.executeQuery('select ci from CostItem ci where ci.costItemElement in (:elementsToUse) and ci.owner = :ctx and ci.sub = :sub', [elementsToUse: elementsToUse, ctx: statsData.contextOrg, sub: statsData.subscription])
+        }
+        else if(config == "consortial") {
+            Org consortium = statsData.subscription.getConsortia()
+            Set<RefdataValue> elementsToUse = CostItemElementConfiguration.executeQuery('select ciec.costItemElement from CostItemElementConfiguration ciec where ciec.forOrganisation = :institution and ciec.useForCostPerUse = true', [institution: consortium])
+            costItems = CostItem.executeQuery('select ci from CostItem ci where ci.costItemElement in (:elementsToUse) and ci.owner = :consortium and ci.sub = :sub and ci.isVisibleForSubscriber = true', [elementsToUse: elementsToUse, consortium: consortium, sub: statsData.subscription])
+        }
+        //calculate 100%
+        BigDecimal totalSum = 0.0
+        costItems.each { CostItem ci ->
+            switch(ci.costItemElementConfiguration) {
+                case RDStore.CIEC_POSITIVE: totalSum += ci.costInBillingCurrencyAfterTax
+                    break
+                case RDStore.CIEC_NEGATIVE: totalSum -= ci.costInBillingCurrencyAfterTax
+                    break
+            }
+        }
+        if(statsData.subscription.startDate) {
+            //loop 1: reports
+            statsData.allYearSums.each { String reportType, Map<String, Object> reportYearSums ->
+                //attempt; check data type of year
+                Map<String, Object> countsPerMetric = reportYearSums.countsPerYear.get(Integer.parseInt(DateUtils.getSDF_yyyy().format(statsData.subscription.startDate))) ?: [:]
+                Long totalClicksInYear = countsPerMetric.values().sum()
+                //loop 2: metrics in report year
+                countsPerMetric.each { String metricType, Long sum ->
+                    BigDecimal partOfTotalSum = totalSum
+                    if(sum != totalClicksInYear) {
+                        BigDecimal percentage = sum / totalClicksInYear
+                        log.debug("percentage: ${percentage*100} %")
+                        partOfTotalSum = totalSum * percentage
+                    }
+                    BigDecimal metricSum = costPerMetric.get(metricType) ?: 0.0
+                    metricSum += (partOfTotalSum / sum).setScale(2, RoundingMode.HALF_UP)
+                    costPerMetric.put(metricType, metricSum)
+                }
+            }
+        }
+        costPerMetric
     }
 
     /**

@@ -397,99 +397,101 @@ class StatsSyncService {
                                             reports.eachWithIndexParallel { String customerUID, List<Map<String, Object>> reportList, int j ->
                                                 log.debug("${Thread.currentThread().getName()} processes customer ${j}")
                                                 Sql statsSql = GlobalService.obtainStorageSqlConnection()
-                                                reportList.eachWithIndex { Map<String, Object> reportData, int ctr ->
-                                                    if (reportData.reportID == Counter4Report.PLATFORM_REPORT_1) {
-                                                        int[] resultCount = statsSql.withBatch("insert into counter4report (c4r_version, c4r_platform_guid, c4r_publisher, c4r_report_institution_guid, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count) " +
-                                                                "values (:version, :platform, :publisher, :reportInstitution, :reportType, :category, :metricType, :reportFrom, :reportTo, :reportCount) " +
-                                                                "on conflict on constraint unique_counter_4_report do " +
-                                                                "update set c4r_report_count = :reportCount") { stmt ->
-                                                            int t = 0
-                                                            //titles.each { row ->
-                                                            reportData.reports.each { reportItem ->
-                                                                Set<String> identifiers = []
-                                                                reportItem.'ns2:ItemIdentifier'.'ns2:Value'.each { identifier ->
-                                                                    identifiers << identifier.text()
-                                                                }
-                                                                //int ctr = 0
-                                                                reportItem.'ns2:ItemPerformance'.each { performance ->
-                                                                    performance.'ns2:Instance'.each { instance ->
-                                                                        String category = performance.'ns2:Category'.text()
-                                                                        String metricType = instance.'ns2:MetricType'.text()
-                                                                        Integer count = Integer.parseInt(instance.'ns2:Count'.text())
-                                                                        Map<String, Object> configMap = [reportType: reportData.reportName, version: 0]
-                                                                        configMap.reportInstitution = customerUID
-                                                                        configMap.platform = c4asPlatform.globalUID
-                                                                        configMap.publisher = reportItem.'ns2:ItemPublisher'.text()
-                                                                        configMap.reportFrom = new Timestamp(DateUtils.parseDateGeneric(performance.'ns2:Period'.'ns2:Begin'.text()).getTime())
-                                                                        configMap.reportTo = new Timestamp(DateUtils.parseDateGeneric(performance.'ns2:Period'.'ns2:End'.text()).getTime())
-                                                                        configMap.category = category
-                                                                        configMap.metricType = metricType
-                                                                        configMap.reportCount = count
-                                                                        //c4r_platform_guid, c4r_report_institution_guid, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count
-                                                                        Map<String, Object> selMap = configMap.clone() as Map<String, Object> //simple assignment makes call by reference so modifies the actual object
-                                                                        selMap.remove('version')
-                                                                        selMap.remove('reportCount')
-                                                                        List<GroovyRowResult> existingKey = statsSql.rows('select c4r_id from counter4report where c4r_platform_guid = :platform ' +
-                                                                                'and c4r_report_institution_guid = :reportInstitution ' +
-                                                                                'and c4r_report_type = :reportType ' +
-                                                                                'and c4r_metric_type = :metricType ' +
-                                                                                'and c4r_report_from = :reportFrom ' +
-                                                                                'and c4r_report_to = :reportTo', selMap)
-                                                                        if (existingKey) {
-                                                                            statsSql.execute('update counter4report set c4r_report_count = :reportCount, c4r_publisher = :publisher where c4r_id = :reportId', [reportCount: count, publisher: reportItem.'ns2:ItemPublisher'.text(), reportId: existingKey[0].get('c4r_id')])
-                                                                        } else
-                                                                            stmt.addBatch(configMap)
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                        log.debug("${Thread.currentThread().getName()} reports success: ${resultCount.length}")
-                                                    } else {
-                                                        GParsPool.withExistingPool(pool) {
-                                                            reportData.reports.eachWithIndexParallel { reportItem, int t ->
-                                                                int[] resultCount = statsSql.withBatch("insert into counter4report (c4r_version, c4r_title_guid, c4r_publisher, c4r_platform_guid, c4r_report_institution_guid, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count) " +
-                                                                        "values (:version, :title, :publisher, :platform, :reportInstitution, :reportType, :category, :metricType, :reportFrom, :reportTo, :reportCount) " +
-                                                                        "on conflict on constraint unique_counter_4_report do " +
-                                                                        "update set c4r_report_count = :reportCount") { stmt ->
+                                                statsSql.withTransaction {
+                                                    reportList.eachWithIndex { Map<String, Object> reportData, int ctr ->
+                                                        if (reportData.reportID == Counter4Report.PLATFORM_REPORT_1) {
+                                                            int[] resultCount = statsSql.withBatch("insert into counter4report (c4r_version, c4r_platform_guid, c4r_publisher, c4r_report_institution_guid, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count) " +
+                                                                    "values (:version, :platform, :publisher, :reportInstitution, :reportType, :category, :metricType, :reportFrom, :reportTo, :reportCount) " +
+                                                                    "on conflict on constraint unique_counter_4_report do " +
+                                                                    "update set c4r_report_count = :reportCount") { stmt ->
+                                                                int t = 0
+                                                                //titles.each { row ->
+                                                                reportData.reports.each { reportItem ->
                                                                     Set<String> identifiers = []
                                                                     reportItem.'ns2:ItemIdentifier'.'ns2:Value'.each { identifier ->
                                                                         identifiers << identifier.text()
                                                                     }
                                                                     //int ctr = 0
-                                                                    List<GroovyRowResult> rows = sql.rows("select tipp_guid from title_instance_package_platform join identifier on id_tipp_fk = tipp_id where id_value = any(:identifiers) and id_ns_fk = any(:namespaces) and tipp_plat_fk = :platform and tipp_status_rv_fk != :removed", [identifiers: sqlConn.createArrayOf('varchar', identifiers as Object[]), namespaces: sqlConn.createArrayOf('bigint', namespaces as Object[]), platform: c4asPlatform.id, removed: RDStore.TIPP_STATUS_REMOVED.id])
-                                                                    if (rows) {
-                                                                        //log.debug("${Thread.currentThread().getName()} processes report item ${t}")
-                                                                        //do not commit
-                                                                        rows.eachWithIndex { GroovyRowResult row, int ctx ->
-                                                                            String title = row.get('tipp_guid')
-                                                                            reportItem.'ns2:ItemPerformance'.each { performance ->
-                                                                                performance.'ns2:Instance'.each { instance ->
-                                                                                    //findAll seems to be less performant than loop processing
-                                                                                    //if (instance.'ns2:MetricType'.text() == "ft_total") {
-                                                                                    //log.debug("${Thread.currentThread().getName()} processes performance ${ctr} for title ${t} in context ${ctx}")
-                                                                                    String category = performance.'ns2:Category'.text()
-                                                                                    String metricType = instance.'ns2:MetricType'.text()
-                                                                                    String publisher = reportItem.'ns2:ItemPublisher'.text()
-                                                                                    Integer count = Integer.parseInt(instance.'ns2:Count'.text())
-                                                                                    Map<String, Object> configMap = [reportType: reportData.reportName, version: 0]
-                                                                                    configMap.title = title
-                                                                                    configMap.reportInstitution = customerUID
-                                                                                    configMap.platform = c4asPlatform.globalUID
-                                                                                    configMap.reportFrom = new Timestamp(DateUtils.parseDateGeneric(performance.'ns2:Period'.'ns2:Begin'.text()).getTime())
-                                                                                    configMap.reportTo = new Timestamp(DateUtils.parseDateGeneric(performance.'ns2:Period'.'ns2:End'.text()).getTime())
-                                                                                    configMap.category = category
-                                                                                    configMap.metricType = metricType
-                                                                                    configMap.publisher = publisher
-                                                                                    configMap.reportCount = count
-                                                                                    //c4r_title_guid, c4r_publisher, c4r_platform_guid, c4r_report_institution_guid, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count
-                                                                                    stmt.addBatch(configMap)
+                                                                    reportItem.'ns2:ItemPerformance'.each { performance ->
+                                                                        performance.'ns2:Instance'.each { instance ->
+                                                                            String category = performance.'ns2:Category'.text()
+                                                                            String metricType = instance.'ns2:MetricType'.text()
+                                                                            Integer count = Integer.parseInt(instance.'ns2:Count'.text())
+                                                                            Map<String, Object> configMap = [reportType: reportData.reportName, version: 0]
+                                                                            configMap.reportInstitution = customerUID
+                                                                            configMap.platform = c4asPlatform.globalUID
+                                                                            configMap.publisher = reportItem.'ns2:ItemPublisher'.text()
+                                                                            configMap.reportFrom = new Timestamp(DateUtils.parseDateGeneric(performance.'ns2:Period'.'ns2:Begin'.text()).getTime())
+                                                                            configMap.reportTo = new Timestamp(DateUtils.parseDateGeneric(performance.'ns2:Period'.'ns2:End'.text()).getTime())
+                                                                            configMap.category = category
+                                                                            configMap.metricType = metricType
+                                                                            configMap.reportCount = count
+                                                                            //c4r_platform_guid, c4r_report_institution_guid, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count
+                                                                            Map<String, Object> selMap = configMap.clone() as Map<String, Object> //simple assignment makes call by reference so modifies the actual object
+                                                                            selMap.remove('version')
+                                                                            selMap.remove('reportCount')
+                                                                            List<GroovyRowResult> existingKey = statsSql.rows('select c4r_id from counter4report where c4r_platform_guid = :platform ' +
+                                                                                    'and c4r_report_institution_guid = :reportInstitution ' +
+                                                                                    'and c4r_report_type = :reportType ' +
+                                                                                    'and c4r_metric_type = :metricType ' +
+                                                                                    'and c4r_report_from = :reportFrom ' +
+                                                                                    'and c4r_report_to = :reportTo', selMap)
+                                                                            if (existingKey) {
+                                                                                statsSql.execute('update counter4report set c4r_report_count = :reportCount, c4r_publisher = :publisher where c4r_id = :reportId', [reportCount: count, publisher: reportItem.'ns2:ItemPublisher'.text(), reportId: existingKey[0].get('c4r_id')])
+                                                                            } else
+                                                                                stmt.addBatch(configMap)
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                            log.debug("${Thread.currentThread().getName()} reports success: ${resultCount.length}")
+                                                        } else {
+                                                            GParsPool.withExistingPool(pool) {
+                                                                reportData.reports.eachWithIndexParallel { reportItem, int t ->
+                                                                    int[] resultCount = statsSql.withBatch("insert into counter4report (c4r_version, c4r_title_guid, c4r_publisher, c4r_platform_guid, c4r_report_institution_guid, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count) " +
+                                                                            "values (:version, :title, :publisher, :platform, :reportInstitution, :reportType, :category, :metricType, :reportFrom, :reportTo, :reportCount) " +
+                                                                            "on conflict on constraint unique_counter_4_report do " +
+                                                                            "update set c4r_report_count = :reportCount") { stmt ->
+                                                                        Set<String> identifiers = []
+                                                                        reportItem.'ns2:ItemIdentifier'.'ns2:Value'.each { identifier ->
+                                                                            identifiers << identifier.text()
+                                                                        }
+                                                                        //int ctr = 0
+                                                                        List<GroovyRowResult> rows = sql.rows("select tipp_guid from title_instance_package_platform join identifier on id_tipp_fk = tipp_id where id_value = any(:identifiers) and id_ns_fk = any(:namespaces) and tipp_plat_fk = :platform and tipp_status_rv_fk != :removed", [identifiers: sqlConn.createArrayOf('varchar', identifiers as Object[]), namespaces: sqlConn.createArrayOf('bigint', namespaces as Object[]), platform: c4asPlatform.id, removed: RDStore.TIPP_STATUS_REMOVED.id])
+                                                                        if (rows) {
+                                                                            //log.debug("${Thread.currentThread().getName()} processes report item ${t}")
+                                                                            //do not commit
+                                                                            rows.eachWithIndex { GroovyRowResult row, int ctx ->
+                                                                                String title = row.get('tipp_guid')
+                                                                                reportItem.'ns2:ItemPerformance'.each { performance ->
+                                                                                    performance.'ns2:Instance'.each { instance ->
+                                                                                        //findAll seems to be less performant than loop processing
+                                                                                        //if (instance.'ns2:MetricType'.text() == "ft_total") {
+                                                                                        //log.debug("${Thread.currentThread().getName()} processes performance ${ctr} for title ${t} in context ${ctx}")
+                                                                                        String category = performance.'ns2:Category'.text()
+                                                                                        String metricType = instance.'ns2:MetricType'.text()
+                                                                                        String publisher = reportItem.'ns2:ItemPublisher'.text()
+                                                                                        Integer count = Integer.parseInt(instance.'ns2:Count'.text())
+                                                                                        Map<String, Object> configMap = [reportType: reportData.reportName, version: 0]
+                                                                                        configMap.title = title
+                                                                                        configMap.reportInstitution = customerUID
+                                                                                        configMap.platform = c4asPlatform.globalUID
+                                                                                        configMap.reportFrom = new Timestamp(DateUtils.parseDateGeneric(performance.'ns2:Period'.'ns2:Begin'.text()).getTime())
+                                                                                        configMap.reportTo = new Timestamp(DateUtils.parseDateGeneric(performance.'ns2:Period'.'ns2:End'.text()).getTime())
+                                                                                        configMap.category = category
+                                                                                        configMap.metricType = metricType
+                                                                                        configMap.publisher = publisher
+                                                                                        configMap.reportCount = count
+                                                                                        //c4r_title_guid, c4r_publisher, c4r_platform_guid, c4r_report_institution_guid, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count
+                                                                                        stmt.addBatch(configMap)
+                                                                                    }
                                                                                 }
                                                                             }
                                                                         }
+                                                                        if (!rows) log.debug("no title found for ${reportItem.'ns2:ItemIdentifier'.'ns2:Value'.text()}")
                                                                     }
-                                                                    if (!rows) log.debug("no title found for ${reportItem.'ns2:ItemIdentifier'.'ns2:Value'.text()}")
+                                                                    log.debug("${Thread.currentThread().getName()} reports success: ${resultCount.length}")
                                                                 }
-                                                                log.debug("${Thread.currentThread().getName()} reports success: ${resultCount.length}")
                                                             }
                                                         }
                                                     }
@@ -639,83 +641,85 @@ class StatsSyncService {
                                         GParsPool.withExistingPool(pool) {
                                             reports.eachWithIndexParallel { String customerUID, List<Map<String, Object>> reportList, int j ->
                                                 Sql statsSql = GlobalService.obtainStorageSqlConnection()
-                                                log.debug("${Thread.currentThread().getName()} processes customer ${j}")
-                                                reportList.eachWithIndex { Map<String, Object> reportData, int ctr ->
-                                                    log.debug("${Thread.currentThread().getName()} processes report ${ctr}") //do not commit
-                                                    if (reportData.reportID in [Counter5Report.PLATFORM_MASTER_REPORT, Counter5Report.PLATFORM_USAGE]) {
-                                                        int[] resultCount = statsSql.withBatch("insert into counter5report (c5r_version, c5r_publisher, c5r_platform_guid, c5r_report_institution_guid, c5r_report_type, c5r_metric_type, c5r_report_from, c5r_report_to, c5r_report_count) " +
-                                                                "values (:version, :publisher, :platform, :reportInstitution, :reportType, :metricType, :reportFrom, :reportTo, :reportCount)") { stmt ->
-                                                            reportData.reports.items.each { Map reportItem ->
-                                                                //int ctr = 0
-                                                                reportItem.Performance.each { Map performance ->
-                                                                    performance.Instance.each { Map instance ->
-                                                                        Map<String, Object> configMap = [reportType: reportData.reports.header.Report_ID, version: 0]
-                                                                        configMap.reportInstitution = customerUID
-                                                                        configMap.platform = c5asPlatform.globalUID
-                                                                        configMap.publisher = reportItem.Publisher
-                                                                        configMap.reportFrom = new Timestamp(DateUtils.parseDateGeneric(performance.Period.Begin_Date).getTime())
-                                                                        configMap.reportTo = new Timestamp(DateUtils.parseDateGeneric(performance.Period.End_Date).getTime())
-                                                                        configMap.metricType = instance.Metric_Type
-                                                                        configMap.reportCount = instance.Count as int
-                                                                        Map<String, Object> selMap = configMap.clone() as Map<String, Object> //simple assignment makes call by reference so modifies the actual object
-                                                                        selMap.remove('version')
-                                                                        selMap.remove('reportCount')
-                                                                        List<GroovyRowResult> existingKey = statsSql.rows('select c5r_id from counter5report where c5r_publisher = :publisher ' +
-                                                                                'and c5r_platform_guid = :platform ' +
-                                                                                'and c5r_report_institution_guid = :reportInstitution ' +
-                                                                                'and c5r_report_type = :reportType ' +
-                                                                                'and c5r_metric_type = :metricType ' +
-                                                                                'and c5r_report_from = :reportFrom ' +
-                                                                                'and c5r_report_to = :reportTo', selMap)
-                                                                        if (existingKey) {
-                                                                            statsSql.execute('update counter5report set c5r_report_count = :reportCount where c5r_id = :reportId', [reportCount: instance.Count as int, reportId: existingKey[0].get('c5r_id')])
-                                                                        } else
-                                                                            stmt.addBatch(configMap)
+                                                statsSql.withTransaction { Connection conn ->
+                                                    log.debug("${Thread.currentThread().getName()} processes customer ${j}")
+                                                    reportList.eachWithIndex { Map<String, Object> reportData, int ctr ->
+                                                        //log.debug("${Thread.currentThread().getName()} processes report ${ctr}") //do not commit
+                                                        if (reportData.reportID in [Counter5Report.PLATFORM_MASTER_REPORT, Counter5Report.PLATFORM_USAGE]) {
+                                                            int[] resultCount = statsSql.withBatch("insert into counter5report (c5r_version, c5r_publisher, c5r_platform_guid, c5r_report_institution_guid, c5r_report_type, c5r_metric_type, c5r_report_from, c5r_report_to, c5r_report_count) " +
+                                                                    "values (:version, :publisher, :platform, :reportInstitution, :reportType, :metricType, :reportFrom, :reportTo, :reportCount)") { stmt ->
+                                                                reportData.reports.items.each { Map reportItem ->
+                                                                    //int ctr = 0
+                                                                    reportItem.Performance.each { Map performance ->
+                                                                        performance.Instance.each { Map instance ->
+                                                                            Map<String, Object> configMap = [reportType: reportData.reports.header.Report_ID, version: 0]
+                                                                            configMap.reportInstitution = customerUID
+                                                                            configMap.platform = c5asPlatform.globalUID
+                                                                            configMap.publisher = reportItem.Publisher
+                                                                            configMap.reportFrom = new Timestamp(DateUtils.parseDateGeneric(performance.Period.Begin_Date).getTime())
+                                                                            configMap.reportTo = new Timestamp(DateUtils.parseDateGeneric(performance.Period.End_Date).getTime())
+                                                                            configMap.metricType = instance.Metric_Type
+                                                                            configMap.reportCount = instance.Count as int
+                                                                            Map<String, Object> selMap = configMap.clone() as Map<String, Object> //simple assignment makes call by reference so modifies the actual object
+                                                                            selMap.remove('version')
+                                                                            selMap.remove('reportCount')
+                                                                            List<GroovyRowResult> existingKey = statsSql.rows('select c5r_id from counter5report where c5r_publisher = :publisher ' +
+                                                                                    'and c5r_platform_guid = :platform ' +
+                                                                                    'and c5r_report_institution_guid = :reportInstitution ' +
+                                                                                    'and c5r_report_type = :reportType ' +
+                                                                                    'and c5r_metric_type = :metricType ' +
+                                                                                    'and c5r_report_from = :reportFrom ' +
+                                                                                    'and c5r_report_to = :reportTo', selMap)
+                                                                            if (existingKey) {
+                                                                                statsSql.execute('update counter5report set c5r_report_count = :reportCount where c5r_id = :reportId', [reportCount: instance.Count as int, reportId: existingKey[0].get('c5r_id')])
+                                                                            } else
+                                                                                stmt.addBatch(configMap)
+                                                                        }
                                                                     }
                                                                 }
                                                             }
-                                                        }
-                                                        //log.debug("${Thread.currentThread().getName()} reports success: ${resultCount.length}")
-                                                    } else {
-                                                        GParsPool.withExistingPool(pool) {
-                                                            reportData.reports.items.eachWithIndexParallel { Map reportItem, int t ->
-                                                                int[] resultCount = statsSql.withBatch("insert into counter5report (c5r_version, c5r_title_guid, c5r_publisher, c5r_platform_guid, c5r_report_institution_guid, c5r_report_type, c5r_metric_type, c5r_access_type, c5r_access_method, c5r_report_from, c5r_report_to, c5r_report_count) " +
-                                                                        "values (:version, :title, :publisher, :platform, :reportInstitution, :reportType, :metricType, :accessType, :accessMethod, :reportFrom, :reportTo, :reportCount) " +
-                                                                        "on conflict on constraint unique_counter_5_report do " +
-                                                                        "update set c5r_report_count = :reportCount, c5r_access_type = :accessType, c5r_access_method = :accessMethod") { stmt ->
-                                                                    //int ctr = 0
-                                                                    Set<String> identifiers = []
-                                                                    reportItem["Item_ID"].each { idData ->
-                                                                        identifiers << idData.Value
-                                                                    }
-                                                                    List<GroovyRowResult> rows = sql.rows("select tipp_guid from title_instance_package_platform join identifier on id_tipp_fk = tipp_id where id_value = any(:identifiers) and id_ns_fk = any(:namespaces) and tipp_plat_fk = :platform and tipp_status_rv_fk != :removed", [identifiers: sqlConn.createArrayOf('varchar', identifiers as Object[]), namespaces: sqlConn.createArrayOf('bigint', namespaces as Object[]), platform: c5asPlatform.id, removed: RDStore.TIPP_STATUS_REMOVED.id])
-                                                                    List<Map> performances = reportItem.Performance as List<Map>
-                                                                    if (rows) {
-                                                                        log.debug("${Thread.currentThread().getName()} processes report item ${t}")
-                                                                        //do not commit
-                                                                        rows.eachWithIndex { GroovyRowResult row, int ctx ->
-                                                                            String title = row.get('tipp_guid')
-                                                                            performances.each { Map performance ->
-                                                                                performance.Instance.each { Map instance ->
-                                                                                    //log.debug("${Thread.currentThread().getName()} processes performance ${ctr} for title ${t} in context ${ctx}")
-                                                                                    Map<String, Object> configMap = [reportType: reportData.reports.header.Report_ID, version: 0]
-                                                                                    configMap.title = title
-                                                                                    configMap.reportInstitution = customerUID
-                                                                                    configMap.platform = c5asPlatform.globalUID
-                                                                                    configMap.publisher = reportItem.Publisher
-                                                                                    configMap.reportFrom = new Timestamp(DateUtils.parseDateGeneric(performance.Period.Begin_Date).getTime())
-                                                                                    configMap.reportTo = new Timestamp(DateUtils.parseDateGeneric(performance.Period.End_Date).getTime())
-                                                                                    configMap.accessType = reportItem.Access_Type
-                                                                                    configMap.accessMethod = reportItem.Access_Method
-                                                                                    configMap.metricType = instance.Metric_Type
-                                                                                    configMap.reportCount = instance.Count as int
-                                                                                    stmt.addBatch(configMap)
+                                                            //log.debug("${Thread.currentThread().getName()} reports success: ${resultCount.length}")
+                                                        } else {
+                                                            GParsPool.withExistingPool(pool) {
+                                                                reportData.reports.items.eachWithIndexParallel { Map reportItem, int t ->
+                                                                    int[] resultCount = statsSql.withBatch("insert into counter5report (c5r_version, c5r_title_guid, c5r_publisher, c5r_platform_guid, c5r_report_institution_guid, c5r_report_type, c5r_metric_type, c5r_access_type, c5r_access_method, c5r_report_from, c5r_report_to, c5r_report_count) " +
+                                                                            "values (:version, :title, :publisher, :platform, :reportInstitution, :reportType, :metricType, :accessType, :accessMethod, :reportFrom, :reportTo, :reportCount) " +
+                                                                            "on conflict on constraint unique_counter_5_report do " +
+                                                                            "update set c5r_report_count = :reportCount, c5r_access_type = :accessType, c5r_access_method = :accessMethod") { stmt ->
+                                                                        //int ctr = 0
+                                                                        Set<String> identifiers = []
+                                                                        reportItem["Item_ID"].each { idData ->
+                                                                            identifiers << idData.Value
+                                                                        }
+                                                                        List<GroovyRowResult> rows = sql.rows("select tipp_guid from title_instance_package_platform join identifier on id_tipp_fk = tipp_id where id_value = any(:identifiers) and id_ns_fk = any(:namespaces) and tipp_plat_fk = :platform and tipp_status_rv_fk != :removed", [identifiers: sqlConn.createArrayOf('varchar', identifiers as Object[]), namespaces: sqlConn.createArrayOf('bigint', namespaces as Object[]), platform: c5asPlatform.id, removed: RDStore.TIPP_STATUS_REMOVED.id])
+                                                                        List<Map> performances = reportItem.Performance as List<Map>
+                                                                        if (rows) {
+                                                                            //log.debug("${Thread.currentThread().getName()} processes report item ${t}")
+                                                                            //do not commit
+                                                                            rows.eachWithIndex { GroovyRowResult row, int ctx ->
+                                                                                String title = row.get('tipp_guid')
+                                                                                performances.each { Map performance ->
+                                                                                    performance.Instance.each { Map instance ->
+                                                                                        //log.debug("${Thread.currentThread().getName()} processes performance ${ctr} for title ${t} in context ${ctx}")
+                                                                                        Map<String, Object> configMap = [reportType: reportData.reports.header.Report_ID, version: 0]
+                                                                                        configMap.title = title
+                                                                                        configMap.reportInstitution = customerUID
+                                                                                        configMap.platform = c5asPlatform.globalUID
+                                                                                        configMap.publisher = reportItem.Publisher
+                                                                                        configMap.reportFrom = new Timestamp(DateUtils.parseDateGeneric(performance.Period.Begin_Date).getTime())
+                                                                                        configMap.reportTo = new Timestamp(DateUtils.parseDateGeneric(performance.Period.End_Date).getTime())
+                                                                                        configMap.accessType = reportItem.Access_Type
+                                                                                        configMap.accessMethod = reportItem.Access_Method
+                                                                                        configMap.metricType = instance.Metric_Type
+                                                                                        configMap.reportCount = instance.Count as int
+                                                                                        stmt.addBatch(configMap)
+                                                                                    }
                                                                                 }
                                                                             }
-                                                                        }
-                                                                    } else log.error("no matching titles determined for ${identifiers}")
+                                                                        } else log.error("no matching titles determined for ${identifiers}")
+                                                                    }
+                                                                    log.debug("${Thread.currentThread().getName()} reports success: ${resultCount.length}")
                                                                 }
-                                                                //log.debug("${Thread.currentThread().getName()} reports success: ${resultCount.length}")
                                                             }
                                                         }
                                                     }
