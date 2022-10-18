@@ -657,6 +657,7 @@ class WorkflowService {
                                         String uploadTitle         = params.get('wfUploadTitle_' + fileId) ?: file.originalFilename
                                         String uploadOwner         = params.get('wfUploadOwner_' + fileId)
                                         RefdataValue uploadDoctype = RefdataValue.get(params.get('wfUploadDoctype_' + fileId) as Serializable)
+                                        RefdataValue uploadCnf     = params.get('wfUploadConfidentiality_' + fileId) ? RefdataValue.get(params.get('wfUploadConfidentiality_' + fileId) as Serializable) : null
 
                                         Doc doc = new Doc(
                                                 contentType: Doc.CONTENT_TYPE_FILE,
@@ -664,6 +665,7 @@ class WorkflowService {
                                                 mimeType: file.contentType,
                                                 title: uploadTitle,
                                                 type: uploadDoctype,
+                                                confidentiality: uploadCnf,
                                                 creator: contextService.getUser(),
                                                 owner: contextService.getOrg()
                                         )

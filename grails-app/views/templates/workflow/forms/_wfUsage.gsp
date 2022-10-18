@@ -221,7 +221,7 @@
                                                           from="${targetDocuments}"
                                                           value="${task.condition.getProperty(field)?.id}"
                                                           optionKey="${{it.id}}"
-                                                          optionValue="${{ (it.owner?.title ? it.owner.title : it.owner?.filename ? it.owner.filename : message(code:'template.documents.missing')) + ' (' + it.owner?.type?.getI10n("value") + ')' }}" />
+                                                          optionValue="${{ (it.owner?.title ?: it.owner?.filename ?: message(code:'template.documents.missing')) + ' (' + it.owner?.type?.getI10n("value") + ')' + (it.owner?.confidentiality ? ' (' + it.owner?.confidentiality?.getI10n('value') + ')' : '')}}" />
                                             </g:if>
                                             <g:else>
                                                 <g:set var="targetDocuments" value="${targetObject.documents.findAll{ it.status != RDStore.DOC_CTX_STATUS_DELETED && it.owner.contentType == Doc.CONTENT_TYPE_FILE }}" />
@@ -230,7 +230,7 @@
                                                           from="${targetDocuments}"
                                                           value="${task.condition.getProperty(field)?.id}"
                                                           optionKey="${{it.id}}"
-                                                          optionValue="${{ (it.owner?.title ? it.owner.title : it.owner?.filename ? it.owner.filename : message(code:'template.documents.missing')) + ' (' + it.owner?.type?.getI10n("value") + ')' }}" />
+                                                          optionValue="${{ (it.owner?.title ?: it.owner?.filename ?: message(code:'template.documents.missing')) + ' (' + it.owner?.type?.getI10n("value") + ')' + (it.owner?.confidentiality ? ' (' + it.owner?.confidentiality?.getI10n('value') + ')' : '')}}" />
 
                                             </g:else>
                                         </div>
@@ -254,6 +254,14 @@
                                                   optionValue="${{ it.getI10n('value') }}"
                                                   name="wfUploadDoctype_${field}"
                                                   />
+
+                                        <label for="wfUploadConfidentiality_${field}">${message(code: 'template.addDocument.confidentiality')}:</label>
+                                        <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.DOCUMENT_CONFIDENTIALITY)}"
+                                                  class="ui dropdown fluid"
+                                                  optionKey="id"
+                                                  optionValue="${{ it.getI10n('value') }}"
+                                                  name="wfUploadConfidentiality_${field}"
+                                                  noSelection="${['': message(code: 'default.select.choose.label')]}" />
 
                                         <g:if test="${(workflow && wfInfo.target instanceof Org) || (targetObject && targetObject instanceof Org)}">
                                             <label for="wfUploadShareConf_${field}">${message(code:'template.addDocument.shareConf')}</label>

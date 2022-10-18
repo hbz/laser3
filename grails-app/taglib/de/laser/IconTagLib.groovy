@@ -246,7 +246,7 @@ class IconTagLib {
                         markup = markup + '<i class="ui icon circle olive"></i> '
                         break;
                     case RDStore.DOC_CONF_INTERNAL:
-                        markup = markup + '<i class="ui icon unlock yellow"></i> '
+                        markup = markup + '<i class="ui icon lock yellow"></i> '
                         break;
                     case RDStore.DOC_CONF_STRICTLY:
                         markup = markup + '<i class="ui icon lock orange"></i> '
