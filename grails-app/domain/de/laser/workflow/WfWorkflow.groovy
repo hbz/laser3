@@ -72,6 +72,7 @@ class WfWorkflow extends WfWorkflowBase {
         title            (blank: false)
         prototypeVariant (blank: false)
         prototypeTitle   (blank: false)
+        user             (nullable: true)
 
         subscription     (nullable: true)
         license          (nullable: true)

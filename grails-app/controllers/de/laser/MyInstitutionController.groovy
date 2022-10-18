@@ -2628,8 +2628,13 @@ join sub.orgRelations or_sub where
             queryParams.put('status', RefdataValue.get(result.filterStatus))
         }
         if (result.filterUser) {
-            idQuery = idQuery + ' and wf.user = :user'
-            queryParams.put('user', User.get(result.filterUser))
+            if (result.filterUser == 'all') {
+                idQuery = idQuery + ' and wf.user = null'
+            }
+            else {
+                idQuery = idQuery + ' and wf.user = :user'
+                queryParams.put('user', User.get(result.filterUser))
+            }
         }
         if (result.filterProvider) {
             idQuery = idQuery + ' and exists (select ooo from OrgRole ooo join ooo.sub sub where ooo.org = :provider and ooo.roleType = :roleType and sub = wf.subscription)'
