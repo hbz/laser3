@@ -9,6 +9,7 @@ import de.laser.AddressbookService
 import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper
 import de.laser.ctrl.SubscriptionControllerService
+import de.laser.interfaces.CalculatedType
 import de.laser.remote.ApiSource
 import de.laser.CacheService
 import de.laser.ContextService
@@ -287,6 +288,14 @@ class AjaxHtmlController {
     @Secured(['ROLE_USER'])
     def generateCostPerUse() {
         Map<String, Object> ctrlResult = subscriptionControllerService.getStatsData(params)
+        ctrlResult.result.costPerUse = [:]
+        if(ctrlResult.result.subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION) {
+            ctrlResult.result.costPerUse.consortialData = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "consortial")
+            if(ctrlResult.result.institution.getCustomerType() == "ORG_INST") {
+                ctrlResult.result.costPerUse.ownData = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "own")
+            }
+        }
+        else ctrlResult.result.costPerUse.ownData = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "own")
         render template: "/subscription/costPerUse", model: ctrlResult.result
     }
 
