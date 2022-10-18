@@ -24,7 +24,6 @@
                 <div class="ui small feed content la-js-dont-hide-this-card">
                     <div class="ui grid summary">
                         <div class="eleven wide column">
-
                             <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().contains(docctx.owner.mimeType)}" />
                             <g:if test="${supportedMimeType}">
                                 <a href="#documentPreview" data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title ?: docctx.owner.filename}</a>
@@ -46,6 +45,9 @@
 %{--                                </g:else>--}%
 
 %{--                            </g:link>(${docctx.owner?.type?.getI10n("value")})--}%
+
+                            %{--ERMS-4529--}%
+                            <ui:documentIcon doc="${docctx.owner}" showText="false" showTooltip="true"/>
 
                             %{--//Vorerst alle Umfrage Dokumente als geteilt nur Kennzeichen--}%
                             <span  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">

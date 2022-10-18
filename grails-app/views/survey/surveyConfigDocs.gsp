@@ -114,25 +114,12 @@
                             ${docctx.owner?.type?.getI10n('value')}
                         </td>
                         <td>
+                            %{--ERMS-4529--}%
+                            <ui:documentIcon doc="${docctx.owner}" showText="false" showTooltip="true"/>
                             %{--//Vorerst alle Umfrage Dokumente als geteilt nur Kennzeichen--}%
                             <span class="la-popup-tooltip la-delay" data-content="${message(code: 'property.share.tooltip.on')}">
                                 <i class="green alternate share icon"></i>
                             </span>
-                            %{--ERMS-4529--}%
-                            <g:if test="${docctx.owner?.confidentiality}">
-                                <span class="la-popup-tooltip la-delay" data-content="${message(code: 'template.addDocument.confidentiality')}: ${docctx.owner.confidentiality.getI10n('value')}">
-                                    <g:if test="${docctx.owner?.confidentiality == RDStore.DOC_CONF_PUBLIC}">
-                                        <i class="ui icon circle olive"></i>
-                                    </g:if>
-                                    <g:elseif test="${docctx.owner?.confidentiality == RDStore.DOC_CONF_INTERNAL}">
-                                        <i class="ui icon unlock yellow"></i>
-                                    </g:elseif>
-                                    <g:elseif test="${docctx.owner?.confidentiality == RDStore.DOC_CONF_STRICTLY}">
-                                        <i class="ui icon lock orange"></i>
-                                    </g:elseif>
-                                </span>
-                            </g:if>
-
                         </td>
                         <td class="x">
                             <g:if test="${((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3))}">
