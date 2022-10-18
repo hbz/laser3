@@ -40009,12 +40009,12 @@ i.icon.la-copy {
   font-family: Icons;
 }
 
-i.icon.la-copy.open:before {
-  content: "\f24d";
+i.icon.la-phone {
+  font-family: Icons;
 }
 
-i.icon.la-copy:before {
-  content: "\f24d";
+i.icon.la-phone.open {
+  font-family: Icons;
 }
 
 i.icon.hand.pointer.outline.slash:before {
@@ -40133,6 +40133,24 @@ i.icon.la-redo.slash:before {
 
 i.icon.la-exchange.slash:before {
   content: "\e91a";
+}
+
+i.icon.la-copy.open:before {
+  content: "\f24d";
+}
+
+i.icon.la-copy:before {
+  content: "\f24d";
+}
+
+i.icon.la-phone.open:before {
+  content: "\f095";
+  -webkit-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+
+i.icon.la-phone:before {
+  content: "\f095";
 }
 
 /*******************************

@@ -159,11 +159,11 @@ r2d2 = {
 
         // universal copy item
         $('.js-copyTrigger').click(function(){
-            var element = $(this).parents('.js-copyTriggerParent').find('.js-copyTopic')
+            var element = $(this).parents('.js-copyTriggerParent').find('.js-copyTopic');
             var html = $(element).html();
             var $temp = $("<input>");
             $("body").append($temp);
-            $temp.val($(element).text()).select();
+            $temp.val($.trim($(element).text())).select();
             document.execCommand("copy");
             clearTimeout(timeout);
             $(element).html(JSPC.dict.get('copied', JSPC.currLanguage));
