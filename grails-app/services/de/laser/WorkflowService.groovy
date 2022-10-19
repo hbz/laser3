@@ -644,7 +644,7 @@ class WorkflowService {
                         }
                     }
 
-                    for(int i=1; i<=2; i++) {
+                    for(int i=1; i<=4; i++) {
                         String fileId = 'file' + i
 
                         if (params.get('wfUploadFile_placeholder_' + fileId)) {
