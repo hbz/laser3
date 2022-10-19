@@ -27,7 +27,7 @@
                                     ${prsFunc.functionType?.getI10n("value")}
                                 </g:each>
                             </td>
-                            <td class="x">
+                            <td class="center aligned">
                                 <g:form class="ui form" url="[controller:'ajax', action:'addPrsRole']" method="post">
                                     <input type="hidden" name="parent" value="${parent}"/>
                                     <input type="hidden" name="person" value="${p.class.name}:${p.id}" />
@@ -55,7 +55,7 @@
                                     ${prsFunc.functionType?.getI10n("value")}
                                 </g:each>
                             </td>
-                            <td class="x">
+                            <td class="center aligned">
                                 <g:form class="ui form" url="[controller:'ajax', action:'addPrsRole']" method="post">
                                     <input type="hidden" name="parent" value="${parent}"/>
                                     <input type="hidden" name="person" value="${p.class.name}:${p.id}" />

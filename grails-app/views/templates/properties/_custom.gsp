@@ -89,7 +89,7 @@
                         <td>
                             <ui:xEditable owner="${prop}" type="textarea" field="note" overwriteEditable="${overwriteEditable}" class="la-dont-break-out"/>
                         </td>
-                        <td class="x la-js-editmode-container">  <%--before="if(!confirm('Merkmal ${prop.type.name} löschen?')) return false" --%>
+                        <td class="center aligned la-js-editmode-container">  <%--before="if(!confirm('Merkmal ${prop.type.name} löschen?')) return false" --%>
                             <g:if test="${overwriteEditable && (prop.hasProperty("instanceOf") && !prop.instanceOf)}">
                                 <g:if test="${showConsortiaFunctions}">
                                     <g:set var="auditMsg" value="${message(code:'property.audit.toggle', args: [prop.type.name])}" />

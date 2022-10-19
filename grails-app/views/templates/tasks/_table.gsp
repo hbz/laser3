@@ -80,7 +80,7 @@
                         </g:if>
                     </td>
 
-                    <td class="x">
+                    <td class="center aligned">
                         <g:if test="${overwriteEditable}">
                             <a onclick="JSPC.app.taskedit(${taskInstance.id});" class="ui icon button blue la-modern-button"
                                role="button"

@@ -88,7 +88,7 @@
                         </g:else>
                     </div>
                 </td>
-                <td class="x">
+                <td class="center aligned">
                     <g:if test="${false}">
                         <ui:remoteLink class="ui icon  negative button la-modern-button js-open-confirm-modal"
                                           controller="ajax"
@@ -139,7 +139,7 @@
                         </ui:remoteLink>
                     </g:else>
                 </td>
-                <td class="x">
+                <td class="center aligned">
                 <g:if test="${dashDueDate?.dueDateObject.isDone}">
                     <ui:remoteLink class="ui green button la-modern-button la-popup-tooltip la-delay"
                                       data-content="${message(code:'myinst.dash.due_dates.status.pending.tooltip')}"
