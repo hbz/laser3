@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      19.10.2022  rc-2.3  2.3.10      Andreas Bug         zahlreiche Bugs im Sync behoben
+
+--      17.10.2022  rc-2.3  2.3.10      Andreas Bug         Zählung der Kosten korrigiert
+
 4548    13.10.2022  rc-2.3  2.3.10      Andreas Bug         500er beim KBART-Export behoben
 
 --      10.10.2022  rc-2.3  2.3.10      Andreas Bug         Löschkaskade behoben

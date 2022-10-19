@@ -1870,7 +1870,8 @@ class SubscriptionControllerService {
             Set<PendingChange> changesOfPage = []
             Set<String> excludes = PendingChangeConfiguration.GENERIC_EXCLUDES
             result.subscription.packages.each { SubscriptionPackage sp ->
-                Set<String> keysWithPendingOrNotification = sp.pendingChangeConfig.findAll { PendingChangeConfiguration pcc -> !(pcc.settingKey in excludes) && (pcc.settingValue == RDStore.PENDING_CHANGE_CONFIG_PROMPT || pcc.withNotification) }.collect{ PendingChangeConfiguration pcc -> pcc.settingKey }
+                //(pcc.settingValue == RDStore.PENDING_CHANGE_CONFIG_PROMPT || pcc.withNotification)
+                Set<String> keysWithPendingOrNotification = sp.pendingChangeConfig.findAll { PendingChangeConfiguration pcc -> !(pcc.settingKey in excludes) && (pcc.settingValue in [RDStore.PENDING_CHANGE_CONFIG_PROMPT, RDStore.PENDING_CHANGE_CONFIG_ACCEPT]) }.collect{ PendingChangeConfiguration pcc -> pcc.settingKey }
                 keysWithPendingOrNotification << PendingChangeConfiguration.TITLE_REMOVED
                 if(keysWithPendingOrNotification) {
                     pkgSettingMap.put(sp, keysWithPendingOrNotification)
@@ -1900,7 +1901,18 @@ class SubscriptionControllerService {
 
             params.sort = params.sort ?: 'ts'
             params.order = params.order ?: 'desc'
-            params.eventType = params.eventType ?: PendingChangeConfiguration.TITLE_UPDATED
+            if(!params.eventType) {
+                if(params.tab == 'acceptedChanges') {
+                    params.eventType = PendingChangeConfiguration.TITLE_UPDATED
+                }
+                else if(params.tab == 'changes' && !pkgSettingMap.values().contains(RDStore.PENDING_CHANGE_CONFIG_PROMPT)) {
+                    params.eventType = PendingChangeConfiguration.TITLE_REMOVED
+                }
+            }
+            else if(params.eventType == PendingChangeConfiguration.TITLE_REMOVED && params.tab == 'acceptedChanges')
+                params.eventType = PendingChangeConfiguration.TITLE_UPDATED
+            else if(params.tab == 'changes' && !pkgSettingMap.containsValue(params.eventType))
+                params.eventType = PendingChangeConfiguration.TITLE_REMOVED
             String order = " order by pc.${params.sort} ${params.order}"
             if(pkgSettingMap && pendingOrWithNotification) {
                 pkgSettingMap.each { SubscriptionPackage sp, Set<String> settings ->
@@ -3346,7 +3358,7 @@ class SubscriptionControllerService {
 
             if(result.contextCustomerType == "ORG_CONSORTIUM") {
                 if(result.subscription.instanceOf){
-                    List subscrCostCounts = CostItem.executeQuery('select count(ci.id) from CostItem ci where ci.sub = :sub and ci.owner = :ctx and ci.costItemStatus != :deleted', [sub: result.subscription, ctx: result.institution, deleted: RDStore.COST_ITEM_DELETED])
+                    List subscrCostCounts = CostItem.executeQuery('select count(ci.id) from CostItem ci where ci.sub = :sub and ci.owner = :ctx and ci.costItemStatus != :deleted', [sub: result.subscription, ctx: result.contextOrg, deleted: RDStore.COST_ITEM_DELETED])
                     result.currentCostItemCounts = subscrCostCounts ? subscrCostCounts[0] : 0
                     result.currentSurveysCounts = SurveyConfig.executeQuery("from SurveyConfig as surConfig where surConfig.subscription = :sub and surConfig.surveyInfo.status not in (:invalidStatuses) and (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org))",
                             [sub: result.subscription.instanceOf,
