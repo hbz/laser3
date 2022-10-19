@@ -35,8 +35,8 @@
                                     <td>
                                         ${entry[1]}
                                     </td>
-                                    <td class="x">
-                                        <button class="ui button icon" data-key="${obj.key}" data-key2="${row.key}" data-value="${entry[0]}"><i class="ui icon search"></i></button>
+                                    <td class="center aligned">
+                                        <button class="ui mini button icon" data-key="${obj.key}" data-key2="${row.key}" data-value="${entry[0]}"><i class="ui icon search"></i></button>
                                     </td>
                                 </tr>
                             </g:each>

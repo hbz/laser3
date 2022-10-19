@@ -121,7 +121,7 @@
                                             <small>${pd.type?.split('\\.').last()}</small>
                                         </g:else>
                                     </td>
-                                    <td class="x">
+                                    <td class="center aligned">
 
                                         <g:if test="${pd.mandatory}">
                                             <g:link action="managePropertyDefinitions" data-content="${message(code:'propertyDefinition.unsetMandatory.label')}" data-position="top left"

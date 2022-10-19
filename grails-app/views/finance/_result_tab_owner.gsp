@@ -149,7 +149,7 @@
                     <td>
                         ${ci.costItemElement?.getI10n("value")}
                     </td>
-                    <td class="x">
+                    <td class="center aligned">
                         <g:if test="${editable}">
                             <g:if test="${fixedSubcription}">
                                 <g:link mapping="subfinanceEditCI" params='[sub:"${fixedSubscription?.id}", id:"${ci.id}", showView:"own", offset: params.offset]' class="ui icon button blue la-modern-button trigger-modal" data-id_suffix="edit_${ci.id}"

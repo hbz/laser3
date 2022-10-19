@@ -57,7 +57,7 @@
                         </g:if>
                     </g:else>
                 </td>
-                <td class="x">
+                <td class="center aligned">
                     <%
                         boolean check = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN');
                         if (! check) {

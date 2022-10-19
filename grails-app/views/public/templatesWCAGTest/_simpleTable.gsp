@@ -68,7 +68,7 @@
             </a>
         </td>
 
-        <td class="x">
+        <td class="center aligned">
 
         </td>
     </tr>
@@ -124,7 +124,7 @@
             </a>
         </td>
 
-        <td class="x">
+        <td class="center aligned">
 
         </td>
     </tr>
@@ -180,7 +180,7 @@
             </a>
         </td>
 
-        <td class="x">
+        <td class="center aligned">
 
         </td>
     </tr>
@@ -236,7 +236,7 @@
             </a>
         </td>
 
-        <td class="x">
+        <td class="center aligned">
 
         </td>
     </tr>
@@ -292,7 +292,7 @@
             </a>
         </td>
 
-        <td class="x">
+        <td class="center aligned">
 
         </td>
     </tr>
@@ -348,7 +348,7 @@
             </a>
         </td>
 
-        <td class="x">
+        <td class="center aligned">
 
         </td>
     </tr>
@@ -404,7 +404,7 @@
             </a>
         </td>
 
-        <td class="x">
+        <td class="center aligned">
 
         </td>
     </tr>
@@ -460,7 +460,7 @@
             </a>
         </td>
 
-        <td class="x">
+        <td class="center aligned">
 
         </td>
     </tr>
@@ -516,7 +516,7 @@
             </a>
         </td>
 
-        <td class="x">
+        <td class="center aligned">
 
         </td>
     </tr>
@@ -572,7 +572,7 @@
             </a>
         </td>
 
-        <td class="x">
+        <td class="center aligned">
 
         </td>
     </tr>

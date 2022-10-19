@@ -138,7 +138,7 @@
       <td>${asr.factType.value}</td>
 
     <g:if test="${statsError.size()!=0}">
-      <td class="x">
+      <td class="center aligned">
         <button class="ui icon button" data-target="stats-error-content-${i}">
           <i class="info icon"></i>
         </button>

@@ -55,7 +55,7 @@
                         </g:link>
                     </td>
                     <g:if test="${editable}">
-                        <td class="x">
+                        <td class="center aligned">
                             <g:if test="${!costItemGroups.get(bcode)}">
                                 <g:link controller="myInstitution"
                                         action="budgetCodes"

@@ -315,7 +315,7 @@
                                         <br />
                                         ${DateUtils.getLocalizedSDF_noTime().format(wf.dateCreated)}
                                     </td>
-                                    <td class="x">
+                                    <td class="center aligned">
                                         <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
                                             <uiWorkflow:usageIconLinkButton workflow="${wf}" params="${[key: 'dashboard:' + wfLinkParamPart]}" />
                                         </g:if>

@@ -33,6 +33,7 @@
                 <th>Feld</th>
                 <th>Datentyp</th>
                 <th>Index</th>
+                <th></th>
                 <th>Collation</th>
             </tr>
         </thead>
@@ -52,21 +53,23 @@
                     <td>${row.data_type}</td>
                     <td>${row.index_name}</td>
                     <g:if test="${! row.collation_name}">
-                        <td class="x disabled">${collate_current}</td>
+                        <td></td>
+                        <td class="disabled">${collate_current}</td>
                     </g:if>
                     <g:else>
-                        <td class="x">
-                            <span class="ui image label">
+                        <td>
                             <g:if test="${row.collation_name == DatabaseInfo.DE_U_CO_PHONEBK_X_ICU}">
-                                <img class="ui mini" src="${resource(dir:'images', file:'flags/de.svg', absolute:true)}" alt="[DE]" /> ${row.collation_name}
+                                <img class="mini-image" src="${resource(dir:'images', file:'flags/de.svg', absolute:true)}" alt="[DE]" />
                             </g:if>
                             <g:elseif test="${row.collation_name == DatabaseInfo.EN_US_U_VA_POSIX_X_ICU}">
-                                <img class="ui mini" src="${resource(dir:'images', file:'flags/us.svg', absolute:true)}" alt="[EN]" /> ${row.collation_name}
+                                <img class="mini-image" src="${resource(dir:'images', file:'flags/us.svg', absolute:true)}" alt="[EN]" />
                             </g:elseif>
                             <g:else>
-                                <img class="ui mini" src="${resource(dir:'images', file:'flags/xx.svg', absolute:true)}" alt="[?]" /> ${row.collation_name}
+                                <img class="mini-image" src="${resource(dir:'images', file:'flags/xx.svg', absolute:true)}" alt="[?]" />
                             </g:else>
-                        </span>
+                        </td>
+                        <td>
+                            ${row.collation_name}
                         </td>
                     </g:else>
                 </tr>
@@ -74,6 +77,10 @@
         </tbody>
     </table>
 </div>
+
+<style>
+    img.mini-image { width:26px; vertical-align:middle;}
+</style>
 
 <div data-tab="second" class="ui bottom attached tab">
     <div class="ui la-float-right">

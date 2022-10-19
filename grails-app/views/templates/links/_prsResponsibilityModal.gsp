@@ -30,7 +30,7 @@
                                 </g:else>
                                 ${p}
                             </td>
-                            <td class="x">
+                            <td class="center aligned">
                                 <g:form class="ui form" url="[controller:'ajax', action:'addPrsRole']" method="post">
                                     <input type="hidden" name="parent" value="${parent.class.name}:${parent.id}"/>
                                     <input type="hidden" name="person" value="${p.class.name}:${p.id}" />

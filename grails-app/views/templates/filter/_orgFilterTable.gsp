@@ -769,7 +769,7 @@
                 </td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveySubCostItem')}">
-                <td class="center aligned x">
+                <td class="center aligned">
 
                     <g:set var="oldCostItem" value="${0.0}"/>
                     <g:set var="oldCostItemAfterTax" value="${0.0}"/>
@@ -809,7 +809,7 @@
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveyCostItem') && surveyInfo.type.id in [RDStore.SURVEY_TYPE_RENEWAL.id, RDStore.SURVEY_TYPE_SUBSCRIPTION.id]}">
                 %{-- // TODO Moe - date.minusDays() --}%
-                <td class="x" style="${(existSubforOrg && orgSub && orgSub.endDate && ChronoUnit.DAYS.between(DateUtils.dateToLocalDate(orgSub.startDate), DateUtils.dateToLocalDate(orgSub.endDate)) < 364) ? 'background: #FFBF00 !important;' : ''}">
+                <td class="center aligned" style="${(existSubforOrg && orgSub && orgSub.endDate && ChronoUnit.DAYS.between(DateUtils.dateToLocalDate(orgSub.startDate), DateUtils.dateToLocalDate(orgSub.endDate)) < 364) ? 'background: #FFBF00 !important;' : ''}">
 
                     <g:if test="${surveyConfig.subSurveyUseForTransfer && orgSub && orgSub.isCurrentMultiYearSubscriptionNew()}">
                         <g:message code="surveyOrg.perennialTerm.available"/>

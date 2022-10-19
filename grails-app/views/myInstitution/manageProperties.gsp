@@ -108,7 +108,7 @@
                         </g:if>
                         <th><g:message code="default.name.label"/></th>
                         <th><g:message code="property.manageProperties.propertySelected"/>: ${filterPropDef.getI10n('name')}</th>
-                        <th class="x"><button class="ui button" type="submit">${message(code: 'default.button.save_changes')}</button></th>
+                        <th class="center aligned"><button class="ui button" type="submit">${message(code: 'default.button.save_changes')}</button></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -254,7 +254,7 @@
                                     </g:if>
                                 </div>
                             </td>
-                            <td class="x">
+                            <td class="center aligned">
                                 <g:link controller="${objWithoutProp.displayController}" action="show" id="${objWithoutProp.id}" class="ui icon button blue la-modern-button"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.edit.universal')}">
@@ -339,7 +339,7 @@
                         </g:if>
                         <th>${message(code: 'default.name.label')}</th>
                         <th>${message(code: 'property.manageProperties.propertySelected')}: ${filterPropDef.getI10n('name')}</th>
-                        <th class="x">
+                        <th class="center aligned">
                             <button class="ui button" type="submit" name="saveChanges" value="true">${message(code: 'default.button.save_changes')}</button>
                             <button class="ui button negative" type="submit" name="deleteProperties" value="true">${message(code: 'property.manageProperties.deleteProperty.button', args: [filterPropDef.getI10n('name')])}</button>
                                 <%-- TODO ask Ingrid
@@ -499,7 +499,7 @@
 
                             </td>
 
-                            <td class="x">
+                            <td class="center aligned">
                                 <g:link controller="${row.displayController}" action="${row.displayAction}" id="${row.id}" class="ui icon button blue la-modern-button"
                                         role="button"
                                         aria-label="${message(code: 'ariaLabel.edit.universal')}">

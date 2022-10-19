@@ -41,7 +41,7 @@
                     />
                 </div>
                 <div class="field">
-                    <label>Limit (Page Reload)</label>
+                    <label>Limit (Seite lädt neu)</label>
                     <g:select name="filter_limit" class="ui selection dropdown reloadFilter la-not-clearable"
                               from="${[100, 500, 1000, 2000, 3000, 5000, 10000]}"
                               noSelection="${['' : message(code:'default.select.choose.label')]}" value="${filter_limit}"
@@ -112,7 +112,7 @@
                     class="hidden"
             >
                 <td class="${tdClass}">
-                    ${i+1}.
+                    ${i+1}
                 </td>
                 <td class="${tdClass}">
                     ${el.category}
