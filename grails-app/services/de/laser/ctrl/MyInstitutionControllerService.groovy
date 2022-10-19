@@ -114,8 +114,16 @@ class MyInstitutionControllerService {
                     WfWorkflow.findAllByOwnerAndStatus(result.institution as Org, RDStore.WF_WORKFLOW_STATUS_OPEN)
             )
 
-            result.currentWorkflowsCount = workflows.size()
-            result.currentWorkflows = workflows.take(contextService.getUser().getPageSizeOrDefault())
+            List<WfWorkflow> myWfList  = workflows.findAll { it.user != null && it.user.id == result.user.id }
+            List<WfWorkflow> allWfList = workflows.findAll { it.user == null }
+
+            result.myWorkflowsCount  = myWfList.size()
+            result.allWorkflowsCount = allWfList.size()
+            result.myWorkflows  = myWfList.take(contextService.getUser().getPageSizeOrDefault())
+            result.allWorkflows = allWfList.take(contextService.getUser().getPageSizeOrDefault())
+
+//            result.currentWorkflowsCount = result.myCurrentWorkflows.size() + result.allCurrentWorkflows.size()
+//            result.currentWorkflows      = workflows.take(contextService.getUser().getPageSizeOrDefault())
         }
         /*
         result.surveys = activeSurveyConfigs.groupBy {it?.id}

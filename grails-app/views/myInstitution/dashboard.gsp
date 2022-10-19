@@ -98,7 +98,7 @@
         <g:if test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
             <a class="${us_dashboard_tab.value == 'Workflows' ? 'active item':'item'}" data-tab="workflows">
                 <i class="tasks icon large"></i>
-                ${currentWorkflowsCount} ${message(code:'workflow.plural')}
+                ${myWorkflowsCount + allWorkflowsCount} ${message(code:'workflow.plural')}
             </a>
         </g:if>
 
@@ -253,10 +253,12 @@
         <g:if test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
             <div class="ui bottom attached tab ${us_dashboard_tab.value == 'Workflows' ? 'active':''}" data-tab="workflows">
 
-                <div>
-                    <g:if test="${currentWorkflows.size() != currentWorkflowsCount}">
-                        <ui:msg class="info" text="${message(code:'workflow.dashboard.msg.more', args:[currentWorkflows.size(), currentWorkflowsCount, g.createLink(controller:'myInstitution', action:'currentWorkflows', params:[filter:'reset',max:200])])}" />
-                    </g:if>
+                <g:if test="${Math.max(myWorkflowsCount, allWorkflowsCount) > user.getPageSizeOrDefault()}">
+                    <ui:msg class="info" text="${message(code:'workflow.dashboard.msg.more', args:[user.getPageSizeOrDefault(), g.createLink(controller:'myInstitution', action:'currentWorkflows', params:[filter:'reset',max:200])])}" />
+                </g:if>
+
+                <g:each in="${[myWorkflows, allWorkflows]}" var="currentWorkflows">
+
                     <table class="ui celled table la-js-responsive-table la-table">
                         <thead>
                             <tr>
@@ -338,7 +340,8 @@
                             </g:each>
                         </tbody>
                     </table>
-                </div>
+
+                </g:each>
             </div>
 
             <div id="wfModal" class="ui modal"></div>
