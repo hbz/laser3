@@ -90,7 +90,7 @@
                     <tr>
 %{--                        <th scope="row" class="la-th-column la-main-object">--}%
                         <td>
-                            <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().contains(docctx.owner.mimeType)}" />
+                            <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}" />
                             <strong>
                                 <g:if test="${docctx.owner.contentType == Doc.CONTENT_TYPE_FILE && visible && supportedMimeType}">
                                     <a href="#documentPreview" data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title}</a>
