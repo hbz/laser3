@@ -1,10 +1,11 @@
 package de.laser
 
+import de.laser.finance.PriceItem
 import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
 import de.laser.system.SystemEvent
+import grails.converters.JSON
 import grails.gorm.transactions.Transactional
-import org.springframework.transaction.TransactionStatus
 
 /**
  * This service handles due date status updates for licenses and subscriptions
@@ -14,7 +15,7 @@ import org.springframework.transaction.TransactionStatus
 class StatusUpdateService extends AbstractLockableService {
 
     def globalSourceSyncService
-    def changeNotificationService
+    def pendingChangeService
     def genericOIDService
     def contextService
      //def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
@@ -297,8 +298,82 @@ class StatusUpdateService extends AbstractLockableService {
      */
     void retriggerPendingChanges(String packageUUID) {
         Package pkg = Package.findByGokbId(packageUUID)
-        Set<SubscriptionPackage> allSPs = SubscriptionPackage.findAllByPkg(pkg)
-        //Set<SubscriptionPackage> allSPs = SubscriptionPackage.executeQuery('select sp from SubscriptionPackage sp where sp.subscription.status = :status and sp.pkg = :pkg and sp.subscription.instanceOf is null',[status:RDStore.SUBSCRIPTION_CURRENT,pkg:pkg]) //activate for debugging
+        Set<SubscriptionPackage> allSPs = SubscriptionPackage.executeQuery('select sp from SubscriptionPackage sp where sp.pkg = :pkg and sp.subscription.instanceOf is null', [pkg: pkg])
+        allSPs.each { SubscriptionPackage sp ->
+            Set<Map<String, Object>> diffs = []
+            //A and B are naming convention for A (old entity which is out of sync) and B (new entity with data up to date)
+            pkg.tipps.each { TitleInstancePackagePlatform tippB ->
+                List<IssueEntitlement> oldCandidates = IssueEntitlement.findAllByTippAndSubscription(tippB, sp.subscription, [sort: 'lastUpdated', order: 'desc'])
+                IssueEntitlement ieA = oldCandidates.find { IssueEntitlement candidate -> candidate.status != RDStore.TIPP_STATUS_REMOVED }
+                if(!ieA && oldCandidates)
+                    ieA = oldCandidates[0]
+                if(!ieA) {
+                    //title did not exist indeed
+                    diffs.add([event: 'add', target: tippB])
+                }
+                else if(ieA.status == RDStore.TIPP_STATUS_REMOVED && !(tippB.status in [RDStore.TIPP_STATUS_REMOVED, RDStore.TIPP_STATUS_DELETED])) {
+                    //restore without registering change
+                    ieA.status = tippB.status
+                    tippB.properties.each { String key, value ->
+                        if(ieA.hasProperty(key))
+                            ieA.setProperty(key, value)
+                    }
+                    ieA.save()
+                }
+                else if(ieA.status == RDStore.TIPP_STATUS_REMOVED && tippB.status == RDStore.TIPP_STATUS_DELETED) {
+                    //restore without registering change
+                    ieA.status = RDStore.TIPP_STATUS_DELETED
+                    ieA.save()
+                }
+                else if(ieA.status != RDStore.TIPP_STATUS_REMOVED && tippB.status == RDStore.TIPP_STATUS_REMOVED)
+                    diffs.add([event: 'removed', target: tippB])
+                else if(ieA.status != RDStore.TIPP_STATUS_DELETED && tippB.status == RDStore.TIPP_STATUS_DELETED)
+                    diffs.add([event: 'delete', oldValue: ieA.status, target: tippB])
+                else if(ieA.status != RDStore.TIPP_STATUS_REMOVED && tippB.status != RDStore.TIPP_STATUS_REMOVED) {
+                    Set<Map<String, Object>> tippDiffs = getTippDiff(ieA, tippB)
+                    if(tippDiffs)
+                        diffs.add([event: 'update', target: tippB, diffs: tippDiffs])
+                }
+            }
+            Set<PendingChange> packagePendingChanges = []
+            diffs.each { Map<String, Object> diff ->
+                log.debug(diff.toMapString())
+                switch(diff.event) {
+                    case 'add': packagePendingChanges << PendingChange.construct([msgToken:PendingChangeConfiguration.NEW_TITLE,target:diff.target,status:RDStore.PENDING_CHANGE_HISTORY])
+                        break
+                    case 'update':
+                        diff.diffs.each { tippDiff ->
+                            switch(tippDiff.prop) {
+                                case 'coverage': tippDiff.covDiffs.each { covEntry ->
+                                    switch(covEntry.event) {
+                                        case 'add': packagePendingChanges << PendingChange.construct([msgToken:PendingChangeConfiguration.NEW_COVERAGE,target:covEntry.target,status:RDStore.PENDING_CHANGE_HISTORY])
+                                            break
+                                        case 'update': covEntry.diffs.each { covDiff ->
+                                            packagePendingChanges << PendingChange.construct([msgToken: PendingChangeConfiguration.COVERAGE_UPDATED, target: covEntry.target, status: RDStore.PENDING_CHANGE_HISTORY, prop: covDiff.prop, newValue: covDiff.newValue, oldValue: covDiff.oldValue])
+                                        }
+                                            break
+                                        case 'delete': JSON oldMap = covEntry.target.properties as JSON
+                                            packagePendingChanges << PendingChange.construct([msgToken:PendingChangeConfiguration.COVERAGE_DELETED, target:covEntry.targetParent, oldValue: oldMap.toString() , status:RDStore.PENDING_CHANGE_HISTORY])
+                                            break
+                                    }
+                                }
+                                    break
+                                default:
+                                    packagePendingChanges << PendingChange.construct([msgToken:PendingChangeConfiguration.TITLE_UPDATED,target:diff.target,status:RDStore.PENDING_CHANGE_HISTORY,prop:tippDiff.prop,newValue:tippDiff.newValue,oldValue:tippDiff.oldValue])
+                                    break
+                            }
+                        }
+                        break
+                    case 'delete': packagePendingChanges << PendingChange.construct([msgToken:PendingChangeConfiguration.TITLE_DELETED,target:diff.target,oldValue:diff.oldValue,status:RDStore.PENDING_CHANGE_HISTORY])
+                        break
+                    case 'remove': PendingChange.construct([msgToken:PendingChangeConfiguration.TITLE_REMOVED,target:diff.target,status:RDStore.PENDING_CHANGE_HISTORY]) //dealt elsewhere!
+                        break
+                }
+            }
+            Org org = Org.executeQuery('select oo.org from OrgRole oo where oo.sub = :sub and oo.roleType in (:roleTypes)', [sub: sp.subscription, roleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA]])[0]
+            globalSourceSyncService.autoAcceptPendingChanges(org, sp, packagePendingChanges)
+        }
+        /*
         SubscriptionPackage.withTransaction { TransactionStatus stat ->
             allSPs.each { SubscriptionPackage sp ->
                 //for session refresh
@@ -325,26 +400,22 @@ class StatusUpdateService extends AbstractLockableService {
                                                     changeMap.prop = covDiff.prop
                                                     changeMap.oldValue = ieCov[covDiff.prop]
                                                     changeMap.newValue = covDiff.newValue
-                                                    changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,sp)
                                                 }
                                             }
                                             else {
                                                 changeDesc = PendingChangeConfiguration.NEW_COVERAGE
                                                 changeMap.oid = genericOIDService.getOID(tippCov)
-                                                changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,sp)
                                             }
                                             break
                                         case 'add':
                                             changeDesc = PendingChangeConfiguration.NEW_COVERAGE
                                             changeMap.oid = genericOIDService.getOID(tippCov)
-                                            changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,sp)
                                             break
                                         case 'delete':
                                             IssueEntitlementCoverage ieCov = (IssueEntitlementCoverage) tippCov.findEquivalent(ieA.coverages)
                                             if(ieCov) {
                                                 changeDesc = PendingChangeConfiguration.COVERAGE_DELETED
                                                 changeMap.oid = genericOIDService.getOID(ieCov)
-                                                changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,sp)
                                             }
                                             break
                                     }
@@ -361,27 +432,164 @@ class StatusUpdateService extends AbstractLockableService {
                                 else
                                     changeMap.oldValue = ieA[diff.prop]
                                 changeMap.newValue = diff.newValue
-                                changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,sp)
                             }
                         }
                     }
                     else {
                         changeDesc = PendingChangeConfiguration.TITLE_DELETED
                         changeMap.oid = genericOIDService.getOID(ieA)
-                        changeNotificationService.determinePendingChangeBehavior(changeMap,changeDesc,sp)
                     }
                 }
                 Set<TitleInstancePackagePlatform> currentTIPPs = sp.subscription.issueEntitlements.collect { IssueEntitlement ie -> ie.tipp }
                 Set<TitleInstancePackagePlatform> inexistentTIPPs = pkg.tipps.findAll { TitleInstancePackagePlatform tipp -> !currentTIPPs.contains(tipp) && tipp.status != RDStore.TIPP_STATUS_REMOVED }
                 inexistentTIPPs.each { TitleInstancePackagePlatform tippB ->
                     log.debug("adding new TIPP ${tippB} to subscription ${sp.subscription.id}")
-                    changeNotificationService.determinePendingChangeBehavior([target:sp.subscription,oid:genericOIDService.getOID(tippB)],PendingChangeConfiguration.NEW_TITLE,sp)
                 }
                 stat.flush()
                 //sess.clear()
                 // //propertyInstanceMap.get().clear()
             }
+        }*/
+    }
+
+    /**
+     * Compares two title entries against each other, retrieving the differences between both.
+     * @param tippa the old TIPP (as {@link TitleInstancePackagePlatform} or {@link IssueEntitlement})
+     * @param tippb the new TIPP (as {@link Map} or {@link TitleInstancePackagePlatform}
+     * @return a {@link Set} of {@link Map}s with the differences
+     */
+    Set<Map<String,Object>> getTippDiff(IssueEntitlement iea, TitleInstancePackagePlatform tippb) {
+            log.info("processing diffs; the respective objects are: ${iea.id} (TitleInstancePackagePlatform) pointing to ${tippb.id} (TIPP)")
+        Set<Map<String, Object>> result = []
+
+        // This is the boss enemy when refactoring coverage statements ... works so far, is going to be kept
+        // the question marks are necessary because only JournalInstance's TIPPs are supposed to have coverage statements
+        Set<Map<String, Object>> coverageDiffs = getSubListDiffs(iea,tippb.coverages,'coverage')
+        if(!coverageDiffs.isEmpty())
+            result.add([prop: 'coverage', covDiffs: coverageDiffs])
+
+        Set<Map<String, Object>> priceDiffs = getSubListDiffs(iea,tippb.priceItems,'price')
+        //if(!priceDiffs.isEmpty())
+        //result.add([prop: 'price', priceDiffs: priceDiffs]) are auto-applied
+
+        if (iea.name != tippb.name) {
+            result.add([prop: 'name', newValue: tippb.name, oldValue: iea.name])
         }
+
+        if (iea.accessStartDate != tippb.accessStartDate) {
+            result.add([prop: 'accessStartDate', newValue: tippb.accessStartDate, oldValue: iea.accessStartDate])
+        }
+
+        if (iea.accessEndDate != tippb.accessEndDate) {
+            result.add([prop: 'accessEndDate', newValue: tippb.accessEndDate, oldValue: iea.accessEndDate])
+        }
+
+        if(iea.status != tippb.status) {
+            result.add([prop: 'status', newValue: tippb.status.id, oldValue: iea.status.id])
+        }
+
+        //println("getTippDiff:"+result)
+        result
+    }
+
+    /**
+     * Compares two sub list entries against each other, retrieving the differences between both.
+     * @param ieA the current {@link IssueEntitlement} object, containing the current {@link Set} of  or price items
+     * @param listB the new statements (a {@link List} of remote records, kept in {@link Map}s)
+     * @param instanceType the container class (may be coverage or price)
+     * @return a {@link Set} of {@link Map}s reflecting the differences between the statements
+     */
+    Set<Map<String,Object>> getSubListDiffs(IssueEntitlement ieA, listB, String instanceType) {
+        Set subDiffs = []
+        Set listA
+        if(instanceType == "coverage")
+            listA = ieA.coverages
+        else if(instanceType == "price")
+            listA = ieA.priceItems
+        if(listA != null) {
+            if(listA.size() == listB.size()) {
+                //statements may have changed or not, no deletions or insertions
+                //sorting has been done by mapping (listA) resp. when converting data (listB)
+                listB.eachWithIndex { itemB, int i ->
+                    def itemA = globalSourceSyncService.locateEquivalent(itemB,listA)
+                    if(!itemA)
+                        itemA = listA[i]
+                    Set<Map<String,Object>> currDiffs = globalSourceSyncService.compareSubListItem(itemA,itemB)
+                    if(instanceType == 'coverage') {
+                        if (currDiffs)
+                            subDiffs << [event: 'update', target: itemA, diffs: currDiffs]
+                    }
+                    else if(instanceType == 'price') {
+                        if(ieA.priceItems) {
+                            PriceItem piA = globalSourceSyncService.locateEquivalent(itemB,ieA.priceItems) as PriceItem
+                            if(!piA) {
+                                piA = ieA.priceItems[i]
+                                piA.startDate = itemB.startDate
+                                piA.endDate = itemB.endDate
+                                piA.listCurrency = itemB.listCurrency
+                            }
+                            piA.listPrice = itemB.listPrice
+                            piA.save()
+                        }
+                        else {
+                            globalSourceSyncService.addNewPriceItem(ieA, itemB)
+                        }
+                    }
+                }
+            }
+            else if(listA.size() > listB.size()) {
+                //statements have been deleted
+                Set toKeep = []
+                listB.each { itemB ->
+                    def itemA = globalSourceSyncService.locateEquivalent(itemB,listA)
+                    if(itemA) {
+                        toKeep << itemA
+                        Set<Map<String,Object>> currDiffs = globalSourceSyncService.compareSubListItem(itemA,itemB)
+                        if(currDiffs)
+                            subDiffs << [event: 'update', target: itemA, diffs: currDiffs]
+                    }
+                    else {
+                        //a new statement may have been added for which I cannot determine an equivalent
+                        def newItem
+                        if(instanceType == 'coverage')
+                            newItem = globalSourceSyncService.addNewStatement(ieA,itemB)
+                        else if(instanceType == 'price') {
+                            globalSourceSyncService.addNewPriceItem(ieA, itemB)
+                        }
+                        if(newItem)
+                            subDiffs << [event: 'add', target: newItem]
+                    }
+                }
+                listA.each { itemA ->
+                    if(!toKeep.contains(itemA)) {
+                        subDiffs << [event: 'delete', target: itemA, targetParent: ieA]
+                    }
+                }
+            }
+            else if(listA.size() < listB.size()) {
+                //coverage statements have been added
+                listB.each { itemB ->
+                    def itemA = globalSourceSyncService.locateEquivalent(itemB,listA)
+                    if(itemA) {
+                        Set<Map<String,Object>> currDiffs = globalSourceSyncService.compareSubListItem(itemA,itemB)
+                        if(currDiffs)
+                            subDiffs << [event: 'update', target: itemA, diffs: currDiffs]
+                    }
+                    else {
+                        def newItem
+                        if(instanceType == 'coverage') {
+                            newItem = globalSourceSyncService.addNewStatement(ieA, itemB)
+                            if(newItem)
+                                subDiffs << [event: 'add', target: newItem]
+                        }
+                        else if(instanceType == 'price') {
+                            globalSourceSyncService.addNewPriceItem(ieA, itemB)
+                        }
+                    }
+                }
+            }
+        }
+        subDiffs
     }
 
     /**

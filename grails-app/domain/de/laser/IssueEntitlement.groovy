@@ -152,7 +152,7 @@ class IssueEntitlement extends AbstractBase implements Comparable {
         static_logger.debug("creating new issue entitlement for ${configMap.tipp} and ${configMap.subscription}")
       Subscription subscription = (Subscription) configMap.subscription
       TitleInstancePackagePlatform tipp = (TitleInstancePackagePlatform) configMap.tipp
-      IssueEntitlement ie = findBySubscriptionAndTipp(subscription,tipp)
+      IssueEntitlement ie = findBySubscriptionAndTippAndStatusNotEqual(subscription,tipp,RDStore.TIPP_STATUS_REMOVED)
       if(!ie) {
           ie = new IssueEntitlement(subscription: subscription, tipp: tipp, medium: tipp.medium, status:tipp.status, acceptStatus: configMap.acceptStatus, name: tipp.name)
           ie.generateSortTitle()

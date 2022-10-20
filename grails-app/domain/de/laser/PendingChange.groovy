@@ -256,9 +256,7 @@ class PendingChange {
      */
     static PendingChange checkPendingChangeExistsForSync(Map<String, Object> configMap, String targetClass) {
         Map<String, Object> changeParams = [target  : configMap.target,
-                                            msgToken: configMap.msgToken,
-                                            newValue: configMap.newValue,
-                                            oldValue: configMap.oldValue]
+                                            msgToken: configMap.msgToken]
         PendingChange pc
 
         if(configMap.owner){
@@ -289,7 +287,7 @@ class PendingChange {
 
             changeParams << [prop: configMap.prop]
             if (!configMap.oid) {
-                List<PendingChange> pendingChangeCheck = executeQuery('select pc from PendingChange pc where pc.status in (:pending) and pc.' + targetClass + ' = :target and pc.targetProperty = :prop and pc.msgToken = :msgToken and pc.newValue = :newValue and pc.oldValue = :oldValue ' + (changeParams.owner ? 'and pc.owner = :owner' : '') + ' order by pc.ts desc', changeParams + [pending: [RDStore.PENDING_CHANGE_PENDING]])
+                List<PendingChange> pendingChangeCheck = executeQuery('select pc from PendingChange pc where pc.status in (:pending) and pc.' + targetClass + ' = :target and pc.targetProperty = :prop and pc.msgToken = :msgToken and pc.newValue = :newValue and pc.oldValue = :oldValue ' + (changeParams.owner ? 'and pc.owner = :owner' : '') + ' order by pc.ts desc', changeParams + [pending: [RDStore.PENDING_CHANGE_HISTORY]])
                 if (pendingChangeCheck) {
                     pc = pendingChangeCheck[0]
                     if (pendingChangeCheck.size() > 0) {
@@ -311,15 +309,32 @@ class PendingChange {
                 }
             }
         } else {
-            changeParams << [oid: configMap.oid]
-            List<PendingChange> pendingChangeCheck = executeQuery('select pc from PendingChange pc where pc.status in (:pending) and pc.oid = :oid and pc.' + targetClass + ' = :target and pc.msgToken = :msgToken and pc.newValue = :newValue and pc.oldValue = :oldValue ' + (changeParams.owner ? 'and pc.owner = :owner' : '') + ' order by pc.ts desc', changeParams + [pending: [RDStore.PENDING_CHANGE_PENDING]])
-            if (pendingChangeCheck) {
-                pc = pendingChangeCheck[0]
-                if (pendingChangeCheck.size() > 0) {
-                    log.error("checkPendingChangeExists: pendingChangeCheck.size() > 0 by " + changeParams)
+            if(configMap.containsKey('oid')) {
+                changeParams << [oid: configMap.oid]
+                if(configMap.containsKey('oldValue'))
+                    changeParams.oldValue = configMap.oldValue
+                if(configMap.containsKey('newValue'))
+                    changeParams.newValue = configMap.newValue
+                List<PendingChange> pendingChangeCheck = executeQuery('select pc from PendingChange pc where pc.status in (:pending) and pc.oid = :oid and pc.' + targetClass + ' = :target and pc.msgToken = :msgToken and pc.newValue = :newValue and pc.oldValue = :oldValue ' + (changeParams.owner ? 'and pc.owner = :owner' : '') + ' order by pc.ts desc', changeParams + [pending: [RDStore.PENDING_CHANGE_PENDING]])
+                if (pendingChangeCheck) {
+                    pc = pendingChangeCheck[0]
+                    if (pendingChangeCheck.size() > 0) {
+                        log.error("checkPendingChangeExists: pendingChangeCheck.size() > 0 by " + changeParams)
+                    }
+                } else {
+                    pc = new PendingChange()
                 }
-            } else {
-                pc = new PendingChange()
+            }
+            else {
+                List<PendingChange> pendingChangeCheck = executeQuery('select pc from PendingChange pc where pc.status in (:pending) and pc.' + targetClass + ' = :target and pc.msgToken = :msgToken order by pc.ts desc', changeParams + [pending: [RDStore.PENDING_CHANGE_HISTORY]])
+                if (pendingChangeCheck) {
+                    pc = pendingChangeCheck[0]
+                    if (pendingChangeCheck.size() > 0) {
+                        log.error("checkPendingChangeExists: pendingChangeCheck.size() > 0 by " + changeParams)
+                    }
+                } else {
+                    pc = new PendingChange()
+                }
             }
         }
 

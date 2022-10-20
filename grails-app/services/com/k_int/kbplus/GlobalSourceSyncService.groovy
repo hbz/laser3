@@ -19,6 +19,7 @@ import de.laser.PersonRole
 import de.laser.Platform
 import de.laser.RefdataCategory
 import de.laser.RefdataValue
+import de.laser.StatusUpdateService
 import de.laser.Subscription
 import de.laser.SubscriptionPackage
 import de.laser.TitleInstancePackagePlatform
@@ -59,6 +60,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
     GlobalService globalService
     GlobalRecordSource source
     ApiSource apiSource
+    StatusUpdateService statusUpdateService
 
     final static long RECTYPE_PACKAGE = 0
     final static long RECTYPE_TITLE = 1
@@ -264,6 +266,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     else {
                         log.info("no diffs recorded ...")
                     }
+                    globalService.cleanUpGorm()
+                    statusUpdateService.retriggerPendingChanges(packageUUID)
                     log.info("package reload finished")
                 }
             }
@@ -895,13 +899,13 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     boolean processed = false
                     if(newChange.tipp) {
                         if(newChange.targetProperty)
-                            processed = acceptedChanges.find { PendingChange accepted -> accepted.tipp == newChange.tipp && accepted.msgToken == newChange.msgToken && accepted.targetProperty == newChange.targetProperty } != null
+                            processed = acceptedChanges.find { PendingChange accepted -> accepted.tipp == newChange.tipp && accepted.msgToken == newChange.msgToken && accepted.targetProperty == newChange.targetProperty && accepted.newValue == newChange.newValue && accepted.oldValue == newChange.oldValue } != null
                         else
                             processed = acceptedChanges.find { PendingChange accepted -> accepted.tipp == newChange.tipp && accepted.msgToken == newChange.msgToken } != null
                     }
                     else if(newChange.tippCoverage) {
                         if(newChange.targetProperty)
-                            processed = acceptedChanges.find { PendingChange accepted -> accepted.tippCoverage == newChange.tippCoverage && accepted.msgToken == newChange.msgToken && accepted.targetProperty == newChange.targetProperty } != null
+                            processed = acceptedChanges.find { PendingChange accepted -> accepted.tippCoverage == newChange.tippCoverage && accepted.msgToken == newChange.msgToken && accepted.targetProperty == newChange.targetProperty && accepted.newValue == newChange.newValue && accepted.oldValue == newChange.oldValue } != null
                         else
                             processed = acceptedChanges.find { PendingChange accepted -> accepted.tippCoverage == newChange.tippCoverage && accepted.msgToken == newChange.msgToken } != null
                     }
@@ -1152,42 +1156,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 List<String> typeNames = contactTypes.values().collect { RefdataValue cct -> cct.getI10n("value") }
                 typeNames.addAll(contactTypes.keySet())
                 List<Person> oldPersons = Person.executeQuery('select p from Person p where p.tenant = :provider and p.isPublic = true and p.last_name in (:contactTypes)',[provider: provider, contactTypes: typeNames])
-                Map<RefdataValue, Person> contactsToUpdate = [:]
-                List newContacts = providerRecord.contacts.findAll{ Map<String, String> cParams -> cParams.content != null }
-                oldPersons.each { Person oldPerson ->
-                    oldPerson.roleLinks.each { PersonRole role ->
-                        switch(role.functionType) {
-                            case RDStore.PRS_FUNC_METADATA: Map<String, String> newContact = newContacts.find { Map<String, String> cParams -> cParams.type == 'Metadata Contact' }
-                                if(newContact)
-                                    contactsToUpdate.put(RDStore.PRS_FUNC_METADATA, oldPerson)
-                                else {
-                                    PersonRole.executeUpdate('delete from PersonRole pr where pr.org = :provider and pr.prs = :oldPerson and pr.functionType.id = :funcType', [provider: provider, oldPerson: oldPerson, funcType: RDStore.PRS_FUNC_METADATA])
-                                    Contact.executeUpdate('delete from Contact c where c.prs = :oldPerson', [oldPerson: oldPerson])
-                                    Person.executeUpdate('delete from Person p where p = :oldPerson', [oldPerson: oldPerson])
-                                }
-                                break
-                            case RDStore.PRS_FUNC_SERVICE_SUPPORT: Map<String, String> newContact = newContacts.find { Map<String, String> cParams -> cParams.type == 'Service Support' }
-                                if(newContact)
-                                    contactsToUpdate.put(RDStore.PRS_FUNC_SERVICE_SUPPORT, oldPerson)
-                                else {
-                                    PersonRole.executeUpdate('delete from PersonRole pr where pr.org = :provider and pr.prs = :oldPerson and pr.functionType.id = :funcType', [provider: provider, oldPerson: oldPerson, funcType: RDStore.PRS_FUNC_SERVICE_SUPPORT])
-                                    Contact.executeUpdate('delete from Contact c where c.prs = :oldPerson', [oldPerson: oldPerson])
-                                    Person.executeUpdate('delete from Person p where p = :oldPerson', [oldPerson: oldPerson])
-                                }
-                                break
-                            case RDStore.PRS_FUNC_TECHNICAL_SUPPORT: Map<String, String> newContact = newContacts.find { Map<String, String> cParams -> cParams.type == 'Technical Support' }
-                                if(newContact)
-                                    contactsToUpdate.put(RDStore.PRS_FUNC_TECHNICAL_SUPPORT, oldPerson)
-                                else {
-                                    PersonRole.executeUpdate('delete from PersonRole pr where pr.org = :provider and pr.prs = :oldPerson and pr.functionType.id = :funcType', [provider: provider, oldPerson: oldPerson, funcType: RDStore.PRS_FUNC_TECHNICAL_SUPPORT])
-                                    Contact.executeUpdate('delete from Contact c where c.prs = :oldPerson', [oldPerson: oldPerson])
-                                    Person.executeUpdate('delete from Person p where p = :oldPerson', [oldPerson: oldPerson])
-                                }
-                                break
-                        }
-                    }
+                if(oldPersons) {
+                    PersonRole.executeUpdate('delete from PersonRole pr where pr.org = :provider and pr.prs in (:oldPersons) and pr.functionType.id in (:funcTypes)', [provider: provider, oldPersons: oldPersons, funcTypes: contactTypes.values().collect { RefdataValue cct -> cct.id }])
+                    Contact.executeUpdate('delete from Contact c where c.prs in (:oldPersons)', [oldPersons: oldPersons])
+                    Person.executeUpdate('delete from Person p where p in (:oldPersons)', [oldPersons: oldPersons])
                 }
-                newContacts.each { contact ->
+                providerRecord.contacts.findAll{ Map<String, String> cParams -> cParams.content != null }.each { contact ->
                     switch(contact.type) {
                         case "Metadata Contact":
                             contact.rdType = RDStore.PRS_FUNC_METADATA
@@ -1202,7 +1176,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             break
                     }
                     if(contact.rdType && contact.contentType != null) {
-                        createOrUpdateSupport(provider, contact, contactsToUpdate.get(contact.rdType))
+                        createOrUpdateSupport(provider, contact)
                     }
                     else log.warn("contact submitted without content type, rejecting contact")
                 }
@@ -1314,7 +1288,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * @param supportProps the configuration {@link Map} containing the support address properties
      * @throws SyncException
      */
-    void createOrUpdateSupport(Org provider, Map<String, String> supportProps, Person personInstance = null) throws SyncException {
+    void createOrUpdateSupport(Org provider, Map<String, String> supportProps) throws SyncException {
+        Person personInstance = Person.findByTenantAndIsPublicAndLast_name(provider, true, supportProps.rdType.getI10n("value"))
         if(!personInstance) {
             personInstance = new Person(tenant: provider, isPublic: true, last_name: supportProps.rdType.getI10n("value"))
             if(!personInstance.save()) {
@@ -2154,6 +2129,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         tippStatus.put(RDStore.TIPP_STATUS_UNKNOWN.value,RDStore.TIPP_STATUS_UNKNOWN)
         contactTypes.put(RDStore.PRS_FUNC_TECHNICAL_SUPPORT.value,RDStore.PRS_FUNC_TECHNICAL_SUPPORT)
         contactTypes.put(RDStore.PRS_FUNC_SERVICE_SUPPORT.value,RDStore.PRS_FUNC_SERVICE_SUPPORT)
+        contactTypes.put(RDStore.PRS_FUNC_METADATA.value,RDStore.PRS_FUNC_METADATA)
         //this complicated way is necessary because of static in order to avoid a NonUniqueObjectException
         titleMedium.put(RDStore.TITLE_TYPE_DATABASE.value, RDStore.TITLE_TYPE_DATABASE)
         titleMedium.put(RDStore.TITLE_TYPE_EBOOK.value, RDStore.TITLE_TYPE_EBOOK)
