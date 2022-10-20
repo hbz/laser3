@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4521    20.10.2022  dev     3.0         David   Feature     Workflow: Alert-Funktion mit Zuweisung an Mitarbeiter oder alle
+
 4529    14.10.2022  dev     3.0         David   Feature     Labels für Dokumente
 
 4524    11.10.2022  dev     3.0         David   Feature     View-Sicht für Dokumente

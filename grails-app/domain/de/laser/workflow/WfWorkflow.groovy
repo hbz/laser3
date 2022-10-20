@@ -30,8 +30,9 @@ class WfWorkflow extends WfWorkflowBase {
     RefdataValue status
 
     WfTask task
-    Org owner
-    User user
+    Org    owner
+    User   user
+    Date   userLastUpdated
 
     Subscription subscription
     License license
@@ -55,6 +56,7 @@ class WfWorkflow extends WfWorkflowBase {
                          task column: 'wfw_task_fk'
                         owner column: 'wfw_owner_fk'
                          user column: 'wfw_user_fk'
+              userLastUpdated column: 'wfw_user_last_updated'
 
        subscription column: 'wfw_subscription_fk'
             license column: 'wfw_license_fk'
@@ -72,7 +74,9 @@ class WfWorkflow extends WfWorkflowBase {
         title            (blank: false)
         prototypeVariant (blank: false)
         prototypeTitle   (blank: false)
+
         user             (nullable: true)
+        userLastUpdated  (nullable: true)
 
         subscription     (nullable: true)
         license          (nullable: true)
