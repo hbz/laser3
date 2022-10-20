@@ -6,7 +6,6 @@ import de.laser.interfaces.AbstractLockableService
 import de.laser.system.SystemEvent
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
-import org.springframework.transaction.TransactionStatus
 
 /**
  * This service handles due date status updates for licenses and subscriptions
@@ -16,7 +15,7 @@ import org.springframework.transaction.TransactionStatus
 class StatusUpdateService extends AbstractLockableService {
 
     def globalSourceSyncService
-    def changeNotificationService
+    def pendingChangeService
     def genericOIDService
     def contextService
      //def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
@@ -308,8 +307,19 @@ class StatusUpdateService extends AbstractLockableService {
                 IssueEntitlement ieA = oldCandidates.find { IssueEntitlement candidate -> candidate.status != RDStore.TIPP_STATUS_REMOVED }
                 if(!ieA && oldCandidates)
                     ieA = oldCandidates[0]
-                if(!ieA || (ieA.status == RDStore.TIPP_STATUS_REMOVED && !(tippB.status in [RDStore.TIPP_STATUS_REMOVED, RDStore.TIPP_STATUS_DELETED])))
+                if(!ieA) {
+                    //title did not exist indeed
                     diffs.add([event: 'add', target: tippB])
+                }
+                else if(ieA.status == RDStore.TIPP_STATUS_REMOVED && !(tippB.status in [RDStore.TIPP_STATUS_REMOVED, RDStore.TIPP_STATUS_DELETED])) {
+                    //restore without registering change
+                    ieA.status = tippB.status
+                    tippB.properties.each { String key, value ->
+                        if(ieA.hasProperty(key))
+                            ieA.setProperty(key, value)
+                    }
+                    ieA.save()
+                }
                 else if(ieA.status == RDStore.TIPP_STATUS_REMOVED && tippB.status == RDStore.TIPP_STATUS_DELETED) {
                     //restore without registering change
                     ieA.status = RDStore.TIPP_STATUS_DELETED
@@ -319,7 +329,7 @@ class StatusUpdateService extends AbstractLockableService {
                     diffs.add([event: 'removed', target: tippB])
                 else if(ieA.status != RDStore.TIPP_STATUS_DELETED && tippB.status == RDStore.TIPP_STATUS_DELETED)
                     diffs.add([event: 'delete', oldValue: ieA.status, target: tippB])
-                else {
+                else if(ieA.status != RDStore.TIPP_STATUS_REMOVED && tippB.status != RDStore.TIPP_STATUS_REMOVED) {
                     Set<Map<String, Object>> tippDiffs = getTippDiff(ieA, tippB)
                     if(tippDiffs)
                         diffs.add([event: 'update', target: tippB, diffs: tippDiffs])

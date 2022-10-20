@@ -26,15 +26,13 @@
     <g:render template="message"/>
 </g:if>
 
-<g:set var="currentSettings" value="${PendingChangeConfiguration.executeQuery('select pcc from PendingChangeConfiguration pcc join pcc.subscriptionPackage sp where sp.subscription = :s', [s: subscription])}"/>
 
 <div class="ui top attached stackable tabular menu">
     <g:link controller="subscription" action="entitlementChanges" id="${subscription.id}" params="[tab: 'changes', eventType: params.eventType]"
             class="item ${params.tab == "changes" ? 'active' : ''}">
         <g:message code="myinst.menu.pendingChanges.label"/>
         <span class="ui blue circular label">
-            <g:if test="${currentSettings.find { PendingChangeConfiguration pcc -> pcc.settingValue == RDStore.PENDING_CHANGE_CONFIG_PROMPT }}">${countPendingChanges}</g:if>
-            <g:else>${titlesRemovedPending}</g:else>
+            ${countPendingChanges}
         </span>
     </g:link>
 
@@ -69,57 +67,34 @@
             Set<String> eventTabs = PendingChangeConfiguration.SETTING_KEYS
             eventTabs.removeAll([PendingChangeConfiguration.PACKAGE_PROP, PendingChangeConfiguration.PACKAGE_DELETED])
             eventTabs << PendingChangeConfiguration.TITLE_REMOVED
+            int currentCount = 0
         %>
         <g:each in="${eventTabs}" var="event">
-            <g:if test="${params.tab == 'acceptedChanges' && event != PendingChangeConfiguration.TITLE_REMOVED || (params.tab == 'changes' && (currentSettings.find { PendingChangeConfiguration pcc -> pcc.settingKey == event && pcc.settingValue == RDStore.PENDING_CHANGE_CONFIG_PROMPT } || event == PendingChangeConfiguration.TITLE_REMOVED))}">
+            <%
+                switch(event) {
+                    case PendingChangeConfiguration.NEW_TITLE: currentCount = params.tab == 'acceptedChanges' ? newTitlesAccepted : newTitlesPending
+                        break
+                    case PendingChangeConfiguration.TITLE_UPDATED: currentCount = params.tab == 'acceptedChanges' ? titlesUpdatedAccepted : titlesUpdatedPending
+                        break
+                    case PendingChangeConfiguration.TITLE_DELETED: currentCount = params.tab == 'acceptedChanges' ? titlesDeletedAccepted : titlesDeletedPending
+                        break
+                    case PendingChangeConfiguration.TITLE_REMOVED: currentCount = params.tab == 'changes' ? titlesRemovedPending : 0
+                        break
+                    case PendingChangeConfiguration.NEW_COVERAGE: currentCount = params.tab == 'acceptedChanges' ? newCoveragesAccepted : newCoveragesPending
+                        break
+                    case PendingChangeConfiguration.COVERAGE_UPDATED: currentCount = params.tab == 'acceptedChanges' ? coveragesUpdatedAccepted : coveragesUpdatedPending
+                        break
+                    case  PendingChangeConfiguration.COVERAGE_DELETED: currentCount = params.tab == 'acceptedChanges' ? coveragesDeletedAccepted : coveragesDeletedPending
+                        break
+                }
+            %>
+            <g:if test="${(event == PendingChangeConfiguration.TITLE_REMOVED && params.tab == 'changes') || event != PendingChangeConfiguration.TITLE_REMOVED}">
                 <g:link controller="subscription" action="entitlementChanges" id="${subscription.id}"
                         params="[eventType: event, tab: params.tab]"
                         class="item ${params.eventType == event ? 'active' : ''}">
                     <g:message code="subscription.packages.${event}"/>
                     <span class="ui circular label">
-                        <g:if test="${params.tab == 'acceptedChanges'}">
-                            <g:if test="${event == PendingChangeConfiguration.NEW_TITLE}">
-                                ${newTitlesAccepted}
-                            </g:if>
-                            <g:elseif test="${event == PendingChangeConfiguration.TITLE_UPDATED}">
-                                ${titlesUpdatedAccepted}
-                            </g:elseif>
-                            <g:elseif test="${event == PendingChangeConfiguration.TITLE_DELETED}">
-                                ${titlesDeletedAccepted}
-                            </g:elseif>
-                            <g:elseif test="${event == PendingChangeConfiguration.NEW_COVERAGE}">
-                                ${newCoveragesAccepted}
-                            </g:elseif>
-                            <g:elseif test="${event == PendingChangeConfiguration.COVERAGE_UPDATED}">
-                                ${coveragesUpdatedAccepted}
-                            </g:elseif>
-                            <g:elseif test="${event == PendingChangeConfiguration.COVERAGE_DELETED}">
-                                ${coveragesDeletedAccepted}
-                            </g:elseif>
-                        </g:if>
-                        <g:else>
-                            <g:if test="${event == PendingChangeConfiguration.NEW_TITLE}">
-                                ${newTitlesPending}
-                            </g:if>
-                            <g:elseif test="${event == PendingChangeConfiguration.TITLE_UPDATED}">
-                                ${titlesUpdatedPending}
-                            </g:elseif>
-                            <g:elseif test="${event == PendingChangeConfiguration.TITLE_DELETED}">
-                                ${titlesDeletedPending}
-                            </g:elseif>
-                            <g:elseif test="${event == PendingChangeConfiguration.TITLE_REMOVED}">
-                                ${titlesRemovedPending}
-                            </g:elseif>
-                            <g:elseif test="${event == PendingChangeConfiguration.NEW_COVERAGE}">
-                                ${newCoveragesPending}
-                            </g:elseif>
-                            <g:elseif test="${event == PendingChangeConfiguration.COVERAGE_UPDATED}">
-                                ${coveragesUpdatedPending}
-                            </g:elseif>
-                            <g:elseif test="${event == PendingChangeConfiguration.COVERAGE_DELETED}">
-                                ${coveragesDeletedPending}
-                            </g:elseif>
-                        </g:else>
+                        ${currentCount}
                     </span>
                 </g:link>
             </g:if>

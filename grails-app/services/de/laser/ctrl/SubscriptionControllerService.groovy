@@ -1905,14 +1905,12 @@ class SubscriptionControllerService {
                 if(params.tab == 'acceptedChanges') {
                     params.eventType = PendingChangeConfiguration.TITLE_UPDATED
                 }
-                else if(params.tab == 'changes' && !pkgSettingMap.values().contains(RDStore.PENDING_CHANGE_CONFIG_PROMPT)) {
+                else if(params.tab == 'changes') {
                     params.eventType = PendingChangeConfiguration.TITLE_REMOVED
                 }
             }
             else if(params.eventType == PendingChangeConfiguration.TITLE_REMOVED && params.tab == 'acceptedChanges')
                 params.eventType = PendingChangeConfiguration.TITLE_UPDATED
-            else if(params.tab == 'changes' && !pkgSettingMap.containsValue(params.eventType))
-                params.eventType = PendingChangeConfiguration.TITLE_REMOVED
             String order = " order by pc.${params.sort} ${params.order}"
             if(pkgSettingMap && pendingOrWithNotification) {
                 pkgSettingMap.each { SubscriptionPackage sp, Set<String> settings ->
@@ -1923,9 +1921,11 @@ class SubscriptionControllerService {
                     //query3a = 'select pc.id,pc.priceItem from PendingChange pc join pc.priceItem.tipp.pkg pkg where pkg = :package and pc.oid = (:subOid) and pc.status in (:pendingStatus)',
                     String query1b, query1c
                     if(params.eventType == PendingChangeConfiguration.NEW_TITLE && params.eventType in settings)
-                        query1b = 'select pc.id from PendingChange pc join pc.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and not exists (select pca.id from PendingChange pca join pca.tipp tippA where tippA = pc.tipp and pca.oid = :subOid and pca.status in (:pendingStatus)) and pc.status = :packageHistory'
-                    else if(params.eventType in [PendingChangeConfiguration.TITLE_UPDATED, PendingChangeConfiguration.TITLE_DELETED] && params.eventType in settings)
-                        query1b = 'select pc.id from PendingChange pc join pc.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and not exists (select pca.id from PendingChange pca join pca.tipp tippA where tippA = pc.tipp and pca.oid = :subOid and pca.newValue = pc.newValue and pca.status in (:pendingStatus)) and exists (select ie.id from IssueEntitlement ie where ie.tipp = pc.tipp and ie.status != :removed and ie.subscription = :subscription) and pc.status = :packageHistory'
+                        query1b = 'select pc.id from PendingChange pc join pc.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and (not exists (select pca.id from PendingChange pca join pca.tipp tippA where tippA = pc.tipp and pca.oid = :subOid and pca.status in (:pendingStatus)) and not exists (select ie.id from IssueEntitlement ie where ie.tipp = pc.tipp and ie.subscription = :subscription and ie.status != :removed)) and pc.status = :packageHistory'
+                    else if(params.eventType == PendingChangeConfiguration.TITLE_UPDATED && params.eventType in settings)
+                        query1b = 'select pc.id from PendingChange pc join pc.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and (not exists (select pca.id from PendingChange pca join pca.tipp tippA where tippA = pc.tipp and pca.oid = :subOid and pca.newValue = pc.newValue and pca.status in (:pendingStatus)) and exists (select ie.id from IssueEntitlement ie where ie.tipp = pc.tipp and ie.status != :removed and ie.subscription = :subscription)) and pc.status = :packageHistory'
+                    else if(params.eventType == PendingChangeConfiguration.TITLE_DELETED && params.eventType in settings)
+                        query1b = 'select pc.id from PendingChange pc join pc.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and (not exists (select pca.id from PendingChange pca join pca.tipp tippA where tippA = pc.tipp and pca.oid = :subOid and pca.status in (:pendingStatus)) and exists (select ie.id from IssueEntitlement ie where ie.tipp = pc.tipp and ie.status not in (:deleted) and ie.subscription = :subscription)) and pc.status = :packageHistory'
                     else if(params.eventType == PendingChangeConfiguration.TITLE_REMOVED && params.eventType in settings)
                         query1c = 'select pc.id from PendingChange pc join pc.tipp tipp join tipp.pkg pkg where pkg = :package and pc.msgToken = :eventType and exists(select ie from IssueEntitlement ie where ie.tipp = tipp and ie.subscription = :subscription and ie.status != :removed)'
                     String query2b
@@ -1940,10 +1940,12 @@ class SubscriptionControllerService {
                     else if(params.eventType in [PendingChangeConfiguration.NEW_COVERAGE, PendingChangeConfiguration.COVERAGE_UPDATED, PendingChangeConfiguration.COVERAGE_DELETED] && params.eventType in settings)
                         subscriptionHistory.addAll(PendingChange.executeQuery(query2a+order,[package: pkg, entryDate: entryDate, eventType: params.eventType, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription)]))
                     //subscriptionHistory.addAll(PendingChange.executeQuery(query3a,[package: pkg, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_HISTORY, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription)]))
-                    if(params.eventType == PendingChangeConfiguration.NEW_TITLE && params.eventType in settings)
-                        changesOfPage.addAll(PendingChange.executeQuery(query1b+order,[package: pkg, entryDate: entryDate, eventType: params.eventType, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription), packageHistory: RDStore.PENDING_CHANGE_HISTORY]))
-                    else if(params.eventType in [PendingChangeConfiguration.TITLE_UPDATED, PendingChangeConfiguration.TITLE_DELETED] && params.eventType in settings)
+                    //if(params.eventType == PendingChangeConfiguration.NEW_TITLE && params.eventType in settings)
+                    //    changesOfPage.addAll(PendingChange.executeQuery(query1b+order,[package: pkg, entryDate: entryDate, eventType: params.eventType, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription), packageHistory: RDStore.PENDING_CHANGE_HISTORY]))
+                    if(params.eventType in [PendingChangeConfiguration.NEW_TITLE, PendingChangeConfiguration.TITLE_UPDATED] && params.eventType in settings)
                         changesOfPage.addAll(PendingChange.executeQuery(query1b+order,[package: pkg, entryDate: entryDate, eventType: params.eventType, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription), packageHistory: RDStore.PENDING_CHANGE_HISTORY, subscription: sp.subscription, removed: RDStore.TIPP_STATUS_REMOVED]))
+                    else if(params.eventType == PendingChangeConfiguration.TITLE_DELETED && params.eventType in settings)
+                        changesOfPage.addAll(PendingChange.executeQuery(query1b+order,[package: pkg, entryDate: entryDate, eventType: params.eventType, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription), packageHistory: RDStore.PENDING_CHANGE_HISTORY, subscription: sp.subscription, deleted: [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]]))
                     else if(params.eventType in [PendingChangeConfiguration.NEW_COVERAGE, PendingChangeConfiguration.COVERAGE_UPDATED, PendingChangeConfiguration.COVERAGE_DELETED] && params.eventType in settings)
                         changesOfPage.addAll(PendingChange.executeQuery(query2b+order,[package: pkg, entryDate: entryDate, eventType: params.eventType, pendingStatus: [RDStore.PENDING_CHANGE_ACCEPTED, RDStore.PENDING_CHANGE_REJECTED], subOid: genericOIDService.getOID(result.subscription), packageHistory: RDStore.PENDING_CHANGE_HISTORY, subscription: sp.subscription, removed: RDStore.TIPP_STATUS_REMOVED]))
                     else if(params.eventType == PendingChangeConfiguration.TITLE_REMOVED && params.eventType in settings)
