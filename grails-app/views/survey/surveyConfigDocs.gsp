@@ -99,7 +99,7 @@
                         <td>${i + 1}</td>
                         <td>
                             %{--ERMS-4524--}%
-                            <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().contains(docctx.owner.mimeType)}" />
+                            <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}" />
                             <g:if test="${docctx.owner.contentType == Doc.CONTENT_TYPE_FILE && supportedMimeType}">
                                 <a href="#documentPreview" data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title}</a>
                             </g:if>

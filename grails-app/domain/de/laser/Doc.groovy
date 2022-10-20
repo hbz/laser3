@@ -94,27 +94,30 @@ class Doc {
         }
     }
 
-    static List<String> getPreviewMimeTypes() {
+    static Map<String, String> getPreviewMimeTypes() {
+        String raw      = 'raw'
+        String encode   = 'encode'
+
         return [
-                'application/json',
-                'application/pdf',
-                'application/rtf',
-                'application/xml',
-                'application/rtf',
-                'image/gif',
-                'image/jpeg',
-                'image/png',
-                'image/svg+xml',
-                'text/calendar',
-                'text/csv',
-                'text/html',
-                'text/javascript',
-                'text/markdown',
-                'text/plain',
-                'text/richtext',
-                'text/rtf',
-                'text/tab-separated-values',
-                'text/xml'
+                'application/json'          : encode,
+                'application/pdf'       : raw,
+                //nope 'application/rtf'   : encode,
+                'application/xml'           : encode,
+                'application/x-javascript'  : encode,
+                'image/gif'             : raw,
+                'image/jpeg'            : raw,
+                'image/png'             : raw,
+                'image/svg+xml'             : encode,
+                'text/calendar'             : encode,
+                'text/csv'                  : encode,
+                'text/html'                 : encode,
+                'text/javascript'           : encode,
+                'text/markdown'             : encode,
+                'text/plain'                : encode,
+                //nope 'text/richtext'     : encode,
+                //nope 'text/rtf'          : encode,
+                'text/tab-separated-values' : encode,
+                'text/xml'                  : encode
         ]
     }
 }
