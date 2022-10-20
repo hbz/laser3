@@ -1572,12 +1572,12 @@ class SubscriptionControllerService {
 
             if(params.provider) {
                 result.filterSet = true
-                esQuery += "&provider=${params.provider.replaceAll('&','ampersand')}"
+                esQuery += "&provider=${params.provider.replaceAll('&','ampersand').replaceAll('\\+','%2B').replaceAll(' ','%20')}"
             }
 
             if(params.curatoryGroup) {
                 result.filterSet = true
-                esQuery += "&curatoryGroupExact=${params.curatoryGroup.replaceAll('&','ampersand')}"
+                esQuery += "&curatoryGroupExact=${params.curatoryGroup.replaceAll('&','ampersand').replaceAll('\\+','%2B').replaceAll(' ','%20')}"
             }
 
             if(params.resourceTyp) {
