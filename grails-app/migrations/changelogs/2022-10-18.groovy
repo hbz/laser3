@@ -69,4 +69,10 @@ databaseChangeLog = {
     changeSet(author: "klober (generated)", id: "1666079486075-13") {
         addForeignKeyConstraint(baseColumnNames: "wfcp_file4", baseTableName: "wf_condition_prototype", constraintName: "FKegx94ihblw5q6cn9sh5pxns98", deferrable: "false", initiallyDeferred: "false", referencedColumnNames: "dc_id", referencedTableName: "doc_context", validate: "true")
     }
+
+    changeSet(author: "klober (generated)", id: "1666079486075-14") {
+        addColumn(tableName: "wf_workflow") {
+            column(name: "wfw_user_last_updated", type: "timestamp")
+        }
+    }
 }

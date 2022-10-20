@@ -22,10 +22,10 @@
     <thead>
     <tr>
         <th class="one wide" rowspan="2">${message(code:'default.status.label')}</th>
-        <th class="six wide" rowspan="2">${message(code:'workflow.label')}</th>
+        <th class="five wide" rowspan="2">${message(code:'workflow.label')}</th>
         <th class="five wide" rowspan="2">${message(code:'default.progress.label')}</th>
-        <th class="three wide la-smaller-table-head">${message(code:'default.lastUpdated.label')}</th>
-        <th class="one wide" rowspan="2">${message(code:'default.actions.label')}</th>
+        <th class="two wide la-smaller-table-head">${message(code:'default.lastUpdated.label')}</th>
+        <th class="three wide" rowspan="2">${message(code:'default.actions.label')}</th>
     </tr>
     <tr>
         <th class="two wide la-smaller-table-head">${message(code:'default.dateCreated.label')}</th>

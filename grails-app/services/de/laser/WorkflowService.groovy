@@ -596,6 +596,7 @@ class WorkflowService {
                 User user = User.get(ph.getLong('user'))
                 if (user != workflow.user) {
                     workflow.user = user
+                    workflow.userLastUpdated = new Date()
                     wChanged = true
                 }
                 if (wChanged) {
