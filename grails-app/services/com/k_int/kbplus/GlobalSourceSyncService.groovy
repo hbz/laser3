@@ -60,7 +60,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
     GlobalService globalService
     GlobalRecordSource source
     ApiSource apiSource
-    StatusUpdateService statusUpdateService
 
     final static long RECTYPE_PACKAGE = 0
     final static long RECTYPE_TITLE = 1
@@ -267,7 +266,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         log.info("no diffs recorded ...")
                     }
                     globalService.cleanUpGorm()
-                    statusUpdateService.retriggerPendingChanges(packageUUID)
                     log.info("package reload finished")
                 }
             }

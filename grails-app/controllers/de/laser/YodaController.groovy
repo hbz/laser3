@@ -850,6 +850,28 @@ class YodaController {
     }
 
     /**
+     * Is another one of the dangerous methods: retriggers the change processing on subscription holding level and hands eventual differences
+     * to the local holdings; if necessary, pending changes are being generated
+     * @see PendingChange
+     */
+    @Secured(['ROLE_YODA'])
+    def retriggerPendingChanges() {
+        if(!globalSourceSyncService.running) {
+            log.debug("match IssueEntitlements to TIPPs ...")
+            String uuid = params.packageUUID
+            executorService.execute({
+                statusUpdateService.retriggerPendingChanges(uuid)
+            })
+        }
+        else {
+            log.debug("process running, lock is set!")
+        }
+        flash.message = "Pakete werden nachgehalten ..."
+
+        redirect controller: 'package'
+    }
+
+    /**
      * Call to reload all provider data from the speicified we:kb instance.
      * Note that the organisations whose data should be updated need a we:kb ID for match;
      * if no match is being found for the given we:kb ID, a new record will be created!
