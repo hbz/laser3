@@ -1132,7 +1132,7 @@ class PendingChangeService extends AbstractLockableService {
                         }
                         else throw new ChangeAcceptException("problems when restoring entitlement - pending change not accepted: ${targetTitle.errors}")
                     }
-                    else if(targetTitle.status != RDStore.TIPP_STATUS_REMOVED) {
+                    else {
                         log.debug("set ${targetTitle} ${pc.targetProperty} to ${parsedNewValue}")
                         targetTitle[pc.targetProperty] = parsedNewValue
                         if(targetTitle.save()) {

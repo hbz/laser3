@@ -1,11 +1,17 @@
 package de.laser
 
+import de.laser.base.AbstractCoverage
+import de.laser.exceptions.ChangeAcceptException
 import de.laser.finance.PriceItem
+import de.laser.helper.DateUtils
 import de.laser.helper.RDStore
 import de.laser.interfaces.AbstractLockableService
 import de.laser.system.SystemEvent
 import grails.converters.JSON
 import grails.gorm.transactions.Transactional
+import net.sf.json.JSONObject
+
+import java.text.SimpleDateFormat
 
 /**
  * This service handles due date status updates for licenses and subscriptions
@@ -15,7 +21,7 @@ import grails.gorm.transactions.Transactional
 class StatusUpdateService extends AbstractLockableService {
 
     def globalSourceSyncService
-    def pendingChangeService
+    def escapeService
     def genericOIDService
     def contextService
      //def propertyInstanceMap = DomainClassGrailsPlugin.PROPERTY_INSTANCE_MAP
@@ -331,40 +337,71 @@ class StatusUpdateService extends AbstractLockableService {
                     diffs.add([event: 'delete', oldValue: ieA.status, target: tippB])
                 else if(ieA.status != RDStore.TIPP_STATUS_REMOVED && tippB.status != RDStore.TIPP_STATUS_REMOVED) {
                     Set<Map<String, Object>> tippDiffs = getTippDiff(ieA, tippB)
-                    if(tippDiffs)
+                    if(tippDiffs) {
+                        log.debug("got tipp diff: ${tippDiffs.toListString()}")
                         diffs.add([event: 'update', target: tippB, diffs: tippDiffs])
+                    }
                 }
             }
             Set<PendingChange> packagePendingChanges = []
             diffs.each { Map<String, Object> diff ->
                 log.debug(diff.toMapString())
                 switch(diff.event) {
-                    case 'add': packagePendingChanges << PendingChange.construct([msgToken:PendingChangeConfiguration.NEW_TITLE,target:diff.target,status:RDStore.PENDING_CHANGE_HISTORY])
+                    //new operator because object should not be persisted!
+                    case 'add': packagePendingChanges << new PendingChange(msgToken:PendingChangeConfiguration.NEW_TITLE, tipp: diff.target)
                         break
                     case 'update':
                         diff.diffs.each { tippDiff ->
                             switch(tippDiff.prop) {
                                 case 'coverage': tippDiff.covDiffs.each { covEntry ->
                                     switch(covEntry.event) {
-                                        case 'add': packagePendingChanges << PendingChange.construct([msgToken:PendingChangeConfiguration.NEW_COVERAGE,target:covEntry.target,status:RDStore.PENDING_CHANGE_HISTORY])
+                                        case 'add': packagePendingChanges << new PendingChange(msgToken:PendingChangeConfiguration.NEW_COVERAGE, tippCoverage: covEntry.target)
                                             break
                                         case 'update': covEntry.diffs.each { covDiff ->
-                                            packagePendingChanges << PendingChange.construct([msgToken: PendingChangeConfiguration.COVERAGE_UPDATED, target: covEntry.target, status: RDStore.PENDING_CHANGE_HISTORY, prop: covDiff.prop, newValue: covDiff.newValue, oldValue: covDiff.oldValue])
+                                            def oldValue, newValue
+                                            if (covDiff.prop in PendingChange.DATE_FIELDS) {
+                                                SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+                                                newValue = (covDiff.newValue && covDiff.newValue instanceof Date) ? sdf.format(covDiff.newValue) : (covDiff.newValue ?: null)
+                                                oldValue = (covDiff.oldValue && covDiff.oldValue instanceof Date) ? sdf.format(covDiff.oldValue) : (covDiff.oldValue ?: null)
+                                            }
+                                            else if (covDiff.prop in PendingChange.REFDATA_FIELDS) {
+                                                newValue = (covDiff.newValue && covDiff.newValue instanceof Long) ? covDiff.newValue.toString() : (covDiff.newValue ?: null)
+                                                oldValue = (covDiff.oldValue && covDiff.oldValue instanceof Long) ? covDiff.oldValue.toString() : (covDiff.oldValue ?: null)
+                                            }
+                                            else {
+                                                newValue = covDiff.newValue
+                                                oldValue = covDiff.oldValue
+                                            }
+                                            packagePendingChanges << new PendingChange(msgToken: PendingChangeConfiguration.COVERAGE_UPDATED, tippCoverage: covEntry.target, targetProperty: covDiff.prop, oldValue: oldValue, newValue: newValue)
                                         }
                                             break
                                         case 'delete': JSON oldMap = covEntry.target.properties as JSON
-                                            packagePendingChanges << PendingChange.construct([msgToken:PendingChangeConfiguration.COVERAGE_DELETED, target:covEntry.targetParent, oldValue: oldMap.toString() , status:RDStore.PENDING_CHANGE_HISTORY])
+                                            packagePendingChanges << new PendingChange(msgToken:PendingChangeConfiguration.COVERAGE_DELETED, target:covEntry.targetParent, oldValue: oldMap.toString())
                                             break
                                     }
                                 }
                                     break
                                 default:
-                                    packagePendingChanges << PendingChange.construct([msgToken:PendingChangeConfiguration.TITLE_UPDATED,target:diff.target,status:RDStore.PENDING_CHANGE_HISTORY,prop:tippDiff.prop,newValue:tippDiff.newValue,oldValue:tippDiff.oldValue])
+                                    def oldValue, newValue
+                                    if (tippDiff.prop in PendingChange.DATE_FIELDS) {
+                                        SimpleDateFormat sdf = DateUtils.getSDF_NoTime()
+                                        newValue = (tippDiff.newValue && tippDiff.newValue instanceof Date) ? sdf.format(tippDiff.newValue) : (tippDiff.newValue ?: null)
+                                        oldValue = (tippDiff.oldValue && tippDiff.oldValue instanceof Date) ? sdf.format(tippDiff.oldValue) : (tippDiff.oldValue ?: null)
+                                    }
+                                    else if (tippDiff.prop in PendingChange.REFDATA_FIELDS) {
+                                        newValue = (tippDiff.newValue && tippDiff.newValue instanceof Long) ? tippDiff.newValue.toString() : (tippDiff.newValue ?: null)
+                                        oldValue = (tippDiff.oldValue && tippDiff.oldValue instanceof Long) ? tippDiff.oldValue.toString() : (tippDiff.oldValue ?: null)
+                                    }
+                                    else {
+                                        newValue = tippDiff.newValue
+                                        oldValue = tippDiff.oldValue
+                                    }
+                                    packagePendingChanges << new PendingChange(msgToken:PendingChangeConfiguration.TITLE_UPDATED,tipp:diff.target,targetProperty: tippDiff.prop,newValue:newValue,oldValue:oldValue)
                                     break
                             }
                         }
                         break
-                    case 'delete': packagePendingChanges << PendingChange.construct([msgToken:PendingChangeConfiguration.TITLE_DELETED,target:diff.target,oldValue:diff.oldValue,status:RDStore.PENDING_CHANGE_HISTORY])
+                    case 'delete': packagePendingChanges << new PendingChange(msgToken:PendingChangeConfiguration.TITLE_DELETED,tipp:diff.target,oldValue:diff.oldValue,status:RDStore.PENDING_CHANGE_HISTORY)
                         break
                     case 'remove': PendingChange.construct([msgToken:PendingChangeConfiguration.TITLE_REMOVED,target:diff.target,status:RDStore.PENDING_CHANGE_HISTORY]) //dealt elsewhere!
                         break
