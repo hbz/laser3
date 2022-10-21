@@ -144,7 +144,7 @@
                                   model="${[instance: sub, context: 'documents', redirect: actionName, owntp: 'subscription']}"/>
 
                     </td>
-                    <td class="x">
+                    <td class="center aligned">
                         <g:link controller="subscription" action="show" id="${sub.id}"
                                 class="ui icon button blue la-modern-button"
                                 role="button"

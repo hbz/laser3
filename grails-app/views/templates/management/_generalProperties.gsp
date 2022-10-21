@@ -65,7 +65,7 @@
                         <ui:auditButton auditable="[subscription, 'hasPublishComponent']"/>
                     </td>
 
-                    <td class="x">
+                    <td class="center aligned">
                         <g:link controller="subscription" action="show" id="${subscription.id}"
                                 class="ui icon button blue la-modern-button"
                                 role="button"
@@ -334,7 +334,7 @@
                                 </span>
                             </g:if>
                         </td>
-                        <td class="x">
+                        <td class="center aligned">
                             <g:link controller="subscription" action="show" id="${sub.id}"
                                     class="ui icon button blue la-modern-button"
                                     role="button"

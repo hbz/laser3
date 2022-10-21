@@ -11,13 +11,13 @@ system = {
     },
 
     status: function () {
-        var socket = new SockJS(JSPC.vars.ws.stompUrl)
-        var client = webstomp.over(socket, { debug: true })
-        var subscription = function(frame) {
+        let socket = new SockJS(JSPC.vars.ws.stompUrl)
+        let client = webstomp.over(socket, { debug: true })
+        let subscription = function(frame) {
             console.log( frame )
             client.subscribe(JSPC.vars.ws.topicStatusUrl, function(message) {
                 console.log( message )
-                var body = JSON.parse(message.body)
+                let body = JSON.parse(message.body)
                 console.log( body )
                 if (body && body.status && body.status === 'ok') {
                     if (body.maintenance) {
@@ -41,7 +41,7 @@ system = {
             url: JSPC.vars.ajax.openProfiler,
             data: {uri: uri},
             success: function (data) {
-                var $sp = $('#system-profiler')
+                let $sp = $('#system-profiler')
                 if ($sp) {
                     if (data.delta > 0) {
                         $sp.removeClass('hidden').find('span').empty().append(data.delta + ' ms')

@@ -55,15 +55,14 @@
         </div>
         <div class="field">
             <label for="${prefixOverride}_user">${message(code:'task.responsible.label')}</label>
-            <g:set var="responsibleList" value="${taskService.getUserDropdown(contextService.getOrg()).collect{ [id: it.id, label: it.display] }}" />
+            <g:set var="responsibleList" value="${taskService.getUserDropdown(contextService.getOrg())}" />
             <g:select id="${prefixOverride}_user"
                       name="${prefixOverride}_user"
-                      from="${taskService.getUserDropdown(contextService.getOrg())}"
-                      optionValue="display"
-                      optionKey="id"
-                      noSelection="${['': message(code:'workflow.user.do.noCurrentUser')]}"
-                      value="${workflow.user?.id}"
-                      class="ui dropdown search"
+                      from="${ responsibleList + [id:'all', display:message(code:'workflow.user.noCurrentUser')] }"
+                      optionValue="${{it.display}}"
+                      optionKey="${{it.id}}"
+                      value="${workflow.user ? workflow.user.id : 'all'}"
+                      class="ui dropdown search la-not-clearable"
             />
         </div>
 
@@ -199,11 +198,11 @@
                                 <g:if test="${wfEditPerm}">
                                     <label for="${prefixOverride}_${field}">${task.condition.getProperty(field + '_title') ?: message(code:'workflow.field.noTitle.label')}
                                         <div id="fileUploadWrapper_toggle_${field}" class="ui small buttons" style="float:right; margin-right:15px">
-                                            <span data-position="top right" class="ui left attached icon button la-popup-tooltip la-delay ${taskConditionFileExists ? '' : 'active'}" data-content="${message(code:'workflow.condition.fileUpload.info')}">
-                                                <i class="icon upload"></i>
-                                            </span>
-                                            <span data-position="top right" class="ui right attached icon button la-popup-tooltip la-delay ${taskConditionFileExists ? 'active' : ''}" data-content="${message(code:'workflow.condition.file.info')}">
+                                            <span class="ui left attached mini icon button ${taskConditionFileExists ? 'active' : ''}">
                                                 <i class="icon file"></i>
+                                            </span>
+                                            <span class="ui right attached mini icon button ${taskConditionFileExists ? '' : 'active'}">
+                                                <i class="icon upload"></i>
                                             </span>
                                         </div>
                                     </label>
@@ -300,6 +299,13 @@
                             </div>
                         </g:if>
                     </g:each>
+
+                    <div class="ui message info la-clear-before" style="display:block;">
+                        <i aria-hidden="true" class="close icon"></i>
+                        %{--<p><strong>Umgang mit Dateien</strong></p>--}%
+                        <p style="margin-top:0.5em;"> <i class="icon file"></i> &nbsp; ${message(code:'workflow.condition.file.info')} </p>
+                        <p style="margin-bottom:0.5em;"> <i class="icon upload"></i> &nbsp; ${message(code:'workflow.condition.fileUpload.info')} </p>
+                    </div>
                 </div>
             </div>
 

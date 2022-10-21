@@ -6,7 +6,6 @@ docs = {
         console.log('docs.init( ' + cssSel + ')')
 
         $(cssSel).find ('a[data-documentKey]').on ('click', function(e) {
-            console.log($(this))
             e.preventDefault();
             let docKey = $(this).attr('data-documentKey')
             let previewModalId = '#document-preview-' + docKey.split(':')[0]

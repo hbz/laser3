@@ -24,10 +24,13 @@ abstract class WfConditionBase {
             ['4_4_0', 2, 'down'],
             ['1_0_1', 1, 'down'],
             ['2_0_2', 2, 'down'],
+            ['4_0_4', 2, 'down'],
             ['1_1_1', 1, 'down'],
             ['2_2_2', 2, 'down'],
+            ['4_4_4', 2, 'down'],
             ['0_0_1', 1, 'down'],
-            ['0_0_2', 2, 'down']
+            ['0_0_2', 2, 'down'],
+            ['0_0_4', 2, 'down']
     ]
 
     String type
@@ -67,9 +70,13 @@ abstract class WfConditionBase {
 
     DocContext  file1
     DocContext  file2
+    DocContext  file3
+    DocContext  file4
 
     String      file1_title
     String      file2_title
+    String      file3_title
+    String      file4_title
 
     // --
 

@@ -75,7 +75,7 @@
                     </div>
                 </div>
             </td>
-            <td class="x">
+            <td class="center aligned">
                 <g:if test="${editable && tmplShowDeleteButton}">
 
                     <button type="button" onclick="JSPC.app.editAddress(${address.id})" class="ui icon button blue la-modern-button"

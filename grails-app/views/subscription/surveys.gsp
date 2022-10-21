@@ -97,7 +97,7 @@
                 <td class="center aligned">
                     <uiSurvey:finishDate participant="${institution}" surveyConfig="${surveyConfig}"/>
                 </td>
-                <td class="x">
+                <td class="center aligned">
 
                     <g:if test="${(contextOrg.getCustomerType() in ['ORG_CONSORTIUM'])}">
                             <span class="la-popup-tooltip la-delay"

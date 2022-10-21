@@ -249,7 +249,7 @@
                             </span>
                         </g:if>
                     </td>
-                    <td class="x">
+                    <td class="center aligned">
                         <g:if test="${! wfp.inUse()}">
                             <g:link class="ui small icon negative button la-modern-button js-open-confirm-modal"
                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.generic", args: [wfp.title])}"
@@ -344,7 +344,7 @@
                             </span>
                         </g:each>
                     </td>
-                    <td class="x">
+                    <td class="center aligned">
                         <g:if test="${! tp.inUse()}">
                             <g:link class="ui small icon negative button la-modern-button js-open-confirm-modal"
                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.generic", args: [tp.title])}"
@@ -403,7 +403,7 @@
                     <td>
                         ${cp.getTypeAsRefdataValue().getI10n('value')}
                     </td>
-                    <td class="x">
+                    <td class="center aligned">
                         <g:if test="${! cp.inUse()}">
                             <g:link class="ui small icon negative button la-modern-button js-open-confirm-modal"
                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.generic", args: [cp.title])}"

@@ -74,7 +74,7 @@
                     </g:if>
                 </g:each>
             </td>
-            <%--<td class="x">
+            <%--<td class="center aligned">
             </td>--%>
         </tr>
     </g:each>

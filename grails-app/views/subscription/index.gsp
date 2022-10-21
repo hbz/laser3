@@ -457,7 +457,7 @@
 
                                     </td>
                                 </g:if>
-                                <td class="x">
+                                <td class="center aligned">
                                     <g:if test="${editable}">
                                         <g:if test="${subscription.ieGroups.size() > 0}">
                                             <g:link action="removeEntitlementWithIEGroups" class="ui icon negative button la-modern-button js-open-confirm-modal"

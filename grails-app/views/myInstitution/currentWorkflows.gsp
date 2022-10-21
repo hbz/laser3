@@ -148,11 +148,11 @@
     <thead>
         <tr>
             <th class="one wide" rowspan="2">${message(code:'sidewide.number')}</th>
-            <th class="four wide" rowspan="2">${message(code:'workflow.label')}</th>
+            <th class="three wide" rowspan="2">${message(code:'workflow.label')}</th>
             <th class="four wide" rowspan="2">${message(code:'default.relation.label')}</th>
             <th class="four wide" rowspan="2">${message(code:'default.progress.label')}</th>
             <th class="two wide la-smaller-table-head">${message(code:'default.lastUpdated.label')}</th>
-            <th class="one wide" rowspan="2">${message(code:'default.actions.label')}</th>
+            <th class="two wide" rowspan="2">${message(code:'default.actions.label')}</th>
         </tr>
         <tr>
             <th class="two wide la-smaller-table-head">${message(code:'default.dateCreated.label')}</th>
@@ -202,7 +202,7 @@
                     <br />
                     ${DateUtils.getLocalizedSDF_noTime().format(wf.dateCreated)}
                 </td>
-                <td class="x">
+                <td class="center aligned">
                     <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
                         <uiWorkflow:usageIconLinkButton workflow="${wf}" params="${[key: 'myInstitution:' + wf.id + ':' + WfWorkflow.KEY + ':' + wf.id]}" />
                     </g:if>

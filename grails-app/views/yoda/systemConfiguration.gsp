@@ -30,11 +30,12 @@
     ]
 %>
 
-<span class="ui label"><i class="icon certificate" style="color:${colors['dataSource']}"></i>dataSource</span>
-<span class="ui label"><i class="icon certificate" style="color:${colors['grailsPlugin']}"></i>grails.plugin(s)</span>
-<span class="ui label"><i class="icon certificate" style="color:${colors['grails']}"></i>grails</span>
-<span class="ui label"><i class="icon certificate" style="color:${colors['java']}"></i>java</span>
-<span class="ui label"><i class="icon certificate" style="color:${colors['spring']}"></i>spring</span>
+<br />
+<span class="ui label"><i class="icon tag" style="color:${colors['dataSource']}"></i>dataSource</span>
+<span class="ui label"><i class="icon tag" style="color:${colors['grailsPlugin']}"></i>grails.plugin(s)</span>
+<span class="ui label"><i class="icon tag" style="color:${colors['grails']}"></i>grails</span>
+<span class="ui label"><i class="icon tag" style="color:${colors['java']}"></i>java</span>
+<span class="ui label"><i class="icon tag" style="color:${colors['spring']}"></i>spring</span>
 
 <table class="ui sortable celled la-js-responsive-table la-hover-table la-table compact table">
     <thead>
@@ -59,10 +60,15 @@
             %>
             <tr>
                 <td>${i+1}</td>
+                <td>
+                    <g:if test="${color}">
+                        <i class="icon tag" style="${color}"></i>
+                    </g:if>
+                </td>
                 <td>${key}</td>
                 <td>
                     <g:if test="${blacklist.contains(key)}">
-                        <span class="sc_orange"> == C O N C E A L E D === </span>
+                        <span class="ui label"> hidden </span>
                     </g:if>
                     <g:else>
                         <g:if test="${key == 'java.class.path'}">
@@ -74,11 +80,6 @@
                             ${currentConfig.get(key)}
                         </g:else>
                     </g:else>
-                </td>
-                <td>
-                    <g:if test="${color}">
-                        <i class="icon certificate" style="${color}"></i>
-                    </g:if>
                 </td>
             </tr>
         </g:each>

@@ -122,7 +122,7 @@
             </a>
         </td>
 
-        <td class="x" data-label="Optionen:">
+        <td class="center aligned" data-label="Optionen:">
 
             <a href="/subscription/surveysConsortia/47645" class="ui button blue icon la-modern-button">
                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"

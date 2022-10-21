@@ -282,7 +282,7 @@
                     </td>
                 </g:if>
 
-                <td class="x">
+                <td class="center aligned">
 
                     <g:if test="${editable}">
                             <span class="la-popup-tooltip la-delay"

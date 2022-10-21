@@ -99,7 +99,7 @@
                         <td>${i + 1}</td>
                         <td>
                             %{--ERMS-4524--}%
-                            <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().contains(docctx.owner.mimeType)}" />
+                            <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}" />
                             <g:if test="${docctx.owner.contentType == Doc.CONTENT_TYPE_FILE && supportedMimeType}">
                                 <a href="#documentPreview" data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title}</a>
                             </g:if>
@@ -121,7 +121,7 @@
                                 <i class="green alternate share icon"></i>
                             </span>
                         </td>
-                        <td class="x">
+                        <td class="center aligned">
                             <g:if test="${((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3))}">
 
                                 <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i

@@ -22,15 +22,15 @@ JSPC = {
     modules : { // -- module registry
         add : function (module, label) {
             if (! JSPC.modules.registry.get (label) ) {
-                console.log ('  module ' + label + ' loaded ..');
+                console.log ('  adding module ' + (JSPC.modules.registry.size+1) + ' > ' + label);
                 JSPC.modules.registry.set (label, module);
             }
         },
-        go : function () {
-            for (let module of JSPC.modules.registry.values()) {
-                if (module.hasOwnProperty ('go')) {
-                    module.go();
-                }
+        init : function () {
+            let i = 1;
+            for (let [label, module] of JSPC.modules.registry) {
+                window[label] = module;
+                console.log ('  init module ' + (i++) + ' > ' + label);
             }
         },
         registry : new Map()

@@ -268,7 +268,7 @@
                     </td>
                     <g:if test="${!params.orgBasicMemberView}">
                         <g:if test="${accessService.checkPermAffiliation("ORG_CONSORTIUM","INST_EDITOR")}">
-                            <td class="x">
+                            <td class="center aligned">
                                 <g:if test="${fixedSubscription}">
                                     <g:link mapping="subfinanceEditCI" params='[sub:"${fixedSubscription.id}", id:"${ci.id}", showView:"cons", offset: params.offset]' class="ui icon button blue la-modern-button trigger-modal" data-id_suffix="edit_${ci.id}"
                                             role="button"
@@ -303,7 +303,7 @@
                             </td>
                         </g:if>
                         <g:elseif test="${accessService.checkPermAffiliation("ORG_INST","INST_EDITOR")}">
-                            <td class="x">
+                            <td class="center aligned">
                                 <g:if test="${fixedSubscription}">
                                     <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code:'financials.costItem.transfer.tooltip')}">
                                         <g:link mapping="subfinanceCopyCI" params='[sub:"${fixedSubscription.id}", id:"${ci.id}", showView:"own"]' class="ui icon blue button la-modern-button trigger-modal" data-id_suffix="copy_${ci.id}">

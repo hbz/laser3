@@ -90,7 +90,7 @@
                     <tr>
 %{--                        <th scope="row" class="la-th-column la-main-object">--}%
                         <td>
-                            <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().contains(docctx.owner.mimeType)}" />
+                            <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}" />
                             <strong>
                                 <g:if test="${docctx.owner.contentType == Doc.CONTENT_TYPE_FILE && visible && supportedMimeType}">
                                     <a href="#documentPreview" data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title}</a>
@@ -132,7 +132,7 @@
                             </td>
                         --%>
                         </g:if>
-                        <td class="x">
+                        <td class="center aligned">
                             <g:if test="${((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3))}">
                                 <g:if test="${instance?.respondsTo('showUIShareButton')}">
                                     <g:if test="${docctx.sharedFrom}">

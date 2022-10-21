@@ -26,7 +26,7 @@
                 <td>
                   <g:link controller="package" action="show" id="${pc.pkg.id}">${pc.pkg.name}</g:link> <br />${pc.desc}
                 </td>
-                <td class="x">
+                <td class="center aligned">
                   <g:link controller="pendingChange" action="accept" id="${pc.id}" class="ui positive button">${message(code:'datamanager.accept.label')}</g:link>
                   <g:link controller="pendingChange" action="reject" id="${pc.id}" class="ui negative button">${message(code:'datamanager.reject.label')}</g:link>
                 </td>

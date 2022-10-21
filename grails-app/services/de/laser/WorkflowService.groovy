@@ -596,6 +596,7 @@ class WorkflowService {
                 User user = User.get(ph.getLong('user'))
                 if (user != workflow.user) {
                     workflow.user = user
+                    workflow.userLastUpdated = new Date()
                     wChanged = true
                 }
                 if (wChanged) {
@@ -644,7 +645,7 @@ class WorkflowService {
                         }
                     }
 
-                    for(int i=1; i<=2; i++) {
+                    for(int i=1; i<=4; i++) {
                         String fileId = 'file' + i
 
                         if (params.get('wfUploadFile_placeholder_' + fileId)) {
