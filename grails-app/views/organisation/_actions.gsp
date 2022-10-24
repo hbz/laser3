@@ -21,7 +21,7 @@
                 <div class="divider"></div>
 
                 <g:if test="${workflowService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
-                    <g:if test="${institutionalView || isProviderOrAgency}">
+                    <g:if test="${inContextOrg || isProviderOrAgency}">
                         <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalInstantiateWorkflow" />
                         <div class="divider"></div>
                     </g:if>
@@ -51,7 +51,7 @@
             </g:if>
             <g:if test="${actionName == 'workflows'}">
                 <g:if test="${workflowService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
-                    <g:if test="${institutionalView || isProviderOrAgency}">
+                    <g:if test="${inContextOrg || isProviderOrAgency}">
                         <ui:actionsDropdownItem message="workflow.instantiate" data-ui="modal" href="#modalInstantiateWorkflow" />
                     </g:if>
                 </g:if>
@@ -139,7 +139,7 @@
 </g:if>
 
 <g:if test="${workflowService.hasUserPerm_init()}"><!-- TODO: workflows-permissions -->
-    <g:if test="${institutionalView}">
+    <g:if test="${inContextOrg}">
         <laser:render template="/templates/workflow/instantiate" model="${[cmd: RDStore.WF_WORKFLOW_TARGET_TYPE_INSTITUTION, target: orgInstance]}"/>
     </g:if>
     <g:if test="${isProviderOrAgency}">

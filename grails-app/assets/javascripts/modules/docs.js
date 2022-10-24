@@ -3,7 +3,7 @@
 docs = {
 
     init: function (cssSel) {
-        console.log('docs.init( ' + cssSel + ')')
+        console.log('docs.init(' + cssSel + ')')
 
         $(cssSel).find ('a[data-documentKey]').on ('click', function(e) {
             e.preventDefault();

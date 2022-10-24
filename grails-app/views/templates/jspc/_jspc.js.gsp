@@ -24,6 +24,7 @@ JSPC = {
             if (! JSPC.modules.registry.get (label) ) {
                 console.log ('  adding module ' + (JSPC.modules.registry.size+1) + ' > ' + label);
                 JSPC.modules.registry.set (label, module);
+                // delete window[label];
             }
         },
         init : function () {

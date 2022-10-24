@@ -1,7 +1,7 @@
 <g:if test="${debug}">
 
     <div style="padding: 1em 0;">
-        <h5 class="ui red header">BenchMark</h5>
+        <h5 class="ui header">BenchMark</h5>
 
         <table class="ui celled la-js-responsive-table la-table compact table la-ignore-fixed">
             <thead>

@@ -15,25 +15,33 @@
             parentAtChild = true
         }
     }
+
+    List<String> colWide = (controllerName != 'myInstitution') ? ['seven', 'three', 'three', 'three'] : ['six', 'two', 'two', 'three', 'three']
+    int cwi = 0
 %>
 
     <table class="ui celled la-js-responsive-table la-table table documents-table">
         <thead>
             <tr>
                 <%--<g:if test="${editable}"><th>${message(code:'default.select.label')}</th></g:if> : REMOVED BULK--%>
-                <th>${message(code:'template.addDocument.name')} / ${message(code:'license.docs.table.fileName')}</th>
-                <th>${message(code:'license.docs.table.type')}</th>
-                <th>${message(code:'template.addDocument.confidentiality')}</th>
+                <th scope="col" class="${colWide[cwi++]} wide la-smaller-table-head">${message(code:'template.addDocument.name')}</th>
+                <th scope="col" class="${colWide[cwi++]} wide" rowspan="2">${message(code:'license.docs.table.type')}</th>
+                <th scope="col" class="${colWide[cwi++]} wide" rowspan="2">${message(code:'template.addDocument.confidentiality')}</th>
                 <%--<th>${message(code:'org.docs.table.ownerOrg')}</th>--%>
                 <g:if test="${controllerName == 'myInstitution'}">
-                    <th>${message(code:'org.docs.table.shareConf')}</th>
-                    <th>${message(code:'org.docs.table.targetBy')}</th>
+                    <th scope="col" class="${colWide[cwi++]} wide la-smaller-table-head">${message(code:'org.docs.table.shareConf')}</th>
                 </g:if>
                 <%--<g:elseif test="${controllerName == 'organisation'}">
                     <th>${message(code:'org.docs.table.targetFor')}</th>
                     <th>${message(code:'org.docs.table.shareConf')}</th>
                 </g:elseif>--%>
-                <th>${message(code:'default.actions.label')}</th>
+                <th scope="col" class="${colWide[cwi]} wide" rowspan="2">${message(code:'default.actions.label')}</th>
+            </tr>
+            <tr>
+                <th scope="col" class="la-smaller-table-head">${message(code:'license.docs.table.fileName')}</th>
+                <g:if test="${controllerName == 'myInstitution'}">
+                    <th scope="col" class="la-smaller-table-head">${message(code:'org.docs.table.targetBy')}</th>
+                </g:if>
             </tr>
         </thead>
         <tbody>
@@ -111,8 +119,7 @@
                         <g:if test="${controllerName == 'myInstitution'}">
                             <td>
                                 ${docctx.shareConf?.getI10n("value")}
-                            </td>
-                            <td>
+                                <br />
                                 ${inTargetOrg ? docctx.owner?.owner?.sortname :  docctx.targetOrg?.sortname}
                             </td>
                         <%--
