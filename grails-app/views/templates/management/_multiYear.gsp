@@ -33,7 +33,7 @@
                         ${subscription.status.getI10n('value')}
                         <ui:auditButton auditable="[subscription, 'status']"/>
                     </td>
-                    <td class="center aligned">
+                    <td class="x">
                         <g:link controller="subscription" action="show" id="${subscription.id}"
                                 class="ui icon button blue la-modern-button"
                                 role="button"
@@ -178,7 +178,7 @@
                     <td>
                         <ui:xEditableBoolean owner="${sub}" field="isMultiYear"/>
                     </td>
-                    <td class="center aligned">
+                    <td class="x">
                         <g:link controller="subscription" action="show" id="${sub.id}"
                                 class="ui icon button blue la-modern-button"
                                 role="button"

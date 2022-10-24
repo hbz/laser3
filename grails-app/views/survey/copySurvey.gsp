@@ -526,7 +526,7 @@
                                     </g:link>
                                 </td>
 
-                                <td class="center aligned">
+                                <td class="x">
                                     <g:if test="${editable && accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")}">
                                         <g:link class="ui icon positive button la-popup-tooltip la-delay"
                                                 data-content="${message(code: 'survey.toggleSurveySub.add.label', args: [SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransferIsNotNull(s).size(), SurveyConfig.findAllBySubscriptionAndSubSurveyUseForTransferIsNull(s).size()])}"

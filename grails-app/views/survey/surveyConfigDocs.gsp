@@ -121,7 +121,7 @@
                                 <i class="green alternate share icon"></i>
                             </span>
                         </td>
-                        <td class="center aligned">
+                        <td class="x">
                             <g:if test="${((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3))}">
 
                                 <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i

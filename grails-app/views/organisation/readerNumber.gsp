@@ -87,7 +87,7 @@
                             <td>
                                 <ui:xEditable type="readerNumber" owner="${numbersInstance.getValue().entrySet()[0].getValue()}" field="dateGroupNote"/>
                             </td>
-                            <td class="center aligned">
+                            <td class="x">
                                 <g:if test="${editable}">
                                     <g:if test="${missing}">
                                         <a role="button" class="ui icon button blue la-modern-button" data-ui="modal" href="#newForSemester${numbersInstance.getKey().id}"
@@ -138,7 +138,7 @@
                                 </g:each>
                                 <td><g:formatNumber number="${dueDateSums.get(numbersInstance.getKey())}" format="${message(code:'default.decimal.format')}"/></td>
                                 <td><ui:xEditable type="readerNumber" owner="${numbersInstance.getValue().entrySet()[0].getValue()}" field="dateGroupNote"/></td>
-                                <td class="center aligned">
+                                <td class="x">
                                     <g:if test="${editable}">
                                         <g:link class="ui icon negative button la-modern-button js-open-confirm-modal" controller="readerNumber" action="delete"
                                                 data-confirm-tokenMsg="${message(code: 'readerNumber.confirmRow.delete')}"

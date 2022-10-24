@@ -139,7 +139,7 @@
                             </td>
                         --%>
                         </g:if>
-                        <td class="center aligned">
+                        <td class="x">
                             <g:if test="${((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3))}">
                                 <g:if test="${instance?.respondsTo('showUIShareButton')}">
                                     <g:if test="${docctx.sharedFrom}">

@@ -192,7 +192,7 @@
                 </td>
             </g:if>
         </g:each>
-            <td class="center aligned">
+            <td class="x">
                 <g:if test="${editable}">
                     <button type="button" onclick="JSPC.app.editPerson(${person.id})" class="ui icon button blue la-modern-button"
                             role="button"

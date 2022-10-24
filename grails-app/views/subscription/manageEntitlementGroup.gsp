@@ -52,7 +52,7 @@
                     ${titleGroup.items.size()}
                     </g:link>
                 </td>
-                <td class="center aligned">
+                <td class="x">
 
                     <g:link action="index" class="ui icon blue button la-modern-button" id="${params.id}"
                             params="[titleGroup: titleGroup.id]"

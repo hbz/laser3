@@ -769,7 +769,7 @@
                 </td>
             </g:if>
             <g:if test="${tmplConfigItem.equalsIgnoreCase('surveySubCostItem')}">
-                <td class="center aligned">
+                <td class="x">
 
                     <g:set var="oldCostItem" value="${0.0}"/>
                     <g:set var="oldCostItemAfterTax" value="${0.0}"/>

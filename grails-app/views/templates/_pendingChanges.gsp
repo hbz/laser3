@@ -54,7 +54,7 @@
                     </g:else>
                 </td>
                 <td><g:formatDate format="${message(code: 'default.date.format')}" date="${pc.ts}"/></td>
-                <td class="center aligned">
+                <td class="x">
                   <g:if test="${! processingpc}">
                     <g:link controller="pendingChange" action="accept" id="${pc.id}" class="ui icon positive button la-modern-button">
                       <i class="checkmark icon"></i>

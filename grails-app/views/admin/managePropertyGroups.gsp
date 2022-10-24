@@ -62,7 +62,7 @@
                     <td>
                         <ui:xEditableBoolean owner="${pdGroup}" field="isVisible" />
                     </td>
-                    <td class="center aligned">
+                    <td class="x">
                         <g:if test="${editable}">
                             <g:set var="pdgOID" value="${pdGroup.class.name + ':' + pdGroup.id}" />
                             <g:link controller="admin" action="managePropertyGroups" params="${[cmd:'edit', oid:pdgOID]}" class="ui icon button blue la-modern-button trigger-modal"

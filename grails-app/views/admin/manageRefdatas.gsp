@@ -105,7 +105,7 @@
                                             ${rdv.getI10n('value', 'en')}
                                         </g:else>
                                     </td>
-                                    <td class="center aligned">
+                                    <td class="x">
                                         <sec:ifAnyGranted roles="ROLE_YODA">
                                             <g:if test="${usedRdvList?.contains(rdv.id)}">
                                                 <span data-position="top rightla-popup-tooltip la-delay" data-content="${message(code:'refdataValue.exchange.label')}">

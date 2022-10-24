@@ -116,7 +116,7 @@
                                                 </g:else>
 
                                         </td>
-                                        <td class="center aligned">
+                                        <td class="x">
                                             <g:if test="${editable}">
                                                 <g:if test="${pd.mandatory}">
                                                     <g:link action="managePrivatePropertyDefinitions" data-content="${message(code:'propertyDefinition.unsetMandatory.label')}" data-position="left center"

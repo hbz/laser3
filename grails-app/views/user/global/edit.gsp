@@ -81,7 +81,7 @@
                         <g:each in="${user.roles}" var="rl">
                             <tr>
                                 <td>${rl.role.authority}</td>
-                                <td class="center aligned">
+                                <td class="x">
                                     <g:if test="${editable}">
                                         <g:link controller="ajax" action="removeUserRole" params='${[user:"${user.class.name}:${user.id}",role:"${rl.role.class.name}:${rl.role.id}"]}'
                                                 class="ui icon negative button la-modern-button js-open-confirm-modal"

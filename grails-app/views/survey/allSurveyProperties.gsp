@@ -98,7 +98,7 @@
                         (${refdataValues.join('/')})
                     </g:if>
                 </td>
-                <td class="center aligned">
+                <td class="x">
                     <g:if test="${property.countUsages() == 0 && property?.tenant?.id == institution?.id}">
                         <g:link action="deleteSurveyProperty" id="${params.id}" params="[deleteId: property?.id]"
                                 class="ui icon negative button js-open-confirm-modal"

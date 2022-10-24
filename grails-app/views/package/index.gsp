@@ -51,7 +51,7 @@
                     <g:sortableColumn property="lastUpdatedDisplay" title="${message(code: 'package.lastUpdated.label')}"
                                       params="${params}" defaultOrder="desc"/>
                     <sec:ifAllGranted roles="ROLE_YODA">
-                        <th class="center aligned">
+                        <th class="x">
                             <g:link class="ui button js-open-confirm-modal"
                                     data-confirm-tokenMsg="${message(code: 'menu.yoda.reloadPackages.confirm')}"
                                     data-confirm-term-how="ok"

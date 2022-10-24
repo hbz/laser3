@@ -244,7 +244,7 @@
                                 </g:if>
                             </td>
                         </g:if>
-                        <td class="center aligned">
+                        <td class="x">
                             <g:if test="${'showActions' in tableConfig}">
                                 <g:if test="${institution.getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER'] && s.instanceOf}">
                                     <g:set var="surveysSub" value="${SurveyConfig.executeQuery("select surConfig.id from SurveyConfig as surConfig where surConfig.subscription = :sub and surConfig.surveyInfo.status not in (:invalidStatuses) and surConfig.surveyInfo.type = :type and (exists (select surOrg from SurveyOrg surOrg where surOrg.surveyConfig = surConfig AND surOrg.org = :org))",

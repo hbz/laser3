@@ -21,7 +21,7 @@
                                 <td>${user.username}</td>
                                 <td>${user.display}</td>
                                 <td>${user.email}</td>
-                                <td class="center aligned">
+                                <td class="x">
                                     <g:link controller="user" action="edit" id="${user.id}" class="ui icon button">
                                         <i class="ui icon write"></i>
                                     </g:link>

@@ -44,7 +44,7 @@
                         </g:else>
                     </td>
                     <g:if test="${(contextService.getUser().hasRole('ROLE_ADMIN'))}">
-                        <td class="center aligned">
+                        <td class="x">
                             <g:if test="${! instAdmService.isUserLastInstAdminForOrg(userInstance, aff.org)}">
                                     <g:link controller="ajax" action="deleteThrough" params='${[contextOid:"${userInstance.class.name}:${userInstance.id}",contextProperty:"affiliations",targetOid:"${aff.class.name}:${aff.id}"]}'
                                             class="ui icon negative button la-modern-button js-open-confirm-modal"

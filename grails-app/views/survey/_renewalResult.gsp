@@ -195,7 +195,7 @@
                     ${(costItem.billingCurrency?.getI10n('value')?.split('-'))?.first()}
                 </g:if>
             </td>
-            <td class="center aligned">
+            <td class="x">
                 <g:link controller="survey" action="evaluationParticipant"
                         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, participant: participantResult.participant.id]"
                         class="ui icon button blue la-modern-button"

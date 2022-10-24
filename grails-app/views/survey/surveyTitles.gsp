@@ -194,7 +194,7 @@
                                     </g:if>
 
                                 </td>
-                                <td class="center aligned">
+                                <td class="x">
 
                                 </td>
                             </tr>

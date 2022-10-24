@@ -33,7 +33,7 @@
                             <span class="sc_darkgrey"><g:formatDate format="${message(code:'default.date.format.notime')}" date="${docctx.owner.dateCreated}"/></span>
                         </g:if>
                     </td>
-                    <td class="center aligned">
+                    <td class="x">
                         <g:if test="${docctx.sharedFrom}">
                             <span  class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">
                                 <i class="grey alternate share icon"></i>

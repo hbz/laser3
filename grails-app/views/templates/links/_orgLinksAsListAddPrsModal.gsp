@@ -27,7 +27,7 @@
                                     ${prsFunc.functionType?.getI10n("value")}
                                 </g:each>
                             </td>
-                            <td class="center aligned">
+                            <td class="x">
                                 <g:form class="ui form" url="[controller:'ajax', action:'addPrsRole']" method="post">
                                     <input type="hidden" name="parent" value="${parent}"/>
                                     <input type="hidden" name="person" value="${p.class.name}:${p.id}" />
@@ -45,7 +45,7 @@
                     <g:if test="${PersonRole.findByPrsAndOrg(p, orgRole.org)}">
                         <tr>
                             <td>
-                                <span  class="la-popup-tooltip la-delay" data-content="${message(code:'address.private')}" data-position="top right">
+                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'address.private')}" data-position="top right">
                                     <i class="address card outline icon"></i>
                                 </span>
                                 ${p}
@@ -55,7 +55,7 @@
                                     ${prsFunc.functionType?.getI10n("value")}
                                 </g:each>
                             </td>
-                            <td class="center aligned">
+                            <td class="x">
                                 <g:form class="ui form" url="[controller:'ajax', action:'addPrsRole']" method="post">
                                     <input type="hidden" name="parent" value="${parent}"/>
                                     <input type="hidden" name="person" value="${p.class.name}:${p.id}" />
