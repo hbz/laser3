@@ -92,12 +92,12 @@
     <table class="ui sortable celled la-js-responsive-table la-table la-hover-table compact table">
         <thead>
         <tr>
-            <th>${message(code:'default.category.label')}</th>
-            <th>${message(code:'default.relevance.label')}</th>
-            <th>${message(code:'default.source.label')}</th>
-            <th>${message(code:'default.event.label')}</th>
-            <th>Payload</th>
-            <th>${message(code:'default.date.label')}</th>
+            <th scope="col" class="two wide">${message(code:'default.category.label')}</th>
+            <th scope="col" class="two wide">${message(code:'default.relevance.label')}</th>
+            <th scope="col" class="two wide">${message(code:'default.source.label')}</th>
+            <th scope="col" class="three wide">${message(code:'default.event.label')}</th>
+            <th scope="col" class="five wide">Payload</th>
+            <th scope="col" class="two wide">${message(code:'default.date.label')}</th>
         </tr>
         </thead>
         <tbody>

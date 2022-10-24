@@ -10,40 +10,39 @@
 
 <ui:form>
     <g:form class="ui form" action="${actionName}" method="post">
+
         <div class="ui field">
-            <label for="selectedLicenses">${message(code: 'default.compare.licenses')}</label>
-
-        <label>${message(code: 'filter.status')}</label>
-
+        <label for="status">${message(code: 'filter.status')}</label>
         <select id="status" name="status" multiple="" class="ui search selection fluid dropdown" onchange="JSPC.app.adjustDropdown()">
             <option value=""><g:message code="default.select.choose.label"/></option>
             <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.LICENSE_STATUS) }" var="status">
                 <option <%=(status.id.toString() in params.list('status')) ? 'selected="selected"' : ''%> value="${status.id}">${status.getI10n('value')}</option>
             </g:each>
         </select>
-
         </div>
             <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
+                <div class="ui field">
                 <div class="ui checkbox">
                     <g:checkBox name="show.subscriber" value="true" checked="false"
                                 onchange="JSPC.app.adjustDropdown()"/>
                     <label for="show.subscriber">${message(code: 'default.compare.show.subscriber.name')}</label>
-                </div><br />
+                </div>
+                </div>
             </g:if>
         %{--<div class="ui checkbox">
             <g:checkBox name="show.connectedLicenses" value="true" checked="false" onchange="JSPC.app.adjustDropdown()"/>
             <label for="show.connectedLicenses">${message(code:'default.compare.show.connectedLicenses.name')}</label>
         </div>--}%
-        <br/>
+        <div class="ui field">
+            <label for="selectedObjects">${message(code: 'default.compare.licenses')}</label>
         <select id="selectedObjects" name="selectedObjects" multiple="" class="ui search selection fluid dropdown">
             <option value="">${message(code: 'default.select.choose.label')}</option>
         </select>
-
         </div>
 
         <div class="field">
             <g:link controller="compare" action="${actionName}"
-                    class="ui button">${message(code: 'default.button.comparereset.label')}</g:link>
+                    class="ui secondary button">${message(code: 'default.button.comparereset.label')}</g:link>
             &nbsp;
             <input ${params.selectedObjects ? 'disabled' : ''} type="submit"
                                                                value="${message(code: 'default.button.compare.label')}"

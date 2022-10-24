@@ -202,7 +202,7 @@ class DateUtils {
         LocalDateTime.ofInstant( date.toInstant(), ZoneId.systemDefault())
     }
 
-    static Date localDateToSqlDate(LocalDate localDate) {
+    static java.sql.Date localDateToSqlDate(LocalDate localDate) {
         if (!localDate) {
             //log.debug 'DateUtils.localDateToSqlDate( NULL )'
             return null
