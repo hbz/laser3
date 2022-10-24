@@ -263,9 +263,9 @@
                         <thead>
                             <tr>
                                 <th class="five wide" rowspan="2">${message(code:'workflow.label')}</th>
-                                <th class="five wide" rowspan="2">${message(code:'default.relation.label')}</th>
+                                <th class="six wide" rowspan="2">${message(code:'default.relation.label')}</th>
                                 <th class="two wide"  rowspan="2">${message(code:'default.progress.label')}</th>
-                                <th class="three wide"  class="la-smaller-table-head">${message(code:'default.lastUpdated.label')}</th>
+                                <th class="two wide"  class="la-smaller-table-head">${message(code:'default.lastUpdated.label')}</th>
                                 <th class="one wide"  rowspan="2"></th>
                             </tr>
                             <tr>

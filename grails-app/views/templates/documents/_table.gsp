@@ -16,7 +16,7 @@
         }
     }
 
-    List<String> colWide = (controllerName != 'myInstitution') ? ['seven', 'three', 'three', 'three'] : ['six', 'two', 'two', 'three', 'three']
+    List<String> colWide = (controllerName != 'myInstitution') ? ['eight', 'three', 'three', 'two'] : ['six', 'two', 'three', 'three', 'two']
     int cwi = 0
 %>
 
