@@ -19,4 +19,4 @@ setTextareaHeight = {
     }
 }
 
-JSPC.modules.add( setTextareaHeight, 'setTextareaHeight' );
+JSPC.modules.add( 'setTextareaHeight', setTextareaHeight );

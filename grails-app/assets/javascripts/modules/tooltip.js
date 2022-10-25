@@ -94,4 +94,4 @@ tooltip = {
     },
 }
 
-JSPC.modules.add( tooltip, 'tooltip' );
+JSPC.modules.add( 'tooltip', tooltip );

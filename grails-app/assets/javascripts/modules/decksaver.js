@@ -159,4 +159,4 @@ deckSaver = {
     }
 }
 
-JSPC.modules.add( deckSaver, 'deckSaver' );
+JSPC.modules.add( 'deckSaver', deckSaver );

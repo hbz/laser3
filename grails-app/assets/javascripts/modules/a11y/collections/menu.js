@@ -41,4 +41,4 @@ a11yMenu = {
     }
 }
 
-JSPC.modules.add( a11yMenu, 'a11yMenu' );
+JSPC.modules.add( 'a11yMenu', a11yMenu );

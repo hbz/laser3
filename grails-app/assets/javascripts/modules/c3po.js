@@ -10,7 +10,7 @@ c3po = {
         if (!cssId) {
             cssId = "#custom_props_div"
         }
-        console.log("c3po.initProperties() " + ajaxurl + " : " + cssId + " : " + tenantId)
+        console.log ('c3po.initProperties( ' + ajaxurl + ', ' + cssId + ', ' + tenantId + ' )')
 
         c3po.refdataCatSearch(ajaxurl, cssId)
         c3po.searchProp(c3po.PROP_SEARCH_NATIVE, ajaxurl, cssId, tenantId)
@@ -23,7 +23,7 @@ c3po = {
         if (!cssId) {
             cssId = "#custom_props_div"
         }
-        console.log("c3po.initGroupedProperties() " + ajaxurl + " : " + cssId + " : " + tenantId)
+        console.log ('c3po.initGroupedProperties( ' + ajaxurl + ', ' + cssId + ', ' + tenantId + ' )')
 
         c3po.refdataCatSearch(ajaxurl, cssId)
         c3po.searchProp(c3po.PROP_SEARCH_GROUPED, ajaxurl, cssId, tenantId)
@@ -32,7 +32,7 @@ c3po = {
     },
 
     refdataCatSearch: function (ajaxurl, cssId) {
-        console.log("c3po.refdataCatSearch() " + ajaxurl + " : " + cssId)
+        console.log ('c3po.refdataCatSearch() ' + ajaxurl + ', ' + cssId + ' )')
 
         $("#cust_prop_refdatacatsearch").select2({
             placeholder: "Kategorie angeben ..",
@@ -55,7 +55,7 @@ c3po = {
     },
 
     searchProp: function (grouped, ajaxurl, cssId, tenantId) {
-        console.log("c3po.searchProp() " + ajaxurl + " : " + cssId + " : " + tenantId)
+        console.log ('c3po.searchProp( ' + ajaxurl + ', ' + cssId + ', ' + tenantId + ' )')
 
         let desc = $(cssId + " .customPropSelect").attr('data-desc')
         let oid  = $(cssId + " .customPropSelect").attr('data-oid')
@@ -99,7 +99,7 @@ c3po = {
 
     // TODO -refactoring
     showModalOnSelect: function (cssId) {
-        console.log("c3po.showModalOnSelect() " + cssId)
+        console.log ('c3po.showModalOnSelect( ' + cssId + ' )')
 
         $(cssId + " .customPropSelect").on("select2-selecting", function (e) {
             if (e.val == -1) {
@@ -114,7 +114,7 @@ c3po = {
 
     // TODO -refactoring
     showHideRefData: function (cssId) {
-        console.log("c3po.showHideRefData() " + cssId)
+        console.log ('c3po.showHideRefData( ' + cssId + ' )')
 
         $('#cust_prop_modal_select').change(function () {
             let selectedText = $("#cust_prop_modal_select option:selected").val();
@@ -127,4 +127,4 @@ c3po = {
     }
 }
 
-JSPC.modules.add( c3po, 'c3po' );
+JSPC.modules.add( 'c3po', c3po );

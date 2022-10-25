@@ -3,7 +3,7 @@
 wysiwyg = {
 
     initEditor: function (cssSel, modalSel) {
-        console.log('wysiwyg.initEditor( ' + cssSel + ', ' + modalSel + ')')
+        console.log('wysiwyg.initEditor( ' + cssSel + ', ' + modalSel + ' )')
 
         let $wrapper = $(cssSel);
         // let $form = $(modalSel + ' form');
@@ -99,5 +99,5 @@ wysiwyg = {
     }
 }
 
-JSPC.modules.add( wysiwyg, 'wysiwyg' );
+JSPC.modules.add( 'wysiwyg', wysiwyg );
 

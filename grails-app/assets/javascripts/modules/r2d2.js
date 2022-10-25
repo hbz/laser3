@@ -911,4 +911,4 @@ r2d2 = {
     }
 }
 
-JSPC.modules.add( r2d2, 'r2d2' );
+JSPC.modules.add( 'r2d2', r2d2 );

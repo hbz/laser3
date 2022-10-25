@@ -52,4 +52,4 @@ system = {
     }
 }
 
-JSPC.modules.add( system, 'system' );
+JSPC.modules.add( 'system', system );

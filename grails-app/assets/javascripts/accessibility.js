@@ -18,12 +18,7 @@ console.log('+ bundle: accessibility.js')
 // here we go ..
 
 $(function () {
-    r2d2.go();
-    bb8.go();
-    a11yMenu.go();
-    a11yIcon.go();
-    verticalNavi.go();
-    responsiveTables.go();
+    JSPC.modules.go( 'r2d2', 'bb8', 'a11yMenu', 'a11yIcon', 'verticalNavi', 'responsiveTables' );
 
     $('main.ui.main').removeClass('hidden');
 })

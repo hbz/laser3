@@ -24,24 +24,7 @@ console.log('+ bundle: laser.js')
 // here we go ..
 
 $(function () {
-    if (JSPC.vars.server === 'LOCAL') {
-        r2d2.go();              why.tap();
-        bb8.go();               why.tap();
-        a11yMenu.go();          why.tap();
-        a11yIcon.go();          why.tap();
-        verticalNavi.go();      why.tap();
-        responsiveTables.go();  why.tap();
-        system.go();            why.tap();
-    }
-    else {
-        r2d2.go();
-        bb8.go();
-        a11yMenu.go();
-        a11yIcon.go();
-        verticalNavi.go();
-        responsiveTables.go();
-        system.go();
-    }
+    JSPC.modules.go( 'r2d2', 'bb8', 'a11yMenu', 'a11yIcon', 'verticalNavi', 'responsiveTables', 'system' );
 
     $('main.ui.main').removeClass('hidden');
 })

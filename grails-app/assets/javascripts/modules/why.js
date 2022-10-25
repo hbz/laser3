@@ -13,6 +13,7 @@ why = {
 
     tap: function (output = false) {
         if (output) { console.log('why -> tap') }
+
         why._checkIds()
 
         let elCounter = why._checkEventListeners()
@@ -28,7 +29,7 @@ why = {
         if (output) {
             console.groupCollapsed('[why] event listener duplicates:', tmpSize, '; id attribute duplicates:', why.id_result.length)
 
-            console.log('+ event listener duplicates', tmp)
+            console.log('+ event listener duplicates', (tmp.length > 0  ? tmp : 0))
             console.log('  event listener found overall: ' + elCounter)
 
             if (why.el_blacklist.length > 0) {
@@ -213,7 +214,7 @@ why = {
     }
 }
 
-JSPC.modules.add( why, 'why' );
+JSPC.modules.add( 'why', why );
 
 /* shortcuts */
 

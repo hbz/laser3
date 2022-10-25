@@ -21,4 +21,4 @@ a11yIcon = {
     }
 }
 
-JSPC.modules.add( a11yIcon, 'a11yIcon' );
+JSPC.modules.add( 'a11yIcon', a11yIcon );

@@ -77,4 +77,4 @@ a11yModal = {
     }
 }
 
-JSPC.modules.add( a11yModal, 'a11yModal' );
+JSPC.modules.add( 'a11yModal', a11yModal );

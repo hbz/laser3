@@ -3,7 +3,7 @@
 docs = {
 
     init: function (cssSel) {
-        console.log('docs.init(' + cssSel + ')')
+        console.log('docs.init( ' + cssSel + ' )')
 
         $(cssSel).find ('a[data-documentKey]').on ('click', function(e) {
             e.preventDefault();
@@ -29,5 +29,5 @@ docs = {
     }
 }
 
-JSPC.modules.add( docs, 'docs' );
+JSPC.modules.add( 'docs', docs );
 

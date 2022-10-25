@@ -21,21 +21,31 @@ JSPC = {
     },
 
     modules : { // -- module registry
-        add : function (module, label) {
+        registry : new Map(),
+
+        add : function (label, module) {
             if (! JSPC.modules.registry.get (label) ) {
-                console.log ('  adding module ' + (JSPC.modules.registry.size+1) + ' > ' + label);
+                console.log ('  /- adding module ' + (JSPC.modules.registry.size+1) + ' > ' + label);
                 JSPC.modules.registry.set (label, module);
-                // delete window[label];
+                if (window[label] != module) {
+                    console.warn ('  /- module OVERRIDES existing property ? ' + label);
+                    window[label] = module;
+                }
             }
+            else { console.log ('  /- module EXISTS and ignored ? ' + label); }
         },
-        init : function () {
-            let i = 1;
-            for (let [label, module] of JSPC.modules.registry) {
-                window[label] = module;
-                console.log ('  init module ' + (i++) + ' > ' + label);
+        go : function ( /*labels*/ ) {
+            console.log ('JSPC.modules.go( ' + arguments.length + ' )')
+            let i = 0;
+            for (let label of arguments) {
+                if (JSPC.modules.registry.get (label)) {
+                    console.log ('  \\- running module ' + (++i) + ' > ' + label);
+                    JSPC.modules.registry.get (label).go();
+                    why.tap();
+                }
+                else { console.log ('  \\- module NOT found ? ' + label ); }
             }
-        },
-        registry : new Map()
+        }
     },
 
     app : { // -- logic container

@@ -94,4 +94,4 @@ verticalNavi = {
     }
 }
 
-JSPC.modules.add( verticalNavi, 'verticalNavi' );
+JSPC.modules.add( 'verticalNavi', verticalNavi );

@@ -57,4 +57,4 @@ responsiveTables = {
   }
 }
 
-JSPC.modules.add( responsiveTables, 'responsiveTables' );
+JSPC.modules.add( 'responsiveTables', responsiveTables );
