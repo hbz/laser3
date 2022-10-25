@@ -3,8 +3,7 @@
 tooltip = {
 
     go : function() {
-        tooltip.initDynamicPopups('body')
-        tooltip.initDynamicAccessViaKeys('body')
+        tooltip.init('body')
     },
 
     init : function(ctxSel) {

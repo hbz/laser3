@@ -11,7 +11,6 @@
                     <th>(Step_x+1 - Step_x) MS</th>
                 </tr>
             </thead>
-            <% def sum = 0 %>
             <g:each in="${debug}" status="c" var="bm">
                 <tr>
                     <td>${c+1}</td>

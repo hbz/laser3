@@ -35,7 +35,7 @@
                         </td>
                         <td>
                             <%
-                                def binding
+                                PropertyDefinitionGroupBinding binding
 
                                 switch (ownobj.class.name) {
                                     case License.class.name:

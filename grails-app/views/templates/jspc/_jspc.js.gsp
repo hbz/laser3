@@ -6,6 +6,7 @@ JSPC = {
     vars : { // -- var injection
         dateFormat: "${message(code:'default.date.format.notime').toLowerCase()}",
         locale: "${message(code:'default.locale.label')}",
+        server: "${de.laser.utils.AppUtils.getCurrentServer()}",
         searchSpotlightSearch: "<g:createLink controller='search' action='spotlightSearch'/>",
         ajax: {
             openMessages: "<g:createLink controller='ajaxOpen' action='messages'/>",
