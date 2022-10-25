@@ -10,8 +10,6 @@ import java.text.SimpleDateFormat
 
 class XEditableTagLib {
 
-    GenericOIDService genericOIDService
-
     static namespace = 'ui'
 
     /**
@@ -185,9 +183,9 @@ class XEditableTagLib {
                 out << "<span>"
 
                 String dataValue = ""
-                def obj = genericOIDService.resolveOID(oid)
+                def obj = attrs.owner
 
-                if (obj && obj."${attrs.field}") {
+                if (obj."${attrs.field}") {
                     def tmpId = obj."${attrs.field}".id
                     dataValue = " data-value=\"${RefdataValue.class.name}:${tmpId}\" "
                 }
@@ -263,9 +261,9 @@ class XEditableTagLib {
                 out << '<span>'
 
                 String dataValue = ""
-                def obj = genericOIDService.resolveOID(oid)
+                def obj = attrs.owner
 
-                if (obj && obj."${attrs.field}") {
+                if (obj."${attrs.field}") {
                     def tmpId = obj."${attrs.field}".id
                     dataValue = " data-value=\"${RefdataValue.class.name}:${tmpId}\" "
                 }
