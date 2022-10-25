@@ -191,7 +191,7 @@ class SemanticUiInplaceTagLib {
                 out << "<span>"
 
                 String dataValue = ""
-                def obj = genericOIDService.resolveOID(oid)
+                def obj = attrs.owner
 
                 if (obj && obj."${attrs.field}") {
                     def tmpId = obj."${attrs.field}".id

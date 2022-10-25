@@ -87,11 +87,11 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
         startDate column: 'surre_start_date'
         endDate column: 'surre_end_date'
         tenant        column: 'surre_tenant_fk' //never set, is for mapping of superclass
-        owner column: 'surre_owner_fk'
-        participant column: 'surre_participant_fk'
+        owner column: 'surre_owner_fk', index: 'surre_owner_idx'
+        participant column: 'surre_participant_fk', index: 'surre_participant_idx'
         isPublic    column: 'surre_is_public'
-        type column: 'surre_type_fk'
-        surveyConfig column: 'surre_survey_config_fk'
+        type column: 'surre_type_fk', index: 'surre_type_idx'
+        surveyConfig column: 'surre_survey_config_fk', index: 'surre_survey_config_idx'
 
         comment column: 'surre_comment', type: 'text'
         participantComment column: 'surre_participant_comment', type: 'text'
