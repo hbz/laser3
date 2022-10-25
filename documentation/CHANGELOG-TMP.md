@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4502    25.10.2022  rc-2.3  2.3.11      Moe     Bug         Timeout bei Übertrag von Lizenzumfragen
+
 4553    20.10.2022  rc-2.3  2.3.10      Andreas Bug         Abfragefehler in "Meine Einrichtungen" behoben
 
 --      19.10.2022  rc-2.3  2.3.10      Andreas Bug         zahlreiche Bugs im Sync behoben
