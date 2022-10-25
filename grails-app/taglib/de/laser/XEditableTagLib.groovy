@@ -29,17 +29,19 @@ class XEditableTagLib {
         boolean editable = _isEditable(request.getAttribute('editable'), attrs.overwriteEditable)
 
         if ( editable ) {
+            def owner    = attrs.owner
+            String field = attrs.field
 
-            String oid           = "${attrs.owner.class.name}:${attrs.owner.id}"
-            String id            = attrs.id ?: "${oid}:${attrs.field}"
+            String oid           = "${owner.class.name}:${owner.id}"
+            String id            = attrs.id ?: "${oid}:${field}"
             String default_empty = message(code:'default.button.edit.label')
             String data_link     = null
 
-            out << '<a href="#" id="' +  id + '" class="xEditableValue ' + (attrs.class ?: '') + '"'
+            out << '<a href="#" id="' + id + '" class="xEditableValue ' + (attrs.class ?: '') + '"'
 
-            if(attrs.owner instanceof SurveyResult){
+            if (owner instanceof SurveyResult) {
                 out << ' data-onblur="submit"'
-            }else {
+            } else {
                 out << ' data-onblur="ignore"'
             }
 
@@ -51,13 +53,13 @@ class XEditableTagLib {
 
                 default_empty = message(code:'default.date.format.notime.normal')
             }
-            else if(attrs.type == "readerNumber") {
+            else if (attrs.type == "readerNumber") {
                 out << ' data-type="text"'
             }
             else {
                 out << ' data-type="' + (attrs.type ?: 'text') + '"'
             }
-            out << ' data-pk="' + oid + '" data-name="' + attrs.field + '"'
+            out << ' data-pk="' + oid + '" data-name="' + field + '"'
 
             if (attrs.validation) {
                 out << ' data-validation="' + attrs.validation + '"'
@@ -92,21 +94,21 @@ class XEditableTagLib {
 
             if (! body) {
                 String oldValue = ''
-                if (attrs.owner[attrs.field] && attrs.type=='date') {
+                if (owner[field] && attrs.type == 'date') {
                     SimpleDateFormat sdf = new SimpleDateFormat(attrs.format?: message(code:'default.date.format.notime'))
-                    oldValue = sdf.format(attrs.owner[attrs.field])
+                    oldValue = sdf.format(owner[field])
                 }
                 else {
-                    if ((attrs.owner[attrs.field] == null) || (attrs.owner[attrs.field].toString().length()==0)) {
+                    if ((owner[field] == null) || (owner[field].toString().length()==0)) {
                     }
-                    else if(attrs.field in ['decValue','listPrice','localPrice'] || (attrs.field == 'value' && attrs.owner instanceof ReaderNumber)) {
+                    else if(field in ['decValue','listPrice','localPrice'] || (field == 'value' && owner instanceof ReaderNumber)) {
                         NumberFormat nf = NumberFormat.getInstance(LocaleUtils.getCurrentLocale())
                         nf.setMinimumFractionDigits(2)
                         nf.setMaximumFractionDigits(2)
-                        oldValue = nf.format(attrs.owner[attrs.field])
+                        oldValue = nf.format(owner[field])
                     }
                     else {
-                        oldValue = attrs.owner[attrs.field]
+                        oldValue = owner[field]
                     }
                 }
                 out << ' data-oldvalue="' + oldValue.encodeAsHTML() + '">'
@@ -125,18 +127,18 @@ class XEditableTagLib {
                 out << body()
             }
             else {
-                if (attrs.owner[attrs.field] && attrs.type=='date') {
+                if (owner[field] && attrs.type == 'date') {
                     SimpleDateFormat sdf = new SimpleDateFormat(attrs.format?: message(code:'default.date.format.notime'))
-                    out << sdf.format(attrs.owner[attrs.field])
+                    out << sdf.format(owner[field])
                 }
                 else {
-                    if ((attrs.owner[attrs.field] == null) || (attrs.owner[attrs.field].toString().length()==0)) {
+                    if ((owner[field] == null) || (owner[field].toString().length()==0)) {
                     }
-                    else if(attrs.field == 'decValue') {
-                        out << NumberFormat.getInstance(LocaleUtils.getCurrentLocale()).format(attrs.owner[attrs.field])
+                    else if (field == 'decValue') {
+                        out << NumberFormat.getInstance(LocaleUtils.getCurrentLocale()).format(owner[field])
                     }
                     else {
-                        out << attrs.owner[attrs.field]
+                        out << owner[field]
                     }
                 }
             }
@@ -154,8 +156,10 @@ class XEditableTagLib {
             boolean editable = _isEditable(request.getAttribute('editable'), attrs.overwriteEditable)
 
             if ( editable ) {
+                def owner    = attrs.owner
+                String field = attrs.field
 
-                String oid = "${attrs.owner.class.name}:${attrs.owner.id}"
+                String oid = "${owner.class.name}:${owner.id}"
                 String dataController = attrs.dataController ?: 'ajax'
                 String dataAction = attrs.dataAction ?: 'select2RefdataSearch'
 
@@ -172,7 +176,7 @@ class XEditableTagLib {
                 ).encodeAsHTML()
 
                 String update_link = createLink(controller:'ajax', action: 'genericSetData').encodeAsHTML()
-                String id = attrs.id ?: "${oid}:${attrs.field}"
+                String id = attrs.id ?: "${oid}:${field}"
                 String cssClass = attrs.cssClass
                 String data_confirm_tokenMsg = attrs.data_confirm_tokenMsg
                 String data_confirm_term_how = attrs.data_confirm_term_how
@@ -183,18 +187,15 @@ class XEditableTagLib {
                 out << "<span>"
 
                 String dataValue = ""
-                def obj = attrs.owner
-
-                if (obj."${attrs.field}") {
-                    def tmpId = obj."${attrs.field}".id
-                    dataValue = " data-value=\"${RefdataValue.class.name}:${tmpId}\" "
+                if (owner[field]) {
+                    dataValue = " data-value=\"${RefdataValue.class.name}:${owner[field].id}\" "
                 }
 
                 // Output an editable link
                 out << "<a href=\"#\" id=\"${id}\" class=\"xEditableManyToOne ${cssClass}\" "
-                if(attrs.owner instanceof SurveyResult){
+                if (owner instanceof SurveyResult) {
                     out << "data-onblur=\"submit\" "
-                }else {
+                } else {
                     out << "data-onblur=\"ignore\" "
                 }
                 out << dataValue + "data-pk=\"${oid}\"  "
@@ -207,18 +208,17 @@ class XEditableTagLib {
                 if(attrs.data_confirm_value) {
                     out << "data-confirm-value=\"${data_confirm_value}\" "
                 }
-                out << "data-type=\"select\" data-name=\"${attrs.field}\" " +
+                out << "data-type=\"select\" data-name=\"${field}\" " +
                         "data-source=\"${data_link}\" data-url=\"${update_link}\" ${emptyText}>"
 
                 // Here we can register different ways of presenting object references. The most pressing need to be
                 // outputting a a containing an icon for refdata fields.
 
-                out << _renderObjectValue(attrs.owner[attrs.field])
-
+                out << _renderObjectValue(owner[field])
                 out << "</a></span>"
             }
             else {
-                out << _renderObjectValue(attrs.owner[attrs.field])
+                out << _renderObjectValue(owner[field])
             }
         }
         catch ( Throwable e ) {
@@ -237,8 +237,10 @@ class XEditableTagLib {
             boolean editable = _isEditable(request.getAttribute('editable'), attrs.overwriteEditable)
 
             if ( editable ) {
+                def owner    = attrs.owner
+                String field = attrs.field
 
-                String oid = "${attrs.owner.class.name}:${attrs.owner.id}"
+                String oid = "${owner.class.name}:${owner.id}"
                 String type = attrs.type ?: 'user'
 
                 Map<String, Object> params = [type:type, oid:oid]
@@ -254,31 +256,28 @@ class XEditableTagLib {
                 ).encodeAsHTML()
 
                 String update_link = createLink(controller:'ajax', action: 'genericSetData').encodeAsHTML()
-                String id = attrs.id ?: "${oid}:${attrs.field}"
+                String id = attrs.id ?: "${oid}:${field}"
                 String default_empty = message(code:'default.button.edit.label')
                 String emptyText = attrs.emptytext ? " data-emptytext=\"${attrs.emptytext}\"" : " data-emptytext=\"${default_empty}\""
 
                 out << '<span>'
 
                 String dataValue = ""
-                def obj = attrs.owner
-
-                if (obj."${attrs.field}") {
-                    def tmpId = obj."${attrs.field}".id
-                    dataValue = " data-value=\"${RefdataValue.class.name}:${tmpId}\" "
+                if (owner[field]) {
+                    dataValue = " data-value=\"${RefdataValue.class.name}:${owner[field].id}\" "
                 }
 
                 // Output an editable link
                 out << '<a href="#" id="' + id + '" class="xEditableManyToOne" '
                 out << 'data-onblur="ignore" ' + dataValue + ' data-type="select" '
-                out << 'data-pk="' + oid + '" data-name="' + attrs.field + '" '
+                out << 'data-pk="' + oid + '" data-name="' + field + '" '
                 out << 'data-source="' + data_link + '" data-url="' + update_link + '" ' + emptyText + '>'
 
-                out << _renderObjectValue(attrs.owner[attrs.field])
+                out << _renderObjectValue(owner[field])
                 out << '</a></span>'
             }
             else {
-                out << _renderObjectValue(attrs.owner[attrs.field])
+                out << _renderObjectValue(owner[field])
             }
         }
         catch ( Throwable e ) {
@@ -295,34 +294,36 @@ class XEditableTagLib {
             boolean editable = _isEditable(request.getAttribute('editable'), attrs.overwriteEditable)
 
             if ( editable ) {
+                def owner    = attrs.owner
+                String field = attrs.field
 
-                String oid 			= "${attrs.owner.class.name}:${attrs.owner.id}"
+                String oid 			= "${owner.class.name}:${owner.id}"
                 String update_link 	= createLink(controller:'ajax', action: 'editableSetValue').encodeAsHTML()
                 String data_link 	= createLink(controller:'ajaxJson', action: 'getBooleans').encodeAsHTML()
-                String id 			= attrs.id ?: "${oid}:${attrs.field}"
+                String id 			= attrs.id ?: "${oid}:${field}"
                 String default_empty = message(code:'default.button.edit.label')
                 String emptyText    = attrs.emptytext ? " data-emptytext=\"${attrs.emptytext}\"" : " data-emptytext=\"${default_empty}\""
 
                 out << "<span>"
 
-                int intValue = attrs.owner[attrs.field] ? 1 : 0
+                int intValue = owner[field] ? 1 : 0
                 String strValue = intValue ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')
 
                 // Output an editable link
                 out << "<a href=\"#\" id=\"${id}\" class=\"xEditableManyToOne\" "
-                if(attrs.owner instanceof SurveyResult){
+                if (owner instanceof SurveyResult) {
                     out << "data-onblur=\"submit\" "
-                }else {
+                } else {
                     out << "data-onblur=\"ignore\" "
                 }
                 out <<  " data-value=\"${intValue}\" data-pk=\"${oid}\" data-type=\"select\" " +
-                        " data-name=\"${attrs.field}\" data-source=\"${data_link}\" data-url=\"${update_link}\" ${emptyText}>"
+                        " data-name=\"${field}\" data-source=\"${data_link}\" data-url=\"${update_link}\" ${emptyText}>"
 
                 out << "${strValue}</a></span>"
             }
             else {
 
-                int intValue = attrs.owner[attrs.field] ? 1 : 0
+                int intValue = owner[field] ? 1 : 0
                 String strValue = intValue ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')
                 out << strValue
             }
@@ -429,17 +430,19 @@ class XEditableTagLib {
         boolean editable = _isEditable(request.getAttribute('editable'), attrs.overwriteEditable)
 
         if (editable) {
+            def owner    = attrs.owner
+            String field = attrs.field
 
-            String oid           = "${attrs.owner.class.name}:${attrs.owner.id}"
-            String id            = attrs.id ?: "${oid}:${attrs.field}"
+            String oid           = "${owner.class.name}:${owner.id}"
+            String id            = attrs.id ?: "${oid}:${field}"
             String default_empty = message(code:'default.button.edit.label')
             String data_link     = null
 
             out << "<a style=\"display: inline-block;\" href=\"#\" id=\"${id}\" class=\"xEditableValue ${attrs.class ?: ''}\""
 
-            if(attrs.owner instanceof SurveyResult){
+            if (owner instanceof SurveyResult) {
                 out << " data-onblur=\"submit\""
-            }else {
+            } else {
                 out << " data-onblur=\"ignore\""
             }
 
@@ -457,7 +460,7 @@ class XEditableTagLib {
                 out << " data-type=\"${attrs.type?:'text'}\""
             }
             out << " data-pk=\"${oid}\""
-            out << " data-name=\"${attrs.field}\""
+            out << " data-name=\"${field}\""
 
 
             if (attrs.validation) {
@@ -489,15 +492,15 @@ class XEditableTagLib {
             out << " data-url=\"${data_link}\""
 
                 String oldValue = ''
-                if (attrs.owner[attrs.field] && attrs.type=='date') {
+                if (owner[field] && attrs.type == 'date') {
                     SimpleDateFormat sdf = new SimpleDateFormat(attrs.format?: message(code:'default.date.format.notime'))
-                    oldValue = sdf.format(attrs.owner[attrs.field])
+                    oldValue = sdf.format(owner[field])
                 }
                 else {
-                    if ((attrs.owner[attrs.field] == null) || (attrs.owner[attrs.field].toString().length()==0)) {
+                    if ((owner[field] == null) || (owner[field].toString().length()==0)) {
                     }
                     else {
-                        oldValue = attrs.owner[attrs.field].encodeAsHTML()
+                        oldValue = owner[field].encodeAsHTML()
                     }
                 }
             out << " data-oldvalue=\"${oldValue}\" "
@@ -512,19 +515,19 @@ class XEditableTagLib {
         // !editable
         else {
 
-            if (attrs.owner[attrs.field]) {
+            if (owner[field]) {
                 out << "<span class=\"la-popup-tooltip la-delay ui icon\" data-position=\"top right\" data-content=\""
 
-                if (attrs.owner[attrs.field] && attrs.type == 'date') {
+                if (owner[field] && attrs.type == 'date') {
                     SimpleDateFormat sdf = new SimpleDateFormat(attrs.format ?: message(code: 'default.date.format.notime'))
-                    out << sdf.format(attrs.owner[attrs.field])
+                    out << sdf.format(owner[field])
                 } else {
-                    if ((attrs.owner[attrs.field] == null) || (attrs.owner[attrs.field].toString().length() == 0)) {
+                    if ((owner[field] == null) || (owner[field].toString().length() == 0)) {
                     } else {
-                        out << attrs.owner[attrs.field]
+                        out << owner[field]
                     }
                 }
-                out << "\"><i class=\"${attrs.iconClass ?: 'info'} ${attrs.owner[attrs.field] ? 'green' : 'la-light-grey'} icon\"></i>"
+                out << "\"><i class=\"${attrs.iconClass ?: 'info'} ${owner[field] ? 'green' : 'la-light-grey'} icon\"></i>"
                 out << '</span>'
             }
         }
