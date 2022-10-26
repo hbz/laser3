@@ -1,6 +1,5 @@
 <%@ page import="de.laser.IssueEntitlementCoverage" %>
 <g:set var="overwriteEditable" value="${(overwriteEditable == null) ? editable : overwriteEditable}" />
-#######################
 <div class="content">
     <div class="la-card-column">
         <div class="la-card-flexRow">
@@ -24,5 +23,4 @@
         </div>
     </div>
 </div>
-;;;;;;;;;;;;;;;;;;;;
 

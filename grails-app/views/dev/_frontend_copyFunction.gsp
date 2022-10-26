@@ -1,4 +1,4 @@
-<h2 class="ui dividing header">Kopiertfunktion<a class="anchor" id="copy"></a>
+<h2 class="ui dividing header">Kopierfunktion<a class="anchor" id="copy"></a>
 </h2>
 
 

@@ -207,7 +207,7 @@
                     <g:hiddenField name="${key}" value="${params[key]}"/>
                 </g:each>
 
-                <g:if test="${entitlements}">
+%{--                <g:if test="${entitlements}">
                     <div class="ui fluid card">
                         <div class="content">
                             <div class="ui accordion la-accordion-showMore">
@@ -506,7 +506,7 @@
                             </div>
                         </div>
                     </div>
-                </g:if>
+                </g:if>--}%
 
                 <table class="ui sortable celled la-js-responsive-table la-table table la-ignore-fixed la-bulk-header">
                     <thead>

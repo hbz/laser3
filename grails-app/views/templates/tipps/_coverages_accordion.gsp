@@ -1,4 +1,3 @@
-++++++++++++++++++++++++++++++++++++
 <g:if test="${(tipp.titleType == 'Book')}">
     <div class="ui card">
         <div class="content">
@@ -65,4 +64,3 @@
         </div>
     </div>
 </g:else>
----------------------------
