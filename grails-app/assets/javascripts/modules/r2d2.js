@@ -155,20 +155,28 @@ r2d2 = {
 
     initGlobalUiStuff : function() {
         console.log("r2d2.initGlobalUiStuff()");
-        // copy email adress next to icon and putting it in cache
+        // copy email adress and IDs and putting it in cache
 
+        // universal copy item
         $('.js-copyTrigger').click(function(){
-            var element = $(this).parents('.js-copyTriggerParent').find('.js-copyTopic')
+            var element = $(this).parents('.js-copyTriggerParent').find('.js-copyTopic');
+            var html = $(element).html();
             var $temp = $("<input>");
             $("body").append($temp);
-            $temp.val($(element).text()).select();
+            $temp.val($.trim($(element).text())).select();
             document.execCommand("copy");
+            clearTimeout(timeout);
+            $(element).html(JSPC.dict.get('copied', JSPC.currLanguage));
+            var timeout = setTimeout(function() {
+                $(element).html(html);
+            }, 2000); // change the HTML after 2 seconds
             $temp.remove();
         });
         $('.js-copyTrigger').hover(
-            function(){ $(this).addClass('open') },
-            function(){ $(this).removeClass('open') }
+            function(){ $('.la-js-copyTriggerIcon').addClass('open') },
+            function(){ $('.la-js-copyTriggerIcon').removeClass('open') }
         )
+
         $('.js-linkGoogle').hover(
             function(){ $(this).removeClass('alternate') },
             function(){ $(this).addClass('alternate') }
@@ -567,6 +575,10 @@ r2d2 = {
                 $(".la-metabox ").css('box-shadow','none');
             }
         });
+        $(ctxSel + ' .accordion.la-accordion-showMore').find('input,a,.description').click(function(event){
+            event.stopPropagation();
+        });
+
 
 
         // tabs

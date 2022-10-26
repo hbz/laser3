@@ -1793,6 +1793,19 @@ i.icon.la-redo.slash {
 i.icon.la-exchange.slash {
   font-family: 'icomoon';
 }
+i.icon.la-copy.open {
+  font-family: @outlineFontName;
+}
+i.icon.la-copy {
+  font-family: Icons;
+}
+i.icon.la-phone {
+  font-family: Icons;
+}
+i.icon.la-phone.open {
+  font-family: Icons;
+}
+
 // to turn off all the buttons on a side
 // the other part of the button is the SEMANTIC UI Icon: 'hand pointer outline'
 
@@ -1829,6 +1842,12 @@ i.icon.la-consortia:before { content: "\e917"; }
 i.icon.la-star.slash:before { content: "\e918"; }
 i.icon.la-redo.slash:before { content: "\e919"; }
 i.icon.la-exchange.slash:before { content: "\e91a"; }
+
+
+i.icon.la-copy.open:before { content: "\f24d"; }
+i.icon.la-copy:before { content: "\f24d"; }
+i.icon.la-phone.open:before { content: "\f095"; transform: rotate(45deg);}
+i.icon.la-phone:before { content: "\f095"; }
 /*******************************
            Laser Icons
 *******************************/

@@ -4,7 +4,7 @@
 	<div class="ui js-copyTriggerParent item contact-details" style="display: flex;">
         <div style="display: flex">
             <ui:contactIcon type="${contact.contentType?.value}" />
-            <div class="content la-space-right">
+            <div class="content la-space-right js-copyTrigger la-popup-tooltip la-delay" data-position="top center" data-content="${message(code: 'tooltip.clickToCopy', args: [contact.contentType?.value])}">
                 <ui:xEditable class="js-copyTopic" owner="${contact}" field="content" overwriteEditable="${overwriteEditable}" />
                 <g:if test="${contact.language}">(${contact.language.getI10n("value")})</g:if>
             </div>
@@ -13,15 +13,15 @@
 
         <div class="content">
             <g:if test="${contact.contentType in [RDStore.CCT_EMAIL]}">
-                <span class="la-popup-tooltip la-delay" data-position="top right" data-content="Mail senden an ..">
-                    <a href="mailto:${contact.content}" class="ui  icon blue button la-modern-button">
+                <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code: 'tooltip.sendMail')}">
+                    <a href="mailto:${contact.content}" class="ui  icon blue button la-modern-button ">
                         <i class="share square icon"></i>
                     </a>
                 </span>
             </g:if>
 
             <g:if test="${contact.contentType in [RDStore.CCT_URL]}">
-                <span class="la-popup-tooltip la-delay" data-position="top right" data-content="Diese URL aufrufen ..">
+                <span class="la-popup-tooltip la-delay" data-position="top right" data-content="${message(code: 'tooltip.callUrl')}">
                     <a href="${contact.content}" target="_blank" class="ui icon blue button la-modern-button">
                         <i class="share square icon"></i>
                     </a>

@@ -1686,6 +1686,14 @@ i.icon.la-list-icon:before {
   font-style: normal;
   font-weight: 400;
 }
+
+/****************************************
+        Copy E-Mail and ID numbers
+*****************************************/
+
+.js-copyTrigger:hover {
+  cursor: pointer;
+}
 /*!
  * # Fomantic-UI 2.8.8 - Button
  * http://github.com/fomantic/Fomantic-UI/
@@ -39993,6 +40001,22 @@ i.icon.la-exchange.slash {
   font-family: 'icomoon';
 }
 
+i.icon.la-copy.open {
+  font-family: 'outline-icons';
+}
+
+i.icon.la-copy {
+  font-family: Icons;
+}
+
+i.icon.la-phone {
+  font-family: Icons;
+}
+
+i.icon.la-phone.open {
+  font-family: Icons;
+}
+
 i.icon.hand.pointer.outline.slash:before {
   content: "\e901";
 }
@@ -40109,6 +40133,24 @@ i.icon.la-redo.slash:before {
 
 i.icon.la-exchange.slash:before {
   content: "\e91a";
+}
+
+i.icon.la-copy.open:before {
+  content: "\f24d";
+}
+
+i.icon.la-copy:before {
+  content: "\f24d";
+}
+
+i.icon.la-phone.open:before {
+  content: "\f095";
+  -webkit-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+
+i.icon.la-phone:before {
+  content: "\f095";
 }
 
 /*******************************
@@ -40692,16 +40734,16 @@ img.ui.bordered.image {
 /* browsers require these rules separate */
 
 .ui.input > input::-webkit-input-placeholder {
-  color: #dadbdd;
+  color: #585c5f;
 }
 
 .ui.input > input::-moz-placeholder {
-  color: #dadbdd;
+  color: #585c5f;
   opacity: 1;
 }
 
 .ui.input > input:-ms-input-placeholder {
-  color: #dadbdd;
+  color: #585c5f;
 }
 
 /*******************************
@@ -47139,7 +47181,7 @@ dd {
 
 .ui.segment {
   position: relative;
-  background: transparent;
+  background: #FFFFFF;
   -webkit-box-shadow: 0 1px 2px 0 rgba(34, 36, 38, 0.15);
   box-shadow: 0 1px 2px 0 rgba(34, 36, 38, 0.15);
   margin: 1rem 0;
@@ -47226,7 +47268,7 @@ dd {
 /* Table */
 
 .ui.basic.table.segment {
-  background: transparent;
+  background: #FFFFFF;
   border: 1px solid rgba(34, 36, 38, 0.15);
   -webkit-box-shadow: 0 1px 2px 0 rgba(34, 36, 38, 0.15);
   box-shadow: 0 1px 2px 0 rgba(34, 36, 38, 0.15);
@@ -49753,15 +49795,15 @@ span.ui.massive.text {
 /* browsers require these rules separate */
 
 .ui.form ::-webkit-input-placeholder {
-  color: #dadbdd;
+  color: #585c5f;
 }
 
 .ui.form :-ms-input-placeholder {
-  color: #dadbdd !important;
+  color: #585c5f !important;
 }
 
 .ui.form ::-moz-placeholder {
-  color: #dadbdd;
+  color: #585c5f;
   opacity: 1;
 }
 
@@ -67891,7 +67933,7 @@ select.ui.dropdown {
 
 .ui.dropdown:not(.button) > .default.text,
 .ui.default.dropdown:not(.button) > .text {
-  color: #dadbdd;
+  color: #585c5f;
 }
 
 .ui.dropdown:not(.button) > input:focus ~ .default.text,

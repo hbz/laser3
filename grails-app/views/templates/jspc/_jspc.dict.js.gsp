@@ -40,7 +40,8 @@
             'pagination.keyboardInput.validation.smaller',
             'pagination.keyboardInput.validation.biggerZero',
             'dropdown.message.addResult',
-            'select2.noMatchesFound'
+            'select2.noMatchesFound',
+            'copied'
     ]
 
     println """

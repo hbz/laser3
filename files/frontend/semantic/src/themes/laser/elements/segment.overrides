@@ -42,7 +42,7 @@
 
 /* Grey */
 .ui.grey.segment:not(.inverted) {
-  border-top: 1px solid @laDecorationColor !important;
+  border-top: 1px solid #d3dae3 !important;
 }
 /***********************************
         Footer Segment
