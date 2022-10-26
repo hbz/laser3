@@ -254,7 +254,11 @@
             <div class="ui bottom attached tab ${us_dashboard_tab.value == 'Workflows' ? 'active':''}" data-tab="workflows">
 
                 <g:if test="${Math.max(myWorkflowsCount, allWorkflowsCount) > user.getPageSizeOrDefault()}">
-                    <ui:msg class="info" text="${message(code:'workflow.dashboard.msg.more', args:[user.getPageSizeOrDefault(), g.createLink(controller:'myInstitution', action:'currentWorkflows', params:[filter:'reset',max:200])])}" />
+                    <ui:msg class="info" noClose="true">
+                        ${message(code:'workflow.dashboard.msg.more', args:[user.getPageSizeOrDefault(), g.createLink(controller:'myInstitution', action:'currentWorkflows', params:[filter:'reset', max:500]) ])}
+                        <br />
+                        ${message(code:'workflow.dashboard.msg.new', args:[message(code:'profile.itemsTimeWindow'), user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)])}
+                    </ui:msg>
                 </g:if>
 
                 <g:each in="${[myWorkflows, allWorkflows]}" var="currentWorkflows">

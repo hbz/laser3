@@ -302,9 +302,20 @@
 
                     <div class="ui message info la-clear-before" style="display:block;">
                         <i aria-hidden="true" class="close icon"></i>
-                        %{--<p><strong>Umgang mit Dateien</strong></p>--}%
-                        <p style="margin-top:0.5em;"> <i class="icon file"></i> &nbsp; ${message(code:'workflow.condition.file.info')} </p>
-                        <p style="margin-bottom:0.5em;"> <i class="icon upload"></i> &nbsp; ${message(code:'workflow.condition.fileUpload.info')} </p>
+                        <div class="ui list">
+                            <div class="item">
+                                <i class="upload icon"></i>
+                                <div class="content" style="color:#276F86"> ${message(code:'workflow.condition.fileUpload.info')} </div>
+                            </div>
+                            <div class="item">
+                                <i class="file icon"></i>
+                                <div class="content" style="color:#276F86"> ${message(code:'workflow.condition.file.info')} </div>
+                            </div>
+                            <div class="item">
+                                <i class="times icon"></i>
+                                <div class="content" style="color:#276F86"> ${message(code:'workflow.condition.fileDelete.info')} </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
