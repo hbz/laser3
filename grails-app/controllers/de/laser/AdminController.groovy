@@ -82,10 +82,12 @@ class AdminController  {
                     dbmVersion : GlobalService.obtainStorageSqlConnection().firstRow('SELECT filename, id, dateexecuted from databasechangelog order by orderexecuted desc limit 1').collect { it.value }
                 ]
             ],
-            events      : SystemEvent.list([max: 15, sort: 'created', order: 'desc']),
+            events      : SystemEvent.executeQuery(
+                    'select se from SystemEvent se where se.created >= :limit order by se.created desc',
+                    [limit: DateUtils.localDateToSqlDate(LocalDate.now().minusDays(1))]
+            ),
             docStore    : AppUtils.getDocumentStorageInfo()
         ]
-
         result
     }
 

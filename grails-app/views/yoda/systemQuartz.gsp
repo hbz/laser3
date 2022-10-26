@@ -11,10 +11,17 @@
 %{--${ConfigMapper.setConfig( ConfigMapper.QUARTZ_HEARTBEAT, new Date())} ##--}%
 %{--${ConfigMapper.getQuartzHeartbeat()} ##--}%
 
+<ui:msg class="info" noClose="true">
+    <i class="check icon"></i> Job is active <br />
+    <i class="stop icon"></i> Job is NOT active <br />
+    <i class="hand point right icon"></i> Job is NOT available - due deactivation oder missing configuration <br />
+</ui:msg>
+
 <g:each in="${quartz}" var="groupKey, group">
     <table class="ui celled la-js-responsive-table la-table la-hover-table compact table">
         <thead>
             <tr>
+                <th>#</th>
                 <th>Job</th>
                 <th>Services</th>
                 <th>Config</th>
@@ -25,8 +32,7 @@
         <tbody>
             <g:each in="${group}" var="job">
                 <%
-                    String tdClass   = ''
-                    String tdStyle   = ''
+                    String tdClass = '', tdIcon = 'question'
 
                     boolean isActive = true
 
@@ -37,27 +43,31 @@
                     }
 
                     if (job.running || isActive) {
-                        tdClass = 'table-td-yoda-green'
+                        tdClass   = 'positive'
+                        tdIcon    = 'check'
                     }
                     else if (! job.available && ! job.nextFireTime) {
-                        tdClass = 'table-td-yoda-red'
-                        tdStyle = 'color:grey'
+                        tdClass   = 'error'
+                        tdIcon    = 'stop'
                     }
                     else if (! job.available) {
-                        tdClass = 'table-td-yoda-yellow'
-                        tdStyle = 'color:grey'
+                        tdClass   = 'warning'
+                        tdIcon    = 'hand point right'
                     }
                 %>
                 <tr>
-                    <td class="${tdClass}" style="${tdStyle}">
+                    <td class="${tdClass}">
+                        <i class="${tdIcon} icon"></i>
+                    </td>
+                    <td class="${tdClass}">
                         ${job.name}
                     </td>
-                    <td class="${tdClass}" style="${tdStyle}">
+                    <td class="${tdClass}">
                         <g:each in="${job.services}" var="srv">
                             ${srv} <br />
                         </g:each>
                     </td>
-                    <td class="${tdClass}" style="${tdStyle}">
+                    <td class="${tdClass}">
                         <g:each in="${job.configurationProperties}" var="prop">
                             <g:if test="${currentConfig.get(prop[0].trim())}">
                                 ${prop[0]} = ${currentConfig.get(prop[0].trim())} <br />
@@ -67,10 +77,10 @@
                             </g:else>
                         </g:each>
                     </td>
-                    <td class="${tdClass}" style="${tdStyle}">
+                    <td class="${tdClass}">
                         <code>${job.cronEx}</code>
                     </td>
-                    <td class="${tdClass}" style="${tdStyle}">
+                    <td class="${tdClass}">
                         ${job.nextFireTime}
                     </td>
                 </tr>
