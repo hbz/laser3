@@ -6,7 +6,7 @@
         </g:if>
     </ui:breadcrumbs>
     <ui:controlButtons>
-        <g:if test="${institutionalView || isProviderOrAgency}">
+        <g:if test="${inContextOrg || isProviderOrAgency}">
             <laser:render template="actions" model="${[org:org]}"/>
         </g:if>
     </ui:controlButtons>
