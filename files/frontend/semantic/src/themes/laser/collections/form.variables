@@ -17,3 +17,5 @@
 @textAreaTransition: @inputTransition;
 
 @disabledOpacity: 0.45;
+
+@inputColor: @black;

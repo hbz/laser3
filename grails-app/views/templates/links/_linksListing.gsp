@@ -92,11 +92,11 @@
                                         <g:if test="${license}"></g:if>
                                         <g:else>
                                             <g:if test="${pair.propertySet && pair instanceof License}">
-                                                <button id="derived-license-properties-toggle${link.id}"
+                                                <div id="derived-license-properties-toggle${link.id}"
                                                         class="ui icon blue button la-modern-button la-js-dont-hide-button la-popup-tooltip la-delay"
                                                         data-content="${message(code: 'subscription.details.viewLicenseProperties')}">
                                                     <i class="ui angle double down icon"></i>
-                                                </button>
+                                                </div>
                                             </g:if>
                                         </g:else>
 

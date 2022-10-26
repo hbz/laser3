@@ -44,10 +44,10 @@
                         </div>
                         <div class="four wide right aligned  column">
                             <g:if test="${editmode}">
-                                <button class="ui icon blue button la-modern-button ${buttonColor} la-js-dont-hide-button la-popup-tooltip la-delay"
+                                <div class="ui icon blue button la-modern-button ${buttonColor} la-js-dont-hide-button la-popup-tooltip la-delay"
                                         data-content="${message(code:'subscription.packages.config.header')}">
                                     <i class="ui angle double down icon"></i>
-                                </button>
+                                </div>
                                 <%
                                     String confirmMsg = message(code: "confirm.dialog.unlink.subscription.package", args: [sp.pkg.name])
                                     String unlinkDisabled = '', unlinkDisabledTooltip = null

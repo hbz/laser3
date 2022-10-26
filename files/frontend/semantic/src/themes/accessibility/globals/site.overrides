@@ -729,3 +729,9 @@ i.icon.la-list-icon{
     font-style: normal;
     font-weight: 400;
 }
+/****************************************
+        Copy E-Mail and ID numbers
+*****************************************/
+.js-copyTrigger:hover {
+    cursor: pointer;
+}

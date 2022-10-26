@@ -68,17 +68,6 @@
                     <div class="column">
                         <div class="ui segment __color-box-segment">
                             <div class="color-container">
-                                <div class="color-wrapper __default"></div>
-                            </div>
-                            <div class="text-container">
-                                <h5>DEFAULT (als PRIMARY Button benutzt)</h5>
-                                <p>CSS-Klasse: keine Klasse für Farbe
-                            </div>
-                        </div>
-                    </div>
-                    <div class="column">
-                        <div class="ui segment __color-box-segment">
-                            <div class="color-container">
                                 <div class="color-wrapper __primary"></div>
                             </div>
                             <div class="text-container">
