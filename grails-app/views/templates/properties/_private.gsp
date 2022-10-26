@@ -97,7 +97,7 @@
                     <td>
                         <ui:xEditable owner="${prop}" type="textarea" field="note" overwriteEditable="${overwriteEditable}" class="la-dont-break-out"/>
                     </td>
-                    <td class="center aligned la-js-editmode-container">
+                    <td class="x la-js-editmode-container">
                         <g:if test="${overwriteEditable == true}">
                             <ui:remoteLink class="ui icon negative button la-modern-button js-open-confirm-modal"
                                               controller="ajax"
