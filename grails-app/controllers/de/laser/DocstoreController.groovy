@@ -86,6 +86,7 @@ class DocstoreController  {
                         //TODO [ticket=2393] this must be replaced by the new entry in the document management system
                         Doc doc_content = new Doc(
                                 contentType: Doc.CONTENT_TYPE_FILE,
+                                confidentiality: params.confidentiality ? RefdataValue.getByValueAndCategory(params.confidentiality, RDConstants.DOCUMENT_CONFIDENTIALITY) : null,
                                 filename: original_filename,
                                 mimeType: request.getFile("upload_file")?.contentType,
                                 title: params.upload_title ?: original_filename,
@@ -141,6 +142,7 @@ class DocstoreController  {
                                     //create document objects for each file
                                     Doc doc_content2 = new Doc(
                                             contentType: Doc.CONTENT_TYPE_FILE,
+                                            confidentiality: doc_content.confidentiality, // todo ?
                                             filename: doc_content.filename,
                                             mimeType: doc_content.mimeType,
                                             title: doc_content.title,

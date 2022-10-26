@@ -2,12 +2,8 @@
 
 wysiwyg = {
 
-    go: function () {
-        console.log('wysiwyg -\> loaded')
-    },
-
     initEditor: function (cssSel, modalSel) {
-        console.log('wysiwyg.initEditor( ' + cssSel + ', ' + modalSel + ')')
+        console.log('wysiwyg.initEditor( ' + cssSel + ', ' + modalSel + ' )')
 
         let $wrapper = $(cssSel);
         // let $form = $(modalSel + ' form');
@@ -48,13 +44,9 @@ wysiwyg = {
             tagsToKeep: [],
             tagsToRemove: ['embed', 'img', 'link', 'object', 'script'] // fallback
         })
-        .on ('tbwpaste', function () {
-            wysiwyg.sanitize($wrapper);
-        })
-        .on ('tbwblur', function () {
-            wysiwyg.sanitize($wrapper);
-        });
-        //.on('tbwinit',   function(){ console.log('init'); })
+        .on ('tbwinit',  function () { wysiwyg.sanitize ($wrapper); })
+        .on ('tbwpaste', function () { wysiwyg.sanitize ($wrapper); })
+        .on ('tbwblur',  function () { wysiwyg.sanitize ($wrapper); });
         //.on('tbwfocus',  function(){ console.log('focus'); })
         //.on('tbwchange', function(){ console.log('change'); })
     },
@@ -80,6 +72,32 @@ wysiwyg = {
         });
 
         $elem.trumbowyg('html', clean);
+    },
+
+    analyzeNote_TMP: function ($elem, $wrapper, showWarnings) {
+        let result = {
+            script: false, style: false
+        };
+
+        result.script = $elem.find ('script').length > 0;
+        result.style  = $elem.find ('style').length > 0 || $elem.find ('*[style]').length > 0;
+
+        if (! result.script) {
+            $elem.find ('*').each ( function (i, e) {
+                if (! result.script) {
+                    Array.from(e.attributes).forEach(function (a) {
+                        if (a.nodeName.startsWith('on') && a.nodeValue != null) { result.script = true; }
+                    })
+                }
+            });
+        }
+        if (showWarnings) {
+            if (result.style)  { $wrapper.prepend('<div class="ui label orange" style="margin-bottom:1em;">Style-Warnung</div>') }
+            if (result.script) { $wrapper.prepend('<div class="ui label red" style="margin-bottom:1em;">Script-Warnung</div>') }
+        }
+        return result;
     }
 }
+
+JSPC.modules.add( 'wysiwyg', wysiwyg );
 

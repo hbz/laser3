@@ -31,11 +31,14 @@ class DocstoreControllerService {
                 log.debug("Got owner instance ${instance}")
 
                 DocContext doc_context = DocContext.get(params.docctx)
+
                 Doc doc_content = doc_context.owner
                 doc_content.title = params.upload_title ?: doc_content.filename
+                doc_content.confidentiality = params.confidentiality ? RefdataValue.getByValueAndCategory(params.confidentiality, RDConstants.DOCUMENT_CONFIDENTIALITY) : null
                 doc_content.type = RefdataValue.getByValueAndCategory(params.doctype, RDConstants.DOCUMENT_TYPE)
                 doc_content.owner = contextService.getOrg()
                 doc_content.save()
+
                 doc_context.doctype = RefdataValue.getByValueAndCategory(params.doctype, RDConstants.DOCUMENT_TYPE)
                 if(params.targetOrg)
                     doc_context.targetOrg = Org.get(params.targetOrg)

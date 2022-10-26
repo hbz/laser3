@@ -58,8 +58,8 @@
             </tr>
             <tr>
                 <g:if test="${! dbInfo.dbmUpdateOnStart}">
-                    <td class="table-td-yoda-red">DBM updateOnStart</td>
-                    <td colspan="2" class="table-td-yoda-red">${dbInfo.dbmUpdateOnStart}</td>
+                    <td class="error">DBM updateOnStart</td>
+                    <td colspan="2" class="error">${dbInfo.dbmUpdateOnStart}</td>
                 </g:if>
                 <g:else>
                     <td>DBM updateOnStart</td>
@@ -127,7 +127,7 @@
             </tr>
             <tr>
                 <g:if test="${dataload.running}">
-                    <td class="table-td-yoda-green">Currently running</td><td class="table-td-yoda-green">${dataload.running}</td>
+                    <td class="positive">Currently running</td><td class="positive">${dataload.running}</td>
                 </g:if>
                 <g:else>
                     <td>Currently running</td><td>${dataload.running}</td>
@@ -171,7 +171,7 @@
         <tbody>
             <tr>
                 <g:if test="${globalSourceSync.running}">
-                    <td class="table-td-yoda-green">Currently running</td><td class="table-td-yoda-green">${globalSourceSync.running}</td>
+                    <td class="positive">Currently running</td><td class="positive">${globalSourceSync.running}</td>
                 </g:if>
                 <g:else>
                     <td>Currently running</td><td>${globalSourceSync.running}</td>
@@ -220,7 +220,7 @@
         <tbody>
             <tr>
                 <g:if test="${statsSync.running}">
-                    <td class="table-td-yoda-green">Currently running</td><td class="table-td-yoda-green">${statsSync.running}</td>
+                    <td class="positive">Currently running</td><td class="positive">${statsSync.running}</td>
                 </g:if>
                 <g:else>
                     <td>Currently running</td><td>${statsSync.running}</td>

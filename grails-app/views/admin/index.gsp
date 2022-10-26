@@ -92,12 +92,12 @@
     <table class="ui sortable celled la-js-responsive-table la-table la-hover-table compact table">
         <thead>
         <tr>
-            <th>${message(code:'default.category.label')}</th>
-            <th>${message(code:'default.relevance.label')}</th>
-            <th>${message(code:'default.source.label')}</th>
-            <th>${message(code:'default.event.label')}</th>
-            <th>Payload</th>
-            <th>${message(code:'default.date.label')}</th>
+            <th scope="col" class="two wide">${message(code:'default.category.label')}</th>
+            <th scope="col" class="two wide">${message(code:'default.relevance.label')}</th>
+            <th scope="col" class="two wide">${message(code:'default.source.label')}</th>
+            <th scope="col" class="three wide">${message(code:'default.event.label')}</th>
+            <th scope="col" class="five wide">Payload</th>
+            <th scope="col" class="two wide">${message(code:'default.date.label')}</th>
         </tr>
         </thead>
         <tbody>
@@ -105,10 +105,10 @@
             <%
                 String tdClass = 'table-td-yoda-blue'
                 switch (el.relevance?.value?.toLowerCase()) {
-                    case 'info'     : tdClass = 'table-td-yoda-blank'; break
-                    case 'ok'       : tdClass = 'table-td-yoda-green'; break
-                    case 'warning'  : tdClass = 'table-td-yoda-yellow'; break
-                    case 'error'    : tdClass = 'table-td-yoda-red'; break
+                    case 'info'     : tdClass = ''; break
+                    case 'ok'       : tdClass = 'positive'; break
+                    case 'warning'  : tdClass = 'warning'; break
+                    case 'error'    : tdClass = 'error'; break
                 }
                 if (el.hasChanged) {
                     tdClass += ' sf_underline'

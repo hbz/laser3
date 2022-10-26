@@ -36,13 +36,15 @@
             <input type="hidden" name="docctx" value="${docctx.id}"/>
         </g:if>
 
+        <g:set var="labelId" value="${doc?.id ?: '000'}" />
+
         <div class="inline-lists">
             <dl>
                 <dt>
-                    <label>${message(code: 'template.addDocument.name')}:</label>
+                    <label for="upload_title-${labelId}">${message(code: 'template.addDocument.name')}:</label>
                 </dt>
                 <dd>
-                    <input type="text" name="upload_title" value="${doc?.title}"/>
+                    <input type="text" id="upload_title-${labelId}" name="upload_title" value="${doc?.title}"/>
                 </dd>
             </dl>
             <g:if test="${!docctx && !doc}">
@@ -74,7 +76,7 @@
             </g:if>
             <dl>
                 <dt>
-                    <label>${message(code: 'template.addDocument.type')}:</label>
+                    <label for="doctype-${labelId}">${message(code: 'template.addDocument.type')}:</label>
                 </dt>
                 <dd>
                     <%
@@ -85,8 +87,24 @@
                               class="ui dropdown fluid"
                               optionKey="value"
                               optionValue="${{ it.getI10n('value') }}"
+                              id="doctype-${labelId}"
                               name="doctype"
                               value="${doc?.type?.value}"/>
+                </dd>
+            </dl>
+            <dl>
+                <dt>
+                    <label for="confidentiality-${labelId}">${message(code: 'template.addDocument.confidentiality')}:</label>
+                </dt>
+                <dd>
+                    <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.DOCUMENT_CONFIDENTIALITY)}"
+                              class="ui dropdown fluid"
+                              optionKey="value"
+                              optionValue="${{ it.getI10n('value') }}"
+                              id="confidentiality-${labelId}"
+                              name="confidentiality"
+                              value="${doc?.confidentiality?.value}"
+                              noSelection="${['': message(code: 'default.select.choose.label')]}" />
                 </dd>
             </dl>
 
@@ -94,19 +112,19 @@
                 <g:if test="${inContextOrg}">
                     <dl>
                         <dt>
-                            <label>${message(code:'template.addDocument.target')}</label>
+                            <label for="targetOrg-${labelId}">${message(code:'template.addDocument.target')}</label>
                         </dt>
                         <dd>
-                            <g:select name="targetOrg" id="targetOrg" from="${controlledListService.getOrgs()}" optionKey="id" optionValue="text" class="ui search select dropdown fluid" value="${docctx?.targetOrg?.id}" noSelection="${['': message(code: 'default.select.choose.label')]}"/>
+                            <g:select id="targetOrg-${labelId}" name="targetOrg" from="${controlledListService.getOrgs()}" optionKey="id" optionValue="text" class="ui search select dropdown fluid" value="${docctx?.targetOrg?.id}" noSelection="${['': message(code: 'default.select.choose.label')]}"/>
                         </dd>
                     </dl>
                 </g:if>
                 <g:else>
-                    <g:hiddenField name="targetOrg" id="targetOrg" value="${ownobj.id}"/>
+                    <g:hiddenField name="targetOrg" value="${ownobj.id}"/>
                 </g:else>
                 <dl>
                     <dt>
-                        <label>${message(code:'template.addDocument.shareConf')}</label>
+                        <label for="shareConf-${labelId}">${message(code:'template.addDocument.shareConf')}</label>
                     </dt>
                     <dd>
                         <%
@@ -115,7 +133,7 @@
                                 value = docctx.shareConf?.id
                             }
                         %>
-                        <ui:select from="${availableConfigs}" class="ui dropdown fluid la-not-clearable" name="shareConf"
+                        <ui:select from="${availableConfigs}" class="ui dropdown fluid la-not-clearable" name="shareConf" id="shareConf-${labelId}"
                                       optionKey="id" optionValue="value" value="${value}"/>
                     </dd>
                 </dl>
@@ -123,15 +141,14 @@
             <g:elseif test="${showConsortiaFunctions}">
                 <dl>
                     <dt>
-                        <label>${message(code:'template.addDocument.setSharing')}</label>
+                        <label for="setSharing-${labelId}">${message(code:'template.addDocument.setSharing')}</label>
                     </dt>
-                    <dd><g:checkBox name="setSharing" class="ui checkbox" value="${docctx?.isShared}"/></dd>
+                    <dd><g:checkBox id="setSharing-${labelId}" name="setSharing" class="ui checkbox" value="${docctx?.isShared}"/></dd>
                 </dl>
             </g:elseif>
         <g:if test="${docForAll}">
             <dl>
                 <dt>
-
                 </dt>
                 <dd>
                     <div class="ui checkbox">

@@ -98,7 +98,7 @@
         <g:if test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
             <a class="${us_dashboard_tab.value == 'Workflows' ? 'active item':'item'}" data-tab="workflows">
                 <i class="tasks icon large"></i>
-                ${currentWorkflowsCount} ${message(code:'workflow.plural')}
+                ${myWorkflowsCount + allWorkflowsCount} ${message(code:'workflow.plural')}
             </a>
         </g:if>
 
@@ -253,17 +253,23 @@
         <g:if test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
             <div class="ui bottom attached tab ${us_dashboard_tab.value == 'Workflows' ? 'active':''}" data-tab="workflows">
 
-                <div>
-                    <g:if test="${currentWorkflows.size() != currentWorkflowsCount}">
-                        <ui:msg class="info" text="${message(code:'workflow.dashboard.msg.more', args:[currentWorkflows.size(), currentWorkflowsCount, g.createLink(controller:'myInstitution', action:'currentWorkflows', params:[filter:'reset',max:200])])}" />
-                    </g:if>
+                <g:if test="${Math.max(myWorkflowsCount, allWorkflowsCount) > user.getPageSizeOrDefault()}">
+                    <ui:msg class="info" noClose="true">
+                        ${message(code:'workflow.dashboard.msg.more', args:[user.getPageSizeOrDefault(), g.createLink(controller:'myInstitution', action:'currentWorkflows', params:[filter:'reset', max:500]) ])}
+                        <br />
+                        ${message(code:'workflow.dashboard.msg.new', args:[message(code:'profile.itemsTimeWindow'), user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)])}
+                    </ui:msg>
+                </g:if>
+
+                <g:each in="${[myWorkflows, allWorkflows]}" var="currentWorkflows">
+
                     <table class="ui celled table la-js-responsive-table la-table">
                         <thead>
                             <tr>
                                 <th class="five wide" rowspan="2">${message(code:'workflow.label')}</th>
-                                <th class="five wide" rowspan="2">${message(code:'default.relation.label')}</th>
+                                <th class="six wide" rowspan="2">${message(code:'default.relation.label')}</th>
                                 <th class="two wide"  rowspan="2">${message(code:'default.progress.label')}</th>
-                                <th class="three wide"  class="la-smaller-table-head">${message(code:'default.lastUpdated.label')}</th>
+                                <th class="two wide"  class="la-smaller-table-head">${message(code:'default.lastUpdated.label')}</th>
                                 <th class="one wide"  rowspan="2"></th>
                             </tr>
                             <tr>
@@ -315,7 +321,7 @@
                                         <br />
                                         ${DateUtils.getLocalizedSDF_noTime().format(wf.dateCreated)}
                                     </td>
-                                    <td class="x">
+                                    <td class="center aligned" style="position:relative;">
                                         <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
                                             <uiWorkflow:usageIconLinkButton workflow="${wf}" params="${[key: 'dashboard:' + wfLinkParamPart]}" />
                                         </g:if>
@@ -332,13 +338,19 @@
 %{--                                                <i class="trash alternate outline icon"></i>--}%
 %{--                                            </g:link>--}%
                                         </g:if>
-
+                                        <g:if test="${wf.userLastUpdated}">
+                                            <g:set var="timeWindow" value="${user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14) * 86400 * 1000}" />
+                                            <g:if test="${(wf.userLastUpdated.getTime() + timeWindow) > System.currentTimeMillis()}">
+                                                <div class="ui floating right aligned mini label yellow" style="top:0.5em;right:-1em;">${message(code:'default.new')}</div>
+                                            </g:if>
+                                        </g:if>
                                     </td>
                                 </tr>
                             </g:each>
                         </tbody>
                     </table>
-                </div>
+
+                </g:each>
             </div>
 
             <div id="wfModal" class="ui modal"></div>

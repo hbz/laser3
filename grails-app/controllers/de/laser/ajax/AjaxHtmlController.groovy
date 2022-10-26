@@ -8,6 +8,8 @@ import de.laser.AccessService
 import de.laser.AddressbookService
 import de.laser.config.ConfigDefaults
 import de.laser.config.ConfigMapper
+import de.laser.ctrl.SubscriptionControllerService
+import de.laser.interfaces.CalculatedType
 import de.laser.remote.ApiSource
 import de.laser.CacheService
 import de.laser.ContextService
@@ -67,8 +69,10 @@ import de.laser.workflow.WfTask
 import de.laser.workflow.WfTaskPrototype
 import grails.plugin.springsecurity.annotation.Secured
 import org.apache.poi.ss.usermodel.Workbook
+import org.mozilla.universalchardet.UniversalDetector
 
 import javax.servlet.ServletOutputStream
+import java.nio.charset.Charset
 
 /**
  * This controller manages HTML fragment rendering calls; object manipulation is done in the AjaxController!
@@ -92,6 +96,7 @@ class AjaxHtmlController {
     ReportingGlobalService reportingGlobalService
     ReportingLocalService reportingLocalService
     SubscriptionService subscriptionService
+    SubscriptionControllerService subscriptionControllerService
     LicenseControllerService licenseControllerService
     CustomWkhtmltoxService wkhtmltoxService // custom
     GokbService gokbService
@@ -280,6 +285,20 @@ class AjaxHtmlController {
                                                             institution: contextOrg,
                                                             editable: license.isEditableBy(user)]
         }
+    }
+
+    @Secured(['ROLE_USER'])
+    def generateCostPerUse() {
+        Map<String, Object> ctrlResult = subscriptionControllerService.getStatsData(params)
+        ctrlResult.result.costPerUse = [:]
+        if(ctrlResult.result.subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION) {
+            ctrlResult.result.costPerUse.consortialData = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "consortial")
+            if(ctrlResult.result.institution.getCustomerType() == "ORG_INST") {
+                ctrlResult.result.costPerUse.ownData = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "own")
+            }
+        }
+        else ctrlResult.result.costPerUse.ownData = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "own")
+        render template: "/subscription/costPerUse", model: ctrlResult.result
     }
 
     /**
@@ -1150,8 +1169,7 @@ class AjaxHtmlController {
             else if (result.prefix == WfWorkflow.KEY) {
                 result.workflow       = WfWorkflow.get( wfObjId )
                 result.tmpl           = '/templates/workflow/forms/wfWorkflow'
-                result.tmplModalTitle = '<i class="icon wrench sc_darkgrey"></i> ' + result.tmplModalTitle
-                //result.tmplModalTitle = result.tmplModalTitle + result.workflow.title
+                result.tmplModalTitle = result.tmplModalTitle + ' - ' + message(code: 'workflow.edit.ext.perms')
 
 //                if (result.workflow) {
 //                    result.dd_taskList          = result.workflow.task ? [ result.workflow.task ] : []
@@ -1184,8 +1202,7 @@ class AjaxHtmlController {
             else if (result.prefix == WfTask.KEY) {
                 result.task           = WfTask.get( wfObjId )
                 result.tmpl           = '/templates/workflow/forms/wfTask'
-                result.tmplModalTitle = '<i class="icon wrench sc_darkgrey"></i> ' + result.tmplModalTitle
-                //result.tmplModalTitle = result.tmplModalTitle + result.task.title
+                result.tmplModalTitle = result.tmplModalTitle + ' - ' + message(code: 'workflow.edit.ext.perms')
 
                 if (result.task) {
 
@@ -1213,8 +1230,7 @@ class AjaxHtmlController {
             else if (result.prefix == WfCondition.KEY) {
                 result.condition      = WfCondition.get( wfObjId )
                 result.tmpl           = '/templates/workflow/forms/wfCondition'
-                result.tmplModalTitle = '<i class="icon wrench sc_darkgrey"></i> ' + result.tmplModalTitle
-                //result.tmplModalTitle = result.tmplModalTitle + result.condition.title
+                result.tmplModalTitle = result.tmplModalTitle + ' - ' + message(code: 'workflow.edit.ext.perms')
 
 //                if (result.condition) {
 //                    result.dd_taskList = WfTask.executeQuery( 'select wft from WfTask wft' )
@@ -1291,11 +1307,26 @@ class AjaxHtmlController {
                     }
 
                     if (checkPermission()) {
-                        if (Doc.getPreviewMimeTypes().contains(doc.mimeType)) {
+                        Map<String, String> mimeTypes = Doc.getPreviewMimeTypes()
+                        if (mimeTypes.containsKey(doc.mimeType)) {
                             String fPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
                             File f = new File(fPath + '/' +  doc.uuid)
+
                             if (f.exists()) {
-                                result.docBase64 = (new File(fPath + '/' + doc.uuid)).getBytes().encodeBase64()
+
+                                if (mimeTypes.get(doc.mimeType) == 'raw'){
+                                    result.docBase64 = f.getBytes().encodeBase64()
+                                    result.docDataType = doc.mimeType
+                                }
+                                else if (mimeTypes.get(doc.mimeType) == 'encode') {
+                                    String fCharset = UniversalDetector.detectCharset(f) ?: Charset.defaultCharset()
+                                    result.docBase64 = f.getText(fCharset).encodeAsRaw().getBytes().encodeBase64()
+                                    result.docDataType = 'text/plain;charset=' + fCharset
+                                }
+                                else {
+                                    result.error = 'Unbekannter Fehler'
+                                }
+                                // encodeAsHTML().replaceAll(/\r\n|\r|\n/,'<br />')
                             }
                             else {
                                 result.error = message(code: 'template.documents.preview.fileNotFound') as String

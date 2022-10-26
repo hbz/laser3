@@ -3,10 +3,7 @@
 tooltip = {
 
     go : function() {
-        // console.log('tooltip.go()')
-
-        tooltip.initDynamicPopups('body')
-        tooltip.initDynamicAccessViaKeys('body')
+        tooltip.init('body')
     },
 
     init : function(ctxSel) {
@@ -96,3 +93,5 @@ tooltip = {
         })
     },
 }
+
+JSPC.modules.add( 'tooltip', tooltip );

@@ -26,8 +26,8 @@
     <table class="ui celled la-js-responsive-table la-table la-hover-table compact table" id="contextTable">
         <tbody>
             <g:each in="${threads}" var="thread">
-                <g:set var="thClass" value="${thread.getName().startsWith('I/O ') ? 'table-td-yoda-yellow' : ''}" />
-                <g:set var="thClass" value="${thread.isDaemon() ? 'table-td-yoda-green' : thClass}" />
+                <g:set var="thClass" value="${thread.getName().startsWith('I/O ') ? 'warning' : ''}" />
+                <g:set var="thClass" value="${thread.isDaemon() ? 'positive' : thClass}" />
 
                 <tr>
                     <td class="${thClass}">${thread.getId()}</td>

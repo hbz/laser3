@@ -178,8 +178,8 @@
                     <%  // TODO .. copied from finance/_result_tab_cons.gsp
 
                     def elementSign = 'notSet'
-                    def icon = ''
-                    def dataTooltip = ""
+                    String icon = ''
+                    String dataTooltip = ""
                     if (ci?.costItemElementConfiguration) {
                         elementSign = ci.costItemElementConfiguration
                     }

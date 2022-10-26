@@ -596,6 +596,7 @@ class WorkflowService {
                 User user = User.get(ph.getLong('user'))
                 if (user != workflow.user) {
                     workflow.user = user
+                    workflow.userLastUpdated = new Date()
                     wChanged = true
                 }
                 if (wChanged) {
@@ -644,7 +645,7 @@ class WorkflowService {
                         }
                     }
 
-                    for(int i=1; i<=2; i++) {
+                    for(int i=1; i<=4; i++) {
                         String fileId = 'file' + i
 
                         if (params.get('wfUploadFile_placeholder_' + fileId)) {
@@ -657,6 +658,7 @@ class WorkflowService {
                                         String uploadTitle         = params.get('wfUploadTitle_' + fileId) ?: file.originalFilename
                                         String uploadOwner         = params.get('wfUploadOwner_' + fileId)
                                         RefdataValue uploadDoctype = RefdataValue.get(params.get('wfUploadDoctype_' + fileId) as Serializable)
+                                        RefdataValue uploadCnf     = params.get('wfUploadConfidentiality_' + fileId) ? RefdataValue.get(params.get('wfUploadConfidentiality_' + fileId) as Serializable) : null
 
                                         Doc doc = new Doc(
                                                 contentType: Doc.CONTENT_TYPE_FILE,
@@ -664,6 +666,7 @@ class WorkflowService {
                                                 mimeType: file.contentType,
                                                 title: uploadTitle,
                                                 type: uploadDoctype,
+                                                confidentiality: uploadCnf,
                                                 creator: contextService.getUser(),
                                                 owner: contextService.getOrg()
                                         )
@@ -759,7 +762,7 @@ class WorkflowService {
     }
 
     boolean hasUserPerm_wrench() {
-        _innerPermissionCheck('INST_ADM')
+        _innerPermissionCheck('INST_EDITOR')
     }
 
     private boolean _innerPermissionCheck(String userRoleName) {

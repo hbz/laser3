@@ -11,32 +11,34 @@
 
 <ui:form>
     <g:form class="ui form" action="${actionName}" method="post">
-        <div class="ui field">
-            <label for="selectedSubscriptions">${message(code: 'default.compare.subscriptions')}</label>
 
             <div class="field">
-                <label>${message(code: 'filter.status')}</label>
+                <label for="status">${message(code: 'filter.status')}</label>
                 <select id="status" name="status" multiple="" class="ui search selection fluid multiple dropdown" onchange="JSPC.app.adjustDropdown()">
                     <option value=""><g:message code="default.select.choose.label"/></option>
                     <g:each in="${RefdataCategory.getAllRefdataValues(RDConstants.SUBSCRIPTION_STATUS) }" var="status">
                         <option <%=(status.id.toString() in params.list('status')) ? 'selected="selected"' : ''%> value="${status.id}">${status.getI10n('value')}</option>
                     </g:each>
                 </select>
-
             </div>
             <g:if test="${accessService.checkPerm("ORG_CONSORTIUM")}">
+                <div class="field">
                 <div class="ui checkbox">
                     <g:checkBox name="show.subscriber" value="true" checked="false"
                                 onchange="JSPC.app.adjustDropdown()"/>
                     <label for="show.subscriber">${message(code: 'default.compare.show.subscriber.name')}</label>
-                </div><br />
+                </div>
+                </div>
             </g:if>
+            <div class="field">
             <div class="ui checkbox">
                 <g:checkBox name="show.connectedObjects" value="true" checked="false"
                             onchange="JSPC.app.adjustDropdown()"/>
                 <label for="show.connectedObjects">${message(code: 'default.compare.show.connectedObjects.name')}</label>
             </div>
-            <br />
+            </div>
+        <div class="field">
+            <label for="selectedObjects">${message(code: 'default.compare.subscriptions')}</label>
             <select id="selectedObjects" name="selectedObjects" multiple="" class="ui search selection fluid dropdown">
                 <option value="">${message(code: 'default.select.choose.label')}</option>
             </select>
@@ -44,7 +46,7 @@
 
         <div class="field">
             <g:link controller="compare" action="${actionName}"
-                    class="ui button">${message(code: 'default.button.comparereset.label')}</g:link>
+                    class="ui secondary button">${message(code: 'default.button.comparereset.label')}</g:link>
             &nbsp;
             <input ${params.selectedObjects ? 'disabled' : ''} type="submit"
                                                                value="${message(code: 'default.button.compare.label')}"

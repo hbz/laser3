@@ -53,15 +53,15 @@
                 </g:else>
             </div>
         </div>
-
         <div class="field">
             <label for="${prefixOverride}_user">${message(code:'task.responsible.label')}</label>
+            <g:set var="responsibleList" value="${taskService.getUserDropdown(contextService.getOrg())}" />
             <g:select id="${prefixOverride}_user"
                       name="${prefixOverride}_user"
-                      from="${taskService.getUserDropdown(contextService.getOrg())}"
-                      optionKey="id"
-                      optionValue="display"
-                      value="${workflow.user?.id}"
+                      from="${ responsibleList + [id:'all', display:message(code:'workflow.user.noCurrentUser')] }"
+                      optionValue="${{it.display}}"
+                      optionKey="${{it.id}}"
+                      value="${workflow.user ? workflow.user.id : 'all'}"
                       class="ui dropdown search la-not-clearable"
             />
         </div>
@@ -198,11 +198,11 @@
                                 <g:if test="${wfEditPerm}">
                                     <label for="${prefixOverride}_${field}">${task.condition.getProperty(field + '_title') ?: message(code:'workflow.field.noTitle.label')}
                                         <div id="fileUploadWrapper_toggle_${field}" class="ui small buttons" style="float:right; margin-right:15px">
-                                            <span data-position="top right" class="ui left attached icon button la-popup-tooltip la-delay ${taskConditionFileExists ? '' : 'active'}" data-content="${message(code:'workflow.condition.fileUpload.info')}">
-                                                <i class="icon upload"></i>
-                                            </span>
-                                            <span data-position="top right" class="ui right attached icon button la-popup-tooltip la-delay ${taskConditionFileExists ? 'active' : ''}" data-content="${message(code:'workflow.condition.file.info')}">
+                                            <span class="ui left attached mini icon button ${taskConditionFileExists ? 'active' : ''}">
                                                 <i class="icon file"></i>
+                                            </span>
+                                            <span class="ui right attached mini icon button ${taskConditionFileExists ? '' : 'active'}">
+                                                <i class="icon upload"></i>
                                             </span>
                                         </div>
                                     </label>
@@ -221,7 +221,7 @@
                                                           from="${targetDocuments}"
                                                           value="${task.condition.getProperty(field)?.id}"
                                                           optionKey="${{it.id}}"
-                                                          optionValue="${{ (it.owner?.title ? it.owner.title : it.owner?.filename ? it.owner.filename : message(code:'template.documents.missing')) + ' (' + it.owner?.type?.getI10n("value") + ')' }}" />
+                                                          optionValue="${{ (it.owner?.title ?: it.owner?.filename ?: message(code:'template.documents.missing')) + ' (' + it.owner?.type?.getI10n("value") + ')' + (it.owner?.confidentiality ? ' (' + it.owner?.confidentiality?.getI10n('value') + ')' : '')}}" />
                                             </g:if>
                                             <g:else>
                                                 <g:set var="targetDocuments" value="${targetObject.documents.findAll{ it.status != RDStore.DOC_CTX_STATUS_DELETED && it.owner.contentType == Doc.CONTENT_TYPE_FILE }}" />
@@ -230,7 +230,7 @@
                                                           from="${targetDocuments}"
                                                           value="${task.condition.getProperty(field)?.id}"
                                                           optionKey="${{it.id}}"
-                                                          optionValue="${{ (it.owner?.title ? it.owner.title : it.owner?.filename ? it.owner.filename : message(code:'template.documents.missing')) + ' (' + it.owner?.type?.getI10n("value") + ')' }}" />
+                                                          optionValue="${{ (it.owner?.title ?: it.owner?.filename ?: message(code:'template.documents.missing')) + ' (' + it.owner?.type?.getI10n("value") + ')' + (it.owner?.confidentiality ? ' (' + it.owner?.confidentiality?.getI10n('value') + ')' : '')}}" />
 
                                             </g:else>
                                         </div>
@@ -254,6 +254,14 @@
                                                   optionValue="${{ it.getI10n('value') }}"
                                                   name="wfUploadDoctype_${field}"
                                                   />
+
+                                        <label for="wfUploadConfidentiality_${field}">${message(code: 'template.addDocument.confidentiality')}:</label>
+                                        <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.DOCUMENT_CONFIDENTIALITY)}"
+                                                  class="ui dropdown fluid"
+                                                  optionKey="id"
+                                                  optionValue="${{ it.getI10n('value') }}"
+                                                  name="wfUploadConfidentiality_${field}"
+                                                  noSelection="${['': message(code: 'default.select.choose.label')]}" />
 
                                         <g:if test="${(workflow && wfInfo.target instanceof Org) || (targetObject && targetObject instanceof Org)}">
                                             <label for="wfUploadShareConf_${field}">${message(code:'template.addDocument.shareConf')}</label>
@@ -291,6 +299,24 @@
                             </div>
                         </g:if>
                     </g:each>
+
+                    <div class="ui message info la-clear-before" style="display:block;">
+                        <i aria-hidden="true" class="close icon"></i>
+                        <div class="ui list">
+                            <div class="item">
+                                <i class="upload icon"></i>
+                                <div class="content" style="color:#276F86"> ${message(code:'workflow.condition.fileUpload.info')} </div>
+                            </div>
+                            <div class="item">
+                                <i class="file icon"></i>
+                                <div class="content" style="color:#276F86"> ${message(code:'workflow.condition.file.info')} </div>
+                            </div>
+                            <div class="item">
+                                <i class="times icon"></i>
+                                <div class="content" style="color:#276F86"> ${message(code:'workflow.condition.fileDelete.info')} </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 

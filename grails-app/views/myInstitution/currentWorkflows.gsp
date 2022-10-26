@@ -12,13 +12,14 @@
     <form id="wfFilterForm" class="ui form">
         <div class="three fields">
             <div class="field">
+                <g:set var="filterUserList" value="${ WfWorkflow.executeQuery('select distinct(wf.user) from WfWorkflow wf where wf.owner = :ctxOrg order by wf.user.display', [ctxOrg: contextService.getOrg()]) }" />
                 <label>${message(code:'task.responsible.label')}</label>
                 <g:select id="filterUser"
                           name="filterUser"
-                          from="${ WfWorkflow.executeQuery('select distinct(wf.user) from WfWorkflow wf where wf.owner = :ctxOrg order by wf.user.display', [ctxOrg: contextService.getOrg()]) }"
+                          from="${ filterUserList + [id:'all', display:message(code:'workflow.user.noCurrentUser')] }"
                           optionKey="id"
                           optionValue="display"
-                          value="${params.filterUser}"
+                          value="${filterUser}"
                           class="ui dropdown search"
                           noSelection="${['' : message(code:'default.select.choose.label')]}"
                 />
@@ -29,7 +30,7 @@
                            required="required"
                            noSelection="${['' : message(code:'default.select.choose.label')]}"
                            from="${RefdataCategory.getAllRefdataValues(RDConstants.WF_WORKFLOW_TARGET_TYPE)}"
-                           value="${params.filterTargetType}"
+                           value="${filterTargetType}"
                            optionKey="id"
                            optionValue="value" />
 
@@ -40,7 +41,7 @@
                           from="${ currentPrototypes }"
                           optionKey="${{it.hash}}"
                           optionValue="${{it.title + ' - ' + it.variant}}"
-                          value="${params.filterPrototypeMeta}"
+                          value="${filterPrototypeMeta}"
                           noSelection="${['' : message(code:'default.select.choose.label')]}"/>
             </div>
 %{--            <div class="field">--}%
@@ -49,7 +50,7 @@
 %{--                  from="${ RefdataCategory.getAllRefdataValues(RDConstants.WF_WORKFLOW_STATUS) }"--}%
 %{--                  optionKey="id"--}%
 %{--                  optionValue="value"--}%
-%{--                  value="${params.filterStatus}"--}%
+%{--                  value="${filterStatus}"--}%
 %{--                  noSelection="${['' : message(code:'default.select.choose.label')]}"/>--}%
 %{--            </div>--}%
 
@@ -61,7 +62,7 @@
                            required="required"
                            noSelection="${['' : message(code:'default.select.choose.label')]}"
                            from="${RefdataCategory.getAllRefdataValues( RDConstants.WF_WORKFLOW_TARGET_TYPE )}"
-                           value="${params.filterTargetType}"
+                           value="${filterTargetType}"
                            optionKey="id"
                            optionValue="value" />
 
@@ -72,7 +73,7 @@
                            required="required"
                            noSelection="${['' : message(code:'default.select.choose.label')]}"
                            from="${RefdataCategory.getAllRefdataValues( RDConstants.WF_WORKFLOW_TARGET_ROLE )}"
-                           value="${params.filterTargetRole}"
+                           value="${filterTargetRole}"
                            optionKey="id"
                            optionValue="value" />
             </div>
@@ -85,7 +86,7 @@
                           from="${ currentProviders }"
                           optionKey="id"
                           optionValue="name"
-                          value="${params.filterProvider}"
+                          value="${filterProvider}"
                           noSelection="${['' : message(code:'default.select.choose.label')]}"/>
             </div>
             <div class="field">
@@ -94,7 +95,7 @@
                           from="${ currentSubscriptions }"
                           optionKey="id"
                           optionValue="name"
-                          value="${params.filterSubscription}"
+                          value="${filterSubscription}"
                           noSelection="${['' : message(code:'default.select.choose.label')]}"/>
             </div>
         </div>--}%
@@ -103,10 +104,7 @@
             <input type="submit" class="ui primary button" value="${message(code:'default.button.filter.label')}" />
         </div>
         <input type="hidden" name="filter" value="true" />
-
-        <input type="hidden" name="tab" value="${params.tab}" />
-        <input type="hidden" name="offset" value="${params.offset}" />
-        <input type="hidden" name="max" value="${params.max}" />
+        <input type="hidden" name="tab" value="${tab}" />
     </form>
 </ui:filter>
 
@@ -128,21 +126,21 @@
 </g:elseif>
 
 <div id="wfTabs" class="ui secondary stackable pointing tabular la-tab-with-js menu" style="margin-top:2em;">
-    <a class="${params.tab == 'open' ? 'active item':'item'}" data-tab="open">
+    <a class="${tab == 'open' ? 'active item':'item'}" data-tab="open">
         ${RDStore.WF_WORKFLOW_STATUS_OPEN.getI10n('value')} <div class="ui  circular label">${currentWorkflowIds_open.size()}</div>
     </a>
-    <a class="${params.tab == 'canceled'  ? 'active item':'item'}" data-tab="canceled">
+    <a class="${tab == 'canceled'  ? 'active item':'item'}" data-tab="canceled">
         ${RDStore.WF_WORKFLOW_STATUS_CANCELED.getI10n('value')} <div class="ui  circular label">${currentWorkflowIds_canceled.size()}</div>
     </a>
-    <a class="${params.tab == 'done'  ? 'active item':'item'}" data-tab="done">
+    <a class="${tab == 'done'  ? 'active item':'item'}" data-tab="done">
         ${RDStore.WF_WORKFLOW_STATUS_DONE.getI10n('value')} <div class="ui  circular label">${currentWorkflowIds_done.size()}</div>
     </a>
 </div>
 
 <g:each in="${['open', 'canceled', 'done']}" var="currentTab">
 
-    <div class="ui bottom attached tab ${params.tab == currentTab ? 'active':''}" data-tab="${currentTab}">
-    <g:if test="${params.tab == currentTab}">
+    <div class="ui bottom attached tab ${tab == currentTab ? 'active':''}" data-tab="${currentTab}">
+    <g:if test="${tab == currentTab}">
 
         <div>
 
@@ -150,11 +148,11 @@
     <thead>
         <tr>
             <th class="one wide" rowspan="2">${message(code:'sidewide.number')}</th>
-            <th class="four wide" rowspan="2">${message(code:'workflow.label')}</th>
+            <th class="three wide" rowspan="2">${message(code:'workflow.label')}</th>
             <th class="four wide" rowspan="2">${message(code:'default.relation.label')}</th>
             <th class="four wide" rowspan="2">${message(code:'default.progress.label')}</th>
             <th class="two wide la-smaller-table-head">${message(code:'default.lastUpdated.label')}</th>
-            <th class="one wide" rowspan="2">${message(code:'default.actions.label')}</th>
+            <th class="two wide" rowspan="2">${message(code:'default.actions.label')}</th>
         </tr>
         <tr>
             <th class="two wide la-smaller-table-head">${message(code:'default.dateCreated.label')}</th>
@@ -166,7 +164,7 @@
 
             <tr>
                 <td class="center aligned">
-                    ${wfi+1}
+                    ${wfi + 1 + offset}
                 </td>
                 <td>
                     <g:if test="${currentTab != 'open'}">
@@ -204,7 +202,7 @@
                     <br />
                     ${DateUtils.getLocalizedSDF_noTime().format(wf.dateCreated)}
                 </td>
-                <td class="x">
+                <td class="center aligned">
                     <g:if test="${workflowService.hasUserPerm_edit()}"><!-- TODO: workflows-permissions -->
                         <uiWorkflow:usageIconLinkButton workflow="${wf}" params="${[key: 'myInstitution:' + wf.id + ':' + WfWorkflow.KEY + ':' + wf.id]}" />
                     </g:if>
@@ -230,7 +228,7 @@
         </div>
 
         <ui:paginate action="currentWorkflows" controller="myInstitution"
-                     max="${params.max}" offset="${params.offset}"
+                     max="${max}" offset="${offset}"
                      total="${(currentTab == 'open' ? currentWorkflowIds_open.size() : currentTab == 'canceled' ? currentWorkflowIds_canceled.size() : currentWorkflowIds_done.size())}"
                      params="${params + [tab: currentTab]}" />
 

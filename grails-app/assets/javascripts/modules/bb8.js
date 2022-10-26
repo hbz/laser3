@@ -137,3 +137,5 @@ bb8 = {
         }
     }
 }
+
+JSPC.modules.add( 'bb8', bb8 );

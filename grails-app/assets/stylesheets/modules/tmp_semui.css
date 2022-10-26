@@ -193,11 +193,6 @@ body.myInstitution_dashboard .ui.tab .item .header {
 
 /* table-td-colors @ yoda/admin */
 
-.ui.la-table.table tr td[class^=table-td]       { vertical-align: top; }
-.ui.la-table.table tr td.table-td-yoda-blank    { }
-.ui.la-table.table tr td.table-td-yoda-green    { background-color: rgba(145, 204, 117, 0.15); }
-.ui.la-table.table tr td.table-td-yoda-yellow   { background-color: rgba(250, 200,  88, 0.15); }
-.ui.la-table.table tr td.table-td-yoda-red      { background-color: rgba(238, 102, 102, 0.15); }
 .ui.la-table.table tr td.table-td-yoda-blue     { background-color: rgba( 84, 112, 198, 0.15); }
 
 /* la-hover-table */

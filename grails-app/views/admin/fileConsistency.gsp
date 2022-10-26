@@ -29,14 +29,14 @@
                     <td>${listOfFiles.size()}</td>
                 </tr>
                 <tr>
-                    <td class="table-td-yoda-green">- entspr. Dateiobjekte in der Datenbank existieren</td>
-                    <td class="table-td-yoda-green"></td>
-                    <td class="table-td-yoda-green">${listOfFilesMatchingDocs.size()}</td>
+                    <td class="positive">- entspr. Dateiobjekte in der Datenbank existieren</td>
+                    <td class="positive"></td>
+                    <td class="positive">${listOfFilesMatchingDocs.size()}</td>
                 </tr>
                 <tr>
-                    <td class="table-td-yoda-red">- entspr. Dateiobjekte in der Datenbank existieren nicht</td>
-                    <td class="table-td-yoda-red">${listOfFilesOrphaned.join(', ')}</td>
-                    <td class="table-td-yoda-red">${listOfFilesOrphaned.size()}</td>
+                    <td class="error">- entspr. Dateiobjekte in der Datenbank existieren nicht</td>
+                    <td class="error">${listOfFilesOrphaned.join(', ')}</td>
+                    <td class="error">${listOfFilesOrphaned.size()}</td>
                 </tr>
             </tbody>
         </table>
@@ -64,14 +64,14 @@
                     <td>${listOfDocsInUse.size()}</td>
                 </tr>
                 <tr>
-                    <td class="table-td-yoda-green">- entspr. Dateien existieren</td>
-                    <td class="table-td-yoda-green"></td>
-                    <td class="table-td-yoda-green">${listOfDocsInUse.size() - listOfDocsInUseOrphaned.size()}</td>
+                    <td class="positive">- entspr. Dateien existieren</td>
+                    <td class="positive"></td>
+                    <td class="positive">${listOfDocsInUse.size() - listOfDocsInUseOrphaned.size()}</td>
                 </tr>
                 <tr>
-                    <td class="table-td-yoda-red">- entspr. Dateien existieren nicht</td>
-                    <td class="table-td-yoda-red">${listOfDocsInUseOrphaned.collect{ it.id }.join(', ')}</td>
-                    <td class="table-td-yoda-red">${listOfDocsInUseOrphaned.size()}</td>
+                    <td class="error">- entspr. Dateien existieren nicht</td>
+                    <td class="error">${listOfDocsInUseOrphaned.collect{ it.id }.join(', ')}</td>
+                    <td class="error">${listOfDocsInUseOrphaned.size()}</td>
                 </tr>
 
                 <tr>
@@ -80,14 +80,14 @@
                     <td>${listOfDocsNotInUse.size()}</td>
                 </tr>
                 <tr>
-                    <td class="table-td-yoda-green">- entspr. Dateien existieren</td>
-                    <td class="table-td-yoda-green"></td>
-                    <td class="table-td-yoda-green">${listOfDocsNotInUse.size() - listOfDocsNotInUseOrphaned.size()}</td>
+                    <td class="positive">- entspr. Dateien existieren</td>
+                    <td class="positive"></td>
+                    <td class="positive">${listOfDocsNotInUse.size() - listOfDocsNotInUseOrphaned.size()}</td>
                 </tr>
                 <tr>
-                    <td class="table-td-yoda-red">- entsprechende Dateien existieren nicht</td>
-                    <td class="table-td-yoda-red">${listOfDocsNotInUseOrphaned.collect{ it.id }.join(', ')}</td>
-                    <td class="table-td-yoda-red">${listOfDocsNotInUseOrphaned.size()}</td>
+                    <td class="error">- entsprechende Dateien existieren nicht</td>
+                    <td class="error">${listOfDocsNotInUseOrphaned.collect{ it.id }.join(', ')}</td>
+                    <td class="error">${listOfDocsNotInUseOrphaned.size()}</td>
                 </tr>
             </tbody>
          </table>

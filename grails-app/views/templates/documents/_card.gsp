@@ -71,26 +71,16 @@
                     <div class="ui grid summary">
                         <div class="eight wide column la-column-right-lessPadding">
 
-                            <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().contains(docctx.owner.mimeType)}" />
+                            <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}" />
                             <g:if test="${supportedMimeType}">
-                                <a href="#documentPreview" data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title}</a>
+                                <a href="#documentPreview" data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title ?: docctx.owner.filename ?: message(code:'template.documents.missing')}</a>
                             </g:if>
                             <g:else>
-                                ${docctx.owner.title}
+                                ${docctx.owner.title ?: docctx.owner.filename ?: message(code:'template.documents.missing')}
                             </g:else>
                             (${docctx.owner?.type?.getI10n("value")})
 
-%{--                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="js-no-wait-wheel la-break-all" target="_blank">--}%
-%{--                                <g:if test="${docctx.owner?.title}">--}%
-%{--                                    ${docctx.owner.title}--}%
-%{--                                </g:if>--}%
-%{--                                <g:elseif test="${docctx.owner?.filename}">--}%
-%{--                                    ${docctx.owner?.filename}--}%
-%{--                                </g:elseif>--}%
-%{--                                <g:else>--}%
-%{--                                    ${message(code:'template.documents.missing')}--}%
-%{--                                </g:else>--}%
-%{--                            </g:link>(${docctx.owner?.type?.getI10n("value")})--}%
+                            <ui:documentIcon doc="${docctx.owner}" showText="false" showTooltip="true"/>
                         </div>
                         <div class="right aligned eight wide column la-column-left-lessPadding">
                             <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
@@ -177,25 +167,6 @@
             </g:if>
         </g:each>
     </ui:card>
-
-    <laser:script file="${this.getGroovyPageFileName()}">
-        $('a[data-documentKey]').on('click', function(e) {
-            e.preventDefault();
-            let docKey = $(this).attr('data-documentKey')
-            let previewModalId = '#document-preview-' + docKey.split(':')[0]
-
-            $.ajax({
-                url: '${g.createLink(controller: 'ajaxHtml', action: 'documentPreview')}?key=' + docKey
-            }).done( function (data) {
-                $( '#dynamicModalContainer' ).html(data)
-                $( previewModalId ).modal({
-                        onVisible: function() { },
-                        onApprove: function() { return false; },
-                        onHidden:  function() { $(previewModalId).remove() }
-                }).modal('show')
-            })
-        })
-    </laser:script>
 </g:if>
 <g:if test="${sharedItems}">
     <ui:card message="license.documents.shared" class="documents la-js-hideable ${css_class}" editable="${editable}">
@@ -205,27 +176,16 @@
 
                     <div class="ui grid summary">
                         <div class="eleven wide column">
-%{--                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="js-no-wait-wheel" target="_blank">--}%
-%{--                                <g:if test="${docctx.owner?.title}">--}%
-%{--                                    ${docctx.owner.title}--}%
-%{--                                </g:if>--}%
-%{--                                <g:elseif test="${docctx.owner?.filename}">--}%
-%{--                                    ${docctx.owner.filename}--}%
-%{--                                </g:elseif>--}%
-%{--                                <g:else>--}%
-%{--                                    ${message(code:'template.documents.missing')}--}%
-%{--                                </g:else>--}%
-
-%{--                            </g:link>(${docctx.owner?.type?.getI10n("value")})--}%
-
-                            <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().contains(docctx.owner.mimeType)}" />
+                            <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}" />
                             <g:if test="${supportedMimeType}">
-                                <a href="#documentPreview" data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title}</a>
+                                <a href="#documentPreview" data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title ?: docctx.owner.filename ?: message(code:'template.documents.missing')}</a>
                             </g:if>
                             <g:else>
-                                ${docctx.owner.title}
+                                ${docctx.owner.title ?: docctx.owner.filename ?: message(code:'template.documents.missing')}
                             </g:else>
                             (${docctx.owner?.type?.getI10n("value")})
+
+                            <ui:documentIcon doc="${docctx.owner}" showText="false" showTooltip="true"/>
                         </div>
 
                         <div class="five wide right aligned column">
@@ -248,3 +208,6 @@
     </ui:card>
 </g:if>
 
+<laser:script file="${this.getGroovyPageFileName()}">
+    docs.init('#container-documents');
+</laser:script>

@@ -13,37 +13,39 @@
         <form id="filter" class="ui form">
             <div class="five fields">
                 <div class="field">
-                    <label>${message(code:'default.category.label')}</label>
+                    <label for="filter_category">${message(code:'default.category.label')}</label>
                     <g:select name="filter_category" class="ui selection dropdown liveFilter"
                               from="${SystemEvent.CATEGORY.values()}"
                               noSelection="${['' : message(code:'default.select.choose.label')]}" value="${filter_category}"
                     />
                 </div>
                 <div class="field">
-                    <label>${message(code:'default.relevance.label')}</label>
+                    <label for="filter_relevance">${message(code:'default.relevance.label')}</label>
                     <g:select name="filter_relevance" class="ui selection dropdown liveFilter"
                               from="${SystemEvent.RELEVANCE.values()}"
                               noSelection="${['' : message(code:'default.select.choose.label')]}" value="${filter_relevance}"
                     />
                 </div>
                 <div class="field">
-                    <label>${message(code:'default.source.label')}</label>
+                    <label for="filter_source">${message(code:'default.source.label')}</label>
                     <g:select name="filter_source" class="ui selection dropdown liveFilter"
                               from="${SystemEvent.getAllSources( events )}"
                               noSelection="${['' : message(code:'default.select.choose.label')]}" value="${filter_source}"
                     />
                 </div>
                 <div class="field">
-                    <label>Exclude <sup>!</sup></label>
+                    <label for="filter_exclude">Exclude <sup>!</sup></label>
                     <g:select name="filter_exclude" class="ui selection dropdown liveFilter"
                               from="${SystemEvent.getAllSources( events )}"
                               noSelection="${['' : message(code:'default.select.choose.label')]}" value="${filter_exclude}"
                     />
                 </div>
                 <div class="field">
-                    <label>Limit (Page Reload)</label>
+                    <label for="filter_limit">${message(code:'default.period.label')} (Seite lädt neu)</label>
                     <g:select name="filter_limit" class="ui selection dropdown reloadFilter la-not-clearable"
-                              from="${[100, 500, 1000, 2000, 3000, 5000, 10000]}"
+                              from="${[7, 14, 30, 90, 180]}"
+                              optionValue="${{it.toString() + ' ' + message(code:'default.day.plural')}}"
+                              optionKey="${{it}}"
                               noSelection="${['' : message(code:'default.select.choose.label')]}" value="${filter_limit}"
                     />
                 </div>
@@ -82,13 +84,13 @@
     <table class="ui sortable celled la-js-responsive-table la-table la-hover-table compact table">
         <thead>
         <tr>
-            <th>${message(code:'default.number')}</th>
-            <th>${message(code:'default.category.label')}</th>
-            <th>${message(code:'default.relevance.label')}</th>
-            <th>${message(code:'default.source.label')}</th>
-            <th>${message(code:'default.event.label')}</th>
-            <th>Payload</th>
-            <th>${message(code:'default.date.label')}</th>
+            <th scope="col" class="one wide">${message(code:'default.number')}</th>
+            <th scope="col" class="two wide">${message(code:'default.category.label')}</th>
+            <th scope="col" class="two wide">${message(code:'default.relevance.label')}</th>
+            <th scope="col" class="two wide">${message(code:'default.source.label')}</th>
+            <th scope="col" class="three wide">${message(code:'default.event.label')}</th>
+            <th scope="col" class="four wide">Payload</th>
+            <th scope="col" class="two wide">${message(code:'default.date.label')}</th>
         </tr>
         </thead>
         <tbody>
@@ -96,10 +98,10 @@
             <%
                 String tdClass = 'table-td-yoda-blue'
                 switch (el.relevance?.value?.toLowerCase()) {
-                    case 'info'     : tdClass = 'table-td-yoda-blank'; break
-                    case 'ok'       : tdClass = 'table-td-yoda-green'; break
-                    case 'warning'  : tdClass = 'table-td-yoda-yellow'; break
-                    case 'error'    : tdClass = 'table-td-yoda-red'; break
+                    case 'info'     : tdClass = ''; break
+                    case 'ok'       : tdClass = 'positive'; break
+                    case 'warning'  : tdClass = 'warning'; break
+                    case 'error'    : tdClass = 'error'; break
                 }
                 if (el.hasChanged) {
                     tdClass += ' sf_underline'
@@ -112,7 +114,7 @@
                     class="hidden"
             >
                 <td class="${tdClass}">
-                    ${i+1}.
+                    ${i+1}
                 </td>
                 <td class="${tdClass}">
                     ${el.category}

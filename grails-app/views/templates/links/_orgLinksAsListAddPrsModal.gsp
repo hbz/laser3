@@ -45,7 +45,7 @@
                     <g:if test="${PersonRole.findByPrsAndOrg(p, orgRole.org)}">
                         <tr>
                             <td>
-                                <span  class="la-popup-tooltip la-delay" data-content="${message(code:'address.private')}" data-position="top right">
+                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'address.private')}" data-position="top right">
                                     <i class="address card outline icon"></i>
                                 </span>
                                 ${p}

@@ -729,15 +729,15 @@
 
         <laser:scriptBlock/>%{-- dont move --}%
 
-        %{-- profiler, jstk --}%
+        %{-- profiler, why --}%
 
         <script data-type="fixed">
             $(document).ready(function() {
                 system.profiler("${ Profiler.generateKey( webRequest )}");
 
-                <g:if test="${Environment.isDevelopmentMode()}">
-                    jstk.go();
-                    console.log(JSPC);
+                <g:if test="${currentServer == AppUtils.LOCAL}">
+                console.log(JSPC);
+                why.tap(true);
                 </g:if>
             })
         </script>

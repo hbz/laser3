@@ -204,13 +204,11 @@
     <table class="ui celled la-js-responsive-table la-table compact table">
         <thead>
             <tr>
-                <th class="eight wide">${message(code:'workflow.label')}</th>
-                <th class="two wide">${message(code:'workflow.task.label')}</th>
-                <th class="four wide">
-                    Details
-                </th>
-                <th class="one wide"></th>
-                <th class="one wide"></th>
+                <th scope="col" class="eight wide">${message(code:'workflow.label')}</th>
+                <th scope="col" class="two wide">${message(code:'workflow.task.label')}</th>
+                <th scope="col" class="four wide">Details</th>
+                <th scope="col" class="one wide"></th>
+                <th scope="col" class="one wide"></th>
             </tr>
         </thead>
         <tbody>
@@ -249,7 +247,7 @@
                             </span>
                         </g:if>
                     </td>
-                    <td class="x">
+                    <td class="center aligned">
                         <g:if test="${! wfp.inUse()}">
                             <g:link class="ui small icon negative button la-modern-button js-open-confirm-modal"
                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.generic", args: [wfp.title])}"
@@ -281,16 +279,16 @@
     <table class="ui celled la-js-responsive-table la-table compact table">
         <thead>
             <tr>
-                <th class="eight wide">${message(code:'workflow.task.label')}</th>
-                <th class="two wide">${message(code:'workflow.condition.label')}</th>
-                <th class="two wide">Priorität</th>
-                <th class="one wide center aligned"><i class="icon angle up"></i></th>
+                <th scope="col" class="eight wide">${message(code:'workflow.task.label')}</th>
+                <th scope="col" class="two wide">${message(code:'workflow.condition.label')}</th>
+                <th scope="col" class="two wide">Priorität</th>
+                <th scope="col" class="one wide center aligned"><i class="icon angle up"></i></th>
                 %{-- <th>${message(code:'default.type.label')}</th> --}%
-                <th class="one wide center aligned"><i class="icon angle right"></i></th>
+                <th scope="col" class="one wide center aligned"><i class="icon angle right"></i></th>
 %{--                <th class="one wide">&darr;&darr;</th>--}%
-                <th class="one wide center aligned"><i class="icon angle left"></i></th>
+                <th scope="col" class="one wide center aligned"><i class="icon angle left"></i></th>
 %{--                <th class="one wide">&uarr;</th>--}%
-                <th class="one wide"></th>
+                <th scope="col" class="one wide"></th>
             </tr>
         </thead>
         <tbody>
@@ -344,7 +342,7 @@
                             </span>
                         </g:each>
                     </td>
-                    <td class="x">
+                    <td class="center aligned">
                         <g:if test="${! tp.inUse()}">
                             <g:link class="ui small icon negative button la-modern-button js-open-confirm-modal"
                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.generic", args: [tp.title])}"
@@ -376,10 +374,10 @@
     <table class="ui celled la-js-responsive-table la-table compact table">
         <thead>
         <tr>
-            <th class="eight wide">${message(code:'workflow.condition.label')}</th>
-            <th class="two wide">${message(code:'workflow.task.label')}</th>
-            <th class="five wide">${message(code:'default.type.label')}</th>
-            <th class="one wide"></th>
+            <th scope="col" class="eight wide">${message(code:'workflow.condition.label')}</th>
+            <th scope="col" class="two wide">${message(code:'workflow.task.label')}</th>
+            <th scope="col" class="five wide">${message(code:'default.type.label')}</th>
+            <th scope="col" class="one wide"></th>
         </tr>
         </thead>
         <tbody>
@@ -403,7 +401,7 @@
                     <td>
                         ${cp.getTypeAsRefdataValue().getI10n('value')}
                     </td>
-                    <td class="x">
+                    <td class="center aligned">
                         <g:if test="${! cp.inUse()}">
                             <g:link class="ui small icon negative button la-modern-button js-open-confirm-modal"
                                     data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.generic", args: [cp.title])}"

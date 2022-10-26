@@ -1,14 +1,5 @@
 package de.laser
 
-import de.laser.AuditService
-import de.laser.ContextService
-import de.laser.GenericOIDService
-import de.laser.GokbService
-import de.laser.License
-import de.laser.RefdataValue
-import de.laser.SystemService
-import de.laser.UserSetting
-import de.laser.YodaService
 import de.laser.auth.User
 import de.laser.cache.SessionCacheWrapper
 import de.laser.storage.BeanStore
@@ -33,10 +24,7 @@ class UiTagLib {
     CodecLookup codecLookup
     ContextService contextService
     GenericOIDService genericOIDService
-    GokbService gokbService
-    SystemService systemService
     TagLibraryLookup gspTagLibraryLookup
-    YodaService yodaService
 
     static namespace = 'ui'
 

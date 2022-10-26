@@ -32,7 +32,7 @@
 									<ui:simpleHiddenValue id="startA" name="startA" type="date" value="${params.startA}"/>
 									${message(code:'default.compare.restrict.before')}
 									<ui:simpleHiddenValue id="endA" name="endA" type="date" value="${params.endA}"/><br />
-									<div class="ui search selection dropdown">
+									<div class="ui search selection dropdown" id="subSelectA-wrapper">
 										<input type="hidden" name="subA" id="subSelectA" value="${subA}">
 										<i class="dropdown icon"></i>
 										<div class="default text">${message(code:'default.compare.select.first', args:[sub_message] )}</div>
@@ -44,7 +44,7 @@
 									<ui:simpleHiddenValue id="startB" name="startB" type="date" value="${params.startB}"/>
 									${message(code:'default.compare.restrict.before')}
 									<ui:simpleHiddenValue id="endB" name="endB" type="date" value="${params.endB}"/><br />
-									<div class="ui search selection dropdown">
+									<div class="ui search selection dropdown" id="subSelectB-wrapper">
 										<input type="hidden" name="subB" id="subSelectB" value="${subB}">
 										<i class="dropdown icon"></i>
 										<div class="default text">${message(code:'default.compare.select.second', args:[sub_message] )}</div>
@@ -223,7 +223,7 @@
 </g:each>
 
 		<laser:script file="${this.getGroovyPageFileName()}">
-			$("div.dropdown").dropdown({
+			$("#subSelectA-wrapper, #subSelectB-wrapper").dropdown({
 				apiSettings: {
 				    url: "${createLink([controller: "ajaxJson", action: "lookupSubscriptions"])}",
 				    cache: false

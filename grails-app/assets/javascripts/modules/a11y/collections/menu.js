@@ -3,7 +3,6 @@
 a11yMenu = {
 
     go: function () {
-        // console.log('a11yMenu.go()')
         a11yMenu.initMenue()
     },
 
@@ -41,3 +40,5 @@ a11yMenu = {
         });
     }
 }
+
+JSPC.modules.add( 'a11yMenu', a11yMenu );

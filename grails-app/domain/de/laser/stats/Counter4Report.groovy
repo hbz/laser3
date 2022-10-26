@@ -91,14 +91,14 @@ class Counter4Report extends AbstractReport {
         datasource           'storage'
         id                   column: 'c4r_id'
         version              column: 'c4r_version'
-        titleUID             column: 'c4r_title_guid', index: 'c4r_title_idx, c4r_report_when_idx'
+        titleUID             column: 'c4r_title_guid', index: 'c4r_title_idx, c4r_report_when_idx, c4r_report_per_inst_idx, c4r_title_when_idx'
         publisher            column: 'c4r_publisher', type: 'text'
-        platformUID          column: 'c4r_platform_guid', index: 'c4r_plat_idx'
-        reportInstitutionUID column: 'c4r_report_institution_guid', index: 'c4r_ri_idx, c4r_report_when_idx'
-        reportType           column: 'c4r_report_type', index: 'c4r_rt_idx, c4r_report_when_idx'
+        platformUID          column: 'c4r_platform_guid', index: 'c4r_plat_idx, c4r_title_when_idx'
+        reportInstitutionUID column: 'c4r_report_institution_guid', index: 'c4r_ri_idx, c4r_report_when_idx, c4r_report_per_inst_idx, c4r_title_when_idx'
+        reportType           column: 'c4r_report_type', index: 'c4r_rt_idx, c4r_report_when_idx, c4r_title_when_idx'
         category             column: 'c4r_category'
         metricType           column: 'c4r_metric_type', index: 'c4r_metric_type_idx, c4r_report_when_idx'
-        reportFrom           column: 'c4r_report_from', index: 'c4r_report_from_idx, c4r_report_when_idx' //for JR5, this will be the start of YOP
+        reportFrom           column: 'c4r_report_from', index: 'c4r_report_from_idx, c4r_report_when_idx, c4r_report_per_inst_idx, c4r_title_when_idx' //for JR5, this will be the start of YOP
         reportTo             column: 'c4r_report_to', index: 'c4r_report_to_idx, c4r_report_when_idx' //for JR5, this will be the end of YOP
         reportCount          column: 'c4r_report_count'
     }

@@ -72,7 +72,7 @@
                                     </td>
                                     <td>
                                         <g:if test="${pd.isUsedForLogic}">
-                                            <span class="sc_orange">${fieldValue(bean: pd, field: "name")}</span>
+                                            <span class="sc_red">${fieldValue(bean: pd, field: "name")}</span>
                                         </g:if>
                                         <g:else>
                                             ${fieldValue(bean: pd, field: "name")}

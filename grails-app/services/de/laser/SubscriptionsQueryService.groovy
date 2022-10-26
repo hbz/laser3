@@ -48,7 +48,7 @@ class SubscriptionsQueryService {
         // ORG: def base_qry = " from Subscription as s where  ( ( exists ( select o from s.orgRelations as o where ( o.roleType IN (:roleTypes) AND o.org = :activeInst ) ) ) ) AND ( s.status.value != 'Deleted' ) "
         // ORG: def qry_params = ['roleTypes':roleTypes, 'activeInst':contextOrg]
 
-        String base_qry
+        String base_qry = ''
         Map qry_params = [:]
 
         if (! params.orgRole) {

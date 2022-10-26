@@ -3,6 +3,7 @@ package de.laser
 import de.laser.config.ConfigDefaults
 import de.laser.utils.AppUtils
 import de.laser.helper.DatabaseInfo
+import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.cache.EhcacheWrapper
 import de.laser.utils.SwissKnife
@@ -37,6 +38,7 @@ import de.laser.config.ConfigMapper
 
 import java.nio.file.Files
 import java.nio.file.Path
+import java.time.LocalDate
 
 /**
  * This controller contains methods which are at least ROLE_ADMIN secured. Those are among the
@@ -80,10 +82,12 @@ class AdminController  {
                     dbmVersion : GlobalService.obtainStorageSqlConnection().firstRow('SELECT filename, id, dateexecuted from databasechangelog order by orderexecuted desc limit 1').collect { it.value }
                 ]
             ],
-            events      : SystemEvent.list([max: 15, sort: 'created', order: 'desc']),
+            events      : SystemEvent.executeQuery(
+                    'select se from SystemEvent se where se.created >= :limit order by se.created desc',
+                    [limit: DateUtils.localDateToSqlDate(LocalDate.now().minusDays(1))]
+            ),
             docStore    : AppUtils.getDocumentStorageInfo()
         ]
-
         result
     }
 
@@ -503,7 +507,8 @@ class AdminController  {
     def systemEvents() {
         Map<String, Object> result = [:]
 
-        params.filter_limit = params.filter_limit ?: 100
+        result.filter_limit = params.long('filter_limit') ?: 14
+        Date limit = DateUtils.localDateToSqlDate( LocalDate.now().minusDays(result.filter_limit as long) )
 
         if (params.filter_category) { result.put('filter_category', params.filter_category) }
         if (params.filter_relevance){ result.put('filter_relevance', params.filter_relevance) }
@@ -511,7 +516,7 @@ class AdminController  {
         if (params.filter_exclude)  { result.put('filter_exclude', params.filter_exclude) }
         if (params.filter_limit)    { result.put('filter_limit', params.filter_limit) }
 
-        result.events = SystemEvent.list([max: params.filter_limit, sort: 'created', order: 'desc'])
+        result.events = SystemEvent.executeQuery('select se from SystemEvent se where se.created >= :limit order by se.created desc', [limit: limit])
         result
     }
     

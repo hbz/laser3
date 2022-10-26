@@ -44,20 +44,21 @@ class WorkflowTagLib {
         User user           = contextService.getUser()
         String link         = g.createLink(controller: 'ajaxHtml', action: 'useWfXModal', params: attrs.params)
 
-        boolean isUser = workflow.user.id == user.id
-
-        if (isUser) {
-            //out <<  '<a href="' + link + '" class="ui icon button blue la-modern-button la-popup-tooltip la-delay wfModalLink" '
-            out <<  '<a href="' + link + '" class="ui icon button blue la-modern-button wfModalLink">'
-
-            out <<      '<i class="icon user"></i>'
-            out <<  '</a>'
+        if (workflow.user) {
+            if (workflow.user.id == user.id) {
+                out <<  '<a href="' + link + '" class="ui icon button blue la-modern-button wfModalLink"><i class="icon user"></i></a>'
+            }
+            else {
+                out <<  '<a href="' + link + '" class="ui icon button blue la-modern-button la-popup-tooltip la-delay wfModalLink" '
+                out <<          'data-position="top right" data-content="' + message(code:'workflow.user.currentUser', args: [workflow.user.displayName]) + '">'
+                out <<      '<i class="icon user outline"></i>'
+                out <<  '</a>'
+            }
         }
         else {
             out <<  '<a href="' + link + '" class="ui icon button blue la-modern-button la-popup-tooltip la-delay wfModalLink" '
-//            out <<  '<a href="' + link + '" class="ui icon button gray la-modern-button wfModalLink">'
-            out <<          'data-position="top right" data-content="' + message(code:'workflow.user.currentUser', args: [workflow.user.displayName]) + '">'
-            out <<      '<i class="icon user outline"></i>'
+            out <<          'data-position="top right" data-content="' + message(code:'workflow.user.noCurrentUser') + '">'
+            out <<      '<i class="icon users"></i>'
             out <<  '</a>'
         }
     }
@@ -170,7 +171,10 @@ class WorkflowTagLib {
                     out << (isListItem ? posMark : '') + '<i class="icon file"></i>'
                     out << (isListItem ? '<div class="middle aligned content">' : '')
                     out << pTitle + ': <a href="#documentPreview" data-documentKey="' + docctx.owner.uuid + ':' + docctx.id + '">' + linkBody + '</a> (' + docctx.owner?.type?.getI10n('value') + ')'
-                    out << ' &nbsp; [ <a href="docstore/index/' + docctx.owner.uuid + '" target="_blank">' + message(code:'template.documents.download') + '</a> ]'
+                    if (docctx.owner.confidentiality) {
+                        out << ' (' + docctx.owner.confidentiality.getI10n('value') + ')'
+                    }
+                    out << ' &nbsp; [ <a href="docstore/index/' + docctx.owner.uuid + '" target="_blank">' + message(code:'default.download.label') + '</a> ]'
 
 //                    out << pTitle + ': ' + g.link( [controller: 'docstore', id: docctx.owner.uuid], linkBody + ' (' + docctx.owner?.type?.getI10n('value') + ')')
 //                    out << ' &nbsp; <a href="docstore/index/' + docctx.owner.uuid + '" class="ui icon small blue button la-modern-button" target="_blank"><i class="download icon"></i></a>'

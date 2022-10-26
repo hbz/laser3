@@ -1,4 +1,4 @@
-<%@ page import="de.laser.survey.SurveyConfig;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;" %>
+<%@ page import="de.laser.Doc; de.laser.survey.SurveyConfig;de.laser.RefdataCategory;de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;" %>
 <laser:htmlStart text="${message(code: 'survey.label')} (${message(code: 'surveyConfigDocs.label')})" serviceInjection="true"/>
 
 <ui:breadcrumbs>
@@ -82,14 +82,14 @@
             <br /><br />
 
 
-            <table class="ui celled la-js-responsive-table la-table table license-documents">
+            <table class="ui celled la-js-responsive-table la-table table documents-table">
                 <thead>
                 <tr>
                     <th>${message(code:'sidewide.number')}</th>
                     <th>${message(code: 'default.title.label')}</th>
                     <th>${message(code: 'surveyConfigDocs.docs.table.fileName')}</th>
                     <th>${message(code: 'surveyConfigDocs.docs.table.type')}</th>
-                    <th>${message(code: 'property.share.tooltip.sharedFrom')}</th>
+                    <th>%{--${message(code: 'property.share.tooltip.sharedFrom')}--}%</th>
                     <th>${message(code: 'default.actions.label')}</th>
                 </tr>
                 </thead>
@@ -98,7 +98,14 @@
                     <tr>
                         <td>${i + 1}</td>
                         <td>
-                            ${docctx.owner.title}
+                            %{--ERMS-4524--}%
+                            <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}" />
+                            <g:if test="${docctx.owner.contentType == Doc.CONTENT_TYPE_FILE && supportedMimeType}">
+                                <a href="#documentPreview" data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title}</a>
+                            </g:if>
+                            <g:else>
+                                ${docctx.owner.title}
+                            </g:else>
                         </td>
                         <td>
                             ${docctx.owner.filename}
@@ -107,6 +114,8 @@
                             ${docctx.owner?.type?.getI10n('value')}
                         </td>
                         <td>
+                            %{--ERMS-4529--}%
+                            <ui:documentIcon doc="${docctx.owner}" showText="false" showTooltip="true"/>
                             %{--//Vorerst alle Umfrage Dokumente als geteilt nur Kennzeichen--}%
                             <span class="la-popup-tooltip la-delay" data-content="${message(code: 'property.share.tooltip.on')}">
                                 <i class="green alternate share icon"></i>
@@ -146,6 +155,10 @@
             </g:each>
         </ui:form>
     </div>
+
+    <laser:script file="${this.getGroovyPageFileName()}">
+        docs.init('.documents-table'); %{--ERMS-4524--}%
+    </laser:script>
 
 </g:if>
 

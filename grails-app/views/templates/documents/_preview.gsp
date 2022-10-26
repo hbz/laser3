@@ -3,7 +3,7 @@
 
     <g:if test="${docBase64}">
         <div style="margin-bottom:1em;">
-            <embed src="data:${doc.mimeType};base64,${docBase64}" width="100%" style="min-height:550px;border:1px solid #dedede;">
+            <embed src="data:${docDataType};base64,${docBase64}" width="100%" style="min-height:550px;border:1px solid #dedede;">
         </div>
     </g:if>
 
@@ -14,7 +14,7 @@
             </ui:msg>
         </g:if>
         <g:if test="${error}">
-            <ui:msg class="error" noClose="true">
+            <ui:msg class="error" icon="bug" noClose="true">
                 ${error}
             </ui:msg>
         </g:if>
@@ -25,6 +25,9 @@
             <div class="item"> <strong>${message(code:'license.docs.table.fileName')}:</strong> ${doc.filename} </div>
             <div class="item"> <strong>${message(code:'license.docs.table.type')}:</strong> ${doc.type.getI10n('value')} </div>
 %{--            <div class="item"> <strong>MIME-Typ:</strong> ${doc.mimeType} </div>--}%
+            <g:if test="${doc.confidentiality}">
+                <div class="item"> <strong>${message(code:'template.addDocument.confidentiality')}:</strong> ${doc.confidentiality.getI10n('value')} </div>
+            </g:if>
             <div class="item"> <strong>${message(code:'license.docs.table.creator')}:</strong> <g:link controller="org" action="show" id="${doc.owner.id}">${doc.owner}</g:link> </div>
         </div>
     </div>

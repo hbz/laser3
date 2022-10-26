@@ -1,6 +1,6 @@
 
     <div style="padding: 1em 0;">
-        <h5 class="ui red header">PERSON_ROLES</h5>
+        <h5 class="ui header">PERSON_ROLES</h5>
 
         <table class="ui celled la-js-responsive-table la-table compact table la-ignore-fixed">
             <thead>
