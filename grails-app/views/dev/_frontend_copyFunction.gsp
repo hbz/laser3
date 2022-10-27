@@ -5,7 +5,7 @@
 <div class="ui list ">
     <div class="item js-copyTriggerParent">
         <span class="js-copyTrigger js-copyTopic la-popup-tooltip la-delay"
-              data-position="top center" data-content="Klicke, um zu kopieren">
+              data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}">
             <i class="ui icon envelope outline la-list-icon la-js-copyTriggerIcon"></i>
             mailto:example@example.de
         </span>
@@ -15,7 +15,7 @@
 <div class="ui list ">
     <div class="item js-copyTriggerParent">
         <span class="ui small basic image label js-copyTrigger js-copyTopic la-popup-tooltip la-delay"
-              data-position="top center" data-content="Klicke, um zu kopieren">
+              data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}">
             <i class="la-copy icon la-js-copyTriggerIcon"></i>
 
             zdb: <div class="detail">2756942-1</div>
@@ -23,7 +23,7 @@
     </div>
     <div class="item js-copyTriggerParent">
         <span class="ui small basic image label js-copyTrigger js-copyTopic la-popup-tooltip la-delay"
-              data-position="top center" data-content="Klicke, um zu kopieren">
+              data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}">
             <i class="la-copy icon la-js-copyTriggerIcon"></i>
 
             zdb: <div class="detail">123456</div>
