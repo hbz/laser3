@@ -17,12 +17,12 @@
 
         <div class="control-group">
             <div class="field">
-                <label>User to Keep</label>
+                <label for="userToKeep">User to Keep</label>
                 <g:select name="userToKeep" from="${usersActive}" optionKey="id"
                     optionValue="${{it.displayName + ' ( ' + it.id +' )'}}" noSelection="${['null':'-Choose user to keep-']}" />
             </div>
             <div class="field">
-                <label> User to Merge</label>
+                <label for="userToMerge">User to Merge</label>
                 <g:select name="userToMerge" from="${usersAll}" optionKey="id"
                     optionValue="${{it.displayName + ' ( ' + it.id +' )'}}" noSelection="${['null':'-Choose user to merge-']}"/>
             </div>

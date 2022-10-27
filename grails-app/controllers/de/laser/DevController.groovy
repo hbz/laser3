@@ -21,6 +21,15 @@ class DevController  {
     }
 
     /**
+     * @return the frontend view with sample area for frontend developing and showcase
+     */
+    @Secured(['ROLE_ADMIN'])
+    def klodav() {
+        Map<String, Object> result = [user: contextService.getUser(), institution: contextService.getOrg()]
+        result
+    }
+
+    /**
      * JavaScript call area
      */
     @Secured(['ROLE_ADMIN'])

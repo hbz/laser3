@@ -97,7 +97,7 @@ dependencies {
     implementation 'org.grails.plugins:async'
     implementation 'org.grails.plugins:scaffolding'
     implementation 'org.grails.plugins:events'
-    implementation 'org.grails.plugins:hibernate5:7.3.0'
+    implementation 'org.grails.plugins:hibernate5'
     implementation 'org.grails.plugins:gsp'
 
     implementation 'io.micronaut:micronaut-http-client'
