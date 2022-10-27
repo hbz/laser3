@@ -405,7 +405,7 @@
                                                         var="id">
                                                     <div class="item js-copyTriggerParent">
                                                        <span class="ui small basic image label js-copyTrigger js-copyTopic la-popup-tooltip la-delay"
-                                                             data-position="top center" data-content="Klicke, um zu kopieren">
+                                                             data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}">
                                                            <i class="la-copy icon la-js-copyTriggerIcon" aria-hidden="true"></i>
                                                         ${id.ns.ns}: <div class="detail">${id.value}</div>
                                                     </span>
