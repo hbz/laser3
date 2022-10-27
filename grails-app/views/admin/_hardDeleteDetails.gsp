@@ -36,11 +36,11 @@
               </td>
               <td>
               <g:if test="${conflict_item.action.actionRequired}">
-                  <i class="icon times circle sc_red"></i>
+                  <i class="icon times circle red"></i>
                   <g:set var="actions_needed" value="true"/>
               </g:if>
               <g:else>
-                <i class="icon check circle sc_green"></i>
+                <i class="icon check circle green"></i>
               </g:else>
                  ${conflict_item.action.text}				
               </td>
