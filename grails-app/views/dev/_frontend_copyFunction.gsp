@@ -2,25 +2,31 @@
 </h2>
 
 
-<div class="ui js-copyTriggerParent item contact-details" style="display: flex;">
-    <div style="display: flex">
-        <i class="ui icon envelope outline la-list-icon la-js-copyTriggerIcon"></i>
-
-        <div class="content la-space-right js-copyTrigger la-popup-tooltip la-delay" data-position="top center"
-             data-content="Klicke, um zu kopieren">
-            <span class="js-copyTopic">mailto:example@example.de</span>
-        </div>
+<div class="ui list ">
+    <div class="item js-copyTriggerParent">
+        <span class="js-copyTrigger js-copyTopic la-popup-tooltip la-delay"
+              data-position="top center" data-content="Klicke, um zu kopieren">
+            <i class="ui icon envelope outline la-list-icon la-js-copyTriggerIcon"></i>
+            mailto:example@example.de
+        </span>
     </div>
 </div>
 
-
-<div class="ui list js-copyTriggerParent">
-    <div class="item">
+<div class="ui list ">
+    <div class="item js-copyTriggerParent">
         <span class="ui small basic image label js-copyTrigger js-copyTopic la-popup-tooltip la-delay"
               data-position="top center" data-content="Klicke, um zu kopieren">
             <i class="la-copy icon la-js-copyTriggerIcon"></i>
 
             zdb: <div class="detail">2756942-1</div>
+        </span>
+    </div>
+    <div class="item js-copyTriggerParent">
+        <span class="ui small basic image label js-copyTrigger js-copyTopic la-popup-tooltip la-delay"
+              data-position="top center" data-content="Klicke, um zu kopieren">
+            <i class="la-copy icon la-js-copyTriggerIcon"></i>
+
+            zdb: <div class="detail">123456</div>
         </span>
     </div>
 </div>
@@ -40,8 +46,8 @@
 <div class="annotation transition visible">
     <div class="ui instructive bottom attached segment">
         <pre aria-hidden="true">
-            &lt;div class="ui list <strong>js-copyTriggerParent</strong>">
-                &lt;div class="item">
+            &lt;div class="ui list">
+                &lt;div class="item <strong>js-copyTriggerParent</strong>">
                     &lt;span class="ui small basic image label <strong>js-copyTrigger js-copyTopic</strong> la-popup-tooltip la-delay"
                           data-position="top center" data-content="Klicke, um zu kopieren">
                         &lt;i class="la-copy icon <strong>la-js-copyTriggerIcon</strong>" aria-hidden="true">&lt;/i>
