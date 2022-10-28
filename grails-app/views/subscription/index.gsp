@@ -207,7 +207,7 @@
                     <g:hiddenField name="${key}" value="${params[key]}"/>
                 </g:each>
 
-                <g:if test="${entitlements}">
+%{--                <g:if test="${entitlements}">
                     <div class="ui fluid card">
                         <div class="content">
                             <div class="ui accordion la-accordion-showMore">
@@ -344,16 +344,6 @@
                                                 <div class="four wide column">
                                                     <div class="ui list">
                                                         <div class="item">
-                                                            <span class="ui small basic  image label">
-                                                                herdt: <div class="detail">AC34534541</div>
-                                                            </span>
-                                                            <span class="ui small basic  image label">
-                                                                pisbn: <div
-                                                                    class="detail">9354345345-3453453452</div>
-                                                            </span>
-                                                        </div>
-
-                                                        <div class="item">
                                                             <i class="icon user circle"></i>
 
                                                             <div class="content">
@@ -472,18 +462,40 @@
                                                 <div class="four wide column">
                                                     <div class="ui inverted segment">
                                                         <div class="ui inverted list">
-                                                            <div class="item">
-                                                                <i class=" save icon la-popup-tooltip la-delay"
-                                                                   data-content="Dauerhafter Kauf"
-                                                                   aria-label="Dauerhafter Kauf"
-                                                                   aria-hidden="true" data-jstk-id="jstk-1221"></i>
+
+
+                                                            <g:if test="${ie}">
+                                                                <div class="item">
+                                                                    <i class="save icon la-popup-tooltip la-delay"
+                                                                       data-content="${message(code: 'issueEntitlement.perpetualAccessBySub.label')}"></i>
 
                                                                 <div class="content">
-                                                                    <div class="header">Dauerhafter Zugriff</div>
-
-                                                                    <div class="description">nein</div>
+                                                                    <div class="header">
+                                                                        ${showCompact ? '' : message(code: 'issueEntitlement.perpetualAccessBySub.label') + ':'}
+                                                                    </div>
+                                                                    <div class="description">
+                                                                        --}%%{--newSub come only from Workflow Survey with IEs--}%%{--
+                                                                        <g:if test="${newSub}">
+                                                                            <g:if test="${participantPerpetualAccessToTitle}">
+                                                                                ${RDStore.YN_YES.getI10n('value')}
+                                                                            </g:if>
+                                                                            <g:else>
+                                                                                ${RDStore.YN_NO.getI10n('value')}
+                                                                            </g:else>
+                                                                        </g:if>
+                                                                        <g:else>
+                                                                            <%
+                                                                                if (ie.perpetualAccessBySub) {
+                                                                                    println g.link([action: 'index', controller: 'subscription', id: ie.perpetualAccessBySub.id], "${RDStore.YN_YES.getI10n('value')}: ${ie.perpetualAccessBySub.dropdownNamingConvention()}")
+                                                                                } else {
+                                                                                    println RDStore.YN_NO.getI10n('value')
+                                                                                }
+                                                                            %>
+                                                                        </g:else>
+                                                                    </div>
+                                                                    </div>
                                                                 </div>
-                                                            </div>
+                                                            </g:if>
 
                                                             <div class="item">
                                                                 <i class="money icon la-popup-tooltip la-delay"></i>
@@ -491,8 +503,7 @@
                                                                 <div class="content">
                                                                     <div class="header">Mein verhandelter Preis:</div>
 
-                                                                    <div class="description">2232 Euro<div>
-                                                                    </div>
+                                                                    <div class="description">2232 Euro<div>/div>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -506,7 +517,7 @@
                             </div>
                         </div>
                     </div>
-                </g:if>
+                </g:if>--}%
 
                 <table class="ui sortable celled la-js-responsive-table la-table table la-ignore-fixed la-bulk-header">
                     <thead>

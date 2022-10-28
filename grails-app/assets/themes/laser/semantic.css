@@ -44603,7 +44603,7 @@ ol.ui.list ol li,
 
 .ui.inverted.list .list > a.item > i.icon,
 .ui.inverted.list > a.item > i.icon {
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255);
 }
 
 .ui.inverted.list .list > .item .header,
@@ -44613,12 +44613,12 @@ ol.ui.list ol li,
 
 .ui.inverted.list .list > .item .description,
 .ui.inverted.list > .item .description {
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255);
 }
 
 .ui.inverted.list .list > .item > .content,
 .ui.inverted.list > .item > .content {
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255);
 }
 
 /* Item Link */
@@ -44626,7 +44626,7 @@ ol.ui.list ol li,
 .ui.inverted.list .list > a.item,
 .ui.inverted.list > a.item {
   cursor: pointer;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255);
 }
 
 .ui.inverted.list .list > a.item:hover,
@@ -44637,7 +44637,7 @@ ol.ui.list ol li,
 /* Linking Content */
 
 .ui.inverted.list .item a:not(.ui) {
-  color: rgba(255, 255, 255, 0.5) !important;
+  color: rgba(255, 255, 255) !important;
 }
 
 .ui.inverted.list .item a:not(.ui):hover {
@@ -44930,7 +44930,7 @@ ol.ui.list li:before,
 ol.ui.inverted.list li:before,
 .ui.ordered.inverted.list .list > .item:before,
 .ui.ordered.inverted.list > .item:before {
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255);
 }
 
 /* Value */
@@ -49336,7 +49336,7 @@ span.ui.massive.text {
 }
 
 .ui.inverted.breadcrumb > .divider {
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255);
 }
 
 /*******************************
@@ -55079,7 +55079,7 @@ Floated Menu / Item
 
 .ui.secondary.inverted.menu .link.item:not(.disabled),
 .ui.secondary.inverted.menu a.item:not(.disabled) {
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255);
 }
 
 .ui.secondary.inverted.menu .dropdown.item:hover,
@@ -62489,12 +62489,12 @@ a.ui.card:hover,
 
 .ui.inverted.cards > .card .meta,
 .ui.inverted.card .meta {
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255);
 }
 
 .ui.inverted.cards > .card .meta > a:not(.ui),
 .ui.inverted.card .meta > a:not(.ui) {
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255);
 }
 
 .ui.inverted.cards > .card .meta > a:not(.ui):hover,
@@ -62507,7 +62507,7 @@ a.ui.card:hover,
 .ui.inverted.cards > .card > .extra,
 .ui.inverted.card > .extra {
   border-top: 1px solid rgba(255, 255, 255, 0.15) !important;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255);
 }
 
 .ui.inverted.cards > .card > .extra a:not(.ui),
@@ -63058,7 +63058,7 @@ a.inverted.ui.card:hover,
 
 .ui.inverted.comments .comment .metadata,
 .ui.inverted.comments .comment .actions a {
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255);
 }
 
 .ui.inverted.comments .comment a.author:hover,
@@ -63411,7 +63411,7 @@ a.inverted.ui.card:hover,
 
 .ui.inverted.feed > .event > .content .date,
 .ui.inverted.feed > .event > .content .meta .like {
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255);
 }
 
 .ui.inverted.feed > .event > .content .summary,
@@ -64023,7 +64023,7 @@ a.inverted.ui.card:hover,
 }
 
 .ui.inverted.items > .item .meta > a:not(.ui) {
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255);
 }
 
 .ui.inverted.items > .item .meta > a:not(.ui):hover {
@@ -64047,7 +64047,7 @@ a.inverted.ui.card:hover,
 }
 
 .ui.inverted.items > .item .extra {
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255);
 }
 
 .ui.inverted.items a.item:hover .content .header,
@@ -65909,7 +65909,7 @@ a.inverted.ui.card:hover,
 /* Slider Hover */
 
 .ui.inverted.slider.checkbox label:hover::before {
-  background: rgba(255, 255, 255, 0.7) !important;
+  background: rgba(255, 255, 255) !important;
 }
 
 /* Slider Active */
@@ -69000,7 +69000,7 @@ select.ui.dropdown {
 
 .ui.inverted.dropdown:not(.button) > input:focus ~ .default.text,
 .ui.inverted.default.dropdown:not(.button) > input:focus ~ .text {
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255);
 }
 
 .ui.inverted.active.search.dropdown input.search:focus + .text i.icon,
@@ -69009,7 +69009,7 @@ select.ui.dropdown {
 }
 
 .ui.inverted.active.search.dropdown input.search:focus + .text {
-  color: rgba(255, 255, 255, 0.7) !important;
+  color: rgba(255, 255, 255) !important;
 }
 
 .ui.dropdown .inverted.menu > .message:not(.ui),
@@ -71613,7 +71613,7 @@ a.ui.nag {
   right: 0.5em;
   left: auto;
   bottom: auto;
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255);
   text-shadow: none;
   margin-top: -0.5em;
   font-weight: bold;
@@ -72372,7 +72372,7 @@ a.ui.nag {
 
 .ui.inverted.sliding.indeterminate.progress .bar .progress,
 .ui.inverted.swinging.indeterminate.progress .bar .progress {
-  color: rgba(255, 255, 255, 0.7);
+  color: rgba(255, 255, 255);
 }
 
 @-webkit-keyframes progress-swinging {
