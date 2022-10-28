@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4562    27.10.2022  dev     3.0         David   Feature     Dashboard: Workflow Nachbesserung
+
 4556    25.10.2022  dev     3.0         David   Bug         Javascript-Probleme: Tooltip-Events
 
 4521    20.10.2022  dev     3.0         David   Feature     Workflow: Alert-Funktion mit Zuweisung an Mitarbeiter oder alle

@@ -253,16 +253,19 @@
         <g:if test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
             <div class="ui bottom attached tab ${us_dashboard_tab.value == 'Workflows' ? 'active':''}" data-tab="workflows">
 
-                <g:if test="${Math.max(myWorkflowsCount, allWorkflowsCount) > user.getPageSizeOrDefault()}">
+                <g:if test="${myWorkflows || allWorkflows}">
                     <ui:msg class="info" noClose="true">
-                        ${message(code:'workflow.dashboard.msg.more', args:[user.getPageSizeOrDefault(), g.createLink(controller:'myInstitution', action:'currentWorkflows', params:[filter:'reset', max:500]) ])}
-                        <br />
+                        <g:if test="${Math.max(myWorkflowsCount, allWorkflowsCount) > user.getPageSizeOrDefault()}">
+                            ${message(code:'workflow.dashboard.msg.more', args:[user.getPageSizeOrDefault(), g.createLink(controller:'myInstitution', action:'currentWorkflows', params:[filter:'reset', max:500]) ])}
+                            <br />
+                        </g:if>
                         ${message(code:'workflow.dashboard.msg.new', args:[message(code:'profile.itemsTimeWindow'), user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14)])}
                     </ui:msg>
                 </g:if>
 
                 <g:each in="${[myWorkflows, allWorkflows]}" var="currentWorkflows">
 
+                    <g:if test="${currentWorkflows}">
                     <table class="ui celled table la-js-responsive-table la-table">
                         <thead>
                             <tr>
@@ -349,6 +352,7 @@
                             </g:each>
                         </tbody>
                     </table>
+                    </g:if>
 
                 </g:each>
             </div>

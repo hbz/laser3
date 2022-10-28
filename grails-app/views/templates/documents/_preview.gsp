@@ -9,12 +9,12 @@
 
     <div>
         <g:if test="${info}">
-            <ui:msg class="info" noClose="true">
+            <ui:msg class="info" icon="robot" noClose="true">
                 ${info}
             </ui:msg>
         </g:if>
         <g:if test="${error}">
-            <ui:msg class="error" icon="bug" noClose="true">
+            <ui:msg class="error" icon="robot" noClose="true">
                 ${error}
             </ui:msg>
         </g:if>
