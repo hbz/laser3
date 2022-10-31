@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4365    31.10.2022  dev     3.0         Moe     Feature     In Kindlizenz einen Sprunklink auf Einrichtungsprofil einbauen
+
 4562    27.10.2022  dev     3.0         David   Feature     Dashboard: Workflow Nachbesserung
 
 4556    25.10.2022  dev     3.0         David   Bug         Javascript-Probleme: Tooltip-Events
