@@ -171,6 +171,7 @@ class SurveyController {
             response.outputStream.flush()
             response.outputStream.close()
             wb.dispose()
+            return
 
         }else {
             prf.setBenchmark("before surveysCount")
@@ -241,6 +242,7 @@ class SurveyController {
             response.outputStream.flush()
             response.outputStream.close()
             wb.dispose()
+            return
 
         }else {
             result.surveysCount = SurveyInfo.executeQuery(fsq.query, fsq.queryParams).size()
@@ -859,6 +861,7 @@ class SurveyController {
             response.outputStream.flush()
             response.outputStream.close()
             wb.dispose()
+            return
         }else {
             result
         }
@@ -1387,6 +1390,7 @@ class SurveyController {
             response.outputStream.flush()
             response.outputStream.close()
             wb.dispose()
+            return
         }else if (params.exportClickMeExcel) {
             try {
                 String message = g.message(code: 'renewalexport.renewals')
@@ -1414,6 +1418,7 @@ class SurveyController {
                 response.outputStream.flush()
                 response.outputStream.close()
                 wb.dispose()
+                return
             }
             catch (Exception e) {
                 log.error("Problem", e);
@@ -1810,6 +1815,7 @@ class SurveyController {
             response.outputStream.flush()
             response.outputStream.close()
             workbook.dispose()
+            return
         }
         else {
             withFormat {
@@ -3069,6 +3075,7 @@ class SurveyController {
                     response.outputStream.flush()
                     response.outputStream.close()
                     wb.dispose()
+                    return
                 }
                 catch (Exception e) {
                     log.error("Problem", e);
@@ -3542,6 +3549,7 @@ class SurveyController {
             response.outputStream.flush()
             response.outputStream.close()
             wb.dispose()
+            return
         } else {
             redirect(uri: request.getHeader('referer'))
         }

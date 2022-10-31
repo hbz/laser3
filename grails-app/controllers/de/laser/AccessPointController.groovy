@@ -271,6 +271,7 @@ class AccessPointController  {
             response.outputStream.flush()
             response.outputStream.close()
             wb.dispose()
+            return
         }
         else {
             Boolean autofocus = (params.autofocus) ? true : false
