@@ -7,6 +7,9 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+
+4480    31.10.2022  dev     3.0         Moe     Bug         Verlängerungsumfrage: Merkmale nur wenn befüllt mitnehmen
+
 4335    31.10.2022  dev     3.0         Moe     Bug         return bei Exports einbauen
 
 4365    31.10.2022  dev     3.0         Moe     Feature     In Kindlizenz einen Sprunklink auf Einrichtungsprofil einbauen
