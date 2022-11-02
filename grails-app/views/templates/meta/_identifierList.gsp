@@ -61,7 +61,6 @@
                                    href="${wekbAPI.editUrl ? wekbAPI.editUrl + '/public/platformContent/' + ident : '#'}"><i
                                         title="${wekbAPI.name} Link" class="external alternate icon"></i></a>
                             </g:elseif>
-                            ääääää
                         </g:if>
                     </g:else>
                 </div>
