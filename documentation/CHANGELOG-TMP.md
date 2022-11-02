@@ -16,13 +16,27 @@
 
 4562    27.10.2022  dev     3.0         David   Feature     Dashboard: Workflow Nachbesserung
 
+4555    28.10.2022  rc-2.3  2.3.11      Moe     Bug         500er Anmerkungen-Reiter in Kindlizenz28.10.2022
+
 4556    25.10.2022  dev     3.0         David   Bug         Javascript-Probleme: Tooltip-Events
+
+4502    25.10.2022  rc-2.3  2.3.11      Moe     Bug         Timeout bei Übertrag von Lizenzumfragen
+
+4553    20.10.2022  rc-2.3  2.3.10      Andreas Bug         Abfragefehler in "Meine Einrichtungen" behoben
 
 4521    20.10.2022  dev     3.0         David   Feature     Workflow: Alert-Funktion mit Zuweisung an Mitarbeiter oder alle
 
+--      19.10.2022  rc-2.3  2.3.10      Andreas Bug         zahlreiche Bugs im Sync behoben
+
+--      17.10.2022  rc-2.3  2.3.10      Andreas Bug         Zählung der Kosten korrigiert
+
 4529    14.10.2022  dev     3.0         David   Feature     Labels für Dokumente
 
+4548    13.10.2022  rc-2.3  2.3.10      Andreas Bug         500er beim KBART-Export behoben
+
 4524    11.10.2022  dev     3.0         David   Feature     View-Sicht für Dokumente
+
+--      10.10.2022  rc-2.3  2.3.10      Andreas Bug         Löschkaskade behoben
 
 4540    07.10.2022  dev     3.0         David   Bug         Pagination - Javascript fehlerhaft
 
@@ -41,6 +55,8 @@
 4504    05.10.2022  dev     3.0         Andreas Feature     Bereinigung und Validierung von WIBIDs, Entfernen von Dubletten bei VAT und WIBID
 
 4512    30.09.2022  dev     3.0         David   Feature     Erstellen eines Workflows: Name und Label
+
+--      30.09.2022  rc-2.3  2.3.10      Andreas Bug         weitere Titelsynchronisationsfehler beseitigt
 
 4514    30.09.2022  dev     3.0         David   Feature     Workflow: Stift-Icon vereinheitlichen
 

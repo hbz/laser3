@@ -173,8 +173,8 @@ r2d2 = {
             $temp.remove();
         });
         $('.js-copyTrigger').hover(
-            function(){ $('.la-js-copyTriggerIcon').addClass('open') },
-            function(){ $('.la-js-copyTriggerIcon').removeClass('open') }
+            function(){ $(this).find('.la-js-copyTriggerIcon').addClass('open') },
+            function(){ $(this).find('.la-js-copyTriggerIcon').removeClass('open') }
         )
 
         $('.js-linkGoogle').hover(

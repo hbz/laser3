@@ -932,17 +932,17 @@ class PendingChangeService extends AbstractLockableService {
             List pendingTitleCounts = [], pendingCoverageCounts = []
             if(PendingChangeConfiguration.NEW_TITLE in settings) {
                 //if(params.eventType == PendingChangeConfiguration.NEW_TITLE)
-                pendingTitleCounts.addAll(PendingChange.executeQuery('select count(pc.id), pc.msgToken from PendingChange pc join pc.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken in (:eventTypes) and not exists (select pca.id from PendingChange pca join pca.tipp tippA where tippA = pc.tipp and pca.oid = :subOid and pca.status in (:pendingStatus)) and pc.status = :packageHistory group by pc.msgToken, pc.tipp', [package: sp.pkg, entryDate: sp.dateCreated, eventTypes: [PendingChangeConfiguration.NEW_TITLE, PendingChangeConfiguration.TITLE_DELETED], subOid: genericOIDService.getOID(sp.subscription), pendingStatus: pendingStatus, packageHistory: RDStore.PENDING_CHANGE_HISTORY]))
+                pendingTitleCounts.addAll(PendingChange.executeQuery('select count(pc.id), pc.msgToken from PendingChange pc join pc.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and pc.tipp.status != :removed and (not exists (select pca.id from PendingChange pca join pca.tipp tippA where tippA = pc.tipp and pca.oid = :subOid and pca.status in (:pendingStatus)) and not exists (select ie.id from IssueEntitlement ie where ie.tipp = pc.tipp and ie.status != :removed and ie.subscription = :subscription)) and pc.status = :packageHistory group by pc.msgToken, pc.tipp', [package: sp.pkg, entryDate: sp.dateCreated, eventType: PendingChangeConfiguration.NEW_TITLE, subOid: genericOIDService.getOID(sp.subscription), pendingStatus: pendingStatus, removed: RDStore.TIPP_STATUS_REMOVED, subscription: sp.subscription, packageHistory: RDStore.PENDING_CHANGE_HISTORY]))
             }
-            else if(PendingChangeConfiguration.TITLE_UPDATED in settings) {
+            if(PendingChangeConfiguration.TITLE_UPDATED in settings) {
                 //else if(params.eventType == PendingChangeConfiguration.TITLE_UPDATED)
-                pendingTitleCounts.addAll(PendingChange.executeQuery('select count(pc.id), pc.msgToken from PendingChange pc join pc.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and not exists (select pca.id from PendingChange pca join pca.tipp tippA where tippA = pc.tipp and pca.oid = :subOid and pca.newValue = pc.newValue and pca.status in (:pendingStatus)) and exists(select ie.id from IssueEntitlement ie where ie.tipp = pc.tipp and ie.status != :removed and ie.subscription = :subscription) and pc.status = :packageHistory group by pc.msgToken', [package: sp.pkg, entryDate: sp.dateCreated, eventType: PendingChangeConfiguration.TITLE_UPDATED, subOid: genericOIDService.getOID(sp.subscription), pendingStatus: pendingStatus, removed: RDStore.TIPP_STATUS_REMOVED, subscription: sp.subscription, packageHistory: RDStore.PENDING_CHANGE_HISTORY]))
+                pendingTitleCounts.addAll(PendingChange.executeQuery('select count(pc.id), pc.msgToken from PendingChange pc join pc.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and pc.tipp.status != :removed and not exists (select pca.id from PendingChange pca join pca.tipp tippA where tippA = pc.tipp and pca.oid = :subOid and (pca.newValue = pc.newValue or (pca.newValue is null and pc.newValue is null)) and pca.status in (:pendingStatus)) and pc.status = :packageHistory group by pc.msgToken', [package: sp.pkg, entryDate: sp.dateCreated, eventType: PendingChangeConfiguration.TITLE_UPDATED, subOid: genericOIDService.getOID(sp.subscription), pendingStatus: pendingStatus, removed: RDStore.TIPP_STATUS_REMOVED, packageHistory: RDStore.PENDING_CHANGE_HISTORY]))
             }
-            else if(PendingChangeConfiguration.TITLE_DELETED in settings) {
+            if(PendingChangeConfiguration.TITLE_DELETED in settings) {
                 //else if(params.eventType == PendingChangeConfiguration.TITLE_DELETED)
-                pendingTitleCounts.addAll(PendingChange.executeQuery('select count(pc.id), pc.msgToken from PendingChange pc join pc.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and not exists (select pca.id from PendingChange pca join pca.tipp tippA where tippA = pc.tipp and pca.oid = :subOid and pca.newValue = pc.newValue and pca.status in (:pendingStatus)) and exists(select ie.id from IssueEntitlement ie where ie.tipp = pc.tipp and ie.status != :removed and ie.subscription = :subscription) and pc.status = :packageHistory group by pc.msgToken', [package: sp.pkg, entryDate: sp.dateCreated, eventType: PendingChangeConfiguration.TITLE_DELETED, subOid: genericOIDService.getOID(sp.subscription), pendingStatus: pendingStatus, removed: RDStore.TIPP_STATUS_REMOVED, subscription: sp.subscription, packageHistory: RDStore.PENDING_CHANGE_HISTORY]))
+                pendingTitleCounts.addAll(PendingChange.executeQuery('select count(pc.id), pc.msgToken from PendingChange pc join pc.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and pc.tipp.status != :removed and not exists (select pca.id from PendingChange pca join pca.tipp tippA where tippA = pc.tipp and pca.oid = :subOid and pca.status in (:pendingStatus)) and exists(select ie.id from IssueEntitlement ie where ie.tipp = pc.tipp and ie.status not in (:deleted) and ie.subscription = :subscription) and pc.status = :packageHistory group by pc.msgToken', [package: sp.pkg, entryDate: sp.dateCreated, eventType: PendingChangeConfiguration.TITLE_DELETED, subOid: genericOIDService.getOID(sp.subscription), pendingStatus: pendingStatus, removed: RDStore.TIPP_STATUS_REMOVED, deleted: [RDStore.TIPP_STATUS_REMOVED, RDStore.TIPP_STATUS_DELETED], subscription: sp.subscription, packageHistory: RDStore.PENDING_CHANGE_HISTORY]))
             }
-            else if(PendingChangeConfiguration.TITLE_REMOVED in settings) {
+            if(PendingChangeConfiguration.TITLE_REMOVED in settings) {
                 //else if(params.eventType == PendingChangeConfiguration.TITLE_REMOVED)
                 pendingTitleCounts.addAll(PendingChange.executeQuery('select count(pc.id), pc.msgToken from PendingChange pc join pc.tipp tipp where tipp in (select ie.tipp from IssueEntitlement ie where ie.subscription = :sub and ie.status != :removed) and tipp.pkg = :pkg and pc.msgToken = :eventType group by pc.msgToken', [sub: sp.subscription, pkg: sp.pkg, removed: RDStore.TIPP_STATUS_REMOVED, eventType: PendingChangeConfiguration.TITLE_REMOVED]))
             }
@@ -950,11 +950,11 @@ class PendingChangeService extends AbstractLockableService {
             //String query2b
             if(PendingChangeConfiguration.NEW_COVERAGE in settings || PendingChangeConfiguration.COVERAGE_DELETED in settings) {
                 //if(params.eventType in [PendingChangeConfiguration.NEW_COVERAGE, PendingChangeConfiguration.COVERAGE_DELETED])
-                pendingCoverageCounts.addAll(PendingChange.executeQuery('select count(pc.id), pc.msgToken from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken in (:eventTypes) and not exists (select pca.id from PendingChange pca join pca.tippCoverage tcA where tcA = pc.tippCoverage and pca.oid = :subOid and pc.status in (:pendingStatus)) and exists(select ie.id from IssueEntitlement ie where ie.tipp = pc.tipp and ie.status != :removed and ie.subscription = :subscription) and pc.status = :packageHistory group by pc.msgToken', [package: sp.pkg, entryDate: sp.dateCreated, eventTypes: [PendingChangeConfiguration.NEW_COVERAGE, PendingChangeConfiguration.COVERAGE_DELETED], subOid: genericOIDService.getOID(sp.subscription), pendingStatus: pendingStatus, removed: RDStore.TIPP_STATUS_REMOVED, subscription: sp.subscription, packageHistory: RDStore.PENDING_CHANGE_HISTORY]))
+                pendingCoverageCounts.addAll(PendingChange.executeQuery('select count(pc.id), pc.msgToken from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken in (:eventTypes) and pc.tipp.status != :removed and not exists (select pca.id from PendingChange pca join pca.tippCoverage tcA where tcA = pc.tippCoverage and pca.oid = :subOid and pc.status in (:pendingStatus)) and exists(select ie.id from IssueEntitlement ie where ie.tipp = pc.tipp and ie.status != :removed and ie.subscription = :subscription) and pc.status = :packageHistory group by pc.msgToken', [package: sp.pkg, entryDate: sp.dateCreated, eventTypes: [PendingChangeConfiguration.NEW_COVERAGE, PendingChangeConfiguration.COVERAGE_DELETED], subOid: genericOIDService.getOID(sp.subscription), pendingStatus: pendingStatus, removed: RDStore.TIPP_STATUS_REMOVED, subscription: sp.subscription, packageHistory: RDStore.PENDING_CHANGE_HISTORY]))
             }
-            else if(PendingChangeConfiguration.COVERAGE_UPDATED in settings) {
+            if(PendingChangeConfiguration.COVERAGE_UPDATED in settings) {
                 //else if(params.eventType == PendingChangeConfiguration.COVERAGE_UPDATED)
-                pendingCoverageCounts.addAll(PendingChange.executeQuery('select count(pc.id), pc.msgToken from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and not exists (select pca.id from PendingChange pca join pca.tippCoverage tcA where tcA = pc.tippCoverage and pca.oid = :subOid and pca.newValue = pc.newValue and pca.status in (:pendingStatus)) and exists(select ie.id from IssueEntitlement ie where ie.tipp = pc.tipp and ie.status != :removed and ie.subscription = :subscription) and pc.status = :packageHistory group by pc.msgToken', [package: sp.pkg, entryDate: sp.dateCreated, eventType: PendingChangeConfiguration.COVERAGE_UPDATED, subOid: genericOIDService.getOID(sp.subscription), pendingStatus: pendingStatus, removed: RDStore.TIPP_STATUS_REMOVED, subscription: sp.subscription, packageHistory: RDStore.PENDING_CHANGE_HISTORY]))
+                pendingCoverageCounts.addAll(PendingChange.executeQuery('select count(pc.id), pc.msgToken from PendingChange pc join pc.tippCoverage.tipp.pkg pkg where pkg = :package and pc.ts >= :entryDate and pc.msgToken = :eventType and pc.tipp.status != :removed and not exists (select pca.id from PendingChange pca join pca.tippCoverage tcA where tcA = pc.tippCoverage and pca.oid = :subOid and pca.newValue = pc.newValue and pca.status in (:pendingStatus)) and exists(select ie.id from IssueEntitlement ie where ie.tipp = pc.tipp and ie.status != :removed and ie.subscription = :subscription) and pc.status = :packageHistory group by pc.msgToken', [package: sp.pkg, entryDate: sp.dateCreated, eventType: PendingChangeConfiguration.COVERAGE_UPDATED, subOid: genericOIDService.getOID(sp.subscription), pendingStatus: pendingStatus, removed: RDStore.TIPP_STATUS_REMOVED, subscription: sp.subscription, packageHistory: RDStore.PENDING_CHANGE_HISTORY]))
             }
             acceptedTitleCounts.each { row ->
                 switch(row[1]) {
@@ -1074,15 +1074,29 @@ class PendingChangeService extends AbstractLockableService {
                     targetTitle = (IssueEntitlement) target
                 }
                 else if(target instanceof Subscription) {
-                    targetTitle = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :target and ie.tipp = :tipp and ie.status != :ieStatus',[target:target,tipp:pc.tipp,ieStatus:RDStore.TIPP_STATUS_REMOVED])[0]
+                    Set<IssueEntitlement> titleCandidates = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :target and ie.tipp = :tipp order by ie_last_updated desc',[target:target,tipp:pc.tipp])
+                    targetTitle = titleCandidates.find { IssueEntitlement ie -> ie.status != RDStore.TIPP_STATUS_REMOVED }
+                    if(!targetTitle)
+                        targetTitle = titleCandidates[0]
                 }
                 if(targetTitle) {
-                    log.debug("set ${targetTitle} ${pc.targetProperty} to ${parsedNewValue}")
-                    targetTitle[pc.targetProperty] = parsedNewValue
-                    if(targetTitle.save()) {
-                        done = true
+                    //special case of deleted title restore ...
+                    if(targetTitle.status == RDStore.TIPP_STATUS_REMOVED && pc.oldValue == RDStore.TIPP_STATUS_DELETED.id.toString() && pc.newValue != RDStore.TIPP_STATUS_REMOVED.id.toString()) {
+                        log.debug("restore deleted ${targetTitle}")
+                        IssueEntitlement restoredTitle = IssueEntitlement.construct([subscription:target,tipp:pc.tipp,acceptStatus:RDStore.IE_ACCEPT_STATUS_FIXED,status:pc.tipp.status])
+                        if(restoredTitle) {
+                            done = true
+                        }
+                        else throw new ChangeAcceptException("problems when restoring entitlement - pending change not accepted: ${targetTitle.errors}")
                     }
-                    else throw new ChangeAcceptException("problems when updating entitlement - pending change not accepted: ${targetTitle.errors}")
+                    else {
+                        log.debug("set ${targetTitle} ${pc.targetProperty} to ${parsedNewValue}")
+                        targetTitle[pc.targetProperty] = parsedNewValue
+                        if(targetTitle.save()) {
+                            done = true
+                        }
+                        else throw new ChangeAcceptException("problems when updating entitlement - pending change not accepted: ${targetTitle.errors}")
+                    }
                 }
                 else {
                     log.warn("no instance of IssueEntitlement stored: ${pc.oid}! Pending change is void!")
@@ -1100,12 +1114,18 @@ class PendingChangeService extends AbstractLockableService {
                     targetTitle = IssueEntitlement.executeQuery('select ie from IssueEntitlement ie where ie.subscription = :target and ie.tipp = :tipp and ie.status != :ieStatus',[target:target,tipp:pc.tipp,ieStatus: RDStore.TIPP_STATUS_REMOVED])[0]
                 }
                 if(targetTitle) {
-                    log.debug("deleting ${targetTitle} from holding ...")
-                    targetTitle.status = RDStore.TIPP_STATUS_DELETED
-                    if(targetTitle.save()) {
-                        done = true
+                    if(pc.tipp.status == RDStore.TIPP_STATUS_DELETED) {
+                        log.debug("deleting ${targetTitle} from holding ...")
+                        targetTitle.status = RDStore.TIPP_STATUS_DELETED
+                        if(targetTitle.save()) {
+                            done = true
+                        }
+                        else throw new ChangeAcceptException("problems when deleting entitlement - pending change not accepted: ${targetTitle.errors}")
                     }
-                    else throw new ChangeAcceptException("problems when deleting entitlement - pending change not accepted: ${targetTitle.errors}")
+                    else {
+                        log.debug("false deletion - pending change is superseded")
+                        done = 'reject'
+                    }
                 }
                 //else throw new ChangeAcceptException("no instance of IssueEntitlement stored: ${pc.oid}! Pending change is void!")
                 break
