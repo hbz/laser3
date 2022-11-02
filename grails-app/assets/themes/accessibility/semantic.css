@@ -44473,7 +44473,7 @@ ol.ui.list ol li,
 .ui.inverted.list .list > a.item,
 .ui.inverted.list > a.item {
   cursor: pointer;
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255);
 }
 
 .ui.inverted.list .list > a.item:hover,
@@ -44484,7 +44484,7 @@ ol.ui.list ol li,
 /* Linking Content */
 
 .ui.inverted.list .item a:not(.ui) {
-  color: rgba(255, 255, 255, 0.5) !important;
+  color: rgba(255, 255, 255) !important;
 }
 
 .ui.inverted.list .item a:not(.ui):hover {
