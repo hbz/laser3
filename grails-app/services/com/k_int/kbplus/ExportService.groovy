@@ -2400,10 +2400,10 @@ class ExportService {
 		}
 
 		coreTitleIdentifierNamespaces.each { GroovyRowResult ns ->
-			row.add(createCell(format, joinIdentifiersSQL(titleRecord.identifiers.get(ns['idns_ns']), ','), style))
+			row.add(createCell(format, joinIdentifiersSQL(titleRecord.identifiers?.get(ns['idns_ns']), ','), style))
 		}
 		otherTitleIdentifierNamespaces.each { GroovyRowResult ns ->
-			row.add(createCell(format, joinIdentifiersSQL(titleRecord.identifiers.get(ns['idns_ns']),','), style))
+			row.add(createCell(format, joinIdentifiersSQL(titleRecord.identifiers?.get(ns['idns_ns']),','), style))
 		}
 
 		if(showStatsInMonthRings && subscriber) {

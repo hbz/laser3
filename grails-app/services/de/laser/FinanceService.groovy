@@ -72,7 +72,7 @@ class FinanceService {
                 }
             }else {
 
-                if (params.newSubscription.contains("${Subscription.class.name}:")) {
+                if (params.newSubscription?.contains("${Subscription.class.name}:")) {
                     subsToDo << (Subscription) genericOIDService.resolveOID(params.newSubscription)
                 }
                 switch (params.newLicenseeTarget) {

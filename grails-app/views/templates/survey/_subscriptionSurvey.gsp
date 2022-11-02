@@ -541,7 +541,7 @@
             <div id="ieInfos" class="la-inline-lists"></div>
         </g:if>
 
-        <g:if test="${subscription}">
+        <g:if test="${subscription && subscription.packages}">
             <%
                 Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: subscription])
                 if(!subscribedPlatforms) {

@@ -258,8 +258,8 @@ class FilterService {
         }
 
         if (params.orgIdentifier?.length() > 0) {
-            query << " exists (select ident from Identifier io join io.org ioorg " +
-                    " where ioorg = o and LOWER(ident.value) like LOWER(:orgIdentifier)) "
+            query << " exists (select io from Identifier io join io.org ioorg " +
+                    " where ioorg = o and LOWER(io.value) like LOWER(:orgIdentifier)) "
             queryParams << [orgIdentifier: "%${params.orgIdentifier}%"]
         }
 
