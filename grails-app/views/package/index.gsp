@@ -135,6 +135,9 @@
                                 <g:link class="ui button" controller="yoda" action="reloadPackage"
                                         params="${[packageUUID: record.uuid]}"><g:message
                                         code="menu.yoda.reloadPackage"/></g:link>
+                                <g:link class="ui button" controller="yoda" action="retriggerPendingChanges"
+                                        params="${[packageUUID: record.uuid]}"><g:message
+                                        code="menu.yoda.retriggerPendingChanges"/></g:link>
                             </td>
                         </sec:ifAllGranted>
                     </tr>

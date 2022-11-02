@@ -8,6 +8,7 @@ import de.laser.stats.Counter4Report
 import de.laser.stats.Counter5Report
 import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
+import de.laser.storage.RDStore
 import groovy.util.logging.Slf4j
 
 import javax.persistence.Transient
@@ -129,7 +130,7 @@ class IssueEntitlement extends AbstractBase implements Comparable {
         log.debug("creating new issue entitlement for ${configMap.tipp} and ${configMap.subscription}")
       Subscription subscription = (Subscription) configMap.subscription
       TitleInstancePackagePlatform tipp = (TitleInstancePackagePlatform) configMap.tipp
-      IssueEntitlement ie = findBySubscriptionAndTipp(subscription,tipp)
+      IssueEntitlement ie = findBySubscriptionAndTippAndStatusNotEqual(subscription,tipp, RDStore.TIPP_STATUS_REMOVED)
       if(!ie) {
           ie = new IssueEntitlement(subscription: subscription, tipp: tipp, medium: tipp.medium, status:tipp.status, acceptStatus: configMap.acceptStatus, name: tipp.name)
           ie.generateSortTitle()

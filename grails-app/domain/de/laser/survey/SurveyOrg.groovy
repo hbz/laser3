@@ -36,8 +36,8 @@ class SurveyOrg {
         id column: 'surorg_id'
         version column: 'surorg_version'
 
-        surveyConfig column: 'surorg_surveyconfig_fk'
-        org column: 'surorg_org_fk'
+        surveyConfig column: 'surorg_surveyconfig_fk', index: 'surorg_surveyconfig_idx'
+        org column: 'surorg_org_fk', index: 'surorg_org_idx'
         priceComment column: 'surorg_pricecomment', type: 'text'
         ownerComment column: 'surorg_owner_comment', type: 'text'
         dateCreated column: 'surorg_date_created'
