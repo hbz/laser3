@@ -23,6 +23,7 @@ class UiTagLib {
     AuditService auditService
     CodecLookup codecLookup
     ContextService contextService
+    FormService formService
     GenericOIDService genericOIDService
     TagLibraryLookup gspTagLibraryLookup
 
@@ -425,12 +426,33 @@ class UiTagLib {
         out << '</div>'
     }
 
+    def greySegment = { attrs, body ->
+
+        out << '<div class="ui grey segment la-clear-before">'
+        out << body()
+        out << '</div>'
+    }
+
     //<ui:form> CONTENT <ui:form>
 
     def form = { attrs, body ->
 
+        println attrs
+        String fController = attrs.controller ?: ''
+        String fAction     = attrs.action     ?: ''
+        String fMethod     = attrs.method     ?: 'POST'
+
+        boolean addForm =  (fController || fAction)
+
         out << '<div class="ui grey segment la-clear-before">'
+        if (addForm) {
+            out << '<form class="ui form" controller="' + (fController ?: controllerName) + '" action="' + (fAction ?: actionName) + '" method="' + fMethod + '">'
+            out << '<input type="hidden" name="' + FormService.FORM_SERVICE_TOKEN + '" value="' + formService.getNewToken() + '"/>'
+        }
+
         out << body()
+
+        if (addForm) { out << '</form>' }
         out << '</div>'
     }
 

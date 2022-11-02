@@ -85,8 +85,7 @@
 
       <br />
 
-    <ui:form>
-        <g:form action="newGlobalSource" class="ui form">
+    <ui:form controller="yoda" action="newGlobalSource">
 
             <div class="fields two">
                 <div class="field">
@@ -151,7 +150,6 @@
                 <input type="submit" value="Submit" class="ui button"/>
             </div>
 
-        </g:form>
     </ui:form>
 
 <laser:htmlEnd />

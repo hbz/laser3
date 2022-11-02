@@ -1,7 +1,7 @@
 <%@ page import="de.laser.survey.SurveyConfig; de.laser.properties.PropertyDefinition; de.laser.storage.RDStore; de.laser.Person; de.laser.Doc; de.laser.Subscription; de.laser.FormService" %>
 <laser:serviceInjection />
 
-<ui:form>
+<div class="ui grey segment la-clear-before">
     <g:set var="isInstAdm" value="${contextService.getUser().hasAffiliation("INST_ADM")}"/>
 
     <g:if test="${!fromSurvey && !copyObject}">
@@ -352,7 +352,7 @@
             </div>
         </g:else>
     </g:form>
-</ui:form>
+</div>
 <g:if test="${!copyObject}">
     <laser:script file="${this.getGroovyPageFileName()}">
 

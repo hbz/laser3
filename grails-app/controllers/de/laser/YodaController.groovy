@@ -959,6 +959,7 @@ class YodaController {
                 type:params.type,
                 haveUpTo:null,
                 uri:params.uri,
+                editUri:params.editUri,
                 listPrefix:params.listPrefix,
                 fullPrefix:params.fullPrefix,
                 principal:params.principal,
