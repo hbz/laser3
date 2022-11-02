@@ -72,16 +72,7 @@
     <div class="sixteen wide stretched column">
 
         <ui:form>
-
-            <div class="four wide column">
-                <button type="button" class="ui icon button blue la-modern-button right floated" data-ui="modal"
-                        data-href="#modalCreateDocument"><i class="plus icon"></i></button>
-                <laser:render template="/templates/documents/modal"
-                          model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
-            </div>
-            <br /><br />
-
-
+            
             <table class="ui celled la-js-responsive-table la-table table documents-table">
                 <thead>
                 <tr>
