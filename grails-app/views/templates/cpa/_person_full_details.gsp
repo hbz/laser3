@@ -4,8 +4,8 @@
     <div class="ui divided middle aligned ${noSelection ? '' : 'selection'} list la-flex-list la-list-border-around">
 
         <div class="ui item person-details">
-            <g:if test="${personRole?.functionType in [RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_SERVICE_SUPPORT] && !(person.last_name in
-                    [RDStore.PRS_FUNC_SERVICE_SUPPORT.value, RDStore.PRS_FUNC_SERVICE_SUPPORT.getI10n("value"), RDStore.PRS_FUNC_TECHNICAL_SUPPORT.value, RDStore.PRS_FUNC_TECHNICAL_SUPPORT.getI10n("value")])}">
+            <g:if test="${personRole?.functionType in [RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_METADATA] && !(person.last_name in
+                    [RDStore.PRS_FUNC_SERVICE_SUPPORT.value, RDStore.PRS_FUNC_SERVICE_SUPPORT.getI10n("value"), RDStore.PRS_FUNC_TECHNICAL_SUPPORT.value, RDStore.PRS_FUNC_TECHNICAL_SUPPORT.getI10n("value"), RDStore.PRS_FUNC_METADATA.value, RDStore.PRS_FUNC_METADATA.getI10n("value")])}">
                 <div class="content la-space-right">
                     <div class="header">
                         ${person.title}
@@ -15,7 +15,7 @@
                     </div>
                 </div>
             </g:if>
-            <g:elseif test="${!(personRole?.functionType in [RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_SERVICE_SUPPORT])}">
+            <g:elseif test="${!(personRole?.functionType in [RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_SERVICE_SUPPORT, RDStore.PRS_FUNC_METADATA])}">
                 <div class="content la-space-right">
                     <div class="header">
                         ${person.title}

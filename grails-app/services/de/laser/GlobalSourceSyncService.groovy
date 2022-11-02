@@ -17,6 +17,7 @@ import de.laser.PersonRole
 import de.laser.Platform
 import de.laser.RefdataCategory
 import de.laser.RefdataValue
+import de.laser.StatusUpdateService
 import de.laser.Subscription
 import de.laser.SubscriptionPackage
 import de.laser.TitleInstancePackagePlatform
@@ -78,7 +79,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
     Map<String,Integer> initialPackagesCounter
     Map<String,Set<Map<String,Object>>> pkgPropDiffsContainer
     Map<String,Set<Map<String,Object>>> packagesToNotify
-    Set<PendingChange> titlesToRemove
 
     boolean running = false
 
@@ -170,6 +170,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                     //nonAutoAcceptPendingChanges(org, sp)
                                 }
                             }
+                            globalService.cleanUpGorm()
                             log.info("end notifying subscriptions")
                             log.info("clearing removed titles")
                             packageService.clearRemovedTitles()
@@ -213,6 +214,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 Thread.currentThread().setName("PackageReload")
                 this.apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI,true)
                 String componentType = 'TitleInstancePackagePlatform'
+                //preliminary: build up list of all deleted components
+                Set<String> permanentlyDeletedTitles = getPermanentlyDeletedTitles(packageUUID)
                 /*
                     structure:
                     { packageUUID: [
@@ -230,7 +233,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 }
                 else {
                     if(result) {
-                        processScrollPage(result, componentType, null, packageUUID)
+                        processScrollPage(result, componentType, null, packageUUID, permanentlyDeletedTitles)
                     }
                     else {
                         log.info("no records updated - leaving everything as is ...")
@@ -260,6 +263,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     else {
                         log.info("no diffs recorded ...")
                     }
+                    globalService.cleanUpGorm()
                     log.info("package reload finished")
                 }
             }
@@ -507,7 +511,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * @param pkgFilter an optional package filter to restrict the data to be loaded
      * @throws SyncException if an error occurs during the update process
      */
-    void processScrollPage(Map<String, Object> result, String componentType, String changedSince, String pkgFilter = null) throws SyncException {
+    void processScrollPage(Map<String, Object> result, String componentType, String changedSince, String pkgFilter = null, Set<String> permanentlyDeletedTitles = []) throws SyncException {
         if(result.count >= 5000) {
             int offset = 0, max = 5000
             Map<String, Object> queryParams = [component_type: componentType, max: max]
@@ -547,7 +551,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
                                 createOrUpdateOrgJSON(record)
                             }
                             break
-                        case RECTYPE_TIPP: updateRecords(result.records, offset)
+                        case RECTYPE_TIPP: if(offset == 0) updateRecords(result.records, offset, permanentlyDeletedTitles)
+                            else updateRecords(result.records, offset)
                             break
                     }
                     if(result.hasMoreRecords) {
@@ -591,7 +596,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                         createOrUpdateOrgJSON(record)
                     }
                     break
-                case RECTYPE_TIPP: updateRecords(result.records, 0)
+                case RECTYPE_TIPP: updateRecords(result.records, 0, permanentlyDeletedTitles)
                     break
             }
         }
@@ -606,7 +611,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * @param rawRecords the scroll page (JSON result) containing the updated entries
      * @param offset the total record counter offset which has to be added to the entry loop counter
      */
-    void updateRecords(List<Map> rawRecords, int offset) {
+    void updateRecords(List<Map> rawRecords, int offset, Set<String> permanentlyDeletedTitles = []) {
         //necessary filter for DEV database
         List<Map> records = rawRecords.findAll { Map tipp -> tipp.containsKey("hostPlatformUuid") && tipp.containsKey("tippPackageUuid") }
         SimpleDateFormat sdf = DateUtils.getSDF_yyyyMMddTHHmmssZ()
@@ -621,7 +626,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         //packageUUIDs is null if package has no tipps
         Set<String> existingPackageUUIDs = packageUUIDs ? Platform.executeQuery('select pkg.gokbId from Package pkg where pkg.gokbId in (:pkgUUIDs)',[pkgUUIDs:packageUUIDs]) : []
         Map<String,TitleInstancePackagePlatform> tippsInLaser = [:]
-        //collect existing TIPPs
+        //collect existing TIPPs and purge deleted ones
         if(tippUUIDs) {
             TitleInstancePackagePlatform.findAllByGokbIdInList(tippUUIDs.toList()).each { TitleInstancePackagePlatform tipp ->
                 tippsInLaser.put(tipp.gokbId, tipp)
@@ -739,6 +744,20 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     }//test with set, otherwise make check
                     packagesToNotify.put(updatedTIPP.packageUUID,diffsOfPackage)
                 }
+                else if(updatedTIPP.status == PERMANENTLY_DELETED) {
+                    TitleInstancePackagePlatform tippA = TitleInstancePackagePlatform.findByGokbIdAndStatusNotEqual(updatedTIPP.uuid, RDStore.TIPP_STATUS_REMOVED)
+                    if(tippA) {
+                        log.info("TIPP with UUID ${tippA.gokbId} has been permanently deleted")
+                        tippA.status = RDStore.TIPP_STATUS_REMOVED
+                        tippA.save()
+                        Set<Map<String,Object>> diffsOfPackage = packagesToNotify.get(tippA.pkg.gokbId)
+                        if(!diffsOfPackage) {
+                            diffsOfPackage = []
+                        }
+                        diffsOfPackage << [event: "remove", target: tippA]
+                        packagesToNotify.put(tippA.pkg.gokbId,diffsOfPackage)
+                    }
+                }
                 else if(!(updatedTIPP.status in [RDStore.TIPP_STATUS_DELETED.value, RDStore.TIPP_STATUS_REMOVED.value, PERMANENTLY_DELETED])) {
                     Package pkg = packagesOnPage.get(updatedTIPP.packageUUID)
                     if(pkg)
@@ -752,6 +771,20 @@ class GlobalSourceSyncService extends AbstractLockableService {
             catch (SyncException e) {
                 log.error("Error on updating tipp ${tipp.uuid}: ",e)
                 SystemEvent.createEvent("GSSS_JSON_WARNING",[tippRecordKey:tipp.uuid])
+            }
+        }
+        permanentlyDeletedTitles.each { String delUUID ->
+            TitleInstancePackagePlatform tippA = TitleInstancePackagePlatform.findByGokbIdAndStatusNotEqual(delUUID, RDStore.TIPP_STATUS_REMOVED)
+            if(tippA && tippA.pkg.gokbId in packageUUIDs) {
+                log.info("TIPP with UUID ${tippA.gokbId} has been permanently deleted")
+                tippA.status = RDStore.TIPP_STATUS_REMOVED
+                tippA.save()
+                Set<Map<String,Object>> diffsOfPackage = packagesToNotify.get(tippA.pkg.gokbId)
+                if(!diffsOfPackage) {
+                    diffsOfPackage = []
+                }
+                diffsOfPackage << [event: "remove", target: tippA]
+                packagesToNotify.put(tippA.pkg.gokbId,diffsOfPackage)
             }
         }
     }
@@ -817,7 +850,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             break
                         case 'delete': packagePendingChanges << PendingChange.construct([msgToken:PendingChangeConfiguration.TITLE_DELETED,target:diff.target,oldValue:diff.oldValue,status:RDStore.PENDING_CHANGE_HISTORY])
                             break
-                        case 'remove': titlesToRemove << PendingChange.construct([msgToken:PendingChangeConfiguration.TITLE_REMOVED,target:diff.target,status:RDStore.PENDING_CHANGE_HISTORY]) //dealt elsewhere!
+                        case 'remove': PendingChange.construct([msgToken:PendingChangeConfiguration.TITLE_REMOVED,target:diff.target,status:RDStore.PENDING_CHANGE_HISTORY]) //dealt elsewhere!
                             break
                         case 'pkgPropDiffs':
                             diff.diffs.each { pkgPropDiff ->
@@ -861,13 +894,13 @@ class GlobalSourceSyncService extends AbstractLockableService {
                     boolean processed = false
                     if(newChange.tipp) {
                         if(newChange.targetProperty)
-                            processed = acceptedChanges.find { PendingChange accepted -> accepted.tipp == newChange.tipp && accepted.msgToken == newChange.msgToken && accepted.targetProperty == newChange.targetProperty } != null
+                            processed = acceptedChanges.find { PendingChange accepted -> accepted.tipp == newChange.tipp && accepted.msgToken == newChange.msgToken && accepted.targetProperty == newChange.targetProperty && accepted.newValue == newChange.newValue && accepted.oldValue == newChange.oldValue } != null
                         else
                             processed = acceptedChanges.find { PendingChange accepted -> accepted.tipp == newChange.tipp && accepted.msgToken == newChange.msgToken } != null
                     }
                     else if(newChange.tippCoverage) {
                         if(newChange.targetProperty)
-                            processed = acceptedChanges.find { PendingChange accepted -> accepted.tippCoverage == newChange.tippCoverage && accepted.msgToken == newChange.msgToken && accepted.targetProperty == newChange.targetProperty } != null
+                            processed = acceptedChanges.find { PendingChange accepted -> accepted.tippCoverage == newChange.tippCoverage && accepted.msgToken == newChange.msgToken && accepted.targetProperty == newChange.targetProperty && accepted.newValue == newChange.newValue && accepted.oldValue == newChange.oldValue } != null
                         else
                             processed = acceptedChanges.find { PendingChange accepted -> accepted.tippCoverage == newChange.tippCoverage && accepted.msgToken == newChange.msgToken } != null
                     }
@@ -1118,42 +1151,12 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 List<String> typeNames = contactTypes.values().collect { RefdataValue cct -> cct.getI10n("value") }
                 typeNames.addAll(contactTypes.keySet())
                 List<Person> oldPersons = Person.executeQuery('select p from Person p where p.tenant = :provider and p.isPublic = true and p.last_name in (:contactTypes)',[provider: provider, contactTypes: typeNames])
-                Map<RefdataValue, Person> contactsToUpdate = [:]
-                List newContacts = providerRecord.contacts.findAll{ Map<String, String> cParams -> cParams.content != null }
-                oldPersons.each { Person oldPerson ->
-                    oldPerson.roleLinks.each { PersonRole role ->
-                        switch(role.functionType) {
-                            case RDStore.PRS_FUNC_METADATA: Map<String, String> newContact = newContacts.find { Map<String, String> cParams -> cParams.type == 'Metadata Contact' }
-                                if(newContact)
-                                    contactsToUpdate.put(RDStore.PRS_FUNC_METADATA, oldPerson)
-                                else {
-                                    PersonRole.executeUpdate('delete from PersonRole pr where pr.org = :provider and pr.prs = :oldPerson and pr.functionType.id = :funcType', [provider: provider, oldPerson: oldPerson, funcType: RDStore.PRS_FUNC_METADATA])
-                                    Contact.executeUpdate('delete from Contact c where c.prs = :oldPerson', [oldPerson: oldPerson])
-                                    Person.executeUpdate('delete from Person p where p = :oldPerson', [oldPerson: oldPerson])
-                                }
-                                break
-                            case RDStore.PRS_FUNC_SERVICE_SUPPORT: Map<String, String> newContact = newContacts.find { Map<String, String> cParams -> cParams.type == 'Service Support' }
-                                if(newContact)
-                                    contactsToUpdate.put(RDStore.PRS_FUNC_SERVICE_SUPPORT, oldPerson)
-                                else {
-                                    PersonRole.executeUpdate('delete from PersonRole pr where pr.org = :provider and pr.prs = :oldPerson and pr.functionType.id = :funcType', [provider: provider, oldPerson: oldPerson, funcType: RDStore.PRS_FUNC_SERVICE_SUPPORT])
-                                    Contact.executeUpdate('delete from Contact c where c.prs = :oldPerson', [oldPerson: oldPerson])
-                                    Person.executeUpdate('delete from Person p where p = :oldPerson', [oldPerson: oldPerson])
-                                }
-                                break
-                            case RDStore.PRS_FUNC_TECHNICAL_SUPPORT: Map<String, String> newContact = newContacts.find { Map<String, String> cParams -> cParams.type == 'Technical Support' }
-                                if(newContact)
-                                    contactsToUpdate.put(RDStore.PRS_FUNC_TECHNICAL_SUPPORT, oldPerson)
-                                else {
-                                    PersonRole.executeUpdate('delete from PersonRole pr where pr.org = :provider and pr.prs = :oldPerson and pr.functionType.id = :funcType', [provider: provider, oldPerson: oldPerson, funcType: RDStore.PRS_FUNC_TECHNICAL_SUPPORT])
-                                    Contact.executeUpdate('delete from Contact c where c.prs = :oldPerson', [oldPerson: oldPerson])
-                                    Person.executeUpdate('delete from Person p where p = :oldPerson', [oldPerson: oldPerson])
-                                }
-                                break
-                        }
-                    }
+                if(oldPersons) {
+                    PersonRole.executeUpdate('delete from PersonRole pr where pr.org = :provider and pr.prs in (:oldPersons) and pr.functionType.id in (:funcTypes)', [provider: provider, oldPersons: oldPersons, funcTypes: contactTypes.values().collect { RefdataValue cct -> cct.id }])
+                    Contact.executeUpdate('delete from Contact c where c.prs in (:oldPersons)', [oldPersons: oldPersons])
+                    Person.executeUpdate('delete from Person p where p in (:oldPersons)', [oldPersons: oldPersons])
                 }
-                newContacts.each { contact ->
+                providerRecord.contacts.findAll{ Map<String, String> cParams -> cParams.content != null }.each { contact ->
                     switch(contact.type) {
                         case "Metadata Contact":
                             contact.rdType = RDStore.PRS_FUNC_METADATA
@@ -1168,7 +1171,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
                             break
                     }
                     if(contact.rdType && contact.contentType != null) {
-                        createOrUpdateSupport(provider, contact, contactsToUpdate.get(contact.rdType))
+                        createOrUpdateSupport(provider, contact)
                     }
                     else log.warn("contact submitted without content type, rejecting contact")
                 }
@@ -1280,7 +1283,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
      * @param supportProps the configuration {@link Map} containing the support address properties
      * @throws SyncException
      */
-    void createOrUpdateSupport(Org provider, Map<String, String> supportProps, Person personInstance = null) throws SyncException {
+    void createOrUpdateSupport(Org provider, Map<String, String> supportProps) throws SyncException {
+        Person personInstance = Person.findByTenantAndIsPublicAndLast_name(provider, true, supportProps.rdType.getI10n("value"))
         if(!personInstance) {
             personInstance = new Person(tenant: provider, isPublic: true, last_name: supportProps.rdType.getI10n("value"))
             if(!personInstance.save()) {
@@ -1437,7 +1441,8 @@ class GlobalSourceSyncService extends AbstractLockableService {
             tippA.save()
             [event: "delete", oldValue: oldStatus, target: tippA]
         }
-        else if(!(tippA.status in [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED]) && !(status in [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED])) {
+        //tippA may be deleted; it occurred that deleted titles have been reactivated - whilst deactivation (tippB deleted/removed) needs a different handler!
+        else if(tippA.status != RDStore.TIPP_STATUS_REMOVED && !(status in [RDStore.TIPP_STATUS_DELETED, RDStore.TIPP_STATUS_REMOVED])) {
             //process central differences which are without effect to issue entitlements
             tippA.titleType = tippB.titleType
             //tippA.name = tippB.name //TODO include name, sortname in IssueEntitlements, then, this property may move to the controlled ones
@@ -2059,7 +2064,7 @@ class GlobalSourceSyncService extends AbstractLockableService {
         else http = new BasicHttpClient(uri+'find')
         Map<String,Object> result = [:]
         //setting default status
-        if(queryParams.componentType == 'TitleInstancePackagePlatform' || queryParams.component_type == 'TitleInstancePackagePlatform') {
+        if((queryParams.componentType == 'TitleInstancePackagePlatform' || queryParams.component_type == 'TitleInstancePackagePlatform') && !queryParams.status) {
             queryParams.status = ["Current","Expected","Retired","Deleted",PERMANENTLY_DELETED,"Removed"]
             //queryParams.status = ["Removed"] //debug only
         }
@@ -2083,6 +2088,19 @@ class GlobalSourceSyncService extends AbstractLockableService {
         result
     }
 
+    Set<String> getPermanentlyDeletedTitles(String pkgUUID) {
+        Set<String> result = []
+        Map<String, Object> recordBatch = fetchRecordJSON(true, [component_type: 'TitleInstancePackagePlatform', status: PERMANENTLY_DELETED])
+        boolean more = true
+        while(more) {
+            result.addAll(recordBatch.records.collect { record -> record.uuid })
+            more = recordBatch.hasMoreRecords
+            if(more)
+                recordBatch = fetchRecordJSON(true, [component_type: 'TitleInstancePackagePlatform', scrollId: recordBatch.scrollId])
+        }
+        result
+    }
+
     /**
      * In order to save performance, reference data is being loaded prior to the synchronisation
      */
@@ -2090,13 +2108,14 @@ class GlobalSourceSyncService extends AbstractLockableService {
         //define map fields
         tippStatus.put(RDStore.TIPP_STATUS_CURRENT.value,RDStore.TIPP_STATUS_CURRENT)
         tippStatus.put(RDStore.TIPP_STATUS_DELETED.value,RDStore.TIPP_STATUS_DELETED)
-        tippStatus.put(PERMANENTLY_DELETED,RDStore.TIPP_STATUS_DELETED)
+        tippStatus.put(PERMANENTLY_DELETED,RDStore.TIPP_STATUS_REMOVED)
         tippStatus.put(RDStore.TIPP_STATUS_RETIRED.value,RDStore.TIPP_STATUS_RETIRED)
         tippStatus.put(RDStore.TIPP_STATUS_EXPECTED.value,RDStore.TIPP_STATUS_EXPECTED)
         tippStatus.put(RDStore.TIPP_STATUS_REMOVED.value,RDStore.TIPP_STATUS_REMOVED)
         tippStatus.put(RDStore.TIPP_STATUS_UNKNOWN.value,RDStore.TIPP_STATUS_UNKNOWN)
         contactTypes.put(RDStore.PRS_FUNC_TECHNICAL_SUPPORT.value,RDStore.PRS_FUNC_TECHNICAL_SUPPORT)
         contactTypes.put(RDStore.PRS_FUNC_SERVICE_SUPPORT.value,RDStore.PRS_FUNC_SERVICE_SUPPORT)
+        contactTypes.put(RDStore.PRS_FUNC_METADATA.value,RDStore.PRS_FUNC_METADATA)
         //this complicated way is necessary because of static in order to avoid a NonUniqueObjectException
         titleMedium.put(RDStore.TITLE_TYPE_DATABASE.value, RDStore.TITLE_TYPE_DATABASE)
         titleMedium.put(RDStore.TITLE_TYPE_EBOOK.value, RDStore.TITLE_TYPE_EBOOK)
@@ -2133,7 +2152,6 @@ class GlobalSourceSyncService extends AbstractLockableService {
         initialPackagesCounter = [:]
         pkgPropDiffsContainer = [:]
         packagesToNotify = [:]
-        titlesToRemove = []
     }
 
     /**
@@ -2154,4 +2172,5 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 break
         }
     }
+
 }
