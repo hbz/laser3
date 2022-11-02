@@ -9,8 +9,7 @@
 
     <ui:messages data="${flash}" />
 
-    <ui:form>
-        <g:form action="testMailSending" class="ui form">
+    <ui:form controller="admin" action="testMailSending">
             <div class="field">
                 <label for="mailAddress">Mail Address</label>
                 <input type="email" id="mailAddress" name="mailAddress" value="laser@hbz-nrw.de" />
@@ -27,7 +26,6 @@
             <div class="field">
                     <input type="submit" name="sendTestMail" class="ui button" value="Send Test Mail" />
             </div>
-        </g:form>
     </ui:form>
 
     <g:if test="${mailDisabled}">

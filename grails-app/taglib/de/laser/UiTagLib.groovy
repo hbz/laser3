@@ -440,13 +440,15 @@ class UiTagLib {
         println attrs
         String fController = attrs.controller ?: ''
         String fAction     = attrs.action     ?: ''
-        String fMethod     = attrs.method     ?: 'POST'
-
         boolean addForm =  (fController || fAction)
 
         out << '<div class="ui grey segment la-clear-before">'
         if (addForm) {
-            out << '<form class="ui form" controller="' + (fController ?: controllerName) + '" action="' + (fAction ?: actionName) + '" method="' + fMethod + '">'
+            out << '<form class="ui form' + (attrs.class ? ' ' + attrs.class : '') + '"'
+            out << ' controller="' + (fController ?: controllerName) + '"'
+            out << ' action="' + (fAction ?: actionName) + '"'
+            out << ' method="' + (attrs.method ?: 'POST') + '"'
+            out << '>'
             out << '<input type="hidden" name="' + FormService.FORM_SERVICE_TOKEN + '" value="' + formService.getNewToken() + '"/>'
         }
 

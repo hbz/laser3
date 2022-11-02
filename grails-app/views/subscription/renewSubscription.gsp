@@ -11,7 +11,7 @@
 
 <ui:messages data="${flash}"/>
 
-<ui:form>
+<ui:greySegment>
     <g:form action="processRenewSubscription" method="post" params="${params}">
 
         <div>
@@ -120,6 +120,6 @@
 
         </div>
     </g:form>
-</ui:form>
+</ui:greySegment>
 
 <laser:htmlEnd />

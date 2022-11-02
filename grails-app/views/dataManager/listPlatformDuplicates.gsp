@@ -10,7 +10,7 @@
 
         <ui:messages data="${flash}" />
 
-        <ui:form>
+        <ui:greySegment>
             <g:form action="executePlatformCleanup" method="post" class="ui form" data-confirm-id="clearUp_form">
                 <table class="ui table">
                     <tbody>
@@ -84,6 +84,6 @@
                     </tfoot>
                 </table>
             </g:form>
-        </ui:form>
+        </ui:greySegment>
 
 <laser:htmlEnd />

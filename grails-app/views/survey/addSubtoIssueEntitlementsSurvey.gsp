@@ -12,8 +12,7 @@
 
 <ui:messages data="${flash}"/>
 
-<ui:form>
-    <g:form action="processCreateIssueEntitlementsSurvey" controller="survey" method="post" class="ui form">
+<ui:form controller="survey" action="processCreateIssueEntitlementsSurvey">
         <g:hiddenField id="sub_id_${subscription.id}" name="sub" value="${subscription.id}"/>
 
         <div class="field required ">
@@ -52,7 +51,6 @@
         <input type="submit" class="ui button"
                value="${message(code: 'createIssueEntitlementsSurvey.create')}"/>
 
-    </g:form>
 </ui:form>
 
 <laser:htmlEnd />

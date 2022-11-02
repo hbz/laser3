@@ -17,7 +17,7 @@
 		<div class="ui grid">
 
 			<div class="twelve wide column">
-				<div class="ui grey segment la-clear-before">
+				<ui:greySegment>
 
 					<g:form class="ui form" action="create" >
 						<fieldset>
@@ -33,7 +33,7 @@
 						</fieldset>
 					</g:form>
 
-				</div>
+				</ui:greySegment>
 			</div><!-- .twelve -->
 
 				<aside class="four wide column">

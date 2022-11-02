@@ -51,7 +51,7 @@
     </div>
 </ui:greySegment>
 
-<ui:form>
+<ui:greySegment>
 
     <g:form action="proccessCopySurveyCostItemsToSub" controller="survey" id="${surveyInfo.id}"
             params="[surveyConfigID: surveyConfig.id]"
@@ -221,7 +221,7 @@
             </div>
         </div>
     </g:form>
-</ui:form>
+</ui:greySegment>
 
 <laser:script file="${this.getGroovyPageFileName()}">
     $('#costItemsToggler').click(function () {
