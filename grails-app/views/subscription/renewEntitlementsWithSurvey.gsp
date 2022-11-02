@@ -169,7 +169,7 @@
 
 <g:if test="${participant}">
 
-    <ui:form>
+    <ui:greySegment>
         <g:set var="choosenOrg" value="${Org.findById(participant.id)}"/>
         <g:set var="choosenOrgCPAs" value="${choosenOrg?.getGeneralContactPersons(false)}"/>
 
@@ -196,7 +196,7 @@
             </tbody>
         </table>
 
-    </ui:form>
+    </ui:greySegment>
 </g:if>
 
 <g:if test="${selectProcess}">

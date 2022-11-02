@@ -190,7 +190,7 @@
         ${message(code: 'copyProperties.copyProperties', args: [message(code: 'copyProperties.' + params.tab)])}
     </h2>
 
-    <ui:form>
+    <ui:greySegment>
         <div class="ui grid">
 
             <div class="row">
@@ -236,7 +236,7 @@
                 </div>
             </div>
         </div>
-    </ui:form>
+    </ui:greySegment>
 
 %{--<div class="ui icon positive message">
     <i class="info icon"></i>

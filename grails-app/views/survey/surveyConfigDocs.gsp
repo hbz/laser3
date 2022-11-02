@@ -71,7 +71,7 @@
 --}%
     <div class="sixteen wide stretched column">
 
-        <ui:form>
+        <ui:greySegment>
 
             <div class="four wide column">
                 <button type="button" class="ui icon button blue la-modern-button right floated" data-ui="modal"
@@ -153,7 +153,7 @@
                 <laser:render template="/templates/documents/modal"
                           model="${[ownobj: surveyConfig, owntp: surveyConfig, docctx: docctx, doc: docctx.owner]}"/>
             </g:each>
-        </ui:form>
+        </ui:greySegment>
     </div>
 
     <laser:script file="${this.getGroovyPageFileName()}">

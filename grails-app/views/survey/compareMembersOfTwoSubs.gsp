@@ -236,7 +236,7 @@
 
 
 
-        <ui:form>
+        <ui:greySegment>
             <div class="ui grid">
 
                 <div class="row">
@@ -292,8 +292,8 @@
                     </div>
                 </div>
             </div>
-        </ui:form>
-        <ui:form>
+        </ui:greySegment>
+        <ui:greySegment>
             <g:set var="count" value="${0}"/>
             <g:set var="count2" value="${0}"/>
             <div class="ui grid">
@@ -441,7 +441,7 @@
                 </div>
             </div>
 
-        </ui:form>
+        </ui:greySegment>
 
         <div class="sixteen wide field" style="text-align: center;">
             <g:link class="ui button" controller="survey" action="copyProperties"

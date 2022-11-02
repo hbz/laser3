@@ -32,7 +32,7 @@
 </h2>
 
 
-<ui:form>
+<ui:greySegment>
     <div class="ui grid">
         <div class="row">
             <div class="sixteen wide column">
@@ -49,7 +49,7 @@
             </div>
         </div>
     </div>
-</ui:form>
+</ui:greySegment>
 
 <ui:form>
 

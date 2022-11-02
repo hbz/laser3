@@ -1,7 +1,7 @@
 <%@ page import="de.laser.Subscription; de.laser.storage.RDStore; de.laser.AuditConfig; de.laser.interfaces.CalculatedType; de.laser.Person; de.laser.License" %>
 <laser:serviceInjection/>
 
-<ui:form>
+<ui:greySegment>
 
     <table class="ui selectable celled table la-js-responsive-table la-table la-ignore-fixed">
         <thead>
@@ -222,7 +222,7 @@
         </tbody>
     </table>
 
-</ui:form>
+</ui:greySegment>
 
 
 

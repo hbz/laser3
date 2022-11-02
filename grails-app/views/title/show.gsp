@@ -23,17 +23,17 @@
 
             <div class="sixteen wide column">
 
-                <ui:form>
+                <ui:greySegment>
                     <!-- START TEMPLATE -->
                     <laser:render template="/templates/title_long"
                               model="${[ie: null, tipp: ti,
                                         showPackage: true, showPlattform: true, showCompact: false, showEmptyFields: true]}"/>
                     <!-- END TEMPLATE -->
-                </ui:form>
+                </ui:greySegment>
             </div>
 
             <div class="sixteen wide column">
-                <ui:form>
+                <ui:greySegment>
                   <g:each in="${duplicates}" var="entry">
 
                           ${message(code:'title.edit.duplicate.warn', args:[entry.key])}:
@@ -44,7 +44,7 @@
                           </ul>
 
                   </g:each>
-                </ui:form>
+                </ui:greySegment>
             </div>
 
         </div><!-- .grid -->

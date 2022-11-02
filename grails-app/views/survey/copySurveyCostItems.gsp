@@ -188,7 +188,7 @@
     </h2>
 
 
-    <ui:form>
+    <ui:greySegment>
         <div class="ui grid">
 
             <div class="row">
@@ -234,7 +234,7 @@
                 </div>
             </div>
         </div>
-    </ui:form>
+    </ui:greySegment>
 
     <ui:form>
 
