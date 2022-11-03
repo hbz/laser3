@@ -2817,10 +2817,6 @@ class SurveyController {
                             it.delete()
                         }
 
-                        SurveyConfigProperties.findAllBySurveyConfig(config).each {
-                            it.delete()
-                        }
-
                         SurveyOrg.findAllBySurveyConfig(config).each { surveyOrg ->
                             CostItem.findAllBySurveyOrg(surveyOrg).each {
                                 it.delete()
@@ -2836,7 +2832,10 @@ class SurveyController {
                         Task.findAllBySurveyConfig(config) {
                             it.delete()
                         }
+
                     }
+
+                    SurveyConfigProperties.executeUpdate("delete from SurveyConfigProperties scp where scp.surveyConfig.id in (:surveyConfigIDs)", [surveyConfigIDs: SurveyConfig.findAllBySurveyInfo(surveyInfo).id])
 
                     SurveyConfig.executeUpdate("delete from SurveyConfig sc where sc.id in (:surveyConfigIDs)", [surveyConfigIDs: SurveyConfig.findAllBySurveyInfo(surveyInfo).id])
 
