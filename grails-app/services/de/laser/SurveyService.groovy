@@ -26,6 +26,7 @@ import de.laser.config.ConfigMapper
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
+import grails.gsp.PageRenderer
 import grails.plugins.mail.MailService
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.sql.Sql
@@ -53,6 +54,8 @@ class SurveyService {
     MailService mailService
     MessageSource messageSource
     SubscriptionService subscriptionService
+
+    PageRenderer groovyPageRenderer
 
     String replyTo
 
@@ -1891,6 +1894,11 @@ class SurveyService {
             count = titles.size()
         }
         return count
+    }
+
+    String notificationSurveyAsString(SurveyInfo surveyInfo) {
+        Locale language = new Locale("de")
+        groovyPageRenderer.render view: '/mailTemplates/html/notificationSurveyForMailClient', model: [language: language, survey: surveyInfo, reminder: false]
     }
 
 }

@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4570    03.11.2022  dev     3.0         Moe     Feature     Umfrage Mails pro Einrichtung selber erstellen mit Mail-Client
+
 4471    02.11.2022  dev     3.0         Moe     Bug         Umfragename bei aus einer Lizenz erstellten Umfragen in "Meine Umfragen" anzeigen und editierbar machen
 
 4446    02.11.2022  dev     3.0         Moe     Bug         Verlängerungsumfrage kann wegen gesetztem Pflichtmerkmal nicht entfernt werden

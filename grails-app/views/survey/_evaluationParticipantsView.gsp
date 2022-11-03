@@ -1,4 +1,15 @@
-<%@ page import="de.laser.survey.SurveyConfig; de.laser.survey.SurveyResult; de.laser.Org; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;de.laser.RefdataCategory; de.laser.survey.SurveyOrg" %>
+<%@ page import="de.laser.config.ConfigMapper; de.laser.survey.SurveyConfig; de.laser.survey.SurveyResult; de.laser.Org; de.laser.storage.RDConstants; de.laser.RefdataValue; de.laser.properties.PropertyDefinition;de.laser.storage.RDStore;de.laser.RefdataCategory; de.laser.survey.SurveyOrg" %>
+<laser:serviceInjection/>
+<%
+    if(showOpenParticipantsAgainButtons) {
+        String mailSubject = escapeService.replaceUmlaute(g.message(code: 'email.subject.surveys', args: ["${surveyConfig.surveyInfo.type.getI10n('value')}"]) + " " + surveyConfig.surveyInfo.name + "")
+
+        String mailBody = surveyService.notificationSurveyAsString(surveyConfig.surveyInfo)
+
+        String mailString = ""
+    }
+%>
+
 
 <g:if test="${surveyConfig}">
 
@@ -270,6 +281,21 @@
                                 </span>
                             </g:if>
 
+                            <g:if test="${showOpenParticipantsAgainButtons}">
+                                <% mailString =
+                                        "mailto:${surveyOrg.org.getMailsOfGeneralContactPersons(false).join(';')}?subject=" + mailSubject +
+                                                "&body=" + mailBody
+                                %>
+
+                                <a href="${mailString}">
+                                    <span data-position="right center"
+                                          class="la-popup-tooltip la-delay"
+                                          data-content="Mail senden an Hauptkontakten">
+                                        <i class="ui icon envelope outline la-list-icon"></i>
+                                    </span>
+                                </a>
+                            </g:if>
+
                         </td>
                     </g:if>
 
@@ -475,6 +501,21 @@
                                       data-content="${message(code: 'surveyLinks.newParticipate')}">
                                     <i class="paper plane outline large icon"></i>
                                 </span>
+                            </g:if>
+
+                            <g:if test="${showOpenParticipantsAgainButtons}">
+                                <% mailString =
+                                        "mailto:${surveyOrg.org.getMailsOfGeneralContactPersons(false).join(';')}?subject=" + mailSubject +
+                                                "&body=" + mailBody
+                                %>
+
+                                <a href="${mailString}">
+                                    <span data-position="right center"
+                                          class="la-popup-tooltip la-delay"
+                                          data-content="Mail senden an Hauptkontakten">
+                                        <i class="ui icon envelope outline la-list-icon"></i>
+                                    </span>
+                                </a>
                             </g:if>
 
                         </td>
