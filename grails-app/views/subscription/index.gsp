@@ -207,7 +207,7 @@
                     <g:hiddenField name="${key}" value="${params[key]}"/>
                 </g:each>
 
-%{--                <g:if test="${entitlements}">
+                <g:if test="${entitlements}">
                     <div class="ui fluid card">
                         <div class="content">
                             <div class="ui accordion la-accordion-showMore">
@@ -227,19 +227,19 @@
 
                                                 <div class="column">
                                                     <div class="ui list">
-                                                        <div class="item">
+
                                                             <!-- START TEMPLATE -->
                                                             <laser:render
                                                                     template="/templates/title_short_accordion"
                                                                     model="${[ie         : ie, tipp: ie.tipp,
                                                                               showPackage: true, showPlattform: true, showCompact: true, showEmptyFields: false]}"/>
                                                             <!-- END TEMPLATE -->
-                                                        </div>
+
                                                     </div>
                                                 </div>
 
                                                 <div class="column">
-                                                    <div class="ui list">
+                                                    <div class="ui list la-label-list">
                                                         <div class="item">
                                                             <div class="content">
                                                                 <div class="ui label">${message(code: 'tipp.dateFirstInPrint')}</div>
@@ -258,7 +258,7 @@
                                                 </div>
 
                                                 <div class="column">
-                                                    <div class="ui list">
+                                                    <div class="ui list la-label-list">
                                                         <div class="item">
                                                             <div class="content">
 
@@ -305,6 +305,7 @@
                                                     </div>
                                                 </div>
 
+
                                                 <div class="two wide column">
                                                     <div class="ui right floated buttons">
                                                         <div class="ui icon blue button la-modern-button "><i
@@ -342,157 +343,44 @@
                                         <div class="ui fluid segment content">
                                             <div class="ui stackable grid">
                                                 <div class="four wide column">
-                                                    <div class="ui list">
-                                                        <div class="item">
-                                                            <i class="icon user circle"></i>
-
-                                                            <div class="content">
-                                                                <div class="header">Autor:</div>
-
-                                                                <div class="description">Kommer</div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="item">
-                                                            <i aria-hidden="true"
-                                                               class="icon database la-list-icon"></i>
-
-                                                            <div class="content">
-                                                                <div class="header">Datenbank-Titel:</div>
-
-                                                                <div class="description">Database</div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="item">
-                                                            <i class="grey medium icon la-popup-tooltip la-delay"
-                                                               data-content="Medium" aria-label="Medium"></i>
-
-                                                            <div class="content">
-                                                                <div class="header">Medium:</div>
-
-                                                                <div class="description">Volltextdatenbank</div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="item">
-                                                            <i class="grey key icon la-popup-tooltip la-delay"
-                                                               data-content="Status" aria-label="Status"></i>
-
-                                                            <div class="content">
-                                                                <div class="header">Status:</div>
-
-                                                                <div class="description">Aktuell</div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="item">
-                                                            <i class="grey icon gift scale la-popup-tooltip la-delay"
-                                                               data-content="Paket" aria-label="Paket"></i>
-
-                                                            <div class="content">
-                                                                <div class="header">Paket:</div>
-
-                                                                <div class="description"><a
-                                                                        href="">Taschenbuch der Mathematik (Bronstein)</a>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="item">
-                                                            <i class="grey icon cloud la-popup-tooltip la-delay"
-                                                               data-content="Plattform" aria-label="Plattform"></i>
-
-                                                            <div class="content">
-                                                                <div class="header">Plattform:</div>
-
-                                                                <div class="description"><a
-                                                                        href="">Europa-Lehrmittel</a>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                                    <laser:render template="/templates/title_long_accordion"
+                                                                  model="${[ie         : ie, tipp: ie.tipp,
+                                                                            showPackage: showPackage, showPlattform: showPlattform, showCompact: showCompact, showEmptyFields: showEmptyFields]}"/>
                                                 </div>
 
                                                 <div class="four wide column">
 
-                                                        <!-- START TEMPLATE -->
-                                                        <laser:render template="/templates/identifier"
-                                                                      model="${[ie         : ie, tipp: ie.tipp]}"/>
-                                                        <!-- END TEMPLATE -->
-
+                                                    <!-- START TEMPLATE -->
+                                                    <laser:render template="/templates/identifier"
+                                                                  model="${[ie: ie, tipp: ie.tipp]}"/>
+                                                    <!-- END TEMPLATE -->
                                                 </div>
 
                                                 <div class="four wide column">
-                                                    <div class="ui list">
-                                                        <div class="item">
-                                                            <i class="users icon"></i>
 
-                                                            <div class="content">
-                                                                Semantic UI
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="item">
-                                                            <i class="marker icon"></i>
-
-                                                            <div class="content">
-                                                                New York, NY
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="item">
-                                                            <i class="mail icon"></i>
-
-                                                            <div class="content">
-                                                                <a href="mailto:jack@semantic-ui.com">jack@semantic-ui.com</a>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="item">
-                                                            <i class="linkify icon"></i>
-
-                                                            <div class="content">
-                                                                <a href="http://www.semantic-ui.com">semantic-ui.com</a>
-                                                            </div>
-                                                        </div>
-                                                    </div>
                                                 </div>
 
                                                 <div class="four wide column">
                                                     <div class="ui inverted segment">
                                                         <div class="ui inverted list">
-
-
                                                             <g:if test="${ie}">
                                                                 <div class="item">
                                                                     <i class="save icon la-popup-tooltip la-delay"
                                                                        data-content="${message(code: 'issueEntitlement.perpetualAccessBySub.label')}"></i>
 
-                                                                <div class="content">
-                                                                    <div class="header">
+                                                                    <div class="content">
+                                                                        <div class="header">
                                                                         ${showCompact ? '' : message(code: 'issueEntitlement.perpetualAccessBySub.label') + ':'}
-                                                                    </div>
-                                                                    <div class="description">
-                                                                        --}%%{--newSub come only from Workflow Survey with IEs--}%%{--
-                                                                        <g:if test="${newSub}">
-                                                                            <g:if test="${participantPerpetualAccessToTitle}">
-                                                                                ${RDStore.YN_YES.getI10n('value')}
-                                                                            </g:if>
-                                                                            <g:else>
-                                                                                ${RDStore.YN_NO.getI10n('value')}
-                                                                            </g:else>
-                                                                        </g:if>
-                                                                        <g:else>
-                                                                            <%
-                                                                                if (ie.perpetualAccessBySub) {
-                                                                                    println g.link([action: 'index', controller: 'subscription', id: ie.perpetualAccessBySub.id], "${RDStore.YN_YES.getI10n('value')}: ${ie.perpetualAccessBySub.dropdownNamingConvention()}")
-                                                                                } else {
-                                                                                    println RDStore.YN_NO.getI10n('value')
-                                                                                }
-                                                                            %>
-                                                                        </g:else>
-                                                                    </div>
+                                                                        </div>
+                                                                        <div class="description">
+                                                                        <%
+                                                                            if (ie.perpetualAccessBySub) {
+                                                                                println g.link([action: 'index', controller: 'subscription', id: ie.perpetualAccessBySub.id], "${RDStore.YN_YES.getI10n('value')}: ${ie.perpetualAccessBySub.dropdownNamingConvention()}")
+                                                                            } else {
+                                                                                println RDStore.YN_NO.getI10n('value')
+                                                                            }
+                                                                        %>
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             </g:if>
@@ -503,8 +391,7 @@
                                                                 <div class="content">
                                                                     <div class="header">Mein verhandelter Preis:</div>
 
-                                                                    <div class="description">2232 Euro<div>/div>
-                                                                    </div>
+                                                                    <div class="description">2232 Euro</div>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -517,7 +404,7 @@
                             </div>
                         </div>
                     </div>
-                </g:if>--}%
+                </g:if>
 
                 <table class="ui sortable celled la-js-responsive-table la-table table la-ignore-fixed la-bulk-header">
                     <thead>

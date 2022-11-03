@@ -45277,6 +45277,22 @@ dd {
 .ui.list > .disabled.item {
   pointer-events: all;
 }
+
+.ui.card .la-label-list .ui.label {
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  margin-bottom: 6px;
+}
+
+.ui.card .la-label-list .description {
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+}
+
+.ui.card .la-label-list .item:nth-child(2) {
+  margin-top: 10px;
+}
 /*!
  * # Fomantic-UI 2.8.8 - Loader
  * http://github.com/fomantic/Fomantic-UI/
