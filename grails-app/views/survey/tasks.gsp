@@ -8,8 +8,7 @@
 </ui:controlButtons>
 
 <ui:h1HeaderWithIcon type="Survey">
-<ui:xEditable owner="${surveyInfo}" field="name"
-                 overwriteEditable="${surveyInfo.isSubscriptionSurvey ? false : editable}"/>
+<ui:xEditable owner="${surveyInfo}" field="name"/>
 </ui:h1HeaderWithIcon>
 <uiSurvey:statusWithRings object="${surveyInfo}" surveyConfig="${surveyConfig}" controller="survey" action="show"/>
 
