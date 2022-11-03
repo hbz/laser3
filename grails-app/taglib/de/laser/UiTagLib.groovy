@@ -8,6 +8,7 @@ import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
+import org.apache.groovy.io.StringBuilderWriter
 import org.grails.encoder.CodecLookup
 import org.grails.encoder.Encoder
 import org.grails.taglib.TagLibraryLookup
@@ -437,24 +438,24 @@ class UiTagLib {
 
     def form = { attrs, body ->
 
-        println attrs
-        String fController = attrs.controller ?: ''
-        String fAction     = attrs.action     ?: ''
-        boolean addForm =  (fController || fAction)
+        Map<String, Object> formAttrs = [
+                controller:     attrs.controller ?: null,
+                action:         attrs.action ?: null,
+                method:         attrs.method ?: 'POST',
+                autocomplete:   attrs.autocomplete ?: 'off',
+                id:             attrs.id ?: null,
+                class:          'ui form' + (attrs.class ? ' ' + attrs.class: ''),
+                params:         attrs.params,
+        ]
+
+        (attrs.keySet() as Set<String>).findAll{ it.startsWith('data-')}.each{ formAttrs.put(it, attrs.getAt(it))}
+
+        Writer bodyWriter = new StringBuilderWriter()
+        bodyWriter << '<input type="hidden" name="' + FormService.FORM_SERVICE_TOKEN + '" value="' + formService.getNewToken() + '"/>'
+        bodyWriter << body()
 
         out << '<div class="ui grey segment la-clear-before">'
-        if (addForm) {
-            out << '<form class="ui form' + (attrs.class ? ' ' + attrs.class : '') + '"'
-            out << ' controller="' + (fController ?: controllerName) + '"'
-            out << ' action="' + (fAction ?: actionName) + '"'
-            out << ' method="' + (attrs.method ?: 'POST') + '"'
-            out << '>'
-            out << '<input type="hidden" name="' + FormService.FORM_SERVICE_TOKEN + '" value="' + formService.getNewToken() + '"/>'
-        }
-
-        out << body()
-
-        if (addForm) { out << '</form>' }
+        out << g.form(formAttrs, bodyWriter.toString())
         out << '</div>'
     }
 

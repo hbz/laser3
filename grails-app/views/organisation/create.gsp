@@ -17,9 +17,8 @@
 		<div class="ui grid">
 
 			<div class="twelve wide column">
-				<ui:greySegment>
 
-					<g:form class="ui form" action="create" >
+					<ui:form controller="org" action="create" >
 						<fieldset>
                             <laser:render template="form"/>
 
@@ -31,9 +30,7 @@
 								<input type="button" class="ui button js-click-control" onclick="JSPC.helper.goBack();" value="${message(code:'default.button.cancel.label')}" />
 							</div>
 						</fieldset>
-					</g:form>
-
-				</ui:greySegment>
+					</ui:form>
 			</div><!-- .twelve -->
 
 				<aside class="four wide column">

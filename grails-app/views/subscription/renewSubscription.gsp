@@ -11,8 +11,7 @@
 
 <ui:messages data="${flash}"/>
 
-<ui:greySegment>
-    <g:form action="processRenewSubscription" method="post" params="${params}">
+    <ui:form controller="subscription" action="processRenewSubscription" params="${params}">
 
         <div>
             <table class="ui celled la-js-responsive-table la-table table">
@@ -119,7 +118,6 @@
             <br />
 
         </div>
-    </g:form>
-</ui:greySegment>
+    </ui:form>
 
 <laser:htmlEnd />
