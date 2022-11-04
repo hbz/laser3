@@ -9,7 +9,7 @@
         </g:if>
     </ui:h1HeaderWithIcon>
 
-    <ui:filter>
+    <ui:filter simple="true">
         <form class="ui form">
             <div class="fields">
 

@@ -9,7 +9,7 @@
 
         <ui:messages data="${flash}" />
 
-        <ui:filter>
+        <ui:filter simple="true">
             <g:form action="hardDeletePkgs" method="get" params="${params}" class="ui form">
                 <input type="hidden" name="offset" value="${params.offset}"/>
 

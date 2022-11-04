@@ -343,29 +343,18 @@ class UiTagLib {
         }
     }
 
-    //<ui:filter showFilterButton="true|false" addFilterJs="true" extended="true|false"> CONTENT <ui:filter>
+    //<ui:filter simple="true|false" extended="true|false"> CONTENT </ui:filter>
 
     def filter = { attrs, body ->
 
+        boolean simpleFilter = attrs.simple?.toLowerCase() == 'true'
         boolean extended = true
-        boolean showFilterButton = false
 
-        if (attrs.showFilterButton) {
-            if (attrs.showFilterButton.toLowerCase() == 'true') {
-                showFilterButton = true
-            }
-            else if (attrs.showFilterButton.toLowerCase() == 'false') {
-                showFilterButton = false
-            }
-        }
-
-        if (showFilterButton) {
+        if (! simpleFilter) {
 
 			// overwrite due attribute
             if (attrs.extended) {
-                if (attrs.extended.toLowerCase() == 'true') {
-                    extended = true
-                } else if (attrs.extended.toLowerCase() == 'false') {
+                if (attrs.extended.toLowerCase() == 'false') {
                     extended = false
                 }
             }
@@ -375,9 +364,7 @@ class UiTagLib {
                 def cacheEntry = sessionCache.get("${UserSetting.KEYS.SHOW_EXTENDED_FILTER.toString()}/${controllerName}/${actionName}")
 
                 if (cacheEntry) {
-                    if (cacheEntry.toLowerCase() == 'true') {
-                        extended = true
-                    } else if (cacheEntry.toLowerCase() == 'false') {
+                    if (cacheEntry.toLowerCase() == 'false') {
                         extended = false
                     }
                 }
@@ -386,9 +373,7 @@ class UiTagLib {
                     User currentUser = contextService.getUser()
                     String settingValue = currentUser.getSettingsValue(UserSetting.KEYS.SHOW_EXTENDED_FILTER, RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N)).value
 
-                    if (settingValue.toLowerCase() == 'yes') {
-                        extended = true
-                    } else if (settingValue.toLowerCase() == 'no') {
+                    if (settingValue.toLowerCase() == 'no') {
                         extended = false
                     }
                 }
@@ -396,22 +381,22 @@ class UiTagLib {
         }
         // for WCAG
         out << '<section class="la-clearfix" aria-label="filter">'
-            if (showFilterButton) {
-                out << '<button aria-expanded="' + (extended ?'true':'false')  + '"  class="ui right floated button la-inline-labeled la-js-filterButton la-clearfix ' + (extended ?'':'blue') + '">'
+
+            if (! simpleFilter) {
+                out << '<button aria-expanded="' + (extended ? 'true':'false') + '" class="ui right floated button la-inline-labeled la-js-filterButton la-clearfix' + (extended ? '':' blue') + '">'
                 out << '    Filter'
                 out << '    <i aria-hidden="true" class="filter icon"></i>'
                 out << '   <span class="ui circular label la-js-filter-total hidden">0</span>'
                 out << '</button>'
+
+                out << render(template: '/templates/filter/js', model: [filterAjaxUri: "${controllerName}/${actionName}"])
             }
 
             out << '<div class="ui la-filter segment la-clear-before"' + (extended ?'':' style="display: none;"') + '>'
             out << body()
             out << '</div>'
-        out << '</section>'
 
-        if (attrs.addFilterJs) {
-            out << render(template: '/templates/filter/js', model: [filterAjaxUri: "${controllerName}/${actionName}"])
-        }
+        out << '</section>'
     }
 
     def searchSegment = { attrs, body ->

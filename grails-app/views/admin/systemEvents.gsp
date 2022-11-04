@@ -9,7 +9,7 @@
 
     <ui:h1HeaderWithIcon message="menu.admin.systemEvents" total="${SystemEvent.count()}"/>
 
-    <ui:filter>
+    <ui:filter simple="true">
         <form id="filter" class="ui form">
             <div class="five fields">
                 <div class="field">

@@ -80,7 +80,7 @@
 
 %{--------------CUSTOMER IDENTIFIERS------------------------}%
         <g:if test="${params.tab == 'customerIdentifiers'}">
-            <ui:filter showFilterButton="true" addFilterJs="true">
+            <ui:filter>
                 <g:form controller="organisation" action="ids" class="ui small form" method="get">
                     <g:hiddenField name="tab" value="customerIdentifiers"/>
                     <g:hiddenField name="id" value="${orgInstance.id}"/>

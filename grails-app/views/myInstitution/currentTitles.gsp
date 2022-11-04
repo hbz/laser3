@@ -62,7 +62,7 @@
 
 <ui:messages data="${flash}"/>
 
-<ui:filter showFilterButton="true" addFilterJs="true">
+<ui:filter>
     <g:form id="filtering-form" action="currentTitles" controller="myInstitution" method="get" class="ui form">
 
         <g:set var="filterSub" value="${params.filterSub ? params.list('filterSub') : "all"}"/>

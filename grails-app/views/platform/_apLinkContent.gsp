@@ -1,4 +1,4 @@
-<ui:filter>
+<ui:filter simple="true">
     <g:form action="linkAccessPoint" controller="platform" method="get" class="ui small form">
         <input type="hidden" name="platform_id" value="${platformInstance.id}">
         <div class="fields">

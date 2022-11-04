@@ -37,7 +37,7 @@
 
 <ui:messages data="${flash}"/>
 
-<ui:filter showFilterButton="true" addFilterJs="true">
+<ui:filter>
     <g:form action="addressbook" controller="myInstitution" method="get" class="ui small form">
         <div class="four fields">
             <div class="field">
