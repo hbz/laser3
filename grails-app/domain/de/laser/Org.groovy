@@ -555,6 +555,28 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
     }
 
     /**
+     * Retrieves e-mails of the general contact persons of this organisation
+     * @param onlyPublic should only the public contacts being retieved?
+     * @return a {@link List} of {@link String}s marked as general contacts  e-mails of this organisation
+     */
+    List<String> getMailsOfGeneralContactPersons(boolean onlyPublic) {
+        if (onlyPublic) {
+            Person.executeQuery(
+                    "select distinct c.content from Contact c inner join c.prs as p inner join p.roleLinks pr where c.contentType = :contentType and p.isPublic = true and pr.org = :org and pr.functionType = :gcp",
+                    [org: this, gcp: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, contentType: RDStore.CCT_EMAIL]
+            )
+        }
+        else {
+            Org ctxOrg = BeanStore.getContextService().getOrg()
+            Person.executeQuery(
+                    "select distinct c.content from Contact c inner join c.prs as p inner join p.roleLinks pr where c.contentType = :contentType and pr.org = :org and pr.functionType = :gcp " +
+                            " and ( (p.isPublic = false and p.tenant = :ctx) or (p.isPublic = true) )",
+                    [org: this, gcp: RDStore.PRS_FUNC_GENERAL_CONTACT_PRS, ctx: ctxOrg, contentType: RDStore.CCT_EMAIL]
+            )
+        }
+    }
+
+    /**
      * Gets all public contact persons of this organisation
      * @return a {@link List} of public {@link Person}s
      */
