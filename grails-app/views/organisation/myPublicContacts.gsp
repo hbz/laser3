@@ -59,7 +59,7 @@
 
     <laser:render template="/templates/copyFilteredEmailAddresses" model="[emailAddresses: emailAddresses]"/>
 
-    <ui:filter>
+    <ui:filter simple="true">
         <g:form action="${actionName}" controller="organisation" method="get" params="${params}" class="ui small form">
             <div class="three fields">
                 <div class="field">
@@ -121,7 +121,7 @@
 <div class="ui bottom attached tab segment ${params.tab == 'personAddresses' ? 'active' : ''}"
      data-tab="personAddresses">
 
-    <ui:filter>
+    <ui:filter simple="true">
         <g:form action="${actionName}" controller="organisation" method="get" params="${params}" class="ui small form">
             <div class="three fields">
                 <div class="field">

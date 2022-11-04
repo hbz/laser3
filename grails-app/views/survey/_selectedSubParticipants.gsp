@@ -23,7 +23,7 @@
 
 </div>
 
-<ui:filter showFilterButton="true" addFilterJs="true">
+<ui:filter>
     <g:form action="surveyParticipants" method="post" class="ui form"
             params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
         <laser:render template="/templates/filter/orgFilter"

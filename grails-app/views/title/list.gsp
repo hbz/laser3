@@ -7,7 +7,7 @@
 
     <ui:h1HeaderWithIcon message="menu.public.all_titles" total="${resultsTotal >= 10000 ? '10000+' : (resultsTotal > 0 ? resultsTotal : 0)}" floated="true" />
 
-    <ui:filter showFilterButton="true" addFilterJs="true">
+    <ui:filter>
       <g:form action="index" role="form" class="ui form" method="get" params="${params}">
         <input type="hidden" name="offset" value="${params.offset}"/>
         <div class="three fields">

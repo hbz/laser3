@@ -9,7 +9,7 @@
 
 <laser:render template="nav"/>
 
-<ui:filter>
+<ui:filter simple="true">
     <g:form action="manageProperties" method="post" class="ui form" id="${params.id}">
         <laser:render template="/templates/properties/genericFilter" model="[propList: propList, hideFilterProp: true, label:message(code: 'subscription.property.search')]"/>
 

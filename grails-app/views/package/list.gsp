@@ -15,7 +15,7 @@
 
     <ui:messages data="${flash}" />
 
-  <ui:filter showFilterButton="true" addFilterJs="true">
+  <ui:filter>
           <g:form action="list" method="get" class="ui form">
 
               <div class="field">

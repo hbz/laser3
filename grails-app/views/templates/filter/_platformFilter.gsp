@@ -1,6 +1,6 @@
 <%@ page import="de.laser.RefdataCategory; de.laser.storage.RDConstants; de.laser.storage.RDStore" %>
 
-<ui:filter showFilterButton="true" addFilterJs="true">
+<ui:filter>
     <g:form controller="${controllerName}" action="${actionName}" method="get" class="ui form">
         <div class="three fields">
             <div class="field">

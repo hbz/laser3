@@ -24,7 +24,7 @@
 
 <ui:messages data="${flash}"/>
 
-<ui:filter showFilterButton="true" addFilterJs="true">
+<ui:filter>
     <g:form action="currentSurveysConsortia" controller="survey" method="post" class="ui small form">
         <div class="four fields">
             <div class="field">

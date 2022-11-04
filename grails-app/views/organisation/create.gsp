@@ -18,7 +18,7 @@
 
 			<div class="twelve wide column">
 
-					<ui:form controller="org" action="create" >
+					<ui:form controller="org" action="create">
 						<fieldset>
                             <laser:render template="form"/>
 

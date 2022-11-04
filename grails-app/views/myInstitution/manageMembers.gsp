@@ -55,7 +55,7 @@
         List configShowTable = ['sortname', 'name', 'status', 'mainContact', 'libraryType', 'legalInformation', 'numberOfSubscriptions', 'numberOfSurveys']
     %>
 
-    <ui:filter showFilterButton="true" addFilterJs="true">
+    <ui:filter>
         <g:form action="manageMembers" method="get" class="ui form">
             <laser:render template="/templates/filter/orgFilter"
                       model="[
