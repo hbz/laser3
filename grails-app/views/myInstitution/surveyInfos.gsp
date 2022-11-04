@@ -42,7 +42,7 @@
     <g:set var="choosenOrg" value="${Org.findById(ownerId)}"/>
 
 
-    <ui:form>
+    <ui:greySegment>
         <h3 class="ui header"><g:message code="surveyInfo.owner.label"/>:</h3>
 
         <g:if test="${choosenOrg}">
@@ -84,7 +84,7 @@
                 </g:else>
             </div>
         </div>
-    </ui:form>
+    </ui:greySegment>
 </g:if>
 
 <br />

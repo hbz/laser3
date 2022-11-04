@@ -190,7 +190,7 @@
         ${message(code: 'copyProperties.copyProperties', args: [message(code: 'copyProperties.' + params.tab)])}
     </h2>
 
-    <ui:form>
+    <ui:greySegment>
         <div class="ui grid">
 
             <div class="row">
@@ -236,7 +236,7 @@
                 </div>
             </div>
         </div>
-    </ui:form>
+    </ui:greySegment>
 
 %{--<div class="ui icon positive message">
     <i class="info icon"></i>
@@ -258,7 +258,7 @@
     </div>
 </div>--}%
 
-    <ui:form>
+    <ui:greySegment>
         <g:if test="${properties}">
 
             <g:form action="proccessCopyProperties" controller="survey" id="${surveyInfo.id}"
@@ -686,7 +686,7 @@
         <g:else>
             <g:message code="copyProperties.noCopyProperties" args="[message(code: 'copyProperties.' + params.tab)]"/>
         </g:else>
-    </ui:form>
+    </ui:greySegment>
 
     <div class="sixteen wide field" style="text-align: center;">
         <g:if test="${params.tab != 'privateProperties'}">

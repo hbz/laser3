@@ -181,11 +181,11 @@
 </g:if>
 <g:else>
 
-    <ui:form>
+    <ui:greySegment>
         <h3 class="ui header">
             <g:message code="survey.notExist.plural"/>
         </h3>
-    </ui:form>
+    </ui:greySegment>
 </g:else>
 <laser:htmlEnd />
 

@@ -10,8 +10,7 @@
 
 <ui:messages data="${flash}"/>
 
-<ui:form>
-    <g:form action="processCreateGeneralSurvey" controller="survey" method="post" class="ui form">
+<ui:form controller="survey" action="processCreateGeneralSurvey">
         <div class="field required ">
             <label>${message(code: 'surveyInfo.name.label')}  <g:message code="messageRequiredField" /></label>
             <input type="text" name="name" placeholder="" value="${params.name}" required/>
@@ -40,11 +39,7 @@
 
         <br />
 
-
-        <input type="submit" class="ui button"
-               value="${message(code: 'createGeneralSurvey.create')}"/>
-
-    </g:form>
+        <input type="submit" class="ui button" value="${message(code: 'createGeneralSurvey.create')}"/>
 </ui:form>
 
 <laser:htmlEnd />

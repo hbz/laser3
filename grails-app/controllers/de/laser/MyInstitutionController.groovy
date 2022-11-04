@@ -35,7 +35,6 @@ import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
 import de.laser.workflow.WfWorkflow
-import de.laser.workflow.WfWorkflowPrototype
 import grails.gsp.PageRenderer
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
@@ -72,7 +71,6 @@ class MyInstitutionController  {
     AccessService accessService
     AddressbookService addressbookService
     ContextService contextService
-    CompareService compareService
     ComparisonService comparisonService
     DeletionService deletionService
     DocstoreService docstoreService

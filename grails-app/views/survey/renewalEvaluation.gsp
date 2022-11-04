@@ -55,7 +55,7 @@
 
     <ui:messages data="${[message: message(code: 'renewalEvaluation.dynamicSite')]}"/>
 
-    <ui:form>
+    <ui:greySegment>
 
         %{--<h3 class="ui header">
         <g:message code="renewalEvaluation.parentSubscription"/>:
@@ -125,7 +125,7 @@
             </div>
         </div>
 
-    </ui:form>
+    </ui:greySegment>
 
     <div class="la-inline-lists">
             <div class="ui card">
@@ -181,7 +181,7 @@
     </div>
 
 
-    <ui:form>
+    <ui:greySegment>
 
         <div class="ui top attached stackable tabular la-tab-with-js menu">
             <a class="active item" data-tab="orgsContinuetoSubscription">
@@ -355,7 +355,7 @@
 
         </div>
 
-    </ui:form>
+    </ui:greySegment>
 
 
     <g:form action="workflowRenewalSent" method="post" class="ui form"

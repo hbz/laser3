@@ -15,7 +15,7 @@
 <ui:h1HeaderWithIcon message="mailTemplate.plural.label" />
 
 <ui:messages data="${flash}"/>
-<ui:form>
+<ui:greySegment>
     <g:if test="${mailTemplates?.size() > 0}">
 
         <table class="ui celled sortable table la-js-responsive-table la-table">
@@ -62,7 +62,7 @@
             ${message(code: 'result.empty')}
         </div>
     </g:else>
-</ui:form>
+</ui:greySegment>
 
 
 <ui:modal id="editMailTemplate" message="mailTemplate.label" isEditModal="isEditModal">

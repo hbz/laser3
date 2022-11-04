@@ -19,7 +19,7 @@ class FormService {
      * @return a randomised unique token as MD5 hash
      */
     String getNewToken() {
-        return "${UUID.randomUUID()}:${System.currentTimeMillis()}".encodeAsMD5()
+        return "${System.currentTimeMillis()}:${UUID.randomUUID()}".encodeAsMD5()
     }
 
     /**

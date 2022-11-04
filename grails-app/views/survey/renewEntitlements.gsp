@@ -102,7 +102,7 @@
     </div>
 </g:if>--}%
 
-<ui:form>
+<ui:greySegment>
 
     <h2 class="ui header left aligned aligned"><g:message
             code="renewEntitlementsWithSurvey.currentEntitlements"/> (${ies.size()})</h2>
@@ -232,7 +232,7 @@
 
     </div>
 
-</ui:form>
+</ui:greySegment>
 
 
 

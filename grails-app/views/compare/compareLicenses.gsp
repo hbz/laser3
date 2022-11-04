@@ -8,9 +8,7 @@
 
 <ui:h1HeaderWithIcon message="menu.my.comp_lic" />
 
-<ui:form>
-    <g:form class="ui form" action="${actionName}" method="post">
-
+<ui:form controller="compare" action="${actionName}">
         <div class="ui field">
         <label for="status">${message(code: 'filter.status')}</label>
         <select id="status" name="status" multiple="" class="ui search selection fluid dropdown" onchange="JSPC.app.adjustDropdown()">
@@ -49,7 +47,6 @@
                                                                name="Compare" class="ui button"/>
         </div>
 
-    </g:form>
 </ui:form>
 
 <g:if test="${objects}">

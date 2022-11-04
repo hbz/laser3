@@ -41,14 +41,14 @@
 </h2>
 
 <g:if test="${(surveyInfo.status in [RDStore.SURVEY_SURVEY_STARTED, RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED])}">
-    <ui:form>
+    <ui:greySegment>
 
         <laser:render template="evaluationParticipantsView" model="[showCheckbox: true,
                                                                 showTransferFields: true,
                                                                 processAction: 'processTransferParticipants',
                                                                 tmplConfigShow   : ['lineNumber', 'name', (surveyConfig.pickAndChoose ? 'finishedDate' : ''), (surveyConfig.pickAndChoose ? 'surveyTitlesCount' : ''), 'surveyProperties', 'commentOnlyForOwner']]"/>
 
-    </ui:form>
+    </ui:greySegment>
 </g:if>
 <g:else>
     <div class="ui segment">

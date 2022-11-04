@@ -12,8 +12,7 @@
 
 <ui:messages data="${flash}"/>
 
-<ui:form>
-    <g:form action="processCreateSubscriptionSurvey" controller="survey" method="post" class="ui form">
+    <ui:form controller="survey" action="processCreateSubscriptionSurvey">
         <g:hiddenField id="sub_id_${subscription?.id}" name="sub" value="${subscription?.id}"/>
         <div class="field required ">
             <label>${message(code: 'surveyInfo.name.label')} ${message(code: 'messageRequiredField')}</label>
@@ -63,8 +62,7 @@
         <input type="submit" class="ui button"
                value="${message(code: 'createSubscriptionSurvey.create')}"/>
 
-    </g:form>
-</ui:form>
+    </ui:form>
 
 <laser:script file="${this.getGroovyPageFileName()}">
         $('#subSurveyUseForTransfer').click(function () {

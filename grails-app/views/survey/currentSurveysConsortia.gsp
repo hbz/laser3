@@ -173,7 +173,7 @@
     </g:form>
 </ui:filter>
 
-<ui:form>
+<ui:greySegment>
 
     <g:if test="${surveys}">
 
@@ -393,7 +393,7 @@
         </g:else>
     </g:else>
 
-</ui:form>
+</ui:greySegment>
 
 <g:if test="${surveysCount}">
     <ui:paginate action="${actionName}" controller="${controllerName}" params="${params}"

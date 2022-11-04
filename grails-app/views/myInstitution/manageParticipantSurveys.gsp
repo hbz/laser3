@@ -139,7 +139,7 @@
 
 <div>
 
-    <ui:form>
+    <ui:greySegment>
 
         <ui:tabs actionName="${actionName}">
             <ui:tabsItem controller="myInstitution" action="manageParticipantSurveys"
@@ -247,7 +247,7 @@
 
             </g:each>
         </table>
-    </ui:form>
+    </ui:greySegment>
 </div>
 
 <laser:htmlEnd />

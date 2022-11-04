@@ -16,26 +16,31 @@
         }
     }
 
-    List<String> colWide = (controllerName != 'myInstitution') ? ['eight', 'three', 'three', 'two'] : ['six', 'two', 'three', 'three', 'two']
-    int cwi = 0
+    List<String> colWide = (controllerName == 'myInstitution') ? ['one', 'five', 'two', 'three', 'three', 'two'] : ['eight', 'three', 'three', 'two']
+    int cwCounter = 0
+    int trCounter = 1
+
+    List<DocContext> securityWorkaroundList = []
 %>
 
     <table class="ui celled la-js-responsive-table la-table table documents-table">
         <thead>
             <tr>
-                <%--<g:if test="${editable}"><th>${message(code:'default.select.label')}</th></g:if> : REMOVED BULK--%>
-                <th scope="col" class="${colWide[cwi++]} wide la-smaller-table-head">${message(code:'template.addDocument.name')}</th>
-                <th scope="col" class="${colWide[cwi++]} wide" rowspan="2">${message(code:'license.docs.table.type')}</th>
-                <th scope="col" class="${colWide[cwi++]} wide" rowspan="2">${message(code:'template.addDocument.confidentiality')}</th>
+                <g:if test="${controllerName == 'myInstitution'}">
+                    <th scope="col" class="${colWide[cwCounter++]} wide" rowspan="2">${message(code:'sidewide.number')}</th>
+                </g:if>
+                <th scope="col" class="${colWide[cwCounter++]} wide la-smaller-table-head">${message(code:'template.addDocument.name')}</th>
+                <th scope="col" class="${colWide[cwCounter++]} wide" rowspan="2">${message(code:'license.docs.table.type')}</th>
+                <th scope="col" class="${colWide[cwCounter++]} wide" rowspan="2">${message(code:'template.addDocument.confidentiality')}</th>
                 <%--<th>${message(code:'org.docs.table.ownerOrg')}</th>--%>
                 <g:if test="${controllerName == 'myInstitution'}">
-                    <th scope="col" class="${colWide[cwi++]} wide la-smaller-table-head">${message(code:'org.docs.table.shareConf')}</th>
+                    <th scope="col" class="${colWide[cwCounter++]} wide la-smaller-table-head">${message(code:'org.docs.table.shareConf')}</th>
                 </g:if>
                 <%--<g:elseif test="${controllerName == 'organisation'}">
                     <th>${message(code:'org.docs.table.targetFor')}</th>
                     <th>${message(code:'org.docs.table.shareConf')}</th>
                 </g:elseif>--%>
-                <th scope="col" class="${colWide[cwi]} wide" rowspan="2">${message(code:'default.actions.label')}</th>
+                <th scope="col" class="${colWide[cwCounter]} wide" rowspan="2">${message(code:'default.actions.label')}</th>
             </tr>
             <tr>
                 <th scope="col" class="la-smaller-table-head">${message(code:'license.docs.table.fileName')}</th>
@@ -95,8 +100,15 @@
                     }
                 %>
                 <g:if test="${(((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3)) && visible && docctx.status != RDStore.DOC_CTX_STATUS_DELETED)}">
+                    <%
+                        securityWorkaroundList.add(docctx as DocContext)
+                    %>
                     <tr>
-%{--                        <th scope="row" class="la-th-column la-main-object">--}%
+                        <g:if test="${controllerName == 'myInstitution'}">
+                            <td class="center aligned">
+                                ${trCounter++}
+                            </td>
+                        </g:if>
                         <td>
                             <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}" />
                             <strong>
@@ -166,14 +178,6 @@
                                         </g:else>
                                     </g:if>
                                 </g:if>
-%{--                                <g:if test="${docctx.owner.contentType == Doc.CONTENT_TYPE_FILE && docctx.owner.owner.id == contextService.getOrg().id}">--}%
-%{--                                    <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().contains(docctx.owner.mimeType)}" />--}%
-%{--                                    <button class="ui icon blue button la-modern-button${supportedMimeType ? '' : ' la-hidden disabled'}"--}%
-%{--                                            data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">--}%
-%{--                                        <i class="search icon"></i>--}%
-%{--                                    </button>--}%
-%{--                                </g:if>--}%
-
                                 <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i class="download icon"></i></g:link>
                                 <g:if test="${accessService.checkMinUserOrgRole(user,docctx.owner.owner,"INST_EDITOR") && inOwnerOrg}">
                                     <button type="button" class="ui icon blue button la-modern-button la-popup-tooltip la-delay" data-ui="modal" data-href="#modalEditDocument_${docctx.id}" data-content="${message(code:"template.documents.edit")}"><i class="pencil icon"></i></button>
@@ -201,6 +205,6 @@
 </laser:script>
 
 <%-- a form within a form is not permitted --%>
-<g:each in="${instance.documents}" var="docctx">
+<g:each in="${securityWorkaroundList}" var="docctx">
     <laser:render template="/templates/documents/modal" model="${[ownobj: instance, owntp: owntp, docctx: docctx, doc: docctx.owner]}"/>
 </g:each>

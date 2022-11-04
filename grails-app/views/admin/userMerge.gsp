@@ -9,20 +9,19 @@
 
     <ui:messages data="${flash}" />
 
-<ui:form>
-    <g:form action="userMerge" method="GET" class="ui form">
+<ui:form controller="admin" action="userMerge">
 
         <p>Select the user to keep, and the user whose rights will be transferred. When 'merge' is clicked,
         a confirmation screen with 'user to merge' current rights will be displayed.</p>
 
         <div class="control-group">
             <div class="field">
-                <label>User to Keep</label>
+                <label for="userToKeep">User to Keep</label>
                 <g:select name="userToKeep" from="${usersActive}" optionKey="id"
                     optionValue="${{it.displayName + ' ( ' + it.id +' )'}}" noSelection="${['null':'-Choose user to keep-']}" />
             </div>
             <div class="field">
-                <label> User to Merge</label>
+                <label for="userToMerge">User to Merge</label>
                 <g:select name="userToMerge" from="${usersAll}" optionKey="id"
                     optionValue="${{it.displayName + ' ( ' + it.id +' )'}}" noSelection="${['null':'-Choose user to merge-']}"/>
             </div>
@@ -30,7 +29,6 @@
                 <input type="submit" value="Merge" class="ui button"/>
             </div>
         </div>
-    </g:form>
 </ui:form>
 
   
