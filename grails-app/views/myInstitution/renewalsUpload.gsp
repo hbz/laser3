@@ -6,12 +6,12 @@
     <ui:crumb message="menu.institutions.imp_renew" class="active" />
   </ui:breadcrumbs>
 
-    <ui:form>
+    <ui:greySegment>
       <g:form class="ui form" action="renewalsUpload" method="post" enctype="multipart/form-data" params="${params}">
           <input type="file" id="renewalsWorksheet" name="renewalsWorksheet"/><br /><br />
         <button type="submit" class="ui button">${message(code:'myinst.renewalUpload.upload')}</button>
       </g:form>
-    </ui:form>
+    </ui:greySegment>
 
     <g:if test="${(errors && (errors.size() > 0))}">
       <div>

@@ -124,7 +124,7 @@ Todo: Websocket communication is broken after upgrading from Grails 4 to Grails 
 
 * #### Juniversalchardet
 
-    *com.github.albfernandez:juniversalchardet* is only used in one file.
+    *com.github.albfernandez:juniversalchardet* is ~~only used in one file.~~ used in two files.
 
 
 

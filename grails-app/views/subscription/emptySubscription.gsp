@@ -11,8 +11,7 @@
 
         <ui:messages data="${flash}"/>
 
-        <ui:form>
-            <g:form action="processEmptySubscription" method="post" class="ui form newSubscription">
+        <ui:form controller="subscription" action="processEmptySubscription" class="newSubscription">
                 <div class="field required">
                     <label>${message(code:'myinst.emptySubscription.name')} <g:message code="messageRequiredField" /></label>
                     <input type="text" name="newEmptySubName" placeholder=""/>
@@ -57,7 +56,6 @@
                 </g:if>--%>
                 <input id="submitterFallback" type="submit" class="ui button js-click-control" value="${message(code:'default.button.create.label')}" />
                 <input type="button" class="ui button js-click-control" onclick="JSPC.helper.goBack();" value="${message(code:'default.button.cancel.label')}" />
-            </g:form>
         </ui:form>
 
     <hr />

@@ -3,7 +3,7 @@
 
 <g:set var="copyElementsService" bean="copyElementsService"/>
 
-<ui:form>
+<ui:greySegment>
 
     <g:if test="${!fromSurvey && !isRenewSub && !copyObject}">
         <laser:render template="/templates/copyElements/selectSourceAndTargetObject" model="[
@@ -729,7 +729,7 @@
             </div>
         </g:else>
     </g:form>
-</ui:form>
+</ui:greySegment>
 
 <g:if test="${!copyObject}">
     <laser:script file="${this.getGroovyPageFileName()}">

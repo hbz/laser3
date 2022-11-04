@@ -86,7 +86,7 @@
             </div>
 
             <div class="field">
-                <label>${message(code: 'default.type.label')}</label>
+                <label for="type">${message(code: 'default.type.label')}</label>
                 <g:select from="${[[SystemMessage.TYPE_ATTENTION, 'Systemmeldung'], [SystemMessage.TYPE_STARTPAGE_NEWS, 'Startseite']]}"
                           optionKey="${{it[0]}}"
                           optionValue="${{it[1]}}"

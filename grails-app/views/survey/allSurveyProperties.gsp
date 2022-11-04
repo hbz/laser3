@@ -27,7 +27,7 @@
            data-ui="modal" data-href="#createSurveyPropertyModal" type="submit">
 </g:if>
 
-<ui:form>
+<ui:greySegment>
 
     <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'surveyProperty.all.label')}
 
@@ -114,7 +114,7 @@
         </g:each>
     </table>
 
-</ui:form>
+</ui:greySegment>
 
 <ui:modal id="createSurveyPropertyModal" message="surveyProperty.create_new.label">
     <div class=" content">

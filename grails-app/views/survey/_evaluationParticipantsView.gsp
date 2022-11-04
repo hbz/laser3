@@ -528,7 +528,7 @@
     <g:if test="${showTransferFields}">
         <br />
         <br />
-        <ui:form>
+        <ui:greySegment>
         <div class="ui form">
         <h3 class="ui header">${message(code: 'surveyTransfer.info.label')}:</h3>
             <div class="two fields">
@@ -557,7 +557,7 @@
             </div>
 
             <input class="ui button" type="submit" value="${message(code: 'surveyTransfer.button')}">
-        </ui:form>
+        </ui:greySegment>
         </div>
 
     </g:if>

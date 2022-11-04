@@ -168,7 +168,7 @@
 </ui:filter>
 
 
-<ui:form>
+<ui:greySegment>
 
     <%
         def tmpParams = params.clone()
@@ -301,7 +301,7 @@
 
         </g:each>
     </table>
-</ui:form>
+</ui:greySegment>
 
 
 %{--<g:if test="${countSurveys."${params.tab}"}">

@@ -14,8 +14,7 @@
 
     <ui:messages data="${flash}" />
 
-    <ui:form>
-        <g:form action="createSystemAnnouncement" class="ui form">
+        <ui:form controller="admin" action="createSystemAnnouncement">
             <input type="hidden" name="saId" value="${currentAnnouncement?.id}">
             <div class="field">
                 <label for="saTitle">${message(code:'announcement.subject.label')}</label>
@@ -57,8 +56,7 @@ ${currentAnnouncement?.getCleanContent()}
                     <input type="submit" class="ui button" value="${message(code:'announcement.create.button.label')}" />
                 </g:else>
             </div>
-        </g:form>
-    </ui:form>
+        </ui:form>
 
     <br />
     <h2 class="ui header la-clear-before">${message(code:'announcement.previous.label')}</h2>

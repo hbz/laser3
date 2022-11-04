@@ -8,6 +8,7 @@ import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
+import org.apache.groovy.io.StringBuilderWriter
 import org.grails.encoder.CodecLookup
 import org.grails.encoder.Encoder
 import org.grails.taglib.TagLibraryLookup
@@ -23,6 +24,7 @@ class UiTagLib {
     AuditService auditService
     CodecLookup codecLookup
     ContextService contextService
+    FormService formService
     GenericOIDService genericOIDService
     TagLibraryLookup gspTagLibraryLookup
 
@@ -425,13 +427,49 @@ class UiTagLib {
         out << '</div>'
     }
 
-    //<ui:form> CONTENT <ui:form>
-
-    def form = { attrs, body ->
+    def greySegment = { attrs, body ->
 
         out << '<div class="ui grey segment la-clear-before">'
         out << body()
         out << '</div>'
+    }
+
+    /**
+     * @attr hideWrapper Renders only the &lt;form&gt; without a &lt;div&gt; wrapper
+     * @attr action The name of the action to use in the link, if not specified the default action will be linked
+     * @attr controller The name of the controller to use in the link, if not specified the current controller will be linked
+     * @attr method The form method to use, either 'POST' or 'GET'; defaults to 'POST'
+     * @attr autocomplete Defaults to 'off'
+     * @attr id The id to use in the link
+     * @attr class Additional css classes for the &lt;form&gt;
+     * @attr params Additional parameters to use in the link
+     */
+    def form = { attrs, body ->
+
+        Map<String, Object> formAttrs = [
+                controller  : attrs.controller ?: null,
+                action      : attrs.action ?: null,
+                method      : attrs.method ?: 'POST',
+                autocomplete: attrs.autocomplete ?: 'off',
+                id          : attrs.id ?: null,
+                class       : 'ui form' + (attrs.class ? ' ' + attrs.class : ''),
+                params      : attrs.params,
+        ]
+
+        (attrs.keySet() as Set<String>).findAll { it.startsWith('data-') }.each { formAttrs.put(it, attrs.getAt(it)) }
+
+        Writer bodyWriter = new StringBuilderWriter()
+        bodyWriter << '<input type="hidden" name="' + FormService.FORM_SERVICE_TOKEN + '" value="' + formService.getNewToken() + '"/>'
+        bodyWriter << body()
+
+        if ('true'.equalsIgnoreCase(attrs.hideWrapper as String)) {
+            out << g.form(formAttrs, bodyWriter.toString())
+        }
+        else {
+            out << '<div class="ui grey segment la-clear-before">'
+            out << g.form(formAttrs, bodyWriter.toString())
+            out << '</div>'
+        }
     }
 
     //<ui:datepicker class="grid stuff here" label="" bean="${objInstance}" name="fieldname" value="" required="" modifiers="" />

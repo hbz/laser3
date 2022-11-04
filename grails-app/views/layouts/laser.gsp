@@ -284,6 +284,7 @@
 
                                     <div class="menu" role="menu">
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="dev" action="frontend">Frontend</ui:link>
+                                        <ui:link generateElementId="true" class="item" role="menuitem" controller="dev" action="klodav">klodav</ui:link>
                                     </div>
                                 </div>
 

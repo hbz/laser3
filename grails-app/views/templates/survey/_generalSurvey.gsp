@@ -265,7 +265,7 @@
 <g:if test="${actionName == "show" && contextOrg.id == surveyConfig.surveyInfo.owner.id}">
     <g:set var="surveyProperties" value="${surveyConfig.getSortedSurveyConfigProperties()}"/>
 
-    <ui:form>
+    <ui:greySegment>
 
         <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'surveyProperty.selected.label')} <ui:totalNumber
                 total="${surveyProperties.size()}"/></h4>
@@ -390,11 +390,11 @@
 
         </table>
 
-    </ui:form>
+    </ui:greySegment>
 </g:if>
 
 <g:if test="${surveyResults}">
-    <ui:form>
+    <ui:greySegment>
         <h3 class="ui header"><g:message code="surveyConfigsInfo.properties"/>
         <ui:totalNumber total="${surveyResults.size()}"/>
         </h3>
@@ -523,5 +523,5 @@
                 </tr>
             </g:each>
         </table>
-    </ui:form>
+    </ui:greySegment>
 </g:if>

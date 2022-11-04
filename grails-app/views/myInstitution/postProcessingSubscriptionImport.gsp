@@ -9,8 +9,7 @@
         <ui:messages data="${flash}" />
         <h2 class="ui header"><g:message code="myinst.subscriptionImport.post.header2"/></h2>
         <h3 class="ui header"><g:message code="myinst.subscriptionImport.post.header3"/></h3>
-    <ui:form>
-        <g:form name="subscriptionParameter" action="addSubscriptions" controller="subscription" method="post">
+    <ui:form controller="subscription" action="addSubscriptions">
             <g:hiddenField name="candidates" value="${candidates.keySet() as JSON}"/>
             <table class="ui striped table">
                 <thead>
@@ -115,7 +114,6 @@
                     </tr>
                 </tfoot>
             </table>
-        </g:form>
     </ui:form>
 
     <laser:script file="${this.getGroovyPageFileName()}">

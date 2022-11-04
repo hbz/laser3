@@ -188,7 +188,7 @@
     </h2>
 
 
-    <ui:form>
+    <ui:greySegment>
         <div class="ui grid">
 
             <div class="row">
@@ -234,9 +234,9 @@
                 </div>
             </div>
         </div>
-    </ui:form>
+    </ui:greySegment>
 
-    <ui:form>
+    <ui:greySegment>
 
         <g:form action="proccessCopySurveyCostItems" controller="survey" id="${surveyInfo.id}"
                 params="[surveyConfigID: surveyConfig.id, targetSubscriptionId: targetSubscription?.id]"
@@ -492,7 +492,7 @@
                 </div>
             </div>
         </g:form>
-    </ui:form>
+    </ui:greySegment>
     <laser:script file="${this.getGroovyPageFileName()}">
         $('#costItemsToggler').click(function () {
             if ($(this).prop('checked')) {
