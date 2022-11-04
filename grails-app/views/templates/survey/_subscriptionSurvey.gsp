@@ -146,7 +146,7 @@
 
                     <div class="ui form">
                         <g:form action="setSurveyConfigComment" controller="survey" method="post"
-                                params="[surveyConfigID: surveyConfig.id, id: surveyInfo.id]">
+                                params="[surveyConfigID: surveyConfig.id, id: surveyInfo.id, setComment: true]">
                             <div class="field">
                                 <label><div class="ui icon la-popup-tooltip la-delay"
                                             data-content="${message(code: "surveyconfig.comment.comment")}">
@@ -154,6 +154,25 @@
                                     <i class="question small circular inverted icon"></i>
                                 </div></label>
                                 <textarea class="la-textarea-resize-vertical" name="comment" rows="15">${surveyConfig.comment}</textarea>
+                            </div>
+
+                            <div class="left aligned">
+                                <button type="submit"
+                                        class="ui button">${message(code: 'default.button.save_changes')}</button>
+                            </div>
+                        </g:form>
+                    </div>
+
+                    <div class="ui form">
+                        <g:form action="setSurveyConfigComment" controller="survey" method="post"
+                                params="[surveyConfigID: surveyConfig.id, id: surveyInfo.id, setCommentForNewParticipants: true]">
+                            <div class="field">
+                                <label><div class="ui icon la-popup-tooltip la-delay"
+                                            data-content="${message(code: "surveyconfig.commentForNewParticipants.comment")}">
+                                    ${message(code: 'surveyconfig.commentForNewParticipants.label')}
+                                    <i class="question small circular inverted icon"></i>
+                                </div></label>
+                                <textarea class="la-textarea-resize-vertical" name="commentForNewParticipants" rows="15">${surveyConfig.commentForNewParticipants}</textarea>
                             </div>
 
                             <div class="left aligned">
@@ -249,19 +268,38 @@
                         </dl>
                     </g:if>
 
-                    <div class="ui form la-padding-left-07em">
-                        <div class="field">
-                            <label>
-                                <g:message code="surveyConfigsInfo.comment"/>
-                            </label>
-                            <g:if test="${surveyConfig.comment}">
-                                <textarea class="la-textarea-resize-vertical" readonly="readonly" rows="1">${surveyConfig.comment}</textarea>
-                            </g:if>
-                            <g:else>
-                                <g:message code="surveyConfigsInfo.comment.noComment"/>
-                            </g:else>
+                    <g:if test="${subscription}">
+                        <div class="ui form la-padding-left-07em">
+                            <div class="field">
+                                <label>
+                                    <g:message code="surveyConfigsInfo.comment"/>
+                                </label>
+                                <g:if test="${surveyConfig.comment}">
+                                    <textarea class="la-textarea-resize-vertical" readonly="readonly"
+                                              rows="1">${surveyConfig.comment}</textarea>
+                                </g:if>
+                                <g:else>
+                                    <g:message code="surveyConfigsInfo.comment.noComment"/>
+                                </g:else>
+                            </div>
                         </div>
-                    </div>
+                    </g:if>
+                    <g:else>
+                        <div class="ui form la-padding-left-07em">
+                            <div class="field">
+                                <label>
+                                    <g:message code="surveyConfigsInfo.comment"/>
+                                </label>
+                                <g:if test="${surveyConfig.commentForNewParticipants}">
+                                    <textarea class="la-textarea-resize-vertical" readonly="readonly"
+                                              rows="1">${surveyConfig.commentForNewParticipants}</textarea>
+                                </g:if>
+                                <g:else>
+                                    <g:message code="surveyConfigsInfo.comment.noComment"/>
+                                </g:else>
+                            </div>
+                        </div>
+                    </g:else>
                 </g:else>
 
                 <br/>

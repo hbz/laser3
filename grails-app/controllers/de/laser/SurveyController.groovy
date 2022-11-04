@@ -3011,7 +3011,14 @@ class SurveyController {
             response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
-        result.surveyConfig.comment = params.comment
+        if(params.setComment){
+            result.surveyConfig.comment = params.comment
+        }
+
+        if(params.setCommentForNewParticipants){
+            result.surveyConfig.commentForNewParticipants = params.commentForNewParticipants
+        }
+
         SurveyConfig.withTransaction {
             if (!result.surveyConfig.save()) {
                 flash.error = g.message(code: 'default.save.error.general.message')
@@ -3309,6 +3316,7 @@ class SurveyController {
                                 subscription: sub,
                                 surveyInfo: newSurveyInfo,
                                 comment: params.copySurvey.copySurveyConfigComment ? baseSurveyConfig.comment : null,
+                                commentForNewParticipants: params.copySurvey.copySurveyConfigCommentForNewParticipants ? baseSurveyConfig.commentForNewParticipants : null,
                                 url: params.copySurvey.copySurveyConfigUrl ? baseSurveyConfig.url : null,
                                 urlComment: params.copySurvey.copySurveyConfigUrl ? baseSurveyConfig.urlComment : null,
                                 url2: params.copySurvey.copySurveyConfigUrl2 ? baseSurveyConfig.url2 : null,
@@ -3343,6 +3351,7 @@ class SurveyController {
                             type: baseSurveyConfig.type,
                             surveyInfo: newSurveyInfo,
                             comment: params.copySurvey.copySurveyConfigComment ? baseSurveyConfig.comment : null,
+                            commentForNewParticipants: params.copySurvey.copySurveyConfigCommentForNewParticipants ? baseSurveyConfig.commentForNewParticipants : null,
                             url: params.copySurvey.copySurveyConfigUrl ? baseSurveyConfig.url : null,
                             urlComment: params.copySurvey.copySurveyConfigUrl ? baseSurveyConfig.urlComment : null,
                             url2: params.copySurvey.copySurveyConfigUrl2 ? baseSurveyConfig.url2 : null,

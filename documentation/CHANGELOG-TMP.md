@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4363    04.11.2022  dev     3.0         Moe     Feature     Umfrage: eigene Bemerkungsfeld für neu Kunden
+
 4317    04.11.2022  dev     3.0         Moe     Feature     Reminder in Umfragen: abhakbar/Datum
 
 4570    03.11.2022  dev     3.0         Moe     Feature     Umfrage Mails pro Einrichtung selber erstellen mit Mail-Client
