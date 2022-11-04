@@ -195,6 +195,11 @@
                     ${message(code: 'surveyInfo.finishedDate')}
                 </th>
                 </g:if>
+                <g:if test="${tmplConfigItem.equalsIgnoreCase('reminderMailDate')}">
+                    <th>
+                        ${message(code: 'surveyOrg.reminderMailDate')}
+                    </th>
+                </g:if>
             </g:each>
             <th scope="col" rowspan="2" class="two">${message(code:'default.actions.label')}</th>
         </tr>
@@ -330,7 +335,12 @@
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('finishedDate')}">
                         <td>
-                            <uiSurvey:finishDate participant="${participant}" surveyConfig="${surveyConfig}"/>
+                            <ui:xEditable owner="${surveyOrg}" type="date" field="finishDate"/>
+                        </td>
+                    </g:if>
+                    <g:if test="${tmplConfigItem.equalsIgnoreCase('reminderMailDate')}">
+                        <td>
+                            <ui:xEditable owner="${surveyOrg}" type="date" field="reminderMailDate"/>
                         </td>
                     </g:if>
                 </g:each>
@@ -413,6 +423,11 @@
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('finishedDate')}">
                     <th>
                         ${message(code: 'surveyInfo.finishedDate')}
+                    </th>
+                </g:if>
+                <g:if test="${tmplConfigItem.equalsIgnoreCase('reminderMailDate')}">
+                    <th>
+                        ${message(code: 'surveyOrg.reminderMailDate')}
                     </th>
                 </g:if>
 
@@ -547,7 +562,12 @@
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('finishedDate')}">
                         <td>
-                            <uiSurvey:finishDate participant="${participant}" surveyConfig="${surveyConfig}"/>
+                            <ui:xEditable owner="${surveyOrg}" type="date" field="finishDate"/>
+                        </td>
+                    </g:if>
+                    <g:if test="${tmplConfigItem.equalsIgnoreCase('reminderMailDate')}">
+                        <td>
+                            <ui:xEditable owner="${surveyOrg}" type="date" field="reminderMailDate"/>
                         </td>
                     </g:if>
 

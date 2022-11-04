@@ -1737,6 +1737,13 @@ class SurveyController {
                     surveyService.emailsToSurveyUsersOfOrg(result.surveyInfo, org, false)
                 }
                 if(reminderMail) {
+                    SurveyOrg.withTransaction { TransactionStatus ts ->
+                        SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(org, result.surveyConfig)
+
+                        surveyOrg.reminderMailDate = new Date()
+                        surveyOrg.save()
+                    }
+
                     surveyService.emailsToSurveyUsersOfOrg(result.surveyInfo, org, true)
                     countReminderMails++
                 }
