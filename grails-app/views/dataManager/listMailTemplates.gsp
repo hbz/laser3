@@ -2,7 +2,7 @@
 <laser:htmlStart message="mailTemplate.plural.label" />
 
 <ui:breadcrumbs>
-    <ui:crumb controller="dataManager" action="index" text="${message(code:'menu.datamanager')}" />
+    <ui:crumb controller="dataManager" action="index" message="menu.datamanager" />
     <ui:crumb message="mailTemplate.plural.label" class="active"/>
 </ui:breadcrumbs>
 
