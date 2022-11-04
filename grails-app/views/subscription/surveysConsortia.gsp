@@ -29,7 +29,7 @@
                 ${message(code: 'sidewide.number')}
             </th>
 
-            <g:sortableColumn params="${params}" property="subscription.name"
+            <g:sortableColumn params="${params}" property="surveyInfo.name"
                               title="${message(code: 'surveyInfo.slash.name')}" rowspan="2" scope="col"/>
 
             <th>${message(code: 'default.status.label')}</th>

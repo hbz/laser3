@@ -10,6 +10,11 @@
         </g:if>
         <g:else>
 
+            <ui:actionsDropdownItem message="task.create.new" data-ui="modal" href="#modalCreateTask" />
+            <ui:actionsDropdownItem message="template.documents.add" data-ui="modal" href="#modalCreateDocument" />
+            <ui:actionsDropdownItem message="template.addNote" data-ui="modal" href="#modalCreateNote" />
+            <div class="divider"></div>
+
             <g:if test="${surveyInfo.type.id != RDStore.SURVEY_TYPE_RENEWAL.id}">
                 <ui:actionsDropdownItem controller="survey" action="copySurvey" params="[id: params.id]"
                                            message="copySurvey.label"/>
@@ -155,6 +160,12 @@
         </g:form>
 
     </ui:modal>
+</g:if>
+
+<g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR') && (actionName != 'currentSurveysConsortia' && actionName != 'workflowsSurveysConsortia')}">
+    <laser:render template="/templates/documents/modal" model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
+    <laser:render template="/templates/tasks/modal_create" model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
+    <laser:render template="/templates/notes/modal_create" model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
 </g:if>
 
 <laser:script file="${this.getGroovyPageFileName()}">

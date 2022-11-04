@@ -116,7 +116,7 @@
         <tbody>
         <tr>
             <td>
-                <p><strong>${choosenOrg?.name} (${choosenOrg?.shortname})</strong></p>
+                <p><strong><g:link controller="organisation" action="show" id="${choosenOrg.id}">${choosenOrg.name} (${choosenOrg.shortname})</g:link></strong></p>
 
                 ${choosenOrg?.libraryType?.getI10n('value')}
             </td>

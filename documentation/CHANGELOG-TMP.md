@@ -7,6 +7,20 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4570    03.11.2022  dev     3.0         Moe     Feature     Umfrage Mails pro Einrichtung selber erstellen mit Mail-Client
+
+4471    02.11.2022  dev     3.0         Moe     Bug         Umfragename bei aus einer Lizenz erstellten Umfragen in "Meine Umfragen" anzeigen und editierbar machen
+
+4446    02.11.2022  dev     3.0         Moe     Bug         Verlängerungsumfrage kann wegen gesetztem Pflichtmerkmal nicht entfernt werden
+
+4290    02.11.2022  dev     3.0         Moe     Bug         Plus-Icon fehlt in den Ufragedetails-Tabellen Anmerkungen und Aufgaben
+
+4480    31.10.2022  dev     3.0         Moe     Bug         Verlängerungsumfrage: Merkmale nur wenn befüllt mitnehmen
+
+4335    31.10.2022  dev     3.0         Moe     Bug         return bei Exports einbauen
+
+4365    31.10.2022  dev     3.0         Moe     Feature     In Kindlizenz einen Sprunklink auf Einrichtungsprofil einbauen
+
 4562    27.10.2022  dev     3.0         David   Feature     Dashboard: Workflow Nachbesserung
 
 4555    28.10.2022  rc-2.3  2.3.11      Moe     Bug         500er Anmerkungen-Reiter in Kindlizenz28.10.2022

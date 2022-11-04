@@ -240,17 +240,6 @@
                     <laser:render template="/templates/notes/card"
                               model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '', editable: accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')]}"/>
                 </div>
-
-                <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')}">
-
-                    <laser:render template="/templates/tasks/modal_create"
-                              model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
-
-                </g:if>
-                <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')}">
-                    <laser:render template="/templates/notes/modal_create"
-                              model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
-                </g:if>
             </g:if>
 
             <div id="container-documents">

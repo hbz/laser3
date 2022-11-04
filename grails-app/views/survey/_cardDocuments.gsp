@@ -114,10 +114,10 @@
     </laser:script>
 </g:if>
 
-<g:if test="${editable}">
+%{--<g:if test="${editable}">
     <laser:render template="/templates/documents/modal"
               model="${[ownobj: ownobj , owntp: 'surveyConfig']}"/>
-</g:if>
+</g:if>--}%
 
 <laser:script file="${this.getGroovyPageFileName()}">
     r2d2.initDynamicUiStuff('#container-documents')
