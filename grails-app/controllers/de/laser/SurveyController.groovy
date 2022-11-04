@@ -2811,34 +2811,19 @@ class SurveyController {
                 SurveyInfo surveyInfo = SurveyInfo.get(result.surveyInfo.id)
                 SurveyInfo.withTransaction {
 
-                    SurveyConfig.findAllBySurveyInfo(surveyInfo).each { config ->
+                    DocContext.executeUpdate("delete from DocContext dc where dc.surveyConfig.id in (:surveyConfigIDs)", [surveyConfigIDs: SurveyConfig.findAllBySurveyInfo(surveyInfo).id])
 
-                        DocContext.findAllBySurveyConfig(config).each {
-                            it.delete()
-                        }
+                    CostItem.executeUpdate("delete from CostItem ct where ct.surveyOrg.id in (:surveyOrgIDs)", [surveyOrgIDs: SurveyOrg.findAllBySurveyConfigInList(SurveyConfig.findAllBySurveyInfo(surveyInfo)).id])
 
-                        SurveyOrg.findAllBySurveyConfig(config).each { surveyOrg ->
-                            CostItem.findAllBySurveyOrg(surveyOrg).each {
-                                it.delete()
-                            }
+                    SurveyOrg.executeUpdate("delete from SurveyOrg so where so.surveyConfig.id in (:surveyConfigIDs)", [surveyConfigIDs: SurveyConfig.findAllBySurveyInfo(surveyInfo).id])
 
-                            surveyOrg.delete()
-                        }
+                    SurveyResult.executeUpdate("delete from SurveyResult sr where sr.surveyConfig.id in (:surveyConfigIDs)", [surveyConfigIDs: SurveyConfig.findAllBySurveyInfo(surveyInfo).id])
 
-                        SurveyResult.findAllBySurveyConfig(config) {
-                            it.delete()
-                        }
-
-                        Task.findAllBySurveyConfig(config) {
-                            it.delete()
-                        }
-
-                    }
+                    Task.executeUpdate("delete from Task ta where ta.surveyConfig.id in (:surveyConfigIDs)", [surveyConfigIDs: SurveyConfig.findAllBySurveyInfo(surveyInfo).id])
 
                     SurveyConfigProperties.executeUpdate("delete from SurveyConfigProperties scp where scp.surveyConfig.id in (:surveyConfigIDs)", [surveyConfigIDs: SurveyConfig.findAllBySurveyInfo(surveyInfo).id])
 
                     SurveyConfig.executeUpdate("delete from SurveyConfig sc where sc.id in (:surveyConfigIDs)", [surveyConfigIDs: SurveyConfig.findAllBySurveyInfo(surveyInfo).id])
-
 
                     surveyInfo.delete()
                 }
