@@ -1,5 +1,6 @@
 <%@ page import="de.laser.remote.ApiSource; de.laser.storage.RDStore" %>
-<div class="ui list">
+
+<div class="ui list" id="accordionAllTitleInfos">
     <div class="item">
         <ui:listIcon hideSurroundingMarkup="true" type="${tipp.titleType}"/>
         <div class="content">

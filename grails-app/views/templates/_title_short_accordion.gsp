@@ -35,4 +35,34 @@
         </g:if>
     </g:each>
 </div>
+<a class="ui mini button" data-ajaxTippId="${tipp.id}"  onclick="JSPC.app.showAllTitleInfos2(${tipp.id}, ${ie ? ie.id : null});">
+    <g:message code="title.details"/>
+</a>
 
+<laser:script file="${this.getGroovyPageFileName()}">
+
+//für alle Elemente mit Attribut data-xyz
+// ajaxTippID
+// hänge Klickevent an
+// this
+    JSPC.app.showAllTitleInfos2 = function (tippID, ieID) {
+        console.log("------------------");
+    console.log( this );
+            console.log("------------------");
+        $.ajax({
+            url: '<g:createLink controller="ajaxHtml" action="showAllTitleInfos2" params="[showPackage: showPackage, showPlattform: showPlattform, showCompact: showCompact, showEmptyFields: showEmptyFields]"/>&tippID='+tippID+'&ieID='+ieID,
+                success: function(result){
+                    $("#dynamicAccordionContainer").empty();
+                    $("#accordionAllTitleInfos").remove();
+
+                    //$(this).html(result);
+%{--                    $("#dynamicAccordionContainer .ui.modal").modal({
+                        onVisible: function () {
+                            r2d2.initDynamicUiStuff('#accordionAllTitleInfos');
+                        }
+                    }).modal('show');--}%
+                }
+            });
+        }
+
+</laser:script>

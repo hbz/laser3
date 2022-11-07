@@ -6932,6 +6932,14 @@ i.icon.la-list-icon:before {
   background-color: #00000099;
   color: #FFFFFF;
 }
+
+/*-------------------
+         Inverted
+  --------------------*/
+
+.ui.inverted.button:hover {
+  color: #1B1C1D;
+}
 /*!
  * # Fomantic-UI 2.8.8 - Container
  * http://github.com/fomantic/Fomantic-UI/

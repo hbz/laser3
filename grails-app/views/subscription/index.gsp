@@ -308,6 +308,9 @@
 
                                                 <div class="two wide column">
                                                     <div class="ui right floated buttons">
+                                                        <div class="right aligned wide column">
+
+                                                        </div>
                                                         <div class="ui icon blue button la-modern-button "><i
                                                                 class="ui angle double down icon"></i>
                                                         </div>
@@ -343,9 +346,10 @@
                                         <div class="ui fluid segment content">
                                             <div class="ui stackable grid">
                                                 <div class="four wide column">
-                                                    <laser:render template="/templates/title_long_accordion"
+                                                    <div id="dynamicAccordionContainer"></div>
+%{--                                                    <laser:render template="/templates/title_long_accordion"
                                                                   model="${[ie         : ie, tipp: ie.tipp,
-                                                                            showPackage: showPackage, showPlattform: showPlattform, showCompact: showCompact, showEmptyFields: showEmptyFields]}"/>
+                                                                            showPackage: showPackage, showPlattform: showPlattform, showCompact: showCompact, showEmptyFields: showEmptyFields]}"/>--}%
                                                 </div>
 
                                                 <div class="four wide column">
@@ -385,15 +389,39 @@
                                                                 </div>
                                                             </g:if>
 
-                                                            <div class="item">
-                                                                <i class="money icon la-popup-tooltip la-delay"></i>
+                                                            <g:each in="${ie.priceItems}" var="priceItem" status="i">
+                                                                <div class="item">
+                                                                    <i class="money icon la-popup-tooltip la-delay"></i>
+                                                                    <div class="content">
+                                                                        <div class="header"><g:message code="tipp.price.localPrice"/>:</div>
 
-                                                                <div class="content">
-                                                                    <div class="header">Mein verhandelter Preis:</div>
+                                                                        <div class="description">
+                                                                            <ui:xEditable field="localPrice"
+                                                                                owner="${priceItem}"/> <ui:xEditableRefData
+                                                                                field="localCurrency" owner="${priceItem}"
+                                                                                config="Currency"/>
+                                                                            <g:if test="${editable}">
+                                                                                <span class="right floated">
+                                                                                    <g:link controller="subscription" action="removePriceItem"
+                                                                                            params="${[priceItem: priceItem.id, id: subscription.id]}"
+                                                                                            class="ui inverted compact icon button tiny"><i
+                                                                                            class="ui icon minus"
+                                                                                            data-content="Preis entfernen"></i></g:link>
+                                                                                </span>
+                                                                            </g:if>
+                                                                        </div>
 
-                                                                    <div class="description">2232 Euro</div>
+                                                                    </div>
                                                                 </div>
-                                                            </div>
+
+                                                                <g:if test="${i < ie.priceItems.size() - 1}"><hr></g:if>
+                                                            </g:each>
+                                                            <g:if test="${editable && ie.priceItems.size() < 1}">
+                                                                <g:link action="addEmptyPriceItem" class="ui inverted tiny button"
+                                                                        params="${[ieid: ie.id, id: subscription.id]}">
+                                                                    <i class="money icon"></i>${message(code: 'subscription.details.addEmptyPriceItem.info')}
+                                                                </g:link>
+                                                            </g:if>
                                                         </div>
                                                     </div>
                                                 </div>
