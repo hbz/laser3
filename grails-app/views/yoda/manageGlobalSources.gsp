@@ -7,6 +7,8 @@
         <ui:crumb text="Global Sources" class="active" />
     </ui:breadcrumbs>
 
+    <ui:h1HeaderWithIcon text="Global Sources" />
+
     <ui:messages data="${flash}" />
 
       <table class="ui celled la-js-responsive-table la-table table">

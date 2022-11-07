@@ -2,6 +2,13 @@
 
 <laser:htmlStart text="Kostenposten berechnen" />
 
+    <ui:breadcrumbs>
+        <ui:crumb message="menu.yoda" controller="yoda" action="index"/>
+        <ui:crumb text="Kostenposten berechnen" class="active"/>
+    </ui:breadcrumbs>
+
+    <ui:h1HeaderWithIcon text="Kostenposten berechnen" />
+
             <table class="ui celled table" id="calcResults">
                 <g:each in="${costItems.entrySet()}" var="entry">
                     <g:set var="ci" value="${entry.getKey()}"/>

@@ -1,4 +1,4 @@
-<%@page import="de.laser.storage.RDStore; de.laser.*; de.laser.interfaces.CalculatedType" %>
+<%@page import="org.apache.commons.lang3.RandomStringUtils; de.laser.storage.RDStore; de.laser.*; de.laser.interfaces.CalculatedType" %>
 <laser:serviceInjection/>
 <%
     boolean parentAtChild = false
@@ -21,9 +21,10 @@
     int trCounter = 1
 
     List<DocContext> securityWorkaroundList = []
+    String randomId = RandomStringUtils.randomAlphanumeric(8)
 %>
 
-    <table class="ui celled la-js-responsive-table la-table table documents-table">
+    <table class="ui celled la-js-responsive-table la-table table documents-table-${randomId}">
         <thead>
             <tr>
                 <g:if test="${controllerName == 'myInstitution'}">
@@ -201,7 +202,7 @@
     </table>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-    docs.init('.documents-table');
+    docs.init('.documents-table-${randomId}');
 </laser:script>
 
 <%-- a form within a form is not permitted --%>

@@ -2,7 +2,7 @@
 <laser:htmlStart text="Admin::Platform duplicates" />
 
         <ui:breadcrumbs>
-            <ui:crumb message="menu.admin" controller="admin" action="index" />
+            <ui:crumb controller="dataManager" action="index" message="menu.datamanager" />
             <ui:crumb text="List Platform Duplicates" class="active"/>
         </ui:breadcrumbs>
 
