@@ -1104,4 +1104,28 @@ select distinct oap from OrgAccessPoint oap
         result
     }
 
+    /**
+     * Retrieves all access points of this subscription's subscriber
+     * @return a {@link Collection} of {@link OrgAccessPoint}s linked to the subscriber {@link Org}
+     */
+    boolean isOrgInSurveyRenewal() {
+        boolean isOrgInSurveyRenewal = false
+       if(this.instanceOf && this.type && this.type.id == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id){
+            Org participant = this.getSubscriber()
+
+           if(participant){
+               List<SurveyOrg> surveyOrgs = SurveyOrg.executeQuery('FROM SurveyOrg surveyOrg LEFT JOIN surveyOrg.surveyConfig surConfig LEFT JOIN surConfig.surveyInfo surInfo ' +
+                       'WHERE surveyOrg.org = :org AND surInfo.type = :type AND surInfo.status != :status and surConfig.subscription = :sub', [org: participant, type: RDStore.SURVEY_TYPE_RENEWAL, status: RDStore.SURVEY_IN_PROCESSING, sub: this.instanceOf])
+
+               if(surveyOrgs.size() > 0){
+                   isOrgInSurveyRenewal = true
+               }
+
+           }
+       }
+
+        return isOrgInSurveyRenewal
+
+    }
+
 }
