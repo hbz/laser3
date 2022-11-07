@@ -59,12 +59,6 @@ configurations {
 configurations {
     all {
         resolutionStrategy.eachDependency { DependencyResolveDetails details ->
-            if (details.requested.name in ['logback-classic', 'logback-core']) {
-                // override dependency from org.springframework.boot:spring-boot-starter-logging
-                details.useVersion '1.2.8' // downgrade from 1.2.10
-            }
-        }
-        resolutionStrategy.eachDependency { DependencyResolveDetails details ->
             if (details.requested.name in ['asset-pipeline-core', 'asset-pipeline-grails']) {
                 // override dependency from org.grails.plugins:cache
                 details.useVersion '3.4.7' // upgrade from 3.0.7
@@ -131,6 +125,7 @@ dependencies {
     implementation 'org.apache.commons:commons-lang3:3.12.0'                // from 3.9
     implementation 'org.apache.poi:poi-ooxml:3.17'                          // from 3.9 : 5.x available
     implementation 'org.codehaus.gpars:gpars:1.2.1'                         // 2014
+    implementation 'org.codehaus.janino:janino:3.1.8'                       // 2022 : logback filter.evaluator
     implementation 'org.liquibase:liquibase-core:4.11.0'                    // from 3.5.5 : + org.grails.plugins:database-migration
     implementation 'org.quartz-scheduler:quartz:2.3.2'                      // 2019
 
