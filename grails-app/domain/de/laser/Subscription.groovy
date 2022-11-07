@@ -1114,10 +1114,10 @@ select distinct oap from OrgAccessPoint oap
             Org participant = this.getSubscriber()
 
            if(participant){
-               List<SurveyOrg> surveyOrgs = SurveyOrg.executeQuery('FROM SurveyOrg surveyOrg LEFT JOIN surveyOrg.surveyConfig surConfig LEFT JOIN surConfig.surveyInfo surInfo ' +
-                       'WHERE surveyOrg.org = :org AND surInfo.type = :type AND surInfo.status != :status and surConfig.subscription = :sub', [org: participant, type: RDStore.SURVEY_TYPE_RENEWAL, status: RDStore.SURVEY_IN_PROCESSING, sub: this.instanceOf])
+               int countSurveyOrgs = SurveyOrg.executeQuery('select count(surveyOrg.id) FROM SurveyOrg surveyOrg LEFT JOIN surveyOrg.surveyConfig surConfig LEFT JOIN surConfig.surveyInfo surInfo ' +
+                       'WHERE surveyOrg.org = :org AND surInfo.type = :type AND surInfo.status != :status and surConfig.subscription = :sub', [org: participant, type: RDStore.SURVEY_TYPE_RENEWAL, status: RDStore.SURVEY_IN_PROCESSING, sub: this.instanceOf])[0]
 
-               if(surveyOrgs.size() > 0){
+               if(countSurveyOrgs > 0){
                    isOrgInSurveyRenewal = true
                }
 
