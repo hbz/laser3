@@ -1105,8 +1105,8 @@ select distinct oap from OrgAccessPoint oap
     }
 
     /**
-     * Retrieves all access points of this subscription's subscriber
-     * @return a {@link Collection} of {@link OrgAccessPoint}s linked to the subscriber {@link Org}
+     * Checks if the subscriber is in survey renewal
+     * @return true if the subscriber is in survey renewal, false otherwise
      */
     boolean isOrgInSurveyRenewal() {
         boolean isOrgInSurveyRenewal = false
