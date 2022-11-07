@@ -2,7 +2,7 @@
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} | %-5level [%t] [%logger{42}] - %ex{12}%replace(%msg){'Stacktrace follows:','Full stacktrace is suppressed..'}%n</pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} | %-5level %-64.64([%t] %logger{42}) - %ex{12}%replace(%msg){'Stacktrace follows:','Full stacktrace is suppressed..'}%n</pattern>
         </encoder>
 
         <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
