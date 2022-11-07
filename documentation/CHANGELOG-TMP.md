@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4571    07.11.2022  rc-2.3  2.3.11      Moe     Feature     Ygor entfernen
+
 4412    07.11.2022  rc-2.3  2.3.11      Moe     Bug         Teilnehmerübertrag in manueller Verlängerung muss bei aktiver verpflichtender Lizenzverlängerungsumfrage geblockt sein
 
 4555    28.10.2022  rc-2.3  2.3.11      Moe     Bug         500er Anmerkungen-Reiter in Kindlizenz
