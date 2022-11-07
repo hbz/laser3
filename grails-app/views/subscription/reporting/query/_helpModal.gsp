@@ -1,7 +1,7 @@
 <%@ page import="de.laser.utils.LocaleUtils; de.laser.reporting.export.LocalExportHelper;" %>
 <laser:serviceInjection />
 <%
-    String lang = LocaleUtils.getCurrentLang() ?: 'de'
+    String lang = (LocaleUtils.getCurrentLang() == 'en') ? 'en' : 'de'
 
     Map<String, Map> text = [
             'timeline-member' : [

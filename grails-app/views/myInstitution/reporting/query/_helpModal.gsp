@@ -1,58 +1,127 @@
-<%@ page import="de.laser.reporting.report.myInstitution.config.PlatformXCfg; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.reporting.export.GlobalExportHelper;" %>
+<%@ page import="de.laser.utils.LocaleUtils; de.laser.reporting.report.myInstitution.config.PlatformXCfg; de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.reporting.export.GlobalExportHelper;" %>
 <laser:serviceInjection />
 <!-- _helpModal.gsp -->
+<%
+    String lang = (LocaleUtils.getCurrentLang() == 'en') ? 'en' : 'de'
+
+    Closure hc_identifier = { token1, token2, token3, token4, token5, token6 = null ->
+        if (lang == 'de') {
+            println """
+                <p class="ui header"> Identifikatoren von ${token1} </p>
+                <p>
+                    Gelistet werden alle relevanten Namensräume - also Namensräume von Identifikatoren, die ${token2} konkret vergeben wurden.
+                    Die Basissuche bestimmt dabei die Menge der betrachteten ${token3}.
+                </p>
+                <p>
+                    Im Detail sind folgende Informationen verfügbar: <br/>
+                    <i class="icon circle blue"></i> ${token4} mit Identifikatoren aus dem jeweiligen Namensraum, <br />
+                    <i class="icon circle green"></i> Insgesamt vergebene Identifikatoren aus dem jeweiligen Namensraum <br />
+                </p>
+            """
+            if (token6) {
+                println """
+                    <p>
+                        ${token5} ohne Identifikatoren werden in der Gruppe <i class="icon circle pink"></i><strong>* ohne Identifikator</strong> zusammmen gefasst. <br />
+                        Ohne <strong>we:kb</strong>-Pendant fehlen relevante Daten - solche ${token6} werden unter <i class="icon circle teal"></i><strong>* kein web:kb Objekt</strong> gelistet. <br />
+                    </p>
+                """
+            } else {
+                println """
+                    <p> ${token5} ohne Identifikatoren werden in der Gruppe <i class="icon circle pink"></i><strong>* ohne Identifikator</strong> zusammmen gefasst. </p>
+                """
+            }
+        }
+        else {
+            println """
+                <p class="ui header"> Identifiers of ${token1} </p>
+                <p>
+                    All relevant namespaces are listed - i.e. namespaces of identifiers that ${token2} have been specifically assigned.
+                    The basic search determines the number of ${token3} considered.
+                </p>
+                <p>
+                    The following information is available in detail: <br/>
+                    <i class="icon circle blue"></i> ${token4} with identifiers from the respective namespace, <br />
+                    <i class="icon circle green"></i> Altogether assigned identifiers from the respective namespace <br />
+                </p>
+            """
+            if (token6) {
+                println """
+                    <p>
+                        ${token5} without identifiers are combined in the group <i class="icon circle pink"></i><strong>* no identifier</strong>. <br />
+                        Without a <strong>we:kb</strong> counterpart, relevant data is missing - such ${token6} are listed in <i class="icon circle teal"></i><strong>* no web:kb object</strong>. <br />
+                    </p>
+                """
+            } else {
+                println """
+                    <p> ${token5} without identifiers are combined in the group <i class="icon circle pink"></i><strong>* no identifier</strong>. </p>
+                """
+            }
+        }
+    }
+
+    Closure hc_property = { token1, token2, token3, token4, token5, token6 ->
+        if (lang == 'de') {
+            println """
+                <p class="ui header"> Merkmale von ${token1} </p>
+                <p>
+                    Gelistet werden alle relevanten (also <strong>private oder öffentliche</strong>) Merkmale, die für ${token2} konkret vergeben wurden.
+                    Die Basissuche bestimmt dabei die Menge der betrachteten ${token3}.
+                </p>
+                <p>
+                    Im Detail sind folgende Informationen verfügbar: <br/>
+                    <i class="icon circle blue"></i> ${token4} mit Merkmal X, <br />
+                    <i class="icon circle green"></i> Öffentlich vergebene Merkmale X für die betrachteten ${token5} <br />
+                    <i class="icon circle yellow"></i> Private Merkmale X für die betrachteten ${token6} <br />
+                </p>
+            """
+        }
+         else {
+            println """
+                <p class="ui header"> Properties of ${token1} </p>
+                <p>
+                    All relevant (i.e. <strong>private or public</strong>) properties that have been specifically assigned for ${token2} are listed.
+                    The basic search determines the number of ${token3} considered.
+                </p>
+                <p>
+                    The following information is available in detail:: <br/>
+                    <i class="icon circle blue"></i> ${token4} with property X, <br />
+                    <i class="icon circle green"></i> Public properties X for the ${token5} under consideration <br />
+                    <i class="icon circle yellow"></i> Private properties X for the ${token6} under consideration <br />
+                </p>
+            """
+        }
+    }
+%>
+
 <ui:infoModal id="${modalID}">
 
     %{-- subscription --}%
 
     <div class="help-section" data-help-section="subscription-x-identifier">
-        <p class="ui header">
-            Identifikatoren von Lizenzen
-        </p>
-        <p>
-            Gelistet werden alle relevanten Namensräume - also Namensräume von Identifikatoren, die Lizenzen konkret vergeben wurden.
-            Die Basissuche bestimmt dabei die Menge der betrachteten Lizenzen.
-        </p>
-        <p>
-            Im Detail sind folgende Informationen verfügbar: <br/>
-            <i class="icon circle blue"></i> Lizenzen mit Identifikatoren aus dem jeweiligen Namensraum, <br />
-            <i class="icon circle green"></i> Insgesamt vergebene Identifikatoren aus dem jeweiligen Namensraum <br />
-        </p>
-        <p>
-            Lizenzen ohne Identifikatoren werden in der Gruppe <i class="icon circle pink"></i><strong>* ohne Identifikator</strong> zusammmen gefasst.
-        </p>
+        <g:if test="${lang == 'de'}">
+            ${hc_identifier( 'Lizenzen', 'Lizenzen', 'Lizenzen', 'Lizenzen', 'Lizenzen' )}
+        </g:if>
+        <g:else>
+            ${hc_identifier( 'subscriptions', 'subscriptions', 'subscriptions', 'Subscriptions', 'Subscriptions' )}
+        </g:else>
     </div>
 
     <div class="help-section" data-help-section="subscription-x-property">
-        <p class="ui header">
-            Merkmale von Lizenzen
-        </p>
-        <p>
-            Gelistet werden alle relevanten (also <strong>private oder öffentliche</strong>) Merkmale, die für Lizenzen konkret vergeben wurden.
-            Die Basissuche bestimmt dabei die Menge der betrachteten Lizenzen.
-        </p>
-        <p>
-            Im Detail sind folgende Informationen verfügbar: <br/>
-            <i class="icon circle blue"></i> Lizenzen mit Merkmal X, <br />
-            <i class="icon circle green"></i> Öffentlich vergebene Merkmale X für die betrachteten Lizenzen <br />
-            <i class="icon circle yellow"></i> Private Merkmale X für die betrachteten Lizenzen <br />
-        </p>
+        <g:if test="${lang == 'de'}">
+            ${hc_property( 'Lizenzen', 'Lizenzen', 'Lizenzen', 'Lizenzen', 'Lizenzen', 'Lizenzen' )}
+        </g:if>
+        <g:else>
+            ${hc_property( 'subscriptions', 'subscriptions', 'subscriptions', 'Subscriptions', 'subscriptions', 'subscriptions' )}
+        </g:else>
     </div>
 
     <div class="help-section" data-help-section="subscription-x-memberSubscriptionProperty">
-        <p class="ui header">
-            Merkmale von Teilnehmerlizenzen
-        </p>
-        <p>
-            Gelistet werden alle relevanten (also <strong>private oder öffentliche</strong>) Merkmale, die für Teilnehmerlizenzen konkret vergeben wurden.
-            Die Basissuche bestimmt dabei die Menge der betrachteten Teilnehmerlizenzen.
-        </p>
-        <p>
-            Im Detail sind folgende Informationen verfügbar: <br/>
-            <i class="icon circle blue"></i> Teilnehmerlizenzen mit Merkmal X, <br />
-            <i class="icon circle green"></i> Öffentlich vergebene Merkmale X für die betrachteten Teilnehmerlizenzen <br />
-            <i class="icon circle yellow"></i> Private Merkmale X für die betrachteten Teilnehmerlizenzen <br />
-        </p>
+        <g:if test="${lang == 'de'}">
+            ${hc_property( 'Teilnehmerlizenzen', 'Teilnehmerlizenzen', 'Teilnehmerlizenzen', 'Teilnehmerlizenzen', 'Teilnehmerlizenzen', 'Teilnehmerlizenzen' )}
+        </g:if>
+        <g:else>
+            ${hc_property( 'Participant subscriptions', 'participant subscriptions', 'participant subscriptions', 'Participant subscriptions', 'participant subscriptions', 'participant subscriptions' )}
+        </g:else>
     </div>
 
     <div class="help-section" data-help-section="subscription-x-annual">
@@ -161,37 +230,21 @@
     %{-- license --}%
 
     <div class="help-section" data-help-section="license-x-identifier">
-        <p class="ui header">
-            Identifikatoren von Verträgen
-        </p>
-        <p>
-            Gelistet werden alle relevanten Namensräume - also Namensräume von Identifikatoren, die Verträgen konkret vergeben wurden.
-            Die Basissuche bestimmt dabei die Menge der betrachteten Verträge.
-        </p>
-        <p>
-            Im Detail sind folgende Informationen verfügbar: <br/>
-            <i class="icon circle blue"></i> Verträge mit Identifikatoren aus dem jeweiligen Namensraum, <br />
-            <i class="icon circle green"></i> Insgesamt vergebene Identifikatoren aus dem jeweiligen Namensraum <br />
-        </p>
-        <p>
-            Verträge ohne Identifikatoren werden in der Gruppe <i class="icon circle pink"></i><strong>* ohne Identifikator</strong> zusammmen gefasst.
-        </p>
+        <g:if test="${lang == 'de'}">
+            ${hc_identifier( 'Verträgen', 'Verträgen', 'Verträge', 'Verträge', 'Verträge' )}
+        </g:if>
+        <g:else>
+            ${hc_identifier( 'licenses', 'licenses', 'licenses', 'Licenses', 'Licenses' )}
+        </g:else>
     </div>
 
     <div class="help-section" data-help-section="license-x-property">
-        <p class="ui header">
-            Merkmale von Verträgen
-        </p>
-        <p>
-            Gelistet werden alle relevanten (also <strong>private oder öffentliche</strong>) Merkmale, die für Verträge konkret vergeben wurden.
-            Die Basissuche bestimmt dabei die Menge der betrachteten Verträge.
-        </p>
-        <p>
-            Im Detail sind folgende Informationen verfügbar: <br/>
-            <i class="icon circle blue"></i> Verträge mit Merkmal X, <br />
-            <i class="icon circle green"></i> Öffentlich vergebene Merkmale X für die betrachteten Verträge <br />
-            <i class="icon circle yellow"></i> Private Merkmale X für die betrachteten Verträge <br />
-        </p>
+        <g:if test="${lang == 'de'}">
+            ${hc_property( 'Verträgen', 'Verträge', 'Verträge', 'Verträge', 'Verträge', 'Verträge' )}
+        </g:if>
+        <g:else>
+            ${hc_property( 'licenses', 'licenses', 'licenses', 'Licenses', 'licenses', 'licenses' )}
+        </g:else>
     </div>
 
     <div class="help-section" data-help-section="license-x-annual">
@@ -213,61 +266,32 @@
     %{-- org --}%
 
     <div class="help-section" data-help-section="org-x-identifier">
-        <p class="ui header">
-            Identifikatoren von Organisationen
-        </p>
-        <p>
-            Gelistet werden alle relevanten Namensräume - also Namensräume von Identifikatoren, die Organisationen konkret vergeben wurden.
-            Die Basissuche bestimmt dabei die Menge der betrachteten Organisationen.
-        </p>
-        <p>
-            Im Detail sind folgende Informationen verfügbar: <br/>
-            <i class="icon circle blue"></i> Organisationen mit Identifikatoren aus dem jeweiligen Namensraum, <br />
-            <i class="icon circle green"></i> Insgesamt vergebene Identifikatoren aus dem jeweiligen Namensraum <br />
-        </p>
-        <p>
-            Organisationen ohne Identifikatoren werden in der Gruppe <i class="icon circle pink"></i><strong>* ohne Identifikator</strong> zusammmen gefasst.
-        </p>
+        <g:if test="${lang == 'de'}">
+            ${hc_identifier( 'Organisationen', 'Organisationen', 'Organisationen', 'Organisationen', 'Organisationen' )}
+        </g:if>
+        <g:else>
+            ${hc_identifier( 'organisations', 'organisations', 'organisations', 'Organisations', 'Organisations' )}
+        </g:else>
     </div>
 
     <div class="help-section" data-help-section="org-x-property">
-        <p class="ui header">
-            Merkmale von Organisationen
-        </p>
-        <p>
-            Gelistet werden alle relevanten (also <strong>private oder öffentliche</strong>) Merkmale, die für Organisationen konkret vergeben wurden.
-            Die Basissuche bestimmt dabei die Menge der betrachteten Organisationen.
-        </p>
-        <p>
-            Im Detail sind folgende Informationen verfügbar: <br/>
-            <i class="icon circle blue"></i> Organisationen mit Merkmal X, <br />
-            <i class="icon circle green"></i> Öffentlich vergebene Merkmale X für die betrachteten Organisationen <br />
-            <i class="icon circle yellow"></i> Private Merkmale X für die betrachteten Organisationen <br />
-        </p>
+        <g:if test="${lang == 'de'}">
+            ${hc_property( 'Organisationen', 'Organisationen', 'Organisationen', 'Organisationen', 'Organisationen', 'Organisationen' )}
+        </g:if>
+        <g:else>
+            ${hc_property( 'organisations', 'organisations', 'organisations', 'Organisations', 'organisations', 'organisations' )}
+        </g:else>
     </div>
 
     %{-- package --}%
 
     <div class="help-section" data-help-section="package-x-id">
-        <p class="ui header">
-            Identifikatoren von Paketen
-        </p>
-        <p>
-            Gelistet werden alle relevanten Namensräume - also Namensräume von Identifikatoren, die Paketen konkret vergeben wurden.
-            Die Basissuche bestimmt dabei die Menge der betrachteten Pakete.
-        </p>
-        <p>
-            Hierzu werden Paketinformationen in <strong>LAS:eR</strong> mit referenzierten Objekten aus der <strong>we:kb</strong> verglichen.
-        </p>
-        <p>
-            Im Detail sind folgende Informationen verfügbar: <br/>
-            <i class="icon circle blue"></i> Pakete mit Identifikatoren aus dem jeweiligen Namensraum, <br />
-            <i class="icon circle green"></i> Insgesamt vergebene Identifikatoren aus dem jeweiligen Namensraum <br />
-        </p>
-        <p>
-            Pakete ohne Identifikatoren werden in der Gruppe <i class="icon circle pink"></i><strong>* ohne Identifikator</strong> zusammmen gefasst. <br />
-            Ohne <strong>we:kb</strong>-Pendant fehlen relevante Daten - solche Pakete werden unter <i class="icon circle teal"></i><strong>* kein web:kb Objekt</strong> gelistet. <br />
-        </p>
+        <g:if test="${lang == 'de'}">
+            ${hc_identifier( 'Paketen', 'Paketen', 'Pakete', 'Pakete', 'Pakete', 'Pakete' )}
+        </g:if>
+        <g:else>
+            ${hc_identifier( 'packages', 'packages', 'packages', 'Packages', 'Packages', 'packages' )}
+        </g:else>
     </div>
 
     <div class="help-section" data-help-section="package-x-provider">
@@ -380,19 +404,12 @@
     %{-- platform --}%
 
     <div class="help-section" data-help-section="platform-x-property">
-        <p class="ui header">
-            Merkmale von Plattformen
-        </p>
-        <p>
-            Gelistet werden alle relevanten (also <strong>private oder öffentliche</strong>) Merkmale, die für Plattformen konkret vergeben wurden.
-            Die Basissuche bestimmt dabei die Menge der betrachteten Plattformen.
-        </p>
-        <p>
-            Im Detail sind folgende Informationen verfügbar: <br/>
-            <i class="icon circle blue"></i> Plattform mit Merkmal X, <br />
-            <i class="icon circle green"></i> Öffentlich vergebene Merkmale X für die betrachteten Plattformen <br />
-            <i class="icon circle yellow"></i> Private Merkmale X für die betrachteten Plattformen <br />
-        </p>
+        <g:if test="${lang == 'de'}">
+            ${hc_property( 'Plattformen', 'Plattformen', 'Plattformen', 'Plattformen', 'Plattformen', 'Plattformen' )}
+        </g:if>
+        <g:else>
+            ${hc_property( 'platforms', 'platforms', 'platforms', 'Platforms', 'platforms', 'platforms' )}
+        </g:else>
     </div>
 
     <div class="help-section" data-help-section="platform-x-propertyWekb">
