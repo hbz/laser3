@@ -41,7 +41,7 @@ class PackageFilter extends BaseFilter {
                 break
             case 'my-pkg':
                 List<Long> subIdList = Subscription.executeQuery(
-                        "select s.id from Subscription s join s.orgRelations ro where (ro.roleType in (:roleTypes) and ro.org = :ctx))",
+                        "select s.id from Subscription s join s.orgRelations ro where (ro.roleType in (:roleTypes) and ro.org = :ctx)",
                         [roleTypes: [ RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA, RDStore.OR_SUBSCRIBER_CONS ], ctx: contextService.getOrg()])
 
                 queryParams.packageIdList = Package.executeQuery(

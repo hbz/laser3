@@ -601,14 +601,14 @@ class PendingChangeService extends AbstractLockableService {
                         eventRow.costItemSubscription = [id: entry.get("ci_sub_fk"), name: subscriptionName(entry, status, locale)]
                         Object[] args = [pc.get("pc_old_value"),pc.get("pc_new_value")]
                         eventRow.eventString = messageSource.getMessage(pc.get("pc_msg_token"),args,locale)
-                        eventRow.changeId = pc.get("id")
+                        eventRow.changeId = pc.get("pc_id")
                     }
                 }
                 else {
                     List prevSub = sql.rows("select l_dest_sub_fk, sub_name, sub_start_date, sub_end_date, sub_status_rv_fk, org_sortname, or_roletype_fk, sub_parent_sub_fk from links join subscription on l_dest_sub_fk = sub_id join org_role on sub_id = or_sub_fk join org on or_org_fk = org_id where l_source_sub_fk = :newSub and l_link_type_rv_fk = :follows", [newSub: pc.get("pc_sub_fk"), follows: RDStore.LINKTYPE_FOLLOWS.id])
                     prevSub.each { GroovyRowResult previous ->
                         eventRow.eventString = messageSource.getMessage("${pc.get("pc_msg_token")}.eventString", null, locale)
-                        eventRow.changeId = pc.get("id")
+                        eventRow.changeId = pc.get("pc_id")
                         eventRow.subscription = [source: Subscription.class.name + ':' + previous.get("l_dest_sub_fk"), target: Subscription.class.name + ':' + pc.get("pc_sub_fk"), id: pc.get("pc_sub_fk"), name: subscriptionName(previous, status, locale)]
                     }
                 }
