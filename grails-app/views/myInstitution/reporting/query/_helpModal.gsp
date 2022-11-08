@@ -4,7 +4,7 @@
 <%
     String lang = (LocaleUtils.getCurrentLang() == 'en') ? 'en' : 'de'
 
-    Closure hc_identifier = { token1x, token3, token4, token5, token6 = null ->
+    Closure hc_identifier = { token1x, token3, token4x, token6 = null ->
         if (lang == 'de') {
             println """
                 <p class="ui header"> Identifikatoren von ${token1x} </p>
@@ -14,20 +14,20 @@
                 </p>
                 <p>
                     Im Detail sind folgende Informationen verfügbar: <br/>
-                    <i class="icon circle blue"></i> ${token4} mit Identifikatoren aus dem jeweiligen Namensraum, <br />
+                    <i class="icon circle blue"></i> ${token4x} mit Identifikatoren aus dem jeweiligen Namensraum, <br />
                     <i class="icon circle green"></i> Insgesamt vergebene Identifikatoren aus dem jeweiligen Namensraum <br />
                 </p>
             """
             if (token6) {
                 println """
                     <p>
-                        ${token5} ohne Identifikatoren werden in der Gruppe <i class="icon circle pink"></i><strong>* ohne Identifikator</strong> zusammmen gefasst. <br />
+                        ${token4x} ohne Identifikatoren werden in der Gruppe <i class="icon circle pink"></i><strong>* ohne Identifikator</strong> zusammmen gefasst. <br />
                         Ohne <strong>we:kb</strong>-Pendant fehlen relevante Daten - solche ${token6} werden unter <i class="icon circle teal"></i><strong>* kein web:kb Objekt</strong> gelistet. <br />
                     </p>
                 """
             } else {
                 println """
-                    <p> ${token5} ohne Identifikatoren werden in der Gruppe <i class="icon circle pink"></i><strong>* ohne Identifikator</strong> zusammmen gefasst. </p>
+                    <p> ${token4x} ohne Identifikatoren werden in der Gruppe <i class="icon circle pink"></i><strong>* ohne Identifikator</strong> zusammmen gefasst. </p>
                 """
             }
         }
@@ -40,38 +40,38 @@
                 </p>
                 <p>
                     The following information is available in detail: <br/>
-                    <i class="icon circle blue"></i> ${token4} with identifiers from the respective namespace, <br />
+                    <i class="icon circle blue"></i> ${token4x} with identifiers from the respective namespace, <br />
                     <i class="icon circle green"></i> Altogether assigned identifiers from the respective namespace <br />
                 </p>
             """
             if (token6) {
                 println """
                     <p>
-                        ${token5} without identifiers are combined in the group <i class="icon circle pink"></i><strong>* no identifier</strong>. <br />
+                        ${token4x} without identifiers are combined in the group <i class="icon circle pink"></i><strong>* no identifier</strong>. <br />
                         Without a <strong>we:kb</strong> counterpart, relevant data is missing - such ${token6} are listed in <i class="icon circle teal"></i><strong>* no web:kb object</strong>. <br />
                     </p>
                 """
             } else {
                 println """
-                    <p> ${token5} without identifiers are combined in the group <i class="icon circle pink"></i><strong>* no identifier</strong>. </p>
+                    <p> ${token4x} without identifiers are combined in the group <i class="icon circle pink"></i><strong>* no identifier</strong>. </p>
                 """
             }
         }
     }
 
-    Closure hc_property = { token1, token2, token3, token4, token5x ->
+    Closure hc_property = { token1, token2x, token4 ->
         if (lang == 'de') {
             println """
                 <p class="ui header"> Merkmale von ${token1} </p>
                 <p>
-                    Gelistet werden alle relevanten (also <strong>private oder öffentliche</strong>) Merkmale, die für ${token2} konkret vergeben wurden.
-                    Die Basissuche bestimmt dabei die Menge der betrachteten ${token3}.
+                    Gelistet werden alle relevanten (also <strong>private oder öffentliche</strong>) Merkmale, die für ${token2x} konkret vergeben wurden.
+                    Die Basissuche bestimmt dabei die Menge der betrachteten ${token2x}.
                 </p>
                 <p>
                     Im Detail sind folgende Informationen verfügbar: <br/>
                     <i class="icon circle blue"></i> ${token4} mit Merkmal X, <br />
-                    <i class="icon circle green"></i> Öffentlich vergebene Merkmale X für die betrachteten ${token5x} <br />
-                    <i class="icon circle yellow"></i> Private Merkmale X für die betrachteten ${token5x} <br />
+                    <i class="icon circle green"></i> Öffentlich vergebene Merkmale X für die betrachteten ${token2x} <br />
+                    <i class="icon circle yellow"></i> Private Merkmale X für die betrachteten ${token2x} <br />
                 </p>
             """
         }
@@ -79,27 +79,27 @@
             println """
                 <p class="ui header"> Properties of ${token1} </p>
                 <p>
-                    All relevant (i.e. <strong>private or public</strong>) properties that have been specifically assigned for ${token2} are listed.
-                    The basic search determines the number of ${token3} considered.
+                    All relevant (i.e. <strong>private or public</strong>) properties that have been specifically assigned for ${token2x} are listed.
+                    The basic search determines the number of ${token2x} considered.
                 </p>
                 <p>
                     The following information is available in detail: <br/>
                     <i class="icon circle blue"></i> ${token4} with property X, <br />
-                    <i class="icon circle green"></i> Public properties X for the ${token5x} under consideration <br />
-                    <i class="icon circle yellow"></i> Private properties X for the ${token5x} under consideration <br />
+                    <i class="icon circle green"></i> Public properties X for the ${token2x} under consideration <br />
+                    <i class="icon circle yellow"></i> Private properties X for the ${token2x} under consideration <br />
                 </p>
             """
         }
     }
 
-    Closure hc_generic_annual = { token1, token2, token3, token4, token5x ->
+    Closure hc_generic_annual = { token1, token2x, token3, token5x ->
         if (lang == 'de') {
             println """
                 <p class="ui header"> Laufzeit von ${token1} </p>
                 <p>
-                    Gruppiert werden die ${token2} in Jahresringen - abhängig von den jeweiligen Datumsgrenzen.
+                    Gruppiert werden die ${token2x} in Jahresringen - abhängig von den jeweiligen Datumsgrenzen.
                     Bedingen vorhandene Daten eine Laufzeit mehrerer Jahre, wird die ${token3} auch mehreren Jahresringen zugeordnet.
-                    Die Basissuche bestimmt dabei die Menge der betrachteten ${token4}.
+                    Die Basissuche bestimmt dabei die Menge der betrachteten ${token2x}.
                 </p>
                 <p>
                     ${token5x} ohne Enddatum werden <strong>zusätzlich</strong> in der Gruppe <i class="icon circle teal"></i><strong>* ohne Ablauf</strong> gelistet. <br />
@@ -112,9 +112,9 @@
             println """
                 <p class="ui header"> Duration of ${token1} </p>
                 <p>
-                    The ${token2} are grouped in annual rings - depending on the respective date lines.
+                    The ${token2x} are grouped in annual rings - depending on the respective date lines.
                     If existing data indicates a duration of several years, the ${token3} is also assigned to several annual rings.
-                    The basic search determines the amount of ${token4} considered.
+                    The basic search determines the amount of ${token2x} considered.
                 </p>
                 <p>
                     ${token5x} without an end date are <strong>additionally</strong> listed in the group <i class="icon circle teal"></i><strong>* no End date</strong>. <br />
@@ -125,22 +125,22 @@
         }
     }
 
-    Closure hc_generic_pkg = { token1, token2, token3, token4, token5 ->
+    Closure hc_generic_pkg = { token1, token2x, token4, token5 ->
         if (lang == 'de') {
             println """
                 <p class="ui header"> ${token1} von Paketen </p>
                 <p>
-                    Gelistet werden alle relevanten ${token2} - also ${token3}, die Paketen konkret zugeordnet werden können.
+                    Gelistet werden alle relevanten ${token2x} - also ${token2x}, die Paketen konkret zugeordnet werden können.
                     Die Basissuche bestimmt dabei die Menge der betrachteten Pakete.
                 </p>
-                <p> Pakete ohne ausgewiesenen ${token4} werden in der Gruppe <i class="icon circle pink"></i><strong>* ohne ${token5}</strong> zusammmen gefasst. </p>
+                <p> Pakete ohne ausgewiesene ${token4} werden in der Gruppe <i class="icon circle pink"></i><strong>* ohne ${token5}</strong> zusammmen gefasst. </p>
             """
         }
         else {
             println """
                 <p class="ui header"> ${token1} of packages </p>
                 <p>
-                    All relevant ${token2} are listed - i.e. ${token3} that can be specifically assigned to packages.
+                    All relevant ${token2x} are listed - i.e. ${token2x} that can be specifically assigned to packages.
                     The basic search determines the number of packages considered.
                 </p>
                 <p> Packages without designated ${token4} are summarized in the group <i class="icon circle pink"></i><strong>* no ${token5}</strong>. </p>
@@ -148,17 +148,17 @@
         }
     }
 
-    Closure hc_generic_pkg_wekb = { token1, token2, token3, token4 ->
+    Closure hc_generic_pkg_wekb = { token1, token2x, token3 ->
         if (lang == 'de') {
             println """
                 <p class="ui header"> ${token1} von Paketen </p>
                 <p>
-                    Gelistet werden alle relevanten ${token2} - also ${token3}, die Paketen konkret zugeordnet werden können.
+                    Gelistet werden alle relevanten ${token2x} - also ${token3}, die Paketen konkret zugeordnet werden können.
                     Die Basissuche bestimmt dabei die Menge der betrachteten Pakete.
                 </p>
                 <p> Hierzu werden Paketinformationen in <strong>LAS:eR</strong> mit referenzierten Objekten aus der <strong>we:kb</strong> verglichen. </p>
                 <p>
-                    Pakete ohne ausgewiesene ${token4} werden in der Gruppe <i class="icon circle pink"></i><strong>* keine Angabe</strong> zusammmen gefasst. <br />
+                    Pakete ohne ausgewiesene ${token2x} werden in der Gruppe <i class="icon circle pink"></i><strong>* keine Angabe</strong> zusammmen gefasst. <br />
                     Ohne <strong>we:kb</strong>-Pendant fehlen relevante Daten - solche Pakete werden unter <i class="icon circle teal"></i><strong>* kein web:kb Objekt</strong> gelistet. <br />
                 </p>
             """
@@ -167,12 +167,12 @@
             println """
                 <p class="ui header"> ${token1} of packages </p>
                 <p>
-                    All relevant ${token2} are listed - i.e. ${token3} that can be specifically assigned to packages.
+                    All relevant ${token2x} are listed - i.e. ${token3} that can be specifically assigned to packages.
                     The basic search determines the number of packages considered.
                 </p>
                 <p> For this purpose, package information in <strong>LAS:eR</strong> is compared with referenced objects from the <strong>we:kb</strong>. </p>
                 <p>
-                    Packages without designated ${token4} are summarized in the group <i class="icon circle pink"></i><strong>* not specified</strong>. <br />
+                    Packages without designated ${token2x} are summarized in the group <i class="icon circle pink"></i><strong>* not specified</strong>. <br />
                     Without a <strong>we:kb</strong> counterpart, relevant data is missing - such packages are listed in <i class="icon circle teal"></i><strong>* no web:kb object</strong>. <br />
                 </p>
             """
@@ -186,146 +186,171 @@
 
     <div class="help-section" data-help-section="subscription-x-identifier">
         <g:if test="${lang == 'de'}">
-            ${hc_identifier( 'Lizenzen', 'Lizenzen', 'Lizenzen', 'Lizenzen' )}
+            ${hc_identifier( 'Lizenzen', 'Lizenzen', 'Lizenzen' )}
         </g:if>
         <g:else>
-            ${hc_identifier( 'subscriptions', 'subscriptions', 'Subscriptions', 'Subscriptions' )}
+            ${hc_identifier( 'subscriptions', 'subscriptions', 'Subscriptions' )}
         </g:else>
     </div>
 
     <div class="help-section" data-help-section="subscription-x-property">
         <g:if test="${lang == 'de'}">
-            ${hc_property( 'Lizenzen', 'Lizenzen', 'Lizenzen', 'Lizenzen', 'Lizenzen' )}
+            ${hc_property( 'Lizenzen', 'Lizenzen', 'Lizenzen' )}
         </g:if>
         <g:else>
-            ${hc_property( 'subscriptions', 'subscriptions', 'subscriptions', 'Subscriptions', 'subscriptions' )}
+            ${hc_property( 'subscriptions', 'subscriptions', 'Subscriptions' )}
         </g:else>
     </div>
 
     <div class="help-section" data-help-section="subscription-x-memberSubscriptionProperty">
         <g:if test="${lang == 'de'}">
-            ${hc_property( 'Teilnehmerlizenzen', 'Teilnehmerlizenzen', 'Teilnehmerlizenzen', 'Teilnehmerlizenzen', 'Teilnehmerlizenzen' )}
+            ${hc_property( 'Teilnehmerlizenzen', 'Teilnehmerlizenzen', 'Teilnehmerlizenzen' )}
         </g:if>
         <g:else>
-            ${hc_property( 'Participant subscriptions', 'participant subscriptions', 'participant subscriptions', 'Participant subscriptions', 'participant subscriptions' )}
+            ${hc_property( 'Participant subscriptions', 'participant subscriptions', 'Participant subscriptions' )}
         </g:else>
     </div>
 
     <div class="help-section" data-help-section="subscription-x-annual">
         <g:if test="${lang == 'de'}">
-            ${hc_generic_annual( 'Lizenzen', 'Lizenzen', 'Lizenz', 'Lizenzen', 'Lizenzen' )}
+            ${hc_generic_annual( 'Lizenzen', 'Lizenzen', 'Lizenz', 'Lizenzen' )}
         </g:if>
         <g:else>
-            ${hc_generic_annual( 'subscriptions', 'subscriptions', 'subscription', 'subscriptions', 'Subscriptions' )}
+            ${hc_generic_annual( 'subscriptions', 'subscriptions', 'subscription', 'Subscriptions' )}
         </g:else>
     </div>
 
     <div class="help-section" data-help-section="subscription-x-memberAnnual">
         <g:if test="${lang == 'de'}">
-            ${hc_generic_annual( 'Teilnehmerlizenzen', 'Teilnehmerlizenzen', 'Teilnehmerlizenz', 'Teilnehmerlizenzen', 'Teilnehmerlizenzen' )}
+            ${hc_generic_annual( 'Teilnehmerlizenzen', 'Teilnehmerlizenzen', 'Teilnehmerlizenz', 'Teilnehmerlizenzen' )}
         </g:if>
         <g:else>
-            ${hc_generic_annual( 'participant subscriptions', 'participant subscriptions', 'participant subscription', 'participant subscriptions', 'Participant subscriptions' )}
+            ${hc_generic_annual( 'participant subscriptions', 'participant subscriptions', 'participant subscription', 'Participant subscriptions' )}
         </g:else>
     </div>
 
     <div class="help-section" data-help-section="subscription-x-provider">
-        <p class="ui header">
-            Anbieter von Lizenzen
-        </p>
-        <p>
-            Gelistet werden alle relevanten Anbieter - also Anbieter, die Lizenzen konkret zugeordnet werden können.
-            Die Basissuche bestimmt dabei die Menge der betrachteten Lizenzen und Anbieter.
-        </p>
-        <p>
-            Lizenzen ohne ausgewiesenen Anbieter werden in der Gruppe <i class="icon circle pink"></i><strong>* ohne Anbieter</strong> zusammmen gefasst.
-        </p>
+        <g:if test="${lang == 'de'}">
+            <p class="ui header">
+                Anbieter von Lizenzen
+            </p>
+            <p>
+                Gelistet werden alle relevanten Anbieter - also Anbieter, die Lizenzen konkret zugeordnet werden können.
+                Die Basissuche bestimmt dabei die Menge der betrachteten Lizenzen und Anbieter.
+            </p>
+            <p>
+                Lizenzen ohne ausgewiesenen Anbieter werden in der Gruppe <i class="icon circle pink"></i><strong>* ohne Anbieter</strong> zusammmen gefasst.
+            </p>
+        </g:if>
+        <g:else>
+            <!-- TODO --> ${message(code:'reporting.ui.global.help.missing')}
+        </g:else>
     </div>
 
     <div class="help-section" data-help-section="subscription-x-memberProvider">
-        <p class="ui header">
-            Anbieter von Teilnehmerlizenzen
-        </p>
-        <p>
-            Gelistet werden alle relevanten Anbieter - also Anbieter, die Teilnehmerlizenzen konkret zugeordnet werden können.
-            Genauer muss ein solcher Anbieter gleichzeitig <strong>einer Lizenz sowie der zugehörigen Teilnehmerlizenz</strong> zugeordnet sein.
-            Die Basissuche bestimmt dabei die Menge der betrachteten Lizenzen, Teilnehmerlizenzen und Anbieter.
-        </p>
-        <p>
-            Teilnehmerlizenzen ohne ausgewiesenen Anbieter oder ohne passende Übereinstimmung werden in der Gruppe <i class="icon circle pink"></i><strong>* keine Übereinstimmung</strong> zusammmen gefasst.
-        </p>
+        <g:if test="${lang == 'de'}">
+            <p class="ui header">
+                Anbieter von Teilnehmerlizenzen
+            </p>
+            <p>
+                Gelistet werden alle relevanten Anbieter - also Anbieter, die Teilnehmerlizenzen konkret zugeordnet werden können.
+                Genauer muss ein solcher Anbieter gleichzeitig <strong>einer Lizenz sowie der zugehörigen Teilnehmerlizenz</strong> zugeordnet sein.
+                Die Basissuche bestimmt dabei die Menge der betrachteten Lizenzen, Teilnehmerlizenzen und Anbieter.
+            </p>
+            <p>
+                Teilnehmerlizenzen ohne ausgewiesenen Anbieter oder ohne passende Übereinstimmung werden in der Gruppe <i class="icon circle pink"></i><strong>* keine Übereinstimmung</strong> zusammmen gefasst.
+            </p>
+        </g:if>
+        <g:else>
+            <!-- TODO --> ${message(code:'reporting.ui.global.help.missing')}
+        </g:else>
     </div>
 
     <div class="help-section" data-help-section="subscription-x-platform">
-        <p class="ui header">
-            Plattformen von Lizenzen
-        </p>
-        <p>
-            Gelistet werden alle relevanten Plattformen - also Plattformen, die Lizenzen konkret zugeordnet werden können.
-            Die Basissuche bestimmt dabei die Menge der betrachteten Lizenzen und Anbieter.
-        </p>
-        <p>
-            Dabei sind folgende Varianten möglich: <br />
-            <i class="icon circle blue"></i> Die Plattform kann direkt über eine Referenz aus dem Lizenz-Bestand ermittelt werden, <br />
-            <i class="icon circle green"></i> Der einer Lizenz zugeordnete Anbieter verweist auf eine Plattform <br />
-        </p>
-        <p>
-            Lizenzen ohne ermittelbare Plattform werden in der Gruppe <i class="icon circle pink"></i><strong>* ohne Plattform</strong> zusammmen gefasst.
-        </p>
+        <g:if test="${lang == 'de'}">
+            <p class="ui header">
+                Plattformen von Lizenzen
+            </p>
+            <p>
+                Gelistet werden alle relevanten Plattformen - also Plattformen, die Lizenzen konkret zugeordnet werden können.
+                Die Basissuche bestimmt dabei die Menge der betrachteten Lizenzen und Anbieter.
+            </p>
+            <p>
+                Dabei sind folgende Varianten möglich: <br />
+                <i class="icon circle blue"></i> Die Plattform kann direkt über eine Referenz aus dem Lizenz-Bestand ermittelt werden, <br />
+                <i class="icon circle green"></i> Der einer Lizenz zugeordnete Anbieter verweist auf eine Plattform <br />
+            </p>
+            <p>
+                Lizenzen ohne ermittelbare Plattform werden in der Gruppe <i class="icon circle pink"></i><strong>* ohne Plattform</strong> zusammmen gefasst.
+            </p>
+        </g:if>
+        <g:else>
+            <!-- TODO --> ${message(code:'reporting.ui.global.help.missing')}
+        </g:else>
     </div>
 
     <div class="help-section" data-help-section="subscription-x-memberSubscription">
-        <p class="ui header">
-            Teilnehmerlizenzen von Lizenzen
-        </p>
-        <p>
-            Gelistet werden alle relevanten Lizenzen - also Lizenzen, denen entsprechende Teilnehmerlizenzen zugeordnet werden können.
-            Die Basissuche bestimmt dabei die Menge der betrachteten Lizenzen und Teilnehmerlizenzen.
-        </p>
-        <p>
-            Ohne übereinstimmende Zuordnung sind ggf. vorhandene Lizenzen <strong>nicht</strong> im Ergebnis sichtbar.
-        </p>
+        <g:if test="${lang == 'de'}">
+            <p class="ui header">
+                Teilnehmerlizenzen von Lizenzen
+            </p>
+            <p>
+                Gelistet werden alle relevanten Lizenzen - also Lizenzen, denen entsprechende Teilnehmerlizenzen zugeordnet werden können.
+                Die Basissuche bestimmt dabei die Menge der betrachteten Lizenzen und Teilnehmerlizenzen.
+            </p>
+            <p>
+                Ohne übereinstimmende Zuordnung sind ggf. vorhandene Lizenzen <strong>nicht</strong> im Ergebnis sichtbar.
+            </p>
+        </g:if>
+        <g:else>
+            <!-- TODO --> ${message(code:'reporting.ui.global.help.missing')}
+        </g:else>
     </div>
 
     <div class="help-section" data-help-section="subscription-x-member">
-        <p class="ui header">
-            Teilnehmer von Lizenzen
-        </p>
-        <p>
-            Gelistet werden alle relevanten Lizenzen - also Lizenzen, denen entsprechende Teilnehmerlizenzen mit konkreten Organisationen als Teilnehmer zugeordnet werden können.
-            Die Basissuche bestimmt dabei die Menge der betrachteten Lizenzen, Teilnehmerlizenzen und Organisationen.
-        </p>
-        <p>
-            Ohne übereinstimmende Zuordnung sind ggf. vorhandene Lizenzen <strong>nicht</strong> im Ergebnis sichtbar.
-        </p>
+        <g:if test="${lang == 'de'}">
+            <p class="ui header">
+                Teilnehmer von Lizenzen
+            </p>
+            <p>
+                Gelistet werden alle relevanten Lizenzen - also Lizenzen, denen entsprechende Teilnehmerlizenzen mit konkreten Organisationen als Teilnehmer zugeordnet werden können.
+                Die Basissuche bestimmt dabei die Menge der betrachteten Lizenzen, Teilnehmerlizenzen und Organisationen.
+            </p>
+            <p>
+                Ohne übereinstimmende Zuordnung sind ggf. vorhandene Lizenzen <strong>nicht</strong> im Ergebnis sichtbar.
+            </p>
+        </g:if>
+        <g:else>
+            <!-- TODO --> ${message(code:'reporting.ui.global.help.missing')}
+        </g:else>
     </div>
 
     %{-- license --}%
 
     <div class="help-section" data-help-section="license-x-identifier">
         <g:if test="${lang == 'de'}">
-            ${hc_identifier( 'Verträgen', 'Verträge', 'Verträge', 'Verträge' )}
+            ${hc_identifier( 'Verträgen', 'Verträge', 'Verträge')}
         </g:if>
         <g:else>
-            ${hc_identifier( 'licenses', 'licenses', 'Licenses', 'Licenses' )}
+            ${hc_identifier( 'licenses', 'licenses', 'Licenses' )}
         </g:else>
     </div>
 
     <div class="help-section" data-help-section="license-x-property">
         <g:if test="${lang == 'de'}">
-            ${hc_property( 'Verträgen', 'Verträge', 'Verträge', 'Verträge', 'Verträge' )}
+            ${hc_property( 'Verträgen', 'Verträge', 'Verträge' )}
         </g:if>
         <g:else>
-            ${hc_property( 'licenses', 'licenses', 'licenses', 'Licenses', 'licenses' )}
+            ${hc_property( 'licenses', 'licenses', 'Licenses' )}
         </g:else>
     </div>
 
     <div class="help-section" data-help-section="license-x-annual">
         <g:if test="${lang == 'de'}">
-            ${hc_generic_annual( 'Verträgen', 'Verträge', 'Vertrag', 'Verträge', 'Verträge' )}
+            ${hc_generic_annual( 'Verträgen', 'Verträge', 'Vertrag', 'Verträge' )}
         </g:if>
         <g:else>
-            ${hc_generic_annual( 'licenses', 'licenses', 'license', 'licenses', 'Licenses' )}
+            ${hc_generic_annual( 'licenses', 'licenses', 'license', 'Licenses' )}
         </g:else>
     </div>
 
@@ -333,19 +358,19 @@
 
     <div class="help-section" data-help-section="org-x-identifier">
         <g:if test="${lang == 'de'}">
-            ${hc_identifier( 'Organisationen', 'Organisationen', 'Organisationen', 'Organisationen' )}
+            ${hc_identifier( 'Organisationen', 'Organisationen', 'Organisationen' )}
         </g:if>
         <g:else>
-            ${hc_identifier( 'organisations', 'organisations', 'Organisations', 'Organisations' )}
+            ${hc_identifier( 'organisations', 'organisations', 'Organisations')}
         </g:else>
     </div>
 
     <div class="help-section" data-help-section="org-x-property">
         <g:if test="${lang == 'de'}">
-            ${hc_property( 'Organisationen', 'Organisationen', 'Organisationen', 'Organisationen', 'Organisationen' )}
+            ${hc_property( 'Organisationen', 'Organisationen', 'Organisationen' )}
         </g:if>
         <g:else>
-            ${hc_property( 'organisations', 'organisations', 'organisations', 'Organisations', 'organisations' )}
+            ${hc_property( 'organisations', 'organisations', 'Organisations' )}
         </g:else>
     </div>
 
@@ -353,73 +378,73 @@
 
     <div class="help-section" data-help-section="package-x-id">
         <g:if test="${lang == 'de'}">
-            ${hc_identifier( 'Paketen', 'Pakete', 'Pakete', 'Pakete', 'Pakete' )}
+            ${hc_identifier( 'Paketen', 'Pakete', 'Pakete', 'Pakete' )}
         </g:if>
         <g:else>
-            ${hc_identifier( 'packages', 'packages', 'Packages', 'Packages', 'packages' )}
+            ${hc_identifier( 'packages', 'packages', 'Packages', 'packages' )}
         </g:else>
     </div>
 
     <div class="help-section" data-help-section="package-x-provider">
         <g:if test="${lang == 'de'}">
-            ${hc_generic_pkg( 'Anbieter', 'Anbieter', 'Anbieter', 'Anbieter', 'Anbieter' )}
+            ${hc_generic_pkg( 'Anbieter', 'Anbieter', 'Anbieter', 'Anbieter' )}
         </g:if>
         <g:else>
-            ${hc_generic_pkg( 'Provider', 'provider', 'provider', 'provider', 'Provider' )}
+            ${hc_generic_pkg( 'Provider', 'provider', 'provider', 'Provider' )}
         </g:else>
     </div>
 
     <div class="help-section" data-help-section="package-x-platform">
         <g:if test="${lang == 'de'}">
-            ${hc_generic_pkg( 'Plattformen', 'Plattformen', 'Plattformen', 'Plattform', 'Plattform' )}
+            ${hc_generic_pkg( 'Plattformen', 'Plattformen', 'Plattform', 'Plattform' )}
         </g:if>
         <g:else>
-            ${hc_generic_pkg( 'Platforms', 'platforms', 'platforms', 'platforms', 'Platform' )}
+            ${hc_generic_pkg( 'Platforms', 'platforms', 'platforms', 'Platform' )}
         </g:else>
     </div>
 
     <div class="help-section" data-help-section="package-x-language">
         <g:if test="${lang == 'de'}">
-            ${hc_generic_pkg( 'Sprachen', 'Sprachen', 'Sprachen', 'Sprachen', 'Sprachen' )}
+            ${hc_generic_pkg( 'Sprachen', 'Sprachen', 'Sprachen', 'Sprachen' )}
         </g:if>
         <g:else>
-            ${hc_generic_pkg( 'Languages', 'languages', 'languages', 'languages', 'Language' )}
+            ${hc_generic_pkg( 'Languages', 'languages', 'languages', 'Language' )}
         </g:else>
     </div>
 
     <div class="help-section" data-help-section="package-x-curatoryGroup">
         <g:if test="${lang == 'de'}">
-            ${hc_generic_pkg_wekb( 'Kuratorengruppen', 'Kuratorengruppen', 'Gruppen', 'Kuratorengruppen' )}
+            ${hc_generic_pkg_wekb( 'Kuratorengruppen', 'Kuratorengruppen', 'Gruppen' )}
         </g:if>
         <g:else>
-            ${hc_generic_pkg_wekb( 'Curatory groups', 'curatory groups', 'groups', 'curatory groups' )}
+            ${hc_generic_pkg_wekb( 'Curatory groups', 'curatory groups', 'groups' )}
         </g:else>
     </div>
 
     <div class="help-section" data-help-section="package-x-nationalRange">
         <g:if test="${lang == 'de'}">
-            ${hc_generic_pkg_wekb( 'Länder', 'Länder', 'Länder', 'Länder' )}
+            ${hc_generic_pkg_wekb( 'Länder', 'Länder', 'Länder' )}
         </g:if>
         <g:else>
-            ${hc_generic_pkg_wekb( 'National ranges', 'national ranges', 'ranges', 'national ranges' )}
+            ${hc_generic_pkg_wekb( 'National ranges', 'national ranges', 'ranges' )}
         </g:else>
     </div>
 
     <div class="help-section" data-help-section="package-x-regionalRange">
         <g:if test="${lang == 'de'}">
-            ${hc_generic_pkg_wekb( 'Regionen', 'Regionen', 'Regionen', 'Regionen' )}
+            ${hc_generic_pkg_wekb( 'Regionen', 'Regionen', 'Regionen' )}
         </g:if>
         <g:else>
-            ${hc_generic_pkg_wekb( 'Regional ranges', 'regional ranges', 'ranges', 'regional ranges' )}
+            ${hc_generic_pkg_wekb( 'Regional ranges', 'regional ranges', 'ranges' )}
         </g:else>
     </div>
         
     <div class="help-section" data-help-section="package-x-ddc">
         <g:if test="${lang == 'de'}">
-            ${hc_generic_pkg_wekb( 'Dewey-Dezimalklassifikation', 'Dewey-Dezimalklassifikation', 'Klassifikationen', 'Dewey-Dezimalklassifikation' )}
+            ${hc_generic_pkg_wekb( 'Dewey-Dezimalklassifikation', 'Dewey-Dezimalklassifikation', 'Klassifikationen' )}
         </g:if>
         <g:else>
-            ${hc_generic_pkg_wekb( 'Dewey decimal classifications', 'Dewey decimal classifications', 'classifications', 'Dewey decimal classifications' )}
+            ${hc_generic_pkg_wekb( 'Dewey decimal classifications', 'Dewey decimal classifications', 'classifications' )}
         </g:else>
     </div>
 
@@ -427,34 +452,39 @@
 
     <div class="help-section" data-help-section="platform-x-property">
         <g:if test="${lang == 'de'}">
-            ${hc_property( 'Plattformen', 'Plattformen', 'Plattformen', 'Plattformen', 'Plattformen')}
+            ${hc_property( 'Plattformen', 'Plattformen', 'Plattformen' )}
         </g:if>
         <g:else>
-            ${hc_property( 'platforms', 'platforms', 'platforms', 'Platforms', 'platforms' )}
+            ${hc_property( 'platforms', 'platforms', 'Platforms' )}
         </g:else>
     </div>
 
     <div class="help-section" data-help-section="platform-x-propertyWekb">
-        <p class="ui header">
-            Merkmale von Plattformen
-        </p>
-        <p>
-            Gelistet werden alle relevanten Merkmale (aus einer fest definierten Liste), die für Plattformen konkret vergeben wurden.
-        Die Basissuche bestimmt dabei die Menge der betrachteten Plattformen.
-        </p>
-        <p>
-            <g:set var="esProperties" value="${PlatformXCfg.CONFIG.base.distribution.default.getAt('platform-x-propertyWekb').esProperties}" />
-            <g:set var="esdConfig" value="${BaseConfig.getCurrentConfigElasticsearchData(BaseConfig.KEY_PLATFORM)}" />
-            <ol class="ui list">
-                <g:each in="${esProperties}" var="prop">
-                    <li value="*"><g:message code="${esdConfig.get(prop).label}" /></li>
-                </g:each>
-            </ol>
-        </p>
-        <p>
-            Pakete ohne entsprechende Merkmale werden in der Gruppe <i class="icon circle pink"></i><strong>* keine Angabe</strong> zusammmen gefasst. <br />
-            Ohne <strong>we:kb</strong>-Pendant fehlen relevante Daten - solche Pakete werden unter <i class="icon circle teal"></i><strong>* kein web:kb Objekt</strong> gelistet. <br />
-        </p>
+        <g:if test="${lang == 'de'}">
+            <p class="ui header">
+                Merkmale von Plattformen
+            </p>
+            <p>
+                Gelistet werden alle relevanten Merkmale (aus einer fest definierten Liste), die für Plattformen konkret vergeben wurden.
+            Die Basissuche bestimmt dabei die Menge der betrachteten Plattformen.
+            </p>
+            <p>
+                <g:set var="esProperties" value="${PlatformXCfg.CONFIG.base.distribution.default.getAt('platform-x-propertyWekb').esProperties}" />
+                <g:set var="esdConfig" value="${BaseConfig.getCurrentConfigElasticsearchData(BaseConfig.KEY_PLATFORM)}" />
+                <ol class="ui list">
+                    <g:each in="${esProperties}" var="prop">
+                        <li value="*"><g:message code="${esdConfig.get(prop).label}" /></li>
+                    </g:each>
+                </ol>
+            </p>
+            <p>
+                Pakete ohne entsprechende Merkmale werden in der Gruppe <i class="icon circle pink"></i><strong>* keine Angabe</strong> zusammmen gefasst. <br />
+                Ohne <strong>we:kb</strong>-Pendant fehlen relevante Daten - solche Pakete werden unter <i class="icon circle teal"></i><strong>* kein web:kb Objekt</strong> gelistet. <br />
+            </p>
+            </g:if>
+        <g:else>
+            <!-- TODO --> ${message(code:'reporting.ui.global.help.missing')}
+        </g:else>
     </div>
 
     <div class="help-section" data-help-section="default">
