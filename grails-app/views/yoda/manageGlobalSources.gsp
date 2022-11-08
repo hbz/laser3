@@ -7,6 +7,8 @@
         <ui:crumb text="Global Sources" class="active" />
     </ui:breadcrumbs>
 
+    <ui:h1HeaderWithIcon text="Global Sources" />
+
     <ui:messages data="${flash}" />
 
       <table class="ui celled la-js-responsive-table la-table table">
@@ -85,40 +87,39 @@
 
       <br />
 
-    <ui:form>
-        <g:form action="newGlobalSource" class="ui form">
+    <ui:form controller="yoda" action="newGlobalSource">
 
             <div class="fields two">
                 <div class="field">
-                    <label>Global Source URI</label>
-                    <input type="text" name="uri" placeholder="eg https://gokb.kuali.org/gokb/oai/packages" value="https://some.host/gokb/oai/packages"/>
+                    <label for="uri">Global Source URI</label>
+                    <input type="text" id="uri" name="uri" placeholder="eg https://gokb.kuali.org/gokb/oai/packages" value="https://some.host/gokb/oai/packages"/>
                 </div>
                 <div class="field">
-                    <label>Global Source Edit URI</label>
-                    <input type="text" name="editUri" placeholder="eg https://gokb.kuali.org/gokb/oai/packages" value="https://some.host/gokb/oai/packages"/>
+                    <label for="editUri">Global Source Edit URI</label>
+                    <input type="text" id="editUri" name="editUri" placeholder="eg https://gokb.kuali.org/gokb/oai/packages" value="https://some.host/gokb/oai/packages"/>
                 </div>
             </div>
 
 
             <div class="fields two">
                 <div class="field">
-                    <label>Global Source Identifier</label>
-                    <input type="text" name="identifier" placeholder="eg GOKbLive"/>
+                    <label for="identifier">Global Source Identifier</label>
+                    <input type="text" id="identifier" name="identifier" placeholder="eg GOKbLive"/>
                 </div>
                 <div class="field">
-                    <label>Global Source Name</label>
-                    <input type="text" name="name" placeholder="eg we:kb Live Server"/>
+                    <label for="name">Global Source Name</label>
+                    <input type="text" id="name" name="name" placeholder="eg we:kb Live Server"/>
                 </div>
             </div>
 
             <div class="fields two">
                 <div class="field">
-                    <label>Global Source Type</label>
-                    <select name="type"><option value="OAI">we:kb OAI Source</option></select>
+                    <label for="type">Global Source Type</label>
+                    <select id="type" name="type"><option value="OAI">we:kb OAI Source</option></select>
                 </div>
                 <div class="field">
-                    <label>Record Type</label>
-                    <select name="rectype">
+                    <label for="rectype">Record Type</label>
+                    <select id="rectype" name="rectype">
                         <option value="${GlobalSourceSyncService.RECTYPE_PACKAGE}">Package</option>
                         <option value="${GlobalSourceSyncService.RECTYPE_TITLE}">Title</option>
                         <option value="${GlobalSourceSyncService.RECTYPE_ORG}">Org</option>
@@ -129,20 +130,20 @@
 
             <div class="fields four">
                 <div class="field">
-                    <label>List Records Prefix</label>
-                    <input type="text" name="listPrefix" placeholder="oai_dc" value="oai_dc"/>
+                    <label for="listPrefix">List Records Prefix</label>
+                    <input type="text" id="listPrefix" name="listPrefix" placeholder="oai_dc" value="oai_dc"/>
                 </div>
                 <div class="field">
-                    <label>Full Record Prefix</label>
-                    <input type="text" name="fullPrefix" placeholder="gokb" value="gokb"/>
+                    <label for="fullPrefix">Full Record Prefix</label>
+                    <input type="text" id="fullPrefix" name="fullPrefix" placeholder="gokb" value="gokb"/>
                 </div>
                 <div class="field">
-                    <label>Principal (Username)</label>
-                    <input type="text" name="principal" placeholder=""/>
+                    <label for="principal">Principal (Username)</label>
+                    <input type="text" id="principal" name="principal" placeholder=""/>
                 </div>
                 <div class="field">
-                    <label>Credentials (Password)</label>
-                    <input type="text" name="credentials" placeholder=""/>
+                    <label for="credentials">Credentials (Password)</label>
+                    <input type="text" id="credentials" name="credentials" placeholder=""/>
                 </div>
             </div>
 
@@ -151,7 +152,6 @@
                 <input type="submit" value="Submit" class="ui button"/>
             </div>
 
-        </g:form>
     </ui:form>
 
 <laser:htmlEnd />

@@ -24,7 +24,7 @@
 
 <ui:messages data="${flash}"/>
 
-<ui:filter showFilterButton="true" addFilterJs="true">
+<ui:filter>
     <g:form action="currentSurveysConsortia" controller="survey" method="post" class="ui small form">
         <div class="four fields">
             <div class="field">
@@ -173,7 +173,7 @@
     </g:form>
 </ui:filter>
 
-<ui:form>
+<ui:greySegment>
 
     <g:if test="${surveys}">
 
@@ -393,7 +393,7 @@
         </g:else>
     </g:else>
 
-</ui:form>
+</ui:greySegment>
 
 <g:if test="${surveysCount}">
     <ui:paginate action="${actionName}" controller="${controllerName}" params="${params}"

@@ -11,7 +11,7 @@
                 <td>
                     <p>
                         <strong>
-                            ${chosenOrg.name}
+                            <g:link controller="organisation" action="show" id="${chosenOrg.id}">${chosenOrg.name}</g:link>
                             <g:if test="${chosenOrg.getCustomerType() == 'ORG_INST'}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
                                       data-content="${chosenOrg.getCustomerTypeI10n()}">

@@ -670,6 +670,7 @@ class PackageController {
             response.outputStream.flush()
             response.outputStream.close()
             workbook.dispose()
+            return
         }else if(params.exportClickMeExcel) {
             if (params.filename) {
                 filename =params.filename
@@ -687,6 +688,7 @@ class PackageController {
             response.outputStream.flush()
             response.outputStream.close()
             wb.dispose()
+            return
         }
         withFormat {
             html {

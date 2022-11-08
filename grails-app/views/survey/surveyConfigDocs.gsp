@@ -35,7 +35,7 @@
     <g:if test="${surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]}">
         <i class="icon clipboard outline la-list-icon"></i>
         <g:link controller="subscription" action="show" id="${surveyConfig.subscription.id}">
-            ${surveyConfig.subscription.name}
+            ${surveyConfig.getConfigNameShort()}
         </g:link>
     </g:if>
     <g:else>
@@ -71,7 +71,7 @@
 --}%
     <div class="sixteen wide stretched column">
 
-        <ui:form>
+        <ui:greySegment>
 
             <div class="four wide column">
                 <button type="button" class="ui icon button blue la-modern-button right floated" data-ui="modal"
@@ -153,7 +153,7 @@
                 <laser:render template="/templates/documents/modal"
                           model="${[ownobj: surveyConfig, owntp: surveyConfig, docctx: docctx, doc: docctx.owner]}"/>
             </g:each>
-        </ui:form>
+        </ui:greySegment>
     </div>
 
     <laser:script file="${this.getGroovyPageFileName()}">

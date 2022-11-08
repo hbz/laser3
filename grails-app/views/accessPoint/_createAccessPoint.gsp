@@ -1,8 +1,9 @@
 <%@ page import="de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
-<ui:form>
-    <g:form action="processCreate" controller="accessPoint" id="${orgInstance.id}" method="post" class="ui form">
+
+    <ui:form controller="accessPoint" action="processCreate" id="${orgInstance.id}">
         <g:hiddenField name="accessMethod" value="${genericOIDService.getOID(accessMethod)}" />
+
         <g:if test="${accessMethod == RDStore.ACCESS_POINT_TYPE_IP}">
             <laser:render template="name" model="${[nameOptions: availableOptions.collectEntries(),
                                                 name: availableOptions.first().values().first(),
@@ -54,5 +55,4 @@
             <laser:render template="name" model="${[nameOptions: [],name: '']}"/>
         </g:elseif>
         <input type="submit" class="ui button js-click-control" value="${message(code: 'default.button.create.label')}"/>
-    </g:form>
-</ui:form>
+    </ui:form>

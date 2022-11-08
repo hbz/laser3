@@ -15,7 +15,7 @@
             <input type="submit" class="ui left floated  button la-clear-before" value="${message(code:'task.create.new')}" data-ui="modal" data-href="#modalCreateTask" />
         </g:if>--%>
 
-        <ui:filter showFilterButton="true" addFilterJs="true">
+        <ui:filter>
             <form class="ui form">
                 <div class="four fields">
                     <div class="field">

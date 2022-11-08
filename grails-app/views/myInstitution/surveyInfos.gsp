@@ -42,7 +42,7 @@
     <g:set var="choosenOrg" value="${Org.findById(ownerId)}"/>
 
 
-    <ui:form>
+    <ui:greySegment>
         <h3 class="ui header"><g:message code="surveyInfo.owner.label"/>:</h3>
 
         <g:if test="${choosenOrg}">
@@ -51,7 +51,7 @@
                 <tbody>
                 <tr>
                     <td>
-                        <p><strong>${choosenOrg.name} (${choosenOrg.shortname})</strong></p>
+                        <p><strong><g:link controller="organisation" action="show" id="${choosenOrg.id}">${choosenOrg.name} (${choosenOrg.shortname})</g:link></strong></p>
 
                         ${choosenOrg.libraryType?.getI10n('value')}
                     </td>
@@ -84,7 +84,7 @@
                 </g:else>
             </div>
         </div>
-    </ui:form>
+    </ui:greySegment>
 </g:if>
 
 <br />

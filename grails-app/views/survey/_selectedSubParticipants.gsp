@@ -2,8 +2,8 @@
 <br />
 %{--<g:if test="${surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION}">
     <h3 class="ui icon header"><ui:headerIcon/>
-    <g:link controller="subscription" action="show" id="${surveyConfig.subscription?.id}">
-        ${surveyConfig.subscription?.name}
+    <g:link controller="subscription" action="show" id="${surveyConfig.subscription.id}">
+        ${surveyConfig.getConfigNameShort()}
     </g:link>
     </h3>
 </g:if>
@@ -23,7 +23,7 @@
 
 </div>
 
-<ui:filter showFilterButton="true" addFilterJs="true">
+<ui:filter>
     <g:form action="surveyParticipants" method="post" class="ui form"
             params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
         <laser:render template="/templates/filter/orgFilter"

@@ -609,16 +609,6 @@
                               model="${[ownobj: surveyConfig, owntp: 'surveyConfig', css_class: '', editable: accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')]}"/>
                 </div>
 
-                <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')}">
-
-                    <laser:render template="/templates/tasks/modal_create"
-                              model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
-
-                </g:if>
-                <g:if test="${accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')}">
-                    <laser:render template="/templates/notes/modal_create"
-                              model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
-                </g:if>
             </g:if>
 
             <div id="container-documents">
@@ -960,7 +950,7 @@
 <g:if test="${controllerName == 'survey' && actionName == 'show'}">
     <g:set var="surveyProperties" value="${surveyConfig.getSortedSurveyConfigProperties()}"/>
 
-    <ui:form>
+    <ui:greySegment>
 
         <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'surveyProperty.selected.label')} <ui:totalNumber
                 total="${surveyProperties.size()}"/></h4>
@@ -1085,12 +1075,12 @@
 
         </table>
 
-    </ui:form>
+    </ui:greySegment>
 </g:if>
 
 <g:if test="${surveyResults}">
 
-    <ui:form>
+    <ui:greySegment>
         <h3 class="ui header"><g:message code="surveyConfigsInfo.properties"/>
         <ui:totalNumber total="${surveyResults.size()}"/>
         </h3>
@@ -1244,7 +1234,7 @@
                 </tr>
             </g:each>
         </table>
-    </ui:form>
+    </ui:greySegment>
     <br/>
 </g:if>
 

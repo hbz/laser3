@@ -2,6 +2,13 @@
 
 <laser:htmlStart text="Datenbereinigung: Gelöschte TIPPs" serviceInjection="true"/>
 
+    <ui:breadcrumbs>
+        <ui:crumb message="menu.yoda" controller="yoda" action="index"/>
+        <ui:crumb text="Datenbereinigung" class="active"/>
+    </ui:breadcrumbs>
+
+    <ui:h1HeaderWithIcon text="Datenbereinigung" />
+
         <ui:messages data="${flash}"/>
         <table>
             <thead>

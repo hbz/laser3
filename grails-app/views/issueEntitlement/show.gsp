@@ -289,7 +289,7 @@
         </div>
 
         <div class="content">
-            <ui:filter>
+            <ui:filter simple="true">
                 <g:form action="show" params="${params}" method="get" class="ui form">
                     <input type="hidden" name="sort" value="${params.sort}">
                     <input type="hidden" name="order" value="${params.order}">

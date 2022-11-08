@@ -26,6 +26,7 @@ import de.laser.config.ConfigMapper
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
+import grails.gsp.PageRenderer
 import grails.plugins.mail.MailService
 import grails.web.servlet.mvc.GrailsParameterMap
 import groovy.sql.Sql
@@ -53,6 +54,8 @@ class SurveyService {
     MailService mailService
     MessageSource messageSource
     SubscriptionService subscriptionService
+
+    PageRenderer groovyPageRenderer
 
     String replyTo
 
@@ -291,9 +294,9 @@ class SurveyService {
 
                     if (surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]) {
 
-                        OrgRole orgRole = Subscription.findAllByInstanceOf(surveyConfig.subscription) ? OrgRole.findByOrgAndRoleTypeAndSubInList(surveyOrg.org, RDStore.OR_SUBSCRIBER_CONS, Subscription.findAllByInstanceOf(surveyConfig.subscription)) : null
-                        subscription =  orgRole ? orgRole.sub : null
-                        row.add([field: subscription?.name ?: surveyName ?: '', style: null])
+                        //OrgRole orgRole = Subscription.findAllByInstanceOf(surveyConfig.subscription) ? OrgRole.findByOrgAndRoleTypeAndSubInList(surveyOrg.org, RDStore.OR_SUBSCRIBER_CONS, Subscription.findAllByInstanceOf(surveyConfig.subscription)) : null
+                        //subscription =  orgRole ? orgRole.sub : null
+                        row.add([field: surveyName ?: '', style: null])
                     }
                     if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY) {
                         row.add([field: surveyName ?: '', style: null])
@@ -384,7 +387,7 @@ class SurveyService {
                     row.add([field: surveyConfig.url3 ?: '', style: null])
                     row.add([field: surveyConfig.urlComment3 ?: '', style: null])
                     subscription = surveyConfig.subscription.getDerivedSubscriptionBySubscribers(contextOrg) ?: null
-                    row.add([field: subscription?.name ?: surveyConfig.getConfigNameShort() ?: "", style: null])
+                    row.add([field: surveyConfig.getConfigNameShort() ?: "", style: null])
                     row.add([field: subscription?.providers ? subscription?.providers?.join(", ") : '', style: null])
                     row.add([field: subscription?.agencies ? subscription?.agencies?.join(", ") : '', style: null])
 
@@ -531,9 +534,9 @@ class SurveyService {
 
                     if (surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]) {
 
-                        OrgRole orgRole = Subscription.findAllByInstanceOf(surveyConfig.subscription) ? OrgRole.findByOrgAndRoleTypeAndSubInList(surveyOrg.org, RDStore.OR_SUBSCRIBER_CONS, Subscription.findAllByInstanceOf(surveyConfig.subscription)) : null
-                        subscription =  orgRole ? orgRole.sub : null
-                        row.add([field: subscription?.name ?: surveyName ?: '', style: null])
+                        //OrgRole orgRole = Subscription.findAllByInstanceOf(surveyConfig.subscription) ? OrgRole.findByOrgAndRoleTypeAndSubInList(surveyOrg.org, RDStore.OR_SUBSCRIBER_CONS, Subscription.findAllByInstanceOf(surveyConfig.subscription)) : null
+                        //subscription =  orgRole ? orgRole.sub : null
+                        row.add([field: surveyName ?: '', style: null])
                     }
                     if (surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY) {
                         row.add([field: surveyName ?: '', style: null])
@@ -872,9 +875,9 @@ class SurveyService {
 
                         if (surveyResult.surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]) {
 
-                            OrgRole orgRole = Subscription.findAllByInstanceOf(surveyResult.surveyConfig.subscription) ? OrgRole.findByOrgAndRoleTypeAndSubInList(participant, RDStore.OR_SUBSCRIBER_CONS, Subscription.findAllByInstanceOf(surveyResult.surveyConfig.subscription)) : null
-                            subscription =  orgRole ? orgRole.sub : null
-                            row.add([field: subscription?.name ?: surveyName ?: '', style: null])
+                            //OrgRole orgRole = Subscription.findAllByInstanceOf(surveyResult.surveyConfig.subscription) ? OrgRole.findByOrgAndRoleTypeAndSubInList(participant, RDStore.OR_SUBSCRIBER_CONS, Subscription.findAllByInstanceOf(surveyResult.surveyConfig.subscription)) : null
+                            //subscription =  orgRole ? orgRole.sub : null
+                            row.add([field: surveyName ?: '', style: null])
                         }
                         if (surveyResult.surveyConfig.type == SurveyConfig.SURVEY_CONFIG_TYPE_GENERAL_SURVEY) {
                             row.add([field: surveyName ?: '', style: null])
@@ -1891,6 +1894,11 @@ class SurveyService {
             count = titles.size()
         }
         return count
+    }
+
+    String notificationSurveyAsString(SurveyInfo surveyInfo) {
+        Locale language = new Locale("de")
+        groovyPageRenderer.render view: '/mailTemplates/html/notificationSurveyForMailClient', model: [language: language, survey: surveyInfo, reminder: false]
     }
 
 }

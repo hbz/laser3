@@ -2,7 +2,7 @@
 <laser:htmlStart message="mailTemplate.plural.label" />
 
 <ui:breadcrumbs>
-    <ui:crumb controller="dataManager" action="index" text="${message(code:'menu.datamanager')}" />
+    <ui:crumb controller="dataManager" action="index" message="menu.datamanager" />
     <ui:crumb message="mailTemplate.plural.label" class="active"/>
 </ui:breadcrumbs>
 
@@ -15,7 +15,7 @@
 <ui:h1HeaderWithIcon message="mailTemplate.plural.label" />
 
 <ui:messages data="${flash}"/>
-<ui:form>
+<ui:greySegment>
     <g:if test="${mailTemplates?.size() > 0}">
 
         <table class="ui celled sortable table la-js-responsive-table la-table">
@@ -62,7 +62,7 @@
             ${message(code: 'result.empty')}
         </div>
     </g:else>
-</ui:form>
+</ui:greySegment>
 
 
 <ui:modal id="editMailTemplate" message="mailTemplate.label" isEditModal="isEditModal">

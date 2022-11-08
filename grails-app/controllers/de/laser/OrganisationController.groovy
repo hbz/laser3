@@ -216,6 +216,7 @@ class OrganisationController  {
                 response.outputStream.flush()
                 response.outputStream.close()
                 wb.dispose()
+                return
 
             }
             catch (Exception e) {

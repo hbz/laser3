@@ -188,6 +188,7 @@ class FinanceController  {
             response.outputStream.flush()
             response.outputStream.close()
             wb.dispose()
+            return
         }
         else {
             ArrayList titles = []

@@ -1,4 +1,4 @@
-<ui:filter showFilterButton="true" addFilterJs="true">
+<ui:filter>
     <g:form action="${actionName}" params="${params}" method="get" class="ui form">
         <input type="hidden" name="sort" value="${params.sort}">
         <input type="hidden" name="order" value="${params.order}">

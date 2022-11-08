@@ -77,7 +77,6 @@
                           value="${ownobj?.id}"
                           noSelection="${['' : message(code:'default.select.choose.label')]}"
                 />
-
             </div>
 
             <div id="orgdiv" class="field ${hasErrors(bean: taskInstance, field: 'org', 'error')} required">
@@ -120,11 +119,8 @@
                           value="${ownobj?.id}"
                           noSelection="${['' : message(code:'default.select.choose.label')]}"
                 />
-
             </div>
-
         </g:if>
-
 
         <div class="field">
             <div class="two fields">
@@ -145,7 +141,6 @@
                 <ui:datepicker class="wide eight" label="task.endDate.label" id="endDate" name="endDate"
                                   placeholder="default.date.label" value="${taskInstance?.endDate}" required=""
                                   bean="${taskInstance}"/>
-
             </div>
         </div>
 
@@ -159,7 +154,7 @@
 
                         <div class="field">
                             <div class="ui radio checkbox">
-                                <input id="radioresponsibleOrg" type="radio" value="Org" name="responsible" tabindex="0" class="hidden">
+                                <input id="radioresponsibleOrg" type="radio" value="Org" name="responsible" tabindex="0" class="hidden" checked="">
                                 <label for="radioresponsibleOrg">${message(code: 'task.responsibleOrg.label')} <strong>${contextOrg.getDesignation()}</strong> </label>
                             </div>
                         </div>
@@ -173,7 +168,7 @@
                     </fieldset>
                 </div>
 
-                <div id="responsibleUser"
+                <div id="responsibleUserWrapper"
                      class="field wide eight ${hasErrors(bean: taskInstance, field: 'responsibleUser', 'error')} required">
                     <label for="responsibleUserInput">
                         <g:message code="task.responsibleUser.label" />
@@ -223,18 +218,15 @@
         </laser:script>
     </g:if>
     <laser:script file="${this.getGroovyPageFileName()}">
-        $("#radioresponsibleOrg").change(function () {
-            JSPC.app.toggleResponsibleUser();
-        });
-        $("#radioresponsibleUser").change(function () {
-            JSPC.app.toggleResponsibleUser();
-        });
+
+        $("#radioresponsibleOrg").change(function () { JSPC.app.toggleResponsibleUser() });
+        $("#radioresponsibleUser").change(function () { JSPC.app.toggleResponsibleUser() });
 
         JSPC.app.toggleResponsibleUser = function () {
             if ($("#radioresponsibleUser").is(':checked')) {
-                $("#responsibleUser").show();
+                $("#responsibleUserWrapper").show()
             } else {
-                $("#responsibleUser").hide();
+                $("#responsibleUserWrapper").hide()
             }
         }
         
@@ -243,11 +235,11 @@
         JSPC.app.chooseRequiredDropdown = function (opt) {
             $(document).ready(function () {
 
-                $.fn.form.settings.rules.responsibleUser = function() {
+                $.fn.form.settings.rules.responsibleUserInput = function() {
                     if($("#radioresponsibleUser").is(":checked")) {
-                        return $('#responsibleUserInput').val();
+                        return $('#responsibleUserInput').val()
                     }
-                    else return true;
+                    else return true
                 }
                 $('#create_task').form({
                         inline: true,
@@ -287,11 +279,11 @@
                                     }
                                 ]
                             },
-                            responsibleUser: {
+                            responsibleUserInput: {
                                 identifier: 'responsibleUserInput',
                                 rules: [
                                     {
-                                        type: 'responsibleUser',
+                                        type: 'responsibleUserInput',
                                         prompt: '<g:message code="validation.responsibleMustBeChecked" />'
                                     }
                                 ]
@@ -301,68 +293,6 @@
             })
         }
         JSPC.app.chooseRequiredDropdown('status.id');
-
-        JSPC.callbacks.dynPostFunc = function () {
-            console.log('dynPostFunc @ tasks/_modal_create.gsp');
-
-            $("#radioresponsibleOrgEdit").change(function () {
-                $("#responsibleUserEdit").hide();
-            });
-
-            $("#radioresponsibleUserEdit").change(function () {
-                $("#responsibleUserEdit").show();
-            });
-
-            if ($("#radioresponsibleUserEdit").is(':checked')) {
-                $("#responsibleUserEdit").show();
-            } else {
-                $("#responsibleUserEdit").hide();
-            }
-
-            $('#edit_task')
-                .form({
-                    on: 'blur',
-                    inline: true,
-                    fields: {
-                        title: {
-                            identifier: 'title',
-                            rules: [
-                                {
-                                    type: 'empty',
-                                    prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
-                                }
-                            ]
-                        },
-                        endDate: {
-                            identifier: 'endDate',
-                            rules: [
-                                {
-                                    type: 'empty',
-                                    prompt: '{name} <g:message code="validation.needsToBeFilledOut" />'
-                                }
-                            ]
-                        },
-                        responsible: {
-                            identifier: 'radioGroup',
-                            rules: [
-                                {
-                                    type: 'empty',
-                                    prompt: '<g:message code="validation.needsToBeFilledOut" />'
-                                }
-                            ]
-                        },
-                        responsibleUser: {
-                            identifier: 'responsibleUserInput',
-                            rules: [
-                                {
-                                    type: 'responsibleUser',
-                                    prompt: '<g:message code="validation.responsibleMustBeChecked" />'
-                                }
-                            ]
-                        }
-                    }
-                });
-        }
     </laser:script>
 
 </ui:modal>

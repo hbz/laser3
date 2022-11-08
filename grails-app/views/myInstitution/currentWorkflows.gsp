@@ -8,7 +8,7 @@
 
 <ui:h1HeaderWithIcon message="menu.my.workflows" type="Workflow" total="${total}" floated="true" />
 
-<ui:filter showFilterButton="true" addFilterJs="true">
+<ui:filter>
     <form id="wfFilterForm" class="ui form">
         <div class="three fields">
             <div class="field">

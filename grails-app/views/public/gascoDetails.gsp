@@ -13,18 +13,18 @@
         </g:if>
     </h2>
 
-    <ui:filter>
+    <ui:filter simple="true">
         <form class="ui form">
             <div class="fields">
 
                 <div class="field">
-                    <label>Suche nach Name</label>
-                    <input type="text" name="q" placeholder="${message(code:'default.search.ph')}" value="${params.q}" />
+                    <label for="q">Suche nach Name</label>
+                    <input type="text" id="q" name="q" placeholder="${message(code:'default.search.ph')}" value="${params.q}" />
                 </div>
 
                 <div class="field">
-                    <label>Suche nach Identifikatoren</label>
-                    <g:select name="idns"
+                    <label for="idns">Suche nach Identifikatoren</label>
+                    <g:select id="idns" name="idns"
                               from="${idnsPreset}" optionKey="id" optionValue="ns"
                               value="${params.idns}"
                               class="ui dropdown"

@@ -1,5 +1,5 @@
 
-<ui:form>
+<ui:greySegment>
 
     <g:if test="${groupedProperties?.size() > 0}">
         <g:each in="${groupedProperties}" var="groupedProps">
@@ -61,5 +61,5 @@
         <br /><br />
     </g:if>
 
-</ui:form>
+</ui:greySegment>
 

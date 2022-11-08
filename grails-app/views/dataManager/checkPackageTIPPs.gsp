@@ -3,7 +3,7 @@
 <laser:htmlStart text="Package Tipps LAS:eR and we:kb" />
 
 <ui:breadcrumbs>
-    <ui:crumb message="menu.admin" controller="admin" action="index" />
+    <ui:crumb controller="dataManager" action="index" message="menu.datamanager" />
     <ui:crumb text="Package Tipps LAS:eR and we:kb" class="active"/>
 </ui:breadcrumbs>
 

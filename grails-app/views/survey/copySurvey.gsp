@@ -24,7 +24,7 @@
 <g:if test="${workFlow == '2'}">
     <g:form action="processCopySurvey" controller="survey" method="post" class="ui form"
             params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id]">
-        <ui:form>
+        <ui:greySegment>
             <g:if test="${surveyInfo.type.id == RDStore.SURVEY_TYPE_INTEREST.id}">
                 <div class="field required">
                     <label>${message(code: 'surveyInfo.name.label')} <g:message code="messageRequiredField" /></label>
@@ -284,7 +284,7 @@
             <input type="submit" class="ui button js-click-control"
                    value="${message(code: 'default.button.copy.label')}"/>
 
-        </ui:form>
+        </ui:greySegment>
     </g:form>
 </g:if>
 
@@ -296,7 +296,7 @@
 
     <ui:h1HeaderWithIcon message="myinst.currentSubscriptions.label" total="${num_sub_rows}" floated="true" />
 
-    <ui:filter showFilterButton="true" addFilterJs="true">
+    <ui:filter>
         <g:form action="copySurvey" controller="survey" method="get" class="ui small form">
             <input type="hidden" name="isSiteReloaded" value="yes"/>
             <input type="hidden" name="id" value="${params.id}"/>

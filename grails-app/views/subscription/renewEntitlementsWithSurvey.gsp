@@ -169,7 +169,7 @@
 
 <g:if test="${participant}">
 
-    <ui:form>
+    <ui:greySegment>
         <g:set var="choosenOrg" value="${Org.findById(participant.id)}"/>
         <g:set var="choosenOrgCPAs" value="${choosenOrg?.getGeneralContactPersons(false)}"/>
 
@@ -177,7 +177,7 @@
             <tbody>
             <tr>
                 <td>
-                    <p><strong>${choosenOrg?.name} (${choosenOrg?.shortname})</strong></p>
+                    <p><strong><g:link controller="organisation" action="show" id="${choosenOrg.id}">${choosenOrg.name} (${choosenOrg.shortname})</g:link></strong></p>
 
                     ${choosenOrg?.libraryType?.getI10n('value')}
                 </td>
@@ -196,7 +196,7 @@
             </tbody>
         </table>
 
-    </ui:form>
+    </ui:greySegment>
 </g:if>
 
 <g:if test="${selectProcess}">
@@ -209,7 +209,7 @@
 
 <g:if test="${(params.tab == 'allIEs' || params.tab == 'allIEsStats') && editable}">
 
-    <ui:form>
+    <ui:greySegment>
         <g:form class="ui form" controller="subscription" action="renewEntitlementsWithSurvey"
                 params="${[id: newSub.id, surveyConfigID: surveyConfig.id, tab: params.tab]}"
                 method="post" enctype="multipart/form-data">
@@ -262,7 +262,7 @@
                 $('input:text', $(e.target).parent()).val(name);
             });
         </laser:script>
-    </ui:form>
+    </ui:greySegment>
 </g:if>
 
 

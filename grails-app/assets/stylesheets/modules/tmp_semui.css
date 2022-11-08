@@ -292,15 +292,15 @@ h1.header.icon > i.trophy {
     background-color:#f3a43b; border-color:#f3a43b; color:white;
 }
 
-/* -- simple color helper -- */
+/* -- simple color helper - fallback if no fomantic style is available -- */
 
-div.sc_red,      p.sc_red,      span.sc_red,      strong.sc_red,      i.sc_red,      tr.sc_red          { color:#d12e34; }
-div.sc_green,    p.sc_green,    span.sc_green,    strong.sc_green,    i.sc_green,    tr.sc_green        { color:#b5c334; }
-div.sc_orange,   p.sc_orange,   span.sc_orange,   strong.sc_orange,   i.sc_orange,   tr.sc_orange       { color:#f3a43b; }
-div.sc_blue,     p.sc_blue,     span.sc_blue,     strong.sc_blue,     i.sc_blue,     tr.sc_blue         { color:#357edd; }
-div.sc_grey,     p.sc_grey,     span.sc_grey,     strong.sc_grey,     i.sc_grey,     tr.sc_grey         { color:#808080; }
-div.sc_darkgrey, p.sc_darkgrey, span.sc_darkgrey, strong.sc_darkgrey, i.sc_darkgrey, tr.sc_darkgrey     { color:#a9a9a9; }
+*.sc_red        { color:#d12e34; }
+*.sc_green      { color:#b5c334; }
+*.sc_orange     { color:#f3a43b; }
+*.sc_blue       { color:#357edd; }
+*.sc_grey       { color:#808080; }
+*.sc_darkgrey   { color:#a9a9a9; }
 
 /* -- simple format helper -- */
 
-span.sf_underline, td.sf_underline    { text-decoration: underline dotted; }
+*.sf_underline  { text-decoration: underline dotted; }

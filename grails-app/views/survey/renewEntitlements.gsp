@@ -67,7 +67,7 @@
         <tbody>
         <tr>
             <td>
-                <p><strong>${choosenOrg.name} (${choosenOrg.shortname})</strong></p>
+                <p><strong><g:link controller="organisation" action="show" id="${choosenOrg.id}">${choosenOrg.name} (${choosenOrg.shortname})</g:link></strong></p>
 
                 ${choosenOrg.libraryType?.getI10n('value')}
             </td>
@@ -102,7 +102,7 @@
     </div>
 </g:if>--}%
 
-<ui:form>
+<ui:greySegment>
 
     <h2 class="ui header left aligned aligned"><g:message
             code="renewEntitlementsWithSurvey.currentEntitlements"/> (${ies.size()})</h2>
@@ -232,7 +232,7 @@
 
     </div>
 
-</ui:form>
+</ui:greySegment>
 
 
 

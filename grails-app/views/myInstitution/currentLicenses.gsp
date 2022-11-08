@@ -43,7 +43,7 @@
 
   <ui:messages data="${flash}" />
 
-  <ui:filter showFilterButton="true" addFilterJs="true" class="license-searches">
+  <ui:filter>
       <form class="ui form">
           <div class="four fields">
               <div class="field">

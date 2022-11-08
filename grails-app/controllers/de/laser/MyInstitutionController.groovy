@@ -35,7 +35,6 @@ import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
 import de.laser.workflow.WfWorkflow
-import de.laser.workflow.WfWorkflowPrototype
 import grails.gsp.PageRenderer
 import grails.plugin.springsecurity.SpringSecurityUtils
 import grails.plugin.springsecurity.annotation.Secured
@@ -72,7 +71,6 @@ class MyInstitutionController  {
     AccessService accessService
     AddressbookService addressbookService
     ContextService contextService
-    CompareService compareService
     ComparisonService comparisonService
     DeletionService deletionService
     DocstoreService docstoreService
@@ -881,6 +879,7 @@ join sub.orgRelations or_sub where
             response.outputStream.flush()
             response.outputStream.close()
             wb.dispose()
+            return
         }
         withFormat {
             html {
@@ -952,6 +951,7 @@ join sub.orgRelations or_sub where
             response.outputStream.flush()
             response.outputStream.close()
             wb.dispose()
+            return
         }
 
         withFormat {
@@ -1443,6 +1443,7 @@ join sub.orgRelations or_sub where
             response.outputStream.flush()
             response.outputStream.close()
             workbook.dispose()
+            return
         }
         else {
             withFormat {
@@ -2742,6 +2743,7 @@ join sub.orgRelations or_sub where
             response.outputStream.flush()
             response.outputStream.close()
             wb.dispose()
+            return
         }
         else if(params.exportClickMeExcel) {
             if (params.filename) {
@@ -2760,6 +2762,7 @@ join sub.orgRelations or_sub where
             response.outputStream.flush()
             response.outputStream.close()
             wb.dispose()
+            return
         }
         else {
             withFormat {
@@ -3142,6 +3145,7 @@ join sub.orgRelations or_sub where
             response.outputStream.flush()
             response.outputStream.close()
             workbook.dispose()
+            return
         }
         else {
             result.benchMark = prf.stopBenchmark()
@@ -3462,6 +3466,7 @@ join sub.orgRelations or_sub where
             response.outputStream.flush()
             response.outputStream.close()
             workbook.dispose()
+            return
         }
         else
             result
@@ -3757,6 +3762,7 @@ join sub.orgRelations or_sub where
             response.outputStream.flush()
             response.outputStream.close()
             workbook.dispose()
+            return
         }
         else
             result
@@ -3841,6 +3847,7 @@ join sub.orgRelations or_sub where
             response.outputStream.flush()
             response.outputStream.close()
             workbook.dispose()
+            return
         }
         else
             render view: 'managePrivatePropertyDefinitions', model: result

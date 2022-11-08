@@ -190,7 +190,7 @@
         ${message(code: 'copyProperties.copyProperties', args: [message(code: 'copyProperties.' + params.tab)])}
     </h2>
 
-    <ui:form>
+    <ui:greySegment>
         <div class="ui grid">
 
             <div class="row">
@@ -236,7 +236,7 @@
                 </div>
             </div>
         </div>
-    </ui:form>
+    </ui:greySegment>
 
 %{--<div class="ui icon positive message">
     <i class="info icon"></i>
@@ -258,7 +258,7 @@
     </div>
 </div>--}%
 
-    <ui:form>
+    <ui:greySegment>
         <g:if test="${properties}">
 
             <g:form action="proccessCopyProperties" controller="survey" id="${surveyInfo.id}"
@@ -329,15 +329,15 @@
 
                         <tr class="">
                             <td>
-                                <g:if test="${params.tab == 'customProperties' && ((!participant.newCustomProperty && participant.oldCustomProperty) || (participant.newPrivateProperty && participant.oldCustomProperty && participant.oldCustomProperty.type.multipleOccurrence))}">
+                                <g:if test="${params.tab == 'customProperties' && (participant.oldSub && ((!participant.newCustomProperty && participant.oldCustomProperty) || (participant.newPrivateProperty && participant.oldCustomProperty && participant.oldCustomProperty.type.multipleOccurrence)))}">
                                     <g:checkBox name="selectedSub" value="${participant.newSub.id}" checked="false"/>
                                 </g:if>
                                 <g:elseif
-                                        test="${params.tab == 'privateProperties' && ((!participant.newPrivateProperty && participant.oldPrivateProperty) || (participant.newPrivateProperty && participant.oldPrivateProperty && participant.oldPrivateProperty.type.multipleOccurrence))}">
+                                        test="${params.tab == 'privateProperties' && (participant.oldSub && ((!participant.newPrivateProperty && participant.oldPrivateProperty) || (participant.newPrivateProperty && participant.oldPrivateProperty && participant.oldPrivateProperty.type.multipleOccurrence)))}">
                                     <g:checkBox name="selectedSub" value="${participant.newSub.id}" checked="false"/>
                                 </g:elseif>
                                 <g:elseif
-                                        test="${params.tab == 'surveyProperties' && ((!participant.newCustomProperty && participant.surveyProperty) || (participant.newCustomProperty && participant.newCustomProperty.type.multipleOccurrence))}">
+                                        test="${params.tab == 'surveyProperties' && (participant.oldSub && ((!participant.newCustomProperty && participant.surveyProperty) || (participant.newCustomProperty && participant.newCustomProperty.type.multipleOccurrence)))}">
                                     <g:checkBox name="selectedSub" value="${participant.newSub.id}" checked="false"/>
                                 </g:elseif>
                             </td>
@@ -686,7 +686,7 @@
         <g:else>
             <g:message code="copyProperties.noCopyProperties" args="[message(code: 'copyProperties.' + params.tab)]"/>
         </g:else>
-    </ui:form>
+    </ui:greySegment>
 
     <div class="sixteen wide field" style="text-align: center;">
         <g:if test="${params.tab != 'privateProperties'}">

@@ -209,6 +209,7 @@ class SubscriptionController {
                 response.outputStream.flush()
                 response.outputStream.close()
                 wb.dispose()
+                return
             }
         }
     }
@@ -425,6 +426,7 @@ class SubscriptionController {
                     response.outputStream.flush()
                     response.outputStream.close()
                     wb.dispose()
+                    return
                 }
             }
             else {
@@ -751,6 +753,7 @@ class SubscriptionController {
                 response.outputStream.flush()
                 response.outputStream.close()
                 workbook.dispose()
+                return
             }
             else if(params.exportClickMeExcel) {
                 if (params.filename) {
@@ -769,6 +772,7 @@ class SubscriptionController {
                 response.outputStream.flush()
                 response.outputStream.close()
                 wb.dispose()
+                return
             }
             else {
                 withFormat {
@@ -855,6 +859,7 @@ class SubscriptionController {
                 response.outputStream.flush()
                 response.outputStream.close()
                 workbook.dispose()
+                return
             }else if(params.exportClickMeExcel) {
                 if (params.filename) {
                     filename =params.filename
@@ -872,6 +877,7 @@ class SubscriptionController {
                 response.outputStream.flush()
                 response.outputStream.close()
                 wb.dispose()
+                return
             }
             withFormat {
                 html {
@@ -1278,6 +1284,7 @@ class SubscriptionController {
             response.outputStream.flush()
             response.outputStream.close()
             workbook.dispose()
+            return
         }
         else {
             withFormat {
@@ -1390,6 +1397,7 @@ class SubscriptionController {
                 response.outputStream.flush()
                 response.outputStream.close()
                 wb.dispose()
+                return
             }
             else if (params.exportXLS) {
                 List<String> perpetuallyPurchasedTitleURLs = TitleInstancePackagePlatform.executeQuery('select tipp.hostPlatformURL from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (select oo.sub from OrgRole oo where oo.org = :org and oo.roleType in (:roleTypes)) and ie.acceptStatus = :acceptStatus and tipp.status = :tippStatus and ie.status = :tippStatus and ie.perpetualAccessBySub is not null',
@@ -1404,6 +1412,7 @@ class SubscriptionController {
                 response.outputStream.flush()
                 response.outputStream.close()
                 wb.dispose()
+                return
             } else if (params.exportXLSStats) {
                     if(wb) {
                         response.setHeader "Content-disposition", "attachment; filename=report_${DateUtils.getSDF_yyyyMMdd().format(ctrlResult.result.dateRun)}.xlsx"
@@ -1412,6 +1421,7 @@ class SubscriptionController {
                         response.outputStream.flush()
                         response.outputStream.close()
                         wb.dispose()
+                        return
                     }
             }else {
 

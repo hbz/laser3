@@ -40,8 +40,8 @@
 <h2 class="ui icon header la-clear-before la-noMargin-top">
     <g:if test="${surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]}">
         <i class="icon clipboard outline la-list-icon"></i>
-        <g:link controller="subscription" action="show" id="${surveyConfig.subscription?.id}">
-            ${surveyConfig.subscription?.name}
+        <g:link controller="subscription" action="show" id="${surveyConfig.subscription.id}">
+            ${surveyConfig.getConfigNameShort()}
         </g:link>
 
     </g:if>
@@ -116,7 +116,7 @@
             <br />
             <br />
 
-            <ui:filter showFilterButton="true" addFilterJs="true">
+            <ui:filter>
                 <g:form action="surveyCostItems" method="post" class="ui form"
                 params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
                 <laser:render template="/templates/filter/orgFilter"

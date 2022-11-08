@@ -31,7 +31,7 @@
            data-ui="modal" data-href="#createEntitlementGroupModal" type="submit">
 </g:if>
 
-<ui:form>
+<ui:greySegment>
     <table class="ui sortable celled la-js-responsive-table la-table table">
         <thead>
         <tr>
@@ -84,7 +84,7 @@
             </tr>
         </g:each>
     </table>
-</ui:form>
+</ui:greySegment>
 
 
 <ui:modal id="createEntitlementGroupModal" message="subscription.details.createEntitlementGroup.label">

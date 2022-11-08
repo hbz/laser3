@@ -29,8 +29,8 @@
 <h2 class="ui icon header la-clear-before la-noMargin-top">
     <g:if test="${surveyConfig.type in [SurveyConfig.SURVEY_CONFIG_TYPE_SUBSCRIPTION, SurveyConfig.SURVEY_CONFIG_TYPE_ISSUE_ENTITLEMENT]}">
         <i class="icon clipboard outline la-list-icon"></i>
-        <g:link controller="subscription" action="show" id="${surveyConfig.subscription?.id}">
-            ${surveyConfig.subscription?.name}
+        <g:link controller="subscription" action="show" id="${surveyConfig.subscription.id}">
+            ${surveyConfig.getConfigNameShort()}
         </g:link>
 
     </g:if>
@@ -41,14 +41,14 @@
 </h2>
 
 <g:if test="${(surveyInfo.status in [RDStore.SURVEY_SURVEY_STARTED, RDStore.SURVEY_SURVEY_COMPLETED, RDStore.SURVEY_IN_EVALUATION, RDStore.SURVEY_COMPLETED])}">
-    <ui:form>
+    <ui:greySegment>
 
         <laser:render template="evaluationParticipantsView" model="[showCheckbox: true,
                                                                 showTransferFields: true,
                                                                 processAction: 'processTransferParticipants',
                                                                 tmplConfigShow   : ['lineNumber', 'name', (surveyConfig.pickAndChoose ? 'finishedDate' : ''), (surveyConfig.pickAndChoose ? 'surveyTitlesCount' : ''), 'surveyProperties', 'commentOnlyForOwner']]"/>
 
-    </ui:form>
+    </ui:greySegment>
 </g:if>
 <g:else>
     <div class="ui segment">

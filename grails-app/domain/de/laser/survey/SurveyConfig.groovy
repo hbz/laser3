@@ -190,11 +190,13 @@ class SurveyConfig {
      */
     String getConfigNameShort() {
 
-        if (type == 'Subscription') {
+/*        if (type == 'Subscription') {
             return subscription?.name
         } else {
             return surveyInfo.name
-        }
+        }*/
+
+        return surveyInfo.name
     }
 
     /**
@@ -203,11 +205,13 @@ class SurveyConfig {
      */
     String getSurveyName() {
 
-        if (type == 'Subscription' && surveyInfo.isSubscriptionSurvey) {
+     /*   if (type == 'Subscription' && surveyInfo.isSubscriptionSurvey) {
             return subscription?.name
         } else {
             return surveyInfo.name
-        }
+        }*/
+
+        return surveyInfo.name
     }
 
     /**
@@ -217,7 +221,7 @@ class SurveyConfig {
     String getConfigName() {
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
 
-        if (type == 'Subscription') {
+    /*    if (type == 'Subscription') {
             return subscription?.name + ' - ' + subscription?.status?.getI10n('value') + ' ' +
                     (subscription?.startDate ? '(' : '') + sdf.format(subscription?.startDate) +
                     (subscription?.endDate ? ' - ' : '') + sdf.format(subscription?.endDate) +
@@ -225,7 +229,9 @@ class SurveyConfig {
 
         } else {
             return surveyInfo.name
-        }
+        }*/
+
+        return surveyInfo.name
     }
 
     /**
@@ -400,7 +406,7 @@ class SurveyConfig {
      * @return the {@link Subscription}'s name if it is a subscription survey, "Survey Element {database id}" otherwise
      */
     String toString() {
-        subscription ? "${subscription?.name}" : "Survey Element ${id}"
+        surveyInfo.name
     }
 
     /**

@@ -3,7 +3,7 @@
     List notAvailable = [ RDStore.DOC_TYPE_ONIXPL, RDStore.DOC_TYPE_NOTE, RDStore.DOC_TYPE_ANNOUNCEMENT ]
     List documentTypes = RefdataCategory.getAllRefdataValues(RDConstants.DOCUMENT_TYPE)-notAvailable
 %>
-<ui:filter>
+<ui:filter simple="true">
     <g:form id="documentFilter" class="ui form" controller="${controllerName}" action="documents">
         <div class="two fields">
             <div class="field">

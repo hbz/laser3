@@ -40,7 +40,7 @@
 
 <ui:msg class="warning" header="${message(code: 'message.information')}" message="myinst.addressBook.visible"/>
 
-<ui:filter showFilterButton="true" addFilterJs="true">
+<ui:filter>
     <g:form action="addressbook" controller="organisation" method="get" params="[id: orgInstance.id]" class="ui small form">
         <div class="three fields">
             <div class="field">

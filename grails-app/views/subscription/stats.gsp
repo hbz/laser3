@@ -62,7 +62,7 @@
             </g:if>
         </g:if>
         <g:else>
-            <ui:filter showFilterButton="true" addFilterJs="true">
+            <ui:filter>
                 <g:form action="generateReport" name="stats" class="ui form" method="get">
                     <g:hiddenField name="id" value="${subscription.id}"/>
                     <div class="four fields">

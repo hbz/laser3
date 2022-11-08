@@ -23,7 +23,7 @@
 
 <ui:messages data="${flash}"/>
 
-<ui:filter showFilterButton="true" addFilterJs="true">
+<ui:filter>
     <g:form action="currentSurveys" controller="myInstitution" method="post" class="ui small form" params="[tab: params.tab ]">
         <div class="three fields">
             <div class="field">
@@ -168,7 +168,7 @@
 </ui:filter>
 
 
-<ui:form>
+<ui:greySegment>
 
     <%
         def tmpParams = params.clone()
@@ -301,7 +301,7 @@
 
         </g:each>
     </table>
-</ui:form>
+</ui:greySegment>
 
 
 %{--<g:if test="${countSurveys."${params.tab}"}">

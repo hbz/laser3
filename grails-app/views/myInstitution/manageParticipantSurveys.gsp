@@ -17,7 +17,7 @@
 
 <ui:messages data="${flash}"/>
 
-<ui:filter showFilterButton="true" addFilterJs="true">
+<ui:filter>
     <g:form action="manageParticipantSurveys" controller="myInstitution" method="post" id="${params.id}"
             params="[tab: params.tab]" class="ui small form">
 
@@ -116,7 +116,7 @@
         <tbody>
         <tr>
             <td>
-                <p><strong>${choosenOrg?.name} (${choosenOrg?.shortname})</strong></p>
+                <p><strong><g:link controller="organisation" action="show" id="${choosenOrg.id}">${choosenOrg.name} (${choosenOrg.shortname})</g:link></strong></p>
 
                 ${choosenOrg?.libraryType?.getI10n('value')}
             </td>
@@ -139,7 +139,7 @@
 
 <div>
 
-    <ui:form>
+    <ui:greySegment>
 
         <ui:tabs actionName="${actionName}">
             <ui:tabsItem controller="myInstitution" action="manageParticipantSurveys"
@@ -247,7 +247,7 @@
 
             </g:each>
         </table>
-    </ui:form>
+    </ui:greySegment>
 </div>
 
 <laser:htmlEnd />

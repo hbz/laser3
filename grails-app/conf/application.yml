@@ -257,6 +257,8 @@ environments:
             storage:
                 dbCreate: none #create-drop
                 url: jdbc:postgresql://localhost:5432/laser3_storage
+        logging:
+            config: 'grails-app/conf/logback-development.xml'
     test:
         dataSource:
             dbCreate: none #update

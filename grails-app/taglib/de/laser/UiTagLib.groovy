@@ -8,6 +8,7 @@ import de.laser.storage.RDStore
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
+import org.apache.groovy.io.StringBuilderWriter
 import org.grails.encoder.CodecLookup
 import org.grails.encoder.Encoder
 import org.grails.taglib.TagLibraryLookup
@@ -23,6 +24,7 @@ class UiTagLib {
     AuditService auditService
     CodecLookup codecLookup
     ContextService contextService
+    FormService formService
     GenericOIDService genericOIDService
     TagLibraryLookup gspTagLibraryLookup
 
@@ -341,29 +343,18 @@ class UiTagLib {
         }
     }
 
-    //<ui:filter showFilterButton="true|false" addFilterJs="true" extended="true|false"> CONTENT <ui:filter>
+    //<ui:filter simple="true|false" extended="true|false"> CONTENT </ui:filter>
 
     def filter = { attrs, body ->
 
+        boolean simpleFilter = attrs.simple?.toLowerCase() == 'true'
         boolean extended = true
-        boolean showFilterButton = false
 
-        if (attrs.showFilterButton) {
-            if (attrs.showFilterButton.toLowerCase() == 'true') {
-                showFilterButton = true
-            }
-            else if (attrs.showFilterButton.toLowerCase() == 'false') {
-                showFilterButton = false
-            }
-        }
-
-        if (showFilterButton) {
+        if (! simpleFilter) {
 
 			// overwrite due attribute
             if (attrs.extended) {
-                if (attrs.extended.toLowerCase() == 'true') {
-                    extended = true
-                } else if (attrs.extended.toLowerCase() == 'false') {
+                if (attrs.extended.toLowerCase() == 'false') {
                     extended = false
                 }
             }
@@ -373,9 +364,7 @@ class UiTagLib {
                 def cacheEntry = sessionCache.get("${UserSetting.KEYS.SHOW_EXTENDED_FILTER.toString()}/${controllerName}/${actionName}")
 
                 if (cacheEntry) {
-                    if (cacheEntry.toLowerCase() == 'true') {
-                        extended = true
-                    } else if (cacheEntry.toLowerCase() == 'false') {
+                    if (cacheEntry.toLowerCase() == 'false') {
                         extended = false
                     }
                 }
@@ -384,9 +373,7 @@ class UiTagLib {
                     User currentUser = contextService.getUser()
                     String settingValue = currentUser.getSettingsValue(UserSetting.KEYS.SHOW_EXTENDED_FILTER, RefdataValue.getByValueAndCategory('Yes', RDConstants.Y_N)).value
 
-                    if (settingValue.toLowerCase() == 'yes') {
-                        extended = true
-                    } else if (settingValue.toLowerCase() == 'no') {
+                    if (settingValue.toLowerCase() == 'no') {
                         extended = false
                     }
                 }
@@ -394,22 +381,22 @@ class UiTagLib {
         }
         // for WCAG
         out << '<section class="la-clearfix" aria-label="filter">'
-            if (showFilterButton) {
-                out << '<button aria-expanded="' + (extended ?'true':'false')  + '"  class="ui right floated button la-inline-labeled la-js-filterButton la-clearfix ' + (extended ?'':'blue') + '">'
+
+            if (! simpleFilter) {
+                out << '<button aria-expanded="' + (extended ? 'true':'false') + '" class="ui right floated button la-inline-labeled la-js-filterButton la-clearfix' + (extended ? '':' blue') + '">'
                 out << '    Filter'
                 out << '    <i aria-hidden="true" class="filter icon"></i>'
                 out << '   <span class="ui circular label la-js-filter-total hidden">0</span>'
                 out << '</button>'
+
+                out << render(template: '/templates/filter/js', model: [filterAjaxUri: "${controllerName}/${actionName}"])
             }
 
             out << '<div class="ui la-filter segment la-clear-before"' + (extended ?'':' style="display: none;"') + '>'
             out << body()
             out << '</div>'
-        out << '</section>'
 
-        if (attrs.addFilterJs) {
-            out << render(template: '/templates/filter/js', model: [filterAjaxUri: "${controllerName}/${actionName}"])
-        }
+        out << '</section>'
     }
 
     def searchSegment = { attrs, body ->
@@ -425,13 +412,49 @@ class UiTagLib {
         out << '</div>'
     }
 
-    //<ui:form> CONTENT <ui:form>
-
-    def form = { attrs, body ->
+    def greySegment = { attrs, body ->
 
         out << '<div class="ui grey segment la-clear-before">'
         out << body()
         out << '</div>'
+    }
+
+    /**
+     * @attr hideWrapper Renders only the &lt;form&gt; without a &lt;div&gt; wrapper
+     * @attr action The name of the action to use in the link, if not specified the default action will be linked
+     * @attr controller The name of the controller to use in the link, if not specified the current controller will be linked
+     * @attr method The form method to use, either 'POST' or 'GET'; defaults to 'POST'
+     * @attr autocomplete Defaults to 'off'
+     * @attr id The id to use in the link
+     * @attr class Additional css classes for the &lt;form&gt;
+     * @attr params Additional parameters to use in the link
+     */
+    def form = { attrs, body ->
+
+        Map<String, Object> formAttrs = [
+                controller  : attrs.controller ?: null,
+                action      : attrs.action ?: null,
+                method      : attrs.method ?: 'POST',
+                autocomplete: attrs.autocomplete ?: 'off',
+                id          : attrs.id ?: null,
+                class       : 'ui form' + (attrs.class ? ' ' + attrs.class : ''),
+                params      : attrs.params,
+        ]
+
+        (attrs.keySet() as Set<String>).findAll { it.startsWith('data-') }.each { formAttrs.put(it, attrs.getAt(it)) }
+
+        Writer bodyWriter = new StringBuilderWriter()
+        bodyWriter << '<input type="hidden" name="' + FormService.FORM_SERVICE_TOKEN + '" value="' + formService.getNewToken() + '"/>'
+        bodyWriter << body()
+
+        if ('true'.equalsIgnoreCase(attrs.hideWrapper as String)) {
+            out << g.form(formAttrs, bodyWriter.toString())
+        }
+        else {
+            out << '<div class="ui grey segment la-clear-before">'
+            out << g.form(formAttrs, bodyWriter.toString())
+            out << '</div>'
+        }
     }
 
     //<ui:datepicker class="grid stuff here" label="" bean="${objInstance}" name="fieldname" value="" required="" modifiers="" />

@@ -69,7 +69,7 @@
 
 <g:if test="${participant}">
 
-    <ui:form>
+    <ui:greySegment>
     <g:set var="choosenOrg" value="${Org.findById(participant.id)}"/>
     <g:set var="choosenOrgCPAs" value="${choosenOrg?.getGeneralContactPersons(false)}"/>
 
@@ -77,9 +77,9 @@
         <tbody>
         <tr>
             <td>
-                <p><strong>${choosenOrg?.name} (${choosenOrg?.shortname})</strong></p>
+                <p><strong><g:link controller="organisation" action="show" id="${choosenOrg.id}">${choosenOrg.name} (${choosenOrg.shortname})</g:link></strong></p>
 
-                ${choosenOrg?.libraryType?.getI10n('value')}
+                ${choosenOrg.libraryType?.getI10n('value')}
             </td>
             <td>
                 <g:if test="${choosenOrgCPAs}">
@@ -110,7 +110,7 @@
             </div>
         </div>
 
-    </ui:form>
+    </ui:greySegment>
 </g:if>
 
 <div class="ui stackable grid">

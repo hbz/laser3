@@ -19,7 +19,7 @@
 
 <ui:h1HeaderWithIcon message="myinst.currentSubscriptions.label" total="${num_sub_rows}" floated="true" />
 
-<ui:filter showFilterButton="true" addFilterJs="true">
+<ui:filter>
     <g:form action="createSubscriptionSurvey" controller="survey" method="get" class="ui small form">
         <input type="hidden" name="isSiteReloaded" value="yes"/>
         <input type="hidden" name="id" value="${params.id}"/>

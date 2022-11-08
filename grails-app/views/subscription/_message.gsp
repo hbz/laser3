@@ -7,8 +7,8 @@
     <div class="header">
         <g:message code="myinst.message.attention" />
         <g:message code="myinst.subscriptionDetails.message.ChildView" />
-        <g:each in="${subscription.getAllSubscribers()?.collect{itOrg -> itOrg.getDesignation()}}" var="subscr">
-            <span class="ui label">${subscr}</span>.
+        <g:each in="${subscription.getAllSubscribers()}" var="subscr">
+            <span class="ui label"><g:link controller="organisation" action="show" id="${subscr.id}">${subscr.getDesignation()}</g:link></span>.
         </g:each>
         <div class="la-float-right">
             <g:if test="${params.orgBasicMemberView}">

@@ -2,7 +2,7 @@
 <laser:htmlStart text="Admin::Platform duplicates" />
 
         <ui:breadcrumbs>
-            <ui:crumb message="menu.admin" controller="admin" action="index" />
+            <ui:crumb controller="dataManager" action="index" message="menu.datamanager" />
             <ui:crumb text="List Platform Duplicates" class="active"/>
         </ui:breadcrumbs>
 
@@ -10,8 +10,7 @@
 
         <ui:messages data="${flash}" />
 
-        <ui:form>
-            <g:form action="executePlatformCleanup" method="post" class="ui form" data-confirm-id="clearUp_form">
+            <ui:form controller="dataManager" action="executePlatformCleanup" data-confirm-id="clearUp_form">
                 <table class="ui table">
                     <tbody>
                         <tr>
@@ -83,7 +82,6 @@
                         </tr>
                     </tfoot>
                 </table>
-            </g:form>
-        </ui:form>
+            </ui:form>
 
 <laser:htmlEnd />

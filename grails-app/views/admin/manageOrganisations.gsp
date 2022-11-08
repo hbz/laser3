@@ -9,7 +9,7 @@
 
     <ui:h1HeaderWithIcon message="menu.admin.manageOrganisations" total="${orgListTotal}" />
 
-    <ui:filter>
+    <ui:filter simple="true">
         <g:form action="manageOrganisations" method="get" class="ui form">
             <laser:render template="/templates/filter/orgFilter"
                       model="[

@@ -29,7 +29,7 @@
                 ${message(code: 'sidewide.number')}
             </th>
 
-            <g:sortableColumn params="${params}" property="subscription.name"
+            <g:sortableColumn params="${params}" property="surveyInfo.name"
                               title="${message(code: 'surveyInfo.slash.name')}" rowspan="2" scope="col"/>
 
             <th>${message(code: 'default.status.label')}</th>
@@ -181,11 +181,11 @@
 </g:if>
 <g:else>
 
-    <ui:form>
+    <ui:greySegment>
         <h3 class="ui header">
             <g:message code="survey.notExist.plural"/>
         </h3>
-    </ui:form>
+    </ui:greySegment>
 </g:else>
 <laser:htmlEnd />
 

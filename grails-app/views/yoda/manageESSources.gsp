@@ -5,6 +5,8 @@
         <ui:crumb text="ES Sources" class="active" />
     </ui:breadcrumbs>
 
+    <ui:h1HeaderWithIcon text="ES Sources" />
+
     <ui:messages data="${flash}" />
 
       <table class="ui celled la-js-responsive-table la-table table">
@@ -56,47 +58,46 @@
 
       <br />
 
-    <ui:form>
-        <g:form action="newESSource" class="ui form">
+    <ui:form controller="yoda" action="newESSource">
 
             <div class="field">
-                <label>ES Source Host</label>
-                <input type="text" name="host" placeholder="" value=""/>
+                <label for="host">ES Source Host</label>
+                <input type="text" id="host" name="host" placeholder="" value=""/>
             </div>
 
             <div class="fields two">
                 <div class="field">
-                    <label>ES Source Identifier</label>
-                    <input type="text" name="identifier" placeholder=""/>
+                    <label for="identifier">ES Source Identifier</label>
+                    <input type="text" id="identifier" name="identifier" placeholder=""/>
                 </div>
                 <div class="field">
-                    <label>ES Source Name</label>
-                    <input type="text" name="name" placeholder=""/>
-                </div>
-            </div>
-
-            <div class="fields two">
-                <div class="field">
-                    <label>ES Index</label>
-                    <input type="text" name="index" placeholder=""/>
-                </div>
-                <div class="field">
-                    <label>ES Cluster</label>
-                    <input type="text" name="cluster" placeholder=""/>
+                    <label for="name">ES Source Name</label>
+                    <input type="text" id="name" name="name" placeholder=""/>
                 </div>
             </div>
 
             <div class="fields two">
                 <div class="field">
-                    <label>LAS:eR ES</label>
-                    <select name="laser_es">
+                    <label for="index">ES Index</label>
+                    <input type="text" id="index" name="index" placeholder=""/>
+                </div>
+                <div class="field">
+                    <label for="cluster">ES Cluster</label>
+                    <input type="text" id="cluster" name="cluster" placeholder=""/>
+                </div>
+            </div>
+
+            <div class="fields two">
+                <div class="field">
+                    <label for="laser_es">LAS:eR ES</label>
+                    <select id="laser_es" name="laser_es">
                         <option value="0">No</option>
                         <option value="1">Yes</option>
                     </select>
                 </div>
                 <div class="field">
-                    <label>we:kb ES</label>
-                    <select name="gokb_es">
+                    <label for="gokb_es">we:kb ES</label>
+                    <select id="gokb_es" name="gokb_es">
                         <option value="0">No</option>
                         <option value="1">Yes</option>
                     </select>
@@ -108,7 +109,6 @@
                 <input type="submit" value="Submit" class="ui button"/>
             </div>
 
-        </g:form>
     </ui:form>
 
 <laser:htmlEnd />

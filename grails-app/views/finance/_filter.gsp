@@ -8,7 +8,7 @@
 %>
 
     <%--normal ui:filter comes along with more functionality which conflicts with ajax dropdown initialisation, see ERMS-1420--%>
-    <ui:filter showFilterButton="true" addFilterJs="true">
+    <ui:filter>
         <%
             Map<String,Object> formUrl = [controller: 'myInstitution', action: 'finance']
             SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()

@@ -15,8 +15,7 @@
 
     <ui:messages data="${flash}"/>
 
-    <ui:form>
-        <g:form action="processEmptyLicense" controller="myInstitution" method="post" class="ui form newLicence">
+    <ui:form controller="myInstitution" action="processEmptyLicense" class="newLicence">
             <g:if test="${subInstance}">
                 <g:hiddenField id="sub_id_${subInstance.id}" name="sub" value="${subInstance.id}"/>
                 <ui:msg class="info" noClose="true">
@@ -70,8 +69,6 @@
 
             <input type="submit" class="ui button js-click-control" value="${message(code: 'default.button.create.label')}"/>
             <input type="button" class="ui button js-click-control" onclick="JSPC.helper.goBack();" value="${message(code:'default.button.cancel.label')}" />
-
-        </g:form>
     </ui:form>
 
 <laser:script file="${this.getGroovyPageFileName()}">

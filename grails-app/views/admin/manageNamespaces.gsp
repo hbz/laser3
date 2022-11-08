@@ -13,8 +13,7 @@
 
         <ui:errors bean="${identifierNamespaceInstance}" />
 
-        <ui:form message="identifier.namespace.add.label">
-            <g:form class="ui form" action="manageNamespaces">
+        <ui:form controller="admin" action="manageNamespaces">
                 <div class="two fields">
                     <div class="field ${hasErrors(bean: identifierNamespaceInstance, field: 'name_de', 'error')} ">
                         <label for="name_de"><g:message code="default.name.label" /> (DE)</label>
@@ -82,7 +81,6 @@
                 <button type="submit" class="ui button">
                     <g:message code="default.button.create.label"/>
                 </button>
-            </g:form>
         </ui:form>
 
         <g:if test="${cmd == 'details'}">
