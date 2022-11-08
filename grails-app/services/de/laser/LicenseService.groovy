@@ -27,14 +27,14 @@ class LicenseService {
             tmpQ = getLicensesConsortiaQuery(params)
             result.addAll(License.executeQuery("select l " + tmpQ[0], tmpQ[1]))
 
-            tmpQ = _getLicensesConsortialLicenseQuery(params)
+            tmpQ = getLicensesConsortialLicenseQuery(params)
             result.addAll(License.executeQuery("select l " + tmpQ[0], tmpQ[1]))
 
-            tmpQ = _getLicensesLocalLicenseQuery(params)
+            tmpQ = getLicensesLocalLicenseQuery(params)
             result.addAll(License.executeQuery("select l " + tmpQ[0], tmpQ[1]))
 
         } else {
-            tmpQ = _getLicensesLocalLicenseQuery(params)
+            tmpQ = getLicensesLocalLicenseQuery(params)
             result.addAll(License.executeQuery("select l " + tmpQ[0], tmpQ[1]))
         }
         result
@@ -53,14 +53,14 @@ class LicenseService {
             tmpQ = getLicensesConsortiaQuery(params)
             result.addAll(License.executeQuery("select l " + tmpQ[0], tmpQ[1]))
 
-            tmpQ = _getLicensesConsortialLicenseQuery(params)
+            tmpQ = getLicensesConsortialLicenseQuery(params)
             result.addAll(License.executeQuery("select l " + tmpQ[0], tmpQ[1]))
 
-            tmpQ = _getLicensesLocalLicenseQuery(params)
+            tmpQ = getLicensesLocalLicenseQuery(params)
             result.addAll(License.executeQuery("select l " + tmpQ[0], tmpQ[1]))
 
         } else {
-            tmpQ = _getLicensesLocalLicenseQuery(params)
+            tmpQ = getLicensesLocalLicenseQuery(params)
             result.addAll(License.executeQuery("select l " + tmpQ[0], tmpQ[1]))
         }
         result.sort {it.dropdownNamingConvention()}
@@ -102,7 +102,7 @@ class LicenseService {
      * @param params the filter parameter map
      * @return a list of consortial parent licenses matching the given filter
      */
-    private List _getLicensesConsortialLicenseQuery(Map params) {
+    List getLicensesConsortialLicenseQuery(Map params) {
         Map qry_params = [roleType: RDStore.OR_LICENSEE_CONS, lic_org: contextService.getOrg()]
         String base_qry = """from License as l where (
                 exists ( select o from l.orgRelations as o where ( o.roleType = :roleType  AND o.org = :lic_org ) ) 
@@ -126,7 +126,7 @@ class LicenseService {
      * @param params the filter parameter map
      * @return a list of licenses matching the given filter
      */
-    private List _getLicensesLocalLicenseQuery(Map params) {
+    List getLicensesLocalLicenseQuery(Map params) {
         Map qry_params = [roleType: RDStore.OR_LICENSEE, lic_org: contextService.getOrg()]
         String base_qry = """from License as l where (
                 exists ( select o from l.orgRelations as o where ( o.roleType = :roleType AND o.org = :lic_org ) ) 
