@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4576    08.11.2022  dev     3.0         David   Bug         X-Editable des Dropdowns für Währung funktioniert nicht mehr
+
+3829    08.11.2022  dev     3.0         David   Feature     Reporting: Hilfetexte übersetzen
+
 4570    03.11.2022  dev     3.0         Moe     Feature     Umfrage Mails pro Einrichtung selber erstellen mit Mail-Client
 
 4471    02.11.2022  dev     3.0         Moe     Bug         Umfragename bei aus einer Lizenz erstellten Umfragen in "Meine Umfragen" anzeigen und editierbar machen

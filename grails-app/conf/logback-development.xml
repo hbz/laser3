@@ -2,7 +2,7 @@
 
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} | %-5level %logger{42} - %ex{12}%replace(%msg){'Stacktrace follows:','See errors.log for full stacktrace.'}%n</pattern>
+            <pattern>%d{HH:mm:ss.SSS} %-5level - %logger{42} : %ex{12}%replace(%msg){'Stacktrace follows:','See errors.log for full stacktrace.'}%n</pattern>
         </encoder>
 
         <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
@@ -36,14 +36,14 @@
     <appender name="FULL_STACKTRACE" class="ch.qos.logback.core.FileAppender">
         <file>logs/errors.log</file>
         <encoder>
-            <pattern>%n%d{yyyy-MM-dd HH:mm:ss.SSS} | %-5level [%t] %logger{42} [%file:%line] - %msg%n</pattern>
+            <pattern>%n%d{yyyy-MM-dd HH:mm:ss.SSS} - %-5level [%t] %logger{42} [%file:%line] : %msg%n</pattern>
         </encoder>
     </appender>
 
     <appender name="LOGFILE" class="ch.qos.logback.core.FileAppender">
         <file>logs/${date}.log</file>
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} | %-5level [%t] [%file:%line] - %ex{short}%replace(%msg){'Stacktrace follows:','See errors.log for full stacktrace.'}%n</pattern>
+            <pattern>%d{HH:mm:ss.SSS} - %-5level [%t] [%file:%line] : %ex{short}%replace(%msg){'Stacktrace follows:','See errors.log for full stacktrace.'}%n</pattern>
         </encoder>
 
         <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
