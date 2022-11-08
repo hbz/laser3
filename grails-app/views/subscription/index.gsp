@@ -237,73 +237,26 @@
 
                                                     </div>
                                                 </div>
-
+----------
                                                 <div class="column">
                                                     <div class="ui list la-label-list">
                                                         <div class="item">
                                                             <div class="content">
-                                                                <div class="ui label">${message(code: 'tipp.dateFirstInPrint')}</div>
-
-                                                                <div class="description coverageStatements"
-                                                                     data-entitlement="${ie.id}">
-
                                                                     <laser:render
                                                                             template="/templates/tipps/coverages_accordion"
                                                                             model="${[ie: ie, tipp: ie.tipp]}"/>
-
-                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
+                                                <div class="four wide column">
 
-                                                <div class="column">
-                                                    <div class="ui list la-label-list">
-                                                        <div class="item">
-                                                            <div class="content">
-
-                                                                <div class="ui label">${message(code: 'subscription.details.access_dates')} ${message(code: 'default.from')}</div>
-
-                                                                <div class="description">
-                                                                <!-- von --->
-                                                                    <g:if test="${editable}">
-                                                                        <ui:xEditable owner="${ie}" type="date"
-                                                                                      field="accessStartDate"/>
-                                                                        <i class="grey question circle icon la-popup-tooltip la-delay"
-                                                                           data-content="${message(code: 'subscription.details.access_start.note')}"></i>
-                                                                    </g:if>
-                                                                    <g:else>
-                                                                        <g:formatDate
-                                                                                format="${message(code: 'default.date.format.notime')}"
-                                                                                date="${ie.accessStartDate}"/>
-                                                                    </g:else>
-
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="item">
-                                                            <div class="content">
-                                                                <div class="ui label">${message(code: 'subscription.details.access_dates')} ${message(code: 'default.to')}</div>
-
-                                                                <div class="description">
-                                                                <!-- bis -->
-                                                                    <g:if test="${editable}">
-                                                                        <ui:xEditable owner="${ie}" type="date"
-                                                                                      field="accessEndDate"/>
-                                                                        <i class="grey question circle icon la-popup-tooltip la-delay"
-                                                                           data-content="${message(code: 'subscription.details.access_end.note')}"></i>
-                                                                    </g:if>
-                                                                    <g:else>
-                                                                        <g:formatDate
-                                                                                format="${message(code: 'default.date.format.notime')}"
-                                                                                date="${ie.accessEndDate}"/>
-                                                                    </g:else>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                                    <!-- START TEMPLATE -->
+                                                    <laser:render template="/templates/identifier"
+                                                                  model="${[ie: ie, tipp: ie.tipp]}"/>
+                                                    <!-- END TEMPLATE -->
                                                 </div>
+
 
 
                                                 <div class="two wide column">
@@ -345,27 +298,92 @@
 
                                         <div class="ui fluid segment content">
                                             <div class="ui stackable grid">
-                                                <div class="four wide column">
-                                                    <div id="dynamicAccordionContainer"></div>
-%{--                                                    <laser:render template="/templates/title_long_accordion"
+
+                                                    <laser:render template="/templates/title_long_accordion"
                                                                   model="${[ie         : ie, tipp: ie.tipp,
-                                                                            showPackage: showPackage, showPlattform: showPlattform, showCompact: showCompact, showEmptyFields: showEmptyFields]}"/>--}%
-                                                </div>
+                                                                            showPackage: showPackage, showPlattform: showPlattform, showCompact: showCompact, showEmptyFields: showEmptyFields]}"/>
+
+
 
                                                 <div class="four wide column">
+                                                    <div class="item">
+                                                        <div class="content">
+                                                            <g:if test="${ie.tipp.accessStartDate}">
+                                                                <div class="ui label">${message(code: 'tipp.access')} ${message(code: 'default.to')}</div>
 
-                                                    <!-- START TEMPLATE -->
-                                                    <laser:render template="/templates/identifier"
-                                                                  model="${[ie: ie, tipp: ie.tipp]}"/>
-                                                    <!-- END TEMPLATE -->
-                                                </div>
+                                                                <div class="description">
 
-                                                <div class="four wide column">
+                                                                    <g:formatDate
+                                                                            format="${message(code: 'default.date.format.notime')}"
+                                                                            date="${ie.tipp.accessStartDate}"/>
+                                                                </div>
+                                                            </g:if>
+                                                        <!-- bis -->
+                                                            <g:if test="${ie.tipp.accessEndDate}">
+                                                                <div class="ui label">${message(code: 'tipp.access')} ${message(code: 'default.to')}</div>
 
+                                                                <div class="description">
+                                                                    <g:formatDate
+                                                                            format="${message(code: 'default.date.format.notime')}"
+                                                                            date="${ie.tipp.accessEndDate}"/>
+                                                                </div>
+                                                            </g:if>
+                                                        </div>
+                                                    </div>
                                                 </div>
 
                                                 <div class="four wide column">
                                                     <div class="ui inverted segment">
+
+
+                                                        <div class="ui list la-label-list">
+                                                            <div class="item">
+                                                                <div class="content">
+
+                                                                    <div class="ui label">${message(code: 'subscription.details.access_dates')} ${message(code: 'default.from')}</div>
+
+                                                                    <div class="description">
+                                                                    <!-- von --->
+                                                                        <g:if test="${editable}">
+                                                                            <ui:xEditable owner="${ie}" type="date"
+                                                                                          field="accessStartDate"/>
+                                                                            <i class="grey question circle icon la-popup-tooltip la-delay"
+                                                                               data-content="${message(code: 'subscription.details.access_start.note')}"></i>
+                                                                        </g:if>
+                                                                        <g:else>
+                                                                            <g:formatDate
+                                                                                    format="${message(code: 'default.date.format.notime')}"
+                                                                                    date="${ie.accessStartDate}"/>
+                                                                        </g:else>
+
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="item">
+                                                                <div class="content">
+                                                                    <div class="ui label">${message(code: 'subscription.details.access_dates')} ${message(code: 'default.to')}</div>
+
+                                                                    <div class="description">
+                                                                    <!-- bis -->
+                                                                        <g:if test="${editable}">
+                                                                            <ui:xEditable owner="${ie}" type="date"
+                                                                                          field="accessEndDate"/>
+                                                                            <i class="grey question circle icon la-popup-tooltip la-delay"
+                                                                               data-content="${message(code: 'subscription.details.access_end.note')}"></i>
+                                                                        </g:if>
+                                                                        <g:else>
+                                                                            <g:formatDate
+                                                                                    format="${message(code: 'default.date.format.notime')}"
+                                                                                    date="${ie.accessEndDate}"/>
+                                                                        </g:else>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+
+
                                                         <div class="ui inverted list">
                                                             <g:if test="${ie}">
                                                                 <div class="item">

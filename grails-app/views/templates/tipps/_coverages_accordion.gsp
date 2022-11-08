@@ -1,22 +1,29 @@
-<g:if test="${(tipp.titleType == 'Book')}">
-    <div class="ui card">
-        <div class="content">
 
-            <i class="grey fitted la-books icon la-popup-tooltip la-delay"
-               data-content="${message(code: 'tipp.dateFirstInPrint')}"></i>
-            <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                          date="${tipp.dateFirstInPrint}"/>
-            <span class='ui grey horizontal divider la-date-devider'></span>
-            <i class="grey fitted la-books icon la-popup-tooltip la-delay"
-               data-content="${message(code: 'tipp.dateFirstOnline')}"></i>
-            <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                          date="${tipp.dateFirstOnline}"/>
-        </div>
+<g:if test="${(tipp.titleType == 'Book')}">
+    ----BOOK ---
+    <div class="ui label">${message(code: 'tipp.dateFirstInPrint')}</div>
+    <div class="description">
+
+                <i class="grey fitted la-books icon la-popup-tooltip la-delay"
+                   data-content="${message(code: 'tipp.dateFirstInPrint')}"></i>
+                <g:formatDate format="${message(code: 'default.date.format.notime')}"
+                              date="${tipp.dateFirstInPrint}"/>
+    </div>
+    <div class="ui label">${message(code: 'tipp.dateFirstOnline')}</div>
+    <div class="description">
+                <span class='ui grey horizontal divider la-date-devider'></span>
+                <i class="grey fitted la-books icon la-popup-tooltip la-delay"
+                   data-content="${message(code: 'tipp.dateFirstOnline')}"></i>
+                <g:formatDate format="${message(code: 'default.date.format.notime')}"
+                              date="${tipp.dateFirstOnline}"/>
     </div>
 </g:if>
 <g:elseif test="${tipp.titleType == "Journal"}">
-    <g:if test="${ie}">
-        <div class="ui cards">
+    ---- JOURNAL ---
+    <div class="ui label">${message(code: 'tipp.dateFirstInPrint')}</div>
+    <div class="description">
+        <g:if test="${ie}">
+
             <%
                 Map<String, Object> paramData = [:]
                 if(params.sort && params.order) {
@@ -30,9 +37,9 @@
                 paramData.putAll(params)
             %>
             <g:each in="${ie.coverages}" var="covStmt">
-                <div class="ui card">
+
                     <laser:render template="/templates/tipps/coverageStatement_accordion" model="${[covStmt: covStmt, paramData: paramData]}"/>
-                </div>
+
             </g:each>
 
 
@@ -42,25 +49,28 @@
                         class="ui compact icon button positive tiny"><i class="ui icon plus"
                                                                         data-content="${message(code: 'subscription.details.addCoverage')}"></i></g:link>
             </g:if>
-        </div>
+
     </g:if>
     <g:else>
-        <div class="ui cards">
+
             <g:each in="${tipp.coverages}" var="covStmt">
-                <div class="ui card">
+
                     <laser:render template="/templates/tipps/coverageStatement" model="${[covStmt: covStmt]}"/>
-                </div>
+
             </g:each>
-        </div>
+
     </g:else>
+    </div>
 </g:elseif>
 <g:else>
-    <div class="ui card">
-        <div class="content">
+    ----- ONLINE -----
+    <div class="ui label">${message(code: 'tipp.dateFirstOnline')}</div>
+    <div class="description">
+
             <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                data-content="${message(code: 'tipp.dateFirstOnline')}"></i>
             <g:formatDate format="${message(code: 'default.date.format.notime')}"
                           date="${tipp.dateFirstOnline}"/>
-        </div>
     </div>
+
 </g:else>
