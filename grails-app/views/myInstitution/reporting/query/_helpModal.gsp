@@ -4,12 +4,12 @@
 <%
     String lang = (LocaleUtils.getCurrentLang() == 'en') ? 'en' : 'de'
 
-    Closure hc_identifier = { token1, token2, token3, token4, token5, token6 = null ->
+    Closure hc_identifier = { token1x, token3, token4, token5, token6 = null ->
         if (lang == 'de') {
             println """
-                <p class="ui header"> Identifikatoren von ${token1} </p>
+                <p class="ui header"> Identifikatoren von ${token1x} </p>
                 <p>
-                    Gelistet werden alle relevanten Namensräume - also Namensräume von Identifikatoren, die ${token2} konkret vergeben wurden.
+                    Gelistet werden alle relevanten Namensräume - also Namensräume von Identifikatoren, die ${token1x} konkret vergeben wurden.
                     Die Basissuche bestimmt dabei die Menge der betrachteten ${token3}.
                 </p>
                 <p>
@@ -33,9 +33,9 @@
         }
         else {
             println """
-                <p class="ui header"> Identifiers of ${token1} </p>
+                <p class="ui header"> Identifiers of ${token1x} </p>
                 <p>
-                    All relevant namespaces are listed - i.e. namespaces of identifiers that ${token2} have been specifically assigned.
+                    All relevant namespaces are listed - i.e. namespaces of identifiers that ${token1x} have been specifically assigned.
                     The basic search determines the number of ${token3} considered.
                 </p>
                 <p>
@@ -59,7 +59,7 @@
         }
     }
 
-    Closure hc_property = { token1, token2, token3, token4, token5, token6 ->
+    Closure hc_property = { token1, token2, token3, token4, token5x ->
         if (lang == 'de') {
             println """
                 <p class="ui header"> Merkmale von ${token1} </p>
@@ -70,8 +70,8 @@
                 <p>
                     Im Detail sind folgende Informationen verfügbar: <br/>
                     <i class="icon circle blue"></i> ${token4} mit Merkmal X, <br />
-                    <i class="icon circle green"></i> Öffentlich vergebene Merkmale X für die betrachteten ${token5} <br />
-                    <i class="icon circle yellow"></i> Private Merkmale X für die betrachteten ${token6} <br />
+                    <i class="icon circle green"></i> Öffentlich vergebene Merkmale X für die betrachteten ${token5x} <br />
+                    <i class="icon circle yellow"></i> Private Merkmale X für die betrachteten ${token5x} <br />
                 </p>
             """
         }
@@ -83,10 +83,43 @@
                     The basic search determines the number of ${token3} considered.
                 </p>
                 <p>
-                    The following information is available in detail:: <br/>
+                    The following information is available in detail: <br/>
                     <i class="icon circle blue"></i> ${token4} with property X, <br />
-                    <i class="icon circle green"></i> Public properties X for the ${token5} under consideration <br />
-                    <i class="icon circle yellow"></i> Private properties X for the ${token6} under consideration <br />
+                    <i class="icon circle green"></i> Public properties X for the ${token5x} under consideration <br />
+                    <i class="icon circle yellow"></i> Private properties X for the ${token5x} under consideration <br />
+                </p>
+            """
+        }
+    }
+
+    Closure hc_generic_annual = { token1, token2, token3, token4, token5x ->
+        if (lang == 'de') {
+            println """
+                <p class="ui header"> Laufzeit von ${token1} </p>
+                <p>
+                    Gruppiert werden die ${token2} in Jahresringen - abhängig von den jeweiligen Datumsgrenzen.
+                    Bedingen vorhandene Daten eine Laufzeit mehrerer Jahre, wird die ${token3} auch mehreren Jahresringen zugeordnet.
+                    Die Basissuche bestimmt dabei die Menge der betrachteten ${token4}.
+                </p>
+                <p>
+                    ${token5x} ohne Enddatum werden <strong>zusätzlich</strong> in der Gruppe <i class="icon circle teal"></i><strong>* ohne Ablauf</strong> gelistet. <br />
+                    ${token5x} ohne Startdatum werden <strong>exklusive</strong> in der Gruppe <i class="icon circle pink"></i><strong>* ohne Startdatum</strong> gelistet. <br />
+                    ${token5x} ohne Angabe von Start- und Enddatum werden <strong>exklusive</strong> in der Gruppe <i class="icon circle pink"></i><strong>* keine Angabe</strong> gelistet. <br />
+                </p>
+            """
+        }
+        else {
+            println """
+                <p class="ui header"> Duration of ${token1} </p>
+                <p>
+                    The ${token2} are grouped in annual rings - depending on the respective date lines.
+                    If existing data indicates a duration of several years, the ${token3} is also assigned to several annual rings.
+                    The basic search determines the amount of ${token4} considered.
+                </p>
+                <p>
+                    ${token5x} without an end date are <strong>additionally</strong> listed in the group <i class="icon circle teal"></i><strong>* no End date</strong>. <br />
+                    ${token5x} without a start date will be <strong>exclusive</strong> listed in the group <i class="icon circle pink"></i><strong>* no Start date</strong>. <br />
+                    ${token5x} without a start and end date will be <strong>exclusive</strong> listed in the group <i class="icon circle pink"></i><strong>* no Information</strong>. <br />
                 </p>
             """
         }
@@ -153,61 +186,47 @@
 
     <div class="help-section" data-help-section="subscription-x-identifier">
         <g:if test="${lang == 'de'}">
-            ${hc_identifier( 'Lizenzen', 'Lizenzen', 'Lizenzen', 'Lizenzen', 'Lizenzen' )}
+            ${hc_identifier( 'Lizenzen', 'Lizenzen', 'Lizenzen', 'Lizenzen' )}
         </g:if>
         <g:else>
-            ${hc_identifier( 'subscriptions', 'subscriptions', 'subscriptions', 'Subscriptions', 'Subscriptions' )}
+            ${hc_identifier( 'subscriptions', 'subscriptions', 'Subscriptions', 'Subscriptions' )}
         </g:else>
     </div>
 
     <div class="help-section" data-help-section="subscription-x-property">
         <g:if test="${lang == 'de'}">
-            ${hc_property( 'Lizenzen', 'Lizenzen', 'Lizenzen', 'Lizenzen', 'Lizenzen', 'Lizenzen' )}
+            ${hc_property( 'Lizenzen', 'Lizenzen', 'Lizenzen', 'Lizenzen', 'Lizenzen' )}
         </g:if>
         <g:else>
-            ${hc_property( 'subscriptions', 'subscriptions', 'subscriptions', 'Subscriptions', 'subscriptions', 'subscriptions' )}
+            ${hc_property( 'subscriptions', 'subscriptions', 'subscriptions', 'Subscriptions', 'subscriptions' )}
         </g:else>
     </div>
 
     <div class="help-section" data-help-section="subscription-x-memberSubscriptionProperty">
         <g:if test="${lang == 'de'}">
-            ${hc_property( 'Teilnehmerlizenzen', 'Teilnehmerlizenzen', 'Teilnehmerlizenzen', 'Teilnehmerlizenzen', 'Teilnehmerlizenzen', 'Teilnehmerlizenzen' )}
+            ${hc_property( 'Teilnehmerlizenzen', 'Teilnehmerlizenzen', 'Teilnehmerlizenzen', 'Teilnehmerlizenzen', 'Teilnehmerlizenzen' )}
         </g:if>
         <g:else>
-            ${hc_property( 'Participant subscriptions', 'participant subscriptions', 'participant subscriptions', 'Participant subscriptions', 'participant subscriptions', 'participant subscriptions' )}
+            ${hc_property( 'Participant subscriptions', 'participant subscriptions', 'participant subscriptions', 'Participant subscriptions', 'participant subscriptions' )}
         </g:else>
     </div>
 
     <div class="help-section" data-help-section="subscription-x-annual">
-        <p class="ui header">
-            Laufzeit von Lizenzen
-        </p>
-        <p>
-            Gruppiert werden die Lizenzen in Jahresringen - abhängig von den jeweiligen Datumsgrenzen.
-            Bedingen vorhandene Daten eine Laufzeit mehrerer Jahre, wird die Lizenz auch mehreren Jahresringen zugeordnet.
-            Die Basissuche bestimmt dabei die Menge der betrachteten Lizenzen.
-        </p>
-        <p>
-            Lizenzen ohne Enddatum werden <strong>zusätzlich</strong> in der Gruppe <i class="icon circle teal"></i><strong>* ohne Ablauf</strong> gelistet. <br />
-            Lizenzen ohne Startdatum werden <strong>exklusive</strong> in der Gruppe <i class="icon circle pink"></i><strong>* ohne Startdatum</strong> gelistet. <br />
-            Lizenzen ohne Angabe von Start- und Enddatum werden <strong>exklusive</strong> in der Gruppe <i class="icon circle pink"></i><strong>* keine Angabe</strong> gelistet. <br />
-        </p>
+        <g:if test="${lang == 'de'}">
+            ${hc_generic_annual( 'Lizenzen', 'Lizenzen', 'Lizenz', 'Lizenzen', 'Lizenzen' )}
+        </g:if>
+        <g:else>
+            ${hc_generic_annual( 'subscriptions', 'subscriptions', 'subscription', 'subscriptions', 'Subscriptions' )}
+        </g:else>
     </div>
 
     <div class="help-section" data-help-section="subscription-x-memberAnnual">
-        <p class="ui header">
-            Laufzeit von Teilnehmerlizenzen
-        </p>
-        <p>
-            Gruppiert werden die Teilnehmerlizenzen in Jahresringen - abhängig von den jeweiligen Datumsgrenzen.
-            Bedingen vorhandene Daten eine Laufzeit mehrerer Jahre, wird die Teilnehmerlizenzen auch mehreren Jahresringen zugeordnet.
-            Die Basissuche bestimmt dabei die Menge der betrachteten Teilnehmerlizenzen.
-        </p>
-        <p>
-            Teilnehmerlizenzen ohne Enddatum werden <strong>zusätzlich</strong> in der Gruppe <i class="icon circle teal"></i><strong>* ohne Ablauf</strong> gelistet. <br />
-            Teilnehmerlizenzen ohne Startdatum werden <strong>exklusive</strong> in der Gruppe <i class="icon circle pink"></i><strong>* ohne Startdatum</strong> gelistet. <br />
-            Teilnehmerlizenzen ohne Angabe von Start- und Enddatum werden <strong>exklusive</strong> in der Gruppe <i class="icon circle pink"></i><strong>* keine Angabe</strong> gelistet. <br />
-        </p>
+        <g:if test="${lang == 'de'}">
+            ${hc_generic_annual( 'Teilnehmerlizenzen', 'Teilnehmerlizenzen', 'Teilnehmerlizenz', 'Teilnehmerlizenzen', 'Teilnehmerlizenzen' )}
+        </g:if>
+        <g:else>
+            ${hc_generic_annual( 'participant subscriptions', 'participant subscriptions', 'participant subscription', 'participant subscriptions', 'Participant subscriptions' )}
+        </g:else>
     </div>
 
     <div class="help-section" data-help-section="subscription-x-provider">
@@ -285,55 +304,48 @@
 
     <div class="help-section" data-help-section="license-x-identifier">
         <g:if test="${lang == 'de'}">
-            ${hc_identifier( 'Verträgen', 'Verträgen', 'Verträge', 'Verträge', 'Verträge' )}
+            ${hc_identifier( 'Verträgen', 'Verträge', 'Verträge', 'Verträge' )}
         </g:if>
         <g:else>
-            ${hc_identifier( 'licenses', 'licenses', 'licenses', 'Licenses', 'Licenses' )}
+            ${hc_identifier( 'licenses', 'licenses', 'Licenses', 'Licenses' )}
         </g:else>
     </div>
 
     <div class="help-section" data-help-section="license-x-property">
         <g:if test="${lang == 'de'}">
-            ${hc_property( 'Verträgen', 'Verträge', 'Verträge', 'Verträge', 'Verträge', 'Verträge' )}
+            ${hc_property( 'Verträgen', 'Verträge', 'Verträge', 'Verträge', 'Verträge' )}
         </g:if>
         <g:else>
-            ${hc_property( 'licenses', 'licenses', 'licenses', 'Licenses', 'licenses', 'licenses' )}
+            ${hc_property( 'licenses', 'licenses', 'licenses', 'Licenses', 'licenses' )}
         </g:else>
     </div>
 
     <div class="help-section" data-help-section="license-x-annual">
-        <p class="ui header">
-            Laufzeit von Verträgen
-        </p>
-        <p>
-            Gruppiert werden die Verträge in Jahresringen - abhängig von den jeweiligen Datumsgrenzen.
-            Bedingen vorhandene Daten eine Laufzeit mehrerer Jahre, wird der Vertrag auch mehreren Jahresringen zugeordnet.
-            Die Basissuche bestimmt dabei die Menge der betrachteten Verträge.
-        </p>
-        <p>
-            Verträge ohne Enddatum werden <strong>zusätzlich</strong> in der Gruppe <i class="icon circle teal"></i><strong>* ohne Ablauf</strong> gelistet. <br />
-            Verträge ohne Startdatum werden <strong>exklusive</strong> in der Gruppe <i class="icon circle pink"></i><strong>* ohne Startdatum</strong> gelistet. <br />
-            Verträge ohne Angabe von Start- und Enddatum werden <strong>exklusive</strong> in der Gruppe <i class="icon circle pink"></i><strong>* keine Angabe</strong> gelistet. <br />
-        </p>
+        <g:if test="${lang == 'de'}">
+            ${hc_generic_annual( 'Verträgen', 'Verträge', 'Vertrag', 'Verträge', 'Verträge' )}
+        </g:if>
+        <g:else>
+            ${hc_generic_annual( 'licenses', 'licenses', 'license', 'licenses', 'Licenses' )}
+        </g:else>
     </div>
 
     %{-- org --}%
 
     <div class="help-section" data-help-section="org-x-identifier">
         <g:if test="${lang == 'de'}">
-            ${hc_identifier( 'Organisationen', 'Organisationen', 'Organisationen', 'Organisationen', 'Organisationen' )}
+            ${hc_identifier( 'Organisationen', 'Organisationen', 'Organisationen', 'Organisationen' )}
         </g:if>
         <g:else>
-            ${hc_identifier( 'organisations', 'organisations', 'organisations', 'Organisations', 'Organisations' )}
+            ${hc_identifier( 'organisations', 'organisations', 'Organisations', 'Organisations' )}
         </g:else>
     </div>
 
     <div class="help-section" data-help-section="org-x-property">
         <g:if test="${lang == 'de'}">
-            ${hc_property( 'Organisationen', 'Organisationen', 'Organisationen', 'Organisationen', 'Organisationen', 'Organisationen' )}
+            ${hc_property( 'Organisationen', 'Organisationen', 'Organisationen', 'Organisationen', 'Organisationen' )}
         </g:if>
         <g:else>
-            ${hc_property( 'organisations', 'organisations', 'organisations', 'Organisations', 'organisations', 'organisations' )}
+            ${hc_property( 'organisations', 'organisations', 'organisations', 'Organisations', 'organisations' )}
         </g:else>
     </div>
 
@@ -341,10 +353,10 @@
 
     <div class="help-section" data-help-section="package-x-id">
         <g:if test="${lang == 'de'}">
-            ${hc_identifier( 'Paketen', 'Paketen', 'Pakete', 'Pakete', 'Pakete', 'Pakete' )}
+            ${hc_identifier( 'Paketen', 'Pakete', 'Pakete', 'Pakete', 'Pakete' )}
         </g:if>
         <g:else>
-            ${hc_identifier( 'packages', 'packages', 'packages', 'Packages', 'Packages', 'packages' )}
+            ${hc_identifier( 'packages', 'packages', 'Packages', 'Packages', 'packages' )}
         </g:else>
     </div>
 
@@ -415,10 +427,10 @@
 
     <div class="help-section" data-help-section="platform-x-property">
         <g:if test="${lang == 'de'}">
-            ${hc_property( 'Plattformen', 'Plattformen', 'Plattformen', 'Plattformen', 'Plattformen', 'Plattformen' )}
+            ${hc_property( 'Plattformen', 'Plattformen', 'Plattformen', 'Plattformen', 'Plattformen')}
         </g:if>
         <g:else>
-            ${hc_property( 'platforms', 'platforms', 'platforms', 'Platforms', 'platforms', 'platforms' )}
+            ${hc_property( 'platforms', 'platforms', 'platforms', 'Platforms', 'platforms' )}
         </g:else>
     </div>
 
