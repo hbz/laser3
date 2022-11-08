@@ -75,7 +75,7 @@
                 </p>
             """
         }
-         else {
+        else {
             println """
                 <p class="ui header"> Properties of ${token1} </p>
                 <p>
@@ -87,6 +87,60 @@
                     <i class="icon circle blue"></i> ${token4} with property X, <br />
                     <i class="icon circle green"></i> Public properties X for the ${token5} under consideration <br />
                     <i class="icon circle yellow"></i> Private properties X for the ${token6} under consideration <br />
+                </p>
+            """
+        }
+    }
+
+    Closure hc_generic_pkg = { token1, token2, token3, token4, token5 ->
+        if (lang == 'de') {
+            println """
+                <p class="ui header"> ${token1} von Paketen </p>
+                <p>
+                    Gelistet werden alle relevanten ${token2} - also ${token3}, die Paketen konkret zugeordnet werden können.
+                    Die Basissuche bestimmt dabei die Menge der betrachteten Pakete.
+                </p>
+                <p> Pakete ohne ausgewiesenen ${token4} werden in der Gruppe <i class="icon circle pink"></i><strong>* ohne ${token5}</strong> zusammmen gefasst. </p>
+            """
+        }
+        else {
+            println """
+                <p class="ui header"> ${token1} of packages </p>
+                <p>
+                    All relevant ${token2} are listed - i.e. ${token3} that can be specifically assigned to packages.
+                    The basic search determines the number of packages considered.
+                </p>
+                <p> Packages without designated ${token4} are summarized in the group <i class="icon circle pink"></i><strong>* no ${token5}</strong>. </p>
+            """
+        }
+    }
+
+    Closure hc_generic_pkg_wekb = { token1, token2, token3, token4 ->
+        if (lang == 'de') {
+            println """
+                <p class="ui header"> ${token1} von Paketen </p>
+                <p>
+                    Gelistet werden alle relevanten ${token2} - also ${token3}, die Paketen konkret zugeordnet werden können.
+                    Die Basissuche bestimmt dabei die Menge der betrachteten Pakete.
+                </p>
+                <p> Hierzu werden Paketinformationen in <strong>LAS:eR</strong> mit referenzierten Objekten aus der <strong>we:kb</strong> verglichen. </p>
+                <p>
+                    Pakete ohne ausgewiesene ${token4} werden in der Gruppe <i class="icon circle pink"></i><strong>* keine Angabe</strong> zusammmen gefasst. <br />
+                    Ohne <strong>we:kb</strong>-Pendant fehlen relevante Daten - solche Pakete werden unter <i class="icon circle teal"></i><strong>* kein web:kb Objekt</strong> gelistet. <br />
+                </p>
+            """
+        }
+        else {
+            println """
+                <p class="ui header"> ${token1} of packages </p>
+                <p>
+                    All relevant ${token2} are listed - i.e. ${token3} that can be specifically assigned to packages.
+                    The basic search determines the number of packages considered.
+                </p>
+                <p> For this purpose, package information in <strong>LAS:eR</strong> is compared with referenced objects from the <strong>we:kb</strong>. </p>
+                <p>
+                    Packages without designated ${token4} are summarized in the group <i class="icon circle pink"></i><strong>* not specified</strong>. <br />
+                    Without a <strong>we:kb</strong> counterpart, relevant data is missing - such packages are listed in <i class="icon circle teal"></i><strong>* no web:kb object</strong>. <br />
                 </p>
             """
         }
@@ -295,110 +349,66 @@
     </div>
 
     <div class="help-section" data-help-section="package-x-provider">
-        <p class="ui header">
-            Anbieter von Paketen
-        </p>
-        <p>
-            Gelistet werden alle relevanten Anbieter - also Anbieter, die Paketen konkret zugeordnet werden können.
-            Die Basissuche bestimmt dabei die Menge der betrachteten Pakete.
-        </p>
-        <p>
-            Pakete ohne ausgewiesenen Anbieter werden in der Gruppe <i class="icon circle pink"></i><strong>* ohne Anbieter</strong> zusammmen gefasst.
-        </p>
+        <g:if test="${lang == 'de'}">
+            ${hc_generic_pkg( 'Anbieter', 'Anbieter', 'Anbieter', 'Anbieter', 'Anbieter' )}
+        </g:if>
+        <g:else>
+            ${hc_generic_pkg( 'Provider', 'provider', 'provider', 'provider', 'Provider' )}
+        </g:else>
     </div>
 
     <div class="help-section" data-help-section="package-x-platform">
-        <p class="ui header">
-            Plattformen von Paketen
-        </p>
-        <p>
-            Gelistet werden alle relevanten Plattformen - also Plattformen, die Paketen konkret zugeordnet werden können.
-            Die Basissuche bestimmt dabei die Menge der betrachteten Pakete.
-        </p>
-        <p>
-            Pakete ohne ausgewiesene Plattform werden in der Gruppe <i class="icon circle pink"></i><strong>* ohne Plattform</strong> zusammmen gefasst.
-        </p>
+        <g:if test="${lang == 'de'}">
+            ${hc_generic_pkg( 'Plattformen', 'Plattformen', 'Plattformen', 'Plattform', 'Plattform' )}
+        </g:if>
+        <g:else>
+            ${hc_generic_pkg( 'Platforms', 'platforms', 'platforms', 'platforms', 'Platform' )}
+        </g:else>
     </div>
 
     <div class="help-section" data-help-section="package-x-language">
-        <p class="ui header">
-            Sprachen von Paketen
-        </p>
-        <p>
-            Gelistet werden alle relevanten Sprachen - also Sprachen, die Paketen konkret zugeordnet werden können.
-            Die Basissuche bestimmt dabei die Menge der betrachteten Pakete.
-        </p>
-        <p>
-            Pakete ohne ausgewiesene Sprachen werden in der Gruppe <i class="icon circle pink"></i><strong>* keine Angabe</strong> zusammmen gefasst. <br />
-        </p>
+        <g:if test="${lang == 'de'}">
+            ${hc_generic_pkg( 'Sprachen', 'Sprachen', 'Sprachen', 'Sprachen', 'Sprachen' )}
+        </g:if>
+        <g:else>
+            ${hc_generic_pkg( 'Languages', 'languages', 'languages', 'languages', 'Language' )}
+        </g:else>
     </div>
 
     <div class="help-section" data-help-section="package-x-curatoryGroup">
-        <p class="ui header">
-            Kuratorengruppen von Paketen
-        </p>
-        <p>
-            Gelistet werden alle relevanten Kuratorengruppen - also Gruppen, die Paketen konkret zugeordnet werden können.
-            Die Basissuche bestimmt dabei die Menge der betrachteten Pakete.
-        </p>
-        <p>
-            Hierzu werden Paketinformationen in <strong>LAS:eR</strong> mit referenzierten Objekten aus der <strong>we:kb</strong> verglichen.
-        </p>
-        <p>
-            Pakete ohne ausgewiesene Kuratorengruppen werden in der Gruppe <i class="icon circle pink"></i><strong>* keine Angabe</strong> zusammmen gefasst. <br />
-            Ohne <strong>we:kb</strong>-Pendant fehlen relevante Daten - solche Pakete werden unter <i class="icon circle teal"></i><strong>* kein web:kb Objekt</strong> gelistet. <br />
-        </p>
+        <g:if test="${lang == 'de'}">
+            ${hc_generic_pkg_wekb( 'Kuratorengruppen', 'Kuratorengruppen', 'Gruppen', 'Kuratorengruppen' )}
+        </g:if>
+        <g:else>
+            ${hc_generic_pkg_wekb( 'Curatory groups', 'curatory groups', 'groups', 'curatory groups' )}
+        </g:else>
     </div>
 
     <div class="help-section" data-help-section="package-x-nationalRange">
-        <p class="ui header">
-            Länder von Paketen
-        </p>
-        <p>
-            Gelistet werden alle relevanten Länder - also Länder, die Paketen konkret zugeordnet werden können.
-            Die Basissuche bestimmt dabei die Menge der betrachteten Pakete.
-        </p>
-        <p>
-            Hierzu werden Paketinformationen in <strong>LAS:eR</strong> mit referenzierten Objekten aus der <strong>we:kb</strong> verglichen.
-        </p>
-        <p>
-            Pakete ohne ausgewiesene Länder werden in der Gruppe <i class="icon circle pink"></i><strong>* keine Angabe</strong> zusammmen gefasst. <br />
-            Ohne <strong>we:kb</strong>-Pendant fehlen relevante Daten - solche Pakete werden unter <i class="icon circle teal"></i><strong>* kein web:kb Objekt</strong> gelistet. <br />
-        </p>
+        <g:if test="${lang == 'de'}">
+            ${hc_generic_pkg_wekb( 'Länder', 'Länder', 'Länder', 'Länder' )}
+        </g:if>
+        <g:else>
+            ${hc_generic_pkg_wekb( 'National ranges', 'national ranges', 'ranges', 'national ranges' )}
+        </g:else>
     </div>
 
     <div class="help-section" data-help-section="package-x-regionalRange">
-        <p class="ui header">
-            Regionen von Paketen
-        </p>
-        <p>
-            Gelistet werden alle relevanten Regionen - also Regionen, die Paketen konkret zugeordnet werden können.
-            Die Basissuche bestimmt dabei die Menge der betrachteten Pakete.
-        </p>
-        <p>
-            Hierzu werden Paketinformationen in <strong>LAS:eR</strong> mit referenzierten Objekten aus der <strong>we:kb</strong> verglichen.
-        </p>
-        <p>
-            Pakete ohne ausgewiesene Regionen werden in der Gruppe <i class="icon circle pink"></i><strong>* keine Angabe</strong> zusammmen gefasst. <br />
-            Ohne <strong>we:kb</strong>-Pendant fehlen relevante Daten - solche Pakete werden unter <i class="icon circle teal"></i><strong>* kein web:kb Objekt</strong> gelistet. <br />
-        </p>
+        <g:if test="${lang == 'de'}">
+            ${hc_generic_pkg_wekb( 'Regionen', 'Regionen', 'Regionen', 'Regionen' )}
+        </g:if>
+        <g:else>
+            ${hc_generic_pkg_wekb( 'Regional ranges', 'regional ranges', 'ranges', 'regional ranges' )}
+        </g:else>
     </div>
         
     <div class="help-section" data-help-section="package-x-ddc">
-        <p class="ui header">
-            Dewey-Dezimalklassifikation von Paketen
-        </p>
-        <p>
-            Gelistet werden alle relevanten Dewey-Dezimalklassifikationen - also Klassifikationen, die Paketen konkret zugeordnet werden können.
-            Die Basissuche bestimmt dabei die Menge der betrachteten Pakete.
-        </p>
-        <p>
-            Hierzu werden Paketinformationen in <strong>LAS:eR</strong> mit referenzierten Objekten aus der <strong>we:kb</strong> verglichen.
-        </p>
-        <p>
-            Pakete ohne ausgewiesene Dewey-Dezimalklassifikation werden in der Gruppe <i class="icon circle pink"></i><strong>* keine Angabe</strong> zusammmen gefasst. <br />
-            Ohne <strong>we:kb</strong>-Pendant fehlen relevante Daten - solche Pakete werden unter <i class="icon circle teal"></i><strong>* kein web:kb Objekt</strong> gelistet. <br />
-        </p>
+        <g:if test="${lang == 'de'}">
+            ${hc_generic_pkg_wekb( 'Dewey-Dezimalklassifikation', 'Dewey-Dezimalklassifikation', 'Klassifikationen', 'Dewey-Dezimalklassifikation' )}
+        </g:if>
+        <g:else>
+            ${hc_generic_pkg_wekb( 'Dewey decimal classifications', 'Dewey decimal classifications', 'classifications', 'Dewey decimal classifications' )}
+        </g:else>
     </div>
 
     %{-- platform --}%
