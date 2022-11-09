@@ -73,6 +73,16 @@
 
                         <div class="ui relaxed horizontal list" style="text-align:center; width:100%;">
                             <div class="item">
+                            <div class="content middle aligned">
+                                <div class="header">We:kb</div>
+                                <g:set var="eshApiSource" value="${ElasticSearchHelper.getCurrentApiSource()}" />
+                                <g:if test="${eshApiSource}">
+                                    <a href="${eshApiSource.baseUrl}" target="_blank">${eshApiSource.baseUrl}</a>
+                                </g:if>
+                                <g:else>--</g:else>
+                            </div>
+                        </div>
+                            <div class="item">
                                 <div class="content middle aligned">
                                     <div class="header">Elasticsearch Index</div>
                                     <g:if test="${ConfigMapper.getConfig('reporting.elasticSearch', Map)}">
@@ -83,10 +93,9 @@
                             </div>
                             <div class="item">
                                 <div class="content middle aligned">
-                                    <div class="header">We:kb</div>
-                                    <g:set var="eshApiSource" value="${ElasticSearchHelper.getCurrentApiSource()}" />
-                                    <g:if test="${eshApiSource}">
-                                        <a href="${eshApiSource.baseUrl}" target="_blank">${eshApiSource.baseUrl}</a>
+                                    <div class="header">Cache</div>
+                                    <g:if test="${token}">
+                                        <g:link controller="yoda" action="systemCache" params="${[key: ReportingCache.CTX_GLOBAL + token ]}" target="_blank">${token}</g:link>
                                     </g:if>
                                     <g:else>--</g:else>
                                 </div>

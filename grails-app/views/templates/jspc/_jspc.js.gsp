@@ -35,7 +35,7 @@ JSPC = {
             else { console.log ('  /- module EXISTS and ignored ? ' + label); }
         },
         go : function ( /*labels*/ ) {
-            console.log ('JSPC.modules.go( ' + arguments.length + ' )')
+            console.log ('JSPC.modules.go( ' + arguments.length + ' modules )')
             let i = 0;
             for (let label of arguments) {
                 if (JSPC.modules.registry.get (label)) {

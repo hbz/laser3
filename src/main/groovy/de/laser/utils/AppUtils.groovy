@@ -54,22 +54,6 @@ class AppUtils {
         Holders.grailsApplication.metadata.get( token ) ?: token
     }
 
-    // -- devtools
-
-    static boolean isRestartedByDevtools() {
-        try {
-            FileReader fr = new FileReader( ConfigDefaults.DEVTOOLS_TRIGGER_FILE )
-            if (fr) {
-                Long ts = Long.parseLong(fr.readLine())
-                if (30000 > (System.currentTimeMillis() - ts)) {
-                    return true
-                }
-            }
-        } catch (Exception e) {}
-
-        false
-    }
-
     // -- debug mode
 
     static boolean isDebugMode() {
