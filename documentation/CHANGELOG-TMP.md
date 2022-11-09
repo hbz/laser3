@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4575    09.11.2022  rc-2.3  2.3.11      Moe     Bug         Titelumfrage Bugs
+
 --      08.11.2022  rc-2.3  2.3.11      David   Bug         Reporting
 
 4571    07.11.2022  rc-2.3  2.3.11      Moe     Feature     Ygor entfernen
