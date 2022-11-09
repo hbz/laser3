@@ -207,6 +207,76 @@
                     <g:hiddenField name="${key}" value="${params[key]}"/>
                 </g:each>
 
+                !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                <laser:script file="${this.getGroovyPageFileName()}">
+                  $('.ui.test.toggle.checkbox')
+                  .checkbox({
+                    onChange   : function() {
+                      $('.la-js-show-hide').toggle();
+                    }
+                  });
+                </laser:script>
+
+ <div class="fields la-right-aligned-fields">
+      <div class="field la-js-show-hide">
+        <g:if test="${editable}">
+                            <input id="select-all" type="checkbox" name="chkall" onClick="JSPC.app.selectAll()"/>
+
+
+                            <g:set var="selected_label" value="${message(code: 'default.selected.label')}"/>
+                            <div class="ui selection dropdown la-clearable">
+                                <input type="hidden" id="bulkOperationSelect" name="bulkOperation">
+                                <i class="dropdown icon"></i>
+
+                                <div class="default text">${message(code: 'default.select.choose.label')}</div>
+
+                                <div class="menu">
+                                    <div class="item"
+                                         data-value="edit">${message(code: 'default.edit.label', args: [selected_label])}</div>
+
+                                    <div class="item"
+                                         data-value="remove">${message(code: 'default.remove.label', args: [selected_label])}</div>
+                                    <g:if test="${institution.getCustomerType() == 'ORG_CONSORTIUM'}">
+                                        <div class="item"
+                                             data-value="removeWithChildren">${message(code: 'subscription.details.remove.withChildren.label')}</div>
+                                    </g:if>
+                                </div>
+                            </div>
+
+                            <g:set var="selected_label" value="${message(code: 'default.selected.label')}"/>
+
+
+
+                            <ui:datepicker hideLabel="true"
+                                           placeholder="${message(code: 'default.from')}"
+                                           inputCssClass="la-input-small" id="bulk_access_start_date"
+                                           name="bulk_access_start_date"/>
+
+
+                            <ui:datepicker hideLabel="true"
+                                           placeholder="${message(code: 'default.to')}"
+                                           inputCssClass="la-input-small" id="bulk_access_end_date"
+                                           name="bulk_access_end_date"/>
+
+
+
+                            <button data-position="top right"
+                                    data-content="${message(code: 'default.button.apply_batch.label')}"
+                                    type="submit" onClick="return JSPC.app.confirmSubmit()"
+                                    class="ui icon button la-popup-tooltip la-delay"><i class="check icon"></i>
+                            </button>
+                    </g:if>
+      </div>
+     <div class="field">
+         <div class="ui test toggle checkbox" style="margin-top: 0">
+             <input type="checkbox" checked="checked">
+             <label>Bearbeiten </label>
+         </div>
+     </div>
+ </div>
+                !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
                 <g:if test="${entitlements}">
                     <div class="ui fluid card">
                         <div class="content">
@@ -228,27 +298,28 @@
                                                 <div class="column">
                                                     <div class="ui list">
 
-                                                            <!-- START TEMPLATE -->
-                                                            <laser:render
-                                                                    template="/templates/title_short_accordion"
-                                                                    model="${[ie         : ie, tipp: ie.tipp,
-                                                                              showPackage: true, showPlattform: true, showCompact: true, showEmptyFields: false]}"/>
-                                                            <!-- END TEMPLATE -->
+                                                        <!-- START TEMPLATE -->
+                                                        <laser:render
+                                                                template="/templates/title_short_accordion"
+                                                                model="${[ie         : ie, tipp: ie.tipp,
+                                                                          showPackage: true, showPlattform: true, showCompact: true, showEmptyFields: false]}"/>
+                                                        <!-- END TEMPLATE -->
 
                                                     </div>
                                                 </div>
-----------
+
                                                 <div class="column">
                                                     <div class="ui list la-label-list">
                                                         <div class="item">
                                                             <div class="content">
-                                                                    <laser:render
-                                                                            template="/templates/tipps/coverages_accordion"
-                                                                            model="${[ie: ie, tipp: ie.tipp]}"/>
+                                                                <laser:render
+                                                                        template="/templates/tipps/coverages_accordion"
+                                                                        model="${[ie: ie, tipp: ie.tipp]}"/>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
+
                                                 <div class="four wide column">
 
                                                     <!-- START TEMPLATE -->
@@ -257,13 +328,20 @@
                                                     <!-- END TEMPLATE -->
                                                 </div>
 
-
-
                                                 <div class="two wide column">
+                                                    <g:each in="${ie.priceItems}" var="priceItem" status="i">
+                                                        <g:formatNumber number="${priceItem.listPrice}" type="currency"
+                                                                        currencyCode="${priceItem.listCurrency.value}"
+                                                                        currencySymbol="${priceItem.listCurrency.value}"/><br/>
+                                                    </g:each>
+                                                </div>
+
+                                                <div class="one wide column">
                                                     <div class="ui right floated buttons">
                                                         <div class="right aligned wide column">
 
                                                         </div>
+
                                                         <div class="ui icon blue button la-modern-button "><i
                                                                 class="ui angle double down icon"></i>
                                                         </div>
@@ -299,43 +377,49 @@
                                         <div class="ui fluid segment content">
                                             <div class="ui stackable grid">
 
-                                                    <laser:render template="/templates/title_long_accordion"
-                                                                  model="${[ie         : ie, tipp: ie.tipp,
-                                                                            showPackage: showPackage, showPlattform: showPlattform, showCompact: showCompact, showEmptyFields: showEmptyFields]}"/>
+                                                <laser:render template="/templates/title_long_accordion"
+                                                              model="${[ie         : ie, tipp: ie.tipp,
+                                                                        showPackage: showPackage, showPlattform: showPlattform, showCompact: showCompact, showEmptyFields: showEmptyFields]}"/>
 
 
 
                                                 <div class="four wide column">
-                                                    <div class="item">
-                                                        <div class="content">
-                                                            <g:if test="${ie.tipp.accessStartDate}">
-                                                                <div class="ui label">${message(code: 'tipp.access')} ${message(code: 'default.to')}</div>
+                                                    <div class="ui list la-label-list">
+                                                        <g:if test="${ie.tipp.accessStartDate}">
+                                                            <div class="item">
+                                                                <div class="content">
+                                                                    <div class="ui label">${message(code: 'tipp.access')} ${message(code: 'default.from')}</div>
 
-                                                                <div class="description">
+                                                                    <div class="description">
 
-                                                                    <g:formatDate
-                                                                            format="${message(code: 'default.date.format.notime')}"
-                                                                            date="${ie.tipp.accessStartDate}"/>
+                                                                        <g:formatDate
+                                                                                format="${message(code: 'default.date.format.notime')}"
+                                                                                date="${ie.tipp.accessStartDate}"/>
+                                                                    </div>
                                                                 </div>
-                                                            </g:if>
-                                                        <!-- bis -->
-                                                            <g:if test="${ie.tipp.accessEndDate}">
-                                                                <div class="ui label">${message(code: 'tipp.access')} ${message(code: 'default.to')}</div>
+                                                            </div>
+                                                        </g:if>
+                                                        <g:if test="${ie.tipp.accessEndDate}">
+                                                                <!-- bis -->
+                                                            <div class="item">
+                                                                <div class="content">
 
-                                                                <div class="description">
-                                                                    <g:formatDate
-                                                                            format="${message(code: 'default.date.format.notime')}"
-                                                                            date="${ie.tipp.accessEndDate}"/>
+                                                                    <div class="ui label">${message(code: 'tipp.access')} ${message(code: 'default.to')}</div>
+
+                                                                    <div class="description">
+                                                                        <g:formatDate
+                                                                                format="${message(code: 'default.date.format.notime')}"
+                                                                                date="${ie.tipp.accessEndDate}"/>
+                                                                    </div>
                                                                 </div>
-                                                            </g:if>
-                                                        </div>
+                                                            </div>
+                                                        </g:if>
                                                     </div>
                                                 </div>
-
+                                                <%-- Veränderbarer Bereich --%>
                                                 <div class="four wide column">
-                                                    <div class="ui inverted segment">
-
-
+                                                    <i class="icon circular inverted edit la-icon-absolute"></i>
+                                                    <div class="ui white segment la-segment-with-icon">
                                                         <div class="ui list la-label-list">
                                                             <div class="item">
                                                                 <div class="content">
@@ -383,8 +467,7 @@
                                                         </div>
 
 
-
-                                                        <div class="ui inverted list">
+                                                        <div class="ui  list">
                                                             <g:if test="${ie}">
                                                                 <div class="item">
                                                                     <i class="save icon la-popup-tooltip la-delay"
@@ -392,16 +475,17 @@
 
                                                                     <div class="content">
                                                                         <div class="header">
-                                                                        ${showCompact ? '' : message(code: 'issueEntitlement.perpetualAccessBySub.label') + ':'}
+                                                                            ${showCompact ? '' : message(code: 'issueEntitlement.perpetualAccessBySub.label') + ':'}
                                                                         </div>
+
                                                                         <div class="description">
-                                                                        <%
-                                                                            if (ie.perpetualAccessBySub) {
-                                                                                println g.link([action: 'index', controller: 'subscription', id: ie.perpetualAccessBySub.id], "${RDStore.YN_YES.getI10n('value')}: ${ie.perpetualAccessBySub.dropdownNamingConvention()}")
-                                                                            } else {
-                                                                                println RDStore.YN_NO.getI10n('value')
-                                                                            }
-                                                                        %>
+                                                                            <ui:xEditableBoolean owner="${subscription}" field="hasPerpetualAccess"/>
+                                                                            <%
+                                                                                if (ie.perpetualAccessBySub) {
+                                                                                    println g.link([action: 'index', controller: 'subscription', id: ie.perpetualAccessBySub.id], "<br><br> ${ie.perpetualAccessBySub.dropdownNamingConvention()}")
+                                                                                }
+                                                                            %>
+
                                                                         </div>
                                                                     </div>
                                                                 </div>
@@ -410,19 +494,23 @@
                                                             <g:each in="${ie.priceItems}" var="priceItem" status="i">
                                                                 <div class="item">
                                                                     <i class="money icon la-popup-tooltip la-delay"></i>
+
                                                                     <div class="content">
-                                                                        <div class="header"><g:message code="tipp.price.localPrice"/>:</div>
+                                                                        <div class="header"><g:message
+                                                                                code="tipp.price.localPrice"/>:</div>
 
                                                                         <div class="description">
                                                                             <ui:xEditable field="localPrice"
-                                                                                owner="${priceItem}"/> <ui:xEditableRefData
-                                                                                field="localCurrency" owner="${priceItem}"
+                                                                                          owner="${priceItem}"/> <ui:xEditableRefData
+                                                                                field="localCurrency"
+                                                                                owner="${priceItem}"
                                                                                 config="Currency"/>
                                                                             <g:if test="${editable}">
                                                                                 <span class="right floated">
-                                                                                    <g:link controller="subscription" action="removePriceItem"
+                                                                                    <g:link controller="subscription"
+                                                                                            action="removePriceItem"
                                                                                             params="${[priceItem: priceItem.id, id: subscription.id]}"
-                                                                                            class="ui inverted compact icon button tiny"><i
+                                                                                            class="ui compact icon button tiny"><i
                                                                                             class="ui icon minus"
                                                                                             data-content="Preis entfernen"></i></g:link>
                                                                                 </span>
@@ -435,7 +523,8 @@
                                                                 <g:if test="${i < ie.priceItems.size() - 1}"><hr></g:if>
                                                             </g:each>
                                                             <g:if test="${editable && ie.priceItems.size() < 1}">
-                                                                <g:link action="addEmptyPriceItem" class="ui inverted tiny button"
+                                                                <g:link action="addEmptyPriceItem"
+                                                                        class="ui tiny button"
                                                                         params="${[ieid: ie.id, id: subscription.id]}">
                                                                     <i class="money icon"></i>${message(code: 'subscription.details.addEmptyPriceItem.info')}
                                                                 </g:link>
@@ -452,7 +541,7 @@
                     </div>
                 </g:if>
 
-                <table class="ui sortable celled la-js-responsive-table la-table table la-ignore-fixed la-bulk-header">
+%{--                <table class="ui sortable celled la-js-responsive-table la-table table la-ignore-fixed la-bulk-header">
                     <thead>
                     <tr>
                         <th></th>
@@ -741,7 +830,7 @@
                         </g:each>
                     </g:if>
                     </tbody>
-                </table>
+                </table>--}%
             </g:form>
 
         </div>

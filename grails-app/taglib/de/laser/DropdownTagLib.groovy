@@ -174,7 +174,7 @@ class DropdownTagLib {
         }
         String cssClass     = attrs.class ?: ''
         String noSelection  = attrs.noSelection ?: ''
-        out << '<select class="ui fluid search selection dropdown sorting' + cssClass + '">'
+        out << '<select class="ui search selection dropdown sorting' + cssClass + '">'
         out <<     '<option class="default text">' + noSelection + '</option>'
         attrs.from.eachWithIndex { sortKey, sortValue, i ->
             String selectedAsc = attrs.sort == sortKey && attrs.order == 'asc' ? 'selected' : ''

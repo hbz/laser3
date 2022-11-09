@@ -40492,6 +40492,21 @@ i.orange.icon.la-subscriptionIsChild.fixed {
     display: none;
   }
 }
+
+.ui.segment.la-segment-with-icon {
+  position: relative;
+  padding-top: 25px;
+}
+
+.la-icon-absolute {
+  position: absolute;
+  z-index: 100;
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;
+  text-align: center;
+}
 /*!
  * # Fomantic-UI 2.8.8 - Image
  * http://github.com/fomantic/Fomantic-UI/

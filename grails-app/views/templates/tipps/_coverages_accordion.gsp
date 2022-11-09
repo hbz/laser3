@@ -1,25 +1,28 @@
 
 <g:if test="${(tipp.titleType == 'Book')}">
-    ----BOOK ---
-    <div class="ui label">${message(code: 'tipp.dateFirstInPrint')}</div>
-    <div class="description">
+    <g:if test="${tipp.dateFirstInPrint}">
+        <div class="ui label">${message(code: 'tipp.dateFirstInPrint')}</div>
+        <div class="description">
 
-                <i class="grey fitted la-books icon la-popup-tooltip la-delay"
-                   data-content="${message(code: 'tipp.dateFirstInPrint')}"></i>
-                <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                              date="${tipp.dateFirstInPrint}"/>
-    </div>
-    <div class="ui label">${message(code: 'tipp.dateFirstOnline')}</div>
-    <div class="description">
-                <span class='ui grey horizontal divider la-date-devider'></span>
-                <i class="grey fitted la-books icon la-popup-tooltip la-delay"
-                   data-content="${message(code: 'tipp.dateFirstOnline')}"></i>
-                <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                              date="${tipp.dateFirstOnline}"/>
-    </div>
+                    <i class="grey fitted la-books icon la-popup-tooltip la-delay"
+                       data-content="${message(code: 'tipp.dateFirstInPrint')}"></i>
+                    <g:formatDate format="${message(code: 'default.date.format.notime')}"
+                                  date="${tipp.dateFirstInPrint}"/>
+        </div>
+    </g:if>
+    <g:if test="${tipp.dateFirstOnline}">
+        <div class="ui label">${message(code: 'tipp.dateFirstOnline')}</div>
+        <div class="description">
+                    <span class='ui grey horizontal divider la-date-devider'></span>
+                    <i class="grey fitted la-books icon la-popup-tooltip la-delay"
+                       data-content="${message(code: 'tipp.dateFirstOnline')}"></i>
+                    <g:formatDate format="${message(code: 'default.date.format.notime')}"
+                                  date="${tipp.dateFirstOnline}"/>
+        </div>
+    </g:if>
 </g:if>
+
 <g:elseif test="${tipp.titleType == "Journal"}">
-    ---- JOURNAL ---
     <div class="ui label">${message(code: 'tipp.dateFirstInPrint')}</div>
     <div class="description">
         <g:if test="${ie}">
@@ -63,14 +66,15 @@
     </div>
 </g:elseif>
 <g:else>
-    ----- ONLINE -----
-    <div class="ui label">${message(code: 'tipp.dateFirstOnline')}</div>
-    <div class="description">
+    <g:if test="${tipp.dateFirstOnline}">
+        <div class="ui label">${message(code: 'tipp.dateFirstOnline')}</div>
+        <div class="description">
 
-            <i class="grey fitted la-books icon la-popup-tooltip la-delay"
-               data-content="${message(code: 'tipp.dateFirstOnline')}"></i>
-            <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                          date="${tipp.dateFirstOnline}"/>
-    </div>
+                <i class="grey fitted la-books icon la-popup-tooltip la-delay"
+                   data-content="${message(code: 'tipp.dateFirstOnline')}"></i>
+                <g:formatDate format="${message(code: 'default.date.format.notime')}"
+                              date="${tipp.dateFirstOnline}"/>
+        </div>
+    </g:if>
 
 </g:else>
