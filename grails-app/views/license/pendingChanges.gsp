@@ -16,7 +16,7 @@
     <g:each in="${pendingChanges}" var="memberId, pcList">
         <g:set var="member" value="${License.get(memberId)}" />
 
-        <h4 class="ui header">${member.getReferenceConcatenated()}</h4>
+        <p>${member.getReferenceConcatenated()}</p>
 
         <laser:render template="/templates/pendingChanges" model="${['pendingChanges':pcList, 'flash':flash, 'model':member, 'tmplSimpleView':true]}"/>
     </g:each>
