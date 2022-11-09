@@ -1,11 +1,6 @@
 <%@ page import="de.laser.utils.DateUtils; de.laser.config.ConfigMapper; de.laser.storage.RDStore; de.laser.storage.RDConstants;de.laser.Package;de.laser.RefdataValue;org.springframework.web.servlet.support.RequestContextUtils; de.laser.Org; de.laser.Package; de.laser.Platform; java.text.SimpleDateFormat;" %>
 <laser:htmlStart message="package.details" serviceInjection="true"/>
 
-<ui:debugInfo>
-%{--<laser:render template="/templates/debug/orgRoles" model="[debug: packageInstance.orgs]" />--}%
-%{--<laser:render template="/templates/debug/prsRoles" model="[debug: packageInstance.prsLinks]" />--}%
-</ui:debugInfo>
-
 <g:set var="locale" value="${RequestContextUtils.getLocale(request)}"/>
 
 <ui:modeSwitch controller="package" action="show" params="${params}"/>
