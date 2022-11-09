@@ -78,14 +78,7 @@ class ContextService {
         //}
     }
 
-    /**
-     * Retrieves a list of the current user's affiliations
-     * @return a list of {@link Org}s (institutions) to which the context user is affiliated
-     */
-    List<Org> getMemberships() {
-        User user = getUser()
-        user ? user.getAffiliationOrgs() : []
-    }
+    // -- Cache --
 
     EhcacheWrapper getUserCache(String cacheKeyPrefix) {
         cacheService.getSharedUserCache(getUser(), cacheKeyPrefix)

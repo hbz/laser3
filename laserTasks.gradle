@@ -15,15 +15,6 @@ task( 'dbm.createGormDiff-storage', group: 'laser', type: Exec ) {
     // args '-c', './grailsw prod dbm-gorm-diff changelogs/' + date + '-storage.groovy --dataSource=storage --add'
 }
 
-task( 'devtools.triggerRestart', group: 'laser' ) {
-    doLast {
-        System.gc()
-        FileWriter fw = new FileWriter('./grails-app/conf/spring/restart.trigger')
-        fw.write(System.currentTimeMillis().toString())
-        fw.close()
-    }
-}
-
 task( 'gradle.helpWarningMode', group: 'laser', type: Exec ) {
     executable 'sh'
     args '-c', './gradlew help --warning-mode=all'

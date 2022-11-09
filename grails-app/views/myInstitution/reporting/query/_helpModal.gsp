@@ -4,6 +4,12 @@
 <%
     String lang = (LocaleUtils.getCurrentLang() == 'en') ? 'en' : 'de'
 
+    String icon_blue   = '<i class="icon circle blue"></i>'
+    String icon_green  = '<i class="icon circle green"></i>'
+    String icon_yellow = '<i class="icon circle yellow"></i>'
+    String icon_pink   = '<i class="icon circle pink"></i>'
+    String icon_teal   = '<i class="icon circle teal"></i>'
+
     Closure hc_identifier = { token1x, token3, token4x, token6 = null ->
         if (lang == 'de') {
             println """
@@ -14,20 +20,20 @@
                 </p>
                 <p>
                     Im Detail sind folgende Informationen verfügbar: <br/>
-                    <i class="icon circle blue"></i> ${token4x} mit Identifikatoren aus dem jeweiligen Namensraum, <br />
-                    <i class="icon circle green"></i> Insgesamt vergebene Identifikatoren aus dem jeweiligen Namensraum <br />
+                    ${icon_blue} ${token4x} mit Identifikatoren aus dem jeweiligen Namensraum, <br />
+                    ${icon_green} Insgesamt vergebene Identifikatoren aus dem jeweiligen Namensraum <br />
                 </p>
             """
             if (token6) {
                 println """
                     <p>
-                        ${token4x} ohne Identifikatoren werden in der Gruppe <i class="icon circle pink"></i><strong>* ohne Identifikator</strong> zusammmen gefasst. <br />
-                        Ohne <strong>we:kb</strong>-Pendant fehlen relevante Daten - solche ${token6} werden unter <i class="icon circle teal"></i><strong>* kein web:kb Objekt</strong> gelistet. <br />
+                        ${token4x} ohne Identifikatoren werden in der Gruppe ${icon_pink}<strong>* ohne Identifikator</strong> zusammmen gefasst. <br />
+                        Ohne <strong>we:kb</strong>-Pendant fehlen relevante Daten - solche ${token6} werden unter ${icon_teal}<strong>* kein web:kb Objekt</strong> gelistet. <br />
                     </p>
                 """
             } else {
                 println """
-                    <p> ${token4x} ohne Identifikatoren werden in der Gruppe <i class="icon circle pink"></i><strong>* ohne Identifikator</strong> zusammmen gefasst. </p>
+                    <p> ${token4x} ohne Identifikatoren werden in der Gruppe ${icon_pink}<strong>* ohne Identifikator</strong> zusammmen gefasst. </p>
                 """
             }
         }
@@ -40,20 +46,20 @@
                 </p>
                 <p>
                     The following information is available in detail: <br/>
-                    <i class="icon circle blue"></i> ${token4x} with identifiers from the respective namespace, <br />
-                    <i class="icon circle green"></i> Altogether assigned identifiers from the respective namespace <br />
+                    ${icon_blue} ${token4x} with identifiers from the respective namespace, <br />
+                    ${icon_green} Altogether assigned identifiers from the respective namespace <br />
                 </p>
             """
             if (token6) {
                 println """
                     <p>
-                        ${token4x} without identifiers are combined in the group <i class="icon circle pink"></i><strong>* no identifier</strong>. <br />
-                        Without a <strong>we:kb</strong> counterpart, relevant data is missing - such ${token6} are listed in <i class="icon circle teal"></i><strong>* no web:kb object</strong>. <br />
+                        ${token4x} without identifiers are combined in the group ${icon_pink}<strong>* no Identifier</strong>. <br />
+                        Without a <strong>we:kb</strong> counterpart, relevant data is missing - such ${token6} are listed in ${icon_teal}<strong>* no web:kb object</strong>. <br />
                     </p>
                 """
             } else {
                 println """
-                    <p> ${token4x} without identifiers are combined in the group <i class="icon circle pink"></i><strong>* no identifier</strong>. </p>
+                    <p> ${token4x} without identifiers are combined in the group ${icon_pink}<strong>* no Identifier</strong>. </p>
                 """
             }
         }
@@ -69,9 +75,9 @@
                 </p>
                 <p>
                     Im Detail sind folgende Informationen verfügbar: <br/>
-                    <i class="icon circle blue"></i> ${token4} mit Merkmal X, <br />
-                    <i class="icon circle green"></i> Öffentlich vergebene Merkmale X für die betrachteten ${token2x} <br />
-                    <i class="icon circle yellow"></i> Private Merkmale X für die betrachteten ${token2x} <br />
+                    ${icon_blue} ${token4} mit Merkmal X, <br />
+                    ${icon_green} Öffentlich vergebene Merkmale X für die betrachteten ${token2x} <br />
+                    ${icon_yellow} Private Merkmale X für die betrachteten ${token2x} <br />
                 </p>
             """
         }
@@ -84,9 +90,9 @@
                 </p>
                 <p>
                     The following information is available in detail: <br/>
-                    <i class="icon circle blue"></i> ${token4} with property X, <br />
-                    <i class="icon circle green"></i> Public properties X for the ${token2x} under consideration <br />
-                    <i class="icon circle yellow"></i> Private properties X for the ${token2x} under consideration <br />
+                    ${icon_blue} ${token4} with property X, <br />
+                    ${icon_green} Public properties X for the ${token2x} under consideration <br />
+                    ${icon_yellow} Private properties X for the ${token2x} under consideration <br />
                 </p>
             """
         }
@@ -102,9 +108,9 @@
                     Die Basissuche bestimmt dabei die Menge der betrachteten ${token2x}.
                 </p>
                 <p>
-                    ${token5x} ohne Enddatum werden <strong>zusätzlich</strong> in der Gruppe <i class="icon circle teal"></i><strong>* ohne Ablauf</strong> gelistet. <br />
-                    ${token5x} ohne Startdatum werden <strong>exklusive</strong> in der Gruppe <i class="icon circle pink"></i><strong>* ohne Startdatum</strong> gelistet. <br />
-                    ${token5x} ohne Angabe von Start- und Enddatum werden <strong>exklusive</strong> in der Gruppe <i class="icon circle pink"></i><strong>* keine Angabe</strong> gelistet. <br />
+                    ${token5x} ohne Enddatum werden <strong>zusätzlich</strong> in der Gruppe ${icon_teal}<strong>* ohne Ablauf</strong> gelistet. <br />
+                    ${token5x} ohne Startdatum werden <strong>exklusive</strong> in der Gruppe ${icon_pink}<strong>* ohne Startdatum</strong> gelistet. <br />
+                    ${token5x} ohne Angabe von Start- und Enddatum werden <strong>exklusive</strong> in der Gruppe ${icon_pink}<strong>* keine Angabe</strong> gelistet. <br />
                 </p>
             """
         }
@@ -117,9 +123,9 @@
                     The basic search determines the amount of ${token2x} considered.
                 </p>
                 <p>
-                    ${token5x} without an end date are <strong>additionally</strong> listed in the group <i class="icon circle teal"></i><strong>* no End date</strong>. <br />
-                    ${token5x} without a start date will be <strong>exclusive</strong> listed in the group <i class="icon circle pink"></i><strong>* no Start date</strong>. <br />
-                    ${token5x} without a start and end date will be <strong>exclusive</strong> listed in the group <i class="icon circle pink"></i><strong>* no Information</strong>. <br />
+                    ${token5x} without an end date are <strong>additionally</strong> listed in the group ${icon_teal}<strong>* no End date</strong>. <br />
+                    ${token5x} without a start date will be <strong>exclusive</strong> listed in the group ${icon_pink}<strong>* no Start date</strong>. <br />
+                    ${token5x} without a start and end date will be <strong>exclusive</strong> listed in the group ${icon_pink}<strong>* no Information</strong>. <br />
                 </p>
             """
         }
@@ -133,7 +139,7 @@
                     Gelistet werden alle relevanten ${token2x} - also ${token2x}, die Paketen konkret zugeordnet werden können.
                     Die Basissuche bestimmt dabei die Menge der betrachteten Pakete.
                 </p>
-                <p> Pakete ohne ausgewiesene ${token4} werden in der Gruppe <i class="icon circle pink"></i><strong>* ohne ${token5}</strong> zusammmen gefasst. </p>
+                <p> Pakete ohne ausgewiesene ${token4} werden in der Gruppe ${icon_pink}<strong>* ohne ${token5}</strong> zusammmen gefasst. </p>
             """
         }
         else {
@@ -143,7 +149,7 @@
                     All relevant ${token2x} are listed - i.e. ${token2x} that can be specifically assigned to packages.
                     The basic search determines the number of packages considered.
                 </p>
-                <p> Packages without designated ${token4} are summarized in the group <i class="icon circle pink"></i><strong>* no ${token5}</strong>. </p>
+                <p> Packages without designated ${token4} are summarized in the group ${icon_pink}<strong>* no ${token5}</strong>. </p>
             """
         }
     }
@@ -158,8 +164,8 @@
                 </p>
                 <p> Hierzu werden Paketinformationen in <strong>LAS:eR</strong> mit referenzierten Objekten aus der <strong>we:kb</strong> verglichen. </p>
                 <p>
-                    Pakete ohne ausgewiesene ${token2x} werden in der Gruppe <i class="icon circle pink"></i><strong>* keine Angabe</strong> zusammmen gefasst. <br />
-                    Ohne <strong>we:kb</strong>-Pendant fehlen relevante Daten - solche Pakete werden unter <i class="icon circle teal"></i><strong>* kein web:kb Objekt</strong> gelistet. <br />
+                    Pakete ohne ausgewiesene ${token2x} werden in der Gruppe ${icon_pink}<strong>* keine Angabe</strong> zusammmen gefasst. <br />
+                    Ohne <strong>we:kb</strong>-Pendant fehlen relevante Daten - solche Pakete werden unter ${icon_teal}<strong>* kein web:kb Objekt</strong> gelistet. <br />
                 </p>
             """
         }
@@ -172,8 +178,8 @@
                 </p>
                 <p> For this purpose, package information in <strong>LAS:eR</strong> is compared with referenced objects from the <strong>we:kb</strong>. </p>
                 <p>
-                    Packages without designated ${token2x} are summarized in the group <i class="icon circle pink"></i><strong>* not specified</strong>. <br />
-                    Without a <strong>we:kb</strong> counterpart, relevant data is missing - such packages are listed in <i class="icon circle teal"></i><strong>* no web:kb object</strong>. <br />
+                    Packages without designated ${token2x} are summarized in the group ${icon_pink}<strong>* not specified</strong>. <br />
+                    Without a <strong>we:kb</strong> counterpart, relevant data is missing - such packages are listed in ${icon_teal}<strong>* no web:kb object</strong>. <br />
                 </p>
             """
         }
@@ -231,97 +237,112 @@
 
     <div class="help-section" data-help-section="subscription-x-provider">
         <g:if test="${lang == 'de'}">
-            <p class="ui header">
-                Anbieter von Lizenzen
-            </p>
+            <p class="ui header"> Anbieter von Lizenzen </p>
             <p>
                 Gelistet werden alle relevanten Anbieter - also Anbieter, die Lizenzen konkret zugeordnet werden können.
                 Die Basissuche bestimmt dabei die Menge der betrachteten Lizenzen und Anbieter.
             </p>
-            <p>
-                Lizenzen ohne ausgewiesenen Anbieter werden in der Gruppe <i class="icon circle pink"></i><strong>* ohne Anbieter</strong> zusammmen gefasst.
-            </p>
+            <p> Lizenzen ohne ausgewiesenen Anbieter werden in der Gruppe ${icon_pink}<strong>* ohne Anbieter</strong> zusammmen gefasst. </p>
         </g:if>
         <g:else>
-            <!-- TODO --> ${message(code:'reporting.ui.global.help.missing')}
+            <p class="ui header"> Providers of subscriptions </p>
+            <p>
+                All relevant providers are listed - i.e. providers that can be specifically assigned to subscriptions.
+                The basic search determines the number of subscriptions and providers considered.
+            </p>
+            <p> Subscriptions without a designated provider are summarized in the group ${icon_pink}<strong>* no Provider</strong>. </p>
         </g:else>
     </div>
 
     <div class="help-section" data-help-section="subscription-x-memberProvider">
         <g:if test="${lang == 'de'}">
-            <p class="ui header">
-                Anbieter von Teilnehmerlizenzen
-            </p>
+            <p class="ui header"> Anbieter von Teilnehmerlizenzen </p>
             <p>
                 Gelistet werden alle relevanten Anbieter - also Anbieter, die Teilnehmerlizenzen konkret zugeordnet werden können.
                 Genauer muss ein solcher Anbieter gleichzeitig <strong>einer Lizenz sowie der zugehörigen Teilnehmerlizenz</strong> zugeordnet sein.
                 Die Basissuche bestimmt dabei die Menge der betrachteten Lizenzen, Teilnehmerlizenzen und Anbieter.
             </p>
             <p>
-                Teilnehmerlizenzen ohne ausgewiesenen Anbieter oder ohne passende Übereinstimmung werden in der Gruppe <i class="icon circle pink"></i><strong>* keine Übereinstimmung</strong> zusammmen gefasst.
+                Teilnehmerlizenzen ohne ausgewiesenen Anbieter oder ohne passende Übereinstimmung werden in der Gruppe ${icon_pink}<strong>* keine Übereinstimmung</strong> zusammmen gefasst.
             </p>
         </g:if>
         <g:else>
-            <!-- TODO --> ${message(code:'reporting.ui.global.help.missing')}
+            <p class="ui header"> Providers of participant subscriptions </p>
+            <p>
+                All relevant providers are listed - i.e. providers that can be specifically assigned to participant subscriptions.
+                More precisely, such a provider must be assigned to <strong>a subscription and the associated participant subscription</strong> at the same time.
+                The basic search determines the number of subscriptions, participant subscriptions and providers considered.
+            </p>
+            <p>
+                Participant subscriptions without a designated provider or without a suitable match are grouped together in the ${icon_pink}<strong>* no Match</strong>.
+            </p>
         </g:else>
     </div>
 
     <div class="help-section" data-help-section="subscription-x-platform">
         <g:if test="${lang == 'de'}">
-            <p class="ui header">
-                Plattformen von Lizenzen
-            </p>
+            <p class="ui header"> Plattformen von Lizenzen </p>
             <p>
                 Gelistet werden alle relevanten Plattformen - also Plattformen, die Lizenzen konkret zugeordnet werden können.
                 Die Basissuche bestimmt dabei die Menge der betrachteten Lizenzen und Anbieter.
             </p>
             <p>
                 Dabei sind folgende Varianten möglich: <br />
-                <i class="icon circle blue"></i> Die Plattform kann direkt über eine Referenz aus dem Lizenz-Bestand ermittelt werden, <br />
-                <i class="icon circle green"></i> Der einer Lizenz zugeordnete Anbieter verweist auf eine Plattform <br />
+                ${icon_blue} Die Plattform kann direkt über eine Referenz aus dem Lizenz-Bestand ermittelt werden, <br />
+                ${icon_green} Der einer Lizenz zugeordnete Anbieter verweist auf eine Plattform <br />
             </p>
-            <p>
-                Lizenzen ohne ermittelbare Plattform werden in der Gruppe <i class="icon circle pink"></i><strong>* ohne Plattform</strong> zusammmen gefasst.
-            </p>
+            <p> Lizenzen ohne ermittelbare Plattform werden in der Gruppe ${icon_pink}<strong>* ohne Plattform</strong> zusammmen gefasst. </p>
         </g:if>
         <g:else>
-            <!-- TODO --> ${message(code:'reporting.ui.global.help.missing')}
+            <p class="ui header"> Platforms of subscriptions </p>
+            <p>
+                All relevant platforms are listed - i.e. platforms that can be specifically assigned to subscriptions.
+                The basic search determines the number of subscriptions and providers considered.
+            </p>
+            <p>
+                The following variants are possible: <br />
+                ${icon_blue} The platform can be determined directly by a reference from the subscription entitlements, <br />
+                ${icon_green} The provider assigned to a subscription refers to a platform <br />
+            </p>
+            <p> Subscriptions without assignable platforms are summarized in the group ${icon_pink}<strong>* without Platform</strong>. </p>
         </g:else>
     </div>
 
     <div class="help-section" data-help-section="subscription-x-memberSubscription">
         <g:if test="${lang == 'de'}">
-            <p class="ui header">
-                Teilnehmerlizenzen von Lizenzen
-            </p>
+            <p class="ui header"> Teilnehmerlizenzen von Lizenzen </p>
             <p>
                 Gelistet werden alle relevanten Lizenzen - also Lizenzen, denen entsprechende Teilnehmerlizenzen zugeordnet werden können.
                 Die Basissuche bestimmt dabei die Menge der betrachteten Lizenzen und Teilnehmerlizenzen.
             </p>
-            <p>
-                Ohne übereinstimmende Zuordnung sind ggf. vorhandene Lizenzen <strong>nicht</strong> im Ergebnis sichtbar.
-            </p>
+            <p> Ohne übereinstimmende Zuordnung sind ggf. vorhandene Lizenzen <strong>nicht</strong> im Ergebnis sichtbar. </p>
         </g:if>
         <g:else>
-            <!-- TODO --> ${message(code:'reporting.ui.global.help.missing')}
+            <p class="ui header"> Participant subscriptions of subscriptions </p>
+            <p>
+                All relevant subscriptions are listed - i.e. subscriptions to which corresponding participant subscriptions can be assigned.
+                The basic search determines the number of subscriptions and participant subscriptions considered.
+            </p>
+            <p> If there is no suitable assignment, any existing subscriptions are <strong>not</strong> visible in the result. </p>
         </g:else>
     </div>
 
     <div class="help-section" data-help-section="subscription-x-member">
         <g:if test="${lang == 'de'}">
-            <p class="ui header">
-                Teilnehmer von Lizenzen
-            </p>
+            <p class="ui header"> Teilnehmer von Lizenzen </p>
             <p>
                 Gelistet werden alle relevanten Lizenzen - also Lizenzen, denen entsprechende Teilnehmerlizenzen mit konkreten Organisationen als Teilnehmer zugeordnet werden können.
                 Die Basissuche bestimmt dabei die Menge der betrachteten Lizenzen, Teilnehmerlizenzen und Organisationen.
             </p>
-            <p>
-                Ohne übereinstimmende Zuordnung sind ggf. vorhandene Lizenzen <strong>nicht</strong> im Ergebnis sichtbar.
-            </p>
+            <p> Ohne übereinstimmende Zuordnung sind ggf. vorhandene Lizenzen <strong>nicht</strong> im Ergebnis sichtbar. </p>
         </g:if>
         <g:else>
-            <!-- TODO --> ${message(code:'reporting.ui.global.help.missing')}
+            <p class="ui header"> Participants of subscriptions </p>
+            <p>
+                All relevant subscriptions are listed - i.e. subscriptions to which corresponding participant subscriptions can be assigned with specific organizations as participants.
+                The basic search determines the number of subscriptions, participant subscriptions and organizations considered.
+            </p>
+            <p> If there is no suitable assignment, any existing subscriptions are <strong>not</strong> visible in the result. </p>
         </g:else>
     </div>
 
@@ -460,30 +481,40 @@
     </div>
 
     <div class="help-section" data-help-section="platform-x-propertyWekb">
+        <g:set var="esProperties" value="${PlatformXCfg.CONFIG.base.distribution.default.getAt('platform-x-propertyWekb').esProperties}" />
+        <g:set var="esdConfig" value="${BaseConfig.getCurrentConfigElasticsearchData(BaseConfig.KEY_PLATFORM)}" />
+
         <g:if test="${lang == 'de'}">
-            <p class="ui header">
-                Merkmale von Plattformen
-            </p>
+            <p class="ui header"> Merkmale von Plattformen </p>
             <p>
                 Gelistet werden alle relevanten Merkmale (aus einer fest definierten Liste), die für Plattformen konkret vergeben wurden.
-            Die Basissuche bestimmt dabei die Menge der betrachteten Plattformen.
+                Die Basissuche bestimmt dabei die Menge der betrachteten Plattformen.
             </p>
             <p>
-                <g:set var="esProperties" value="${PlatformXCfg.CONFIG.base.distribution.default.getAt('platform-x-propertyWekb').esProperties}" />
-                <g:set var="esdConfig" value="${BaseConfig.getCurrentConfigElasticsearchData(BaseConfig.KEY_PLATFORM)}" />
                 <ol class="ui list">
-                    <g:each in="${esProperties}" var="prop">
-                        <li value="*"><g:message code="${esdConfig.get(prop).label}" /></li>
-                    </g:each>
+                    <g:each in="${esProperties}" var="prop"> <li value="*"><g:message code="${esdConfig.get(prop).label}" /></li> </g:each>
                 </ol>
             </p>
             <p>
-                Pakete ohne entsprechende Merkmale werden in der Gruppe <i class="icon circle pink"></i><strong>* keine Angabe</strong> zusammmen gefasst. <br />
-                Ohne <strong>we:kb</strong>-Pendant fehlen relevante Daten - solche Pakete werden unter <i class="icon circle teal"></i><strong>* kein web:kb Objekt</strong> gelistet. <br />
+                Pakete ohne entsprechende Merkmale werden in der Gruppe ${icon_pink}<strong>* keine Angabe</strong> zusammmen gefasst. <br />
+                Ohne <strong>we:kb</strong>-Pendant fehlen relevante Daten - solche Pakete werden unter ${icon_teal}<strong>* kein web:kb Objekt</strong> gelistet. <br />
             </p>
-            </g:if>
+        </g:if>
         <g:else>
-            <!-- TODO --> ${message(code:'reporting.ui.global.help.missing')}
+            <p class="ui header"> Properties of platforms </p>
+            <p>
+                All relevant properties (from a firmly defined list) that have been specifically assigned for platforms are listed.
+                The basic search determines the number of platforms considered.
+            </p>
+            <p>
+                <ol class="ui list">
+                    <g:each in="${esProperties}" var="prop"> <li value="*"><g:message code="${esdConfig.get(prop).label}" /></li> </g:each>
+                </ol>
+            </p>
+            <p>
+                Packages without corresponding properties are summarized in the group ${icon_pink}<strong>* no Information</strong>. <br />
+                Relevant data is missing without a <strong>we:kb</strong> counterpart - such packages are listed under ${icon_teal}<strong>* no web:kb object</strong>. <br />
+            </p>
         </g:else>
     </div>
 

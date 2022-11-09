@@ -15,5 +15,4 @@ class ConfigDefaults {
     public static final String DOCSTORE_LOCATION_FALLBACK      = System.getProperty('java.io.tmpdir') + '/laser'   // -> ConfigMapper.getDocumentStorageLocation()
     public static final String DEPLOYBACKUP_LOCATION_FALLBACK  = System.getProperty('java.io.tmpdir')              // -> CustomMigrationCallbacks.onStartMigration()
 
-    public static final String DEVTOOLS_TRIGGER_FILE           = './grails-app/conf/spring/restart.trigger'        // -> AppUtils.isRestartedByDevtools()
 }

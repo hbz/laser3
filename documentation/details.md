@@ -7,12 +7,12 @@ Previous versions of Grails used a reloading agent called SpringLoaded.
 Since this library is no longer maintained and does not support Java 11 it has been removed.
 As a replacement, SpringBootDeveloperTools is used.
 
-Deploying code changes is configured to watch a [trigger file](../grails-app/conf/spring/restart.trigger).
-Use the Gradle task **devtools.triggerRestart** to update this file and force a restart with the latest code changes.
+~~Deploying code changes is configured to watch a [trigger file](../grails-app/conf/spring/restart.trigger).~~
+~~Use the Gradle task **devtools.triggerRestart** to update this file and force a restart with the latest code changes.~~
 
 ### Apache Commons Lang
 
-~~Two different versions are currently used.~~ New code should always use *org.apache.commons.lang3*, 
+New code should always use *org.apache.commons.lang3*, 
 not the previous version *org.apache.commons.lang* (which is still a dependency of _org.grails.plugins:gsp_)
 
 ### Configuration
