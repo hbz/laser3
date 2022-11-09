@@ -83,17 +83,4 @@ class TitleController  {
         result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
         result
     }
-
-    @Deprecated
-    @Secured(['ROLE_USER'])
-    @Check404(domain = TitleInstancePackagePlatform)
-    Map<String,Object> show() {
-        Map<String, Object> result = [:]
-
-        result.editable = SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
-
-        result.titleHistory = TitleHistoryEvent.executeQuery("select distinct thep.event from TitleHistoryEventParticipant as thep where thep.participant = :participant", [participant: result.tipp] )
-
-        result
-    }
 }

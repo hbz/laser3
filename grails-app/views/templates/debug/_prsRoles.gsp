@@ -43,8 +43,8 @@
                         <g:if test="${role.lic}">
                             <g:link controller="license" action="show" id="${role.lic.id}">${role.lic.reference} (${role.lic.id})</g:link>
                         </g:if>
-                        <g:if test="${role.title}">
-                            <g:link controller="title" action="show" id="${role.title.id}">${role.title.title} (${role.title.id})</g:link>
+                        <g:if test="${role.tipp}">
+                            <g:link controller="tipp" action="show" id="${role.tipp.id}">${role.tipp.name} (${role.tipp.id})</g:link>
                         </g:if>
                     </td>
                 </tr>

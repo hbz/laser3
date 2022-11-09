@@ -738,7 +738,7 @@
 
                 <g:if test="${currentServer == AppUtils.LOCAL}">
                 console.log(JSPC);
-                why.tap(true);
+                why.info(false);
                 </g:if>
             })
         </script>

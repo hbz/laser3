@@ -11,9 +11,88 @@ why = {
     el_resultCounter: {},
     el_idCounter: 0,
 
-    tap: function (output = false) {
-        if (output) { console.log('why -> tap') }
+    help: function() {
+        console.log(
+            '_help      -> returns this help \n' +
+            '  \n' +
+            '_tap       -> checks for duplicate event listener and id attributes, writes history \n' +
+            '_info      -> shows current details' +
+            '_history   -> shows existing history \n' +
+            '  \n' +
+            '_elem(id)  -> shows $(*[data-why-id="why-<id>"]) \n' +
+            '_forms     -> shows $(forms) \n' +
+            '_headlines -> shows $(h{1..6}) \n' +
+            '_comments  -> shows $(<!-- -->) \n' +
+            '_templates -> shows $(<!-- [template: .. ] -->) \n'
+        )
+    },
 
+    tap: function () {
+        console.log('why -> tap ' + (1 + why.el_keys.length))
+        why._executeTap ()
+    },
+
+    info: function (expand = true) {
+        console.log('why -> info')
+        why._executeTap (true, expand)
+    },
+
+    history: function () {
+        console.log('why -> history')
+        $.each(why.el_keys, function (i, e) {
+            console.log(e)
+        })
+    },
+
+    elem: function (id) {
+        console.log('why -> elem : $( [data-why-id] )')
+        let elem = $('*[data-why-id="why-' + id + '"]')
+
+        if (elem) {
+            console.log(elem)
+            let evs = $._data(elem[0], 'events')
+            $.each(evs, function (i, elist) {
+                $.each(elist, function (ii, oo) {
+                    console.log(oo)
+                })
+            })
+        }
+    },
+
+    comments: function() {
+        console.log('why -> comments')
+        let comments = $('*').contents().filter(function() { return this.nodeType === 8 })
+        $.each(comments, function (i, elem) {
+            console.log(elem)
+        })
+    },
+
+    forms: function() {
+        console.log('why -> forms')
+        $.each($('form'), function (i, elem) {
+            console.log(elem)
+        })
+    },
+
+    headlines: function() {
+        console.log('why -> headlines')
+        $.each($('h1,h2,h3,h4,h5,h6'), function (i, elem) {
+            console.log(elem)
+        })
+    },
+
+    templates: function() {
+        console.log('why -> templates')
+        let comments = $('*').contents().filter(function () { return this.nodeType === 8 && this.textContent.includes('[template:') && this.textContent.includes('START') })
+        $.each(comments, function (i, elem) {
+            console.log(elem)
+            console.log(elem.nextElementSibling)
+        })
+    },
+
+    // ----->
+
+    _executeTap: function (output = false, expand = false) {
         why._checkIds()
 
         let elCounter = why._checkEventListeners()
@@ -27,8 +106,12 @@ why = {
         })
 
         if (output) {
-            console.groupCollapsed('[why] event listener duplicates:', tmpSize, '; id attribute duplicates:', why.id_result.length)
-
+            if (expand) {
+                console.group('[why] event listener duplicates:', tmpSize, '; id attribute duplicates:', why.id_result.length)
+            }
+            else {
+                console.groupCollapsed('[why] event listener duplicates:', tmpSize, '; id attribute duplicates:', why.id_result.length)
+            }
             console.log('+ event listener duplicates', (tmp.length > 0  ? tmp : 0))
             console.log('  event listener found overall: ' + elCounter)
 
@@ -61,75 +144,6 @@ why = {
         })
         if (output) { console.groupEnd() }
     },
-
-    help: function() {
-        console.log(
-            '_help      -> returns this help \n' +
-            '  \n' +
-            '_tap       -> checks for duplicate event listener and id attributes, writes history \n' +
-            '_history   -> returns existing history \n' +
-            '_info(id)  -> returns $(*[data-why-id="why-<id>"]) \n' +
-            '_forms     -> returns $(forms) \n' +
-            '_headlines -> returns $(h{1..6}) \n' +
-            '_comments  -> returns $(<!-- -->) \n' +
-            '_templates -> returns $(<!-- [template: .. ] -->) \n'
-        )
-    },
-
-    history: function () {
-        console.log('why -> history')
-        $.each(why.el_keys, function (i, e) {
-            console.log(e)
-        })
-    },
-
-    info: function (id) {
-        console.log('why: $( [data-why-id] )')
-        let elem = $('*[data-why-id="why-' + id + '"]')
-
-        if (elem) {
-            console.log(elem)
-            let evs = $._data(elem[0], 'events')
-            $.each(evs, function (i, elist) {
-                $.each(elist, function (ii, oo) {
-                    console.log(oo)
-                })
-            })
-        }
-    },
-
-    comments: function() {
-        console.log('why: $( comments )')
-        let comments = $('*').contents().filter(function() { return this.nodeType === 8 })
-        $.each(comments, function (i, elem) {
-            console.log(elem)
-        })
-    },
-
-    forms: function() {
-        console.log('why: $( forms )')
-        $.each($('form'), function (i, elem) {
-            console.log(elem)
-        })
-    },
-
-    headlines: function() {
-        console.log('why: $( headlines )')
-        $.each($('h1,h2,h3,h4,h5,h6'), function (i, elem) {
-            console.log(elem)
-        })
-    },
-
-    templates: function() {
-        console.log('why: $( templates )')
-        let comments = $('*').contents().filter(function () { return this.nodeType === 8 && this.textContent.includes('[template:') && this.textContent.includes('START') })
-        $.each(comments, function (i, elem) {
-            console.log(elem)
-            console.log(elem.nextElementSibling)
-        })
-    },
-
-    // ----->
 
     _checkEventListeners: function () {
         let elCounter = 0
@@ -218,12 +232,13 @@ JSPC.modules.add( 'why', why );
 
 /* shortcuts */
 
-window._info = function (id) { why.info (id) }
+window._elem = function (id) { why.elem (id) }
 
 Object.defineProperty (window, '_comments',  { get: function () { why.comments() } })
 Object.defineProperty (window, '_forms',     { get: function () { why.forms() } })
 Object.defineProperty (window, '_headlines', { get: function () { why.headlines() } })
 Object.defineProperty (window, '_help',      { get: function () { why.help() } })
 Object.defineProperty (window, '_history',   { get: function () { why.history() } })
+Object.defineProperty (window, '_info',      { get: function () { why.info() } })
 Object.defineProperty (window, '_tap',       { get: function () { why.tap() } })
 Object.defineProperty (window, '_templates', { get: function () { why.templates() } })

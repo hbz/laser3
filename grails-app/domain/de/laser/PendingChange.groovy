@@ -370,6 +370,9 @@ class PendingChange {
     def resolveOID() {
         BeanStore.getGenericOIDService().resolveOID(oid)
     }
+    def resolveOID(String oid) {
+        BeanStore.getGenericOIDService().resolveOID(oid)
+    }
 
     /**
      * Returns the change data stored as JSON. Works only for those changes which are in JSON only
