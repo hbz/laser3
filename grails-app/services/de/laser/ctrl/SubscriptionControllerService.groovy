@@ -1389,7 +1389,7 @@ class SubscriptionControllerService {
             result.countAllIEs = subscriptionService.countIssueEntitlementsFixed(baseSub)
             result.toBeSelectedIEs = result.countAllIEs - result.countSelectedIEs
 
-            result.num_ies_rows = sourceIEs.size()
+            result.num_ies_rows = IssueEntitlement.countByIdInList(sourceIEs)
 
             if(params.tab in ['allIEsStats', 'holdingIEsStats']) {
                 //result = surveyService.getStatsForParticipant(result, params, newSub, result.subscriber, subscriptionService.getTippIDsFixed(baseSub))

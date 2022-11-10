@@ -1668,6 +1668,12 @@ class FilterService {
                     else params.subscription = Long.parseLong(configMap.subscription)
                     where += " and ie_subscription_fk = :subscription"
                 }
+                else if(configMap.subscriptions) {
+                    List<Object> subIds = []
+                    subIds.addAll(configMap.subscriptions.id)
+                    params.subscriptions = connection.createArrayOf('bigint', subIds.toArray())
+                    where += " and ie_subscription_fk = any(:subscriptions)"
+                }
                 if(configMap.asAt != null && !configMap.asAt.isEmpty()) {
                     Date dateFilter = sdf.parse(configMap.asAt)
                     params.asAt = new Timestamp(dateFilter.getTime())
