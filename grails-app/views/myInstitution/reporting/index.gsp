@@ -162,10 +162,10 @@
 
             JSPC.app.reporting.updateHabMenu = function (current) {
                 var base = ['info', 'bookmark', 'history']
-                var negative = base.filter( function(c) { return c.indexOf( current ) < 0; } )
+                var negative = base.filter( function (c) { return c.indexOf( current ) < 0; } )
 
-                $( negative.map(function(e) { return '#' + e + '-content' }).join(',') ).addClass('hidden');
-                $( negative.map(function(e) { return '#' + e + '-toggle' }).join(',') ).removeClass('blue').removeClass('teal');
+                $( negative.map(function (e) { return '#' + e + '-content' }).join(',') ).addClass('hidden');
+                $( negative.map(function (e) { return '#' + e + '-toggle' }).join(',') ).removeClass('blue').removeClass('teal');
                 $( '#' + current + '-content').toggleClass('hidden');
                 if (current == 'bookmark') {
                     $( '#' + current + '-toggle').toggleClass('teal');
@@ -173,28 +173,28 @@
                     $( '#' + current + '-toggle').toggleClass('blue');
                 }
             }
-            $('#info-toggle').on( 'click', function() {
+            $('#info-toggle').on ('click', function () {
                 JSPC.app.reporting.updateHabMenu('info');
             })
-            $('#bookmark-toggle').on( 'click', function() {
+            $('#bookmark-toggle').on ('click', function () {
                 JSPC.app.reporting.updateHabMenu('bookmark');
                 $('#bookmark-content #last-added-bookmark').fadeOut(250).fadeIn(250).delay(50).fadeOut(250).fadeIn(250).delay(50).fadeOut(250).fadeIn(250).delay(50).fadeOut(250);
             })
-            $('#history-toggle').on( 'click', function() {
+            $('#history-toggle').on ('click', function () {
                 JSPC.app.reporting.updateHabMenu('history');
             })
-            $('#hab-wrapper').load( '<g:createLink controller="ajaxHtml" action="reporting" />', function() {});
+            $('#hab-wrapper').load( '<g:createLink controller="ajaxHtml" action="reporting" />', function () {});
 
             /*-- filter --*/
 
-            $('#filter-chooser').on( 'change', function(e) {
+            $('#filter-chooser').on ('change', function (e) {
                 $.ajax({
                     url: '<g:createLink controller="myInstitution" action="reporting" />',
                     data: { init: true, filter: $(this).val() },
                     dataType: 'html',
-                    beforeSend: function(xhr) { $('#loadingIndicator').show(); }
+                    beforeSend: function (xhr) { $('#loadingIndicator').show(); }
                 })
-                .done( function (data) {
+                .done (function (data) {
                     $('#filter-wrapper').html(data);
                     r2d2.initDynamicUiStuff('#filter-wrapper');
                     r2d2.initDynamicXEditableStuff('#filter-wrapper');
@@ -202,13 +202,13 @@
                     JSPC.app.reporting.initFilterEvents();
                     $('#filter-wrapper > div').removeClass('hidden');
                 })
-                .fail( function() { $("#reporting-modal-error").modal('show'); })
-                .always( function() { $('#loadingIndicator').hide(); });
+                .fail (function () { $("#reporting-modal-error").modal('show'); })
+                .always (function () { $('#loadingIndicator').hide(); });
             })
 
             /*-- charts --*/
 
-            $('*[id^=query-chooser').on( 'change', function(e) {
+            $('*[id^=query-chooser').on ('change', function (e) {
                 var value = $(e.target).val();
                 if (value) {
                     $('*[id^=query-chooser').not( $('#' + this.id)).dropdown('clear');
@@ -216,12 +216,14 @@
                     JSPC.app.reporting.requestChartJsonData();
                 }
             })
-            $('#chart-chooser').on( 'change', function(e) {
-                JSPC.app.reporting.current.request.chart = $(e.target).dropdown('get value');
-                JSPC.app.reporting.requestChartJsonData();
+            $('#chart-chooser').on ('change', function (e) {
+                if (JSPC.app.reporting.current.request) {
+                    JSPC.app.reporting.current.request.chart = $(e.target).dropdown('get value');
+                    JSPC.app.reporting.requestChartJsonData();
+                }
             })
 
-            JSPC.app.reporting.requestChartJsonData = function() {
+            JSPC.app.reporting.requestChartJsonData = function () {
                 if ( JSPC.app.reporting.current.request.query && JSPC.app.reporting.current.request.chart ) {
                     JSPC.app.reporting.current.chart = {};
 
@@ -235,7 +237,7 @@
                             $('#query-export-button, #query-help-button').attr('disabled', 'disabled');
                         }
                     })
-                    .done( function (data) {
+                    .done (function (data) {
                         $('#chart-wrapper').replaceWith( '<div id="chart-wrapper"></div>' );
                         $('#chart-details').replaceWith( '<div id="chart-details"></div>' );
                         $('#reporting-chart-nodata').hide();
@@ -264,7 +266,7 @@
 
                             var echart = echarts.init($('#chart-wrapper')[0]);
                             echart.setOption( JSPC.app.reporting.current.chart.option );
-                            echart.on( 'click', function (params) {
+                            echart.on ('click', function (params) {
                                 var clone = {}
                                 Object.assign(clone, JSPC.app.reporting.current.request);
                                 clone.id = params.data[0];
@@ -272,7 +274,7 @@
                                 clone.context = '${BaseConfig.KEY_MYINST}';
                                 JSPC.app.reporting.requestChartHtmlDetails(clone);
                             });
-                            echart.on( 'legendselectchanged', function (params) { /* console.log(params); */ });
+                            echart.on ('legendselectchanged', function (params) { /* console.log(params); */ });
 
                             JSPC.app.reporting.current.chart.echart = echart;
 
@@ -282,13 +284,13 @@
                             }
                         }
                     })
-                    .fail( function (data) {
+                    .fail (function (data) {
                         $('#chart-wrapper').replaceWith( '<div id="chart-wrapper"></div>' );
                         $('#chart-details').replaceWith( '<div id="chart-details"></div>' );
                         $('#reporting-chart-nodata').hide();
                         $("#reporting-modal-error").modal('show');
                     })
-                    .always(function() { $('#loadingIndicator').hide(); });
+                    .always (function () { $('#loadingIndicator').hide(); });
                 }
             }
 
@@ -296,31 +298,31 @@
 
             /* -- helper -- */
 
-            JSPC.app.reporting.initFilterEvents = function() {
-                $("select[name=filter\\:member_country]").on( 'change', function() {
+            JSPC.app.reporting.initFilterEvents = function () {
+                $("select[name=filter\\:member_country]").on ('change', function () {
                     JSPC.app.reporting.countryRegionUpdate( 'filter\\:member' );
                 }).trigger( 'change' );
 
-                $("select[name=filter\\:org_country]").on( 'change', function() {
+                $("select[name=filter\\:org_country]").on ('change', function () {
                     JSPC.app.reporting.countryRegionUpdate( 'filter\\:org' );
                 }).trigger( 'change' );
 
                 $("select[name=filter\\:member_region_virtualFF]").dropdown(
-                    'setting', 'onChange', function(value, text, $choice) {
+                    'setting', 'onChange', function (value, text, $choice) {
                         $("input[name=filter\\:member_region]").attr('value', value);
                 });
 
                 $("select[name=filter\\:org_region_virtualFF]").dropdown(
-                    'setting', 'onChange', function(value, text, $choice) {
+                    'setting', 'onChange', function (value, text, $choice) {
                         $("input[name=filter\\:org_region]").attr('value', value);
                 });
 
-                $("*[name$='_propertyKey']").on( 'change', function() {
+                $("*[name$='_propertyKey']").on ('change', function () {
                     JSPC.app.reporting.propertyUpdate( this );
                 }).trigger( 'change' );
             }
 
-            JSPC.app.reporting.countryRegionUpdate = function( selectorPart ) {
+            JSPC.app.reporting.countryRegionUpdate = function (selectorPart) {
                 var $country     = $('select[name=' + selectorPart + '_country]');
                 var $region      = $('select[name=' + selectorPart + '_region_virtualFF]');
                 var $regionValue = $('input[name=' + selectorPart + '_region]');
@@ -334,7 +336,7 @@
                 $.ajax({
                     url: url,
                     success: function (data) {
-                        $region.dropdown('change values', data.map( function(e){
+                        $region.dropdown('change values', data.map( function (e) {
                             return { value: e.id, name: e.value_de, text: e.value_de }
                         }))
                         $region.dropdown('set selected', $regionValue.attr('value'));
@@ -342,7 +344,7 @@
                 });
             }
 
-            JSPC.app.reporting.propertyUpdate = function( elem ) {
+            JSPC.app.reporting.propertyUpdate = function (elem) {
                 var defaults = {}
                 <%
                     params.findAll{ it.key.startsWith('filter:') && (it.key.endsWith('_propertyKey') || it.key.endsWith('_propertyValue')) }.each{ it ->

@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4581    10.11.2022  dev     3.0         David   Feature     Lizenz-Reporting: Tortendiagramm
+
 4576    08.11.2022  dev     3.0         David   Bug         X-Editable des Dropdowns für Währung funktioniert nicht mehr
 
 3829    08.11.2022  dev     3.0         David   Feature     Reporting: Hilfetexte übersetzen
