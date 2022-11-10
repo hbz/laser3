@@ -192,14 +192,19 @@
     sortFieldMap['tipp.accessEndDate'] = "${message(code: 'subscription.details.access_dates')} ${message(code: 'default.to')}"
 %>
 <div class="row">
-    <div class="left floated eight wide column">
+    <div class="eight wide column">
         <h3 class="ui icon header la-clear-before la-noMargin-top"><span
                 class="ui circular  label">${num_ies_rows}</span> <g:message code="title.filter.result"/></h3>
     </div>
 
-    <div class="right floated eight wide column">
+    <div class="four wide column">
         <div class="ui form">
             <ui:sortingDropdown from="${sortFieldMap}" sort="${params.sort}" order="${params.order}"/>
+        </div>
+    </div>
+    <div class="four wide column">
+        <div class="field la-field-right-aligned la-field-noLabel">
+            <div class="ui right floated button la-js-editButton la-la-clearfix la">Massenbearbeitung</div>
         </div>
     </div>
 </div>
@@ -225,18 +230,15 @@
             <g:if test="${editable}">
                 <g:set var="selected_label" value="${message(code: 'default.selected.label')}"/>
 
-                <div class="ui right floated button la-js-editButton la-la-clearfix">Massenbearbeitung</div>
-                <div class="fields la-js-show-hide left floated" style="display: none">
+                <div class="ui segment la-filter la-js-show-hide" style="display: none">
+                    <div class="five fields  left floated  " >
 
-                    <div class="field ">
-                        <label><g:message code="subscription.details.issueEntitlementEnrichment.uploadCoverageDates.label"/></label>
+                    <div class="field la-field-noLabel">
                         <input id="select-all" type="checkbox" name="chkall" onClick="JSPC.app.selectAll()"/>
                     </div>
 
 
-                    <div class="field ">
-                        <label><g:message code="subscription.details.issueEntitlementEnrichment.uploadCoverageDates.label"/></label>
-
+                    <div class="field la-field-noLabel">
                         <div class="ui selection dropdown la-clearable">
                             <input type="hidden" id="bulkOperationSelect" name="bulkOperation">
                             <i class="dropdown icon"></i>
@@ -260,15 +262,14 @@
 
 
                     <div class="field">
-                        <label><g:message code="subscription.details.access_dates"/> <g:message code="default.from"/></label>
+                        <label><g:message code="subscription.details.access_dates"/></label>
                         <ui:datepicker hideLabel="true"
                                        placeholder="${message(code: 'default.from')}"
                                        inputCssClass="la-input-small" id="bulk_access_start_date"
                                        name="bulk_access_start_date"/>
                     </div>
 
-                    <div class="field ">
-                        <label><g:message code="subscription.details.access_dates"/> <g:message code="default.to"/></label>
+                    <div class="field la-field-noLabel">
                         <ui:datepicker hideLabel="true"
                                        placeholder="${message(code: 'default.to')}"
                                        inputCssClass="la-input-small" id="bulk_access_end_date"
@@ -284,6 +285,7 @@
                                 class="ui icon button la-popup-tooltip la-delay"><i class="check icon"></i>
                         </button>
                     </div>
+                </div>
                 </div>
 
 
@@ -483,7 +485,7 @@
                                                     </div>
 
 
-                                                    <div class="ui  list">
+                                                    <div class="ui list">
                                                         <g:if test="${ie}">
                                                             <div class="item">
                                                                 <i class="save icon la-popup-tooltip la-delay"

@@ -51613,6 +51613,10 @@ legend {
   -ms-flex-item-align: center;
   align-self: center;
 }
+
+.la-field-noLabel {
+  margin-top: 26px;
+}
 /*!
  * # Fomantic-UI 2.8.8 - Grid
  * http://github.com/fomantic/Fomantic-UI/

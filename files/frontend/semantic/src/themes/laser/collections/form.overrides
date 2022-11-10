@@ -160,3 +160,6 @@ legend {
     align-self: center;
   }
 }
+.la-field-noLabel {
+  margin-top: 26px;
+}
