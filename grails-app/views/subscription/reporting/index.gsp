@@ -37,9 +37,29 @@
         </style>
 
         <laser:script file="${this.getGroovyPageFileName()}">
-            $('*[id^=query-chooser').on( 'change', function(e) {
+            $('*[id^=query-chooser-1').on ('change', function (e) {
                 var value = $(e.target).dropdown('get value');
                 if (value) {
+                    $('#chart-chooser').removeAttr('disabled').parent().removeClass('disabled');
+
+                    $('*[id^=query-chooser').not($('#' + e.target.id)).dropdown('clear');
+                    JSPC.app.reporting.current.request = {
+                        id: ${subscription.id},
+                        query: value,
+                        context: '${BaseConfig.KEY_SUBSCRIPTION}',
+                        chart: $('#chart-chooser').dropdown('get value'),
+                        token: '${token}'
+                    }
+                    JSPC.app.reporting.requestChartJsonData();
+                }
+            })
+
+            $('*[id^=query-chooser-2').on ('change', function (e) {
+                var value = $(e.target).dropdown('get value');
+                if (value) {
+                    $('#chart-chooser').attr('disabled', 'disabled').parent().addClass('disabled')
+                    $('#chart-chooser').dropdown('set selected', 'bar');
+
                     $('*[id^=query-chooser').not($('#' + e.target.id)).dropdown('clear');
                     JSPC.app.reporting.current.request = {
                         id: ${subscription.id},
@@ -51,7 +71,16 @@
                 }
             })
 
-            JSPC.app.reporting.requestChartJsonData = function() {
+            $('#chart-chooser').on ('change', function (e) {
+                if (JSPC.app.reporting.current.request) {
+                    JSPC.app.reporting.current.request.chart = $(e.target).dropdown('get value');
+                    if (! $(e.target).attr('disabled')) {
+                        JSPC.app.reporting.requestChartJsonData();
+                    }
+                }
+            })
+
+            JSPC.app.reporting.requestChartJsonData = function () {
                 if ( JSPC.app.reporting.current.request.query ) {
                     JSPC.app.reporting.current.chart = {};
 
@@ -65,7 +94,7 @@
                             $('#query-export-button, #query-help-button').attr('disabled', 'disabled');
                         }
                     })
-                    .done( function (data) {
+                    .done (function (data) {
                         $('#chart-wrapper').replaceWith( '<div id="chart-wrapper"></div>' );
                         $('#chart-details').replaceWith( '<div id="chart-details"></div>' );
                         $('#reporting-chart-nodata').hide();
@@ -82,7 +111,8 @@
                         else {
                             var dsl = JSPC.app.reporting.current.chart.option.dataset.source.length
                             if (JSPC.app.reporting.current.request.query.split('-')[0] != 'timeline') {
-                                $('#chart-wrapper').css('height', 220 + (20 * JSPC.app.reporting.current.chart.option.dataset.source.length) + 'px');
+                                var cwh = (JSPC.app.reporting.current.request.chart == 'pie') ? 320 : 220;
+                                $('#chart-wrapper').css('height', cwh + (20 * JSPC.app.reporting.current.chart.option.dataset.source.length) + 'px');
                             } else {
                                 $('#chart-wrapper').removeAttr('style');
                             }
@@ -110,15 +140,17 @@
                             }
                         }
                     })
-                    .fail( function (data) {
+                    .fail (function (data) {
                         $('#chart-wrapper').replaceWith( '<div id="chart-wrapper"></div>' );
                         $('#chart-details').replaceWith( '<div id="chart-details"></div>' );
                         $('#reporting-chart-nodata').hide();
                         $("#reporting-modal-error").modal('show');
                     })
-                    .always(function() { $('#loadingIndicator').hide(); });
+                    .always (function () { $('#loadingIndicator').hide(); });
                 }
             }
+
+            $('#chart-chooser').dropdown('set selected', 'bar');
         </laser:script>
 
         <ui:modal id="reporting-modal-error" text="REPORTING" hideSubmitButton="true">

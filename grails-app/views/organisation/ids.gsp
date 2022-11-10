@@ -7,8 +7,6 @@
 
 <ui:debugInfo>
     <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]"/>
-    %{--<laser:render template="/templates/debug/orgRoles" model="[debug: orgInstance.links]"/>--}%
-    %{--<laser:render template="/templates/debug/prsRoles" model="[debug: orgInstance.prsLinks]"/>--}%
 </ui:debugInfo>
 
 <laser:render template="breadcrumb"

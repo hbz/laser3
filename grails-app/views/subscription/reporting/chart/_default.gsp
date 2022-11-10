@@ -1,5 +1,79 @@
-<%@ page import="de.laser.reporting.report.myInstitution.base.BaseQuery" %>
-<g:if test="${data}">
+<%@ page import="de.laser.reporting.report.myInstitution.base.BaseConfig; de.laser.reporting.report.myInstitution.base.BaseQuery" %>
+<g:if test="${data && chart == BaseConfig.CHART_PIE}">
+    JSPC.app.reporting.current.chart.option = {
+        title: {
+            text: '${labels.tooltip}',
+            show: false
+        },
+        dataset: {
+            source: [
+                ['id', 'name', 'value'],
+                <%
+                    if (objectReference) {
+                        data.each { it ->
+                            if (it[0] instanceof String) {
+                                print "['${objectReference}:${it[0].replaceAll("'", BaseQuery.SQM_MASK)}', '${it[1].replaceAll("'", BaseQuery.SQM_MASK)}', ${it[2]}]," // property
+                            } else {
+                                print "['${objectReference}:${it[0]}', '${it[1].replaceAll("'", BaseQuery.SQM_MASK)}', ${it[2]}]," // rdv
+                            }
+                        } // workaround : XYZ
+                    }
+                    else {
+                        data.each { it -> print "['${it[0]}', '${it[1].replaceAll("'", BaseQuery.SQM_MASK)}', ${it[2]}]," }
+                    }
+                %>
+            ]
+        },
+        toolbox: JSPC.app.reporting.helper._pie.toolbox,
+        tooltip: {
+            trigger: 'item',
+            formatter (params) {
+                var str = JSPC.app.reporting.current.chart.option.title.text
+                str += JSPC.app.reporting.helper.tooltip.getEntry(params.marker, params.name, params.data[2])
+                return str
+           }
+        },
+        legend: {
+            bottom: 0,
+            left: 'center',
+            z: 1,
+            formatter: function (value) {
+                return value.replace(/\s\(ID:[0-9]*\)/,'')
+            }
+        },
+        series: [
+            {
+                type: 'pie',
+                radius: [0, '70%'],
+                center: ['50%', '45%'],
+                minAngle: 1,
+                minShowLabelAngle: 1,
+                encode: {
+                    itemName: 'name',
+                    value: 'value',
+                    id: 'id'
+                },
+                emphasis: JSPC.app.reporting.helper.series._pie.emphasis,
+                label: {
+                    formatter: function (obj) {
+                        return obj.name.replace(/\s\(ID:[0-9]*\)/,'')
+                    }
+                },
+                itemStyle: {
+                    color: function(params) {
+                        if (JSPC.helper.contains(['${BaseQuery.getChartLabel(BaseQuery.NO_DATA_LABEL)}'], params.name)) {
+                            return JSPC.app.reporting.helper.series._color.redInactiveSolid
+                        }
+                        else {
+                            return JSPC.app.reporting.helper.series._color.palette[params.dataIndex % JSPC.app.reporting.helper.series._color.palette.length];
+                        }
+                    }
+                }
+            }
+        ]
+    };
+</g:if>
+<g:elseif test="${data && chart == BaseConfig.CHART_BAR}">
     JSPC.app.reporting.current.chart.option = {
         title: {
             text: '${labels.tooltip}',
@@ -65,7 +139,7 @@
             }
         ]
     };
-</g:if>
+</g:elseif>
 <g:elseif test="${data != null && data.isEmpty()}">
     JSPC.app.reporting.current.chart.statusCode = 204
 </g:elseif>

@@ -18,6 +18,7 @@ import de.laser.properties.SubscriptionProperty
 import de.laser.remote.ApiSource
 import de.laser.remote.GlobalRecordSource
 import de.laser.reporting.report.local.SubscriptionReport
+import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
@@ -3438,8 +3439,9 @@ class SubscriptionControllerService {
         Map<String, Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         Subscription sub = Subscription.get(params.id)
 
-        result.token         = params.token ?: RandomStringUtils.randomAlphanumeric(16) // -> static token
+        result.token           = params.token ?: RandomStringUtils.randomAlphanumeric(16) // -> static token
         result.cfgQueryList    = SubscriptionReport.getCurrentQueryConfig( sub )
+        result.cfgChartsList   = BaseConfig.CHARTS
         result.cfgTimelineList = SubscriptionReport.getCurrentTimelineConfig( sub )
 
         [result: result, status: (result ? STATUS_OK : STATUS_ERROR)]
