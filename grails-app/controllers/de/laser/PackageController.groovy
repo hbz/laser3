@@ -785,7 +785,7 @@ class PackageController {
         params.offset = result.offset
 
         List changes = packageHistory ? PendingChange.findAllByIdInList(packageHistory.drop(result.max).take(result.max), params) : []
-        result.countPendingChanges = packageHistory ? PendingChange.countByIdInList(packageHistory) : 0
+        result.countPendingChanges = packageHistory.size()
 
         result.num_change_rows = result.countPendingChanges
         result.changes = changes
