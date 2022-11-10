@@ -22,5 +22,5 @@
 </div>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-    $(function(){ responsiveTables.go(); }
+    $(function(){ responsiveTables.go(); })
 </laser:script>
