@@ -40341,11 +40341,8 @@ i.orange.icon.la-subscriptionIsChild.fixed {
 .la-icon-absolute {
   position: absolute;
   z-index: 100;
-  margin-left: auto;
-  margin-right: auto;
   left: 0;
   right: 0;
-  text-align: center;
 }
 /*!
  * # Fomantic-UI 2.8.8 - Image
@@ -51604,6 +51601,17 @@ legend {
 
 .ui.form .inline.fields .field {
   margin: 0 0 1em;
+}
+
+.la-right-aligned-fields {
+  -webkit-box-pack: end;
+  -ms-flex-pack: end;
+  justify-content: flex-end;
+}
+
+.la-right-aligned-fields .field {
+  -ms-flex-item-align: center;
+  align-self: center;
 }
 /*!
  * # Fomantic-UI 2.8.8 - Grid

@@ -174,6 +174,9 @@ class DropdownTagLib {
         }
         String cssClass     = attrs.class ?: ''
         String noSelection  = attrs.noSelection ?: ''
+        out << '<div class="fields">'
+        out << '<div class="field">'
+        out << '<label for">' + message(code: 'form.label.sort') + '</label>'
         out << '<select class="ui search selection dropdown sorting' + cssClass + '">'
         out <<     '<option class="default text">' + noSelection + '</option>'
         attrs.from.eachWithIndex { sortKey, sortValue, i ->
@@ -187,6 +190,8 @@ class DropdownTagLib {
             out << '</option>'
         }
         out << '</select>'
+        out << '</div>'
+        out << '</div>'
     }
 
     def dropdown = { attrs, body ->

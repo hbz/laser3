@@ -57,9 +57,6 @@
     /*margin-right: 0 !important;*/
     opacity: 1 !important;
 }
-.ui.inverted.list .item a.xEditableValue {
-color: red!important;
-}
 /* select 2 */
 
 .ui .select2-container {
