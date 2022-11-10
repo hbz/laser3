@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      10.11.2022  rc-2.3  2.3.11      Moe     Featrue     Umfrage-Bemerkungsfeld so groß wie Bemerkung
+
 4575    09.11.2022  rc-2.3  2.3.11      Moe     Bug         Titelumfrage Bugs
 
 --      08.11.2022  rc-2.3  2.3.11      David   Bug         Reporting

@@ -526,3 +526,11 @@
         </table>
     </semui:form>
 </g:if>
+
+<laser:script file="${this.getGroovyPageFileName()}">
+
+    $('textarea').each(function () {
+        this.setAttribute('style', 'height:' + (this.scrollHeight) + 'px;overflow-y:hidden;');
+    });
+
+</laser:script>
