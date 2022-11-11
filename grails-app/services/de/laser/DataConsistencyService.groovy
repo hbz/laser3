@@ -1,11 +1,9 @@
 package de.laser
 
-
 import de.laser.storage.BeanStore
 import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
 import de.laser.utils.SwissKnife
-import de.laser.titles.TitleInstance
 import grails.gorm.transactions.Transactional
 import org.grails.core.io.support.GrailsFactoriesLoader
 import org.grails.datastore.mapping.model.PersistentEntity
@@ -27,7 +25,7 @@ class DataConsistencyService {
      * Checks the duplicates of organisation, package and platform names
      * @return a map containing for each of the object types the counts per name
      */
-    Map<String, Object> checkTitles() {
+    Map<String, Object> checkDuplicates() {
         Map result = [
                 Org: [:],
                 Package: [:],
@@ -121,26 +119,6 @@ class DataConsistencyService {
                     link: g.createLink(controller:'platform', action:'show', id: it.id),
                     created: sdfA.format( it.dateCreated ),
                     updated: sdfB.format( it.lastUpdated )
-                ]
-            }
-        }
-        if (key1 == 'TitleInstance') {
-            result = TitleInstance.findAllWhere( "${key2}": value ).collect{ it -> [
-                    id: it.id,
-                    name: it.title,
-                    link: g.createLink(controller:'title', action:'show', id: it.id),
-                    created: sdfA.format( it.dateCreated ),
-                    updated: sdfB.format( it.lastUpdated )
-                ]
-            }
-        }
-        if (key1 == 'TitleInstancePackagePlatform') {
-            result = TitleInstancePackagePlatform.findAllWhere( "${key2}": value ).collect{ it -> [
-                    id: it.id,
-                    name: 'TitleInstancePackagePlatform',
-                    link: g.createLink(controller:'tipp', action:'show', id: it.id),
-                    created: '',
-                    updated: ''
                 ]
             }
         }
