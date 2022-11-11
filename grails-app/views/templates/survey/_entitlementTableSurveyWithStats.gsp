@@ -24,7 +24,7 @@
         </thead>
         <tbody>
 
-        <g:each in="${stats.findAll { AbstractReport rep -> rep.title != null }}" var="stat">
+        <g:each in="${stats.findAll { rep -> rep.title != null }}" var="stat">
             <g:set var="tipp" value="${TitleInstancePackagePlatform.get(stat.title.id)}"/>
             <g:set var="ie" value="${IssueEntitlement.findByTippAndSubscriptionAndStatusAndAcceptStatus(stat.title, subscription, RDStore.TIPP_STATUS_CURRENT, RDStore.IE_ACCEPT_STATUS_FIXED)}"/>
             <g:set var="ieInNewSub"

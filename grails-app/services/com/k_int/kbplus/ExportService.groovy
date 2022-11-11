@@ -613,6 +613,11 @@ class ExportService {
 				cell.setCellValue(data.dateRun.format('yyyy-MM-dd'))
 				columnHeaders.addAll(Counter4Report.COLUMN_HEADERS.valueOf(reportType).headers)
 				columnHeaders.addAll(data.monthsInRing.collect { Date month -> month.format('yyyy-MM') })
+
+				if(showMetricType) {
+					columnHeaders.add("Metric Type") //not compliant to COUNTER 4! But I shall take this way for convenience
+				}
+
 				if(showPriceDate) {
 					columnHeaders.addAll(["List Price EUR", "List Price GBP", "List Price USD"])
 				}
@@ -1041,6 +1046,8 @@ class ExportService {
 					}
 
 				}
+				if(showMetricType)
+					titleRow.put("Metric Type", report.metricType) //in order to explain doublets in COUNTER 4 reports in title surveys
 				titleMetrics.put(report.metricType, titleRow)
 				titleRows.put(report.title, titleMetrics)
 			}
@@ -1460,7 +1467,8 @@ class ExportService {
 		List<String> titleHeaders = getBaseTitleHeaders()
 		Map<String, List> export = [titleRow:titleHeaders]
 		List rows = []
-		Map<String, Object> data = getTitleData(configMap, entitlementInstance, sql)
+		Map<String, Object> data = getTitleData(configMap+[format: 'kbart'], entitlementInstance, sql)
+        titleHeaders.addAll(data.otherTitleIdentifierNamespaces.idns_ns)
 		data.titles.eachWithIndex { GroovyRowResult title, int outer ->
 			if(entitlementInstance == IssueEntitlement.class.name && data.coverageMap.get(title['ie_id'])) {
 				data.coverageMap.get(title['ie_id']).eachWithIndex { GroovyRowResult covStmt, int inner ->
@@ -2099,34 +2107,49 @@ class ExportService {
 				messageSource.getMessage('tipp.name',null,locale),
 				'Print Identifier',
 				'Online Identifier',
-				messageSource.getMessage('package.label',null,locale),
-				messageSource.getMessage('platform.label',null,locale),
-				messageSource.getMessage('tipp.titleType',null,locale),
-				messageSource.getMessage('tipp.publisher',null,locale),
-				messageSource.getMessage('tipp.medium',null,locale),
-				messageSource.getMessage('tipp.accessStartDate',null,locale),
-				messageSource.getMessage('tipp.accessEndDate',null,locale),
-				messageSource.getMessage('tipp.hostPlatformURL',null,locale),
-				messageSource.getMessage('tipp.firstAuthor',null,locale),
-				messageSource.getMessage('tipp.firstEditor',null,locale),
 				messageSource.getMessage('tipp.startDate',null,locale),
 				messageSource.getMessage('tipp.startVolume',null,locale),
 				messageSource.getMessage('tipp.startIssue',null,locale),
 				messageSource.getMessage('tipp.endDate',null,locale),
 				messageSource.getMessage('tipp.endVolume',null,locale),
 				messageSource.getMessage('tipp.endIssue',null,locale),
+				messageSource.getMessage('tipp.hostPlatformURL',null,locale),
+				messageSource.getMessage('tipp.firstAuthor',null,locale),
+				messageSource.getMessage('tipp.titleId',null,locale),
 				messageSource.getMessage('tipp.embargo',null,locale),
 				messageSource.getMessage('tipp.coverageDepth',null,locale),
 				messageSource.getMessage('tipp.coverageNote',null,locale),
+				messageSource.getMessage('tipp.titleType',null,locale),
+				messageSource.getMessage('tipp.publisher',null,locale),
 				messageSource.getMessage('tipp.dateFirstInPrint',null,locale),
 				messageSource.getMessage('tipp.dateFirstOnline',null,locale),
 				messageSource.getMessage('tipp.volume',null,locale),
 				messageSource.getMessage('tipp.editionNumber',null,locale),
+				messageSource.getMessage('tipp.firstEditor',null,locale),
+				messageSource.getMessage('tipp.parentTitleId',null,locale),
+				messageSource.getMessage('tipp.precedingTitleId',null,locale),
+				messageSource.getMessage('package.label',null,locale),
+				messageSource.getMessage('platform.label',null,locale),
+				messageSource.getMessage('tipp.lastUpdated',null,locale),
+				messageSource.getMessage('tipp.accessStartDate',null,locale),
+				messageSource.getMessage('tipp.accessEndDate',null,locale),
+				messageSource.getMessage('tipp.medium',null,locale),
+				IdentifierNamespace.ZDB,
+				IdentifierNamespace.DOI,
+				IdentifierNamespace.EZB,
+				messageSource.getMessage('tipp.tippWekbId',null,locale),
+				messageSource.getMessage('tipp.pkgWekbId',null,locale),
+				IdentifierNamespace.ISCI,
+				IdentifierNamespace.ISIL_PAKETSIGEL,
+				IdentifierNamespace.EZB_ANCHOR,
+				messageSource.getMessage('tipp.illIndicator',null,locale),
+				messageSource.getMessage('tipp.supersedingPublicationTitleId',null,locale),
 				messageSource.getMessage('tipp.seriesName',null,locale),
 				messageSource.getMessage('tipp.subjectReference',null,locale),
 				messageSource.getMessage('tipp.status',null,locale),
 				messageSource.getMessage('tipp.accessType',null,locale),
 				messageSource.getMessage('tipp.openAccess',null,locale),
+				IdentifierNamespace.ZDB_PPN,
 				messageSource.getMessage('tipp.listprice_eur',null,locale),
 				messageSource.getMessage('tipp.listprice_gbp',null,locale),
 				messageSource.getMessage('tipp.listprice_usd',null,locale),
@@ -2195,7 +2218,7 @@ class ExportService {
 		 'parent_publication_title_id',
 		 'preceding_publication_title_id',
 		 'package_name',
-		 'package_id',
+		 'platform_name',
 		 'last_changed',
 		 'access_start_date',
 		 'access_end_date',
@@ -2329,16 +2352,6 @@ class ExportService {
 			row.add(createCell(format, '', style))
 			row.add(createCell(format, '', style))
 		}
-		row.add(createCell(format, titleRecord['tipp_pkg_name'] ?: '', style))
-		row.add(createCell(format, titleRecord['tipp_plat_name'] ?: '', style))
-		row.add(createCell(format, titleRecord['title_type'], style))
-		row.add(createCell(format, titleRecord['tipp_publisher_name'] ? titleRecord['tipp_publisher_name'] : '', style))
-		row.add(createCell(format, titleRecord['tipp_medium'] ? titleRecord['tipp_medium'] : '', style))
-		row.add(createCell(format, titleRecord['accessStartDate'] ? formatter.format(titleRecord['accessStartDate']) : '', style))
-		row.add(createCell(format, titleRecord['accessEndDate'] ? formatter.format(titleRecord['accessEndDate']) : '', style))
-		row.add(createCell(format, titleRecord['tipp_host_platform_url'] ?: '', style))
-		row.add(createCell(format, titleRecord['tipp_first_author'] ?: '', style))
-		row.add(createCell(format, titleRecord['tipp_first_editor'] ?: '', style))
 		//date_first_issue_online
 		row.add(createCell(format, titleRecord.containsKey('startDate') && titleRecord.startDate ? formatter.format(titleRecord.startDate) : ' ', style))
 		//num_first_volume_online
@@ -2351,12 +2364,17 @@ class ExportService {
 		row.add(createCell(format, titleRecord.containsKey('endVolume') && titleRecord.endVolume ?: ' ', style))
 		//num_last_issue_online
 		row.add(createCell(format, titleRecord.containsKey('endIssue') && titleRecord.endIssue ?: ' ', style))
+		row.add(createCell(format, titleRecord['tipp_host_platform_url'] ?: '', style))
+		row.add(createCell(format, titleRecord['tipp_first_author'] ?: '', style))
+		row.add(createCell(format, joinIdentifiersSQL(titleRecord.identifiers.get(titleRecord['tipp_plat_namespace']), ','), style))
 		//embargo_information
 		row.add(createCell(format, titleRecord.containsKey('embargo') && titleRecord.embargo ?: ' ', style))
 		//coverage_depth
 		row.add(createCell(format, titleRecord.containsKey('coverageDepth') && titleRecord.coverageDepth ?: ' ', style))
 		//notes
 		row.add(createCell(format, titleRecord.containsKey('coverageNote') && titleRecord.coverageNote ?: ' ', style))
+		row.add(createCell(format, titleRecord['title_type'], style))
+		row.add(createCell(format, titleRecord['tipp_publisher_name'] ? titleRecord['tipp_publisher_name'] : '', style))
 		if(titleRecord['title_type'] == 'monograph') {
 			row.add(createCell(format, titleRecord['tipp_date_first_in_print'] ? formatter.format(titleRecord['tipp_date_first_in_print']) : ' ', style))
 			row.add(createCell(format, titleRecord['tipp_date_first_online'] ? formatter.format(titleRecord['tipp_date_first_online']) : ' ', style))
@@ -2370,11 +2388,31 @@ class ExportService {
 			row.add(createCell(format, '', style))
 			row.add(createCell(format, '', style))
 		}
-		row.add(createCell(format, titleRecord['tipp_series_name'] ?: ' ', style))
-		row.add(createCell(format, titleRecord['tipp_subject_reference'] ?: ' ', style))
-		row.add(createCell(format, titleRecord['status'] ?: ' ', style))
+		row.add(createCell(format, titleRecord['tipp_first_editor'] ?: '', style))
+		row.add(createCell(format, '', style))
+		row.add(createCell(format, '', style))
+		row.add(createCell(format, titleRecord['tipp_pkg_name'] ?: '', style))
+		row.add(createCell(format, titleRecord['tipp_plat_name'] ?: '', style))
+		row.add(createCell(format, titleRecord['tipp_last_updated'] ? formatter.format(titleRecord['tipp_last_updated']) : '', style))
+		row.add(createCell(format, titleRecord['accessStartDate'] ? formatter.format(titleRecord['accessStartDate']) : '', style))
+		row.add(createCell(format, titleRecord['accessEndDate'] ? formatter.format(titleRecord['accessEndDate']) : '', style))
+		row.add(createCell(format, titleRecord['tipp_medium'] ? titleRecord['tipp_medium'] : '', style))
+        row.add(createCell(format, joinIdentifiersSQL(titleRecord.identifiers.get('zdb'), ','), style))
+        row.add(createCell(format, joinIdentifiersSQL(titleRecord.identifiers.get('doi'), ','), style))
+        row.add(createCell(format, joinIdentifiersSQL(titleRecord.identifiers.get('ezb'), ','), style))
+        row.add(createCell(format, titleRecord['tipp_gokb_id'] ?: '', style))
+        row.add(createCell(format, titleRecord['tipp_pkg_uuid'] ?: '', style))
+        row.add(createCell(format, joinIdentifiersSQL(titleRecord.identifiers.get('ISCI'), ','), style))
+        row.add(createCell(format, joinIdentifiersSQL(titleRecord.identifiers.get('package_isil'), ','), style))
+        row.add(createCell(format, joinIdentifiersSQL(titleRecord.identifiers.get('ezb_anchor'), ','), style))
+        row.add(createCell(format, '', style))
+        row.add(createCell(format, '', style))
+        row.add(createCell(format, titleRecord['tipp_series_name'] ?: ' ', style))
+        row.add(createCell(format, titleRecord['tipp_subject_reference'] ?: ' ', style))
+        row.add(createCell(format, titleRecord['status'] ?: ' ', style))
 		row.add(createCell(format, titleRecord['accessType'] ?: ' ', style))
 		row.add(createCell(format, titleRecord['openAccess'] ?: ' ', style))
+        row.add(createCell(format, joinIdentifiersSQL(titleRecord.identifiers.get('zdb_ppn'), ','), style))
 		if(titleRecord.priceItems) {
 			//listprice_eur
 			row.add(createCell(format, titleRecord.priceItems.get(RDStore.CURRENCY_EUR.value)?.get('pi_list_price') ?: ' ', style))
