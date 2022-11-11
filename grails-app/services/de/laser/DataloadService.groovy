@@ -897,12 +897,14 @@ class DataloadService {
 
             }
             catch (Exception e) {
-                log.error("${logPrefix} - Error", e)
+                log.error("${logPrefix} - error", e)
 
                 SystemEvent.createEvent('FT_INDEX_UPDATE_ERROR', ["index": domainClass.name])
             }
             finally {
-                log.debug("${logPrefix} - processing completed - saved ${total} records")
+                if (ftControl.active) {
+                    log.debug("${logPrefix} - processing completed - saved ${total} records")
+                }
                 try {
                     if (ESWrapperService.testConnection()) {
                         if (ftControl.active) {
@@ -917,7 +919,7 @@ class DataloadService {
                     checkESElementswithDBElements(domainClass.name)
                 }
                 catch (Exception e) {
-                    log.error(e.toString())
+                    log.error("${logPrefix} - finally error: " + e.toString())
                 }
             }
         //}
@@ -948,10 +950,10 @@ class DataloadService {
                     try {
                         boolean isDeletedIndex = ESWrapperService.deleteIndex(indexName)
                         if (isDeletedIndex) {
-                            log.debug("deleted ES index: ${indexName}")
+                            log.debug("Deleted ES index: ${indexName}")
                             deleted.add(indexName)
                         } else {
-                            log.error("failed to delete ES index: ${indexName}")
+                            log.error("Failed to delete ES index: ${indexName}")
                             deletedFailed.add(indexName)
                         }
                     }
@@ -968,11 +970,11 @@ class DataloadService {
 
                     boolean isCreatedIndex = ESWrapperService.createIndex(indexName)
                     if (isCreatedIndex) {
-                        log.debug("created ES index: ${indexName}")
+                        log.debug("Created ES index: ${indexName}")
                         created.add(indexName)
 
                     } else {
-                        log.debug("failed to create ES index: ${indexName}")
+                        log.debug("Failed to create ES index: ${indexName}")
                         createdFailed.add(indexName)
                     }
                 }
@@ -987,13 +989,13 @@ class DataloadService {
                     log.error(e.toString())
                 }
 
-                log.debug("Do updateFTIndices");
+                log.debug("Call updateFTIndices")
                 updateFTIndices()
 
                 // SystemEvent.createEvent('YODA_ES_RESET_END')
             }
             else {
-                log.debug("!!!! resetESIndices is not possible !!!!");
+                log.debug("!!!! resetESIndices is not possible !!!!")
             }
         }
     }
@@ -1036,17 +1038,17 @@ class DataloadService {
                             //println(ft.dbElements +' , '+ ft.esElements)
 
                             if (ftControl.dbElements != ftControl.esElements) {
-                                log.debug("+++++ ES NOT COMPLETE FOR ${ftControl.domainClassName}: ES Results = ${ftControl.esElements}, DB Results = ${ftControl.dbElements} +++++")
+                                log.debug("Element comparison: ES <-> DB ( ${domainClassName} ) : +++++ NOT COMPLETE FOR ${ftControl.domainClassName}: ES Results = ${ftControl.esElements}, DB Results = ${ftControl.dbElements} +++++")
                                 //ft.lastTimestamp = 0
                             }
 
                             ftControl.save()
                         }
 
-                        log.debug("Completed element comparison: ES <-> DB ( ${domainClassName} )")
+                        log.debug("Element comparison complete: ES <-> DB ( ${domainClassName} )")
                 }
                 else {
-                    log.debug("Ignored element comparison, because ftControl is not active")
+                    log.debug("Element comparison ignored, because ftControl is not active")
                 }
             }
         }
@@ -1055,7 +1057,7 @@ class DataloadService {
                 esclient.close()
             }
             catch (Exception e) {
-                log.error(e.toString())
+                log.error("Element comparison - finally error: " + e.toString())
             }
         }
         return true
@@ -1106,10 +1108,10 @@ class DataloadService {
                             ft.save()
                         }
 
-                        log.debug("Completed element comparison: ES <-> DB")
+                        log.debug("Element comparison complete: ES <-> DB")
                     }
                     else {
-                        log.debug("Ignored element comparison, because ftControl is not active")
+                        log.debug("Element comparison ignored, because ftControl is not active")
                     }
                 }
             }
@@ -1119,7 +1121,7 @@ class DataloadService {
                 esclient.close()
             }
             catch (Exception e) {
-                log.error(e.toString())
+                log.error("Element comparison - finally error: " + e.toString())
             }
         }
         return true
@@ -1154,10 +1156,10 @@ class DataloadService {
             activeFuture.cancel(true)
             if (update_running) {
                 update_running = false
-                log.debug("killed DataloadService! Set DataloadService.update_running to false")
+                log.debug("Killed DataloadService! Set DataloadService.update_running to false")
             }
             else {
-                log.debug("killed DataloadService!")
+                log.debug("Killed DataloadService!")
             }
         }
     }
