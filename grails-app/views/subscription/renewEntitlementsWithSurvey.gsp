@@ -341,7 +341,7 @@ ${message(code: 'issueEntitlementsSurvey.label')} - ${surveyConfig.surveyInfo.na
 
 
 <g:if test="${params.tab in ['allIEsStats', 'holdingIEsStats']}">
-    <semui:tabs>
+    <semui:tabs class="la-overflowX-auto">
         <semui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
                         params="${params + [tabStat: 'total']}"
                         text="${message(code: 'default.usage.allUsageGrid.header')}" tab="total" subTab="tabStat"/>
