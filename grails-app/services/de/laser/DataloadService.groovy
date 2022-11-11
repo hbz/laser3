@@ -53,7 +53,6 @@ class DataloadService {
      * @return false if the job is already running, true otherwise
      */
     def updateFTIndices() {
-        //log.debug("updateFTIndexes ${this.hashCode()}")
         if(! update_running) {
 
             if(!(activeFuture) || activeFuture.isDone()) {
@@ -63,7 +62,8 @@ class DataloadService {
                     doFTUpdate()
                 })
                  log.debug("updateFTIndices returning")
-            }else{
+            }
+            else{
                 log.debug("doFTUpdate already running #2")
                 return false
             }
@@ -85,20 +85,20 @@ class DataloadService {
 
         synchronized(this) {
             if ( update_running ) {
-                log.debug("doFTUpdate: exiting - one already running")
+                log.debug("doFTUpdate ---> exiting - one already running")
                 return false
             }
             else {
-                update_running = true;
+                update_running = true
             }
         }
         long start_time = System.currentTimeMillis()
-        log.debug("doFTUpdate: Execute IndexUpdateJob starting at ${new Date()}");
+        log.debug("doFTUpdate ---> Execute IndexUpdateJob starting at ${new Date()}");
 
         _doFTUpdateUpdateESCalls()
 
         long elapsed = System.currentTimeMillis() - start_time
-        log.debug("doFTUpdate: Completed in ${elapsed}ms at ${new Date()} ")
+        log.debug("doFTUpdate ---> Completed in ${elapsed}ms at ${new Date()} ")
 
         sysEvent.changeTo('FT_INDEX_UPDATE_COMPLETE', [ms: elapsed])
 
@@ -790,6 +790,7 @@ class DataloadService {
             FTControl ftControl = FTControl.findByDomainClassNameAndActivity(domainClass.name, 'ESIndex')
             if (!ftControl) {
                 ftControl = new FTControl(domainClassName: domainClass.name, activity: 'ESIndex', lastTimestamp: 0, active: true, esElements: 0, dbElements: 0)
+                ftControl.save()
             }
 
             try {
@@ -797,8 +798,8 @@ class DataloadService {
 
                     if (ESWrapperService.testConnection() && es_indices && es_indices.get(domainClass.simpleName)) {
 
-                        log.debug("${logPrefix} - for changes since ${new Date(ftControl.lastTimestamp)}")
                         Date from = new Date(ftControl.lastTimestamp)
+                        log.debug("${logPrefix} - for changes since ${from}")
 
                         List<Long> idList = []
 
@@ -887,14 +888,13 @@ class DataloadService {
 
                         } // withNewSession
                     } else {
-                        ftControl.save()
+                        // ftControl.save() - not needed
                         log.debug("${logPrefix} - failed -> ESWrapperService.testConnection() && es_indices && es_indices.get(domain.simpleName)")
                     }
                 } else {
-                    ftControl.save()
+                    // ftControl.save() - not needed
                     log.debug("${logPrefix} - ignored. FTControl is not active")
                 }
-
             }
             catch (Exception e) {
                 log.error("${logPrefix} - error", e)
@@ -911,12 +911,13 @@ class DataloadService {
                             FlushRequest request = new FlushRequest(es_indices.get(domainClass.simpleName));
                             FlushResponse flushResponse = esclient.indices().flush(request, RequestOptions.DEFAULT)
 
-                            log.debug("${logPrefix} - ${flushResponse}")
+                            log.debug("${logPrefix} - finally: ${flushResponse}")
                         }
-
                         esclient.close()
                     }
-                    checkESElementswithDBElements(domainClass.name)
+                    if (ftControl.active) {
+                        checkESElementswithDBElements(domainClass.name)
+                    }
                 }
                 catch (Exception e) {
                     log.error("${logPrefix} - finally error: " + e.toString())
@@ -1020,7 +1021,6 @@ class DataloadService {
 
                 if (ftControl && ftControl.active) {
                         Class domainClass = CodeUtils.getDomainClass(ftControl.domainClassName)
-
                         String indexName =  es_indices.get(domainClass.simpleName)
                         Integer countIndex = 0
 
@@ -1035,16 +1035,13 @@ class DataloadService {
                         FTControl.withTransaction {
                             ftControl.dbElements = domainClass.count()
                             ftControl.esElements = countIndex
-                            //println(ft.dbElements +' , '+ ft.esElements)
 
                             if (ftControl.dbElements != ftControl.esElements) {
                                 log.debug("Element comparison: ES <-> DB ( ${domainClassName} ) : +++++ NOT COMPLETE FOR ${ftControl.domainClassName}: ES Results = ${ftControl.esElements}, DB Results = ${ftControl.dbElements} +++++")
                                 //ft.lastTimestamp = 0
                             }
-
                             ftControl.save()
                         }
-
                         log.debug("Element comparison complete: ES <-> DB ( ${domainClassName} )")
                 }
                 else {
@@ -1081,9 +1078,7 @@ class DataloadService {
                 FTControl.list().each { ft ->
 
                     if (ft.active) {
-
                         Class domainClass = CodeUtils.getDomainClass(ft.domainClassName)
-
                         String indexName = es_indices.get(domainClass.simpleName)
                         Integer countIndex = 0
 
@@ -1098,16 +1093,13 @@ class DataloadService {
                         FTControl.withTransaction {
                             ft.dbElements = domainClass.count()
                             ft.esElements = countIndex
-                            //println(ft.dbElements +' , '+ ft.esElements)
 
                             if (ft.dbElements != ft.esElements) {
-                                log.debug("+++++ ES NOT COMPLETE FOR ${ft.domainClassName}: ES Results = ${ft.esElements}, DB Results = ${ft.dbElements} +++++")
+                                log.debug("Element comparison: ES <-> DB : +++++ NOT COMPLETE FOR ${ft.domainClassName}: ES Results = ${ft.esElements}, DB Results = ${ft.dbElements} +++++")
                                 //ft.lastTimestamp = 0
                             }
-
                             ft.save()
                         }
-
                         log.debug("Element comparison complete: ES <-> DB")
                     }
                     else {
