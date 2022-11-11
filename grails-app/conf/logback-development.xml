@@ -17,6 +17,7 @@
                     <!-- warn -->
                     if (message.contains("Use 'config.getProperty(key, targetClass)' instead.")) return true;
                     if (message.contains("Replaced rule for '")) return true;
+                    if (message.contains("299 Elasticsearch-7.15.1-83c34f456ae29d60e94d886e455e6a3409bba9ed")) return true;
                     <!-- info -->
                     if (message.contains("(for example: not eligible for auto-proxying)")) return true;
                     if (message.contains("As of Liquibase 4.0, cannot set resource accessor on")) return true;
@@ -60,6 +61,8 @@
                     if (message.contains("Use 'config.getProperty(key, targetClass)' instead.")) return true;
                     <!-- WARN: Replaced rule for '[..]' and ConfigAttributes [..] with ConfigAttributes [..] -->
                     if (message.contains("Replaced rule for '")) return true;
+                    <!-- WARN: request [..] returned 1 warnings: [299 Elasticsearch-7.15.1 ..] -->
+                    if (message.contains("299 Elasticsearch-7.15.1-83c34f456ae29d60e94d886e455e6a3409bba9ed")) return true;
                     <!-- INFO: Bean '[..]' of type [..] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying) -->
                     if (message.contains("(for example: not eligible for auto-proxying)")) return true;
                     <!-- INFO: As of Liquibase 4.0, cannot set resource accessor on [..]. Must add it to the Scope -->
