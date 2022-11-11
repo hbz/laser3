@@ -103,7 +103,7 @@ dependencies {
     implementation 'org.elasticsearch:elasticsearch:7.15.1'                                 // 2021
     implementation 'org.elasticsearch.client:elasticsearch-rest-high-level-client:7.15.1'   // 2021
 
-    implementation 'org.grails.plugins:spring-security-core:5.1.0'          // 2022
+    implementation 'org.grails.plugins:spring-security-core:5.1.1'          // 2022
     implementation 'org.grails.plugins:audit-logging:4.0.3'                 // 2021
     implementation 'org.grails.plugins:database-migration:4.1.0', {         // 2022
         exclude module: 'spring-boot-cli'

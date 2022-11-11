@@ -66,20 +66,7 @@ class ESWrapperService {
         (new HttpHost(ES_Host, 9200, "http")).toString()
     }
 
-    /*void closeClient() {
-        esclient.close()
-    }*/
-
-/*    Map<String, String> getESSettings(){
-        Map<String, String> result = [:]
-
-        result.clusterName = es_cluster_name
-        result.host = es_host
-        result.indexName = es_indices
-
-        result
-    }
-
+    /*
     Object getESMapping(){
         JSONParser jsonParser = new JSONParser(this.class.classLoader.getResourceAsStream("es_mapping.json"))
 
