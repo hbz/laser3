@@ -1398,18 +1398,26 @@ class PendingChangeService extends AbstractLockableService {
             target = newChange.tippCoverage
         /*else if(newChange.priceItem && newChange.priceItem.tipp)
             target = newChange.priceItem*/
-        if(target) {
-            PendingChange toApply = PendingChange.construct([target: target, oid: genericOIDService.getOID(subPkg.subscription), newValue: newChange.newValue, oldValue: newChange.oldValue, prop: newChange.targetProperty, msgToken: newChange.msgToken, status: RDStore.PENDING_CHANGE_PENDING, owner: contextOrg])
-            if(accept(toApply, subPkg.subscription.id)) {
-                if(auditService.getAuditConfig(subPkg.subscription,newChange.msgToken)) {
-                    log.debug("got audit config, processing ...")
-                    applyPendingChangeForHolding(newChange, subPkg, contextOrg)
+        if(newChange.msgToken != PendingChangeConfiguration.TITLE_REMOVED) {
+            if(target) {
+                PendingChange toApply = PendingChange.construct([target: target, oid: genericOIDService.getOID(subPkg.subscription), newValue: newChange.newValue, oldValue: newChange.oldValue, prop: newChange.targetProperty, msgToken: newChange.msgToken, status: RDStore.PENDING_CHANGE_PENDING, owner: contextOrg])
+                if(accept(toApply, subPkg.subscription.id)) {
+                    if(auditService.getAuditConfig(subPkg.subscription,newChange.msgToken)) {
+                        log.debug("got audit config, processing ...")
+                        applyPendingChangeForHolding(newChange, subPkg, contextOrg)
+                    }
                 }
+                else
+                    log.error("Error when auto-accepting pending change ${toApply} with token ${toApply.msgToken}!")
             }
-            else
-                log.error("Error when auto-accepting pending change ${toApply} with token ${toApply.msgToken}!")
+            else log.error("Unable to determine target object! Ignoring change ${newChange}!")
         }
-        else log.error("Unable to determine target object! Ignoring change ${newChange}!")
+        else {
+            accept(newChange, subPkg.subscription.id)
+            subPkg.subscription.getDerivedSubscriptions().each { Subscription child ->
+                accept(newChange, child.id)
+            }
+        }
     }
 
     /**

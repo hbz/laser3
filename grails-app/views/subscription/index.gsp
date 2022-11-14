@@ -162,7 +162,7 @@
                         class="item ${(params.titleGroup == titleGroup.id.toString()) ? 'active' : ''}">
                     ${titleGroup.name}
                     <span class="ui blue circular label">
-                        ${titleGroup.items.size()}
+                        ${titleGroup.countCurrentTitles()}
                     </span>
                 </g:link>
             </g:each>

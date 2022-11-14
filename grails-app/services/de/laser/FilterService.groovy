@@ -1566,17 +1566,18 @@ class FilterService {
         as defined in filterService.getTippQuery(), filterServie.getIssueEntitlementQuery()
         as defined in myInstitutionController.currentTitles()
          */
-        String query = "", join = "", where = "", orderClause = "", refdata_value_col = I10nTranslation.getRefdataValueColumn(LocaleUtils.getCurrentLocale())
+        String query = "", join = "", where = "", orderClause = "", refdata_value_col = configMap.format == 'kbart' ? 'rdv_value' : I10nTranslation.getRefdataValueColumn(LocaleUtils.getCurrentLocale())
         Map<String, Object> params = [:]
         Connection connection = sql.dataSource.getConnection()
         //sql.withTransaction {
             SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
             if(entitlementInstance == TitleInstancePackagePlatform.class.name) {
                 List<String> columns = ['tipp_id', '(select pkg_name from package where pkg_id = tipp_pkg_fk) as tipp_pkg_name', '(select plat_name from platform where plat_id = tipp_plat_fk) as tipp_plat_name',
+                                        '(select plat_title_namespace from platform where plat_id = tipp_plat_fk) as tipp_plat_namespace',
                                         "case tipp_title_type when 'Journal' then 'serial' when 'Book' then 'monograph' when 'Database' then 'database' else 'other' end as title_type",
                                         'tipp_name as name', 'tipp_access_start_date as accessStartDate', 'tipp_access_end_date as accessEndDate',
                                         'tipp_publisher_name', "(select ${refdata_value_col} from refdata_value where rdv_id = tipp_medium_rv_fk) as tipp_medium", 'tipp_host_platform_url', 'tipp_date_first_in_print',
-                                        'tipp_date_first_online', 'tipp_first_author', 'tipp_first_editor', 'tipp_volume', 'tipp_edition_number', 'tipp_series_name', 'tipp_subject_reference',
+                                        'tipp_date_first_online', 'tipp_gokb_id', '(select pkg_gokb_id from package where pkg_id = tipp_pkg_fk) as tipp_pkg_uuid', 'tipp_last_updated', 'tipp_first_author', 'tipp_first_editor', 'tipp_volume', 'tipp_edition_number', 'tipp_series_name', 'tipp_subject_reference',
                                         "(select ${refdata_value_col} from refdata_value where rdv_id = tipp_status_rv_fk) as status",
                                         "(select ${refdata_value_col} from refdata_value where rdv_id = tipp_access_type_rv_fk) as accessType",
                                         "(select ${refdata_value_col} from refdata_value where rdv_id = tipp_open_access_rv_fk) as openAccess"]
@@ -1635,10 +1636,11 @@ class FilterService {
                     columns = ['0', 'now()', 'ie_id', configMap.titleGroupInsert, 'now()']
                 else
                     columns = ['ie_id', 'tipp_id', '(select pkg_name from package where pkg_id = tipp_pkg_fk) as tipp_pkg_name', '(select plat_name from platform where plat_id = tipp_plat_fk) as tipp_plat_name',
+                               '(select plat_title_namespace from platform where plat_id = tipp_plat_fk) as tipp_plat_namespace',
                                "case tipp_title_type when 'Journal' then 'serial' when 'Book' then 'monograph' when 'Database' then 'database' else 'other' end as title_type",
                                'ie_name as name', 'coalesce(ie_access_start_date, tipp_access_start_date) as accessStartDate', 'coalesce(ie_access_end_date, tipp_access_end_date) as accessEndDate',
                                'tipp_publisher_name', "(select ${refdata_value_col} from refdata_value where rdv_id = ie_medium_rv_fk) as tipp_medium", 'tipp_host_platform_url', 'tipp_date_first_in_print',
-                               'tipp_date_first_online', 'tipp_first_author', 'tipp_first_editor', 'tipp_volume', 'tipp_edition_number', 'tipp_series_name', 'tipp_subject_reference',
+                               'tipp_date_first_online', 'tipp_gokb_id', '(select pkg_gokb_id from package where pkg_id = tipp_pkg_fk) as tipp_pkg_uuid',  'tipp_last_updated', 'tipp_first_author', 'tipp_first_editor', 'tipp_volume', 'tipp_edition_number', 'tipp_series_name', 'tipp_subject_reference',
                                "(select ${refdata_value_col} from refdata_value where rdv_id = ie_status_rv_fk) as status",
                                "(select ${refdata_value_col} from refdata_value where rdv_id = tipp_access_type_rv_fk) as accessType",
                                "(select ${refdata_value_col} from refdata_value where rdv_id = tipp_open_access_rv_fk) as openAccess"]
@@ -1665,6 +1667,12 @@ class FilterService {
                         params.subscription = configMap.subscription.id
                     else params.subscription = Long.parseLong(configMap.subscription)
                     where += " and ie_subscription_fk = :subscription"
+                }
+                else if(configMap.subscriptions) {
+                    List<Object> subIds = []
+                    subIds.addAll(configMap.subscriptions.id)
+                    params.subscriptions = connection.createArrayOf('bigint', subIds.toArray())
+                    where += " and ie_subscription_fk = any(:subscriptions)"
                 }
                 if(configMap.asAt != null && !configMap.asAt.isEmpty()) {
                     Date dateFilter = sdf.parse(configMap.asAt)

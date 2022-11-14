@@ -1,5 +1,7 @@
 package de.laser
 
+import de.laser.helper.RDStore
+
 /**
  * Issue entitlements may be organised in groups; this is the grouping unit where issue entitlements may be sorted in.
  * Issue entitlement groups are useful for organising titles of a package within a narrower range; use cases are cost distributions
@@ -35,5 +37,9 @@ class IssueEntitlementGroup {
         name        column: 'ig_name'
         description column: 'ig_description', type: 'text'
         sub         column: 'ig_sub_fk'
+    }
+
+    int countCurrentTitles(){
+        items.count {it.ie.status == RDStore.TIPP_STATUS_CURRENT}
     }
 }
