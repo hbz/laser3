@@ -7,11 +7,29 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      14.11.2022  rc-2.3  2.3.11      Moe     Feature     Title-Auswahl mit Title-Url
+
 4581    10.11.2022  dev     3.0         David   Feature     Lizenz-Reporting: Tortendiagramm
+
+--      10.11.2022  rc-2.3  2.3.11      Andreas Bug         Aufruf der Änderungen in einem Paket verbessert (Fehler fiel in den Logs auf)
+
+4495    10.11.2022  rc-2.3  2.3.11      Andreas Bug         Duplizierung der Titel durch Ausgabe der Metrik temporär entschärft
+
+4493    10.11.2022  rc-2.3  2.3.11      Andreas Bug         Titelnutzung wird in der Titelumfrage kumuliert
+
+--      10.11.2022  rc-2.3  2.3.11      Moe     Featrue     Umfrage-Bemerkungsfeld so groß wie Bemerkung
+
+4575    09.11.2022  rc-2.3  2.3.11      Moe     Bug         Titelumfrage Bugs
 
 4576    08.11.2022  dev     3.0         David   Bug         X-Editable des Dropdowns für Währung funktioniert nicht mehr
 
 3829    08.11.2022  dev     3.0         David   Feature     Reporting: Hilfetexte übersetzen
+
+--      08.11.2022  rc-2.3  2.3.11      David   Bug         Reporting
+
+4571    07.11.2022  rc-2.3  2.3.11      Moe     Feature     Ygor entfernen
+
+4412    07.11.2022  rc-2.3  2.3.11      Moe     Bug         Teilnehmerübertrag in manueller Verlängerung muss bei aktiver verpflichtender Lizenzverlängerungsumfrage geblockt sein
 
 4570    03.11.2022  dev     3.0         Moe     Feature     Umfrage Mails pro Einrichtung selber erstellen mit Mail-Client
 

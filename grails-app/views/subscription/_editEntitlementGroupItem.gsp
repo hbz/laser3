@@ -32,7 +32,7 @@
                                             ${titleGroup.description}
                                         </td>
                                         <td>
-                                            ${titleGroup.items.size()}
+                                            ${titleGroup.countCurrentTitles()}
                                         </td>
                                         <td>
                                             <g:if test="${de.laser.IssueEntitlementGroupItem.findByIeAndIeGroup(ie, titleGroup)}">

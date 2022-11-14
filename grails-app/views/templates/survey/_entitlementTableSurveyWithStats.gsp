@@ -38,8 +38,8 @@
             </g:each>
         </g:if>
         <g:else>
-            <g:each in="${stats.findAll { AbstractReport rep -> rep.title != null }}" var="stat">
-                <g:set var="tipp" value="${stat.title}"/>
+            <g:each in="${stats.findAll { rep -> rep.titleUID != null }}" var="stat">
+                <g:set var="tipp" value="${TitleInstancePackagePlatform.findByGlobalUID(stat.titleUID)}"/>
                 <g:set var="ie" value="${IssueEntitlement.findByTippAndSubscriptionAndStatusAndAcceptStatus(stat.title, subscription, RDStore.TIPP_STATUS_CURRENT, RDStore.IE_ACCEPT_STATUS_FIXED)}"/>
                 <g:set var="ieInNewSub"
                        value="${surveyService.titleContainedBySubscription(newSub, tipp)}"/>

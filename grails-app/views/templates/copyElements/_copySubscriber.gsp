@@ -68,11 +68,17 @@
                                                           date="${sub.endDate}"/></td>
                                         <td>${sub.status.getI10n('value')}</td>
                                         <td class=" center aligned">
-                                            <div class="ui checkbox la-toggle-radio la-replace">
-                                                <g:checkBox name="copyObject.copySubscriber"
-                                                            value="${genericOIDService.getOID(sub)}"
-                                                            data-action="copy" checked="${true}"/>
-                                            </div>
+                                            <g:set var="orgInSurveyRenewal" value="${sub.isOrgInSurveyRenewal()}"/>
+                                            <g:if test="${!orgInSurveyRenewal}">
+                                                <div class="ui checkbox la-toggle-radio la-replace">
+                                                    <g:checkBox name="copyObject.copySubscriber"
+                                                                value="${genericOIDService.getOID(sub)}"
+                                                                data-action="copy" checked="${true}"/>
+                                                </div>
+                                            </g:if>
+                                            <g:else>
+                                                <span class="la-popup-tooltip la-delay" data-content="${g.message(code: 'renewalEvaluation.orgsInSurvey')}" data-position="top right"><i class="icon times circle red"></i></span>
+                                            </g:else>
                                         </td>
                                     </g:each>
                                 </tr>
