@@ -334,7 +334,7 @@
                                     </g:link>
                                     <div class="ui accordion">
                                         <div class="title"><i class="dropdown icon"></i>
-                                            ${message(code: 'issueEntitlementGroup.items.label')}: ${titleGroup.items?.size()}
+                                            ${message(code: 'issueEntitlementGroup.items.label')}: ${titleGroup.countCurrentTitles()}
                                         </div>
 
                                         <div class="content">
@@ -381,7 +381,7 @@
                                     <div class="ui accordion">
                                         <div class="title"><i
                                                 class="dropdown icon"></i>
-                                            ${message(code: 'issueEntitlementGroup.items.label')}: ${titleGroup.items?.size()}
+                                            ${message(code: 'issueEntitlementGroup.items.label')}: ${titleGroup.countCurrentTitles()}
                                         </div>
 
                                         <div class="content">

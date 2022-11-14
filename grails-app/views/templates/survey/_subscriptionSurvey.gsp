@@ -1303,4 +1303,8 @@
         JSPC.app.loadIEInfos();
     </g:if>
 
+    $('textarea').each(function () {
+        this.setAttribute('style', 'height:' + (this.scrollHeight) + 'px;overflow-y:hidden;');
+    });
+
 </laser:script>

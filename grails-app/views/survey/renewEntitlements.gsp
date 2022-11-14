@@ -210,7 +210,7 @@
 
                                 <g:each in="${subscriptionParticipant.ieGroups.sort { it.name }}" var="titleGroup">
                                     <option value="${titleGroup.id}">
-                                        ${titleGroup.name} (${titleGroup.items.size()})
+                                        ${titleGroup.name} (${titleGroup.countCurrentTitles.size()})
                                     </option>
                                 </g:each>
                             </select>

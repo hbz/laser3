@@ -7,7 +7,27 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-4555    28.10.2022  rc-2.3  2.3.11      Moe     Bug         500er Anmerkungen-Reiter in Kindlizenz28.10.2022
+--      14.11.2022  rc-2.3  2.3.11      Moe     Feature     Title-Auswahl mit Title-Url
+
+4586    14.11.2022  rc-2.3  2.3.11      Moe     Bug         Zählung bei Titel-Gruppen falsch
+
+--      10.11.2022  rc-2.3  2.3.11      Andreas Bug         Aufruf der Änderungen in einem Paket verbessert (Fehler fiel in den Logs auf)
+
+4495    10.11.2022  rc-2.3  2.3.11      Andreas Bug         Duplizierung der Titel durch Ausgabe der Metrik temporär entschärft
+
+4493    10.11.2022  rc-2.3  2.3.11      Andreas Bug         Titelnutzung wird in der Titelumfrage kumuliert
+
+--      10.11.2022  rc-2.3  2.3.11      Moe     Featrue     Umfrage-Bemerkungsfeld so groß wie Bemerkung
+
+4575    09.11.2022  rc-2.3  2.3.11      Moe     Bug         Titelumfrage Bugs
+
+--      08.11.2022  rc-2.3  2.3.11      David   Bug         Reporting
+
+4571    07.11.2022  rc-2.3  2.3.11      Moe     Feature     Ygor entfernen
+
+4412    07.11.2022  rc-2.3  2.3.11      Moe     Bug         Teilnehmerübertrag in manueller Verlängerung muss bei aktiver verpflichtender Lizenzverlängerungsumfrage geblockt sein
+
+4555    28.10.2022  rc-2.3  2.3.11      Moe     Bug         500er Anmerkungen-Reiter in Kindlizenz
 
 4502    25.10.2022  rc-2.3  2.3.11      Moe     Bug         Timeout bei Übertrag von Lizenzumfragen
 
