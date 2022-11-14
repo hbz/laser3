@@ -1,6 +1,6 @@
 package de.laser
 
-import de.laser.helper.RDStore
+import de.laser.storage.RDStore
 
 /**
  * Issue entitlements may be organised in groups; this is the grouping unit where issue entitlements may be sorted in.
