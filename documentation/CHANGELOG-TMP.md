@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      14.11.2022  rc-2.3  2.3.11      Moe     Feature     Title-Auswahl mit Title-Url
+
+4586    14.11.2022  rc-2.3  2.3.11      Moe     Bug         Zählung bei Titel-Gruppen falsch
+
 --      10.11.2022  rc-2.3  2.3.11      Andreas Bug         Aufruf der Änderungen in einem Paket verbessert (Fehler fiel in den Logs auf)
 
 4495    10.11.2022  rc-2.3  2.3.11      Andreas Bug         Duplizierung der Titel durch Ausgabe der Metrik temporär entschärft

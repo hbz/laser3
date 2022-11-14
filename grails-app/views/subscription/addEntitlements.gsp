@@ -114,6 +114,10 @@
         </div>
         <div class="field"></div>
     </div>
+
+    <div class="ui blue large label"><g:message code="title.plural"/>: <div class="detail">${num_tipp_rows}</div>
+    </div>
+
     <table class="ui sortable celled la-js-responsive-table la-table table la-ignore-fixed la-bulk-header">
         <thead>
         <tr>
