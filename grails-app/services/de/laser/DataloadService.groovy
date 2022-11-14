@@ -42,7 +42,9 @@ class DataloadService {
     ESWrapperService ESWrapperService
     ExecutorService executorService
 
-    static final int BULK_SIZE = 5000
+    static final int BULK_SIZE_LARGE    = 5000
+    static final int BULK_SIZE_MEDIUM   = 1000
+    static final int BULK_SIZE_SMALL    = 50
 
     boolean update_running = false
     Future activeFuture
@@ -135,7 +137,7 @@ class DataloadService {
 
         if (!domainClass || domainClass == Org.class) {
 
-            _updateES(Org.class) { Org org ->
+            _updateES(Org.class, BULK_SIZE_LARGE) { Org org ->
                 def result = [:]
 
                 result._id = org.globalUID
@@ -192,7 +194,7 @@ class DataloadService {
 
         if (!domainClass || domainClass == TitleInstancePackagePlatform.class) {
 
-            _updateES(TitleInstancePackagePlatform.class) { TitleInstancePackagePlatform tipp ->
+            _updateES(TitleInstancePackagePlatform.class, BULK_SIZE_LARGE) { TitleInstancePackagePlatform tipp ->
                 def result = [:]
 
                 if (tipp.name != null && tipp.titleType != null) {
@@ -254,7 +256,7 @@ class DataloadService {
 
         if (!domainClass || domainClass == Package.class) {
 
-            _updateES(Package.class) { Package pkg ->
+            _updateES(Package.class, BULK_SIZE_SMALL) { Package pkg ->
                 def result = [:]
 
                 result._id = pkg.globalUID
@@ -299,7 +301,7 @@ class DataloadService {
 
         if (!domainClass || domainClass == Platform.class) {
 
-            _updateES(Platform.class) { Platform plat ->
+            _updateES(Platform.class, BULK_SIZE_SMALL) { Platform plat ->
                 def result = [:]
 
                 result._id = plat.globalUID
@@ -326,7 +328,7 @@ class DataloadService {
 
         if (!domainClass || domainClass == License.class) {
 
-            _updateES(License.class) { License lic ->
+            _updateES(License.class, BULK_SIZE_LARGE) { License lic ->
                 def result = [:]
 
                 result._id = lic.globalUID
@@ -392,7 +394,7 @@ class DataloadService {
 
         if (!domainClass || domainClass == Subscription.class) {
 
-            _updateES(Subscription.class) { Subscription sub ->
+            _updateES(Subscription.class, BULK_SIZE_LARGE) { Subscription sub ->
                 def result = [:]
 
                 result._id = sub.globalUID
@@ -474,7 +476,7 @@ class DataloadService {
 
         if (!domainClass || domainClass == SurveyConfig.class) {
 
-            _updateES(SurveyConfig.class) { SurveyConfig surveyConfig ->
+            _updateES(SurveyConfig.class, BULK_SIZE_LARGE) { SurveyConfig surveyConfig ->
                 def result = [:]
 
                 result._id = surveyConfig.getClass().getSimpleName().toLowerCase() + ":" + surveyConfig.id
@@ -513,7 +515,7 @@ class DataloadService {
 
         if (!domainClass || domainClass == SurveyOrg.class) {
 
-            _updateES(SurveyOrg.class) { SurveyOrg surOrg ->
+            _updateES(SurveyOrg.class, BULK_SIZE_LARGE) { SurveyOrg surOrg ->
                 def result = [:]
 
                 result._id = surOrg.getClass().getSimpleName().toLowerCase() + ":" + surOrg.id
@@ -550,7 +552,7 @@ class DataloadService {
 
         if (!domainClass || domainClass == Task.class) {
 
-            _updateES(Task.class) { Task task ->
+            _updateES(Task.class, BULK_SIZE_LARGE) { Task task ->
                 def result = [:]
 
                 result._id = task.getClass().getSimpleName().toLowerCase() + ":" + task.id
@@ -601,7 +603,7 @@ class DataloadService {
 
         if (!domainClass || domainClass == DocContext.class) {
 
-            _updateES(DocContext.class) { DocContext docCon ->
+            _updateES(DocContext.class, BULK_SIZE_LARGE) { DocContext docCon ->
                 def result = [:]
 
                 result._id = docCon.getClass().getSimpleName().toLowerCase() + ":" + docCon.id
@@ -650,7 +652,7 @@ class DataloadService {
 
         if (!domainClass || domainClass == IssueEntitlement.class) {
 
-            _updateES(IssueEntitlement.class) { IssueEntitlement ie ->
+            _updateES(IssueEntitlement.class, BULK_SIZE_LARGE) { IssueEntitlement ie ->
                 def result = [:]
 
                 result._id = ie.globalUID
@@ -704,7 +706,7 @@ class DataloadService {
 
         if (!domainClass || domainClass == SubscriptionProperty.class) {
 
-            _updateES(SubscriptionProperty.class) { SubscriptionProperty subProp ->
+            _updateES(SubscriptionProperty.class, BULK_SIZE_LARGE) { SubscriptionProperty subProp ->
                 def result = [:]
 
                 result._id = subProp.getClass().getSimpleName().toLowerCase() + ":" + subProp.id
@@ -763,7 +765,7 @@ class DataloadService {
 
         if (!domainClass || domainClass == LicenseProperty.class) {
 
-            _updateES(LicenseProperty.class) { LicenseProperty licProp ->
+            _updateES(LicenseProperty.class, BULK_SIZE_LARGE) { LicenseProperty licProp ->
                 def result = [:]
 
                 result._id = licProp.getClass().getSimpleName().toLowerCase() + ":" + licProp.id
@@ -824,7 +826,7 @@ class DataloadService {
      * @param recgen_closure the closure to be used for record generation
      * @see ESWrapperService#ES_Indices
      */
-    private void _updateES(Class domainClass, Closure recgen_closure) {
+    private void _updateES(Class domainClass, int bulkSize, Closure recgen_closure) {
         String logPrefix = "updateES ( ${domainClass.name} )"
 
         log.info ( "${logPrefix} - Start")
@@ -835,14 +837,13 @@ class DataloadService {
         long total = 0, currentTimestamp = 0
         BigDecimal mb = 0, totalMb = 0
 
-        //FTControl.withTransaction { TransactionStatus ts ->
+        if (! FTControl.findByDomainClassNameAndActivity(domainClass.name, 'ESIndex')) {
+            (new FTControl(domainClassName: domainClass.name, activity: 'ESIndex', lastTimestamp: 0, active: true, esElements: 0, dbElements: 0)).save()
+        }
+
+        FTControl.withTransaction {
 
             FTControl ftControl = FTControl.findByDomainClassNameAndActivity(domainClass.name, 'ESIndex')
-            if (!ftControl) {
-                ftControl = new FTControl(domainClassName: domainClass.name, activity: 'ESIndex', lastTimestamp: 0, active: true, esElements: 0, dbElements: 0)
-                ftControl.save()
-            }
-
             try {
                 if (ftControl.active) {
 
@@ -853,12 +854,14 @@ class DataloadService {
 
                         if (ClassUtils.getAllInterfaces(domainClass).contains(CalculatedLastUpdated)) {
                             idList = domainClass.executeQuery(
-                                    "select d.id from " + domainClass.name + " as d where (d.lastUpdatedCascading is not null and d.lastUpdatedCascading > :from) or (d.lastUpdated > :from) or (d.dateCreated > :from and d.lastUpdated is null) order by d.lastUpdated asc, d.id",
+                                    // "select d.id from " + domainClass.name + " as d where (d.lastUpdatedCascading is not null and d.lastUpdatedCascading > :from) or (d.lastUpdated > :from) or (d.dateCreated > :from and d.lastUpdated is null) order by d.lastUpdated asc, d.id",
+                                    "select d.id from " + domainClass.name + " as d where (d.dateCreated > :from or d.lastUpdated > :from or d.lastUpdatedCascading > :from) order by d.lastUpdated asc, d.id",
                                     [from: from], [readonly: true]
                             )
                         } else {
                             idList = domainClass.executeQuery(
-                                    "select d.id from " + domainClass.name + " as d where (d.lastUpdated > :from) or (d.dateCreated > :from and d.lastUpdated is null) order by d.lastUpdated asc, d.id",
+                                    // "select d.id from " + domainClass.name + " as d where (d.lastUpdated > :from) or (d.dateCreated > :from and d.lastUpdated is null) order by d.lastUpdated asc, d.id",
+                                    "select d.id from " + domainClass.name + " as d where (d.dateCreated > :from or d.lastUpdated > :from) order by d.lastUpdated asc, d.id",
                                     [from: from], [readonly: true]
                             )
                         }
@@ -866,9 +869,9 @@ class DataloadService {
                         currentTimestamp = System.currentTimeMillis()
                         BulkRequest bulkRequest = new BulkRequest();
 
-                        FTControl.withNewSession { Session session ->
+                        // FTControl.withNewSession { Session session ->
 
-                            List<List<Long>> bulks = idList.collate(BULK_SIZE)
+                            List<List<Long>> bulks = idList.collate(bulkSize)
                             if (bulks) { log.debug("${logPrefix} - for changes since ${from} - bulks todo: ${bulks.size()}") }
 
                             bulks.eachWithIndex { List bulk, int i ->
@@ -909,17 +912,17 @@ class DataloadService {
                                 log.debug("${logPrefix} - processed ${total} of ${idList.size()} records ; bulkSize ${mb.round(2)}MB")
                                 bulkRequest = new BulkRequest()
 
-                                session.flush()
+                                // session.flush()
                             } // each
 
                             log.debug("${logPrefix} - totally processed ${total} records ; ${totalMb.round(2)}MB")
 
                             ftControl.lastTimestamp = currentTimestamp
                             ftControl.save()
-                            session.flush()
-                            session.clear()
+                            //session.flush()
+                            //session.clear()
 
-                        } // withNewSession
+                        //} // withNewSession
                     } else {
                         // ftControl.save() - not needed
                         log.debug("${logPrefix} - failed -> ESWrapperService.testConnection() && es_indices && es_indices.get(domain.simpleName)")
@@ -945,15 +948,13 @@ class DataloadService {
                         }
                         esclient.close()
                     }
-                    if (ftControl.active) {
-                        checkESElementswithDBElements(domainClass.name)
-                    }
+                    checkESElementswithDBElements(ftControl)
                 }
                 catch (Exception e) {
                     log.error("${logPrefix} - finally error: " + e.toString())
                 }
             }
-        //}
+        }
 
         log.info ( "${logPrefix} - End")
     }
@@ -1038,18 +1039,17 @@ class DataloadService {
      * @return true if successful, false otherwise
      * @see FTControl
      */
-    boolean checkESElementswithDBElements(String domainClassName) {
+    boolean checkESElementswithDBElements(FTControl ftControl) {
 
         RestHighLevelClient esclient = ESWrapperService.getClient()
         Map es_indices = ESWrapperService.ES_Indices
 
         try {
             if(ESWrapperService.testConnection()) {
-                log.debug("Element comparison: ES <-> DB ( ${domainClassName} )")
 
-                FTControl ftControl = FTControl.findByDomainClassName(domainClassName)
+                if (ftControl.active) {
+                    log.debug("Element comparison: ES <-> DB ( ${ftControl.domainClassName} )")
 
-                if (ftControl && ftControl.active) {
                         Class domainClass = CodeUtils.getDomainClass(ftControl.domainClassName)
                         String indexName =  es_indices.get(domainClass.simpleName)
                         Integer countIndex = 0
@@ -1067,12 +1067,12 @@ class DataloadService {
                             ftControl.esElements = countIndex
 
                             if (ftControl.dbElements != ftControl.esElements) {
-                                log.debug("Element comparison: ES <-> DB ( ${domainClassName} / ${indexName} ) : +++++ NOT COMPLETE +++++ ES Results = ${ftControl.esElements}, DB Results = ${ftControl.dbElements} +++++")
+                                log.debug("Element comparison: ES <-> DB ( ${ftControl.domainClassName} / ${indexName} ) : +++++ NOT COMPLETE +++++ ES Results = ${ftControl.esElements}, DB Results = ${ftControl.dbElements} +++++")
                                 //ft.lastTimestamp = 0
                             }
                             ftControl.save()
                         }
-                        log.debug("Element comparison complete: ES <-> DB ( ${domainClassName} )")
+                        log.debug("Element comparison complete: ES <-> DB ( ${ftControl.domainClassName} )")
                 }
                 else {
                     log.debug("Element comparison ignored, because ftControl is not active")
