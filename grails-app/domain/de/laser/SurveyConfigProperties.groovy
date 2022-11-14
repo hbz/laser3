@@ -28,7 +28,7 @@ class SurveyConfigProperties {
 
         mandatoryProperty  column: 'surconpro_mandatory_property'
 
-        surveyConfig column: 'surconpro_survey_config_fk'
-        surveyProperty column: 'surconpro_survey_property_fk'
+        surveyConfig column: 'surconpro_survey_config_fk', index: 'surconpro_survey_config_idx'
+        surveyProperty column: 'surconpro_survey_property_fk', index: 'surconpro_survey_property_idx'
     }
 }

@@ -1,4 +1,6 @@
 <%@ page import="de.laser.interfaces.CalculatedType;" %>
+<laser:serviceInjection />
+
 <g:set var="checkCons" value="${contextService.getOrg().id == subscription.getConsortia()?.id && subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION}" />
 
 <g:if test="${checkCons}">

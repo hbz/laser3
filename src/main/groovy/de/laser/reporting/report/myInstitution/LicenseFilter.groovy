@@ -187,6 +187,8 @@ class LicenseFilter extends BaseFilter {
     static void _handleInternalOrgFilter(GrailsParameterMap params, String partKey, Map<String, Object> filterResult) {
 
         String filterSource = getCurrentFilterSource(params, partKey)
+        if (!filterSource) { return /* e.g. inst-lic-local */ }
+
         filterResult.labels.put(partKey, [source: BaseConfig.getSourceLabel(BaseConfig.KEY_LICENSE, filterSource)])
 
         if (! filterResult.data.get('licenseIdList')) {
