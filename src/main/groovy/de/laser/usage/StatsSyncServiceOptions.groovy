@@ -9,7 +9,6 @@ import de.laser.RefdataValue
 import de.laser.TitleInstancePackagePlatform
 import de.laser.storage.RDConstants
 import de.laser.properties.PlatformProperty
-import de.laser.titles.TitleInstance
 import groovy.util.logging.Slf4j
 
 @Slf4j

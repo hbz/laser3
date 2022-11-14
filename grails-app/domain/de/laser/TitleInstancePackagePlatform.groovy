@@ -7,13 +7,11 @@ import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.titles.TitleHistoryEvent
-import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import groovy.time.TimeCategory
 
 import javax.persistence.Transient
 import java.text.Normalizer
-import java.text.SimpleDateFormat
 import java.util.regex.Pattern
 
 /**
