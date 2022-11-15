@@ -944,12 +944,7 @@ class YodaController {
      */
     @Secured(['ROLE_YODA'])
     def deleteAndRefillIndex() {
-        String indexName = params.name
-        if (indexName) {
-           ESWrapperService.deleteIndex(indexName)
-           ESWrapperService.createIndex(indexName)
-           dataloadService.updateFTIndex(indexName)
-        }
+        dataloadService.updateFTIndex(params.name)
         redirect(action: 'manageFTControl')
     }
 

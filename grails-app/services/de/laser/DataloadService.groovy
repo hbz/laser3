@@ -49,51 +49,45 @@ class DataloadService {
     boolean update_running = false
     Future activeFuture
 
+    def updateFTIndex(String indexName) {
+        if (indexName) {
+            ESWrapperService.deleteIndex(indexName)
+            ESWrapperService.createIndex(indexName)
+            updateFTIndices(indexName)
+        }
+    }
+
     /**
      * Cronjob- or Yoda-triggered.
      * Starts the update of the ElasticSearch indices and initialises a parallel thread for the update
      * @return false if the job is already running, true otherwise
      */
-    def updateFTIndices() {
+    def updateFTIndices(String indexName = null) {
         if (! update_running) {
             if (!(activeFuture) || activeFuture.isDone()) {
 
-                activeFuture = executorService.submit({
-                    Thread.currentThread().setName("DataloadServiceUpdateFTIndices")
-                    doFTUpdate()
-                })
-                log.debug("updateFTIndices returning")
-            }
-            else {
-                log.debug("doFTUpdate already running #2a")
+                if (indexName) {
+                    activeFuture = executorService.submit({
+                        Thread.currentThread().setName("DataloadServiceUpdateFTIndex")
+                        doFTUpdate(indexName)
+                    })
+                    log.debug("updateFTIndices(${indexName}) returning")
+                } else {
+                    activeFuture = executorService.submit({
+                        Thread.currentThread().setName("DataloadServiceUpdateFTIndices")
+                        doFTUpdate()
+                    })
+                    log.debug("updateFTIndices returning")
+                }
+            } else {
+                log.debug("doFTUpdate already running")
                 return false
             }
         } else {
-            log.debug("doFTUpdate already running #1a")
+            log.debug("doFTUpdate already running")
             return false
         }
     }
-
-    def updateFTIndex(String indexName) {
-        if (! update_running) {
-            if (!(activeFuture) || activeFuture.isDone()) {
-
-                activeFuture = executorService.submit({
-                    Thread.currentThread().setName("DataloadServiceUpdateFTIndex")
-                    doFTUpdate(indexName)
-                })
-                log.debug("updateFTIndex returning")
-            }
-            else {
-                log.debug("doFTUpdate already running #2b")
-                return false
-            }
-        } else {
-            log.debug("doFTUpdate already running #1b")
-            return false
-        }
-    }
-
 
     /**
      * Performs the index update and sets a lock to prevent multiple execution.
@@ -138,7 +132,7 @@ class DataloadService {
         if (!domainClass || domainClass == Org.class) {
 
             _updateES(Org.class, BULK_SIZE_LARGE) { Org org ->
-                def result = [:]
+                Map result = [:]
 
                 result._id = org.globalUID
                 result.priority = 30
@@ -195,7 +189,7 @@ class DataloadService {
         if (!domainClass || domainClass == TitleInstancePackagePlatform.class) {
 
             _updateES(TitleInstancePackagePlatform.class, BULK_SIZE_LARGE) { TitleInstancePackagePlatform tipp ->
-                def result = [:]
+                Map result = [:]
 
                 if (tipp.name != null && tipp.titleType != null) {
                     if (!tipp.sortname) {
@@ -257,7 +251,7 @@ class DataloadService {
         if (!domainClass || domainClass == Package.class) {
 
             _updateES(Package.class, BULK_SIZE_SMALL) { Package pkg ->
-                def result = [:]
+                Map result = [:]
 
                 result._id = pkg.globalUID
                 result.priority = 30
@@ -302,7 +296,7 @@ class DataloadService {
         if (!domainClass || domainClass == Platform.class) {
 
             _updateES(Platform.class, BULK_SIZE_SMALL) { Platform plat ->
-                def result = [:]
+                Map result = [:]
 
                 result._id = plat.globalUID
                 result.priority = 30
@@ -329,7 +323,7 @@ class DataloadService {
         if (!domainClass || domainClass == License.class) {
 
             _updateES(License.class, BULK_SIZE_LARGE) { License lic ->
-                def result = [:]
+                Map result = [:]
 
                 result._id = lic.globalUID
                 result.priority = 50
@@ -395,7 +389,7 @@ class DataloadService {
         if (!domainClass || domainClass == Subscription.class) {
 
             _updateES(Subscription.class, BULK_SIZE_LARGE) { Subscription sub ->
-                def result = [:]
+                Map result = [:]
 
                 result._id = sub.globalUID
                 result.priority = 70
@@ -463,7 +457,7 @@ class DataloadService {
                         pgkinfo.pkgid = sp.pkg.id
                         pgkinfo.providerName = sp.pkg.contentProvider?.name
                         pgkinfo.providerId = sp.pkg.contentProvider?.id
-                        result.packages.add(pgkinfo);
+                        result.packages.add(pgkinfo)
                     }
                 }
 
@@ -477,7 +471,7 @@ class DataloadService {
         if (!domainClass || domainClass == SurveyConfig.class) {
 
             _updateES(SurveyConfig.class, BULK_SIZE_LARGE) { SurveyConfig surveyConfig ->
-                def result = [:]
+                Map result = [:]
 
                 result._id = surveyConfig.getClass().getSimpleName().toLowerCase() + ":" + surveyConfig.id
                 result.priority = 60
@@ -516,7 +510,7 @@ class DataloadService {
         if (!domainClass || domainClass == SurveyOrg.class) {
 
             _updateES(SurveyOrg.class, BULK_SIZE_LARGE) { SurveyOrg surOrg ->
-                def result = [:]
+                Map result = [:]
 
                 result._id = surOrg.getClass().getSimpleName().toLowerCase() + ":" + surOrg.id
                 result.priority = 60
@@ -553,7 +547,7 @@ class DataloadService {
         if (!domainClass || domainClass == Task.class) {
 
             _updateES(Task.class, BULK_SIZE_LARGE) { Task task ->
-                def result = [:]
+                Map result = [:]
 
                 result._id = task.getClass().getSimpleName().toLowerCase() + ":" + task.id
                 result.priority = 40
@@ -604,7 +598,7 @@ class DataloadService {
         if (!domainClass || domainClass == DocContext.class) {
 
             _updateES(DocContext.class, BULK_SIZE_LARGE) { DocContext docCon ->
-                def result = [:]
+                Map result = [:]
 
                 result._id = docCon.getClass().getSimpleName().toLowerCase() + ":" + docCon.id
                 result.priority = 40
@@ -653,7 +647,7 @@ class DataloadService {
         if (!domainClass || domainClass == IssueEntitlement.class) {
 
             _updateES(IssueEntitlement.class, BULK_SIZE_LARGE) { IssueEntitlement ie ->
-                def result = [:]
+                Map result = [:]
 
                 result._id = ie.globalUID
                 result.priority = 45
@@ -707,7 +701,7 @@ class DataloadService {
         if (!domainClass || domainClass == SubscriptionProperty.class) {
 
             _updateES(SubscriptionProperty.class, BULK_SIZE_LARGE) { SubscriptionProperty subProp ->
-                def result = [:]
+                Map result = [:]
 
                 result._id = subProp.getClass().getSimpleName().toLowerCase() + ":" + subProp.id
                 result.priority = 45
@@ -766,7 +760,7 @@ class DataloadService {
         if (!domainClass || domainClass == LicenseProperty.class) {
 
             _updateES(LicenseProperty.class, BULK_SIZE_LARGE) { LicenseProperty licProp ->
-                def result = [:]
+                Map result = [:]
 
                 result._id = licProp.getClass().getSimpleName().toLowerCase() + ":" + licProp.id
                 result.priority = 45
@@ -867,12 +861,12 @@ class DataloadService {
                         }
 
                         currentTimestamp = System.currentTimeMillis()
-                        BulkRequest bulkRequest = new BulkRequest();
+                        BulkRequest bulkRequest = new BulkRequest()
 
                         // FTControl.withNewSession { Session session ->
 
                             List<List<Long>> bulks = idList.collate(bulkSize)
-                            if (bulks) { log.debug("${logPrefix} - for changes since ${from} - bulks todo: ${bulks.size()}") }
+                            if (bulks) { log.debug("${logPrefix} - for changes since ${from}; bulks todo: ${bulks.size()}") }
 
                             bulks.eachWithIndex { List bulk, int i ->
                                 for (domain_id in bulk) {
@@ -884,10 +878,10 @@ class DataloadService {
                                     }
 
                                     String recid = idx_record['_id'].toString()
-                                    idx_record.remove('_id');
+                                    idx_record.remove('_id')
 
                                     IndexRequest request = new IndexRequest(es_indices[domainClass.simpleName])
-                                    request.id(recid);
+                                    request.id(recid)
                                     String jsonString = idx_record as JSON
                                     request.source(jsonString, XContentType.JSON)
 
@@ -909,13 +903,13 @@ class DataloadService {
                                     }
                                 }
 
-                                log.debug("${logPrefix} - processed ${total} of ${idList.size()} records ; bulkSize ${mb.round(2)}MB")
+                                log.debug("${logPrefix} - processed ${total} of ${idList.size()} records; bulkSize ${mb.round(2)}MB")
                                 bulkRequest = new BulkRequest()
 
                                 // session.flush()
                             } // each
 
-                            log.debug("${logPrefix} - totally processed ${total} records ; ${totalMb.round(2)}MB")
+                            log.debug("${logPrefix} - totally processed ${total} records; ${totalMb.round(2)}MB")
 
                             ftControl.lastTimestamp = currentTimestamp
                             ftControl.save()
@@ -941,7 +935,7 @@ class DataloadService {
                 try {
                     if (ESWrapperService.testConnection()) {
                         if (ftControl.active) {
-                            FlushRequest request = new FlushRequest(es_indices.get(domainClass.simpleName));
+                            FlushRequest request = new FlushRequest(es_indices.get(domainClass.simpleName))
                             esclient.indices().flush(request, RequestOptions.DEFAULT)
                         }
                         esclient.close()
@@ -1046,7 +1040,7 @@ class DataloadService {
             if(ESWrapperService.testConnection()) {
 
                 if (ftControl.active) {
-                    log.debug("Element comparison: ES <-> DB ( ${ftControl.domainClassName} )")
+                    log.debug("Element comparison: DB <-> ES ( ${ftControl.domainClassName} )")
 
                         Class domainClass = CodeUtils.getDomainClass(ftControl.domainClassName)
                         String indexName =  es_indices.get(domainClass.simpleName)
@@ -1066,9 +1060,6 @@ class DataloadService {
                             if (countDB != countIndex) {
                                 log.debug("Element comparison: DB <-> ES ( ${ftControl.domainClassName} / ${indexName} ) : +++++ DIFF found +++++ DB Results = ${countDB}, ES Results = ${countIndex} +++++")
                                 //ft.lastTimestamp = 0
-                            }
-                            else {
-                                log.debug("Element comparison complete: DB <-> ES ( ${ftControl.domainClassName} )")
                             }
                             ftControl.dbElements = countDB
                             ftControl.esElements = countIndex
@@ -1128,9 +1119,6 @@ class DataloadService {
                                 log.debug("Element comparison: DB <-> ES  ( ${indexName} ): +++++ DIFF found +++++ DB Results = ${countDB}, ES Results = ${countIndex} +++++")
                                 //ft.lastTimestamp = 0
                             }
-                            else {
-                                log.debug("Element comparison complete: DB <-> ES")
-                            }
                             ft.dbElements = countDB
                             ft.esElements = countIndex
                             ft.save()
@@ -1185,7 +1173,7 @@ class DataloadService {
     /**
      * Kills an eventually running process
      */
-    public synchronized void killDataloadService() {
+    synchronized void killDataloadService() {
         if (activeFuture != null) {
             SystemEvent.createEvent('FT_INDEX_UPDATE_KILLED')
 
