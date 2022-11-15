@@ -20,7 +20,6 @@ import org.elasticsearch.action.bulk.BulkResponse
 import org.elasticsearch.client.indices.GetIndexRequest
 import org.elasticsearch.ElasticsearchException
 import org.elasticsearch.action.admin.indices.flush.FlushRequest
-import org.elasticsearch.action.admin.indices.flush.FlushResponse
 import org.elasticsearch.action.index.IndexRequest
 import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestHighLevelClient
@@ -28,6 +27,7 @@ import org.elasticsearch.client.core.CountRequest
 import org.elasticsearch.client.core.CountResponse
 import org.elasticsearch.common.xcontent.XContentType
 import org.elasticsearch.rest.RestStatus
+import org.grails.web.json.JSONElement
 import org.hibernate.Session
 
 import java.util.concurrent.ExecutorService
@@ -62,7 +62,7 @@ class DataloadService {
                     Thread.currentThread().setName("DataloadServiceUpdateFTIndices")
                     doFTUpdate()
                 })
-                 log.debug("updateFTIndices returning")
+                log.debug("updateFTIndices returning")
             }
             else {
                 log.debug("doFTUpdate already running #2a")
@@ -123,11 +123,11 @@ class DataloadService {
         if (indexName) { _doFTUpdateUpdateESCalls(ESWrapperService.getDomainClassByIndex(indexName)) }
         else           { _doFTUpdateUpdateESCalls() }
 
-        long elapsed = System.currentTimeMillis() - start_time
-        log.debug("doFTUpdate ---> Completed in ${(elapsed/1000).round(2)}s")
+        double elapsed = ((System.currentTimeMillis() - start_time) / 1000).round(2)
+        log.debug("doFTUpdate ---> Completed in ${elapsed}s")
 
-        if (indexName) { sysEvent.changeTo('FT_INDEX_UPDATE_COMPLETE', [index: indexName, ms: elapsed]) }
-        else           { sysEvent.changeTo('FT_INDEX_UPDATE_COMPLETE', [ms: elapsed]) }
+        if (indexName) { sysEvent.changeTo('FT_INDEX_UPDATE_COMPLETE', [index: indexName, s: elapsed]) }
+        else           { sysEvent.changeTo('FT_INDEX_UPDATE_COMPLETE', [s: elapsed]) }
 
         update_running = false
         true
@@ -942,9 +942,7 @@ class DataloadService {
                     if (ESWrapperService.testConnection()) {
                         if (ftControl.active) {
                             FlushRequest request = new FlushRequest(es_indices.get(domainClass.simpleName));
-                            FlushResponse flushResponse = esclient.indices().flush(request, RequestOptions.DEFAULT)
-
-                            log.debug("${logPrefix} - finally: ${flushResponse}")
+                            esclient.indices().flush(request, RequestOptions.DEFAULT)
                         }
                         esclient.close()
                     }
@@ -1063,16 +1061,19 @@ class DataloadService {
                         }
 
                         FTControl.withTransaction {
-                            ftControl.dbElements = domainClass.count()
-                            ftControl.esElements = countIndex
+                            int countDB = domainClass.count()
 
-                            if (ftControl.dbElements != ftControl.esElements) {
-                                log.debug("Element comparison: ES <-> DB ( ${ftControl.domainClassName} / ${indexName} ) : +++++ NOT COMPLETE +++++ ES Results = ${ftControl.esElements}, DB Results = ${ftControl.dbElements} +++++")
+                            if (countDB != countIndex) {
+                                log.debug("Element comparison: DB <-> ES ( ${ftControl.domainClassName} / ${indexName} ) : +++++ DIFF found +++++ DB Results = ${countDB}, ES Results = ${countIndex} +++++")
                                 //ft.lastTimestamp = 0
                             }
+                            else {
+                                log.debug("Element comparison complete: DB <-> ES ( ${ftControl.domainClassName} )")
+                            }
+                            ftControl.dbElements = countDB
+                            ftControl.esElements = countIndex
                             ftControl.save()
                         }
-                        log.debug("Element comparison complete: ES <-> DB ( ${ftControl.domainClassName} )")
                 }
                 else {
                     log.debug("Element comparison ignored, because ftControl is not active")
@@ -1103,7 +1104,7 @@ class DataloadService {
 
         try {
             if(ESWrapperService.testConnection()) {
-                log.debug("Element comparison: ES <-> DB")
+                log.debug("Element comparison: DB <-> ES")
 
                 FTControl.list().each { ft ->
 
@@ -1121,16 +1122,19 @@ class DataloadService {
                         }
 
                         FTControl.withTransaction {
-                            ft.dbElements = domainClass.count()
-                            ft.esElements = countIndex
+                            int countDB = domainClass.count()
 
-                            if (ft.dbElements != ft.esElements) {
-                                log.debug("Element comparison: ES <-> DB  ( ${indexName} ): +++++ NOT COMPLETE +++++ ES Results = ${ft.esElements}, DB Results = ${ft.dbElements} +++++")
+                            if (countDB != countIndex) {
+                                log.debug("Element comparison: DB <-> ES  ( ${indexName} ): +++++ DIFF found +++++ DB Results = ${countDB}, ES Results = ${countIndex} +++++")
                                 //ft.lastTimestamp = 0
                             }
+                            else {
+                                log.debug("Element comparison complete: DB <-> ES")
+                            }
+                            ft.dbElements = countDB
+                            ft.esElements = countIndex
                             ft.save()
                         }
-                        log.debug("Element comparison complete: ES <-> DB")
                     }
                     else {
                         log.debug("Element comparison ignored, because ftControl is not active")
@@ -1159,9 +1163,19 @@ class DataloadService {
         if (se) {
             info = DateUtils.getLocalizedSDF_noZ().format(se.created)
             if (se.payload) {
-                long ms = JSON.parse(se.payload).ms ?: 0
-                if (ms) {
-                    info += ' (' + (ms/1000).round(2) + ' s.)'
+                JSONElement je = JSON.parse(se.payload)
+
+                if (je.ms) {
+                    long ms = JSON.parse(se.payload).ms ?: 0
+                    if (ms) {
+                        info += ' (' + (ms/1000).round(2) + ' s.)'
+                    }
+                }
+                if (je.s) {
+                    double s = JSON.parse(se.payload).s ?: 0
+                    if (s) {
+                        info += ' (' + s + ' s.)'
+                    }
                 }
             }
         }
