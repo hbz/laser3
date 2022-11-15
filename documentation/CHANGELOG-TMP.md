@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4589    14.11.2022  rc-2.3  2.3.12      Moe     Bug         Dashboard Benachrichtung-Mail hat falschen Link drin
+
 --      14.11.2022  rc-2.3  2.3.11      Moe     Feature     Title-Auswahl mit Title-Url
 
 4586    14.11.2022  rc-2.3  2.3.11      Moe     Bug         Zählung bei Titel-Gruppen falsch
