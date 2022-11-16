@@ -42,9 +42,9 @@ class DataloadService {
     ESWrapperService ESWrapperService
     ExecutorService executorService
 
-    static final int BULK_SIZE_LARGE    = 5000
-    static final int BULK_SIZE_MEDIUM   = 1000
-    static final int BULK_SIZE_SMALL    = 50
+    static final int BULK_SIZE_LARGE    = 10000
+    static final int BULK_SIZE_MEDIUM   = 5000
+    static final int BULK_SIZE_SMALL    = 100
 
     boolean update_running = false
     Future activeFuture
@@ -131,7 +131,7 @@ class DataloadService {
 
         if (!domainClass || domainClass == Org.class) {
 
-            _updateES(Org.class, BULK_SIZE_LARGE) { Org org ->
+            _updateES(Org.class, BULK_SIZE_MEDIUM) { Org org ->
                 Map result = [:]
 
                 result._id = org.globalUID
@@ -188,7 +188,7 @@ class DataloadService {
 
         if (!domainClass || domainClass == TitleInstancePackagePlatform.class) {
 
-            _updateES(TitleInstancePackagePlatform.class, BULK_SIZE_LARGE) { TitleInstancePackagePlatform tipp ->
+            _updateES(TitleInstancePackagePlatform.class, BULK_SIZE_MEDIUM) { TitleInstancePackagePlatform tipp ->
                 Map result = [:]
 
                 if (tipp.name != null && tipp.titleType != null) {
@@ -250,7 +250,7 @@ class DataloadService {
 
         if (!domainClass || domainClass == Package.class) {
 
-            _updateES(Package.class, BULK_SIZE_SMALL) { Package pkg ->
+            _updateES(Package.class, BULK_SIZE_MEDIUM) { Package pkg ->
                 Map result = [:]
 
                 result._id = pkg.globalUID
@@ -274,7 +274,11 @@ class DataloadService {
                 result.startDate = pkg.startDate
                 result.endDate = pkg.endDate
 
-                result.titleCountCurrent = pkg.getCurrentTipps().size() ?: 0
+                //result.titleCountCurrent = pkg.getCurrentTipps().size() ?: 0
+                result.titleCountCurrent = TitleInstancePackagePlatform.executeQuery(
+                        'select count(id) from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg and tipp.status = :status',
+                        [pkg: pkg, status: RDStore.TIPP_STATUS_CURRENT]
+                )
 
                 result.identifiers = []
                 pkg.ids?.each { ident ->
@@ -295,7 +299,7 @@ class DataloadService {
 
         if (!domainClass || domainClass == Platform.class) {
 
-            _updateES(Platform.class, BULK_SIZE_SMALL) { Platform plat ->
+            _updateES(Platform.class, BULK_SIZE_MEDIUM) { Platform plat ->
                 Map result = [:]
 
                 result._id = plat.globalUID
@@ -311,7 +315,12 @@ class DataloadService {
                 result.primaryUrl = plat.primaryUrl
                 result.orgId = plat.org?.id
                 result.orgName = plat.org?.name
-                result.titleCountCurrent = plat.getCurrentTipps().size() ?: 0
+
+                //result.titleCountCurrent = plat.getCurrentTipps().size() ?: 0
+                result.titleCountCurrent = TitleInstancePackagePlatform.executeQuery(
+                        'select count(id) from TitleInstancePackagePlatform tipp where tipp.platform = :plat and tipp.status = :status',
+                        [plat: plat, status: RDStore.TIPP_STATUS_CURRENT]
+                )
 
                 result.dateCreated = plat.dateCreated
                 result.lastUpdated = plat.lastUpdated
@@ -322,7 +331,7 @@ class DataloadService {
 
         if (!domainClass || domainClass == License.class) {
 
-            _updateES(License.class, BULK_SIZE_LARGE) { License lic ->
+            _updateES(License.class, BULK_SIZE_MEDIUM) { License lic ->
                 Map result = [:]
 
                 result._id = lic.globalUID
@@ -388,7 +397,7 @@ class DataloadService {
 
         if (!domainClass || domainClass == Subscription.class) {
 
-            _updateES(Subscription.class, BULK_SIZE_LARGE) { Subscription sub ->
+            _updateES(Subscription.class, BULK_SIZE_MEDIUM) { Subscription sub ->
                 Map result = [:]
 
                 result._id = sub.globalUID
@@ -470,7 +479,7 @@ class DataloadService {
 
         if (!domainClass || domainClass == SurveyConfig.class) {
 
-            _updateES(SurveyConfig.class, BULK_SIZE_LARGE) { SurveyConfig surveyConfig ->
+            _updateES(SurveyConfig.class, BULK_SIZE_MEDIUM) { SurveyConfig surveyConfig ->
                 Map result = [:]
 
                 result._id = surveyConfig.getClass().getSimpleName().toLowerCase() + ":" + surveyConfig.id
@@ -509,7 +518,7 @@ class DataloadService {
 
         if (!domainClass || domainClass == SurveyOrg.class) {
 
-            _updateES(SurveyOrg.class, BULK_SIZE_LARGE) { SurveyOrg surOrg ->
+            _updateES(SurveyOrg.class, BULK_SIZE_MEDIUM) { SurveyOrg surOrg ->
                 Map result = [:]
 
                 result._id = surOrg.getClass().getSimpleName().toLowerCase() + ":" + surOrg.id
@@ -546,7 +555,7 @@ class DataloadService {
 
         if (!domainClass || domainClass == Task.class) {
 
-            _updateES(Task.class, BULK_SIZE_LARGE) { Task task ->
+            _updateES(Task.class, BULK_SIZE_MEDIUM) { Task task ->
                 Map result = [:]
 
                 result._id = task.getClass().getSimpleName().toLowerCase() + ":" + task.id
@@ -597,7 +606,7 @@ class DataloadService {
 
         if (!domainClass || domainClass == DocContext.class) {
 
-            _updateES(DocContext.class, BULK_SIZE_LARGE) { DocContext docCon ->
+            _updateES(DocContext.class, BULK_SIZE_MEDIUM) { DocContext docCon ->
                 Map result = [:]
 
                 result._id = docCon.getClass().getSimpleName().toLowerCase() + ":" + docCon.id
@@ -646,7 +655,7 @@ class DataloadService {
 
         if (!domainClass || domainClass == IssueEntitlement.class) {
 
-            _updateES(IssueEntitlement.class, BULK_SIZE_LARGE) { IssueEntitlement ie ->
+            _updateES(IssueEntitlement.class, BULK_SIZE_MEDIUM) { IssueEntitlement ie ->
                 Map result = [:]
 
                 result._id = ie.globalUID
@@ -700,7 +709,7 @@ class DataloadService {
 
         if (!domainClass || domainClass == SubscriptionProperty.class) {
 
-            _updateES(SubscriptionProperty.class, BULK_SIZE_LARGE) { SubscriptionProperty subProp ->
+            _updateES(SubscriptionProperty.class, BULK_SIZE_MEDIUM) { SubscriptionProperty subProp ->
                 Map result = [:]
 
                 result._id = subProp.getClass().getSimpleName().toLowerCase() + ":" + subProp.id
@@ -759,7 +768,7 @@ class DataloadService {
 
         if (!domainClass || domainClass == LicenseProperty.class) {
 
-            _updateES(LicenseProperty.class, BULK_SIZE_LARGE) { LicenseProperty licProp ->
+            _updateES(LicenseProperty.class, BULK_SIZE_MEDIUM) { LicenseProperty licProp ->
                 Map result = [:]
 
                 result._id = licProp.getClass().getSimpleName().toLowerCase() + ":" + licProp.id
@@ -863,8 +872,6 @@ class DataloadService {
                         currentTimestamp = System.currentTimeMillis()
                         BulkRequest bulkRequest = new BulkRequest()
 
-                        // FTControl.withNewSession { Session session ->
-
                             List<List<Long>> bulks = idList.collate(bulkSize)
                             if (bulks) { log.debug("${logPrefix} - for changes since ${from}; bulks todo: ${bulks.size()}") }
 
@@ -903,7 +910,7 @@ class DataloadService {
                                     }
                                 }
 
-                                log.debug("${logPrefix} - processed ${total} of ${idList.size()} records; bulkSize ${mb.round(2)}MB")
+                                log.debug("${logPrefix} - processed ${total} records, ${idList.size() - total} todo; bulkSize ${mb.round(2)}MB")
                                 bulkRequest = new BulkRequest()
 
                                 // session.flush()
@@ -913,10 +920,7 @@ class DataloadService {
 
                             ftControl.lastTimestamp = currentTimestamp
                             ftControl.save()
-                            //session.flush()
-                            //session.clear()
 
-                        //} // withNewSession
                     } else {
                         // ftControl.save() - not needed
                         log.debug("${logPrefix} - failed -> ESWrapperService.testConnection() && es_indices && es_indices.get(domain.simpleName)")

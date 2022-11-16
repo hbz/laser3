@@ -893,22 +893,22 @@ class YodaController {
 
         result.indices = []
         Map es_indices = ESWrapperService.ES_Indices
-        es_indices.each{ indice ->
+        es_indices.each{ index ->
             Map indexInfo = [:]
-            indexInfo.name = indice.value
-            indexInfo.type = indice.key
+            indexInfo.name = index.value
+            indexInfo.type = index.key
 
-            GetIndexRequest request = new GetIndexRequest(indice.value)
+            GetIndexRequest request = new GetIndexRequest(index.value)
 
             if (esclient.indices().exists(request, RequestOptions.DEFAULT)) {
-                CountRequest countRequest = new CountRequest(indice.value)
+                CountRequest countRequest = new CountRequest(index.value)
                 CountResponse countResponse = esclient.count(countRequest, RequestOptions.DEFAULT)
                 indexInfo.countIndex = countResponse ? countResponse.getCount().toInteger() : 0
             }else {
                 indexInfo.countIndex = "n/a"
             }
 
-            String query = "select count(id) from ${indice.key}"
+            String query = "select count(id) from ${index.key}"
             indexInfo.countDB = FTControl.executeQuery(query)[0]
             result.indices << indexInfo
         }
