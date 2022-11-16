@@ -1091,4 +1091,28 @@ select distinct oap from OrgAccessPoint oap
         result
     }
 
+    /**
+     * Checks if the subscriber is in survey renewal
+     * @return true if the subscriber is in survey renewal, false otherwise
+     */
+    boolean isOrgInSurveyRenewal() {
+        boolean isOrgInSurveyRenewal = false
+       if(this.instanceOf && this.type && this.type.id == RDStore.SUBSCRIPTION_TYPE_CONSORTIAL.id){
+            Org participant = this.getSubscriber()
+
+           if(participant){
+               int countSurveyOrgs = SurveyOrg.executeQuery('select count(surveyOrg.id) FROM SurveyOrg surveyOrg LEFT JOIN surveyOrg.surveyConfig surConfig LEFT JOIN surConfig.surveyInfo surInfo ' +
+                       'WHERE surveyOrg.org = :org AND surInfo.type = :type AND surInfo.status != :status and surConfig.subscription = :sub', [org: participant, type: RDStore.SURVEY_TYPE_RENEWAL, status: RDStore.SURVEY_IN_PROCESSING, sub: this.instanceOf])[0]
+
+               if(countSurveyOrgs > 0){
+                   isOrgInSurveyRenewal = true
+               }
+
+           }
+       }
+
+        return isOrgInSurveyRenewal
+
+    }
+
 }

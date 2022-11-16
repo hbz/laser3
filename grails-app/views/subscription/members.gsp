@@ -93,7 +93,7 @@
 
     <laser:render template="nav" />
 
-    <ui:filter showFilterButton="true" addFilterJs="true">
+    <ui:filter>
         <g:form action="members" controller="subscription" params="${[id:params.id]}" method="get" class="ui form">
             <laser:render template="/templates/filter/orgFilter"
                   model="[

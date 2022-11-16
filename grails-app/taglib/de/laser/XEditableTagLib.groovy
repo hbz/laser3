@@ -38,7 +38,7 @@ class XEditableTagLib {
 
             out << '<a href="#" id="' + id + '" class="xEditableValue ' + (attrs.class ?: '') + '"'
 
-            out << (owner instanceof SurveyResult) ? ' data-onblur="submit"' : ' data-onblur="ignore"'
+            out << (owner instanceof SurveyResult ? ' data-onblur="submit"' : ' data-onblur="ignore"')
 
             if (attrs.type == 'date') {
                 out << ' data-type="text"' // combodate | date
@@ -183,7 +183,7 @@ class XEditableTagLib {
                 // Output an editable link
                 out << "<a href=\"#\" id=\"${id}\" class=\"xEditableManyToOne ${cssClass}\" "
 
-                out << (owner instanceof SurveyResult) ? 'data-onblur="submit" ' : 'data-onblur="ignore" '
+                out << (owner instanceof SurveyResult ? 'data-onblur="submit" ' : 'data-onblur="ignore" ')
 
                 out << dataValue + "data-pk=\"${oid}\"  "
 
@@ -298,7 +298,7 @@ class XEditableTagLib {
                 // Output an editable link
                 out << "<a href=\"#\" id=\"${id}\" class=\"xEditableManyToOne\""
 
-                out << (owner instanceof SurveyResult) ? ' data-onblur="submit"' : ' data-onblur="ignore"'
+                out << (owner instanceof SurveyResult ? ' data-onblur="submit"' : ' data-onblur="ignore"')
 
                 out <<  " data-value=\"${intValue}\" data-pk=\"${oid}\" data-type=\"select\" " +
                         " data-name=\"${field}\" data-source=\"${data_link}\" data-url=\"${update_link}\" ${emptyText}>"
@@ -423,7 +423,7 @@ class XEditableTagLib {
 
             out << "<a style=\"display: inline-block;\" href=\"#\" id=\"${id}\" class=\"xEditableValue ${attrs.class ?: ''}\""
 
-            out << (owner instanceof SurveyResult) ? ' data-onblur="submit"' : ' data-onblur="ignore"'
+            out << (owner instanceof SurveyResult ? ' data-onblur="submit"' : ' data-onblur="ignore"')
 
             if (attrs.type == 'date') {
                 out << ' data-type="text"' // combodate | date

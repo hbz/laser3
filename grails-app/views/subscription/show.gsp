@@ -17,8 +17,6 @@
         <p>getCalculatedType(): ${subscription._getCalculatedType()}</p>
     </div>
     <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]"/>
-%{--<laser:render template="/templates/debug/orgRoles"  model="[debug: subscription.orgRelations]" />--}%
-%{--<laser:render template="/templates/debug/prsRoles"  model="[debug: subscription.prsLinks]" />--}%
 </ui:debugInfo>
 <laser:render template="breadcrumb" model="${[params: params]}"/>
 <ui:controlButtons>

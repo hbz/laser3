@@ -20,7 +20,7 @@ class BootStrap {
             'XMLHttpRequest' == delegate.getHeader('X-Requested-With')
         }
 
-        bootStrapService.init( AppUtils.isRestartedByDevtools() )
+        bootStrapService.init( false )
     }
 
     /**

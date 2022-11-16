@@ -1,0 +1,43 @@
+<configuration>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level --- %-64.64([%t] %logger{42}) : %ex{12}%replace(%msg){'Stacktrace follows:','Full stacktrace is suppressed..'}%n</pattern>
+        </encoder>
+
+        <filter class="ch.qos.logback.core.filter.EvaluatorFilter">
+            <evaluator>
+                <expression>
+                    <!-- logback-development.xml for details -->
+                    <!-- hibernate -->
+                    if (message.contains("HHH020003")) return true;
+                    if (message.contains("HHH020008")) return true;
+                    if (message.contains("HHH90000022")) return true;
+                    if (message.contains("HHH90001005")) return true;
+                    <!-- warn -->
+                    if (message.contains("Use 'config.getProperty(key, targetClass)' instead.")) return true;
+                    if (message.contains("Replaced rule for '")) return true;
+                    if (message.contains("299 Elasticsearch-7.15.1-83c34f456ae29d60e94d886e455e6a3409bba9ed")) return true;
+                    <!-- info -->
+                    if (message.contains("(for example: not eligible for auto-proxying)")) return true;
+                    if (message.contains("As of Liquibase 4.0, cannot set resource accessor on")) return true;
+                    if (message.contains("Cached entry expired :")) return true;
+                    return false;
+                </expression>
+            </evaluator>
+            <OnMismatch>NEUTRAL</OnMismatch>
+            <OnMatch>DENY</OnMatch>
+        </filter>
+    </appender>
+
+    <!-- default -->
+
+    <logger name="de.laser" level="DEBUG" additivity="false">
+        <appender-ref ref="STDOUT" />
+    </logger>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
+    </root>
+
+</configuration>

@@ -76,12 +76,12 @@
                         </div>
                     </fieldset>
                 </div>
-                <div id="responsibleUserEdit"
+                <div id="responsibleUserWrapperEdit"
                      class="field wide eight ${hasErrors(bean: taskInstance, field: 'responsibleUser', 'error')}">
-                    <label for="responsibleUser">
+                    <label for="responsibleUserInputEdit">
                         <g:message code="task.responsibleUser.label" />
                     </label>
-                    <g:select id="responsibleUser"
+                    <g:select id="responsibleUserInputEdit"
                               name="responsibleUser.id"
                               from="${taskService.getUserDropdown(contextOrg)}"
                               optionKey="id"
@@ -102,30 +102,25 @@
         JSPC.callbacks.dynPostFunc = function () {
             console.log('dynPostFunc @ tasks/_modal_edit.gsp');
 
-        $("#radioresponsibleOrgEdit").change(function () {
-            JSPC.app.toggleResponsibleUserEdit();
-        });
-        $("#radioresponsibleUserEdit").change(function () {
-            JSPC.app.toggleResponsibleUserEdit();
-        });
+        $("#radioresponsibleOrgEdit").change(function () { JSPC.app.toggleResponsibleUserEdit() });
+        $("#radioresponsibleUserEdit").change(function () { JSPC.app.toggleResponsibleUserEdit() });
 
         JSPC.app.toggleResponsibleUserEdit = function () {
             if ($("#radioresponsibleUserEdit").is(':checked')) {
-                $("#responsibleUserEdit").show();
+                $("#responsibleUserWrapperEdit").show()
             } else {
-                $("#responsibleUserEdit").hide();
+                $("#responsibleUserWrapperEdit").hide()
             }
         }
 
         JSPC.app.toggleResponsibleUserEdit();
 
-            $.fn.form.settings.rules.responsibleUser = function() {
-                    if($("#radioresponsibleUser").is(":checked")) {
-                        return $('#responsibleUserInput').val();
-                    }
-                    else return true;
+            $.fn.form.settings.rules.responsibleUserInputEdit = function() {
+                if($("#radioresponsibleUserEdit").is(":checked")) {
+                    return $('#responsibleUserInputEdit').val()
                 }
-
+                else return true
+            }
             $('#edit_task')
                 .form({
                     on: 'blur',
@@ -158,11 +153,11 @@
                                     }
                                 ]
                             },
-                            responsibleUser: {
-                                identifier: 'responsibleUser',
+                            responsibleUserInputEdit: {
+                                identifier: 'responsibleUserInputEdit',
                                 rules: [
                                     {
-                                        type: 'responsibleUser',
+                                        type: 'responsibleUserInputEdit',
                                         prompt: '<g:message code="validation.responsibleMustBeChecked" />'
                                     }
                                 ]

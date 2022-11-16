@@ -601,14 +601,14 @@ class PendingChangeService extends AbstractLockableService {
                         eventRow.costItemSubscription = [id: entry.get("ci_sub_fk"), name: subscriptionName(entry, status, locale)]
                         Object[] args = [pc.get("pc_old_value"),pc.get("pc_new_value")]
                         eventRow.eventString = messageSource.getMessage(pc.get("pc_msg_token"),args,locale)
-                        eventRow.changeId = pc.get("id")
+                        eventRow.changeId = pc.get("pc_id")
                     }
                 }
                 else {
                     List prevSub = sql.rows("select l_dest_sub_fk, sub_name, sub_start_date, sub_end_date, sub_status_rv_fk, org_sortname, or_roletype_fk, sub_parent_sub_fk from links join subscription on l_dest_sub_fk = sub_id join org_role on sub_id = or_sub_fk join org on or_org_fk = org_id where l_source_sub_fk = :newSub and l_link_type_rv_fk = :follows", [newSub: pc.get("pc_sub_fk"), follows: RDStore.LINKTYPE_FOLLOWS.id])
                     prevSub.each { GroovyRowResult previous ->
                         eventRow.eventString = messageSource.getMessage("${pc.get("pc_msg_token")}.eventString", null, locale)
-                        eventRow.changeId = pc.get("id")
+                        eventRow.changeId = pc.get("pc_id")
                         eventRow.subscription = [source: Subscription.class.name + ':' + previous.get("l_dest_sub_fk"), target: Subscription.class.name + ':' + pc.get("pc_sub_fk"), id: pc.get("pc_sub_fk"), name: subscriptionName(previous, status, locale)]
                     }
                 }
@@ -1398,18 +1398,26 @@ class PendingChangeService extends AbstractLockableService {
             target = newChange.tippCoverage
         /*else if(newChange.priceItem && newChange.priceItem.tipp)
             target = newChange.priceItem*/
-        if(target) {
-            PendingChange toApply = PendingChange.construct([target: target, oid: genericOIDService.getOID(subPkg.subscription), newValue: newChange.newValue, oldValue: newChange.oldValue, prop: newChange.targetProperty, msgToken: newChange.msgToken, status: RDStore.PENDING_CHANGE_PENDING, owner: contextOrg])
-            if(accept(toApply, subPkg.subscription.id)) {
-                if(auditService.getAuditConfig(subPkg.subscription,newChange.msgToken)) {
-                    log.debug("got audit config, processing ...")
-                    applyPendingChangeForHolding(newChange, subPkg, contextOrg)
+        if(newChange.msgToken != PendingChangeConfiguration.TITLE_REMOVED) {
+            if(target) {
+                PendingChange toApply = PendingChange.construct([target: target, oid: genericOIDService.getOID(subPkg.subscription), newValue: newChange.newValue, oldValue: newChange.oldValue, prop: newChange.targetProperty, msgToken: newChange.msgToken, status: RDStore.PENDING_CHANGE_PENDING, owner: contextOrg])
+                if(accept(toApply, subPkg.subscription.id)) {
+                    if(auditService.getAuditConfig(subPkg.subscription,newChange.msgToken)) {
+                        log.debug("got audit config, processing ...")
+                        applyPendingChangeForHolding(newChange, subPkg, contextOrg)
+                    }
                 }
+                else
+                    log.error("Error when auto-accepting pending change ${toApply} with token ${toApply.msgToken}!")
             }
-            else
-                log.error("Error when auto-accepting pending change ${toApply} with token ${toApply.msgToken}!")
+            else log.error("Unable to determine target object! Ignoring change ${newChange}!")
         }
-        else log.error("Unable to determine target object! Ignoring change ${newChange}!")
+        else {
+            accept(newChange, subPkg.subscription.id)
+            subPkg.subscription.getDerivedSubscriptions().each { Subscription child ->
+                accept(newChange, child.id)
+            }
+        }
     }
 
     /**

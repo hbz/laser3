@@ -1,6 +1,13 @@
 <%@ page import="de.laser.IssueEntitlement; de.laser.TitleInstancePackagePlatform; grails.converters.JSON" %>
 <laser:htmlStart text="Expunge deleted TIPPs" serviceInjection="true"/>
 
+    <ui:breadcrumbs>
+        <ui:crumb controller="dataManager" action="index" message="menu.datamanager" />
+        <ui:crumb text="Expunge deleted TIPPs" class="active"/>
+    </ui:breadcrumbs>
+
+    <ui:h1HeaderWithIcon text="Expunge deleted TIPPs" />
+
         <table class="ui table">
             <tbody>
                 <tr>

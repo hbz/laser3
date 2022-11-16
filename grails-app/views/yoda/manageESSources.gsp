@@ -5,6 +5,8 @@
         <ui:crumb text="ES Sources" class="active" />
     </ui:breadcrumbs>
 
+    <ui:h1HeaderWithIcon text="ES Sources" />
+
     <ui:messages data="${flash}" />
 
       <table class="ui celled la-js-responsive-table la-table table">

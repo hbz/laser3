@@ -96,7 +96,7 @@
                 <td>
                     <g:formatNumber number="${indexInfo.countDB}" format="${message(code:'default.decimal.format')}"/>
                 </td>
-                <td><g:link action="deleteAndRefillIndex" params="[name: indexInfo.name]">Delete and refill Index</g:link></td>
+                <td><g:link action="deleteAndRefillIndex" params="[name: indexInfo.name]">Reset Index</g:link></td>
             </tr>
             </g:each>
         </tbody>

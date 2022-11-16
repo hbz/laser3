@@ -11,7 +11,7 @@
 <ui:messages data="${flash}" />
 
 <h2 class="ui header">${message(code: 'default.usage.adminPage.formHeader')}</h2>
-<ui:filter>
+<ui:filter simple="true">
     <g:form action="index" controller="usage" method="get" class="ui small form">
         <div class="three fields">
             <div class="field">
@@ -81,7 +81,7 @@
         </td></tr>
 </table>
 
-<ui:filter>
+<ui:filter simple="true">
     <g:form action="index" controller="usage" method="get" class="ui small form">
 
         <div class="two fields">

@@ -316,7 +316,7 @@
 
 
 <g:if test="${params.tab in ['allIEsStats', 'holdingIEsStats']}">
-    <ui:tabs>
+    <ui:tabs class="la-overflowX-auto">
         <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
                         params="${params + [tabStat: 'total']}"
                         text="${message(code: 'default.usage.allUsageGrid.header')}" tab="total" subTab="tabStat"/>

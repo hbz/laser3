@@ -948,9 +948,8 @@ class YodaController {
         if (indexName) {
            ESWrapperService.deleteIndex(indexName)
            ESWrapperService.createIndex(indexName)
-           dataloadService.updateFTIndices()
+           dataloadService.updateFTIndex(indexName)
         }
-
         redirect(action: 'manageFTControl')
     }
 

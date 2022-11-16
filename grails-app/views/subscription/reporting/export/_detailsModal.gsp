@@ -101,54 +101,63 @@
                             ${message(code: 'reporting.modal.export.cfg.csv.fieldQuotation')}: <span class="ui circular label">${BaseDetailsExport.CSV_FIELD_QUOTATION}</span> <br />
                             ${message(code: 'reporting.modal.export.cfg.csv.valueSeparator')}: <span class="ui circular label">${BaseDetailsExport.CSV_VALUE_SEPARATOR}</span> <br />
                         </p>
-                        <p>
-                            <span class="ui checkbox">
-                                <input type="checkbox" name="hideEmptyResults-csv" id="hideEmptyResults-csv" />
-                                <label for="hideEmptyResults-csv">${message(code: 'reporting.modal.export.cfg.hideEmptyResults')}</label>
-                            </span>
-                        </p>
+                        <div class="grouped fields">
+                            <div class="field">
+                                <span class="ui checkbox">
+                                    <input type="checkbox" name="hideEmptyResults-csv" id="hideEmptyResults-csv" />
+                                    <label for="hideEmptyResults-csv">${message(code: 'reporting.modal.export.cfg.hideEmptyResults')}</label>
+                                </span>
+                            </div>
+                        </div>
                     </div>
                     <div class="wide eight field fileformat-details-xlsx">
                         <label>${message(code: 'reporting.modal.export.cfg.xlsx')}</label>
-                        <p>
-                            <br />
-                            <span class="ui checkbox">
-                                <input type="checkbox" name="insertNewLines-xlsx" id="insertNewLines-xlsx" />
-                                <label for="insertNewLines-xlsx">${message(code: 'reporting.modal.export.cfg.xlsx.newLines')}</label>
-                            </span>
-                            <br />
-                            <span class="ui checkbox">
-                                <input type="checkbox" name="hideEmptyResults-xlsx" id="hideEmptyResults-xlsx" />
-                                <label for="hideEmptyResults-xlsx">${message(code: 'reporting.modal.export.cfg.hideEmptyResults')}</label>
-                            </span>
-                            <br />
-                            <span class="ui checkbox">
-                                <input type="checkbox" name="useHyperlinks-xlsx" id="useHyperlinks-xlsx" />
-                                <label for="useHyperlinks-xlsx">${message(code: 'reporting.modal.export.cfg.useHyperlinks')}</label>
-                            </span>
-                        </p>
+                        <div class="grouped fields">
+                            <div class="field">
+                                <span class="ui checkbox">
+                                    <input type="checkbox" name="insertNewLines-xlsx" id="insertNewLines-xlsx" />
+                                    <label for="insertNewLines-xlsx">${message(code: 'reporting.modal.export.cfg.xlsx.newLines')}</label>
+                                </span>
+                            </div>
+                            <div class="field">
+                                <span class="ui checkbox">
+                                    <input type="checkbox" name="hideEmptyResults-xlsx" id="hideEmptyResults-xlsx" />
+                                    <label for="hideEmptyResults-xlsx">${message(code: 'reporting.modal.export.cfg.hideEmptyResults')}</label>
+                                </span>
+                            </div>
+                            <div class="field">
+                                <span class="ui checkbox">
+                                    <input type="checkbox" name="useHyperlinks-xlsx" id="useHyperlinks-xlsx" />
+                                    <label for="useHyperlinks-xlsx">${message(code: 'reporting.modal.export.cfg.useHyperlinks')}</label>
+                                </span>
+                            </div>
+                        </div>
                     </div>
                     <div class="wide eight field fileformat-details-pdf">
                         <label>${message(code: 'reporting.modal.export.cfg.pdf')}</label>
                         <p>
                             ${message(code: 'reporting.modal.export.cfg.pdf.queryInfo')}: <span class="ui circular label">${message(code: 'reporting.modal.export.cfg.pdf.queryInfo.default')}</span> <br />
                         </p>
-                        <p>
-                            <span class="ui checkbox">
-                                <input type="checkbox" name="useLineNumbers-pdf" id="useLineNumbers-pdf" checked="checked" />
-                                <label for="useLineNumbers-pdf">${message(code: 'reporting.modal.export.cfg.pdf.useLineNumbers')}</label>
-                            </span>
-                            <br />
-                            <span class="ui checkbox">
-                                <input type="checkbox" name="hideEmptyResults-pdf" id="hideEmptyResults-pdf" />
-                                <label for="hideEmptyResults-pdf">${message(code: 'reporting.modal.export.cfg.hideEmptyResults')}</label>
-                            </span>
-                            <br />
-                            <span class="ui checkbox">
-                                <input type="checkbox" name="useHyperlinks-pdf" id="useHyperlinks-pdf" />
-                                <label for="useHyperlinks-pdf">${message(code: 'reporting.modal.export.cfg.useHyperlinks')}</label>
-                            </span>
-                        </p>
+                        <div class="grouped fields">
+                            <div class="field">
+                                <span class="ui checkbox">
+                                    <input type="checkbox" name="useLineNumbers-pdf" id="useLineNumbers-pdf" checked="checked" />
+                                    <label for="useLineNumbers-pdf">${message(code: 'reporting.modal.export.cfg.pdf.useLineNumbers')}</label>
+                                </span>
+                            </div>
+                            <div class="field">
+                                <span class="ui checkbox">
+                                    <input type="checkbox" name="hideEmptyResults-pdf" id="hideEmptyResults-pdf" />
+                                    <label for="hideEmptyResults-pdf">${message(code: 'reporting.modal.export.cfg.hideEmptyResults')}</label>
+                                </span>
+                            </div>
+                            <div class="field">
+                                <span class="ui checkbox">
+                                    <input type="checkbox" name="useHyperlinks-pdf" id="useHyperlinks-pdf" />
+                                    <label for="useHyperlinks-pdf">${message(code: 'reporting.modal.export.cfg.useHyperlinks')}</label>
+                                </span>
+                            </div>
+                        </div>
                     </div>
 
                     <div class="wide eight field">

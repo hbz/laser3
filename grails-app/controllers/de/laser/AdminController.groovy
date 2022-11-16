@@ -8,8 +8,6 @@ import de.laser.utils.LocaleUtils
 import de.laser.cache.EhcacheWrapper
 import de.laser.utils.SwissKnife
 import de.laser.remote.FTControl
-import de.laser.titles.BookInstance
-import de.laser.titles.TitleInstance
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.auth.UserOrg
@@ -658,7 +656,7 @@ class AdminController  {
             return
         }
 
-        result.titles    = dataConsistencyService.checkTitles()
+        result.duplicates = dataConsistencyService.checkDuplicates()
 
         result
     }

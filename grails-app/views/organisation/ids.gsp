@@ -7,8 +7,6 @@
 
 <ui:debugInfo>
     <laser:render template="/templates/debug/benchMark" model="[debug: benchMark]"/>
-    %{--<laser:render template="/templates/debug/orgRoles" model="[debug: orgInstance.links]"/>--}%
-    %{--<laser:render template="/templates/debug/prsRoles" model="[debug: orgInstance.prsLinks]"/>--}%
 </ui:debugInfo>
 
 <laser:render template="breadcrumb"
@@ -80,7 +78,7 @@
 
 %{--------------CUSTOMER IDENTIFIERS------------------------}%
         <g:if test="${params.tab == 'customerIdentifiers'}">
-            <ui:filter showFilterButton="true" addFilterJs="true">
+            <ui:filter>
                 <g:form controller="organisation" action="ids" class="ui small form" method="get">
                     <g:hiddenField name="tab" value="customerIdentifiers"/>
                     <g:hiddenField name="id" value="${orgInstance.id}"/>

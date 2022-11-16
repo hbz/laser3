@@ -292,7 +292,7 @@
                                                         <g:link controller="license" action="show" id="${link.lic.id}">${link.lic}</g:link>
                                                     </g:if>
                                                     <g:if test="${link.tipp}">
-                                                        <g:link controller="title" action="show" id="${link.title.id}">${link.title.title}</g:link>
+                                                        <g:link controller="tipp" action="show" id="${link.tipp.id}">${link.tipp.name}</g:link>
                                                     </g:if>
                                                 </div>
 

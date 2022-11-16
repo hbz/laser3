@@ -13,7 +13,7 @@
 
     <ui:messages data="${flash}" />
 
-    <ui:filter>
+    <ui:filter simple="true">
         <g:form action="addMembers" method="get" class="ui form">
             <laser:render template="/templates/filter/orgFilter"
                       model="[

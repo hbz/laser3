@@ -318,6 +318,8 @@ class SubscriptionFilter extends BaseFilter {
     static void _handleInternalOrgFilter(GrailsParameterMap params, String partKey, Map<String, Object> filterResult) {
 
         String filterSource = getCurrentFilterSource(params, partKey)
+        if (!filterSource) { return /* e.g. inst-sub-local */ }
+
         filterResult.labels.put(partKey, [source: BaseConfig.getSourceLabel(BaseConfig.KEY_SUBSCRIPTION, filterSource)])
 
         if (! filterResult.data.get('subscriptionIdList')) {

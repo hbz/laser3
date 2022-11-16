@@ -3,6 +3,8 @@ package de.laser
 import de.laser.config.ConfigMapper
 import de.laser.remote.FTControl
 import de.laser.system.SystemEvent
+import de.laser.utils.CodeUtils
+import grails.core.GrailsClass
 import grails.gorm.transactions.Transactional
 import groovy.json.JsonOutput
 import org.apache.http.HttpHost
@@ -66,20 +68,7 @@ class ESWrapperService {
         (new HttpHost(ES_Host, 9200, "http")).toString()
     }
 
-    /*void closeClient() {
-        esclient.close()
-    }*/
-
-/*    Map<String, String> getESSettings(){
-        Map<String, String> result = [:]
-
-        result.clusterName = es_cluster_name
-        result.host = es_host
-        result.indexName = es_indices
-
-        result
-    }
-
+    /*
     Object getESMapping(){
         JSONParser jsonParser = new JSONParser(this.class.classLoader.getResourceAsStream("es_mapping.json"))
 
@@ -100,6 +89,16 @@ class ESWrapperService {
      */
     def getMapping(){
         _parseResource("${File.separator}elasticsearch${File.separator}es_mapping.json")
+    }
+
+    Class getDomainClassByIndex(String indexName) {
+        String domain = ES_Indices.find {it.value == indexName}.key
+        if (domain) {
+            GrailsClass cls = CodeUtils.getDomainArtefactBySimpleName(domain)
+            if (cls) {
+                return cls.clazz
+            }
+        }
     }
 
     /**
@@ -197,8 +196,6 @@ class ESWrapperService {
         GetIndexRequest request = new GetIndexRequest(indexName)
 
         if (!esclient.indices().exists(request, RequestOptions.DEFAULT)) {
-            log.debug("ES index ${indexName} did not exist, creating..")
-
             CreateIndexRequest createRequest = new CreateIndexRequest(indexName)
 
             log.debug("Adding index settings..")
@@ -210,13 +207,13 @@ class ESWrapperService {
 
             boolean acknowledged = createIndexResponse.isAcknowledged()
 
-
             if (acknowledged) {
                 log.debug("Index ${indexName} successfully created!")
-                String domainClassName = ES_Indices.find {it.value == indexName}.key
+                //String domainClassName = ES_Indices.find {it.value == indexName}.key
+                String dcn = getDomainClassByIndex(indexName).name
 
                 FTControl.withTransaction {
-                    int res = FTControl.executeUpdate("delete FTControl c where c.domainClassName = :deleteFT", [deleteFT: "de.laser.${domainClassName}"])
+                    int res = FTControl.executeUpdate("delete FTControl c where c.domainClassName = :deleteFT", [deleteFT: dcn])
                     log.info("Result: ${res}")
                 }
                 esclient.close()

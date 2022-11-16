@@ -13,7 +13,7 @@
         </g:if>
     </h2>
 
-    <ui:filter>
+    <ui:filter simple="true">
         <form class="ui form">
             <div class="fields">
 

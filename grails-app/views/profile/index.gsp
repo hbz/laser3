@@ -29,7 +29,7 @@
                         ${message(code: 'profile.bc.profile')}
                     </h2>
 
-                    <g:form action="updateProfile" class="ui form updateProfile">
+                    <ui:form controller="profile" action="updateProfile" class="updateProfile" hideWrapper="true">
                         <div class="field">
                             <label for="profile_username">${message(code: 'profile.username')}</label>
                             <input type="text" readonly="readonly" id="profile_username" value="${user.username}"/>
@@ -56,7 +56,7 @@
                         <div class="field">
                             <button type="submit" class="ui button">${message(code: 'profile.update.button')}</button>
                         </div>
-                    </g:form><!-- updateProfile -->
+                    </ui:form><!-- updateProfile -->
 
                 </div><!-- .content -->
             </div><!-- .card -->
@@ -67,7 +67,7 @@
                         ${message(code: 'profile.notification.label')}
                     </h2>
 
-                    <g:form action="updateNotificationSettings" class="ui form updateNotificationSettings">
+                    <ui:form controller="profile" action="updateNotificationSettings" class="updateNotificationSettings" hideWrapper="true">
                         <div class="inline field">
                             <div class="ui checkbox">
                                 <g:set var="isNotificationByEmail" value="${user.getSetting(KEYS.IS_NOTIFICATION_BY_EMAIL, RDStore.YN_NO).rdValue == RDStore.YN_YES}"/>
@@ -131,7 +131,7 @@
                         <div class="inline field">
                             <button type="submit" class="ui button" id="notificationSubmit">${message(code: 'profile.notification.submit')}</button>
                         </div>
-                    </g:form><!-- updateNotificationSettings -->
+                    </ui:form><!-- updateNotificationSettings -->
 
                 </div><!-- .content -->
             </div><!-- .card -->
@@ -142,7 +142,7 @@
                         ${message(code: 'profile.reminder.label')}
                     </h2>
 
-                    <g:form action="updateReminderSettings" class="ui form updateReminderSettings">
+                    <ui:form controller="profile" action="updateReminderSettings" class="updateReminderSettings" hideWrapper="true">
 
                         <div class="inline field">
                             <div class="ui checkbox">
@@ -323,7 +323,7 @@
                         <div class="inline field">
                             <button type="submit" class="ui button" id="reminderSubmit">${message(code: 'profile.reminder.submit')}</button>
                         </div>
-                    </g:form><!-- updateReminderSettings -->
+                    </ui:form><!-- updateReminderSettings -->
                 </div><!-- .content -->
             </div><!-- .card -->
 
@@ -370,7 +370,7 @@
                         </div>
                     </g:if>
 
-                    <g:form action="updatePassword" class="ui form updatePassword">
+                    <ui:form controller="profile" action="updatePassword" class="updatePassword" hideWrapper="true">
                         <div class="field required">
                             <label for="password_current">${message(code: 'profile.password.current')} <g:message code="messageRequiredField" /></label>
                             <input type="password" name="password_current" id="password_current" class="pw"/>
@@ -391,7 +391,7 @@
                             <label></label>
                             <button type="submit" class="ui button" id="password_submit">${message(code: 'profile.password.update.button')}</button>
                         </div>
-                    </g:form><!-- updatePassword -->
+                    </ui:form><!-- updatePassword -->
 
                 </div><!-- .content -->
             </div><!-- .card -->
@@ -473,7 +473,7 @@
 
                 <div class="ui card la-full-width">
                     <div class="content">
-                        <g:form controller="profile" action="addAffiliation" class="ui form addAffiliationForm" method="get">
+                        <ui:form controller="profile" action="addAffiliation" class="addAffiliationForm" hideWrapper="true">
                             <div class="two fields">
                                 <div class="field">
                                     <label for="org">Organisation</label>
@@ -498,7 +498,7 @@
                             <div class="field">
                                 <button id="submitARForm" data-complete-text="Request Membership" type="submit" class="ui button">${message(code: 'profile.membership.add.button')}</button>
                             </div>
-                        </g:form>
+                        </ui:form>
                     </div><!-- .content -->
                 </div><!-- .card -->
 

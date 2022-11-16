@@ -1,7 +1,7 @@
 <%@ page import="de.laser.auth.Role" %>
 <laser:serviceInjection/>
 
-<ui:filter showFilterButton="true" addFilterJs="true">
+<ui:filter>
     <g:form controller="${controllerName}" action="${actionName}" params="${params.id ? [id:params.id] : []}" method="get" class="ui form">
 
         <div class="four fields">

@@ -20,7 +20,7 @@
 
     <ui:messages data="${flash}" />
 
-    <ui:filter showFilterButton="true" addFilterJs="true">
+    <ui:filter>
         <g:form action="listConsortia" method="get" class="ui form">
             <laser:render template="/templates/filter/orgFilter"
                       model="[

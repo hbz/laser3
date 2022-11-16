@@ -1,7 +1,7 @@
 <laser:htmlStart message="datamanager.deletedOrgManagement.label" />
 
     <ui:breadcrumbs>
-      <ui:crumb controller="dataManager" action="index" text="${message(code:'menu.datamanager')}" />
+      <ui:crumb controller="dataManager" action="index" message="menu.datamanager" />
       <ui:crumb text="${message(code:'datamanager.deletedOrgManagement.label')}" class="active"/>
     </ui:breadcrumbs>
 

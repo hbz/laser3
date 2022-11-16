@@ -80,7 +80,7 @@
                                     <ui:link generateElementId="true" class="item" role="menuitem" controller="gasco">${message(code:'menu.public.gasco_monitor')}</ui:link>
 
                                     <a id="wekb" href="${message(code:'url.wekb.' + currentServer)}" target="_blank" class="item" role="menuitem"><i class="ui icon la-gokb"></i> we:kb</a>
-                                    <a id="ygor" href="${message(code:'url.ygor.' + currentServer)}" target="_blank" class="item" role="menuitem">YGOR</a>
+
                             </div>
                         </div>
 
@@ -738,7 +738,7 @@
 
                 <g:if test="${currentServer == AppUtils.LOCAL}">
                 console.log(JSPC);
-                why.tap(true);
+                why.info(false);
                 </g:if>
             })
         </script>
