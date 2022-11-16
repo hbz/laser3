@@ -54,15 +54,7 @@ spring:
         livereload:
             enabled: false
         restart:
-            additional-exclude:
-                - '*.gsp'
-                - '**/*.gsp'
-                - '*.gson'
-                - '**/*.gson'
-                - 'logback.groovy'
-                - '*.properties'
-            enabled: true
-            trigger-file: 'restart.trigger'
+            enabled: false
 
 server:
     servlet:

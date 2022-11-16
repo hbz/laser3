@@ -2,8 +2,8 @@ package de.laser.jobs
 
 import de.laser.SystemService
 import de.laser.annotations.UnderDevelopment
-import de.laser.custom.CustomWebSocketConfig
 import de.laser.config.ConfigMapper
+import de.laser.custom.CustomWebSocketMessageBrokerConfig
 import de.laser.system.SystemActivityProfiler
 import de.laser.base.AbstractJob
 import grails.converters.JSON
@@ -20,6 +20,7 @@ class HeartbeatJob extends AbstractJob {
 
     static triggers = {
     cron name:'heartbeatTrigger', startDelay:10000, cronExpression: "0 0/5 * * * ?"
+    //cron name:'heartbeatTrigger', startDelay:10000, cronExpression: "0/10 * * * * ?"
     // cronExpression: "s m h D M W Y"
     //                  | | | | | | `- Year [optional]
     //                  | | | | | `- Day of Week, 1-7 or SUN-SAT, ?
@@ -58,7 +59,7 @@ class HeartbeatJob extends AbstractJob {
             //                         ^ org.springframework.messaging.simp.SimpMessagingTemplate
 
             String status = new JSON(systemService.getStatusMessage()).toString(false)
-            brokerMessagingTemplate.convertAndSend( CustomWebSocketConfig.WS_TOPIC_STATUS, status )
+            brokerMessagingTemplate.convertAndSend( CustomWebSocketMessageBrokerConfig.WS_TOPIC_STATUS, status )
 
         } catch (Exception e) {
             log.error e.getMessage()
