@@ -54,7 +54,14 @@ spring:
         livereload:
             enabled: false
         restart:
-            enabled: true
+            additional-exclude:
+                - '*.gsp'
+                - '**/*.gsp'
+                - '*.gson'
+                - '**/*.gson'
+                - 'logback.groovy'
+                - '*.properties'
+            enabled: false
 
 server:
     servlet:
