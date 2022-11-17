@@ -42,6 +42,8 @@ class DataloadService {
     ESWrapperService ESWrapperService
     ExecutorService executorService
 
+    static final int BULK_LIMIT         = 5000000
+
     static final int BULK_SIZE_LARGE    = 10000
     static final int BULK_SIZE_MEDIUM   = 5000
     static final int BULK_SIZE_SMALL    = 100
@@ -51,8 +53,6 @@ class DataloadService {
 
     def updateFTIndex(String indexName) {
         if (indexName) {
-            ESWrapperService.deleteIndex(indexName)
-            ESWrapperService.createIndex(indexName)
             updateFTIndices(indexName)
         }
     }
@@ -188,7 +188,7 @@ class DataloadService {
 
         if (!domainClass || domainClass == TitleInstancePackagePlatform.class) {
 
-            _updateES(TitleInstancePackagePlatform.class, BULK_SIZE_MEDIUM) { TitleInstancePackagePlatform tipp ->
+            _updateES(TitleInstancePackagePlatform.class, BULK_SIZE_LARGE) { TitleInstancePackagePlatform tipp ->
                 Map result = [:]
 
                 if (tipp.name != null && tipp.titleType != null) {
@@ -655,7 +655,7 @@ class DataloadService {
 
         if (!domainClass || domainClass == IssueEntitlement.class) {
 
-            _updateES(IssueEntitlement.class, BULK_SIZE_MEDIUM) { IssueEntitlement ie ->
+            _updateES(IssueEntitlement.class, BULK_SIZE_LARGE) { IssueEntitlement ie ->
                 Map result = [:]
 
                 result._id = ie.globalUID
@@ -837,7 +837,7 @@ class DataloadService {
         RestHighLevelClient esclient = ESWrapperService.getClient()
         Map es_indices = ESWrapperService.ES_Indices
 
-        long total = 0, currentTimestamp = 0
+        long total = 0, startingTimestamp = 0, bulkMaxTimestamp = 0
         BigDecimal mb = 0, totalMb = 0
 
         if (! FTControl.findByDomainClassNameAndActivity(domainClass.name, 'ESIndex')) {
@@ -858,22 +858,31 @@ class DataloadService {
                         if (ClassUtils.getAllInterfaces(domainClass).contains(CalculatedLastUpdated)) {
                             idList = domainClass.executeQuery(
                                     // "select d.id from " + domainClass.name + " as d where (d.lastUpdatedCascading is not null and d.lastUpdatedCascading > :from) or (d.lastUpdated > :from) or (d.dateCreated > :from and d.lastUpdated is null) order by d.lastUpdated asc, d.id",
-                                    "select d.id from " + domainClass.name + " as d where (d.dateCreated > :from or d.lastUpdated > :from or d.lastUpdatedCascading > :from) order by d.lastUpdated asc, d.id",
+                                    "select d.id from " + domainClass.name + " as d where (d.dateCreated > :from or d.lastUpdated > :from or d.lastUpdatedCascading > :from) order by d.dateCreated asc, d.id",
                                     [from: from], [readonly: true]
                             )
                         } else {
                             idList = domainClass.executeQuery(
                                     // "select d.id from " + domainClass.name + " as d where (d.lastUpdated > :from) or (d.dateCreated > :from and d.lastUpdated is null) order by d.lastUpdated asc, d.id",
-                                    "select d.id from " + domainClass.name + " as d where (d.dateCreated > :from or d.lastUpdated > :from) order by d.lastUpdated asc, d.id",
+                                    "select d.id from " + domainClass.name + " as d where (d.dateCreated > :from or d.lastUpdated > :from) order by d.dateCreated asc, d.id",
                                     [from: from], [readonly: true]
                             )
                         }
 
-                        currentTimestamp = System.currentTimeMillis()
                         BulkRequest bulkRequest = new BulkRequest()
+                        startingTimestamp = System.currentTimeMillis()
 
-                            List<List<Long>> bulks = idList.collate(bulkSize)
-                            if (bulks) { log.debug("${logPrefix} - for changes since ${from}; bulks todo: ${bulks.size()}") }
+                            List<Long> todoList = idList.take(BULK_LIMIT)
+                            List<List<Long>> bulks = todoList.collate(bulkSize)
+
+                            if (bulks) {
+                                if (idList.size() > BULK_LIMIT) {
+                                    log.debug("${logPrefix} - ${idList.size()} changes since [${from}] - processing is limited to ${BULK_LIMIT}; bulks todo: ${bulks.size()}")
+                                }
+                                else {
+                                    log.debug("${logPrefix} - ${idList.size()} changes since [${from}]; bulks todo: ${bulks.size()}")
+                                }
+                            }
 
                             bulks.eachWithIndex { List bulk, int i ->
                                 for (domain_id in bulk) {
@@ -894,6 +903,7 @@ class DataloadService {
 
                                     bulkRequest.add(request)
                                     total++
+                                    bulkMaxTimestamp = Math.max(bulkMaxTimestamp, ((Date) r.dateCreated)?.getTime())
                                 } // for
 
                                 mb = (bulkRequest.estimatedSizeInBytes()/1024/1024)
@@ -910,23 +920,24 @@ class DataloadService {
                                     }
                                 }
 
-                                log.debug("${logPrefix} - processed ${total} records, ${idList.size() - total} todo; bulkSize ${mb.round(2)}MB")
+                                log.debug("${logPrefix} - processed ${total} <- ${todoList.size() - total} records; bulkSize ${mb.round(2)}MB")
                                 bulkRequest = new BulkRequest()
-
-                                // session.flush()
                             } // each
 
                             log.debug("${logPrefix} - totally processed ${total} records; ${totalMb.round(2)}MB")
 
-                            ftControl.lastTimestamp = currentTimestamp
+                            if (idList.size() > BULK_LIMIT) {
+                                log.debug("${logPrefix} - increasing last_timestamp to [${new Date(bulkMaxTimestamp)}]")
+                                ftControl.lastTimestamp = bulkMaxTimestamp
+                            } else {
+                                ftControl.lastTimestamp = startingTimestamp
+                            }
                             ftControl.save()
 
                     } else {
-                        // ftControl.save() - not needed
                         log.debug("${logPrefix} - failed -> ESWrapperService.testConnection() && es_indices && es_indices.get(domain.simpleName)")
                     }
                 } else {
-                    // ftControl.save() - not needed
                     log.debug("${logPrefix} - ignored. FTControl is not active")
                 }
             }
@@ -1160,13 +1171,13 @@ class DataloadService {
                 if (je.ms) {
                     long ms = JSON.parse(se.payload).ms ?: 0
                     if (ms) {
-                        info += ' (' + (ms/1000).round(2) + ' s.)'
+                        info += ' (' + (ms/1000).round(2) + 's)'
                     }
                 }
                 if (je.s) {
                     double s = JSON.parse(se.payload).s ?: 0
                     if (s) {
-                        info += ' (' + s + ' s.)'
+                        info += ' (' + s + 's)'
                     }
                 }
             }

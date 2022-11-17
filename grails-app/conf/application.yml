@@ -54,7 +54,7 @@ spring:
         livereload:
             enabled: false
         restart:
-            enabled: false
+            enabled: true
 
 server:
     servlet:
