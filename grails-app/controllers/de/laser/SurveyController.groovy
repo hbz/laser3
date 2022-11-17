@@ -1023,6 +1023,20 @@ class SurveyController {
 
         result.selectedCostItemElement = params.selectedCostItemElement ? params.selectedCostItemElement.toString() : RefdataValue.getByValueAndCategory('price: consortial price', RDConstants.COST_ITEM_ELEMENT).id.toString()
 
+        if(result.selectedSubParticipants && params.sortOnCostItems){
+            List<Subscription> orgSubscriptions = result.surveyConfig.orgSubscriptions()
+            List<Org> selectedSubParticipants = result.selectedSubParticipants
+            result.selectedSubParticipants = []
+
+            List<Subscription> subscriptionList =  CostItem.executeQuery("select c.sub from CostItem as c where c.sub in (:subList) and c.owner = :owner and c.costItemStatus != :status and c.costItemElement.id = :costItemElement order by c.costInBillingCurrency", [subList: orgSubscriptions, owner: result.surveyInfo.owner, status: RDStore.COST_ITEM_DELETED, costItemElement: Long.parseLong(result.selectedCostItemElement)])
+
+            subscriptionList.each { Subscription sub ->
+                Org org = sub.getSubscriber()
+                if(selectedSubParticipants && org && org.id in selectedSubParticipants.id)
+                    result.selectedSubParticipants << sub.getSubscriber()
+            }
+        }
+
         if (params.selectedCostItemElement) {
             params.remove('selectedCostItemElement')
         }

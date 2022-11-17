@@ -347,6 +347,25 @@ class SurveyConfig {
     }
 
     /**
+     * Get the subscriptions which is target of this survey
+     * @return list of subscription
+     */
+    List<Subscription> orgSubscriptions() {
+        List<Subscription> orgSubscriptions = []
+        if (this.subscription) {
+            orgSubscriptions = Subscription.executeQuery("select sub" +
+                    " from Subscription sub " +
+                    " join sub.orgRelations orgR " +
+                    " where orgR.roleType in :roleTypes " +
+                    " and sub.instanceOf = :instanceOfSub",
+                    [roleTypes    : [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS],
+                     instanceOfSub: this.subscription])
+        }
+        return orgSubscriptions
+
+    }
+
+    /**
      * Gets the following survey target to this one
      * @return the next config if it exists, null otherwise
      */
