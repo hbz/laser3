@@ -1023,6 +1023,20 @@ class SurveyController {
 
         result.selectedCostItemElement = params.selectedCostItemElement ? params.selectedCostItemElement.toString() : RefdataValue.getByValueAndCategory('price: consortial price', RDConstants.COST_ITEM_ELEMENT).id.toString()
 
+        if(result.selectedSubParticipants && params.sortOnCostItems){
+            List<Subscription> orgSubscriptions = result.surveyConfig.orgSubscriptions()
+            List<Org> selectedSubParticipants = result.selectedSubParticipants
+            result.selectedSubParticipants = []
+
+            List<Subscription> subscriptionList =  CostItem.executeQuery("select c.sub from CostItem as c where c.sub in (:subList) and c.owner = :owner and c.costItemStatus != :status and c.costItemElement.id = :costItemElement order by c.costInBillingCurrency", [subList: orgSubscriptions, owner: result.surveyInfo.owner, status: RDStore.COST_ITEM_DELETED, costItemElement: Long.parseLong(result.selectedCostItemElement)])
+
+            subscriptionList.each { Subscription sub ->
+                Org org = sub.getSubscriber()
+                if(selectedSubParticipants && org && org.id in selectedSubParticipants.id)
+                    result.selectedSubParticipants << sub.getSubscriber()
+            }
+        }
+
         if (params.selectedCostItemElement) {
             params.remove('selectedCostItemElement')
         }
@@ -1737,6 +1751,13 @@ class SurveyController {
                     surveyService.emailsToSurveyUsersOfOrg(result.surveyInfo, org, false)
                 }
                 if(reminderMail) {
+                    SurveyOrg.withTransaction { TransactionStatus ts ->
+                        SurveyOrg surveyOrg = SurveyOrg.findByOrgAndSurveyConfig(org, result.surveyConfig)
+
+                        surveyOrg.reminderMailDate = new Date()
+                        surveyOrg.save()
+                    }
+
                     surveyService.emailsToSurveyUsersOfOrg(result.surveyInfo, org, true)
                     countReminderMails++
                 }
@@ -3004,7 +3025,14 @@ class SurveyController {
             response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
 
-        result.surveyConfig.comment = params.comment
+        if(params.setComment){
+            result.surveyConfig.comment = params.comment
+        }
+
+        if(params.setCommentForNewParticipants){
+            result.surveyConfig.commentForNewParticipants = params.commentForNewParticipants
+        }
+
         SurveyConfig.withTransaction {
             if (!result.surveyConfig.save()) {
                 flash.error = g.message(code: 'default.save.error.general.message')
@@ -3302,6 +3330,7 @@ class SurveyController {
                                 subscription: sub,
                                 surveyInfo: newSurveyInfo,
                                 comment: params.copySurvey.copySurveyConfigComment ? baseSurveyConfig.comment : null,
+                                commentForNewParticipants: params.copySurvey.copySurveyConfigCommentForNewParticipants ? baseSurveyConfig.commentForNewParticipants : null,
                                 url: params.copySurvey.copySurveyConfigUrl ? baseSurveyConfig.url : null,
                                 urlComment: params.copySurvey.copySurveyConfigUrl ? baseSurveyConfig.urlComment : null,
                                 url2: params.copySurvey.copySurveyConfigUrl2 ? baseSurveyConfig.url2 : null,
@@ -3336,6 +3365,7 @@ class SurveyController {
                             type: baseSurveyConfig.type,
                             surveyInfo: newSurveyInfo,
                             comment: params.copySurvey.copySurveyConfigComment ? baseSurveyConfig.comment : null,
+                            commentForNewParticipants: params.copySurvey.copySurveyConfigCommentForNewParticipants ? baseSurveyConfig.commentForNewParticipants : null,
                             url: params.copySurvey.copySurveyConfigUrl ? baseSurveyConfig.url : null,
                             urlComment: params.copySurvey.copySurveyConfigUrl ? baseSurveyConfig.urlComment : null,
                             url2: params.copySurvey.copySurveyConfigUrl2 ? baseSurveyConfig.url2 : null,

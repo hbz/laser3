@@ -121,7 +121,7 @@
                 params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
                 <laser:render template="/templates/filter/orgFilter"
                 model="[
-                                  tmplConfigShow      : [['name', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value']],
+                                  tmplConfigShow      : [['name', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value'], surveyConfig.subscription ? ['hasSubscription'] : []],
                                   tmplConfigFormFilter: true
                           ]"/>
                 </g:form>
@@ -175,12 +175,13 @@
 
                 <g:if test="${params.tab == 'selectedSubParticipants'}">
 
+                    <g:link action="surveyCostItems" class="ui button"
+                            params="${params + [sortOnCostItems: true]}"><g:message code="surveyCostItems.sortOnPrice"/> </g:link>
+
                     <h3 class="ui header"><g:message code="surveyParticipants.hasAccess"/></h3>
 
                     <g:set var="surveyParticipantsHasAccess"
-                           value="${selectedSubParticipants?.findAll { it?.hasAccessOrg() }?.sort {
-                               it?.sortname
-                           }}"/>
+                           value="${selectedSubParticipants?.findAll { it.hasAccessOrg() }}"/>
 
                     <div class="four wide column">
                     <g:if test="${surveyParticipantsHasAccess}">
@@ -204,7 +205,7 @@
                     <h3 class="ui header"><g:message code="surveyParticipants.hasNotAccess"/></h3>
 
                     <g:set var="surveyParticipantsHasNotAccess"
-                           value="${selectedSubParticipants?.findAll { !it?.hasAccessOrg() }?.sort { it?.sortname }}"/>
+                           value="${selectedSubParticipants?.findAll { !it.hasAccessOrg() }}"/>
 
                     <div class="four wide column">
                     <g:if test="${surveyParticipantsHasNotAccess}">
@@ -234,7 +235,7 @@
 
 
                     <g:set var="surveyParticipantsHasAccess"
-                           value="${selectedParticipants?.findAll { it?.hasAccessOrg() }?.sort { it?.sortname }}"/>
+                           value="${selectedParticipants?.findAll { it.hasAccessOrg() }}"/>
 
                     <div class="four wide column">
                     <g:if test="${surveyParticipantsHasAccess}">
@@ -259,7 +260,7 @@
                     <h3 class="ui header"><g:message code="surveyParticipants.hasNotAccess"/></h3>
 
                     <g:set var="surveyParticipantsHasNotAccess"
-                           value="${selectedParticipants?.findAll { !it?.hasAccessOrg() }?.sort { it?.sortname }}"/>
+                           value="${selectedParticipants?.findAll { !it.hasAccessOrg() }}"/>
 
                     <div class="four wide column">
                     <g:if test="${surveyParticipantsHasNotAccess}">

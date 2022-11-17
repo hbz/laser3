@@ -1046,6 +1046,21 @@ class FilterService {
             }
         }
 
+        if((params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription)) {
+            String subQuery = " and "
+            if(params.hasSubscription) {
+                subQuery = subQuery
+            }
+            if(params.hasNotSubscription) {
+                subQuery = subQuery + " not"
+            }
+
+            subQuery = subQuery + " exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = surveyOrg.org.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and sub.instanceOf = surveyOrg.surveyConfig.subscription)"
+            queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIA, context: contextService.getOrg()]
+            base_qry = base_qry + subQuery
+        }
+
+
         if ((params.sort != null) && (params.sort.length() > 0)) {
                 base_qry += " order by ${params.sort} ${params.order ?: "asc"}"
         } else {
