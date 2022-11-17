@@ -9,6 +9,8 @@
 
 4369    16.11.2022  dev     3.0         Moe     Feature     Umfrage: Filter für Nicht Lizenzteilnehmer bauen
 
+4552    16.11.2022  dev     3.0         Andreas Feature     neue Details auf der Paketdetailsicht
+
 --      14.11.2022  rc-2.3  2.3.11      Moe     Feature     Title-Auswahl mit Title-Url
 
 4581    10.11.2022  dev     3.0         David   Feature     Lizenz-Reporting: Tortendiagramm

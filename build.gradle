@@ -95,6 +95,8 @@ dependencies {
     implementation 'org.grails.plugins:gsp'
 
     implementation 'io.micronaut:micronaut-http-client'
+    implementation 'org.springframework:spring-websocket'
+    implementation 'org.springframework:spring-messaging'
 
     profile 'org.grails.profiles:web'
 
@@ -111,7 +113,6 @@ dependencies {
     implementation 'org.grails.plugins:grails-executor:0.4'                 // 2016 : [deprecated]
     implementation 'org.grails.plugins:mail:3.0.0'                          // 2021 : upgrade from 2.0.0
     implementation 'org.grails.plugins:quartz:2.0.13'                       // 2019
-    implementation 'org.grails.plugins:grails-spring-websocket:2.5.0.RC1'   // 2019
     implementation 'org.grails.plugins:wkhtmltopdf:1.0.0.RC9'               // 2018
 
     implementation 'org.hibernate:hibernate-core:5.6.14.Final'              // 2022

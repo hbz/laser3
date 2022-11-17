@@ -53,7 +53,7 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
           altnames   : AlternativeName
   ]
 
-  static transients = ['currentTipps', 'calculatedPropDefGroups', 'viewName'] // mark read-only accessor methods
+  static transients = ['calculatedPropDefGroups', 'viewName'] // mark read-only accessor methods
 
   static mapping = {
                 id column:'plat_id'
@@ -187,13 +187,4 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
     name
   }
 
-  /**
-   * Gets the titles provided on this platform marked as current
-   * @return a {@link Set} of {@link TitleInstancePackagePlatform}s, linked to this platform and marked as current
-   */
-  def getCurrentTipps() {
-    def result = this.tipps?.findAll{it?.status?.id == RDStore.TIPP_STATUS_CURRENT.id}
-
-    result
-  }
 }
