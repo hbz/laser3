@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4368    16.11.2022  dev     3.0         Moe     Feature     Preise sortieren in Umfragen
+
+4369    16.11.2022  dev     3.0         Moe     Feature     Umfrage: Filter für Nicht Lizenzteilnehmer bauen
+
 4552    16.11.2022  dev     3.0         Andreas Feature     neue Details auf der Paketdetailsicht
 
 --      14.11.2022  rc-2.3  2.3.11      Moe     Feature     Title-Auswahl mit Title-Url
@@ -32,6 +36,10 @@
 4571    07.11.2022  rc-2.3  2.3.11      Moe     Feature     Ygor entfernen
 
 4412    07.11.2022  rc-2.3  2.3.11      Moe     Bug         Teilnehmerübertrag in manueller Verlängerung muss bei aktiver verpflichtender Lizenzverlängerungsumfrage geblockt sein
+
+4363    04.11.2022  dev     3.0         Moe     Feature     Umfrage: eigene Bemerkungsfeld für neu Kunden
+
+4317    04.11.2022  dev     3.0         Moe     Feature     Reminder in Umfragen: abhakbar/Datum
 
 4570    03.11.2022  dev     3.0         Moe     Feature     Umfrage Mails pro Einrichtung selber erstellen mit Mail-Client
 

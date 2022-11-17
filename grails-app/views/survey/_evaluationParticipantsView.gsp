@@ -115,7 +115,7 @@
         params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
     <laser:render template="/templates/filter/orgFilter"
               model="[
-                      tmplConfigShow      : [['name', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value']],
+                      tmplConfigShow      : [['name', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value'], surveyConfig.subscription ? ['hasSubscription'] : []],
                       tmplConfigFormFilter: true
               ]"/>
 </g:form>
@@ -126,6 +126,11 @@
 <g:form action="${processAction}" controller="survey" method="post" class="ui form"
         params="[id: surveyInfo.id, surveyConfigID: surveyConfig.id, tab: params.tab]">
     <br/><br/>
+
+    <div class="ui blue large label">
+        <g:message code="surveyEvaluation.participants"/>: <div class="detail">${participants.size()}</div>
+    </div>
+
     <h4 class="ui header"><g:message code="surveyParticipants.hasAccess"/></h4>
 
     <g:set var="surveyParticipantsHasAccess"
@@ -194,6 +199,11 @@
                 <th>
                     ${message(code: 'surveyInfo.finishedDate')}
                 </th>
+                </g:if>
+                <g:if test="${tmplConfigItem.equalsIgnoreCase('reminderMailDate')}">
+                    <th>
+                        ${message(code: 'surveyOrg.reminderMailDate')}
+                    </th>
                 </g:if>
             </g:each>
             <th scope="col" rowspan="2" class="two">${message(code:'default.actions.label')}</th>
@@ -330,7 +340,12 @@
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('finishedDate')}">
                         <td>
-                            <uiSurvey:finishDate participant="${participant}" surveyConfig="${surveyConfig}"/>
+                            <ui:xEditable owner="${surveyOrg}" type="date" field="finishDate"/>
+                        </td>
+                    </g:if>
+                    <g:if test="${tmplConfigItem.equalsIgnoreCase('reminderMailDate')}">
+                        <td>
+                            <ui:xEditable owner="${surveyOrg}" type="date" field="reminderMailDate"/>
                         </td>
                     </g:if>
                 </g:each>
@@ -413,6 +428,11 @@
                 <g:if test="${tmplConfigItem.equalsIgnoreCase('finishedDate')}">
                     <th>
                         ${message(code: 'surveyInfo.finishedDate')}
+                    </th>
+                </g:if>
+                <g:if test="${tmplConfigItem.equalsIgnoreCase('reminderMailDate')}">
+                    <th>
+                        ${message(code: 'surveyOrg.reminderMailDate')}
                     </th>
                 </g:if>
 
@@ -547,7 +567,12 @@
                     </g:if>
                     <g:if test="${tmplConfigItem.equalsIgnoreCase('finishedDate')}">
                         <td>
-                            <uiSurvey:finishDate participant="${participant}" surveyConfig="${surveyConfig}"/>
+                            <ui:xEditable owner="${surveyOrg}" type="date" field="finishDate"/>
+                        </td>
+                    </g:if>
+                    <g:if test="${tmplConfigItem.equalsIgnoreCase('reminderMailDate')}">
+                        <td>
+                            <ui:xEditable owner="${surveyOrg}" type="date" field="reminderMailDate"/>
                         </td>
                     </g:if>
 

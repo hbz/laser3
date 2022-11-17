@@ -124,6 +124,16 @@
                 </tr>
 
                 <tr>
+                    <td><g:checkBox name="copySurvey.copySurveyConfigCommentForNewParticipants" value="${true}"/></td>
+                    <td><g:message code="copySurvey.copySurveyConfigCommentForNewParticipants"/></td>
+                    <td>
+                        <g:if test="${surveyConfig.commentForNewParticipants}">
+                            <textarea class="la-textarea-resize-vertical" readonly="readonly" rows="15">${surveyConfig.commentForNewParticipants}</textarea>
+                        </g:if>
+                    </td>
+                </tr>
+
+                <tr>
                     <td><g:checkBox name="copySurvey.copySurveyProperties" value="${true}"/></td>
                     <td>${message(code: 'copySurvey.copySurveyProperties')}</td>
                     <td>
