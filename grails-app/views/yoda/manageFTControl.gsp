@@ -96,7 +96,10 @@
                 <td>
                     <g:formatNumber number="${indexInfo.countDB}" format="${message(code:'default.decimal.format')}"/>
                 </td>
-                <td><g:link action="deleteAndRefillIndex" params="[name: indexInfo.name]">Reset Index</g:link></td>
+                <td class="right aligned">
+                    <g:link action="resetIndex" params="[name: indexInfo.name]" class="ui tiny button red">Reset</g:link>
+                    <g:link action="continueIndex" params="[name: indexInfo.name]" class="ui tiny button green ${indexInfo.countIndex == indexInfo.countDB ? 'disabled' : ''}">Continue</g:link>
+                </td>
             </tr>
             </g:each>
         </tbody>

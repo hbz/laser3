@@ -1,7 +1,7 @@
 package de.laser.interceptors
 
 import de.laser.ContextService
-import de.laser.custom.CustomWebSocketConfig
+import de.laser.custom.CustomWebSocketMessageBrokerConfig
 import de.laser.helper.Profiler
 import de.laser.cache.SessionCacheWrapper
 import de.laser.system.SystemActivityProfiler
@@ -12,7 +12,7 @@ class SystemProfilerInterceptor implements grails.artefact.Interceptor {
 
     SystemProfilerInterceptor() {
         matchAll().excludes(controller:  ~/(ajax|ajaxHtml|ajaxJson|ajaxOpen)/)
-                  .excludes(uri: CustomWebSocketConfig.WS_STOMP + '/**') // websockets
+                  .excludes(uri: CustomWebSocketMessageBrokerConfig.WS_STOMP + '/**') // websockets
     }
 
     boolean before() {
