@@ -903,7 +903,10 @@ class DataloadService {
 
                                     bulkRequest.add(request)
                                     total++
-                                    bulkMaxTimestamp = Math.max(bulkMaxTimestamp, ((Date) r.dateCreated)?.getTime())
+
+                                    if (r.dateCreated) {
+                                        bulkMaxTimestamp = Math.max(bulkMaxTimestamp, ((Date) r.dateCreated).getTime())
+                                    }
                                 } // for
 
                                 mb = (bulkRequest.estimatedSizeInBytes()/1024/1024)

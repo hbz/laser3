@@ -144,7 +144,11 @@ class UserRole implements Serializable, Comparable {
 	 */
 	@Override
 	String toString() {
-		return '(' + user?.id + ',' + role?.id + ')'
+		try {
+			return '(' + user?.id + ',' + role?.id + ')'
+		} catch (Exception e) {
+			return '(' + user?.id + ', ?)'
+		}
 	}
 
 	/**
