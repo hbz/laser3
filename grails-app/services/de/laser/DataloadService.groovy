@@ -850,8 +850,13 @@ class DataloadService {
             try {
                 if (ftControl.active) {
 
-                    if (ESWrapperService.testConnection() && es_indices && es_indices.get(domainClass.simpleName)) {
+                    List<Long> validationList = domainClass.executeQuery('select d.id from ' + domainClass.name + ' as d where d.dateCreated is null')
+                    if (validationList) {
+                        log.info( "${logPrefix} - found ${validationList.size()} entries with dateCreated = null")
+                        // TODO migration
+                    }
 
+                    if (ESWrapperService.testConnection() && es_indices && es_indices.get(domainClass.simpleName)) {
                         Date from = new Date(ftControl.lastTimestamp)
                         List<Long> idList = []
 
