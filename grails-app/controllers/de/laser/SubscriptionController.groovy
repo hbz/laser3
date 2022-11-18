@@ -40,6 +40,7 @@ class SubscriptionController {
     ExportService exportService
     GenericOIDService genericOIDService
     GokbService gokbService
+    LinksGenerationService linksGenerationService
     ManagementService managementService
     SubscriptionControllerService subscriptionControllerService
     SubscriptionService subscriptionService
@@ -1327,8 +1328,7 @@ class SubscriptionController {
             Map queryMap = [:]
             String filename
             if(params.tab == 'allIEs') {
-                if(!params.exportXLS && !params.exportForImport)
-                    queryMap = [sub: ctrlResult.result.subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: ctrlResult.result.subscription.packages?.pkg?.id]
+                queryMap = [sub: ctrlResult.result.subscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: ctrlResult.result.subscription.packages?.pkg?.id]
                 filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.selectableTitles') + '_' + ctrlResult.result.subscription.dropdownNamingConvention())
             }
             if(params.tab == 'selectedIEs') {
@@ -1337,7 +1337,21 @@ class SubscriptionController {
             }
 
             if(params.tab == 'currentIEs' && ctrlResult.result.previousSubscription) {
-                queryMap = [sub: ctrlResult.result.previousSubscription, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: ctrlResult.result.previousSubscription.packages?.pkg?.id]
+                Set<Subscription> subscriptions = []
+                Set<Long> packageIds = []
+                if(ctrlResult.result.surveyConfig.pickAndChoosePerpetualAccess) {
+                    subscriptions = linksGenerationService.getSuccessionChain(ctrlResult.result.newSub, 'sourceSubscription')
+                    subscriptions.each {
+                        packageIds.addAll(it.packages?.pkg?.id)
+                    }
+                    subscriptions << ctrlResult.result.newSub
+                    packageIds.addAll(ctrlResult.result.newSub.packages?.pkg?.id)
+                }else {
+                    subscriptions << ctrlResult.result.previousSubscription
+                    packageIds.addAll(ctrlResult.result.previousSubscription.packages?.pkg?.id)
+                }
+
+                queryMap = [subscriptions: subscriptions, acceptStat: RDStore.IE_ACCEPT_STATUS_FIXED, ieStatus: RDStore.TIPP_STATUS_CURRENT, pkgIds: packageIds]
                 filename = escapeService.escapeString(message(code: 'renewEntitlementsWithSurvey.currentTitles') + '_' + ctrlResult.result.previousSubscription.dropdownNamingConvention())
             }
 

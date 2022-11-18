@@ -93,11 +93,21 @@
         <g:message code="surveyConfigsInfo.comment"/>
     </dt>
     <dd>
-        <g:if test="${surveyConfig.comment}">
-            ${surveyConfig.comment}
+        <g:if test="${subscription}">
+            <g:if test="${surveyConfig.comment}">
+                ${surveyConfig.comment}
+            </g:if>
+            <g:else>
+                <g:message code="surveyConfigsInfo.comment.noComment"/>
+            </g:else>
         </g:if>
         <g:else>
-            <g:message code="surveyConfigsInfo.comment.noComment"/>
+            <g:if test="${surveyConfig.commentForNewParticipants}">
+                ${surveyConfig.commentForNewParticipants}
+            </g:if>
+            <g:else>
+                <g:message code="surveyConfigsInfo.comment.noComment"/>
+            </g:else>
         </g:else>
     </dd>
 </dl>

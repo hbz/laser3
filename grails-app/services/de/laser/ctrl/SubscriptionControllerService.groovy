@@ -18,6 +18,7 @@ import de.laser.properties.SubscriptionProperty
 import de.laser.remote.ApiSource
 import de.laser.remote.GlobalRecordSource
 import de.laser.reporting.report.local.SubscriptionReport
+import de.laser.reporting.report.myInstitution.base.BaseConfig
 import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
@@ -1358,7 +1359,7 @@ class SubscriptionControllerService {
             result.countAllIEs = subscriptionService.countIssueEntitlementsFixed(baseSub)
             result.toBeSelectedIEs = result.countAllIEs - result.countSelectedIEs
 
-            result.num_ies_rows = sourceIEs.size()
+            result.num_ies_rows = sourceIEs ? IssueEntitlement.countByIdInList(sourceIEs) : 0
 
             if(params.tab in ['allIEsStats', 'holdingIEsStats']) {
                 //result = surveyService.getStatsForParticipant(result, params, newSub, result.subscriber, subscriptionService.getTippIDsFixed(baseSub))
@@ -2050,7 +2051,8 @@ class SubscriptionControllerService {
                                                    startDateCol       : -1, startVolumeCol: -1, startIssueCol: -1,
                                                    endDateCol         : -1, endVolumeCol: -1, endIssueCol: -1,
                                                    accessStartDateCol : -1, accessEndDateCol: -1, coverageDepthCol: -1, coverageNotesCol: -1, embargoCol: -1,
-                                                   listPriceCol       : -1, listCurrencyCol: -1, listPriceEurCol: -1, listPriceUsdCol: -1, listPriceGbpCol: -1, localPriceCol: -1, localCurrencyCol: -1, priceDateCol: -1]
+                                                   listPriceCol       : -1, listCurrencyCol: -1, listPriceEurCol: -1, listPriceUsdCol: -1, listPriceGbpCol: -1, localPriceCol: -1, localCurrencyCol: -1, priceDateCol: -1,
+                                                   title_url: -1]
                     boolean isUniqueListpriceColumn = false
                     //read off first line of KBART file
                     rows[0].split('\t').eachWithIndex { String headerCol, int c ->
@@ -2107,6 +2109,8 @@ class SubscriptionControllerService {
                                 break
                             case "price_date": colMap.priceDateCol = c
                                 break
+                            case "title_url": colMap.titleUrlCol = c
+                                break
                         }
                     }
                     if(result.uploadPriceInfo) {
@@ -2120,6 +2124,7 @@ class SubscriptionControllerService {
                     //after having read off the header row, pop the first row
                     rows.remove(0)
                     rows.eachWithIndex { row, int i ->
+                        String titleUrl = null
                         Map<String, Object> ieCandidate = [:]
                         ArrayList<String> cols = row.split('\t')
                         Map<String, Object> idCandidate = [:]
@@ -2151,14 +2156,28 @@ class SubscriptionControllerService {
                             else if (issueEntitlementOverwrite[cols[colMap.printIdentifierCol]])
                                 ieCandidate = issueEntitlementOverwrite[cols[colMap.printIdentifierCol]]
                         }
-                        if (((colMap.zdbCol >= 0 && cols[colMap.zdbCol].trim().isEmpty()) || colMap.zdbCol < 0) &&
+
+                        if (colMap.titleUrlCol >= 0 && !cols[colMap.titleUrlCol]?.trim()?.isEmpty()) {
+                            titleUrl = cols[colMap.titleUrlCol]
+                        }
+                        if (!titleUrl && ((colMap.zdbCol >= 0 && cols[colMap.zdbCol].trim().isEmpty()) || colMap.zdbCol < 0) &&
                                 ((colMap.onlineIdentifierCol >= 0 && cols[colMap.onlineIdentifierCol].trim().isEmpty()) || colMap.onlineIdentifierCol < 0) &&
                                 ((colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol].trim().isEmpty()) || colMap.printIdentifierCol < 0)) {
                             identifiers.unidentified.add('"' + cols[0] + '"')
                         } else {
                             //make checks ...
                             //is title in LAS:eR?
-                            List<TitleInstancePackagePlatform> matchingTipps = TitleInstancePackagePlatform.executeQuery("select tipp from Identifier id join id.tipp tipp where id.value = :value and id.ns in (:ns) and tipp.pkg in (:subPkgs)",[value: idCandidate.value, ns: idCandidate.namespaces, subPkgs: result.subscription.packages.collect { SubscriptionPackage sp -> sp.pkg }]) //it is *always* possible to have multiple packages linked to a subscription!
+                            String ieQuery = "select tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and  "
+                            Map ieQueryParams = [value: idCandidate.value, ns: idCandidate.namespaces, subPkgs: result.subscription.packages.collect { SubscriptionPackage sp -> sp.pkg }]
+                            if(titleUrl){
+                                ieQuery = ieQuery + " ((id.value = :value and id.ns in (:ns)) or tipp.hostPlatformURL = :url)"
+                                ieQueryParams.url = titleUrl
+                            }else {
+                                ieQuery = ieQuery + " id.value = :value and id.ns in (:ns)"
+                            }
+
+                            List<TitleInstancePackagePlatform> matchingTipps = TitleInstancePackagePlatform.executeQuery(ieQuery, ieQueryParams) //it is *always* possible to have multiple packages linked to a subscription!
+
                             if (matchingTipps) {
                                 TitleInstancePackagePlatform tipp = matchingTipps.find { TitleInstancePackagePlatform matchingTipp -> matchingTipp.pkg in result.subscription.packages.pkg } as TitleInstancePackagePlatform
                                 //is title already added?
@@ -2241,10 +2260,17 @@ class SubscriptionControllerService {
                                 }
                             }
                         }
-                        if (ieCandIdentifier) {
+                        if (ieCandIdentifier || titleUrl) {
+                            String tippQuery = "select tipp.gokbId from TitleInstancePackagePlatform tipp join tipp.ids id where tipp.pkg in (:pkgs) and tipp.status != :deleted and "
                             Map<String, Object> unfilteredParams = [pkgs:result.subscription.packages.pkg, deleted:RDStore.TIPP_STATUS_REMOVED, value: ieCandIdentifier]
+                            if(titleUrl){
+                                tippQuery = tippQuery + " ((id.value = :value) or tipp.hostPlatformURL = :url) "
+                                unfilteredParams.url = titleUrl
+                            }else {
+                                tippQuery = tippQuery + " id.value = :value "
+                            }
                             //check where indices are needed!
-                            List<String> matches = TitleInstancePackagePlatform.executeQuery('select tipp.gokbId from TitleInstancePackagePlatform tipp join tipp.ids id where tipp.pkg in (:pkgs) and tipp.status != :deleted and id.value = :value',unfilteredParams)
+                            List<String> matches = TitleInstancePackagePlatform.executeQuery(tippQuery, unfilteredParams)
                             ieCoverages.add(covStmt)
                             ieCandidate.coverages = ieCoverages
                             matches.each { String match ->
@@ -3437,8 +3463,9 @@ class SubscriptionControllerService {
         Map<String, Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
         Subscription sub = Subscription.get(params.id)
 
-        result.token         = params.token ?: RandomStringUtils.randomAlphanumeric(16) // -> static token
+        result.token           = params.token ?: RandomStringUtils.randomAlphanumeric(16) // -> static token
         result.cfgQueryList    = SubscriptionReport.getCurrentQueryConfig( sub )
+        result.cfgChartsList   = BaseConfig.CHARTS
         result.cfgTimelineList = SubscriptionReport.getCurrentTimelineConfig( sub )
 
         [result: result, status: (result ? STATUS_OK : STATUS_ERROR)]

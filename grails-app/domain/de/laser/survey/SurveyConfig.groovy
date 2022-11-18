@@ -57,6 +57,7 @@ class SurveyConfig {
     String type
     String header
     String comment
+    String commentForNewParticipants
     String internalComment
     String url
     String url2
@@ -92,6 +93,7 @@ class SurveyConfig {
 
         header(nullable: true, blank: false)
         comment(nullable: true, blank: true)
+        commentForNewParticipants(nullable: true, blank: true)
         documents   (nullable: true)
         orgs        (nullable: true)
         scheduledStartDate  (nullable: true)
@@ -119,6 +121,7 @@ class SurveyConfig {
         type column: 'surconf_type'
         header column: 'surconf_header'
         comment column: 'surconf_comment', type: 'text'
+        commentForNewParticipants column: 'surconf_comment_for_new_participants', type: 'text'
         internalComment column: 'surconf_internal_comment', type: 'text'
         url column: 'surconf_url'
         url2 column: 'surconf_url_2'
@@ -340,6 +343,25 @@ class SurveyConfig {
             }
         }
         return false
+
+    }
+
+    /**
+     * Get the subscriptions which is target of this survey
+     * @return list of subscription
+     */
+    List<Subscription> orgSubscriptions() {
+        List<Subscription> orgSubscriptions = []
+        if (this.subscription) {
+            orgSubscriptions = Subscription.executeQuery("select sub" +
+                    " from Subscription sub " +
+                    " join sub.orgRelations orgR " +
+                    " where orgR.roleType in :roleTypes " +
+                    " and sub.instanceOf = :instanceOfSub",
+                    [roleTypes    : [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS],
+                     instanceOfSub: this.subscription])
+        }
+        return orgSubscriptions
 
     }
 

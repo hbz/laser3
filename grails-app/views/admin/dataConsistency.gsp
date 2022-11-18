@@ -7,12 +7,12 @@
 
 <ui:h1HeaderWithIcon message="menu.admin.dataConsistency" />
 
-<h2 class="ui header">${message(code: "admin.duplicateNamesAndTitles")}</h2>
+<h2 class="ui header">${message(code: "admin.duplicateNames")}</h2>
 
 <div class="ui grid">
     <div class="twelve wide column">
 
-        <g:each in="${titles}" var="obj">
+        <g:each in="${duplicates}" var="obj">
             <g:if test="${true}">
 
                 <h3 class="ui header" id="jumpMark_2_${obj.key}">${obj.key}</h3>
@@ -51,9 +51,9 @@
     <div class="four wide column">
         <div class="ui sticky">
             <aside>
-                <p>${message(code: "admin.duplicateNamesAndTitles")}</p>
+                <p>${message(code: "admin.duplicateNames")}</p>
 
-                <g:each in="${titles}" var="obj">
+                <g:each in="${duplicates}" var="obj">
                     <a href="#jumpMark_2_${obj.key}">${obj.key}</a> <br />
                 </g:each>
             </aside>

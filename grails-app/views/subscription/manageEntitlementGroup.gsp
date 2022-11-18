@@ -49,7 +49,7 @@
                 <td><ui:xEditable owner="${titleGroup}" field="description"/></td>
                 <td>
                     <g:link action="index" id="${params.id}" params="[titleGroup: titleGroup.id]">
-                    ${titleGroup.items.size()}
+                    ${titleGroup.countCurrentTitles()}
                     </g:link>
                 </td>
                 <td class="x">

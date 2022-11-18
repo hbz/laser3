@@ -1,10 +1,5 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.config.ConfigMapper; de.laser.storage.RDStore; de.laser.storage.RDConstants;de.laser.Package;de.laser.RefdataValue;org.springframework.web.servlet.support.RequestContextUtils; de.laser.Org; de.laser.Package; de.laser.Platform; java.text.SimpleDateFormat;" %>
+<%@ page import="de.laser.utils.DateUtils; de.laser.config.ConfigMapper; de.laser.storage.RDStore; de.laser.storage.RDConstants;de.laser.Package;de.laser.RefdataValue;org.springframework.web.servlet.support.RequestContextUtils; de.laser.Org; de.laser.Package; de.laser.Platform; java.text.SimpleDateFormat; de.laser.PersonRole; de.laser.Contact" %>
 <laser:htmlStart message="package.details" serviceInjection="true"/>
-
-<ui:debugInfo>
-%{--<laser:render template="/templates/debug/orgRoles" model="[debug: packageInstance.orgs]" />--}%
-%{--<laser:render template="/templates/debug/prsRoles" model="[debug: packageInstance.prsLinks]" />--}%
-</ui:debugInfo>
 
 <g:set var="locale" value="${RequestContextUtils.getLocale(request)}"/>
 
@@ -189,21 +184,64 @@
 
                 <div class="ui card">
                     <div class="content">
-                        <dl>
-                            <dt>${message(code: 'platform.label')}</dt>
-                            <dd>
-                                <g:if test="${packageInstance.nominalPlatform}">
-                                    <g:link controller="platform" action="show"
-                                            id="${packageInstance.nominalPlatform.id}">${packageInstance.nominalPlatform.name}</g:link>
-
-                                    <g:if test="${packageInstance.nominalPlatform.primaryUrl}">
-                                        <ui:linkWithIcon
-                                                href="${packageInstance.nominalPlatform.primaryUrl?.startsWith('http') ? packageInstance.nominalPlatform.primaryUrl : 'http://' + packageInstance.nominalPlatform.primaryUrl}"/>
-                                    </g:if>
-                                </g:if>
-                            </dd>
-                        </dl>
-
+                        <h2 class="ui header">${message(code: 'platform.label')}</h2>
+                        <g:if test="${platformInstanceRecord}">
+                            <div class="ui accordion la-accordion-showMore">
+                                <div class="ui raised segments la-accordion-segments">
+                                    <div class="ui fluid segment title">
+                                        <g:link controller="platform" action="show" id="${platformInstanceRecord.id}">${platformInstanceRecord.name}</g:link>
+                                        <g:if test="${platformInstanceRecord.primaryUrl}">
+                                            <ui:linkWithIcon href="${platformInstanceRecord.primaryUrl?.startsWith('http') ? platformInstanceRecord.primaryUrl : 'http://' + platformInstanceRecord.primaryUrl}"/>
+                                        </g:if>
+                                        <div class="ui icon blue button la-modern-button ${buttonColor} la-js-dont-hide-button la-popup-tooltip la-delay"
+                                             data-content="${message(code: 'platform.details')}">
+                                            <i class="ui angle double down icon"></i>
+                                        </div>
+                                    </div>
+                                    <div class="ui fluid segment content">
+                                        <dl>
+                                            <dt>${message(code: 'default.status.label')}</dt>
+                                            <dd>${platformInstanceRecord.status.getI10n("value")}</dd>
+                                        </dl>
+                                        <dl>
+                                            <dt>${message(code: 'platform.provider')}</dt>
+                                            <dd>
+                                                <g:if test="${platformInstanceRecord.org}">
+                                                    <g:link controller="organisation" action="show" id="${platformInstanceRecord.org.id}">${platformInstanceRecord.org.name}</g:link>
+                                                </g:if>
+                                            </dd>
+                                        </dl>
+                                        <h3 class="ui header">
+                                            <g:message code="platform.auth.header"/>
+                                        </h3>
+                                        <dl>
+                                            <dt><g:message code="platform.auth.ip.supported"/></dt>
+                                            <dd>${platformInstanceRecord.ipAuthentication && RefdataValue.getByValueAndCategory(platformInstanceRecord.ipAuthentication, RDConstants.IP_AUTHENTICATION) ? RefdataValue.getByValueAndCategory(platformInstanceRecord.ipAuthentication, RDConstants.IP_AUTHENTICATION).getI10n("value") : message(code: 'default.not.available')}</dd>
+                                        </dl>
+                                        <dl>
+                                            <dt><g:message code="platform.auth.shibboleth.supported"/></dt>
+                                            <dd>${platformInstanceRecord.shibbolethAuthentication ? RefdataValue.getByValueAndCategory(platformInstanceRecord.shibbolethAuthentication, RDConstants.Y_N).getI10n("value") : message(code: 'default.not.available')}</dd>
+                                        </dl>
+                                        <dl>
+                                            <dt><g:message code="platform.auth.userPass.supported"/></dt>
+                                            <dd>${platformInstanceRecord.passwordAuthentication ? RefdataValue.getByValueAndCategory(platformInstanceRecord.passwordAuthentication, RDConstants.Y_N).getI10n("value") : message(code: 'default.not.available')}</dd>
+                                        </dl>
+                                        <dl>
+                                            <dt><g:message code="platform.auth.proxy.supported"/></dt>
+                                            <dd>${platformInstanceRecord.proxySupported ? RefdataValue.getByValueAndCategory(platformInstanceRecord.proxySupported, RDConstants.Y_N).getI10n("value") : message(code: 'default.not.available')}</dd>
+                                        </dl>
+                                        <dl>
+                                            <dt><g:message code="platform.auth.openathens.supported"/></dt>
+                                            <dd>${platformInstanceRecord.openAthens ? RefdataValue.getByValueAndCategory(platformInstanceRecord.openAthens, RDConstants.Y_N).getI10n("value") : message(code: 'default.not.available')}</dd>
+                                        </dl>
+                                        <h3 class="ui header">
+                                            <g:message code="platform.stats.header"/>
+                                        </h3>
+                                        <laser:render template="/templates/platformStatsDetails" />
+                                    </div>
+                                </div>
+                            </div>
+                        </g:if>
                     </div>
                 </div>
 
@@ -286,7 +324,62 @@
                 </div>
             </div>
         </div><!-- .twelve -->
+        <aside class="four wide column la-sidekick">
+            <g:if test="${gascoContacts}">
+                <div class="ui one cards">
+                    <div id="container-provider">
+                        <div class="ui card ">
+                            <div class="content">
+                                <h2 class="ui header">${RDStore.PRS_FUNC_GASCO_CONTACT.getValue_de()}</h2>
+                                <g:each in="${gascoContacts}" var="entry">
+                                    <g:set var="gascoContact" value="${entry.getValue()}"/>
+                                    ${gascoContact.orgDisplay}
+                                    <br>
+                                    <g:each in ="${gascoContact.personRoles}" var="personRole">
+                                        <g:set var="person" value="${personRole.getPrs()}" />
+                                        <g:if test="${person.isPublic}">
+                                            <div class="ui list">
+                                                <div class="item">
+                                                    <div class="content">
+                                                        <div class="header">
+                                                            ${person?.getFirst_name()} ${person?.getLast_name()}
+                                                        </div>
+                                                        <g:each in ="${Contact.findAllByPrsAndContentType(
+                                                                person,
+                                                                RDStore.CCT_URL
+                                                        )}" var="prsContact">
+                                                            <div class="description">
+                                                                <i class="icon globe la-list-icon"></i>
+                                                                <span  class="la-popup-tooltip la-delay " data-position="right center" data-content="Diese URL aufrufen:  ${prsContact?.content}">
+                                                                    <a class="la-break-all" href="${prsContact?.content}" target="_blank">${prsContact?.content}</a>
+                                                                </span>
 
+                                                            </div>
+                                                        </g:each>
+                                                        <g:each in ="${Contact.findAllByPrsAndContentType(
+                                                                person,
+                                                                RDStore.CCT_EMAIL
+                                                        )}" var="prsContact">
+                                                            <div class="description js-copyTriggerParent">
+                                                                <i class="ui icon envelope outline la-list-icon js-copyTrigger"></i>
+                                                                <span  class="la-popup-tooltip la-delay" data-position="right center " data-content="Mail senden an ${person?.getFirst_name()} ${person?.getLast_name()}">
+                                                                    <a class="la-break-all js-copyTopic" href="mailto:${prsContact?.content}" >${prsContact?.content}</a>
+                                                                </span>
+                                                            </div>
+                                                        </g:each>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </g:if>
+                                    </g:each>
+                                </g:each>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </g:if>
+
+        </aside>
 
     %{-- <aside class="four wide column la-sidekick">
          <laser:render template="/templates/aside1" model="${[ownobj:packageInstance, owntp:'pkg']}" />

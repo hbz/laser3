@@ -2,6 +2,8 @@ package de.laser
 
 import de.laser.annotations.Check404
 import de.laser.auth.User
+import de.laser.properties.PropertyDefinition
+import de.laser.properties.SubscriptionProperty
 import de.laser.utils.DateUtils
 import de.laser.annotations.DebugInfo
 import de.laser.remote.ApiSource
@@ -433,6 +435,24 @@ class PackageController {
             result.packageIdentifier = packageInstance.getIdentifierByType('isil')?.value
         }
 
+        Set<Subscription> gascoSubscriptions = Subscription.executeQuery('select s from SubscriptionPackage sp join sp.pkg pkg join sp.subscription s join s.propertySet prop where pkg = :pkg and prop.type = :gasco and prop.refValue = :yes', [pkg: packageInstance, gasco: PropertyDefinition.getByNameAndDescr('GASCO Entry', PropertyDefinition.SUB_PROP), yes: RDStore.YN_YES])
+        Map<Org, Map<String, Object>> gascoContacts = [:]
+        PropertyDefinition gascoDisplayName = PropertyDefinition.getByNameAndDescr('GASCO negotiator name', PropertyDefinition.SUB_PROP)
+        gascoSubscriptions.each { Subscription s ->
+            Org gascoNegotiator = s.getConsortia()
+            if(gascoNegotiator) {
+                Map<String, Object> gascoContactData = gascoContacts.get(gascoNegotiator)
+                if(!gascoContactData) {
+                    gascoContactData = [:]
+                    String gascoDisplay = s.propertySet.find{ it.type == gascoDisplayName}?.stringValue
+                    gascoContactData.orgDisplay = gascoDisplay ?: gascoNegotiator.name
+                    gascoContactData.personRoles = PersonRole.findAllByFunctionTypeAndOrg(RDStore.PRS_FUNC_GASCO_CONTACT, gascoNegotiator)
+                    gascoContacts.put(gascoNegotiator, gascoContactData)
+                }
+            }
+        }
+        result.gascoContacts = gascoContacts
+
         result.packageInstance = packageInstance
 
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
@@ -445,6 +465,22 @@ class PackageController {
         else if (queryResult.warning) {
             List records = queryResult.warning.records
             result.packageInstanceRecord = records ? records[0] : [:]
+        }
+        if(packageInstance.nominalPlatform) {
+            //record filled with LAS:eR and we:kb data
+            Map<String, Object> platformInstanceRecord = [:]
+            queryResult = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+"/find?uuid=${packageInstance.nominalPlatform.gokbId}")
+            if(queryResult.warning) {
+                List records = queryResult.warning.records
+                if(records)
+                    platformInstanceRecord.putAll(records[0])
+                platformInstanceRecord.name = packageInstance.nominalPlatform.name
+                platformInstanceRecord.status = packageInstance.nominalPlatform.status
+                platformInstanceRecord.org = packageInstance.nominalPlatform.org
+                platformInstanceRecord.id = packageInstance.nominalPlatform.id
+                platformInstanceRecord.primaryUrl = packageInstance.nominalPlatform.primaryUrl
+            }
+            result.platformInstanceRecord = platformInstanceRecord
         }
 
         result.flagContentGokb = true // gokbService.queryElasticsearch
@@ -753,7 +789,7 @@ class PackageController {
         params.offset = result.offset
 
         List changes = packageHistory ? PendingChange.findAllByIdInList(packageHistory.drop(result.max).take(result.max), params) : []
-        result.countPendingChanges = packageHistory ? PendingChange.countByIdInList(packageHistory) : 0
+        result.countPendingChanges = packageHistory.size()
 
         result.num_change_rows = result.countPendingChanges
         result.changes = changes

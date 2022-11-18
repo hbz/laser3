@@ -3,6 +3,8 @@ package de.laser
 import de.laser.config.ConfigMapper
 import de.laser.remote.FTControl
 import de.laser.system.SystemEvent
+import de.laser.utils.CodeUtils
+import grails.core.GrailsClass
 import grails.gorm.transactions.Transactional
 import groovy.json.JsonOutput
 import org.apache.http.HttpHost
@@ -54,11 +56,17 @@ class ESWrapperService {
      * Establishes the REST client connection to the ElasticSearch host
      * @return
      */
-    RestHighLevelClient getClient() {
-        new RestHighLevelClient(
-                RestClient.builder(
-                        new HttpHost(ES_Host, 9200, "http"),
-                        new HttpHost(ES_Host, 9201, "http")))
+    RestHighLevelClient getNewClient(boolean onlyWithActiveConnection = false) {
+        RestHighLevelClient client = new RestHighLevelClient(
+            RestClient.builder(
+                    new HttpHost(ES_Host, 9200, "http"),
+                    new HttpHost(ES_Host, 9201, "http")
+            )
+        )
+        if (onlyWithActiveConnection && !testConnection()) {
+            client = null
+        }
+        client
     }
 
     // TMP
@@ -66,20 +74,7 @@ class ESWrapperService {
         (new HttpHost(ES_Host, 9200, "http")).toString()
     }
 
-    /*void closeClient() {
-        esclient.close()
-    }*/
-
-/*    Map<String, String> getESSettings(){
-        Map<String, String> result = [:]
-
-        result.clusterName = es_cluster_name
-        result.host = es_host
-        result.indexName = es_indices
-
-        result
-    }
-
+    /*
     Object getESMapping(){
         JSONParser jsonParser = new JSONParser(this.class.classLoader.getResourceAsStream("es_mapping.json"))
 
@@ -100,6 +95,16 @@ class ESWrapperService {
      */
     def getMapping(){
         _parseResource("${File.separator}elasticsearch${File.separator}es_mapping.json")
+    }
+
+    Class getDomainClassByIndex(String indexName) {
+        String domain = ES_Indices.find {it.value == indexName}.key
+        if (domain) {
+            GrailsClass cls = CodeUtils.getDomainArtefactBySimpleName(domain)
+            if (cls) {
+                return cls.clazz
+            }
+        }
     }
 
     /**
@@ -127,31 +132,28 @@ class ESWrapperService {
      * @return true if the test was successful, false otherwise
      */
     boolean testConnection() {
-
-        RestHighLevelClient esclient = getClient()
+        boolean response = false
+        RestHighLevelClient esclient = getNewClient()
 
         try {
-            boolean response = esclient.ping(RequestOptions.DEFAULT)
-
-            if(!response){
+            response = esclient.ping(RequestOptions.DEFAULT)
+            if (!response){
                 log.warn("Problem with ElasticSearch: Ping Fail")
                 SystemEvent.createEvent('FT_INDEX_UPDATE_ERROR', ["Ping Fail": "Ping Fail"])
             }
-            esclient.close()
-            return response
-        } catch (ConnectTimeoutException e) {
+        }
+        catch (ConnectTimeoutException e) {
             log.warn("Problem with ElasticSearch: Connect Timeout")
             SystemEvent.createEvent('FT_INDEX_UPDATE_ERROR', ["Connect Timeout": "Connect Timeout"])
-            esclient.close()
-            return false
         }
         catch (ConnectException e) {
             log.warn("Problem with ElasticSearch: Connection Fail")
             SystemEvent.createEvent('FT_INDEX_UPDATE_ERROR', ["Connection Fail": "Connection Fail"])
-            esclient.close()
-            return false
         }
-
+        finally {
+            esclient.close()
+        }
+        response
     }
 
     /**
@@ -161,7 +163,7 @@ class ESWrapperService {
      */
     boolean deleteIndex(String indexName){
         log.info("deleteIndex ${indexName} ...")
-        RestHighLevelClient esclient = getClient()
+        RestHighLevelClient esclient = getNewClient()
         GetIndexRequest request = new GetIndexRequest(indexName)
 
         if (esclient.indices().exists(request, RequestOptions.DEFAULT)) {
@@ -193,12 +195,10 @@ class ESWrapperService {
      */
     boolean createIndex(String indexName){
         log.info("createIndex ${indexName}...")
-        RestHighLevelClient esclient = getClient()
+        RestHighLevelClient esclient = getNewClient()
         GetIndexRequest request = new GetIndexRequest(indexName)
 
         if (!esclient.indices().exists(request, RequestOptions.DEFAULT)) {
-            log.debug("ES index ${indexName} did not exist, creating..")
-
             CreateIndexRequest createRequest = new CreateIndexRequest(indexName)
 
             log.debug("Adding index settings..")
@@ -210,13 +210,13 @@ class ESWrapperService {
 
             boolean acknowledged = createIndexResponse.isAcknowledged()
 
-
             if (acknowledged) {
                 log.debug("Index ${indexName} successfully created!")
-                String domainClassName = ES_Indices.find {it.value == indexName}.key
+                //String domainClassName = ES_Indices.find {it.value == indexName}.key
+                String dcn = getDomainClassByIndex(indexName).name
 
                 FTControl.withTransaction {
-                    int res = FTControl.executeUpdate("delete FTControl c where c.domainClassName = :deleteFT", [deleteFT: "de.laser.${domainClassName}"])
+                    int res = FTControl.executeUpdate("delete FTControl c where c.domainClassName = :deleteFT", [deleteFT: dcn])
                     log.info("Result: ${res}")
                 }
                 esclient.close()

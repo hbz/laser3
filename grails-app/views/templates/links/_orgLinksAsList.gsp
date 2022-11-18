@@ -82,14 +82,18 @@
                 </td>
 
             </tr>
-            <g:if test="${showPersons && (Person.getPublicByOrgAndFunc(role.org, 'General contact person') ||
+            <g:if test="${showPersons && (Person.getPublicByOrgAndFunc(role.org, 'General contact person') || (roleObject instanceof de.laser.Package && Person.getPublicByOrgAndFunc(role.org, 'Technical Support')) || (roleObject instanceof de.laser.Package && Person.getPublicByOrgAndFunc(role.org, 'Service Support')) ||
                             Person.getPublicByOrgAndObjectResp(role.org, roleObject, roleRespValue) ||
                             Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'General contact person', contextOrg) ||
+                            (roleObject instanceof de.laser.Package && Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Technical Support', contextOrg)) ||
+                            (roleObject instanceof de.laser.Package && Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Service Support', contextOrg)) ||
                             Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, roleObject, roleRespValue, contextOrg))}">
                 <tr>
                     <td colspan="3" style="padding-bottom:0;">
                         <%-- public --%>
                         <g:if test="${ Person.getPublicByOrgAndFunc(role.org, 'General contact person') ||
+                                (roleObject instanceof de.laser.Package && Person.getPublicByOrgAndFunc(role.org, 'Technical Support')) ||
+                                (roleObject instanceof de.laser.Package && Person.getPublicByOrgAndFunc(role.org, 'Service Support')) ||
                                 Person.getPublicByOrgAndObjectResp(role.org, roleObject, roleRespValue)  }">
                             <div class="ui segment la-timeLineSegment-contact">
                                 <div class="la-timeLineGrid">
@@ -119,6 +123,58 @@
                                                 </div>
                                             </div>
                                         </g:each>
+                                        <g:if test="${roleObject instanceof de.laser.Package}">
+                                            <g:each in="${Person.getPublicByOrgAndFunc(role.org, 'Technical Support')}" var="func">
+                                                <div class="row">
+                                                    <div class="two wide column">
+                                                        <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
+                                                    </div>
+                                                    <div class="twelve wide column">
+                                                        <div class="ui  label">
+                                                            ${(RefdataValue.getByValueAndCategory('Technical Support', RDConstants.PERSON_FUNCTION)).getI10n('value')}
+                                                        </div>
+                                                        <div class="ui header">
+                                                            ${func}
+                                                        </div>
+                                                        <g:each in="${Contact.findAllByPrsAndContentType(
+                                                                func,
+                                                                RDStore.CCT_EMAIL
+                                                        )}" var="email">
+                                                            <laser:render template="/templates/cpa/contact" model="${[
+                                                                    contact             : email,
+                                                                    tmplShowDeleteButton: false,
+                                                                    overwriteEditable   : false
+                                                            ]}" />
+                                                        </g:each>
+                                                    </div>
+                                                </div>
+                                            </g:each>
+                                            <g:each in="${Person.getPublicByOrgAndFunc(role.org, 'Service Support')}" var="func">
+                                                <div class="row">
+                                                    <div class="two wide column">
+                                                        <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
+                                                    </div>
+                                                    <div class="twelve wide column">
+                                                        <div class="ui  label">
+                                                            ${(RefdataValue.getByValueAndCategory('Service Support', RDConstants.PERSON_FUNCTION)).getI10n('value')}
+                                                        </div>
+                                                        <div class="ui header">
+                                                            ${func}
+                                                        </div>
+                                                        <g:each in="${Contact.findAllByPrsAndContentType(
+                                                                func,
+                                                                RDStore.CCT_EMAIL
+                                                        )}" var="email">
+                                                            <laser:render template="/templates/cpa/contact" model="${[
+                                                                    contact             : email,
+                                                                    tmplShowDeleteButton: false,
+                                                                    overwriteEditable   : false
+                                                            ]}" />
+                                                        </g:each>
+                                                    </div>
+                                                </div>
+                                            </g:each>
+                                        </g:if>
                                         <g:each in="${Person.getPublicByOrgAndObjectResp(role.org, roleObject, roleRespValue)}" var="resp">
                                             <div class="row">
                                                 <div class="two wide column">
@@ -164,6 +220,8 @@
 
                         <%-- private --%>
                         <g:if test="${ Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'General contact person', contextOrg) ||
+                                (roleObject instanceof de.laser.Package && Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Technical Support', contextOrg)) ||
+                                (roleObject instanceof de.laser.Package && Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Service Support', contextOrg)) ||
                                 Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, roleObject, roleRespValue, contextOrg)}">
                             <div class="ui segment la-timeLineSegment-contact">
                                 <div class="la-timeLineGrid">
@@ -193,6 +251,58 @@
                                                 </div>
                                             </div>
                                         </g:each>
+                                        <g:if test="${roleObject instanceof de.laser.Package}">
+                                            <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Technical Support', contextOrg)}" var="func">
+                                                <div class="row">
+                                                    <div class="two wide column">
+                                                        <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
+                                                    </div>
+                                                    <div class="twelve wide column">
+                                                        <div class="ui  label">
+                                                            ${(RefdataValue.getByValueAndCategory('Technical Support', RDConstants.PERSON_FUNCTION)).getI10n('value')}
+                                                        </div>
+                                                        <div class="ui header">
+                                                            ${func}
+                                                        </div>
+                                                        <g:each in="${Contact.findAllByPrsAndContentType(
+                                                                func,
+                                                                RDStore.CCT_EMAIL
+                                                        )}" var="email">
+                                                            <laser:render template="/templates/cpa/contact" model="${[
+                                                                    contact             : email,
+                                                                    tmplShowDeleteButton: false,
+                                                                    overwriteEditable   : false
+                                                            ]}" />
+                                                        </g:each>
+                                                    </div>
+                                                </div>
+                                            </g:each>
+                                            <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Service Support', contextOrg)}" var="func">
+                                                <div class="row">
+                                                    <div class="two wide column">
+                                                        <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
+                                                    </div>
+                                                    <div class="twelve wide column">
+                                                        <div class="ui  label">
+                                                            ${(RefdataValue.getByValueAndCategory('Service Support', RDConstants.PERSON_FUNCTION)).getI10n('value')}
+                                                        </div>
+                                                        <div class="ui header">
+                                                            ${func}
+                                                        </div>
+                                                        <g:each in="${Contact.findAllByPrsAndContentType(
+                                                                func,
+                                                                RDStore.CCT_EMAIL
+                                                        )}" var="email">
+                                                            <laser:render template="/templates/cpa/contact" model="${[
+                                                                    contact             : email,
+                                                                    tmplShowDeleteButton: false,
+                                                                    overwriteEditable   : false
+                                                            ]}" />
+                                                        </g:each>
+                                                    </div>
+                                                </div>
+                                            </g:each>
+                                        </g:if>
                                         <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, roleObject, roleRespValue, contextOrg)}" var="resp">
                                             <div class="row">
                                                <div class="two wide column">

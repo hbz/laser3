@@ -295,18 +295,6 @@ static hasMany = [  tipps:     TitleInstancePackagePlatform,
     }
 
     /**
-     * Retrieves all titles in this packages which are marked as current
-     * @return a {@link Set} of {@link TitleInstancePackagePlatform}s which are marked as current
-     */
-    Set<TitleInstancePackagePlatform> getCurrentTipps() {
-        Set<TitleInstancePackagePlatform> result = []
-        if (this.tipps) {
-            result = this.tipps?.findAll{it?.status?.id == RDStore.TIPP_STATUS_CURRENT.id}
-        }
-        result
-    }
-
-    /**
      * Called from linkPackages.gsp
      * Outputs the name of this package and how many titles are marked as current
      * @return a concatenated string of this package's name and the number of {@link TitleInstancePackagePlatform}s marked as current

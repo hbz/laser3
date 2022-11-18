@@ -250,6 +250,27 @@
                 </div>
             </g:if>
 
+            <g:if test="${field.equalsIgnoreCase('hasSubscription')}">
+                <div class="field">
+                    <div class="inline fields la-filter-inline">
+                        <div class="inline field">
+                            <div class="ui checkbox">
+                                <label for="checkHasSubscription">${message(code: 'surveyEvaluation.filter.hasSubscription')}</label>
+                                <input id="checkHasSubscription" name="hasSubscription" type="checkbox" <g:if test="${params.hasSubscription == "on"}">checked=""</g:if>
+                                       tabindex="0">
+                            </div>
+                        </div>
+                        <div class="inline field">
+                            <div class="ui checkbox">
+                                <label for="checkHasNotSubscription">${message(code: 'surveyEvaluation.filter.hasNotSubscription')}</label>
+                                <input id="checkHasNotSubscription" name="hasNotSubscription" type="checkbox" <g:if test="${params.hasNotSubscription == "on"}">checked=""</g:if>
+                                       tabindex="0">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </g:if>
+
 
         </g:each>
     <g:if test="${numberOfFields > 1}">

@@ -112,28 +112,37 @@
 
     <table class="ui celled la-js-responsive-table la-table la-hover-table table compact">
         <thead>
-            <tr><th class="seven wide">FTControl / ES Index</th><th class="nine wide"></th></tr>
+            <tr>
+                <th class="seven wide">FTControl / ES Index</th>
+                <th class="six wide"></th>
+                <th class="three wide"></th>
+            </tr>
         </thead>
         <tbody>
             <tr>
                 <td>Url</td>
-                <td><a href="${ES_URL}/_cat/indices?v" target="_blank">${ES_URL}</a> -> ${BeanStore.getESWrapperService().ES_Cluster}</td>
+                <td colspan="2"><a href="${ES_URL}/_cat/indices?v" target="_blank">${ES_URL}</a> -> ${BeanStore.getESWrapperService().ES_Cluster}</td>
             </tr>
             <tr>
                 <td>Indices</td>
-                <td>
+                <td colspan="2">
                     ${BeanStore.getESWrapperService().ES_Indices}
                 </td>
             </tr>
             <tr>
                 <g:if test="${dataload.running}">
-                    <td class="positive">Currently running</td><td class="positive">${dataload.running}</td>
+                    <td class="positive">Currently running</td>
+                    <td colspan="2" class="positive">${dataload.running}</td>
                 </g:if>
                 <g:else>
-                    <td>Currently running</td><td>${dataload.running}</td>
+                    <td>Currently running</td>
+                    <td colspan="2">${dataload.running}</td>
                 </g:else>
             </tr>
-            <tr><td>Last doFTUpdate</td><td>${dataload.lastFTIndexUpdateInfo}</td></tr>
+            <tr>
+                <td>Last doFTUpdate</td>
+                <td colspan="2">${dataload.lastFTIndexUpdateInfo}</td>
+            </tr>
             <g:each in="${ftcInfos}" var="ftc">
                 <tr>
                     <td>
@@ -148,15 +157,15 @@
                             </span>
                         </g:if>
                         <g:else>
-                            Elements in DB: <g:formatNumber number="${ftc.dbElements}" format="${message(code:'default.decimal.format')}"/>,
-                            ES: <g:formatNumber number="${ftc.esElements}" format="${message(code:'default.decimal.format')}"/>
+                            Elements: <g:formatNumber number="${ftc.dbElements}" format="${message(code:'default.decimal.format')}"/>
                         </g:else>
-                        <br />
+                    </td>
+                    <td>
                         <g:if test="${ftc.lastTimestamp}">
-                            Last ftUpdate: ${DateUtils.getLocalizedSDF_noZ().format(new Date(ftc.lastTimestamp))}
+                            ${DateUtils.getLocalizedSDF_noZ().format(new Date(ftc.lastTimestamp))}
                         </g:if>
                         <g:else>
-                            No last ftUpdate info
+                            ?
                         </g:else>
                     </td>
                 </tr>

@@ -20,7 +20,6 @@ import org.elasticsearch.action.bulk.BulkResponse
 import org.elasticsearch.client.indices.GetIndexRequest
 import org.elasticsearch.ElasticsearchException
 import org.elasticsearch.action.admin.indices.flush.FlushRequest
-import org.elasticsearch.action.admin.indices.flush.FlushResponse
 import org.elasticsearch.action.index.IndexRequest
 import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestHighLevelClient
@@ -28,7 +27,7 @@ import org.elasticsearch.client.core.CountRequest
 import org.elasticsearch.client.core.CountResponse
 import org.elasticsearch.common.xcontent.XContentType
 import org.elasticsearch.rest.RestStatus
-import org.hibernate.Session
+import org.grails.web.json.JSONElement
 
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Future
@@ -42,33 +41,49 @@ class DataloadService {
     ESWrapperService ESWrapperService
     ExecutorService executorService
 
-    static final int BULK_SIZE = 10000
+    static final int BULK_LIMIT         = 3000000
+
+    static final int BULK_SIZE_LARGE    = 10000
+    static final int BULK_SIZE_MEDIUM   = 5000
+    static final int BULK_SIZE_SMALL    = 100
 
     boolean update_running = false
     Future activeFuture
+
+    def updateFTIndex(String indexName) {
+        if (indexName) {
+            updateFTIndices(indexName)
+        }
+    }
 
     /**
      * Cronjob- or Yoda-triggered.
      * Starts the update of the ElasticSearch indices and initialises a parallel thread for the update
      * @return false if the job is already running, true otherwise
      */
-    def updateFTIndices() {
-        //log.debug("updateFTIndexes ${this.hashCode()}")
-        if(! update_running) {
+    def updateFTIndices(String indexName = null) {
+        if (! update_running) {
+            if (!(activeFuture) || activeFuture.isDone()) {
 
-            if(!(activeFuture) || activeFuture.isDone()) {
-
-                activeFuture = executorService.submit({
-                    Thread.currentThread().setName("DataloadServiceUpdateFTIndices")
-                    doFTUpdate()
-                })
-                 log.debug("updateFTIndices returning")
-            }else{
-                log.debug("doFTUpdate already running #2")
+                if (indexName) {
+                    activeFuture = executorService.submit({
+                        Thread.currentThread().setName("DataloadServiceUpdateFTIndex")
+                        doFTUpdate(indexName)
+                    })
+                    log.debug("updateFTIndices(${indexName}) returning")
+                } else {
+                    activeFuture = executorService.submit({
+                        Thread.currentThread().setName("DataloadServiceUpdateFTIndices")
+                        doFTUpdate()
+                    })
+                    log.debug("updateFTIndices returning")
+                }
+            } else {
+                log.debug("doFTUpdate already running")
                 return false
             }
         } else {
-            log.debug("doFTUpdate already running #1")
+            log.debug("doFTUpdate already running")
             return false
         }
     }
@@ -80,36 +95,43 @@ class DataloadService {
      * @return true if the update was successful, false otherwise
      * @see ESWrapperService#ES_Indices
      */
-    boolean doFTUpdate() {
-        SystemEvent sysEvent = SystemEvent.createEvent('FT_INDEX_UPDATE_START')
+    boolean doFTUpdate(String indexName = null) {
+
+        SystemEvent sysEvent
+        if (indexName) { sysEvent = SystemEvent.createEvent('FT_INDEX_UPDATE_START', [index: indexName]) }
+        else           { sysEvent = SystemEvent.createEvent('FT_INDEX_UPDATE_START') }
 
         synchronized(this) {
             if ( update_running ) {
-                log.debug("doFTUpdate: exiting - one already running")
+                log.debug("doFTUpdate ---> exiting - one already running")
                 return false
             }
             else {
-                update_running = true;
+                update_running = true
             }
         }
         long start_time = System.currentTimeMillis()
-        log.debug("doFTUpdate: Execute IndexUpdateJob starting at ${new Date()}");
+        log.debug("doFTUpdate ---> Starting at ${new Date()}")
 
-        _doFTUpdateUpdateESCalls()
+        if (indexName) { _doFTUpdateUpdateESCalls(ESWrapperService.getDomainClassByIndex(indexName)) }
+        else           { _doFTUpdateUpdateESCalls() }
 
-        long elapsed = System.currentTimeMillis() - start_time
-        log.debug("doFTUpdate: Completed in ${elapsed}ms at ${new Date()} ")
+        double elapsed = ((System.currentTimeMillis() - start_time) / 1000).round(2)
+        log.debug("doFTUpdate ---> Completed in ${elapsed}s")
 
-        sysEvent.changeTo('FT_INDEX_UPDATE_COMPLETE', [ms: elapsed])
+        if (indexName) { sysEvent.changeTo('FT_INDEX_UPDATE_COMPLETE', [index: indexName, s: elapsed]) }
+        else           { sysEvent.changeTo('FT_INDEX_UPDATE_COMPLETE', [s: elapsed]) }
 
         update_running = false
         true
     }
 
-    private void _doFTUpdateUpdateESCalls() {
+    private void _doFTUpdateUpdateESCalls(Class domainClass = null) {
 
-        _updateES( Org.class ) { Org org ->
-            def result = [:]
+        if (!domainClass || domainClass == Org.class) {
+
+            _updateES(Org.class, BULK_SIZE_MEDIUM) { Org org ->
+                Map result = [:]
 
                 result._id = org.globalUID
                 result.priority = 30
@@ -139,7 +161,7 @@ class DataloadService {
                 result.identifiers = []
                 org.ids?.each { ident ->
                     try {
-                        if(ident.value) {
+                        if (ident.value) {
                             result.identifiers.add([type: ident.ns.ns, value: ident.value])
                         }
                     } catch (Exception e) {
@@ -159,12 +181,14 @@ class DataloadService {
                 result.dateCreated = org.dateCreated
                 result.lastUpdated = org.lastUpdated
 
-            result
+                result
+            }
         }
 
-        _updateES( TitleInstancePackagePlatform.class ) { TitleInstancePackagePlatform tipp ->
+        if (!domainClass || domainClass == TitleInstancePackagePlatform.class) {
 
-            def result = [:]
+            _updateES(TitleInstancePackagePlatform.class, BULK_SIZE_LARGE) { TitleInstancePackagePlatform tipp ->
+                Map result = [:]
 
                 if (tipp.name != null && tipp.titleType != null) {
                     if (!tipp.sortname) {
@@ -202,9 +226,9 @@ class DataloadService {
                     result.identifiers = []
                     tipp.ids.each { Identifier ident ->
                         try {
-                            if(ident.value) {
-                            result.identifiers.add([type: ident.ns.ns, value: ident.value])
-                        }
+                            if (ident.value) {
+                                result.identifiers.add([type: ident.ns.ns, value: ident.value])
+                            }
                         } catch (Exception e) {
                             log.error( e.toString() )
                         }
@@ -219,11 +243,14 @@ class DataloadService {
                     log.warn("Title with no title string - ${tipp.id}")
                 }
 
-            result
+                result
+            }
         }
 
-        _updateES( Package.class ) { Package pkg ->
-            def result = [:]
+        if (!domainClass || domainClass == Package.class) {
+
+            _updateES(Package.class, BULK_SIZE_MEDIUM) { Package pkg ->
+                Map result = [:]
 
                 result._id = pkg.globalUID
                 result.priority = 30
@@ -246,12 +273,16 @@ class DataloadService {
                 result.startDate = pkg.startDate
                 result.endDate = pkg.endDate
 
-                result.titleCountCurrent = pkg.getCurrentTipps().size()?:0
+                //result.titleCountCurrent = pkg.getCurrentTipps().size() ?: 0
+                result.titleCountCurrent = TitleInstancePackagePlatform.executeQuery(
+                        'select count(id) from TitleInstancePackagePlatform tipp where tipp.pkg = :pkg and tipp.status = :status',
+                        [pkg: pkg, status: RDStore.TIPP_STATUS_CURRENT]
+                )
 
                 result.identifiers = []
                 pkg.ids?.each { ident ->
                     try {
-                        if(ident.value) {
+                        if (ident.value) {
                             result.identifiers.add([type: ident.ns.ns, value: ident.value])
                         }
                     } catch (Exception e) {
@@ -261,11 +292,14 @@ class DataloadService {
                 result.dateCreated = pkg.dateCreated
                 result.lastUpdated = pkg.lastUpdated
 
-            result
+                result
+            }
         }
 
-        _updateES( Platform.class ) { Platform plat ->
-            def result = [:]
+        if (!domainClass || domainClass == Platform.class) {
+
+            _updateES(Platform.class, BULK_SIZE_MEDIUM) { Platform plat ->
+                Map result = [:]
 
                 result._id = plat.globalUID
                 result.priority = 30
@@ -280,79 +314,90 @@ class DataloadService {
                 result.primaryUrl = plat.primaryUrl
                 result.orgId = plat.org?.id
                 result.orgName = plat.org?.name
-                result.titleCountCurrent = plat.getCurrentTipps().size()?:0
+
+                //result.titleCountCurrent = plat.getCurrentTipps().size() ?: 0
+                result.titleCountCurrent = TitleInstancePackagePlatform.executeQuery(
+                        'select count(id) from TitleInstancePackagePlatform tipp where tipp.platform = :plat and tipp.status = :status',
+                        [plat: plat, status: RDStore.TIPP_STATUS_CURRENT]
+                )
 
                 result.dateCreated = plat.dateCreated
                 result.lastUpdated = plat.lastUpdated
 
-            result
+                result
+            }
         }
 
-        _updateES( License.class ) { License lic ->
-            def result = [:]
+        if (!domainClass || domainClass == License.class) {
 
-            result._id = lic.globalUID
-            result.priority = 50
-            result.dbId = lic.id
-            result.guid = lic.globalUID ?:''
-            result.name = lic.reference
-            result.visible = 'Private'
-            result.rectype = lic.getClass().getSimpleName()
+            _updateES(License.class, BULK_SIZE_MEDIUM) { License lic ->
+                Map result = [:]
 
-            switch(lic._getCalculatedType()) {
-                case CalculatedType.TYPE_CONSORTIAL:
-                    result.availableToOrgs = lic.orgRelations.findAll{ OrgRole oo ->oo.roleType.value in [RDStore.OR_LICENSING_CONSORTIUM.value]}?.org?.id
-                    result.membersCount = License.findAllByInstanceOf(lic).size()?:0
-                    break
-                case CalculatedType.TYPE_PARTICIPATION:
-                    List orgs = lic.orgRelations.findAll{ OrgRole oo -> oo.roleType.value in [RDStore.OR_LICENSEE_CONS.value]}?.org
-                    result.availableToOrgs = orgs.collect{ Org org -> org.id }
-                    result.consortiaID = lic.getLicensingConsortium()?.id
-                    result.consortiaName = lic.getLicensingConsortium()?.name
+                result._id = lic.globalUID
+                result.priority = 50
+                result.dbId = lic.id
+                result.guid = lic.globalUID ?: ''
+                result.name = lic.reference
+                result.visible = 'Private'
+                result.rectype = lic.getClass().getSimpleName()
 
-                    result.members = []
-                    orgs.each{ Org org ->
-                        result.members.add([dbId: org.id, name: org.name, shortname: org.shortname, sortname: org.sortname])
-                    }
-                    break
-                case CalculatedType.TYPE_LOCAL:
-                    result.availableToOrgs = lic.orgRelations.findAll{ OrgRole oo -> oo.roleType.value in [RDStore.OR_LICENSEE.value]}?.org?.id
-                    break
-            }
+                switch (lic._getCalculatedType()) {
+                    case CalculatedType.TYPE_CONSORTIAL:
+                        result.availableToOrgs = lic.orgRelations.findAll { OrgRole oo ->oo.roleType.value in [RDStore.OR_LICENSING_CONSORTIUM.value] }?.org?.id
+                        result.membersCount = License.findAllByInstanceOf(lic).size()?:0
+                        break
+                    case CalculatedType.TYPE_PARTICIPATION:
+                        List orgs = lic.orgRelations.findAll { OrgRole oo -> oo.roleType.value in [RDStore.OR_LICENSEE_CONS.value] }?.org
+                        result.availableToOrgs = orgs.collect { Org org -> org.id }
+                        result.consortiaID = lic.getLicensingConsortium()?.id
+                        result.consortiaName = lic.getLicensingConsortium()?.name
 
-            result.identifiers = []
-            lic.ids?.each { ident ->
-                try {
-                    if(ident.value) {
+                        result.members = []
+                        orgs.each { Org org ->
+                            result.members.add([dbId: org.id, name: org.name, shortname: org.shortname, sortname: org.sortname])
+                        }
+                        break
+                    case CalculatedType.TYPE_LOCAL:
+                        result.availableToOrgs = lic.orgRelations.findAll { OrgRole oo -> oo.roleType.value in [RDStore.OR_LICENSEE.value] }?.org?.id
+                        break
+                }
+
+                result.identifiers = []
+                lic.ids?.each { ident ->
+                    try {
+                        if (ident.value) {
                             result.identifiers.add([type: ident.ns.ns, value: ident.value])
                         }
-                } catch (Exception e) {
-                    log.error( e.toString() )
+                    } catch (Exception e) {
+                        log.error(e.toString())
+                    }
                 }
+
+                result.endDate = lic.endDate
+                result.startDate = lic.startDate
+
+                if (lic.startDate) {
+                    GregorianCalendar c = new GregorianCalendar()
+                    c.setTime(lic.startDate)
+                    result.startYear = "${c.get(Calendar.YEAR)}"
+                }
+                if (lic.endDate) {
+                    GregorianCalendar c = new GregorianCalendar()
+                    c.setTime(lic.endDate)
+                    result.endYear = "${c.get(Calendar.YEAR)}"
+                }
+
+                result.dateCreated = lic.dateCreated
+                result.lastUpdated = lic.lastUpdated
+
+                result
             }
-
-            result.endDate = lic.endDate
-            result.startDate = lic.startDate
-            if (lic.startDate) {
-                GregorianCalendar c = new GregorianCalendar()
-                c.setTime(lic.startDate)
-                result.startYear = "${c.get(Calendar.YEAR)}"
-            }
-
-            if (lic.endDate) {
-                GregorianCalendar c = new GregorianCalendar()
-                c.setTime(lic.endDate)
-                result.endYear = "${c.get(Calendar.YEAR)}"
-            }
-
-            result.dateCreated = lic.dateCreated
-            result.lastUpdated = lic.lastUpdated
-
-            result
         }
 
-        _updateES( Subscription.class ) { Subscription sub ->
-            def result = [:]
+        if (!domainClass || domainClass == Subscription.class) {
+
+            _updateES(Subscription.class, BULK_SIZE_MEDIUM) { Subscription sub ->
+                Map result = [:]
 
                 result._id = sub.globalUID
                 result.priority = 70
@@ -365,38 +410,38 @@ class DataloadService {
 
                 switch (sub._getCalculatedType()) {
                     case CalculatedType.TYPE_CONSORTIAL:
-                        result.availableToOrgs = sub.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIPTION_CONSORTIA.value]}?.org?.id
-                        result.membersCount = Subscription.findAllByInstanceOf(sub).size() ?:0
+                        result.availableToOrgs = sub.orgRelations.findAll { it.roleType.value in [RDStore.OR_SUBSCRIPTION_CONSORTIA.value] }?.org?.id
+                        result.membersCount = Subscription.findAllByInstanceOf(sub).size() ?: 0
                         break
                     case CalculatedType.TYPE_PARTICIPATION:
-                        List orgs = sub.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value]}?.org
+                        List orgs = sub.orgRelations.findAll { it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value] }?.org
                         result.availableToOrgs = orgs?.id
                         result.consortiaID = sub.getConsortia()?.id
                         result.consortiaName = sub.getConsortia()?.name
 
                         result.members = []
-                        orgs.each{ org ->
+                        orgs.each { org ->
                             result.members.add([dbId: org.id, name: org.name, shortname: org.shortname, sortname: org.sortname])
                         }
                         break
-                /*              case CalculatedType.TYPE_ADMINISTRATIVE:
+                        /*              case CalculatedType.TYPE_ADMINISTRATIVE:
                                   result.availableToOrgs = sub.orgRelations.findAll {it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value]}?.org?.id
                                   break*/
                     case CalculatedType.TYPE_LOCAL:
-                        result.availableToOrgs = sub.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIBER.value]}?.org?.id
+                        result.availableToOrgs = sub.orgRelations.findAll { it.roleType.value in [RDStore.OR_SUBSCRIBER.value] }?.org?.id
                         break
                 }
 
                 result.identifiers = []
                 sub.ids?.each { ident ->
-                        try {
-                            if(ident.value) {
+                    try {
+                        if (ident.value) {
                             result.identifiers.add([type: ident.ns.ns, value: ident.value])
                         }
-                        } catch (Exception e) {
-                            log.error( e.toString() )
-                        }
+                    } catch (Exception e) {
+                        log.error(e.toString())
                     }
+                }
 
                 result.endDate = sub.endDate
                 result.startDate = sub.startDate
@@ -420,349 +465,359 @@ class DataloadService {
                         pgkinfo.pkgid = sp.pkg.id
                         pgkinfo.providerName = sp.pkg.contentProvider?.name
                         pgkinfo.providerId = sp.pkg.contentProvider?.id
-                        result.packages.add(pgkinfo);
+                        result.packages.add(pgkinfo)
                     }
                 }
 
                 result.dateCreated = sub.dateCreated
                 result.lastUpdated = sub.lastUpdated
 
-            result
+                result
+            }
         }
 
-        _updateES( SurveyConfig.class ) { SurveyConfig surveyConfig ->
-            def result = [:]
+        if (!domainClass || domainClass == SurveyConfig.class) {
 
-            result._id = surveyConfig.getClass().getSimpleName().toLowerCase()+":"+surveyConfig.id
-            result.priority = 60
-            result.dbId = surveyConfig.id
-            result.name = surveyConfig.getSurveyName()
-            result.status= surveyConfig.surveyInfo.status?.getMapForES()
-            result.visible = 'Private'
-            result.rectype = surveyConfig.getClass().getSimpleName()
+            _updateES(SurveyConfig.class, BULK_SIZE_MEDIUM) { SurveyConfig surveyConfig ->
+                Map result = [:]
 
-            result.availableToOrgs = [surveyConfig.surveyInfo.owner?.id]
+                result._id = surveyConfig.getClass().getSimpleName().toLowerCase() + ":" + surveyConfig.id
+                result.priority = 60
+                result.dbId = surveyConfig.id
+                result.name = surveyConfig.getSurveyName()
+                result.status = surveyConfig.surveyInfo.status?.getMapForES()
+                result.visible = 'Private'
+                result.rectype = surveyConfig.getClass().getSimpleName()
 
-            result.membersCount = surveyConfig.orgs?.size() ?: 0
+                result.availableToOrgs = [surveyConfig.surveyInfo.owner?.id]
 
-            result.endDate = surveyConfig.surveyInfo.endDate
-            result.startDate = surveyConfig.surveyInfo.startDate
+                result.membersCount = surveyConfig.orgs?.size() ?: 0
 
-            if (surveyConfig.surveyInfo.startDate) {
-                GregorianCalendar c = new GregorianCalendar()
-                c.setTime(surveyConfig.surveyInfo.startDate)
-                result.startYear = "${c.get(Calendar.YEAR)}"
+                result.endDate = surveyConfig.surveyInfo.endDate
+                result.startDate = surveyConfig.surveyInfo.startDate
+
+                if (surveyConfig.surveyInfo.startDate) {
+                    GregorianCalendar c = new GregorianCalendar()
+                    c.setTime(surveyConfig.surveyInfo.startDate)
+                    result.startYear = "${c.get(Calendar.YEAR)}"
+                }
+
+                if (surveyConfig.surveyInfo.endDate) {
+                    GregorianCalendar c = new GregorianCalendar()
+                    c.setTime(surveyConfig.surveyInfo.endDate)
+                    result.endYear = "${c.get(Calendar.YEAR)}"
+                }
+
+                result.dateCreated = surveyConfig.dateCreated
+                result.lastUpdated = surveyConfig.lastUpdated
+
+                result
             }
-
-            if (surveyConfig.surveyInfo.endDate) {
-                GregorianCalendar c = new GregorianCalendar()
-                c.setTime(surveyConfig.surveyInfo.endDate)
-                result.endYear = "${c.get(Calendar.YEAR)}"
-            }
-
-            result.dateCreated = surveyConfig.dateCreated
-            result.lastUpdated = surveyConfig.lastUpdated
-
-            result
         }
 
-        _updateES( SurveyOrg.class ) { SurveyOrg surOrg ->
-            def result = [:]
+        if (!domainClass || domainClass == SurveyOrg.class) {
 
-            result._id = surOrg.getClass().getSimpleName().toLowerCase()+":"+surOrg.id
-            result.priority = 60
-            result.dbId = surOrg.surveyConfig.id
-            result.name = surOrg.surveyConfig.getSurveyName()
-            result.status= surOrg.surveyConfig.surveyInfo.status?.getMapForES()
-            result.visible = 'Private'
-            result.rectype = surOrg.getClass().getSimpleName()
+            _updateES(SurveyOrg.class, BULK_SIZE_MEDIUM) { SurveyOrg surOrg ->
+                Map result = [:]
 
-            result.availableToOrgs = (surOrg.surveyConfig.surveyInfo.status.value != RDStore.SURVEY_IN_PROCESSING.value) ? [surOrg.org.id] : [0]
+                result._id = surOrg.getClass().getSimpleName().toLowerCase() + ":" + surOrg.id
+                result.priority = 60
+                result.dbId = surOrg.surveyConfig.id
+                result.name = surOrg.surveyConfig.getSurveyName()
+                result.status = surOrg.surveyConfig.surveyInfo.status?.getMapForES()
+                result.visible = 'Private'
+                result.rectype = surOrg.getClass().getSimpleName()
 
-            result.endDate = surOrg.surveyConfig.surveyInfo.endDate
-            result.startDate = surOrg.surveyConfig.surveyInfo.startDate
+                result.availableToOrgs = (surOrg.surveyConfig.surveyInfo.status.value != RDStore.SURVEY_IN_PROCESSING.value) ? [surOrg.org.id] : [0]
 
-            if (surOrg.surveyConfig.surveyInfo.startDate) {
-                GregorianCalendar c = new GregorianCalendar()
-                c.setTime(surOrg.surveyConfig.surveyInfo.startDate)
-                result.startYear = "${c.get(Calendar.YEAR)}"
+                result.endDate = surOrg.surveyConfig.surveyInfo.endDate
+                result.startDate = surOrg.surveyConfig.surveyInfo.startDate
+
+                if (surOrg.surveyConfig.surveyInfo.startDate) {
+                    GregorianCalendar c = new GregorianCalendar()
+                    c.setTime(surOrg.surveyConfig.surveyInfo.startDate)
+                    result.startYear = "${c.get(Calendar.YEAR)}"
+                }
+
+                if (surOrg.surveyConfig.surveyInfo.endDate) {
+                    GregorianCalendar c = new GregorianCalendar()
+                    c.setTime(surOrg.surveyConfig.surveyInfo.endDate)
+                    result.endYear = "${c.get(Calendar.YEAR)}"
+                }
+
+                result.dateCreated = surOrg.dateCreated
+                result.lastUpdated = surOrg.lastUpdated
+
+                result
             }
-
-            if (surOrg.surveyConfig.surveyInfo.endDate) {
-                GregorianCalendar c = new GregorianCalendar()
-                c.setTime(surOrg.surveyConfig.surveyInfo.endDate)
-                result.endYear = "${c.get(Calendar.YEAR)}"
-            }
-
-            result.dateCreated = surOrg.dateCreated
-            result.lastUpdated = surOrg.lastUpdated
-
-            result
         }
 
-        _updateES( Task.class ) { Task task ->
-            def result = [:]
+        if (!domainClass || domainClass == Task.class) {
 
-            result._id = task.getClass().getSimpleName().toLowerCase()+":"+task.id
-            result.priority = 40
-            result.dbId = task.id
-            result.name = task.title
-            result.status= task.status?.getMapForES()
-            result.visible = 'Private'
-            result.rectype = task.getClass().getSimpleName()
+            _updateES(Task.class, BULK_SIZE_MEDIUM) { Task task ->
+                Map result = [:]
 
-            result.availableToOrgs = [task.responsibleOrg?.id ?: 0]
-            result.availableToUser = [task.responsibleUser?.id]
+                result._id = task.getClass().getSimpleName().toLowerCase() + ":" + task.id
+                result.priority = 40
+                result.dbId = task.id
+                result.name = task.title
+                result.status = task.status?.getMapForES()
+                result.visible = 'Private'
+                result.rectype = task.getClass().getSimpleName()
 
-            result.description = task.description
-            result.endDate= task.endDate
+                result.availableToOrgs = [task.responsibleOrg?.id ?: 0]
+                result.availableToUser = [task.responsibleUser?.id]
 
-            if(task.subscription){
-                result.objectId = task.subscription.id
-                result.objectName = task.subscription.name
-                result.objectTypeId = task.subscription.type?.id
-                result.objectClassName = task.subscription.getClass().getSimpleName().toLowerCase()
+                result.description = task.description
+                result.endDate = task.endDate
+
+                if (task.subscription) {
+                    result.objectId = task.subscription.id
+                    result.objectName = task.subscription.name
+                    result.objectTypeId = task.subscription.type?.id
+                    result.objectClassName = task.subscription.getClass().getSimpleName().toLowerCase()
+                }
+
+                if (task.org) {
+                    result.objectId = task.org.id
+                    result.objectName = task.org.name
+                    result.objectClassName = task.org.getClass().getSimpleName().toLowerCase()
+                }
+
+                if (task.license) {
+                    result.objectId = task.license.id
+                    result.objectName = task.license.reference
+                    result.objectClassName = task.license.getClass().getSimpleName().toLowerCase()
+                }
+
+                if (task.surveyConfig) {
+                    result.objectId = task.surveyConfig.id
+                    result.objectName = task.surveyConfig.getSurveyName()
+                    result.objectClassName = task.surveyConfig.getClass().getSimpleName().toLowerCase()
+                }
+
+                result.dateCreated = task.dateCreated
+                result.lastUpdated = task.lastUpdated
+
+                result
             }
-
-            if(task.org){
-                result.objectId = task.org.id
-                result.objectName = task.org.name
-                result.objectClassName = task.org.getClass().getSimpleName().toLowerCase()
-            }
-
-            if(task.license){
-                result.objectId = task.license.id
-                result.objectName = task.license.reference
-                result.objectClassName = task.license.getClass().getSimpleName().toLowerCase()
-            }
-
-            if(task.surveyConfig){
-                result.objectId = task.surveyConfig.id
-                result.objectName = task.surveyConfig.getSurveyName()
-                result.objectClassName = task.surveyConfig.getClass().getSimpleName().toLowerCase()
-            }
-
-            result.dateCreated = task.dateCreated
-            result.lastUpdated = task.lastUpdated
-
-            result
         }
 
-        _updateES( DocContext.class ) { DocContext docCon ->
-            def result = [:]
+        if (!domainClass || domainClass == DocContext.class) {
 
-            result._id = docCon.getClass().getSimpleName().toLowerCase()+":"+docCon.id
-            result.priority = 40
-            result.dbId = docCon.id
-            result.name = docCon.owner?.title ?: ''
-            result.status= docCon.status?.getMapForES()
-            result.visible = 'Private'
-            result.rectype = (docCon.owner?.contentType == Doc.CONTENT_TYPE_STRING) ? 'Note' : 'Document'
+            _updateES(DocContext.class, BULK_SIZE_LARGE) { DocContext docCon ->
+                Map result = [:]
 
-            result.availableToOrgs = [docCon.owner?.owner?.id ?: 0]
+                result._id = docCon.getClass().getSimpleName().toLowerCase() + ":" + docCon.id
+                result.priority = 40
+                result.dbId = docCon.id
+                result.name = docCon.owner?.title ?: ''
+                result.status = docCon.status?.getMapForES()
+                result.visible = 'Private'
+                result.rectype = (docCon.owner?.contentType == Doc.CONTENT_TYPE_STRING) ? 'Note' : 'Document'
 
-            result.description = docCon.owner?.content ?: ''
+                result.availableToOrgs = [docCon.owner?.owner?.id ?: 0]
 
-            if(docCon.subscription){
-                result.objectId = docCon.subscription.id
-                result.objectName = docCon.subscription.name
-                result.objectTypeId = docCon.subscription.type?.id
-                result.objectClassName = docCon.subscription.getClass().getSimpleName().toLowerCase()
+                result.description = docCon.owner?.content ?: ''
+
+                if (docCon.subscription) {
+                    result.objectId = docCon.subscription.id
+                    result.objectName = docCon.subscription.name
+                    result.objectTypeId = docCon.subscription.type?.id
+                    result.objectClassName = docCon.subscription.getClass().getSimpleName().toLowerCase()
+                }
+
+                if (docCon.org) {
+                    result.objectId = docCon.org.id
+                    result.objectName = docCon.org.name
+                    result.objectClassName = docCon.org.getClass().getSimpleName().toLowerCase()
+                }
+
+                if (docCon.license) {
+                    result.objectId = docCon.license.id
+                    result.objectName = docCon.license.reference
+                    result.objectClassName = docCon.license.getClass().getSimpleName().toLowerCase()
+                }
+
+                if (docCon.surveyConfig) {
+                    result.objectId = docCon.surveyConfig.id
+                    result.objectName = docCon.surveyConfig.getSurveyName()
+                    result.objectClassName = docCon.surveyConfig.getClass().getSimpleName().toLowerCase()
+                }
+
+                result.dateCreated = docCon.dateCreated
+                result.lastUpdated = docCon.lastUpdated
+
+                result
             }
-
-            if(docCon.org){
-                result.objectId = docCon.org.id
-                result.objectName = docCon.org.name
-                result.objectClassName = docCon.org.getClass().getSimpleName().toLowerCase()
-            }
-
-            if(docCon.license){
-                result.objectId = docCon.license.id
-                result.objectName = docCon.license.reference
-                result.objectClassName = docCon.license.getClass().getSimpleName().toLowerCase()
-            }
-
-            if(docCon.surveyConfig){
-                result.objectId = docCon.surveyConfig.id
-                result.objectName = docCon.surveyConfig.getSurveyName()
-                result.objectClassName = docCon.surveyConfig.getClass().getSimpleName().toLowerCase()
-            }
-
-            result.dateCreated = docCon.dateCreated
-            result.lastUpdated = docCon.lastUpdated
-
-            result
         }
 
-        _updateES( IssueEntitlement.class ) { IssueEntitlement ie ->
-            def result = [:]
+        if (!domainClass || domainClass == IssueEntitlement.class) {
 
-            result._id = ie.globalUID
-            result.priority = 45
-            result.dbId = ie.id
-            result.name = ie.tipp?.name
-            result.status= ie.status?.getMapForES()
-            result.visible = 'Private'
-            result.rectype = ie.getClass().getSimpleName()
+            _updateES(IssueEntitlement.class, BULK_SIZE_LARGE) { IssueEntitlement ie ->
+                Map result = [:]
 
-            switch (ie.subscription._getCalculatedType()) {
-                case CalculatedType.TYPE_CONSORTIAL:
-                    result.availableToOrgs = ie.subscription.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIPTION_CONSORTIA.value]}?.org?.id
-                    break
-                case CalculatedType.TYPE_PARTICIPATION:
-                    result.availableToOrgs = ie.subscription.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value]}?.org?.id
-                    break
-            /*              case CalculatedType.TYPE_ADMINISTRATIVE:
+                result._id = ie.globalUID
+                result.priority = 45
+                result.dbId = ie.id
+                result.name = ie.tipp?.name
+                result.status = ie.status?.getMapForES()
+                result.visible = 'Private'
+                result.rectype = ie.getClass().getSimpleName()
+
+                switch (ie.subscription._getCalculatedType()) {
+                    case CalculatedType.TYPE_CONSORTIAL:
+                        result.availableToOrgs = ie.subscription.orgRelations.findAll { it.roleType.value in [RDStore.OR_SUBSCRIPTION_CONSORTIA.value] }?.org?.id
+                        break
+                    case CalculatedType.TYPE_PARTICIPATION:
+                        result.availableToOrgs = ie.subscription.orgRelations.findAll { it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value] }?.org?.id
+                        break
+                        /*              case CalculatedType.TYPE_ADMINISTRATIVE:
                               result.availableToOrgs = sub.orgRelations.findAll {it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value]}?.org?.id
                               break*/
-                case CalculatedType.TYPE_LOCAL:
-                    result.availableToOrgs = ie.subscription.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIBER.value]}?.org?.id
-                    break
+                    case CalculatedType.TYPE_LOCAL:
+                        result.availableToOrgs = ie.subscription.orgRelations.findAll { it.roleType.value in [RDStore.OR_SUBSCRIBER.value] }?.org?.id
+                        break
+                }
+
+                if (ie.subscription) {
+                    result.objectId = ie.subscription.id
+                    result.objectName = ie.subscription.name
+                    result.objectTypeId = ie.subscription.type?.id
+                    result.objectClassName = ie.subscription.getClass().getSimpleName().toLowerCase()
+                }
+
+                if (ie.accessStartDate) {
+                    GregorianCalendar c = new GregorianCalendar()
+                    c.setTime(ie.accessStartDate)
+                    result.startYear = "${c.get(Calendar.YEAR)}"
+                }
+
+                if (ie.accessEndDate) {
+                    GregorianCalendar c = new GregorianCalendar()
+                    c.setTime(ie.accessEndDate)
+                    result.endYear = "${c.get(Calendar.YEAR)}"
+                }
+
+                result.dateCreated = ie.dateCreated
+                result.lastUpdated = ie.lastUpdated
+
+                result
             }
-
-            if(ie.subscription){
-                result.objectId = ie.subscription.id
-                result.objectName = ie.subscription.name
-                result.objectTypeId = ie.subscription.type?.id
-                result.objectClassName = ie.subscription.getClass().getSimpleName().toLowerCase()
-            }
-
-            if (ie.accessStartDate) {
-                GregorianCalendar c = new GregorianCalendar()
-                c.setTime(ie.accessStartDate)
-                result.startYear = "${c.get(Calendar.YEAR)}"
-            }
-
-            if (ie.accessEndDate) {
-                GregorianCalendar c = new GregorianCalendar()
-                c.setTime(ie.accessEndDate)
-                result.endYear = "${c.get(Calendar.YEAR)}"
-            }
-
-            result.dateCreated = ie.dateCreated
-            result.lastUpdated = ie.lastUpdated
-
-            result
         }
 
-        _updateES( SubscriptionProperty.class ) { SubscriptionProperty subProp ->
-            def result = [:]
+        if (!domainClass || domainClass == SubscriptionProperty.class) {
 
-            result._id = subProp.getClass().getSimpleName().toLowerCase()+":"+subProp.id
-            result.priority = 45
-            result.dbId = subProp.id
-            result.name = subProp.type?.name
+            _updateES(SubscriptionProperty.class, BULK_SIZE_LARGE) { SubscriptionProperty subProp ->
+                Map result = [:]
 
-            result.visible = 'Private'
-            result.rectype = subProp.getClass().getSimpleName()
+                result._id = subProp.getClass().getSimpleName().toLowerCase() + ":" + subProp.id
+                result.priority = 45
+                result.dbId = subProp.id
+                result.name = subProp.type?.name
 
-            if(subProp.type.isIntegerType()){
-                result.description = subProp.intValue
-            }
-            else if(subProp.type.isStringType()){
-                result.description = subProp.stringValue
-            }
-            else if(subProp.type.isBigDecimalType()){
-                result.description = subProp.decValue
-            }
-            else if(subProp.type.isDateType()){
-                result.description = subProp.dateValue
-            }
-            else if(subProp.type.isURLType()){
-                result.description = subProp.urlValue
-            }
-            else if(subProp.type.isRefdataValueType()){
-                //result.description = subProp.refValue?.getMapForES()
-                result.description = subProp.refValue?.value
-            }
+                result.visible = 'Private'
+                result.rectype = subProp.getClass().getSimpleName()
 
-            if(subProp.isPublic) {
-                switch (subProp.owner._getCalculatedType()) {
-                    case CalculatedType.TYPE_CONSORTIAL:
-                        result.availableToOrgs = subProp.owner.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIPTION_CONSORTIA.value]}?.org?.id
-                        break
-                    case CalculatedType.TYPE_PARTICIPATION:
-                        result.availableToOrgs = subProp.owner.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value]}?.org?.id
-                        break
-                /*              case CalculatedType.TYPE_ADMINISTRATIVE:
+                if (subProp.type.isIntegerType()) {
+                    result.description = subProp.intValue
+                } else if (subProp.type.isStringType()) {
+                    result.description = subProp.stringValue
+                } else if (subProp.type.isBigDecimalType()) {
+                    result.description = subProp.decValue
+                } else if (subProp.type.isDateType()) {
+                    result.description = subProp.dateValue
+                } else if (subProp.type.isURLType()) {
+                    result.description = subProp.urlValue
+                } else if (subProp.type.isRefdataValueType()) {
+                    //result.description = subProp.refValue?.getMapForES()
+                    result.description = subProp.refValue?.value
+                }
+
+                if (subProp.isPublic) {
+                    switch (subProp.owner._getCalculatedType()) {
+                        case CalculatedType.TYPE_CONSORTIAL:
+                            result.availableToOrgs = subProp.owner.orgRelations.findAll { it.roleType.value in [RDStore.OR_SUBSCRIPTION_CONSORTIA.value] }?.org?.id
+                            break
+                        case CalculatedType.TYPE_PARTICIPATION:
+                            result.availableToOrgs = subProp.owner.orgRelations.findAll { it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value] }?.org?.id
+                            break
+                            /*              case CalculatedType.TYPE_ADMINISTRATIVE:
                                   result.availableToOrgs = sub.orgRelations.findAll {it.roleType.value in [RDStore.OR_SUBSCRIBER_CONS.value]}?.org?.id
                                   break*/
-                    case CalculatedType.TYPE_LOCAL:
-                        result.availableToOrgs = subProp.owner.orgRelations.findAll{it.roleType.value in [RDStore.OR_SUBSCRIBER.value]}?.org?.id
-                        break
+                        case CalculatedType.TYPE_LOCAL:
+                            result.availableToOrgs = subProp.owner.orgRelations.findAll { it.roleType.value in [RDStore.OR_SUBSCRIBER.value] }?.org?.id
+                            break
+                    }
+                } else result.availableToOrgs = [subProp.type.tenant?.id ?: 0]
+
+                if (subProp.owner) {
+                    result.objectId = subProp.owner.id
+                    result.objectName = subProp.owner.name
+                    result.objectTypeId = subProp.owner.type?.id
+                    result.objectClassName = subProp.owner.getClass().getSimpleName().toLowerCase()
                 }
+
+                result.dateCreated = subProp.dateCreated
+                result.lastUpdated = subProp.lastUpdated
+
+                result
             }
-            else result.availableToOrgs = [subProp.type.tenant?.id ?: 0]
-
-            if(subProp.owner){
-                result.objectId = subProp.owner.id
-                result.objectName = subProp.owner.name
-                result.objectTypeId = subProp.owner.type?.id
-                result.objectClassName = subProp.owner.getClass().getSimpleName().toLowerCase()
-            }
-
-            result.dateCreated = subProp.dateCreated
-            result.lastUpdated = subProp.lastUpdated
-
-            result
         }
 
-        _updateES( LicenseProperty.class ) { LicenseProperty licProp ->
-            def result = [:]
+        if (!domainClass || domainClass == LicenseProperty.class) {
 
-            result._id = licProp.getClass().getSimpleName().toLowerCase()+":"+licProp.id
-            result.priority = 45
-            result.dbId = licProp.id
-            result.name = licProp.type?.name
+            _updateES(LicenseProperty.class, BULK_SIZE_MEDIUM) { LicenseProperty licProp ->
+                Map result = [:]
 
-            result.visible = 'Private'
-            result.rectype = licProp.getClass().getSimpleName()
+                result._id = licProp.getClass().getSimpleName().toLowerCase() + ":" + licProp.id
+                result.priority = 45
+                result.dbId = licProp.id
+                result.name = licProp.type?.name
 
-            if(licProp.type.isIntegerType()){
-                result.description = licProp.intValue
-            }
-            else if(licProp.type.isStringType()){
-                result.description = licProp.stringValue
-            }
-            else if(licProp.type.isBigDecimalType()){
-                result.description = licProp.decValue
-            }
-            else if(licProp.type.isDateType()){
-                result.description = licProp.dateValue
-            }
-            else if(licProp.type.isURLType()){
-                result.description = licProp.urlValue
-            }
-            else if(licProp.type.isRefdataValueType()){
-                //result.description = licProp.refValue?.getMapForES()
-                result.description = licProp.refValue?.value
-            }
+                result.visible = 'Private'
+                result.rectype = licProp.getClass().getSimpleName()
 
-            if(licProp.isPublic) {
-                switch(licProp.owner._getCalculatedType()) {
-                    case CalculatedType.TYPE_CONSORTIAL:
-                        result.availableToOrgs = licProp.owner.orgRelations.findAll{it.roleType?.value in [RDStore.OR_LICENSING_CONSORTIUM.value]}?.org?.id
-                        break
-                    case CalculatedType.TYPE_PARTICIPATION:
-                        result.availableToOrgs = licProp.owner.orgRelations.findAll{it.roleType?.value in [RDStore.OR_LICENSEE_CONS.value]}?.org?.id
-                        break
-                    case CalculatedType.TYPE_LOCAL:
-                        result.availableToOrgs = licProp.owner.orgRelations.findAll{it.roleType?.value in [RDStore.OR_LICENSEE.value]}?.org?.id
-                        break
+                if (licProp.type.isIntegerType()) {
+                    result.description = licProp.intValue
+                } else if (licProp.type.isStringType()) {
+                    result.description = licProp.stringValue
+                } else if (licProp.type.isBigDecimalType()) {
+                    result.description = licProp.decValue
+                } else if (licProp.type.isDateType()) {
+                    result.description = licProp.dateValue
+                } else if (licProp.type.isURLType()) {
+                    result.description = licProp.urlValue
+                } else if (licProp.type.isRefdataValueType()) {
+                    //result.description = licProp.refValue?.getMapForES()
+                    result.description = licProp.refValue?.value
                 }
+
+                if (licProp.isPublic) {
+                    switch (licProp.owner._getCalculatedType()) {
+                        case CalculatedType.TYPE_CONSORTIAL:
+                            result.availableToOrgs = licProp.owner.orgRelations.findAll { it.roleType?.value in [RDStore.OR_LICENSING_CONSORTIUM.value] }?.org?.id
+                            break
+                        case CalculatedType.TYPE_PARTICIPATION:
+                            result.availableToOrgs = licProp.owner.orgRelations.findAll { it.roleType?.value in [RDStore.OR_LICENSEE_CONS.value] }?.org?.id
+                            break
+                        case CalculatedType.TYPE_LOCAL:
+                            result.availableToOrgs = licProp.owner.orgRelations.findAll { it.roleType?.value in [RDStore.OR_LICENSEE.value] }?.org?.id
+                            break
+                    }
+                } else result.availableToOrgs = [licProp.type.tenant?.id ?: 0]
+
+                if (licProp.owner) {
+                    result.objectId = licProp.owner.id
+                    result.objectName = licProp.owner.reference
+                    result.objectClassName = licProp.owner.getClass().getSimpleName().toLowerCase()
+                }
+
+                result.dateCreated = licProp.dateCreated
+                result.lastUpdated = licProp.lastUpdated
+
+                result
             }
-            else result.availableToOrgs = [licProp.type.tenant?.id ?: 0]
-
-            if(licProp.owner){
-                result.objectId = licProp.owner.id
-                result.objectName = licProp.owner.reference
-                result.objectClassName = licProp.owner.getClass().getSimpleName().toLowerCase()
-            }
-
-            result.dateCreated = licProp.dateCreated
-            result.lastUpdated = licProp.lastUpdated
-
-            result
         }
     }
 
@@ -773,96 +828,94 @@ class DataloadService {
      * @param recgen_closure the closure to be used for record generation
      * @see ESWrapperService#ES_Indices
      */
-    private void _updateES(Class domainClass, Closure recgen_closure) {
-        String logPrefix = "( ${domainClass.name} ) updateES"
+    private void _updateES(Class domainClass, int bulkSize, Closure recgen_closure) {
+        String logPrefix = "updateES ( ${domainClass.name} )"
 
         log.info ( "${logPrefix} - Start")
 
-        RestHighLevelClient esclient = ESWrapperService.getClient()
+        RestHighLevelClient esclient = ESWrapperService.getNewClient(true)
         Map es_indices = ESWrapperService.ES_Indices
 
-        int count = 0
-        long total = 0, currentTimestamp = 0
+        long total = 0, startingTimestamp = 0, bulkMaxTimestamp = 0
         BigDecimal mb = 0, totalMb = 0
 
-        //FTControl.withTransaction { TransactionStatus ts ->
+        if (! FTControl.findByDomainClassNameAndActivity(domainClass.name, 'ESIndex')) {
+            (new FTControl(domainClassName: domainClass.name, activity: 'ESIndex', lastTimestamp: 0, active: true, esElements: 0, dbElements: 0)).save()
+        }
+
+        FTControl.withTransaction {
 
             FTControl ftControl = FTControl.findByDomainClassNameAndActivity(domainClass.name, 'ESIndex')
-            if (!ftControl) {
-                ftControl = new FTControl(domainClassName: domainClass.name, activity: 'ESIndex', lastTimestamp: 0, active: true, esElements: 0, dbElements: 0)
-            }
-
             try {
                 if (ftControl.active) {
 
-                    if (ESWrapperService.testConnection() && es_indices && es_indices.get(domainClass.simpleName)) {
+                    List<Long> vList = domainClass.executeQuery('select d.id from ' + domainClass.name + ' as d where d.dateCreated is null')
+                    if (vList) {
+                        Date vDate = new Date()
+                        log.info("${logPrefix} - found ${vList.size()} entries with dateCreated = null -> data correction to [${vDate}]")
 
-                        log.debug("${logPrefix} - for changes since ${new Date(ftControl.lastTimestamp)}")
+                        int vdResult = domainClass.executeUpdate('update ' + domainClass.name + ' d set d.dateCreated = :vDate where d.id in (:vList)', [vDate: vDate, vList: vList])
+                        log.info("${logPrefix} - updated: ${vdResult}")
+                    }
+
+                    if (esclient && es_indices && es_indices.get(domainClass.simpleName)) {
                         Date from = new Date(ftControl.lastTimestamp)
-
                         List<Long> idList = []
 
                         if (ClassUtils.getAllInterfaces(domainClass).contains(CalculatedLastUpdated)) {
                             idList = domainClass.executeQuery(
-                                    "select d.id from " + domainClass.name + " as d where (d.lastUpdatedCascading is not null and d.lastUpdatedCascading > :from) or (d.lastUpdated > :from) or (d.dateCreated > :from and d.lastUpdated is null) order by d.lastUpdated asc, d.id",
+                                    // "select d.id from " + domainClass.name + " as d where (d.lastUpdatedCascading is not null and d.lastUpdatedCascading > :from) or (d.lastUpdated > :from) or (d.dateCreated > :from and d.lastUpdated is null) order by d.lastUpdated asc, d.id",
+                                    "select d.id from " + domainClass.name + " as d where (d.dateCreated > :from or d.lastUpdated > :from or d.lastUpdatedCascading > :from) order by d.dateCreated asc, d.id",
                                     [from: from], [readonly: true]
                             )
                         } else {
                             idList = domainClass.executeQuery(
-                                    "select d.id from " + domainClass.name + " as d where (d.lastUpdated > :from) or (d.dateCreated > :from and d.lastUpdated is null) order by d.lastUpdated asc, d.id",
+                                    // "select d.id from " + domainClass.name + " as d where (d.lastUpdated > :from) or (d.dateCreated > :from and d.lastUpdated is null) order by d.lastUpdated asc, d.id",
+                                    "select d.id from " + domainClass.name + " as d where (d.dateCreated > :from or d.lastUpdated > :from) order by d.dateCreated asc, d.id",
                                     [from: from], [readonly: true]
                             )
                         }
 
-                        currentTimestamp = System.currentTimeMillis()
-                        BulkRequest bulkRequest = new BulkRequest();
+                        BulkRequest bulkRequest = new BulkRequest()
+                        startingTimestamp = System.currentTimeMillis()
 
-                        FTControl.withNewSession { Session session ->
-                            for (domain_id in idList) {
-                                Object r = domainClass.get(domain_id)
-                                Map idx_record = recgen_closure(r) as Map
-                                if (idx_record['_id'] == null) {
-                                    // log.error("******** Record without an ID: ${idx_record} Obj:${r} ******** ")
-                                    log.warn("+++++ Record without an ID for: ${r} +++++")
-                                    continue
+                            List<Long> todoList = idList.take(BULK_LIMIT)
+                            List<List<Long>> bulks = todoList.collate(bulkSize)
+
+                            if (bulks) {
+                                if (idList.size() > BULK_LIMIT) {
+                                    log.debug("${logPrefix} - ${idList.size()} changes since [${from}] - processing is limited to ${BULK_LIMIT}; bulks todo: ${bulks.size()}")
                                 }
-
-                                String recid = idx_record['_id'].toString()
-                                idx_record.remove('_id');
-
-                                IndexRequest request = new IndexRequest(es_indices[domainClass.simpleName])
-                                request.id(recid);
-                                String jsonString = idx_record as JSON
-                                //String jsonString = JsonOutput.toJson(idx_record)
-                                //println(jsonString)
-                                request.source(jsonString, XContentType.JSON)
-
-                                bulkRequest.add(request)
-
-                                count++
-                                total++
-                                if (count >= BULK_SIZE) {
-                                    count = 0;
-                                    mb = (bulkRequest.estimatedSizeInBytes()/1024/1024)
-                                    totalMb = totalMb + mb
-
-                                    BulkResponse bulkResponse = esclient.bulk(bulkRequest, RequestOptions.DEFAULT)
-
-                                    if (bulkResponse.hasFailures()) {
-                                        for (BulkItemResponse bulkItemResponse : bulkResponse) {
-                                            if (bulkItemResponse.isFailed()) {
-                                                BulkItemResponse.Failure failure = bulkItemResponse.getFailure()
-                                                log.warn("${logPrefix} - (#1) bulk operation failure -> ${failure}")
-                                            }
-                                        }
-                                    }
-
-                                    log.debug("${logPrefix} - processed ${total} of ${idList.size()} records ; bulkSize ${mb.round(2)}MB")
-                                    bulkRequest = new BulkRequest()
+                                else {
+                                    log.debug("${logPrefix} - ${idList.size()} changes since [${from}]; bulks todo: ${bulks.size()}")
                                 }
                             }
 
-                            if (count > 0) {
+                            bulks.eachWithIndex { List bulk, int i ->
+                                for (domain_id in bulk) {
+                                    Object r = domainClass.get(domain_id)
+                                    Map idx_record = recgen_closure(r) as Map
+                                    if (idx_record['_id'] == null) {
+                                        log.warn("+++++ Record without an ID for: ${r} +++++")
+                                        continue
+                                    }
+
+                                    String recid = idx_record['_id'].toString()
+                                    idx_record.remove('_id')
+
+                                    IndexRequest request = new IndexRequest(es_indices[domainClass.simpleName])
+                                    request.id(recid)
+                                    String jsonString = idx_record as JSON
+                                    request.source(jsonString, XContentType.JSON)
+
+                                    bulkRequest.add(request)
+                                    total++
+
+                                    if (r.dateCreated) {
+                                        bulkMaxTimestamp = Math.max(bulkMaxTimestamp, ((Date) r.dateCreated).getTime())
+                                    }
+                                } // for
+
                                 mb = (bulkRequest.estimatedSizeInBytes()/1024/1024)
                                 totalMb = totalMb + mb
 
@@ -872,55 +925,53 @@ class DataloadService {
                                     for (BulkItemResponse bulkItemResponse : bulkResponse) {
                                         if (bulkItemResponse.isFailed()) {
                                             BulkItemResponse.Failure failure = bulkItemResponse.getFailure()
-                                            log.warn("${logPrefix} - (#2) bulk operation failure -> ${failure}")
+                                            log.warn("${logPrefix} - (#1) bulk operation failure -> ${failure}")
                                         }
                                     }
                                 }
+
+                                log.debug("${logPrefix} - processed ${total} / ${todoList.size() - total} records; bulkSize ${mb.round(2)}MB")
+                                bulkRequest = new BulkRequest()
+                            } // each
+
+                            log.debug("${logPrefix} - totally processed ${total} records; ${totalMb.round(2)}MB")
+
+                            if (idList.size() > BULK_LIMIT) {
+                                log.debug("${logPrefix} - increasing last_timestamp to [${new Date(bulkMaxTimestamp)}]")
+                                ftControl.lastTimestamp = bulkMaxTimestamp
+                            } else {
+                                ftControl.lastTimestamp = startingTimestamp
                             }
-
-                            log.debug("${logPrefix} - finally processed ${total} records ; ${totalMb.round(2)}MB")
-
-                            ftControl.lastTimestamp = currentTimestamp
                             ftControl.save()
-                            session.flush()
-                            session.clear()
 
-                        } // withNewSession
                     } else {
-                        ftControl.save()
-                        log.debug("${logPrefix} - failed -> ESWrapperService.testConnection() && es_indices && es_indices.get(domain.simpleName)")
+                        log.debug("${logPrefix} - failed. Preconditions not met!")
                     }
                 } else {
-                    ftControl.save()
                     log.debug("${logPrefix} - ignored. FTControl is not active")
                 }
-
             }
             catch (Exception e) {
-                log.error("${logPrefix} - Error", e)
+                log.error("${logPrefix} - Error with Rollback!", e)
 
                 SystemEvent.createEvent('FT_INDEX_UPDATE_ERROR', ["index": domainClass.name])
             }
             finally {
-                log.debug("${logPrefix} - processing completed - saved ${total} records")
                 try {
-                    if (ESWrapperService.testConnection()) {
+                    if (esclient) {
                         if (ftControl.active) {
-                            FlushRequest request = new FlushRequest(es_indices.get(domainClass.simpleName));
-                            FlushResponse flushResponse = esclient.indices().flush(request, RequestOptions.DEFAULT)
-
-                            log.debug("${logPrefix} - ${flushResponse}")
+                            FlushRequest request = new FlushRequest(es_indices.get(domainClass.simpleName))
+                            esclient.indices().flush(request, RequestOptions.DEFAULT)
                         }
-
                         esclient.close()
                     }
-                    checkESElementswithDBElements(domainClass.name)
+                    checkESElementswithDBElements(ftControl)
                 }
                 catch (Exception e) {
-                    log.error(e.toString())
+                    log.error("${logPrefix} - finally error: " + e.toString())
                 }
             }
-        //}
+        }
 
         log.info ( "${logPrefix} - End")
     }
@@ -933,9 +984,9 @@ class DataloadService {
     def resetESIndices() {
         log.debug("resetESIndices")
 
-        RestHighLevelClient client = ESWrapperService.getClient()
+        RestHighLevelClient client = ESWrapperService.getNewClient(true)
 
-        if(ESWrapperService.testConnection()) {
+        if (client) {
             if (!(activeFuture) || (activeFuture && activeFuture.cancel(true))) {
 
                 SystemEvent.createEvent('YODA_ES_RESET_START')
@@ -948,10 +999,10 @@ class DataloadService {
                     try {
                         boolean isDeletedIndex = ESWrapperService.deleteIndex(indexName)
                         if (isDeletedIndex) {
-                            log.debug("deleted ES index: ${indexName}")
+                            log.debug("Deleted ES index: ${indexName}")
                             deleted.add(indexName)
                         } else {
-                            log.error("failed to delete ES index: ${indexName}")
+                            log.error("Failed to delete ES index: ${indexName}")
                             deletedFailed.add(indexName)
                         }
                     }
@@ -968,11 +1019,11 @@ class DataloadService {
 
                     boolean isCreatedIndex = ESWrapperService.createIndex(indexName)
                     if (isCreatedIndex) {
-                        log.debug("created ES index: ${indexName}")
+                        log.debug("Created ES index: ${indexName}")
                         created.add(indexName)
 
                     } else {
-                        log.debug("failed to create ES index: ${indexName}")
+                        log.debug("Failed to create ES index: ${indexName}")
                         createdFailed.add(indexName)
                     }
                 }
@@ -987,13 +1038,13 @@ class DataloadService {
                     log.error(e.toString())
                 }
 
-                log.debug("Do updateFTIndices");
+                log.debug("Call updateFTIndices")
                 updateFTIndices()
 
                 // SystemEvent.createEvent('YODA_ES_RESET_END')
             }
             else {
-                log.debug("!!!! resetESIndices is not possible !!!!");
+                log.debug("!!!! resetESIndices is not possible !!!!")
             }
         }
     }
@@ -1005,20 +1056,17 @@ class DataloadService {
      * @return true if successful, false otherwise
      * @see FTControl
      */
-    boolean checkESElementswithDBElements(String domainClassName) {
+    boolean checkESElementswithDBElements(FTControl ftControl) {
 
-        RestHighLevelClient esclient = ESWrapperService.getClient()
+        RestHighLevelClient esclient = ESWrapperService.getNewClient(true)
         Map es_indices = ESWrapperService.ES_Indices
 
-        try {
-            if(ESWrapperService.testConnection()) {
-                log.debug("Element comparison: ES <-> DB ( ${domainClassName} )")
+        if (esclient) {
+            try {
+                if (ftControl.active) {
+                    log.debug("Element comparison: DB <-> ES ( ${ftControl.domainClassName} )")
 
-                FTControl ftControl = FTControl.findByDomainClassName(domainClassName)
-
-                if (ftControl && ftControl.active) {
                         Class domainClass = CodeUtils.getDomainClass(ftControl.domainClassName)
-
                         String indexName =  es_indices.get(domainClass.simpleName)
                         Integer countIndex = 0
 
@@ -1031,31 +1079,23 @@ class DataloadService {
                         }
 
                         FTControl.withTransaction {
-                            ftControl.dbElements = domainClass.count()
-                            ftControl.esElements = countIndex
-                            //println(ft.dbElements +' , '+ ft.esElements)
+                            int countDB = domainClass.count()
 
-                            if (ftControl.dbElements != ftControl.esElements) {
-                                log.debug("+++++ ES NOT COMPLETE FOR ${ftControl.domainClassName}: ES Results = ${ftControl.esElements}, DB Results = ${ftControl.dbElements} +++++")
+                            if (countDB != countIndex) {
+                                log.debug("Element comparison: DB <-> ES ( ${ftControl.domainClassName} / ${indexName} ) : +++++ DIFF found +++++ DB Results = ${countDB}, ES Results = ${countIndex} +++++")
                                 //ft.lastTimestamp = 0
                             }
-
+                            ftControl.dbElements = countDB
+                            ftControl.esElements = countIndex
                             ftControl.save()
                         }
-
-                        log.debug("Completed element comparison: ES <-> DB ( ${domainClassName} )")
                 }
                 else {
-                    log.debug("Ignored element comparison, because ftControl is not active")
+                    log.debug("Element comparison ignored, because ftControl is not active")
                 }
             }
-        }
-        finally {
-            try {
+            finally {
                 esclient.close()
-            }
-            catch (Exception e) {
-                log.error(e.toString())
             }
         }
         return true
@@ -1069,19 +1109,17 @@ class DataloadService {
      */
     boolean checkESElementswithDBElements() {
 
-        RestHighLevelClient esclient = ESWrapperService.getClient()
+        RestHighLevelClient esclient = ESWrapperService.getNewClient(true)
         Map es_indices = ESWrapperService.ES_Indices
 
-        try {
-            if(ESWrapperService.testConnection()) {
-                log.debug("Element comparison: ES <-> DB")
+        if (esclient) {
+            try {
+                log.debug("Element comparison: DB <-> ES")
 
                 FTControl.list().each { ft ->
 
                     if (ft.active) {
-
                         Class domainClass = CodeUtils.getDomainClass(ft.domainClassName)
-
                         String indexName = es_indices.get(domainClass.simpleName)
                         Integer countIndex = 0
 
@@ -1094,32 +1132,23 @@ class DataloadService {
                         }
 
                         FTControl.withTransaction {
-                            ft.dbElements = domainClass.count()
-                            ft.esElements = countIndex
-                            //println(ft.dbElements +' , '+ ft.esElements)
+                            int countDB = domainClass.count()
 
-                            if (ft.dbElements != ft.esElements) {
-                                log.debug("+++++ ES NOT COMPLETE FOR ${ft.domainClassName}: ES Results = ${ft.esElements}, DB Results = ${ft.dbElements} +++++")
+                            if (countDB != countIndex) {
+                                log.debug("Element comparison: DB <-> ES  ( ${indexName} ): +++++ DIFF found +++++ DB Results = ${countDB}, ES Results = ${countIndex} +++++")
                                 //ft.lastTimestamp = 0
                             }
-
+                            ft.dbElements = countDB
+                            ft.esElements = countIndex
                             ft.save()
                         }
-
-                        log.debug("Completed element comparison: ES <-> DB")
-                    }
-                    else {
-                        log.debug("Ignored element comparison, because ftControl is not active")
+                    } else {
+                        log.debug("Element comparison ignored, because ftControl is not active")
                     }
                 }
             }
-        }
-        finally {
-            try {
+            finally {
                 esclient.close()
-            }
-            catch (Exception e) {
-                log.error(e.toString())
             }
         }
         return true
@@ -1135,9 +1164,19 @@ class DataloadService {
         if (se) {
             info = DateUtils.getLocalizedSDF_noZ().format(se.created)
             if (se.payload) {
-                long ms = JSON.parse(se.payload).ms ?: 0
-                if (ms) {
-                    info += ' (' + (ms/1000).round(2) + ' s.)'
+                JSONElement je = JSON.parse(se.payload)
+
+                if (je.ms) {
+                    long ms = JSON.parse(se.payload).ms ?: 0
+                    if (ms) {
+                        info += ' (' + (ms/1000).round(2) + 's)'
+                    }
+                }
+                if (je.s) {
+                    double s = JSON.parse(se.payload).s ?: 0
+                    if (s) {
+                        info += ' (' + s + 's)'
+                    }
                 }
             }
         }
@@ -1147,17 +1186,17 @@ class DataloadService {
     /**
      * Kills an eventually running process
      */
-    public synchronized void killDataloadService() {
+    synchronized void killDataloadService() {
         if (activeFuture != null) {
             SystemEvent.createEvent('FT_INDEX_UPDATE_KILLED')
 
             activeFuture.cancel(true)
             if (update_running) {
                 update_running = false
-                log.debug("killed DataloadService! Set DataloadService.update_running to false")
+                log.debug("Killed DataloadService! Set DataloadService.update_running to false")
             }
             else {
-                log.debug("killed DataloadService!")
+                log.debug("Killed DataloadService!")
             }
         }
     }

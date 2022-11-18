@@ -95,6 +95,30 @@
 
         <div class="field">
             <g:if test="${!blockSubmit}">
+                <div class="ui two fields">
+                    <div class="field">
+                        <label for="issueEntitlementGroup">${message(code: 'issueEntitlementGroup.entitlementsRenew.selected.add')}:</label>
+
+                        <select name="issueEntitlementGroupID" id="issueEntitlementGroup"
+                                class="ui search dropdown">
+                            <option value="">${message(code: 'default.select.choose.label')}</option>
+
+                            <g:each in="${subscription.ieGroups.sort { it.name }}" var="titleGroup">
+                                <option value="${titleGroup.id}">
+                                    ${titleGroup.name} (${titleGroup.countCurrentTitles.size()})
+                                </option>
+                            </g:each>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label for="issueEntitlementGroup">${message(code: 'issueEntitlementGroup.entitlementsRenew.selected.new')}:</label>
+                        <input type="text" name="issueEntitlementGroupNew"
+                               value="Phase ${IssueEntitlementGroup.findAllBySubAndNameIlike(subscriptionParticipant, 'Phase').size() + 1}">
+                    </div>
+
+                </div>
+
                 <input type="submit"
                        value="${message(code: 'subscription.details.addEntitlements.add_selected')}"
                        class="fluid ui button"/>
@@ -109,6 +133,10 @@
         </div>
         <div class="field"></div>
     </div>
+
+    <div class="ui blue large label"><g:message code="title.plural"/>: <div class="detail">${num_tipp_rows}</div>
+    </div>
+
     <table class="ui sortable celled la-js-responsive-table la-table table la-ignore-fixed la-bulk-header">
         <thead>
         <tr>
