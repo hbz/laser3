@@ -889,7 +889,7 @@ class YodaController {
         ]
         result.editable = true
 
-        RestHighLevelClient esclient = ESWrapperService.getClient()
+        RestHighLevelClient esclient = ESWrapperService.getNewClient()
 
         result.indices = []
         Map es_indices = ESWrapperService.ES_Indices

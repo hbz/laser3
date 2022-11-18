@@ -56,11 +56,17 @@ class ESWrapperService {
      * Establishes the REST client connection to the ElasticSearch host
      * @return
      */
-    RestHighLevelClient getClient() {
-        new RestHighLevelClient(
-                RestClient.builder(
-                        new HttpHost(ES_Host, 9200, "http"),
-                        new HttpHost(ES_Host, 9201, "http")))
+    RestHighLevelClient getNewClient(boolean onlyWithActiveConnection = false) {
+        RestHighLevelClient client = new RestHighLevelClient(
+            RestClient.builder(
+                    new HttpHost(ES_Host, 9200, "http"),
+                    new HttpHost(ES_Host, 9201, "http")
+            )
+        )
+        if (onlyWithActiveConnection && !testConnection()) {
+            client = null
+        }
+        client
     }
 
     // TMP
@@ -126,31 +132,28 @@ class ESWrapperService {
      * @return true if the test was successful, false otherwise
      */
     boolean testConnection() {
-
-        RestHighLevelClient esclient = getClient()
+        boolean response = false
+        RestHighLevelClient esclient = getNewClient()
 
         try {
-            boolean response = esclient.ping(RequestOptions.DEFAULT)
-
-            if(!response){
+            response = esclient.ping(RequestOptions.DEFAULT)
+            if (!response){
                 log.warn("Problem with ElasticSearch: Ping Fail")
                 SystemEvent.createEvent('FT_INDEX_UPDATE_ERROR', ["Ping Fail": "Ping Fail"])
             }
-            esclient.close()
-            return response
-        } catch (ConnectTimeoutException e) {
+        }
+        catch (ConnectTimeoutException e) {
             log.warn("Problem with ElasticSearch: Connect Timeout")
             SystemEvent.createEvent('FT_INDEX_UPDATE_ERROR', ["Connect Timeout": "Connect Timeout"])
-            esclient.close()
-            return false
         }
         catch (ConnectException e) {
             log.warn("Problem with ElasticSearch: Connection Fail")
             SystemEvent.createEvent('FT_INDEX_UPDATE_ERROR', ["Connection Fail": "Connection Fail"])
-            esclient.close()
-            return false
         }
-
+        finally {
+            esclient.close()
+        }
+        response
     }
 
     /**
@@ -160,7 +163,7 @@ class ESWrapperService {
      */
     boolean deleteIndex(String indexName){
         log.info("deleteIndex ${indexName} ...")
-        RestHighLevelClient esclient = getClient()
+        RestHighLevelClient esclient = getNewClient()
         GetIndexRequest request = new GetIndexRequest(indexName)
 
         if (esclient.indices().exists(request, RequestOptions.DEFAULT)) {
@@ -192,7 +195,7 @@ class ESWrapperService {
      */
     boolean createIndex(String indexName){
         log.info("createIndex ${indexName}...")
-        RestHighLevelClient esclient = getClient()
+        RestHighLevelClient esclient = getNewClient()
         GetIndexRequest request = new GetIndexRequest(indexName)
 
         if (!esclient.indices().exists(request, RequestOptions.DEFAULT)) {

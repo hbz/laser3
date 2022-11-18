@@ -972,21 +972,22 @@ class DeletionService {
      * @param className the domain class index from which the entry should be removed
      */
     void deleteDocumentFromIndex(id, String className) {
-        RestHighLevelClient esclient = ESWrapperService.getClient()
+        RestHighLevelClient esclient = ESWrapperService.getNewClient(true)
         Map es_indices = ESWrapperService.ES_Indices
         String es_index = es_indices.get(className)
 
-        try {
-            if(ESWrapperService.testConnection()) {
+        if (esclient) {
+            try {
                 DeleteRequest request = new DeleteRequest(es_index, id)
                 esclient.delete(request, RequestOptions.DEFAULT)
             }
-            esclient.close()
-        }
-        catch(Exception e) {
-            log.error("deleteDocumentFromIndex with id=${id} failed because: ")
-            e.printStackTrace()
-            esclient.close()
+            catch (Exception e) {
+                log.error("deleteDocumentFromIndex with id=${id} failed because: ")
+                e.printStackTrace()
+            }
+            finally {
+                esclient.close()
+            }
         }
     }
 }
