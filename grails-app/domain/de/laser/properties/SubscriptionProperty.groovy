@@ -68,7 +68,6 @@ class SubscriptionProperty extends AbstractPropertyWithCalculatedLastUpdated imp
         dateValue   (nullable: true)
         instanceOf  (nullable: true)
 
-        dateCreated (nullable: true)
         lastUpdated (nullable: true)
         lastUpdatedCascading (nullable: true)
     }

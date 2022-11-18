@@ -67,10 +67,7 @@ class GlobalRecordSource {
      listPrefix(nullable:true, blank:false)
       principal(nullable:true, blank:false)
     credentials(nullable:true, blank:false)
-
-      // Nullable is true, because values are already in the database
-      lastUpdated (nullable: true)
-      dateCreated (nullable: true)
+    lastUpdated(nullable: true)
     }
 
     @Deprecated

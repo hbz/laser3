@@ -79,10 +79,7 @@ class DocContext implements ShareableTrait, Comparable {
         shareConf     (nullable: true)
         targetOrg     (nullable: true)
         surveyConfig  (nullable: true)
-
-        // Nullable is true, because values are already in the database
-        lastUpdated (nullable: true)
-        dateCreated (nullable: true)
+        lastUpdated   (nullable: true)
     }
 
     /**

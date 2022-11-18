@@ -32,7 +32,6 @@ class DeweyDecimalClassification implements CalculatedLastUpdated, Comparable{
     static constraints = {
         tipp (nullable: true)
         pkg  (nullable: true)
-        dateCreated (nullable: true)
         lastUpdated (nullable: true)
         lastUpdatedCascading (nullable: true)
     }
