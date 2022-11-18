@@ -61,8 +61,6 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
 	  	tipp        (nullable:true)
         instanceOf  (nullable: true)
 
-		// Nullable is true, because values are already in the database
-        dateCreated (nullable: true)
         lastUpdated (nullable: true)
         lastUpdatedCascading (nullable: true)
   	}
