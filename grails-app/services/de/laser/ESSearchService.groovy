@@ -57,11 +57,12 @@ class ESSearchService{
    Map<String, Object> result = [:]
 
    //List client = getClient()
-   RestHighLevelClient esclient = ESWrapperService.getClient()
+   RestHighLevelClient esclient = ESWrapperService.getNewClient(true)
    Map es_indices = ESWrapperService.ES_Indices
 
-    try {
-      if(ESWrapperService.testConnection()) {
+    if (esclient) {
+
+      try {
         if ((params.q && params.q.length() > 0) || params.rectype) {
 
           params.max = Math.min(params.max ? params.int('max') : 15, 10000)
@@ -76,10 +77,8 @@ class ESSearchService{
 
           SearchResponse searchResponse
           try {
-
             SearchRequest searchRequest = new SearchRequest(es_indices.values() as String[])
             SearchSourceBuilder searchSourceBuilder = new SearchSourceBuilder()
-
 
             if (params.sort) {
               SortOrder order = SortOrder.ASC
@@ -125,7 +124,6 @@ class ESSearchService{
               searchSourceBuilder.from(params.offset)
               searchSourceBuilder.size(params.max)
               searchRequest.source(searchSourceBuilder)
-
             }
             searchResponse = esclient.search(searchRequest, RequestOptions.DEFAULT)
 
@@ -171,20 +169,14 @@ class ESSearchService{
             result.hits = searchResponse.getHits()
             result.resultsTotal = searchResponse.getHits().getTotalHits().value ?: 0
             result.index = es_indices as String[]
-
           }
 
         } else {
           log.debug("No query.. Show search page")
         }
       }
-    }
-    finally {
-      try {
-        esclient.close()
-      }
-      catch ( Exception e ) {
-        log.error("Problem by Close ES Client",e)
+      finally {
+          esclient.close()
       }
     }
     result

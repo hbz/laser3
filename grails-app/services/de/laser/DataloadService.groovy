@@ -28,7 +28,6 @@ import org.elasticsearch.client.core.CountResponse
 import org.elasticsearch.common.xcontent.XContentType
 import org.elasticsearch.rest.RestStatus
 import org.grails.web.json.JSONElement
-import org.hibernate.Session
 
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Future
@@ -42,7 +41,7 @@ class DataloadService {
     ESWrapperService ESWrapperService
     ExecutorService executorService
 
-    static final int BULK_LIMIT         = 5000000
+    static final int BULK_LIMIT         = 3000000
 
     static final int BULK_SIZE_LARGE    = 10000
     static final int BULK_SIZE_MEDIUM   = 5000
@@ -606,7 +605,7 @@ class DataloadService {
 
         if (!domainClass || domainClass == DocContext.class) {
 
-            _updateES(DocContext.class, BULK_SIZE_MEDIUM) { DocContext docCon ->
+            _updateES(DocContext.class, BULK_SIZE_LARGE) { DocContext docCon ->
                 Map result = [:]
 
                 result._id = docCon.getClass().getSimpleName().toLowerCase() + ":" + docCon.id
@@ -709,7 +708,7 @@ class DataloadService {
 
         if (!domainClass || domainClass == SubscriptionProperty.class) {
 
-            _updateES(SubscriptionProperty.class, BULK_SIZE_MEDIUM) { SubscriptionProperty subProp ->
+            _updateES(SubscriptionProperty.class, BULK_SIZE_LARGE) { SubscriptionProperty subProp ->
                 Map result = [:]
 
                 result._id = subProp.getClass().getSimpleName().toLowerCase() + ":" + subProp.id
@@ -834,7 +833,7 @@ class DataloadService {
 
         log.info ( "${logPrefix} - Start")
 
-        RestHighLevelClient esclient = ESWrapperService.getClient()
+        RestHighLevelClient esclient = ESWrapperService.getNewClient(true)
         Map es_indices = ESWrapperService.ES_Indices
 
         long total = 0, startingTimestamp = 0, bulkMaxTimestamp = 0
@@ -850,13 +849,16 @@ class DataloadService {
             try {
                 if (ftControl.active) {
 
-                    List<Long> validationList = domainClass.executeQuery('select d.id from ' + domainClass.name + ' as d where d.dateCreated is null')
-                    if (validationList) {
-                        log.info( "${logPrefix} - found ${validationList.size()} entries with dateCreated = null")
-                        // TODO migration
+                    List<Long> vList = domainClass.executeQuery('select d.id from ' + domainClass.name + ' as d where d.dateCreated is null')
+                    if (vList) {
+                        Date vDate = new Date()
+                        log.info("${logPrefix} - found ${vList.size()} entries with dateCreated = null -> data correction to [${vDate}]")
+
+                        int vdResult = domainClass.executeUpdate('update ' + domainClass.name + ' d set d.dateCreated = :vDate where d.id in (:vList)', [vDate: vDate, vList: vList])
+                        log.info("${logPrefix} - updated: ${vdResult}")
                     }
 
-                    if (ESWrapperService.testConnection() && es_indices && es_indices.get(domainClass.simpleName)) {
+                    if (esclient && es_indices && es_indices.get(domainClass.simpleName)) {
                         Date from = new Date(ftControl.lastTimestamp)
                         List<Long> idList = []
 
@@ -928,7 +930,7 @@ class DataloadService {
                                     }
                                 }
 
-                                log.debug("${logPrefix} - processed ${total} <- ${todoList.size() - total} records; bulkSize ${mb.round(2)}MB")
+                                log.debug("${logPrefix} - processed ${total} / ${todoList.size() - total} records; bulkSize ${mb.round(2)}MB")
                                 bulkRequest = new BulkRequest()
                             } // each
 
@@ -943,20 +945,20 @@ class DataloadService {
                             ftControl.save()
 
                     } else {
-                        log.debug("${logPrefix} - failed -> ESWrapperService.testConnection() && es_indices && es_indices.get(domain.simpleName)")
+                        log.debug("${logPrefix} - failed. Preconditions not met!")
                     }
                 } else {
                     log.debug("${logPrefix} - ignored. FTControl is not active")
                 }
             }
             catch (Exception e) {
-                log.error("${logPrefix} - error", e)
+                log.error("${logPrefix} - Error with Rollback!", e)
 
                 SystemEvent.createEvent('FT_INDEX_UPDATE_ERROR', ["index": domainClass.name])
             }
             finally {
                 try {
-                    if (ESWrapperService.testConnection()) {
+                    if (esclient) {
                         if (ftControl.active) {
                             FlushRequest request = new FlushRequest(es_indices.get(domainClass.simpleName))
                             esclient.indices().flush(request, RequestOptions.DEFAULT)
@@ -982,9 +984,9 @@ class DataloadService {
     def resetESIndices() {
         log.debug("resetESIndices")
 
-        RestHighLevelClient client = ESWrapperService.getClient()
+        RestHighLevelClient client = ESWrapperService.getNewClient(true)
 
-        if(ESWrapperService.testConnection()) {
+        if (client) {
             if (!(activeFuture) || (activeFuture && activeFuture.cancel(true))) {
 
                 SystemEvent.createEvent('YODA_ES_RESET_START')
@@ -1056,12 +1058,11 @@ class DataloadService {
      */
     boolean checkESElementswithDBElements(FTControl ftControl) {
 
-        RestHighLevelClient esclient = ESWrapperService.getClient()
+        RestHighLevelClient esclient = ESWrapperService.getNewClient(true)
         Map es_indices = ESWrapperService.ES_Indices
 
-        try {
-            if(ESWrapperService.testConnection()) {
-
+        if (esclient) {
+            try {
                 if (ftControl.active) {
                     log.debug("Element comparison: DB <-> ES ( ${ftControl.domainClassName} )")
 
@@ -1093,13 +1094,8 @@ class DataloadService {
                     log.debug("Element comparison ignored, because ftControl is not active")
                 }
             }
-        }
-        finally {
-            try {
+            finally {
                 esclient.close()
-            }
-            catch (Exception e) {
-                log.error("Element comparison - finally error: " + e.toString())
             }
         }
         return true
@@ -1113,11 +1109,11 @@ class DataloadService {
      */
     boolean checkESElementswithDBElements() {
 
-        RestHighLevelClient esclient = ESWrapperService.getClient()
+        RestHighLevelClient esclient = ESWrapperService.getNewClient(true)
         Map es_indices = ESWrapperService.ES_Indices
 
-        try {
-            if(ESWrapperService.testConnection()) {
+        if (esclient) {
+            try {
                 log.debug("Element comparison: DB <-> ES")
 
                 FTControl.list().each { ft ->
@@ -1146,19 +1142,13 @@ class DataloadService {
                             ft.esElements = countIndex
                             ft.save()
                         }
-                    }
-                    else {
+                    } else {
                         log.debug("Element comparison ignored, because ftControl is not active")
                     }
                 }
             }
-        }
-        finally {
-            try {
+            finally {
                 esclient.close()
-            }
-            catch (Exception e) {
-                log.error("Element comparison - finally error: " + e.toString())
             }
         }
         return true
