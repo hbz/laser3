@@ -73,7 +73,6 @@ class LicenseProperty extends AbstractPropertyWithCalculatedLastUpdated implemen
         instanceOf  (nullable: true)
         paragraph   (nullable: true)
 
-        dateCreated (nullable: true)
         lastUpdated (nullable: true)
         lastUpdatedCascading (nullable: true)
     }

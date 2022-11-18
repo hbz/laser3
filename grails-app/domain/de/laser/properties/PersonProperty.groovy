@@ -57,7 +57,6 @@ class PersonProperty extends AbstractPropertyWithCalculatedLastUpdated {
         note        (nullable: true)
         dateValue   (nullable: true)
 
-        dateCreated (nullable: true)
         lastUpdated (nullable: true)
         lastUpdatedCascading (nullable: true)
     }

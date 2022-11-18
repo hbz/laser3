@@ -60,4 +60,27 @@ databaseChangeLog = {
         addNotNullConstraint(columnDataType: "timestamp", columnName: "cnqi_date_created", tableName: "change_notification_queue_item", validate: "true")
     }
 
+    changeSet(author: "klober (modified)", id: "1668769531625-13") {
+        addNotNullConstraint(columnDataType: "timestamp", columnName: "dc_date_created", tableName: "doc_context", validate: "true")
+    }
+
+    changeSet(author: "klober (modified)", id: "1668769531625-14") {
+        addNotNullConstraint(columnDataType: "timestamp", columnName: "surre_date_created", tableName: "survey_result", validate: "true")
+    }
+
+    changeSet(author: "klober (modified)", id: "1668769531625-15") {
+        addNotNullConstraint(columnDataType: "timestamp", columnName: "tsk_date_created", tableName: "task", validate: "true")
+    }
+
+    changeSet(author: "klober (modified)", id: "1668769531625-16") {
+        addNotNullConstraint(columnDataType: "timestamp", columnName: "lp_date_created", tableName: "license_property", validate: "true")
+    }
+
+    changeSet(author: "klober (modified)", id: "1668769531625-17") {
+        addNotNullConstraint(columnDataType: "timestamp", columnName: "pp_date_created", tableName: "person_property", validate: "true")
+    }
+
+    changeSet(author: "klober (modified)", id: "1668769531625-18") {
+        addNotNullConstraint(columnDataType: "timestamp", columnName: "sp_date_created", tableName: "subscription_property", validate: "true")
+    }
 }
