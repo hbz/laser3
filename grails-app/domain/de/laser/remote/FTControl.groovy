@@ -22,9 +22,7 @@ class FTControl {
     Date lastUpdated
 
     static constraints = {
-        // Nullable is true, because values are already in the database
         lastUpdated (nullable: true)
-        dateCreated (nullable: true)
     }
 
     static mapping = {

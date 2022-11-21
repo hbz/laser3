@@ -24,6 +24,5 @@ class IssueEntitlementGroupItem {
 
     static constraints = {
         lastUpdated (nullable: true)
-        dateCreated (nullable: true)
     }
 }

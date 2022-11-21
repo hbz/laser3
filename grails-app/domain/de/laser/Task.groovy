@@ -53,10 +53,7 @@ class Task {
         description     (nullable:true, blank:true)
         responsibleUser (nullable:true)
         responsibleOrg  (nullable:true)
-
-        // Nullable is true, because values are already in the database
-        lastUpdated (nullable: true)
-        dateCreated (nullable: true)
+        lastUpdated     (nullable: true)
     }
 
     static transients = ['objects'] // mark read-only accessor methods

@@ -59,7 +59,6 @@ class SurveyResult extends AbstractPropertyWithCalculatedLastUpdated implements 
         participantComment (nullable:true, blank:false)
         ownerComment (nullable:true, blank:false)
 
-        dateCreated (nullable: true)
         lastUpdated (nullable: true)
         lastUpdatedCascading (nullable: true)
     }
