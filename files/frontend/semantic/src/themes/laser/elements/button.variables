@@ -12,6 +12,7 @@
 @focusBackgroundColor: #00375f;
 
 @hoverColor: @primaryHoverTextColor;
+@invertedTextHoverColor: @hoverColor;
 @activeColor: @primaryHoverTextColor;
 @focusColor: @primaryHoverTextColor;
 

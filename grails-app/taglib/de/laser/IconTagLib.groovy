@@ -125,6 +125,9 @@ class IconTagLib {
     def listIcon = { attrs, body ->
         boolean hideTooltip = attrs.hideTooltip ? false : true
 
+        boolean hideSurroundingMarkup = attrs.hideSurroundingMarkup ? false : true
+
+
         String dc = message(code: 'default.title.label')
         String icon = 'question'
 
@@ -146,13 +149,19 @@ class IconTagLib {
                 icon = 'film'
                 break
         }
-
-        out << '<div class="la-inline-flexbox la-popup-tooltip la-delay"'
-        if (hideTooltip) {
+        if (hideSurroundingMarkup) {
+            out << '<div class="la-inline-flexbox la-popup-tooltip la-delay"'
+        }
+        if ( (hideTooltip) &&  (hideSurroundingMarkup) ){
             out << ' data-content="' + dc + '" data-position="left center" data-variation="tiny"'
         }
-        out << '><i aria-hidden="true" class="icon ' + icon + ' la-list-icon"></i>'
-        out << '</div>'
+        if (hideSurroundingMarkup) {
+            out << '>'
+        }
+        out << '<i aria-hidden="true" class="icon ' + icon + ' la-list-icon"></i>'
+        if (hideSurroundingMarkup) {
+            out << '</div>'
+        }
     }
 
     def ieAcceptStatusIcon = { attrs, body ->

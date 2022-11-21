@@ -327,7 +327,7 @@ r2d2 = {
 
         // ----- other stuff -----
 
-        $('.dropdown.sorting').on('change', function(e) {
+        $('.dropdown.la-js-sorting').on('change', function(e) {
             //console.log($(this).find('option:contains("'+$(this).val()+'")').attr('data-value'));
             let url = new URL(window.location.href)
             let urlParams = new URLSearchParams(url.search)
