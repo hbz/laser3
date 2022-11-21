@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4588    21.11.2022  dev     3.0         Andreas Feature     Neues Feld "Notizen" für Coverages
+
+4557    21.11.2022  dev     3.0         Andreas Bug         Aktualisierungsroutine bei Anbieterkontakten behoben
+
+4428    21.11.2022  dev     3.0         Andreas Feature     neuer Referenzwert "50" für Simuser-Zahl aufgenommen
+
 4368    16.11.2022  dev     3.0         Moe     Feature     Preise sortieren in Umfragen
 
 4369    16.11.2022  dev     3.0         Moe     Feature     Umfrage: Filter für Nicht Lizenzteilnehmer bauen

@@ -19,7 +19,7 @@ import java.text.Normalizer
  * The individually negotiated subscription holding may differ from what a provider offers usually. Those differences must be reflected in the issue entitlement record; that is why there are some
  * fields in both classes. In detail:
  * <ul>
- *     <li>acces start/end may be different</li>
+ *     <li>access start/end may be different</li>
  *     <li>name</li>
  *     <li>the subscribing institution may have a perpetual access negotiated to the title; this is of course no global property</li>
  *     <li>prices may differ from list prices on global level (the {@link de.laser.finance.PriceItem}s linked to the owning {@link TitleInstancePackagePlatform}; that is why issue entitlements and TIPPs have an individual set of price items)</li>
@@ -41,6 +41,7 @@ class IssueEntitlement extends AbstractBase implements Comparable {
 
     String name
     String sortname
+    String notes
 
     Subscription perpetualAccessBySub
 
@@ -88,6 +89,7 @@ class IssueEntitlement extends AbstractBase implements Comparable {
            version column:'ie_version'
               name column:'ie_name', type: 'text'
           sortname column:'ie_sortname', type: 'text'
+             notes column:'ie_notes', type: 'text'
             status column:'ie_status_rv_fk', index: 'ie_status_idx, ie_status_accept_status_idx, ie_tipp_status_accept_status_idx'
       subscription column:'ie_subscription_fk', index: 'ie_sub_idx, ie_sub_tipp_idx, ie_status_accept_status_idx, ie_tipp_status_accept_status_idx'
               tipp column:'ie_tipp_fk',         index: 'ie_tipp_idx, ie_sub_tipp_idx, ie_tipp_status_accept_status_idx'
@@ -108,6 +110,7 @@ class IssueEntitlement extends AbstractBase implements Comparable {
         status         (nullable:true)
         name           (nullable:true)
         sortname       (nullable:true)
+        notes          (nullable:true)
         medium         (nullable:true)
         accessStartDate(nullable:true)
         accessEndDate  (nullable:true)
