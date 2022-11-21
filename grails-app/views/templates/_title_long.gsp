@@ -40,7 +40,7 @@
     </div>
 </div>
 
-<div class="la-icon-list">
+
     <g:if test="${ie && (ie.medium || showEmptyFields)}">
         <div class="item">
             <i class="grey medium icon la-popup-tooltip la-delay"

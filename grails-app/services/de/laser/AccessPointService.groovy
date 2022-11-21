@@ -95,7 +95,8 @@ class AccessPointService {
         List titles = []
 
         Locale locale = LocaleUtils.getCurrentLocale()
-        titles.addAll([messageSource.getMessage('accessMethod.label', null, locale),
+        titles.addAll([messageSource.getMessage('default.name.label', null, locale),
+                messageSource.getMessage('accessMethod.label', null, locale),
                        messageSource.getMessage('accessRule.plural', null, locale)])
 
         Map sheetData = [:]
@@ -105,6 +106,7 @@ class AccessPointService {
             if (accessPoint.accessMethod == RDStore.ACCESS_POINT_TYPE_IP) {
                 accessPoint.getIpRangeStrings('ipv4', 'ranges').each {
                     List row = []
+                    row.add([field: accessPoint.name ?: '', style: null])
                     row.add([field: accessPoint.accessMethod.getI10n('value'), style: null])
                     row.add([field: it ?: '', style: null])
                     accessPointData.add(row)
@@ -112,6 +114,7 @@ class AccessPointService {
 
                 accessPoint.getIpRangeStrings('ipv6', 'ranges').each {
                     List row = []
+                    row.add([field: accessPoint.name ?: '', style: null])
                     row.add([field: accessPoint.accessMethod.getI10n('value'), style: null])
                     row.add([field: it ?: '', style: null])
                     accessPointData.add(row)
@@ -121,6 +124,7 @@ class AccessPointService {
             if (accessPoint.accessMethod == RDStore.ACCESS_POINT_TYPE_EZPROXY) {
                 accessPoint.getIpRangeStrings('ipv4', 'ranges').each {
                     List row = []
+                    row.add([field: accessPoint.name ?: '', style: null])
                     row.add([field: accessPoint.accessMethod.getI10n('value'), style: null])
                     row.add([field: it ?: '', style: null])
                     row.add([field: accessPoint.url ?: '', style: null])
@@ -129,6 +133,7 @@ class AccessPointService {
 
                 accessPoint.getIpRangeStrings('ipv6', 'ranges').each {
                     List row = []
+                    row.add([field: accessPoint.name ?: '', style: null])
                     row.add([field: accessPoint.accessMethod.getI10n('value'), style: null])
                     row.add([field: it ?: '', style: null])
                     row.add([field: accessPoint.url ?: '', style: null])
@@ -139,6 +144,7 @@ class AccessPointService {
             if (accessPoint.accessMethod == RDStore.ACCESS_POINT_TYPE_PROXY) {
                 accessPoint.getIpRangeStrings('ipv4', 'ranges').each {
                     List row = []
+                    row.add([field: accessPoint.name ?: '', style: null])
                     row.add([field: accessPoint.accessMethod.getI10n('value'), style: null])
                     row.add([field: it ?: '', style: null])
                     accessPointData.add(row)
@@ -146,6 +152,7 @@ class AccessPointService {
 
                 accessPoint.getIpRangeStrings('ipv6', 'ranges').each {
                     List row = []
+                    row.add([field: accessPoint.name ?: '', style: null])
                     row.add([field: accessPoint.accessMethod.getI10n('value'), style: null])
                     row.add([field: it ?: '', style: null])
                     accessPointData.add(row)
@@ -154,9 +161,20 @@ class AccessPointService {
 
             if (accessPoint.accessMethod == RDStore.ACCESS_POINT_TYPE_SHIBBOLETH) {
                 List row = []
+                row.add([field: accessPoint.name ?: '', style: null])
                 row.add([field: accessPoint.accessMethod.getI10n('value'), style: null])
                 row.add([field: accessPoint.entityId ?: '', style: null])
                 accessPointData.add(row)
+            }
+
+            if (accessPoint.accessMethod == RDStore.ACCESS_POINT_TYPE_MAIL_DOMAIN) {
+                accessPoint.accessPointData.each {
+                    List row = []
+                    row.add([field: accessPoint.name ?: '', style: null])
+                    row.add([field: accessPoint.accessMethod.getI10n('value'), style: null])
+                    row.add([field: it.data ?: '', style: null])
+                    accessPointData.add(row)
+                }
             }
             
             sheetData.put(escapeService.escapeString(accessPoint.name), [titleRow: titles, columnData: accessPointData])

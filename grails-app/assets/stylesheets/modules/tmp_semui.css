@@ -54,10 +54,9 @@
 }
 
 .ui.button > i.icon {
-    margin-right: 0 !important;
+    /*margin-right: 0 !important;*/
     opacity: 1 !important;
 }
-
 /* select 2 */
 
 .ui .select2-container {

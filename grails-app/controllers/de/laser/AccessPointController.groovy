@@ -56,6 +56,25 @@ class AccessPointController  {
     }
 
     /**
+     * Adds a new Mail Domain with the given parameters.
+     * @see AccessPointControllerService#addMailDomain(grails.web.servlet.mvc.GrailsParameterMap)
+     */
+    @DebugInfo(perm="ORG_BASIC_MEMBER,ORG_CONSORTIUM", affil="INST_EDITOR", ctrlService = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")
+    })
+    def addMailDomain() {
+        Map<String,Object> ctrlResult = accessPointControllerService.addMailDomain(params)
+        if (ctrlResult.status == AccessPointControllerService.STATUS_ERROR) {
+            flash.error = ctrlResult.result.error
+            redirect controller: 'accessPoint', action: 'edit_' + params.accessMethod, id: params.id
+            return
+        } else {
+            redirect controller: 'accessPoint', action: 'edit_' + params.accessMethod, id: params.id
+        }
+    }
+
+    /**
      * Loads a list of subscriptions linked to the given {@link OrgAccessPoint}
      * @returns a table view listing the resulting subscriptions
      */
@@ -195,7 +214,7 @@ class AccessPointController  {
      */
     @Secured(['ROLE_USER'])
     def edit_ip() {
-        _edit()
+        _edit("ip")
     }
 
     /**
@@ -205,7 +224,7 @@ class AccessPointController  {
      */
     @Secured(['ROLE_USER'])
     def edit_vpn() {
-        _edit()
+        _edit("vpn")
     }
 
     /**
@@ -215,7 +234,7 @@ class AccessPointController  {
      */
     @Secured(['ROLE_USER'])
     def edit_oa() {
-        _edit()
+        _edit("oa")
     }
 
     /**
@@ -225,7 +244,7 @@ class AccessPointController  {
      */
     @Secured(['ROLE_USER'])
     def edit_proxy() {
-        _edit()
+        _edit("proxy")
     }
 
     /**
@@ -235,7 +254,7 @@ class AccessPointController  {
      */
     @Secured(['ROLE_USER'])
     def edit_ezproxy() {
-        _edit()
+        _edit("ezproxy")
     }
 
     /**
@@ -245,7 +264,17 @@ class AccessPointController  {
      */
     @Secured(['ROLE_USER'])
     def edit_shibboleth() {
-        _edit()
+        _edit("shibboleth")
+    }
+
+    /**
+     * Handles the call for editing a Mail-Domain based access point
+     * @return the Mail-Domain editing view
+     * @see de.laser.oap.OrgAccessPoint
+     */
+    @Secured(['ROLE_USER'])
+    def edit_maildomain() {
+        _edit("mailDomain")
     }
 
     /**
@@ -253,7 +282,7 @@ class AccessPointController  {
      * in that case, the attached access methods are being collected and printed to a table
      * @return the editing view for the given access point or the export table if an export parameter has been specified
      */
-    private _edit() {
+    private _edit(String accessMethod) {
         OrgAccessPoint orgAccessPoint = OrgAccessPoint.get(params.id)
         Org org = orgAccessPoint.org
         Long orgId = org.id
@@ -274,11 +303,15 @@ class AccessPointController  {
             return
         }
         else {
+            Map<String, Object> accessPointDataList = [:]
             Boolean autofocus = (params.autofocus) ? true : false
             Boolean activeChecksOnly = (params.checked == 'false')
-            Map<String, Object> accessPointDataList = orgAccessPoint.getAccessPointIpRanges()
+            if(accessMethod in ['ip', 'ezproxy', 'proxy']) {
+                accessPointDataList = orgAccessPoint.getAccessPointIpRanges()
+            }else if(accessMethod == 'mailDomain'){
+                accessPointDataList = orgAccessPoint.getAccessPointMailDomains()
+            }
             List<Long> currentSubIds = orgTypeService.getCurrentSubscriptionIds(orgAccessPoint.org)
-            RefdataCategory.getAllRefdataValues(RDConstants.IPV6_ADDRESS_FORMAT)
             List<HashMap> linkedPlatforms = accessPointService.getLinkedPlatforms(params, orgAccessPoint)
             linkedPlatforms.each() {
                 String qry2 = """

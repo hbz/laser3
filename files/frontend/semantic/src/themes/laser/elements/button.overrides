@@ -197,3 +197,10 @@
     color: @white;
   }
 }
+/*-------------------
+         Inverted
+  --------------------*/
+
+.ui.inverted.button:hover {
+  color: @black;
+}

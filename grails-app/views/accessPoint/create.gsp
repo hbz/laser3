@@ -17,7 +17,7 @@
 
   <laser:render template="/organisation/nav" model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, tmplAccessPointsActive: true]}"/>
 
-  <h2 class="ui header la-noMargin-top"><g:message code="accessPoint.new"/></h2>
+  <h2 class="ui header la-noMargin-top"><g:message code="accessPoint.create_${accessMethod}"/></h2>
   <ui:messages data="${flash}"/>
 
   <div id="details">
