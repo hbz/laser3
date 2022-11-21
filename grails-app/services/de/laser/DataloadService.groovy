@@ -849,15 +849,6 @@ class DataloadService {
             try {
                 if (ftControl.active) {
 
-                    List<Long> vList = domainClass.executeQuery('select d.id from ' + domainClass.name + ' as d where d.dateCreated is null')
-                    if (vList) {
-                        Date vDate = new Date()
-                        log.info("${logPrefix} - found ${vList.size()} entries with dateCreated = null -> data correction to [${vDate}]")
-
-                        int vdResult = domainClass.executeUpdate('update ' + domainClass.name + ' d set d.dateCreated = :vDate where d.id in (:vList)', [vDate: vDate, vList: vList])
-                        log.info("${logPrefix} - updated: ${vdResult}")
-                    }
-
                     if (esclient && es_indices && es_indices.get(domainClass.simpleName)) {
                         Date from = new Date(ftControl.lastTimestamp)
                         List<Long> idList = []
