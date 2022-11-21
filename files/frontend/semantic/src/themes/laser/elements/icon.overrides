@@ -2005,3 +2005,14 @@ i.orange.icon.la-subscriptionIsChild.fixed {
     display: none;
   }
 }
+
+.ui.segment.la-segment-with-icon {
+  position: relative;
+  padding-top: 25px;
+}
+.la-icon-absolute {
+  position: absolute;
+  z-index: 100;
+  left: 0;
+  right: 0;
+}

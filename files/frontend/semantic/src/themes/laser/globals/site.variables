@@ -183,3 +183,6 @@
 
 @inputPlaceholderColor: #585c5f;
 
+/*--- Hovered Colored Text ---*/
+@primaryHoverTextColor   : @primaryTextColor;
+
