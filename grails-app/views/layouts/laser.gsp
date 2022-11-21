@@ -79,7 +79,7 @@
                                     <div class="divider"></div>
                                     <ui:link generateElementId="true" class="item" role="menuitem" controller="gasco">${message(code:'menu.public.gasco_monitor')}</ui:link>
 
-                                    <a id="wekb" href="${message(code:'url.wekb.' + currentServer)}" target="_blank" class="item" role="menuitem"><i class="ui icon la-gokb"></i> we:kb</a>
+                                    <a id="wekb" href="${message(code:'url.wekb.' + currentServer)}" class="item" role="menuitem"><i class="ui icon la-gokb"></i> we:kb</a>
 
                             </div>
                         </div>
