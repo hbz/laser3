@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4546    21.11.2022  dev     3.0         Andreas Bug         kopierte Kosten konnten durch die Konsortialstelle exportiert werden
+
+4491    21.11.2022  dev     3.0         Andreas Bug         Rechteprüfung bei Einrichtungssichten korrigiert
+
 4368    16.11.2022  dev     3.0         Moe     Feature     Preise sortieren in Umfragen
 
 4369    16.11.2022  dev     3.0         Moe     Feature     Umfrage: Filter für Nicht Lizenzteilnehmer bauen

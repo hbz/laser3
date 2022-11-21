@@ -209,7 +209,8 @@ class SubscriptionService {
                     " where roleK.org = :org and roleK.roleType = :rdvCons " +
                     " and roleTK.org = :org and roleTK.roleType = :rdvCons " +
                     " and roleT.roleType in (:rdvSubscr) " +
-                    " and ( ci is null or ci.costItemStatus != :deleted or ci.owner = :org )"
+                    " and ( (ci is null or ci.costItemStatus != :deleted) ) " +
+                    " and (ci.owner = :org or ci is null)"
             qarams = [org      : contextOrg,
                       rdvCons  : RDStore.OR_SUBSCRIPTION_CONSORTIA,
                       rdvSubscr: [RDStore.OR_SUBSCRIBER_CONS,RDStore.OR_SUBSCRIBER_CONS_HIDDEN],
