@@ -96,12 +96,12 @@
             <laser:render template="/templates/tipps/coverageStatement_accordion"
                           model="${[covStmt: covStmt, paramData: paramData, objectTypeIsIE: true, overwriteEditable: overwriteEditable]}"/>
         </g:each>
-        <g:if test="${editable}">
+%{--        <g:if test="${editable}">
             <br/>
             <g:link action="addCoverage" params="${paramData + [issueEntitlement: ie.id]}"
                     class="ui compact icon button positive tiny"><i class="ui icon plus"
                                                                     data-content="${message(code: 'subscription.details.addCoverage')}"></i></g:link>
-        </g:if>
+        </g:if>--}%
     </g:if>
 
     %{-- TIPP  --}%

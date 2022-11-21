@@ -26,8 +26,9 @@
         </div>
     </g:if>
     <g:if test="${covStmt.startVolume || objectTypeIsIE}">
+        <div class="item">
             <i class="grey fitted la-books icon la-popup-tooltip la-delay"
-               data-content="${message(code: 'tipp.startVolume.tooltip')}"></i>
+                data-content="${message(code: 'tipp.startVolume.tooltip')}"></i>
 
             <div class="content">
                 <div class="header">
@@ -38,6 +39,7 @@
                     <ui:xEditable owner="${covStmt}" field="startVolume" overwriteEditable="${overwriteEditable}"/>
                 </div>
             </div>
+        </div>
     </g:if>
     <g:if test="${covStmt.startIssue || objectTypeIsIE}">
         <div class="item">
