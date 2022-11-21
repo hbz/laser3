@@ -97,7 +97,7 @@ class AccessPointControllerService {
         OrgAccessPoint orgAccessPoint = OrgAccessPoint.get(params.id)
         String mailDomain = params.mailDomain
 
-        if(!(mailDomain =~ '@([a-zA-Z-.]+)([.a-zA-Z])')){
+        if(!(mailDomain =~ '@([a-zA-Z0-9-.]+)([.a-zA-Z0-9])')){
             Object[] args = [mailDomain]
             result.error = messageSource.getMessage('accessPoint.mailDomain.invalid', args, LocaleUtils.getCurrentLocale())
             [result:result,status:STATUS_ERROR]
