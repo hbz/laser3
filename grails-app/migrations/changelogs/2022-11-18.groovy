@@ -144,7 +144,7 @@ databaseChangeLog = {
                                     println '- setting dateCreated to [' + newTs + '] for ids: ' + nullIdBeforeMinList
 
                                     SystemEvent.createEvent( 'DBM_SCRIPT_INFO', [
-                                            msg: 'Data migration - replacing null values',
+                                            msg: 'Data migration (A1) - replacing null values',
                                             field: obj + '.dateCreated',
                                             newValue: newTs.toString(),
                                             numberOfTargets: nullIdBeforeMinList.size(),
@@ -226,4 +226,115 @@ databaseChangeLog = {
         addNotNullConstraint(columnDataType: "timestamp", columnName: "prs_date_created", tableName: "person", validate: "true")
     }
 
+    changeSet(author: "klober (modified)", id: "1669018812496-37") {
+        grailsChange {
+            change {
+                List<String> objList = [
+                        'AlternativeName',
+                        'IdentifierNamespace',
+                        'OrgRole',
+                        'PlatformProperty',
+                        'RefdataCategory',
+                        'RefdataValue',
+                        'TIPPCoverage',
+                        'TitleHistoryEventParticipant',
+                        'UserSetting'
+                ]
+
+                objList.each { obj ->
+                    String nullIdQuery  = 'select obj.id from ' + obj + ' obj where obj.dateCreated is null'
+                    String minQuery     = 'select min(dateCreated) from ' + obj
+                    String minIdQuery   = 'select obj.id, obj.dateCreated from ' + obj + ' obj where obj.dateCreated = ( ' + minQuery + ' ) order by obj.id asc'
+                    String lowerIdQuery_part  = 'select obj.id from ' + obj + ' obj where obj.dateCreated is null and obj.id < '
+
+                    List<Long> nullIdList = Org.executeQuery( nullIdQuery )
+                    if (nullIdList) {
+                        println obj + '.dateCreated=null matches found: ' + nullIdList.size()
+
+                        List<Date> minValue = Org.executeQuery( minQuery )
+                        if (minValue) {
+                            List<List> minEntry = Org.executeQuery( minIdQuery, [max: 1] )
+                            if (minEntry) {
+                                println '- min(dateCreated)=' + minEntry[0][1] + ' found @ id=' + minEntry[0][0]
+
+                                List<Long> nullIdBeforeMinList = Org.executeQuery( lowerIdQuery_part + minEntry[0][0] + ' order by obj.id')
+                                Timestamp minTs = minEntry[0][1] as Timestamp
+                                Timestamp newTs = Timestamp.valueOf(minTs.toLocalDateTime().minusYears(1).withNano(123456000))
+
+                                println '- ' + nullIdBeforeMinList.size() + ' of ' + nullIdList.size() + ' matches with dateCreated = null and id < ' + minEntry[0][0]
+
+                                if (nullIdBeforeMinList) {
+                                    println '- setting dateCreated to [' + newTs + '] for ids: ' + nullIdBeforeMinList
+
+                                    SystemEvent.createEvent( 'DBM_SCRIPT_INFO', [
+                                            msg: 'Data migration (B1) - replacing null values',
+                                            field: obj + '.dateCreated',
+                                            newValue: newTs.toString(),
+                                            numberOfTargets: nullIdBeforeMinList.size(),
+                                            targets: nullIdBeforeMinList
+                                    ])
+                                    Org.executeUpdate('update ' + obj + ' obj set obj.dateCreated = :dc where obj.id in (:idList)', [dc: newTs, idList: nullIdBeforeMinList])
+                                }
+
+                                List<Long> nullIdLeftoverList = nullIdList - nullIdBeforeMinList
+                                newTs = Timestamp.valueOf(minTs.toLocalDateTime().withNano(654321000))
+
+                                println '- ' + nullIdLeftoverList.size() + ' of ' + nullIdList.size() + ' matches with dateCreated = null and id > ' + minEntry[0][0]
+
+                                if (nullIdLeftoverList) {
+                                    println '- setting dateCreated to [' + newTs + '] for ids: ' + nullIdLeftoverList
+
+                                    SystemEvent.createEvent( 'DBM_SCRIPT_INFO', [
+                                            msg: 'Data migration (B2) - replacing null values',
+                                            field: obj + '.dateCreated',
+                                            newValue: newTs.toString(),
+                                            numberOfTargets: nullIdLeftoverList.size(),
+                                            targets: nullIdLeftoverList
+                                    ])
+                                    Org.executeUpdate('update ' + obj + ' obj set obj.dateCreated = :dc where obj.id in (:idList)', [dc: newTs, idList: nullIdLeftoverList])
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            rollback {}
+        }
+    }
+
+    changeSet(author: "klober (generated)", id: "1669018812496-38") {
+        addNotNullConstraint(columnDataType: "timestamp", columnName: "altname_date_created", tableName: "alternative_name", validate: "true")
+    }
+
+    changeSet(author: "klober (generated)", id: "1669018812496-39") {
+        addNotNullConstraint(columnDataType: "timestamp", columnName: "us_date_created", tableName: "user_setting", validate: "true")
+    }
+
+    changeSet(author: "klober (generated)", id: "1669018812496-40") {
+        addNotNullConstraint(columnDataType: "timestamp", columnName: "idns_date_created", tableName: "identifier_namespace", validate: "true")
+    }
+
+    changeSet(author: "klober (generated)", id: "1669018812496-41") {
+        addNotNullConstraint(columnDataType: "timestamp", columnName: "or_date_created", tableName: "org_role", validate: "true")
+    }
+
+    changeSet(author: "klober (generated)", id: "1669018812496-42") {
+        addNotNullConstraint(columnDataType: "timestamp", columnName: "plp_date_created", tableName: "platform_property", validate: "true")
+    }
+
+    changeSet(author: "klober (generated)", id: "1669018812496-43") {
+        addNotNullConstraint(columnDataType: "timestamp", columnName: "rdc_date_created", tableName: "refdata_category", validate: "true")
+    }
+
+    changeSet(author: "klober (generated)", id: "1669018812496-44") {
+        addNotNullConstraint(columnDataType: "timestamp", columnName: "rdv_date_created", tableName: "refdata_value", validate: "true")
+    }
+
+    changeSet(author: "klober (generated)", id: "1669018812496-45") {
+        addNotNullConstraint(columnDataType: "timestamp", columnName: "tc_date_created", tableName: "tippcoverage", validate: "true")
+    }
+
+    changeSet(author: "klober (generated)", id: "1669018812496-46") {
+        addNotNullConstraint(columnDataType: "timestamp", columnName: "thep_date_created", tableName: "title_history_event_participant", validate: "true")
+    }
 }

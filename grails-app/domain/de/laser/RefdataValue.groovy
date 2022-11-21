@@ -76,10 +76,7 @@ class RefdataValue extends AbstractI10n implements Comparable<RefdataValue> {
         value_en (nullable: true, blank: false)
         expl_de  (nullable: true, blank: false)
         expl_en  (nullable: true, blank: false)
-
-        // Nullable is true, because values are already in the database
         lastUpdated (nullable: true)
-        dateCreated (nullable: true)
     }
 
     /**
