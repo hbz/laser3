@@ -108,3 +108,16 @@ dd {
 .ui.list > .disabled.item {
   pointer-events: all;
 }
+.ui.card .la-label-list {
+  .ui.label {
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    margin-bottom: 6px;
+  }
+  .description {
+    width: fit-content;
+  }
+  .item:nth-child(2){
+    margin-top:10px;
+  }
+}

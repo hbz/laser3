@@ -6932,6 +6932,14 @@ i.icon.la-list-icon:before {
   background-color: #00000099;
   color: #FFFFFF;
 }
+
+/*-------------------
+         Inverted
+  --------------------*/
+
+.ui.inverted.button:hover {
+  color: #1B1C1D;
+}
 /*!
  * # Fomantic-UI 2.8.8 - Container
  * http://github.com/fomantic/Fomantic-UI/
@@ -40324,6 +40332,18 @@ i.orange.icon.la-subscriptionIsChild.fixed {
     display: none;
   }
 }
+
+.ui.segment.la-segment-with-icon {
+  position: relative;
+  padding-top: 25px;
+}
+
+.la-icon-absolute {
+  position: absolute;
+  z-index: 100;
+  left: 0;
+  right: 0;
+}
 /*!
  * # Fomantic-UI 2.8.8 - Image
  * http://github.com/fomantic/Fomantic-UI/
@@ -45429,6 +45449,22 @@ dd {
 .ui.list .list > .disabled.item,
 .ui.list > .disabled.item {
   pointer-events: all;
+}
+
+.ui.card .la-label-list .ui.label {
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  margin-bottom: 6px;
+}
+
+.ui.card .la-label-list .description {
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+}
+
+.ui.card .la-label-list .item:nth-child(2) {
+  margin-top: 10px;
 }
 /*!
  * # Fomantic-UI 2.8.8 - Loader
@@ -51565,6 +51601,21 @@ legend {
 
 .ui.form .inline.fields .field {
   margin: 0 0 1em;
+}
+
+.la-right-aligned-fields {
+  -webkit-box-pack: end;
+  -ms-flex-pack: end;
+  justify-content: flex-end;
+}
+
+.la-right-aligned-fields .field {
+  -ms-flex-item-align: center;
+  align-self: center;
+}
+
+.la-field-noLabel {
+  margin-top: 26px;
 }
 /*!
  * # Fomantic-UI 2.8.8 - Grid
