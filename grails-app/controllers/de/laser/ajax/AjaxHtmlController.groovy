@@ -1267,6 +1267,26 @@ class AjaxHtmlController {
 
     }
 
+    /**
+     * Retrieves detailed title information to a given entitlement and opens a modal showing those details
+     */
+    @Secured(['ROLE_USER'])
+    Map<String,Object> showAllTitleInfos2() {
+        Map<String, Object> result = [:]
+
+        result.apisources = ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
+
+        result.tipp = params.tippID ? TitleInstancePackagePlatform.get(params.tippID) : null
+        result.ie = params.ieID ? IssueEntitlement.get(params.ieID) : null
+        result.showPackage = params.showPackage
+        result.showPlattform = params.showPlattform
+        result.showCompact = params.showCompact
+        result.showEmptyFields = params.showEmptyFields
+
+        render template: "/templates/title_long_accordion", model: result
+
+    }
+
     @Secured(['ROLE_USER'])
     def documentPreview() {
         Map<String, Object> result = [:]
