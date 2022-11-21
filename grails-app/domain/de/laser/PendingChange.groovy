@@ -134,10 +134,7 @@ class PendingChange {
         desc(nullable: true, blank: false)
         status(nullable: true)
         actionDate(nullable: true)
-
-        // Nullable is true, because values are already in the database
-        lastUpdated(nullable: true)
-        dateCreated(nullable: true)
+        lastUpdated (nullable: true)
     }
 
     /**

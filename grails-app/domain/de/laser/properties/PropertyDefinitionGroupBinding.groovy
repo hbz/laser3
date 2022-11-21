@@ -40,7 +40,6 @@ class PropertyDefinitionGroupBinding {
         org                         (nullable: true, unique: ['propDefGroup'])
         sub                         (nullable: true, unique: ['propDefGroup'])
         lastUpdated (nullable: true)
-        dateCreated (nullable: true)
     }
 }
 

@@ -32,7 +32,6 @@ class TIPPCoverage extends AbstractCoverage {
         coverageDepth(nullable:true, blank:true)
         coverageNote(nullable:true, blank:true)
         lastUpdated (nullable: true)
-        dateCreated (nullable: true)
     }
 
     static mapping = {

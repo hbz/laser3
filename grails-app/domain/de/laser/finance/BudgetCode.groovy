@@ -27,10 +27,7 @@ class BudgetCode implements Comparable {
     static constraints = {
         value (blank:false, unique: 'owner')
         descr (nullable:true,  blank:true, maxSize:2048)
-
-        // Nullable is true, because values are already in the database
         lastUpdated (nullable: true)
-        dateCreated (nullable: true)
     }
 
     @Override

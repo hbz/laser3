@@ -25,7 +25,6 @@ class PropertyDefinitionGroupItem {
     static constraints = {
         propDef     (unique: ['propDefGroup'])
         lastUpdated (nullable: true)
-        dateCreated (nullable: true)
     }
 }
 

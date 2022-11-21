@@ -58,8 +58,6 @@ class PlatformProperty extends AbstractPropertyWithCalculatedLastUpdated {
         note        (nullable: true)
         dateValue   (nullable: true)
         tenant      (nullable: true) //as no tenant can be determined for the moment, subject of discussion
-
-        dateCreated (nullable: true)
         lastUpdated (nullable: true)
         lastUpdatedCascading (nullable: true)
     }

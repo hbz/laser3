@@ -149,8 +149,6 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
         description_de  (nullable:true, blank:false)
         description_en  (nullable:true, blank:false)
 
-        // Nullable is true, because values are already in the database
-        dateCreated (nullable: true)
         lastUpdated (nullable: true)
         lastUpdatedCascading (nullable: true)
     }

@@ -28,10 +28,7 @@ class Order {
 
   static constraints = {
     orderNumber (blank:false)
-
-      // Nullable is true, because values are already in the database
-      lastUpdated (nullable: true)
-      dateCreated (nullable: true)
+    lastUpdated (nullable: true)
   }
 
     /**

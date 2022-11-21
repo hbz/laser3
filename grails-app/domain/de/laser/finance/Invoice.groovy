@@ -48,10 +48,7 @@ class Invoice {
               startDate (nullable:true)
                 endDate (nullable:true)
             description(nullable: true, blank: false)
-
-      // Nullable is true, because values are already in the database
-      lastUpdated (nullable: true)
-      dateCreated (nullable: true)
+           lastUpdated (nullable: true)
   }
 
     /**
