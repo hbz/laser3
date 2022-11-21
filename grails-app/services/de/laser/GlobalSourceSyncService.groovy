@@ -1,28 +1,5 @@
 package de.laser
 
-import de.laser.AlternativeName
-import de.laser.Contact
-import de.laser.DeweyDecimalClassification
-import de.laser.EscapeService
-import de.laser.GlobalService
-import de.laser.Identifier
-import de.laser.IssueEntitlement
-import de.laser.Language
-import de.laser.Org
-import de.laser.OrgRole
-import de.laser.Package
-import de.laser.PendingChange
-import de.laser.Person
-import de.laser.PersonRole
-import de.laser.Platform
-import de.laser.RefdataCategory
-import de.laser.RefdataValue
-import de.laser.StatusUpdateService
-import de.laser.Subscription
-import de.laser.SubscriptionPackage
-import de.laser.TitleInstancePackagePlatform
-import de.laser.finance.PriceItem
-import de.laser.system.SystemEvent
 import de.laser.base.AbstractCoverage
 import de.laser.base.AbstractLockableService
 import de.laser.exceptions.SyncException
@@ -1151,10 +1128,13 @@ class GlobalSourceSyncService extends AbstractLockableService {
                 List<String> typeNames = contactTypes.values().collect { RefdataValue cct -> cct.getI10n("value") }
                 typeNames.addAll(contactTypes.keySet())
                 List<Person> oldPersons = Person.executeQuery('select p from Person p where p.tenant = :provider and p.isPublic = true and p.last_name in (:contactTypes)',[provider: provider, contactTypes: typeNames])
-                if(oldPersons) {
-                    PersonRole.executeUpdate('delete from PersonRole pr where pr.org = :provider and pr.prs in (:oldPersons) and pr.functionType.id in (:funcTypes)', [provider: provider, oldPersons: oldPersons, funcTypes: contactTypes.values().collect { RefdataValue cct -> cct.id }])
-                    Contact.executeUpdate('delete from Contact c where c.prs in (:oldPersons)', [oldPersons: oldPersons])
-                    Person.executeUpdate('delete from Person p where p in (:oldPersons)', [oldPersons: oldPersons])
+                List<Long> funcTypes = contactTypes.values().collect { RefdataValue cct -> cct.id }
+                oldPersons.each { Person old ->
+                    PersonRole.executeUpdate('delete from PersonRole pr where pr.org = :provider and pr.prs = :oldPerson and pr.functionType.id in (:funcTypes)', [provider: provider, oldPerson: old, funcTypes: funcTypes])
+                    Contact.executeUpdate('delete from Contact c where c.prs = :oldPerson', [oldPerson: old])
+                    if(PersonRole.executeQuery('select count(pr) from PersonRole pr where pr.prs = :oldPerson and pr.org = :provider and (pr.functionType.id not in (:funcTypes) or pr.functionType = null)', [provider: provider, oldPerson: old, funcTypes: funcTypes])[0] == 0) {
+                        Person.executeUpdate('delete from Person p where p = :oldPerson', [oldPerson: old])
+                    }
                 }
                 providerRecord.contacts.findAll{ Map<String, String> cParams -> cParams.content != null }.each { contact ->
                     switch(contact.type) {
