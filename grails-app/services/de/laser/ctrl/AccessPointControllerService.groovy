@@ -88,6 +88,50 @@ class AccessPointControllerService {
     }
 
     /**
+     * Adds the given mail domain to the institution's access points after validating the input
+     * @param params the parameter map containing the input
+     * @return the status map: OK if the submit was successful, ERROR otherwise
+     */
+    Map<String,Object> addMailDomain(GrailsParameterMap params) {
+        Map<String,Object> result = [:]
+        OrgAccessPoint orgAccessPoint = OrgAccessPoint.get(params.id)
+        String mailDomain = params.mailDomain
+
+        if(!(mailDomain =~ '@([a-zA-Z0-9-.]+)([.a-zA-Z0-9])')){
+            Object[] args = [mailDomain]
+            result.error = messageSource.getMessage('accessPoint.mailDomain.invalid', args, LocaleUtils.getCurrentLocale())
+            [result:result,status:STATUS_ERROR]
+        }else{
+
+            List<AccessPointData> accessPointDataList = AccessPointData.findAllByOrgAccessPoint(orgAccessPoint)
+            // so far we know that the input string represents a valid ip range
+            // check if the input string is already saved
+            boolean isDuplicate = false
+            for (accessPointData in accessPointDataList) {
+                if (accessPointData.data == mailDomain.trim()) {
+                    isDuplicate = true
+                }
+            }
+
+            if (isDuplicate) {
+                Object[] args = [mailDomain]
+                result.error = messageSource.getMessage('accessPoint.mailDomain.duplicate', args, LocaleUtils.getCurrentLocale())
+                [result: result, status: STATUS_ERROR]
+            } else {
+
+                AccessPointData accessPointData = new AccessPointData()
+                accessPointData.orgAccessPoint = orgAccessPoint
+                accessPointData.datatype = 'mailDomain'
+                accessPointData.data = mailDomain.trim()
+                accessPointData.save()
+                orgAccessPoint.lastUpdated = new Date()
+                orgAccessPoint.save()
+                [result: result, status: STATUS_OK]
+            }
+        }
+    }
+
+    /**
      * Creates a new access point for the given institution with the given access method
      * @param params the parameter map containing the input
      * @param accessMethod the access method for the new access point

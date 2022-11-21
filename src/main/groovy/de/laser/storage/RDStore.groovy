@@ -14,6 +14,7 @@ class RDStore {
 
     public final static RefdataValue ACCESS_POINT_TYPE_EZPROXY      = getRefdataValue('ezproxy', RDConstants.ACCESS_POINT_TYPE)
     public final static RefdataValue ACCESS_POINT_TYPE_IP           = getRefdataValue('ip', RDConstants.ACCESS_POINT_TYPE)
+    public final static RefdataValue ACCESS_POINT_TYPE_MAIL_DOMAIN           = getRefdataValue('mailDomain', RDConstants.ACCESS_POINT_TYPE)
     public final static RefdataValue ACCESS_POINT_TYPE_OA           = getRefdataValue('oa', RDConstants.ACCESS_POINT_TYPE)
     public final static RefdataValue ACCESS_POINT_TYPE_PROXY        = getRefdataValue('proxy', RDConstants.ACCESS_POINT_TYPE)
     public final static RefdataValue ACCESS_POINT_TYPE_SHIBBOLETH   = getRefdataValue('shibboleth', RDConstants.ACCESS_POINT_TYPE)
