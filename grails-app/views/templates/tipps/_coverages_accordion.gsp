@@ -94,7 +94,7 @@
         %>
         <g:each in="${ie.coverages}" var="covStmt">
             <laser:render template="/templates/tipps/coverageStatement_accordion"
-                          model="${[covStmt: covStmt, paramData: paramData, overwriteEditable: overwriteEditable]}"/>
+                          model="${[covStmt: covStmt, paramData: paramData, objectTypeIsIE: true, overwriteEditable: overwriteEditable]}"/>
         </g:each>
         <g:if test="${editable}">
             <br/>
