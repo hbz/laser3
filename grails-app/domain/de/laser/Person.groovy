@@ -92,10 +92,7 @@ class Person extends AbstractBaseWithCalculatedLastUpdated {
         tenant      (nullable:true)
         contactType (nullable:true)
         roleType    (nullable:true)
-
-        // Nullable is true, because values are already in the database
         lastUpdated (nullable: true)
-        dateCreated (nullable: true)
         lastUpdatedCascading (nullable: true)
     }
 

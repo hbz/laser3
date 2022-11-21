@@ -115,10 +115,7 @@ class UserSetting {
         strValue   (nullable: true)
         rdValue    (nullable: true)
         orgValue   (nullable: true)
-
-        // Nullable is true, because values are already in the database
         lastUpdated (nullable: true)
-        dateCreated (nullable: true)
     }
 
     /**

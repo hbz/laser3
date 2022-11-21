@@ -81,10 +81,7 @@ class OrgSetting {
         strValue   (nullable: true)
         rdValue    (nullable: true)
         roleValue  (nullable: true)
-
-        // Nullable is true, because values are already in the database
         lastUpdated (nullable: true)
-        dateCreated (nullable: true)
     }
 
     /**

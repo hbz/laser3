@@ -41,10 +41,7 @@ class AccessPointData extends AbstractBase {
         globalUID(nullable:true, blank:false, unique:true, maxSize:255) 
         datatype(nullable:true, blank:true)
         data(nullable:true, blank:true)
-
-        // Nullable is true, because values are already in the database
         lastUpdated (nullable: true)
-        dateCreated (nullable: true)
     }
 
     /**

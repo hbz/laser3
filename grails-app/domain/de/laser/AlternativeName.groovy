@@ -35,7 +35,6 @@ class AlternativeName implements CalculatedLastUpdated, Comparable {
         pkg  (nullable: true)
         platform (nullable: true)
         org (nullable: true)
-        dateCreated (nullable: true)
         lastUpdated (nullable: true)
         lastUpdatedCascading (nullable: true)
     }
