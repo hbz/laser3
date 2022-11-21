@@ -126,6 +126,7 @@ class SubscriptionController {
         if(!subscribedPlatforms) {
             subscribedPlatforms = Platform.executeQuery("select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription", [subscription: result.subscription])
         }
+        Set<Subscription> refSubs = [result.subscription, result.subscription.instanceOf]
         result.platformInstanceRecords = [:]
         result.platforms = subscribedPlatforms
         result.platformsJSON = subscribedPlatforms.globalUID as JSON
@@ -142,42 +143,58 @@ class SubscriptionController {
                 }
             }
         }
-        Map<String, Object> queryParamsBound = [customer: result.subscription.getSubscriber().globalUID, platforms: subscribedPlatforms.globalUID]+subscriptionControllerService.getDateRange(params, result.subscription).dateRangeParams
-        Counter5Report.withTransaction {
-            Set allAvailableReports = []
-            allAvailableReports.addAll(Counter5Report.executeQuery('select new map(lower(r.reportType) as reportType, r.accessType as accessType, r.metricType as metricType, r.accessMethod as accessMethod) from Counter5Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms) and r.reportFrom >= :startDate and r.reportTo <= :endDate group by r.reportType, r.accessType, r.metricType, r.accessMethod', queryParamsBound))
-            if(allAvailableReports.size() > 0) {
-                Set<String> reportTypes = [], metricTypes = [], accessTypes = [], accessMethods = []
-                allAvailableReports.each { row ->
-                    if(!params.loadFor || (params.loadFor && !(row.reportType in Counter5Report.COUNTER_5_PLATFORM_REPORTS))) {
-                        if (row.reportType)
-                            reportTypes << row.reportType
-                        if (row.metricType)
-                            metricTypes << row.metricType
-                        if (row.accessMethod)
-                            accessMethods << row.accessMethod
-                        if (row.accessType)
-                            accessTypes << row.accessType
-                    }
-                }
-                result.reportTypes = reportTypes
-                result.metricTypes = metricTypes
-                result.accessTypes = accessTypes
-                result.accessMethods = accessMethods
+        if(result.subscription._getCalculatedType() != CalculatedType.TYPE_CONSORTIAL) {
+            Set<String> tippUIDs = subscriptionControllerService.fetchTitles(params, refSubs, 'uids')
+            Map<String, Object> queryParamsBound = [customer: result.subscription.getSubscriber().globalUID, platforms: subscribedPlatforms.globalUID],
+                                dateRangeParams = subscriptionControllerService.getDateRange(params, result.subscription)
+            if(dateRangeParams.dateRange.length() > 0) {
+                queryParamsBound.startDate = dateRangeParams.startDate
+                queryParamsBound.endDate = dateRangeParams.endDate
             }
-            else {
-                allAvailableReports.addAll(Counter4Report.executeQuery('select new map(r.reportType as reportType, r.metricType as metricType) from Counter4Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms) and r.reportFrom >= :startDate and r.reportTo <= :endDate group by r.reportType, r.metricType order by r.reportType', queryParamsBound))
-                Set<String> reportTypes = [], metricTypes = []
-                allAvailableReports.each { row ->
-                    if(!params.loadFor || (params.loadFor && row.reportType != Counter4Report.PLATFORM_REPORT_1)) {
-                        if (row.reportType)
-                            reportTypes << row.reportType
-                        if (row.metricType)
-                            metricTypes << row.metricType
-                    }
+            Counter5Report.withTransaction {
+                Set allAvailableReports = []
+                allAvailableReports.addAll(Counter5Report.executeQuery('select new map(lower(r.reportType) as reportType, r.accessType as accessType, r.metricType as metricType, r.accessMethod as accessMethod) from Counter5Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms) and r.titleUID = null '+dateRangeParams.dateRange+' group by r.reportType, r.accessType, r.metricType, r.accessMethod', queryParamsBound))
+                tippUIDs.collate(65000).each { subList ->
+                    allAvailableReports.addAll(Counter5Report.executeQuery('select new map(lower(r.reportType) as reportType, r.accessType as accessType, r.metricType as metricType, r.accessMethod as accessMethod) from Counter5Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms) and r.titleUID in (:uids) '+dateRangeParams.dateRange+' group by r.reportType, r.accessType, r.metricType, r.accessMethod', queryParamsBound+[uids: subList]))
                 }
-                result.reportTypes = reportTypes
-                result.metricTypes = metricTypes
+                if(allAvailableReports.size() > 0) {
+                    Set<String> reportTypes = [], metricTypes = [], accessTypes = [], accessMethods = []
+                    allAvailableReports.each { row ->
+                        if(!params.loadFor || (params.loadFor && !(row.reportType in Counter5Report.COUNTER_5_PLATFORM_REPORTS))) {
+                            if (row.reportType)
+                                reportTypes << row.reportType
+                            if (row.metricType)
+                                metricTypes << row.metricType
+                            if (row.accessMethod)
+                                accessMethods << row.accessMethod
+                            if (row.accessType)
+                                accessTypes << row.accessType
+                        }
+                    }
+                    result.reportTypes = reportTypes
+                    result.metricTypes = metricTypes
+                    result.accessTypes = accessTypes
+                    result.accessMethods = accessMethods
+                    result.revision = 'counter5'
+                }
+                else {
+                    allAvailableReports.addAll(Counter4Report.executeQuery('select new map(r.reportType as reportType, r.metricType as metricType) from Counter4Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms) and r.titleUID = null '+dateRangeParams.dateRange+' group by r.reportType, r.metricType order by r.reportType', queryParamsBound))
+                    tippUIDs.collate(65000).each { subList ->
+                        allAvailableReports.addAll(Counter4Report.executeQuery('select new map(r.reportType as reportType, r.metricType as metricType) from Counter4Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms) and r.titleUID in (:uids) '+dateRangeParams.dateRange+' group by r.reportType, r.metricType order by r.reportType', queryParamsBound+[uids:subList]))
+                    }
+                    Set<String> reportTypes = [], metricTypes = []
+                    allAvailableReports.each { row ->
+                        if(!params.loadFor || (params.loadFor && row.reportType != Counter4Report.PLATFORM_REPORT_1)) {
+                            if (row.reportType)
+                                reportTypes << row.reportType
+                            if (row.metricType)
+                                metricTypes << row.metricType
+                        }
+                    }
+                    result.reportTypes = reportTypes
+                    result.metricTypes = metricTypes
+                    result.revision = 'counter4'
+                }
             }
         }
         result
@@ -190,28 +207,20 @@ class SubscriptionController {
     @DebugInfo(test = 'hasAffiliation("INST_USER")', ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def generateReport() {
-        SXSSFWorkbook wb
-        Map<String,Object> ctrlResult
-        ctrlResult = subscriptionControllerService.getStatsData(params)
-        if(params.exportXLS) {
-            wb = exportService.exportReport(params, ctrlResult.result)
-        }
-        if(ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            if (!ctrlResult.result) {
-                response.sendError(401)
-                return
-            }
+        SXSSFWorkbook wb = exportService.generateReport(params)
+        if(!wb) {
+            response.sendError(401)
+            return
         }
         else {
-            if(wb) {
-                response.setHeader "Content-disposition", "attachment; filename=report_${DateUtils.getSDF_yyyyMMdd().format(ctrlResult.result.dateRun)}.xlsx"
-                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-                wb.write(response.outputStream)
-                response.outputStream.flush()
-                response.outputStream.close()
-                wb.dispose()
-                return
-            }
+            Date dateRun = new Date()
+            response.setHeader "Content-disposition", "attachment; filename=report_${DateUtils.getSDF_yyyyMMdd().format(dateRun)}.xlsx"
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+            return
         }
     }
 
@@ -1308,8 +1317,7 @@ class SubscriptionController {
         SXSSFWorkbook wb
         if(params.exportXLSStats) {
             params.tab = params.tabStat
-            ctrlResult = subscriptionControllerService.statsForExport(params)
-            wb = exportService.exportReport(params, ctrlResult.result, true,  true, true)
+            wb = exportService.generateReport(params, true,  true, true)
         }
         else {
             ctrlResult = subscriptionControllerService.renewEntitlementsWithSurvey(this, params)

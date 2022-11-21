@@ -16,7 +16,7 @@ import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
  * This class represents a platform record. A platform is a portal where providers offer access to titles subscribed via packages.
  * This class is a mirror of the we:kb-implementation of Platform, <a href="https://github.com/hbz/wekb/blob/wekb-dev/server/gokbg3/grails-app/domain/org/gokb/cred/Platform.groovy">cf. with the we:kb-implementation</a>
  */
-class Platform extends AbstractBaseWithCalculatedLastUpdated {
+class Platform extends AbstractBaseWithCalculatedLastUpdated implements Comparable<Platform> {
 
   String gokbId
   String name
@@ -91,6 +91,18 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
     lastUpdatedCascading (nullable: true)
     counter4LastRun (nullable: true)
     counter5LastRun (nullable: true)
+  }
+
+  @Override
+  int compareTo(Platform that) {
+    int result
+    if(this.org && that.org) {
+      if(this.org.sortname && that.org.sortname)
+        result = this.org.sortname <=> that.org.sortname
+      else result = this.org.name <=> that.org.name
+    }
+    else result = this.name <=> that.name
+    result
   }
 
   @Override

@@ -289,7 +289,7 @@
             <div class="${accessTypes ? print('three') : print('two')} fields">
                 <div class="field">
                     <label for="metricType"><g:message code="default.usage.metricType"/></label>
-                    <select name="metricType" id="metricType" class="ui selection dropdown">
+                    <select name="metricType" id="metricType" multiple="multiple" class="ui selection dropdown">
                         <option value=""><g:message code="default.select.choose.label"/></option>
                         <g:each in="${metricTypes}" var="metricType">
                             <option <%=(params.metricType == metricType) ? 'selected="selected"' : ''%>
@@ -323,7 +323,7 @@
 
                 <div class="field">
                     <label for="reportType"><g:message code="default.usage.reportType"/></label>
-                    <select name="reportType" id="reportType" multiple="multiple" class="ui selection dropdown">
+                    <select name="reportType" id="reportType" class="ui selection dropdown">
                         <option value=""><g:message code="default.select.choose.label"/></option>
                         <g:each in="${reportTypes}" var="reportType">
                             <option <%=(params.list('reportType')?.contains(reportType)) ? 'selected="selected"' : ''%>

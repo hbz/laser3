@@ -3,6 +3,7 @@ package de.laser.ctrl
 
 import de.laser.*
 import de.laser.auth.User
+import de.laser.base.AbstractReport
 import de.laser.cache.SessionCacheWrapper
 import de.laser.exceptions.CreationException
 import de.laser.exceptions.EntitlementCreationException
@@ -347,48 +348,49 @@ class SubscriptionControllerService {
      * @param params the request parameter map
      * @return the usage data, grouped by month
      */
-    Map<String, Object> getStatsData(GrailsParameterMap params) {
+    Map<String, Object> getStatsDataForCostPerUse(GrailsParameterMap params) {
         Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
-
+        Profiler prf = new Profiler('statsLoading')
+        prf.setBenchmark('start loading data')
         SwissKnife.setPaginationParams(result, params, result.user)
         if(!result)
             [result: null, status: STATUS_ERROR]
         else {
             result.dateRun = new Date()
+            prf.setBenchmark('before subscribed platforms')
             Set<Platform> subscribedPlatforms = Platform.executeQuery("select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription", [subscription: result.subscription])
             if(!subscribedPlatforms) {
                 subscribedPlatforms = Platform.executeQuery("select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription", [subscription: result.subscription])
             }
+            result.platforms = subscribedPlatforms
             //at this point, we should be sure that at least the parent subscription has a holding!
             Set<Subscription> refSubs
-            if (params.statsForSurvey == true) {
-                if(params.loadFor == 'allIEsStats')
-                    refSubs = [result.subscription.instanceOf] //look at statistics of the whole set of titles, i.e. of the consortial parent subscription
-                else if(params.loadFor == 'holdingIEsStats')
-                    refSubs = result.subscription._getCalculatedPrevious() //look at the statistics of the member, i.e. the member's stock of the previous year
-            }
-            else if(subscriptionService.getCurrentIssueEntitlementIDs(result.subscription).size() > 0){
+            prf.setBenchmark('before subscription determination')
+            if(subscriptionService.getCurrentIssueEntitlementIDs(result.subscription).size() > 0){
                 refSubs = [result.subscription]
             }
             else refSubs = [result.subscription.instanceOf]
             Set c4usages = [], c4allYears = [], c5usages = [], c5allYears = []
-            List sumsByTitle = []
             Map<Date, Map<String, Integer>> c4sums = [:], c4allYearSums = [:], c5sums = [:], c5allYearSums = [:]
             SortedSet monthsInRing = new TreeSet(), allYears = new TreeSet()
             if(!params.tab)
                 params.tab = 'total'
-            String sort, customerUID = result.subscription.getSubscriber().globalUID
+            String sort, customerUID = result.subscription.getSubscriber().globalUID, groupKey
             result.customer = customerUID
             if(subscribedPlatforms && refSubs) {
-                Set refTitles = fetchTitles(params, refSubs)
+                Set refTitles = fetchTitles(params, refSubs, 'uids')
                 Map<String, Object> dateRanges = getDateRange(params, result.subscription)
                 result.dateRangeParams = dateRanges.dateRangeParams
                 String filter = "", baseQuery, baseQueryAllYears, groupClause = " group by r.reportFrom, r.reportType, r.metricType"
                 Set<String> platforms = subscribedPlatforms.globalUID
                 boolean isCounter5 = false
                 Counter5Report.withTransaction {
-                    Map<String, Object> queryParams = [customer: customerUID, platforms: platforms], queryParamsBound = queryParams+dateRanges.dateRangeParams
-                    isCounter5 = Counter5Report.countByReportInstitutionUIDAndPlatformUIDAndReportFromGreaterThanEqualsAndReportToLessThanEquals(customerUID, platforms, dateRanges.dateRangeParams.startDate, dateRanges.dateRangeParams.endDate) > 0
+                    Map<String, Object> queryParams = [customer: customerUID, platforms: platforms], queryParamsBound = queryParams.clone()
+                    if(dateRanges.dateRange.length() > 0) {
+                        queryParamsBound.startDate = dateRanges.startDate
+                        queryParamsBound.endDate = dateRanges.endDate
+                    }
+                    isCounter5 = Counter5Report.executeQuery('select count(r.id) from Counter5Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms)'+dateRanges.dateRange, queryParams)[0] > 0
                     if(isCounter5) {
                         result.revision = 'counter5'
                         baseQueryAllYears = 'select new map(r.reportType as reportType, r.metricType as metricType, year(r.reportFrom) as year, sum(r.reportCount) as count) from Counter5Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms) '
@@ -406,14 +408,14 @@ class SubscriptionControllerService {
                             filter += " and r.metricType in (:metricType) "
                         }
                         queryParamsBound.putAll(queryParams)
-                        if(result.reportType in Counter5Report.COUNTER_5_PLATFORM_REPORTS || params.data == 'fetchAll') {
+                        if(result.reportType in Counter5Report.COUNTER_5_PLATFORM_REPORTS) {
                             //without titles
                             c5usages.addAll(Counter5Report.executeQuery(baseQuery+'and r.titleUID = null '+filter+dateRanges.dateRange+groupClause, queryParamsBound))
                             c5allYears.addAll(Counter5Report.executeQuery(baseQueryAllYears+'and r.titleUID = null '+filter+' group by year(r.reportFrom), r.reportType, r.metricType', queryParams))
                         }
-                        if(result.reportType in Counter5Report.COUNTER_5_TITLE_REPORTS || params.data == 'fetchAll') {
+                        if(result.reportType in Counter5Report.COUNTER_5_TITLE_REPORTS) {
                             //with titles
-                            refTitles.tippUID.collate(32700).each { List subList ->
+                            refTitles.collate(32700).each { List subList ->
                                 c5usages.addAll(Counter5Report.executeQuery(baseQuery+'and r.titleUID in (:uids) '+filter+dateRanges.dateRange+groupClause, queryParamsBound+[uids: subList]))
                                 c5allYears.addAll(Counter5Report.executeQuery(baseQueryAllYears+'and r.titleUID in (:uids) '+filter+' group by year(r.reportFrom), r.reportType, r.metricType', queryParams+[uids: subList]))
                             }
@@ -452,10 +454,19 @@ class SubscriptionControllerService {
                     }
                     else {
                         result.revision = 'counter4'
-                        baseQuery = 'select new map(r.reportType as reportType, r.metricType as metricType, r.reportFrom as reportMonth, sum(r.reportCount) as count) from Counter4Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms) '
+                        if(params.reportType == Counter4Report.JOURNAL_REPORT_5) {
+                            baseQuery = 'select new map(r.reportType as reportType, r.metricType as metricType, r.yop as yop, sum(r.reportCount) as count) from Counter4Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms) '
+                            groupClause = ' group by r.yop, r.reportType, r.metricType'
+                        }
+                        else
+                            baseQuery = 'select new map(r.reportType as reportType, r.metricType as metricType, r.reportFrom as reportMonth, sum(r.reportCount) as count) from Counter4Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms) '
                         baseQueryAllYears = 'select new map(r.reportType as reportType, r.metricType as metricType, year(r.reportFrom) as year, sum(r.reportCount) as count) from Counter4Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms) '
                         queryParams = [customer: customerUID, platforms: platforms]
-                        queryParamsBound = queryParams+dateRanges.dateRangeParams
+                        queryParamsBound = queryParams.clone()
+                        if(dateRanges.dateRange.length() > 0) {
+                            queryParamsBound.startDate = dateRanges.startDate
+                            queryParamsBound.endDate = dateRanges.endDate
+                        }
                         //reportFrom is correct at end-date because first of months are being passed!
                         monthsInRing.addAll(Counter4Report.executeQuery('select r.reportFrom from Counter4Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms) and r.reportFrom >= :startDate and r.reportFrom <= :endDate group by r.reportFrom', queryParams+[startDate: dateRanges.monthsInRing.first(), endDate: dateRanges.monthsInRing.last()]))
                         if(params.reportType) {
@@ -469,31 +480,51 @@ class SubscriptionControllerService {
                             filter += " and r.metricType in (:metricType) "
                         }
                         queryParamsBound.putAll(queryParams)
-                        if(result.reportType == Counter4Report.PLATFORM_REPORT_1 || params.data == 'fetchAll') {
+                        if(result.reportType == Counter4Report.PLATFORM_REPORT_1) {
                             //without titles
                             c4usages.addAll(Counter4Report.executeQuery(baseQuery+'and r.titleUID = null '+filter+dateRanges.dateRange+groupClause, queryParamsBound))
                             c4allYears.addAll(Counter4Report.executeQuery(baseQueryAllYears+'and r.titleUID = null '+filter+' group by year(r.reportFrom), r.reportType, r.metricType', queryParams))
                         }
-                        if(result.reportType in Counter4Report.COUNTER_4_TITLE_REPORTS || params.data == 'fetchAll') {
+                        if(result.reportType in Counter4Report.COUNTER_4_TITLE_REPORTS) {
                             //with titles
-                            refTitles.tippUID.collate(32700).each { List subList ->
+                            refTitles.collate(32700).each { List subList ->
                                 c4usages.addAll(Counter4Report.executeQuery(baseQuery+'and r.titleUID in (:uids) '+filter+dateRanges.dateRange+groupClause, queryParamsBound+[uids: subList]))
                                 c4allYears.addAll(Counter4Report.executeQuery(baseQueryAllYears+'and r.titleUID in (:uids) '+filter+' group by year(r.reportFrom), r.reportType, r.metricType', queryParams+[uids: subList]))
                             }
                         }
+                        Calendar cal = GregorianCalendar.getInstance()
+                        cal.set(2000, 0, 1)
                         c4usages.each { row ->
                             Map<String, Object> reportSums = c4sums.get(row.reportType)
                             if(!reportSums) {
-                                reportSums = [countsPerMonth: [:], sumsPerMetric: [:]]
+                                reportSums = [sumsPerMetric: [:], countsPerTitle: [:]]
+                                if(result.reportType == Counter4Report.JOURNAL_REPORT_5)
+                                    reportSums.countsPerYop = [:]
+                                else
+                                    reportSums.countsPerMonth = [:]
                             }
-                            Map<String, Object> countsPerMetric = reportSums.countsPerMonth.get(row.reportMonth)
-                            if(!countsPerMetric)
-                                countsPerMetric = [:]
-                            countsPerMetric.put(row.metricType, row.count)
-                            reportSums.countsPerMonth.put(row.reportMonth, countsPerMetric)
+                            if(result.reportType == Counter4Report.JOURNAL_REPORT_5) {
+                                String yop
+                                if(row.yop < cal.getTime())
+                                    yop = 'before 2000'
+                                else yop = DateUtils.getSDF_yyyy().format(row.yop)
+                                Map<String, Object> countsPerMetric = reportSums.countsPerYop.get(yop)
+                                if(!countsPerMetric)
+                                    countsPerMetric = [:]
+                                countsPerMetric.put(row.metricType, row.count)
+                                reportSums.countsPerYop.put(yop, countsPerMetric)
+                            }
+                            else {
+                                Map<String, Object> countsPerMetric = reportSums.countsPerMonth.get(row.reportMonth)
+                                if(!countsPerMetric)
+                                    countsPerMetric = [:]
+                                countsPerMetric.put(row.metricType, row.count)
+                                reportSums.countsPerMonth.put(row.reportMonth, countsPerMetric)
+                            }
                             reportSums.sumsPerMetric.put(row.metricType, reportSums.sumsPerMetric.get(row.metricType) ? reportSums.sumsPerMetric.get(row.metricType) + row.count : row.count)
                             c4sums.put(row.reportType, reportSums)
                         }
+                        prf.setBenchmark('after report loop')
                         c4allYears.each { row ->
                             Map<String, Object> reportYearSums = c4allYearSums.get(row.reportType)
                             if(!reportYearSums) {
@@ -521,7 +552,6 @@ class SubscriptionControllerService {
                 result.monthsInRing = []
                 result.platforms = [] as JSON
             }
-            result.sumsByTitle = sumsByTitle
             [result: result, status: STATUS_OK]
         }
     }
@@ -552,32 +582,59 @@ class SubscriptionControllerService {
             costItems = CostItem.executeQuery('select ci from CostItem ci where ci.costItemElement in (:elementsToUse) and ci.owner = :consortium and ci.sub = :sub and ci.isVisibleForSubscriber = true', [elementsToUse: elementsToUse, consortium: consortium, sub: statsData.subscription])
         }
         //calculate 100%
-        BigDecimal totalSum = 0.0
+        Map<Integer, BigDecimal> allSums = [:]
+        Calendar cal = GregorianCalendar.getInstance(), endTime = GregorianCalendar.getInstance()
         costItems.each { CostItem ci ->
+            cal.setTime(ci.startDate)
+            BigDecimal costForYear = allSums.get(cal.get(Calendar.YEAR)) ?: 0.0
             switch(ci.costItemElementConfiguration) {
-                case RDStore.CIEC_POSITIVE: totalSum += ci.costInBillingCurrencyAfterTax
+                case RDStore.CIEC_POSITIVE: costForYear += ci.costInBillingCurrencyAfterTax
                     break
-                case RDStore.CIEC_NEGATIVE: totalSum -= ci.costInBillingCurrencyAfterTax
+                case RDStore.CIEC_NEGATIVE: costForYear -= ci.costInBillingCurrencyAfterTax
                     break
             }
+            allSums.put(cal.get(Calendar.YEAR), costForYear)
         }
         if(statsData.subscription.startDate) {
-            //loop 1: reports
-            statsData.allYearSums.each { String reportType, Map<String, Object> reportYearSums ->
-                //attempt; check data type of year
-                Map<String, Object> countsPerMetric = reportYearSums.countsPerYear.get(Integer.parseInt(DateUtils.getSDF_yyyy().format(statsData.subscription.startDate))) ?: [:]
-                Long totalClicksInYear = countsPerMetric.values().sum()
-                //loop 2: metrics in report year
-                countsPerMetric.each { String metricType, Long sum ->
-                    BigDecimal partOfTotalSum = totalSum
-                    if(sum != totalClicksInYear) {
-                        BigDecimal percentage = sum / totalClicksInYear
-                        log.debug("percentage: ${percentage*100} %")
-                        partOfTotalSum = totalSum * percentage
+            List<Integer> reportYears = []
+            if(statsData.subscription.isMultiYear) {
+                cal.setTime(statsData.subscription.startDate)
+                if(statsData.subscription.endDate)
+                    endTime.setTime(statsData.subscription.endDate)
+                else {
+                    endTime.set(Calendar.MONTH, Calendar.DECEMBER)
+                    endTime.set(Calendar.DAY_OF_MONTH, 31)
+                }
+                while(cal.before(endTime)) {
+                    reportYears << cal.get(Calendar.YEAR)
+                    cal.add(Calendar.YEAR, 1)
+                }
+            }
+            else
+                reportYears << Integer.parseInt(DateUtils.getSDF_yyyy().format(statsData.subscription.startDate))
+            //loop 1: subscription year rings
+            reportYears.each { Integer reportYear ->
+                //loop 2: reports
+                statsData.allYearSums.each { String reportType, Map<String, Object> reportYearSums ->
+                    //attempt; check data type of year
+                    Map<String, Object> countsPerMetric = reportYearSums.countsPerYear.get(reportYear) ?: [:]
+                    Long totalClicksInYear = countsPerMetric.values().sum()
+                    //loop 3: metrics in report year
+                    countsPerMetric.each { String metricType, Long sum ->
+                        BigDecimal totalSum = allSums.get(reportYear)
+                        if(totalSum) {
+                            BigDecimal partOfTotalSum
+                            if(sum != totalClicksInYear) {
+                                BigDecimal percentage = sum / totalClicksInYear
+                                log.debug("percentage: ${percentage*100} % for ${metricType}")
+                                partOfTotalSum = totalSum * percentage
+                            }
+                            else partOfTotalSum = totalSum
+                            BigDecimal metricSum = costPerMetric.get(metricType) ?: 0.0
+                            metricSum += (partOfTotalSum / sum).setScale(2, RoundingMode.HALF_UP)
+                            costPerMetric.put(metricType, metricSum)
+                        }
                     }
-                    BigDecimal metricSum = costPerMetric.get(metricType) ?: 0.0
-                    metricSum += (partOfTotalSum / sum).setScale(2, RoundingMode.HALF_UP)
-                    costPerMetric.put(metricType, metricSum)
                 }
             }
         }
@@ -598,17 +655,17 @@ class SubscriptionControllerService {
      */
     Map<String, Object> getDateRange(GrailsParameterMap params, Subscription subscription) {
         String dateRange
-        List monthsInRing = []
+        SortedSet<Date> monthsInRing = new TreeSet<Date>()
         Map<String, Object> dateRangeParams = [:]
         LocalDate startTime, endTime = LocalDate.now(), now = LocalDate.now()
         if(subscription.startDate && subscription.endDate) {
             dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
-            if(!params.containsKey('month')) {
+            if(!params.containsKey('tabStat') || params.tabStat == 'total') {
                 dateRangeParams.startDate = subscription.startDate
                 dateRangeParams.endDate = subscription.endDate
             }
             else {
-                LocalDate filterDate = LocalDate.parse(params.month+'-01', DateTimeFormatter.ofPattern('yyyy-MM-dd'))
+                LocalDate filterDate = LocalDate.parse(params.tabStat+'-01', DateTimeFormatter.ofPattern('yyyy-MM-dd'))
                 dateRangeParams.startDate = Date.from(filterDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
                 dateRangeParams.endDate = Date.from(filterDate.withDayOfMonth(filterDate.getMonth().length(filterDate.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant())
             }
@@ -619,12 +676,12 @@ class SubscriptionControllerService {
         }
         else if(subscription.startDate) {
             dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
-            if(!params.containsKey('month')) {
+            if(!params.containsKey('tabStat') || params.tabStat == 'total') {
                 dateRangeParams.startDate = subscription.startDate
                 dateRangeParams.endDate = new Date()
             }
             else {
-                LocalDate filterDate = LocalDate.parse(params.month+'-01', DateTimeFormatter.ofPattern('yyyy-MM-dd'))
+                LocalDate filterDate = LocalDate.parse(params.tabStat+'-01', DateTimeFormatter.ofPattern('yyyy-MM-dd'))
                 dateRangeParams.startDate = Date.from(filterDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
                 dateRangeParams.endDate = Date.from(filterDate.withDayOfMonth(filterDate.getMonth().length(filterDate.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant())
             }
@@ -632,20 +689,20 @@ class SubscriptionControllerService {
             endTime = LocalDate.now()
         }
         else {
-            if(!params.containsKey('month')) {
+            if(!params.containsKey('tabStat') || params.tabStat == 'total') {
                 dateRange = ''
             }
             else {
                 dateRange = " and r.reportFrom >= :startDate and r.reportTo <= :endDate "
-                LocalDate filterDate = LocalDate.parse(params.month+'-01', DateTimeFormatter.ofPattern('yyyy-MM-dd'))
+                LocalDate filterDate = LocalDate.parse(params.tabStat+'-01', DateTimeFormatter.ofPattern('yyyy-MM-dd'))
                 dateRangeParams.startDate = Date.from(filterDate.atStartOfDay(ZoneId.systemDefault()).toInstant())
                 dateRangeParams.endDate = Date.from(filterDate.withDayOfMonth(filterDate.getMonth().length(filterDate.isLeapYear())).atStartOfDay(ZoneId.systemDefault()).toInstant())
             }
             startTime = now.with(TemporalAdjusters.firstDayOfYear())
             endTime = now.with(TemporalAdjusters.lastDayOfYear())
         }
-        if(params.month && params.exportXLS && params.data != 'fetchAll') {
-            monthsInRing << DateUtils.getSDF_yyyyMM().parse(params.month)
+        if(params.tabStat && params.tabStat != 'total' && params.exportXLS && params.data != 'fetchAll') {
+            monthsInRing << DateUtils.getSDF_yyyyMM().parse(params.tabStat)
         }
         else {
             while(startTime.isBefore(endTime)) {
@@ -655,12 +712,17 @@ class SubscriptionControllerService {
         }
 
         //titles have to be pre-fetched, title filter thus moved
-        [dateRange: dateRange, dateRangeParams: dateRangeParams, monthsInRing: monthsInRing]
+        dateRangeParams+[dateRange: dateRange, monthsInRing: monthsInRing]
     }
 
-    Set fetchTitles(GrailsParameterMap params, Set<Subscription> refSubs) {
+    Set fetchTitles(GrailsParameterMap params, Set<Subscription> refSubs, String fetchWhat) {
         Set result = []
-        String query = "select new map(tipp.globalUID as tippUID, tipp.sortname as sortname, tipp.name as name) from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (:refSubs) and ie.status = :current and ie.acceptStatus = :fixed "
+        String selectClause
+        if(fetchWhat == 'fullObjects')
+            selectClause = 'tipp'
+        else if(fetchWhat == 'uids')
+            selectClause = 'tipp.globalUID as tippUID'
+        String query = "select ${selectClause} from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (:refSubs) and ie.status = :current and ie.acceptStatus = :fixed "
         Map<String, Object> queryParams = [refSubs: refSubs, current: RDStore.TIPP_STATUS_CURRENT, fixed: RDStore.IE_ACCEPT_STATUS_FIXED]//current for now
         if(params.data != 'fetchAll') {
             if(params.series_names) {
@@ -730,8 +792,8 @@ class SubscriptionControllerService {
             }
         }
         if(params.sort == "title.name")
-            query += " order by ie.sortname ${params.order}"
-        else query += " order by ie.sortname"
+            query += " order by ie.sortname ${params.order}, tipp.sortname ${params.order}, ie.name ${params.order}, tipp.name ${params.order}"
+        else query += " order by ie.sortname, tipp.sortname, ie.name, tipp.name"
 
         result.addAll(TitleInstancePackagePlatform.executeQuery(query, queryParams))
 
@@ -1310,7 +1372,7 @@ class SubscriptionControllerService {
             }
 
             List<Long> sourceIEs = []
-            if(params.tab == 'allIEs') {
+            if(params.tab in ['allIEs', 'allIEsStats']) {
                 Map query = filterService.getIssueEntitlementQuery(params, baseSub)
                 sourceIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
             }
@@ -1318,7 +1380,7 @@ class SubscriptionControllerService {
                 Map query = filterService.getIssueEntitlementQuery(params+[ieAcceptStatusNotFixed: true], newSub)
                 sourceIEs = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
             }
-            if(params.tab == 'currentIEs') {
+            if(params.tab in ['currentIEs','holdingIEsStats', 'top100']) {
                 GrailsParameterMap parameterMap = params.clone()
                 Map query = [:]
                 if(subscriptions) {
@@ -1330,6 +1392,10 @@ class SubscriptionControllerService {
                 query = filterService.getIssueEntitlementQuery(parameterMap+[ieAcceptStatusFixed: true], newSub)
                 List<Long> currentIes = newSub ? IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams) : []
                 sourceIEs = sourceIEs + currentIes
+                if(params.tab == 'top100') {
+                    query = filterService.getIssueEntitlementQuery(params, baseSub)
+                    sourceIEs.addAll(IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams))
+                }
 
             }
 
@@ -1360,8 +1426,8 @@ class SubscriptionControllerService {
             result.toBeSelectedIEs = result.countAllIEs - result.countSelectedIEs
 
             result.num_ies_rows = sourceIEs ? IssueEntitlement.countByIdInList(sourceIEs) : 0
-
-            if(params.tab in ['allIEsStats', 'holdingIEsStats']) {
+            //allIEsStats and holdingIEsStats are left active for possible backswitch
+            if(params.tab in ['allIEsStats', 'holdingIEsStats', 'top100']) {
                 //result = surveyService.getStatsForParticipant(result, params, newSub, result.subscriber, subscriptionService.getTippIDsFixed(baseSub))
 
                 if(!params.tabStat)
@@ -1371,24 +1437,74 @@ class SubscriptionControllerService {
                 params.loadFor = oldTab
                 params.tab = params.tabStat
 
-                params.sort= params.sort ?: 'r.reportCount'
-                params.order= params.order ?: 'desc'
 
-                Map<String,Object> statsResult
-
-                statsResult = stats(params)
-
-                if (statsResult.status == SubscriptionControllerService.STATUS_ERROR) {
-                    if (!statsResult.result) {
-                        [result: null, status: STATUS_ERROR]
-                        return
-                    }
-                } else {
-                    result = result + statsResult.result
+                Set titlesAndPlatforms = []
+                sourceIEs.collate(32500).each { subList ->
+                    titlesAndPlatforms.addAll(TitleInstancePackagePlatform.executeQuery('select new map(tipp.globalUID as titleUID, tipp.platform.globalUID as platformUID) from IssueEntitlement ie join ie.tipp tipp where ie.id in (:sourceIDs)', [sourceIDs: subList]))
                 }
+                Subscription refSub
+                if(params.loadFor in ['allIEsStats', 'top100'])
+                    refSub = baseSub
+                else if(params.loadFor == 'holdingIEsStats')
+                    refSub = newSub
+                Map<String, Object> dateRanges = getDateRange(params, refSub)
+                result.monthsInRing = dateRanges.monthsInRing
+                boolean isCounter5 = false
+                SortedSet<String> reportTypes = new TreeSet<String>(), metricTypes = new TreeSet<String>(), accessTypes = new TreeSet<String>()
+                List usages = []
+                Counter5Report.withTransaction {
+                    String customerUID = refSub.getSubscriber().globalUID
+                    Set<String> platforms = titlesAndPlatforms.platformUID
+                    Map<String, Object> queryParams = [customer: customerUID, platforms: platforms]
+                    if(dateRanges.dateRange.length() > 0) {
+                        queryParams.startDate = dateRanges.startDate
+                        queryParams.endDate = dateRanges.endDate
+                    }
+                    isCounter5 = Counter5Report.executeQuery('select count(r.id) from Counter5Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms)'+dateRanges.dateRange, queryParams)[0] > 0
+                    String baseQuery, groupClause = '', reportCount = 'r.reportCount as reportCount'
+                    if(params.tabStat == 'total') {
+                        groupClause = ' group by r.titleUID '
+                        reportCount = ' sum(r.reportCount) as reportCount '
+                    }
+                    if(isCounter5) {
+                        result.statsAvailable = true
+                        titlesAndPlatforms.titleUID.collate(32500).each { subList ->
+                            Counter5Report.executeQuery('select r.reportType, r.metricType, r.accessType from Counter5Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms)'+dateRanges.dateRange+'and r.titleUID in (:uids) group by r.reportType, r.metricType, r.accessType', queryParams+[uids: subList]).each { row ->
+                                reportTypes << row[0]
+                                metricTypes << row[1]
+                                accessTypes << row[2]
+                            }
+                        }
+                        //restrict to load only iff report and metric types are set!
+                        if(params.reportType && params.metricType) {
+                            baseQuery = 'select r from Counter5Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms)'+dateRanges.dateRange+'and r.titleUID in (:uids)) '
 
+                        }
+                    }
+                    else {
+                        result.statsAvailable = Counter4Report.executeQuery('select count(r.id) from Counter4Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms)'+dateRanges.dateRange, queryParams)[0] > 0
+                        titlesAndPlatforms.titleUID.collate(32500).each { subList ->
+                            Counter4Report.executeQuery('select r.reportType, r.metricType from Counter4Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms)'+dateRanges.dateRange+'and r.titleUID in (:uids) group by r.reportType, r.metricType', queryParams+[uids: subList]).each { row ->
+                                reportTypes << row[0]
+                                metricTypes << row[1]
+                            }
+                        }
+                        //restrict to load only iff report and metric types are set!
+                        if(params.reportType && params.metricType) {
+                            baseQuery = 'select new map(r.titleUID as titleUID,'+reportCount+') from Counter4Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms) and r.reportType = :reportType and r.metricType in (:metricTypes)'+dateRanges.dateRange+'and r.titleUID in (:uids)'+groupClause
+                            queryParams.reportType = params.reportType
+                            queryParams.metricTypes = params.list('metricType')
+                            titlesAndPlatforms.titleUID.collate(32500).each { subList ->
+                                usages.addAll(Counter4Report.executeQuery(baseQuery, queryParams+[uids: subList]))
+                            }
+                        }
+                    }
+                }
+                result.reportTypes = reportTypes
+                result.metricTypes = metricTypes
+                result.accessTypes = accessTypes
+                result.usages = usages.sort { a, b -> a.reportCount <=> b.reportCount }.reverse().take(100)
                 params.tab = oldTab
-
             }else {
 
                 params.sort = params.sort ?: 'sortname'

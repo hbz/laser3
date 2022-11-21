@@ -1,7 +1,6 @@
 package de.laser.stats
 
 import de.laser.base.AbstractReport
-import de.laser.exceptions.CreationException
 import groovy.util.logging.Slf4j
 
 /**
@@ -127,30 +126,35 @@ class Counter5Report extends AbstractReport {
 
     String accessType
     String accessMethod
+    String dataType
 
     static mapping = {
         datasource           'storage'
         id                   column: 'c5r_id'
         version              column: 'c5r_version'
-        titleUID             column: 'c5r_title_guid', index: 'c5r_title_idx, c5r_report_when_idx, c5r_report_per_inst_idx, c5r_title_when_idx'
+        titleUID             column: 'c5r_title_guid', index: 'c5r_title_idx, c5r_report_when_idx, c5r_title_when_idx'
         publisher            column: 'c5r_publisher', type: 'text'
         platformUID          column: 'c5r_platform_guid', index: 'c5r_plat_idx, c5r_title_when_idx'
-        reportInstitutionUID column: 'c5r_report_institution_guid', index: 'c5r_ri_idx, c5r_report_when_idx, c5r_report_per_inst_idx, c5r_title_when_idx'
+        reportInstitutionUID column: 'c5r_report_institution_guid', index: 'c5r_ri_idx, c5r_report_when_idx, c5r_title_when_idx'
         reportType           column: 'c5r_report_type', index: 'c5r_rt_idx, c5r_report_when_idx, c5r_title_when_idx'
+        dataType             column: 'c5r_data_type', index: 'c5r_dt_idx'
         accessType           column: 'c5r_access_type', index: 'c5r_access_type_idx'
         accessMethod         column: 'c5r_access_method', index: 'c5r_access_method_idx'
-        metricType           column: 'c5r_metric_type', index: 'c5r_metric_type_idx, c5r_report_when_idx'
-        reportFrom           column: 'c5r_report_from', index: 'c5r_report_from_idx, c5r_report_when_idx, c5r_report_per_inst_idx, c5r_title_when_idx'
-        reportTo             column: 'c5r_report_to', index: 'c5r_report_to_idx, c5r_report_when_idx'
+        metricType           column: 'c5r_metric_type', index: 'c5r_metric_type_idx, c5r_report_when_idx, c5r_title_when_idx'
+        reportFrom           column: 'c5r_report_from', index: 'c5r_report_from_idx, c5r_report_when_idx, c5r_title_when_idx'
+        reportTo             column: 'c5r_report_to', index: 'c5r_report_to_idx, c5r_report_when_idx, c5r_title_when_idx'
+        yop                  column: 'c5r_yop', index: 'c5r_yop_idx'
         reportCount          column: 'c5r_report_count'
     }
 
     static constraints = {
         titleUID            (nullable: true) //because of platform reports!
         publisher           (nullable: true, blank: false) //because of platform reports!
+        dataType            (nullable: true, blank: false)
         accessType          (nullable: true, blank: false)
         accessMethod        (nullable: true, blank: false)
-        title(unique: ['platform', 'reportInstitution', 'metricType', 'reportFrom', 'reportTo', 'reportType'])
+        yop                 (nullable: true) //YOP is only used in tr_j4
+        //unique constraints need to be defined manually per dbm changeset because of partial null values
     }
 
     static transients = ['title', 'platform', 'reportInstitution']

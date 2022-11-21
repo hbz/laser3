@@ -14,6 +14,7 @@ import de.laser.ReportingGlobalService
 import de.laser.ReportingLocalService
 import de.laser.SubscriptionService
 import de.laser.auth.Role
+import de.laser.ctrl.SubscriptionControllerService
 import de.laser.utils.CodeUtils
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
@@ -69,6 +70,7 @@ class AjaxJsonController {
     ReportingGlobalService reportingGlobalService
     ReportingLocalService reportingLocalService
     SubscriptionService subscriptionService
+    SubscriptionControllerService subscriptionControllerService
 
     /**
      * Test call
@@ -263,16 +265,40 @@ class AjaxJsonController {
      */
     @Secured(['ROLE_USER'])
     def adjustMetricList() {
-        Map<String, Object> result = [:], queryParams = [reportType: params.reportType, platforms: params.list("platforms[]"), customer: params.customer]
+        Map<String, Object> queryParams = [reportType: params.reportType, platforms: params.list("platforms[]"), customer: params.customer]
+        Subscription refSub = Subscription.get(params.subscription)
+        String dateFilter = ''
+        if(refSub.startDate) {
+            dateFilter += ' and r.reportFrom >= :startDate'
+            queryParams.startDate = refSub.startDate
+        }
+        if(refSub.endDate) {
+            dateFilter += ' and r.reportTo <= :endDate'
+            queryParams.endDate = refSub.endDate
+        }
+        List<Map<String, Object>> result = []
+        SortedSet metricTypes = new TreeSet<String>()
         if(queryParams.reportType in Counter4Report.COUNTER_4_REPORTS) {
             Counter4Report.withTransaction {
-                result.metricTypes = Counter4Report.executeQuery('select r.metricType from Counter4Report r where r.reportType = :reportType and r.platformUID in (:platforms) and r.reportInstitutionUID = :customer', queryParams) as SortedSet<String>
+                if(queryParams.reportType in Counter4Report.COUNTER_4_TITLE_REPORTS) {
+                    queryParams.titleUIDs = subscriptionControllerService.fetchTitles(params, [refSub, refSub.instanceOf] as Set<Subscription>, 'uids')
+
+                    metricTypes.addAll(Counter4Report.executeQuery('select r.metricType from Counter4Report r where r.reportType = :reportType and r.platformUID in (:platforms) and r.reportInstitutionUID = :customer and r.titleUID in (:titleUIDs)'+dateFilter, queryParams))
+                }
+                else metricTypes.addAll(Counter4Report.executeQuery('select r.metricType from Counter4Report r where r.reportType = :reportType and r.platformUID in (:platforms) and r.reportInstitutionUID = :customer and r.titleUID is null'+dateFilter, queryParams))
             }
         }
         else if(queryParams.reportType in Counter5Report.COUNTER_5_REPORTS) {
             Counter5Report.withTransaction {
-                result.metricTypes = Counter5Report.executeQuery('select r.metricType from Counter5Report r where lower(r.reportType) = :reportType and r.platformUID in (:platforms) and r.reportInstitutionUID = :customer', queryParams) as SortedSet<String>
+                if(queryParams.reportType in Counter5Report.COUNTER_5_TITLE_REPORTS) {
+                    queryParams.titleUIDs = subscriptionControllerService.fetchTitles(params, [refSub, refSub.instanceOf] as Set<Subscription>, 'uids')
+                    metricTypes.addAll(Counter5Report.executeQuery('select r.metricType from Counter5Report r where lower(r.reportType) = :reportType and r.platformUID in (:platforms) and r.reportInstitutionUID = :customer and r.titleUID in (:titleUIDs)'+dateFilter, queryParams))
+                }
+                else metricTypes.addAll(Counter5Report.executeQuery('select r.metricType from Counter5Report r where lower(r.reportType) = :reportType and r.platformUID in (:platforms) and r.reportInstitutionUID = :customer and r.titleUID is null'+dateFilter, queryParams))
             }
+        }
+        metricTypes.each { String metricType ->
+            result.add([name: metricType, value: metricType])
         }
         render result as JSON
     }
