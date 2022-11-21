@@ -349,13 +349,13 @@
 
                                             <div class="two wide column">
                                                 <g:each in="${ie.priceItems}" var="priceItem" status="i">
-                                                    <g:if test="${priceItem?.listCurrency}">
+                                                    <g:if test="${priceItem.listCurrency}">
                                                         <div class="ui list">
                                                             <div class="item">
                                                                 <div class="contet">
                                                                     <div class="header"><g:message code="tipp.price.listPrice"/></div>
-                                                                    <div class="content"><g:formatNumber number="${priceItem?.listPrice}" type="currency" currencyCode="${priceItem?.listCurrency.value}"
-                                                                                                                                                          currencySymbol="${priceItem?.listCurrency.value}"/>
+                                                                    <div class="content"><g:formatNumber number="${priceItem.listPrice}" type="currency" currencyCode="${priceItem.listCurrency.value}"
+                                                                                                                                                          currencySymbol="${priceItem.listCurrency.value}"/>
                                                                     </div>
                                                                 </div>
                                                             </div>
