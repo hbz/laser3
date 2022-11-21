@@ -97,6 +97,7 @@ databaseChangeLog = {
         }
     }
 
+    /*
     changeSet(author: "klober (modified)", id: "1668769531625-20") {
         grailsChange {
             change {
@@ -337,4 +338,5 @@ databaseChangeLog = {
     changeSet(author: "klober (generated)", id: "1669018812496-46") {
         addNotNullConstraint(columnDataType: "timestamp", columnName: "thep_date_created", tableName: "title_history_event_participant", validate: "true")
     }
+    */
 }
