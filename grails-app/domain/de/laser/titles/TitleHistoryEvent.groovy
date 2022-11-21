@@ -33,9 +33,7 @@ class TitleHistoryEvent {
     from        (nullable: true) //backwards-compatibility until old values have been migrated
     to          (nullable: true) //backwards-compatibility until old values have been migrated
     tipp        (nullable: true) //backwards-compatibility until old values have been migrated
-    // Nullable is true, because values are already in the database
     lastUpdated (nullable: true)
-    dateCreated (nullable: true)
   }
 
   /*

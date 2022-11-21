@@ -54,11 +54,8 @@ class Contact implements Comparable<Contact>{
         contentType (nullable:true)
         prs         (nullable:true)
         org         (nullable:true)
-
-        // Nullable is true, because values are already in the database
         language    (nullable: true)
         lastUpdated (nullable: true)
-        dateCreated (nullable: true)
     }
 
     /**

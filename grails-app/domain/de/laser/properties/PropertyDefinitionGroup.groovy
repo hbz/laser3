@@ -59,7 +59,6 @@ class PropertyDefinitionGroup {
         tenant      (nullable: true)
         ownerType   (blank: false)
         lastUpdated (nullable: true)
-        dateCreated (nullable: true)
     }
 
     /**
