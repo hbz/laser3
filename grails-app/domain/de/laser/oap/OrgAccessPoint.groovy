@@ -181,4 +181,24 @@ class OrgAccessPoint extends AbstractBase {
 
         accessPointIpRanges
     }
+
+    Map<String, Object> getAccessPointMailDomains() {
+        Map<String, Object> accessPoints = [:]
+
+        accessPoints.accessPointMailDomains = []
+
+        accessPointData.each { accPD ->
+            Map apd = [:]
+            if (accPD.datatype == 'mailDomain') {
+                apd.id = accPD.id
+                apd.name = name
+                apd.mailDomain = accPD.data
+                accessPoints.accessPointMailDomains << apd
+            }
+        }
+
+        accessPoints.accessPointMailDomains = accessPoints.accessPointMailDomains.sort{it.mailDomain}
+
+        accessPoints
+    }
 }

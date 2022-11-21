@@ -54,5 +54,8 @@
         <g:elseif test="${accessMethod == RDStore.ACCESS_POINT_TYPE_VPN}">
             <laser:render template="name" model="${[nameOptions: [],name: '']}"/>
         </g:elseif>
+        <g:elseif test="${accessMethod == RDStore.ACCESS_POINT_TYPE_MAIL_DOMAIN}">
+            <laser:render template="name" model="${[nameOptions: [],name: '']}"/>
+        </g:elseif>
         <input type="submit" class="ui button js-click-control" value="${message(code: 'default.button.create.label')}"/>
     </ui:form>

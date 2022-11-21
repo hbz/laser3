@@ -19,6 +19,7 @@
                 <ui:actionsDropdownItem controller="accessPoint" action="create" params="[id: orgInstance.id, accessMethod: 'ezproxy']" message="accessPoint.create_ezproxy"/>
                 <ui:actionsDropdownItem controller="accessPoint" action="create" params="[id: orgInstance.id, accessMethod: 'oa']" message="accessPoint.create_openAthens"/>
                 <ui:actionsDropdownItem controller="accessPoint" action="create" params="[id: orgInstance.id, accessMethod: 'shibboleth']" message="accessPoint.create_shibboleth"/>
+                <ui:actionsDropdownItem controller="accessPoint" action="create" params="[id: orgInstance.id, accessMethod: 'mailDomain']" message="accessPoint.create_mailDomain"/>
             </ui:actionsDropdown>
 
         </g:if>
@@ -108,6 +109,13 @@
                                     <g:if test="${accessPoint.hasProperty('url')}">
                                         ${accessPoint.url}
                                     </g:if>
+                                </td>
+                            </g:elseif>
+                            <g:elseif test="${accessPointListItem.key == 'mailDomain'}">
+                                <td>
+                                    <g:each in="${accessPoint.accessPointData}" var="apd">
+                                        <div >${apd.data}</div>
+                                    </g:each>
                                 </td>
                             </g:elseif>
                             <g:else>

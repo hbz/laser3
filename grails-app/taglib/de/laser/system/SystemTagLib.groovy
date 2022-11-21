@@ -49,7 +49,7 @@ class SystemTagLib {
             title = title + ' : ' + attrs.text
         }
         if (attrs.message) {
-            SwissKnife.checkMessageKey(attrs.message as String)
+            //SwissKnife.checkMessageKey(attrs.message as String)
             title = title + ' : ' + message(code: attrs.message, args: attrs.args)
         }
 
