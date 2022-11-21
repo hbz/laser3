@@ -97,10 +97,7 @@ class PersonRole implements Comparable<PersonRole>{
         tipp        (nullable:true)
         start_date  (nullable:true)
         end_date    (nullable:true)
-
-        // Nullable is true, because values are already in the database
         lastUpdated (nullable: true)
-        dateCreated (nullable: true)
     }
 
     /**

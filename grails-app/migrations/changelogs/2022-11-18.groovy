@@ -1,5 +1,9 @@
 package changelogs
 
+import de.laser.Org
+import de.laser.system.SystemEvent
+import java.sql.Timestamp
+
 databaseChangeLog = {
 
     changeSet(author: "klober (generated)", id: "1668769531625-1") {
@@ -83,4 +87,143 @@ databaseChangeLog = {
     changeSet(author: "klober (modified)", id: "1668769531625-18") {
         addNotNullConstraint(columnDataType: "timestamp", columnName: "sp_date_created", tableName: "subscription_property", validate: "true")
     }
+
+    changeSet(author: "klober (modified)", id: "1668769531625-19") {
+        grailsChange {
+            change {
+                sql.execute("update pending_change set pc_date_created = pc_ts where pc_date_created is null")
+            }
+            rollback {}
+        }
+    }
+
+    changeSet(author: "klober (modified)", id: "1668769531625-20") {
+        grailsChange {
+            change {
+                List<String> objList = [
+                        'AccessPointData',
+                        'Address',
+                        'BudgetCode',
+                        'Combo',
+                        'Contact',
+                        'Invoice',
+                        'Order',
+                        'OrgProperty',
+                        'OrgSetting',
+                        'Person',
+                        'PersonRole',
+                        'PropertyDefinitionGroup',
+                        'PropertyDefinitionGroupBinding',
+                        'PropertyDefinitionGroupItem',
+                        'TitleHistoryEvent'
+                ]
+
+                objList.each { obj ->
+                    String nullIdQuery  = 'select obj.id from ' + obj + ' obj where obj.dateCreated is null'
+                    String minQuery     = 'select min(dateCreated) from ' + obj
+                    String minIdQuery   = 'select obj.id, obj.dateCreated from ' + obj + ' obj where obj.dateCreated = ( ' + minQuery + ' ) order by obj.id asc'
+                    String lowerIdQuery_part = 'select obj.id from ' + obj + ' obj where obj.dateCreated is null and obj.id < '
+
+                    List<Long> nullIdList = Org.executeQuery( nullIdQuery )
+                    if (nullIdList) {
+                        println obj + '.dateCreated=null matches found: ' + nullIdList.size()
+
+                        List<Date> minValue = Org.executeQuery( minQuery )
+                        if (minValue) {
+                            List<List> minEntry = Org.executeQuery( minIdQuery, [max: 1] )
+                            if (minEntry) {
+                                println '- min(dateCreated)=' + minEntry[0][1] + ' found @ id=' + minEntry[0][0]
+
+                                List<Long> nullIdBeforeMinList = Org.executeQuery( lowerIdQuery_part + minEntry[0][0] + ' order by obj.id')
+                                Timestamp minTs = minEntry[0][1] as Timestamp
+                                Timestamp newTs = Timestamp.valueOf(minTs.toLocalDateTime().minusYears(1).withNano(123456000))
+
+                                println '- ' + nullIdBeforeMinList.size() + ' of ' + nullIdList.size() + ' matches with dateCreated = null and id < ' + minEntry[0][0]
+
+                                if (nullIdBeforeMinList) {
+                                    println '- setting dateCreated to [' + newTs + '] for ids: ' + nullIdBeforeMinList
+
+                                    SystemEvent.createEvent( 'DBM_SCRIPT_INFO', [
+                                            msg: 'Data migration - replacing null values',
+                                            field: obj + '.dateCreated',
+                                            newValue: newTs.toString(),
+                                            numberOfTargets: nullIdBeforeMinList.size(),
+                                            targets: nullIdBeforeMinList
+                                    ]
+                                    )
+                                    Org.executeUpdate('update ' + obj + ' obj set obj.dateCreated = :dc where obj.id in (:idList)', [dc: newTs, idList: nullIdBeforeMinList])
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            rollback {}
+        }
+    }
+
+    changeSet(author: "klober (generated)", id: "1669018812496-21") {
+        addNotNullConstraint(columnDataType: "timestamp", columnName: "adr_date_created", tableName: "address", validate: "true")
+    }
+
+    changeSet(author: "klober (generated)", id: "1669018812496-22") {
+        addNotNullConstraint(columnDataType: "timestamp", columnName: "apd_date_created", tableName: "access_point_data", validate: "true")
+    }
+
+    changeSet(author: "klober (generated)", id: "1669018812496-23") {
+        addNotNullConstraint(columnDataType: "timestamp", columnName: "bc_date_created", tableName: "budget_code", validate: "true")
+    }
+
+    changeSet(author: "klober (generated)", id: "1669018812496-24") {
+        addNotNullConstraint(columnDataType: "timestamp", columnName: "combo_date_created", tableName: "combo", validate: "true")
+    }
+
+    changeSet(author: "klober (generated)", id: "1669018812496-25") {
+        addNotNullConstraint(columnDataType: "timestamp", columnName: "ct_date_created", tableName: "contact", validate: "true")
+    }
+
+    changeSet(author: "klober (generated)", id: "1669018812496-26") {
+        addNotNullConstraint(columnDataType: "timestamp", columnName: "the_date_created", tableName: "title_history_event", validate: "true")
+    }
+
+    changeSet(author: "klober (generated)", id: "1669018812496-27") {
+        addNotNullConstraint(columnDataType: "timestamp", columnName: "inv_date_created", tableName: "invoice", validate: "true")
+    }
+
+    changeSet(author: "klober (generated)", id: "1669018812496-28") {
+        addNotNullConstraint(columnDataType: "timestamp", columnName: "op_date_created", tableName: "org_property", validate: "true")
+    }
+
+    changeSet(author: "klober (generated)", id: "1669018812496-29") {
+        addNotNullConstraint(columnDataType: "timestamp", columnName: "ord_date_created", tableName: "ordering", validate: "true")
+    }
+
+    changeSet(author: "klober (generated)", id: "1669018812496-30") {
+        addNotNullConstraint(columnDataType: "timestamp", columnName: "os_date_created", tableName: "org_setting", validate: "true")
+    }
+
+    changeSet(author: "klober (generated)", id: "1669018812496-31") {
+        addNotNullConstraint(columnDataType: "timestamp", columnName: "pc_date_created", tableName: "pending_change", validate: "true")
+    }
+
+    changeSet(author: "klober (generated)", id: "1669018812496-32") {
+        addNotNullConstraint(columnDataType: "timestamp", columnName: "pde_date_created", tableName: "property_definition_group_item", validate: "true")
+    }
+
+    changeSet(author: "klober (generated)", id: "1669018812496-33") {
+        addNotNullConstraint(columnDataType: "timestamp", columnName: "pdg_date_created", tableName: "property_definition_group", validate: "true")
+    }
+
+    changeSet(author: "klober (generated)", id: "1669018812496-34") {
+        addNotNullConstraint(columnDataType: "timestamp", columnName: "pdgb_date_created", tableName: "property_definition_group_binding", validate: "true")
+    }
+
+    changeSet(author: "klober (generated)", id: "1669018812496-35") {
+        addNotNullConstraint(columnDataType: "timestamp", columnName: "pr_date_created", tableName: "person_role", validate: "true")
+    }
+
+    changeSet(author: "klober (generated)", id: "1669018812496-36") {
+        addNotNullConstraint(columnDataType: "timestamp", columnName: "prs_date_created", tableName: "person", validate: "true")
+    }
+
 }

@@ -57,8 +57,6 @@ class OrgProperty extends AbstractPropertyWithCalculatedLastUpdated {
         note        (nullable: true)
         dateValue   (nullable: true)
         tenant      (nullable: true) //subject of discussion, for the moment, it cannot be determined exactly
-
-        dateCreated (nullable: true)
         lastUpdated (nullable: true)
         lastUpdatedCascading (nullable: true)
     }
