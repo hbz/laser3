@@ -836,8 +836,11 @@ class DataloadService {
         RestHighLevelClient esclient = ESWrapperService.getNewClient(true)
         Map es_indices = ESWrapperService.ES_Indices
 
-        long total = 0, startingTimestamp = 0, bulkMaxTimestamp = 0
-        BigDecimal mb = 0, totalMb = 0
+        long total = 0
+        long startingTimestamp = 0
+        long bulkMaxTimestamp = 0
+        BigDecimal mb = 0
+        BigDecimal totalMb = 0
 
         if (! FTControl.findByDomainClassNameAndActivity(domainClass.name, 'ESIndex')) {
             (new FTControl(domainClassName: domainClass.name, activity: 'ESIndex', lastTimestamp: 0, active: true, esElements: 0, dbElements: 0)).save()
@@ -849,18 +852,10 @@ class DataloadService {
             try {
                 if (ftControl.active) {
 
-                    List<Long> vList = domainClass.executeQuery('select d.id from ' + domainClass.name + ' as d where d.dateCreated is null')
-                    if (vList) {
-                        Date vDate = new Date()
-                        log.info("${logPrefix} - found ${vList.size()} entries with dateCreated = null -> data correction to [${vDate}]")
-
-                        int vdResult = domainClass.executeUpdate('update ' + domainClass.name + ' d set d.dateCreated = :vDate where d.id in (:vList)', [vDate: vDate, vList: vList])
-                        log.info("${logPrefix} - updated: ${vdResult}")
-                    }
-
                     if (esclient && es_indices && es_indices.get(domainClass.simpleName)) {
                         Date from = new Date(ftControl.lastTimestamp)
                         List<Long> idList = []
+                        List<Long> ignoredObjectIdList = []
 
                         if (ClassUtils.getAllInterfaces(domainClass).contains(CalculatedLastUpdated)) {
                             idList = domainClass.executeQuery(
@@ -891,12 +886,12 @@ class DataloadService {
                                 }
                             }
 
-                            bulks.eachWithIndex { List bulk, int i ->
+                            bulks.eachWithIndex { List<Long> bulk, int i ->
                                 for (domain_id in bulk) {
                                     Object r = domainClass.get(domain_id)
                                     Map idx_record = recgen_closure(r) as Map
                                     if (idx_record['_id'] == null) {
-                                        log.warn("+++++ Record without an ID for: ${r} +++++")
+                                        ignoredObjectIdList.add(domain_id)
                                         continue
                                     }
 
@@ -919,22 +914,31 @@ class DataloadService {
                                 mb = (bulkRequest.estimatedSizeInBytes()/1024/1024)
                                 totalMb = totalMb + mb
 
-                                BulkResponse bulkResponse = esclient.bulk(bulkRequest, RequestOptions.DEFAULT)
+                                if (bulkRequest.numberOfActions()) {
+                                    BulkResponse bulkResponse = esclient.bulk(bulkRequest, RequestOptions.DEFAULT)
 
-                                if (bulkResponse.hasFailures()) {
-                                    for (BulkItemResponse bulkItemResponse : bulkResponse) {
-                                        if (bulkItemResponse.isFailed()) {
-                                            BulkItemResponse.Failure failure = bulkItemResponse.getFailure()
-                                            log.warn("${logPrefix} - (#1) bulk operation failure -> ${failure}")
+                                    if (bulkResponse.hasFailures()) {
+                                        for (BulkItemResponse bulkItemResponse : bulkResponse) {
+                                            if (bulkItemResponse.isFailed()) {
+                                                BulkItemResponse.Failure failure = bulkItemResponse.getFailure()
+                                                log.warn("${logPrefix} - (#1) bulk operation failure -> ${failure}")
+                                            }
                                         }
                                     }
+                                    log.debug("${logPrefix} - processed ${total} / ${todoList.size() - total} records; bulkSize ${mb.round(2)}MB")
+                                }
+                                else {
+                                    log.debug( "${logPrefix} - ignored empty bulk")
                                 }
 
-                                log.debug("${logPrefix} - processed ${total} / ${todoList.size() - total} records; bulkSize ${mb.round(2)}MB")
                                 bulkRequest = new BulkRequest()
                             } // each
 
                             log.debug("${logPrefix} - totally processed ${total} records; ${totalMb.round(2)}MB")
+
+                            if (ignoredObjectIdList) {
+                                log.info("${logPrefix} - but ignored ${ignoredObjectIdList.size()} records because of missing _id")
+                            }
 
                             if (idList.size() > BULK_LIMIT) {
                                 log.debug("${logPrefix} - increasing last_timestamp to [${new Date(bulkMaxTimestamp)}]")
