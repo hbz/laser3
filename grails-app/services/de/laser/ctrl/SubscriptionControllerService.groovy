@@ -1466,7 +1466,7 @@ class SubscriptionControllerService {
 
                     MultipartFile kbartFile = params.kbartPreselect
                     InputStream stream = kbartFile.getInputStream()
-                    result.selectProcess = subscriptionService.issueEntitlementSelect(stream, result.subscription)
+                    result.selectProcess = subscriptionService.issueEntitlementSelectForSurvey(stream, result.subscription, result.surveyConfig, newSub, result.subscriberSubs)
 
                         if (result.selectProcess.selectedIEs) {
                             checkedCache.put('checked', result.selectProcess.selectedIEs)
