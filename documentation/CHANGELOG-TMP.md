@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4594    21.11.2022  dev     3.0         David   Feature     Refactoring: dateCreated nullable:true
+
 3035    21.11.2022  dev     3.0         Moe     Feature     Neuer Typ Zugangskonfiguration: Maildomänen
 
 4588    21.11.2022  dev     3.0         Andreas Feature     Neues Feld "Notizen" für Coverages
