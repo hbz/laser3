@@ -116,9 +116,7 @@ class IssueEntitlement extends AbstractBase implements Comparable {
         accessEndDate  (nullable:true)
         acceptStatus   (nullable:true)
 
-        // Nullable is true, because values are already in the database
         lastUpdated (nullable: true)
-        dateCreated (nullable: true)
         perpetualAccessBySub (nullable: true)
     }
 

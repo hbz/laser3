@@ -201,9 +201,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
         editionDifferentiator (nullable:true, blank:false)
         editionNumber       (nullable:true)
         editionStatement (nullable:true, blank:false)
-        // Nullable is true, because values are already in the database
-        lastUpdated (nullable: true)
-        dateCreated (nullable: true)
+        lastUpdated      (nullable: true)
     }
 
     static final Pattern alphanum = Pattern.compile("\\p{Punct}|\\p{Cntrl}")
