@@ -3046,7 +3046,9 @@ join sub.orgRelations or_sub where
                 cell = row.createCell(cellnum++)
                 if(result.linkedLicenses.get(subCons)) {
                     List<String> references = result.linkedLicenses.get(subCons).collect { License l -> l.reference }
-                    cell.setCellValue(references.join("\n"))
+                    if(references)
+                        cell.setCellValue(references.join("\n"))
+                    else cell.setCellValue(" ")
                 }
                 //packages
                 log.debug("insert package name")
@@ -3056,7 +3058,9 @@ join sub.orgRelations or_sub where
                 subCons.packages.each { subPkg ->
                     packageNames << subPkg.pkg.name
                 }
-                cell.setCellValue(packageNames.join("\n"))
+                if(packageNames)
+                    cell.setCellValue(packageNames.join("\n"))
+                else cell.setCellValue(" ")
                 //provider
                 log.debug("insert provider name")
                 cell = row.createCell(cellnum++)
@@ -3066,7 +3070,9 @@ join sub.orgRelations or_sub where
                     log.debug("Getting provider ${p.org}")
                     providerNames << p.org.name
                 }
-                cell.setCellValue(providerNames.join("\n"))
+                if(providerNames)
+                    cell.setCellValue(providerNames.join("\n"))
+                else cell.setCellValue(" ")
                 //running time from / to
                 log.debug("insert running times")
                 cell = row.createCell(cellnum++)
@@ -3132,6 +3138,7 @@ join sub.orgRelations or_sub where
             }
             for(int i = 0;i < titles.size();i++) {
                 try {
+                    sheet.trackColumnForAutoSizing(i)
                     sheet.autoSizeColumn(i)
                 }
                 catch (NullPointerException e) {
