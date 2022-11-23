@@ -7,6 +7,14 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4598    23.11.2022  dev     3.0         Andreas Feature     Umstellungen in der Organisationssicht
+
+4563    23.11.2022  dev     3.0         Andreas Bug         Sicherheitsabfrage löste gar nicht aus
+
+4535    23.11.2022  dev     3.0         Andreas Feature     Bezeichner korrigiert
+
+4551    22.11.2022  dev     3.0         Andreas Bug         Sicherheitsabfrage löste falsch aus
+
 4594    21.11.2022  dev     3.0         David   Feature     Refactoring: dateCreated nullable:true
 
 4588    21.11.2022  dev     3.0         Andreas Feature     Neues Feld "Notizen" für Coverages

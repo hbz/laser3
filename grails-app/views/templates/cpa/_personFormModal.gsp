@@ -220,7 +220,7 @@
 
                 <g:if test="${personInstance}">
                     <g:each in="${personInstance.contacts?.toSorted()}" var="contact" status="i">
-                        <div class="three fields" id="contactFields${i}">
+                        <div class="three fields contactField" id="contactFields${i}">
                             <div class="field wide four ">
                                 <input type="text" readonly value="${contact.contentType.getI10n('value')}"/>
                             </div>
@@ -258,7 +258,7 @@
                 <br />
                 <br />
             <div class="field">
-                <div class="three fields" id="contactFields1">
+                <div class="three fields contactField" id="contactFields1">
                     <div class="field wide four">
                         <label></label>
                         <ui:select class="ui dropdown" name="contentType.id"
@@ -299,7 +299,7 @@
                     <g:message code="person.addresses.label"/>:
                 </label>
                 <g:if test="${personInstance}">
-                    <div class="ui divided middle aligned list la-flex-list ">
+                    <div class="ui divided middle aligned list la-flex-list addressField">
                         <g:each in="${personInstance.addresses.sort { it.type.each { it?.getI10n('value') } }}"
                                 var="address">
                             <laser:render template="/templates/cpa/address"
@@ -399,8 +399,8 @@
 
             tooltip.go()  // TODO: set ctxSel @ tooltip.init()
 
-            JSPC.app.addressElementCount = 1;
-            JSPC.app.contactElementCount = 1;
+            JSPC.app.addressElementCount = $(".addressField").length;
+            JSPC.app.contactElementCount = $(".contactField").length;
 
             JSPC.app.addressContainer = $(document.createElement('div'));
             JSPC.app.contactContainer = $(document.createElement('div'));
@@ -434,9 +434,9 @@
 
             $('#removeContactElement').click(function () {
                 if (JSPC.app.contactElementCount != 0) {
-                    $('#contactFields' + JSPC.app.contactElementCount).remove();
-                    JSPC.app.contactElementCount = JSPC.app.contactElementCount - 1;
+                    $('.contactField').last().remove();
                 }
+                JSPC.app.contactElementCount = $(".contactField").length;
 
                 if (JSPC.app.contactElementCount == 0) {
                     $(JSPC.app.contactContainer).empty().remove();
@@ -470,9 +470,9 @@
 
             $('#removeAddressElement').click(function () {
                 if (JSPC.app.addressElementCount != 0) {
-                    $('#addressFields' + JSPC.app.addressElementCount).remove();
-                    JSPC.app.addressElementCount = JSPC.app.addressElementCount - 1;
+                    $('.addressField').remove();
                 }
+                JSPC.app.addressElementCount = $(".addressField").length;
 
                 if (JSPC.app.addressElementCount == 0) {
                     $(JSPC.app.addressContainer).empty().remove();
@@ -488,13 +488,23 @@
 
             $('#person_form').submit(function(e) {
                 e.preventDefault();
+                JSPC.app.addressElementCount = $(".addressField").length;
+                JSPC.app.contactElementCount = $(".contactField").length;
                 if($.fn.form.settings.rules.functionOrPosition() && $('#last_name').val().length > 0) {
                     let addressElements = null, contactElements = null;
                     if(JSPC.app.addressElementCount == 1) {
                         contactElements = [$('#'+$.escapeSelector('contactLang.id')), $('#content')];
                     }
+                    else {
+                        $(".contactField").each(function(i) {
+                            console.log(this);
+                        });
+                    }
                     if(JSPC.app.contactElementCount == 1) {
                         addressElements = [$('#type'), $('#name'), $('#additionFirst'), $('#additionSecond'), $('#street_1'), $('#street_2'), $('#zipcode'), $('#city'), $('#pob'), $('#pobZipcode'), $('#pobCity'), $('#country'), $('#region')];
+                    }
+                    else {
+
                     }
                     if((JSPC.app.addressElementCount == 0 || !JSPC.app.areElementsFilledOut(addressElements)) &&
                         JSPC.app.contactElementCount == 0 || !JSPC.app.areElementsFilledOut(contactElements)) {

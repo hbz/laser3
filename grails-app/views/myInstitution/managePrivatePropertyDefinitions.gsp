@@ -207,7 +207,7 @@
             <div class="fields">
 
                 <div class="field six wide required">
-                    <label class="property-label" for="pd_descr">${message(code:'propertyDefinitionGroup.editModal.category')} <g:message code="messageRequiredField" /></label>
+                    <label class="property-label" for="pd_descr">${message(code:'propertyDefinition.descr.label')} <g:message code="messageRequiredField" /></label>
                     <%
                         Map<String,Object> availablePrivateDescr = [:]
                         Set<String> availablePrivDescs = PropertyDefinition.AVAILABLE_PRIVATE_DESCR
@@ -222,7 +222,7 @@
                 </div>
 
                 <div class="field five wide required">
-                    <label class="property-label" for="cust_prop_modal_select"><g:message code="default.type.label" /> <g:message code="messageRequiredField" /></label>
+                    <label class="property-label" for="cust_prop_modal_select"><g:message code="propertyDefinition.type.label" /> <g:message code="messageRequiredField" /></label>
                     <g:select class="ui dropdown"
                         from="${PropertyDefinition.validTypes.entrySet()}"
                         optionKey="key" optionValue="${{PropertyDefinition.getLocalizedValue(it.key)}}"
