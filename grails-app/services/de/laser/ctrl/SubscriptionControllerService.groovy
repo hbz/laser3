@@ -920,7 +920,7 @@ class SubscriptionControllerService {
         //result.validSubChilds = Subscription.executeQuery('select s from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes order by oo.org.sortname asc, oo.org.name asc',[parent:result.subscription,subscriberRoleTypes:subscriberRoleTypes])
         prf.setBenchmark('getting filtered subscribers')
         result.filteredSubChilds = getFilteredSubscribers(params,result.subscription)
-        prf.setBenchmark('after sub schildren')
+        prf.setBenchmark('after sub children')
         result.filterSet = params.filterSet ? true : false
         Set<Map<String,Object>> orgs = []
         if (params.exportXLS || params.format) {

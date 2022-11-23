@@ -2,7 +2,7 @@
 <laser:serviceInjection/>
 
 <!-- _individuallyExportModal.gsp -->
-<g:set var="formFields" value="${exportClickMeService.getExportSubscriptionFieldsForUI()}"/>
+<g:set var="formFields" value="${exportClickMeService.getExportSubscriptionFieldsForUI(institution)}"/>
 
 <ui:modal modalSize="large" id="${modalID}" text="Excel-Export" refreshModal="true" hideSubmitButton="true">
 

@@ -272,6 +272,18 @@ class ExportClickMeService {
                     ]
             ],
 
+            participantIdentifiers : [
+                    label: 'Identifiers',
+                    message: 'exportClickMe.participantIdentifiers',
+                    fields: [:],
+
+            ],
+            participantCustomerIdentifiers : [
+                    label: 'Customer Identifier',
+                    message: 'exportClickMe.participantCustomerIdentifiers',
+                    fields: [:],
+
+            ],
 
             subProperties : [
                     label: 'Properties',
@@ -770,7 +782,7 @@ class ExportClickMeService {
         IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
             exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
         }
-        Platform.executeQuery('select distinct(ci.platform) from CustomerIdentifier ci').each { Platform plat ->
+        Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where ci.value != null and plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription)', [subscription: surveyConfig.subscription]).each { Platform plat ->
             exportFields.put("participantCustomerIdentifiers."+plat.id, [field: null, label: plat.name])
         }
 
@@ -811,10 +823,12 @@ class ExportClickMeService {
         Locale locale = LocaleUtils.getCurrentLocale()
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
 
+        fields.participantIdentifiers.fields.clear()
+        fields.participantCustomerIdentifiers.fields.clear()
         IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
             fields.participantIdentifiers.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
         }
-        Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat order by plat.name').each { Platform plat ->
+        Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where ci.value != null and plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription)', [subscription: surveyConfig.subscription]).each { Platform plat ->
             fields.participantCustomerIdentifiers.fields << ["participantCustomerIdentifiers.${plat.id}":[field: null, label: plat.name]]
         }
 
@@ -863,7 +877,7 @@ class ExportClickMeService {
         IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
             exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
         }
-        Platform.executeQuery('select distinct(ci.platform) from CustomerIdentifier ci').each { Platform plat ->
+        Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where plat = (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription) and ci.value != null', [subscription: subscription]).each { Platform plat ->
             exportFields.put("participantCustomerIdentifiers."+plat.id, [field: null, label: plat.name])
         }
         List<Subscription> childSubs = subscription.getNonDeletedDerivedSubscriptions()
@@ -898,7 +912,7 @@ class ExportClickMeService {
         IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
             fields.participantIdentifiers.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
         }
-        Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat order by plat.name').each { Platform plat ->
+        Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription) = plat and ci.value != null order by plat.name',[subscription:subscription]).each { Platform plat ->
             fields.participantCustomerIdentifiers.fields << ["participantCustomerIdentifiers.${plat.id}":[field: null, label: plat.name]]
         }
 
@@ -952,7 +966,10 @@ class ExportClickMeService {
         IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
             exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
         }
-        Platform.executeQuery('select distinct(ci.platform) from CustomerIdentifier ci').each { Platform plat ->
+        String consortiaFilter = ''
+        if(institution.getCustomerType() == 'ORG_CONSORTIUM')
+            consortiaFilter = ' and s.instanceOf = null '
+        Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where plat = in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg join sp.subscription s join s.orgRelations oo where oo.org = :ctx '+consortiaFilter+')', [ctx: institution]).each { Platform plat ->
             exportFields.put("participantCustomerIdentifiers."+plat.id, [field: null, label: plat.name])
         }
 
@@ -997,6 +1014,16 @@ class ExportClickMeService {
         fields.subProperties.fields.clear()
         fields.subCostItems.fields.costItemsElements.clear()
 
+        IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
+            fields.participantIdentifiers.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
+        }
+        String consortiaFilter = ''
+        if(institution.getCustomerType() == 'ORG_CONSORTIUM')
+            consortiaFilter = ' and s.instanceOf = null '
+        Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg join sp.subscription s join s.orgRelations oo where oo.org = :ctx '+consortiaFilter+') order by plat.name', [ctx:institution]).each { Platform plat ->
+            fields.participantCustomerIdentifiers.fields << ["participantCustomerIdentifiers.${plat.id}":[field: null, label: plat.name]]
+        }
+
         Set<PropertyDefinition> propList = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd where pd.descr in (:availableTypes) and (pd.tenant = null or pd.tenant = :ctx) order by pd."+localizedName+" asc",
                 [ctx:institution,availableTypes:[PropertyDefinition.SUB_PROP]])
 
@@ -1017,7 +1044,7 @@ class ExportClickMeService {
      * Gets the cost item fields for the given institution
      * @return the configuration map for the cost item export
      */
-    Map<String, Object> getExportCostItemFields() {
+    Map<String, Object> getExportCostItemFields(Subscription sub = null) {
 
         Map<String, Object> exportFields = [:]
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
@@ -1031,7 +1058,17 @@ class ExportClickMeService {
         IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
             exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
         }
-        Platform.executeQuery('select distinct(ci.platform) from CustomerIdentifier ci').each { Platform plat ->
+        String subquery
+        Map<String, Object> queryParams = [ctx: contextService.getOrg()]
+        if(sub) {
+            subquery = '(select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :s)'
+            queryParams.s = sub
+        }
+        else {
+            subquery = '(select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg join sp.subscription s join s.orgRelations oo where oo.org = :ctx)'
+        }
+        Set<Platform> platforms = Platform.executeQuery('select plat from CustomerIdentifier ci join ci.platform plat where plat in '+subquery+' and ci.value != null and ci.customer = :ctx order by plat.name', queryParams)
+        platforms.each { Platform plat ->
             exportFields.put("participantCustomerIdentifiers."+plat.id, [field: null, label: plat.name])
         }
 
@@ -1042,15 +1079,28 @@ class ExportClickMeService {
      * Gets the cost item fields for the given institution
      * @return the configuration map for the cost item export for UI
      */
-    Map<String, Object> getExportCostItemFieldsForUI() {
+    Map<String, Object> getExportCostItemFieldsForUI(Subscription sub = null) {
 
         Map<String, Object> fields = EXPORT_COST_ITEM_CONFIG as Map
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
 
+        fields.participantIdentifiers.fields.clear()
+        fields.participantCustomerIdentifiers.fields.clear()
+
         IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
             fields.participantIdentifiers.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
         }
-        Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat order by plat.name').each { Platform plat ->
+        String subquery
+        Map<String, Object> queryParams = [ctx: contextService.getOrg()]
+        if(sub) {
+            subquery = '(select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :s)'
+            queryParams.s = sub
+        }
+        else {
+            subquery = '(select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg join sp.subscription s join s.orgRelations oo where oo.org = :ctx)'
+        }
+        Set<Platform> platforms = Platform.executeQuery('select plat from CustomerIdentifier ci join ci.platform plat where plat in '+subquery+' and ci.value != null and ci.customer = :ctx order by plat.name', queryParams)
+        platforms.each { Platform plat ->
             fields.participantCustomerIdentifiers.fields << ["participantCustomerIdentifiers.${plat.id}":[field: null, label: plat.name]]
         }
 
@@ -1064,7 +1114,7 @@ class ExportClickMeService {
      */
     Map<String, Object> getExportOrgFields(String config) {
 
-        Map<String, Object> exportFields = [:]
+        Map<String, Object> exportFields = [:], contextParams = [ctx: contextService.getOrg()]
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
 
         switch(config) {
@@ -1080,7 +1130,7 @@ class ExportClickMeService {
                     exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
                 }
 
-                Platform.executeQuery('select distinct(ci.platform) from CustomerIdentifier ci').each { Platform plat ->
+                Platform.executeQuery('select distinct(ci.platform) from CustomerIdentifier ci where ci.value != null and ci.customer in (select c.fromOrg from Combo c where c.toOrg = :ctx)', contextParams).each { Platform plat ->
                     exportFields.put("participantCustomerIdentifiers."+plat.id, [field: null, label: plat.name])
                 }
 
@@ -1099,7 +1149,7 @@ class ExportClickMeService {
                     exportFields.put("providerIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
                 }
 
-                Platform.executeQuery('select distinct(ci.platform) from CustomerIdentifier ci').each { Platform plat ->
+                Platform.executeQuery('select distinct(ci.platform) from CustomerIdentifier ci where ci.value != null and ci.customer in (select c.fromOrg from Combo c where c.toOrg = :ctx)', contextParams).each { Platform plat ->
                     exportFields.put("providerCustomerIdentifiers."+plat.id, [field: null, label: plat.name])
                 }
 
@@ -1120,7 +1170,7 @@ class ExportClickMeService {
      */
     Map<String, Object> getExportOrgFieldsForUI(String orgType) {
 
-        Map<String, Object> fields
+        Map<String, Object> fields, contextParams = [ctx: contextService.getOrg()]
         String localizedName = LocaleUtils.getLocalizedAttributeName('name')
 
         switch(orgType) {
@@ -1128,7 +1178,7 @@ class ExportClickMeService {
                 IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
                     fields.participantIdentifiers.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
                 }
-                Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where ci.value != null order by plat.name').each { Platform plat ->
+                Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where ci.value != null and ci.customer in (select c.fromOrg from Combo c where c.toOrg = :ctx) order by plat.name', contextParams).each { Platform plat ->
                     fields.participantCustomerIdentifiers.fields << ["participantCustomerIdentifiers.${plat.id}":[field: null, label: plat.name]]
                 }
                 fields.participantProperties.fields.clear()
@@ -1140,7 +1190,7 @@ class ExportClickMeService {
                 IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
                     fields.providerIdentifiers.fields << ["providerIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
                 }
-                Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat order by plat.name').each { Platform plat ->
+                Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where ci.value != null and ci.customer in (select c.fromOrg from Combo c where c.toOrg = :ctx) order by plat.name', contextParams).each { Platform plat ->
                     fields.providerCustomerIdentifiers.fields << ["providerCustomerIdentifiers.${plat.id}":[field: null, label: plat.name]]
                 }
                 fields.providerProperties.fields.clear()
@@ -1182,7 +1232,7 @@ class ExportClickMeService {
         IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
             exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
         }
-        Platform.executeQuery('select distinct(ci.platform) from CustomerIdentifier ci').each { Platform plat ->
+        Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where ci.value != null and ci.customer in (:participants) and plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription)', [participants: surveyConfig.orgs.org, subscription: surveyConfig.subscription]).each { Platform plat ->
             exportFields.put("participantCustomerIdentifiers."+plat.id, [field: null, label: plat.name])
         }
 
@@ -1215,7 +1265,7 @@ class ExportClickMeService {
         IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
             fields.participantIdentifiers.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
         }
-        Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat order by plat.name').each { Platform plat ->
+        Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where ci.value != null and ci.customer in (:participants) and plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg where sp.subscription = :subscription)', [participants: surveyConfig.orgs.org, subscription: surveyConfig.subscription]).each { Platform plat ->
             fields.participantCustomerIdentifiers.fields << ["participantCustomerIdentifiers.${plat.id}":[field: null, label: plat.name]]
         }
 
@@ -2012,8 +2062,17 @@ class ExportClickMeService {
     private void _setSubRow(def result, Map<String, Object> selectedFields, List exportData, String localizedName, List<RefdataValue> selectedCostItemElements, Map selectedCostItemFields){
         List row = []
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
+        Org org
+        Subscription subscription
+        if(result instanceof Subscription) {
+            subscription = result
+            org = subscription.getSubscriber()
+        }
+        else {
+            subscription = result.sub
+            org = result.orgs
+        }
 
-        Subscription subscription = result instanceof Subscription ? result : result.sub
 
         List<CostItem> costItems
         if(selectedCostItemElements){
@@ -2025,23 +2084,23 @@ class ExportClickMeService {
             String field = mapSelecetedFields.field
             if(!mapSelecetedFields.separateSheet) {
                 if (fieldKey == 'participant.generalContact') {
-                    _setOrgFurtherInformation(result.orgs, row, fieldKey)
+                    _setOrgFurtherInformation(org, row, fieldKey)
                 }else if (fieldKey == 'participant.billingContact') {
-                    _setOrgFurtherInformation(result.orgs, row, fieldKey)
+                    _setOrgFurtherInformation(org, row, fieldKey)
                 }
                 else if (fieldKey == 'participant.billingAdress') {
-                    _setOrgFurtherInformation(result.orgs, row, fieldKey)
+                    _setOrgFurtherInformation(org, row, fieldKey)
                 }
                 else if (fieldKey == 'participant.postAdress') {
-                    _setOrgFurtherInformation(result.orgs, row, fieldKey)
+                    _setOrgFurtherInformation(org, row, fieldKey)
                 }
                 else if (fieldKey.startsWith('participantCustomerIdentifiers.')) {
-                    _setOrgFurtherInformation(result.orgs, row, fieldKey, subscription)
+                    _setOrgFurtherInformation(org, row, fieldKey, subscription)
                 }else if (fieldKey == 'participant.readerNumbers') {
-                    _setOrgFurtherInformation(result.orgs, row, fieldKey)
+                    _setOrgFurtherInformation(org, row, fieldKey)
                 }
                 else if (fieldKey.startsWith('participantIdentifiers.')) {
-                    _setOrgFurtherInformation(result.orgs, row, fieldKey)
+                    _setOrgFurtherInformation(org, row, fieldKey)
                 }else if (fieldKey.startsWith('participantSubProperty.') || fieldKey.startsWith('subProperty.')) {
                     Long id = Long.parseLong(fieldKey.split("\\.")[1])
                     String query = "select prop from SubscriptionProperty prop where (prop.owner = :sub and prop.type.id in (:propertyDefs) and prop.isPublic = true) or (prop.owner = :sub and prop.type.id in (:propertyDefs) and prop.isPublic = false and prop.tenant = :contextOrg) order by prop.type.${localizedName} asc"
