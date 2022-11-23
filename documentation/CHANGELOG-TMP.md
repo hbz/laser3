@@ -15,6 +15,8 @@
 
 4551    22.11.2022  dev     3.0         Andreas Bug         Sicherheitsabfrage löste falsch aus
 
+4599    21.11.2022  dev     3.0         David   Bug         Spotlight- und Suche: Probleme mit Hibernate Proxies
+
 4594    21.11.2022  dev     3.0         David   Feature     Refactoring: dateCreated nullable:true
 
 4588    21.11.2022  dev     3.0         Andreas Feature     Neues Feld "Notizen" für Coverages
