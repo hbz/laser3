@@ -18,7 +18,7 @@
             <ui:subNavItem disabled="true" controller="organisation" action="myPublicContacts" message="menu.institutions.publicContactsHyphen" />
         </g:if>
     </g:else>
-    <g:if test="${!isProviderOrAgency}">
+    <g:if test="${orgInstance.getCustomerType() == 'ORG_INST'}">
         <ui:securedSubNavItem affiliation="INST_USER" controller="organisation" action="readerNumber" params="${[id: orgInstance.id]}" message="menu.institutions.readerNumbers"/>
 
         <g:if test="${tmplAccessPointsActive}">
@@ -35,8 +35,8 @@
     <ui:securedSubNavItem controller="organisation" action="tasks" params="${breadcrumbParams}" counts="${tasksCount}" affiliation="INST_USER" orgPerm="ORG_INST,ORG_CONSORTIUM" message="menu.institutions.tasks"/>
     <ui:securedSubNavItem controller="organisation" action="documents" params="${breadcrumbParams}" affiliation="INST_USER" orgPerm="ORG_INST,ORG_CONSORTIUM" message="menu.my.documents" />
     <ui:subNavItem controller="organisation" action="notes" params="${breadcrumbParams}" counts="${notesCount}" message="default.notes.label"/>
-    <g:if test="${!inContextOrg}">
-        <ui:securedSubNavItem controller="organisation" action="addressbook" params="${breadcrumbParams}" affiliation="INST_USER" orgPerm="ORG_INST,ORG_CONSORTIUM" message="menu.institutions.myAddressbook"/>
+    <g:if test="${!inContextOrg && contextCustomerType in ['ORG_INST','ORG_CONSORTIUM']}">
+        <ui:subNavItem controller="organisation" action="addressbook" params="${breadcrumbParams}" message="menu.institutions.myAddressbook"/>
     </g:if>
     <g:if test="${!isProviderOrAgency}">
         <g:if test="${inContextOrg}">

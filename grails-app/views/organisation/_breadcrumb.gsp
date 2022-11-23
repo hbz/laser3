@@ -16,6 +16,10 @@
                 <ui:crumb message="menu.my.insts" controller="myInstitution" action="manageMembers" params="[comboType:RDStore.COMBO_TYPE_CONSORTIUM]"/>
                 <ui:crumb text="${orgInstance.sortname}" class="active"/>
             </g:if>
+            <g:elseif test="${consortialView}">
+                <ui:crumb message="menu.my.consortia" controller="myInstitution" action="currentConsortia"/>
+                <ui:crumb text="${orgInstance.sortname}" class="active"/>
+            </g:elseif>
             <g:else>
                 <ui:crumb text="${orgInstance.sortname}" class="active"/>
             </g:else>
