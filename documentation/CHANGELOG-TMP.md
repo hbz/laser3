@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4596    24.11.2022  rc-2.3  2.3.12      Moe     Bug         Titel hinzufügen - KBART hochladen
+
 4592    22.11.2022  rc-2.3  2.3.12      Moe     Bug         Titelumfrage: Titelauswahl per tsv blockt keine Bestandstitel
 
 4589    14.11.2022  rc-2.3  2.3.12      Moe     Bug         Dashboard Benachrichtung-Mail hat falschen Link drin
