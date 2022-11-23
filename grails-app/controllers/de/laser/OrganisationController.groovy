@@ -877,6 +877,21 @@ class OrganisationController  {
         if(!result.isProviderOrAgency){
             result.orgInstance.createCoreIdentifiersIfNotExist()
         }
+        else {
+            Set<Package> packages = []
+            OrgRole.executeQuery('select oo from OrgRole oo where oo.org = :org and exists(select sp from SubscriptionPackage sp join sp.subscription s join s.orgRelations ooo where ooo.org = :ctx and sp.pkg = oo.pkg) or exists(select oo.id from IssueEntitlement ie join ie.subscription s join s.orgRelations ooo join ie.tipp tipp where oo.tipp = tipp and oo.org = :org and ooo.org = :ctx)', [ctx: result.institution, org: result.orgInstance]).each { OrgRole oo ->
+                if (oo.pkg)
+                    packages << oo.pkg
+                else if (oo.tipp)
+                    packages << oo.tipp.pkg
+            }
+            result.packages = packages.sort { Package pkg -> pkg.sortname }
+            //may become a performance bottleneck - SUBJECT OF OBSERVATION!
+            String consortialFilter = ''
+            if (result.institution.getCustomerType() == 'ORG_CONSORTIUM')
+                consortialFilter = " and s.instanceOf is null"
+            result.subLinks = OrgRole.executeQuery('select distinct(oo.sub) from OrgRole oo join oo.sub s where oo.org = :org and exists(select ooo from OrgRole ooo where s = ooo.sub and ooo.org = :ctx)'+consortialFilter+' order by s.name, s.startDate, s.endDate',[org: result.orgInstance, ctx: result.institution])
+        }
 
         prf.setBenchmark('createdBy and legallyObligedBy')
 

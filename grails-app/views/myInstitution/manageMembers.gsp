@@ -77,8 +77,8 @@
 
 
         <g:if test="${members && editable}">
-            <input type="submit" class="ui button"
-                   data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.function", args: [message(code:'members.confirmDelete')])}"
+            <input type="submit" class="ui button js-open-confirm-modal"
+                   data-confirm-tokenMsg="${message(code:'members.confirmDelete')}"
                    data-confirm-term-how="delete" value="${message(code: 'default.button.revoke.label')}"/>
         </g:if>
     </g:form>
