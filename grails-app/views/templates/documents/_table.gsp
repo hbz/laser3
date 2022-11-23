@@ -1,4 +1,4 @@
-<%@page import="org.apache.commons.lang3.RandomStringUtils; de.laser.storage.RDStore; de.laser.*; de.laser.interfaces.CalculatedType" %>
+<%@page import="de.laser.storage.RDConstants; org.apache.commons.lang3.RandomStringUtils; de.laser.storage.RDStore; de.laser.*; de.laser.interfaces.CalculatedType" %>
 <laser:serviceInjection/>
 <%
     boolean parentAtChild = false
@@ -16,7 +16,7 @@
         }
     }
 
-    List<String> colWide = (controllerName == 'myInstitution') ? ['one', 'five', 'two', 'three', 'three', 'two'] : ['eight', 'three', 'three', 'two']
+    List<String> colWide = (controllerName == 'myInstitution') ? ['one', /*'one',*/ 'five', 'two', 'three', 'three', 'two'] : ['one',  'seven', 'three', 'three', 'two']
     int cwCounter = 0
     int trCounter = 1
 
@@ -27,9 +27,10 @@
     <table class="ui celled la-js-responsive-table la-table table documents-table-${randomId}">
         <thead>
             <tr>
-                <g:if test="${controllerName == 'myInstitution'}">
-                    <th scope="col" class="${colWide[cwCounter++]} wide" rowspan="2">${message(code:'sidewide.number')}</th>
-                </g:if>
+                <th scope="col" class="${colWide[cwCounter++]} center aligned wide" rowspan="2">#</th>
+%{--                <g:if test="${controllerName == 'myInstitution'}">--}%
+%{--                    <th scope="col" class="${colWide[cwCounter++]} wide" rowspan="2">${message(code:'sidewide.number')}</th>--}%
+%{--                </g:if>--}%
                 <th scope="col" class="${colWide[cwCounter++]} wide la-smaller-table-head">${message(code:'template.addDocument.name')}</th>
                 <th scope="col" class="${colWide[cwCounter++]} wide" rowspan="2">${message(code:'license.docs.table.type')}</th>
                 <th scope="col" class="${colWide[cwCounter++]} wide" rowspan="2">${message(code:'template.addDocument.confidentiality')}</th>
@@ -105,11 +106,17 @@
                         securityWorkaroundList.add(docctx as DocContext)
                     %>
                     <tr>
-                        <g:if test="${controllerName == 'myInstitution'}">
-                            <td class="center aligned">
-                                ${trCounter++}
-                            </td>
-                        </g:if>
+                        <td class="center aligned">
+                            <g:if test="${docctx.owner.owner.id == contextService.getOrg().id}">
+                                <g:set var="blukEnabled" value="${true}" />
+                                <g:checkBox id="bulk_doc_${docctx.owner.id}" name="bulk_doc" value="${docctx.owner.id}" checked="false"/>
+                            </g:if>
+                        </td>
+%{--                        <g:if test="${controllerName == 'myInstitution'}">--}%
+%{--                            <td class="center aligned">--}%
+%{--                                ${trCounter++}--}%
+%{--                            </td>--}%
+%{--                        </g:if>--}%
                         <td>
                             <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}" />
                             <strong>
@@ -199,10 +206,59 @@
                 </g:if>
             </g:each>
         </tbody>
+        <g:if test="${blukEnabled}">
+            <tfoot>
+                <tr>
+                    <td class="center aligned">
+                        <g:checkBox name="bulk_selectionToggler" id="bulk_selectionToggler" checked="false"/>
+                    </td>
+%{--                    <g:if test="${controllerName == 'myInstitution'}">--}%
+%{--                        <td></td>--}%
+%{--                    </g:if>--}%
+                    <td></td>
+                    <td></td>
+                    <td>
+                        <form id="bulk_form" class="ui form" method="POST">
+                            <ui:select class="ui dropdown search"
+                                       name="bulk_docConf" id="bulk_docConf"
+                                       from="${RefdataCategory.getAllRefdataValues(RDConstants.DOCUMENT_CONFIDENTIALITY)}"
+                                       optionKey="id"
+                                       optionValue="value"
+                            />
+                            <input name="bulk_docIdList" id="bulk_docIdList" type="hidden" value="" />
+                            <input name="bulk_op" type="hidden" value="${RDConstants.DOCUMENT_CONFIDENTIALITY}" />
+                        </form>
+                    </td>
+                    <g:if test="${controllerName == 'myInstitution'}">
+                        <td></td>
+                    </g:if>
+                    <td>
+                        <button id="bulk_submit" class="ui button primary">Übernehmen</button>
+                    </td>
+                </tr>
+            </tfoot>
+        </g:if>
     </table>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-    docs.init('.documents-table-${randomId}');
+    docs.init('.documents-table-${randomId}')
+
+    $('#bulk_submit').click (function () {
+        let ids = []
+        $('input[name=bulk_doc]:checked').each( function (i, e) {
+            ids.push($(e).attr ('value'))
+        })
+        $('#bulk_docIdList').attr ('value', ids.join (','))
+        $('#bulk_form').submit()
+    })
+
+    $('#bulk_selectionToggler').click (function () {
+        if ($(this).prop ('checked')) {
+            $('input[name=bulk_doc]').prop ('checked', true)
+        } else {
+            $('input[name=bulk_doc]').prop ('checked', false)
+        }
+    })
 </laser:script>
 
 <%-- a form within a form is not permitted --%>

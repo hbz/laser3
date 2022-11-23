@@ -1077,6 +1077,10 @@ class OrganisationController  {
             response.sendError(401)
             return
         }
+
+        if (params.bulk_op) {
+            docstoreService.bulkDocOperation(params, result, flash)
+        }
         result
     }
 

@@ -24,6 +24,7 @@ class CustomWebSocketMessageBrokerConfig implements WebSocketMessageBrokerConfig
     @Override
     void configureMessageBroker(MessageBrokerRegistry messageBrokerRegistry) {
         messageBrokerRegistry.enableSimpleBroker( WS_TOPIC )
+        //messageBrokerRegistry.enableStompBrokerRelay( WS_TOPIC )
         messageBrokerRegistry.setApplicationDestinationPrefixes( WS_APP )
         // messageBrokerRegistry.setUserDestinationPrefix( '/user' )
     }
