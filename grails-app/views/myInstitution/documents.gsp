@@ -8,9 +8,10 @@
     <ui:controlButtons>
       <laser:render template="actions" />
     </ui:controlButtons>
-    <ui:messages data="${flash}" />
 
     <ui:h1HeaderWithIcon message="menu.my.documents" />
+
+    <ui:messages data="${flash}" />
 
     <%-- does not work as it is mapped upon a DomainClass attribute <laser:render template="/templates/documents/filter" model="${[availableUsers:availableUsers]}"/>--%>
 
