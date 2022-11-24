@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4604    24.11.2022  dev     3.0         David   Feature     Workflow: Dokumentenprüfung
+
 4598    23.11.2022  dev     3.0         Andreas Feature     Umstellungen in der Organisationssicht
 
 4563    23.11.2022  dev     3.0         Andreas Bug         Sicherheitsabfrage löste gar nicht aus
