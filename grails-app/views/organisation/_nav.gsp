@@ -52,7 +52,7 @@
         </g:elseif>--%>
         <g:else>
             <%-- this kind of check is necessary because it should not be displayed at all if user has no specRoles --%>
-            <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_EDITOR">
+            <sec:ifAnyGranted roles="ROLE_ADMIN">
                 <ui:subNavItem controller="organisation" action="users" params="${[id: orgInstance.id]}" message="org.nav.users"/>
             </sec:ifAnyGranted>
         </g:else>
@@ -64,7 +64,7 @@
                     org: orgInstance,
                     comboPerm: "ORG_CONSORTIUM",
                     comboAffiliation: "INST_ADM",
-                    specRoles: "ROLE_ORG_EDITOR, ROLE_ADMIN"
+                    specRoles: "ROLE_ADMIN"
         ])}">
             <ui:subNavItem controller="organisation" action="settings" params="${[id: orgInstance.id]}" message="org.nav.options"/>
         </g:elseif>

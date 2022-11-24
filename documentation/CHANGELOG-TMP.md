@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+2976    24.11.2022  dev     3.0         David   Feature     Überprüfung verwaister Nutzerrollen
+
 4604    24.11.2022  dev     3.0         David   Feature     Workflow: Dokumentenprüfung
 
 --      24.11.2022  dev     3.0         Andreas Feature     Default-Status bei EZB-Lizenzabruf auf Aktuell setzen

@@ -9,7 +9,7 @@
     <ui:controlButtons>
 
         <%
-            editable = (editable && accessService.checkPerm('ORG_INST')) || contextService.getUser()?.hasRole('ROLE_ADMIN,ROLE_ORG_EDITOR')
+            editable = (editable && accessService.checkPerm('ORG_INST')) || contextService.getUser()?.hasRole('ROLE_ADMIN')
         %>
         <g:if test="${editable}">
             <laser:render template="actions" />
