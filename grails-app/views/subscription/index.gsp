@@ -955,8 +955,6 @@
 
     <g:if test="${params.asAt && params.asAt.length() > 0}">$(function() { document.body.style.background = "#fcf8e3"; });</g:if>
 
-    //$('.ui.accordion.la-accordion-showMore').accordion().on('click', function(e) {
-
     $("[data-ajaxTippId]").accordion().on('click', function(e) {
             var tippID = $(this).attr('data-ajaxTippId');
             var ieID = $(this).attr('data-ajaxIeId');
