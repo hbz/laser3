@@ -7,19 +7,47 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-3035    21.11.2022  dev     3.0         Moe     Feature     Neuer Typ Zugangskonfiguration: Maildomänen
+4596    24.11.2022  rc-2.3  2.3.12      Moe     Bug         Titel hinzufügen - KBART hochladen
+
+4604    24.11.2022  dev     3.0         David   Feature     Workflow: Dokumentenprüfung
+
+2976    24.11.2022  dev     3.0         David   Feature     Überprüfung verwaister Nutzerrollen
+
+--      24.11.2022  dev     3.0         Andreas Feature     Default-Status bei EZB-Lizenzabruf auf Aktuell setzen
+
+4598    23.11.2022  dev     3.0         Andreas Feature     Umstellungen in der Organisationssicht
+
+4563    23.11.2022  dev     3.0         Andreas Bug         Sicherheitsabfrage löste gar nicht aus
+
+4592    22.11.2022  rc-2.3  2.3.12      Moe     Bug         Titelumfrage: Titelauswahl per tsv blockt keine Bestandstitel
+
+4535    23.11.2022  dev     3.0         Andreas Feature     Bezeichner korrigiert
+
+4551    22.11.2022  dev     3.0         Andreas Bug         Sicherheitsabfrage löste falsch aus
+
+4599    21.11.2022  dev     3.0         David   Bug         Spotlight- und Suche: Probleme mit Hibernate Proxies
+
+4594    21.11.2022  dev     3.0         David   Feature     Refactoring: dateCreated nullable:true
 
 4588    21.11.2022  dev     3.0         Andreas Feature     Neues Feld "Notizen" für Coverages
 
 4557    21.11.2022  dev     3.0         Andreas Bug         Aktualisierungsroutine bei Anbieterkontakten behoben
 
+4546    21.11.2022  dev     3.0         Andreas Bug         kopierte Kosten konnten durch die Konsortialstelle exportiert werden
+
+4491    21.11.2022  dev     3.0         Andreas Bug         Rechteprüfung bei Einrichtungssichten korrigiert
+
 4428    21.11.2022  dev     3.0         Andreas Feature     neuer Referenzwert "50" für Simuser-Zahl aufgenommen
+
+3035    21.11.2022  dev     3.0         Moe     Feature     Neuer Typ Zugangskonfiguration: Maildomänen
 
 4368    16.11.2022  dev     3.0         Moe     Feature     Preise sortieren in Umfragen
 
 4369    16.11.2022  dev     3.0         Moe     Feature     Umfrage: Filter für Nicht Lizenzteilnehmer bauen
 
 4552    16.11.2022  dev     3.0         Andreas Feature     neue Details auf der Paketdetailsicht
+
+4589    14.11.2022  rc-2.3  2.3.12      Moe     Bug         Dashboard Benachrichtung-Mail hat falschen Link drin
 
 --      14.11.2022  rc-2.3  2.3.11      Moe     Feature     Title-Auswahl mit Title-Url
 

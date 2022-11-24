@@ -1239,6 +1239,10 @@ join sub.orgRelations or_sub where
     })
     Map documents() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
+
+        if (params.bulk_op) {
+            docstoreService.bulkDocOperation(params, result, flash)
+        }
         result
     }
 
@@ -2488,8 +2492,8 @@ join sub.orgRelations or_sub where
      * Call for listing institutions eligible to be attached to or detached from the context consortium
      * @return a list of institutions
      */
-    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_EDITOR",specRole="ROLE_ADMIN, ROLE_ORG_EDITOR", wtc = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM","INST_EDITOR","ROLE_ADMIN, ROLE_ORG_EDITOR") })
+    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_EDITOR",specRole="ROLE_ADMIN", wtc = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM","INST_EDITOR","ROLE_ADMIN") })
     def addMembers() {
         Combo.withTransaction {
             Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2788,9 +2792,9 @@ join sub.orgRelations or_sub where
      * The result may be filtered by organisational and subscription parameters
      * @return the list of consortial member institutions
      */
-    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR", wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN", wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM","INST_USER","ROLE_ADMIN,ROLE_ORG_EDITOR")
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM","INST_USER","ROLE_ADMIN")
     })
     def manageMembers() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -3046,7 +3050,9 @@ join sub.orgRelations or_sub where
                 cell = row.createCell(cellnum++)
                 if(result.linkedLicenses.get(subCons)) {
                     List<String> references = result.linkedLicenses.get(subCons).collect { License l -> l.reference }
-                    cell.setCellValue(references.join("\n"))
+                    if(references)
+                        cell.setCellValue(references.join("\n"))
+                    else cell.setCellValue(" ")
                 }
                 //packages
                 log.debug("insert package name")
@@ -3056,7 +3062,9 @@ join sub.orgRelations or_sub where
                 subCons.packages.each { subPkg ->
                     packageNames << subPkg.pkg.name
                 }
-                cell.setCellValue(packageNames.join("\n"))
+                if(packageNames)
+                    cell.setCellValue(packageNames.join("\n"))
+                else cell.setCellValue(" ")
                 //provider
                 log.debug("insert provider name")
                 cell = row.createCell(cellnum++)
@@ -3066,7 +3074,9 @@ join sub.orgRelations or_sub where
                     log.debug("Getting provider ${p.org}")
                     providerNames << p.org.name
                 }
-                cell.setCellValue(providerNames.join("\n"))
+                if(providerNames)
+                    cell.setCellValue(providerNames.join("\n"))
+                else cell.setCellValue(" ")
                 //running time from / to
                 log.debug("insert running times")
                 cell = row.createCell(cellnum++)
@@ -3132,6 +3142,7 @@ join sub.orgRelations or_sub where
             }
             for(int i = 0;i < titles.size();i++) {
                 try {
+                    sheet.trackColumnForAutoSizing(i)
                     sheet.autoSizeColumn(i)
                 }
                 catch (NullPointerException e) {

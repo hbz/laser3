@@ -8,6 +8,10 @@ import org.springframework.web.context.request.RequestAttributes
 import org.springframework.web.context.request.RequestContextHolder
 
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import static java.time.temporal.TemporalAdjusters.firstDayOfYear
+import static java.time.temporal.TemporalAdjusters.lastDayOfYear
 
 /**
  * This class is a toolbox for checkings and validations during the API usage
@@ -69,22 +73,17 @@ class ApiToolkit {
     }
 
     static String getStartOfYearRing() {
-        Calendar calendar = GregorianCalendar.getInstance()
-        calendar.set(Calendar.DAY_OF_YEAR, 1)
-        calendar.set(Calendar.HOUR, 0)
-        calendar.set(Calendar.MINUTE, 0)
-        calendar.set(Calendar.SECOND, 0)
-        calendar.format(DATE_TIME_PATTERN)
+        LocalDateTime ldt = LocalDateTime.now()
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN)
+        ldt.with(firstDayOfYear())
+        dateTimeFormatter.format(ldt)
     }
 
     static String getEndOfYearRing() {
-        Calendar calendar = GregorianCalendar.getInstance()
-        calendar.set(Calendar.MONTH, 11) //java calendar months range between 0-11
-        calendar.set(Calendar.DAY_OF_MONTH, 31)
-        calendar.set(Calendar.HOUR, 0)
-        calendar.set(Calendar.MINUTE, 0)
-        calendar.set(Calendar.SECOND, 0)
-        calendar.format(DATE_TIME_PATTERN)
+        LocalDateTime ldt = LocalDateTime.now()
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN)
+        ldt.with(lastDayOfYear())
+        dateTimeFormatter.format(ldt)
     }
 
     /**

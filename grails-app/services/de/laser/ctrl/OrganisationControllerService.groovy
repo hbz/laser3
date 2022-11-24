@@ -221,7 +221,7 @@ class OrganisationControllerService {
                                       contextOrg: org,
                                       inContextOrg:true,
                                       institutionalView:false,
-                                      isGrantedOrgRoleAdminOrOrgEditor: SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR'),
+                                      isGrantedOrgRoleAdminOrOrgEditor: SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'),
                                       isGrantedOrgRoleAdmin: SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN'),
                                       contextCustomerType:org.getCustomerType()]
 
@@ -257,10 +257,15 @@ class OrganisationControllerService {
             if (checkCombo && checkCombo.type == RDStore.COMBO_TYPE_CONSORTIUM) {
                 result.institutionalView = true
             }
+            else if(!checkCombo) {
+                checkCombo = Combo.findByToOrgAndFromOrgAndType(result.orgInstance, org, RDStore.COMBO_TYPE_CONSORTIUM)
+                if(checkCombo)
+                    result.consortialView = true
+            }
             //restrictions hold if viewed org is not the context org
-            if (!result.inContextOrg && !accessService.checkPerm("ORG_CONSORTIUM") && !SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN, ROLE_ORG_EDITOR")) {
-                //restrictions further concern only single users, not consortia
-                if (accessService.checkPerm("ORG_INST") && result.orgInstance.getCustomerType() == "ORG_INST") {
+            if (!result.inContextOrg && !accessService.checkPerm("ORG_CONSORTIUM") && !SpringSecurityUtils.ifAnyGranted("ROLE_ADMIN")) {
+                //restrictions further concern only single users or consortium members, not consortia
+                if (!accessService.checkPerm("ORG_CONSORTIUM") && result.orgInstance.getCustomerType() in ["ORG_BASIC_MEMBER","ORG_INST"]) {
                     return null
                 }
             }

@@ -134,6 +134,10 @@ class DataloadService {
                 Map result = [:]
 
                 result._id = org.globalUID
+                if (!result._id) {
+                    return result
+                }
+
                 result.priority = 30
                 result.dbId = org.id
 
@@ -201,6 +205,10 @@ class DataloadService {
                     }
 
                     result._id = tipp.globalUID
+                    if (!result._id) {
+                        return result
+                    }
+
                     result.priority = 20
                     result.dbId = tipp.id
 
@@ -253,6 +261,10 @@ class DataloadService {
                 Map result = [:]
 
                 result._id = pkg.globalUID
+                if (!result._id) {
+                    return result
+                }
+
                 result.priority = 30
                 result.dbId = pkg.id
                 result.gokbId = pkg.gokbId
@@ -302,6 +314,10 @@ class DataloadService {
                 Map result = [:]
 
                 result._id = plat.globalUID
+                if (!result._id) {
+                    return result
+                }
+
                 result.priority = 30
                 result.dbId = plat.id
                 result.gokbId = plat.gokbId
@@ -334,6 +350,10 @@ class DataloadService {
                 Map result = [:]
 
                 result._id = lic.globalUID
+                if (!result._id) {
+                    return result
+                }
+
                 result.priority = 50
                 result.dbId = lic.id
                 result.guid = lic.globalUID ?: ''
@@ -400,6 +420,10 @@ class DataloadService {
                 Map result = [:]
 
                 result._id = sub.globalUID
+                if (!result._id) {
+                    return result
+                }
+
                 result.priority = 70
                 result.dbId = sub.id
                 result.guid = sub.globalUID ?: ''
@@ -482,6 +506,10 @@ class DataloadService {
                 Map result = [:]
 
                 result._id = surveyConfig.getClass().getSimpleName().toLowerCase() + ":" + surveyConfig.id
+                if (!result._id) {
+                    return result
+                }
+
                 result.priority = 60
                 result.dbId = surveyConfig.id
                 result.name = surveyConfig.getSurveyName()
@@ -521,6 +549,10 @@ class DataloadService {
                 Map result = [:]
 
                 result._id = surOrg.getClass().getSimpleName().toLowerCase() + ":" + surOrg.id
+                if (!result._id) {
+                    return result
+                }
+
                 result.priority = 60
                 result.dbId = surOrg.surveyConfig.id
                 result.name = surOrg.surveyConfig.getSurveyName()
@@ -558,6 +590,10 @@ class DataloadService {
                 Map result = [:]
 
                 result._id = task.getClass().getSimpleName().toLowerCase() + ":" + task.id
+                if (!result._id) {
+                    return result
+                }
+
                 result.priority = 40
                 result.dbId = task.id
                 result.name = task.title
@@ -609,6 +645,10 @@ class DataloadService {
                 Map result = [:]
 
                 result._id = docCon.getClass().getSimpleName().toLowerCase() + ":" + docCon.id
+                if (!result._id) {
+                    return result
+                }
+
                 result.priority = 40
                 result.dbId = docCon.id
                 result.name = docCon.owner?.title ?: ''
@@ -658,6 +698,10 @@ class DataloadService {
                 Map result = [:]
 
                 result._id = ie.globalUID
+                if (!result._id) {
+                    return result
+                }
+
                 result.priority = 45
                 result.dbId = ie.id
                 result.name = ie.tipp?.name
@@ -712,6 +756,10 @@ class DataloadService {
                 Map result = [:]
 
                 result._id = subProp.getClass().getSimpleName().toLowerCase() + ":" + subProp.id
+                if (!result._id) {
+                    return result
+                }
+
                 result.priority = 45
                 result.dbId = subProp.id
                 result.name = subProp.type?.name
@@ -771,6 +819,10 @@ class DataloadService {
                 Map result = [:]
 
                 result._id = licProp.getClass().getSimpleName().toLowerCase() + ":" + licProp.id
+                if (!result._id) {
+                    return result
+                }
+
                 result.priority = 45
                 result.dbId = licProp.id
                 result.name = licProp.type?.name
@@ -836,8 +888,11 @@ class DataloadService {
         RestHighLevelClient esclient = ESWrapperService.getNewClient(true)
         Map es_indices = ESWrapperService.ES_Indices
 
-        long total = 0, startingTimestamp = 0, bulkMaxTimestamp = 0
-        BigDecimal mb = 0, totalMb = 0
+        long total = 0
+        long startingTimestamp = 0
+        long bulkMaxTimestamp = 0
+        BigDecimal mb = 0
+        BigDecimal totalMb = 0
 
         if (! FTControl.findByDomainClassNameAndActivity(domainClass.name, 'ESIndex')) {
             (new FTControl(domainClassName: domainClass.name, activity: 'ESIndex', lastTimestamp: 0, active: true, esElements: 0, dbElements: 0)).save()
@@ -852,6 +907,7 @@ class DataloadService {
                     if (esclient && es_indices && es_indices.get(domainClass.simpleName)) {
                         Date from = new Date(ftControl.lastTimestamp)
                         List<Long> idList = []
+                        List<Long> ignoredObjectIdList = []
 
                         if (ClassUtils.getAllInterfaces(domainClass).contains(CalculatedLastUpdated)) {
                             idList = domainClass.executeQuery(
@@ -882,12 +938,12 @@ class DataloadService {
                                 }
                             }
 
-                            bulks.eachWithIndex { List bulk, int i ->
+                            bulks.eachWithIndex { List<Long> bulk, int i ->
                                 for (domain_id in bulk) {
                                     Object r = domainClass.get(domain_id)
                                     Map idx_record = recgen_closure(r) as Map
                                     if (idx_record['_id'] == null) {
-                                        log.warn("+++++ Record without an ID for: ${r} +++++")
+                                        ignoredObjectIdList.add(domain_id)
                                         continue
                                     }
 
@@ -910,22 +966,32 @@ class DataloadService {
                                 mb = (bulkRequest.estimatedSizeInBytes()/1024/1024)
                                 totalMb = totalMb + mb
 
-                                BulkResponse bulkResponse = esclient.bulk(bulkRequest, RequestOptions.DEFAULT)
+                                if (bulkRequest.numberOfActions()) {
+                                    BulkResponse bulkResponse = esclient.bulk(bulkRequest, RequestOptions.DEFAULT)
 
-                                if (bulkResponse.hasFailures()) {
-                                    for (BulkItemResponse bulkItemResponse : bulkResponse) {
-                                        if (bulkItemResponse.isFailed()) {
-                                            BulkItemResponse.Failure failure = bulkItemResponse.getFailure()
-                                            log.warn("${logPrefix} - (#1) bulk operation failure -> ${failure}")
+                                    if (bulkResponse.hasFailures()) {
+                                        for (BulkItemResponse bulkItemResponse : bulkResponse) {
+                                            if (bulkItemResponse.isFailed()) {
+                                                BulkItemResponse.Failure failure = bulkItemResponse.getFailure()
+                                                log.warn("${logPrefix} - (#1) bulk operation failure -> ${failure}")
+                                            }
                                         }
                                     }
+                                    log.debug("${logPrefix} - processed ${total} / ignored ${ignoredObjectIdList.size()} from ${todoList.size() - (total + ignoredObjectIdList.size())} records; bulkSize ${mb.round(2)}MB")
+                                }
+                                else {
+                                    log.debug( "${logPrefix} - ignored empty bulk")
                                 }
 
-                                log.debug("${logPrefix} - processed ${total} / ${todoList.size() - total} records; bulkSize ${mb.round(2)}MB")
                                 bulkRequest = new BulkRequest()
                             } // each
 
-                            log.debug("${logPrefix} - totally processed ${total} records; ${totalMb.round(2)}MB")
+                            if (total) {
+                                log.debug("${logPrefix} - totally processed ${total} records; ${totalMb.round(2)}MB")
+                            }
+                            if (ignoredObjectIdList) {
+                                log.info("${logPrefix} - but ignored ${ignoredObjectIdList.size()} records because of missing _id")
+                            }
 
                             if (idList.size() > BULK_LIMIT) {
                                 log.debug("${logPrefix} - increasing last_timestamp to [${new Date(bulkMaxTimestamp)}]")
@@ -1073,7 +1139,7 @@ class DataloadService {
                             int countDB = domainClass.count()
 
                             if (countDB != countIndex) {
-                                log.debug("Element comparison: DB <-> ES ( ${ftControl.domainClassName} / ${indexName} ) : +++++ DIFF found +++++ DB Results = ${countDB}, ES Results = ${countIndex} +++++")
+                                log.debug("Element comparison: DB <-> ES ( ${ftControl.domainClassName} / ${indexName} ) : +++++ DIFF found: DB = ${countDB}, ES = ${countIndex} +++++")
                                 //ft.lastTimestamp = 0
                             }
                             ftControl.dbElements = countDB
@@ -1126,7 +1192,7 @@ class DataloadService {
                             int countDB = domainClass.count()
 
                             if (countDB != countIndex) {
-                                log.debug("Element comparison: DB <-> ES  ( ${indexName} ): +++++ DIFF found +++++ DB Results = ${countDB}, ES Results = ${countIndex} +++++")
+                                log.debug("Element comparison: DB <-> ES  ( ${indexName} ): +++++ DIFF found: DB = ${countDB}, ES = ${countIndex} +++++")
                                 //ft.lastTimestamp = 0
                             }
                             ft.dbElements = countDB

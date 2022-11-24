@@ -58,6 +58,9 @@ class UiTagLib {
         if (attrs.total) {
             out << ui.totalNumber([total: attrs.total])
         }
+        if (attrs.existsWekbRecord == true) {
+            out << ' <i class="ui handshake icon la-popup-tooltip" data-content="'+message(code:'org.isWekbCurated.header.label')+'"></i>'
+        }
         if ( body ) {
             out << body()
         }

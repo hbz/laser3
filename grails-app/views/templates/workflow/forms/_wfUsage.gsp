@@ -330,7 +330,10 @@
                 $('[id^=wfUploadFile]').on('change', function(e) {
                     var id = $(this).attr('id').split('_')[2];
                     var name = e.target.files[0].name;
-                    $('#wfUploadTitle_' + id).val(name);
+
+                    if (! $('#wfUploadTitle_' + id).val() || ($('#wfUploadTitle_' + id).val() == $('#wfUploadFile_placeholder_' + id).val())) {
+                        $('#wfUploadTitle_' + id).val(name);
+                    }
                     $('#wfUploadFile_placeholder_' + id).val(name);
                 });
                 $('[id^=wfUploadFile_button]').click( function() {

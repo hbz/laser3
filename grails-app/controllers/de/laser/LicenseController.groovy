@@ -676,6 +676,10 @@ class LicenseController {
         if (!result) {
             response.sendError( HttpStatus.SC_FORBIDDEN ); return
         }
+
+        if (params.bulk_op) {
+            docstoreService.bulkDocOperation(params, result, flash)
+        }
         result
     }
 

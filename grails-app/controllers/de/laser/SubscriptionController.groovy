@@ -339,7 +339,13 @@ class SubscriptionController {
             response.sendError(401)
             return
         }
-        else ctrlResult.result
+        else {
+            if (params.bulk_op) {
+                docstoreService.bulkDocOperation(params, ctrlResult.result as Map, flash)
+            }
+
+            ctrlResult.result
+        }
     }
 
     /**

@@ -19,12 +19,12 @@
 
         <ui:tabs actionName="settings">
             <ui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'general']" tab="general" text="${message(code: 'org.setting.tab.general')}"/>
-            <g:if test="${accessService.checkPermX('FAKE,ORG_INST,ORG_CONSORTIUM', 'ROLE_ADMIN,ROLE_ORG_EDITOR')}">
+            <g:if test="${accessService.checkPermX('FAKE,ORG_INST,ORG_CONSORTIUM', 'ROLE_ADMIN')}">
                 <ui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'api']" tab="api" text="${message(code: 'org.setting.tab.api')}"/>
             </g:if>
             <ui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'ezb']" tab="ezb" text="${message(code: 'org.setting.tab.ezb')}"/>
             <ui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'natstat']" tab="natstat" text="${message(code: 'org.setting.tab.natstat')}"/>
-            <g:if test="${accessService.checkPermX('ORG_INST,ORG_CONSORTIUM', 'ROLE_ADMIN,ROLE_ORG_EDITOR')}">
+            <g:if test="${accessService.checkPermX('ORG_INST,ORG_CONSORTIUM', 'ROLE_ADMIN')}">
                 <ui:tabsItem controller="org" action="settings" params="[id: orgInstance.id, tab: 'oamonitor']" tab="oamonitor" text="${message(code: 'org.setting.tab.oamonitor')}"/>
             </g:if>
         </ui:tabs>
@@ -156,7 +156,7 @@
                                             <g:else>
 
                                                 <g:if test="${OrgSetting.KEYS.GASCO_ENTRY == os.key}">
-                                                    <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')}">
+                                                    <g:if test="${SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')}">
                                                         <ui:xEditableRefData owner="${os}" field="rdValue" config="${os.key.rdc}" />
                                                     </g:if>
                                                     <g:else>
