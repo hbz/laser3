@@ -220,7 +220,7 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
         dateCreated (nullable: true)
     }
 
-    static final Pattern alphanum = Pattern.compile("\\p{Punct}|\\p{Cntrl}")
+    static final Pattern alphanum = Pattern.compile("\\p{Punct}|\\p{Cntrl}|( ?« ?)+|( ?» ?)+")
 
     @Override
     def beforeUpdate(){
@@ -259,7 +259,12 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
      */
     void generateSortTitle() {
         if ( name ) {
-            sortname = Normalizer.normalize(name, Normalizer.Form.NFKD).trim().toLowerCase()
+            sortname = name.replaceAll('&',' and ')
+            sortname = sortname.trim()
+            sortname = sortname.toLowerCase()
+            sortname = alphanum.matcher(sortname).replaceAll("")
+            sortname = sortname.replaceAll("\\s+", " ")
+            sortname = asciify(sortname)
             sortname = sortname.replaceFirst('^copy of ', '')
             sortname = sortname.replaceFirst('^the ', '')
             sortname = sortname.replaceFirst('^a ', '')
