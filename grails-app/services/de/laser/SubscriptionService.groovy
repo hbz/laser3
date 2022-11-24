@@ -15,10 +15,9 @@ import de.laser.properties.PropertyDefinition
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.properties.PropertyDefinitionGroupBinding
 import de.laser.remote.ApiSource
-import de.laser.stats.Counter4Report
-import de.laser.stats.Counter5Report
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
+import de.laser.survey.SurveyConfig
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
