@@ -1239,6 +1239,10 @@ join sub.orgRelations or_sub where
     })
     Map documents() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
+
+        if (params.bulk_op) {
+            docstoreService.bulkDocOperation(params, result, flash)
+        }
         result
     }
 
