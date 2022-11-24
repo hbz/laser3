@@ -1804,6 +1804,7 @@ class SubscriptionControllerService {
             result.pendingChanges = pendingChanges*/
 
             params.ieAcceptStatusFixed = true
+            params.status = params.status ?: RDStore.TIPP_STATUS_CURRENT.id.toString()
             def query = filterService.getIssueEntitlementQuery(params, result.subscription)
             result.filterSet = query.filterSet
             Set<Long> entitlements = IssueEntitlement.executeQuery("select ie.id " + query.query, query.queryParams)
