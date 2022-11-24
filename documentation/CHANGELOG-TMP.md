@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4607    24.11.2022  dev     3.0         David   Bug         Umfrage: 'Neues Dokument' funktioniert nicht mehr
+
 2976    24.11.2022  dev     3.0         David   Feature     Überprüfung verwaister Nutzerrollen
 
 4604    24.11.2022  dev     3.0         David   Feature     Workflow: Dokumentenprüfung

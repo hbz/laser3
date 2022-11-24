@@ -37,12 +37,16 @@ class SystemActivityProfiler {
     }
 
     static void addActiveUser(User user) {
-        EhcacheWrapper cache = BeanStore.getCacheService().getTTL1800Cache( CACHE_KEY_ACTIVE_USER )
-        cache.put(user.id.encodeAsMD5() as String, System.currentTimeMillis())
+        if (user) {
+            EhcacheWrapper cache = BeanStore.getCacheService().getTTL1800Cache(CACHE_KEY_ACTIVE_USER)
+            cache.put(user.id.encodeAsMD5() as String, System.currentTimeMillis())
+        }
     }
     static void removeActiveUser(User user) {
-        EhcacheWrapper cache = BeanStore.getCacheService().getTTL1800Cache( CACHE_KEY_ACTIVE_USER )
-        cache.remove(user.id.encodeAsMD5() as String)
+        if (user) {
+            EhcacheWrapper cache = BeanStore.getCacheService().getTTL1800Cache(CACHE_KEY_ACTIVE_USER)
+            cache.remove(user.id.encodeAsMD5() as String)
+        }
     }
 
     static List<String> getActiveUsers(long ms) {
