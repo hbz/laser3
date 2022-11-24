@@ -1,4 +1,4 @@
-<%@ page import="de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Org; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo" %>
+<%@ page import="de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Org; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo" %>
 
 <laser:htmlStart message="menu.institutions.org_info" serviceInjection="true" />
 
@@ -14,14 +14,14 @@
 
 
 <laser:render template="breadcrumb"
-          model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView]}"/>
+          model="${[orgInstance: orgInstance, inContextOrg: inContextOrg, institutionalView: institutionalView, consortialView: consortialView]}"/>
 
 
 <ui:controlButtons>
     <laser:render template="actions" model="${[org: orgInstance, user: user]}"/>
 </ui:controlButtons>
 
-<ui:h1HeaderWithIcon text="${orgInstance.name}" />
+<ui:h1HeaderWithIcon text="${orgInstance.name}" existsWekbRecord="${orgInstanceRecord != null}" />
 
 <g:if test="${missing.size() > 0}">
     <div class="ui icon message warning">
@@ -105,7 +105,7 @@
                             <br />&nbsp<br />&nbsp<br />
                         </dd>
                     </dl>
-                    <g:if test="${!isProviderOrAgency}">
+                    <g:if test="${orgInstance.getCustomerType() == 'ORG_INST'}">
                         <dl>
                             <dt>
                                 <g:message code="org.linkResolverBase.label"/>
@@ -131,8 +131,6 @@
                                 <ui:xEditable owner="${orgInstance}" field="legalPatronName"/>
                             </dd>
                         </dl>
-                    </g:if>
-                    <g:if test="${ !isProviderOrAgency}">
                         <dl>
                             <dt>
                                 <g:message code="org.urlGov.label"/>
@@ -152,7 +150,7 @@
                 </div>
             </div><!-- .card -->
 
-            <g:if test="${!isProviderOrAgency}">
+            <g:if test="${orgInstance.getCustomerType() == 'ORG_INST'}">
                 <div class="ui card">
                     <div class="content">
                         <dl>
@@ -238,29 +236,30 @@
                 </div><!-- .card -->
             </g:if>
 
-            <div class="ui card">
-                <div class="content">
-                    <h2 class="ui header"><g:message code="org.retirementLinking.label"/></h2>
-                    <g:if test="${links}">
-                        <table class="ui three column table">
-                            <g:each in="${links}" var="row">
-                                <%
-                                    String[] linkTypes = RDStore.COMBO_TYPE_FOLLOWS.getI10n('value').split('\\|')
-                                    int perspectiveIndex
-                                    Org pair
-                                    if(orgInstance == row.fromOrg) {
-                                        perspectiveIndex = 0
-                                        pair = row.toOrg
-                                    }
-                                    else if(orgInstance == row.toOrg) {
-                                        perspectiveIndex = 1
-                                        pair = row.fromOrg
-                                    }
-                                %>
-                                <g:if test="${pair != null}">
-                                    <th scope="row" class="control-label">${linkTypes[perspectiveIndex]}</th>
-                                    <td><g:link action="show" id="${pair.id}">${pair.name}</g:link></td>
-                                    <td class="right aligned">
+            <g:if test="${links || isGrantedOrgRoleAdminOrOrgEditor}">
+                <div class="ui card">
+                    <div class="content">
+                        <h2 class="ui header"><g:message code="org.retirementLinking.label"/></h2>
+                        <g:if test="${links}">
+                            <table class="ui three column table">
+                                <g:each in="${links}" var="row">
+                                    <%
+                                        String[] linkTypes = RDStore.COMBO_TYPE_FOLLOWS.getI10n('value').split('\\|')
+                                        int perspectiveIndex
+                                        Org pair
+                                        if(orgInstance == row.fromOrg) {
+                                            perspectiveIndex = 0
+                                            pair = row.toOrg
+                                        }
+                                        else if(orgInstance == row.toOrg) {
+                                            perspectiveIndex = 1
+                                            pair = row.fromOrg
+                                        }
+                                    %>
+                                    <g:if test="${pair != null}">
+                                        <th scope="row" class="control-label">${linkTypes[perspectiveIndex]}</th>
+                                        <td><g:link action="show" id="${pair.id}">${pair.name}</g:link></td>
+                                        <td class="right aligned">
                                         <%--<laser:render template="/templates/links/subLinksModal"
                                                   model="${[tmplText:message(code:'org.details.editLink'),
                                                             tmplIcon:'write',
@@ -272,41 +271,43 @@
                                                             linkInstanceType: row.class.name,
                                                             link: row
                                                   ]}" />--%>
-                                        <g:if test="${isGrantedOrgRoleAdminOrOrgEditor}">
-                                            <span class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.unlink')}">
-                                                <g:link class="ui negative icon button la-modern-button la-selectable-button js-open-confirm-modal"
-                                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.subscription")}"
-                                                        data-confirm-term-how="unlink"
-                                                        action="unlinkOrg" params="[id: orgInstance.id, combo: row.id]"
-                                                        role="button"
-                                                        aria-label="${message(code: 'ariaLabel.unlink.universal')}">
-                                                    <i class="unlink icon"></i>
-                                                </g:link>
-                                            </span>
-                                        </g:if>
-                                    </td>
-                                </g:if>
-                            </g:each>
-                        </table>
-                    </g:if>
-                    <g:if test="${isGrantedOrgRoleAdminOrOrgEditor}">
-                        <div class="ui la-vertical buttons">
-                            <%
-                                Map<String,Object> model = [tmplText:message(code: 'org.linking.addLink'),
-                                                            tmplID:'addLink',
-                                                            tmplButtonText:message(code: 'org.linking.addLink'),
-                                                            tmplModalID:'org_add_link',
-                                                            editmode: editable,
-                                                            linkInstanceType: Combo.class.name,
-                                                            context: orgInstance
-                                ]
-                            %>
-                            <laser:render template="/templates/links/subLinksModal"
-                                      model="${model}" />
-                        </div>
-                    </g:if>
+                                            <g:if test="${isGrantedOrgRoleAdminOrOrgEditor}">
+                                                <span class="la-popup-tooltip la-delay" data-content="${message(code:'license.details.unlink')}">
+                                                    <g:link class="ui negative icon button la-modern-button la-selectable-button js-open-confirm-modal"
+                                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.subscription.subscription")}"
+                                                            data-confirm-term-how="unlink"
+                                                            action="unlinkOrg" params="[id: orgInstance.id, combo: row.id]"
+                                                            role="button"
+                                                            aria-label="${message(code: 'ariaLabel.unlink.universal')}">
+                                                        <i class="unlink icon"></i>
+                                                    </g:link>
+                                                </span>
+                                            </g:if>
+                                        </td>
+                                    </g:if>
+                                </g:each>
+                            </table>
+                        </g:if>
+                        <g:if test="${isGrantedOrgRoleAdminOrOrgEditor}">
+                            <div class="ui la-vertical buttons">
+                                <%
+                                    Map<String,Object> model = [tmplText:message(code: 'org.linking.addLink'),
+                                                                tmplID:'addLink',
+                                                                tmplButtonText:message(code: 'org.linking.addLink'),
+                                                                tmplModalID:'org_add_link',
+                                                                editmode: editable,
+                                                                linkInstanceType: Combo.class.name,
+                                                                context: orgInstance
+                                    ]
+                                %>
+                                <laser:render template="/templates/links/subLinksModal"
+                                              model="${model}" />
+                            </div>
+                        </g:if>
+                    </div>
                 </div>
-            </div>
+            </g:if>
+
 
             <g:if test="${isGrantedOrgRoleAdminOrOrgEditor}">
                 <div class="ui card">
@@ -326,7 +327,7 @@
                 </div>
             </g:if>
 
-            <g:if test="${ !isProviderOrAgency}">
+            <g:if test="${orgInstance.getCustomerType() == 'ORG_INST'}">
                 <div class="ui card">
                     <div class="content">
                         <dl>
@@ -430,34 +431,9 @@
             </g:if>
 
 
-            <g:if test="${isProviderOrAgency}">
-                <div class="ui card">
-                    <div class="content">
-                        <dl>
-                            <dt><g:message code="org.platforms.label" /></dt>
-                            <dd>
-
-                                <div class="ui divided middle aligned selection list la-flex-list">
-                                    <g:each in="${orgInstance.platforms}" var="platform">
-                                        <div class="ui item">
-                                            <div class="content la-space-right">
-                                                <strong><g:link controller="platform" action="show"
-                                                                id="${platform.id}">${platform.name}</g:link>
-                                                </strong>
-                                            </div>
-                                        </div>
-                                    </g:each>
-                                </div>
-                            </dd>
-                        </dl>
-                    </div>
-                </div>
-            </g:if>
-
-
             <div class="ui card">
                 <div class="content">
-                    <g:if test="${!isProviderOrAgency}">
+                    <g:if test="${orgInstance.getCustomerType() == 'ORG_INST'}">
                         <h2 class="ui header"><g:message code="org.contactpersons.and.addresses.label"/></h2>
                     </g:if>
 
@@ -542,6 +518,83 @@
                     </dl>
                 </div>
             </div><!-- .card -->
+
+
+            <g:if test="${isProviderOrAgency}">
+                <div class="ui card">
+                    <div class="content">
+                        <dl>
+                            <dt><g:message code="org.platforms.label" /></dt>
+                            <dd>
+
+                                <div class="ui divided middle aligned selection list la-flex-list">
+                                    <g:each in="${orgInstance.platforms}" var="platform">
+                                        <div class="ui item">
+                                            <div class="content la-space-right">
+                                                <strong><g:link controller="platform" action="show"
+                                                                id="${platform.id}">${platform.name}</g:link>
+                                                </strong>
+                                            </div>
+                                        </div>
+                                    </g:each>
+                                </div>
+                            </dd>
+                        </dl>
+                    </div>
+                </div>
+                <g:if test="${params.my}">
+                    <div class="ui card">
+                        <div class="content">
+                            <div class="ui accordion">
+                                <div class="title">
+                                    <div class="ui blue ribbon label">${packages.size()}</div>
+                                    <g:message code="package.plural" /><i class="dropdown icon la-dropdown-accordion"></i>
+                                </div>
+                                <div class="content">
+                                    <div class="ui divided middle aligned selection list la-flex-list">
+                                        <g:each in="${packages}" var="pkg">
+                                            <div class="ui item">
+                                                <div class="content la-space-right">
+                                                    <strong>
+                                                        <g:link controller="package" action="show" id="${pkg.id}">${pkg.name}</g:link>
+                                                    </strong>
+                                                </div>
+                                            </div>
+                                        </g:each>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </g:if>
+                <div class="ui card">
+                    <div class="content">
+                        <div class="ui accordion">
+                            <div class="title">
+                                <div class="ui blue ribbon label">${subLinks.size()}</div>
+                                <g:message code="subscription.plural" /><i class="dropdown icon la-dropdown-accordion"></i>
+                            </div>
+                            <div class="content">
+                                <div class="ui divided middle aligned selection list la-flex-list">
+                                    <g:each in="${subLinks}" var="subLink">
+                                        <div class="ui item">
+                                            <div class="content la-space-right">
+                                                <strong><g:link controller="subscription" action="show"
+                                                                id="${subLink.id}">${subLink.name} (${subLink.status.getI10n('value')})
+                                                                <g:if test="${subLink.startDate && subLink.endDate}">
+                                                                    (${ DateUtils.getLocalizedSDF_noTime().format(subLink.startDate)}-${DateUtils.getLocalizedSDF_noTime().format(subLink.endDate)})
+                                                                </g:if>
+                                                </g:link>
+                                                </strong>
+                                            </div>
+                                        </div>
+                                    </g:each>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </g:if>
 
                 <g:if test="${(user.isAdmin() || institution.getCustomerType()  == 'ORG_CONSORTIUM') && (institution != orgInstance)}">
                     <g:if test="${orgInstance.createdBy || orgInstance.legallyObligedBy}">

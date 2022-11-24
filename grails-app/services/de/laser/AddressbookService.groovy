@@ -47,7 +47,7 @@ class AddressbookService {
      */
     boolean isAddressEditable(Address address, User user) {
         Org org = address.getPrs()?.tenant ?: address.org
-        accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
+        accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
     }
 
     /**
@@ -58,7 +58,7 @@ class AddressbookService {
      */
     boolean isContactEditable(Contact contact, User user) {
         Org org = contact.getPrs()?.tenant ?: contact.org
-        accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
+        accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
     }
 
     /**

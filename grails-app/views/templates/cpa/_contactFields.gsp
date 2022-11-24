@@ -1,7 +1,7 @@
 <%@ page import="de.laser.Contact; de.laser.storage.RDConstants; de.laser.RefdataCategory;" %>
 
 
-   <div id="contactFields" class="three fields">
+   <div class="three fields contactField">
        <div class="field four wide">
            <label></label>
             <ui:select class="ui dropdown" name="contentType.id"

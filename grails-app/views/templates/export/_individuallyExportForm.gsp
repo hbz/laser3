@@ -6,8 +6,10 @@
 
         <div class="ui top attached stackable tabular la-tab-with-js menu">
             <g:each in="${formFields}" var="fields" status="i">
-                <a class="${("tab-${i}" == "tab-0") ? 'active' : ''}  item"
-                   data-tab="tab-${i}">${fields.value.message ? message(code: fields.value.message) : fields.value.label}</a>
+                <g:if test="${fields.value.fields.size() > 0}">
+                    <a class="${("tab-${i}" == "tab-0") ? 'active' : ''}  item"
+                       data-tab="tab-${i}">${fields.value.message ? message(code: fields.value.message) : fields.value.label}</a>
+                </g:if>
             </g:each>
         </div>
 

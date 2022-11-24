@@ -4,7 +4,6 @@
     <ui:controlButtons>
       <laser:render template="actions" />
     </ui:controlButtons>
-    <ui:messages data="${flash}" />
 
       <ui:h1HeaderWithIcon>
         <g:if test="${subscription.instanceOf && contextOrg.id == subscription.getConsortia()?.id}">

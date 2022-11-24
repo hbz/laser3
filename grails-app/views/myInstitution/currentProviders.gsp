@@ -67,7 +67,7 @@
         <laser:render template="/templates/filter/orgFilterTable"
                   model="[orgList: orgList,
                           tmplShowCheckbox: false,
-                          tmplConfigShow: ['lineNumber', 'shortname', 'name', 'isWekbCurated', 'privateContacts', 'numberOfSubscriptions']
+                          tmplConfigShow: ['lineNumber', 'shortname', 'name', 'isWekbCurated', 'numberOfSubscriptions']
                   ]"/>
         </g:if>
         <g:else>
