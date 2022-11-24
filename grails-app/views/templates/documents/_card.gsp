@@ -7,7 +7,7 @@
     String documentMessage
     switch(ownobj.class.name) {
         case Org.class.name: documentMessage = "menu.my.documents"
-            editable = accessService.checkMinUserOrgRole(contextService.getUser(), contextOrg, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
+            editable = accessService.checkMinUserOrgRole(contextService.getUser(), contextOrg, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
             break
         default: documentMessage = "license.documents"
             break
