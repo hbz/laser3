@@ -48,6 +48,7 @@ class SubscriptionService {
     ComparisonService comparisonService
     PackageService packageService
     GokbService gokbService
+    SurveyService surveyService
 
     /**
      * ex MyInstitutionController.currentSubscriptions()
@@ -2591,11 +2592,12 @@ class SubscriptionService {
      * @param subscription the subscription whose holding should be accessed
      * @return a map containing the process result
      */
-    Map issueEntitlementSelect(InputStream stream, Subscription subscription) {
+    Map issueEntitlementSelectForSurvey(InputStream stream, Subscription subscription, SurveyConfig surveyConfig, Subscription newSub, List<Subscription> subscriberSubs) {
 
         Integer count = 0
         Integer countSelectIEs = 0
         Map<String, Object> selectedIEs = [:]
+        Org contextOrg = contextService.getOrg()
 
         ArrayList<String> rows = stream.text.split('\n')
         Map<String, Integer> colMap = [zdbCol: -1, onlineIdentifierCol: -1, printIdentifierCol: -1, pick: -1]
@@ -2657,8 +2659,20 @@ class SubscriptionService {
                                     switch (colName) {
                                         case "pick":
                                             if(cellEntry.toLowerCase() == RDStore.YN_YES.value_de.toLowerCase() || cellEntry == RDStore.YN_YES.value_en.toLowerCase()) {
-                                                selectedIEs[issueEntitlement.id.toString()] = 'checked'
-                                                countSelectIEs++
+                                                TitleInstancePackagePlatform tipp = issueEntitlement.tipp
+                                                IssueEntitlement ieInNewSub = surveyService.titleContainedBySubscription(newSub, tipp)
+                                                boolean allowedToSelect = false
+                                                if (surveyConfig.pickAndChoosePerpetualAccess) {
+                                                    boolean participantPerpetualAccessToTitle = surveyService.hasParticipantPerpetualAccessToTitle(subscriberSubs, tipp)
+                                                    allowedToSelect = !(participantPerpetualAccessToTitle) && (!ieInNewSub || (ieInNewSub && (ieInNewSub.acceptStatus == RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION || contextOrg.id == surveyConfig.surveyInfo.owner.id)))
+                                                } else {
+                                                    allowedToSelect = !ieInNewSub || (ieInNewSub && (ieInNewSub.acceptStatus == RDStore.IE_ACCEPT_STATUS_UNDER_CONSIDERATION || contextOrg.id == surveyConfig.surveyInfo.owner.id))
+                                                }
+
+                                                if(!ieInNewSub && allowedToSelect) {
+                                                    selectedIEs[issueEntitlement.id.toString()] = 'checked'
+                                                    countSelectIEs++
+                                                }
                                             }
                                             break
                                     }
