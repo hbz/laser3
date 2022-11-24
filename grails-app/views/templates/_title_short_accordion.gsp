@@ -35,7 +35,3 @@
         </g:if>
     </g:each>
 </div>
-%{--
-<a class="ui mini button" data-ajaxTippId="${tipp.id}"  onclick="JSPC.app.showAllTitleInfos2(${tipp.id}, ${ie ? ie.id : null});">
-    <g:message code="title.details"/>
-</a>--}%
