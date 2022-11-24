@@ -284,7 +284,11 @@ class DashboardDueDatesService {
                     }
                     else if(obj instanceof SurveyInfo) {
                         dashDueDateRow.classLabel = messageSource.getMessage('survey', null, language)
-                        dashDueDateRow.link = grailsLinkGenerator.link([controller: "survey", action: "show", id: obj.id, absolute: true])
+                        if(obj.owner == org) {
+                            dashDueDateRow.link = grailsLinkGenerator.link([controller: "survey", action: "show", id: obj.id, absolute: true])
+                        }else {
+                            dashDueDateRow.link = grailsLinkGenerator.link([controller: "myInstitution", action: "surveyInfos", id: obj.id, absolute: true, params: [surveyConfigID: obj.surveyConfigs[0].id]])
+                        }
                         dashDueDateRow.objLabel = obj.name
                     }
                     else {

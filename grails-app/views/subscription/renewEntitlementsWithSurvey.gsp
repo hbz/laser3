@@ -24,6 +24,14 @@
                     id="${newSub.id}"
                     params="${[surveyConfigID: surveyConfig.id,
                                exportKBart   : true,
+                               tab           : 'toBeSelectedIEs']}">${message(code: 'renewEntitlementsWithSurvey.toBeSelectedIEs')}</g:link>
+        </ui:exportDropdownItem>
+
+        <ui:exportDropdownItem>
+            <g:link class="item" action="renewEntitlementsWithSurvey"
+                    id="${newSub.id}"
+                    params="${[surveyConfigID: surveyConfig.id,
+                               exportKBart   : true,
                                tab           : 'allIEs']}">${message(code: 'renewEntitlementsWithSurvey.selectableTitles')}</g:link>
         </ui:exportDropdownItem>
 
@@ -46,17 +54,17 @@
                                tab           : 'selectedIEs']}">${message(code: 'renewEntitlementsWithSurvey.currentEntitlements')}</g:link>
         </ui:exportDropdownItem>
 
+        <div class="divider"></div>
+
+        <div class="header">${message(code: 'default.button.exports.xls')}s</div>
+
         <ui:exportDropdownItem>
             <g:link class="item" action="renewEntitlementsWithSurvey"
                     id="${newSub.id}"
                     params="${[surveyConfigID: surveyConfig.id,
-                               exportKBart   : true,
+                               exportXLS     : true,
                                tab           : 'toBeSelectedIEs']}">${message(code: 'renewEntitlementsWithSurvey.toBeSelectedIEs')}</g:link>
         </ui:exportDropdownItem>
-
-        <div class="divider"></div>
-
-        <div class="header">${message(code: 'default.button.exports.xls')}s</div>
 
         <ui:exportDropdownItem>
             <g:link class="item" action="renewEntitlementsWithSurvey"
@@ -86,14 +94,17 @@
                                tab           : 'selectedIEs']}">${message(code: 'renewEntitlementsWithSurvey.currentEntitlements')}</g:link>
         </ui:exportDropdownItem>
 
-        <ui:exportDropdownItem>
-            <g:link class="item" action="renewEntitlementsWithSurvey"
-                    id="${newSub.id}"
-                    params="${[surveyConfigID: surveyConfig.id,
-                               exportXLS     : true,
-                               tab           : 'toBeSelectedIEs']}">${message(code: 'renewEntitlementsWithSurvey.toBeSelectedIEs')}</g:link>
-        </ui:exportDropdownItem>
-
+        <g:if test="${showStatisticByParticipant}">
+            <ui:exportDropdownItem>
+                <g:link class="item" action="renewEntitlementsWithSurvey"
+                        id="${newSub.id}"
+                        params="${[surveyConfigID : surveyConfig.id,
+                                   exportXLS: true,
+                                   tab            : 'toBeSelectedIEs']}">
+                    ${message(code: 'renewEntitlementsWithSurvey.toBeSelectedIEs')} + ${message(code: 'default.stats.label')}
+                </g:link>
+            </ui:exportDropdownItem>
+        </g:if>
 
         <g:if test="${showStatisticByParticipant}">
             <ui:exportDropdownItem>
