@@ -152,8 +152,8 @@ class ApiEZB {
         orgs.each { Org org ->
             Map<String, Object> orgStubMap = ApiUnsecuredMapReader.getOrganisationStubMap(org)
             orgStubMap.subscriptions = []
-            String queryString = 'SELECT DISTINCT(sub) FROM Subscription sub JOIN sub.orgRelations oo WHERE oo.org = :owner AND oo.roleType in (:roles) AND sub.isPublicForApi = true'
-            Map<String, Object> queryParams = [owner: org, roles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA]] //set to OR_SUBSCRIBER_CONS
+            String queryString = 'SELECT DISTINCT(sub) FROM Subscription sub JOIN sub.orgRelations oo WHERE oo.org = :owner AND oo.roleType in (:roles) AND sub.isPublicForApi = true AND sub.status = :current' //as of November 24th, '22, per Miriam's suggestion, only current subscriptions should be made available for EZB yello switch
+            Map<String, Object> queryParams = [owner: org, roles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIPTION_CONSORTIA], current: RDStore.SUBSCRIPTION_CURRENT] //set to OR_SUBSCRIBER_CONS
             if(changedFrom) {
                 queryString += ' AND sub.lastUpdatedCascading >= :changedFrom'
                 queryParams.changedFrom = changedFrom
