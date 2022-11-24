@@ -55,7 +55,7 @@
 
         <div class="field">
             <div class="ui checkbox toggle">
-                <g:checkBox name="preselectValues" value="${preselectValues}"/>
+                <g:checkBox name="preselectValues" value="${preselectValues}" checked="true" readonly="readonly"/>
                 <label><g:message code="subscription.details.addEntitlements.preselectValues"/></label>
             </div>
             <div class="ui checkbox toggle">
@@ -119,9 +119,8 @@
 
                 </div>
 
-                <input type="submit"
-                       value="${message(code: 'subscription.details.addEntitlements.add_selected')}"
-                       class="fluid ui button"/>
+                <button type="submit" name="process" id="processButton" value="${message(code: 'subscription.details.addEntitlements.add_selected')}" class="fluid ui button">
+                    ${checkedCount} ${message(code: 'subscription.details.addEntitlements.add_selected')}</button>
             </g:if>
             <g:else>
                 <div class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.details.addEntitlements.thread.running')}">
@@ -280,9 +279,8 @@
 
     <div class="paginateButtons" style="text-align:center">
         <g:if test="${!blockSubmit}">
-            <input type="submit"
-                   value="${message(code: 'subscription.details.addEntitlements.add_selected')}"
-                   class="ui button"/>
+            <button type="submit" name="process" id="processButton2" value="${message(code: 'subscription.details.addEntitlements.add_selected')}" class="ui button">
+                ${checkedCount} ${message(code: 'subscription.details.addEntitlements.add_selected')}</button>
         </g:if>
         <g:else>
             <div class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.details.addEntitlements.thread.running')}">
@@ -335,13 +333,16 @@
         };
         $.ajax({
             url: "<g:createLink controller="ajax" action="updateChecked" />",
-            method: "post",
             data: {
                 sub: ${subscription.id},
                 index: index,
                 filterParams: JSON.stringify(filterParams),
                 referer: "${actionName}",
                 checked: checked
+            },
+            success: function (data) {
+                $("#processButton").html(data.checkedCount + " ${g.message(code: 'subscription.details.addEntitlements.add_selected')}");
+                $("#processButton2").html(data.checkedCount + " ${g.message(code: 'subscription.details.addEntitlements.add_selected')}");
             }
         }).done(function(result){
 
