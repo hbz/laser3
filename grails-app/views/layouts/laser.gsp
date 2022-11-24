@@ -160,7 +160,7 @@
                         </div>
                     </g:if>
 
-                    <sec:ifAnyGranted roles="ROLE_ORG_MANAGER,ROLE_ADMIN,ROLE_STATISTICS_EDITOR">
+                    <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_STATISTICS_EDITOR">
                         <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
                             <a class="title">
                                 ${message(code:'menu.datamanager')} <i class="dropdown icon"></i>
@@ -178,7 +178,7 @@
                                             action="deletedTitles">${message(code: 'datamanager.deletedTitleManagement.label')}</ui:link>
                                 </sec:ifAnyGranted>
 
-                                <sec:ifAnyGranted roles="ROLE_ORG_MANAGER,ROLE_ADMIN">
+                                <sec:ifAnyGranted roles="ROLE_ADMIN">
                                     <ui:link generateElementId="true" class="item" role="menuitem" controller="dataManager"
                                             action="deletedOrgs">${message(code: 'datamanager.deletedOrgManagement.label')}</ui:link>
                                 </sec:ifAnyGranted>
