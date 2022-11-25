@@ -8,7 +8,7 @@
             <div class="ui label">${message(code: 'tipp.coverage')}</div>
         </div>
     </g:if>
-    <g:elseif test="${(covStmt.startDate || covStmt.startVolume || covStmt.startIssue) && objectTypeIsIE}">
+    <g:elseif test="${objectTypeIsIE}">
         <div class="item">
             <div class="ui label">${message(code: 'tipp.myCoverage')}</div>
         </div>
@@ -63,9 +63,15 @@
             </div>
         </div>
     </g:if>
-    <g:if test="${covStmt.endDate || covStmt.endVolume || covStmt.endIssue}">
+
+
+    <g:if test="${(covStmt.endDate || covStmt.endVolume || covStmt.endIssue) && !objectTypeIsIE}">
         <ui:dateDevider/>
     </g:if>
+    <g:elseif test="${objectTypeIsIE}">
+        <ui:dateDevider/>
+    </g:elseif>
+
     <g:if test="${covStmt.endDate || objectTypeIsIE}">
         <div class="item">
             <i class="grey fitted calendar alternate icon la-popup-tooltip la-delay"

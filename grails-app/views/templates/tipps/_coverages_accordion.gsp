@@ -77,25 +77,77 @@
 
 %{-- JOURNAL  --}%
 <g:elseif test="${tipp.titleType == "Journal"}">
+    <div class="ui stackable grid"></div>
 
     %{-- IE  --}%
     <g:if test="${ie}">
-        <%
-            Map<String, Object> paramData = [:]
-            if (params.sort && params.order) {
-                paramData.sort = params.sort
-                paramData.order = params.order
-            }
-            if (params.max && params.offset) {
-                paramData.max = params.max
-                paramData.offset = params.offset
-            }
-            paramData.putAll(params)
-        %>
-        <g:each in="${ie.coverages}" var="covStmt">
-            <laser:render template="/templates/tipps/coverageStatement_accordion"
-                          model="${[covStmt: covStmt, paramData: paramData, objectTypeIsIE: true, overwriteEditable: overwriteEditable]}"/>
-        </g:each>
+        <div class="ui stackable grid">
+            <div class="eight wide column">
+                <%
+                    Map<String, Object> paramData = [:]
+                    if (params.sort && params.order) {
+                        paramData.sort = params.sort
+                        paramData.order = params.order
+                    }
+                    if (params.max && params.offset) {
+                        paramData.max = params.max
+                        paramData.offset = params.offset
+                    }
+                    paramData.putAll(params)
+                %>
+                <g:each in="${ie.coverages}" var="covStmt">
+                    <laser:render template="/templates/tipps/coverageStatement_accordion"
+                                  model="${[covStmt: covStmt, paramData: paramData, objectTypeIsIE: true, overwriteEditable: overwriteEditable]}"/>
+                </g:each>
+            </div>
+            <div class="eight wide column">
+                <div class="ui list la-label-list">
+                    <div class="item">
+                        <div class="content">
+
+                            <div class="ui label">${message(code: 'subscription.details.access_dates')} ${message(code: 'default.from')}</div>
+
+                            <div class="description">
+                            <!-- von --->
+                                <g:if test="${editable}">
+                                    <ui:xEditable owner="${ie}" type="date"
+                                                  field="accessStartDate"/>
+                                    <i class="grey question circle icon la-popup-tooltip la-delay"
+                                       data-content="${message(code: 'subscription.details.access_start.note')}"></i>
+                                </g:if>
+                                <g:else>
+                                    <g:formatDate
+                                            format="${message(code: 'default.date.format.notime')}"
+                                            date="${ie.accessStartDate}"/>
+                                </g:else>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="item">
+                        <div class="content">
+                            <div class="ui label">${message(code: 'subscription.details.access_dates')} ${message(code: 'default.to')}</div>
+
+                            <div class="description">
+                            <!-- bis -->
+                                <g:if test="${editable}">
+                                    <ui:xEditable owner="${ie}" type="date"
+                                                  field="accessEndDate"/>
+                                    <i class="grey question circle icon la-popup-tooltip la-delay"
+                                       data-content="${message(code: 'subscription.details.access_end.note')}"></i>
+                                </g:if>
+                                <g:else>
+                                    <g:formatDate
+                                            format="${message(code: 'default.date.format.notime')}"
+                                            date="${ie.accessEndDate}"/>
+                                </g:else>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 %{--        <g:if test="${editable}">
             <br/>
             <g:link action="addCoverage" params="${paramData + [issueEntitlement: ie.id]}"
