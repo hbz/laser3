@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4451    25.11.2022  dev     3.0         Moe     Bug         Meine Umfragen pro TN: Fehler
+
 4336    25.11.2022  dev     3.0         Moe     Bug         Aufruf der Referenzwertliste erzeugt angebliche Wartungsmeldung
 
 4479    25.11.2022  dev     3.0         Moe     Bug         Verlängerungsumfrage: nach Folgelizenz erstellen zurück zur Verlängerung
