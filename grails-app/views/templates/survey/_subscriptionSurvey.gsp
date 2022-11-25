@@ -442,10 +442,10 @@
                                                 <g:each in="${subscription.ids?.sort { it.ns.ns }}"
                                                         var="id">
                                                     <div class="item js-copyTriggerParent">
-                                                       <span class="ui small basic image label js-copyTrigger js-copyTopic la-popup-tooltip la-delay"
+                                                       <span class="ui small basic image label js-copyTrigger la-popup-tooltip la-delay"
                                                              data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}">
                                                            <i class="la-copy icon la-js-copyTriggerIcon" aria-hidden="true"></i>
-                                                        ${id.ns.ns}: <div class="detail">${id.value}</div>
+                                                        ${id.ns.ns}: <div class="detail js-copyTopic">${id.value}</div>
                                                     </span>
                                                     </div>
                                                 </g:each>

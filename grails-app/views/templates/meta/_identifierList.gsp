@@ -34,16 +34,16 @@
                         <g:else><span class="js-copyTrigger js-copyTopic la-popup-tooltip la-delay"
                                       data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}">
                                     <i class="la-copy icon la-js-copyTriggerIcon" aria-hidden="true"></i>
-                                    ${ident.value}
+                                    <span class="js-copyTopic">${ident.value}</span>
                                 </span>
                         </g:else>
                         <g:if test="${ident.ns.urlPrefix}"><a target="_blank" href="${ident.ns.urlPrefix}${ident.value}"><i title="${ident.ns.getI10n('name')} Link" class="external alternate icon"></i></a></g:if>
                     </g:if>
                     <g:else>
-                        <span class="js-copyTrigger js-copyTopic la-popup-tooltip la-delay"
+                        <span class="js-copyTrigger la-popup-tooltip la-delay"
                                       data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}">
                             <i class="la-copy icon la-js-copyTriggerIcon" aria-hidden="true"></i>
-                            ${ident}
+                            <span class="js-copyTopic">${ident}</span>
                         </span>
                         <g:if test="${!objIsOrgAndInst && object.hasProperty("gokbId") && ident == object.gokbId}">
                             <g:if test="${object instanceof Package}">
