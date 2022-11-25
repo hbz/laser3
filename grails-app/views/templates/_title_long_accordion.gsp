@@ -1,7 +1,7 @@
 <%@ page import="de.laser.remote.ApiSource; de.laser.storage.RDStore" %>
-<div class="four wide column">
-    <div class="ui list" id="accordionAllTitleInfos">
 
+<div class="four wide column" data-ajaxTopic="true">
+    <div class="ui list"  >
         <div class="item">
             <ui:listIcon hideSurroundingMarkup="true" type="${tipp.titleType}"/>
             <div class="content">
@@ -206,8 +206,8 @@
         </g:if>
     </div>
 </div>
-<div class="four wide column">
-    <div class="ui list" id="accordionAllTitleInfos">
+<div class="four wide column" data-ajaxTopic="true">
+    <div class="ui list" >
 
         <g:if test="${(tipp.subjectReference || showEmptyFields)}">
             <div class="item">
