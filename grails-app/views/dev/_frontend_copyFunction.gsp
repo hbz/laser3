@@ -14,19 +14,19 @@
 
 <div class="ui list ">
     <div class="item js-copyTriggerParent">
-        <span class="ui small basic image label js-copyTrigger js-copyTopic la-popup-tooltip la-delay"
+        <span class="ui small basic image label js-copyTrigger la-popup-tooltip la-delay"
               data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}">
             <i class="la-copy icon la-js-copyTriggerIcon"></i>
 
-            zdb: <div class="detail">2756942-1</div>
+            zdb: <div class="detail js-copyTopic">2756942-1</div>
         </span>
     </div>
     <div class="item js-copyTriggerParent">
-        <span class="ui small basic image label js-copyTrigger js-copyTopic la-popup-tooltip la-delay"
+        <span class="ui small basic image label js-copyTrigger  la-popup-tooltip la-delay"
               data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}">
             <i class="la-copy icon la-js-copyTriggerIcon"></i>
 
-            zdb: <div class="detail">123456</div>
+            zdb: <div class="detail js-copyTopic">123456</div>
         </span>
     </div>
 </div>
@@ -48,10 +48,10 @@
         <pre aria-hidden="true">
             &lt;div class="ui list">
                 &lt;div class="item <strong>js-copyTriggerParent</strong>">
-                    &lt;span class="ui small basic image label <strong>js-copyTrigger js-copyTopic</strong> la-popup-tooltip la-delay"
+                    &lt;span class="ui small basic image label <strong>js-copyTrigger</strong> la-popup-tooltip la-delay"
                           data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}">
                         &lt;i class="la-copy icon <strong>la-js-copyTriggerIcon</strong>" aria-hidden="true">&lt;/i>
-                        zdb: &lt;div class="detail">2756942-1&lt;/div>
+                        zdb: &lt;div class="detail <strong>js-copyTopic</strong>">2756942-1&lt;/div>
                      &lt;/span>
                 &lt;/div>
             &lt;/div>
