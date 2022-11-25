@@ -676,7 +676,7 @@ class PackageController {
         Map<String, Object> query = filterService.getTippQuery(params, [packageInstance])
         result.filterSet = query.filterSet
 
-        List<TitleInstancePackagePlatform> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
+        List<Long> titlesList = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
         result.filename = filename
 
         if (params.exportKBart) {
@@ -712,7 +712,7 @@ class PackageController {
                 filename =params.filename
             }
 
-            ArrayList<TitleInstancePackagePlatform> tipps = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList,[sort:'tipp.sortname']) : [:]
+            ArrayList<TitleInstancePackagePlatform> tipps = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList,[sort:'sortname']) : [:]
 
             Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
             Map<String, Object> selectedFields = [:]
@@ -729,7 +729,7 @@ class PackageController {
         withFormat {
             html {
 
-                result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList.drop(result.offset).take(result.max)) : []
+                result.titlesList = titlesList ? TitleInstancePackagePlatform.findAllByIdInList(titlesList,[sort:'sortname']).drop(result.offset).take(result.max) : []
                 result.num_tipp_rows = titlesList.size()
 
                 result.lasttipp = result.offset + result.max > result.num_tipp_rows ? result.num_tipp_rows : result.offset + result.max

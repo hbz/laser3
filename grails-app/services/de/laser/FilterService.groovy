@@ -1217,6 +1217,7 @@ class FilterService {
             List<Long> status = params.list('status').collect { String statusId -> Long.parseLong(statusId) }
             base_qry += " and ie.status.id in (:status) "
             qry_params.status = status
+            filterSet = true
         }
         else if (params.notStatus != '' && params.notStatus != null){
             base_qry += " and ie.status.id != :notStatus "
