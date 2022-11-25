@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4336    25.11.2022  dev     3.0         Moe     Bug         Aufruf der Referenzwertliste erzeugt angebliche Wartungsmeldung
+
 4479    25.11.2022  dev     3.0         Moe     Bug         Verlängerungsumfrage: nach Folgelizenz erstellen zurück zur Verlängerung
 
 --      24.11.2022  rc-2.3  2.3.12      Andreas Bug         Sortiernamenkorrekturskript und Sortierabfrage korrigiert
