@@ -3504,6 +3504,17 @@ join sub.orgRelations or_sub where
             redirect(url: request.getHeader('referer'))
         }
         SwissKnife.setPaginationParams(result, params, result.user)
+
+        result.availableDescrs = [PropertyDefinition.SUB_PROP,PropertyDefinition.LIC_PROP,PropertyDefinition.PRS_PROP,PropertyDefinition.PLA_PROP,PropertyDefinition.ORG_PROP]
+
+        String localizedName = LocaleUtils.getLocalizedAttributeName('name')
+        Set<PropertyDefinition> propList = []
+        if(params.descr) {
+           propList = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd where pd.descr = :descr and (pd.tenant = null or pd.tenant = :ctx) order by pd."+localizedName+" asc",
+                    [ctx:result.institution, descr: params.descr])
+            result.propList = propList
+        }
+
         EhcacheWrapper cache = contextService.getUserCache("/manageProperties")
         result.selectedWithout = cache.get('without') ?: []
         result.selectedWith = cache.get('with') ?: []
@@ -3530,12 +3541,6 @@ join sub.orgRelations or_sub where
             (sa.sortname ?: sa.name).compareTo((sb.sortname ?: sb.name))
         }*/
         //result.validSubChilds = validSubChildren
-
-        String localizedName = LocaleUtils.getLocalizedAttributeName('name')
-        //result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.getOrg())
-        Set<PropertyDefinition> propList = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd where pd.descr in (:availableTypes) and (pd.tenant = null or pd.tenant = :ctx) order by pd."+localizedName+" asc",
-                [ctx:result.institution,availableTypes:[PropertyDefinition.SUB_PROP,PropertyDefinition.LIC_PROP,PropertyDefinition.PRS_PROP,PropertyDefinition.PLA_PROP,PropertyDefinition.ORG_PROP]])
-        result.propList = propList
 
         if(propDef) {
             result.putAll(propertyService.getAvailableProperties(propDef, result.institution, params))
@@ -3575,6 +3580,8 @@ join sub.orgRelations or_sub where
         //prepare next pagination
         params.withoutPropOffset = result.withoutPropOffset
         params.withPropOffset = result.withPropOffset
+
+        println(result)
 
         result
     }
@@ -3861,7 +3868,7 @@ join sub.orgRelations or_sub where
             return
         }
         else
-            render view: 'managePrivatePropertyDefinitions', model: result
+            render view: 'managePropertyDefinitions', model: result
     }
 
     /**
