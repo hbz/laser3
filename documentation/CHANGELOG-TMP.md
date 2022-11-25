@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+--      24.11.2022  rc-2.3  2.3.12      Andreas Bug         Sortiernamenkorrekturskript und Sortierabfrage korrigiert
+
 4596    24.11.2022  rc-2.3  2.3.12      Moe     Bug         Titel hinzufügen - KBART hochladen
 
 4604    24.11.2022  dev     3.0         David   Feature     Workflow: Dokumentenprüfung
