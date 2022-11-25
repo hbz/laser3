@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4600    25.11.2022  dev     3.0         Moe     Feature     Bei Titelumfragen auf der Auswertungssicht den Bearbeitungsstatus ausblenden wenn es keine Merkmale gibt
+
 4451    25.11.2022  dev     3.0         Moe     Bug         Meine Umfragen pro TN: Fehler
 
 4336    25.11.2022  dev     3.0         Moe     Bug         Aufruf der Referenzwertliste erzeugt angebliche Wartungsmeldung
