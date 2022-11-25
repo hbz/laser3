@@ -107,7 +107,8 @@
     %{-- TIPP  --}%
     <g:else>
         <g:each in="${tipp.coverages}" var="covStmt">
-            <laser:render template="/templates/tipps/coverageStatement_accordion" model="${[covStmt: covStmt]}"/>
+            <laser:render template="/templates/tipps/coverageStatement_accordion"
+                          model="${[covStmt: covStmt , objectTypeIsIE: false]}"/>
         </g:each>
     </g:else>
 </g:elseif>

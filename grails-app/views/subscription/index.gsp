@@ -199,7 +199,7 @@
 
         <div class="eight wide column">
             <div class="field la-field-right-aligned ">
-                <div class="ui right floated button la-js-editButton la-la-clearfix la">Massenbearbeitung</div>
+                <div class="ui right floated button la-js-editButton la-la-clearfix la"><g:message code="default.button.edit.label"/></div>
             </div>
         </div>
     </div><!--.row-->
