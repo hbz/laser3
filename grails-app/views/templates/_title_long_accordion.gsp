@@ -1,6 +1,6 @@
 <%@ page import="de.laser.remote.ApiSource; de.laser.storage.RDStore" %>
 
-<div class="four wide column" data-ajaxTopic="true">
+<div class="three wide column" data-ajaxTopic="true">
     <div class="ui list"  >
         <div class="item">
             <ui:listIcon hideSurroundingMarkup="true" type="${tipp.titleType}"/>
@@ -206,7 +206,7 @@
         </g:if>
     </div>
 </div>
-<div class="four wide column" data-ajaxTopic="true">
+<div class="three wide column" data-ajaxTopic="true">
     <div class="ui list" >
 
         <g:if test="${(tipp.subjectReference || showEmptyFields)}">
