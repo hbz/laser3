@@ -17,6 +17,7 @@ import de.laser.survey.SurveyConfigProperties
 import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyResult
 import grails.gorm.transactions.Transactional
+import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.springframework.context.MessageSource
 import org.hibernate.Session
 
@@ -494,31 +495,34 @@ class ExportClickMeService {
     static Map<String, Object> EXPORT_ADDRESS_CONFIG = [
             contact : [
                     label: 'Contact',
-                    message: 'contact',
+                    message: 'contact.label',
                     fields: [
+                            'organisation': [field: 'organisation', label: 'Organisation', message: 'address.org.label', defaultChecked: 'true'],
                             'receiver' : [field: 'receiver', label: 'Receiver', message: 'address.receiver.label', defaultChecked: 'true'],
-                            'additionFirst': [field: 'additionFirst', label: 'First Addition', message: 'address.additionFirst.label', defaultChecked: 'true'],
-                            'additionSecond': [field: 'additionSecond', label: 'Second Addition', message: 'address.additionSecond.label', defaultChecked: 'true'],
-                            'street_1': [field: 'street_1', label: 'Street', message: 'address.street_1.label', defaultChecked: 'true'],
-                            'street_2': [field: 'street_2', label: 'Number', message: 'address.street_2.label', defaultChecked: 'true'],
-                            'zipcode': [field: 'zipcode', label: 'Postcode', message: 'address.zipcode.label', defaultChecked: 'true'],
-                            'city': [field: 'city', label: 'City', message: 'address.city.label', defaultChecked: 'true'],
-                            'pob': [field: 'pob', label: 'Postal box', message: 'address.pob.label', defaultChecked: 'true'],
-                            'pobZipcode': [field: 'pobZipcode', label: 'Postal box zip code', message: 'address.pobZipcode.label', defaultChecked: 'true'],
-                            'pobCity': [field: 'pobCity', label: 'Postal box city', message: 'address.pobCity.label', defaultChecked: 'true'],
-                            'country': [field: 'country', label: 'Country', message: 'address.country.label', defaultChecked: 'true'],
-                            'region': [field: 'region', label: 'Region', message: 'address.region.label', defaultChecked: 'true'],
+                            'language': [field: 'language', label: 'Language', message: 'contact.language.label', defaultChecked: 'true'],
+                            'email': [field: 'email', label: 'Email', message: 'contact.icon.label.email', defaultChecked: 'true'],
+                            'fax': [field: 'fax', label: 'Fax', message: 'contact.icon.label.fax', defaultChecked: 'true'],
+                            'url': [field: 'url', label: 'URL', message: 'contact.icon.label.url', defaultChecked: 'true'],
+                            'phone': [field: 'phone', label: 'Phone', message: 'contact.icon.label.phone', defaultChecked: 'true']
                     ]
             ],
             address : [
                     label: 'Address',
                     message: 'address.label',
                     fields: [
-                            'language': [field: 'language', label: 'Language', message: 'contact.language.label', defaultChecked: 'true'],
-                            'email': [field: 'email', label: 'Email', message: 'contact.icon.label.email', defaultChecked: 'true'],
-                            'fax': [field: 'fax', label: 'Fax', message: 'contact.icon.label.fax', defaultChecked: 'true'],
-                            'url': [field: 'url', label: 'URL', message: 'contact.icon.label.url', defaultChecked: 'true'],
-                            'phone': [field: 'phone', label: 'Phone', message: 'contact.icon.label.phone', defaultChecked: 'true']
+                            'organisation': [field: 'organisation', label: 'Organisation', message: 'address.org.label'],
+                            'receiver' : [field: 'receiver', label: 'Receiver', message: 'address.receiver.label'],
+                            'additionFirst': [field: 'additionFirst', label: 'First Addition', message: 'address.additionFirst.label'],
+                            'additionSecond': [field: 'additionSecond', label: 'Second Addition', message: 'address.additionSecond.label'],
+                            'street_1': [field: 'street_1', label: 'Street', message: 'address.street_1.label'],
+                            'street_2': [field: 'street_2', label: 'Number', message: 'address.street_2.label'],
+                            'zipcode': [field: 'zipcode', label: 'Postcode', message: 'address.zipcode.label'],
+                            'city': [field: 'city', label: 'City', message: 'address.city.label'],
+                            'pob': [field: 'pob', label: 'Postal box', message: 'address.pob.label'],
+                            'pobZipcode': [field: 'pobZipcode', label: 'Postal box zip code', message: 'address.pobZipcode.label'],
+                            'pobCity': [field: 'pobCity', label: 'Postal box city', message: 'address.pobCity.label'],
+                            'country': [field: 'country', label: 'Country', message: 'address.country.label'],
+                            'region': [field: 'region', label: 'Region', message: 'address.region.label'],
                     ]
             ]
     ]
@@ -1237,6 +1241,105 @@ class ExportClickMeService {
         fields
     }
 
+    Map<String, Object> getExportAddressFields() {
+
+        Map<String, Object> exportFields = [:]
+        String localizedName = LocaleUtils.getLocalizedAttributeName('name')
+
+        EXPORT_ADDRESS_CONFIG.keySet().each { String k ->
+            EXPORT_ADDRESS_CONFIG.get(k).fields.each { key, value ->
+                exportFields.put(key, value)
+            }
+        }
+
+        /*
+        switch(config) {
+            case 'institution':
+            case 'member':
+                EXPORT_ORG_CONFIG.keySet().each {
+                    EXPORT_ORG_CONFIG.get(it).fields.each {
+                        exportFields.put(it.key, it.value)
+                    }
+                }
+
+                IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
+                    exportFields.put("participantIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
+                }
+
+                Platform.executeQuery('select distinct(ci.platform) from CustomerIdentifier ci where ci.value != null and ci.customer in (select c.fromOrg from Combo c where c.toOrg = :ctx)', contextParams).each { Platform plat ->
+                    exportFields.put("participantCustomerIdentifiers."+plat.id, [field: null, label: plat.name])
+                }
+
+                PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg()).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
+                    exportFields.put("participantProperty."+propertyDefinition.id, [field: null, label: propertyDefinition."${localizedName}"])
+                }
+                break
+            case 'provider':
+                EXPORT_PROVIDER_CONFIG.keySet().each {
+                    EXPORT_PROVIDER_CONFIG.get(it).fields.each {
+                        exportFields.put(it.key, it.value)
+                    }
+                }
+
+                IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
+                    exportFields.put("providerIdentifiers."+it.id, [field: null, label: it."${localizedName}" ?: it.ns])
+                }
+
+                Platform.executeQuery('select distinct(ci.platform) from CustomerIdentifier ci where ci.value != null and ci.customer in (select c.fromOrg from Combo c where c.toOrg = :ctx)', contextParams).each { Platform plat ->
+                    exportFields.put("providerCustomerIdentifiers."+plat.id, [field: null, label: plat.name])
+                }
+
+                PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg()).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
+                    exportFields.put("providerProperty."+propertyDefinition.id, [field: null, label: propertyDefinition."${localizedName}"])
+                }
+                break
+        }
+        */
+
+        exportFields
+    }
+
+    Map<String, Object> getExportAddressFieldsForUI() {
+
+        Map<String, Object> fields = EXPORT_ADDRESS_CONFIG as Map
+        String localizedName = LocaleUtils.getLocalizedAttributeName('name')
+
+
+
+        /*
+        switch(orgType) {
+            case 'institution': fields = EXPORT_ORG_CONFIG as Map
+                IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS).each {
+                    fields.participantIdentifiers.fields << ["participantIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
+                }
+                Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where ci.value != null and ci.customer in (select c.fromOrg from Combo c where c.toOrg = :ctx) order by plat.name', contextParams).each { Platform plat ->
+                    fields.participantCustomerIdentifiers.fields << ["participantCustomerIdentifiers.${plat.id}":[field: null, label: plat.name]]
+                }
+                fields.participantProperties.fields.clear()
+                PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg()).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
+                    fields.participantProperties.fields << ["participantProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant != null)]]
+                }
+                break
+            case 'provider': fields = EXPORT_PROVIDER_CONFIG as Map
+                IdentifierNamespace.findAllByNsType(Org.class.name, [sort: 'ns']).each {
+                    fields.providerIdentifiers.fields << ["providerIdentifiers.${it.id}":[field: null, label: it."${localizedName}" ?: it.ns]]
+                }
+                Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where ci.value != null and ci.customer in (select c.fromOrg from Combo c where c.toOrg = :ctx) order by plat.name', contextParams).each { Platform plat ->
+                    fields.providerCustomerIdentifiers.fields << ["providerCustomerIdentifiers.${plat.id}":[field: null, label: plat.name]]
+                }
+                fields.providerProperties.fields.clear()
+                PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg()).sort {it."${localizedName}"}.each { PropertyDefinition propertyDefinition ->
+                    fields.providerProperties.fields << ["providerProperty.${propertyDefinition.id}":[field: null, label: propertyDefinition."${localizedName}", privateProperty: (propertyDefinition.tenant != null)]]
+                }
+                break
+            default: fields = [:]
+                break
+        }
+        */
+
+        fields
+    }
+
     /**
      * Gets the survey evaluation fields for export
      * @param surveyConfig the survey whose evaluation should be exported
@@ -1739,7 +1842,7 @@ class ExportClickMeService {
      * @param config the organisation type to be exported
      * @return an Excel worksheet containing the output
      */
-    def exportOrgs(List<Org> result, Map<String, Object> selectedFields, String config) {
+    def exportOrgs(List<Org> result, Map<String, Object> selectedFields, String config, String contactSwitch = null) {
         Locale locale = LocaleUtils.getCurrentLocale()
 
         String sheetTitle
@@ -1768,7 +1871,7 @@ class ExportClickMeService {
 
         List exportData = []
         result.each { Org org ->
-            _setOrgRow(org, selectedExportFields, exportData)
+            _setOrgRow(org, selectedExportFields, exportData, contactSwitch)
         }
 
         Map sheetData = [:]
@@ -1776,6 +1879,76 @@ class ExportClickMeService {
 
         sheetData =  _exportAccessPoints(result, sheetData, selectedExportFields, locale, "")
 
+        return exportService.generateXLSXWorkbook(sheetData)
+    }
+
+    SXSSFWorkbook exportAddresses(List visiblePersons, Map<String, Object> selectedFields) {
+        Locale locale = LocaleUtils.getCurrentLocale()
+        Map<String, Object> configFields = getExportAddressFields(), selectedExportFields = [:], sheetData = [:]
+        List exportData = []
+
+        selectedFields.keySet().each { String key ->
+            selectedExportFields.put(key, configFields.get(key))
+        }
+
+        Map<Person, Map<String, Map<String, String>>> addressesContacts = [:]
+        visiblePersons.each { Person p ->
+            //lang: contactData
+            Map<String, Map<String, String>> contactData = addressesContacts.get(p)
+            if(!contactData)
+                contactData = [:]
+            p.contacts.each { Contact c ->
+                String langKey
+                if(c.language)
+                    langKey = c.language.getI10n('value')
+                else langKey = Contact.PRIMARY
+                Map<String, String> contact = contactData.get(langKey)
+                if(!contact)
+                    contact = [:]
+                switch(c.contentType) {
+                    case RDStore.CCT_EMAIL: contact.email = c.content
+                        break
+                    case RDStore.CCT_FAX: contact.fax = c.content
+                        break
+                    case RDStore.CCT_PHONE: contact.phone = c.content
+                        break
+                    case RDStore.CCT_URL: contact.url = c.content
+                        break
+                }
+                contactData.put(langKey, contact)
+            }
+            addressesContacts.put(p, contactData)
+        }
+        addressesContacts.each { Person p, Map<String, Map<String, String>> contactData ->
+            for(int addressRow = 0; addressRow < Math.max(contactData.size(), p.addresses.size()); addressRow++) {
+                List row = []
+                Map.Entry<String, Map<String, String>> contact = contactData.entrySet()[addressRow]
+                Address a = p.addresses[addressRow]
+                selectedExportFields.each { String fieldKey, Map mapSelectedFields ->
+                    String field = mapSelectedFields.field
+                    if (field == 'organisation') {
+                        row.add([field: p.roleLinks.find { PersonRole pr -> pr.org != null }.org.name, style: null])
+                    }
+                    else if (field == 'receiver') {
+                        row.add([field: p.toString(), style: null])
+                    }
+                    else if (field == 'language')
+                        contact?.key == Contact.PRIMARY ? row.add([field: ' ', style: null]) : row.add([field: contact.key, style: null])
+                    else if (field in ['email', 'fax', 'phone', 'url'])
+                        row.add([field: contact?.value?.get(fieldKey), style: null])
+                    else {
+                        if (a && a.hasProperty(field)) {
+                            if (a[field] instanceof RefdataValue)
+                                row.add([field: a[field].getI10n("value"), style: null])
+                            else row.add([field: a[field], style: null])
+                        }
+                    }
+                }
+                exportData << row
+            }
+        }
+
+        sheetData[messageSource.getMessage('menu.institutions.myAddressbook', null, locale)] = [titleRow: _exportTitles(selectedExportFields, locale), columnData: exportData]
         return exportService.generateXLSXWorkbook(sheetData)
     }
 
@@ -2220,7 +2393,7 @@ class ExportClickMeService {
      * @param selectedFields the fields which should appear
      * @param exportData the list containing the export rows
      */
-    private void _setOrgRow(Org result, Map<String, Object> selectedFields, List exportData){
+    private void _setOrgRow(Org result, Map<String, Object> selectedFields, List exportData, String contactSwitch = null){
         List row = []
         SimpleDateFormat sdf = DateUtils.getLocalizedSDF_noTime()
         selectedFields.keySet().each { String fieldKey ->
@@ -2228,18 +2401,18 @@ class ExportClickMeService {
             String field = mapSelecetedFields.field
             if(!mapSelecetedFields.separateSheet) {
                 if (fieldKey.contains('generalContact')) {
-                    _setOrgFurtherInformation(result, row, fieldKey)
+                    _setOrgFurtherInformation(result, row, fieldKey, null, contactSwitch)
                 }else if (fieldKey.contains('billingContact')) {
-                    _setOrgFurtherInformation(result, row, fieldKey)
+                    _setOrgFurtherInformation(result, row, fieldKey, null, contactSwitch)
                 }
                 else if (fieldKey.contains('billingAdress')) {
-                    _setOrgFurtherInformation(result, row, fieldKey)
+                    _setOrgFurtherInformation(result, row, fieldKey, null, contactSwitch)
                 }
                 else if (fieldKey.contains('postAdress')) {
-                    _setOrgFurtherInformation(result, row, fieldKey)
+                    _setOrgFurtherInformation(result, row, fieldKey, null, contactSwitch)
                 }
                 else if (fieldKey.contains('altnames')) {
-                    _setOrgFurtherInformation(result, row, fieldKey)
+                    _setOrgFurtherInformation(result, row, fieldKey, null, contactSwitch)
                 }
                 else if (fieldKey == 'participant.readerNumbers') {
                     _setOrgFurtherInformation(result, row, fieldKey)
@@ -2635,12 +2808,13 @@ class ExportClickMeService {
         return sheetData
     }
 
-    private void _setOrgFurtherInformation(Org org, List row, String fieldKey, Subscription subscription = null){
+    private void _setOrgFurtherInformation(Org org, List row, String fieldKey, Subscription subscription = null, String contactSwitch = 'public'){
 
+        boolean isPublic = contactSwitch == 'public'
         if (fieldKey == 'participant.generalContact') {
             if (org) {
                 RefdataValue generalContact = RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
-                List<Contact> contactList = Contact.executeQuery("select c from PersonRole pr join pr.prs p join p.contacts c where pr.org = :org and pr.functionType in (:functionTypes) and c.contentType = :type and p.isPublic = true", [org: org, functionTypes: [generalContact], type: RDStore.CCT_EMAIL])
+                List<Contact> contactList = Contact.executeQuery("select c from PersonRole pr join pr.prs p join p.contacts c where pr.org = :org and pr.functionType in (:functionTypes) and c.contentType = :type and p.isPublic = :isPublic", [org: org, functionTypes: [generalContact], type: RDStore.CCT_EMAIL, isPublic: isPublic])
 
                 if (contactList) {
                     row.add([field: contactList.content.join(";"), style: null])
@@ -2654,7 +2828,7 @@ class ExportClickMeService {
         } else if (fieldKey == 'participant.billingContact') {
             if (org) {
                 RefdataValue billingContact = RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS
-                List<Contact> contactList = Contact.executeQuery("select c from PersonRole pr join pr.prs p join p.contacts c where pr.org = :org and pr.functionType in (:functionTypes) and c.contentType = :type and p.isPublic = true", [org: org, functionTypes: [billingContact], type: RDStore.CCT_EMAIL])
+                List<Contact> contactList = Contact.executeQuery("select c from PersonRole pr join pr.prs p join p.contacts c where pr.org = :org and pr.functionType in (:functionTypes) and c.contentType = :type and p.isPublic = :isPublic", [org: org, functionTypes: [billingContact], type: RDStore.CCT_EMAIL, isPublic: isPublic])
 
                 if (contactList) {
                     row.add([field: contactList.content.join(";"), style: null])
