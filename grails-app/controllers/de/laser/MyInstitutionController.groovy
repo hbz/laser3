@@ -2376,6 +2376,9 @@ join sub.orgRelations or_sub where
 
         List visiblePersons = addressbookService.getVisiblePersons("addressbook",params)
 
+        Set<String> filterFields = ['org', 'prs', 'filterPropDef', 'filterProp', 'function', 'position', 'showOnlyContactPersonForInstitution', 'showOnlyContactPersonForProviderAgency']
+        result.filterSet = params.keySet().any { String selField -> selField in filterFields }
+
         result.propList =
                 PropertyDefinition.findAllWhere(
                         descr: PropertyDefinition.PRS_PROP,
@@ -2390,7 +2393,38 @@ join sub.orgRelations or_sub where
                     [persons: visiblePersons, contentType: RDStore.CCT_EMAIL])
         }
 
-        result
+        String filename = escapeService.escapeString("${message(code: 'menu.institutions.myAddressbook')}_${DateUtils.getSDF_yyyyMMdd().format(new Date())}")
+        if(params.exportXLS) {
+            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportService.exportAddressbook('xlsx', visiblePersons)
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+
+            return
+        }
+        else if(params.exportClickMeExcel) {
+
+            return
+        }
+        else {
+            withFormat {
+                html {
+                    result
+                }
+                csv {
+                    response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
+                    response.contentType = "text/csv"
+                    ServletOutputStream out = response.outputStream
+                    out.withWriter { Writer writer ->
+                        writer.write((String) exportService.exportAddressbook('csv', visiblePersons))
+                    }
+                    out.close()
+                }
+            }
+        }
       }
 
     /**
