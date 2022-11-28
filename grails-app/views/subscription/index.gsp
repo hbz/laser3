@@ -199,7 +199,7 @@
 
         <div class="eight wide column">
             <div class="field la-field-right-aligned ">
-                <div class="ui right floated button la-js-editButton la-la-clearfix la">Massenbearbeitung</div>
+                <div class="ui right floated button la-js-editButton la-la-clearfix la"><g:message code="default.button.edit.label"/></div>
             </div>
         </div>
     </div><!--.row-->
@@ -416,7 +416,7 @@
 --}%
 
 
-                                            <div class="four wide column">
+                                            <div class="three wide column">
                                                 <div class="ui list la-label-list">
                                                     <g:if test="${ie.tipp.accessStartDate}">
                                                         <div class="item">
@@ -450,17 +450,14 @@
                                                 </div>
                                             </div>
                                             <%-- Veränderbarer Bereich START--%>
-                                            <div class="four wide column">
+                                            <div class="seven wide column">
                                                 <i class="icon circular inverted edit la-icon-absolute"></i>
 
                                                 <div class="ui white segment la-segment-with-icon">
-                                                    <%-- BOOK AND ONLINE START--%>
 
-                                                    <%--BOOK AND ONLINE END --%>
-                                                    <%-- JOURNALS START --%>
                                                     <laser:render template="/templates/tipps/coverages_accordion"
                                                                   model="${[ie: ie, tipp: ie.tipp]}"/>
-                                                    <%-- JOURNALS END --%>
+
                                                     <div class="ui list">
                                                         <g:if test="${ie}">
                                                             <div class="item">
