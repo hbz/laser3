@@ -2672,7 +2672,7 @@ class SubscriptionControllerService {
                         Map<String, Object> sqlQuery = filterService.prepareTitleSQLQuery(params, IssueEntitlement.class.name, sql)
                         //log.debug("insert into issue_entitlement_group_item (igi_version, igi_date_created, igi_ie_fk, igi_ie_group_fk, igi_last_updated) "+sqlQuery.query+" where "+sqlQuery.where+" and not exists(select igi_id from issue_entitlement_group_item where igi_ie_fk = ie_id)")
                         //log.debug(sqlQuery.params.toMapString())
-                        sql.execute("insert into issue_entitlement_group_item (igi_version, igi_date_created, igi_ie_fk, igi_ie_group_fk, igi_last_updated) "+sqlQuery.query+" where "+sqlQuery.where+" and not exists(select igi_id from issue_entitlement_group_item where igi_ie_fk = ie_id)", sqlQuery.params)
+                        sql.execute("insert into issue_entitlement_group_item (igi_version, igi_date_created, igi_ie_fk, igi_ie_group_fk, igi_last_updated, igi_date_created) "+sqlQuery.query+" where "+sqlQuery.where+" and not exists(select igi_id from issue_entitlement_group_item where igi_ie_fk = ie_id)", sqlQuery.params)
                         /*if(entitlementGroup && !IssueEntitlementGroupItem.findByIeGroupAndIe(entitlementGroup, ie) && !IssueEntitlementGroupItem.findByIe(ie)){
                             IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
                                     ie: ie,
