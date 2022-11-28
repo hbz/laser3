@@ -491,6 +491,38 @@ class ExportClickMeService {
 
     ]
 
+    static Map<String, Object> EXPORT_ADDRESS_CONFIG = [
+            contact : [
+                    label: 'Contact',
+                    message: 'contact',
+                    fields: [
+                            'receiver' : [field: 'receiver', label: 'Receiver', message: 'address.receiver.label', defaultChecked: 'true'],
+                            'additionFirst': [field: 'additionFirst', label: 'First Addition', message: 'address.additionFirst.label', defaultChecked: 'true'],
+                            'additionSecond': [field: 'additionSecond', label: 'Second Addition', message: 'address.additionSecond.label', defaultChecked: 'true'],
+                            'street_1': [field: 'street_1', label: 'Street', message: 'address.street_1.label', defaultChecked: 'true'],
+                            'street_2': [field: 'street_2', label: 'Number', message: 'address.street_2.label', defaultChecked: 'true'],
+                            'zipcode': [field: 'zipcode', label: 'Postcode', message: 'address.zipcode.label', defaultChecked: 'true'],
+                            'city': [field: 'city', label: 'City', message: 'address.city.label', defaultChecked: 'true'],
+                            'pob': [field: 'pob', label: 'Postal box', message: 'address.pob.label', defaultChecked: 'true'],
+                            'pobZipcode': [field: 'pobZipcode', label: 'Postal box zip code', message: 'address.pobZipcode.label', defaultChecked: 'true'],
+                            'pobCity': [field: 'pobCity', label: 'Postal box city', message: 'address.pobCity.label', defaultChecked: 'true'],
+                            'country': [field: 'country', label: 'Country', message: 'address.country.label', defaultChecked: 'true'],
+                            'region': [field: 'region', label: 'Region', message: 'address.region.label', defaultChecked: 'true'],
+                    ]
+            ],
+            address : [
+                    label: 'Address',
+                    message: 'address.label',
+                    fields: [
+                            'language': [field: 'language', label: 'Language', message: 'contact.language.label', defaultChecked: 'true'],
+                            'email': [field: 'email', label: 'Email', message: 'contact.icon.label.email', defaultChecked: 'true'],
+                            'fax': [field: 'fax', label: 'Fax', message: 'contact.icon.label.fax', defaultChecked: 'true'],
+                            'url': [field: 'url', label: 'URL', message: 'contact.icon.label.url', defaultChecked: 'true'],
+                            'phone': [field: 'phone', label: 'Phone', message: 'contact.icon.label.phone', defaultChecked: 'true']
+                    ]
+            ]
+    ]
+
     static Map<String, Object> EXPORT_SURVEY_EVALUATION = [
             //Wichtig: Hier bei dieser Config bitte drauf achten, welche Feld Bezeichnung gesetzt ist,
             // weil die Felder von einer zusammengesetzten Map kommen. siehe ExportClickMeService -> exportSurveyEvaluation
