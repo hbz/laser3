@@ -125,12 +125,11 @@
                 </g:link>
             </div>
             <div class="la-flexbox">
-                <i class="icon user la-list-icon"></i>
                 <g:if test="${wf.user}">
-                    ${wf.user?.display}
+                    <i class="icon user la-list-icon"></i> ${wf.user?.display}
                 </g:if>
                 <g:else>
-                    Kein verantwortlicher Nutzer zugewiesen. (todo: wird entfernt)
+                    <i class="icon users la-list-icon"></i> ${message(code:'workflow.user.noCurrentUser')}
                 </g:else>
             </div>
 
