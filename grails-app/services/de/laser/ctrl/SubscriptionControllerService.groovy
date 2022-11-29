@@ -3259,33 +3259,6 @@ class SubscriptionControllerService {
         }
     }
 
-    //--------------------------------------------- admin section -------------------------------------------------
-
-    @Deprecated
-    Map<String,Object> pendingChanges(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
-        if (!result) {
-            [result:null,status:STATUS_ERROR]
-        }
-        else {
-            Set<Subscription> validSubChilds = Subscription.executeQuery("select oo.sub from OrgRole oo join oo.sub sub join oo.org org where sub.instanceOf = :contextSub order by org.sortname asc, org.name asc",[contextSub:result.subscription])
-            result.pendingChanges = [:]
-            validSubChilds.each { Subscription member ->
-                if (executorWrapperService.hasRunningProcess(member)) {
-                    log.debug("PendingChange processing in progress")
-                    result.processingpc = true
-                } else {
-                    List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where subscription.id = :subId and ( pc.status is null or pc.status = :status ) order by pc.ts desc",
-                            [subId: member.id, status: RDStore.PENDING_CHANGE_PENDING]
-                    )
-                    result.pendingChanges << [("${member.id}".toString()): pendingChanges]
-                }
-            }
-
-            [result:result,status:STATUS_OK]
-        }
-    }
-
     //--------------------------------------------- helper section -------------------------------------------------
 
     /**
