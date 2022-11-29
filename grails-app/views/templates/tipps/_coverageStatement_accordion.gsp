@@ -3,11 +3,17 @@
 
 
 <div class="ui list la-label-list">
-    <g:if test="${covStmt.startDate || covStmt.startVolume || covStmt.startIssue || objectTypeIsIE}">
+    <g:if test="${(covStmt.startDate || covStmt.startVolume || covStmt.startIssue) && !objectTypeIsIE}">
         <div class="item">
-            <div class="ui label">${message(code: 'default.from')}</div>
+            <div class="ui label">${message(code: 'tipp.coverage')}</div>
         </div>
     </g:if>
+    <g:elseif test="${objectTypeIsIE}">
+        <div class="item">
+            <div class="ui label">${message(code: 'tipp.myCoverage')}</div>
+        </div>
+    </g:elseif>
+
     <g:if test="${covStmt.startDate || objectTypeIsIE}">
         <div class="item">
             <i class="grey fitted calendar alternate icon la-popup-tooltip la-delay"
@@ -57,11 +63,15 @@
             </div>
         </div>
     </g:if>
-    <g:if test="${covStmt.endDate || covStmt.endVolume || covStmt.endIssue || objectTypeIsIE}">
-        <div class="item">
-            <div class="ui label">${message(code: 'default.to')}</div>
-        </div>
+
+
+    <g:if test="${(covStmt.endDate || covStmt.endVolume || covStmt.endIssue) && !objectTypeIsIE}">
+        <ui:dateDevider/>
     </g:if>
+    <g:elseif test="${objectTypeIsIE}">
+        <ui:dateDevider/>
+    </g:elseif>
+
     <g:if test="${covStmt.endDate || objectTypeIsIE}">
         <div class="item">
             <i class="grey fitted calendar alternate icon la-popup-tooltip la-delay"

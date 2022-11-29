@@ -199,7 +199,7 @@
 
         <div class="eight wide column">
             <div class="field la-field-right-aligned ">
-                <div class="ui right floated button la-js-editButton la-la-clearfix la">Massenbearbeitung</div>
+                <div class="ui right floated button la-js-editButton la-la-clearfix la"><g:message code="default.button.edit.label"/></div>
             </div>
         </div>
     </div><!--.row-->
@@ -309,7 +309,7 @@
                         <div class="ui accordion la-accordion-showMore">
                             <g:each in="${entitlements}" var="ie">
                                 <div class="ui raised segments la-accordion-segments">
-                                    <div class="ui fluid segment title">
+                                    <div class="ui fluid segment title" data-ajaxTippId="${ie.tipp.id}" data-ajaxIeId="${ie ? ie.id : null}">
                                         <div class="ui stackable equal width grid">
                                             <div class="one wide column la-js-show-hide" style="display: none">
                                                 <g:if test="${editable}"><input type="checkbox"
@@ -404,17 +404,19 @@
                                         </div>
                                     </div>
 
-                                    <div class="ui fluid segment content">
-                                        <div class="ui stackable grid">
+                                    <div class="ui fluid segment content" data-ajaxTargetWrap="true">
+                                        <div class="ui stackable grid" data-ajaxTarget="true">
 
 
+%{--
                                             <laser:render template="/templates/title_long_accordion"
                                                           model="${[ie         : ie, tipp: ie.tipp,
                                                                     showPackage: showPackage, showPlattform: showPlattform, showCompact: showCompact, showEmptyFields: showEmptyFields]}"/>
 
+--}%
 
 
-                                            <div class="four wide column">
+                                            <div class="three wide column">
                                                 <div class="ui list la-label-list">
                                                     <g:if test="${ie.tipp.accessStartDate}">
                                                         <div class="item">
@@ -448,17 +450,14 @@
                                                 </div>
                                             </div>
                                             <%-- Veränderbarer Bereich START--%>
-                                            <div class="four wide column">
+                                            <div class="seven wide column">
                                                 <i class="icon circular inverted edit la-icon-absolute"></i>
 
                                                 <div class="ui white segment la-segment-with-icon">
-                                                    <%-- BOOK AND ONLINE START--%>
 
-                                                    <%--BOOK AND ONLINE END --%>
-                                                    <%-- JOURNALS START --%>
                                                     <laser:render template="/templates/tipps/coverages_accordion"
                                                                   model="${[ie: ie, tipp: ie.tipp]}"/>
-                                                    <%-- JOURNALS END --%>
+
                                                     <div class="ui list">
                                                         <g:if test="${ie}">
                                                             <div class="item">
@@ -952,5 +951,27 @@
         })
 
     <g:if test="${params.asAt && params.asAt.length() > 0}">$(function() { document.body.style.background = "#fcf8e3"; });</g:if>
+
+    $("[data-ajaxTippId]").accordion().on('click', function(e) {
+            var tippID = $(this).attr('data-ajaxTippId');
+            var ieID = $(this).attr('data-ajaxIeId');
+
+            var dataAjaxTarget = $(this)
+                .next($('[data-ajaxTargetWrap]'))
+                .children($('[data-ajaxTarget]'));
+
+            var dataAjaxTopic = $(this)
+                .next($('[data-ajaxTargetWrap]'))
+                .find($('[data-ajaxTopic]'));
+
+
+            $.ajax({
+                url: '<g:createLink controller="ajaxHtml" action="showAllTitleInfosAccordion" params="[showPackage: showPackage, showPlattform: showPlattform, showCompact: showCompact, showEmptyFields: showEmptyFields]"/>&tippID=' + tippID + '&ieID=' + ieID,
+                    success: function(result) {
+                        dataAjaxTopic.remove();
+                        dataAjaxTarget.prepend(result);
+                    }
+                });
+    });
 </laser:script>
 <laser:htmlEnd/>

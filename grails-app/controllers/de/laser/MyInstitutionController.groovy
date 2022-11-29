@@ -2376,6 +2376,9 @@ join sub.orgRelations or_sub where
 
         List visiblePersons = addressbookService.getVisiblePersons("addressbook",params)
 
+        Set<String> filterFields = ['org', 'prs', 'filterPropDef', 'filterProp', 'function', 'position', 'showOnlyContactPersonForInstitution', 'showOnlyContactPersonForProviderAgency']
+        result.filterSet = params.keySet().any { String selField -> selField in filterFields }
+
         result.propList =
                 PropertyDefinition.findAllWhere(
                         descr: PropertyDefinition.PRS_PROP,
@@ -2390,7 +2393,38 @@ join sub.orgRelations or_sub where
                     [persons: visiblePersons, contentType: RDStore.CCT_EMAIL])
         }
 
-        result
+        String filename = escapeService.escapeString("${message(code: 'menu.institutions.myAddressbook')}_${DateUtils.getSDF_yyyyMMdd().format(new Date())}")
+        if(params.exportXLS) {
+            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportService.exportAddressbook('xlsx', visiblePersons)
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+
+            return
+        }
+        else if(params.exportClickMeExcel) {
+
+            return
+        }
+        else {
+            withFormat {
+                html {
+                    result
+                }
+                csv {
+                    response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
+                    response.contentType = "text/csv"
+                    ServletOutputStream out = response.outputStream
+                    out.withWriter { Writer writer ->
+                        writer.write((String) exportService.exportAddressbook('csv', visiblePersons))
+                    }
+                    out.close()
+                }
+            }
+        }
       }
 
     /**
@@ -3504,6 +3538,17 @@ join sub.orgRelations or_sub where
             redirect(url: request.getHeader('referer'))
         }
         SwissKnife.setPaginationParams(result, params, result.user)
+
+        result.availableDescrs = [PropertyDefinition.SUB_PROP,PropertyDefinition.LIC_PROP,PropertyDefinition.PRS_PROP,PropertyDefinition.PLA_PROP,PropertyDefinition.ORG_PROP]
+
+        String localizedName = LocaleUtils.getLocalizedAttributeName('name')
+        Set<PropertyDefinition> propList = []
+        if(params.descr) {
+           propList = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd where pd.descr = :descr and (pd.tenant = null or pd.tenant = :ctx) order by pd."+localizedName+" asc",
+                    [ctx:result.institution, descr: params.descr])
+            result.propList = propList
+        }
+
         EhcacheWrapper cache = contextService.getUserCache("/manageProperties")
         result.selectedWithout = cache.get('without') ?: []
         result.selectedWith = cache.get('with') ?: []
@@ -3530,12 +3575,6 @@ join sub.orgRelations or_sub where
             (sa.sortname ?: sa.name).compareTo((sb.sortname ?: sb.name))
         }*/
         //result.validSubChilds = validSubChildren
-
-        String localizedName = LocaleUtils.getLocalizedAttributeName('name')
-        //result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.getOrg())
-        Set<PropertyDefinition> propList = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd where pd.descr in (:availableTypes) and (pd.tenant = null or pd.tenant = :ctx) order by pd."+localizedName+" asc",
-                [ctx:result.institution,availableTypes:[PropertyDefinition.SUB_PROP,PropertyDefinition.LIC_PROP,PropertyDefinition.PRS_PROP,PropertyDefinition.PLA_PROP,PropertyDefinition.ORG_PROP]])
-        result.propList = propList
 
         if(propDef) {
             result.putAll(propertyService.getAvailableProperties(propDef, result.institution, params))
@@ -3575,6 +3614,8 @@ join sub.orgRelations or_sub where
         //prepare next pagination
         params.withoutPropOffset = result.withoutPropOffset
         params.withPropOffset = result.withPropOffset
+
+        println(result)
 
         result
     }
@@ -3861,7 +3902,7 @@ join sub.orgRelations or_sub where
             return
         }
         else
-            render view: 'managePrivatePropertyDefinitions', model: result
+            render view: 'managePropertyDefinitions', model: result
     }
 
     /**

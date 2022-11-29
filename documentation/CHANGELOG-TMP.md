@@ -7,6 +7,16 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4600    25.11.2022  dev     3.0         Moe     Feature     Bei Titelumfragen auf der Auswertungssicht den Bearbeitungsstatus ausblenden wenn es keine Merkmale gibt
+
+4451    25.11.2022  dev     3.0         Moe     Bug         Meine Umfragen pro TN: Fehler
+
+4336    25.11.2022  dev     3.0         Moe     Bug         Aufruf der Referenzwertliste erzeugt angebliche Wartungsmeldung
+
+4479    25.11.2022  dev     3.0         Moe     Bug         Verlängerungsumfrage: nach Folgelizenz erstellen zurück zur Verlängerung
+
+--      24.11.2022  rc-2.3  2.3.12      Andreas Bug         Sortiernamenkorrekturskript und Sortierabfrage korrigiert
+
 4607    24.11.2022  dev     3.0         David   Bug         Umfrage: 'Neues Dokument' funktioniert nicht mehr
 
 2976    24.11.2022  dev     3.0         David   Feature     Überprüfung verwaister Nutzerrollen
@@ -18,6 +28,8 @@
 2976    24.11.2022  dev     3.0         David   Feature     Überprüfung verwaister Nutzerrollen
 
 --      24.11.2022  dev     3.0         Andreas Feature     Default-Status bei EZB-Lizenzabruf auf Aktuell setzen
+
+3405    23.11.2022  dev     3.0         Moe     Feature     Verbesserung Merkmalsverwaltung
 
 4598    23.11.2022  dev     3.0         Andreas Feature     Umstellungen in der Organisationssicht
 

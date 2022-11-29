@@ -7,7 +7,18 @@
 
 <ui:h1HeaderWithIcon message="menu.user.properties" />
 
-<h2 class="la-clear-before">${message(code: 'propertyDefinition.plural')}</h2>
+<ui:tabs actionName="${actionName}">
+    <ui:tabsItem controller="profile" action="properties"
+                 params="[tab: 'propertyDefinitions']"
+                 text="${message(code: "propertyDefinition.plural")}" tab="propertyDefinitions"/>
+    <ui:tabsItem controller="profile" action="properties"
+                 params="[tab: 'refdatas']"
+                 text="${message(code: "refdata.plural")}" tab="refdatas"/>
+</ui:tabs>
+
+<div class="ui bottom attached tab active segment">
+
+<g:if test="${params.tab == 'propertyDefinitions'}">
 
 <div class="ui styled fluid accordion">
     <g:each in="${propertyDefinitions}" var="entry">
@@ -76,7 +87,9 @@
     </g:each>
 </div>
 
-<h3 class="ui header">${message(code: 'refdata.plural')}</h3>
+</g:if>
+
+<g:if test="${params.tab == 'refdatas'}">
 
 <div class="ui styled fluid accordion">
     <g:each in="${rdCategories}" var="rdc">
@@ -130,5 +143,7 @@
 
     </g:each>
 </div>
+
+</g:if>
 
 <laser:htmlEnd />

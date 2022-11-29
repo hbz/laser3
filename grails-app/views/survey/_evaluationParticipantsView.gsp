@@ -243,6 +243,7 @@
                             </g:link>
 
 
+                        <g:if test="${surveyConfig.surveyProperties}">
                             <g:if test="${surveyConfig.checkResultsEditByOrg(participant) == SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                       data-content="${message(code: 'surveyResult.processedOrg')}">
@@ -255,6 +256,7 @@
                                     <i class="edit red icon"></i>
                                 </span>
                             </g:else>
+                        </g:if>
 
                             <g:if test="${surveyConfig.isResultsSetFinishByOrg(participant)}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay"
@@ -475,7 +477,7 @@
                                 (${fieldValue(bean: participant, field: "name")})
                             </g:link>
 
-
+                        <g:if test="${surveyConfig.surveyProperties}">
                             <g:if test="${surveyConfig.checkResultsEditByOrg(participant) == SurveyConfig.ALL_RESULTS_PROCESSED_BY_ORG}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                       data-content="${message(code: 'surveyResult.processedOrg')}">
@@ -488,6 +490,7 @@
                                     <i class="edit red icon"></i>
                                 </span>
                             </g:else>
+                        </g:if>
 
                             <g:if test="${surveyConfig.isResultsSetFinishByOrg(participant)}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay"
