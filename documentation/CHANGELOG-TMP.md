@@ -9,6 +9,14 @@
 
 4340    29.11.2022  dev     3.0         David   Feature     Verträge: TN-Änderungen entfernen
 
+4559    29.11.2022  dev     3.0         Andreas Bug         Dokumente, Anmerkungen und Merkmale konnten über "Meine Lizenzverwaltung" nicht an Teilnahmelizenzen gehangen werden
+
+4477    29.11.2022  dev     3.0         Andreas Feature     Tooltip bei leerem Kommentarfeld eingefügt
+
+4424    28.11.2022  dev     3.0         Andreas Feature     Schalter für private/öffentliche Kontakte beim Export von "Meine Einrichtungen"
+
+4423    28.11.2022  dev     3.0         Andreas Feature     Exportfunktionen für "Mein Adressbuch" gebaut
+
 4600    25.11.2022  dev     3.0         Moe     Feature     Bei Titelumfragen auf der Auswertungssicht den Bearbeitungsstatus ausblenden wenn es keine Merkmale gibt
 
 4451    25.11.2022  dev     3.0         Moe     Bug         Meine Umfragen pro TN: Fehler
