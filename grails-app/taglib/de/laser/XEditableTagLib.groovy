@@ -413,7 +413,7 @@ class XEditableTagLib {
 
         boolean editable = _isEditable(request.getAttribute('editable'), attrs.overwriteEditable)
         def owner    = attrs.owner
-        String field = attrs.field
+        String field = attrs.field, emptyTooltip = attrs.emptyTooltip
 
         if (editable) {
             String oid           = "${owner.class.name}:${owner.id}"
@@ -480,7 +480,11 @@ class XEditableTagLib {
                 }
             out << " data-oldvalue=\"${oldValue}\" "
             out << " data-value=\"${oldValue}\" data-autotext=\"never\">"
-            out << '<span class="la-popup-tooltip la-delay" data-position="" data-content="' + oldValue + '"/>'
+            if(oldValue)
+                out << '<span class="la-popup-tooltip la-delay" data-position="" data-content="' + oldValue + '"/>'
+            else if(!oldValue && emptyTooltip)
+                out << '<span class="la-popup-tooltip la-delay" data-position="" data-content="' + emptyTooltip + '"/>'
+            else out << '<span class="la-popup-tooltip la-delay" data-position="" data-content=""/>'
             out << "<i class=\"${attrs.iconClass ?: 'info'} ${oldValue ? 'green' : 'la-light-grey'} icon\"></i>"
             out << '</span>'
 

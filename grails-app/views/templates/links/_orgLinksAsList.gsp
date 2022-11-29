@@ -11,12 +11,21 @@
                             <i class="la-list-icon la-popup-tooltip la-delay la-consortia icon" data-content="${message(code:'consortium')}"></i>
                         </g:if>
                         <g:elseif test="${role.roleType.value==RDStore.OR_PROVIDER.value}">
-                            <i class="la-list-icon la-popup-tooltip la-delay handshake outline icon" data-content="${message(code:'default.provider.label')}"></i>
+                            <g:if test="${role.org.gokbId}">
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code:'default.provider.label')} + ${message(code:'org.isWekbCurated.header.label')}">
+                                    <i class="grey handshake la-list-icon icon"></i>
+                                </span>
+                            </g:if>
+                            <g:else>
+                                <i class="la-list-icon la-popup-tooltip la-delay handshake outline icon" data-content="${message(code:'default.provider.label')}"></i>
+                            </g:else>
                         </g:elseif>
                         <g:elseif test="${role.roleType.value ==RDStore.OR_AGENCY.value}">
                             <i class="la-list-icon la-popup-tooltip la-delay shipping fast icon" data-content="${message(code:'default.agency.label')}"></i>
                         </g:elseif>
-                        <g:link controller="organisation" action="show" id="${role.org.id}">${role.org.name}</g:link>
+                        <g:link controller="organisation" action="show" id="${role.org.id}">
+                            ${role.org.name}
+                        </g:link>
                     </span>
 
                 </td>
@@ -82,18 +91,18 @@
                 </td>
 
             </tr>
-            <g:if test="${showPersons && (Person.getPublicByOrgAndFunc(role.org, 'General contact person') || (roleObject instanceof de.laser.Package && Person.getPublicByOrgAndFunc(role.org, 'Technical Support')) || (roleObject instanceof de.laser.Package && Person.getPublicByOrgAndFunc(role.org, 'Service Support')) ||
+            <g:if test="${showPersons && (Person.getPublicByOrgAndFunc(role.org, 'General contact person') || (Person.getPublicByOrgAndFunc(role.org, 'Technical Support')) || (Person.getPublicByOrgAndFunc(role.org, 'Service Support')) ||
                             Person.getPublicByOrgAndObjectResp(role.org, roleObject, roleRespValue) ||
                             Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'General contact person', contextOrg) ||
-                            (roleObject instanceof de.laser.Package && Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Technical Support', contextOrg)) ||
-                            (roleObject instanceof de.laser.Package && Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Service Support', contextOrg)) ||
+                            Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Technical Support', contextOrg) ||
+                            Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Service Support', contextOrg) ||
                             Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, roleObject, roleRespValue, contextOrg))}">
                 <tr>
                     <td colspan="3" style="padding-bottom:0;">
                         <%-- public --%>
                         <g:if test="${ Person.getPublicByOrgAndFunc(role.org, 'General contact person') ||
-                                (roleObject instanceof de.laser.Package && Person.getPublicByOrgAndFunc(role.org, 'Technical Support')) ||
-                                (roleObject instanceof de.laser.Package && Person.getPublicByOrgAndFunc(role.org, 'Service Support')) ||
+                                Person.getPublicByOrgAndFunc(role.org, 'Technical Support') ||
+                                Person.getPublicByOrgAndFunc(role.org, 'Service Support') ||
                                 Person.getPublicByOrgAndObjectResp(role.org, roleObject, roleRespValue)  }">
                             <div class="ui segment la-timeLineSegment-contact">
                                 <div class="la-timeLineGrid">
@@ -123,7 +132,7 @@
                                                 </div>
                                             </div>
                                         </g:each>
-                                        <g:if test="${roleObject instanceof de.laser.Package}">
+                                        <%--<g:if test="${roleObject instanceof de.laser.Package}">--%>
                                             <g:each in="${Person.getPublicByOrgAndFunc(role.org, 'Technical Support')}" var="func">
                                                 <div class="row">
                                                     <div class="two wide column">
@@ -174,7 +183,7 @@
                                                     </div>
                                                 </div>
                                             </g:each>
-                                        </g:if>
+                                        <%--</g:if>--%>
                                         <g:each in="${Person.getPublicByOrgAndObjectResp(role.org, roleObject, roleRespValue)}" var="resp">
                                             <div class="row">
                                                 <div class="two wide column">
@@ -220,8 +229,8 @@
 
                         <%-- private --%>
                         <g:if test="${ Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'General contact person', contextOrg) ||
-                                (roleObject instanceof de.laser.Package && Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Technical Support', contextOrg)) ||
-                                (roleObject instanceof de.laser.Package && Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Service Support', contextOrg)) ||
+                                Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Technical Support', contextOrg) ||
+                                Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Service Support', contextOrg) ||
                                 Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, roleObject, roleRespValue, contextOrg)}">
                             <div class="ui segment la-timeLineSegment-contact">
                                 <div class="la-timeLineGrid">
@@ -251,7 +260,7 @@
                                                 </div>
                                             </div>
                                         </g:each>
-                                        <g:if test="${roleObject instanceof de.laser.Package}">
+                                        <%--<g:if test="${roleObject instanceof de.laser.Package}">--%>
                                             <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Technical Support', contextOrg)}" var="func">
                                                 <div class="row">
                                                     <div class="two wide column">
@@ -302,7 +311,7 @@
                                                     </div>
                                                 </div>
                                             </g:each>
-                                        </g:if>
+                                        <%--</g:if>--%>
                                         <g:each in="${Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, roleObject, roleRespValue, contextOrg)}" var="resp">
                                             <div class="row">
                                                <div class="two wide column">
