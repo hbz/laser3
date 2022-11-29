@@ -18,6 +18,7 @@ class Contact implements Comparable<Contact>{
     public static final String REFDATA_MAIL =  "Mail"
     public static final String REFDATA_EMAIL = "E-Mail"
     public static final String REFDATA_URL =   "Url"
+    public static final String PRIMARY = 'primary' //default language key for addressbook exports
 
     String content
     Person prs            // person related contact; exclusive with org

@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4424    28.11.2022  dev     3.0         Andreas Feature     Schalter für private/öffentliche Kontakte beim Export von "Meine Einrichtungen"
+
+4423    28.11.2022  dev     3.0         Andreas Feature     Exportfunktionen für "Mein Adressbuch" gebaut
+
 4600    25.11.2022  dev     3.0         Moe     Feature     Bei Titelumfragen auf der Auswertungssicht den Bearbeitungsstatus ausblenden wenn es keine Merkmale gibt
 
 4451    25.11.2022  dev     3.0         Moe     Bug         Meine Umfragen pro TN: Fehler
