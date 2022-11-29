@@ -23,7 +23,7 @@ class UsageController  {
     /**
      * Landing page of the statistics overview
      */
-    @Secured(['ROLE_STATISTICS_EDITOR','ROLE_ADMIN'])
+    @Secured(['ROLE_ADMIN'])
     def index() {
         Map<String, Object> result = usageControllerService.initResult(this, params)
         if (result.tmpFlashError) {
@@ -86,7 +86,7 @@ class UsageController  {
     /**
      * Aborts an eventually running loading procedure
      */
-    @Secured(['ROLE_STATISTICS_EDITOR','ROLE_ADMIN'])
+    @Secured(['ROLE_ADMIN'])
     def abort()
     {
         Map<String, Object> result = usageControllerService.initResult(this, params)
@@ -104,7 +104,7 @@ class UsageController  {
      * Fetches for the given institution and provider the usage data from the Nationaler Statistikserver
      * SUSHI server
      */
-    @Secured(['ROLE_STATISTICS_EDITOR','ROLE_ADMIN'])
+    @Secured(['ROLE_ADMIN'])
     def fetchSelection()
     {
         // TODO when we switch to global API Key / Requestor, query SUSHI Service status endpoint here
@@ -127,7 +127,7 @@ class UsageController  {
     /**
      * Clears the database from current usage data
      */
-    @Secured(['ROLE_STATISTICS_EDITOR','ROLE_ADMIN'])
+    @Secured(['ROLE_ADMIN'])
     @Transactional
     def deleteAll()
     {
@@ -147,7 +147,7 @@ class UsageController  {
     /**
      * Clears the usage data for the given institution and provider
      */
-    @Secured(['ROLE_STATISTICS_EDITOR','ROLE_ADMIN'])
+    @Secured(['ROLE_ADMIN'])
     @Transactional
     def deleteSelection()
     {
