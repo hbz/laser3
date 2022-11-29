@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4559    29.11.2022  dev     3.0         Andreas Bug         Dokumente, Anmerkungen und Merkmale konnten über "Meine Lizenzverwaltung" nicht an Teilnahmelizenzen gehangen werden
+
+4477    29.11.2022  dev     3.0         Andreas Feature     Tooltip bei leerem Kommentarfeld eingefügt
+
 4424    28.11.2022  dev     3.0         Andreas Feature     Schalter für private/öffentliche Kontakte beim Export von "Meine Einrichtungen"
 
 4423    28.11.2022  dev     3.0         Andreas Feature     Exportfunktionen für "Mein Adressbuch" gebaut

@@ -397,6 +397,7 @@
                                             editmode     : editable,
                                             showPersons  : true
                                   ]}"/>
+
                         <div class="ui la-vertical buttons la-js-hide-this-card">
 
                             <laser:render template="/templates/links/orgLinksSimpleModal"
