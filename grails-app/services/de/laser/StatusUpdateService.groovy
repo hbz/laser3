@@ -181,7 +181,9 @@ class StatusUpdateService extends AbstractLockableService {
                 }
             }**/
 
-            SystemEvent.createEvent('SUB_UPDATE_SERVICE_PROCESSING', updatedObjs)
+            if (updatedObjs) {
+                SystemEvent.createEvent('SUB_UPDATE_SERVICE_PROCESSING', updatedObjs)
+            }
             running = false
 
             return true
@@ -266,7 +268,9 @@ class StatusUpdateService extends AbstractLockableService {
                 }
             }
 
-            SystemEvent.createEvent('LIC_UPDATE_SERVICE_PROCESSING', updatedObjs)
+            if (updatedObjs) {
+                SystemEvent.createEvent('LIC_UPDATE_SERVICE_PROCESSING', updatedObjs)
+            }
             running = false
 
             return true

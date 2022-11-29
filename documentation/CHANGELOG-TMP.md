@@ -21,6 +21,10 @@
 
 --      24.11.2022  rc-2.3  2.3.12      Andreas Bug         Sortiernamenkorrekturskript und Sortierabfrage korrigiert
 
+4607    24.11.2022  dev     3.0         David   Bug         Umfrage: 'Neues Dokument' funktioniert nicht mehr
+
+2976    24.11.2022  dev     3.0         David   Feature     Überprüfung verwaister Nutzerrollen
+
 4596    24.11.2022  rc-2.3  2.3.12      Moe     Bug         Titel hinzufügen - KBART hochladen
 
 4604    24.11.2022  dev     3.0         David   Feature     Workflow: Dokumentenprüfung
