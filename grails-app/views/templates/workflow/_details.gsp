@@ -38,12 +38,16 @@
                                     </g:link>
                                 </div>
                                 <div class="la-flexbox">
-                                    <i class="icon user la-list-icon"></i>
                                     <g:if test="${wf.user}">
-                                        ${wf.user?.display}
+                                        <g:if test="${wf.user.id == contextService.getUser().id}">
+                                            <i class="icon user la-list-icon"></i> ${wf.user?.display}
+                                        </g:if>
+                                        <g:else>
+                                            <i class="icon user outline la-list-icon"></i> ${wf.user?.display}
+                                        </g:else>
                                     </g:if>
                                     <g:else>
-                                        Kein verantwortlicher Nutzer zugewiesen. (todo: wird entfernt)
+                                        <i class="icon users la-list-icon"></i> ${message(code:'workflow.user.noCurrentUser')}
                                     </g:else>
                                 </div>
                                 <g:if test="${wf.comment}">
