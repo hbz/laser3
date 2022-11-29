@@ -245,7 +245,14 @@ class FinanceService {
             }
             else if(params.percentOnOldPrice) {
                 Double percentage = 1 + params.double('percentOnOldPrice') / 100
-                CostItem.executeUpdate('update CostItem ci set ci.costInBillingCurrency = floor(abs(ci.costInBillingCurrency * :percentage) * 100)/100.0, ci.costInLocalCurrency =floor(abs(ci.costInLocalCurrency * :percentage) * 100)/100.0 where ci.id in (:ids)',[ids:selectedCostItems,percentage:percentage])
+                //Set<Long> lastYearEquivalents = CostItem.executeQuery('select ci.id from CostItem ci where ci.sub in (select l.destinationSubscription from Links l where l.linkType = :follows and l.sourceSubscription in (select cil.sub from CostItem cil where cil.id in (:selectedCostItems)))', [selectedCostItems: selectedCostItems, follows: RDStore.LINKTYPE_FOLLOWS])
+                //CostItem.executeUpdate('update CostItem ci set ci.costInBillingCurrency = floor(abs(cil.costInBillingCurrency * :percentage) * 100)/100.0, ci.costInLocalCurrency = floor(abs(cil.costInLocalCurrency * :percentage) * 100)/100.0 where ci = (select cil )',[ids: selectedCostItems, percentage:percentage])
+                CostItem.findAllByIdInList(selectedCostItems).each { CostItem ci ->
+                    CostItem lastYearEquivalent = CostItem.executeQuery('select ci from CostItem ci where ci.sub = (select l.destinationSubscription from Links l where l.linkType = :follows and l.sourceSubscription = :currentYearSub) and ci.costItemElement = :element', [follows: RDStore.LINKTYPE_FOLLOWS, currentYearSub: ci.sub, element: ci.costItemElement])[0]
+                    ci.costInBillingCurrency = Math.floor(Math.abs(lastYearEquivalent.costInBillingCurrency * percentage))
+                    ci.costInLocalCurrency = Math.floor(Math.abs(lastYearEquivalent.costInLocalCurrency * percentage))
+                    ci.save()
+                }
             }
             else {
                 Map<String, Object> configMap = setupConfigMap(params, result.institution)

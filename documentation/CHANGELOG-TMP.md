@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4609    29.11.2022  dev     3.0         Andreas Bug         Kostenausschüttung den konsortialen Anforderungen entsprechend angepasst
+
+4608    29.11.2022  dev     3.0         Andreas Feature     Aufstufung des Merkmals Titelwahl (Stichtag) zum allgemeinen Merkmal
+
 4559    29.11.2022  dev     3.0         Andreas Bug         Dokumente, Anmerkungen und Merkmale konnten über "Meine Lizenzverwaltung" nicht an Teilnahmelizenzen gehangen werden
 
 4477    29.11.2022  dev     3.0         Andreas Feature     Tooltip bei leerem Kommentarfeld eingefügt
