@@ -11,6 +11,8 @@
 
 4608    29.11.2022  dev     3.0         Andreas Feature     Aufstufung des Merkmals Titelwahl (Stichtag) zum allgemeinen Merkmal
 
+4340    29.11.2022  dev     3.0         David   Feature     Verträge: TN-Änderungen entfernen
+
 4559    29.11.2022  dev     3.0         Andreas Bug         Dokumente, Anmerkungen und Merkmale konnten über "Meine Lizenzverwaltung" nicht an Teilnahmelizenzen gehangen werden
 
 4477    29.11.2022  dev     3.0         Andreas Feature     Tooltip bei leerem Kommentarfeld eingefügt

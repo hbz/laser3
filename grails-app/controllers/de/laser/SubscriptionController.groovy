@@ -1849,24 +1849,6 @@ class SubscriptionController {
         }
     }
 
-    //--------------------------------------------- admin section -------------------------------------------------
-
-    @Deprecated
-    @DebugInfo(ctrlService = DebugInfo.WITH_TRANSACTION)
-    @Secured(['ROLE_ADMIN'])
-    @Check404()
-    def pendingChanges() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.pendingChanges(this, params)
-        if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            if(!ctrlResult.result) {
-                response.sendError(401)
-                return
-            }
-        }
-        else
-            ctrlResult.result
-    }
-
     //--------------------------------------------- reporting -------------------------------------------------
 
     /**
