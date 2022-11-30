@@ -741,33 +741,34 @@
             this.currentForm.submit(function(e){
                 e.preventDefault();
                 if('${idSuffix}' === 'bulk') {
-                    var isValueSetForVisibleForSubscriber = $("#percentOnOldPrice").val() > 0 ? true : (${showVisibilitySettings} ? (JSPC.app.finance${idSuffix}.isVisibleForSubscriber.val() != 'null') : true)
+                    //var isValueSetForVisibleForSubscriber = $("#percentOnOldPrice").val() > 0 ? true : (${showVisibilitySettings} ? (JSPC.app.finance${idSuffix}.isVisibleForSubscriber.val() != 'null') : true)
 
                     if((JSPC.app.finance${idSuffix}.costBillingCurrency.val() && JSPC.app.finance${idSuffix}.costLocalCurrency.val()) ||
                         (JSPC.app.finance${idSuffix}.costBillingCurrency.val() && JSPC.app.finance${idSuffix}.costCurrencyRate.val()) ||
                         (JSPC.app.finance${idSuffix}.costLocalCurrency.val() && JSPC.app.finance${idSuffix}.costCurrencyRate.val())) {
                         let valuesCorrect = JSPC.app.finance${idSuffix}.checkValues();
-                        if(valuesCorrect && isValueSetForVisibleForSubscriber) {
+                        //if(valuesCorrect && isValueSetForVisibleForSubscriber) {
+                        if(valuesCorrect) {
                             JSPC.app.finance${idSuffix}.costCurrency.parent(".field").removeClass("error");
                             JSPC.app.finance${idSuffix}.currentForm.unbind('submit').submit();
                         }
                         else {
-                                if(!isValueSetForVisibleForSubscriber) {
-                                    alert("${message(code:'financials.newCosts.noIsVisibleForSubscriberPicked')}");
-                                }
-                                else{
-                                    alert("${message(code:'financials.newCosts.calculationError')}");
-                                }
+                            //if(!isValueSetForVisibleForSubscriber) {
+                                //alert("${message(code:'financials.newCosts.noIsVisibleForSubscriberPicked')}");
+                            //}
+                            //else{
+                                alert("${message(code:'financials.newCosts.calculationError')}");
+                            //}
                         }
                     }
                     else {
-                        if(!isValueSetForVisibleForSubscriber) {
-                                    alert("${message(code:'financials.newCosts.noIsVisibleForSubscriberPicked')}");
-                        }
-                        else{
-                                    //modifications in only one of the fields
-                                    JSPC.app.finance${idSuffix}.currentForm.unbind('submit').submit();
-                        }
+                        //if(!isValueSetForVisibleForSubscriber) {
+                            //alert("${message(code:'financials.newCosts.noIsVisibleForSubscriberPicked')}");
+                        //}
+                        //else{
+                            //modifications in only one of the fields
+                            JSPC.app.finance${idSuffix}.currentForm.unbind('submit').submit();
+                        //}
                     }
                 }
                 else if(JSPC.app.finance${idSuffix}.costCurrency.val() != 0) {
