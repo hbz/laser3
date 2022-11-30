@@ -1,3 +1,5 @@
+package changelogs
+
 import de.laser.BootStrapService
 import grails.util.Holders
 

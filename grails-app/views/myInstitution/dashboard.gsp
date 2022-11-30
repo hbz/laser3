@@ -341,11 +341,8 @@
 %{--                                                <i class="trash alternate outline icon"></i>--}%
 %{--                                            </g:link>--}%
                                         </g:if>
-                                        <g:if test="${wf.userLastUpdated}">
-                                            <g:set var="timeWindow" value="${user.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14) * 86400 * 1000}" />
-                                            <g:if test="${(wf.userLastUpdated.getTime() + timeWindow) > System.currentTimeMillis()}">
-                                                <div class="ui floating right aligned mini label yellow" style="top:0.5em;right:-1em;">${message(code:'default.new')}</div>
-                                            </g:if>
+                                        <g:if test="${wf.isFlaggedAsNew( user )}">
+                                            <div class="ui floating right aligned mini label yellow" style="top:0.5em;right:-1em;">${message(code:'default.new')}</div>
                                         </g:if>
                                     </td>
                                 </tr>

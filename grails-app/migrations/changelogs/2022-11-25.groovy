@@ -1,3 +1,5 @@
+package changelogs
+
 databaseChangeLog = {
 
     //indirect cherry-pick from changelogs/2022-06-24.groovy - sorting has been complained again ...
