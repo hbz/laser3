@@ -21,6 +21,8 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook
 import org.springframework.context.MessageSource
 import org.hibernate.Session
 
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
 import java.text.SimpleDateFormat
 
 /**
@@ -1005,7 +1007,7 @@ class ExportClickMeService {
         String consortiaFilter = ''
         if(institution.getCustomerType() == 'ORG_CONSORTIUM')
             consortiaFilter = ' and s.instanceOf = null '
-        Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where plat = in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg join sp.subscription s join s.orgRelations oo where oo.org = :ctx '+consortiaFilter+')', [ctx: institution]).each { Platform plat ->
+        Platform.executeQuery('select distinct(plat) from CustomerIdentifier ci join ci.platform plat where plat in (select pkg.nominalPlatform from SubscriptionPackage sp join sp.pkg pkg join sp.subscription s join s.orgRelations oo where oo.org = :ctx '+consortiaFilter+')', [ctx: institution]).each { Platform plat ->
             exportFields.put("participantCustomerIdentifiers."+plat.id, [field: null, label: plat.name])
         }
 
@@ -2513,6 +2515,8 @@ class ExportClickMeService {
 
         result = exportService.getIssueEntitlement(result)
 
+        DecimalFormat df = new DecimalFormat("###,##0.00")
+        df.decimalFormatSymbols = new DecimalFormatSymbols(LocaleUtils.getCurrentLocale())
         selectedFields.keySet().each { String fieldKey ->
             Map mapSelecetedFields = selectedFields.get(fieldKey)
             String field = mapSelecetedFields.field
@@ -2549,52 +2553,52 @@ class ExportClickMeService {
                     LinkedHashSet<PriceItem> priceItemsList = result.priceItems.findAll { it.listCurrency == RDStore.CURRENCY_EUR }
 
                     if (priceItemsList) {
-                        row.add([field: priceItemsList.collect {it.listPrice}.join(";"), style: null])
+                        row.add([field: priceItemsList.collect {df.format(it.listPrice)}.join(";"), style: null])
                     } else {
                         row.add([field: '', style: null])
                     }
                 }
                 else if (fieldKey.contains('listPriceGBP')) {
-                    LinkedHashSet<PriceItem> priceItemsList = result.priceItems.findAll { it.listCurrency == RDStore.CURRENCY_GBP }
+                    PriceItem priceItem = result.priceItems.find { it.listCurrency == RDStore.CURRENCY_GBP }
 
-                    if (priceItemsList) {
-                        row.add([field: priceItemsList.collect {it.listPrice}.join(";"), style: null])
+                    if (priceItem) {
+                        row.add([field: df.format(priceItem.listPrice), style: null])
                     } else {
                         row.add([field: '', style: null])
                     }
                 }
                 else if (fieldKey.contains('listPriceUSD')) {
-                    LinkedHashSet<PriceItem> priceItemsList = result.priceItems.findAll { it.listCurrency == RDStore.CURRENCY_USD }
+                    PriceItem priceItem = result.priceItems.find { it.listCurrency == RDStore.CURRENCY_USD }
 
-                    if (priceItemsList) {
-                        row.add([field: priceItemsList.collect {it.listPrice}.join(";"), style: null])
+                    if (priceItem) {
+                        row.add([field: df.format(priceItem.listPrice), style: null])
                     } else {
                         row.add([field: '', style: null])
                     }
                 }
                 else if (fieldKey.contains('localPriceEUR')) {
-                    LinkedHashSet<PriceItem> priceItemsList = result.priceItems.findAll { it.localCurrency == RDStore.CURRENCY_EUR }
+                    PriceItem priceItem = result.priceItems.find { it.localCurrency == RDStore.CURRENCY_EUR }
 
-                    if (priceItemsList) {
-                        row.add([field: priceItemsList.collect {it.localPrice}.join(";"), style: null])
+                    if (priceItem) {
+                        row.add([field: df.format(priceItem.localPrice), style: null])
                     } else {
                         row.add([field: '', style: null])
                     }
                 }
                 else if (fieldKey.contains('localPriceGBP')) {
-                    LinkedHashSet<PriceItem> priceItemsList = result.priceItems.findAll { it.localCurrency == RDStore.CURRENCY_GBP }
+                    PriceItem priceItem = result.priceItems.find { it.localCurrency == RDStore.CURRENCY_GBP }
 
-                    if (priceItemsList) {
-                        row.add([field: priceItemsList.collect {it.localPrice}.join(";"), style: null])
+                    if (priceItem) {
+                        row.add([field: df.format(priceItem.localPrice), style: null])
                     } else {
                         row.add([field: '', style: null])
                     }
                 }
                 else if (fieldKey.contains('localPriceUSD')) {
-                    LinkedHashSet<PriceItem> priceItemsList = result.priceItems.findAll { it.localCurrency == RDStore.CURRENCY_USD }
+                    PriceItem priceItem = result.priceItems.find { it.localCurrency == RDStore.CURRENCY_USD }
 
-                    if (priceItemsList) {
-                        row.add([field: priceItemsList.collect {it.localPrice}.join(";"), style: null])
+                    if (priceItem) {
+                        row.add([field: df.format(priceItem.localPrice), style: null])
                     } else {
                         row.add([field: '', style: null])
                     }
@@ -2621,6 +2625,8 @@ class ExportClickMeService {
 
         result = exportService.getTipp(result)
 
+        DecimalFormat df = new DecimalFormat("###,##0.00")
+        df.decimalFormatSymbols = new DecimalFormatSymbols(LocaleUtils.getCurrentLocale())
         selectedFields.keySet().each { String fieldKey ->
             Map mapSelecetedFields = selectedFields.get(fieldKey)
             String field = mapSelecetedFields.field
@@ -2655,7 +2661,7 @@ class ExportClickMeService {
                     LinkedHashSet<PriceItem> priceItemsList = result.priceItems.findAll { it.listCurrency == RDStore.CURRENCY_EUR }
 
                     if (priceItemsList) {
-                        row.add([field: priceItemsList.collect {it.listPrice}.join(";"), style: null])
+                        row.add([field: priceItemsList.collect {df.format(it.listPrice)}.join(";"), style: null])
                     } else {
                         row.add([field: '', style: null])
                     }
@@ -2664,7 +2670,7 @@ class ExportClickMeService {
                     LinkedHashSet<PriceItem> priceItemsList = result.priceItems.findAll { it.listCurrency == RDStore.CURRENCY_GBP }
 
                     if (priceItemsList) {
-                        row.add([field: priceItemsList.collect {it.listPrice}.join(";"), style: null])
+                        row.add([field: priceItemsList.collect {df.format(it.listPrice)}.join(";"), style: null])
                     } else {
                         row.add([field: '', style: null])
                     }
@@ -2673,7 +2679,7 @@ class ExportClickMeService {
                     LinkedHashSet<PriceItem> priceItemsList = result.priceItems.findAll { it.listCurrency == RDStore.CURRENCY_USD }
 
                     if (priceItemsList) {
-                        row.add([field: priceItemsList.collect {it.listPrice}.join(";"), style: null])
+                        row.add([field: priceItemsList.collect {df.format(it.listPrice)}.join(";"), style: null])
                     } else {
                         row.add([field: '', style: null])
                     }
@@ -2682,7 +2688,7 @@ class ExportClickMeService {
                     LinkedHashSet<PriceItem> priceItemsList = result.priceItems.findAll { it.localCurrency == RDStore.CURRENCY_EUR }
 
                     if (priceItemsList) {
-                        row.add([field: priceItemsList.collect {it.localPrice}.join(";"), style: null])
+                        row.add([field: priceItemsList.collect {df.format(it.localPrice)}.join(";"), style: null])
                     } else {
                         row.add([field: '', style: null])
                     }
@@ -2691,7 +2697,7 @@ class ExportClickMeService {
                     LinkedHashSet<PriceItem> priceItemsList = result.priceItems.findAll { it.localCurrency == RDStore.CURRENCY_GBP }
 
                     if (priceItemsList) {
-                        row.add([field: priceItemsList.collect {it.localPrice}.join(";"), style: null])
+                        row.add([field: priceItemsList.collect {df.format(it.localPrice)}.join(";"), style: null])
                     } else {
                         row.add([field: '', style: null])
                     }
@@ -2700,7 +2706,7 @@ class ExportClickMeService {
                     LinkedHashSet<PriceItem> priceItemsList = result.priceItems.findAll { it.localCurrency == RDStore.CURRENCY_USD }
 
                     if (priceItemsList) {
-                        row.add([field: priceItemsList.collect {it.localPrice}.join(";"), style: null])
+                        row.add([field: priceItemsList.collect {df.format(it.localPrice)}.join(";"), style: null])
                     } else {
                         row.add([field: '', style: null])
                     }

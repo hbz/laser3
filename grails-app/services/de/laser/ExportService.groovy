@@ -38,6 +38,8 @@ import java.awt.*
 import java.math.RoundingMode
 import java.sql.Connection
 import java.sql.Timestamp
+import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
 import java.text.SimpleDateFormat
 import java.util.List
 
@@ -2024,7 +2026,7 @@ class ExportService {
 					//title_url
 					row.add(tipp.hostPlatformURL ?: ' ')
 					//first_author (no value?)
-					row.add(tipp.firstAuthor ?: ' ')
+					row.add(tipp.firstAuthor ? tipp.firstAuthor.replaceAll(';', ',') : ' ')
 					//title_id (no value?)
 					row.add(' ')
 					if(covStmt) {
@@ -2064,7 +2066,7 @@ class ExportService {
 						//monograph_edition (no value unless BookInstance)
 						row.add(tipp.editionNumber ?: ' ')
 						//first_editor (no value unless BookInstance)
-						row.add(tipp.firstEditor ?: ' ')
+						row.add(tipp.firstEditor ? tipp.firstEditor.replaceAll(';', ',') : ' ')
 					}
 					else {
 						//empty values from date_monograph_published_print to first_editor
@@ -2162,33 +2164,46 @@ class ExportService {
                     //ISBNs
                     row.add(joinIdentifiers(tipp.ids,IdentifierNamespace.PISBN,','))*/
 					//other identifier namespaces
-
+					DecimalFormat df = new DecimalFormat("###,##0.00")
+					df.decimalFormatSymbols = new DecimalFormatSymbols(LocaleUtils.getCurrentLocale())
 					if(entitlement?.priceItems) {
 						//listprice_eur
-						row.add(entitlement.priceItems.find {it.listCurrency == RDStore.CURRENCY_EUR}?.listPrice ?: ' ')
+						BigDecimal listEUR = entitlement.priceItems.find {it.listCurrency == RDStore.CURRENCY_EUR}?.listPrice
+						row.add(listEUR ? df.format(listEUR) : ' ')
 						//listprice_gbp
-						row.add(entitlement.priceItems.find {it.listCurrency == RDStore.CURRENCY_GBP}?.listPrice ?: ' ')
+						BigDecimal listGBP = entitlement.priceItems.find {it.listCurrency == RDStore.CURRENCY_GBP}?.listPrice
+						row.add(listGBP ? df.format(listGBP) : ' ')
 						//listprice_usd
-						row.add(entitlement.priceItems.find {it.listCurrency == RDStore.CURRENCY_USD}?.listPrice ?: ' ')
+						BigDecimal listUSD = entitlement.priceItems.find {it.listCurrency == RDStore.CURRENCY_USD}?.listPrice
+						row.add(listUSD ? df.format(listUSD) : ' ')
 						//localprice_eur
-						row.add(entitlement.priceItems.find {it.localCurrency == RDStore.CURRENCY_EUR}?.localPrice ?: ' ')
+						BigDecimal localEUR = entitlement.priceItems.find {it.localCurrency == RDStore.CURRENCY_EUR}?.localPrice
+						row.add(localEUR ? df.format(localEUR) : ' ')
 						//localprice_gbp
-						row.add(entitlement.priceItems.find {it.localCurrency == RDStore.CURRENCY_GBP}?.localPrice ?: ' ')
+						BigDecimal localGBP = entitlement.priceItems.find {it.localCurrency == RDStore.CURRENCY_GBP}?.localPrice
+						row.add(localGBP ? df.format(localGBP) : ' ')
 						//localprice_usd
-						row.add(entitlement.priceItems.find {it.localCurrency == RDStore.CURRENCY_USD}?.localPrice ?: ' ')
+						BigDecimal localUSD = entitlement.priceItems.find {it.localCurrency == RDStore.CURRENCY_USD}?.localPrice
+						row.add(localUSD ? df.format(localUSD) : ' ')
 					} else if (tipp.priceItems) {
 						//listprice_eur
-						row.add(tipp.priceItems.find { it.listCurrency == RDStore.CURRENCY_EUR }?.listPrice ?: ' ')
+						BigDecimal listEUR = tipp.priceItems.find {it.listCurrency == RDStore.CURRENCY_EUR}?.listPrice
+						row.add(listEUR ? df.format(listEUR) : ' ')
 						//listprice_gbp
-						row.add(tipp.priceItems.find { it.listCurrency == RDStore.CURRENCY_GBP }?.listPrice ?: ' ')
+						BigDecimal listGBP = tipp.priceItems.find {it.listCurrency == RDStore.CURRENCY_GBP}?.listPrice
+						row.add(listGBP ? df.format(listGBP) : ' ')
 						//listprice_usd
-						row.add(tipp.priceItems.find { it.listCurrency == RDStore.CURRENCY_USD }?.listPrice ?: ' ')
+						BigDecimal listUSD = tipp.priceItems.find { it.listCurrency == RDStore.CURRENCY_USD }?.listPrice
+						row.add(listUSD ? df.format(listUSD) : ' ')
 						//localprice_eur
-						row.add(tipp.priceItems.find { it.localCurrency == RDStore.CURRENCY_EUR }?.localPrice ?: ' ')
+						BigDecimal localEUR = tipp.priceItems.find {it.localCurrency == RDStore.CURRENCY_EUR}?.localPrice
+						row.add(localEUR ? df.format(localEUR) : ' ')
 						//localprice_gbp
-						row.add(tipp.priceItems.find { it.localCurrency == RDStore.CURRENCY_GBP }?.localPrice ?: ' ')
+						BigDecimal localGBP = tipp.priceItems.find {it.localCurrency == RDStore.CURRENCY_GBP}?.localPrice
+						row.add(localGBP ? df.format(localGBP) : ' ')
 						//localprice_usd
-						row.add(tipp.priceItems.find { it.localCurrency == RDStore.CURRENCY_USD }?.localPrice ?: ' ')
+						BigDecimal localUSD = tipp.priceItems.find { it.localCurrency == RDStore.CURRENCY_USD }?.localPrice
+						row.add(localUSD ? df.format(localUSD) : ' ')
 					}
 					else {
 						//empty values for price item columns
@@ -2213,6 +2228,7 @@ class ExportService {
 				}
 				log.debug("flush after ${offset} ...")
 				sess.flush()
+				sess.clear()
 			}
 		}
 
@@ -2617,7 +2633,7 @@ class ExportService {
 			!(coreTitleNS in [IdentifierNamespace.ISBN, IdentifierNamespace.PISBN, IdentifierNamespace.ISSN, IdentifierNamespace.EISSN])
 		}
 		if(entitlementInstance == TitleInstancePackagePlatform.class.name) {
-			identifiers = sql.rows("select tipp_global_uid, id_value, idns_ns from identifier join identifier_namespace on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id ${queryData.join} where ${queryData.where}", queryData.params)
+			identifiers = sql.rows("select id_tipp_fk, id_value, idns_ns from identifier join identifier_namespace on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id ${queryData.join} where ${queryData.where}", queryData.params)
 			coverages = sql.rows("select tc_tipp_fk, tc_start_date as startDate, tc_start_volume as startVolume, tc_start_issue as startIssue, tc_end_date as endDate, tc_end_volume as endIssue, tc_end_issue as endIssue, tc_coverage_note as coverageNote, tc_coverage_depth as coverageDepth, tc_embargo as embargo from tippcoverage join title_instance_package_platform on tc_tipp_fk = tipp_id ${queryData.join} where ${queryData.where}", queryData.params)
 			priceItems = sql.rows("select pi_tipp_fk, pi_list_price, (select rdv_value from refdata_value where rdv_id = pi_list_currency_rv_fk) as pi_list_currency, pi_local_price, (select rdv_value from refdata_value where rdv_id = pi_local_currency_rv_fk) as pi_local_currency from price_item join title_instance_package_platform on pi_tipp_fk = tipp_id ${queryData.join} where ${queryData.where}", queryData.params)
 			coreTitleIdentifierNamespaces = sql.rows("select distinct idns_ns from identifier_namespace join identifier on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id ${queryData.join} where idns_ns in ('${coreTitleNSrestricted.join("','")}') and ${queryData.where}", queryData.params)
@@ -2627,7 +2643,7 @@ class ExportService {
 			priceItemMap.putAll(preprocessPriceItemRows(priceItems, 'pi_tipp_fk'))
 		}
 		else if(entitlementInstance == IssueEntitlement.class.name) {
-			identifiers = sql.rows("select tipp_global_uid, id_value, idns_ns from identifier join identifier_namespace on id_ns_fk = idns_id join issue_entitlement on ie_tipp_fk = id_tipp_fk join title_instance_package_platform on ie_tipp_fk = tipp_id where ${queryData.where}", queryData.params)
+			identifiers = sql.rows("select id_tipp_fk, id_value, idns_ns from identifier join identifier_namespace on id_ns_fk = idns_id join issue_entitlement on ie_tipp_fk = id_tipp_fk join title_instance_package_platform on ie_tipp_fk = tipp_id where ${queryData.where}", queryData.params)
 			coverages = sql.rows("select ic_ie_fk, ic_start_date as startDate, ic_start_volume as startVolume, ic_start_issue as startIssue, ic_end_date as endDate, ic_end_volume as endVolume, ic_end_issue as endIssue, ic_coverage_note as coverageNote, ic_coverage_depth as coverageDepth, ic_embargo as embargo from issue_entitlement_coverage join issue_entitlement on ic_ie_fk = ie_id join title_instance_package_platform on ie_tipp_fk = tipp_id where ${queryData.where}", queryData.params)
 			priceItems = sql.rows("select pi_ie_fk, pi_list_price, (select rdv_value from refdata_value where rdv_id = pi_list_currency_rv_fk) as pi_list_currency, pi_local_price, (select rdv_value from refdata_value where rdv_id = pi_local_currency_rv_fk) as pi_local_currency from price_item join issue_entitlement on pi_ie_fk = ie_id join title_instance_package_platform on ie_tipp_fk = tipp_id where ${queryData.where}", queryData.params)
 			coreTitleIdentifierNamespaces = sql.rows("select distinct idns_ns from identifier_namespace join identifier on id_ns_fk = idns_id join title_instance_package_platform on id_tipp_fk = tipp_id join issue_entitlement on ie_tipp_fk = tipp_id where idns_ns in ('${coreTitleNSrestricted.join("','")}') and ${queryData.where}", queryData.params)
@@ -2743,8 +2759,10 @@ class ExportService {
 				whereTo = 'id.tipp.id in (:titleInstances)'
 			else if(entitlementInstance == IssueEntitlement.class.name)
 				whereTo = 'id.tipp.id in (select ie.tipp from IssueEntitlement ie where ie.tipp.id in (:titleInstances))'
-			if(whereTo)
-				result.addAll(IdentifierNamespace.executeQuery('select distinct(ns) from Identifier id join id.ns ns where '+whereTo+' and ns.ns not in (:coreTitleNS)',[titleInstances:entitlementChunk,coreTitleNS:IdentifierNamespace.CORE_TITLE_NS]))
+			if(whereTo) {
+				List subResult = IdentifierNamespace.executeQuery('select distinct(ns) from Identifier id join id.ns ns where ' + whereTo + ' and ns.ns not in (:coreTitleNS)', [titleInstances: entitlementChunk, coreTitleNS: IdentifierNamespace.CORE_TITLE_NS])
+				result.addAll(subResult)
+			}
 		}
 		result
 	}

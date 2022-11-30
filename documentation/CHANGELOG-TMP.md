@@ -7,6 +7,16 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4625    30.11.2022  dev     3.0         Andreas Bug         Umgang mit WIBID korrigiert
+
+4623    30.11.2022  dev     3.0         Andreas Bug         Datenausgabe bei Vertragsexport korrigiert
+
+4622    30.11.2022  dev     3.0         Andreas Bug         Fehler bei ClickMichExcel-Abfrage behoben
+
+4618    30.11.2022  dev     3.0         Andreas Bug         Text bei leerer Ergebnismenge eingebaut
+
+4615    30.11.2022  dev     3.0         Andreas Bug         Fehler bei Meine Pakete-Filter behoben
+
 4609    29.11.2022  dev     3.0         Andreas Bug         Kostenausschüttung den konsortialen Anforderungen entsprechend angepasst
 
 4608    29.11.2022  dev     3.0         Andreas Feature     Aufstufung des Merkmals Titelwahl (Stichtag) zum allgemeinen Merkmal

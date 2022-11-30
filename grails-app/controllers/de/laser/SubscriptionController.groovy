@@ -767,7 +767,7 @@ class SubscriptionController {
                     filename =params.filename
                 }
 
-                ArrayList<IssueEntitlement> issueEntitlements = ctrlResult.result.entitlementIDs ? IssueEntitlement.findAllByIdInList(ctrlResult.result.entitlementIDs,[sort:'tipp.sortname']) : [:]
+                ArrayList<IssueEntitlement> issueEntitlements = ctrlResult.result.entitlementIDs ? IssueEntitlement.findAllByIdInList(ctrlResult.result.entitlementIDs.id,[sort:'tipp.sortname']) : [:]
 
                 Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
                 Map<String, Object> selectedFields = [:]
@@ -791,7 +791,7 @@ class SubscriptionController {
                         response.setHeader("Content-disposition", "attachment; filename=${filename}.csv")
                         response.contentType = "text/csv"
                         ServletOutputStream out = response.outputStream
-                        Map<String,List> tableData = exportService.generateTitleExportCSV(ctrlResult.result.entitlementIDs,IssueEntitlement.class.name)
+                        Map<String,List> tableData = exportService.generateTitleExportCSV(ctrlResult.result.entitlementIDs.id,IssueEntitlement.class.name)
                         out.withWriter { writer ->
                             writer.write(exportService.generateSeparatorTableString(tableData.titleRow,tableData.rows,';'))
                         }
