@@ -463,7 +463,7 @@ class WorkflowService {
      * @param params the request parameter map
      * @return a result map with the execution status
      */
-    Map<String, Object> instantiateCompleteWorkflow(GrailsParameterMap params, String title) {
+    Map<String, Object> instantiateCompleteWorkflow(GrailsParameterMap params) {
         log.debug('instantiateCompleteWorkflow() ' + params)
         String[] cmd = (params.cmd as String).split(':')
 
@@ -477,8 +477,11 @@ class WorkflowService {
                     result.prototype    = WfWorkflowPrototype.get( cmd[2] )
                     result.workflow     = result.prototype.instantiate( genericOIDService.resolveOID(params.target)  )
 
-                    if (title) {
-                        result.workflow.title = title
+                    if (params.workflowName) {
+                        result.workflow.title = params.workflowName
+                    }
+                    if (params.workflowUser && params.workflowUser != 'all') {
+                        result.workflow.user = User.get(params.workflowUser)
                     }
 
                     if (! result.workflow.save()) {
@@ -572,7 +575,7 @@ class WorkflowService {
                 GrailsParameterMap clone = params.clone() as GrailsParameterMap
                 clone.setProperty( 'cmd', params.cmd + ':' + params.workflowId )
 
-                result = instantiateCompleteWorkflow( clone, params.workflowName )
+                result = instantiateCompleteWorkflow( clone )
             }
         }
         else if (cmd[0] == 'usage') {  // TODO return msg

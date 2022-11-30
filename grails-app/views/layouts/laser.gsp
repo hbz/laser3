@@ -167,8 +167,6 @@
                             </a>
 
                             <div class="menu" role="menu">
-                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="usage"
-                                            action="index">${message(code: 'menu.datamanager.manage_usage_stats')}</ui:link>
 
                                     <ui:link generateElementId="true" class="item" role="menuitem" controller="dataManager" action="index">${message(code:'default.dashboard')}</ui:link>
                                     <ui:link generateElementId="true" class="item" role="menuitem" controller="dataManager"
@@ -191,6 +189,8 @@
                                     <ui:link generateElementId="true" class="item" role="menuitem" controller="dataManager" action="checkPackageTIPPs">Tipps Check of we:kb and LAS:eR</ui:link>
                                     <div class="divider"></div>
                                     <ui:link generateElementId="true" class="item" role="menuitem" controller="dataManager" action="listMailTemplates">Mail Templates</ui:link>
+
+                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="usage" action="index">${message(code: 'menu.datamanager.manage_usage_stats')}</ui:link>
                             </div>
                         </div>
                     </sec:ifAnyGranted>

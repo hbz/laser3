@@ -35,9 +35,23 @@
     <ui:modal id="modalInstantiateWorkflow" text="Workflow für '${targetText}' erstellen">
 
         <g:form controller="${targetController}" action="workflows" id="${target.id}" method="POST" class="ui form">
+            <div class="fields two" style="margin-bottom:0;">
             <div class="field">
                 <label for="workflowName">${message(code:'default.title.label')}</label>
                 <input id="workflowName" name="workflowName" type="text" value="Mein neuer Workflow">
+            </div>
+            <div class="field">
+                <label for="workflowUser">${message(code:'task.responsible.label')}</label>
+                <g:set var="responsibleList" value="${taskService.getUserDropdown(contextService.getOrg())}" />
+                <g:select id="workflowUser"
+                          name="workflowUser"
+                          from="${ responsibleList + [id:'all', display:message(code:'workflow.user.noCurrentUser')] }"
+                          optionValue="${{it.display}}"
+                          optionKey="${{it.id}}"
+                          value="all"
+                          class="ui dropdown search la-not-clearable"
+                />
+            </div>
             </div>
             <div class="field">
                 <label for="workflowId">${message(code:'workflow.template')}</label>
