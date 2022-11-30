@@ -348,7 +348,13 @@ class SubscriptionController {
             response.sendError(401)
             return
         }
-        else ctrlResult.result
+        else {
+            if (params.bulk_op) {
+                docstoreService.bulkDocOperation(params, ctrlResult.result as Map, flash)
+            }
+
+            ctrlResult.result
+        }
     }
 
     /**
@@ -1767,7 +1773,7 @@ class SubscriptionController {
             if(params.workFlowPart == CopyElementsService.WORKFLOW_END && ctrlResult.result.targetObject) {
                 SurveyConfig surveyConfig = SurveyConfig.findBySubscriptionAndSubSurveyUseForTransfer(ctrlResult.result.sourceObject, true)
                 if (surveyConfig && ctrlResult.result.fromSurvey) {
-                    redirect controller: 'survey', action: 'renewalEvaluation', params: [id: surveyConfig.surveyInfo.id, surveyConfigID: surveyConfig.id]
+                    redirect controller: 'survey', action: 'compareMembersOfTwoSubs', params: [id: surveyConfig.surveyInfo.id, surveyConfigID: surveyConfig.id]
                     return
                 }
                 else {
@@ -1849,24 +1855,6 @@ class SubscriptionController {
             redirect controller: 'myInstitution', action: 'currentSubscriptions'
             return
         }
-    }
-
-    //--------------------------------------------- admin section -------------------------------------------------
-
-    @Deprecated
-    @DebugInfo(ctrlService = DebugInfo.WITH_TRANSACTION)
-    @Secured(['ROLE_ADMIN'])
-    @Check404()
-    def pendingChanges() {
-        Map<String,Object> ctrlResult = subscriptionControllerService.pendingChanges(this, params)
-        if (ctrlResult.status == SubscriptionControllerService.STATUS_ERROR) {
-            if(!ctrlResult.result) {
-                response.sendError(401)
-                return
-            }
-        }
-        else
-            ctrlResult.result
     }
 
     //--------------------------------------------- reporting -------------------------------------------------

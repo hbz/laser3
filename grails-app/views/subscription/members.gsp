@@ -314,7 +314,7 @@
                                     </button>
                                 </span>
                             </g:else>
-                        <ui:xEditableAsIcon owner="${sub}" class="ui icon center aligned" iconClass="info circular inverted" field="comment" type="textarea"/>
+                        <ui:xEditableAsIcon owner="${sub}" class="ui icon center aligned" iconClass="info circular inverted" field="comment" type="textarea" emptyTooltip="${message(code: 'subscription.details.internalComment')}"/>
                     </td>
                 </tr>
             </g:each>

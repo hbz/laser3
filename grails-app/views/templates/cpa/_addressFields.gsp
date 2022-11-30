@@ -1,7 +1,7 @@
 <%@ page import="de.laser.Address; de.laser.FormService; de.laser.storage.RDStore; de.laser.RefdataValue; de.laser.RefdataCategory;de.laser.storage.RDConstants; de.laser.I10nTranslation;" %>
 
 <laser:serviceInjection />
-<div id="addressFields1">
+<div id="addressFields1" class="addressField">
         <g:if test="${multipleAddresses}">
             <input type="hidden" name="multipleAddresses" value="multipleAddresses"/>
         </g:if>

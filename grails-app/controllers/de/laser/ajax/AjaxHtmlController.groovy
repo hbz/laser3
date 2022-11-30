@@ -1270,7 +1270,7 @@ class AjaxHtmlController {
      * Retrieves detailed title information to a given entitlement and opens a modal showing those details
      */
     @Secured(['ROLE_USER'])
-    Map<String,Object> showAllTitleInfos2() {
+    Map<String,Object> showAllTitleInfosAccordion() {
         Map<String, Object> result = [:]
 
         result.apisources = ApiSource.findAllByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)

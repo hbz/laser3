@@ -45,15 +45,19 @@ class WorkflowTagLib {
         String link         = g.createLink(controller: 'ajaxHtml', action: 'useWfXModal', params: attrs.params)
 
         if (workflow.user) {
-            if (workflow.user.id == user.id) {
-                out <<  '<a href="' + link + '" class="ui icon button blue la-modern-button wfModalLink"><i class="icon user"></i></a>'
-            }
-            else {
+//            if (workflow.user.id == user.id) {
+//                out <<  '<a href="' + link + '" class="ui icon button blue la-modern-button wfModalLink"><i class="icon user"></i></a>'
+//            }
+//            else {
                 out <<  '<a href="' + link + '" class="ui icon button blue la-modern-button la-popup-tooltip la-delay wfModalLink" '
                 out <<          'data-position="top right" data-content="' + message(code:'workflow.user.currentUser', args: [workflow.user.displayName]) + '">'
-                out <<      '<i class="icon user outline"></i>'
+                if (workflow.user.id == user.id) {
+                    out <<      '<i class="icon user"></i>'
+                } else {
+                    out <<      '<i class="icon user outline"></i>'
+                }
                 out <<  '</a>'
-            }
+//            }
         }
         else {
             out <<  '<a href="' + link + '" class="ui icon button blue la-modern-button la-popup-tooltip la-delay wfModalLink" '

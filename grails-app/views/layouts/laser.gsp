@@ -62,11 +62,11 @@
                                     <ui:link generateElementId="true" class="item" role="menuitem" controller="package" action="index">${message(code:'menu.public.all_pkg')}</ui:link>
                                     <ui:link generateElementId="true" class="item" role="menuitem" controller="title" action="index">${message(code:'menu.public.all_titles')}</ui:link>
 
-                                    <sec:ifAnyGranted roles="ROLE_ADMIN,ROLE_ORG_EDITOR">
+                                    <sec:ifAnyGranted roles="ROLE_ADMIN">
                                         <ui:link generateElementId="true" role="menuitem" controller="organisation" action="index">${message(code:'menu.public.all_orgs')}</ui:link>
                                     </sec:ifAnyGranted>
 
-                                    <g:if test="${accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_USER','ROLE_ADMIN,ROLE_ORG_EDITOR')}">
+                                    <g:if test="${accessService.checkPermAffiliationX('ORG_CONSORTIUM','INST_USER','ROLE_ADMIN')}">
                                         <ui:link generateElementId="true" role="menuitem" controller="organisation" action="listInstitution">${message(code:'menu.public.all_insts')}</ui:link>
                                     </g:if>
                                     <g:elseif test="${accessService.checkPermAffiliation('ORG_BASIC_MEMBER','INST_USER')}">
@@ -79,7 +79,7 @@
                                     <div class="divider"></div>
                                     <ui:link generateElementId="true" class="item" role="menuitem" controller="gasco">${message(code:'menu.public.gasco_monitor')}</ui:link>
 
-                                    <a id="wekb" href="${message(code:'url.wekb.' + currentServer)}" target="_blank" class="item" role="menuitem"><i class="ui icon la-gokb"></i> we:kb</a>
+                                    <a id="wekb" href="${message(code:'url.wekb.' + currentServer)}" class="item" role="menuitem"><i class="ui icon la-gokb"></i> we:kb</a>
 
                             </div>
                         </div>
@@ -117,7 +117,7 @@
                                     <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="survey" action="workflowsSurveysConsortia" message="menu.my.surveys" />
 
                                     <div class="divider"></div>
-                                    <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" specRole="ROLE_ADMIN,ROLE_ORG_EDITOR" action="manageMembers" message="menu.my.insts" />
+                                    <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" specRole="ROLE_ADMIN" action="manageMembers" message="menu.my.insts" />
                                     <ui:securedMainNavItem generateElementId="true" role="menuitem" affiliation="INST_USER" controller="myInstitution" specRole="ROLE_ADMIN" action="manageConsortiaSubscriptions" message="menu.my.consortiaSubscriptions" />
                                 </g:if>
                                 <g:elseif test="${accessService.checkPerm('ORG_BASIC_MEMBER')}">
@@ -160,30 +160,21 @@
                         </div>
                     </g:if>
 
-                    <sec:ifAnyGranted roles="ROLE_ORG_MANAGER,ROLE_ADMIN,ROLE_STATISTICS_EDITOR">
+                    <sec:ifAnyGranted roles="ROLE_ADMIN">
                         <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
                             <a class="title">
                                 ${message(code:'menu.datamanager')} <i class="dropdown icon"></i>
                             </a>
 
                             <div class="menu" role="menu">
-                                <sec:ifAnyGranted roles="ROLE_STATISTICS_EDITOR">
-                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="usage"
-                                            action="index">${message(code: 'menu.datamanager.manage_usage_stats')}</ui:link>
-                                </sec:ifAnyGranted>
 
-                                <sec:ifAnyGranted roles="ROLE_ADMIN">
                                     <ui:link generateElementId="true" class="item" role="menuitem" controller="dataManager" action="index">${message(code:'default.dashboard')}</ui:link>
                                     <ui:link generateElementId="true" class="item" role="menuitem" controller="dataManager"
                                             action="deletedTitles">${message(code: 'datamanager.deletedTitleManagement.label')}</ui:link>
-                                </sec:ifAnyGranted>
 
-                                <sec:ifAnyGranted roles="ROLE_ORG_MANAGER,ROLE_ADMIN">
                                     <ui:link generateElementId="true" class="item" role="menuitem" controller="dataManager"
                                             action="deletedOrgs">${message(code: 'datamanager.deletedOrgManagement.label')}</ui:link>
-                                </sec:ifAnyGranted>
 
-                                <sec:ifAnyGranted roles="ROLE_ADMIN">
                                     <div class="divider"></div>
 
                                     <ui:link generateElementId="true" class="item" role="menuitem" controller="package" action="list">${message(code:'menu.datamanager.searchPackages')}</ui:link>
@@ -194,13 +185,12 @@
                                     <ui:link generateElementId="true" class="item" role="menuitem" controller="subscription" action="compare">${message(code:'menu.datamanager.compareSubscriptions')}</ui:link>
                                     <ui:link generateElementId="true" class="item" role="menuitem" controller="onixplLicenseCompare" action="index">${message(code:'menu.institutions.comp_onix')}</ui:link>
                                     <div class="divider"></div>
-                                </sec:ifAnyGranted>
 
-                                <sec:ifAnyGranted roles="ROLE_ADMIN">
                                     <ui:link generateElementId="true" class="item" role="menuitem" controller="dataManager" action="checkPackageTIPPs">Tipps Check of we:kb and LAS:eR</ui:link>
                                     <div class="divider"></div>
                                     <ui:link generateElementId="true" class="item" role="menuitem" controller="dataManager" action="listMailTemplates">Mail Templates</ui:link>
-                                </sec:ifAnyGranted>
+
+                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="usage" action="index">${message(code: 'menu.datamanager.manage_usage_stats')}</ui:link>
                             </div>
                         </div>
                     </sec:ifAnyGranted>

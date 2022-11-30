@@ -1,7 +1,7 @@
 <%@ page import="de.laser.storage.RDStore" %>
 <laser:serviceInjection/>
 
-<g:if test="${accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN,ROLE_ORG_EDITOR')}">
+<g:if test="${accessService.checkPermAffiliationX('ORG_INST,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')}">
     <ui:actionsDropdown>
         <g:if test="${editable || accessService.checkPermAffiliation('ORG_INST,ORG_CONSORTIUM','INST_EDITOR')}">
             <g:if test="${actionName == 'list'}">
@@ -78,14 +78,14 @@
             <g:set var="createModal" value="${true}"/>
         </g:if>
         <g:if test="${actionName == 'show'}">
-            <sec:ifAnyGranted roles="ROLE_ORG_EDITOR,ROLE_ADMIN">
+            <sec:ifAnyGranted roles="ROLE_ADMIN">
                 <div class="divider"></div>
                 <g:link class="item" action="delete" id="${params.id}"><i class="trash alternate outline icon"></i> ${message(code:'deletion.org')}</g:link>
             </sec:ifAnyGranted>
         </g:if>
     </ui:actionsDropdown>
 </g:if>
-<g:elseif test="${accessService.checkPermAffiliationX('ORG_BASIC_MEMBER','INST_EDITOR','ROLE_ADMIN,ROLE_ORG_EDITOR')}">
+<g:elseif test="${accessService.checkPermAffiliationX('ORG_BASIC_MEMBER','INST_EDITOR','ROLE_ADMIN')}">
     <g:if test="${actionName in ['show','notes']}">
         <ui:actionsDropdown>
             <ui:actionsDropdownItem message="template.notes.add" data-ui="modal" href="#modalCreateNote"/>

@@ -14,7 +14,7 @@ buildscript {
         classpath 'org.grails:grails-gradle-plugin:' + grailsGradlePluginVersion
         classpath 'org.grails.plugins:hibernate5:7.3.0'                                     // 2022
         classpath 'org.grails.plugins:database-migration:4.1.0'                             // 2022
-        classpath 'com.bertramlabs.plugins:asset-pipeline-gradle:3.4.7'                     // 2022
+        classpath 'com.bertramlabs.plugins:asset-pipeline-gradle:3.4.7'                     // 2022 : [freeze] : 4.0.0 available
         classpath 'com.gorylenko.gradle-git-properties:gradle-git-properties:2.4.1'         // 2022
         classpath 'com.github.ben-manes:gradle-versions-plugin:0.44.0'                      // 2022
 
@@ -134,7 +134,7 @@ dependencies {
 
     runtimeOnly 'org.apache.tomcat:tomcat-jdbc'
     runtimeOnly 'javax.xml.bind:jaxb-api:2.3.1'                             // 2018 : [?]
-    runtimeOnly 'org.postgresql:postgresql:42.5.0'                          // 2022
+    runtimeOnly 'org.postgresql:postgresql:42.5.1'                          // 2022
 }
 
 springBoot {

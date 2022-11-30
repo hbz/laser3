@@ -82,5 +82,5 @@
 
         <laser:render template="result" model="[own:own,cons:cons,subscr:subscr,showView:showView,filterPresets:filterPresets,ciTitles:ciTitles]" />
 
-        <laser:render template="export/individuallyExportModal" model="[modalID: 'individuallyExportModal']" />
+        <laser:render template="export/individuallyExportModal" model="[modalID: 'individuallyExportModal', subscription: null]" />
 <laser:htmlEnd />

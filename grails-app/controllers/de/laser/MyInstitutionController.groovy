@@ -1239,6 +1239,10 @@ join sub.orgRelations or_sub where
     })
     Map documents() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
+
+        if (params.bulk_op) {
+            docstoreService.bulkDocOperation(params, result, flash)
+        }
         result
     }
 
@@ -2372,6 +2376,9 @@ join sub.orgRelations or_sub where
 
         List visiblePersons = addressbookService.getVisiblePersons("addressbook",params)
 
+        Set<String> filterFields = ['org', 'prs', 'filterPropDef', 'filterProp', 'function', 'position', 'showOnlyContactPersonForInstitution', 'showOnlyContactPersonForProviderAgency']
+        result.filterSet = params.keySet().any { String selField -> selField in filterFields }
+
         result.propList =
                 PropertyDefinition.findAllWhere(
                         descr: PropertyDefinition.PRS_PROP,
@@ -2386,7 +2393,53 @@ join sub.orgRelations or_sub where
                     [persons: visiblePersons, contentType: RDStore.CCT_EMAIL])
         }
 
-        result
+        String filename = escapeService.escapeString("${message(code: 'menu.institutions.myAddressbook')}_${DateUtils.getSDF_yyyyMMdd().format(new Date())}")
+        if(params.exportXLS) {
+            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportService.exportAddressbook('xlsx', visiblePersons)
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+
+            return
+        }
+        else if(params.exportClickMeExcel) {
+            if (params.filename) {
+                filename = params.filename
+            }
+
+            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+            Map<String, Object> selectedFields = [:]
+            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportAddresses(visiblePersons, selectedFields)
+
+            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
+            return
+        }
+        else {
+            withFormat {
+                html {
+                    result
+                }
+                csv {
+                    response.setHeader("Content-disposition", "attachment; filename=\"${filename}.csv\"")
+                    response.contentType = "text/csv"
+                    ServletOutputStream out = response.outputStream
+                    out.withWriter { Writer writer ->
+                        writer.write((String) exportService.exportAddressbook('csv', visiblePersons))
+                    }
+                    out.close()
+                }
+            }
+        }
       }
 
     /**
@@ -2488,8 +2541,8 @@ join sub.orgRelations or_sub where
      * Call for listing institutions eligible to be attached to or detached from the context consortium
      * @return a list of institutions
      */
-    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_EDITOR",specRole="ROLE_ADMIN, ROLE_ORG_EDITOR", wtc = DebugInfo.WITH_TRANSACTION)
-    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM","INST_EDITOR","ROLE_ADMIN, ROLE_ORG_EDITOR") })
+    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_EDITOR",specRole="ROLE_ADMIN", wtc = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = { ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM","INST_EDITOR","ROLE_ADMIN") })
     def addMembers() {
         Combo.withTransaction {
             Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2788,9 +2841,9 @@ join sub.orgRelations or_sub where
      * The result may be filtered by organisational and subscription parameters
      * @return the list of consortial member institutions
      */
-    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN,ROLE_ORG_EDITOR", wtc = DebugInfo.IN_BETWEEN)
+    @DebugInfo(perm="ORG_CONSORTIUM", affil="INST_USER", specRole="ROLE_ADMIN", wtc = DebugInfo.IN_BETWEEN)
     @Secured(closure = {
-        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM","INST_USER","ROLE_ADMIN,ROLE_ORG_EDITOR")
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM","INST_USER","ROLE_ADMIN")
     })
     def manageMembers() {
         Map<String, Object> result = myInstitutionControllerService.getResultGenerics(this, params)
@@ -2880,7 +2933,7 @@ join sub.orgRelations or_sub where
             Map<String, Object> selectedFields = [:]
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
 
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(totalMembers, selectedFields, 'member')
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(totalMembers, selectedFields, 'member', params.contactSwitch)
 
             response.setHeader "Content-disposition", "attachment; filename=\"${file}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
@@ -3500,6 +3553,17 @@ join sub.orgRelations or_sub where
             redirect(url: request.getHeader('referer'))
         }
         SwissKnife.setPaginationParams(result, params, result.user)
+
+        result.availableDescrs = [PropertyDefinition.SUB_PROP,PropertyDefinition.LIC_PROP,PropertyDefinition.PRS_PROP,PropertyDefinition.PLA_PROP,PropertyDefinition.ORG_PROP]
+
+        String localizedName = LocaleUtils.getLocalizedAttributeName('name')
+        Set<PropertyDefinition> propList = []
+        if(params.descr) {
+           propList = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd where pd.descr = :descr and (pd.tenant = null or pd.tenant = :ctx) order by pd."+localizedName+" asc",
+                    [ctx:result.institution, descr: params.descr])
+            result.propList = propList
+        }
+
         EhcacheWrapper cache = contextService.getUserCache("/manageProperties")
         result.selectedWithout = cache.get('without') ?: []
         result.selectedWith = cache.get('with') ?: []
@@ -3526,12 +3590,6 @@ join sub.orgRelations or_sub where
             (sa.sortname ?: sa.name).compareTo((sb.sortname ?: sb.name))
         }*/
         //result.validSubChilds = validSubChildren
-
-        String localizedName = LocaleUtils.getLocalizedAttributeName('name')
-        //result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SUB_PROP], contextService.getOrg())
-        Set<PropertyDefinition> propList = PropertyDefinition.executeQuery("select pd from PropertyDefinition pd where pd.descr in (:availableTypes) and (pd.tenant = null or pd.tenant = :ctx) order by pd."+localizedName+" asc",
-                [ctx:result.institution,availableTypes:[PropertyDefinition.SUB_PROP,PropertyDefinition.LIC_PROP,PropertyDefinition.PRS_PROP,PropertyDefinition.PLA_PROP,PropertyDefinition.ORG_PROP]])
-        result.propList = propList
 
         if(propDef) {
             result.putAll(propertyService.getAvailableProperties(propDef, result.institution, params))
@@ -3571,6 +3629,8 @@ join sub.orgRelations or_sub where
         //prepare next pagination
         params.withoutPropOffset = result.withoutPropOffset
         params.withPropOffset = result.withPropOffset
+
+        println(result)
 
         result
     }
@@ -3857,7 +3917,7 @@ join sub.orgRelations or_sub where
             return
         }
         else
-            render view: 'managePrivatePropertyDefinitions', model: result
+            render view: 'managePropertyDefinitions', model: result
     }
 
     /**

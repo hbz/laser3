@@ -7,9 +7,6 @@
     <ui:subNavItem controller="license" action="linkedSubs" params="${[id:params.id]}" message="subscription.plural"/>
     <g:if test="${license._getCalculatedType() == de.laser.interfaces.CalculatedType.TYPE_CONSORTIAL}">
         <ui:subNavItem controller="license" action="members" params="${[id:params.id]}" text="${message(code:'license.details.incoming.childs')}"/>
-        <sec:ifAnyGranted roles="ROLE_ADMIN">
-            <ui:subNavItem controller="license" action="pendingChanges" params="${[id:params.id]}" message="pendingChange.plural" />
-        </sec:ifAnyGranted>
     </g:if>
     <g:if test="${workflowService.hasUserPerm_read()}"><!-- TODO: workflows-permissions -->
         <ui:subNavItem controller="license" action="workflows" counts="${workflowCount}" params="${[id:params.id]}" message="workflow.plural" />

@@ -47,7 +47,7 @@ class AddressbookService {
      */
     boolean isAddressEditable(Address address, User user) {
         Org org = address.getPrs()?.tenant ?: address.org
-        accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
+        accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
     }
 
     /**
@@ -58,7 +58,7 @@ class AddressbookService {
      */
     boolean isContactEditable(Contact contact, User user) {
         Org org = contact.getPrs()?.tenant ?: contact.org
-        accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN,ROLE_ORG_EDITOR')
+        accessService.checkMinUserOrgRole(user, org, 'INST_EDITOR') || SpringSecurityUtils.ifAnyGranted('ROLE_ADMIN')
     }
 
     /**
@@ -119,25 +119,21 @@ class AddressbookService {
         if (params.function){
             qParts << "pr.functionType.id in (:selectedFunctions) "
             qParams << [selectedFunctions: params.list('function').collect{Long.parseLong(it)}]
-
         }
 
         if (params.position){
             qParts << "pr.positionType.id in (:selectedPositions) "
             qParams << [selectedPositions: params.list('position').collect{Long.parseLong(it)}]
-
         }
 
         if (params.showOnlyContactPersonForInstitution){
             qParts << "(exists (select roletype from pr.org.orgType as roletype where roletype.id = :orgType ) and pr.org.sector.id = :orgSector )"
             qParams << [orgSector: RDStore.O_SECTOR_HIGHER_EDU.id, orgType: RDStore.OT_INSTITUTION.id]
-
         }
 
         if (params.showOnlyContactPersonForProviderAgency){
             qParts << "(exists (select roletype from pr.org.orgType as roletype where roletype.id in (:orgType)) and pr.org.sector.id = :orgSector )"
             qParams << [orgSector: RDStore.O_SECTOR_PUBLISHER.id, orgType: [RDStore.OT_PROVIDER.id, RDStore.OT_AGENCY.id]]
-
         }
 
         String query = "SELECT distinct(p), ${params.sort} FROM Person AS p join p.roleLinks pr WHERE " + qParts.join(" AND ")
@@ -153,7 +149,7 @@ class AddressbookService {
             order = params.order
         }
 
-        query = query + " ORDER BY ${params.sort} ${order}"
+        query = query + " ORDER BY ${params.sort} ${order}, p.last_name"
         List result = Person.executeQuery(query, qParams)
 
         if(result) {

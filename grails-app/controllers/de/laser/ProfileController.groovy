@@ -64,27 +64,33 @@ class ProfileController {
         Map<String, Object> propDefs = [:]
 
         Locale locale = LocaleUtils.getCurrentLocale()
-
-        String[] custPropDefs = PropertyDefinition.AVAILABLE_CUSTOM_DESCR.sort {a, b ->
-            messageSource.getMessage("propertyDefinition.${a}.label", null, locale) <=> messageSource.getMessage("propertyDefinition.${b}.label", null, locale)
-        }
-
         String i10nAttr = locale.getLanguage() == Locale.GERMAN.getLanguage() ? 'name_de' : 'name_en'
+        List usedPdList = []
+        List usedRdvList = []
+        List refdatas = []
 
-        custPropDefs.each { String it ->
-            List<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: i10nAttr]) // NO private properties!
-            propDefs.putAt( it, itResult )
+        params.tab = params.tab ?: 'propertyDefinitions'
+
+        if(params.tab == 'propertyDefinitions'){
+            String[] custPropDefs = PropertyDefinition.AVAILABLE_CUSTOM_DESCR.sort {a, b ->
+                messageSource.getMessage("propertyDefinition.${a}.label", null, locale) <=> messageSource.getMessage("propertyDefinition.${b}.label", null, locale)
+            }
+            custPropDefs.each { String it ->
+                List<PropertyDefinition> itResult = PropertyDefinition.findAllByDescrAndTenant(it, null, [sort: i10nAttr]) // NO private properties!
+                propDefs.putAt( it, itResult )
+            }
+            usedPdList = propertyService.getUsageDetails()
+        }else{
+            usedRdvList = refdataService.getUsageDetails()
+            i10nAttr = locale.getLanguage() == Locale.GERMAN.getLanguage() ? 'desc_de' : 'desc_en'
+            println(i10nAttr)
+            refdatas = RefdataCategory.executeQuery("from RefdataCategory order by ${i10nAttr}")
         }
-
-        List usedRdvList = refdataService.getUsageDetails()
-        List usedPdList = propertyService.getUsageDetails()
-
-        i10nAttr = locale.getLanguage() == Locale.GERMAN.getLanguage() ? 'desc_de' : 'desc_en'
 
         render view: 'properties', model: [
                 editable    : false,
                 propertyDefinitions: propDefs,
-                rdCategories: RefdataCategory.where{}.sort( i10nAttr ),
+                rdCategories: refdatas,
                 usedRdvList : usedRdvList,
                 usedPdList  : usedPdList
         ]

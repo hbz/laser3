@@ -586,37 +586,6 @@ class LicenseController {
         Org.executeQuery(fsq.query, fsq.queryParams, tmpParams)
     }
 
-    @Deprecated
-    @DebugInfo(test = 'hasAffiliation("INST_USER")')
-    @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
-    @Check404()
-    def pendingChanges() {
-        Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW)
-        if (!result) {
-            response.sendError(401); return
-        }
-        def validMemberLicenses = License.where {
-            instanceOf == result.license
-        }
-
-        result.pendingChanges = [:]
-
-        validMemberLicenses.each{ member ->
-            if (executorWrapperService.hasRunningProcess(member)) {
-                log.debug("PendingChange processing in progress")
-                result.processingpc = true
-            }
-            else {
-                List<PendingChange> pendingChanges = PendingChange.executeQuery(
-                        "select pc from PendingChange as pc where license.id = :licId and ( pc.status is null or pc.status = :status ) order by pc.ts desc",
-                        [licId: member.id, status: RDStore.PENDING_CHANGE_PENDING]
-                )
-                result.pendingChanges << ["${member.id}": pendingChanges]
-            }
-        }
-        result
-    }
-
     /**
      * Should enumerate the changes done on the given license, function currently undetermined
      */
@@ -675,6 +644,10 @@ class LicenseController {
         Map<String,Object> result = licenseControllerService.getResultGenericsAndCheckAccess(this, params, AccessService.CHECK_VIEW)
         if (!result) {
             response.sendError( HttpStatus.SC_FORBIDDEN ); return
+        }
+
+        if (params.bulk_op) {
+            docstoreService.bulkDocOperation(params, result, flash)
         }
         result
     }

@@ -190,6 +190,8 @@ class SubscriptionControllerService {
                     }
                 }
             }
+            Set<RefdataValue> wekbFunctionTypes = [RDStore.PRS_FUNC_METADATA, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_SERVICE_SUPPORT]
+            result.visiblePrsLinks.addAll(PersonRole.executeQuery('select pr from PersonRole pr where (pr.org in (select oo.org from OrgRole oo where oo.sub = :s and oo.roleType = :provider) or pr.org in (select oo.org from OrgRole oo where oo.pkg in (select sp.pkg from SubscriptionPackage sp where sp.subscription = :s))) and pr.functionType in (:wekbFunctionTypes)', [s: result.subscription, provider: RDStore.OR_PROVIDER, wekbFunctionTypes: wekbFunctionTypes]))
             //}
             if(ConfigMapper.getShowStatsInfo()) {
                 prf.setBenchmark('usage')
@@ -982,7 +984,7 @@ class SubscriptionControllerService {
         //result.validSubChilds = Subscription.executeQuery('select s from Subscription s join s.orgRelations oo where s.instanceOf = :parent and oo.roleType in :subscriberRoleTypes order by oo.org.sortname asc, oo.org.name asc',[parent:result.subscription,subscriberRoleTypes:subscriberRoleTypes])
         prf.setBenchmark('getting filtered subscribers')
         result.filteredSubChilds = getFilteredSubscribers(params,result.subscription)
-        prf.setBenchmark('after sub schildren')
+        prf.setBenchmark('after sub children')
         result.filterSet = params.filterSet ? true : false
         Set<Map<String,Object>> orgs = []
         if (params.exportXLS || params.format) {
@@ -1546,7 +1548,7 @@ class SubscriptionControllerService {
 
                     MultipartFile kbartFile = params.kbartPreselect
                     InputStream stream = kbartFile.getInputStream()
-                    result.selectProcess = subscriptionService.issueEntitlementSelect(stream, result.subscription)
+                    result.selectProcess = subscriptionService.issueEntitlementSelectForSurvey(stream, result.subscription, result.surveyConfig, newSub, result.subscriberSubs)
 
                         if (result.selectProcess.selectedIEs) {
                             checkedCache.put('checked', result.selectProcess.selectedIEs)
@@ -1886,6 +1888,7 @@ class SubscriptionControllerService {
             result.pendingChanges = pendingChanges*/
 
             params.ieAcceptStatusFixed = true
+            params.status = params.status ?: [RDStore.TIPP_STATUS_CURRENT.id.toString(), RDStore.TIPP_STATUS_RETIRED.id.toString()]
             Map query = filterService.getIssueEntitlementQuery(params, result.subscription)
             result.filterSet = query.filterSet
             Set entitlements = IssueEntitlement.executeQuery("select new map(ie.id as id, ie.tipp.sortname as sortname) " + query.query, query.queryParams)
@@ -2147,8 +2150,11 @@ class SubscriptionControllerService {
                     tipps.addAll(TitleInstancePackagePlatform.findAllByIdInList(tippIds.drop(result.offset).take(result.max),[sort:'sortname']))
                 //now, assemble the identifiers available to highlight
                 Map<String, IdentifierNamespace> namespaces = [zdb  : IdentifierNamespace.findByNsAndNsType('zdb', TitleInstancePackagePlatform.class.name),
-                                                               eissn: IdentifierNamespace.findByNsAndNsType('eissn', TitleInstancePackagePlatform.class.name), isbn: IdentifierNamespace.findByNsAndNsType('isbn',TitleInstancePackagePlatform.class.name),
-                                                               issn : IdentifierNamespace.findByNsAndNsType('issn', TitleInstancePackagePlatform.class.name), pisbn: IdentifierNamespace.findByNsAndNsType('pisbn', TitleInstancePackagePlatform.class.name)]
+                                                               eissn: IdentifierNamespace.findByNsAndNsType('eissn', TitleInstancePackagePlatform.class.name),
+                                                               isbn: IdentifierNamespace.findByNsAndNsType('isbn',TitleInstancePackagePlatform.class.name),
+                                                               issn : IdentifierNamespace.findByNsAndNsType('issn', TitleInstancePackagePlatform.class.name),
+                                                               pisbn: IdentifierNamespace.findByNsAndNsType('pisbn', TitleInstancePackagePlatform.class.name),
+                                                               doi: IdentifierNamespace.findByNsAndNsType('doi', TitleInstancePackagePlatform.class.name)]
                 result.num_tipp_rows = tippIds.size()
                 result.tipps = tipps
                 result.tippIDs = tippIds
@@ -2168,7 +2174,7 @@ class SubscriptionControllerService {
                                                    endDateCol         : -1, endVolumeCol: -1, endIssueCol: -1,
                                                    accessStartDateCol : -1, accessEndDateCol: -1, coverageDepthCol: -1, coverageNotesCol: -1, embargoCol: -1,
                                                    listPriceCol       : -1, listCurrencyCol: -1, listPriceEurCol: -1, listPriceUsdCol: -1, listPriceGbpCol: -1, localPriceCol: -1, localCurrencyCol: -1, priceDateCol: -1,
-                                                   title_url: -1]
+                                                   titleUrlCol: -1, doiCol: -1]
                     boolean isUniqueListpriceColumn = false
                     //read off first line of KBART file
                     rows[0].split('\t').eachWithIndex { String headerCol, int c ->
@@ -2227,6 +2233,8 @@ class SubscriptionControllerService {
                                 break
                             case "title_url": colMap.titleUrlCol = c
                                 break
+                            case "doi_identifier": colMap.doiCol = c
+                                break
                         }
                     }
                     if(result.uploadPriceInfo) {
@@ -2272,24 +2280,44 @@ class SubscriptionControllerService {
                             else if (issueEntitlementOverwrite[cols[colMap.printIdentifierCol]])
                                 ieCandidate = issueEntitlementOverwrite[cols[colMap.printIdentifierCol]]
                         }
+                        if (colMap.doiCol >= 0 && !cols[colMap.doiCol]?.trim()?.isEmpty()) {
+                            identifiers.doiIds.add(cols[colMap.doiCol])
+                            idCandidate = [namespaces: namespaces.doi, value: cols[colMap.doiCol]]
+                            if (issueEntitlementOverwrite[cols[colMap.doiCol]])
+                                ieCandidate = issueEntitlementOverwrite[cols[colMap.doiCol]]
+                            else ieCandIdentifier = cols[colMap.doiCol]
+                        }
 
                         if (colMap.titleUrlCol >= 0 && !cols[colMap.titleUrlCol]?.trim()?.isEmpty()) {
                             titleUrl = cols[colMap.titleUrlCol]
                         }
+
                         if (!titleUrl && ((colMap.zdbCol >= 0 && cols[colMap.zdbCol].trim().isEmpty()) || colMap.zdbCol < 0) &&
                                 ((colMap.onlineIdentifierCol >= 0 && cols[colMap.onlineIdentifierCol].trim().isEmpty()) || colMap.onlineIdentifierCol < 0) &&
-                                ((colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol].trim().isEmpty()) || colMap.printIdentifierCol < 0)) {
+                                ((colMap.printIdentifierCol >= 0 && cols[colMap.printIdentifierCol].trim().isEmpty()) || colMap.printIdentifierCol < 0) &&
+                                ((colMap.doiCol >= 0 && cols[colMap.doiCol].trim().isEmpty()) || colMap.doiCol < 0)) {
                             identifiers.unidentified.add('"' + cols[0] + '"')
                         } else {
                             //make checks ...
                             //is title in LAS:eR?
-                            String ieQuery = "select tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and  "
-                            Map ieQueryParams = [value: idCandidate.value, ns: idCandidate.namespaces, subPkgs: result.subscription.packages.collect { SubscriptionPackage sp -> sp.pkg }]
+                            String ieQuery = "select tipp from Identifier id join id.tipp tipp where tipp.pkg in (:subPkgs) and "
+                            Map ieQueryParams = [subPkgs: result.subscription.packages.collect { SubscriptionPackage sp -> sp.pkg }]
+
                             if(titleUrl){
-                                ieQuery = ieQuery + " ((id.value = :value and id.ns in (:ns)) or tipp.hostPlatformURL = :url)"
-                                ieQueryParams.url = titleUrl
-                            }else {
+                                ieQuery = ieQuery + " ( tipp.hostPlatformURL = :titleUrl "
+                                ieQueryParams.titleUrl = titleUrl.replace("\r", "")
+
+                                if(idCandidate) {
+                                    ieQuery = ieQuery + " or (id.value = :value and id.ns in (:ns))"
+                                    ieQueryParams.value = idCandidate.value.replace("\r", "")
+                                    ieQueryParams.ns = idCandidate.namespaces
+                                }
+                                ieQuery = ieQuery + " )"
+                            }
+                            else {
                                 ieQuery = ieQuery + " id.value = :value and id.ns in (:ns)"
+                                ieQueryParams.value = idCandidate.value.replace("\r", "")
+                                ieQueryParams.ns = idCandidate.namespaces
                             }
 
                             List<TitleInstancePackagePlatform> matchingTipps = TitleInstancePackagePlatform.executeQuery(ieQuery, ieQueryParams) //it is *always* possible to have multiple packages linked to a subscription!
@@ -2302,10 +2330,12 @@ class SubscriptionControllerService {
                                 }
                             }
                             else {
-                                if(matchingTipps)
+                               /* if(matchingTipps)
                                     errorList.add("${cols[colMap.publicationTitleCol]}&#9;${cols[colMap.zdbCol] && colMap.zdbCol > -1 ? cols[colMap.zdbCol] : " "}&#9;${cols[colMap.onlineIdentifierCol] && colMap.onlineIndentifierCol > -1 ? cols[colMap.onlineIdentifierCol] : " "}&#9;${cols[colMap.printIdentifierCol] && colMap.printIdentifierCol > -1 ? cols[colMap.printIdentifierCol] : " "}&#9;${messageSource.getMessage('subscription.details.addEntitlements.titleNotInPackage', null, locale)}")
                                 else
                                     errorList.add("${cols[colMap.publicationTitleCol]}&#9;${cols[colMap.zdbCol] && colMap.zdbCol > -1 ? cols[colMap.zdbCol] : " "}&#9;${cols[colMap.onlineIdentifierCol] && colMap.onlineIndentifierCol > -1 ? cols[colMap.onlineIdentifierCol] : " "}&#9;${cols[colMap.printIdentifierCol] && colMap.printIdentifierCol > -1 ? cols[colMap.printIdentifierCol] : " "}&#9;${messageSource.getMessage('subscription.details.addEntitlements.titleNotInERMS', null, locale)}")
+                          */
+                                errorList.add("${cols[colMap.publicationTitleCol]}&#9;${cols[colMap.zdbCol] && colMap.zdbCol > -1 ? cols[colMap.zdbCol] : " "}&#9;${cols[colMap.onlineIdentifierCol] && colMap.onlineIndentifierCol > -1 ? cols[colMap.onlineIdentifierCol] : " "}&#9;${cols[colMap.printIdentifierCol] && colMap.printIdentifierCol > -1 ? cols[colMap.printIdentifierCol] : " "}&#9;${messageSource.getMessage('subscription.details.addEntitlements.titleNotInERMS', null, locale)}")
                             }
                         }
                         List<Map> ieCoverages
@@ -2378,12 +2408,19 @@ class SubscriptionControllerService {
                         }
                         if (ieCandIdentifier || titleUrl) {
                             String tippQuery = "select tipp.gokbId from TitleInstancePackagePlatform tipp join tipp.ids id where tipp.pkg in (:pkgs) and tipp.status != :deleted and "
-                            Map<String, Object> unfilteredParams = [pkgs:result.subscription.packages.pkg, deleted:RDStore.TIPP_STATUS_REMOVED, value: ieCandIdentifier]
+                            Map<String, Object> unfilteredParams = [pkgs:result.subscription.packages.pkg, deleted:RDStore.TIPP_STATUS_REMOVED]
                             if(titleUrl){
-                                tippQuery = tippQuery + " ((id.value = :value) or tipp.hostPlatformURL = :url) "
-                                unfilteredParams.url = titleUrl
+                                tippQuery = tippQuery + " (tipp.hostPlatformURL = :url "
+                                unfilteredParams.url = titleUrl.replace("\r", "")
+                                if(ieCandIdentifier){
+                                    tippQuery = tippQuery + " or id.value = :value "
+                                    unfilteredParams.value = ieCandIdentifier.replace("\r", "")
+                                }
+                                tippQuery = tippQuery + ")"
+
                             }else {
                                 tippQuery = tippQuery + " id.value = :value "
+                                unfilteredParams.value = ieCandIdentifier.replace("\r", "")
                             }
                             //check where indices are needed!
                             List<String> matches = TitleInstancePackagePlatform.executeQuery(tippQuery, unfilteredParams)
@@ -2468,6 +2505,10 @@ class SubscriptionControllerService {
                 if (errorList)
                     result.error = "<pre style='font-family:Lato,Arial,Helvetica,sans-serif;'>" + errorList.join("\n") + "</pre>"
             }
+
+            result.checkedCache = checkedCache.get('checked')
+            result.checkedCount = result.checkedCache.findAll { it.value == 'checked' }.size()
+
             [result:result,status:STATUS_OK]
         }
     }
@@ -2749,7 +2790,7 @@ class SubscriptionControllerService {
                         Map<String, Object> sqlQuery = filterService.prepareTitleSQLQuery(params, IssueEntitlement.class.name, sql)
                         //log.debug("insert into issue_entitlement_group_item (igi_version, igi_date_created, igi_ie_fk, igi_ie_group_fk, igi_last_updated) "+sqlQuery.query+" where "+sqlQuery.where+" and not exists(select igi_id from issue_entitlement_group_item where igi_ie_fk = ie_id)")
                         //log.debug(sqlQuery.params.toMapString())
-                        sql.execute("insert into issue_entitlement_group_item (igi_version, igi_date_created, igi_ie_fk, igi_ie_group_fk, igi_last_updated) "+sqlQuery.query+" where "+sqlQuery.where+" and not exists(select igi_id from issue_entitlement_group_item where igi_ie_fk = ie_id)", sqlQuery.params)
+                        sql.execute("insert into issue_entitlement_group_item (igi_version, igi_date_created, igi_ie_fk, igi_ie_group_fk, igi_last_updated, igi_date_created) "+sqlQuery.query+" where "+sqlQuery.where+" and not exists(select igi_id from issue_entitlement_group_item where igi_ie_fk = ie_id)", sqlQuery.params)
                         /*if(entitlementGroup && !IssueEntitlementGroupItem.findByIeGroupAndIe(entitlementGroup, ie) && !IssueEntitlementGroupItem.findByIe(ie)){
                             IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
                                     ie: ie,
@@ -3332,33 +3373,6 @@ class SubscriptionControllerService {
             if (params.targetObjectId) {
                 result.targetObject = genericOIDService.resolveOID(params.targetObjectId)
             }
-            [result:result,status:STATUS_OK]
-        }
-    }
-
-    //--------------------------------------------- admin section -------------------------------------------------
-
-    @Deprecated
-    Map<String,Object> pendingChanges(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
-        if (!result) {
-            [result:null,status:STATUS_ERROR]
-        }
-        else {
-            Set<Subscription> validSubChilds = Subscription.executeQuery("select oo.sub from OrgRole oo join oo.sub sub join oo.org org where sub.instanceOf = :contextSub order by org.sortname asc, org.name asc",[contextSub:result.subscription])
-            result.pendingChanges = [:]
-            validSubChilds.each { Subscription member ->
-                if (executorWrapperService.hasRunningProcess(member)) {
-                    log.debug("PendingChange processing in progress")
-                    result.processingpc = true
-                } else {
-                    List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where subscription.id = :subId and ( pc.status is null or pc.status = :status ) order by pc.ts desc",
-                            [subId: member.id, status: RDStore.PENDING_CHANGE_PENDING]
-                    )
-                    result.pendingChanges << [("${member.id}".toString()): pendingChanges]
-                }
-            }
-
             [result:result,status:STATUS_OK]
         }
     }

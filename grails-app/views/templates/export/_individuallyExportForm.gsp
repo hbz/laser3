@@ -6,8 +6,10 @@
 
         <div class="ui top attached stackable tabular la-tab-with-js menu">
             <g:each in="${formFields}" var="fields" status="i">
-                <a class="${("tab-${i}" == "tab-0") ? 'active' : ''}  item"
-                   data-tab="tab-${i}">${fields.value.message ? message(code: fields.value.message) : fields.value.label}</a>
+                <g:if test="${fields.value.fields.size() > 0}">
+                    <a class="${("tab-${i}" == "tab-0") ? 'active' : ''}  item"
+                       data-tab="tab-${i}">${fields.value.message ? message(code: fields.value.message) : fields.value.label}</a>
+                </g:if>
             </g:each>
         </div>
 
@@ -75,6 +77,21 @@
                 </div>
             </div>
         </g:each>
+
+        <g:if test="${contactSwitch == true}">
+            <div class="fields">
+                <div class="wide eight field">
+                    <div class="ui radio">
+                        <input type="radio" name="contactSwitch" id="public" value="public">
+                        <label for="public"><g:message code="org.publicContacts.label"/></label>
+                    </div>
+                    <div class="ui radio">
+                        <input type="radio" name="contactSwitch" id="private" value="private" checked="checked">
+                        <label for="private"><g:message code="org.privateContacts.exports.label"/></label>
+                    </div>
+                </div>
+            </div>
+        </g:if>
 
         <br/>
 

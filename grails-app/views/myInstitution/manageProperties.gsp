@@ -9,19 +9,34 @@
 
 <laser:render template="nav"/>
 
-<ui:filter simple="true">
-    <g:form action="manageProperties" method="post" class="ui form" id="${params.id}">
-        <laser:render template="/templates/properties/genericFilter" model="[propList: propList, hideFilterProp: true, label:message(code: 'subscription.property.search')]"/>
 
-        <div class="field la-field-right-aligned">
-            <a href="${request.forwardURI}"
-               class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>
-            <input type="submit" value="${message(code: 'default.button.filter.label')}" class="ui primary button"/>
+<ui:filter simple="true">
+    <g:form action="manageProperties" method="get" class="ui form">
+
+        <div class="field">
+            <label for="descr">
+                <g:message code="propertyDefinition.plural"/>
+            </label>
+
+            <g:select id="descr" name="descr" value="${params.descr}"
+                      class="ui fluid search dropdown" from="${availableDescrs}"
+                      optionValue="${{ message(code: "propertyDefinition.${it}.label")+'-'+message(code: "propertyDefinition.plural")}}"
+                      noSelection="${['': message(code: 'default.select.choose.label')]}"/>
         </div>
+
+
+        <g:if test="${propList}">
+            <div class="field">
+                <laser:render template="/templates/properties/genericFilter"
+                              model="[propList: propList, hideFilterProp: true, label: message(code: 'propertyDefinition.'+params.descr+'.label')+'-'+message(code: 'propertyDefinition.plural')]"/>
+            </div>
+        </g:if>
+
+        <a href="${request.forwardURI}"
+           class="ui reset secondary button">${message(code: 'default.button.reset.label')}</a>
+        <input type="submit" class="ui primary button" value="${message(code: 'default.button.filter.label')}"/>
     </g:form>
 </ui:filter>
-
-
 
 
 <g:if test="${filterPropDef}">

@@ -62,30 +62,31 @@ class DataloadService {
      * @return false if the job is already running, true otherwise
      */
     def updateFTIndices(String indexName = null) {
+        boolean update = false
+
         if (! update_running) {
             if (!(activeFuture) || activeFuture.isDone()) {
 
                 if (indexName) {
                     activeFuture = executorService.submit({
                         Thread.currentThread().setName("DataloadServiceUpdateFTIndex")
-                        doFTUpdate(indexName)
+                        update = doFTUpdate(indexName)
                     })
                     log.debug("updateFTIndices(${indexName}) returning")
                 } else {
                     activeFuture = executorService.submit({
                         Thread.currentThread().setName("DataloadServiceUpdateFTIndices")
-                        doFTUpdate()
+                        update = doFTUpdate()
                     })
                     log.debug("updateFTIndices returning")
                 }
             } else {
                 log.debug("doFTUpdate already running")
-                return false
             }
         } else {
             log.debug("doFTUpdate already running")
-            return false
         }
+        update
     }
 
     /**
@@ -1121,7 +1122,6 @@ class DataloadService {
         if (esclient) {
             try {
                 if (ftControl.active) {
-                    log.debug("Element comparison: DB <-> ES ( ${ftControl.domainClassName} )")
 
                         Class domainClass = CodeUtils.getDomainClass(ftControl.domainClassName)
                         String indexName =  es_indices.get(domainClass.simpleName)
@@ -1139,8 +1139,11 @@ class DataloadService {
                             int countDB = domainClass.count()
 
                             if (countDB != countIndex) {
-                                log.debug("Element comparison: DB <-> ES ( ${ftControl.domainClassName} / ${indexName} ) : +++++ DIFF found +++++ DB Results = ${countDB}, ES Results = ${countIndex} +++++")
+                                log.debug("Element comparison: DB <-> ES ( ${ftControl.domainClassName} / ${indexName} ) : +++++ DB = ${countDB}, ES = ${countIndex} +++++")
                                 //ft.lastTimestamp = 0
+                            }
+                            else {
+                                log.debug("Element comparison: DB <-> ES ( ${ftControl.domainClassName} )")
                             }
                             ftControl.dbElements = countDB
                             ftControl.esElements = countIndex
@@ -1171,7 +1174,6 @@ class DataloadService {
 
         if (esclient) {
             try {
-                log.debug("Element comparison: DB <-> ES")
 
                 FTControl.list().each { ft ->
 
@@ -1192,9 +1194,13 @@ class DataloadService {
                             int countDB = domainClass.count()
 
                             if (countDB != countIndex) {
-                                log.debug("Element comparison: DB <-> ES  ( ${indexName} ): +++++ DIFF found +++++ DB Results = ${countDB}, ES Results = ${countIndex} +++++")
+                                log.debug("Element comparison: DB <-> ES  ( ${indexName} ): +++++ DB = ${countDB}, ES = ${countIndex} +++++")
                                 //ft.lastTimestamp = 0
                             }
+                            else {
+                                log.debug("Element comparison: DB <-> ES")
+                            }
+
                             ft.dbElements = countDB
                             ft.esElements = countIndex
                             ft.save()

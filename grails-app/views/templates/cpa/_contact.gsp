@@ -2,10 +2,10 @@
 <laser:serviceInjection/>
 <g:if test="${contact}">
 	<div class="ui js-copyTriggerParent item contact-details" style="display: flex;">
-        <div  style="display: flex" class="js-copyTopic js-copyTrigger la-popup-tooltip la-delay"
+        <div  style="display: flex" class="js-copyTrigger la-popup-tooltip la-delay"
     data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}">
             <ui:contactIcon type="${contact.contentType?.value}" />
-            <div class="content la-space-right">
+            <div class="content js-copyTopic la-space-right">
                 <ui:xEditable  owner="${contact}" field="content" overwriteEditable="${overwriteEditable}" />
                 <g:if test="${contact.language}">(${contact.language.getI10n("value")})</g:if>
             </div>

@@ -468,6 +468,161 @@ class ExportService {
 		}
 	}
 
+	def exportAddressbook(String format, List visiblePersons) {
+		Locale locale = LocaleUtils.getCurrentLocale()
+		Map<String, String> columnHeaders = [
+		        'organisation': messageSource.getMessage('address.org.label', null, locale),
+		        'receiver': messageSource.getMessage('address.receiver.label', null, locale),
+		        'additionFirst': messageSource.getMessage('address.additionFirst.label', null, locale),
+		        'additionSecond': messageSource.getMessage('address.additionSecond.label', null, locale),
+		        'street_1': messageSource.getMessage('address.street_1.label', null, locale),
+		        'street_2': messageSource.getMessage('address.street_2.label', null, locale),
+		        'zipcode': messageSource.getMessage('address.zipcode.label', null, locale),
+		        'city': messageSource.getMessage('address.city.label', null, locale),
+		        'pob': messageSource.getMessage('address.pob.label', null, locale),
+		        'pobZipcode': messageSource.getMessage('address.pobZipcode.label', null, locale),
+		        'pobCity': messageSource.getMessage('address.pobCity.label', null, locale),
+		        'country': messageSource.getMessage('address.country.label', null, locale),
+		        'region': messageSource.getMessage('address.region.label', null, locale),
+				'language': messageSource.getMessage('contact.language.label', null, locale),
+				'email': messageSource.getMessage('contact.icon.label.email', null, locale),
+				'fax': messageSource.getMessage('contact.icon.label.fax', null, locale),
+				'url': messageSource.getMessage('contact.icon.label.url', null, locale),
+				'phone': messageSource.getMessage('contact.icon.label.phone', null, locale)
+		]
+		Map<Person, Map<String, Map<String, String>>> addressesContacts = [:]
+		visiblePersons.each { Person p ->
+			//lang: contactData
+			Map<String, Map<String, String>> contactData = addressesContacts.get(p)
+			if(!contactData)
+				contactData = [:]
+			p.contacts.each { Contact c ->
+				String langKey
+				if(c.language)
+					langKey = c.language.getI10n('value')
+				else langKey = Contact.PRIMARY
+				Map<String, String> contact = contactData.get(langKey)
+				if(!contact)
+					contact = [:]
+				switch(c.contentType) {
+					case RDStore.CCT_EMAIL: contact.email = c.content
+						break
+					case RDStore.CCT_FAX: contact.fax = c.content
+						break
+					case RDStore.CCT_PHONE: contact.phone = c.content
+						break
+					case RDStore.CCT_URL: contact.url = c.content
+						break
+				}
+				contactData.put(langKey, contact)
+			}
+			addressesContacts.put(p, contactData)
+		}
+        if(format == 'xlsx') {
+			XSSFWorkbook workbook = new XSSFWorkbook()
+			POIXMLProperties xmlProps = workbook.getProperties()
+			POIXMLProperties.CoreProperties coreProps = xmlProps.getCoreProperties()
+			coreProps.setCreator(messageSource.getMessage('laser',null,locale))
+			SXSSFWorkbook wb = new SXSSFWorkbook(workbook,50,true)
+			Sheet sheet = wb.createSheet(messageSource.getMessage('menu.institutions.addressbook', null, locale))
+			//the following three statements are required only for HSSF
+			sheet.setAutobreaks(true)
+			//the header row: centered text in 48pt font
+			Row headerRow = sheet.createRow(0)
+			headerRow.setHeightInPoints(16.75f)
+			columnHeaders.eachWithIndex { String key, String header, int index ->
+				Cell cell = headerRow.createCell(index)
+				cell.setCellValue(header)
+			}
+			//freeze the first row
+			sheet.createFreezePane(0, 1)
+			Row row
+			Cell cell
+			int rownum = 1
+			addressesContacts.each { Person p, Map<String, Map<String, String>> contactData ->
+				for(int addressRow = 0; addressRow < Math.max(contactData.size(), p.addresses.size());addressRow++) {
+					row = sheet.createRow(rownum)
+					Map.Entry<String, Map<String, String>> contact = contactData.entrySet()[addressRow]
+                    Address a = p.addresses[addressRow]
+					columnHeaders.keySet().eachWithIndex { String fieldKey, int cellnum ->
+						cell = row.createCell(cellnum)
+						if (fieldKey == 'organisation') {
+							p.roleLinks.each { PersonRole pr ->
+								if (pr.org) {
+									cell.setCellValue(pr.org.name)
+								}
+							}
+						}
+						else if (fieldKey == 'receiver') {
+							cell.setCellValue(p.toString())
+						}
+						else if (fieldKey == 'language')
+							contact?.key == Contact.PRIMARY ? cell.setCellValue(' ') : cell.setCellValue(contact.key)
+						else if (fieldKey in ['email', 'fax', 'phone', 'url'])
+							cell.setCellValue(contact?.value?.get(fieldKey))
+						else {
+							if (a && a.hasProperty(fieldKey)) {
+								if (a[fieldKey] instanceof RefdataValue)
+									cell.setCellValue(a[fieldKey].getI10n("value"))
+								else cell.setCellValue(a[fieldKey])
+							}
+						}
+					}
+					rownum++
+				}
+			}
+			wb
+        }
+        else if(format == 'csv') {
+			List rows = []
+			List<String> row = []
+			addressesContacts.each { Person p, Map<String, Map<String, String>> contactData ->
+				for(int addressRow = 0; addressRow < Math.max(contactData.size(), p.addresses.size()); addressRow++) {
+					row = []
+					Map.Entry<String, Map<String, String>> contact = contactData.entrySet()[addressRow]
+					Address a = p.addresses[addressRow]
+					columnHeaders.keySet().each { String fieldKey ->
+						if(fieldKey == 'organisation') {
+							row << p.roleLinks.find { PersonRole pr -> pr.org != null }.org.name
+						}
+						else if(fieldKey == 'receiver') {
+							row << p.toString()
+						}
+						//first CSV column of address, used as gap-filler
+						else if(fieldKey == 'additionFirst' && !a)
+							row.addAll([' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '])
+						else if(fieldKey == 'language') {
+							if(contact?.key == Contact.PRIMARY)
+								row << ' '
+							else row << contact.key
+						}
+						else if(fieldKey in ['email', 'fax', 'phone', 'url']) {
+							if(contact?.value && contact.value.get(fieldKey))
+								row << contact.value.get(fieldKey)
+							else row << ' '
+						}
+						else {
+							if(a.hasProperty(fieldKey)) {
+								if(a[fieldKey]) {
+									row << a[fieldKey] instanceof RefdataValue ? a[fieldKey].getI10n("value") : a[fieldKey]
+								}
+								else {
+									row << ' '
+								}
+							}
+						}
+					}
+					rows << row
+				}
+			}
+			generateSeparatorTableString(columnHeaders.values(), rows, ';')
+        }
+        else {
+            log.error("invalid format submitted: ${format}")
+            null
+        }
+    }
+
 	/**
 	 * Retrieves for the given property definition type and organisation of list of headers, containing property definition names. Includes custom and private properties
 	 * @param propDefConst a {@link PropertyDefinition} constant which property definition type should be loaded
@@ -2311,7 +2466,7 @@ class ExportService {
 		log.debug("Begin generateTitleExportCustom")
 		Sql sql = GlobalService.obtainSqlConnection()
 		Locale locale = LocaleUtils.getCurrentLocale()
-		Map<String, Object> data = getTitleData(configMap, entitlementInstance, sql)
+		Map<String, Object> data = getTitleData(configMap, entitlementInstance, sql, showStatsInMonthRings, subscriber)
 		List<String> titleHeaders = [
 				messageSource.getMessage('tipp.name',null,locale),
 				'Print Identifier',
@@ -2726,7 +2881,7 @@ class ExportService {
 				counterReportRows = sql.rows('select c5r_title_guid as title, c5r_report_from as report_from, c5r_report_to as report_to, c5r_report_count as report_count from counter5report where c5r_report_institution_guid = :customer and lower(c5r_report_type) = :defaultReport and c5r_metric_type = :defaultMetric and c5r_report_from >= :startDate and c5r_report_to <= :endDate and '+queryData.where, queryData.params+[customer: subscriber.id, startDate: startDate, endDate: endDate, defaultReport: Counter5Report.TITLE_MASTER_REPORT, defaultMetric: 'Unique_Title_Requests'])
 				if(!counterReportRows) {
 					List<Object> defaultReports = [Counter4Report.BOOK_REPORT_1, Counter4Report.JOURNAL_REPORT_1]
-					counterReportRows = Counter4Report.executeQuery('select c4r_title_guid as title, c4r_report_from as report_from, c4r_report_to as report_to, c4r_report_count as report_count from counter4report where c4r_report_institution_guid = :customer and c4r_report_type = any(:defaultReports) and c4r_metric_type = :defaultMetric and c4r_report_from >= :startDate and c4r_report_to <= :endDate and ' + queryData.where, queryData.params + [customer: subscriber.id, startDate: startDate, endDate: endDate, defaultReports: connection.createArrayOf('varchar', defaultReports.toArray()), defaultMetric: 'ft_total'])
+					counterReportRows = sql.rows('select c4r_title_guid as title, c4r_report_from as report_from, c4r_report_to as report_to, c4r_report_count as report_count from counter4report where c4r_report_institution_guid = :customer and c4r_report_type = any(:defaultReports) and c4r_metric_type = :defaultMetric and c4r_report_from >= :startDate and c4r_report_to <= :endDate and ' + queryData.where, queryData.params + [customer: subscriber.id, startDate: startDate, endDate: endDate, defaultReports: connection.createArrayOf('varchar', defaultReports.toArray()), defaultMetric: 'ft_total'])
 				}
 				counterReportRows.each { GroovyRowResult reportRow ->
 					Map<Date, GroovyRowResult> usageMap = reportMap.get(reportRow['title'])

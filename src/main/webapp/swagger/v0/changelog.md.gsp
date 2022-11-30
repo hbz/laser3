@@ -2,6 +2,10 @@
 
 Source: ${de.laser.config.ConfigMapper.getGrailsServerURL()} - Version: ${de.laser.api.v0.ApiManager.VERSION}
 
+#### 1.5
+
+- listing at __/ezb/subscription/list/__ is now restricted upon current subscriptions
+
 #### 1.4
 
 - internal refactoring

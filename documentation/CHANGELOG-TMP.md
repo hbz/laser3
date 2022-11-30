@@ -7,6 +7,56 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4624    30.11.2022  dev     3.0         David   Feature     Performance: Referenzwerte verwalten
+
+4609    29.11.2022  dev     3.0         Andreas Bug         Kostenausschüttung den konsortialen Anforderungen entsprechend angepasst
+
+4608    29.11.2022  dev     3.0         Andreas Feature     Aufstufung des Merkmals Titelwahl (Stichtag) zum allgemeinen Merkmal
+
+4340    29.11.2022  dev     3.0         David   Feature     Verträge: TN-Änderungen entfernen
+
+4559    29.11.2022  dev     3.0         Andreas Bug         Dokumente, Anmerkungen und Merkmale konnten über "Meine Lizenzverwaltung" nicht an Teilnahmelizenzen gehangen werden
+
+4477    29.11.2022  dev     3.0         Andreas Feature     Tooltip bei leerem Kommentarfeld eingefügt
+
+4424    28.11.2022  dev     3.0         Andreas Feature     Schalter für private/öffentliche Kontakte beim Export von "Meine Einrichtungen"
+
+4423    28.11.2022  dev     3.0         Andreas Feature     Exportfunktionen für "Mein Adressbuch" gebaut
+
+4600    25.11.2022  dev     3.0         Moe     Feature     Bei Titelumfragen auf der Auswertungssicht den Bearbeitungsstatus ausblenden wenn es keine Merkmale gibt
+
+4451    25.11.2022  dev     3.0         Moe     Bug         Meine Umfragen pro TN: Fehler
+
+4336    25.11.2022  dev     3.0         Moe     Bug         Aufruf der Referenzwertliste erzeugt angebliche Wartungsmeldung
+
+4479    25.11.2022  dev     3.0         Moe     Bug         Verlängerungsumfrage: nach Folgelizenz erstellen zurück zur Verlängerung
+
+--      24.11.2022  rc-2.3  2.3.12      Andreas Bug         Sortiernamenkorrekturskript und Sortierabfrage korrigiert
+
+4607    24.11.2022  dev     3.0         David   Bug         Umfrage: 'Neues Dokument' funktioniert nicht mehr
+
+2976    24.11.2022  dev     3.0         David   Feature     Überprüfung verwaister Nutzerrollen
+
+4596    24.11.2022  rc-2.3  2.3.12      Moe     Bug         Titel hinzufügen - KBART hochladen
+
+4604    24.11.2022  dev     3.0         David   Feature     Workflow: Dokumentenprüfung
+
+2976    24.11.2022  dev     3.0         David   Feature     Überprüfung verwaister Nutzerrollen
+
+--      24.11.2022  dev     3.0         Andreas Feature     Default-Status bei EZB-Lizenzabruf auf Aktuell setzen
+
+3405    23.11.2022  dev     3.0         Moe     Feature     Verbesserung Merkmalsverwaltung
+
+4598    23.11.2022  dev     3.0         Andreas Feature     Umstellungen in der Organisationssicht
+
+4563    23.11.2022  dev     3.0         Andreas Bug         Sicherheitsabfrage löste gar nicht aus
+
+4592    22.11.2022  rc-2.3  2.3.12      Moe     Bug         Titelumfrage: Titelauswahl per tsv blockt keine Bestandstitel
+
+4535    23.11.2022  dev     3.0         Andreas Feature     Bezeichner korrigiert
+
+4551    22.11.2022  dev     3.0         Andreas Bug         Sicherheitsabfrage löste falsch aus
+
 4599    21.11.2022  dev     3.0         David   Bug         Spotlight- und Suche: Probleme mit Hibernate Proxies
 
 4594    21.11.2022  dev     3.0         David   Feature     Refactoring: dateCreated nullable:true
@@ -28,6 +78,8 @@
 4369    16.11.2022  dev     3.0         Moe     Feature     Umfrage: Filter für Nicht Lizenzteilnehmer bauen
 
 4552    16.11.2022  dev     3.0         Andreas Feature     neue Details auf der Paketdetailsicht
+
+4589    14.11.2022  rc-2.3  2.3.12      Moe     Bug         Dashboard Benachrichtung-Mail hat falschen Link drin
 
 --      14.11.2022  rc-2.3  2.3.11      Moe     Feature     Title-Auswahl mit Title-Url
 

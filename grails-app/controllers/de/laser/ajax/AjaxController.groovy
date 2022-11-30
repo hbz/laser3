@@ -1651,7 +1651,7 @@ class AjaxController {
      * @see Person
      * @see PersonRole
      */
-    @Secured(['ROLE_ORG_EDITOR'])
+    @Secured(['ROLE_ADMIN'])
     @Transactional
     def deletePersonRole(){
         PersonRole personRole = genericOIDService.resolveOID(params.oid) as PersonRole

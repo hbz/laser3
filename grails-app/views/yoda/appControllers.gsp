@@ -43,15 +43,6 @@
         </div>
     </div>
 
-    <p><strong>User Roles without Hierarchy</strong></p>
-
-    <div class="ui list secInfoWrapper">
-        <div class="item">
-            <span class="ROLE_ORG_EDITOR">ROLE_ORG_EDITOR</span> |
-            <span class="ROLE_STATISTICS_EDITOR">ROLE_STATISTICS_EDITOR</span>
-        </div>
-    </div>
-
 <h2 class="ui header">App Controllers</h2>
 
 <g:each in="${controller}" var="c">
@@ -305,10 +296,6 @@
 }
 .secInfoWrapper .ROLE_USER {
     color: #1E90FF;
-}
-.secInfoWrapper .ROLE_ORG_EDITOR,
-.secInfoWrapper .ROLE_STATISTICS_EDITOR {
-    color: #8B4513;
 }
 </style>
 

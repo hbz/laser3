@@ -1,4 +1,6 @@
-<%@ page import="de.laser.PersonRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Org; de.laser.Person; de.laser.RefdataValue; de.laser.RefdataCategory" %>
+<%@ page import="de.laser.PersonRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Org; de.laser.Person; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.utils.DateUtils" %>
+
+<laser:serviceInjection/>
 
 <laser:htmlStart message="menu.institutions.myAddressbook" />
 
@@ -7,6 +9,33 @@
 </ui:breadcrumbs>
 
 <ui:controlButtons>
+    <ui:exportDropdown>
+        <ui:exportDropdownItem>
+            <a class="item" data-ui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
+        </ui:exportDropdownItem>
+        <g:if test="${filterSet == true}">
+            <ui:exportDropdownItem>
+                <g:link class="item js-open-confirm-modal" params="${params+[exportXLS: true]}" action="addressbook"
+                        data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}" data-confirm-term-how="ok">
+                    <g:message code="default.button.exports.xls"/>
+                </g:link>
+            </ui:exportDropdownItem>
+            <ui:exportDropdownItem>
+                <g:link class="item js-open-confirm-modal" params="${params+[format: 'csv']}" action="addressbook"
+                        data-confirm-tokenMsg="${message(code: 'confirmation.content.exportPartial')}" data-confirm-term-how="ok">
+                    <g:message code="default.button.exports.csv"/>
+                </g:link>
+            </ui:exportDropdownItem>
+        </g:if>
+        <g:else>
+            <ui:exportDropdownItem>
+                <g:link class="item" params="${params+[exportXLS: true]}" action="addressbook"><g:message code="default.button.exports.xls"/></g:link>
+            </ui:exportDropdownItem>
+            <ui:exportDropdownItem>
+                <g:link class="item" params="${params+[format: 'csv']}" action="addressbook"><g:message code="default.button.exports.csv"/></g:link>
+            </ui:exportDropdownItem>
+        </g:else>
+    </ui:exportDropdown>
     <ui:actionsDropdown>
         <g:if test="${editable}">
             <g:if test="${institution.getCustomerType() == 'ORG_CONSORTIUM'}">
@@ -154,5 +183,19 @@
         });
     }
 </laser:script>
+
+<!-- _individuallyExportModal.gsp -->
+<g:set var="formFields" value="${exportClickMeService.getExportAddressFieldsForUI()}"/>
+
+<ui:modal modalSize="large" id="individuallyExportModal" text="Excel-Export" refreshModal="true" hideSubmitButton="true">
+
+    <g:form action="addressbook" controller="myInstitution" params="${params+[exportClickMeExcel: true]}">
+
+        <laser:render template="/templates/export/individuallyExportForm" model="${[formFields: formFields, exportFileName: escapeService.escapeString("${message(code: 'menu.institutions.myAddressbook')}_${DateUtils.getSDF_yyyyMMdd().format(new Date())}")]}"/>
+
+    </g:form>
+
+</ui:modal>
+<!-- _individuallyExportModal.gsp -->
 
 <laser:htmlEnd />

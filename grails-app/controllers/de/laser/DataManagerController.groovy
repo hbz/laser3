@@ -62,7 +62,7 @@ class DataManagerController  {
     }
 
     @Deprecated
-    @Secured(['ROLE_ORG_MANAGER', 'ROLE_ADMIN'])
+    @Secured(['ROLE_ADMIN'])
     def deletedOrgs() {
         Map<String, Object> result = [:]
 

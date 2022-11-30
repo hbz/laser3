@@ -14,6 +14,8 @@
 
     <laser:render template="nav" />
 
+    <ui:messages data="${flash}" />
+
     <laser:render template="/templates/documents/table" model="${[instance:license, redirect:'documents',owntp:'license']}"/>
 
 <laser:htmlEnd />

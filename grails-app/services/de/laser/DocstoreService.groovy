@@ -1,15 +1,21 @@
 package de.laser
 
 import de.laser.interfaces.CalculatedType
+import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.survey.SurveyConfig
+import de.laser.utils.LocaleUtils
 import grails.gorm.transactions.Transactional
+import grails.web.servlet.mvc.GrailsParameterMap
+import org.springframework.context.MessageSource
 
 /**
  * This service is one step behind {@link de.laser.ctrl.DocstoreControllerService} and contains helper methods for document retrieval
  */
 @Transactional
 class DocstoreService {
+
+    MessageSource messageSource
 
     /**
      * Deletes a document with the given parameter map.
@@ -181,5 +187,32 @@ class DocstoreService {
 
 
         Doc.executeQuery("select dc from DocContext dc, Doc d where " + query, queryParams)
+    }
+
+    def bulkDocOperation (GrailsParameterMap params, Map result, def flash) {
+        if (params.bulk_op == RDConstants.DOCUMENT_CONFIDENTIALITY) {
+            if (params.bulk_docIdList) {
+                Locale locale = LocaleUtils.getCurrentLocale()
+
+                try {
+                    RefdataValue dc = params.bulk_docConf ? RefdataValue.get(params.bulk_docConf) : null
+                    List<Long> idList = params.bulk_docIdList.split(',').collect { it as Long }
+
+                    idList.each { id ->
+                        Doc doc = Doc.get(id)
+                        if (doc.owner.id == result.contextOrg.id) {
+                            doc.confidentiality = dc
+                            doc.save()
+                        }
+                    }
+                    log.debug('set document.confidentiality = ' + dc + ' for ' + idList)
+                    flash.message = messageSource.getMessage('default.updated.selection.message', null, locale)
+                }
+                catch (Exception e) {
+                    log.debug(e.toString())
+                    flash.error = messageSource.getMessage('default.not.updated.selection.message', null, locale)
+                }
+            }
+        }
     }
 }
