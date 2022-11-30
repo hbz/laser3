@@ -9,6 +9,8 @@
 
 4625    30.11.2022  dev     3.0         Andreas Bug         Umgang mit WIBID korrigiert
 
+4624    30.11.2022  dev     3.0         David   Feature     Performance: Referenzwerte verwalten
+
 4623    30.11.2022  dev     3.0         Andreas Bug         Datenausgabe bei Vertragsexport korrigiert
 
 4622    30.11.2022  dev     3.0         Andreas Bug         Fehler bei ClickMichExcel-Abfrage behoben
