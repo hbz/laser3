@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4624    30.11.2022  dev     3.0         David   Feature     Performance: Referenzwerte verwalten
+
 4609    29.11.2022  dev     3.0         Andreas Bug         Kostenausschüttung den konsortialen Anforderungen entsprechend angepasst
 
 4608    29.11.2022  dev     3.0         Andreas Feature     Aufstufung des Merkmals Titelwahl (Stichtag) zum allgemeinen Merkmal
