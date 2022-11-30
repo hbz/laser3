@@ -2,10 +2,6 @@
 
 <laser:htmlStart message="menu.admin.manageRefdatas" />
 
-        <ui:debugInfo>
-            <laser:render template="/templates/refdata/integrityCheck" model="[result: integrityCheckResult]" />
-        </ui:debugInfo>
-
 		<ui:breadcrumbs>
 			<ui:crumb message="menu.admin" controller="admin" action="index" />
 			<ui:crumb message="menu.admin.manageRefdatas" class="active"/>
@@ -22,6 +18,9 @@
                     </div>
                     <div class="field">
                         <button class="ui button" value="" data-href="#addRefdataCategoryModal" data-ui="modal">${message(code:'refdataCategory.create_new.label')}</button>
+                    </div>
+                    <div class="field">
+                        <g:link class="ui button" action="manageRefdataIntegrityCheck"><i class="icon wrench"></i> ${message(code:'default.integrityCheck.label')}</g:link>
                     </div>
                 </div>
             </div>
