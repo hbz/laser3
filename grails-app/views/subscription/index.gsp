@@ -498,7 +498,7 @@
                                             </div>
                                             <%-- Editable Area START--%>
                                             <div class="seven wide column">
-                                                <i class="icon circular inverted edit la-icon-absolute"></i>
+                                                <i class="grey icon circular inverted edit la-icon-absolute"></i>
 
                                                 <div class="ui white segment la-segment-with-icon">
 
@@ -508,7 +508,7 @@
                                                     <div class="ui list">
                                                         <g:if test="${ie}">
                                                             <div class="item">
-                                                                <i class="save icon la-popup-tooltip la-delay"
+                                                                <i class="grey save icon la-popup-tooltip la-delay"
                                                                    data-content="${message(code: 'issueEntitlement.perpetualAccessBySub.label')}"></i>
 
                                                                 <div class="content">
@@ -525,6 +525,17 @@
                                                                             }
                                                                         %>
 
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="item">
+                                                                <i class="grey icon edit la-popup-tooltip la-delay"
+                                                                   data-content="${message(code: 'issueEntitlement.myNotes')}"></i>
+                                                                <div class="content">
+                                                                    <div class="header"><g:message code="issueEntitlement.myNotes"/></div>
+                                                                    <div class="description">
+                                                                        <ui:xEditable owner="${ie}" type="text"
+                                                                                      field="notes"/>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -592,6 +603,8 @@
                                                                 </g:if>
                                                             </g:each>
                                                         </g:if>
+
+
                                                         <%-- GROUPS END--%>
                                                     </div>
                                                 </div>
