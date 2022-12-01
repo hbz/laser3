@@ -65132,6 +65132,11 @@ a.inverted.ui.card:hover,
   -webkit-transform: rotate(-180deg);
   transform: rotate(-180deg);
 }
+
+.ui.label.la-label-accordion {
+  background-color: #997a88;
+  color: #FFFFFF;
+}
 /*!
  * # Fomantic-UI 2.8.8 - Calendar
  * http://github.com/fomantic/Fomantic-UI/

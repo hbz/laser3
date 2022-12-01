@@ -421,7 +421,7 @@
                                                     <g:if test="${ie.tipp.accessStartDate}">
                                                         <div class="item">
                                                             <div class="content">
-                                                                <div class="ui label">${message(code: 'tipp.access')} ${message(code: 'default.from')}</div>
+                                                                <div class="ui label la-label-accordion">${message(code: 'tipp.access')} ${message(code: 'default.from')}</div>
 
                                                                 <div class="description">
 
@@ -436,9 +436,7 @@
                                                         <!-- bis -->
                                                         <div class="item">
                                                             <div class="content">
-
-                                                                <div class="ui label">${message(code: 'tipp.access')} ${message(code: 'default.to')}</div>
-
+                                                                <div class="ui label la-label-accordion">${message(code: 'tipp.access')} ${message(code: 'default.to')}</div>
                                                                 <div class="description">
                                                                     <g:formatDate
                                                                             format="${message(code: 'default.date.format.notime')}"
@@ -449,42 +447,52 @@
                                                     </g:if>
 
                                                     <%-- Coverage Details START --%>
-                                                    <div class="item">
-                                                        <div class="ui label">Abdeckungsdetails</div>
-                                                    </div>
-                                                    <div class="item">
-                                                        <i class="grey icon quote right la-popup-tooltip la-delay" data-content="${message(code: 'default.note.label')}"></i>
-                                                        <div class="content">
-                                                            <div class="header">
-                                                                ${message(code: 'default.note.label')}
+                                                    <g:each in="${ie.tipp.coverages}" var="covStmt" status="counterCoverage">
+                                                        <g:if test="${covStmt.coverageNote || covStmt.coverageDepth || covStmt.embargo}">
+                                                            <div class="item">
+                                                                <div class="ui label la-label-accordion">${message(code: 'tipp.coverageDetails')} ${counterCoverage > 0 ? counterCoverage++ + 1 : ''}</div>
                                                             </div>
-                                                            <div class="description">
-                                                                <ui:xEditable owner="${ie.tipp.coverages}" field="coverageNote" overwriteEditable="false"/>
+                                                        </g:if>
+                                                        <g:if test="${covStmt.coverageNote}">
+                                                            <div class="item">
+                                                                <i class="grey icon quote right la-popup-tooltip la-delay" data-content="${message(code: 'default.note.label')}"></i>
+                                                                <div class="content">
+                                                                    <div class="header">
+                                                                        ${message(code: 'default.note.label')}
+                                                                    </div>
+                                                                    <div class="description">
+                                                                        ${covStmt.coverageNote}
+                                                                    </div>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="item">
-                                                        <i class="grey icon file alternate right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.coverageDepth')}"></i>
-                                                        <div class="content">
-                                                            <div class="header">
-                                                                ${message(code: 'tipp.coverageDepth')}
+                                                        </g:if>
+                                                        <g:if test="${covStmt.coverageDepth}">
+                                                            <div class="item">
+                                                                <i class="grey icon file alternate right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.coverageDepth')}"></i>
+                                                                <div class="content">
+                                                                    <div class="header">
+                                                                        ${message(code: 'tipp.coverageDepth')}
+                                                                    </div>
+                                                                    <div class="description">
+                                                                        ${covStmt.coverageDepth}
+                                                                    </div>
+                                                                </div>
                                                             </div>
-                                                            <div class="description">
-                                                                <ui:xEditable owner="${ie.tipp.coverages}" field="coverageDepth" overwriteEditable="false"/>
+                                                        </g:if>
+                                                        <g:if test="${covStmt.embargo}">
+                                                            <div class="item">
+                                                                <i class="grey icon hand paper right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.embargo')}"></i>
+                                                                <div class="content">
+                                                                    <div class="header">
+                                                                        ${message(code: 'tipp.embargo')}
+                                                                    </div>
+                                                                    <div class="description">
+                                                                        ${covStmt.embargo}
+                                                                    </div>
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                    </div>
-                                                    <div class="item">
-                                                        <i class="grey icon hand paper right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.embargo')}"></i>
-                                                        <div class="content">
-                                                            <div class="header">
-                                                                ${message(code: 'tipp.embargo')}
-                                                            </div>
-                                                            <div class="description">
-                                                                <ui:xEditable owner="${ie.tipp.coverages}" field="embargo" overwriteEditable="false"/>
-                                                            </div>
-                                                        </div>
-                                                    </div>
+                                                        </g:if>
+                                                    </g:each>
                                                     <%-- Coverage Details END --%>
                                                 </div>
                                             </div>
@@ -598,7 +606,7 @@
                 </div>
             </g:if>
 
-                        <table class="ui sortable celled la-js-responsive-table la-table table la-ignore-fixed la-bulk-header">
+%{--                        <table class="ui sortable celled la-js-responsive-table la-table table la-ignore-fixed la-bulk-header">
                             <thead>
                             <tr>
                                 <th></th>
@@ -885,7 +893,7 @@
                                 </g:each>
                             </g:if>
                             </tbody>
-                        </table>
+                        </table>--}%
         </g:form>
 
 </div>

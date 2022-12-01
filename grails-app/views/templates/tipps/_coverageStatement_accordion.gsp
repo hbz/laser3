@@ -65,7 +65,7 @@
                 <i class="grey fitted la-books icon la-popup-tooltip la-delay"
                    data-content="${message(code: 'tipp.endVolume.tooltip')}"></i>
                 <span class="la-identifier">
-                    ${message(code: 'tipp.Value.short')}
+                    ${message(code: 'tipp.Volume.short')}
                 </span>
                 <ui:xEditable owner="${covStmt}" field="endVolume" overwriteEditable="${overwriteEditable}"/>
             </span>
@@ -81,17 +81,19 @@
             </span>
         </g:if>
     </div>
-    <div class="item">
-        <i class="grey icon hand paper right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.embargo')}"></i>
-        <div class="content">
-            <div class="header">
-                ${message(code: 'tipp.embargo')}
-            </div>
-            <div class="description">
-                <ui:xEditable owner="${tipp.coverages}" field="embargo" overwriteEditable="true"/>
+    <g:if test="${showEmbargo}">
+        <div class="item">
+            <i class="grey icon hand paper right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.embargo')}"></i>
+            <div class="content">
+                <div class="header">
+                    ${message(code: 'tipp.embargo')}
+                </div>
+                <div class="description">
+                    <ui:xEditable owner="${tipp.coverages}" field="embargo" overwriteEditable="true"/>
+                </div>
             </div>
         </div>
-    </div>
+    </g:if>
 %{--    <g:if test="${overwriteEditable && (covStmt instanceof IssueEntitlementCoverage) && subscription}">
         <span class="right floated">
             <g:link controller="subscription" action="removeCoverage"
