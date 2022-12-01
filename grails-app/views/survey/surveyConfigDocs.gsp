@@ -76,8 +76,8 @@
             <div class="four wide column">
                 <button type="button" class="ui icon button blue la-modern-button right floated" data-ui="modal"
                         data-href="#modalCreateDocument"><i class="plus icon"></i></button>
-                <laser:render template="/templates/documents/modal"
-                          model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>
+%{--                <laser:render template="/templates/documents/modal"--}%
+%{--                          model="${[ownobj: surveyConfig, owntp: 'surveyConfig']}"/>--}%
             </div>
             <br /><br />
 

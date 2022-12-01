@@ -189,6 +189,8 @@ class SubscriptionControllerService {
                     }
                 }
             }
+            Set<RefdataValue> wekbFunctionTypes = [RDStore.PRS_FUNC_METADATA, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, RDStore.PRS_FUNC_SERVICE_SUPPORT]
+            result.visiblePrsLinks.addAll(PersonRole.executeQuery('select pr from PersonRole pr where (pr.org in (select oo.org from OrgRole oo where oo.sub = :s and oo.roleType = :provider) or pr.org in (select oo.org from OrgRole oo where oo.pkg in (select sp.pkg from SubscriptionPackage sp where sp.subscription = :s))) and pr.functionType in (:wekbFunctionTypes)', [s: result.subscription, provider: RDStore.OR_PROVIDER, wekbFunctionTypes: wekbFunctionTypes]))
             //}
             if(ConfigMapper.getShowStatsInfo()) {
                 prf.setBenchmark('usage')
@@ -2672,7 +2674,7 @@ class SubscriptionControllerService {
                         Map<String, Object> sqlQuery = filterService.prepareTitleSQLQuery(params, IssueEntitlement.class.name, sql)
                         //log.debug("insert into issue_entitlement_group_item (igi_version, igi_date_created, igi_ie_fk, igi_ie_group_fk, igi_last_updated) "+sqlQuery.query+" where "+sqlQuery.where+" and not exists(select igi_id from issue_entitlement_group_item where igi_ie_fk = ie_id)")
                         //log.debug(sqlQuery.params.toMapString())
-                        sql.execute("insert into issue_entitlement_group_item (igi_version, igi_date_created, igi_ie_fk, igi_ie_group_fk, igi_last_updated) "+sqlQuery.query+" where "+sqlQuery.where+" and not exists(select igi_id from issue_entitlement_group_item where igi_ie_fk = ie_id)", sqlQuery.params)
+                        sql.execute("insert into issue_entitlement_group_item (igi_version, igi_date_created, igi_ie_fk, igi_ie_group_fk, igi_last_updated, igi_date_created) "+sqlQuery.query+" where "+sqlQuery.where+" and not exists(select igi_id from issue_entitlement_group_item where igi_ie_fk = ie_id)", sqlQuery.params)
                         /*if(entitlementGroup && !IssueEntitlementGroupItem.findByIeGroupAndIe(entitlementGroup, ie) && !IssueEntitlementGroupItem.findByIe(ie)){
                             IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
                                     ie: ie,
@@ -3255,33 +3257,6 @@ class SubscriptionControllerService {
             if (params.targetObjectId) {
                 result.targetObject = genericOIDService.resolveOID(params.targetObjectId)
             }
-            [result:result,status:STATUS_OK]
-        }
-    }
-
-    //--------------------------------------------- admin section -------------------------------------------------
-
-    @Deprecated
-    Map<String,Object> pendingChanges(SubscriptionController controller, GrailsParameterMap params) {
-        Map<String,Object> result = getResultGenericsAndCheckAccess(params, AccessService.CHECK_VIEW)
-        if (!result) {
-            [result:null,status:STATUS_ERROR]
-        }
-        else {
-            Set<Subscription> validSubChilds = Subscription.executeQuery("select oo.sub from OrgRole oo join oo.sub sub join oo.org org where sub.instanceOf = :contextSub order by org.sortname asc, org.name asc",[contextSub:result.subscription])
-            result.pendingChanges = [:]
-            validSubChilds.each { Subscription member ->
-                if (executorWrapperService.hasRunningProcess(member)) {
-                    log.debug("PendingChange processing in progress")
-                    result.processingpc = true
-                } else {
-                    List<PendingChange> pendingChanges = PendingChange.executeQuery("select pc from PendingChange as pc where subscription.id = :subId and ( pc.status is null or pc.status = :status ) order by pc.ts desc",
-                            [subId: member.id, status: RDStore.PENDING_CHANGE_PENDING]
-                    )
-                    result.pendingChanges << [("${member.id}".toString()): pendingChanges]
-                }
-            }
-
             [result:result,status:STATUS_OK]
         }
     }

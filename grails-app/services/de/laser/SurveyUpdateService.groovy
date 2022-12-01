@@ -78,7 +78,9 @@ class SurveyUpdateService extends AbstractLockableService {
                 updatedObjs << ["old_StartedToCompleted (${oldStartedSurveyIds.size()})": oldStartedSurveyIds]
             }
 
-            SystemEvent.createEvent('SURVEY_UPDATE_SERVICE_PROCESSING', updatedObjs)
+            if (updatedObjs) {
+                SystemEvent.createEvent('SURVEY_UPDATE_SERVICE_PROCESSING', updatedObjs)
+            }
             running = false
             return true
         }

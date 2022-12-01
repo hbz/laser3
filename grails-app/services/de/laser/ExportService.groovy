@@ -464,7 +464,6 @@ class ExportService {
 	}
 
 	def exportAddressbook(String format, List visiblePersons) {
-		final String PRIMARY = 'primary'
 		Locale locale = LocaleUtils.getCurrentLocale()
 		Map<String, String> columnHeaders = [
 		        'organisation': messageSource.getMessage('address.org.label', null, locale),
@@ -496,7 +495,7 @@ class ExportService {
 				String langKey
 				if(c.language)
 					langKey = c.language.getI10n('value')
-				else langKey = PRIMARY
+				else langKey = Contact.PRIMARY
 				Map<String, String> contact = contactData.get(langKey)
 				if(!contact)
 					contact = [:]
@@ -553,7 +552,7 @@ class ExportService {
 							cell.setCellValue(p.toString())
 						}
 						else if (fieldKey == 'language')
-							contact?.key == 'primary' ? cell.setCellValue(' ') : cell.setCellValue(contact.key)
+							contact?.key == Contact.PRIMARY ? cell.setCellValue(' ') : cell.setCellValue(contact.key)
 						else if (fieldKey in ['email', 'fax', 'phone', 'url'])
 							cell.setCellValue(contact?.value?.get(fieldKey))
 						else {
@@ -588,7 +587,7 @@ class ExportService {
 						else if(fieldKey == 'additionFirst' && !a)
 							row.addAll([' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' '])
 						else if(fieldKey == 'language') {
-							if(contact?.key == 'primary')
+							if(contact?.key == Contact.PRIMARY)
 								row << ' '
 							else row << contact.key
 						}

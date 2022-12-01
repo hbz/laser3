@@ -35,10 +35,6 @@
 
         <ui:messages data="${flash}" />
 
-        <%--<g:if test="${institution.id == license.getLicensingConsortium()?.id || (! license.getLicensingConsortium() && institution.id == license.getLicensee()?.id)}">
-            <laser:render template="/templates/pendingChanges" model="${['pendingChanges':pendingChanges, 'flash':flash, 'model':license]}"/>
-        </g:if>--%>
-
         <div class="ui stackable grid">
 
             <div class="ten wide column">

@@ -120,7 +120,7 @@ Todo: Websocket communication is broken after upgrading from Grails 4 to Grails 
 
 * #### GPars
 
-    *org.codehaus.gpars:gpars* is outdated and only used in one file.
+    *org.codehaus.gpars:gpars* is outdated and only used in ~~one file~~ two files.
 
 * #### Juniversalchardet
 

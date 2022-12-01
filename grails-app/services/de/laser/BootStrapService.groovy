@@ -282,10 +282,9 @@ class BootStrapService {
             role
         }
 
-        Role tmp = updateRole('ROLE_YODA',              'transcendent', [en: 'ROLE_YODA', de: 'ROLE_YODA'])
-             tmp = updateRole('ROLE_ADMIN',             'global', [en: 'ROLE_ADMIN', de: 'ROLE_ADMIN'])
-             tmp = updateRole('ROLE_USER',              'global', [en: 'ROLE_USER', de: 'ROLE_USER'])
-             tmp = updateRole('ROLE_STATISTICS_EDITOR', 'global', [en: 'ROLE_STATISTICS_EDITOR', de: 'ROLE_STATISTICS_EDITOR'])
+        Role tmp = updateRole('ROLE_YODA',  'transcendent', [en: 'ROLE_YODA', de: 'ROLE_YODA'])
+             tmp = updateRole('ROLE_ADMIN', 'global',       [en: 'ROLE_ADMIN', de: 'ROLE_ADMIN'])
+             tmp = updateRole('ROLE_USER',  'global',       [en: 'ROLE_USER', de: 'ROLE_USER'])
 
         // Inst User Roles
 

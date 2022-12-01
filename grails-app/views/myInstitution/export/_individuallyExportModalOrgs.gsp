@@ -17,7 +17,7 @@
 
     <g:form action="${actionName}" controller="${controllerName}" params="${params+[exportClickMeExcel: true]}">
 
-        <laser:render template="/templates/export/individuallyExportForm" model="${[formFields: formFields, exportFileName: exportFileName]}"/>
+        <laser:render template="/templates/export/individuallyExportForm" model="${[formFields: formFields, exportFileName: exportFileName, contactSwitch: actionName == 'manageMembers']}"/>
 
     </g:form>
 

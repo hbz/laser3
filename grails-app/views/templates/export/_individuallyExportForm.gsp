@@ -78,6 +78,21 @@
             </div>
         </g:each>
 
+        <g:if test="${contactSwitch == true}">
+            <div class="fields">
+                <div class="wide eight field">
+                    <div class="ui radio">
+                        <input type="radio" name="contactSwitch" id="public" value="public">
+                        <label for="public"><g:message code="org.publicContacts.label"/></label>
+                    </div>
+                    <div class="ui radio">
+                        <input type="radio" name="contactSwitch" id="private" value="private" checked="checked">
+                        <label for="private"><g:message code="org.privateContacts.exports.label"/></label>
+                    </div>
+                </div>
+            </div>
+        </g:if>
+
         <br/>
 
         <div class="fields">
