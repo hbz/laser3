@@ -447,9 +447,48 @@
                                                             </div>
                                                         </div>
                                                     </g:if>
+
+                                                    <%-- Coverage Details START --%>
+                                                    <div class="item">
+                                                        <div class="ui label">Abdeckungsdetails</div>
+                                                    </div>
+                                                    <div class="item">
+                                                        <i class="grey icon quote right la-popup-tooltip la-delay" data-content="${message(code: 'default.note.label')}"></i>
+                                                        <div class="content">
+                                                            <div class="header">
+                                                                ${message(code: 'default.note.label')}
+                                                            </div>
+                                                            <div class="description">
+                                                                <ui:xEditable owner="${ie.tipp.coverages}" field="coverageNote" overwriteEditable="false"/>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="item">
+                                                        <i class="grey icon file alternate right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.coverageDepth')}"></i>
+                                                        <div class="content">
+                                                            <div class="header">
+                                                                ${message(code: 'tipp.coverageDepth')}
+                                                            </div>
+                                                            <div class="description">
+                                                                <ui:xEditable owner="${ie.tipp.coverages}" field="coverageDepth" overwriteEditable="false"/>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="item">
+                                                        <i class="grey icon hand paper right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.embargo')}"></i>
+                                                        <div class="content">
+                                                            <div class="header">
+                                                                ${message(code: 'tipp.embargo')}
+                                                            </div>
+                                                            <div class="description">
+                                                                <ui:xEditable owner="${ie.tipp.coverages}" field="embargo" overwriteEditable="false"/>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <%-- Coverage Details END --%>
                                                 </div>
                                             </div>
-                                            <%-- Veränderbarer Bereich START--%>
+                                            <%-- Editable Area START--%>
                                             <div class="seven wide column">
                                                 <i class="icon circular inverted edit la-icon-absolute"></i>
 
@@ -549,7 +588,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <%-- END ---%>
+                                            <%-- Editable Area END ---%>
                                         </div>
                                     </div>
                                 </div>
@@ -559,7 +598,7 @@
                 </div>
             </g:if>
 
-%{--                        <table class="ui sortable celled la-js-responsive-table la-table table la-ignore-fixed la-bulk-header">
+                        <table class="ui sortable celled la-js-responsive-table la-table table la-ignore-fixed la-bulk-header">
                             <thead>
                             <tr>
                                 <th></th>
@@ -846,7 +885,7 @@
                                 </g:each>
                             </g:if>
                             </tbody>
-                        </table>--}%
+                        </table>
         </g:form>
 
 </div>
@@ -966,7 +1005,7 @@
 
 
             $.ajax({
-                url: '<g:createLink controller="ajaxHtml" action="showAllTitleInfosAccordion" params="[showPackage: showPackage, showPlattform: showPlattform, showCompact: showCompact, showEmptyFields: showEmptyFields]"/>&tippID=' + tippID + '&ieID=' + ieID,
+                url: '<g:createLink controller="ajaxHtml" action="showAllTitleInfosAccordion" params="[showPackage: true, showPlattform: true, showCompact: showCompact, showEmptyFields: showEmptyFields]"/>&tippID=' + tippID + '&ieID=' + ieID,
                     success: function(result) {
                         dataAjaxTopic.remove();
                         dataAjaxTarget.prepend(result);

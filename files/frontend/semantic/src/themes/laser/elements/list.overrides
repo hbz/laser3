@@ -121,3 +121,22 @@ dd {
     margin-top:10px;
   }
 }
+.la-onliner {
+  vertical-align: top;
+  padding: 0.21428571em 0;
+  .la-online-wrap {
+    padding-right: .8em;
+    i.icon {
+      margin-right:0;
+      padding-right: .4em;
+      padding-left: .28571429em;
+      display: inline!important;
+    }
+    span.la-identifier {
+      font-weight: bold;
+    }
+    span.la-nr {
+      font-weight: normal;
+    }
+  }
+}
