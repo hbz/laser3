@@ -1715,9 +1715,9 @@ class FilterService {
                     params.ieStatus = configMap.ieStatus.id
                     where += " and ie_status_rv_fk = :ieStatus"
                 }
-                else if(configMap.status != null && !configMap.status.isEmpty()) {
-                    params.ieStatus = configMap.status instanceof String ? Long.parseLong(configMap.status) : configMap.status //already id
-                    where += " and ie_status_rv_fk = :ieStatus"
+                else if(configMap.status) {
+                    params.ieStatus = connection.createArrayOf('bigint', listReaderWrapper(configMap, 'status').toArray())
+                    where += " and ie_status_rv_fk = any(:ieStatus)"
                 }
                 else if(configMap.notStatus != null && !configMap.notStatus.isEmpty()) {
                     params.ieStatus = configMap.notStatus instanceof String ? Long.parseLong(configMap.notStatus) : configMap.notStatus //already id
