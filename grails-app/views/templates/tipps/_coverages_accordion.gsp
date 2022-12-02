@@ -95,9 +95,9 @@
                     }
                     paramData.putAll(params)
                 %>
-                <g:each in="${ie.coverages}" var="covStmt">
+                <g:each in="${ie.coverages}" var="covStmt" status="counterCoverage">
                     <laser:render template="/templates/tipps/coverageStatement_accordion"
-                                  model="${[covStmt: covStmt, paramData: paramData, showEmbargo: true, objectTypeIsIE: true, overwriteEditable: overwriteEditable]}"/>
+                                  model="${[covStmt: covStmt, paramData: paramData, showEmbargo: true, objectTypeIsIE: true, overwriteEditable: overwriteEditable, counterCoverage: counterCoverage]}"/>
                 </g:each>
             </div>
             <div class="five wide column">
@@ -158,10 +158,10 @@
 
     %{-- TIPP  --}%
     <g:else>
-        <g:each in="${tipp.coverages}" var="covStmt">
+        <g:each in="${tipp.coverages}" var="covStmt" status="counterCoverage">
 
             <laser:render template="/templates/tipps/coverageStatement_accordion"
-                          model="${[covStmt: covStmt , showEmbargo: false, objectTypeIsIE: false]}"/>
+                          model="${[covStmt: covStmt , showEmbargo: false, objectTypeIsIE: false, counterCoverage: counterCoverage]}"/>
 
         </g:each>
     </g:else>
