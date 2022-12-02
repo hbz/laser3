@@ -559,7 +559,7 @@ class MyInstitutionController  {
             totalLicenses.each { License licObj ->
                 License license = (License) licObj
                 List row = [[field:license.reference.replaceAll(',',' '),style:'bold']]
-                List linkedSubs = license._getSubscriptions(result.institution).collect { sub ->
+                List linkedSubs = license.getSubscriptions(result.institution).collect { sub ->
                     sub.name
                 }
                 row.add([field:linkedSubs.join(", "),style:null])
@@ -613,7 +613,7 @@ class MyInstitutionController  {
                 totalLicenses.each { licObj ->
                     License license = (License) licObj
                     List row = [license.reference.replaceAll(',',' ')]
-                    List linkedSubs = license._getSubscriptions(result.institution).collect { sub ->
+                    List linkedSubs = license.getSubscriptions(result.institution).collect { sub ->
                         sub.name.replaceAll(',',' ')
                     }
                     row.add(linkedSubs.join("; "))
