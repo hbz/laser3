@@ -208,7 +208,11 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
                 factoryResult.status += FactoryResult.STATUS_ERR_UNIQUE_BUT_ALREADY_SEVERAL_EXIST_IN_REFERENCE_OBJ
 //                factoryResult.result = identifierInDB
                 ident = identifierInDB
-			} else {
+			}
+            else if(ns.isUnique && Identifier.executeQuery("select count(ident) from Identifier ident where ident.value != '"+IdentifierNamespace.UNKNOWN+"' and ident.ns = :ns and ident." + attr + " = :ref", [ns: ns, ref: reference])[0] > 0) {
+                log.debug("NO IDENTIFIER CREATED: multiple occurrences found for unique namespace ( ${ns} )")
+            }
+            else {
                 log.debug("INFO: no match found; creating new identifier for ( ${value}, ${ns}, ${reference.class} )")
 				ident = new Identifier(ns: ns, value: value)
                 if(parent)
