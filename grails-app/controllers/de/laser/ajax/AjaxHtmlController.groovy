@@ -1,7 +1,6 @@
 package de.laser.ajax
 
 import de.laser.DocContext
-import de.laser.DocstoreService
 import de.laser.GenericOIDService
 import de.laser.PendingChangeService
 import de.laser.AccessService
@@ -289,7 +288,7 @@ class AjaxHtmlController {
 
     @Secured(['ROLE_USER'])
     def generateCostPerUse() {
-        Map<String, Object> ctrlResult = subscriptionControllerService.getStatsData(params)
+        Map<String, Object> ctrlResult = subscriptionControllerService.getStatsDataForCostPerUse(params)
         ctrlResult.result.costPerUse = [:]
         if(ctrlResult.result.subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION) {
             ctrlResult.result.costPerUse.consortialData = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "consortial")

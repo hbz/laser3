@@ -10,35 +10,14 @@
                 %{--<g:if test="${editable}"><input id="select-all" type="checkbox" name="chkall" ${allChecked}/></g:if>--}%
             </th>
             <th>${message(code: 'sidewide.number')}</th>
-            <g:if test="${params.tabStat != 'total'}">
-            <g:sortableColumn class="ten wide" params="${params}" property="r.title.sortname"
-                              title="${message(code: 'title.label')}"/>
-            </g:if>
-            <g:else>
-                <th>${message(code: 'title.label')}</th>
-            </g:else>
-            <g:sortableColumn title="${message(code:"default.usage.metricType")}" property="r.metricType" params="${params}" class="two wide"/>
+            <th>${message(code: 'title.label')}</th>
+            <th class="two wide"><g:message code="default.usage.metricType"/></th>
             <g:sortableColumn title="${message(code:"default.count.label")}" property="r.reportCount" params="${params}" class="two wide"/>
             <th class="two wide"><g:message code="default.actions.label"/></th>
         </tr>
         </thead>
         <tbody>
-
-        <g:if test="${params.tabStat == 'total' || !params.tabStat}">
-            <g:each in="${sumsByTitle}" var="sum">
-                <g:set var="tipp" value="${TitleInstancePackagePlatform.findByGlobalUID(sum.titleUID)}"/>
-                <tr>
-                    <td></td>
-                    <td>${ DateUtils.getSDF_yyyyMM().format(sum.reportMonth)}</td>
-                    <td>${tipp.name}</td>
-                    <td>${sum.metricType}</td>
-                    <td>${sum.reportCount}</td>
-                    <td></td>
-                </tr>
-            </g:each>
-        </g:if>
-        <g:else>
-            <g:each in="${stats.findAll { rep -> rep.titleUID != null }}" var="stat">
+            <g:each in="${stats}" var="stat">
                 <g:set var="tipp" value="${TitleInstancePackagePlatform.findByGlobalUID(stat.titleUID)}"/>
                 <g:set var="ie" value="${IssueEntitlement.findByTippAndSubscriptionAndStatusAndAcceptStatus(stat.title, subscription, RDStore.TIPP_STATUS_CURRENT, RDStore.IE_ACCEPT_STATUS_FIXED)}"/>
                 <g:set var="ieInNewSub"
@@ -117,7 +96,6 @@
                 </tr>
 
             </g:each>
-        </g:else>
 
         </tbody>
     </table>

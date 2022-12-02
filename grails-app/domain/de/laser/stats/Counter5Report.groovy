@@ -29,10 +29,9 @@ class Counter5Report extends AbstractReport {
     /**
      * ex Counter5ApiSource, these are the report types supported by COUNTER Revision 5
      */
-    static List<String> COUNTER_5_TITLE_REPORTS         = [DATABASE_MASTER_REPORT, DATABASE_SEARCH_AND_ITEM_USAGE, DATABASE_ACCESS_DENIED,
-                                                           TITLE_MASTER_REPORT, BOOK_REQUESTS, BOOK_ACCESS_DENIED, BOOK_USAGE_BY_ACCESS_TYPE, JOURNAL_REQUESTS, JOURNAL_ACCESS_DENIED, JOURNAL_USAGE_BY_ACCESS_TYPE, JOURNAL_REQUESTS_BY_YOP,
+    static List<String> COUNTER_5_TITLE_REPORTS         = [TITLE_MASTER_REPORT, BOOK_REQUESTS, BOOK_ACCESS_DENIED, BOOK_USAGE_BY_ACCESS_TYPE, JOURNAL_REQUESTS, JOURNAL_ACCESS_DENIED, JOURNAL_USAGE_BY_ACCESS_TYPE, JOURNAL_REQUESTS_BY_YOP,
                                                            ITEM_MASTER_REPORT, JOURNAL_ARTICLE_REQUESTS, MULTIMEDIA_ITEM_REQUESTS]
-    static List<String> COUNTER_5_PLATFORM_REPORTS      = [PLATFORM_MASTER_REPORT, PLATFORM_USAGE]
+    static List<String> COUNTER_5_PLATFORM_REPORTS      = [PLATFORM_MASTER_REPORT, PLATFORM_USAGE, DATABASE_MASTER_REPORT, DATABASE_SEARCH_AND_ITEM_USAGE, DATABASE_ACCESS_DENIED]
     static List<String> COUNTER_5_REPORTS               = COUNTER_5_TITLE_REPORTS+COUNTER_5_PLATFORM_REPORTS
 
 
@@ -77,10 +76,10 @@ class Counter5Report extends AbstractReport {
         TR_B1 ('Total_Item_Requests; Unique_Title_Requests', 'Data_Type=Book; Access_Type=Controlled; Access_Method=Regular', ''),
         TR_B2 ('Limit_Exceeded; No_License', 'Data_Type=Book; Access_Method=Regular', ''),
         TR_B3 ('Total_Item_Investigations; Total_Item_Requests; Unique_Item_Investigations; Unique_Item_Requests; Unique_Title_Investigations; Unique_Title_Requests', 'Data_Type=Book; Access_Method=Regular',''),
-        TR_J1 ('Total_Item_Requests; Unique_Item_Requests', 'Data_Type=Journal; Access_Type=Controlled; Access_Method=Regular', ''),
+        TR_J1 ('Total_Item_Requests; Unique_Item_Requests', 'Data_Type=Journal; Access_Type=Controlled, Others_Free_To_Read; Access_Method=Regular', ''),
         TR_J2 ('Limit_Exceeded; No_License', 'Data_Type=Journal; Access_Method=Regular', ''),
         TR_J3 ('Total_Item_Investigations; Total_Item_Requests; Unique_Item_Investigations; Unique_Item_Requests', 'Data_Type=Journal; Access_Method=Regular' , ''),
-        TR_J4 ('Total_Item_Requests; Unique_Item_Requests', 'Data_Type=Journal; Access_Type=Controlled; Access_Method=Regular', ''),
+        TR_J4 ('Total_Item_Requests; Unique_Item_Requests', 'Data_Type=Journal; Access_Type=Controlled, Others_Free_To_Read; Access_Method=Regular', ''),
         IR ('as selected', 'as selected', 'as selected'),
         IR_A1 ('Total_Item_Requests; Unique_Items_Requests', 'Data_Type=Article; Parent_Data_Type=Journal; Access_Method=Regular', ''),
         IR_M1 ('Total_Item_Requests', 'Data_Type=Multimedia; Access_Method=Regular', '')
@@ -106,11 +105,11 @@ class Counter5Report extends AbstractReport {
         DR_D1 (['Database', 'Publisher', 'Publisher_ID', 'Platform', 'Proprietary_ID', 'Metric_Type', 'Reporting_Period_Total'] as LinkedHashSet<String>),
         DR_D2 (['Database', 'Publisher', 'Publisher_ID', 'Platform', 'Proprietary_ID', 'Metric_Type', 'Reporting_Period_Total'] as LinkedHashSet<String>),
         TR (['Title', 'Publisher', 'Publisher_ID', 'Platform', 'DOI', 'Proprietary_ID', 'ISBN', 'Print_ISSN', 'Online_ISSN', 'URI', 'Metric_Type', 'Reporting_Period_Total'] as LinkedHashSet<String>),
-        TR_B1 (['Title', 'Publisher', 'Publisher_ID', 'Platform', 'DOI', 'Proprietary_ID', 'ISBN', 'Print_ISSN', 'Online_ISSN', 'URI', 'YOP', 'Metric_Type', 'Reporting_Period_Total'] as LinkedHashSet<String>),
-        TR_B2 (['Title', 'Publisher', 'Publisher_ID', 'Platform', 'DOI', 'Proprietary_ID', 'ISBN', 'Print_ISSN', 'Online_ISSN', 'URI', 'YOP', 'Metric_Type', 'Reporting_Period_Total'] as LinkedHashSet<String>),
+        TR_B1 (['Title', 'Publisher', 'Publisher_ID', 'Platform', 'DOI', 'Proprietary_ID', 'ISBN', 'Print_ISSN', 'Online_ISSN', 'URI', 'YOP', 'Access_Type', 'Metric_Type', 'Reporting_Period_Total'] as LinkedHashSet<String>),
+        TR_B2 (['Title', 'Publisher', 'Publisher_ID', 'Platform', 'DOI', 'Proprietary_ID', 'ISBN', 'Print_ISSN', 'Online_ISSN', 'URI', 'YOP', 'Access_Type', 'Metric_Type', 'Reporting_Period_Total'] as LinkedHashSet<String>),
         TR_B3 (['Title', 'Publisher', 'Publisher_ID', 'Platform', 'DOI', 'Proprietary_ID', 'ISBN', 'Print_ISSN', 'Online_ISSN', 'URI', 'YOP', 'Access_Type', 'Metric_Type', 'Reporting_Period_Total'] as LinkedHashSet<String>),
-        TR_J1 (['Title', 'Publisher', 'Publisher_ID', 'Platform', 'DOI', 'Proprietary_ID', 'Print_ISSN', 'Online_ISSN', 'URI', 'Metric_Type', 'Reporting_Period_Total'] as LinkedHashSet<String>),
-        TR_J2 (['Title', 'Publisher', 'Publisher_ID', 'Platform', 'DOI', 'Proprietary_ID', 'Print_ISSN', 'Online_ISSN', 'URI', 'Metric_Type', 'Reporting_Period_Total'] as LinkedHashSet<String>),
+        TR_J1 (['Title', 'Publisher', 'Publisher_ID', 'Platform', 'DOI', 'Proprietary_ID', 'Print_ISSN', 'Online_ISSN', 'URI', 'Access_Type', 'Metric_Type', 'Reporting_Period_Total'] as LinkedHashSet<String>),
+        TR_J2 (['Title', 'Publisher', 'Publisher_ID', 'Platform', 'DOI', 'Proprietary_ID', 'Print_ISSN', 'Online_ISSN', 'URI', 'Access_Type', 'Metric_Type', 'Reporting_Period_Total'] as LinkedHashSet<String>),
         TR_J3 (['Title', 'Publisher', 'Publisher_ID', 'Platform', 'DOI', 'Proprietary_ID', 'Print_ISSN', 'Online_ISSN', 'URI', 'Access_Type', 'Metric_Type', 'Reporting_Period_Total'] as LinkedHashSet<String>),
         TR_J4 (['Title', 'Publisher', 'Publisher_ID', 'Platform', 'DOI', 'Proprietary_ID', 'Print_ISSN', 'Online_ISSN', 'URI', 'YOP', 'Metric_Type', 'Reporting_Period_Total'] as LinkedHashSet<String>),
         IR (['Item', 'Publisher', 'Publisher_ID', 'Platform', 'DOI', 'Proprietary_ID', 'ISBN', 'Print_ISSN', 'Online_ISSN', 'URI', 'Metric_Type', 'Reporting_Period_Total'] as LinkedHashSet<String>),
@@ -126,32 +125,45 @@ class Counter5Report extends AbstractReport {
 
     String accessType
     String accessMethod
+    String dataType
 
     static mapping = {
         datasource           'storage'
-        id                   column: 'c5r_id'
-        version              column: 'c5r_version'
-        titleUID             column: 'c5r_title_guid', index: 'c5r_title_idx, c5r_report_when_idx, c5r_report_per_inst_idx, c5r_title_when_idx'
-        publisher            column: 'c5r_publisher', type: 'text'
-        platformUID          column: 'c5r_platform_guid', index: 'c5r_plat_idx, c5r_title_when_idx'
-        reportInstitutionUID column: 'c5r_report_institution_guid', index: 'c5r_ri_idx, c5r_report_when_idx, c5r_report_per_inst_idx, c5r_title_when_idx'
-        reportType           column: 'c5r_report_type', index: 'c5r_rt_idx, c5r_report_when_idx, c5r_title_when_idx'
-        accessType           column: 'c5r_access_type', index: 'c5r_access_type_idx'
-        accessMethod         column: 'c5r_access_method', index: 'c5r_access_method_idx'
-        metricType           column: 'c5r_metric_type', index: 'c5r_metric_type_idx, c5r_report_when_idx'
-        reportFrom           column: 'c5r_report_from', index: 'c5r_report_from_idx, c5r_report_when_idx, c5r_report_per_inst_idx, c5r_title_when_idx'
-        reportTo             column: 'c5r_report_to', index: 'c5r_report_to_idx, c5r_report_when_idx'
-        reportCount          column: 'c5r_report_count'
+        id                      column: 'c5r_id'
+        version                 column: 'c5r_version'
+        onlineIdentifier        column: 'c5r_online_identifier', index: 'c5r_online_identifier_idx'
+        printIdentifier         column: 'c5r_print_identifier', index: 'c5r_print_identifier_idx'
+        doi                     column: 'c5r_doi', index: 'c5r_doi_idx'
+        isbn                    column: 'c5r_isbn', index: 'c5r_isbn_idx'
+        proprietaryIdentifier   column: 'c5r_proprietary_identifier', index: 'c5r_prop_ident_idx'
+        publisher               column: 'c5r_publisher', type: 'text'
+        platformUID             column: 'c5r_platform_guid', index: 'c5r_plat_idx'
+        reportInstitutionUID    column: 'c5r_report_institution_guid', index: 'c5r_ri_idx'
+        reportType              column: 'c5r_report_type', index: 'c5r_rt_idx'
+        dataType                column: 'c5r_data_type', index: 'c5r_dt_idx'
+        accessType              column: 'c5r_access_type', index: 'c5r_access_type_idx'
+        accessMethod            column: 'c5r_access_method', index: 'c5r_access_method_idx'
+        metricType              column: 'c5r_metric_type', index: 'c5r_metric_type_idx'
+        reportFrom              column: 'c5r_report_from', index: 'c5r_report_from_idx'
+        reportTo                column: 'c5r_report_to', index: 'c5r_report_to_idx '
+        yop                     column: 'c5r_yop', index: 'c5r_yop_idx'
+        reportCount             column: 'c5r_report_count'
     }
 
     static constraints = {
-        titleUID            (nullable: true) //because of platform reports!
-        publisher           (nullable: true, blank: false) //because of platform reports!
-        accessType          (nullable: true, blank: false)
-        accessMethod        (nullable: true, blank: false)
-        title(unique: ['platform', 'reportInstitution', 'metricType', 'reportFrom', 'reportTo', 'reportType'])
+        onlineIdentifier        (nullable: true) //because of platform reports!
+        printIdentifier         (nullable: true) //because of platform reports!
+        doi                     (nullable: true) //because of platform reports!
+        isbn                    (nullable: true) //because of platform reports!
+        proprietaryIdentifier   (nullable: true) //because of platform reports!
+        publisher               (nullable: true, blank: false) //because of platform reports!
+        dataType                (nullable: true, blank: false)
+        accessType              (nullable: true, blank: false)
+        accessMethod            (nullable: true, blank: false)
+        yop                     (nullable: true) //YOP is only used in tr_j4
+        //unique constraints need to be defined manually per dbm changeset because of partial null values
     }
 
-    static transients = ['title', 'platform', 'reportInstitution']
+    static transients = ['platform', 'reportInstitution']
 
 }

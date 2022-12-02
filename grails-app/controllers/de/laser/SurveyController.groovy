@@ -2027,9 +2027,11 @@ class SurveyController {
     })
      Map<String,Object> evaluationParticipant() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
+        /*
         if (!result.editable) {
             response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
+        */
 
         result.participant = Org.get(params.participant)
 

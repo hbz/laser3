@@ -46,7 +46,7 @@
 <table class="ui compact celled table">
     <thead>
         <tr>
-            <th colspan="2"><g:message code="default.usage.reportType"/></th>
+            <th colspan="0"><g:message code="default.usage.reportType"/></th>
             <th><g:message code="default.usage.allUsageGrid.header"/></th>
             <th></th>
         </tr>
@@ -67,46 +67,64 @@
                 </td>
                 <td>
                     <table>
-                        <g:set var="currMonth" value="${GregorianCalendar.getInstance()}"/>
-                        <g:set var="currMonthInner" value="${GregorianCalendar.getInstance()}"/>
-                        <g:each in="${monthsInRing}" var="month" status="monthCtr">
-                            <%
-                                currMonth.setTime(month)
-                            %>
-                            <g:if test="${currMonth.get(Calendar.MONTH) == Calendar.JANUARY}">
-                                <tr>
-                            </g:if>
-                                <th>${DateUtils.getSDF_yyyyMM().format(month)}</th>
-                            <g:if test="${currMonth.get(Calendar.MONTH) == Calendar.DECEMBER || monthCtr == monthsInRing.size()-1}">
-                                </tr>
-                                <g:each in="${monthsInRing}" var="monthInner" status="monthInnerCtr">
-                                    <%
-                                        currMonthInner.setTime(monthInner)
-                                    %>
-                                    <g:if test="${currMonthInner.get(Calendar.YEAR) == currMonth.get(Calendar.YEAR)}">
-                                        <g:if test="${currMonthInner.get(Calendar.MONTH) == Calendar.JANUARY}">
-                                            <tr>
-                                        </g:if>
-                                        <td>
-                                            <g:if test="${reportSums.getValue().countsPerMonth.get(monthInner)}">
-                                                <g:each in="${reportSums.getValue().countsPerMonth.get(monthInner)}" var="metric">
-                                                    ${metric.getValue()}<br>
-                                                </g:each>
-                                            </g:if>
-                                            <g:else>
-                                                <span class="la-long-tooltip la-popup-tooltip la-delay"
-                                                      data-tooltip="${message(code: 'default.usage.missingUsageInfo')}">
-                                                    <i class="exclamation triangle icon la-popup small"></i>
-                                                </span>
-                                            </g:else>
-                                        </td>
-                                        <g:if test="${currMonthInner.get(Calendar.MONTH) == Calendar.DECEMBER || monthInnerCtr == monthsInRing.size()-1}">
-                                            </tr>
-                                        </g:if>
-                                    </g:if>
+                        <g:if test="${reportSums.getValue().containsKey('countsPerYop')}">
+                            <tr>
+                                <g:each in="${reportSums.getValue().countsPerYop.keySet()}" var="yop">
+                                    <th>${yop}</th>
                                 </g:each>
-                            </g:if>
-                        </g:each>
+                            </tr>
+                            <tr>
+                                <g:each in="${reportSums.getValue().countsPerYop.keySet()}" var="yop">
+                                    <td>
+                                        <g:each in="${reportSums.getValue().countsPerYop.get(yop)}" var="metric">
+                                            ${metric.getValue()}
+                                        </g:each>
+                                    </td>
+                                </g:each>
+                            </tr>
+                        </g:if>
+                        <g:else>
+                            <g:set var="currMonth" value="${GregorianCalendar.getInstance()}"/>
+                            <g:set var="currMonthInner" value="${GregorianCalendar.getInstance()}"/>
+                            <g:each in="${monthsInRing}" var="month" status="monthCtr">
+                                <%
+                                    currMonth.setTime(month)
+                                %>
+                                <g:if test="${currMonth.get(Calendar.MONTH) == Calendar.JANUARY}">
+                                    <tr>
+                                </g:if>
+                                <th>${DateUtils.getSDF_yyyyMM().format(month)}</th>
+                                <g:if test="${currMonth.get(Calendar.MONTH) == Calendar.DECEMBER || monthCtr == monthsInRing.size()-1}">
+                                    </tr>
+                                    <g:each in="${monthsInRing}" var="monthInner" status="monthInnerCtr">
+                                        <%
+                                            currMonthInner.setTime(monthInner)
+                                        %>
+                                        <g:if test="${currMonthInner.get(Calendar.YEAR) == currMonth.get(Calendar.YEAR)}">
+                                            <g:if test="${currMonthInner.get(Calendar.MONTH) == Calendar.JANUARY}">
+                                                <tr>
+                                            </g:if>
+                                            <td>
+                                                <g:if test="${reportSums.getValue().countsPerMonth.get(monthInner)}">
+                                                    <g:each in="${reportSums.getValue().countsPerMonth.get(monthInner)}" var="metric">
+                                                        ${metric.getValue()}<br>
+                                                    </g:each>
+                                                </g:if>
+                                                <g:else>
+                                                    <span class="la-long-tooltip la-popup-tooltip la-delay"
+                                                          data-tooltip="${message(code: 'default.usage.missingUsageInfo')}">
+                                                        <i class="exclamation triangle icon la-popup small"></i>
+                                                    </span>
+                                                </g:else>
+                                            </td>
+                                            <g:if test="${currMonthInner.get(Calendar.MONTH) == Calendar.DECEMBER || monthInnerCtr == monthsInRing.size()-1}">
+                                                </tr>
+                                            </g:if>
+                                        </g:if>
+                                    </g:each>
+                                </g:if>
+                            </g:each>
+                        </g:else>
                     </table>
                 </td>
             </tr>

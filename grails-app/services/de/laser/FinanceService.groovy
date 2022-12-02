@@ -40,7 +40,6 @@ class FinanceService {
     FinanceControllerService financeControllerService
 
     String genericExcludes = ' and ci.surveyOrg = null and ci.costItemStatus != :deleted '
-    Map<String,RefdataValue> genericExcludeParams = [deleted: RDStore.COST_ITEM_DELETED]
 
     //model attempt; the finance controller is subject of general refactoring
     static final int STATUS_OK = 0
@@ -554,6 +553,7 @@ class FinanceService {
      * @return a LinkedHashMap with the cost items for each tab to display
      */
     Map getCostItemsForSubscription(GrailsParameterMap params,Map configMap) throws FinancialDataException {
+        Map<String,RefdataValue> genericExcludeParams = [deleted: RDStore.COST_ITEM_DELETED]
         if(configMap.subscription) {
             Profiler prf = new Profiler()
             prf.setBenchmark("init")
@@ -645,6 +645,7 @@ class FinanceService {
      * @see CostItem
      */
     Map<String,Object> getCostItems(GrailsParameterMap params, Map configMap) throws FinancialDataException {
+        Map<String,RefdataValue> genericExcludeParams = [deleted: RDStore.COST_ITEM_DELETED]
         Profiler prf = new Profiler()
         prf.setBenchmark("load filter params")
         params.filterKey = "global"

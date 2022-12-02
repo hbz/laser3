@@ -65,6 +65,7 @@
             <ui:filter>
                 <g:form action="generateReport" name="stats" class="ui form" method="get">
                     <g:hiddenField name="id" value="${subscription.id}"/>
+                    <g:hiddenField name="revision" value="${revision}"/>
                     <div class="four fields">
                         <div class="field">
                             <label for="reportType"><g:message code="default.usage.reportType"/></label>
@@ -84,7 +85,12 @@
 
                         <div class="field">
                             <label for="metricType"><g:message code="default.usage.metricType"/></label>
-                            <select name="metricType" id="metricType" multiple="multiple" class="ui search selection dropdown">
+                            <div id="metricType" class="ui multiple search selection dropdown">
+                                <input type="hidden" name="metricType"/>
+                                <div class="text"></div>
+                                <i class="dropdown icon"></i>
+                            </div>
+                            <%--<select name="metricType" id="metricType" multiple="multiple" class="ui search selection dropdown">
                                 <option value=""><g:message code="default.select.choose.label"/></option>
                                 <g:each in="${metricTypes}" var="metricType">
                                     <option <%=(params.list('metricType')?.contains(metricType)) ? 'selected="selected"' : ''%>
@@ -95,29 +101,13 @@
                                 <g:if test="${metricTypes.size() == 0}">
                                     <option value="<g:message code="default.stats.noMetric" />"><g:message code="default.stats.noMetric" /></option>
                                 </g:if>
-                            </select>
-                        </div>
-
-                        <div class="field">
-                            <g:if test="${accessTypes}">
-                                <label for="accessType"><g:message code="default.usage.accessType"/></label>
-                                <select name="accessType" id="accessType" class="ui search selection dropdown">
-                                    <option value=""><g:message code="default.select.choose.label"/></option>
-                                    <g:each in="${accessTypes}" var="accessType">
-                                        <option <%=(params.accessType == accessType) ? 'selected="selected"' : ''%>
-                                                value="${accessType}">
-                                            ${accessType}
-                                        </option>
-                                    </g:each>
-                                    <g:if test="${accessTypes.size() == 0}">
-                                        <option value="<g:message code="default.stats.noAccess" />"><g:message code="default.stats.noAccess" /></option>
-                                    </g:if>
-                                </select>
-                            </g:if>
+                            </select>--%>
                         </div>
 
                         <div class="field la-field-right-aligned">
                             <input id="generateCostPerUse" type="button" class="ui secondary button" value="${message(code: 'default.stats.generateCostPerUse')}"/>
+                        </div>
+                        <div class="field la-field-right-aligned">
                             <input type="submit" class="ui primary button" value="${message(code: 'default.stats.generateReport')}"/>
                         </div>
                     </div>
@@ -134,19 +124,15 @@
                 $.ajax({
                     url: "<g:createLink controller="ajaxJson" action="adjustMetricList"/>",
                     data: {
-                        reportTypes: $(this).val(),
+                        reportType: $(this).val(),
                         platforms: platforms,
-                        customer: '${customer}'
+                        customer: '${subscription.getSubscriber().globalUID}',
+                        subscription: ${subscription.id}
                     }
                 }).done(function(response){
-                    let dropdown = '<option value=""><g:message code="default.select.choose.label"/></option>';
-                    for(let i = 0; i < response.metricTypes.length; i++) {
-                        if(i === 0)
-                            dropdown += '<option selected="selected" value="'+response.metricTypes[i]+'">'+response.metricTypes[i]+'</option>';
-                        else
-                            dropdown += '<option value="'+response.metricTypes[i]+'">'+response.metricTypes[i]+'</option>';
-                    }
-                    $("#metricType").html(dropdown);
+                    $('#metricType').dropdown({
+                        values: response
+                    });
                 });
             });
             $("#generateCostPerUse").on('click', function() {
