@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4616    02.12.2022  dev     3.0         David   Bug         Aufgaben: Editierbarkeit
+
+4611    02.12.2022  dev     3.0         David   Feature     Workflow: Änderungen "Dokument einhängen"
+
 4625    30.11.2022  dev     3.0         Andreas Bug         Umgang mit WIBID korrigiert
 
 4624    30.11.2022  dev     3.0         David   Feature     Performance: Referenzwerte verwalten
