@@ -421,7 +421,7 @@
                                                     <g:if test="${ie.tipp.accessStartDate}">
                                                         <div class="item">
                                                             <div class="content">
-                                                                <div class="ui label">${message(code: 'tipp.access')} ${message(code: 'default.from')}</div>
+                                                                <div class="ui label la-label-accordion">${message(code: 'tipp.access')} ${message(code: 'default.from')}</div>
 
                                                                 <div class="description">
 
@@ -436,9 +436,7 @@
                                                         <!-- bis -->
                                                         <div class="item">
                                                             <div class="content">
-
-                                                                <div class="ui label">${message(code: 'tipp.access')} ${message(code: 'default.to')}</div>
-
+                                                                <div class="ui label la-label-accordion">${message(code: 'tipp.access')} ${message(code: 'default.to')}</div>
                                                                 <div class="description">
                                                                     <g:formatDate
                                                                             format="${message(code: 'default.date.format.notime')}"
@@ -447,11 +445,60 @@
                                                             </div>
                                                         </div>
                                                     </g:if>
+
+                                                    <%-- Coverage Details START --%>
+                                                    <g:each in="${ie.tipp.coverages}" var="covStmt" status="counterCoverage">
+                                                        <g:if test="${covStmt.coverageNote || covStmt.coverageDepth || covStmt.embargo}">
+                                                            <div class="item">
+                                                                <div class="ui label la-label-accordion">${message(code: 'tipp.coverageDetails')} ${counterCoverage > 0 ? counterCoverage++ + 1 : ''}</div>
+                                                            </div>
+                                                        </g:if>
+                                                        <g:if test="${covStmt.coverageNote}">
+                                                            <div class="item">
+                                                                <i class="grey icon quote right la-popup-tooltip la-delay" data-content="${message(code: 'default.note.label')}"></i>
+                                                                <div class="content">
+                                                                    <div class="header">
+                                                                        ${message(code: 'default.note.label')}
+                                                                    </div>
+                                                                    <div class="description">
+                                                                        ${covStmt.coverageNote}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </g:if>
+                                                        <g:if test="${covStmt.coverageDepth}">
+                                                            <div class="item">
+                                                                <i class="grey icon file alternate right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.coverageDepth')}"></i>
+                                                                <div class="content">
+                                                                    <div class="header">
+                                                                        ${message(code: 'tipp.coverageDepth')}
+                                                                    </div>
+                                                                    <div class="description">
+                                                                        ${covStmt.coverageDepth}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </g:if>
+                                                        <g:if test="${covStmt.embargo}">
+                                                            <div class="item">
+                                                                <i class="grey icon hand paper right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.embargo')}"></i>
+                                                                <div class="content">
+                                                                    <div class="header">
+                                                                        ${message(code: 'tipp.embargo')}
+                                                                    </div>
+                                                                    <div class="description">
+                                                                        ${covStmt.embargo}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </g:if>
+                                                    </g:each>
+                                                    <%-- Coverage Details END --%>
                                                 </div>
                                             </div>
-                                            <%-- Veränderbarer Bereich START--%>
+                                            <%-- Editable Area START--%>
                                             <div class="seven wide column">
-                                                <i class="icon circular inverted edit la-icon-absolute"></i>
+                                                <i class="grey icon circular inverted edit la-icon-absolute"></i>
 
                                                 <div class="ui white segment la-segment-with-icon">
 
@@ -461,7 +508,7 @@
                                                     <div class="ui list">
                                                         <g:if test="${ie}">
                                                             <div class="item">
-                                                                <i class="save icon la-popup-tooltip la-delay"
+                                                                <i class="grey save icon la-popup-tooltip la-delay"
                                                                    data-content="${message(code: 'issueEntitlement.perpetualAccessBySub.label')}"></i>
 
                                                                 <div class="content">
@@ -478,6 +525,17 @@
                                                                             }
                                                                         %>
 
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="item">
+                                                                <i class="grey icon edit la-popup-tooltip la-delay"
+                                                                   data-content="${message(code: 'issueEntitlement.myNotes')}"></i>
+                                                                <div class="content">
+                                                                    <div class="header"><g:message code="issueEntitlement.myNotes"/></div>
+                                                                    <div class="description">
+                                                                        <ui:xEditable owner="${ie}" type="text"
+                                                                                      field="notes"/>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -545,11 +603,13 @@
                                                                 </g:if>
                                                             </g:each>
                                                         </g:if>
+
+
                                                         <%-- GROUPS END--%>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <%-- END ---%>
+                                            <%-- Editable Area END ---%>
                                         </div>
                                     </div>
                                 </div>
@@ -966,7 +1026,7 @@
 
 
             $.ajax({
-                url: '<g:createLink controller="ajaxHtml" action="showAllTitleInfosAccordion" params="[showPackage: showPackage, showPlattform: showPlattform, showCompact: showCompact, showEmptyFields: showEmptyFields]"/>&tippID=' + tippID + '&ieID=' + ieID,
+                url: '<g:createLink controller="ajaxHtml" action="showAllTitleInfosAccordion" params="[showPackage: true, showPlattform: true, showCompact: showCompact, showEmptyFields: showEmptyFields]"/>&tippID=' + tippID + '&ieID=' + ieID,
                     success: function(result) {
                         dataAjaxTopic.remove();
                         dataAjaxTarget.prepend(result);
