@@ -770,7 +770,7 @@ class ExportService {
 							//I hate such solutions ... Anja would kill me!
 							counter4Reports.each { Counter4Report r ->
 								Set<String> identifiers = [r.onlineIdentifier, r.printIdentifier, r.doi, r.isbn, r.proprietaryIdentifier]
-								List<TitleInstancePackagePlatform> tippMatch = TitleInstancePackagePlatform.executeQuery('select tipp from Identifier id join id.tipp tipp where id.value in (:values) and id.ns in (:namespaces) and tipp.status != :removed', [values: identifiers, namespaces: namespaces, removed: RDStore.TIPP_STATUS_REMOVED])
+								Set<TitleInstancePackagePlatform> tippMatch = TitleInstancePackagePlatform.executeQuery('select tipp from Identifier id join id.tipp tipp where id.value in (:values) and id.ns in (:namespaces) and tipp.status != :removed', [values: identifiers, namespaces: namespaces, removed: RDStore.TIPP_STATUS_REMOVED])
 								if(tippMatch) {
 									TitleInstancePackagePlatform tipp = tippMatch[0]
 									Set<AbstractReport> reportsForTitle = titleReports.get(tipp)
@@ -1033,7 +1033,7 @@ class ExportService {
 						//I hate such solutions ... Anja would kill me!
 						counter5Reports.each { Counter5Report r ->
 							Set<String> identifiers = [r.onlineIdentifier, r.printIdentifier, r.doi, r.isbn, r.proprietaryIdentifier]
-							List<TitleInstancePackagePlatform> tippMatch = TitleInstancePackagePlatform.executeQuery('select tipp from Identifier id join id.tipp tipp where id.value in (:values) and id.ns in (:namespaces) and tipp.status != :removed', [values: identifiers, namespaces: namespaces, removed: RDStore.TIPP_STATUS_REMOVED])
+							Set<TitleInstancePackagePlatform> tippMatch = TitleInstancePackagePlatform.executeQuery('select tipp from Identifier id join id.tipp tipp where id.value in (:values) and id.ns in (:namespaces) and tipp.status != :removed', [values: identifiers, namespaces: namespaces, removed: RDStore.TIPP_STATUS_REMOVED])
 							if(tippMatch) {
 								TitleInstancePackagePlatform tipp = tippMatch[0]
 								Set<AbstractReport> reportsForTitle = titleReports.get(tipp)
@@ -1041,7 +1041,9 @@ class ExportService {
 									reportsForTitle << r
 									titleReports.put(tipp, reportsForTitle)
 								}
-								else log.info("tipp ${tipp.name} not in subscription holding")
+								else {
+									log.info("tipp ${tipp.name} not in subscription holding")
+								}
 							}
 							else {
 								log.info("no match found for report with identifier set ${identifiers}")
