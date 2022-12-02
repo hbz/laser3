@@ -27,9 +27,9 @@ class Counter4Report extends AbstractReport {
      * ex Counter4ApiSource; these are the report types supported by COUNTER Revision 4
      */
     static List<String> COUNTER_4_TITLE_REPORTS = [JOURNAL_REPORT_1, JOURNAL_REPORT_1_GOA, JOURNAL_REPORT_2, JOURNAL_REPORT_5,
-                                                   DATABASE_REPORT_1, DATABASE_REPORT_2,
                                                    BOOK_REPORT_1, BOOK_REPORT_2, BOOK_REPORT_3, BOOK_REPORT_4, BOOK_REPORT_5]
-    static List<String> COUNTER_4_REPORTS       = COUNTER_4_TITLE_REPORTS+PLATFORM_REPORT_1
+    static List<String> COUNTER_4_PLATFORM_REPORTS = [DATABASE_REPORT_1, DATABASE_REPORT_2,PLATFORM_REPORT_1]
+    static List<String> COUNTER_4_REPORTS       = COUNTER_4_TITLE_REPORTS+COUNTER_4_PLATFORM_REPORTS
 
     /**
      * These are the header parameters for each COUNTER 4 report
@@ -87,29 +87,37 @@ class Counter4Report extends AbstractReport {
 
     static mapping = {
         datasource           'storage'
-        id                   column: 'c4r_id'
-        version              column: 'c4r_version'
-        titleUID             column: 'c4r_title_guid', index: 'c4r_title_idx, c4r_report_when_idx, c4r_title_when_idx'
-        publisher            column: 'c4r_publisher', type: 'text'
-        platformUID          column: 'c4r_platform_guid', index: 'c4r_plat_idx, c4r_title_when_idx'
-        reportInstitutionUID column: 'c4r_report_institution_guid', index: 'c4r_ri_idx, c4r_report_when_idx, c4r_title_when_idx'
-        reportType           column: 'c4r_report_type', index: 'c4r_rt_idx, c4r_report_when_idx, c4r_title_when_idx'
-        category             column: 'c4r_category'
-        metricType           column: 'c4r_metric_type', index: 'c4r_metric_type_idx, c4r_report_when_idx, c4r_title_when_idx'
-        reportFrom           column: 'c4r_report_from', index: 'c4r_report_from_idx, c4r_report_when_idx, c4r_title_when_idx'
-        reportTo             column: 'c4r_report_to', index: 'c4r_report_to_idx, c4r_report_when_idx, c4r_title_when_idx'
-        yop                  column: 'c4r_yop', index: 'c4r_yop_idx'
-        reportCount          column: 'c4r_report_count'
+        id                      column: 'c4r_id'
+        version                 column: 'c4r_version'
+        onlineIdentifier        column: 'c4r_online_identifier', index: 'c4r_online_identifier_idx'
+        printIdentifier         column: 'c4r_print_identifier', index: 'c4r_print_identifier_idx'
+        doi                     column: 'c4r_doi', index: 'c4r_doi_idx'
+        isbn                    column: 'c4r_isbn', index: 'c4r_isbn_idx'
+        proprietaryIdentifier   column: 'c4r_proprietary_identifier', index: 'c4r_prop_ident_idx'
+        publisher               column: 'c4r_publisher', type: 'text'
+        platformUID             column: 'c4r_platform_guid', index: 'c4r_plat_idx'
+        reportInstitutionUID    column: 'c4r_report_institution_guid', index: 'c4r_ri_idx,'
+        reportType              column: 'c4r_report_type', index: 'c4r_rt_idx'
+        category                column: 'c4r_category'
+        metricType              column: 'c4r_metric_type', index: 'c4r_metric_type_idx'
+        reportFrom              column: 'c4r_report_from', index: 'c4r_report_from_idx'
+        reportTo                column: 'c4r_report_to', index: 'c4r_report_to_idx'
+        yop                     column: 'c4r_yop', index: 'c4r_yop_idx'
+        reportCount             column: 'c4r_report_count'
     }
 
     static constraints = {
-        titleUID             (nullable: true) //because of platform reports!
-        publisher            (nullable: true) //because of platform reports!
-        yop                  (nullable: true) //YOP is used only for JR5
+        onlineIdentifier        (nullable: true) //because of platform reports!
+        printIdentifier         (nullable: true) //because of platform reports!
+        doi                     (nullable: true) //because of platform reports!
+        isbn                    (nullable: true) //because of platform reports!
+        proprietaryIdentifier   (nullable: true) //because of platform reports!
+        publisher               (nullable: true) //because of platform reports!
+        yop                     (nullable: true) //YOP is used only for JR5
         //unique constraints need to be defined manually per dbm changeset because of partial null values
     }
 
-    static transients = ['title', 'platform', 'reportInstitution']
+    static transients = ['platform', 'reportInstitution']
 
 
 }

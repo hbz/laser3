@@ -144,7 +144,7 @@ class SubscriptionController {
             }
         }
         if(result.subscription._getCalculatedType() != CalculatedType.TYPE_CONSORTIAL) {
-            Set<String> tippUIDs = subscriptionControllerService.fetchTitles(params, refSubs, 'uids')
+            //Set<String> tippUIDs = subscriptionControllerService.fetchTitles(params, refSubs, 'uids')
             Map<String, Object> queryParamsBound = [customer: result.subscription.getSubscriber().globalUID, platforms: subscribedPlatforms.globalUID],
                                 dateRangeParams = subscriptionControllerService.getDateRange(params, result.subscription)
             if(dateRangeParams.dateRange.length() > 0) {
@@ -153,10 +153,7 @@ class SubscriptionController {
             }
             Counter5Report.withTransaction {
                 Set allAvailableReports = []
-                allAvailableReports.addAll(Counter5Report.executeQuery('select new map(lower(r.reportType) as reportType, r.accessType as accessType, r.metricType as metricType, r.accessMethod as accessMethod) from Counter5Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms) and r.titleUID = null '+dateRangeParams.dateRange+' group by r.reportType, r.accessType, r.metricType, r.accessMethod', queryParamsBound))
-                tippUIDs.collate(65000).each { subList ->
-                    allAvailableReports.addAll(Counter5Report.executeQuery('select new map(lower(r.reportType) as reportType, r.accessType as accessType, r.metricType as metricType, r.accessMethod as accessMethod) from Counter5Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms) and r.titleUID in (:uids) '+dateRangeParams.dateRange+' group by r.reportType, r.accessType, r.metricType, r.accessMethod', queryParamsBound+[uids: subList]))
-                }
+                allAvailableReports.addAll(Counter5Report.executeQuery('select new map(lower(r.reportType) as reportType, r.accessType as accessType, r.metricType as metricType, r.accessMethod as accessMethod) from Counter5Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms) '+dateRangeParams.dateRange+' group by r.reportType, r.accessType, r.metricType, r.accessMethod', queryParamsBound))
                 if(allAvailableReports.size() > 0) {
                     Set<String> reportTypes = [], metricTypes = [], accessTypes = [], accessMethods = []
                     allAvailableReports.each { row ->
@@ -178,10 +175,7 @@ class SubscriptionController {
                     result.revision = 'counter5'
                 }
                 else {
-                    allAvailableReports.addAll(Counter4Report.executeQuery('select new map(r.reportType as reportType, r.metricType as metricType) from Counter4Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms) and r.titleUID = null '+dateRangeParams.dateRange+' group by r.reportType, r.metricType order by r.reportType', queryParamsBound))
-                    tippUIDs.collate(65000).each { subList ->
-                        allAvailableReports.addAll(Counter4Report.executeQuery('select new map(r.reportType as reportType, r.metricType as metricType) from Counter4Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms) and r.titleUID in (:uids) '+dateRangeParams.dateRange+' group by r.reportType, r.metricType order by r.reportType', queryParamsBound+[uids:subList]))
-                    }
+                    allAvailableReports.addAll(Counter4Report.executeQuery('select new map(r.reportType as reportType, r.metricType as metricType) from Counter4Report r where r.reportInstitutionUID = :customer and r.platformUID in (:platforms) '+dateRangeParams.dateRange+' group by r.reportType, r.metricType order by r.reportType', queryParamsBound))
                     Set<String> reportTypes = [], metricTypes = []
                     allAvailableReports.each { row ->
                         if(!params.loadFor || (params.loadFor && row.reportType != Counter4Report.PLATFORM_REPORT_1)) {

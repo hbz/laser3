@@ -12,7 +12,11 @@ import java.time.Year
 abstract class AbstractReport implements Comparable<AbstractReport> {
 
     Long id
-    String titleUID
+    String onlineIdentifier
+    String printIdentifier
+    String doi
+    String isbn
+    String proprietaryIdentifier
     String reportType
     String publisher
     String metricType
@@ -23,14 +27,6 @@ abstract class AbstractReport implements Comparable<AbstractReport> {
     Integer reportCount
     //only for Journal Report 5 in COUNTER 4 resp. tr_j4 in COUNTER 5
     Date yop
-
-    TitleInstancePackagePlatform getTitle() {
-        return titleUID ? TitleInstancePackagePlatform.findByGlobalUID(titleUID) : null
-    }
-
-    void setTitle(TitleInstancePackagePlatform title) {
-        this.titleUID = title.globalUID
-    }
 
     Platform getPlatform() {
         return platformUID ? Platform.findByGlobalUID(platformUID) : null
@@ -51,9 +47,7 @@ abstract class AbstractReport implements Comparable<AbstractReport> {
     @Override
     int compareTo(AbstractReport that) {
         int result
-        result = this.titleUID <=> that.titleUID
-        if(result == 0)
-            result = this.reportFrom <=> that.reportFrom
+        result = this.reportFrom <=> that.reportFrom
         if(result == 0)
             result = this.reportType <=> that.reportType
         if(result == 0)

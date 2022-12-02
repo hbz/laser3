@@ -23,6 +23,7 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated implements Comparab
   String primaryUrl
   String provenance
   String titleNamespace
+  String centralApiKey
 
   @RefdataInfo(cat = RDConstants.PLATFORM_STATUS)
   RefdataValue status
@@ -63,6 +64,7 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated implements Comparab
           normname column:'plat_normalised_name'
         provenance column:'plat_data_provenance'
     titleNamespace column:'plat_title_namespace', type: 'text'
+     centralApiKey column:'plat_central_api_key', type: 'text'
         primaryUrl column:'plat_primary_url'
             status column:'plat_status_rv_fk'
    serviceProvider column:'plat_servprov_rv_fk'
@@ -83,6 +85,7 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated implements Comparab
     primaryUrl(nullable:true, blank:false)
     provenance(nullable:true, blank:false)
     titleNamespace(nullable:true, blank:false)
+    centralApiKey(nullable:true, blank:false)
     serviceProvider (nullable:true)
     softwareProvider(nullable:true)
     gokbId (blank:false, unique: true, maxSize:511)
@@ -94,13 +97,14 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated implements Comparab
 
   @Override
   int compareTo(Platform that) {
-    int result
+    int result = 0
     if(this.org && that.org) {
       if(this.org.sortname && that.org.sortname)
         result = this.org.sortname <=> that.org.sortname
       else result = this.org.name <=> that.org.name
     }
-    else result = this.name <=> that.name
+    if(result == 0)
+        result = this.name <=> that.name
     result
   }
 

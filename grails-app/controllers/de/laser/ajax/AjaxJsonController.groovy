@@ -278,23 +278,15 @@ class AjaxJsonController {
         }
         List<Map<String, Object>> result = []
         SortedSet metricTypes = new TreeSet<String>()
+        //will the missing of title keys affect the choice?
         if(queryParams.reportType in Counter4Report.COUNTER_4_REPORTS) {
             Counter4Report.withTransaction {
-                if(queryParams.reportType in Counter4Report.COUNTER_4_TITLE_REPORTS) {
-                    queryParams.titleUIDs = subscriptionControllerService.fetchTitles(params, [refSub, refSub.instanceOf] as Set<Subscription>, 'uids')
-
-                    metricTypes.addAll(Counter4Report.executeQuery('select r.metricType from Counter4Report r where r.reportType = :reportType and r.platformUID in (:platforms) and r.reportInstitutionUID = :customer and r.titleUID in (:titleUIDs)'+dateFilter, queryParams))
-                }
-                else metricTypes.addAll(Counter4Report.executeQuery('select r.metricType from Counter4Report r where r.reportType = :reportType and r.platformUID in (:platforms) and r.reportInstitutionUID = :customer and r.titleUID is null'+dateFilter, queryParams))
+                metricTypes.addAll(Counter4Report.executeQuery('select r.metricType from Counter4Report r where r.reportType = :reportType and r.platformUID in (:platforms) and r.reportInstitutionUID = :customer'+dateFilter, queryParams))
             }
         }
         else if(queryParams.reportType in Counter5Report.COUNTER_5_REPORTS) {
             Counter5Report.withTransaction {
-                if(queryParams.reportType in Counter5Report.COUNTER_5_TITLE_REPORTS) {
-                    queryParams.titleUIDs = subscriptionControllerService.fetchTitles(params, [refSub, refSub.instanceOf] as Set<Subscription>, 'uids')
-                    metricTypes.addAll(Counter5Report.executeQuery('select r.metricType from Counter5Report r where lower(r.reportType) = :reportType and r.platformUID in (:platforms) and r.reportInstitutionUID = :customer and r.titleUID in (:titleUIDs)'+dateFilter, queryParams))
-                }
-                else metricTypes.addAll(Counter5Report.executeQuery('select r.metricType from Counter5Report r where lower(r.reportType) = :reportType and r.platformUID in (:platforms) and r.reportInstitutionUID = :customer and r.titleUID is null'+dateFilter, queryParams))
+                metricTypes.addAll(Counter5Report.executeQuery('select r.metricType from Counter5Report r where lower(r.reportType) = :reportType and r.platformUID in (:platforms) and r.reportInstitutionUID = :customer'+dateFilter, queryParams))
             }
         }
         metricTypes.each { String metricType ->

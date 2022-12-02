@@ -365,6 +365,10 @@ class SubscriptionControllerService {
                 subscribedPlatforms = Platform.executeQuery("select tipp.platform from IssueEntitlement ie join ie.tipp tipp where ie.subscription = :subscription", [subscription: result.subscription])
             }
             result.platforms = subscribedPlatforms
+            Set<IdentifierNamespace> namespaces = [IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.EISSN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISSN, TitleInstancePackagePlatform.class.name).id, IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.ISBN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.PISBN, TitleInstancePackagePlatform.class.name), IdentifierNamespace.findByNsAndNsType(IdentifierNamespace.DOI, TitleInstancePackagePlatform.class.name)] as Set<IdentifierNamespace>
+            if(subscribedPlatforms.titleNamespace) {
+                namespaces.addAll(IdentifierNamespace.findAllByNsInList(subscribedPlatforms.titleNamespace))
+            }
             //at this point, we should be sure that at least the parent subscription has a holding!
             Set<Subscription> refSubs
             prf.setBenchmark('before subscription determination')
@@ -380,7 +384,7 @@ class SubscriptionControllerService {
             String sort, customerUID = result.subscription.getSubscriber().globalUID, groupKey
             result.customer = customerUID
             if(subscribedPlatforms && refSubs) {
-                Set refTitles = fetchTitles(params, refSubs, 'uids')
+                Set refTitles = fetchTitles(params, refSubs, namespaces, 'ids')
                 Map<String, Object> dateRanges = getDateRange(params, result.subscription)
                 result.dateRangeParams = dateRanges.dateRangeParams
                 String filter = "", baseQuery, baseQueryAllYears, groupClause = " group by r.reportFrom, r.reportType, r.metricType"
@@ -412,14 +416,14 @@ class SubscriptionControllerService {
                         queryParamsBound.putAll(queryParams)
                         if(result.reportType in Counter5Report.COUNTER_5_PLATFORM_REPORTS) {
                             //without titles
-                            c5usages.addAll(Counter5Report.executeQuery(baseQuery+'and r.titleUID = null '+filter+dateRanges.dateRange+groupClause, queryParamsBound))
-                            c5allYears.addAll(Counter5Report.executeQuery(baseQueryAllYears+'and r.titleUID = null '+filter+' group by year(r.reportFrom), r.reportType, r.metricType', queryParams))
+                            c5usages.addAll(Counter5Report.executeQuery(baseQuery+filter+dateRanges.dateRange+groupClause, queryParamsBound))
+                            c5allYears.addAll(Counter5Report.executeQuery(baseQueryAllYears+filter+' group by year(r.reportFrom), r.reportType, r.metricType', queryParams))
                         }
                         if(result.reportType in Counter5Report.COUNTER_5_TITLE_REPORTS) {
                             //with titles
                             refTitles.collate(32700).each { List subList ->
-                                c5usages.addAll(Counter5Report.executeQuery(baseQuery+'and r.titleUID in (:uids) '+filter+dateRanges.dateRange+groupClause, queryParamsBound+[uids: subList]))
-                                c5allYears.addAll(Counter5Report.executeQuery(baseQueryAllYears+'and r.titleUID in (:uids) '+filter+' group by year(r.reportFrom), r.reportType, r.metricType', queryParams+[uids: subList]))
+                                c5usages.addAll(Counter5Report.executeQuery(baseQuery+'and ((r.onlineIdentifier, r.printIdentifier, r.doi, r.isbn, r.proprietaryIdentifier) in (:ids) '+filter+dateRanges.dateRange+groupClause, queryParamsBound+[uids: subList]))
+                                c5allYears.addAll(Counter5Report.executeQuery(baseQueryAllYears+'and ((r.onlineIdentifier, r.printIdentifier, r.doi, r.isbn, r.proprietaryIdentifier) in (:ids)) '+filter+' group by year(r.reportFrom), r.reportType, r.metricType', queryParams+[uids: subList]))
                             }
                         }
                         c5usages.each { row ->
@@ -482,24 +486,14 @@ class SubscriptionControllerService {
                             filter += " and r.metricType in (:metricType) "
                         }
                         queryParamsBound.putAll(queryParams)
-                        if(result.reportType == Counter4Report.PLATFORM_REPORT_1) {
-                            //without titles
-                            c4usages.addAll(Counter4Report.executeQuery(baseQuery+'and r.titleUID = null '+filter+dateRanges.dateRange+groupClause, queryParamsBound))
-                            c4allYears.addAll(Counter4Report.executeQuery(baseQueryAllYears+'and r.titleUID = null '+filter+' group by year(r.reportFrom), r.reportType, r.metricType', queryParams))
-                        }
-                        if(result.reportType in Counter4Report.COUNTER_4_TITLE_REPORTS) {
-                            //with titles
-                            refTitles.collate(32700).each { List subList ->
-                                c4usages.addAll(Counter4Report.executeQuery(baseQuery+'and r.titleUID in (:uids) '+filter+dateRanges.dateRange+groupClause, queryParamsBound+[uids: subList]))
-                                c4allYears.addAll(Counter4Report.executeQuery(baseQueryAllYears+'and r.titleUID in (:uids) '+filter+' group by year(r.reportFrom), r.reportType, r.metricType', queryParams+[uids: subList]))
-                            }
-                        }
+                        c4usages.addAll(Counter4Report.executeQuery(baseQuery+filter+dateRanges.dateRange+groupClause, queryParamsBound))
+                        c4allYears.addAll(Counter4Report.executeQuery(baseQueryAllYears+filter+' group by year(r.reportFrom), r.reportType, r.metricType', queryParams))
                         Calendar cal = GregorianCalendar.getInstance()
                         cal.set(2000, 0, 1)
                         c4usages.each { row ->
                             Map<String, Object> reportSums = c4sums.get(row.reportType)
                             if(!reportSums) {
-                                reportSums = [sumsPerMetric: [:], countsPerTitle: [:]]
+                                reportSums = [sumsPerMetric: [:]]
                                 if(result.reportType == Counter4Report.JOURNAL_REPORT_5)
                                     reportSums.countsPerYop = [:]
                                 else
@@ -717,15 +711,17 @@ class SubscriptionControllerService {
         dateRangeParams+[dateRange: dateRange, monthsInRing: monthsInRing]
     }
 
-    Set fetchTitles(GrailsParameterMap params, Set<Subscription> refSubs, String fetchWhat) {
+    Set fetchTitles(GrailsParameterMap params, Set<Subscription> refSubs, Set<IdentifierNamespace> namespaces, String fetchWhat) {
         Set result = []
-        String selectClause
-        if(fetchWhat == 'fullObjects')
-            selectClause = 'tipp'
-        else if(fetchWhat == 'uids')
-            selectClause = 'tipp.globalUID as tippUID'
-        String query = "select ${selectClause} from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (:refSubs) and ie.status = :current and ie.acceptStatus = :fixed "
+        String query
         Map<String, Object> queryParams = [refSubs: refSubs, current: RDStore.TIPP_STATUS_CURRENT, fixed: RDStore.IE_ACCEPT_STATUS_FIXED]//current for now
+        if(fetchWhat == 'fullObjects')
+            query = "select tipp from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (:refSubs) and ie.status = :current and ie.acceptStatus = :fixed "
+        else if(fetchWhat == 'ids') {
+            //!!!!!! MAY BE A PERFORMANCE BOTTLENECK! OBSERVE CLOSELY !!!!!!!!!
+            query = "select id.value from Identifier id join id.tipp tipp where id.ns in (:namespaces) and tipp in (select ie.tipp from IssueEntitlement ie where ie.subscription in (:refSubs) and ie.status = :current and ie.acceptStatus = :fixed) "
+            queryParams.namespaces = namespaces
+        }
         if(params.data != 'fetchAll') {
             if(params.series_names) {
                 query += " and title.seriesName in (:seriesName) "
@@ -794,8 +790,8 @@ class SubscriptionControllerService {
             }
         }
         if(params.sort == "title.name")
-            query += " order by ie.sortname ${params.order}, tipp.sortname ${params.order}, ie.name ${params.order}, tipp.name ${params.order}"
-        else query += " order by ie.sortname, tipp.sortname, ie.name, tipp.name"
+            query += " order by tipp.sortname ${params.order}, tipp.name ${params.order}"
+        else query += " order by tipp.sortname, tipp.name"
 
         result.addAll(TitleInstancePackagePlatform.executeQuery(query, queryParams))
 

@@ -17,6 +17,7 @@
                     <th>#</th>
                     <th>Anbieter</th>
                     <th>Plattform</th>
+                    <th>zentraler API-Schlüssel</th>
                     <th>Aktionen</th>
                 </tr>
             </thead>
@@ -37,6 +38,7 @@
                         <td>Plattform - ${platform.id}</td>
                         <td>${platform.org ? platform.org.name : null}</td>
                         <td>${platform.name}</td>
+                        <td><ui:xEditable owner="${platform}" field="centralApiKey" overwriteEditable="${true}"/></td>
                         <td>
                             <g:if test="${!platformInstanceRecords[platform.gokbId].containsKey("noCursor")}">
                                 <g:link class="ui negative button js-open-confirm-modal"
