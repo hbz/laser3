@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4430    05.12.2022  dev     3.0         Moe     Feature     Lokale Titelauswahl per KBART-Upload: Systemrückmeldung verbessern
+
 4362    05.12.2022  dev     3.0         Moe     Feature     Lizenzteilnehmer aktiv zu Lizenz-/allgemeinen Umfragen hinzufügen
 
 4627    05.12.2022  dev     3.0         David   Bug         Einrichtungen können Dokumenttyp in Umfragen editieren
