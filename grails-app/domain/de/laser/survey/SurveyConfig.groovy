@@ -184,7 +184,7 @@ class SurveyConfig {
      */
     def getCurrentDocs() {
 
-        return documents.findAll { (it.status?.value != 'Deleted' && (it.owner?.contentType == Doc.CONTENT_TYPE_FILE))}
+        return documents.findAll { (it.status?.value != 'Deleted' && (it.owner?.contentType == Doc.CONTENT_TYPE_FILE))}.sort()
     }
 
     /**

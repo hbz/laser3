@@ -1322,6 +1322,13 @@ class AjaxHtmlController {
                                 check = true
                             }
                         }
+                        // survey workaround
+                        else if ( docCtx.surveyConfig ) {
+                            Map orgIdMap = docCtx.surveyConfig.getSurveyOrgsIDs()
+                            if (contextService.getOrg().id in orgIdMap.orgsWithSubIDs || contextService.getOrg().id in orgIdMap.orgsWithoutSubIDs) {
+                                check = true
+                            }
+                        }
                         return check
                     }
 
