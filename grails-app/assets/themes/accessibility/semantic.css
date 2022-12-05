@@ -45305,13 +45305,11 @@ dd {
   width: fit-content;
 }
 
-.ui.card .la-label-list .item:nth-child(2) {
-  margin-top: 10px;
-}
-
 .la-onliner {
   vertical-align: top;
-  padding: 0.21428571em 0;
+  padding-top: 0.21428571em;
+  padding-bottom: 0.4em;
+  display: inline-block;
 }
 
 .la-onliner .la-online-wrap {

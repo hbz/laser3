@@ -16,7 +16,7 @@
     <div class="item js-copyTriggerParent">
         <span class="ui small basic image label js-copyTrigger la-popup-tooltip la-delay"
               data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}">
-            <i class="la-copy icon la-js-copyTriggerIcon"></i>
+            <i class="la-copy grey icon la-js-copyTriggerIcon"></i>
 
             zdb: <div class="detail js-copyTopic">2756942-1</div>
         </span>
@@ -24,7 +24,7 @@
     <div class="item js-copyTriggerParent">
         <span class="ui small basic image label js-copyTrigger  la-popup-tooltip la-delay"
               data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}">
-            <i class="la-copy icon la-js-copyTriggerIcon"></i>
+            <i class="la-copy grey icon la-js-copyTriggerIcon"></i>
 
             zdb: <div class="detail js-copyTopic">123456</div>
         </span>
@@ -50,7 +50,7 @@
                 &lt;div class="item <strong>js-copyTriggerParent</strong>">
                     &lt;span class="ui small basic image label <strong>js-copyTrigger</strong> la-popup-tooltip la-delay"
                           data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}">
-                        &lt;i class="la-copy icon <strong>la-js-copyTriggerIcon</strong>" aria-hidden="true">&lt;/i>
+                        &lt;i class="la-copy grey icon <strong>la-js-copyTriggerIcon</strong>" aria-hidden="true">&lt;/i>
                         zdb: &lt;div class="detail <strong>js-copyTopic</strong>">2756942-1&lt;/div>
                      &lt;/span>
                 &lt;/div>

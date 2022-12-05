@@ -118,12 +118,14 @@ dd {
     width: fit-content;
   }
   .item:nth-child(2){
-    margin-top:10px;
+   // margin-top:10px;
   }
 }
 .la-onliner {
   vertical-align: top;
-  padding: 0.21428571em 0;
+  padding-top: 0.21428571em;
+  padding-bottom: 0.4em;
+  display: inline-block;
   .la-online-wrap {
     padding-right: .8em;
     i.icon {

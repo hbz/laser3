@@ -543,7 +543,7 @@
 
                                                         <g:each in="${ie.priceItems}" var="priceItem" status="i">
                                                             <div class="item">
-                                                                <i class="money icon la-popup-tooltip la-delay"></i>
+                                                                <i class="money grey icon la-popup-tooltip la-delay"></i>
 
                                                                 <div class="content">
                                                                     <div class="header"><g:message

@@ -33,7 +33,7 @@
                         </g:if>
                         <g:else><span class="js-copyTrigger js-copyTopic la-popup-tooltip la-delay"
                                       data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}">
-                                    <i class="la-copy icon la-js-copyTriggerIcon" aria-hidden="true"></i>
+                                    <i class="la-copy grey icon la-js-copyTriggerIcon" aria-hidden="true"></i>
                                     <span class="js-copyTopic">${ident.value}</span>
                                 </span>
                         </g:else>
@@ -42,7 +42,7 @@
                     <g:else>
                         <span class="js-copyTrigger la-popup-tooltip la-delay"
                                       data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}">
-                            <i class="la-copy icon la-js-copyTriggerIcon" aria-hidden="true"></i>
+                            <i class="la-copy grey icon la-js-copyTriggerIcon" aria-hidden="true"></i>
                             <span class="js-copyTopic">${ident}</span>
                         </span>
                         <g:if test="${!objIsOrgAndInst && object.hasProperty("gokbId") && ident == object.gokbId}">
