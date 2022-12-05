@@ -1,4 +1,4 @@
-<%@ page import="de.laser.Subscription; de.laser.remote.ApiSource; grails.converters.JSON; de.laser.storage.RDStore; de.laser.Platform;de.laser.titles.BookInstance" %>
+<%@ page import="de.laser.Subscription; de.laser.remote.ApiSource; grails.converters.JSON; de.laser.storage.RDStore; de.laser.Platform;de.laser.titles.BookInstance; de.laser.IssueEntitlementGroup;" %>
 
 <laser:htmlStart message="subscription.details.addEntitlements.label" serviceInjection="true" />
 
@@ -34,14 +34,15 @@
 
     <ui:messages data="${flash}"/>
 
-<h3 class="ui dividing header"><g:message code="subscription.details.addEntitlements.header"/></h3>
-<ui:msg class="warning" header="${message(code:"message.attention")}" message="subscription.details.addEntitlements.warning" />
-<g:form class="ui form" controller="subscription" action="addEntitlements"
+<ui:form>
+    <h3 class="ui dividing header"><g:message code="subscription.details.addEntitlements.header"/></h3>
+    <ui:msg header="${message(code:"message.attention")}" message="subscription.details.addEntitlements.warning" />
+
+    <g:form class="ui form" controller="subscription" action="addEntitlements"
         params="${[sort: params.sort, order: params.order, filter: params.filter, pkgFilter: params.pkgfilter, startsBefore: params.startsBefore, endsAfter: params.endAfter, id: subscription.id]}"
         method="post" enctype="multipart/form-data">
-    <div class="three fields">
         <div class="field">
-            <div class="ui fluid action input">
+            <div class="ui action input">
                 <input type="text" readonly="readonly"
                        placeholder="${message(code: 'template.addDocument.selectFile')}">
                 <input type="file" id="kbartPreselect" name="kbartPreselect" accept="text/tab-separated-values"
@@ -53,27 +54,32 @@
             </div>
         </div>
 
-        <div class="field">
-            <div class="ui checkbox toggle">
-                <g:checkBox name="preselectValues" value="${preselectValues}" checked="true" readonly="readonly"/>
-                <label><g:message code="subscription.details.addEntitlements.preselectValues"/></label>
+        <div class="one fields">
+            <div class="field">
+                <div class="ui checkbox toggle">
+                    <g:checkBox name="preselectValues" value="${preselectValues}" checked="true" readonly="readonly"/>
+                    <label><g:message code="subscription.details.addEntitlements.preselectValues"/></label>
+                </div>
+
+                <div class="ui checkbox toggle">
+                    <g:checkBox name="preselectCoverageDates" value="${preselectCoverageDates}"/>
+                    <label><g:message code="subscription.details.addEntitlements.preselectCoverageDates"/></label>
+                </div>
+
+                <div class="ui checkbox toggle">
+                    <g:checkBox name="uploadPriceInfo" value="${uploadPriceInfo}"/>
+                    <label><g:message code="subscription.details.addEntitlements.uploadPriceInfo"/></label>
+                </div>
             </div>
-            <div class="ui checkbox toggle">
-                <g:checkBox name="preselectCoverageDates" value="${preselectCoverageDates}"/>
-                <label><g:message code="subscription.details.addEntitlements.preselectCoverageDates"/></label>
-            </div>
-            <div class="ui checkbox toggle">
-                <g:checkBox name="uploadPriceInfo" value="${uploadPriceInfo}"/>
-                <label><g:message code="subscription.details.addEntitlements.uploadPriceInfo"/></label>
-            </div>
+
         </div>
 
-        <div class="field">
+        <div class="field la-field-right-aligned">
             <input type="submit"
                    value="${message(code: 'subscription.details.addEntitlements.preselect')}"
-                   class="fluid ui button"/>
+                   class="ui button"/>
         </div>
-    </div>
+
 </g:form>
 <laser:script file="${this.getGroovyPageFileName()}">
     $('.action .icon.button').click(function () {
@@ -85,53 +91,68 @@
         $('input:text', $(e.target).parent()).val(name);
     });
 </laser:script>
+</ui:form>
+<br>
+<br>
+
+<ui:modal id="linkToIssueEntitlementGroup" message="issueEntitlementGroup.entitlementsRenew.selected.add"
+          refreshModal="true"
+          msgSave="${g.message(code: 'subscription.details.addEntitlements.add_selectedToIssueEntitlementGroup')}">
+
+    <g:form action="processAddEntitlements" class="ui form">
+        <input type="hidden" name="id" value="${subscription.id}"/>
+        <g:hiddenField name="preselectCoverageDates" value="${preselectCoverageDates}"/>
+        <g:hiddenField name="uploadPriceInfo" value="${uploadPriceInfo}"/>
+        <g:hiddenField name="process" value="withTitleGroup"/>
+
+        <div class="ui three fields">
+
+            <g:if test="${subscription.ieGroups}">
+                <div class="field">
+                    <label for="issueEntitlementGroup">${message(code: 'issueEntitlementGroup.entitlementsRenew.selected.add')}:</label>
+
+                    <select name="issueEntitlementGroupID" id="issueEntitlementGroup"
+                            class="ui search dropdown">
+                        <option value="">${message(code: 'default.select.choose.label')}</option>
+
+                        <g:each in="${subscription.ieGroups.sort { it.name }}" var="titleGroup">
+                            <option value="${titleGroup.id}">
+                                ${titleGroup.name} (${titleGroup.countCurrentTitles()})
+                            </option>
+                        </g:each>
+                    </select>
+                </div>
+            </g:if>
+
+            <div class="field"></div>
+
+            <div class="field">
+                <label for="issueEntitlementGroup">${message(code: 'issueEntitlementGroup.entitlementsRenew.selected.new')}:</label>
+                <input type="text" name="issueEntitlementGroupNew"
+                       value="Phase ${IssueEntitlementGroup.findAllBySubAndNameIlike(subscription, 'Phase').size() + 1}">
+            </div>
+
+        </div>
+    </g:form>
+</ui:modal>
+
 <g:form action="processAddEntitlements" class="ui form">
     <input type="hidden" name="id" value="${subscription.id}"/>
     <g:hiddenField name="preselectCoverageDates" value="${preselectCoverageDates}"/>
     <g:hiddenField name="uploadPriceInfo" value="${uploadPriceInfo}"/>
 
-    <div class="three fields">
-        <div class="field"></div>
+    <div class="field">
+        <g:if test="${blockSubmit}">
+            <ui:msg header="${message(code:"message.attention")}" message="subscription.details.addEntitlements.thread.running" />
+        </g:if>
+        <a class="ui left floated button" id="processButton" data-ui="modal" href="#linkToIssueEntitlementGroup" ${blockSubmit ? 'disabled="disabled"' : '' }>
+            ${checkedCount} <g:message code="subscription.details.addEntitlements.add_selectedToIssueEntitlementGroup"/></a>
 
-        <div class="field">
-            <g:if test="${!blockSubmit}">
-                <div class="ui two fields">
-                    <div class="field">
-                        <label for="issueEntitlementGroup">${message(code: 'issueEntitlementGroup.entitlementsRenew.selected.add')}:</label>
-
-                        <select name="issueEntitlementGroupID" id="issueEntitlementGroup"
-                                class="ui search dropdown">
-                            <option value="">${message(code: 'default.select.choose.label')}</option>
-
-                            <g:each in="${subscription.ieGroups.sort { it.name }}" var="titleGroup">
-                                <option value="${titleGroup.id}">
-                                    ${titleGroup.name} (${titleGroup.countCurrentTitles.size()})
-                                </option>
-                            </g:each>
-                        </select>
-                    </div>
-
-                    <div class="field">
-                        <label for="issueEntitlementGroup">${message(code: 'issueEntitlementGroup.entitlementsRenew.selected.new')}:</label>
-                        <input type="text" name="issueEntitlementGroupNew"
-                               value="Phase ${IssueEntitlementGroup.findAllBySubAndNameIlike(subscriptionParticipant, 'Phase').size() + 1}">
-                    </div>
-
-                </div>
-
-                <button type="submit" name="process" id="processButton" value="${message(code: 'subscription.details.addEntitlements.add_selected')}" class="fluid ui button">
-                    ${checkedCount} ${message(code: 'subscription.details.addEntitlements.add_selected')}</button>
-            </g:if>
-            <g:else>
-                <div class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.details.addEntitlements.thread.running')}">
-                    <input type="submit" disabled="disabled"
-                           value="${message(code: 'subscription.details.addEntitlements.add_selected')}"
-                           class="fluid ui button"/>
-                </div>
-            </g:else>
-        </div>
-        <div class="field"></div>
+        <button type="submit" name="process" id="processButton2" value="withoutTitleGroup" ${blockSubmit ? 'disabled="disabled"' : '' } class="ui right floated button">
+            ${checkedCount} ${message(code: 'subscription.details.addEntitlements.add_selected')}</button>
     </div>
+
+    <div class="field"></div>
 
     <div class="ui blue large label"><g:message code="title.plural"/>: <div class="detail">${num_tipp_rows}</div>
     </div>
@@ -278,17 +299,16 @@
     </table>
 
     <div class="paginateButtons" style="text-align:center">
-        <g:if test="${!blockSubmit}">
-            <button type="submit" name="process" id="processButton2" value="${message(code: 'subscription.details.addEntitlements.add_selected')}" class="ui button">
+        <div class="field">
+            <g:if test="${blockSubmit}">
+                <ui:msg header="${message(code:"message.attention")}" message="subscription.details.addEntitlements.thread.running" />
+            </g:if>
+            <a class="ui left floated button" id="processButton3" data-ui="modal" href="#linkToIssueEntitlementGroup" ${blockSubmit ? 'disabled="disabled"' : '' }>
+                ${checkedCount} <g:message code="subscription.details.addEntitlements.add_selectedToIssueEntitlementGroup"/></a>
+
+            <button type="submit" name="process" id="processButton4" value="withoutTitleGroup" ${blockSubmit ? 'disabled="disabled"' : '' } class="ui right floated button">
                 ${checkedCount} ${message(code: 'subscription.details.addEntitlements.add_selected')}</button>
-        </g:if>
-        <g:else>
-            <div class="la-popup-tooltip la-delay" data-content="${message(code: 'subscription.details.addEntitlements.thread.running')}">
-                <input type="submit" disabled="disabled"
-                       value="${message(code: 'subscription.details.addEntitlements.add_selected')}"
-                       class="ui button"/>
-            </div>
-        </g:else>
+        </div>
     </div>
 
 
@@ -304,6 +324,8 @@
     </g:if>
 
 </g:form>
+
+
 
 
 <laser:render template="/templates/export/individuallyExportTippsModal" model="[modalID: 'individuallyExportTippsModal']" />
@@ -341,8 +363,10 @@
                 checked: checked
             },
             success: function (data) {
-                $("#processButton").html(data.checkedCount + " ${g.message(code: 'subscription.details.addEntitlements.add_selected')}");
+                $("#processButton").html(data.checkedCount + " ${g.message(code: 'subscription.details.addEntitlements.add_selectedToIssueEntitlementGroup')}");
                 $("#processButton2").html(data.checkedCount + " ${g.message(code: 'subscription.details.addEntitlements.add_selected')}");
+                 $("#processButton3").html(data.checkedCount + " ${g.message(code: 'subscription.details.addEntitlements.add_selectedToIssueEntitlementGroup')}");
+                  $("#processButton4").html(data.checkedCount + " ${g.message(code: 'subscription.details.addEntitlements.add_selected')}");
             }
         }).done(function(result){
 

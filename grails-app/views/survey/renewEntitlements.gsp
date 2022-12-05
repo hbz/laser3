@@ -191,6 +191,7 @@
 
                 <g:if test="${editable}">
                     <div class="ui two fields">
+                    <g:if test="${subscriptionParticipant.ieGroups}">
                         <div class="field">
                             <label for="issueEntitlementGroup">${message(code: 'issueEntitlementGroup.entitlementsRenew.selected.add')}:</label>
 
@@ -200,11 +201,12 @@
 
                                 <g:each in="${subscriptionParticipant.ieGroups.sort { it.name }}" var="titleGroup">
                                     <option value="${titleGroup.id}">
-                                        ${titleGroup.name} (${titleGroup.countCurrentTitles.size()})
+                                        ${titleGroup.name} (${titleGroup.countCurrentTitles()})
                                     </option>
                                 </g:each>
                             </select>
                         </div>
+                    </g:if>
 
                         <div class="field">
                             <label for="issueEntitlementGroup">${message(code: 'issueEntitlementGroup.entitlementsRenew.selected.new')}:</label>
