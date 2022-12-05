@@ -409,10 +409,14 @@
                 <div class="item">
                     <i class="grey icon gift scale la-popup-tooltip la-delay"
                        data-content="${message(code: 'package.label')}"></i>
-
                     <div class="content">
-                        <g:link controller="package" action="show" target="_blank"
-                                id="${tipp.pkg.id}">${tipp.pkg.name}</g:link>
+                        <div class="header">
+                            ${message(code: 'package.label')}
+                        </div>
+                        <div class="description">
+                            <g:link controller="package" action="show" target="_blank"
+                                    id="${tipp.pkg.id}">${tipp.pkg.name}</g:link>
+                        </div>
                     </div>
                 </div>
             </g:if>
@@ -423,17 +427,21 @@
                 <div class="item">
                     <i class="grey icon cloud la-popup-tooltip la-delay"
                        data-content="${message(code: 'tipp.platform')}"></i>
-
                     <div class="content">
-                        <g:if test="${tipp.platform.name}">
-                            <g:link controller="platform" action="show" target="_blank"
-                                    id="${tipp.platform.id}">
-                                ${tipp.platform.name}
-                            </g:link>
-                        </g:if>
-                        <g:else>
-                            ${message(code: 'default.unknown')}
-                        </g:else>
+                        <div class="header">
+                            ${message(code: 'tipp.platform')}
+                        </div>
+                        <div class="description">
+                            <g:if test="${tipp.platform.name}">
+                                <g:link controller="platform" action="show" target="_blank"
+                                        id="${tipp.platform.id}">
+                                    ${tipp.platform.name}
+                                </g:link>
+                            </g:if>
+                            <g:else>
+                                ${message(code: 'default.unknown')}
+                            </g:else>
+                        </div>
                     </div>
                 </div>
             </g:if>

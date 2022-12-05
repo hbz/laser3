@@ -1,7 +1,6 @@
 package de.laser.ajax
 
 import de.laser.DocContext
-import de.laser.DocstoreService
 import de.laser.GenericOIDService
 import de.laser.PendingChangeService
 import de.laser.AccessService
@@ -289,7 +288,7 @@ class AjaxHtmlController {
 
     @Secured(['ROLE_USER'])
     def generateCostPerUse() {
-        Map<String, Object> ctrlResult = subscriptionControllerService.getStatsData(params)
+        Map<String, Object> ctrlResult = subscriptionControllerService.getStatsDataForCostPerUse(params)
         ctrlResult.result.costPerUse = [:]
         if(ctrlResult.result.subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION) {
             ctrlResult.result.costPerUse.consortialData = subscriptionControllerService.calculateCostPerUse(ctrlResult.result, "consortial")
@@ -1320,6 +1319,13 @@ class AjaxHtmlController {
                             }
                             if ( docCtx.shareConf == RDStore.SHARE_CONF_CONSORTIUM || docCtx.shareConf == RDStore.SHARE_CONF_ALL ) {
                                 // context based restrictions must be applied
+                                check = true
+                            }
+                        }
+                        // survey workaround
+                        else if ( docCtx.surveyConfig ) {
+                            Map orgIdMap = docCtx.surveyConfig.getSurveyOrgsIDs()
+                            if (contextService.getOrg().id in orgIdMap.orgsWithSubIDs || contextService.getOrg().id in orgIdMap.orgsWithoutSubIDs) {
                                 check = true
                             }
                         }

@@ -559,7 +559,7 @@ class MyInstitutionController  {
             totalLicenses.each { License licObj ->
                 License license = (License) licObj
                 List row = [[field:license.reference.replaceAll(',',' '),style:'bold']]
-                List linkedSubs = license.subscriptions.collect { sub ->
+                List linkedSubs = license.getSubscriptions(result.institution).collect { sub ->
                     sub.name
                 }
                 row.add([field:linkedSubs.join(", "),style:null])
@@ -613,7 +613,7 @@ class MyInstitutionController  {
                 totalLicenses.each { licObj ->
                     License license = (License) licObj
                     List row = [license.reference.replaceAll(',',' ')]
-                    List linkedSubs = license.subscriptions.collect { sub ->
+                    List linkedSubs = license.getSubscriptions(result.institution).collect { sub ->
                         sub.name.replaceAll(',',' ')
                     }
                     row.add(linkedSubs.join("; "))
@@ -1540,9 +1540,9 @@ join sub.orgRelations or_sub where
                 qryParams3.put('query', "${params.pkg_q}")
             }
 
-            if (params.ddc?.length() > 0) {
-                qry3 += " and ((exists (select ddc.id from DeweyDecimalClassification ddc where ddc.ddc in (:ddcs) and ddc.tipp = tipp)) or (exists (select ddc.id from DeweyDecimalClassification ddc where ddc.ddc in (:ddcs) and ddc.pkg = pkg)))"
-                qryParams3.put('ddcs', RefdataValue.findAllByIdInList(params.list("ddc").collect { String ddc -> Long.parseLong(ddc) }))
+            if (params.ddc && params.list('ddc').size() > 0) {
+                qry3 += " and ((exists (select ddc.id from DeweyDecimalClassification ddc where ddc.ddc.id in (:ddcs) and ddc.tipp.pkg = pkg)) or (exists (select ddc.id from DeweyDecimalClassification ddc where ddc.ddc.id in (:ddcs) and ddc.pkg = pkg)))"
+                qryParams3.put('ddcs', params.list("ddc").collect { String ddc -> Long.parseLong(ddc) })
             }
 
             qry3 += " group by pkg, s"
@@ -2406,7 +2406,22 @@ join sub.orgRelations or_sub where
             return
         }
         else if(params.exportClickMeExcel) {
+            if (params.filename) {
+                filename = params.filename
+            }
 
+            Map<String, Object> selectedFieldsRaw = params.findAll{ it -> it.toString().startsWith('iex:') }
+            Map<String, Object> selectedFields = [:]
+            selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
+
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportAddresses(visiblePersons, selectedFields)
+
+            response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
+            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            wb.write(response.outputStream)
+            response.outputStream.flush()
+            response.outputStream.close()
+            wb.dispose()
             return
         }
         else {
@@ -2918,7 +2933,7 @@ join sub.orgRelations or_sub where
             Map<String, Object> selectedFields = [:]
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
 
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(totalMembers, selectedFields, 'member')
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(totalMembers, selectedFields, 'member', params.contactSwitch)
 
             response.setHeader "Content-disposition", "attachment; filename=\"${file}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"

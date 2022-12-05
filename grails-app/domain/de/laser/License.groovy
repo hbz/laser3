@@ -4,7 +4,6 @@ import de.laser.annotations.RefdataInfo
 import de.laser.auth.Role
 import de.laser.auth.User
 import de.laser.base.AbstractBaseWithCalculatedLastUpdated
-import de.laser.utils.DateUtils
 import de.laser.interfaces.CalculatedType
 import de.laser.interfaces.Permissions
 import de.laser.interfaces.ShareSupport
@@ -14,6 +13,7 @@ import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
 import de.laser.storage.RDStore
 import de.laser.traits.ShareableTrait
+import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import grails.plugins.orm.auditable.Auditable
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
@@ -597,11 +597,11 @@ class License extends AbstractBaseWithCalculatedLastUpdated
     }
 
     /**
-     * Retrieves all linked subscriptions to this license
+     * Retrieves all linked subscriptions to this license to which the context institution has access
      * @return a {@link Set} of {@link Subscription}s connected to this license
      */
-    Set<Subscription> getSubscriptions() {
-        Set<Subscription> result = Subscription.executeQuery("select li.destinationSubscription from Links li where li.sourceLicense = :license and li.linkType = :linkType",[license:this,linkType:RDStore.LINKTYPE_LICENSE])
+    Set<Subscription> getSubscriptions(Org institution) {
+        Set<Subscription> result = Subscription.executeQuery("select s from Links li join li.destinationSubscription s join s.orgRelations oo where li.sourceLicense = :license and li.linkType = :linkType and oo.org = :institution",[institution: institution, license:this,linkType:RDStore.LINKTYPE_LICENSE])
         /*Links.findAllBySourceAndSourceTypeAndDestinationTypeAndLinkType(genericOIDService.getOID(this),RDStore.LINKTYPE_LICENSE).each { l ->
             result << genericOIDService.resolveOID(l.destination)
         }*/

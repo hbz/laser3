@@ -33,6 +33,8 @@ import grails.plugin.springsecurity.annotation.Secured
 import grails.gorm.transactions.Transactional
 import grails.util.Holders
 import grails.web.Action
+import groovyx.gpars.GParsExecutorsPool
+import groovyx.gpars.GParsPool
 import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestHighLevelClient
 import org.elasticsearch.client.core.CountRequest
@@ -599,21 +601,28 @@ class YodaController {
      */
     @Secured(['ROLE_YODA'])
     Map<String, Object> manageStatsSources() {
-        Set<Platform> platforms = Platform.executeQuery('select p from LaserStatsCursor lsc join lsc.platform p join p.org o where p.org is not null order by o.name, o.sortname, p.name') as Set<Platform>
+        SortedSet<Platform> platforms = Platform.executeQuery('select p from LaserStatsCursor lsc join lsc.platform p join p.org o where p.org is not null order by o.name, o.sortname, p.name') as TreeSet<Platform>
         Map<String, Object> result = [
                 platforms: platforms,
                 platformInstanceRecords: [:],
                 flagContentGokb : true // gokbService.queryElasticsearch
         ]
         ApiSource apiSource = ApiSource.findByTypAndActive(ApiSource.ApiTyp.GOKBAPI, true)
-        platforms.each { Platform platformInstance ->
-            Map queryResult = gokbService.queryElasticsearch(apiSource.baseUrl + apiSource.fixToken + "/find?uuid=${platformInstance.gokbId}")
-            if (queryResult.error && queryResult.error == 404) {
-                result.wekbServerUnavailable = message(code: 'wekb.error.404')
-            }
-            else if (queryResult.warning) {
-                List records = queryResult.warning.records
-                result.platformInstanceRecords[platformInstance.gokbId] = records ? records[0] : [:]
+        Map allPlatforms = gokbService.queryElasticsearch(apiSource.baseUrl+apiSource.fixToken+"/find?componentType=Platform&max=10000")
+        if (allPlatforms.error && allPlatforms.error == 404) {
+            result.wekbServerUnavailable = message(code: 'wekb.error.404')
+        }
+        else if (allPlatforms.warning) {
+            List records = allPlatforms.warning.records
+            records.each { Map otherRecord ->
+                if((otherRecord.counterR5SushiApiSupported == 'Yes' && otherRecord.counterR5SushiServerUrl != null) || (otherRecord.counterR4SushiApiSupported == 'Yes' && otherRecord.counterR4SushiServerUrl != null)) {
+                    String gokbId = otherRecord.uuid as String
+                    Platform platformInstance = Platform.findByGokbId(gokbId)
+                    if(platformInstance && result.platforms.add(platformInstance)) {
+                        otherRecord.noCursor = true
+                    }
+                    result.platformInstanceRecords[gokbId] = otherRecord
+                }
             }
         }
         result
@@ -644,19 +653,6 @@ class YodaController {
         redirect(action: 'manageStatsSources')
     }
 
-    @Deprecated
-    @Secured(['ROLE_YODA'])
-    def editStatsSource() {
-        statsSyncService.updateStatsSource(params)
-        redirect(action: 'manageStatsSources')
-    }
-
-    @Deprecated
-    @Secured(['ROLE_YODA'])
-    def deleteStatsSource() {
-        statsSyncService.deleteStatsSource(params)
-        redirect(action: 'manageStatsSources')
-    }
 
     /**
      * Triggers the loading of usage data from the Nationaler Statistikserver

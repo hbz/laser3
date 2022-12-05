@@ -14,109 +14,82 @@
         </div>
     </g:elseif>
 
-    <g:if test="${covStmt.startDate || objectTypeIsIE}">
-        <div class="item">
-            <i class="grey fitted calendar alternate icon la-popup-tooltip la-delay"
-               data-content="${message(code: 'tipp.startDate.tooltip')}"></i>
+    <div class="la-onliner">
+        <g:if test="${covStmt.startDate || objectTypeIsIE}">
+            <span class="la-online-wrap">
+                <i class="grey fitted calendar alternate icon la-popup-tooltip la-delay"
+                   data-content="${message(code: 'tipp.startDate.tooltip')}"></i>
+                <ui:xEditable owner="${covStmt}" type="date" field="startDate"
+                              overwriteEditable="${overwriteEditable}"/>
+            </span>
+        </g:if>
+        <g:if test="${covStmt.startVolume || objectTypeIsIE}">
+            <span class="la-online-wrap">
+                <i class="grey fitted la-books icon la-popup-tooltip la-delay"
+                   data-content="${message(code: 'tipp.startVolume.tooltip')}"></i>
+                <span class="la-identifier">
+                    ${message(code: 'tipp.Volume.short')}
+                </span>
+                <ui:xEditable owner="${covStmt}" field="startVolume" overwriteEditable="${overwriteEditable}"/>
+            </span>
+        </g:if>
+        <g:if test="${covStmt.startIssue || objectTypeIsIE}">
+            <span class="la-online-wrap">
+                <i class="grey fitted la-notebook icon la-popup-tooltip la-delay"
+                   data-content="${message(code: 'tipp.startIssue.tooltip')}"></i>
+                <span class="la-identifier">
+                    ${message(code: 'tipp.Issue.short')}
+                </span>
+                <ui:xEditable owner="${covStmt}" field="startIssue" overwriteEditable="${overwriteEditable}"/>
+            </span>
+        </g:if>
 
+
+        <g:if test="${(covStmt.endDate || covStmt.endVolume || covStmt.endIssue) && !objectTypeIsIE}">
+            <ui:dateDevider/>
+        </g:if>
+        <g:elseif test="${objectTypeIsIE}">
+            <ui:dateDevider/>
+        </g:elseif>
+
+        <g:if test="${covStmt.endDate || objectTypeIsIE}">
+            <span class="la-online-wrap">
+                <i class="grey fitted calendar alternate icon la-popup-tooltip la-delay"
+                   data-content="${message(code: 'tipp.endDate.tooltip')}"></i>
+                <ui:xEditable owner="${covStmt}" type="date" field="endDate"
+                              overwriteEditable="${overwriteEditable}"/>
+            </span>
+        </g:if>
+        <g:if test="${covStmt.endVolume || objectTypeIsIE}">
+            <span class="la-online-wrap">
+                <i class="grey fitted la-books icon la-popup-tooltip la-delay"
+                   data-content="${message(code: 'tipp.endVolume.tooltip')}"></i>
+                <span class="la-identifier">
+                    ${message(code: 'tipp.Volume.short')}
+                </span>
+                <ui:xEditable owner="${covStmt}" field="endVolume" overwriteEditable="${overwriteEditable}"/>
+            </span>
+        </g:if>
+        <g:if test="${covStmt.endIssue || objectTypeIsIE}">
+            <span class="la-online-wrap">
+                <i class="grey fitted la-notebook icon la-popup-tooltip la-delay"
+                   data-content="${message(code: 'tipp.endIssue.tooltip')}"></i>
+                <span class="la-identifier">
+                    ${message(code: 'tipp.Issue.short')}
+                </span>
+                <ui:xEditable owner="${covStmt}" field="endIssue" overwriteEditable="${overwriteEditable}"/>
+            </span>
+        </g:if>
+    </div>
+    <g:if test="${showEmbargo}">
+        <div class="item">
+            <i class="grey icon hand paper right la-popup-tooltip la-delay" data-content="${message(code: 'tipp.embargo')}"></i>
             <div class="content">
                 <div class="header">
-                    ${message(code: 'tipp.startDate')}
+                    ${message(code: 'tipp.embargo')}
                 </div>
-
                 <div class="description">
-                    <ui:xEditable owner="${covStmt}" type="date" field="startDate"
-                                  overwriteEditable="${overwriteEditable}"/>
-                </div>
-            </div>
-        </div>
-    </g:if>
-    <g:if test="${covStmt.startVolume || objectTypeIsIE}">
-        <div class="item">
-            <i class="grey fitted la-books icon la-popup-tooltip la-delay"
-                data-content="${message(code: 'tipp.startVolume.tooltip')}"></i>
-
-            <div class="content">
-                <div class="header">
-                    ${message(code: 'tipp.startVolume')}
-                </div>
-
-                <div class="description">
-                    <ui:xEditable owner="${covStmt}" field="startVolume" overwriteEditable="${overwriteEditable}"/>
-                </div>
-            </div>
-        </div>
-    </g:if>
-    <g:if test="${covStmt.startIssue || objectTypeIsIE}">
-        <div class="item">
-            <i class="grey fitted la-notebook icon la-popup-tooltip la-delay"
-               data-content="${message(code: 'tipp.startIssue.tooltip')}"></i>
-
-            <div class="content">
-                <div class="header">
-                    ${message(code: 'tipp.startIssue')}
-                </div>
-
-                <div class="description">
-                    <ui:xEditable owner="${covStmt}" field="startIssue" overwriteEditable="${overwriteEditable}"/>
-                </div>
-            </div>
-        </div>
-    </g:if>
-
-
-    <g:if test="${(covStmt.endDate || covStmt.endVolume || covStmt.endIssue) && !objectTypeIsIE}">
-        <ui:dateDevider/>
-    </g:if>
-    <g:elseif test="${objectTypeIsIE}">
-        <ui:dateDevider/>
-    </g:elseif>
-
-    <g:if test="${covStmt.endDate || objectTypeIsIE}">
-        <div class="item">
-            <i class="grey fitted calendar alternate icon la-popup-tooltip la-delay"
-               data-content="${message(code: 'tipp.endDate.tooltip')}"></i>
-
-            <div class="content">
-                <div class="header">
-                    ${message(code: 'tipp.endDate')}
-                </div>
-
-                <div class="description">
-                    <ui:xEditable owner="${covStmt}" type="date" field="endDate"
-                                  overwriteEditable="${overwriteEditable}"/>
-                </div>
-            </div>
-        </div>
-    </g:if>
-    <g:if test="${covStmt.endVolume || objectTypeIsIE}">
-        <div class="item">
-            <i class="grey fitted la-books icon la-popup-tooltip la-delay"
-               data-content="${message(code: 'tipp.endVolume.tooltip')}"></i>
-
-            <div class="content">
-                <div class="header">
-                    ${message(code: 'tipp.endVolume')}
-                </div>
-
-                <div class="description">
-                    <ui:xEditable owner="${covStmt}" field="endVolume" overwriteEditable="${overwriteEditable}"/>
-                </div>
-            </div>
-        </div>
-    </g:if>
-    <g:if test="${covStmt.endIssue || objectTypeIsIE}">
-        <div class="item">
-            <i class="grey fitted la-notebook icon la-popup-tooltip la-delay"
-               data-content="${message(code: 'tipp.endIssue.tooltip')}"></i>
-
-            <div class="content">
-                <div class="header">
-                    ${message(code: 'tipp.endIssue')}
-                </div>
-
-                <div class="description">
-                    <ui:xEditable owner="${covStmt}" field="endIssue" overwriteEditable="${overwriteEditable}"/>
+                    <ui:xEditable owner="${covStmt}" field="embargo" overwriteEditable="true"/>
                 </div>
             </div>
         </div>

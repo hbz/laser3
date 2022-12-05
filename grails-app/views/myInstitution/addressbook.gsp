@@ -1,4 +1,6 @@
-<%@ page import="de.laser.PersonRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Org; de.laser.Person; de.laser.RefdataValue; de.laser.RefdataCategory" %>
+<%@ page import="de.laser.PersonRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.Org; de.laser.Person; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.utils.DateUtils" %>
+
+<laser:serviceInjection/>
 
 <laser:htmlStart message="menu.institutions.myAddressbook" />
 
@@ -9,7 +11,7 @@
 <ui:controlButtons>
     <ui:exportDropdown>
         <ui:exportDropdownItem>
-            <g:link class="item" params="${params+[exportClickMeExcel: true]}" action="addressbook">Click Me Excel Export</g:link>
+            <a class="item" data-ui="modal" href="#individuallyExportModal">Click Me Excel Export</a>
         </ui:exportDropdownItem>
         <g:if test="${filterSet == true}">
             <ui:exportDropdownItem>
@@ -181,5 +183,19 @@
         });
     }
 </laser:script>
+
+<!-- _individuallyExportModal.gsp -->
+<g:set var="formFields" value="${exportClickMeService.getExportAddressFieldsForUI()}"/>
+
+<ui:modal modalSize="large" id="individuallyExportModal" text="Excel-Export" refreshModal="true" hideSubmitButton="true">
+
+    <g:form action="addressbook" controller="myInstitution" params="${params+[exportClickMeExcel: true]}">
+
+        <laser:render template="/templates/export/individuallyExportForm" model="${[formFields: formFields, exportFileName: escapeService.escapeString("${message(code: 'menu.institutions.myAddressbook')}_${DateUtils.getSDF_yyyyMMdd().format(new Date())}")]}"/>
+
+    </g:form>
+
+</ui:modal>
+<!-- _individuallyExportModal.gsp -->
 
 <laser:htmlEnd />

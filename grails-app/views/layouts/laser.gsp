@@ -160,30 +160,21 @@
                         </div>
                     </g:if>
 
-                    <sec:ifAnyGranted roles="ROLE_ORG_MANAGER,ROLE_ADMIN,ROLE_STATISTICS_EDITOR">
+                    <sec:ifAnyGranted roles="ROLE_ADMIN">
                         <div class="ui dropdown item" role="menuitem" aria-haspopup="true">
                             <a class="title">
                                 ${message(code:'menu.datamanager')} <i class="dropdown icon"></i>
                             </a>
 
                             <div class="menu" role="menu">
-                                <sec:ifAnyGranted roles="ROLE_STATISTICS_EDITOR">
-                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="usage"
-                                            action="index">${message(code: 'menu.datamanager.manage_usage_stats')}</ui:link>
-                                </sec:ifAnyGranted>
 
-                                <sec:ifAnyGranted roles="ROLE_ADMIN">
                                     <ui:link generateElementId="true" class="item" role="menuitem" controller="dataManager" action="index">${message(code:'default.dashboard')}</ui:link>
                                     <ui:link generateElementId="true" class="item" role="menuitem" controller="dataManager"
                                             action="deletedTitles">${message(code: 'datamanager.deletedTitleManagement.label')}</ui:link>
-                                </sec:ifAnyGranted>
 
-                                <sec:ifAnyGranted roles="ROLE_ORG_MANAGER,ROLE_ADMIN">
                                     <ui:link generateElementId="true" class="item" role="menuitem" controller="dataManager"
                                             action="deletedOrgs">${message(code: 'datamanager.deletedOrgManagement.label')}</ui:link>
-                                </sec:ifAnyGranted>
 
-                                <sec:ifAnyGranted roles="ROLE_ADMIN">
                                     <div class="divider"></div>
 
                                     <ui:link generateElementId="true" class="item" role="menuitem" controller="package" action="list">${message(code:'menu.datamanager.searchPackages')}</ui:link>
@@ -194,13 +185,12 @@
                                     <ui:link generateElementId="true" class="item" role="menuitem" controller="subscription" action="compare">${message(code:'menu.datamanager.compareSubscriptions')}</ui:link>
                                     <ui:link generateElementId="true" class="item" role="menuitem" controller="onixplLicenseCompare" action="index">${message(code:'menu.institutions.comp_onix')}</ui:link>
                                     <div class="divider"></div>
-                                </sec:ifAnyGranted>
 
-                                <sec:ifAnyGranted roles="ROLE_ADMIN">
                                     <ui:link generateElementId="true" class="item" role="menuitem" controller="dataManager" action="checkPackageTIPPs">Tipps Check of we:kb and LAS:eR</ui:link>
                                     <div class="divider"></div>
                                     <ui:link generateElementId="true" class="item" role="menuitem" controller="dataManager" action="listMailTemplates">Mail Templates</ui:link>
-                                </sec:ifAnyGranted>
+
+                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="usage" action="index">${message(code: 'menu.datamanager.manage_usage_stats')}</ui:link>
                             </div>
                         </div>
                     </sec:ifAnyGranted>

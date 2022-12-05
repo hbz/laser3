@@ -30,9 +30,16 @@ class IdentifierService {
         def target = genericOIDService.resolveOID(targetKey)
         if (owner && target) {
             if (target.ns.ns in IdentifierNamespace.CORE_ORG_NS) {
-                target.value = ''
-                target.note = ''
-                target.save()
+                Org org = (Org) owner
+                if(Identifier.countByNsAndOrg(target.ns, org) == 1) {
+                    target.value = ''
+                    target.note = ''
+                    target.save()
+                }
+                else {
+                    log.debug("Duplicate identifier deleted: ${owner}, ${target}")
+                    target.delete()
+                }
             }
             else {
                 if (target."${Identifier.getAttributeName(owner)}"?.id == owner.id) {

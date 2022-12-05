@@ -193,6 +193,7 @@
                         </g:elseif>
                         <g:elseif test="${field.startsWith('file')}">
                             <g:set var="taskConditionFileExists" value="${task.condition.getProperty(field) != null}" />
+                            <g:set var="showTaskFileInfo" value="${true}" />
 
                             <div class="field">
                                 <g:if test="${wfEditPerm}">
@@ -300,23 +301,25 @@
                         </g:if>
                     </g:each>
 
-                    <div class="ui message info la-clear-before" style="display:block;">
-                        <i aria-hidden="true" class="close icon"></i>
-                        <div class="ui list">
-                            <div class="item">
-                                <i class="upload icon"></i>
-                                <div class="content" style="color:#276F86"> ${message(code:'workflow.condition.fileUpload.info')} </div>
-                            </div>
-                            <div class="item">
-                                <i class="file icon"></i>
-                                <div class="content" style="color:#276F86"> ${message(code:'workflow.condition.file.info')} </div>
-                            </div>
-                            <div class="item">
-                                <i class="times icon"></i>
-                                <div class="content" style="color:#276F86"> ${message(code:'workflow.condition.fileDelete.info')} </div>
+                    <g:if test="${showTaskFileInfo}">
+                        <div class="ui message info la-clear-before" style="display:block;">
+                            <i aria-hidden="true" class="close icon"></i>
+                            <div class="ui list">
+                                <div class="item">
+                                    <i class="upload icon"></i>
+                                    <div class="content" style="color:#276F86"> ${message(code:'workflow.condition.fileUpload.info')} </div>
+                                </div>
+                                <div class="item">
+                                    <i class="file icon"></i>
+                                    <div class="content" style="color:#276F86"> ${message(code:'workflow.condition.file.info')} </div>
+                                </div>
+                                <div class="item">
+                                    <i class="times icon"></i>
+                                    <div class="content" style="color:#276F86"> ${message(code:'workflow.condition.fileDelete.info')} </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </g:if>
                 </div>
             </div>
 

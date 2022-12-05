@@ -1,6 +1,7 @@
 package de.laser
 
 import groovy.util.logging.Slf4j
+import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
 /**
  * This domain class keeps track of the inherited properties. Consortial objects may inherit some of their properties to the member objects, those are:
@@ -99,6 +100,7 @@ class AuditConfig {
     static AuditConfig getConfig(Object obj, String field) {
         if (! obj)
             return null
+        obj = GrailsHibernateUtil.unwrapIfProxy(obj)
         AuditConfig ret = AuditConfig.findByReferenceIdAndReferenceClassAndReferenceField(
                 obj.getId(),
                 obj.getClass().name,

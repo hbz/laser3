@@ -4,6 +4,7 @@ import de.laser.License
 import de.laser.Org
 import de.laser.RefdataValue
 import de.laser.Subscription
+import de.laser.UserSetting
 import de.laser.annotations.RefdataInfo
 import de.laser.auth.User
 import de.laser.storage.BeanStore
@@ -194,6 +195,11 @@ class WfWorkflow extends WfWorkflowBase {
         }
 
         info
+    }
+
+    boolean isFlaggedAsNew(User currentUser) {
+        long timeWindow = currentUser.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14) * 86400 * 1000
+        return userLastUpdated ? (userLastUpdated.getTime() + timeWindow) > System.currentTimeMillis() : false
     }
 
     /**

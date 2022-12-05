@@ -1300,15 +1300,19 @@ SELECT * FROM (
 
         def (usedRdvList, attrMap) = refdataService.getUsageDetails()
 
-        Map integrityCheckResult = refdataService.integrityCheck()
-
-        render view: 'manageRefdatas', model: [
-                editable    : true,
-                rdCategories: RefdataCategory.where{}.sort('desc_' + LocaleUtils.getCurrentLang()),
-                attrMap     : attrMap,
-                usedRdvList : usedRdvList,
-                integrityCheckResult : integrityCheckResult
+        [
+            editable    : true,
+            rdCategories: RefdataCategory.where{}.sort('desc_' + LocaleUtils.getCurrentLang()),
+            attrMap     : attrMap,
+            usedRdvList : usedRdvList
         ]
+    }
+
+    @Secured(['ROLE_ADMIN'])
+    @Transactional
+    def manageRefdataIntegrityCheck() {
+
+        [ integrityCheck : refdataService.integrityCheck() ]
     }
 
     /**

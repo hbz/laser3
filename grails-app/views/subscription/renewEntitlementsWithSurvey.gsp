@@ -218,7 +218,7 @@
 </g:if>
 
 
-<g:if test="${(params.tab == 'allIEs' || params.tab == 'allIEsStats') && editable}">
+<g:if test="${(params.tab == 'allIEs' || params.tab == 'allIEsStats' || params.tab == 'top100') && editable}">
 
     <ui:greySegment>
         <g:form class="ui form" controller="subscription" action="renewEntitlementsWithSurvey"
@@ -280,7 +280,7 @@
 <div class="row">
     <div class="column">
 
-        <laser:render template="/templates/filter/tipp_ieFilter" model="[showStatsFilter: params.tab == 'allIEsStats']"/>
+        <laser:render template="/templates/filter/tipp_ieFilter" model="[showStatsFilter: params.tab in ['allIEsStats', 'top100']]"/>
 
     </div>
 </div><!--.row-->
@@ -316,27 +316,32 @@
 
     <g:if test="${showStatisticByParticipant}">
         <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
+                     params="[id: newSub.id, surveyConfigID: surveyConfig.id, tab: 'top100']"
+                     text="${message(code: "renewEntitlementsWithSurvey.top100")}" tab="top100"/>
+        <%--<ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
                         params="[id: newSub.id, surveyConfigID: surveyConfig.id, tab: 'allIEsStats']"
                         text="${message(code: "renewEntitlementsWithSurvey.allIEsStats")}" tab="allIEsStats"/>
         <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
                         params="[id: newSub.id, surveyConfigID: surveyConfig.id, tab: 'holdingIEsStats']"
-                        text="${message(code: "renewEntitlementsWithSurvey.holdingIEsStats")}" tab="holdingIEsStats"/>
+                        text="${message(code: "renewEntitlementsWithSurvey.holdingIEsStats")}" tab="holdingIEsStats"/>--%>
     </g:if>
 
 </ui:tabs>
 
 
-<g:if test="${params.tab in ['allIEsStats', 'holdingIEsStats']}">
-    <ui:tabs class="la-overflowX-auto">
-        <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
-                        params="${params + [tabStat: 'total']}"
-                        text="${message(code: 'default.usage.allUsageGrid.header')}" tab="total" subTab="tabStat"/>
-        <g:each in="${monthsInRing}" var="month">
+<g:if test="${params.tab in ['allIEsStats', 'holdingIEsStats', 'top100']}">
+    <g:if test="${params.reportType && params.metricType}">
+        <ui:tabs class="la-overflowX-auto">
             <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
-                            params="${params + [tabStat: DateUtils.getSDF_yyyyMM().format(month)]}" text="${DateUtils.getSDF_yyyyMM().format(month)}"
-                            tab="${DateUtils.getSDF_yyyyMM().format(month)}" subTab="tabStat"/>
-        </g:each>
-    </ui:tabs>
+                         params="${params + [tabStat: 'total']}"
+                         text="${message(code: 'default.usage.allUsageGrid.header')}" tab="total" subTab="tabStat"/>
+            <g:each in="${monthsInRing}" var="month">
+                <ui:tabsItem controller="subscription" action="renewEntitlementsWithSurvey"
+                             params="${params + [tabStat: DateUtils.getSDF_yyyyMM().format(month)]}" text="${DateUtils.getSDF_yyyyMM().format(month)}"
+                             tab="${DateUtils.getSDF_yyyyMM().format(month)}" subTab="tabStat"/>
+            </g:each>
+        </ui:tabs>
+    </g:if>
 </g:if>
 
 <g:form name="renewEntitlements" id="${newSub.id}" action="processRenewEntitlementsWithSurvey" class="ui form">
@@ -346,14 +351,17 @@
 
     <div class="ui segment">
 
-        <g:if test="${params.tab in ['allIEsStats', 'holdingIEsStats']}">
+        <g:if test="${params.tab in ['allIEsStats', 'holdingIEsStats', 'top100']}">
             <g:if test="${usages}">
                 <laser:render template="/templates/survey/entitlementTableSurveyWithStats"
-                          model="${[stats: usages, sumsByTitle: sumsByTitle, showPackage: true, showPlattform: true]}"/>
+                              model="${[stats: usages, sumsByTitle: sumsByTitle, showPackage: true, showPlattform: true]}"/>
             </g:if>
-            <g:else>
+            <g:elseif test="${params.reportType && params.metricType}">
                 <g:message code="renewEntitlementsWithSurvey.noIEsStats"/>
-            </g:else>
+            </g:elseif>
+            <g:elseif test="${statsAvailable}">
+                <g:message code="renewEntitlementsWithSurvey.noReportSelected"/>
+            </g:elseif>
         </g:if>
         <g:else>
             <laser:render template="/templates/survey/entitlementTableSurvey"
@@ -398,11 +406,6 @@
     </div>
 
 </g:form>
-
-<g:if test="${usages}">
-    <ui:paginate action="renewEntitlementsWithSurvey" controller="subscription" params="${params}"
-                    max="${max}" total="${total}"/>
-</g:if>
 
 <g:if test="${sourceIEs}">
     <ui:paginate action="renewEntitlementsWithSurvey" controller="subscription" params="${params}"

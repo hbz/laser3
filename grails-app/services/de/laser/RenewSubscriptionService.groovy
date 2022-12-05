@@ -351,7 +351,9 @@ class RenewSubscriptionService extends AbstractLockableService {
                 }
             }
 
-            SystemEvent.createEvent('SUB_RENEW_SERVICE_PROCESSING', ["renew Subscription Fail (${renewFailSubIds.size()})": renewFailSubIds, "renew Subscription Success (${renewSuccessSubIds.size()})": renewSuccessSubIds])
+            if (renewFailSubIds.size() > 0 || renewSuccessSubIds.size() > 0 ) {
+                SystemEvent.createEvent('SUB_RENEW_SERVICE_PROCESSING', ["renew Subscription Fail (${renewFailSubIds.size()})": renewFailSubIds, "renew Subscription Success (${renewSuccessSubIds.size()})": renewSuccessSubIds])
+            }
             running = false
 
             return true

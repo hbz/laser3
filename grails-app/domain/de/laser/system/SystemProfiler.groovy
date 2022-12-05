@@ -1,8 +1,8 @@
 package de.laser.system
 
 import de.laser.Org
-import de.laser.utils.AppUtils
 import de.laser.storage.BeanStore
+import de.laser.utils.AppUtils
 
 /**
  * This class keeps track of the loading times for each page. Recorded is every page which has a longer loading time than 1000 msecs

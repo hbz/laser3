@@ -8,7 +8,6 @@ import de.laser.properties.PlatformProperty
 import de.laser.properties.PropertyDefinitionGroup
 import de.laser.storage.BeanStore
 import de.laser.storage.RDConstants
-import de.laser.storage.RDStore
 import grails.web.servlet.mvc.GrailsParameterMap
 import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
 
@@ -16,7 +15,7 @@ import org.grails.orm.hibernate.cfg.GrailsHibernateUtil
  * This class represents a platform record. A platform is a portal where providers offer access to titles subscribed via packages.
  * This class is a mirror of the we:kb-implementation of Platform, <a href="https://github.com/hbz/wekb/blob/wekb-dev/server/gokbg3/grails-app/domain/org/gokb/cred/Platform.groovy">cf. with the we:kb-implementation</a>
  */
-class Platform extends AbstractBaseWithCalculatedLastUpdated {
+class Platform extends AbstractBaseWithCalculatedLastUpdated implements Comparable<Platform> {
 
   String gokbId
   String name
@@ -24,6 +23,7 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
   String primaryUrl
   String provenance
   String titleNamespace
+  String centralApiKey
 
   @RefdataInfo(cat = RDConstants.PLATFORM_STATUS)
   RefdataValue status
@@ -64,6 +64,7 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
           normname column:'plat_normalised_name'
         provenance column:'plat_data_provenance'
     titleNamespace column:'plat_title_namespace', type: 'text'
+     centralApiKey column:'plat_central_api_key', type: 'text'
         primaryUrl column:'plat_primary_url'
             status column:'plat_status_rv_fk'
    serviceProvider column:'plat_servprov_rv_fk'
@@ -84,6 +85,7 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
     primaryUrl(nullable:true, blank:false)
     provenance(nullable:true, blank:false)
     titleNamespace(nullable:true, blank:false)
+    centralApiKey(nullable:true, blank:false)
     serviceProvider (nullable:true)
     softwareProvider(nullable:true)
     gokbId (blank:false, unique: true, maxSize:511)
@@ -91,6 +93,19 @@ class Platform extends AbstractBaseWithCalculatedLastUpdated {
     lastUpdatedCascading (nullable: true)
     counter4LastRun (nullable: true)
     counter5LastRun (nullable: true)
+  }
+
+  @Override
+  int compareTo(Platform that) {
+    int result = 0
+    if(this.org && that.org) {
+      if(this.org.sortname && that.org.sortname)
+        result = this.org.sortname <=> that.org.sortname
+      else result = this.org.name <=> that.org.name
+    }
+    if(result == 0)
+        result = this.name <=> that.name
+    result
   }
 
   @Override

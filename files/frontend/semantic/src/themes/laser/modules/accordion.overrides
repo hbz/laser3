@@ -31,3 +31,8 @@
 .ui.accordion.la-accordion-showMore  .active.title  .angle.double.icon {
   transform: rotate(-180deg);
 }
+
+.ui.label.la-label-accordion {
+  background-color: #997a88;
+  color: @white;
+}

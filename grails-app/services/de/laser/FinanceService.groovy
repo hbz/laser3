@@ -40,7 +40,6 @@ class FinanceService {
     FinanceControllerService financeControllerService
 
     String genericExcludes = ' and ci.surveyOrg = null and ci.costItemStatus != :deleted '
-    Map<String,RefdataValue> genericExcludeParams = [deleted: RDStore.COST_ITEM_DELETED]
 
     //model attempt; the finance controller is subject of general refactoring
     static final int STATUS_OK = 0
@@ -245,7 +244,14 @@ class FinanceService {
             }
             else if(params.percentOnOldPrice) {
                 Double percentage = 1 + params.double('percentOnOldPrice') / 100
-                CostItem.executeUpdate('update CostItem ci set ci.costInBillingCurrency = floor(abs(ci.costInBillingCurrency * :percentage) * 100)/100.0, ci.costInLocalCurrency =floor(abs(ci.costInLocalCurrency * :percentage) * 100)/100.0 where ci.id in (:ids)',[ids:selectedCostItems,percentage:percentage])
+                //Set<Long> lastYearEquivalents = CostItem.executeQuery('select ci.id from CostItem ci where ci.sub in (select l.destinationSubscription from Links l where l.linkType = :follows and l.sourceSubscription in (select cil.sub from CostItem cil where cil.id in (:selectedCostItems)))', [selectedCostItems: selectedCostItems, follows: RDStore.LINKTYPE_FOLLOWS])
+                //CostItem.executeUpdate('update CostItem ci set ci.costInBillingCurrency = floor(abs(cil.costInBillingCurrency * :percentage) * 100)/100.0, ci.costInLocalCurrency = floor(abs(cil.costInLocalCurrency * :percentage) * 100)/100.0 where ci = (select cil )',[ids: selectedCostItems, percentage:percentage])
+                CostItem.findAllByIdInList(selectedCostItems).each { CostItem ci ->
+                    CostItem lastYearEquivalent = CostItem.executeQuery('select ci from CostItem ci where ci.sub = (select l.destinationSubscription from Links l where l.linkType = :follows and l.sourceSubscription = :currentYearSub) and ci.costItemElement = :element', [follows: RDStore.LINKTYPE_FOLLOWS, currentYearSub: ci.sub, element: ci.costItemElement])[0]
+                    ci.costInBillingCurrency = Math.floor(Math.abs(lastYearEquivalent.costInBillingCurrency * percentage))
+                    ci.costInLocalCurrency = Math.floor(Math.abs(lastYearEquivalent.costInLocalCurrency * percentage))
+                    ci.save()
+                }
             }
             else {
                 Map<String, Object> configMap = setupConfigMap(params, result.institution)
@@ -547,6 +553,7 @@ class FinanceService {
      * @return a LinkedHashMap with the cost items for each tab to display
      */
     Map getCostItemsForSubscription(GrailsParameterMap params,Map configMap) throws FinancialDataException {
+        Map<String,RefdataValue> genericExcludeParams = [deleted: RDStore.COST_ITEM_DELETED]
         if(configMap.subscription) {
             Profiler prf = new Profiler()
             prf.setBenchmark("init")
@@ -638,6 +645,7 @@ class FinanceService {
      * @see CostItem
      */
     Map<String,Object> getCostItems(GrailsParameterMap params, Map configMap) throws FinancialDataException {
+        Map<String,RefdataValue> genericExcludeParams = [deleted: RDStore.COST_ITEM_DELETED]
         Profiler prf = new Profiler()
         prf.setBenchmark("load filter params")
         params.filterKey = "global"

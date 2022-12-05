@@ -82,7 +82,7 @@
     %{-- IE  --}%
     <g:if test="${ie}">
         <div class="ui stackable grid">
-            <div class="eight wide column">
+            <div class="eleven wide column">
                 <%
                     Map<String, Object> paramData = [:]
                     if (params.sort && params.order) {
@@ -97,10 +97,10 @@
                 %>
                 <g:each in="${ie.coverages}" var="covStmt">
                     <laser:render template="/templates/tipps/coverageStatement_accordion"
-                                  model="${[covStmt: covStmt, paramData: paramData, objectTypeIsIE: true, overwriteEditable: overwriteEditable]}"/>
+                                  model="${[covStmt: covStmt, paramData: paramData, showEmbargo: true, objectTypeIsIE: true, overwriteEditable: overwriteEditable]}"/>
                 </g:each>
             </div>
-            <div class="eight wide column">
+            <div class="five wide column">
                 <div class="ui list la-label-list">
                     <div class="item">
                         <div class="content">
@@ -159,8 +159,10 @@
     %{-- TIPP  --}%
     <g:else>
         <g:each in="${tipp.coverages}" var="covStmt">
+
             <laser:render template="/templates/tipps/coverageStatement_accordion"
-                          model="${[covStmt: covStmt , objectTypeIsIE: false]}"/>
+                          model="${[covStmt: covStmt , showEmbargo: false, objectTypeIsIE: false]}"/>
+
         </g:each>
     </g:else>
 </g:elseif>
