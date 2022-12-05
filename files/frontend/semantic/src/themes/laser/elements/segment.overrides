@@ -82,3 +82,19 @@ aside.la-metabox + .la-metabox-spacer {
     background:@laAlternativeBackground;
   }
 }
+.ui.la-segment-with-icon {
+  --mask: radial-gradient(25px at 0 0,#0000 98%,#000);
+  mask: var(--mask);
+  position: relative;
+  padding: @padding;
+  padding-top: 20px;
+  font-size: 1rem;
+  background: @white;
+  box-shadow: @boxShadow;
+  margin: @margin;
+  border-radius: @borderRadius;
+  border: @border;
+  &:last-child {
+    margin-bottom: 0;
+  }
+}

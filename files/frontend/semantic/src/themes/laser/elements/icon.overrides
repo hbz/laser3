@@ -2006,12 +2006,7 @@ i.orange.icon.la-subscriptionIsChild.fixed {
   }
 }
 
-.ui.segment.la-segment-with-icon {
-  --mask: radial-gradient(25px at 0 0,#0000 98%,#000);
-  mask: var(--mask);
-  position: relative;
-  padding-top: 25px;
-}
+
 .la-icon-absolute {
   position: absolute;
   z-index: 100;

@@ -103,46 +103,41 @@
             <div class="five wide column">
                 <div class="ui list la-label-list">
                     <div class="item">
-                        <div class="content">
-
-                            <div class="ui label">${message(code: 'subscription.details.access_dates')} ${message(code: 'default.from')}</div>
-
-                            <div class="description">
-                            <!-- von --->
-                                <g:if test="${editable}">
-                                    <ui:xEditable owner="${ie}" type="date"
-                                                  field="accessStartDate"/>
-                                    <i class="grey question circle icon la-popup-tooltip la-delay"
-                                       data-content="${message(code: 'subscription.details.access_start.note')}"></i>
-                                </g:if>
-                                <g:else>
-                                    <g:formatDate
-                                            format="${message(code: 'default.date.format.notime')}"
-                                            date="${ie.accessStartDate}"/>
-                                </g:else>
-
-                            </div>
-                        </div>
+                        <div class="ui label">${message(code: 'subscription.details.access_dates')}</div>
                     </div>
 
                     <div class="item">
                         <div class="content">
-                            <div class="ui label">${message(code: 'subscription.details.access_dates')} ${message(code: 'default.to')}</div>
-
-                            <div class="description">
+                        <!-- von --->
+                            <g:if test="${editable}">
+                                <ui:xEditable owner="${ie}" type="date"
+                                              field="accessStartDate"/>
+                                <i class="grey question circle icon la-popup-tooltip la-delay"
+                                   data-content="${message(code: 'subscription.details.access_start.note')}"></i>
+                            </g:if>
+                            <g:else>
+                                <g:formatDate
+                                        format="${message(code: 'default.date.format.notime')}"
+                                        date="${ie.accessStartDate}"/>
+                            </g:else>
+                        </div>
+                    </div>
+                    <!-- DEVIDER  -->
+                    <ui:dateDevider/>
+                    <div class="item">
+                        <div class="content">
                             <!-- bis -->
-                                <g:if test="${editable}">
-                                    <ui:xEditable owner="${ie}" type="date"
-                                                  field="accessEndDate"/>
-                                    <i class="grey question circle icon la-popup-tooltip la-delay"
-                                       data-content="${message(code: 'subscription.details.access_end.note')}"></i>
-                                </g:if>
-                                <g:else>
-                                    <g:formatDate
-                                            format="${message(code: 'default.date.format.notime')}"
-                                            date="${ie.accessEndDate}"/>
-                                </g:else>
-                            </div>
+                            <g:if test="${editable}">
+                                <ui:xEditable owner="${ie}" type="date"
+                                              field="accessEndDate"/>
+                                <i class="grey question circle icon la-popup-tooltip la-delay"
+                                   data-content="${message(code: 'subscription.details.access_end.note')}"></i>
+                            </g:if>
+                            <g:else>
+                                <g:formatDate
+                                        format="${message(code: 'default.date.format.notime')}"
+                                        date="${ie.accessEndDate}"/>
+                            </g:else>
                         </div>
                     </div>
                 </div>
@@ -173,46 +168,41 @@
     <g:if test="${ie}">
         <div class="ui list la-label-list">
             <div class="item">
-                <div class="content">
-
-                    <div class="ui label">${message(code: 'subscription.details.access_dates')} ${message(code: 'default.from')}</div>
-
-                    <div class="description">
-                    <!-- von --->
-                        <g:if test="${editable}">
-                            <ui:xEditable owner="${ie}" type="date"
-                                          field="accessStartDate"/>
-                            <i class="grey question circle icon la-popup-tooltip la-delay"
-                               data-content="${message(code: 'subscription.details.access_start.note')}"></i>
-                        </g:if>
-                        <g:else>
-                            <g:formatDate
-                                    format="${message(code: 'default.date.format.notime')}"
-                                    date="${ie.accessStartDate}"/>
-                        </g:else>
-
-                    </div>
-                </div>
+                    <div class="ui label">${message(code: 'subscription.details.access_dates')}</div>
             </div>
 
             <div class="item">
                 <div class="content">
-                    <div class="ui label">${message(code: 'subscription.details.access_dates')} ${message(code: 'default.to')}</div>
+                <!-- von --->
+                    <g:if test="${editable}">
+                        <ui:xEditable owner="${ie}" type="date"
+                                      field="accessStartDate"/>
+                        <i class="grey question circle icon la-popup-tooltip la-delay"
+                           data-content="${message(code: 'subscription.details.access_start.note')}"></i>
+                    </g:if>
+                    <g:else>
+                        <g:formatDate
+                                format="${message(code: 'default.date.format.notime')}"
+                                date="${ie.accessStartDate}"/>
+                    </g:else>
+                </div>
+            </div>
+            <ui:dateDevider/>
+            <div class="item">
+                <div class="content">
+                <!-- bis -->
+                    <g:if test="${editable}">
+                        <ui:xEditable owner="${ie}" type="date"
+                                      field="accessEndDate"/>
+                        <i class="grey question circle icon la-popup-tooltip la-delay"
+                           data-content="${message(code: 'subscription.details.access_end.note')}"></i>
+                    </g:if>
+                    <g:else>
+                        <g:formatDate
+                                format="${message(code: 'default.date.format.notime')}"
+                                date="${ie.accessEndDate}"/>
+                    </g:else>
 
-                    <div class="description">
-                    <!-- bis -->
-                        <g:if test="${editable}">
-                            <ui:xEditable owner="${ie}" type="date"
-                                          field="accessEndDate"/>
-                            <i class="grey question circle icon la-popup-tooltip la-delay"
-                               data-content="${message(code: 'subscription.details.access_end.note')}"></i>
-                        </g:if>
-                        <g:else>
-                            <g:formatDate
-                                    format="${message(code: 'default.date.format.notime')}"
-                                    date="${ie.accessEndDate}"/>
-                        </g:else>
-                    </div>
                 </div>
             </div>
         </div>

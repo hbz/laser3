@@ -420,28 +420,26 @@
                                                 <div class="ui list la-label-list">
                                                     <g:if test="${ie.tipp.accessStartDate}">
                                                         <div class="item">
+                                                                <div class="ui label la-label-accordion">${message(code: 'tipp.access')}</div>
+                                                        </div>
+                                                        <div class="item">
                                                             <div class="content">
-                                                                <div class="ui label la-label-accordion">${message(code: 'tipp.access')} ${message(code: 'default.from')}</div>
-
-                                                                <div class="description">
-
                                                                     <g:formatDate
                                                                             format="${message(code: 'default.date.format.notime')}"
                                                                             date="${ie.tipp.accessStartDate}"/>
-                                                                </div>
                                                             </div>
                                                         </div>
+
                                                     </g:if>
                                                     <g:if test="${ie.tipp.accessEndDate}">
                                                         <!-- bis -->
+                                                        <!-- DEVIDER  -->
+                                                        <ui:dateDevider/>
                                                         <div class="item">
                                                             <div class="content">
-                                                                <div class="ui label la-label-accordion">${message(code: 'tipp.access')} ${message(code: 'default.to')}</div>
-                                                                <div class="description">
-                                                                    <g:formatDate
-                                                                            format="${message(code: 'default.date.format.notime')}"
-                                                                            date="${ie.tipp.accessEndDate}"/>
-                                                                </div>
+                                                                <g:formatDate
+                                                                        format="${message(code: 'default.date.format.notime')}"
+                                                                        date="${ie.tipp.accessEndDate}"/>
                                                             </div>
                                                         </div>
                                                     </g:if>
@@ -500,7 +498,7 @@
                                             <div class="seven wide column">
                                                 <i class="grey icon circular inverted edit la-icon-absolute"></i>
 
-                                                <div class="ui white segment la-segment-with-icon">
+                                                <div class="ui la-segment-with-icon">
 
                                                     <laser:render template="/templates/tipps/coverages_accordion"
                                                                   model="${[ie: ie, tipp: ie.tipp]}"/>
