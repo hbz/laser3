@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4627    05.12.2022  dev     3.0         David   Bug         Einrichtungen können Dokumenttyp in Umfragen editieren
+
 4616    02.12.2022  dev     3.0         David   Bug         Aufgaben: Editierbarkeit
 
 4611    02.12.2022  dev     3.0         David   Feature     Workflow: Änderungen "Dokument einhängen"

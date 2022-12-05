@@ -46,17 +46,15 @@
     </g:if> --}%
 
     <g:if test="${condition?.getFields()}">
-
-            <div class="ui top attached header" style="background-color: #f9fafb;">
-                Typabhängige Datenfelder - Definition / Vorschau
-            </div>
-            <div class="ui attached segment">
+        <div class="field">
+            <label>Datenfelder</label>
+            <div class="ui segment" style="margin-top:0; box-shadow:none">
                 <g:each in="${condition.getFields()}" var="field" status="fi">
                     <g:if test="${field.startsWith('checkbox')}">
                         <div class="fields two" style="margin-bottom:0;">
                             <div class="field">
                                 <label for="${prefix}_${field}_title">
-                                    Titel für ${condition.getFieldLabel(field)}
+                                    Bezeichnung für Feld: ${condition.getFieldLabel(field)}
                                     ${condition.getProperty(field + '_title') ? '' : ' #' + field.reverse().take(1)}
                                 </label>
                                 <input type="text" name="${prefix}_${field}_title" id="${prefix}_${field}_title" value="${condition.getProperty(field + '_title')}" />
@@ -76,7 +74,7 @@
                         <div class="fields two" style="margin-bottom:0;">
                             <div class="field">
                                 <label for="${prefix}_${field}_title">
-                                    Titel für ${condition.getFieldLabel(field)}
+                                    Bezeichnung für Feld: ${condition.getFieldLabel(field)}
                                     ${condition.getProperty(field + '_title') ? '' : ' #' + field.reverse().take(1)}
                                 </label>
                                 <input type="text" name="${prefix}_${field}_title" id="${prefix}_${field}_title" value="${condition.getProperty(field + '_title')}" />
@@ -89,7 +87,7 @@
                         <div class="fields two" style="margin-bottom:0;">
                             <div class="field">
                                 <label for="${prefix}_${field}_title">
-                                    Titel für ${condition.getFieldLabel(field)}
+                                    Bezeichnung für Feld: ${condition.getFieldLabel(field)}
                                     ${condition.getProperty(field + '_title') ? '' : ' #' + field.reverse().take(1)}
                                 </label>
                                 <input type="text" name="${prefix}_${field}_title" id="${prefix}_${field}_title" value="${condition.getProperty(field + '_title')}" />
@@ -100,7 +98,9 @@
                     </g:if>
                 </g:each>
             </div>
-            <div class="ui bottom attached segment" style="background-color:#f9fafb;">
+
+            <label>Vorschau (Datenfelder)</label>
+            <div class="ui segment" style="margin-top:0; box-shadow:none; background-color:#f9fafb;">
                 <g:each in="${condition.getFields('table')}" var="field" status="fi">
                     <g:if test="${fi == 0 || fi%2 == 0}">
                         <div class="field">
@@ -180,7 +180,7 @@
                     </g:if>
                 </g:each>
             </div>
-
+        </div>
     </g:if>
 
     <g:if test="${prefix == WfConditionPrototype.KEY}">
