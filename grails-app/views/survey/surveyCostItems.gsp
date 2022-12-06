@@ -129,48 +129,72 @@
 
             <br><br>
 
+        <br/>
+            <div class="field" style="text-align: right;">
+                <button id="bulkCostItems-toggle"
+                        class="ui button"><g:message code="financials.bulkCostItems.show"/></button>
+                <laser:script file="${this.getGroovyPageFileName()}">
+                    $('#bulkCostItems-toggle').on('click', function () {
+                        $('#bulkCostItems').toggleClass('hidden')
+                        if ($('#bulkCostItems').hasClass('hidden')) {
+                            $(this).text("${g.message(code: 'financials.bulkCostItems.show')}")
+                                                    } else {
+                                                        $(this).text("${g.message(code: 'financials.bulkCostItems.hidden')}")
+                                                    }
+                                                })
+                </laser:script>
+            </div>
+
             <g:form action="processSurveyCostItemsBulk" data-confirm-id="processSurveyCostItemsBulk_form" name="editCost_${idSuffix}" method="post" class="ui form"
                     params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: 'selectedSubParticipants']">
 
-                <h3 class="ui header"><span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center" data-content="${message(code: 'surveyCostItems.bulkOption.info')}">
-                    ${message(code: 'surveyCostItems.bulkOption.label')}
+                <div id="bulkCostItems" class="hidden">
+                    <h3 class="ui header"><span class="la-long-tooltip la-popup-tooltip la-delay"
+                                                data-position="right center"
+                                                data-content="${message(code: 'surveyCostItems.bulkOption.info')}">
+                        ${message(code: 'surveyCostItems.bulkOption.label')}
                         <i class="question circle icon"></i>
                     </span></h3>
 
-                <div class="ui basic segment">
+                    <div class="ui basic segment">
 
-                    <laser:render template="costItemInputSurvey" />
+                        <laser:render template="costItemInputSurvey"/>
 
-                    <g:if test="${params.tab == 'selectedSubParticipants' }">
-                    <div class="ui horizontal divider"><g:message code="search.advancedSearch.option.OR"/></div>
+                        <g:if test="${params.tab == 'selectedSubParticipants'}">
+                            <div class="ui horizontal divider"><g:message code="search.advancedSearch.option.OR"/></div>
 
-                    <div class="fields la-forms-grid">
-                        <fieldset class="sixteen wide field la-account-currency">
-                            <div class="field center aligned">
+                            <div class="fields la-forms-grid">
+                                <fieldset class="sixteen wide field la-account-currency">
+                                    <div class="field center aligned">
 
-                                <label>${message(code: 'surveyCostItems.bulkOption.percentOnOldPrice')}</label>
-                                <div class="ui right labeled input">
-                                <input type="number"
-                                       name="percentOnOldPrice"
-                                       id="percentOnOldPrice"
-                                       placeholder="${g.message(code: 'surveyCostItems.bulkOption.percentOnOldPrice')}"
-                                       value="" step="0.01"/>
-                                <div class="ui basic label">%</div>
-                                </div>
+                                        <label>${message(code: 'surveyCostItems.bulkOption.percentOnOldPrice')}</label>
+
+                                        <div class="ui right labeled input">
+                                            <input type="number"
+                                                   name="percentOnOldPrice"
+                                                   id="percentOnOldPrice"
+                                                   placeholder="${g.message(code: 'surveyCostItems.bulkOption.percentOnOldPrice')}"
+                                                   value="" step="0.01"/>
+
+                                            <div class="ui basic label">%</div>
+                                        </div>
+                                    </div>
+                                </fieldset>
                             </div>
-                        </fieldset>
-                    </div>
-                    </g:if>
+                        </g:if>
 
-                </div>
-
-                <div class="two fields">
-                    <div class="eight wide field" style="text-align: left;">
-                        <button class="ui button" type="submit">${message(code: 'default.button.save_changes')}</button>
                     </div>
 
-                    <div class="eight wide field" style="text-align: right;">
+                    <div class="two fields">
+                        <div class="eight wide field" style="text-align: left;">
+                            <button class="ui button"
+                                    type="submit">${message(code: 'default.button.save_changes')}</button>
+                        </div>
+
+                        <div class="eight wide field" style="text-align: right;">
+                        </div>
                     </div>
+
                 </div>
 
                 <g:if test="${params.tab == 'selectedSubParticipants'}">

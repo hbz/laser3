@@ -1021,12 +1021,27 @@ class SurveyController {
 
         result.selectedCostItemElement = params.selectedCostItemElement ? params.selectedCostItemElement.toString() : RefdataValue.getByValueAndCategory('price: consortial price', RDConstants.COST_ITEM_ELEMENT).id.toString()
 
-        if(result.selectedSubParticipants && params.sortOnCostItems){
+        if(result.selectedSubParticipants && (params.sortOnCostItemsDown || params.sortOnCostItemsUp)){
             List<Subscription> orgSubscriptions = result.surveyConfig.orgSubscriptions()
             List<Org> selectedSubParticipants = result.selectedSubParticipants
             result.selectedSubParticipants = []
 
-            List<Subscription> subscriptionList =  CostItem.executeQuery("select c.sub from CostItem as c where c.sub in (:subList) and c.owner = :owner and c.costItemStatus != :status and c.costItemElement.id = :costItemElement order by c.costInBillingCurrency", [subList: orgSubscriptions, owner: result.surveyInfo.owner, status: RDStore.COST_ITEM_DELETED, costItemElement: Long.parseLong(result.selectedCostItemElement)])
+            String orderByQuery = " order by c.costInBillingCurrency, org.name"
+
+            println(params)
+
+            if(params.sortOnCostItemsUp){
+                result.sortOnCostItemsUp = true
+                orderByQuery = " order by c.costInBillingCurrency DESC, org.name"
+                params.remove('sortOnCostItemsUp')
+            }else {
+                params.remove('sortOnCostItemsDown')
+            }
+
+            println(params)
+            String query = "select c.sub from CostItem as c join c.owner org where c.sub in (:subList) and c.owner = :owner and c.costItemStatus != :status and c.costItemElement.id = :costItemElement " + orderByQuery
+
+            List<Subscription> subscriptionList =  CostItem.executeQuery(query, [subList: orgSubscriptions, owner: result.surveyInfo.owner, status: RDStore.COST_ITEM_DELETED, costItemElement: Long.parseLong(result.selectedCostItemElement)])
 
             subscriptionList.each { Subscription sub ->
                 Org org = sub.getSubscriber()
