@@ -1028,8 +1028,6 @@ class SurveyController {
 
             String orderByQuery = " order by c.costInBillingCurrency, org.name"
 
-            println(params)
-
             if(params.sortOnCostItemsUp){
                 result.sortOnCostItemsUp = true
                 orderByQuery = " order by c.costInBillingCurrency DESC, org.name"
@@ -1038,7 +1036,6 @@ class SurveyController {
                 params.remove('sortOnCostItemsDown')
             }
 
-            println(params)
             String query = "select c.sub from CostItem as c join c.owner org where c.sub in (:subList) and c.owner = :owner and c.costItemStatus != :status and c.costItemElement.id = :costItemElement " + orderByQuery
 
             List<Subscription> subscriptionList =  CostItem.executeQuery(query, [subList: orgSubscriptions, owner: result.surveyInfo.owner, status: RDStore.COST_ITEM_DELETED, costItemElement: Long.parseLong(result.selectedCostItemElement)])
