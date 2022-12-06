@@ -7,7 +7,29 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4437    05.12.2022  dev     3.0         Moe     Feature     Verknüpfte Umfragen
+
+4430    05.12.2022  dev     3.0         Moe     Feature     Lokale Titelauswahl per KBART-Upload: Systemrückmeldung verbessern
+
+4362    05.12.2022  dev     3.0         Moe     Feature     Lizenzteilnehmer aktiv zu Lizenz-/allgemeinen Umfragen hinzufügen
+
+4627    05.12.2022  dev     3.0         David   Bug         Einrichtungen können Dokumenttyp in Umfragen editieren
+
+4616    02.12.2022  dev     3.0         David   Bug         Aufgaben: Editierbarkeit
+
+4611    02.12.2022  dev     3.0         David   Feature     Workflow: Änderungen "Dokument einhängen"
+
+4625    30.11.2022  dev     3.0         Andreas Bug         Umgang mit WIBID korrigiert
+
 4624    30.11.2022  dev     3.0         David   Feature     Performance: Referenzwerte verwalten
+
+4623    30.11.2022  dev     3.0         Andreas Bug         Datenausgabe bei Vertragsexport korrigiert
+
+4622    30.11.2022  dev     3.0         Andreas Bug         Fehler bei ClickMichExcel-Abfrage behoben
+
+4618    30.11.2022  dev     3.0         Andreas Bug         Text bei leerer Ergebnismenge eingebaut
+
+4615    30.11.2022  dev     3.0         Andreas Bug         Fehler bei Meine Pakete-Filter behoben
 
 4609    29.11.2022  dev     3.0         Andreas Bug         Kostenausschüttung den konsortialen Anforderungen entsprechend angepasst
 
@@ -22,6 +44,8 @@
 4424    28.11.2022  dev     3.0         Andreas Feature     Schalter für private/öffentliche Kontakte beim Export von "Meine Einrichtungen"
 
 4423    28.11.2022  dev     3.0         Andreas Feature     Exportfunktionen für "Mein Adressbuch" gebaut
+
+4344    28.11.2022  dev     3.0         Moe     Bug         Erinnerungsmail an Teilnehmer: Button anders positionieren und benennen
 
 4600    25.11.2022  dev     3.0         Moe     Feature     Bei Titelumfragen auf der Auswertungssicht den Bearbeitungsstatus ausblenden wenn es keine Merkmale gibt
 

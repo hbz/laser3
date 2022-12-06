@@ -675,7 +675,12 @@ class SurveyService {
                     String subjectSystemPraefix = (currentServer == AppUtils.PROD)? "" : (ConfigMapper.getLaserSystemId() + " - ")
                     String mailSubject = escapeService.replaceUmlaute(subjectSystemPraefix + surveyInfo.type.getI10n('value', language) + ": " + surveyInfo.name +  " (" + participationFinish.sortname + ")")
 
-                        try {
+                    SurveyOrg surveyOrg = SurveyOrg.findBySurveyConfigAndOrg(surveyInfo.surveyConfigs[0], participationFinish)
+                    if(surveyOrg && surveyOrg.orgInsertedItself) {
+                        mailSubject = escapeService.replaceUmlaute(subjectSystemPraefix + " " +messageSource.getMessage('default.new', null, language) + " " +surveyInfo.type.getI10n('value', language) + ": " + surveyInfo.name + " (" + participationFinish.sortname + ")")
+                    }
+
+                    try {
                             if (emailReceiver == null || emailReceiver.isEmpty()) {
                                 log.debug("The following user does not have an email address and can not be informed about surveys: " + user.username);
                             } else {

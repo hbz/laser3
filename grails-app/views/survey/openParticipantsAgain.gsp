@@ -56,14 +56,14 @@
             <g:link class="item ${params.tab == 'participantsViewAllFinish' ? 'active' : ''}"
                     controller="survey" action="openParticipantsAgain"
                     params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsViewAllFinish']">
-                ${message(code: 'surveyEvaluation.participantsViewAllFinish')}
+                ${message(code: 'openParticipantsAgain.label')}
                 <div class="ui floating blue circular label">${participantsFinishTotal}</div>
             </g:link>
 
             <g:link class="item ${params.tab == 'participantsViewAllNotFinish' ? 'active' : ''}"
                     controller="survey" action="openParticipantsAgain"
                     params="[id: params.id, surveyConfigID: surveyConfig.id, tab: 'participantsViewAllNotFinish']">
-                ${message(code: 'surveyEvaluation.participantsViewAllNotFinish')}
+                ${message(code: 'openParticipantsAgain.reminder')}
                 <div class="ui floating blue circular label">${participantsNotFinishTotal}</div>
             </g:link>
 

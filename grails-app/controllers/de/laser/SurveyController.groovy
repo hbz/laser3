@@ -659,8 +659,6 @@ class SurveyController {
                     if (configProperty.save() && configProperty2.save()) {
                         surveyService.addSubMembers(surveyConfig)
                     }
-                } else {
-                    surveyService.addSubMembers(surveyConfig)
                 }
             }
             else {
@@ -2027,9 +2025,11 @@ class SurveyController {
     })
      Map<String,Object> evaluationParticipant() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
+        /*
         if (!result.editable) {
             response.sendError(HttpStatus.SC_FORBIDDEN); return
         }
+        */
 
         result.participant = Org.get(params.participant)
 

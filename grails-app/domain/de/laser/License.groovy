@@ -597,11 +597,11 @@ class License extends AbstractBaseWithCalculatedLastUpdated
     }
 
     /**
-     * Retrieves all linked subscriptions to this license
+     * Retrieves all linked subscriptions to this license to which the context institution has access
      * @return a {@link Set} of {@link Subscription}s connected to this license
      */
-    Set<Subscription> getSubscriptions() {
-        Set<Subscription> result = Subscription.executeQuery("select li.destinationSubscription from Links li where li.sourceLicense = :license and li.linkType = :linkType",[license:this,linkType:RDStore.LINKTYPE_LICENSE])
+    Set<Subscription> getSubscriptions(Org institution) {
+        Set<Subscription> result = Subscription.executeQuery("select s from Links li join li.destinationSubscription s join s.orgRelations oo where li.sourceLicense = :license and li.linkType = :linkType and oo.org = :institution",[institution: institution, license:this,linkType:RDStore.LINKTYPE_LICENSE])
         /*Links.findAllBySourceAndSourceTypeAndDestinationTypeAndLinkType(genericOIDService.getOID(this),RDStore.LINKTYPE_LICENSE).each { l ->
             result << genericOIDService.resolveOID(l.destination)
         }*/

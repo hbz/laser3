@@ -95,6 +95,7 @@ class TaskController  {
     def edit() {
 		Task.withTransaction {
 			Org contextOrg = contextService.getOrg()
+			User contextUser = contextService.getUser()
             Map<String, Object> result = [:]
 			result.contextOrg = contextOrg
 
@@ -106,7 +107,8 @@ class TaskController  {
 
 			Task taskInstance = Task.get(params.id)
 
-			if (((!taskInstance.responsibleOrg) && taskInstance.responsibleUser != contextService.getUser()) && (taskInstance.responsibleOrg != contextOrg) && (taskInstance.creator != contextService.getUser())) {
+			if ( !((contextOrg.id == taskInstance.responsibleOrg?.id) || (contextUser.id == taskInstance.responsibleUser?.id) || (contextUser.id == taskInstance.creator.id))
+			) {
 				flash.error = message(code: 'task.edit.norights', args: [taskInstance.title]) as String
 				redirect(url: request.getHeader('referer'))
 				return
