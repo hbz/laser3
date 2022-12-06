@@ -659,8 +659,6 @@ class SurveyController {
                     if (configProperty.save() && configProperty2.save()) {
                         surveyService.addSubMembers(surveyConfig)
                     }
-                } else {
-                    surveyService.addSubMembers(surveyConfig)
                 }
             }
             else {

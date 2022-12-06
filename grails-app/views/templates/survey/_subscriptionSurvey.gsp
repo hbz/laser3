@@ -1241,7 +1241,7 @@
 
                                 <g:if test="${surveyResult.surveyConfig.subSurveyUseForTransfer && surveyResult.type == PropertyStore.SURVEY_PROPERTY_PARTICIPATION && surveyResult.owner?.id != contextService.getOrg().id}">
                                     <ui:xEditableRefData
-                                            data_confirm_tokenMsg="${message(code: 'survey.participationProperty.confirmation')}"
+                                            data_confirm_tokenMsg="${surveyOrg.orgInsertedItself ? message(code: 'survey.participationProperty.confirmation2') : message(code: 'survey.participationProperty.confirmation')}"
                                             data_confirm_term_how="ok"
                                             cssClass="js-open-confirm-modal-xeditable"
                                             data_confirm_value="${RefdataValue.class.name}:${RDStore.YN_NO.id}"
