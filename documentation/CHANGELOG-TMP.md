@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4641    05.12.2022  dev     3.0         Moe     Feature     Umfrage Urls und deren Bemerkung umstellen auf One to Many Relation
+
 4437    05.12.2022  dev     3.0         Moe     Feature     Verknüpfte Umfragen
 
 4430    05.12.2022  dev     3.0         Moe     Feature     Lokale Titelauswahl per KBART-Upload: Systemrückmeldung verbessern

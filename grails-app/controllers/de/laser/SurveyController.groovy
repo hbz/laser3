@@ -24,6 +24,7 @@ import de.laser.survey.SurveyInfo
 import de.laser.survey.SurveyLinks
 import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyResult
+import de.laser.survey.SurveyUrl
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
@@ -3344,12 +3345,6 @@ class SurveyController {
                                 surveyInfo: newSurveyInfo,
                                 comment: params.copySurvey.copySurveyConfigComment ? baseSurveyConfig.comment : null,
                                 commentForNewParticipants: params.copySurvey.copySurveyConfigCommentForNewParticipants ? baseSurveyConfig.commentForNewParticipants : null,
-                                url: params.copySurvey.copySurveyConfigUrl ? baseSurveyConfig.url : null,
-                                urlComment: params.copySurvey.copySurveyConfigUrl ? baseSurveyConfig.urlComment : null,
-                                url2: params.copySurvey.copySurveyConfigUrl2 ? baseSurveyConfig.url2 : null,
-                                urlComment2: params.copySurvey.copySurveyConfigUrl2 ? baseSurveyConfig.urlComment2 : null,
-                                url3: params.copySurvey.copySurveyConfigUrl3 ? baseSurveyConfig.url3 : null,
-                                urlComment3: params.copySurvey.copySurveyConfigUrl3 ? baseSurveyConfig.urlComment3 : null,
                                 configOrder: newSurveyInfo.surveyConfigs ? newSurveyInfo.surveyConfigs.size() + 1 : 1
                         ).save()
 
@@ -3379,12 +3374,6 @@ class SurveyController {
                             surveyInfo: newSurveyInfo,
                             comment: params.copySurvey.copySurveyConfigComment ? baseSurveyConfig.comment : null,
                             commentForNewParticipants: params.copySurvey.copySurveyConfigCommentForNewParticipants ? baseSurveyConfig.commentForNewParticipants : null,
-                            url: params.copySurvey.copySurveyConfigUrl ? baseSurveyConfig.url : null,
-                            urlComment: params.copySurvey.copySurveyConfigUrl ? baseSurveyConfig.urlComment : null,
-                            url2: params.copySurvey.copySurveyConfigUrl2 ? baseSurveyConfig.url2 : null,
-                            urlComment2: params.copySurvey.copySurveyConfigUrl ? baseSurveyConfig.urlComment2 : null,
-                            url3: params.copySurvey.copySurveyConfigUrl3 ? baseSurveyConfig.url3 : null,
-                            urlComment3: params.copySurvey.copySurveyConfigUrl ? baseSurveyConfig.urlComment3 : null,
                             configOrder: newSurveyInfo.surveyConfigs ? newSurveyInfo.surveyConfigs.size() + 1 : 1
                     ).save()
                     surveyService.copySurveyConfigCharacteristic(baseSurveyConfig, newSurveyConfig, params)
@@ -5022,6 +5011,40 @@ class SurveyController {
                 }
                 surveyLink.delete()
 
+            }
+        }
+
+        redirect(url: request.getHeader('referer'))
+
+    }
+
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    Map<String,Object> addSurveyUrl() {
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
+        if (!result.editable) {
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
+        }
+
+        if(params.deleteSurveyUrl){
+            SurveyConfig.withTransaction { TransactionStatus ts ->
+                SurveyUrl surveyUrl = SurveyUrl.get(Long.parseLong(params.deleteSurveyUrl))
+                surveyUrl.delete()
+            }
+        }else {
+            if (result.surveyConfig.surveyUrls.size() >= 10) {
+                flash.error = g.message(code: 'surveyconfig.url.fail.max10')
+            } else {
+                if (params.url) {
+                    SurveyConfig.withTransaction { TransactionStatus ts ->
+                        SurveyUrl surveyUrl = new SurveyUrl(url: params.url, urlComment: params.urlComment, surveyConfig: result.surveyConfig)
+                        if (!surveyUrl.save()) {
+                            flash.error = g.message(code: 'survey.change.fail')
+                        }
+                    }
+                }
             }
         }
 

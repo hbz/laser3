@@ -34,59 +34,21 @@
     </dl>
 </g:if>
 
-<g:if test="${surveyConfig.url}">
+<g:each in="${surveyConfig.surveyUrls}" var="surveyUrl" status="i">
     <dl>
         <dt>
-            ${message(code: 'surveyconfig.url.label')}
+            ${message(code: 'surveyconfig.url.label', args: [i+1])}
         </dt>
         <dd>
-            <g:link uri="${surveyConfig.url}">
-                ${surveyConfig.url}
+            <g:link uri="${surveyUrl.url}">
+                ${surveyUrl.url}
             </g:link>
-
-            <g:if test="${surveyConfig.urlComment}">
-                <br>
-                ${message(code: 'surveyConfigsInfo.comment')}: ${surveyConfig.urlComment}
+            <g:if test="${surveyUrl.urlComment}">
+                <br> ${message(code: 'surveyconfig.urlComment.label', args: [i+1])}: ${surveyUrl.urlComment}">
             </g:if>
         </dd>
     </dl>
-</g:if>
-
-<g:if test="${surveyConfig.url2}">
-    <dl>
-        <dt>
-            ${message(code: 'surveyconfig.url2.label')}
-        </dt>
-        <dd>
-            <g:link uri="${surveyConfig.url2}">
-                ${surveyConfig.url2}
-            </g:link>
-
-            <g:if test="${surveyConfig.urlComment2}">
-                <br>
-                ${message(code: 'surveyConfigsInfo.comment')}: ${surveyConfig.urlComment2}
-            </g:if>
-        </dd>
-    </dl>
-</g:if>
-
-<g:if test="${surveyConfig.url3}">
-    <dl>
-        <dt>
-            ${message(code: 'surveyconfig.url3.label')}
-        </dt>
-        <dd>
-            <g:link uri="${surveyConfig.url3}">
-                ${surveyConfig.url3}
-            </g:link>
-
-            <g:if test="${surveyConfig.urlComment3}">
-                <br>
-                ${message(code: 'surveyConfigsInfo.comment')}: ${surveyConfig.urlComment3}
-            </g:if>
-        </dd>
-    </dl>
-</g:if>
+</g:each>
 
 <dl>
     <dt>
