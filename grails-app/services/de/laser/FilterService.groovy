@@ -879,7 +879,12 @@ class FilterService {
             result.query = "from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrg " + defaultOrder
         }
 
-
+        if (params.filterPropDef?.size() > 0) {
+            def psq = propertyService.evalFilterQuery(params, result.query, 'surConfig', queryParams)
+            result.query = psq.query
+            queryParams = psq.queryParams
+            params.filterSet = true
+        }
 
         result.queryParams = queryParams
         result
