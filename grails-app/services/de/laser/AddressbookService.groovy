@@ -87,7 +87,7 @@ class AddressbookService {
      * @param params a parameter map to filter the results
      * @return an eventually filtered list of person contacts
      */
-    List getVisiblePersons(String fromSite, GrailsParameterMap params) {
+    List getVisiblePersons(String fromSite, Map params) {
         List qParts = [
                 'p.isPublic = :public'
         ]
