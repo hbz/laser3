@@ -40493,14 +40493,6 @@ i.orange.icon.la-subscriptionIsChild.fixed {
   }
 }
 
-.ui.segment.la-segment-with-icon {
-  --mask: radial-gradient(25px at 0 0, #0000 98%, #000);
-  -webkit-mask: var(--mask);
-  mask: var(--mask);
-  position: relative;
-  padding-top: 25px;
-}
-
 .la-icon-absolute {
   position: absolute;
   z-index: 100;
@@ -45305,13 +45297,15 @@ dd {
   width: fit-content;
 }
 
-.ui.card .la-label-list .item:nth-child(2) {
-  margin-top: 10px;
+.ui.card .la-label-list .ui.label:nth-child(n+2) {
+  margin-top: 20px;
 }
 
 .la-onliner {
   vertical-align: top;
-  padding: 0.21428571em 0;
+  padding-top: 0.21428571em;
+  padding-bottom: 1.2em;
+  display: inline-block;
 }
 
 .la-onliner .la-online-wrap {
