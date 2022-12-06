@@ -94,7 +94,7 @@ class XEditableTagLib {
                     oldValue = sdf.format(owner[field])
                 }
                 else {
-                    if ((owner[field] == null) || (owner[field].toString().length()==0)) {
+                    if ((owner[field] == null) || (owner[field] == 'Unknown') || (owner[field].toString().length()==0)) {
                     }
                     else if(field in ['decValue','listPrice','localPrice'] || (field == 'value' && owner instanceof ReaderNumber)) {
                         NumberFormat nf = NumberFormat.getInstance(LocaleUtils.getCurrentLocale())
@@ -127,7 +127,7 @@ class XEditableTagLib {
                     out << sdf.format(owner[field])
                 }
                 else {
-                    if ((owner[field] == null) || (owner[field].toString().length()==0)) {
+                    if ((owner[field] == null) || owner[field] == 'Unknown' || (owner[field].toString().length()==0)) {
                     }
                     else if (field == 'decValue') {
                         out << NumberFormat.getInstance(LocaleUtils.getCurrentLocale()).format(owner[field])
