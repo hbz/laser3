@@ -78,7 +78,9 @@
                             <g:else>
                                 ${docctx.owner.title ?: docctx.owner.filename ?: message(code:'template.documents.missing')}
                             </g:else>
-                            (${docctx.owner?.type?.getI10n("value")})
+                            <g:if test="${docctx.owner.type}">
+                                (${docctx.owner.type.getI10n("value")})
+                            </g:if>
 
                             <ui:documentIcon doc="${docctx.owner}" showText="false" showTooltip="true"/>
                         </div>
@@ -183,7 +185,9 @@
                             <g:else>
                                 ${docctx.owner.title ?: docctx.owner.filename ?: message(code:'template.documents.missing')}
                             </g:else>
-                            (${docctx.owner?.type?.getI10n("value")})
+                            <g:if test="${docctx.owner.type}">
+                                (${docctx.owner.type.getI10n("value")})
+                            </g:if>
 
                             <ui:documentIcon doc="${docctx.owner}" showText="false" showTooltip="true"/>
                         </div>

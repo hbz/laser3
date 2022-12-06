@@ -89,7 +89,8 @@
                               optionValue="${{ it.getI10n('value') }}"
                               id="doctype-${labelId}"
                               name="doctype"
-                              value="${doc?.type?.value}"/>
+                              value="${doc?.type?.value}"
+                              noSelection="${['': message(code: 'default.select.choose.label')]}" />
                 </dd>
             </dl>
             <dl>

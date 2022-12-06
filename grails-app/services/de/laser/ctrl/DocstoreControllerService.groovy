@@ -31,15 +31,15 @@ class DocstoreControllerService {
                 log.debug("Got owner instance ${instance}")
 
                 DocContext doc_context = DocContext.get(params.docctx)
+                Doc doc = doc_context.owner
 
-                Doc doc_content = doc_context.owner
-                doc_content.title = params.upload_title ?: doc_content.filename
-                doc_content.confidentiality = params.confidentiality ? RefdataValue.getByValueAndCategory(params.confidentiality, RDConstants.DOCUMENT_CONFIDENTIALITY) : null
-                doc_content.type = RefdataValue.getByValueAndCategory(params.doctype, RDConstants.DOCUMENT_TYPE)
-                doc_content.owner = contextService.getOrg()
-                doc_content.save()
+                doc.title = params.upload_title ?: doc.filename
+                doc.confidentiality = params.confidentiality ? RefdataValue.getByValueAndCategory(params.confidentiality, RDConstants.DOCUMENT_CONFIDENTIALITY) : null
+                doc.type = params.doctype ? RefdataValue.getByValueAndCategory(params.doctype, RDConstants.DOCUMENT_TYPE) : null
+                doc.owner = contextService.getOrg()
+                doc.save()
 
-                doc_context.doctype = RefdataValue.getByValueAndCategory(params.doctype, RDConstants.DOCUMENT_TYPE)
+                doc_context.doctype = params.doctype ? RefdataValue.getByValueAndCategory(params.doctype, RDConstants.DOCUMENT_TYPE) : null
                 if(params.targetOrg)
                     doc_context.targetOrg = Org.get(params.targetOrg)
                 doc_context.shareConf = RefdataValue.get(params.shareConf) ?: null

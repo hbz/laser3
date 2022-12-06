@@ -222,7 +222,7 @@
                                                           from="${targetDocuments}"
                                                           value="${task.condition.getProperty(field)?.id}"
                                                           optionKey="${{it.id}}"
-                                                          optionValue="${{ (it.owner?.title ?: it.owner?.filename ?: message(code:'template.documents.missing')) + ' (' + it.owner?.type?.getI10n("value") + ')' + (it.owner?.confidentiality ? ' (' + it.owner?.confidentiality?.getI10n('value') + ')' : '')}}" />
+                                                          optionValue="${{ (it.owner?.title ?: it.owner?.filename ?: message(code:'template.documents.missing')) + (it.owner?.type ? ' (' + it.owner.type.getI10n("value") + ')' : '') + (it.owner?.confidentiality ? ' (' + it.owner?.confidentiality?.getI10n('value') + ')' : '')}}" />
                                             </g:if>
                                             <g:else>
                                                 <g:set var="targetDocuments" value="${targetObject.documents.findAll{ it.status != RDStore.DOC_CTX_STATUS_DELETED && it.owner.contentType == Doc.CONTENT_TYPE_FILE }}" />
@@ -231,7 +231,7 @@
                                                           from="${targetDocuments}"
                                                           value="${task.condition.getProperty(field)?.id}"
                                                           optionKey="${{it.id}}"
-                                                          optionValue="${{ (it.owner?.title ?: it.owner?.filename ?: message(code:'template.documents.missing')) + ' (' + it.owner?.type?.getI10n("value") + ')' + (it.owner?.confidentiality ? ' (' + it.owner?.confidentiality?.getI10n('value') + ')' : '')}}" />
+                                                          optionValue="${{ (it.owner?.title ?: it.owner?.filename ?: message(code:'template.documents.missing')) + (it.owner?.type ? ' (' + it.owner.type.getI10n("value") + ')' : '') + (it.owner?.confidentiality ? ' (' + it.owner.confidentiality.getI10n('value') + ')' : '')}}" />
 
                                             </g:else>
                                         </div>
@@ -250,11 +250,11 @@
 
                                         <label for="wfUploadDoctype_${field}">${message(code: 'template.addDocument.type')}:</label>
                                         <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.DOCUMENT_TYPE) - [RDStore.DOC_TYPE_NOTE, RDStore.DOC_TYPE_ANNOUNCEMENT, RDStore.DOC_TYPE_ONIXPL]}"
-                                                  class="ui dropdown fluid la-not-clearable"
+                                                  class="ui dropdown fluid"
                                                   optionKey="id"
                                                   optionValue="${{ it.getI10n('value') }}"
                                                   name="wfUploadDoctype_${field}"
-                                                  />
+                                                  noSelection="${['': message(code: 'default.select.choose.label')]}" />
 
                                         <label for="wfUploadConfidentiality_${field}">${message(code: 'template.addDocument.confidentiality')}:</label>
                                         <g:select from="${RefdataCategory.getAllRefdataValues(RDConstants.DOCUMENT_CONFIDENTIALITY)}"
