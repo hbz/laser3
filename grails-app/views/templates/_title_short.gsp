@@ -23,7 +23,7 @@
         <div class="js-copyTriggerParent">
             <span class="ui small basic image label js-copyTrigger la-popup-tooltip la-delay"
                   data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}">
-                <i class="la-copy icon la-js-copyTriggerIcon" aria-hidden="true"></i>
+                <i class="la-copy grey icon la-js-copyTriggerIcon" aria-hidden="true"></i>
                 ${title_id.ns.ns}:
                 <div class="detail js-copyTopic">${title_id.value}</div>
             </span>

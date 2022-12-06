@@ -305,3 +305,9 @@ a .ui.circular.label {
     transition:border-radius;
   }
 }
+.ui.label.la-labelBlock,
+.la-label-accordion{
+  display: block;
+  letter-spacing: 0.04em;
+}
+

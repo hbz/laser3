@@ -18,7 +18,7 @@
             <ui:subNavItem disabled="true" controller="organisation" action="myPublicContacts" message="menu.institutions.publicContactsHyphen" />
         </g:if>
     </g:else>
-    <g:if test="${orgInstance.getCustomerType() == 'ORG_INST'}">
+    <g:if test="${!isProviderOrAgency}">
         <ui:securedSubNavItem affiliation="INST_USER" controller="organisation" action="readerNumber" params="${[id: orgInstance.id]}" message="menu.institutions.readerNumbers"/>
 
         <g:if test="${tmplAccessPointsActive}">

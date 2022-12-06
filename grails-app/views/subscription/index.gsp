@@ -419,29 +419,25 @@
                                             <div class="three wide column">
                                                 <div class="ui list la-label-list">
                                                     <g:if test="${ie.tipp.accessStartDate}">
+                                                        <div class="ui label la-label-accordion">${message(code: 'tipp.access')}</div>
                                                         <div class="item">
                                                             <div class="content">
-                                                                <div class="ui label la-label-accordion">${message(code: 'tipp.access')} ${message(code: 'default.from')}</div>
-
-                                                                <div class="description">
-
                                                                     <g:formatDate
                                                                             format="${message(code: 'default.date.format.notime')}"
                                                                             date="${ie.tipp.accessStartDate}"/>
-                                                                </div>
                                                             </div>
                                                         </div>
+
                                                     </g:if>
                                                     <g:if test="${ie.tipp.accessEndDate}">
                                                         <!-- bis -->
+                                                        <!-- DEVIDER  -->
+                                                        <ui:dateDevider/>
                                                         <div class="item">
                                                             <div class="content">
-                                                                <div class="ui label la-label-accordion">${message(code: 'tipp.access')} ${message(code: 'default.to')}</div>
-                                                                <div class="description">
-                                                                    <g:formatDate
-                                                                            format="${message(code: 'default.date.format.notime')}"
-                                                                            date="${ie.tipp.accessEndDate}"/>
-                                                                </div>
+                                                                <g:formatDate
+                                                                        format="${message(code: 'default.date.format.notime')}"
+                                                                        date="${ie.tipp.accessEndDate}"/>
                                                             </div>
                                                         </div>
                                                     </g:if>
@@ -449,9 +445,7 @@
                                                     <%-- Coverage Details START --%>
                                                     <g:each in="${ie.tipp.coverages}" var="covStmt" status="counterCoverage">
                                                         <g:if test="${covStmt.coverageNote || covStmt.coverageDepth || covStmt.embargo}">
-                                                            <div class="item">
-                                                                <div class="ui label la-label-accordion">${message(code: 'tipp.coverageDetails')} ${counterCoverage > 0 ? counterCoverage++ + 1 : ''}</div>
-                                                            </div>
+                                                            <div class="ui label la-label-accordion">${message(code: 'tipp.coverageDetails')} ${counterCoverage > 0 ? counterCoverage++ + 1 : ''}</div>
                                                         </g:if>
                                                         <g:if test="${covStmt.coverageNote}">
                                                             <div class="item">
@@ -500,7 +494,7 @@
                                             <div class="seven wide column">
                                                 <i class="grey icon circular inverted edit la-icon-absolute"></i>
 
-                                                <div class="ui white segment la-segment-with-icon">
+                                                <div class="ui la-segment-with-icon">
 
                                                     <laser:render template="/templates/tipps/coverages_accordion"
                                                                   model="${[ie: ie, tipp: ie.tipp]}"/>
@@ -519,12 +513,6 @@
                                                                     <div class="description">
                                                                         <ui:xEditableBoolean owner="${subscription}"
                                                                                              field="hasPerpetualAccess"/>
-                                                                        <%
-                                                                            if (ie.perpetualAccessBySub) {
-                                                                                println g.link([action: 'index', controller: 'subscription', id: ie.perpetualAccessBySub.id], "<br><br> ${ie.perpetualAccessBySub.dropdownNamingConvention()}")
-                                                                            }
-                                                                        %>
-
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -543,7 +531,7 @@
 
                                                         <g:each in="${ie.priceItems}" var="priceItem" status="i">
                                                             <div class="item">
-                                                                <i class="money icon la-popup-tooltip la-delay"></i>
+                                                                <i class="money grey icon la-popup-tooltip la-delay"></i>
 
                                                                 <div class="content">
                                                                     <div class="header"><g:message
