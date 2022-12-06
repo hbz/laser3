@@ -11,6 +11,7 @@ class SystemTagLib {
     def serviceInjection = { attrs, body ->
 
         g.set( var:'accessService',             bean:'accessService' )
+        g.set( var:'addressbookService',        bean:'addressbookService' )
         g.set( var:'auditService',              bean:'auditService' )
         g.set( var:'cacheService',              bean:'cacheService' )
         g.set( var:'compareService',            bean:'compareService' )
