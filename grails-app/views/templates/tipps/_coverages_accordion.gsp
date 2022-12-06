@@ -3,12 +3,9 @@
     %{-- IE  --}%
     <g:if test="${ie}">
         <div class="ui list la-label-list">
+            <div class="ui label la-labelBlock">${message(code: 'subscription.details.access_dates')}</div>
             <div class="item">
                 <div class="content">
-
-                    <div class="ui label">${message(code: 'subscription.details.access_dates')} ${message(code: 'default.from')}</div>
-
-                    <div class="description">
                     <!-- von --->
                         <g:if test="${editable}">
                             <ui:xEditable owner="${ie}" type="date"
@@ -21,16 +18,11 @@
                                     format="${message(code: 'default.date.format.notime')}"
                                     date="${ie.accessStartDate}"/>
                         </g:else>
-
-                    </div>
                 </div>
             </div>
-
+            <ui:dateDevider/>
             <div class="item">
                 <div class="content">
-                    <div class="ui label">${message(code: 'subscription.details.access_dates')} ${message(code: 'default.to')}</div>
-
-                    <div class="description">
                     <!-- bis -->
                         <g:if test="${editable}">
                             <ui:xEditable owner="${ie}" type="date"
@@ -43,7 +35,6 @@
                                     format="${message(code: 'default.date.format.notime')}"
                                     date="${ie.accessEndDate}"/>
                         </g:else>
-                    </div>
                 </div>
             </div>
         </div>
@@ -51,7 +42,7 @@
     %{-- TIPP  --}%
     <g:else>
         <g:if test="${tipp.dateFirstInPrint}">
-            <div class="ui label">${message(code: 'tipp.dateFirstInPrint')}</div>
+            <div class="ui label la-labelBlock">${message(code: 'tipp.dateFirstInPrint')}</div>
 
             <div class="description">
 
@@ -62,7 +53,7 @@
             </div>
         </g:if>
         <g:if test="${tipp.dateFirstOnline}">
-            <div class="ui label">${message(code: 'tipp.dateFirstOnline')}</div>
+            <div class="ui label la-labelBlock">${message(code: 'tipp.dateFirstOnline')}</div>
 
             <div class="description">
                 <span class='ui grey horizontal divider la-date-devider'></span>
@@ -102,10 +93,7 @@
             </div>
             <div class="five wide column">
                 <div class="ui list la-label-list">
-                    <div class="item">
-                        <div class="ui label">${message(code: 'subscription.details.access_dates')}</div>
-                    </div>
-
+                    <div class="ui label la-labelBlock">${message(code: 'subscription.details.access_dates')}</div>
                     <div class="item">
                         <div class="content">
                         <!-- von --->
@@ -167,10 +155,7 @@
     %{-- IE  --}%
     <g:if test="${ie}">
         <div class="ui list la-label-list">
-            <div class="item">
-                    <div class="ui label">${message(code: 'subscription.details.access_dates')}</div>
-            </div>
-
+            <div class="ui label la-labelBlock">${message(code: 'subscription.details.access_dates')}</div>
             <div class="item">
                 <div class="content">
                 <!-- von --->
@@ -210,7 +195,7 @@
     %{-- TIPP  --}%
     <g:else>
         <g:if test="${tipp.dateFirstOnline}">
-        <div class="ui label">${message(code: 'tipp.dateFirstOnline')}</div>
+        <div class="ui label la-labelBlock">${message(code: 'tipp.dateFirstOnline')}</div>
 
         <div class="description">
 

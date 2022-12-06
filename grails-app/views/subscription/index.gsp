@@ -419,9 +419,7 @@
                                             <div class="three wide column">
                                                 <div class="ui list la-label-list">
                                                     <g:if test="${ie.tipp.accessStartDate}">
-                                                        <div class="item">
-                                                                <div class="ui label la-label-accordion">${message(code: 'tipp.access')}</div>
-                                                        </div>
+                                                        <div class="ui label la-label-accordion">${message(code: 'tipp.access')}</div>
                                                         <div class="item">
                                                             <div class="content">
                                                                     <g:formatDate
@@ -447,9 +445,7 @@
                                                     <%-- Coverage Details START --%>
                                                     <g:each in="${ie.tipp.coverages}" var="covStmt" status="counterCoverage">
                                                         <g:if test="${covStmt.coverageNote || covStmt.coverageDepth || covStmt.embargo}">
-                                                            <div class="item">
-                                                                <div class="ui label la-label-accordion">${message(code: 'tipp.coverageDetails')} ${counterCoverage > 0 ? counterCoverage++ + 1 : ''}</div>
-                                                            </div>
+                                                            <div class="ui label la-label-accordion">${message(code: 'tipp.coverageDetails')} ${counterCoverage > 0 ? counterCoverage++ + 1 : ''}</div>
                                                         </g:if>
                                                         <g:if test="${covStmt.coverageNote}">
                                                             <div class="item">
@@ -517,12 +513,6 @@
                                                                     <div class="description">
                                                                         <ui:xEditableBoolean owner="${subscription}"
                                                                                              field="hasPerpetualAccess"/>
-                                                                        <%
-                                                                            if (ie.perpetualAccessBySub) {
-                                                                                println g.link([action: 'index', controller: 'subscription', id: ie.perpetualAccessBySub.id], "<br><br> ${ie.perpetualAccessBySub.dropdownNamingConvention()}")
-                                                                            }
-                                                                        %>
-
                                                                     </div>
                                                                 </div>
                                                             </div>

@@ -44213,6 +44213,12 @@ a .ui.circular.label:focus {
   -webkit-transition: border-radius;
   transition: border-radius;
 }
+
+.ui.label.la-labelBlock,
+.la-label-accordion {
+  display: block;
+  letter-spacing: 0.04em;
+}
 /*!
  * # Fomantic-UI 2.8.8 - List
  * http://github.com/fomantic/Fomantic-UI/
@@ -45459,7 +45465,7 @@ dd {
 }
 
 .ui.card .la-label-list .ui.label:nth-child(n+2) {
-  margin-top: 100px;
+  margin-top: 20px;
 }
 
 .la-onliner {
@@ -48312,12 +48318,8 @@ aside.la-metabox + .la-metabox-spacer {
 }
 
 .ui.la-segment-with-icon {
-  --mask: radial-gradient(25px at 0 0, #0000 98%, #000);
-  -webkit-mask: var(--mask);
-  mask: var(--mask);
   position: relative;
   padding: 1em 1em;
-  padding-top: 20px;
   font-size: 1rem;
   background: #FFFFFF;
   -webkit-box-shadow: 0 1px 2px 0 rgba(34, 36, 38, 0.15);

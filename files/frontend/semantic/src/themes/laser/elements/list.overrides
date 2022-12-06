@@ -118,7 +118,7 @@ dd {
     width: fit-content;
   }
   .ui.label:nth-child(n+2) {
-    margin-top:100px;
+    margin-top:20px;
   }
 }
 .la-onliner {

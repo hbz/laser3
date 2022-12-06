@@ -4,14 +4,10 @@
 
 <div class="ui list la-label-list">
     <g:if test="${(covStmt.startDate || covStmt.startVolume || covStmt.startIssue) && !objectTypeIsIE}">
-        <div class="item">
-            <div class="ui label">${message(code: 'tipp.coverage')} ${counterCoverage > 0 ? counterCoverage++ + 1 : ''}</div>
-        </div>
+        <div class="ui label la-labelBlock">${message(code: 'tipp.coverage')} ${counterCoverage > 0 ? counterCoverage++ + 1 : ''}</div>
     </g:if>
     <g:elseif test="${objectTypeIsIE}">
-        <div class="item">
-            <div class="ui label">${message(code: 'tipp.myCoverage')} ${counterCoverage > 0 ? counterCoverage++ + 1 : ''}</div>
-        </div>
+        <div class="ui label la-labelBlock">${message(code: 'tipp.myCoverage')} ${counterCoverage > 0 ? counterCoverage++ + 1 : ''}</div>
     </g:elseif>
 
     <div class="la-onliner">
