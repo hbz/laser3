@@ -202,28 +202,33 @@ class Identifier implements CalculatedLastUpdated, Comparable, Auditable {
         }
 
         if (! ident) {
-            Identifier identifierInDB = Identifier.findByNsAndValue(ns, value)
-			if (ns.isUnique && identifierInDB && value != "Unknown") {
+			if (ns.isUnique && Identifier.executeQuery("select count(ident) from Identifier ident where ident.value != '"+IdentifierNamespace.UNKNOWN+"' and ident.ns = :ns and ident." + attr + " = :ref", [ns: ns, ref: reference])[0] > 0) {
                 log.debug("NO IDENTIFIER CREATED: multiple occurrences found for unique namespace ( ${value}, ${ns} )")
+                Identifier identifierInDB = Identifier.executeQuery("select ident from Identifier ident where ident.value != '"+IdentifierNamespace.UNKNOWN+"' and ident.ns = :ns and ident." + attr + " = :ref", [ns: ns, ref: reference])[0]
                 factoryResult.status += FactoryResult.STATUS_ERR_UNIQUE_BUT_ALREADY_SEVERAL_EXIST_IN_REFERENCE_OBJ
 //                factoryResult.result = identifierInDB
                 ident = identifierInDB
+                ident.value = value
 			}
-            else if(ns.isUnique && Identifier.executeQuery("select count(ident) from Identifier ident where ident.value != '"+IdentifierNamespace.UNKNOWN+"' and ident.ns = :ns and ident." + attr + " = :ref", [ns: ns, ref: reference])[0] > 0) {
-                log.debug("NO IDENTIFIER CREATED: multiple occurrences found for unique namespace ( ${ns} )")
-            }
             else {
-                log.debug("INFO: no match found; creating new identifier for ( ${value}, ${ns}, ${reference.class} )")
-				ident = new Identifier(ns: ns, value: value)
-                if(parent)
-                    ident.instanceOf = parent
-				ident.setReference(reference)
-                ident.note = note
-				boolean success = ident.save()
-                if (success){
-                    factoryResult.status += FactoryResult.STATUS_OK
-                } else {
-                    factoryResult.status += FactoryResult.STATUS_ERR
+                Identifier dupeId = Identifier.executeQuery("select ident from Identifier ident where ident.value = '"+IdentifierNamespace.UNKNOWN+"' and ident.ns = :ns and ident." + attr + " = :ref", [ns: ns, ref: reference])[0]
+                if(dupeId && ns.isUnique) {
+                    ident = dupeId
+                    ident.value = value
+                }
+                else {
+                    log.debug("INFO: no match found; creating new identifier for ( ${value}, ${ns}, ${reference.class} )")
+                    ident = new Identifier(ns: ns, value: value)
+                    if(parent)
+                        ident.instanceOf = parent
+                    ident.setReference(reference)
+                    ident.note = note
+                    boolean success = ident.save()
+                    if (success){
+                        factoryResult.status += FactoryResult.STATUS_OK
+                    } else {
+                        factoryResult.status += FactoryResult.STATUS_ERR
+                    }
                 }
 			}
         }

@@ -88,11 +88,17 @@
                             <g:message code="org.altname.label" />
                         </dt>
                         <dd>
-                            <ul>
+                            <ul id="altnames">
                                 <g:each in="${orgInstance.altnames}" var="altname">
-                                    <li>${altname.name}</li>
+                                    <li data-objId="${altname.id}">
+                                        <ui:xEditable owner="${altname}" field="name" overwriteEditable="${orgInstanceRecord == null}"/>
+                                        <button name="removeAltname" class="ui small icon negative button la-modern-button removeAltname" data-objId="${altname.id}"><i class="ui small trash alternate outline icon"></i></button>
+                                    </li>
                                 </g:each>
                             </ul>
+                            <g:if test="${orgInstanceRecord == null}">
+                                <input name="addAltname" id="addAltname" type="button" class="ui button" value="Altnernativnamen hinzufügen">
+                            </g:if>
                         </dd>
                     </dl>
                     <dl>
@@ -514,6 +520,7 @@
                                 </div>
                             </g:if>
                             </dd>
+                        <g:if test="${isProviderOrAgency}">
                             <dd>
                                 <div class="ui cards">
                                     <%
@@ -555,6 +562,7 @@
                                     </g:each>
                                 </div>
                             </dd>
+                        </g:if>
                         </dt>
                     </dl>
                 </div>
@@ -745,9 +753,29 @@
         func();
     }
 
-    <g:if test="${!isProviderOrAgency}">
+    <g:if test="${orgInstance.getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER']}">
         JSPC.app.showRegionsdropdown( $("#country").editable('getValue', true) );
     </g:if>
+    $('#addAltname').click(function() {
+        $.ajax({
+            url: '<g:createLink controller="ajaxHtml" action="addObject" params="[object: 'altname', owner: orgInstance.id]"/>',
+            success: function(result) {
+                $('#altnames').append(result);
+                r2d2.initDynamicXEditableStuff('#altnames');
+            }
+        });
+    });
+    $('#altnames').on('click', '.removeAltname', function() {
+        let objId = $(this).attr("data-objId");
+        $.ajax({
+            url: '<g:createLink controller="ajaxJson" action="removeObject" params="[object: 'altname']"/>&objId='+objId,
+            success: function(result) {
+                if(result.success === true) {
+                    $("li[data-objId='"+objId+"']").remove();
+                }
+            }
+        });
+    });
 
 <g:if test="${isProviderOrAgency}">
 

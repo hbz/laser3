@@ -32,8 +32,8 @@ class IdentifierService {
             if (target.ns.ns in IdentifierNamespace.CORE_ORG_NS) {
                 Org org = (Org) owner
                 if(Identifier.countByNsAndOrg(target.ns, org) == 1) {
-                    target.value = ''
-                    target.note = ''
+                    target.value = IdentifierNamespace.UNKNOWN
+                    target.note = null
                     target.save()
                 }
                 else {
