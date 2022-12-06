@@ -936,6 +936,7 @@ class SurveyController {
         result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
 
         params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
+        params.sub = result.subscription
         Map<String,Object> fsq = filterService.getOrgComboQuery(params, result.institution)
         String tmpQuery = "select o.id " + fsq.query.minus("select o ")
         List consortiaMemberIds = Org.executeQuery(tmpQuery, fsq.queryParams)

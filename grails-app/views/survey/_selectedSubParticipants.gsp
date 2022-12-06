@@ -28,7 +28,7 @@
             params="[id: surveyInfo.id, surveyConfigID: params.surveyConfigID, tab: params.tab]">
         <laser:render template="/templates/filter/orgFilter"
                   model="[
-                          tmplConfigShow      : [['name', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value'], ['subStatus', surveyConfig.subscription ? 'hasSubscription' : '']],
+                          tmplConfigShow      : [['name', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value'], ['subStatus']],
                           tmplConfigFormFilter: true
                   ]"/>
     </g:form>
@@ -89,11 +89,11 @@
 
     <g:if test="${selectedSubParticipants && editable}">
         <button type="submit" data-confirm-id="deleteSurveyParticipants" class="ui icon negative button js-open-confirm-modal"
-                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.surveyParticipants")}"
-                        data-confirm-term-how="delete"
+                        data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.surveyParticipants")}"
+                        data-confirm-term-how="unlink"
                         role="button"
-                        aria-label="${message(code: 'ariaLabel.delete.universal')}">
-        <i class="trash alternate outline icon"></i> ${message(code: 'default.button.delete.label')}
+                        aria-label="${message(code: 'ariaLabel.unlink.universal')}">
+            <i class="unlink icon"></i> ${message(code: 'default.button.unlink.label')}
         </button>
     </g:if>
 
