@@ -173,6 +173,8 @@
     <g:each in="${orgList}" var="org" status="i">
 
         <g:if test="${controllerName in ["survey"]}">
+            <g:set var="surveyOrg" value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org)}"/>
+
             <g:set var="existSubforOrg"
                    value="${Subscription.get(surveyConfig.subscription?.id)?.getDerivedSubscribers()?.id?.contains(org?.id)}"/>
 
@@ -189,7 +191,7 @@
         <g:if test="${tmplShowCheckbox}">
             <td>
                 <g:if test="${controllerName in ["survey"] && actionName == "surveyCostItems"}">
-                    <g:if test="${CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org), RDStore.COST_ITEM_DELETED)}">
+                    <g:if test="${CostItem.findBySurveyOrgAndCostItemStatusNotEqual(surveyOrg, RDStore.COST_ITEM_DELETED)}">
                         <g:checkBox id="selectedOrgs_${org.id}" name="selectedOrgs" value="${org.id}" checked="false"/>
                     </g:if>
                 </g:if>
@@ -252,6 +254,13 @@
                                 </g:if>
                             </g:link>
                         </g:else>
+
+                        <g:if test="${surveyOrg && surveyOrg.orgInsertedItself}">
+                            <span data-position="top right" class="la-popup-tooltip la-delay"
+                                  data-content="${message(code: 'surveyLinks.newParticipate')}">
+                                <i class="paper plane outline large icon"></i>
+                            </span>
+                        </g:if>
                     </div>
                 </th>
             </g:if>
@@ -817,7 +826,7 @@
                     <g:else>
 
                         <g:set var="costItem" scope="request"
-                               value="${CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org), RDStore.COST_ITEM_DELETED)}"/>
+                               value="${CostItem.findBySurveyOrgAndCostItemStatusNotEqual(surveyOrg, RDStore.COST_ITEM_DELETED)}"/>
 
                         <g:if test="${costItem}">
 
@@ -869,7 +878,7 @@
 
                 <td class="center aligned">
                     <g:set var="costItem" scope="request"
-                           value="${CostItem.findBySurveyOrgAndCostItemStatusNotEqual(SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, org), RDStore.COST_ITEM_DELETED)}"/>
+                           value="${CostItem.findBySurveyOrgAndCostItemStatusNotEqual(surveyOrg, RDStore.COST_ITEM_DELETED)}"/>
                     <g:if test="${costItem && costItem.costDescription}">
 
                         <div class="ui icon la-popup-tooltip la-delay" data-content="${costItem.costDescription}">
