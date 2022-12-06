@@ -64,10 +64,10 @@
     <g:if test="${selectedParticipants && editable}">
         <button type="submit" data-confirm-id="deleteSurveyParticipants" class="ui icon negative button js-open-confirm-modal"
                 data-confirm-tokenMsg="${message(code: "confirm.dialog.unlink.surveyParticipants")}"
-                data-confirm-term-how="delete"
+                data-confirm-term-how="unlink"
                 role="button"
-                aria-label="${message(code: 'ariaLabel.delete.universal')}">
-            <i class="unlink icon"></i> ${message(code: 'default.button.delete.label')}
+                aria-label="${message(code: 'ariaLabel.unlink.universal')}">
+            <i class="unlink icon"></i> ${message(code: 'default.button.unlink.label')}
         </button>
     </g:if>
 
