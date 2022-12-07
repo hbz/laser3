@@ -60,65 +60,77 @@
     </g:form>
 </ui:filter>
 
-<table class="ui sortable celled la-js-responsive-table la-table table">
-    <thead>
-    <tr>
-        <th>${message(code:'sidewide.number')}</th>
-        <g:sortableColumn property="name" title="${message(code: 'default.name.label')}" />
-        <th>${message(code:'package.compare.overview.tipps')}</th>
-        <th>${message(code:'default.provider.label')}</th>
-        <th>${message(code:'platform.label')}</th>
-        <th>${message(code:'myinst.currentPackages.assignedSubscriptions')}</th>
-    </tr>
-    </thead>
-    <tbody>
-    <g:each in="${packageList}" var="pkg" status="jj">
+<g:if test="${packageList}">
+    <table class="ui sortable celled la-js-responsive-table la-table table">
+        <thead>
         <tr>
-            <td>
-                ${ (params.int('offset') ?: 0)  + jj + 1 }
-            </td>
-            <th scope="row" class="la-th-column">
-                <g:link class="la-main-object"  controller="package" action="show" id="${pkg.id}">${fieldValue(bean: pkg, field: "name")}</g:link>
-            </th>
-
-            <td>
-                ${packageService.getCurrentTippIDs(pkg).size()}
-            </td>
-
-            <td>
-                <g:each in="${pkg.orgs.findAll{it.roleType == RDStore.OR_CONTENT_PROVIDER}.sort{it.org.name}}" var="role">
-                    <g:link controller="organisation" action="show" id="${role.org.id}">${role?.org?.name}</g:link><br />
-                </g:each>
-            </td>
-
-            <td>
-                <g:if test="${pkg.nominalPlatform}">
-                    <g:link controller="platform" action="show" id="${pkg.nominalPlatform.id}">
-                        ${pkg.nominalPlatform.name}
-                    </g:link>
-                </g:if>
-            </td>
-
-            <td>
-                <g:each in="${subscriptionMap.get('package_' + pkg.id)}" var="sub">
-                    <%
-                        String period = sub.startDate ? g.formatDate(date: sub.startDate, format: message(code: 'default.date.format.notime'))  : ''
-                        period = sub.endDate ? period + ' - ' + g.formatDate(date: sub.endDate, format: message(code: 'default.date.format.notime'))  : ''
-                        period = period ? '('+period+')' : ''
-                    %>
-
-                    <g:link controller="subscription" action="show" id="${sub.id}">
-                        ${sub.name + ' ' +period}
-                    </g:link> <br />
-                </g:each>
-            </td>
-            <%--<td class="center aligned">
-            </td>--%>
+            <th>${message(code:'sidewide.number')}</th>
+            <g:sortableColumn property="name" title="${message(code: 'default.name.label')}" />
+            <th>${message(code:'package.compare.overview.tipps')}</th>
+            <th>${message(code:'default.provider.label')}</th>
+            <th>${message(code:'platform.label')}</th>
+            <th>${message(code:'myinst.currentPackages.assignedSubscriptions')}</th>
         </tr>
-    </g:each>
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+        <g:each in="${packageList}" var="pkg" status="jj">
+            <tr>
+                <td>
+                    ${ (params.int('offset') ?: 0)  + jj + 1 }
+                </td>
+                <th scope="row" class="la-th-column">
+                    <g:link class="la-main-object"  controller="package" action="show" id="${pkg.id}">${fieldValue(bean: pkg, field: "name")}</g:link>
+                </th>
+
+                <td>
+                    ${packageService.getCurrentTippIDs(pkg).size()}
+                </td>
+
+                <td>
+                    <g:each in="${pkg.orgs.findAll{it.roleType == RDStore.OR_CONTENT_PROVIDER}.sort{it.org.name}}" var="role">
+                        <g:link controller="organisation" action="show" id="${role.org.id}">${role?.org?.name}</g:link><br />
+                    </g:each>
+                </td>
+
+                <td>
+                    <g:if test="${pkg.nominalPlatform}">
+                        <g:link controller="platform" action="show" id="${pkg.nominalPlatform.id}">
+                            ${pkg.nominalPlatform.name}
+                        </g:link>
+                    </g:if>
+                </td>
+
+                <td>
+                    <g:each in="${subscriptionMap.get('package_' + pkg.id)}" var="sub">
+                        <%
+                            String period = sub.startDate ? g.formatDate(date: sub.startDate, format: message(code: 'default.date.format.notime'))  : ''
+                            period = sub.endDate ? period + ' - ' + g.formatDate(date: sub.endDate, format: message(code: 'default.date.format.notime'))  : ''
+                            period = period ? '('+period+')' : ''
+                        %>
+
+                        <g:link controller="subscription" action="show" id="${sub.id}">
+                            ${sub.name + ' ' +period}
+                        </g:link> <br />
+                    </g:each>
+                </td>
+                <%--<td class="center aligned">
+                </td>--%>
+            </tr>
+        </g:each>
+        </tbody>
+    </table>
 
     <ui:paginate total="${packageListTotal}" params="${params}" max="${max}" offset="${offset}" />
+</g:if>
+<g:else>
+    <g:if test="${filterSet}">
+        <br/><strong><g:message code="filter.result.empty.object"
+                                args="${[message(code: "package.plural")]}"/></strong>
+    </g:if>
+    <g:elseif test="${!error}">
+        <br/><strong><g:message code="result.empty.object"
+                                args="${[message(code: "package.plural")]}"/></strong>
+    </g:elseif>
+</g:else>
 
 <laser:htmlEnd />

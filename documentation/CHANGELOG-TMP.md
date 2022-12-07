@@ -7,6 +7,10 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4642    07.12.2022  dev     3.0         Andreas Bug         falsches Lösch-Icon bei Adressen
+
+4334    07.12.2022  dev     3.0         Andreas Feature     Neue Referenzwertkategorien Auswahloption (Buchstabe bzw. Ziffer)
+
 4648    06.12.2022  dev     3.0         Moe     Feature     Umfragen: Filter Merkmal wertet nicht aus
 
 4640    06.12.2022  dev     3.0         Moe     Feature     Preissteigerung in Prozenz bei Teilnehmern ohne Vorgängerlizenz nicht berechnen

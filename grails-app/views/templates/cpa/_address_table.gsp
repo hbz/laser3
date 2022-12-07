@@ -83,7 +83,7 @@
                             aria-label="${message(code: 'ariaLabel.edit.universal')}">
                         <i aria-hidden="true" class="write icon"></i>
                     </button>
-                    <g:link class="ui negative button icon js-open-confirm-modal"
+                    <g:link class="ui negative button icon js-open-confirm-modal la-modern-button"
                             data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.address.addressbook")}"
                             data-confirm-term-how="delete"
                             controller="ajax" action="delete" params="[cmd: 'deleteAddress', oid: genericOIDService.getOID(address)]"
