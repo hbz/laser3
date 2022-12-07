@@ -70,5 +70,6 @@ statsSyncJobActive = false
 
 systemEmail = 'laser@localhost'
 
+systemInfoJobActive = false
 testJobActivate = false
 

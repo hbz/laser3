@@ -1299,7 +1299,6 @@ class SurveyService {
                             surveyConfig: newSurveyConfig,
                             domain: dctx.domain,
                             status: dctx.status
-                            // 4644 doctype: dctx.doctype
                     ).save()
                 }
             }
@@ -1321,7 +1320,6 @@ class SurveyService {
                             surveyConfig: newSurveyConfig,
                             domain: dctx.domain,
                             status: dctx.status
-                            // 4644 doctype: dctx.doctype
                     ).save()
                 }
             }

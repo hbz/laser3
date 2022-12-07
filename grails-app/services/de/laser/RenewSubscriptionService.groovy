@@ -332,7 +332,6 @@ class RenewSubscriptionService extends AbstractLockableService {
 
                                 Doc docContent = new Doc(contentType: Doc.CONTENT_TYPE_STRING, content: 'Diese Lizenz ist eine Kopie der vorherigen Lizenz. Es wurde automatisch vom System erstellt, da in der vorherigen Lizenz das Flag "Automatisch um ein Jahr verlängern" gesetzt war. (This subscription is a copy of the previous subscription. It was created automatically by the system because the flag "Automatic renew annually" was set in the previous subscription.)', title: 'Automatisch um ein Jahr verlängert (Automatic renew annually)', type: RefdataValue.getByValueAndCategory('Note', RDConstants.DOCUMENT_TYPE), owner: org, user: null)
                                 if(docContent.save()) {
-                                    // 4644 DocContext dc = new DocContext(subscription: copySub, owner: docContent, doctype: RDStore.DOC_TYPE_NOTE)
                                     DocContext dc = new DocContext(subscription: copySub, owner: docContent)
                                     dc.save()
                                 }

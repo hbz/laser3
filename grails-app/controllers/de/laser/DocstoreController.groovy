@@ -118,7 +118,6 @@ class DocstoreController  {
                         DocContext doc_context = new DocContext(
                                 "${params.ownertp}": instance,
                                 owner: doc_content
-                                // 4644 doctype: RefdataValue.getByValueAndCategory(params.doctype, RDConstants.DOCUMENT_TYPE)
                         )
                         //set sharing settings (counts iff document is linked to an Org, are null otherwise)
                         doc_context.shareConf = RefdataValue.get(params.shareConf) ?: null
@@ -173,7 +172,6 @@ class DocstoreController  {
                                     DocContext doc_context2 = new DocContext(
                                             "${params.ownertp}": config,
                                             owner: doc_content2
-                                            // 4644 doctype: doc_context.doctype
                                     )
                                     //doc_context2.shareConf = genericOIDService.resolveOID(params.shareConf)
                                     doc_context2.save()

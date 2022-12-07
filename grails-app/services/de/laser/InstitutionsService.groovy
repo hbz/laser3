@@ -106,7 +106,6 @@ class InstitutionsService {
                                 license: licenseInstance,
                                 domain: dctx.domain,
                                 status: dctx.status,
-                                // 4644 doctype: dctx.doctype,
                                 sharedFrom: dctx
                         ).save()
                     }
@@ -146,7 +145,6 @@ class InstitutionsService {
                             license: licenseInstance,
                             domain: dctx.domain,
                             status: dctx.status
-                            // 4644 doctype: dctx.doctype
                     ).save()
                 }
             }

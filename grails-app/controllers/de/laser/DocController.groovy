@@ -49,7 +49,6 @@ class DocController  {
 				DocContext doc_context = new DocContext(
 						"${params.ownertp}": instance,
 						owner: doc_content)
-						// 4644 doctype: RDStore.DOC_TYPE_NOTE)
 				doc_context.save()
 			}
 			else {
