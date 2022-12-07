@@ -369,8 +369,8 @@
                 <td>
                     <g:if test="${org.gokbId != null && RDStore.OT_PROVIDER.id in org.getAllOrgTypeIds()}">
                         <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="bottom center"
-                              data-content="${RDStore.OT_PROVIDER.getI10n("value")}">
-                            <i class="grey handshake outline la-list-icon icon"></i>
+                              data-content="${message(code:'org.isWekbCurated.header.label')}">
+                            <i class="grey la-gokb la-list-icon icon"></i>
                         </span>
                     </g:if>
                 </td>

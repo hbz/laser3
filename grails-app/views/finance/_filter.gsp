@@ -75,7 +75,7 @@
                             <i class="question circle icon"></i>
                         </span>
                     </label>
-                    <div class="ui search selection dropdown allowAdditions" id="filterCITitle">
+                    <div class="ui search selection dropdown <g:if test="${ciTitles}">allowAdditions</g:if>" id="filterCITitle">
                         <input type="hidden" name="filterCITitle" value="${filterPresets?.filterCITitle}">
                         <i class="dropdown icon"></i>
                         <input type="text" class="search">
