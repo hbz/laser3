@@ -26,6 +26,14 @@
     <laser:render template="/organisation/nav" model="${[orgInstance: accessPoint.org, inContextOrg: inContextOrg, tmplAccessPointsActive: true]}"/>
 
     <h2 class="ui header la-noMargin-top"><g:message code="default.edit.label" args="[entityName]"/></h2>
+
+    <g:link class="ui right floated button" controller="organisation" action="accessPoints"
+            id="${orgInstance.id}">
+        ${message(code: 'default.button.back')}
+    </g:link>
+    <br>
+    <br>
+
     <ui:messages data="${flash}"/>
 
 

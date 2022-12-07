@@ -67,10 +67,10 @@ class AccessPointController  {
         Map<String,Object> ctrlResult = accessPointControllerService.addMailDomain(params)
         if (ctrlResult.status == AccessPointControllerService.STATUS_ERROR) {
             flash.error = ctrlResult.result.error
-            redirect controller: 'accessPoint', action: 'edit_' + params.accessMethod, id: params.id
+            redirect controller: 'accessPoint', action: 'edit_' + params.accessMethod.toLowerCase(), id: params.id
             return
         } else {
-            redirect controller: 'accessPoint', action: 'edit_' + params.accessMethod, id: params.id
+            redirect controller: 'accessPoint', action: 'edit_' + params.accessMethod.toLowerCase(), id: params.id
         }
     }
 
@@ -273,7 +273,7 @@ class AccessPointController  {
      * @see de.laser.oap.OrgAccessPoint
      */
     @Secured(['ROLE_USER'])
-    def edit_mailDomain() {
+    def edit_maildomain() {
         _edit("mailDomain")
     }
 
