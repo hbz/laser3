@@ -9,7 +9,11 @@
 
 4655    07.12.2022  dev     3.0         Andreas Bug         Dropdown der Anbieter wurde falsch bespeist
 
+4652    07.12.2022  dev     3.0         Andreas Feature     Liste der Alternativnamen an Liste der Fächergruppen bzw. Einrichtungstypen angeglichen
+
 4651    07.12.2022  dev     3.0         David   Bug         Dokumente teilen @ Meine Dokumente
+
+4650    07.12.2022  dev     3.0         Andreas Bug         falscher Text bei leerer Dropdown-Ausgabe
 
 4646    07.12.2022  dev     3.0         Andreas Bug         Leertext erschien bei Bezeichnungsdropdown nicht
 

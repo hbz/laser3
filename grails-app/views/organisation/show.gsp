@@ -88,14 +88,26 @@
                             <g:message code="org.altname.label" />
                         </dt>
                         <dd>
-                            <ul id="altnames">
+                            <div id="altnames" class="ui divided middle aligned selection list la-flex-list">
                                 <g:each in="${orgInstance.altnames}" var="altname">
-                                    <li data-objId="${altname.id}">
-                                        <ui:xEditable owner="${altname}" field="name" overwriteEditable="${orgInstanceRecord == null}"/>
-                                        <button name="removeAltname" class="ui small icon negative button la-modern-button removeAltname" data-objId="${altname.id}"><i class="ui small trash alternate outline icon"></i></button>
-                                    </li>
+                                    <div class="ui item" data-objId="${altname.id}">
+                                        <div class="content la-space-right">
+                                            <ui:xEditable owner="${altname}" field="name" overwriteEditable="${editable && orgInstanceRecord == null}"/>
+                                        </div>
+                                        <g:if test="${editable && orgInstanceRecord == null}">
+                                            <div class="content la-space-right">
+                                                <div class="ui buttons">
+                                                    <ui:remoteLink role="button" class="ui icon negative button la-modern-button js-open-confirm-modal" controller="ajaxJson" action="removeObject" params="[object: 'altname', objId: altname.id]"
+                                                                   data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.altname", args: [altname.name])}"
+                                                                   data-confirm-term-how="delete" data-done="JSPC.app.removeAltname(${altname.id})">
+                                                        <i class="trash alternate outline icon"></i>
+                                                    </ui:remoteLink>
+                                                </div>
+                                            </div>
+                                        </g:if>
+                                    </div>
                                 </g:each>
-                            </ul>
+                            </div>
                             <g:if test="${orgInstanceRecord == null}">
                                 <input name="addAltname" id="addAltname" type="button" class="ui button" value="Altnernativnamen hinzufügen">
                             </g:if>
@@ -761,21 +773,14 @@
             url: '<g:createLink controller="ajaxHtml" action="addObject" params="[object: 'altname', owner: orgInstance.id]"/>',
             success: function(result) {
                 $('#altnames').append(result);
+                r2d2.initDynamicUiStuff('#altnames');
                 r2d2.initDynamicXEditableStuff('#altnames');
             }
         });
     });
-    $('#altnames').on('click', '.removeAltname', function() {
-        let objId = $(this).attr("data-objId");
-        $.ajax({
-            url: '<g:createLink controller="ajaxJson" action="removeObject" params="[object: 'altname']"/>&objId='+objId,
-            success: function(result) {
-                if(result.success === true) {
-                    $("li[data-objId='"+objId+"']").remove();
-                }
-            }
-        });
-    });
+    JSPC.app.removeAltname = function(objId) {
+        $("div[data-objId='"+objId+"']").remove();
+    }
 
 <g:if test="${isProviderOrAgency}">
 
