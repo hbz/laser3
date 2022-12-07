@@ -72,7 +72,7 @@
             <div class="header la-primary-header">
                 ${RDStore.PRS_FUNC_TECHNICAL_SUPPORT.getI10n('value')}
                 <g:if test="${existsWekbRecord == true}">
-                    <i class="ui light grey handshake icon la-popup-tooltip" data-content="${message(code:'org.isWekbCurated.header.label')}"></i>
+                    <i class="ui light grey la-gokb icon la-popup-tooltip" data-content="${message(code:'org.isWekbCurated.header.label')}"></i>
                 </g:if>
             </div>
 
@@ -110,7 +110,7 @@
                 <div class="header la-primary-header">
                     ${RDStore.PRS_FUNC_SERVICE_SUPPORT.getI10n('value')}
                     <g:if test="${existsWekbRecord == true}">
-                        <i class="ui light grey handshake icon la-popup-tooltip" data-content="${message(code:'org.isWekbCurated.header.label')}"></i>
+                        <i class="ui light grey la-gokb icon la-popup-tooltip" data-content="${message(code:'org.isWekbCurated.header.label')}"></i>
                     </g:if>
                 </div>
 
@@ -146,7 +146,7 @@
                 <div class="header la-primary-header">
                     ${RDStore.PRS_FUNC_METADATA.getI10n('value')}
                     <g:if test="${existsWekbRecord == true}">
-                        <i class="ui light grey handshake icon la-popup-tooltip" data-content="${message(code:'org.isWekbCurated.header.label')}"></i>
+                        <i class="ui light grey la-gokb icon la-popup-tooltip" data-content="${message(code:'org.isWekbCurated.header.label')}"></i>
                     </g:if>
                 </div>
 

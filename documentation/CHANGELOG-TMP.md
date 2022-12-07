@@ -7,11 +7,27 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4655    07.12.2022  dev     3.0         Andreas Bug         Dropdown der Anbieter wurde falsch bespeist
+
+4652    07.12.2022  dev     3.0         Andreas Feature     Liste der Alternativnamen an Liste der Fächergruppen bzw. Einrichtungstypen angeglichen
+
 4651    07.12.2022  dev     3.0         David   Bug         Dokumente teilen @ Meine Dokumente
+
+4650    07.12.2022  dev     3.0         Andreas Bug         falscher Text bei leerer Dropdown-Ausgabe
+
+4646    07.12.2022  dev     3.0         Andreas Bug         Leertext erschien bei Bezeichnungsdropdown nicht
 
 4644    07.12.2022  dev     3.0         David   Feature     Doc vs. DocContext - Redundanzen entfernen
 
+4643    07.12.2022  dev     3.0         Andreas Bug         Absturz bei Excel-Exporten behoben
+
 4642    07.12.2022  dev     3.0         Andreas Bug         falsches Lösch-Icon bei Adressen
+
+4639    07.12.2022  dev     3.0         Andreas Bug         Abfragefehler bei Zusammensetzen der Felder für Clickmich-Excel behoben
+
+4631    07.12.2022  dev     3.0         Andreas Bug         Falsche Abfrage bei Verbindung Dauerhafter Zugriff und Status aktuell
+
+4617    07.12.2022  dev     3.0         Andreas Feature     Erweiterung der Identifier-Abfrage um Kundennummern
 
 4334    07.12.2022  dev     3.0         Andreas Feature     Neue Referenzwertkategorien Auswahloption (Buchstabe bzw. Ziffer)
 

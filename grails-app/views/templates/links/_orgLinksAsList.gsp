@@ -11,14 +11,7 @@
                             <i class="la-list-icon la-popup-tooltip la-delay la-consortia icon" data-content="${message(code:'consortium')}"></i>
                         </g:if>
                         <g:elseif test="${role.roleType.value==RDStore.OR_PROVIDER.value}">
-                            <g:if test="${role.org.gokbId}">
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="${message(code:'default.provider.label')} + ${message(code:'org.isWekbCurated.header.label')}">
-                                    <i class="grey handshake la-list-icon icon"></i>
-                                </span>
-                            </g:if>
-                            <g:else>
-                                <i class="la-list-icon la-popup-tooltip la-delay handshake outline icon" data-content="${message(code:'default.provider.label')}"></i>
-                            </g:else>
+                            <i class="la-list-icon la-popup-tooltip la-delay handshake outline icon" data-content="${message(code:'default.provider.label')}"></i>
                         </g:elseif>
                         <g:elseif test="${role.roleType.value ==RDStore.OR_AGENCY.value}">
                             <i class="la-list-icon la-popup-tooltip la-delay shipping fast icon" data-content="${message(code:'default.agency.label')}"></i>
@@ -91,11 +84,12 @@
                 </td>
 
             </tr>
-            <g:if test="${showPersons && (Person.getPublicByOrgAndFunc(role.org, 'General contact person') || (Person.getPublicByOrgAndFunc(role.org, 'Technical Support')) || (Person.getPublicByOrgAndFunc(role.org, 'Service Support')) ||
+            <g:if test="${showPersons && (Person.getPublicByOrgAndFunc(role.org, 'General contact person') || (Person.getPublicByOrgAndFunc(role.org, 'Technical Support')) || (Person.getPublicByOrgAndFunc(role.org, 'Service Support')) || (Person.getPublicByOrgAndFunc(role.org, 'Metadata Contact')) ||
                             Person.getPublicByOrgAndObjectResp(role.org, roleObject, roleRespValue) ||
                             Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'General contact person', contextOrg) ||
                             Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Technical Support', contextOrg) ||
                             Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Service Support', contextOrg) ||
+                            Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Metadata Contact', contextOrg) ||
                             Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, roleObject, roleRespValue, contextOrg))}">
                 <tr>
                     <td colspan="3" style="padding-bottom:0;">
@@ -103,6 +97,7 @@
                         <g:if test="${ Person.getPublicByOrgAndFunc(role.org, 'General contact person') ||
                                 Person.getPublicByOrgAndFunc(role.org, 'Technical Support') ||
                                 Person.getPublicByOrgAndFunc(role.org, 'Service Support') ||
+                                Person.getPublicByOrgAndFunc(role.org, 'Metadata Contact') ||
                                 Person.getPublicByOrgAndObjectResp(role.org, roleObject, roleRespValue)  }">
                             <div class="ui segment la-timeLineSegment-contact">
                                 <div class="la-timeLineGrid">
@@ -136,7 +131,12 @@
                                             <g:each in="${Person.getPublicByOrgAndFunc(role.org, 'Technical Support')}" var="func">
                                                 <div class="row">
                                                     <div class="two wide column">
-                                                        <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
+                                                        <g:if test="${role.org.gokbId}">
+                                                            <i class="circular large la-gokb icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'org.isWekbCurated.header.label')}"></i>
+                                                        </g:if>
+                                                        <g:else>
+                                                            <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
+                                                        </g:else>
                                                     </div>
                                                     <div class="twelve wide column">
                                                         <div class="ui  label">
@@ -161,11 +161,46 @@
                                             <g:each in="${Person.getPublicByOrgAndFunc(role.org, 'Service Support')}" var="func">
                                                 <div class="row">
                                                     <div class="two wide column">
-                                                        <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
+                                                        <g:if test="${role.org.gokbId}">
+                                                            <i class="circular large la-gokb icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'org.isWekbCurated.header.label')}"></i>
+                                                        </g:if>
+                                                        <g:else>
+                                                            <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
+                                                        </g:else>
                                                     </div>
                                                     <div class="twelve wide column">
                                                         <div class="ui  label">
                                                             ${(RefdataValue.getByValueAndCategory('Service Support', RDConstants.PERSON_FUNCTION)).getI10n('value')}
+                                                        </div>
+                                                        <div class="ui header">
+                                                            ${func}
+                                                        </div>
+                                                        <g:each in="${Contact.findAllByPrsAndContentType(
+                                                                func,
+                                                                RDStore.CCT_EMAIL
+                                                        )}" var="email">
+                                                            <laser:render template="/templates/cpa/contact" model="${[
+                                                                    contact             : email,
+                                                                    tmplShowDeleteButton: false,
+                                                                    overwriteEditable   : false
+                                                            ]}" />
+                                                        </g:each>
+                                                    </div>
+                                                </div>
+                                            </g:each>
+                                            <g:each in="${Person.getPublicByOrgAndFunc(role.org, 'Metadata Contact')}" var="func">
+                                                <div class="row">
+                                                    <div class="two wide column">
+                                                        <g:if test="${role.org.gokbId}">
+                                                            <i class="circular large la-gokb icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'org.isWekbCurated.header.label')}"></i>
+                                                        </g:if>
+                                                        <g:else>
+                                                            <i class="circular large address card icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.public')}"></i>
+                                                        </g:else>
+                                                    </div>
+                                                    <div class="twelve wide column">
+                                                        <div class="ui  label">
+                                                            ${(RefdataValue.getByValueAndCategory('Metadata Contact', RDConstants.PERSON_FUNCTION)).getI10n('value')}
                                                         </div>
                                                         <div class="ui header">
                                                             ${func}
@@ -231,6 +266,7 @@
                         <g:if test="${ Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'General contact person', contextOrg) ||
                                 Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Technical Support', contextOrg) ||
                                 Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Service Support', contextOrg) ||
+                                Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Metadata Contact', contextOrg) ||
                                 Person.getPrivateByOrgAndObjectRespFromAddressbook(role.org, roleObject, roleRespValue, contextOrg)}">
                             <div class="ui segment la-timeLineSegment-contact">
                                 <div class="la-timeLineGrid">
@@ -294,6 +330,31 @@
                                                     <div class="twelve wide column">
                                                         <div class="ui  label">
                                                             ${(RefdataValue.getByValueAndCategory('Service Support', RDConstants.PERSON_FUNCTION)).getI10n('value')}
+                                                        </div>
+                                                        <div class="ui header">
+                                                            ${func}
+                                                        </div>
+                                                        <g:each in="${Contact.findAllByPrsAndContentType(
+                                                                func,
+                                                                RDStore.CCT_EMAIL
+                                                        )}" var="email">
+                                                            <laser:render template="/templates/cpa/contact" model="${[
+                                                                    contact             : email,
+                                                                    tmplShowDeleteButton: false,
+                                                                    overwriteEditable   : false
+                                                            ]}" />
+                                                        </g:each>
+                                                    </div>
+                                                </div>
+                                            </g:each>
+                                            <g:each in="${Person.getPrivateByOrgAndFuncFromAddressbook(role.org, 'Metadata Contact', contextOrg)}" var="func">
+                                                <div class="row">
+                                                    <div class="two wide column">
+                                                        <i class="circular large address card outline icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'address.private')}"></i>
+                                                    </div>
+                                                    <div class="twelve wide column">
+                                                        <div class="ui  label">
+                                                            ${(RefdataValue.getByValueAndCategory('Metadata Contact', RDConstants.PERSON_FUNCTION)).getI10n('value')}
                                                         </div>
                                                         <div class="ui header">
                                                             ${func}
