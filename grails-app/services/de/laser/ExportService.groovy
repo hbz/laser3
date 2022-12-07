@@ -1255,12 +1255,14 @@ class ExportService {
 				long start = System.currentTimeMillis()
 				Map<String, String> availableIdentifiers = [:]
 				Set<Identifier> titleIDs = Identifier.findAllByTipp(tipp)
-				Set<PriceItem> priceItems = PriceItem.findAllByTipp(tipp)
+				Set<PriceItem> priceItems = []
+				if(showPriceDate)
+					priceItems.addAll(PriceItem.findAllByTipp(tipp))
 				availableIdentifiers.onlineIdentifier 	   = titleIDs.find { Identifier id -> id.ns.ns in [IdentifierNamespace.EISSN, IdentifierNamespace.ISBN] }?.value
 				availableIdentifiers.printIdentifier  	   = titleIDs.find { Identifier id -> id.ns.ns in [IdentifierNamespace.ISSN, IdentifierNamespace.PISBN] }?.value
 				availableIdentifiers.doi              	   = titleIDs.find { Identifier id -> id.ns.ns == IdentifierNamespace.DOI }?.value
 				availableIdentifiers.isbn             	   = titleIDs.find { Identifier id -> id.ns.ns == IdentifierNamespace.ISBN }?.value
-				availableIdentifiers.proprietaryIdentifier = titleIDs.find { Identifier id -> id.ns.ns == tipp.platform.titleNamespace }?.value
+				availableIdentifiers.proprietaryIdentifier = titleIDs.find { Identifier id -> id.ns in propIdNamespaces }?.value
 				Counter4Report.withTransaction {
 					List<AbstractReport> reports = []
 					if(reportType in Counter4Report.COUNTER_4_REPORTS)

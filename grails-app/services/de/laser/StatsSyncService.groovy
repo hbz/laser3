@@ -465,7 +465,8 @@ class StatsSyncService {
                                         //DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
                                         Calendar startTime = GregorianCalendar.getInstance(), currentYearEnd = GregorianCalendar.getInstance()
                                         SimpleDateFormat monthFormatter = DateUtils.getSDF_yyyyMM()
-                                        String params = "?customer_id=${keyPair.value}&requestor_id=${keyPair.requestorKey}&api_key=${keyPair.requestorKey}"
+                                        String apiKey = c5asPlatform.centralApiKey ?: keyPair.requestorKey
+                                        String params = "?customer_id=${keyPair.value}&requestor_id=${keyPair.requestorKey}&api_key=${apiKey}"
                                         Map<String, Object> availableReports = fetchJSONData(statsUrl + params, true)
                                         if (availableReports && availableReports.list) {
                                             List<String> reportList = availableReports.list.collect { listEntry -> listEntry["Report_ID"].toLowerCase() }

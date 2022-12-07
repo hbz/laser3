@@ -31,6 +31,8 @@
 
 4334    07.12.2022  dev     3.0         Andreas Feature     Neue Referenzwertkategorien Auswahloption (Buchstabe bzw. Ziffer)
 
+3966    07.12.2022  dev     3.0         Andreas Feature     Ertüchtigung der SUSHI-Authentifizierung auf zentralen API-Schlüssel
+
 4637    06.12.2022  dev     3.0         David   Bug         500er beim Ändern von Dokumenttyp
 
 4648    06.12.2022  dev     3.0         Moe     Feature     Umfragen: Filter Merkmal wertet nicht aus
