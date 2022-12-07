@@ -125,6 +125,7 @@ class InstitutionsService {
                 base.documents?.each { dctx ->
                     Doc clonedContents = new Doc(
                             type: dctx.getDocType(),
+                            confidentiality: dctx.getDocConfid(),
                             content: dctx.owner.content,
                             uuid: dctx.owner.uuid,
                             contentType: dctx.owner.contentType,

@@ -1281,6 +1281,7 @@ class SurveyService {
                 if ((dctx.owner?.contentType == Doc.CONTENT_TYPE_FILE) && (dctx.status != RDStore.DOC_CTX_STATUS_DELETED)) {
                     Doc clonedContents = new Doc(
                             type: dctx.getDocType(),
+                            confidentiality: dctx.getDocConfid(),
                             content: dctx.owner.content,
                             uuid: dctx.owner.uuid,
                             contentType: dctx.owner.contentType,
@@ -1307,6 +1308,7 @@ class SurveyService {
                 if ((dctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(dctx.domain) && (dctx.status != RDStore.DOC_CTX_STATUS_DELETED)) {
                     Doc clonedContents = new Doc(
                             type: dctx.getDocType(),
+                            confidentiality: dctx.getDocConfid(),
                             content: dctx.owner.content,
                             uuid: dctx.owner.uuid,
                             contentType: dctx.owner.contentType,
