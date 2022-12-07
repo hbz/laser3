@@ -1817,8 +1817,7 @@ join sub.orgRelations or_sub where
             params.validOnYear = [newYear]
         }
 
-        result.propList = PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList order by pd.name_de asc", [defList: [PropertyDefinition.SVY_PROP]])
-
+        result.propList = PropertyDefinition.findAll( "select sur.type from SurveyResult as sur where sur.participant = :contextOrg order by sur.type.name_de asc", [contextOrg: result.contextOrg]).groupBy {it}.collect {it.key}
 
         result.allConsortia = Org.executeQuery(
                 """select o from Org o, SurveyInfo surInfo where surInfo.owner = o
