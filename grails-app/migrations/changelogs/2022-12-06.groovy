@@ -79,7 +79,7 @@ databaseChangeLog = {
         dropColumn(columnName: "surconf_url_comment_2", tableName: "survey_config")
     }
 
-    changeSet(author: "djebeniani (generated)", id: "1670359606968-10") {
+    changeSet(author: "djebeniani (generated)", id: "1670359606968-11") {
         dropColumn(columnName: "surconf_url_comment_3", tableName: "survey_config")
     }
 
