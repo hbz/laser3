@@ -23,7 +23,7 @@
            <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_FILE) && (docctx.status?.value != 'Deleted'))}">
                 <div class="ui small feed content la-js-dont-hide-this-card">
                     <div class="ui grid summary">
-                        <div class="eleven wide column">
+                        <div class="nine wide column">
                             <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}" />
                             <g:if test="${supportedMimeType}">
                                 <a href="#documentPreview" data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title ?: docctx.owner.filename}</a>
@@ -57,7 +57,7 @@
                             </span>
                         </div>
 
-                        <div class="right aligned five wide column">
+                        <div class="right aligned seven wide column">
                             <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i class="download icon"></i></g:link>
 
                             <g:if test="${!(ownobj instanceof SurveyConfig)}">
@@ -104,6 +104,16 @@
                                         data-href="#modalEditDocument_${docctx.id}"
                                         aria-label="${message(code: 'ariaLabel.change.universal')}">
                                     <i class="pencil icon"></i></button>
+
+                                <g:link controller="survey" action="deleteDocuments"
+                                        class="ui icon negative button la-modern-button js-open-confirm-modal"
+                                        data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.document", args: [docctx.owner.title])}"
+                                        data-confirm-term-how="delete"
+                                        params='[id: surveyInfo.id, deleteId: "${docctx.id}"]'
+                                        role="button"
+                                        aria-label="${message(code: 'ariaLabel.delete.universal')}">
+                                    <i class="trash alternate outline icon"></i>
+                                </g:link>
                             </g:if>
                         </div>
                     </div>
