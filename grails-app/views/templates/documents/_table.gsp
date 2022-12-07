@@ -16,7 +16,7 @@
         }
     }
 
-    List<String> colWide = (controllerName == 'myInstitution') ? ['one', /*'one',*/ 'five', 'two', 'three', 'three', 'two'] : ['one',  'seven', 'three', 'three', 'two']
+    List<String> colWide = (controllerName == 'myInstitution' && actionName != 'subscriptionsManagement') ? ['one', /*'one',*/ 'five', 'two', 'three', 'three', 'two'] : ['one',  'seven', 'three', 'three', 'two']
     int cwCounter = 0
     int trCounter = 1
 
@@ -27,7 +27,10 @@
     <table class="ui celled la-js-responsive-table la-table table documents-table-${randomId}">
         <thead>
             <tr>
-                <th scope="col" class="${colWide[cwCounter++]} center aligned wide" rowspan="2">#</th>
+                <g:if test="${!(controllerName == 'myInstitution' && actionName == 'subscriptionsManagement')}">
+                    <th scope="col" class="${colWide[cwCounter++]} center aligned wide" rowspan="2">#</th>
+                </g:if>
+
 %{--                <g:if test="${controllerName == 'myInstitution'}">--}%
 %{--                    <th scope="col" class="${colWide[cwCounter++]} wide" rowspan="2">${message(code:'sidewide.number')}</th>--}%
 %{--                </g:if>--}%
@@ -35,7 +38,7 @@
                 <th scope="col" class="${colWide[cwCounter++]} wide" rowspan="2">${message(code:'license.docs.table.type')}</th>
                 <th scope="col" class="${colWide[cwCounter++]} wide" rowspan="2">${message(code:'template.addDocument.confidentiality')}</th>
                 <%--<th>${message(code:'org.docs.table.ownerOrg')}</th>--%>
-                <g:if test="${controllerName == 'myInstitution'}">
+                <g:if test="${controllerName == 'myInstitution' && actionName != 'subscriptionsManagement'}">
                     <th scope="col" class="${colWide[cwCounter++]} wide la-smaller-table-head">${message(code:'org.docs.table.shareConf')}</th>
                 </g:if>
                 <%--<g:elseif test="${controllerName == 'organisation'}">
@@ -46,7 +49,7 @@
             </tr>
             <tr>
                 <th scope="col" class="la-smaller-table-head">${message(code:'license.docs.table.fileName')}</th>
-                <g:if test="${controllerName == 'myInstitution'}">
+                <g:if test="${controllerName == 'myInstitution' && actionName != 'subscriptionsManagement'}">
                     <th scope="col" class="la-smaller-table-head">${message(code:'org.docs.table.targetBy')}</th>
                 </g:if>
             </tr>
@@ -103,12 +106,14 @@
                 %>
                 <g:if test="${(((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3)) && visible && docctx.status != RDStore.DOC_CTX_STATUS_DELETED)}">
                     <tr>
-                        <td class="center aligned">
-                            <g:if test="${docctx.owner.owner.id == contextService.getOrg().id && !docctx.sharedFrom}">
-                                <g:set var="blukEnabled" value="${true}" />
-                                <g:checkBox id="bulk_doc_${docctx.owner.id}" name="bulk_doc" value="${docctx.owner.id}" checked="false"/>
-                            </g:if>
-                        </td>
+                        <g:if test="${!(controllerName == 'myInstitution' && actionName == 'subscriptionsManagement')}">
+                            <td class="center aligned">
+                                <g:if test="${docctx.owner.owner.id == contextService.getOrg().id && !docctx.sharedFrom}">
+                                    <g:set var="blukEnabled" value="${true}" />
+                                    <g:checkBox id="bulk_doc_${docctx.owner.id}" name="bulk_doc" value="${docctx.owner.id}" checked="false"/>
+                                </g:if>
+                            </td>
+                        </g:if>
 %{--                        <g:if test="${controllerName == 'myInstitution'}">--}%
 %{--                            <td class="center aligned">--}%
 %{--                                ${trCounter++}--}%
@@ -133,7 +138,7 @@
                         <td>
                             <ui:documentIcon doc="${docctx.owner}" showText="true" showTooltip="false"/>
                         </td>
-                        <g:if test="${controllerName == 'myInstitution'}">
+                        <g:if test="${controllerName == 'myInstitution' && actionName != 'subscriptionsManagement'}">
                             <td>
                                 ${docctx.shareConf?.getI10n("value")}
                                 <br />
@@ -241,6 +246,7 @@
         </g:if>
     </table>
 
+<g:if test="${!(controllerName == 'myInstitution' && actionName == 'subscriptionsManagement')}">
 <laser:script file="${this.getGroovyPageFileName()}">
     docs.init('.documents-table-${randomId}')
 
@@ -261,6 +267,7 @@
         }
     })
 </laser:script>
+</g:if>
 
 <%-- a form within a form is not permitted --%>
 <g:each in="${securityWorkaroundList}" var="docctx">
