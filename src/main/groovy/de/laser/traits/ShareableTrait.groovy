@@ -47,10 +47,10 @@ trait ShareableTrait {
         log?.debug ("deleteShareForTarget " + this + " for " + target)
 
         if (this instanceof DocContext) {
-            BeanStore.getShareService().deleteDocShareForTarget(this, target)
+            BeanStore.getShareService().deleteDocShareForTarget(target)
         }
         if (this instanceof OrgRole) {
-            BeanStore.getShareService().deleteOrgRoleShareForTarget(this, target)
+            BeanStore.getShareService().deleteOrgRoleShareForTarget(target)
         }
     }
 

@@ -51,7 +51,8 @@ class ConfigMapper {
     static final List SHOW_STATS_INFO       = ['showStatsInfo',  Boolean]
     static final List STATS_API_URL         = ['statsApiUrl', String]
     static final List STATS_SYNC_JOB_ACTIVE = ['statsSyncJobActive', Boolean]
-    static final List SYSTEM_EMAIL          = ['systemEmail', String]
+    static final List SYSTEM_EMAIL              = ['systemEmail', String]
+    static final List SYSTEM_INFO_JOB_ACTIVE    = ['systemInfoJobActive', Boolean]
 
     static final List TEST_JOB_ACTIVE       = ['testJobActivate', Boolean]
 
@@ -67,7 +68,7 @@ class ConfigMapper {
             PGDUMP_PATH,
             QUARTZ_HEARTBEAT,
             REPORTING,
-            SHOW_DEBUG_INFO, SHOW_SYSTEM_INFO, SHOW_STATS_INFO, STATS_API_URL, STATS_SYNC_JOB_ACTIVE, SYSTEM_EMAIL,
+            SHOW_DEBUG_INFO, SHOW_SYSTEM_INFO, SHOW_STATS_INFO, STATS_API_URL, STATS_SYNC_JOB_ACTIVE, SYSTEM_EMAIL, SYSTEM_INFO_JOB_ACTIVE,
             TEST_JOB_ACTIVE
 
     ]
@@ -204,6 +205,9 @@ class ConfigMapper {
     }
     static String getSystemEmail(int output = LOGGER) {
         readConfig( SYSTEM_EMAIL, output )
+    }
+    static boolean getSystemInfoJobActive(int output = LOGGER) {
+        readConfig( SYSTEM_INFO_JOB_ACTIVE, output )
     }
     static boolean getTestJobActive(int output = LOGGER) {
         readConfig( TEST_JOB_ACTIVE, output )

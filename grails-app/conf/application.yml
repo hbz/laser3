@@ -144,6 +144,7 @@ grails:
             disabled: true  # events are triggered, but not persisted
         databasemigration:
             updateOnStart:  true
+            updateOnStartDefaultSchema: 'public'
             changelogFileName: 'changelog.groovy'
             dbDocController:
                 enabled: false

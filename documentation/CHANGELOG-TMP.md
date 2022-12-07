@@ -7,9 +7,15 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4651    07.12.2022  dev     3.0         David   Bug         Dokumente teilen @ Meine Dokumente
+
+4644    07.12.2022  dev     3.0         David   Feature     Doc vs. DocContext - Redundanzen entfernen
+
 4642    07.12.2022  dev     3.0         Andreas Bug         falsches Lösch-Icon bei Adressen
 
 4334    07.12.2022  dev     3.0         Andreas Feature     Neue Referenzwertkategorien Auswahloption (Buchstabe bzw. Ziffer)
+
+4637    06.12.2022  dev     3.0         David   Bug         500er beim Ändern von Dokumenttyp
 
 4648    06.12.2022  dev     3.0         Moe     Feature     Umfragen: Filter Merkmal wertet nicht aus
 
