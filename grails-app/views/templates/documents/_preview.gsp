@@ -14,7 +14,7 @@
             </ui:msg>
         </g:if>
         <g:if test="${error}">
-            <ui:msg class="error" icon="robot" noClose="true">
+            <ui:msg class="error" icon="sad tear outline" noClose="true">
                 ${error}
             </ui:msg>
         </g:if>
@@ -23,7 +23,9 @@
     <div style="margin-top:1em;">
         <div class="ui list">
             <div class="item"> <strong>${message(code:'license.docs.table.fileName')}:</strong> ${doc.filename} </div>
-            <div class="item"> <strong>${message(code:'license.docs.table.type')}:</strong> ${doc.type.getI10n('value')} </div>
+            <g:if test="${doc.type}">
+                <div class="item"> <strong>${message(code:'license.docs.table.type')}:</strong> ${doc.type.getI10n('value')} </div>
+            </g:if>
 %{--            <div class="item"> <strong>MIME-Typ:</strong> ${doc.mimeType} </div>--}%
             <g:if test="${doc.confidentiality}">
                 <div class="item"> <strong>${message(code:'template.addDocument.confidentiality')}:</strong> ${doc.confidentiality.getI10n('value')} </div>

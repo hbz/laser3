@@ -166,17 +166,20 @@ class WorkflowTagLib {
                 DocContext docctx = condition.getProperty(field) as DocContext
                 if (docctx) {
                     String linkBody = message(code:'template.documents.missing')
-                    if (docctx.owner?.title) {
+                    if (docctx.owner.title) {
                         linkBody = docctx.owner.title
                     }
-                    else if (docctx.owner?.filename) {
+                    else if (docctx.owner.filename) {
                         linkBody = docctx.owner.filename
                     }
                     out << (isListItem ? posMark : '') + '<i class="icon file"></i>'
                     out << (isListItem ? '<div class="middle aligned content">' : '')
-                    out << pTitle + ': <a href="#documentPreview" data-documentKey="' + docctx.owner.uuid + ':' + docctx.id + '">' + linkBody + '</a> (' + docctx.owner?.type?.getI10n('value') + ')'
-                    if (docctx.owner.confidentiality) {
-                        out << ' (' + docctx.owner.confidentiality.getI10n('value') + ')'
+                    out << pTitle + ': <a href="#documentPreview" data-documentKey="' + docctx.owner.uuid + ':' + docctx.id + '">' + linkBody + '</a>'
+                    if (docctx.getDocType()) {
+                        out << ' (' + docctx.getDocType().getI10n('value') + ')'
+                    }
+                    if (docctx.getDocConfid()) {
+                        out << ' (' + docctx.getDocConfid().getI10n('value') + ')'
                     }
                     out << ' &nbsp; [ <a href="docstore/index/' + docctx.owner.uuid + '" target="_blank">' + message(code:'default.download.label') + '</a> ]'
 

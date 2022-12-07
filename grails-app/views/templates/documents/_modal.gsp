@@ -89,7 +89,8 @@
                               optionValue="${{ it.getI10n('value') }}"
                               id="doctype-${labelId}"
                               name="doctype"
-                              value="${doc?.type?.value}"/>
+                              value="${doc?.type?.value}"
+                              noSelection="${['': message(code: 'default.select.choose.label')]}" />
                 </dd>
             </dl>
             <dl>
@@ -138,7 +139,7 @@
                     </dd>
                 </dl>
             </g:if>
-            <g:elseif test="${showConsortiaFunctions}">
+            <g:elseif test="${controllerName != 'myInstitution' && showConsortiaFunctions}">
                 <dl>
                     <dt>
                         <label for="setSharing-${labelId}">${message(code:'template.addDocument.setSharing')}</label>

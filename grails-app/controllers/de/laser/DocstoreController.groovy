@@ -117,8 +117,7 @@ class DocstoreController  {
                         //link the document to the target object
                         DocContext doc_context = new DocContext(
                                 "${params.ownertp}": instance,
-                                owner: doc_content,
-                                doctype: RefdataValue.getByValueAndCategory(params.doctype, RDConstants.DOCUMENT_TYPE)
+                                owner: doc_content
                         )
                         //set sharing settings (counts iff document is linked to an Org, are null otherwise)
                         doc_context.shareConf = RefdataValue.get(params.shareConf) ?: null
@@ -172,8 +171,7 @@ class DocstoreController  {
                                     //create attachment of each document to the survey config
                                     DocContext doc_context2 = new DocContext(
                                             "${params.ownertp}": config,
-                                            owner: doc_content2,
-                                            doctype: doc_context.doctype
+                                            owner: doc_content2
                                     )
                                     //doc_context2.shareConf = genericOIDService.resolveOID(params.shareConf)
                                     doc_context2.save()

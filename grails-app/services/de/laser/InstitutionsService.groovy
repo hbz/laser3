@@ -106,7 +106,6 @@ class InstitutionsService {
                                 license: licenseInstance,
                                 domain: dctx.domain,
                                 status: dctx.status,
-                                doctype: dctx.doctype,
                                 sharedFrom: dctx
                         ).save()
                     }
@@ -125,7 +124,8 @@ class InstitutionsService {
                 // clone documents
                 base.documents?.each { dctx ->
                     Doc clonedContents = new Doc(
-                            type: dctx.owner.type,
+                            type: dctx.getDocType(),
+                            confidentiality: dctx.getDocConfid(),
                             content: dctx.owner.content,
                             uuid: dctx.owner.uuid,
                             contentType: dctx.owner.contentType,
@@ -145,8 +145,7 @@ class InstitutionsService {
                             owner: clonedContents,
                             license: licenseInstance,
                             domain: dctx.domain,
-                            status: dctx.status,
-                            doctype: dctx.doctype
+                            status: dctx.status
                     ).save()
                 }
             }

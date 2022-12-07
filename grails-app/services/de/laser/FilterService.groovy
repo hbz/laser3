@@ -62,9 +62,11 @@ class FilterService {
              queryParams << [orgSector : Long.parseLong(params.orgSector)]
         }
         if (params.orgIdentifier?.length() > 0) {
-            query << " exists (select ident from Identifier ident join ident.org ioorg " +
-                     " where ioorg = o and LOWER(ident.value) like LOWER(:orgIdentifier)) "
-            queryParams << [orgIdentifier: "%${params.orgIdentifier}%"]
+            query << " ( exists (select ident from Identifier ident join ident.org ioorg " +
+                     " where ioorg = o and genfunc_filter_matcher(ident.value, :orgIdentifier) = true ) or " +
+                     " ( exists ( select ci from CustomerIdentifier ci where ci.customer = o and genfunc_filter_matcher(ci.value, :orgIdentifier) = true ) ) " +
+                     " ) "
+            queryParams << [orgIdentifier: params.orgIdentifier]
         }
 
         if (params.region?.size() > 0) {

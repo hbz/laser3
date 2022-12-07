@@ -83,4 +83,11 @@ databaseChangeLog = {
         dropColumn(columnName: "surconf_url_comment_3", tableName: "survey_config")
     }
 
+    changeSet(author: "klober (generated)", id: "1670338391348-12") {
+        dropForeignKeyConstraint(baseTableName: "doc_context", constraintName: "fk30eba9a858752a7e")
+    }
+
+    changeSet(author: "klober (generated)", id: "1670338391348-13") {
+        dropColumn(columnName: "dc_rv_doctype_fk", tableName: "doc_context")
+    }
 }

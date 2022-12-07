@@ -111,7 +111,7 @@
                             ${docctx.owner.filename}
                         </td>
                         <td>
-                            ${docctx.owner?.type?.getI10n('value')}
+                            ${docctx.getDocType()?.getI10n('value')}
                         </td>
                         <td>
                             %{--ERMS-4529--}%
