@@ -59,12 +59,6 @@ class SurveyConfig {
     String comment
     String commentForNewParticipants
     String internalComment
-    String url
-    String url2
-    String url3
-    String urlComment
-    String urlComment2
-    String urlComment3
 
     Date dateCreated
     Date lastUpdated
@@ -84,7 +78,8 @@ class SurveyConfig {
             documents       : DocContext,
             surveyProperties: SurveyConfigProperties,
             orgs            : SurveyOrg,
-            propertySet      : SurveyResult
+            propertySet      : SurveyResult,
+            surveyUrls         : SurveyUrl
     ]
 
     static constraints = {
@@ -99,12 +94,6 @@ class SurveyConfig {
         scheduledStartDate  (nullable: true)
         scheduledEndDate    (nullable: true)
         internalComment(nullable: true, blank: true)
-        url(nullable: true, blank: false, maxSize:512)
-        url2(nullable: true, blank: false, maxSize:512)
-        url3(nullable: true, blank: false, maxSize:512)
-        urlComment(nullable: true, blank: false)
-        urlComment2(nullable: true, blank: false)
-        urlComment3(nullable: true, blank: false)
         propertySet (nullable: true)
         transferWorkflow (nullable: true, blank: false)
     }
@@ -123,12 +112,6 @@ class SurveyConfig {
         comment column: 'surconf_comment', type: 'text'
         commentForNewParticipants column: 'surconf_comment_for_new_participants', type: 'text'
         internalComment column: 'surconf_internal_comment', type: 'text'
-        url column: 'surconf_url'
-        url2 column: 'surconf_url_2'
-        url3 column: 'surconf_url_3'
-        urlComment column: 'surconf_url_comment', type: 'text'
-        urlComment2 column: 'surconf_url_comment_2', type: 'text'
-        urlComment3 column: 'surconf_url_comment_3', type: 'text'
         pickAndChoose column: 'surconf_pickandchoose'
         configFinish column: 'surconf_config_finish'
         costItemsFinish column: 'surconf_costitems_finish'

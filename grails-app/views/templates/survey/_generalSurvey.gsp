@@ -46,63 +46,52 @@
 
                     </dl>
 
-                    <dl>
-                        <dt class="control-label">
-                            ${message(code: 'surveyconfig.url.label')}
-                        </dt>
-                        <dd>
-                            <ui:xEditable owner="${surveyConfig}" field="url" type="text"/>
-                            <g:if test="${surveyConfig.url}">
-                                <ui:linkWithIcon href="${surveyConfig.url}"/>
-                            </g:if>
+                    <ui:card message="${message(code: 'surveyconfig.url.plural.label')}" href="#surveyUrls"
+                             editable="${editable}">
+                        <g:each in="${surveyConfig.surveyUrls}" var="surveyUrl" status="i">
+                            <dl>
+                                <dt class="control-label">
+                                    ${message(code: 'surveyconfig.url.label', args: [i+1])}
+                                </dt>
+                                <dd>
+                                    <ui:xEditable owner="${surveyUrl}" field="url" type="text"/>
+                                    <g:if test="${surveyUrl.url}">
+                                        <ui:linkWithIcon href="${surveyUrl.url}"/>
+                                    </g:if>
 
-                        </dd>
-                        <dt class="control-label">
-                            ${message(code: 'surveyconfig.urlComment.label')}
-                        </dt>
-                        <dd>
-                            <ui:xEditable owner="${surveyConfig}" field="urlComment" type="textarea"/>
-                        </dd>
+                                </dd>
+                                <dt class="control-label">
+                                    ${message(code: 'surveyconfig.urlComment.label', args: [i+1])}
+                                </dt>
+                                <dd>
+                                    <ui:xEditable owner="${surveyUrl}" field="urlComment" type="textarea"/>
+                                </dd>
 
-                    </dl>
+                                <div class="right aligned">
+                                    <g:if test="${editable}">
+                                        <span class="la-popup-tooltip la-delay"
+                                              data-content="${message(code: 'default.button.delete.label')}">
+                                            <g:link class="ui negative icon button la-modern-button  la-selectable-button js-open-confirm-modal"
+                                                    data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.generic", args: [message(code: 'surveyconfig.url.label', args: [i+1])])}"
+                                                    data-confirm-term-how="delete"
+                                                    controller="survey" action="addSurveyUrl"
+                                                    params="${[deleteSurveyUrl: surveyUrl.id, surveyConfigID: surveyConfig.id, id: surveyInfo.id]}"
+                                                    role="button"
+                                                    aria-label="${message(code: 'ariaLabel.delete.universal')}">
+                                                <i class="trash icon"></i>
+                                            </g:link>
+                                        </span>
+                                    </g:if>
+                                </div>
 
-                    <dl>
-                        <dt class="control-label">
-                            ${message(code: 'surveyconfig.url2.label')}
-                        </dt>
-                        <dd>
-                            <ui:xEditable owner="${surveyConfig}" field="url2" type="text"/>
-                            <g:if test="${surveyConfig.url2}">
-                                <ui:linkWithIcon href="${surveyConfig.url2}"/>
-                            </g:if>
-                        </dd>
-                        <dt class="control-label">
-                            ${message(code: 'surveyconfig.urlComment2.label')}
-                        </dt>
-                        <dd>
-                            <ui:xEditable owner="${surveyConfig}" field="urlComment2" type="textarea"/>
-                        </dd>
+                            </dl>
+                        </g:each>
 
-                    </dl>
+                        <g:if test="${editable}">
+                            <g:render template="/survey/surveyUrlsModal"/>
+                        </g:if>
 
-                    <dl>
-                        <dt class="control-label">
-                            ${message(code: 'surveyconfig.url3.label')}
-                        </dt>
-                        <dd>
-                            <ui:xEditable owner="${surveyConfig}" field="url3" type="text"/>
-                            <g:if test="${surveyConfig.url3}">
-                                <ui:linkWithIcon href="${surveyConfig.url3}"/>
-                            </g:if>
-                        </dd>
-                        <dt class="control-label">
-                            ${message(code: 'surveyconfig.urlComment3.label')}
-                        </dt>
-                        <dd>
-                            <ui:xEditable owner="${surveyConfig}" field="urlComment3" type="textarea"/>
-                        </dd>
-
-                    </dl>
+                    </ui:card>
 
                     <br />
 
@@ -127,70 +116,26 @@
 
                 </g:if>
                 <g:else>
-                    <g:if test="${surveyConfig.url}">
+                    <g:each in="${surveyConfig.surveyUrls}" var="surveyUrl" status="i">
                         <dl>
                             <dt class="control-label">
-                                ${message(code: 'surveyconfig.url.label')}
+                                ${message(code: 'surveyconfig.url.label', args: [i+1])}
                             </dt>
                             <dd>
-                                <ui:xEditable owner="${surveyConfig}" field="url" type="text"
-                                                 overwriteEditable="${false}"/>
+                                <ui:xEditable owner="${surveyUrl}" field="url" type="text"/>
+                                overwriteEditable="${false}"/>
 
-                                <g:if test="${surveyConfig.urlComment}">
+                                <g:if test="${surveyUrl.urlComment}">
                                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                          data-content="${surveyConfig.urlComment}">
+                                          data-content="${surveyUrl.urlComment}">
                                         <i class="info circle icon"></i>
                                     </span>
                                 </g:if>
-                                <ui:linkWithIcon href="${surveyConfig.url}"/>
+                                <ui:linkWithIcon href="${surveyUrl.url}"/>
                             </dd>
-
                         </dl>
-                    </g:if>
+                    </g:each>
 
-                    <g:if test="${surveyConfig.url2}">
-                        <dl>
-                            <dt class="control-label">
-                                ${message(code: 'surveyconfig.url2.label')}
-                            </dt>
-                            <dd>
-                                <ui:xEditable owner="${surveyConfig}" field="url2" type="text"
-                                                 overwriteEditable="${false}"/>
-
-                                <g:if test="${surveyConfig.urlComment2}">
-                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                          data-content="${surveyConfig.urlComment2}">
-                                        <i class="info circle icon"></i>
-                                    </span>
-                                </g:if>
-
-                                <ui:linkWithIcon href="${surveyConfig.url2}"/>
-                            </dd>
-
-                        </dl>
-                    </g:if>
-
-                    <g:if test="${surveyConfig.url3}">
-                        <dl>
-                            <dt class="control-label">
-                                ${message(code: 'surveyconfig.url3.label')}
-                            </dt>
-                            <dd>
-                                <ui:xEditable owner="${surveyConfig}" field="url3" type="text"
-                                                 overwriteEditable="${false}"/>
-
-                                <g:if test="${surveyConfig.urlComment3}">
-                                    <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"
-                                          data-content="${surveyConfig.urlComment3}">
-                                        <i class="info circle icon"></i>
-                                    </span>
-                                </g:if>
-
-                                <ui:linkWithIcon href="${surveyConfig.url3}"/>
-                            </dd>
-
-                        </dl>
-                    </g:if>
 
                     <div class="ui form la-padding-left-07em">
                         <div class="field">

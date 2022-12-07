@@ -7,7 +7,13 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-4437    05.12.2022  dev     3.0         Moe     Feature     Verknüpfte Umfragen
+4648    06.12.2022  dev     3.0         Moe     Feature     Umfragen: Filter Merkmal wertet nicht aus
+
+4640    06.12.2022  dev     3.0         Moe     Feature     Preissteigerung in Prozenz bei Teilnehmern ohne Vorgängerlizenz nicht berechnen
+
+4641    06.12.2022  dev     3.0         Moe     Feature     Umfrage Urls und deren Bemerkung umstellen auf One to Many Relation
+
+4437    06.12.2022  dev     3.0         Moe     Feature     Verknüpfte Umfragen
 
 4430    05.12.2022  dev     3.0         Moe     Feature     Lokale Titelauswahl per KBART-Upload: Systemrückmeldung verbessern
 
