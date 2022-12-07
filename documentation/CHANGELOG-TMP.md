@@ -11,7 +11,23 @@
 
 4644    07.12.2022  dev     3.0         David   Feature     Doc vs. DocContext - Redundanzen entfernen
 
+4642    07.12.2022  dev     3.0         Andreas Bug         falsches Lösch-Icon bei Adressen
+
+4334    07.12.2022  dev     3.0         Andreas Feature     Neue Referenzwertkategorien Auswahloption (Buchstabe bzw. Ziffer)
+
 4637    06.12.2022  dev     3.0         David   Bug         500er beim Ändern von Dokumenttyp
+
+4648    06.12.2022  dev     3.0         Moe     Feature     Umfragen: Filter Merkmal wertet nicht aus
+
+4640    06.12.2022  dev     3.0         Moe     Feature     Preissteigerung in Prozenz bei Teilnehmern ohne Vorgängerlizenz nicht berechnen
+
+4641    06.12.2022  dev     3.0         Moe     Feature     Umfrage Urls und deren Bemerkung umstellen auf One to Many Relation
+
+4437    06.12.2022  dev     3.0         Moe     Feature     Verknüpfte Umfragen
+
+4430    05.12.2022  dev     3.0         Moe     Feature     Lokale Titelauswahl per KBART-Upload: Systemrückmeldung verbessern
+
+4362    05.12.2022  dev     3.0         Moe     Feature     Lizenzteilnehmer aktiv zu Lizenz-/allgemeinen Umfragen hinzufügen
 
 4627    05.12.2022  dev     3.0         David   Bug         Einrichtungen können Dokumenttyp in Umfragen editieren
 
@@ -44,6 +60,8 @@
 4424    28.11.2022  dev     3.0         Andreas Feature     Schalter für private/öffentliche Kontakte beim Export von "Meine Einrichtungen"
 
 4423    28.11.2022  dev     3.0         Andreas Feature     Exportfunktionen für "Mein Adressbuch" gebaut
+
+4344    28.11.2022  dev     3.0         Moe     Bug         Erinnerungsmail an Teilnehmer: Button anders positionieren und benennen
 
 4600    25.11.2022  dev     3.0         Moe     Feature     Bei Titelumfragen auf der Auswertungssicht den Bearbeitungsstatus ausblenden wenn es keine Merkmale gibt
 

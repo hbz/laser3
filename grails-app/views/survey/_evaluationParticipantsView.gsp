@@ -302,7 +302,7 @@
                                 <a href="${mailString}">
                                     <span data-position="right center"
                                           class="la-popup-tooltip la-delay"
-                                          data-content="Mail senden an Hauptkontakten">
+                                          data-content="Mail senden an Hauptkontakte">
                                         <i class="ui icon envelope outline la-list-icon"></i>
                                     </span>
                                 </a>
@@ -365,6 +365,22 @@
         </g:each>
         </tbody>
     </table>
+
+    <g:if test="${showOpenParticipantsAgainButtons}">
+        <div class="content">
+            <div class="ui form twelve wide column">
+                <div class="two fields">
+                    <g:if test="${params.tab == 'participantsViewAllNotFinish' ? 'active' : ''}">
+                        <div class="eight wide field" style="text-align: left;">
+                            <button name="openOption" type="submit" value="ReminderMail" class="ui button">
+                                ${message(code: 'openParticipantsAgain.reminder.participantsHasAccess')}
+                            </button>
+                        </div>
+                    </g:if>
+                </div>
+            </div>
+        </div>
+    </g:if>
     <br/><br/>
     <h4 class="ui header"><g:message code="surveyParticipants.hasNotAccess"/></h4>
 
@@ -386,7 +402,7 @@
         <tr>
             <g:if test="${showCheckbox}">
                 <th>
-                    <g:if test="${surveyParticipantsHasNotAccess}">
+                    <g:if test="${surveyParticipantsHasNotAccess && actionName != 'openParticipantsAgain' && params.tab != 'participantsViewAllNotFinish'}">
                         <g:checkBox name="orgListToggler" id="orgListToggler" checked="false"/>
                     </g:if>
                 </th>
@@ -455,9 +471,11 @@
 
             <tr>
                 <g:if test="${showCheckbox}">
+                    <g:if test="${actionName != 'openParticipantsAgain' && params.tab != 'participantsViewAllNotFinish'}">
                     <td>
                         <g:checkBox name="selectedOrgs" value="${participant.id}" checked="false"/>
                     </td>
+                    </g:if>
                 </g:if>
                 <g:each in="${tmplConfigShow}" var="tmplConfigItem">
 
@@ -535,7 +553,7 @@
                                 <a href="${mailString}">
                                     <span data-position="right center"
                                           class="la-popup-tooltip la-delay"
-                                          data-content="Mail senden an Hauptkontakten">
+                                          data-content="Mail senden an Hauptkontakte">
                                         <i class="ui icon envelope outline la-list-icon"></i>
                                     </span>
                                 </a>
@@ -635,14 +653,7 @@
         <div class="content">
             <div class="ui form twelve wide column">
                 <div class="two fields">
-                    <g:if test="${params.tab == 'participantsViewAllNotFinish' ? 'active' : ''}">
-                        <div class="eight wide field" style="text-align: left;">
-                            <button name="openOption" type="submit" value="ReminderMail" class="ui button">
-                                ${message(code: 'openParticipantsAgain.reminder')}
-                            </button>
-                        </div>
-                    </g:if>
-                    <g:else>
+                    <g:if test="${params.tab == 'participantsViewAllFinish' ? 'active' : ''}">
 
                         <div class="eight wide field" style="text-align: left;">
                             <button name="openOption" type="submit" value="OpenWithoutMail" class="ui button">
@@ -655,7 +666,7 @@
                                 ${message(code: 'openParticipantsAgain.openWithMail.button')}
                             </button>
                         </div>
-                    </g:else>
+                    </g:if>
                 </div>
             </div>
         </div>

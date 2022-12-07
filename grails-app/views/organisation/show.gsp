@@ -1,4 +1,4 @@
-<%@ page import="de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Org; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo" %>
+<%@ page import="de.laser.utils.DateUtils; de.laser.RefdataValue; de.laser.RefdataCategory; de.laser.Person; de.laser.OrgSubjectGroup; de.laser.OrgRole; de.laser.storage.RDStore; de.laser.storage.RDConstants; de.laser.PersonRole; de.laser.Org; de.laser.properties.PropertyDefinition; de.laser.properties.PropertyDefinitionGroup; de.laser.OrgSetting;de.laser.Combo; de.laser.Contact" %>
 
 <laser:htmlStart message="menu.institutions.org_info" serviceInjection="true" />
 
@@ -21,7 +21,7 @@
     <laser:render template="actions" model="${[org: orgInstance, user: user]}"/>
 </ui:controlButtons>
 
-<ui:h1HeaderWithIcon text="${orgInstance.name}" existsWekbRecord="${orgInstanceRecord != null}" />
+<ui:h1HeaderWithIcon text="${orgInstance.name}" />
 
 <g:if test="${missing.size() > 0}">
     <div class="ui icon message warning">
@@ -88,11 +88,17 @@
                             <g:message code="org.altname.label" />
                         </dt>
                         <dd>
-                            <ul>
+                            <ul id="altnames">
                                 <g:each in="${orgInstance.altnames}" var="altname">
-                                    <li>${altname.name}</li>
+                                    <li data-objId="${altname.id}">
+                                        <ui:xEditable owner="${altname}" field="name" overwriteEditable="${orgInstanceRecord == null}"/>
+                                        <button name="removeAltname" class="ui small icon negative button la-modern-button removeAltname" data-objId="${altname.id}"><i class="ui small trash alternate outline icon"></i></button>
+                                    </li>
                                 </g:each>
                             </ul>
+                            <g:if test="${orgInstanceRecord == null}">
+                                <input name="addAltname" id="addAltname" type="button" class="ui button" value="Altnernativnamen hinzufügen">
+                            </g:if>
                         </dd>
                     </dl>
                     <dl>
@@ -327,7 +333,7 @@
                 </div>
             </g:if>
 
-            <g:if test="${orgInstance.getCustomerType() == 'ORG_INST'}">
+            <g:if test="${orgInstance.getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER']}">
                 <div class="ui card">
                     <div class="content">
                         <dl>
@@ -433,7 +439,7 @@
 
             <div class="ui card">
                 <div class="content">
-                    <g:if test="${orgInstance.getCustomerType() == 'ORG_INST'}">
+                    <g:if test="${orgInstance.getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER']}">
                         <h2 class="ui header"><g:message code="org.contactpersons.and.addresses.label"/></h2>
                     </g:if>
 
@@ -514,6 +520,49 @@
                                 </div>
                             </g:if>
                             </dd>
+                        <g:if test="${isProviderOrAgency}">
+                            <dd>
+                                <div class="ui cards">
+                                    <%
+                                        List visiblePersons = addressbookService.getVisiblePersons("addressbook",[org: orgInstance, sort: 'p.last_name, p.first_name'])
+                                    %>
+                                    <g:each in="${visiblePersons}" var="person">
+                                        <%
+                                            SortedSet<String> roles = new TreeSet<String>()
+                                            person.roleLinks.each { PersonRole pr ->
+                                                if(pr.functionType)
+                                                    roles << pr.functionType.getI10n('value')
+                                                if(pr.positionType)
+                                                    roles << pr.positionType.getI10n('value')
+                                            }
+                                        %>
+                                        <div class="card divided">
+                                            <div class="content">
+                                                <div class="header la-primary-header">${roles.join(' / ')}</div>
+                                                <div class="description">
+                                                    <div class="ui middle aligned list la-flex-list">
+                                                        <laser:render template="/templates/cpa/person_full_details" model="${[
+                                                                person                 : person,
+                                                                personContext          : orgInstance,
+                                                                tmplShowDeleteButton   : true,
+                                                                tmplShowFunctions      : false,
+                                                                tmplShowPositions      : true,
+                                                                tmplShowResponsiblities: true,
+                                                                tmplConfigShow         : ['E-Mail', 'Mail', 'Url', 'Phone', 'Mobil', 'Fax', 'address'],
+                                                                controller             : 'organisation',
+                                                                action                 : 'show',
+                                                                id                     : orgInstance.id,
+                                                                editable               : false,
+                                                                noSelection            : true
+                                                        ]}"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </g:each>
+                                </div>
+                            </dd>
+                        </g:if>
                         </dt>
                     </dl>
                 </div>
@@ -704,9 +753,29 @@
         func();
     }
 
-    <g:if test="${!isProviderOrAgency}">
+    <g:if test="${orgInstance.getCustomerType() in ['ORG_INST', 'ORG_BASIC_MEMBER']}">
         JSPC.app.showRegionsdropdown( $("#country").editable('getValue', true) );
     </g:if>
+    $('#addAltname').click(function() {
+        $.ajax({
+            url: '<g:createLink controller="ajaxHtml" action="addObject" params="[object: 'altname', owner: orgInstance.id]"/>',
+            success: function(result) {
+                $('#altnames').append(result);
+                r2d2.initDynamicXEditableStuff('#altnames');
+            }
+        });
+    });
+    $('#altnames').on('click', '.removeAltname', function() {
+        let objId = $(this).attr("data-objId");
+        $.ajax({
+            url: '<g:createLink controller="ajaxJson" action="removeObject" params="[object: 'altname']"/>&objId='+objId,
+            success: function(result) {
+                if(result.success === true) {
+                    $("li[data-objId='"+objId+"']").remove();
+                }
+            }
+        });
+    });
 
 <g:if test="${isProviderOrAgency}">
 

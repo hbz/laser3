@@ -46,6 +46,7 @@ import org.hibernate.SessionFactory
 import org.grails.orm.hibernate.cfg.GrailsDomainBinder
 import org.grails.orm.hibernate.cfg.PropertyConfig
 import org.springframework.context.MessageSource
+import org.springframework.transaction.TransactionStatus
 import org.springframework.web.multipart.MultipartFile
 
 import javax.sql.DataSource
@@ -2331,7 +2332,7 @@ class SubscriptionControllerService {
                                 else
                                     errorList.add("${cols[colMap.publicationTitleCol]}&#9;${cols[colMap.zdbCol] && colMap.zdbCol > -1 ? cols[colMap.zdbCol] : " "}&#9;${cols[colMap.onlineIdentifierCol] && colMap.onlineIndentifierCol > -1 ? cols[colMap.onlineIdentifierCol] : " "}&#9;${cols[colMap.printIdentifierCol] && colMap.printIdentifierCol > -1 ? cols[colMap.printIdentifierCol] : " "}&#9;${messageSource.getMessage('subscription.details.addEntitlements.titleNotInERMS', null, locale)}")
                           */
-                                errorList.add("${cols[colMap.publicationTitleCol]}&#9;${cols[colMap.zdbCol] && colMap.zdbCol > -1 ? cols[colMap.zdbCol] : " "}&#9;${cols[colMap.onlineIdentifierCol] && colMap.onlineIndentifierCol > -1 ? cols[colMap.onlineIdentifierCol] : " "}&#9;${cols[colMap.printIdentifierCol] && colMap.printIdentifierCol > -1 ? cols[colMap.printIdentifierCol] : " "}&#9;${messageSource.getMessage('subscription.details.addEntitlements.titleNotInERMS', null, locale)}")
+                                errorList.add("${cols[colMap.publicationTitleCol]}&#9;${cols[colMap.zdbCol] && colMap.zdbCol > -1 ? cols[colMap.zdbCol] : " "}&#9;${cols[colMap.onlineIdentifierCol] && colMap.onlineIndentifierCol > -1 ? cols[colMap.onlineIdentifierCol] : " "}&#9;${cols[colMap.printIdentifierCol] && colMap.printIdentifierCol > -1 ? cols[colMap.printIdentifierCol] : " "}&#9;${messageSource.getMessage('subscription.details.addEntitlements.titleNotInPackage', null, locale)}")
                             }
                         }
                         List<Map> ieCoverages
@@ -2594,6 +2595,43 @@ class SubscriptionControllerService {
                         */
                         //}
                     //})
+
+                    if(params.process && params.process	== "withTitleGroup") {
+                        IssueEntitlementGroup issueEntitlementGroup
+                        if (params.issueEntitlementGroupNew) {
+
+                            IssueEntitlementGroup.withTransaction {
+                                issueEntitlementGroup = IssueEntitlementGroup.findBySubAndName(result.subscription, params.issueEntitlementGroupNew) ?: new IssueEntitlementGroup(sub: result.subscription, name: params.issueEntitlementGroupNew).save()
+                            }
+                        }
+
+                        if (params.issueEntitlementGroupID && params.issueEntitlementGroupID != '') {
+                            issueEntitlementGroup = IssueEntitlementGroup.findById(Long.parseLong(params.issueEntitlementGroupID))
+                        }
+
+                        if (issueEntitlementGroup) {
+                            Object[] keys = checked.keySet().toArray()
+                            keys.each { String gokbUUID ->
+                                IssueEntitlement.withTransaction { TransactionStatus ts ->
+                                    TitleInstancePackagePlatform titleInstancePackagePlatform = TitleInstancePackagePlatform.findByGokbId(gokbUUID)
+                                    if (titleInstancePackagePlatform) {
+                                        IssueEntitlement ie = IssueEntitlement.findBySubscriptionAndTipp(result.subscription, titleInstancePackagePlatform)
+
+                                        if (issueEntitlementGroup && !IssueEntitlementGroupItem.findByIe(ie)) {
+                                            IssueEntitlementGroupItem issueEntitlementGroupItem = new IssueEntitlementGroupItem(
+                                                    ie: ie,
+                                                    ieGroup: issueEntitlementGroup)
+
+                                            if (!issueEntitlementGroupItem.save()) {
+                                                log.error("Problem saving IssueEntitlementGroupItem by Survey ${issueEntitlementGroupItem.errors}")
+                                            }
+                                        }
+                                    }
+                                }
+
+                            }
+                        }
+                    }
                 }
                 else {
                     log.error('cache error or no titles selected')

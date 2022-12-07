@@ -248,8 +248,8 @@
             <g:set var="sumOldCostItemAfterTax" value="${0.0}"/>
             <g:set var="sumNewCostItemAfterTax" value="${0.0}"/>
             <g:set var="sumSurveyCostItemAfterTax" value="${0.0}"/>
-            <g:set var="OldCostItem" value="${0.0}"/>
-            <g:set var="OldCostItemAfterTax" value="${0.0}"/>
+            <g:set var="oldCostItem" value="${0.0}"/>
+            <g:set var="oldCostItemAfterTax" value="${0.0}"/>
             <table class="ui celled sortable table la-js-responsive-table la-table" id="parentSubscription">
                 <thead>
                 <tr>
@@ -273,6 +273,8 @@
                 </thead>
                 <tbody>
                 <g:each in="${participantsList}" var="participant" status="i">
+                    <g:set var="oldCostItem" value="${0.0}"/>
+                    <g:set var="oldCostItemAfterTax" value="${0.0}"/>
                     <g:set var="costElement"
                            value="${RefdataValue.getByValueAndCategory('price: consortial price', de.laser.storage.RDConstants.COST_ITEM_ELEMENT)}"/>
 
@@ -338,9 +340,9 @@
                                     <g:set var="sumOldCostItemAfterTax"
                                            value="${sumOldCostItemAfterTax + costItemParticipantSub.costInBillingCurrencyAfterTax ?: 0}"/>
 
-                                    <g:set var="OldCostItem"
+                                    <g:set var="oldCostItem"
                                            value="${costItemParticipantSub.costInBillingCurrency ?: null}"/>
-                                    <g:set var="OldCostItemAfterTax"
+                                    <g:set var="oldCostItemAfterTax"
                                            value="${costItemParticipantSub.costInBillingCurrencyAfterTax ?: null}"/>
                                 </g:each>
                             </g:if>
@@ -366,14 +368,14 @@
                                 <g:set var="sumSurveyCostItemAfterTax"
                                        value="${sumSurveyCostItemAfterTax + participant.surveyCostItem.costInBillingCurrencyAfterTax ?: 0}"/>
 
-                                <g:if test="${OldCostItem || OldCostItemAfterTax}">
+                                <g:if test="${oldCostItem || oldCostItemAfterTax}">
                                     <br/><strong><g:formatNumber
-                                        number="${((participant.surveyCostItem.costInBillingCurrencyAfterTax - OldCostItemAfterTax) / OldCostItemAfterTax) * 100}"
+                                        number="${((participant.surveyCostItem.costInBillingCurrencyAfterTax - oldCostItemAfterTax) / oldCostItemAfterTax) * 100}"
                                         minFractionDigits="2"
                                         maxFractionDigits="2" type="number"/>%</strong>
 
                                     (<g:formatNumber
-                                        number="${((participant.surveyCostItem.costInBillingCurrency - OldCostItem) / OldCostItem) * 100}"
+                                        number="${((participant.surveyCostItem.costInBillingCurrency - oldCostItem) / oldCostItem) * 100}"
                                         minFractionDigits="2"
                                         maxFractionDigits="2" type="number"/>%)
                                 </g:if>
@@ -402,14 +404,14 @@
                                     <g:set var="sumNewCostItemAfterTax"
                                            value="${sumNewCostItemAfterTax + costItemParticipantSuccessorSub.costInBillingCurrencyAfterTax ?: 0}"/>
 
-                                    <g:if test="${OldCostItem || OldCostItemAfterTax}">
+                                    <g:if test="${oldCostItem || oldCostItemAfterTax}">
                                         <br/><strong><g:formatNumber
-                                            number="${((costItemParticipantSuccessorSub.costInBillingCurrencyAfterTax - OldCostItemAfterTax) / OldCostItemAfterTax) * 100}"
+                                            number="${((costItemParticipantSuccessorSub.costInBillingCurrencyAfterTax - oldCostItemAfterTax) / oldCostItemAfterTax) * 100}"
                                             minFractionDigits="2"
                                             maxFractionDigits="2" type="number"/>%</strong>
 
                                         (<g:formatNumber
-                                            number="${((costItemParticipantSuccessorSub.costInBillingCurrency - OldCostItem) / OldCostItem) * 100}"
+                                            number="${((costItemParticipantSuccessorSub.costInBillingCurrency - oldCostItem) / oldCostItem) * 100}"
                                             minFractionDigits="2"
                                             maxFractionDigits="2" type="number"/>%)
                                     </g:if>

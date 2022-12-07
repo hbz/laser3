@@ -24,6 +24,7 @@ import de.laser.survey.SurveyInfo
 import de.laser.survey.SurveyLinks
 import de.laser.survey.SurveyOrg
 import de.laser.survey.SurveyResult
+import de.laser.survey.SurveyUrl
 import de.laser.utils.DateUtils
 import de.laser.utils.LocaleUtils
 import de.laser.utils.SwissKnife
@@ -659,8 +660,6 @@ class SurveyController {
                     if (configProperty.save() && configProperty2.save()) {
                         surveyService.addSubMembers(surveyConfig)
                     }
-                } else {
-                    surveyService.addSubMembers(surveyConfig)
                 }
             }
             else {
@@ -938,6 +937,7 @@ class SurveyController {
         result.propList = PropertyDefinition.findAllPublicAndPrivateOrgProp(contextService.getOrg())
 
         params.comboType = RDStore.COMBO_TYPE_CONSORTIUM.value
+        params.sub = result.subscription
         Map<String,Object> fsq = filterService.getOrgComboQuery(params, result.institution)
         String tmpQuery = "select o.id " + fsq.query.minus("select o ")
         List consortiaMemberIds = Org.executeQuery(tmpQuery, fsq.queryParams)
@@ -1023,12 +1023,24 @@ class SurveyController {
 
         result.selectedCostItemElement = params.selectedCostItemElement ? params.selectedCostItemElement.toString() : RefdataValue.getByValueAndCategory('price: consortial price', RDConstants.COST_ITEM_ELEMENT).id.toString()
 
-        if(result.selectedSubParticipants && params.sortOnCostItems){
+        if(result.selectedSubParticipants && (params.sortOnCostItemsDown || params.sortOnCostItemsUp)){
             List<Subscription> orgSubscriptions = result.surveyConfig.orgSubscriptions()
             List<Org> selectedSubParticipants = result.selectedSubParticipants
             result.selectedSubParticipants = []
 
-            List<Subscription> subscriptionList =  CostItem.executeQuery("select c.sub from CostItem as c where c.sub in (:subList) and c.owner = :owner and c.costItemStatus != :status and c.costItemElement.id = :costItemElement order by c.costInBillingCurrency", [subList: orgSubscriptions, owner: result.surveyInfo.owner, status: RDStore.COST_ITEM_DELETED, costItemElement: Long.parseLong(result.selectedCostItemElement)])
+            String orderByQuery = " order by c.costInBillingCurrency, org.name"
+
+            if(params.sortOnCostItemsUp){
+                result.sortOnCostItemsUp = true
+                orderByQuery = " order by c.costInBillingCurrency DESC, org.name"
+                params.remove('sortOnCostItemsUp')
+            }else {
+                params.remove('sortOnCostItemsDown')
+            }
+
+            String query = "select c.sub from CostItem as c join c.owner org where c.sub in (:subList) and c.owner = :owner and c.costItemStatus != :status and c.costItemElement.id = :costItemElement " + orderByQuery
+
+            List<Subscription> subscriptionList =  CostItem.executeQuery(query, [subList: orgSubscriptions, owner: result.surveyInfo.owner, status: RDStore.COST_ITEM_DELETED, costItemElement: Long.parseLong(result.selectedCostItemElement)])
 
             subscriptionList.each { Subscription sub ->
                 Org org = sub.getSubscriber()
@@ -3333,12 +3345,6 @@ class SurveyController {
                                 surveyInfo: newSurveyInfo,
                                 comment: params.copySurvey.copySurveyConfigComment ? baseSurveyConfig.comment : null,
                                 commentForNewParticipants: params.copySurvey.copySurveyConfigCommentForNewParticipants ? baseSurveyConfig.commentForNewParticipants : null,
-                                url: params.copySurvey.copySurveyConfigUrl ? baseSurveyConfig.url : null,
-                                urlComment: params.copySurvey.copySurveyConfigUrl ? baseSurveyConfig.urlComment : null,
-                                url2: params.copySurvey.copySurveyConfigUrl2 ? baseSurveyConfig.url2 : null,
-                                urlComment2: params.copySurvey.copySurveyConfigUrl2 ? baseSurveyConfig.urlComment2 : null,
-                                url3: params.copySurvey.copySurveyConfigUrl3 ? baseSurveyConfig.url3 : null,
-                                urlComment3: params.copySurvey.copySurveyConfigUrl3 ? baseSurveyConfig.urlComment3 : null,
                                 configOrder: newSurveyInfo.surveyConfigs ? newSurveyInfo.surveyConfigs.size() + 1 : 1
                         ).save()
 
@@ -3368,12 +3374,6 @@ class SurveyController {
                             surveyInfo: newSurveyInfo,
                             comment: params.copySurvey.copySurveyConfigComment ? baseSurveyConfig.comment : null,
                             commentForNewParticipants: params.copySurvey.copySurveyConfigCommentForNewParticipants ? baseSurveyConfig.commentForNewParticipants : null,
-                            url: params.copySurvey.copySurveyConfigUrl ? baseSurveyConfig.url : null,
-                            urlComment: params.copySurvey.copySurveyConfigUrl ? baseSurveyConfig.urlComment : null,
-                            url2: params.copySurvey.copySurveyConfigUrl2 ? baseSurveyConfig.url2 : null,
-                            urlComment2: params.copySurvey.copySurveyConfigUrl ? baseSurveyConfig.urlComment2 : null,
-                            url3: params.copySurvey.copySurveyConfigUrl3 ? baseSurveyConfig.url3 : null,
-                            urlComment3: params.copySurvey.copySurveyConfigUrl ? baseSurveyConfig.urlComment3 : null,
                             configOrder: newSurveyInfo.surveyConfigs ? newSurveyInfo.surveyConfigs.size() + 1 : 1
                     ).save()
                     surveyService.copySurveyConfigCharacteristic(baseSurveyConfig, newSurveyConfig, params)
@@ -5011,6 +5011,40 @@ class SurveyController {
                 }
                 surveyLink.delete()
 
+            }
+        }
+
+        redirect(url: request.getHeader('referer'))
+
+    }
+
+    @DebugInfo(perm = "ORG_CONSORTIUM", affil = "INST_EDITOR", specRole = "ROLE_ADMIN", wtc = DebugInfo.WITH_TRANSACTION)
+    @Secured(closure = {
+        ctx.accessService.checkPermAffiliationX("ORG_CONSORTIUM", "INST_EDITOR", "ROLE_ADMIN")
+    })
+    Map<String,Object> addSurveyUrl() {
+        Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
+        if (!result.editable) {
+            response.sendError(HttpStatus.SC_FORBIDDEN); return
+        }
+
+        if(params.deleteSurveyUrl){
+            SurveyConfig.withTransaction { TransactionStatus ts ->
+                SurveyUrl surveyUrl = SurveyUrl.get(Long.parseLong(params.deleteSurveyUrl))
+                surveyUrl.delete()
+            }
+        }else {
+            if (result.surveyConfig.surveyUrls.size() >= 10) {
+                flash.error = g.message(code: 'surveyconfig.url.fail.max10')
+            } else {
+                if (params.url) {
+                    SurveyConfig.withTransaction { TransactionStatus ts ->
+                        SurveyUrl surveyUrl = new SurveyUrl(url: params.url, urlComment: params.urlComment, surveyConfig: result.surveyConfig)
+                        if (!surveyUrl.save()) {
+                            flash.error = g.message(code: 'survey.change.fail')
+                        }
+                    }
+                }
             }
         }
 
