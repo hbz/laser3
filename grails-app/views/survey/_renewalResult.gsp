@@ -41,6 +41,8 @@
     </tr>
     </thead>
     <g:each in="${participantResults}" var="participantResult" status="i">
+        <g:set var="surveyOrg"
+               value="${SurveyOrg.findBySurveyConfigAndOrg(participantResult.surveyConfig, participantResult.participant)}"/>
 
         <tr>
             <td class="center aligned">
@@ -95,6 +97,12 @@
                         <i class="exclamation triangle yellow large icon"></i>
                     </span>
                 </g:if>
+                <g:if test="${surveyOrg.orgInsertedItself}">
+                    <span data-position="top right" class="la-popup-tooltip la-delay"
+                          data-content="${message(code: 'surveyLinks.newParticipate')}">
+                        <i class="paper plane outline large icon"></i>
+                    </span>
+                </g:if>
 
             </td>
             <td>
@@ -106,9 +114,6 @@
                         <i class="question circle icon"></i>
                     </span>
                 </g:if>
-
-                <g:set var="surveyOrg"
-                       value="${SurveyOrg.findBySurveyConfigAndOrg(participantResult.surveyConfig, participantResult.participant)}"/>
 
                 <g:if test="${surveyOrg && surveyOrg.ownerComment}">
                     <span class="la-long-tooltip la-popup-tooltip la-delay" data-position="right center"

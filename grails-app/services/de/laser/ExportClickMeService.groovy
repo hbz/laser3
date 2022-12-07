@@ -1640,6 +1640,16 @@ class ExportClickMeService {
             _setRenewalRow(participantResult, selectedExportFields, renewalData, false, renewalResult.multiYearTermTwoSurvey, renewalResult.multiYearTermThreeSurvey)
         }
 
+        renewalData.add([[field: '', style: null]])
+        renewalData.add([[field: '', style: null]])
+        renewalData.add([[field: '', style: null]])
+        renewalData.add([[field: messageSource.getMessage('renewalEvaluation.orgInsertedItself.label', null, locale) + " (${renewalResult.orgInsertedItself.size()})", style: 'negative']])
+
+
+        renewalResult.orgInsertedItself.sort{it.participant.sortname}.each { participantResult ->
+            _setRenewalRow(participantResult, selectedExportFields, renewalData, false, renewalResult.multiYearTermTwoSurvey, renewalResult.multiYearTermThreeSurvey)
+        }
+
 
         Map sheetData = [:]
         sheetData[messageSource.getMessage('renewalexport.renewals', null, locale)] = [titleRow: titles, columnData: renewalData]
