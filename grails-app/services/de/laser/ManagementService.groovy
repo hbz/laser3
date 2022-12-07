@@ -773,8 +773,7 @@ class ManagementService {
 
                                 DocContext doc_context = new DocContext(
                                         subscription: subscription,
-                                        owner: doc_content,
-                                        doctype: RDStore.DOC_TYPE_NOTE)
+                                        owner: doc_content)
                                 doc_context.save()
                             }
                         }
@@ -848,7 +847,6 @@ class ManagementService {
                                     DocContext doc_context = new DocContext(
                                             subscription: subscription,
                                             owner: doc_content,
-                                            doctype: RefdataValue.getByValueAndCategory(params.doctype, RDConstants.DOCUMENT_TYPE),
                                             isShared: params.setSharing == 'on'
                                     )
 

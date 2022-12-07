@@ -255,7 +255,7 @@
                                 </g:elseif>
                             </td>
                             <td>
-                                 ${docctx.owner.type?.getI10n("value")}
+                                 ${docctx.getDocType()?.getI10n("value")}
                             </td>
                             %{--<td>
                                 <g:if test="${docctx.isShared}">
@@ -285,7 +285,7 @@
                                     </g:elseif>
                                 </td>
                                 <td>
-                                    ${docctx.owner.type?.getI10n("value")}
+                                    ${docctx.getDocType()?.getI10n("value")}
                                 </td>
                             </tr>
                         </g:each>
