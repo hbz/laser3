@@ -246,10 +246,10 @@
         </g:if>
     </table>
 
-<g:if test="${!(controllerName == 'myInstitution' && actionName == 'subscriptionsManagement')}">
 <laser:script file="${this.getGroovyPageFileName()}">
     docs.init('.documents-table-${randomId}')
 
+    <g:if test="${!(controllerName == 'myInstitution' && actionName == 'subscriptionsManagement')}">
     $('#bulk_submit').click (function () {
         let ids = []
         $('input[name=bulk_doc]:checked').each( function (i, e) {
@@ -266,8 +266,8 @@
             $('input[name=bulk_doc]').prop ('checked', false)
         }
     })
+    </g:if>
 </laser:script>
-</g:if>
 
 <%-- a form within a form is not permitted --%>
 <g:each in="${securityWorkaroundList}" var="docctx">
