@@ -33,7 +33,6 @@ class ShareService {
                 subscription:   (target instanceof Subscription) ? target : share.subscription,
                 pkg:            (target instanceof Package) ? target : share.pkg,
                 link:           (target instanceof Links) ? target : share.link,
-                doctype:        share.doctype,
                 domain:         share.domain,
                 globannounce:   share.globannounce,
                 sharedFrom:     share,
@@ -47,7 +46,6 @@ class ShareService {
                     DocContext clonedDescendantShare = new DocContext(
                             owner:          share.owner ,
                             subscription:   d,
-                            doctype:        share.doctype,
                             domain:         share.domain,
                             globannounce:   share.globannounce,
                             sharedFrom:     share,
@@ -72,7 +70,7 @@ class ShareService {
      * @param target the share flag to unset
      * @return true if the flag could be removed successfully, false otherwise
      */
-    boolean deleteDocShareForTarget(DocContext share, ShareSupport target) {
+    boolean deleteDocShareForTarget(ShareSupport target) {
 
         String tp =
                 (target instanceof License) ? 'license' :
@@ -131,7 +129,7 @@ class ShareService {
      * @param target the share flag to unset
      * @return true if the flag could be removed successfully, false otherwise
      */
-    boolean deleteOrgRoleShareForTarget(OrgRole share, ShareSupport target) {
+    boolean deleteOrgRoleShareForTarget(ShareSupport target) {
 
         String tp =
                 (target instanceof License) ? 'lic' :

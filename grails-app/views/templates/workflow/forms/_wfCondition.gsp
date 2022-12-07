@@ -151,7 +151,7 @@
                                         <g:else>
                                             ${message(code:'template.documents.missing')}
                                         </g:else>
-                                        (${docctx.owner?.type?.getI10n("value")})
+                                        (${docctx.getDocType()?.getI10n("value")})
                                     </g:link>
                                     <input type="hidden" name="${prefix}_${field}" value="${docctx.id}" />
                                 </div>
@@ -165,7 +165,7 @@
                                           from="${targetObject.documents}"
                                           value="${task.condition.getProperty(field)?.id}"
                                           optionKey="id"
-                                          optionValue="${{ (it.owner?.title ? it.owner.title : it.owner?.filename ? it.owner.filename : message(code:'template.documents.missing')) + ' (' + it.owner?.type?.getI10n("value") + ')' }}" />
+                                          optionValue="${{ (it.owner?.title ? it.owner.title : it.owner?.filename ? it.owner.filename : message(code:'template.documents.missing')) + ' (' + it.getDocType()?.getI10n("value") + ')' }}" />
                                 --}%
 
                             </g:else>

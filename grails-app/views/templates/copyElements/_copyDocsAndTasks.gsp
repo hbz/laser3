@@ -63,7 +63,8 @@
                                                     ${message(code: 'template.documents.missing')}
                                                 </g:else>
                                             </g:else>
-                                        </g:link>(${docctx.owner.type.getI10n("value")})
+                                        </g:link>
+                                        <g:if test="${docctx.getDocType()}">(${docctx.getDocType().getI10n("value")})</g:if>
                                     </label>
                                 </div>
                             </g:if>
@@ -115,7 +116,8 @@
                                                             ${message(code: 'template.documents.missing')}
                                                         </g:else>
                                                     </g:else>
-                                                </g:link>(${docctx.owner.type.getI10n("value")})
+                                                </g:link>
+                                                <g:if test="${docctx.getDocType()}">(${docctx.getDocType().getI10n("value")})</g:if>
                                             </div>
                                             <g:if test="${isConsortialObjects}">
                                                 <div class="right aligned wide column">

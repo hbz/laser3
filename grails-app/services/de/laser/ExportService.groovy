@@ -140,6 +140,7 @@ class ExportService {
 
 				Sheet sheet = output.createSheet(title)
 				sheet.setAutobreaks(true)
+				sheet.trackAllColumnsForAutoSizing()
 				int rownum = 0
 				Row headerRow = sheet.createRow(rownum++)
 				headerRow.setHeightInPoints(16.75f)
@@ -248,6 +249,7 @@ class ExportService {
 
 				//the following three statements are required only for HSSF
 				sheet.setAutobreaks(true)
+				sheet.trackAllColumnsForAutoSizing()
 
 				//the header row: centered text in 48pt font
 				Row headerRow = sheet.createRow(0)
@@ -529,6 +531,7 @@ class ExportService {
 			Sheet sheet = wb.createSheet(messageSource.getMessage('menu.institutions.addressbook', null, locale))
 			//the following three statements are required only for HSSF
 			sheet.setAutobreaks(true)
+			sheet.trackAllColumnsForAutoSizing()
 			//the header row: centered text in 48pt font
 			Row headerRow = sheet.createRow(0)
 			headerRow.setHeightInPoints(16.75f)
@@ -755,6 +758,7 @@ class ExportService {
 					sheet = wb.createSheet(reportType)
 					sheet.flushRows(10)
 					sheet.setAutobreaks(true)
+					sheet.trackAllColumnsForAutoSizing()
                     Map<String, Object> queryParams = [reportType: reportType, metricType: metricType, customer: customer.globalUID]
 					if(dateRangeParams.dateRange.length() > 0) {
 						queryParams.startDate = dateRangeParams.startDate
@@ -1014,6 +1018,7 @@ class ExportService {
 				sheet = wb.createSheet(reportType)
 				sheet.flushRows(10)
 				sheet.setAutobreaks(true)
+				sheet.trackAllColumnsForAutoSizing()
 				Map<String, Object> queryParams = [reportType: reportType, customer: customer.globalUID]
 				String metricFilter = ' '
 				if(params.metricType) {
@@ -1492,6 +1497,7 @@ class ExportService {
 			SXSSFSheet sheet = wb.createSheet(sheettitle)
 			sheet.flushRows(10)
 			sheet.setAutobreaks(true)
+			sheet.trackAllColumnsForAutoSizing()
 			Row headerRow = sheet.createRow(0)
 			headerRow.setHeightInPoints(16.75f)
 			ArrayList titles = [messageSource.getMessage( 'sidewide.number',null,locale)]
@@ -1524,7 +1530,7 @@ class ExportService {
 			int sumCurrencyCell = -1
 			int sumCurrencyAfterTaxCell = -1
 			HashSet<String> currencies = new HashSet<String>()
-			if(cit.getValue().count > 0) {
+			if(cit.getValue()?.count > 0) {
 				cit.getValue().costItems.eachWithIndex { ci, int i ->
 					//log.debug("now processing entry #${i}")
 					BudgetCode codes = costItemGroups.get(ci)

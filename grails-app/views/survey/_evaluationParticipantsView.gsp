@@ -302,7 +302,7 @@
                                 <a href="${mailString}">
                                     <span data-position="right center"
                                           class="la-popup-tooltip la-delay"
-                                          data-content="Mail senden an Hauptkontakten">
+                                          data-content="Mail senden an Hauptkontakte">
                                         <i class="ui icon envelope outline la-list-icon"></i>
                                     </span>
                                 </a>
@@ -553,7 +553,7 @@
                                 <a href="${mailString}">
                                     <span data-position="right center"
                                           class="la-popup-tooltip la-delay"
-                                          data-content="Mail senden an Hauptkontakten">
+                                          data-content="Mail senden an Hauptkontakte">
                                         <i class="ui icon envelope outline la-list-icon"></i>
                                     </span>
                                 </a>

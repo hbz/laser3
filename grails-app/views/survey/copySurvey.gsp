@@ -81,39 +81,6 @@
                     </td>
                 </tr>
                 <tr>
-                    <td><g:checkBox name="copySurvey.copySurveyConfigUrl" value="${true}"/></td>
-                    <td>${message(code: 'copySurvey.copySurveyConfigUrl')}</td>
-                    <td>
-                        ${surveyConfig.url}
-                        <g:if test="${surveyConfig.url}">
-                            <ui:linkWithIcon href="${surveyConfig.url}"/>
-
-                        </g:if>
-                    </td>
-                </tr>
-                <tr>
-                    <td><g:checkBox name="copySurvey.copySurveyConfigUrl2" value="${true}"/></td>
-                    <td>${message(code: 'copySurvey.copySurveyConfigUrl2')}</td>
-                    <td>
-                        ${surveyConfig.url2}
-                        <g:if test="${surveyConfig.url2}">
-                            <ui:linkWithIcon href="${surveyConfig.url2}"/>
-
-                        </g:if>
-                    </td>
-                </tr>
-                <tr>
-                    <td><g:checkBox name="copySurvey.copySurveyConfigUrl3" value="${true}"/></td>
-                    <td>${message(code: 'copySurvey.copySurveyConfigUrl3')}</td>
-                    <td>
-                        ${surveyConfig.url3}
-                        <g:if test="${surveyConfig.url3}">
-                            <ui:linkWithIcon href="${surveyConfig.url3}"/>
-
-                        </g:if>
-                    </td>
-                </tr>
-                <tr>
                     <td><g:checkBox name="copySurvey.copySurveyConfigComment" value="${true}"/></td>
                     <td><g:message code="copySurvey.copySurveyConfigComment"/></td>
                     <td>
@@ -219,7 +186,7 @@
                                         </g:else>
                                     </g:else>
 
-                                </g:link>(${docctx.owner.type.getI10n("value")}) <br />
+                                </g:link>(${docctx.getDocType().getI10n("value")}) <br />
                             </g:if>
                         </g:each>
                     </td>

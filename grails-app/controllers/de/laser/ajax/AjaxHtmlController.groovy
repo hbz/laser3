@@ -1,5 +1,6 @@
 package de.laser.ajax
 
+import de.laser.AlternativeName
 import de.laser.DocContext
 import de.laser.GenericOIDService
 import de.laser.PendingChangeService
@@ -123,6 +124,23 @@ class AjaxHtmlController {
     def loadGeneralFilter() {
         Map<String,Object> result = [entry:params.entry,queried:params.queried]
         render view: '/reporting/_displayConfigurations', model: result
+    }
+
+    @Secured(['ROLE_USER'])
+    def addObject() {
+        def resultObj, owner
+        String field
+        switch(params.object) {
+            case "altname": owner= Org.get(params.owner)
+                resultObj = AlternativeName.construct([org: owner, name: 'Unknown'])
+                field = "name"
+                break
+            case "coverage": //TODO
+                break
+        }
+        if(resultObj) {
+            render view: '/templates/ajax/_newXEditable', model: [wrapper: params.object, ownObj: resultObj, field: field, overwriteEditable: true]
+        }
     }
 
     //-------------------------------------------------- myInstitution/dashboard ---------------------------------------

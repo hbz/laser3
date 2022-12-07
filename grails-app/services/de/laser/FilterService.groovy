@@ -62,9 +62,11 @@ class FilterService {
              queryParams << [orgSector : Long.parseLong(params.orgSector)]
         }
         if (params.orgIdentifier?.length() > 0) {
-            query << " exists (select ident from Identifier ident join ident.org ioorg " +
-                     " where ioorg = o and LOWER(ident.value) like LOWER(:orgIdentifier)) "
-            queryParams << [orgIdentifier: "%${params.orgIdentifier}%"]
+            query << " ( exists (select ident from Identifier ident join ident.org ioorg " +
+                     " where ioorg = o and genfunc_filter_matcher(ident.value, :orgIdentifier) = true ) or " +
+                     " ( exists ( select ci from CustomerIdentifier ci where ci.customer = o and genfunc_filter_matcher(ci.value, :orgIdentifier) = true ) ) " +
+                     " ) "
+            queryParams << [orgIdentifier: params.orgIdentifier]
         }
 
         if (params.region?.size() > 0) {
@@ -247,6 +249,18 @@ class FilterService {
                 }
             }
             query << subQuery+")"
+        }
+
+        if(params.sub && (params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription)) {
+            String subQuery = ""
+
+            if(params.hasNotSubscription) {
+                subQuery = " not"
+            }
+
+            subQuery = subQuery + " exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = o.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and sub.instanceOf = :sub)"
+            queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIA, context: contextService.getOrg(), sub: params.sub]
+            query << subQuery
         }
 
         if (params.customerType?.length() > 0) {
@@ -867,7 +881,12 @@ class FilterService {
             result.query = "from SurveyInfo surInfo left join surInfo.surveyConfigs surConfig left join surConfig.orgs surOrg " + defaultOrder
         }
 
-
+        if (params.filterPropDef?.size() > 0) {
+            def psq = propertyService.evalFilterQuery(params, result.query, 'surConfig', queryParams)
+            result.query = psq.query
+            queryParams = psq.queryParams
+            params.filterSet = true
+        }
 
         result.queryParams = queryParams
         result

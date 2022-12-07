@@ -1,5 +1,6 @@
 package de.laser.ajax
 
+import de.laser.AlternativeName
 import de.laser.GenericOIDService
 import de.laser.AccessService
 import de.laser.CompareService
@@ -830,6 +831,20 @@ class AjaxJsonController {
             result.add([value: "${genericOIDService.getOID(notSet)}", text: "${notSet.getI10n('value')}"])
         }
 
+        render result as JSON
+    }
+
+    @Secured(['ROLE_USER'])
+    def removeObject() {
+        int removed = 0
+        switch(params.object) {
+            case "altname": removed = AlternativeName.executeUpdate('delete from AlternativeName altname where altname.id = :id', [id: params.long("objId")])
+                break
+            case "coverage": //TODO
+                break
+        }
+        Boolean success = removed > 0
+        Map<String, Boolean> result = [success: success]
         render result as JSON
     }
 
