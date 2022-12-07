@@ -27,6 +27,8 @@
 
 4631    07.12.2022  dev     3.0         Andreas Bug         Falsche Abfrage bei Verbindung Dauerhafter Zugriff und Status aktuell
 
+4628    07.12.2022  dev     3.0         Andreas Bug         Teil A: Entfernen des Merkmalswertes bei entferntem Merkmalstyp
+
 4617    07.12.2022  dev     3.0         Andreas Feature     Erweiterung der Identifier-Abfrage um Kundennummern
 
 4334    07.12.2022  dev     3.0         Andreas Feature     Neue Referenzwertkategorien Auswahloption (Buchstabe bzw. Ziffer)

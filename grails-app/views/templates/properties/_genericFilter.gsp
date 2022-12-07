@@ -58,8 +58,12 @@
 
             updateProp: function (selOpt) {
 
+                if(selOpt === null) {
+                    let select = '<input id="filterProp" name="filterProp" type="text" placeholder="${message(code: 'license.search.property.ph')}" value=""/>';
+                    $('label[for=filterProp]').next().replaceWith(select);
+                }
                 //If we are working with RefdataValue, grab the values and create select box
-                if (selOpt.attr('data-rdc')) {
+                else if (selOpt.attr('data-rdc')) {
                     $.ajax({
                         url: '<g:createLink controller="ajaxJson" action="refdataSearchByCategory"/>' + '?cat=' + selOpt.attr('data-rdc'),
                         success: function (data) {
