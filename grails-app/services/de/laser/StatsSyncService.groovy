@@ -600,12 +600,9 @@ class StatsSyncService {
      * Internal
      */
     void processCounter4ReportData(Map<String, Object> reportData, Platform c4asPlatform, String customerUID, Set<Long> namespaces, Sql sql, Sql statsSql) {
-        Connection sqlConn = sql.getDataSource().getConnection()
         if (reportData.reportID in Counter4Report.COUNTER_4_PLATFORM_REPORTS) {
             int[] resultCount = statsSql.withBatch("insert into counter4report (c4r_version, c4r_platform_guid, c4r_publisher, c4r_report_institution_guid, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count) " +
-                    "values (:version, :platform, :publisher, :reportInstitution, :reportType, :category, :metricType, :reportFrom, :reportTo, :reportCount) " +
-                    "on conflict (c4r_report_from, c4r_report_to, c4r_report_type, c4r_metric_type, c4r_platform_guid, c4r_report_institution_guid, c4r_online_identifier, c4r_print_identifier, c4r_proprietary_identifier, c4r_isbn, c4r_doi) where c4r_yop is null " +
-                    "do update set c4r_report_count = :reportCount") { stmt ->
+                    "values (:version, :platform, :publisher, :reportInstitution, :reportType, :category, :metricType, :reportFrom, :reportTo, :reportCount)") { stmt ->
                 int t = 0
                 //titles.each { row ->
                 reportData.reports.each { reportItem ->
