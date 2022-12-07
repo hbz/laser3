@@ -2368,7 +2368,8 @@ class SubscriptionService {
                         Object[] args = [sdf.format(new Date())]
                         Doc docContent = new Doc(contentType: Doc.CONTENT_TYPE_STRING, content: entry.notes, title: messageSource.getMessage('myinst.subscriptionImport.notes.title',args,locale), type: RefdataValue.getByValueAndCategory('Note', RDConstants.DOCUMENT_TYPE), owner: contextOrg, user: contextService.getUser())
                         if(docContent.save()) {
-                            DocContext dc = new DocContext(subscription: sub, owner: docContent, doctype: RDStore.DOC_TYPE_NOTE)
+                            // 4644 DocContext dc = new DocContext(subscription: sub, owner: docContent, doctype: RDStore.DOC_TYPE_NOTE)
+                            DocContext dc = new DocContext(subscription: sub, owner: docContent)
                             dc.save()
                         }
                     }

@@ -31,8 +31,8 @@
                             <g:else>
                                 ${docctx.owner.title ?: docctx.owner.filename}
                             </g:else>
-                            <g:if test="${docctx.owner.type}">
-                                (${docctx.owner.type.getI10n("value")})
+                            <g:if test="${docctx.getDocType()}">
+                                (${docctx.getDocType().getI10n("value")})
                             </g:if>
 
 %{--                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="js-no-wait-wheel" target="_blank">--}%

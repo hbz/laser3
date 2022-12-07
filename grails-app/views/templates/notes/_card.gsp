@@ -137,7 +137,6 @@
                                 <g:else>
                                     <a onclick="JSPC.app.noteread(${docctx.owner.id});">Ohne Titel</a>
                                 </g:else>
-%{--                                (${docctx.owner.type.getI10n("value")})--}%
 
                                 <br />
                                 <g:if test="${! docctx.owner.content}">

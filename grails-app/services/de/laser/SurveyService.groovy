@@ -1286,7 +1286,7 @@ class SurveyService {
             if (params.copySurvey.copyDocs) {
                 if ((dctx.owner?.contentType == Doc.CONTENT_TYPE_FILE) && (dctx.status != RDStore.DOC_CTX_STATUS_DELETED)) {
                     Doc clonedContents = new Doc(
-                            type: dctx.owner.type,
+                            type: dctx.getDocType(),
                             content: dctx.owner.content,
                             uuid: dctx.owner.uuid,
                             contentType: dctx.owner.contentType,
@@ -1304,8 +1304,8 @@ class SurveyService {
                             owner: clonedContents,
                             surveyConfig: newSurveyConfig,
                             domain: dctx.domain,
-                            status: dctx.status,
-                            doctype: dctx.doctype
+                            status: dctx.status
+                            // 4644 doctype: dctx.doctype
                     ).save()
                 }
             }
@@ -1313,7 +1313,7 @@ class SurveyService {
             if (params.copySurvey.copyAnnouncements) {
                 if ((dctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(dctx.domain) && (dctx.status != RDStore.DOC_CTX_STATUS_DELETED)) {
                     Doc clonedContents = new Doc(
-                            type: dctx.owner.type,
+                            type: dctx.getDocType(),
                             content: dctx.owner.content,
                             uuid: dctx.owner.uuid,
                             contentType: dctx.owner.contentType,
@@ -1326,8 +1326,8 @@ class SurveyService {
                             owner: clonedContents,
                             surveyConfig: newSurveyConfig,
                             domain: dctx.domain,
-                            status: dctx.status,
-                            doctype: dctx.doctype
+                            status: dctx.status
+                            // 4644 doctype: dctx.doctype
                     ).save()
                 }
             }

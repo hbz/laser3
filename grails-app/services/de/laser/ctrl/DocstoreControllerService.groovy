@@ -39,7 +39,7 @@ class DocstoreControllerService {
                 doc.owner = contextService.getOrg()
                 doc.save()
 
-                doc_context.doctype = params.doctype ? RefdataValue.getByValueAndCategory(params.doctype, RDConstants.DOCUMENT_TYPE) : null
+                // 4644 doc_context.doctype = params.doctype ? RefdataValue.getByValueAndCategory(params.doctype, RDConstants.DOCUMENT_TYPE) : null
                 if(params.targetOrg)
                     doc_context.targetOrg = Org.get(params.targetOrg)
                 doc_context.shareConf = RefdataValue.get(params.shareConf) ?: null

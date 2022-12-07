@@ -688,8 +688,8 @@ class WorkflowService {
                                         // TODO
 
                                         DocContext docctx = new DocContext(
-                                                owner: doc,
-                                                doctype: uploadDoctype
+                                                owner: doc
+                                                // 4644 doctype: uploadDoctype
                                         )
                                         Object owner = genericOIDService.resolveOID( uploadOwner )
 

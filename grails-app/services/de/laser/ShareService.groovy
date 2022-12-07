@@ -33,7 +33,7 @@ class ShareService {
                 subscription:   (target instanceof Subscription) ? target : share.subscription,
                 pkg:            (target instanceof Package) ? target : share.pkg,
                 link:           (target instanceof Links) ? target : share.link,
-                doctype:        share.doctype,
+                // 4644 doctype:        share.doctype,
                 domain:         share.domain,
                 globannounce:   share.globannounce,
                 sharedFrom:     share,
@@ -47,7 +47,7 @@ class ShareService {
                     DocContext clonedDescendantShare = new DocContext(
                             owner:          share.owner ,
                             subscription:   d,
-                            doctype:        share.doctype,
+                            // 4644 doctype:        share.doctype,
                             domain:         share.domain,
                             globannounce:   share.globannounce,
                             sharedFrom:     share,

@@ -26,8 +26,8 @@ class DocContext implements ShareableTrait, Comparable {
 
     @RefdataInfo(cat = RDConstants.DOCUMENT_CONTEXT_STATUS)
     RefdataValue status
-    @RefdataInfo(cat = RDConstants.DOCUMENT_TYPE)
-    RefdataValue doctype
+    // 4644 @RefdataInfo(cat = RDConstants.DOCUMENT_TYPE)
+    // 4644 RefdataValue doctype
     @RefdataInfo(cat = RDConstants.SHARE_CONFIGURATION)
     RefdataValue shareConf
     Org targetOrg
@@ -46,7 +46,7 @@ class DocContext implements ShareableTrait, Comparable {
                id column:'dc_id'
           version column:'dc_version'
             owner column:'dc_doc_fk', sort:'title', order:'asc', index:'doc_owner_idx'
-          doctype column:'dc_rv_doctype_fk'
+        // 4644 doctype column:'dc_rv_doctype_fk'
            domain column:'dc_domain'
           license column:'dc_lic_fk', index:'doc_lic_idx'
      subscription column:'dc_sub_fk', index:'doc_sub_idx'
@@ -67,7 +67,7 @@ class DocContext implements ShareableTrait, Comparable {
     }
 
     static constraints = {
-        doctype     (nullable:true)
+        // 4644 doctype     (nullable:true)
         license     (nullable:true)
         subscription(nullable:true)
         pkg         (nullable:true)
@@ -100,6 +100,13 @@ class DocContext implements ShareableTrait, Comparable {
     void beforeDelete(PostUpdateEvent event) {
         log.debug('beforeDelete')
         deleteShare_trait()
+    }
+
+    RefdataValue getDocType() {
+        owner.type
+    }
+    RefdataValue getDocConfid() {
+        owner.confidentiality
     }
 
     /**

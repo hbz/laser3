@@ -14,7 +14,7 @@
             </ui:msg>
         </g:if>
         <g:if test="${error}">
-            <ui:msg class="error" icon="robot" noClose="true">
+            <ui:msg class="error" icon="sad tear outline" noClose="true">
                 ${error}
             </ui:msg>
         </g:if>

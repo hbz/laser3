@@ -342,13 +342,15 @@ class LinksGenerationService {
             }
             else if(!linkComment && configMap.commentContent.length() > 0) {
                 RefdataValue typeNote = RefdataValue.getByValueAndCategory('Note', RDConstants.DOCUMENT_TYPE)
-                DocContext commentContext = DocContext.findByDoctypeAndLink(typeNote, link)
+                // 4644 DocContext commentContext = DocContext.findByDoctypeAndLink(typeNote, link)
+                DocContext commentContext = DocContext.findByLink(link)
                 if(commentContext) {
                     linkComment = commentContext.owner
                 }
                 else {
                     linkComment = new Doc([type: typeNote])
-                    commentContext = new DocContext([doctype: typeNote, link: link, owner: linkComment])
+                    // 4644 commentContext = new DocContext([doctype: typeNote, link: link, owner: linkComment])
+                    commentContext = new DocContext([link: link, owner: linkComment])
                     commentContext.save()
                 }
                 linkComment.content = configMap.commentContent

@@ -219,7 +219,7 @@
                                         </g:else>
                                     </g:else>
 
-                                </g:link>(${docctx.owner.type.getI10n("value")}) <br />
+                                </g:link>(${docctx.getDocType().getI10n("value")}) <br />
                             </g:if>
                         </g:each>
                     </td>

@@ -222,7 +222,7 @@
                                                           from="${targetDocuments}"
                                                           value="${task.condition.getProperty(field)?.id}"
                                                           optionKey="${{it.id}}"
-                                                          optionValue="${{ (it.owner?.title ?: it.owner?.filename ?: message(code:'template.documents.missing')) + (it.owner?.type ? ' (' + it.owner.type.getI10n("value") + ')' : '') + (it.owner?.confidentiality ? ' (' + it.owner?.confidentiality?.getI10n('value') + ')' : '')}}" />
+                                                          optionValue="${{ (it.owner?.title ?: it.owner?.filename ?: message(code:'template.documents.missing')) + (it.owner?.type ? ' (' + it.getDocType().getI10n("value") + ')' : '') + (it.owner?.confidentiality ? ' (' + it.getDocConfid().getI10n('value') + ')' : '')}}" />
                                             </g:if>
                                             <g:else>
                                                 <g:set var="targetDocuments" value="${targetObject.documents.findAll{ it.status != RDStore.DOC_CTX_STATUS_DELETED && it.owner.contentType == Doc.CONTENT_TYPE_FILE }}" />
@@ -231,7 +231,7 @@
                                                           from="${targetDocuments}"
                                                           value="${task.condition.getProperty(field)?.id}"
                                                           optionKey="${{it.id}}"
-                                                          optionValue="${{ (it.owner?.title ?: it.owner?.filename ?: message(code:'template.documents.missing')) + (it.owner?.type ? ' (' + it.owner.type.getI10n("value") + ')' : '') + (it.owner?.confidentiality ? ' (' + it.owner.confidentiality.getI10n('value') + ')' : '')}}" />
+                                                          optionValue="${{ (it.owner?.title ?: it.owner?.filename ?: message(code:'template.documents.missing')) + (it.owner?.type ? ' (' + it.getDocType().getI10n("value") + ')' : '') + (it.owner?.confidentiality ? ' (' + it.getDocConfid().getI10n('value') + ')' : '')}}" />
 
                                             </g:else>
                                         </div>
