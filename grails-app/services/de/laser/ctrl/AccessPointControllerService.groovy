@@ -34,7 +34,7 @@ class AccessPointControllerService {
         Map<String,Object> result = [:]
         OrgAccessPoint orgAccessPoint = OrgAccessPoint.get(params.id)
         // need to check if contextOrg == orgAccessPoint.org for ORG_CONSORTIUM? The template has no editable elements
-        // in that context (would need to fake a post request), similar for deleteIpRange method.
+        // in that context (would need to fake a post request), similar for deleteAccessPointData method.
         List<IpRange> validRanges = []
         List<IpRange> invalidRanges = []
         // allow multiple ip ranges as input (must be separated by comma)

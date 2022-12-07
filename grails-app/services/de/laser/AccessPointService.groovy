@@ -20,10 +20,10 @@ class AccessPointService {
     MessageSource messageSource
 
     /**
-     * Deletes the given IP range
-     * @param accessPointData the IP range to delete
+     * Deletes the given accessPointData
+     * @param accessPointData to delete
      */
-    void deleteIpRange(AccessPointData accessPointData) {
+    void deleteAccessPointData(AccessPointData accessPointData) {
         accessPointData.delete()
     }
 

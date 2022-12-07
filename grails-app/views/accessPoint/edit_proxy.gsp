@@ -78,7 +78,7 @@
                     <td>${accessPointData.ipCidr}</td>
                     <td class="center aligned">
                         <g:if test="${(accessService.checkPermAffiliation('ORG_BASIC_MEMBER', 'INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR'))}">
-                            <g:link action="deleteIpRange" controller="accessPoint" id="${accessPointData.id}"
+                            <g:link action="deleteAccessPointData" controller="accessPoint" id="${accessPointData.id}"
                                     class="ui negative icon button"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
@@ -148,7 +148,7 @@
                 <td>${accessPointData.ipCidr}</td>
                 <td class="center aligned">
                     <g:if test="${(accessService.checkPermAffiliation('ORG_BASIC_MEMBER', 'INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR'))}">
-                        <g:link action="deleteIpRange" controller="accessPoint" id="${accessPointData.id}"
+                        <g:link action="deleteAccessPointData" controller="accessPoint" id="${accessPointData.id}"
                                 class="ui negative icon button"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">

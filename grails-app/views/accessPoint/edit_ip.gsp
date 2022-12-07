@@ -78,7 +78,7 @@
                     <td>${accessPointData.ipCidr}</td>
                     <td class="center aligned">
                         <g:if test="${(accessService.checkPermAffiliation('ORG_BASIC_MEMBER', 'INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR'))}">
-                            <g:link action="deleteIpRange" controller="accessPoint" id="${accessPointData.id}" params="[tab: 'IPv4']"
+                            <g:link action="deleteAccessPointData" controller="accessPoint" id="${accessPointData.id}" params="[tab: 'IPv4']"
                                     class="ui negative icon button js-open-confirm-modal"
                                     data-confirm-tokenMsg="${message(code: 'confirm.dialog.delete.accessPoint.ip', args: [accessPointData.ipInput])}"
                                     data-confirm-term-how="delete"
@@ -153,7 +153,7 @@
                 <td>${accessPointData.ipCidr}</td>
                 <td class="center aligned">
                     <g:if test="${(accessService.checkPermAffiliation('ORG_BASIC_MEMBER', 'INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR'))}">
-                        <g:link action="deleteIpRange" controller="accessPoint" id="${accessPointData.id}" params="[tab: 'IPv6']"
+                        <g:link action="deleteAccessPointData" controller="accessPoint" id="${accessPointData.id}" params="[tab: 'IPv6']"
                                 class="ui negative icon button js-open-confirm-modal"
                                 data-confirm-tokenMsg="${message(code: 'confirm.dialog.delete.accessPoint.ip', args: [accessPointData.ipInput])}"
                                 data-confirm-term-how="delete"

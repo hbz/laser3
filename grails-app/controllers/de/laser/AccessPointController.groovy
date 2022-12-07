@@ -273,7 +273,7 @@ class AccessPointController  {
      * @see de.laser.oap.OrgAccessPoint
      */
     @Secured(['ROLE_USER'])
-    def edit_maildomain() {
+    def edit_mailDomain() {
         _edit("mailDomain")
     }
 
@@ -371,8 +371,16 @@ class AccessPointController  {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")
     })
-    def deleteIpRange() {
-        accessPointService.deleteIpRange(AccessPointData.get(params.id))
+    def deleteAccessPointData() {
+        Org organisation = accessService.checkPerm("ORG_CONSORTIUM") ? Org.get(params.id) : contextService.getOrg()
+        boolean inContextOrg = organisation.id == contextService.getOrg().id
+
+        if(((accessService.checkPermAffiliation('ORG_BASIC_MEMBER', 'INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')))){
+            accessPointService.deleteAccessPointData(AccessPointData.get(params.id))
+        }else {
+            flash.error = message(code: 'default.noPermissions') as String
+        }
+
         redirect(url: request.getHeader('referer'))
     }
 

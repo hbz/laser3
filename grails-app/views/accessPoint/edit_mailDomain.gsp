@@ -14,7 +14,7 @@
     <ui:controlButtons>
         <ui:exportDropdown>
             <ui:exportDropdownItem>
-                <g:link class="item" action="edit_maildomain"
+                <g:link class="item" action="edit_mailDomain"
                         params="[id: accessPoint.id, exportXLSX: true]">${message(code: 'accessPoint.exportAccessPoint')}</g:link>
             </ui:exportDropdownItem>
         </ui:exportDropdown>
@@ -65,9 +65,9 @@
                 <td>${accessPointData.mailDomain}</td>
                 <td class="center aligned">
                     <g:if test="${(accessService.checkPermAffiliation('ORG_BASIC_MEMBER', 'INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR'))}">
-                        <g:link action="deleteIpRange" controller="accessPoint" id="${accessPointData.id}"
+                        <g:link action="deleteAccessPointData" controller="accessPoint" id="${accessPointData.id}"
                                 class="ui negative icon button js-open-confirm-modal"
-                                data-confirm-tokenMsg="${message(code: 'confirm.dialog.delete.accessPoint.ip', args: [accessPointData.mailDomain])}"
+                                data-confirm-tokenMsg="${message(code: 'confirm.dialog.delete.generic', args: [accessPointData.mailDomain])}"
                                 data-confirm-term-how="delete"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">
@@ -91,11 +91,7 @@
 
                 <div class="ui form">
                     <div class="field">
-                        <label for="mailDomain_id">Mail-Domain
-                            <span class="la-long-tooltip la-popup-tooltip la-delay"
-                                  data-content="${message(code: "accessPoint.ip.input")}">
-                                <i class="question circle icon la-popup"></i></span>
-                        </label>
+                        <label for="mailDomain_id">Mail-Domain</label>
 
                         <g:field type="text" name="mailDomain" id="mailDomain_id" value="${mailDomain}"/>
                     </div>
