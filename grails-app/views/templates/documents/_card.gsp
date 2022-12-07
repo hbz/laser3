@@ -78,8 +78,8 @@
                             <g:else>
                                 ${docctx.owner.title ?: docctx.owner.filename ?: message(code:'template.documents.missing')}
                             </g:else>
-                            <g:if test="${docctx.owner.type}">
-                                (${docctx.owner.type.getI10n("value")})
+                            <g:if test="${docctx.getDocType()}">
+                                (${docctx.getDocType().getI10n("value")})
                             </g:if>
 
                             <ui:documentIcon doc="${docctx.owner}" showText="false" showTooltip="true"/>
@@ -185,8 +185,8 @@
                             <g:else>
                                 ${docctx.owner.title ?: docctx.owner.filename ?: message(code:'template.documents.missing')}
                             </g:else>
-                            <g:if test="${docctx.owner.type}">
-                                (${docctx.owner.type.getI10n("value")})
+                            <g:if test="${docctx.getDocType()}">
+                                (${docctx.getDocType().getI10n("value")})
                             </g:if>
 
                             <ui:documentIcon doc="${docctx.owner}" showText="false" showTooltip="true"/>
@@ -195,6 +195,7 @@
                         <div class="five wide right aligned column">
                             <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i class="download icon"></i></g:link>
 
+                            %{--
                             <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
                                 <laser:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />
                                 <button type="button" class="ui icon blue button la-modern-button editable-cancel" data-ui="modal"
@@ -202,6 +203,7 @@
                                         aria-label="${message(code: 'ariaLabel.change.universal')}">
                                 <i class="pencil icon"></i></button>
                             </g:if>
+                            --}%
                         </div>
 
                     </div>

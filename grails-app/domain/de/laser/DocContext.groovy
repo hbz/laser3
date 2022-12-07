@@ -103,10 +103,10 @@ class DocContext implements ShareableTrait, Comparable {
     }
 
     RefdataValue getDocType() {
-        owner.type
+        owner?.type
     }
     RefdataValue getDocConfid() {
-        owner.confidentiality
+        owner?.confidentiality
     }
 
     /**

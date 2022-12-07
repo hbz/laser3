@@ -102,12 +102,9 @@
                     }
                 %>
                 <g:if test="${(((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3)) && visible && docctx.status != RDStore.DOC_CTX_STATUS_DELETED)}">
-                    <%
-                        securityWorkaroundList.add(docctx as DocContext)
-                    %>
                     <tr>
                         <td class="center aligned">
-                            <g:if test="${docctx.owner.owner.id == contextService.getOrg().id}">
+                            <g:if test="${docctx.owner.owner.id == contextService.getOrg().id && !docctx.sharedFrom}">
                                 <g:set var="blukEnabled" value="${true}" />
                                 <g:checkBox id="bulk_doc_${docctx.owner.id}" name="bulk_doc" value="${docctx.owner.id}" checked="false"/>
                             </g:if>
@@ -131,7 +128,7 @@
                             ${docctx.owner.filename}
                         </td>
                         <td>
-                            ${docctx.owner?.type?.getI10n('value')}
+                            ${docctx.getDocType()?.getI10n('value')}
                         </td>
                         <td>
                             <ui:documentIcon doc="${docctx.owner}" showText="true" showTooltip="false"/>
@@ -187,8 +184,12 @@
                                     </g:if>
                                 </g:if>
                                 <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i class="download icon"></i></g:link>
-                                <g:if test="${accessService.checkMinUserOrgRole(user,docctx.owner.owner,"INST_EDITOR") && inOwnerOrg}">
+                                %{-- todo: !docctx.sharedFrom --}%
+                                <g:if test="${accessService.checkMinUserOrgRole(user,docctx.owner.owner,"INST_EDITOR") && inOwnerOrg && !docctx.sharedFrom}">
                                     <button type="button" class="ui icon blue button la-modern-button la-popup-tooltip la-delay" data-ui="modal" data-href="#modalEditDocument_${docctx.id}" data-content="${message(code:"template.documents.edit")}"><i class="pencil icon"></i></button>
+                                    <%
+                                        securityWorkaroundList.add(docctx as DocContext)
+                                    %>
                                 </g:if>
                                 <g:if test="${!docctx.sharedFrom && !docctx.isShared && accessService.checkMinUserOrgRole(user,docctx.owner.owner,"INST_EDITOR") && inOwnerOrg}">
                                     <g:link controller="${controllerName}" action="deleteDocuments" class="ui icon negative button la-modern-button js-open-confirm-modal"

@@ -139,7 +139,7 @@
                     </dd>
                 </dl>
             </g:if>
-            <g:elseif test="${showConsortiaFunctions}">
+            <g:elseif test="${controllerName != 'myInstitution' && showConsortiaFunctions}">
                 <dl>
                     <dt>
                         <label for="setSharing-${labelId}">${message(code:'template.addDocument.setSharing')}</label>
