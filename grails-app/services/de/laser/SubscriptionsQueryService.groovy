@@ -263,15 +263,21 @@ class SubscriptionsQueryService {
                 needs to be dealt separately, must not be and-linked
                 */
                 if (params.hasPerpetualAccess) {
-                    base_qry += "or s.hasPerpetualAccess = :hasPerpetualAccess) "
-                    qry_params.put('hasPerpetualAccess', (params.hasPerpetualAccess == RDStore.YN_YES.id.toString()) ? true : false)
+                    if(params.hasPerpetualAccess == RDStore.YN_YES.id.toString()) {
+                        base_qry += "or s.hasPerpetualAccess = :hasPerpetualAccess) "
+                        qry_params.put('hasPerpetualAccess', true)
+                    }
+                    else if(params.hasPerpetualAccess == RDStore.YN_NO.id.toString()) {
+                        base_qry += "and s.hasPerpetualAccess = :hasPerpetualAccess) "
+                        qry_params.put('hasPerpetualAccess', false)
+                    }
                     filterSet = true
                 }
                 else base_qry += ")" //opened in line 268 or 272
             }
             else if(params.status != 'FETCH_ALL') base_qry += ")" //opened in line 268 or 272
         }
-        if (params.status == 'FETCH_ALL' && params.hasPerpetualAccess) {
+        if (!(RDStore.SUBSCRIPTION_CURRENT.id.toString() in params.status) && params.hasPerpetualAccess) {
             base_qry += " and s.hasPerpetualAccess = :hasPerpetualAccess "
             qry_params.put('hasPerpetualAccess', (params.hasPerpetualAccess == RDStore.YN_YES.id.toString()) ? true : false)
             filterSet = true

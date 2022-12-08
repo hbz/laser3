@@ -36,11 +36,25 @@
 
             <g:if test="${field.equalsIgnoreCase('identifier')}">
                 <div class="field">
-                    <label for="orgIdentifier">${message(code: 'default.search.identifier')}</label>
+                    <label for="orgIdentifier">
+                        <g:if test="${actionName == 'listInstitution'}">
+                            ${message(code: 'org.institution.search.identifier')}
+                        </g:if>
+                        <g:else>
+                            ${message(code: 'default.search.identifier')}
+                        </g:else>
+                    </label>
                     <div class="ui input">
-                        <input type="text" id="orgIdentifier" name="orgIdentifier"
-                               placeholder="${message(code: 'default.search.identifier.ph')}"
-                               value="${params.orgIdentifier}"/>
+                        <g:if test="${actionName == 'listInstitution'}">
+                            <input type="text" id="orgIdentifier" name="orgIdentifier"
+                                   placeholder="${message(code: 'org.institution.search.identifier.ph')}"
+                                   value="${params.orgIdentifier}"/>
+                        </g:if>
+                        <g:else>
+                            <input type="text" id="orgIdentifier" name="orgIdentifier"
+                                   placeholder="${message(code: 'default.search.identifier.ph')}"
+                                   value="${params.orgIdentifier}"/>
+                        </g:else>
                     </div>
                 </div>
             </g:if>
