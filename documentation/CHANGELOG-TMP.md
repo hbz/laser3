@@ -9,6 +9,8 @@
 
 4658    08.12.2022  dev     3.0         David   Bug         Login: Anmelde-Formular nicht sichtbar
 
+4657    07.12.2022  dev     3.0         Moe     Feature     Excel-Export der Zugangskonfigurationen
+
 4655    07.12.2022  dev     3.0         Andreas Bug         Dropdown der Anbieter wurde falsch bespeist
 
 4652    07.12.2022  dev     3.0         Andreas Feature     Liste der Alternativnamen an Liste der Fächergruppen bzw. Einrichtungstypen angeglichen
