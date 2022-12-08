@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4577    08.12.2022  rc-3.0  3.0         Moe     Feature     Wenn Tabs abstürzen wegen Treffermenge zu hoch eingstellt
+
 4645    08.12.2022  dev     3.0         Moe     Feature     Meine Einrichtungen - Filter "Anbieter" und "Lizenzen der Anbieter"
 
 4659    08.12.2022  dev     3.0         David   Feature     Workflow-Dokumente kennzeichnen

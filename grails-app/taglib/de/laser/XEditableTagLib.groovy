@@ -317,6 +317,57 @@ class XEditableTagLib {
         }
     }
 
+    /**
+     *   Attributes:
+     *   overwriteEditable - if existing, value overwrites global editable
+     */
+    def xEditableDropDown = { attrs, body ->
+        try {
+            boolean editable = _isEditable(request.getAttribute('editable'), attrs.overwriteEditable)
+            def owner    = attrs.owner
+            String field = attrs.field
+
+            if ( editable ) {
+                String oid 			= "${owner.class.name}:${owner.id}"
+                String update_link 	= createLink(controller:'ajax', action: 'editableSetValue').encodeAsHTML()
+                String data_link 	= createLink(controller:'ajaxJson', action: attrs.dataLink).encodeAsHTML()
+                String id 			= attrs.id ?: "${oid}:${field}"
+                String emptyText    = ' data-emptytext="' + ( attrs.emptytext ?: message(code:'default.button.edit.label') ) + '"'
+
+                out << '<span>'
+
+                String oldValue = ''
+                if ((owner[field] == null) || (owner[field] == 'Unknown') || (owner[field].toString().length() == 0)) {
+                }  else {
+                    oldValue = owner[field]
+                }
+
+                // Output an editable link
+                out << "<a href=\"#\" id=\"${id}\" class=\"xEditableManyToOne\""
+
+                out << (owner instanceof SurveyResult ? ' data-onblur="submit"' : ' data-onblur="ignore"')
+
+                out <<  " data-value=\"${oldValue}\" data-pk=\"${oid}\" data-type=\"select\" " +
+                        " data-name=\"${field}\" data-source=\"${data_link}\" data-url=\"${update_link}\" ${emptyText}>"
+
+                out << "${oldValue}</a></span>"
+            }
+            else {
+
+                String oldValue = ''
+                if ((owner[field] == null) || (owner[field] == 'Unknown') || (owner[field].toString().length() == 0)) {
+                }  else {
+                    oldValue = owner[field]
+                }
+                out << ' data-oldvalue="' + oldValue.encodeAsHTML() + '">'
+                out << oldValue.encodeAsHTML()
+            }
+        }
+        catch ( Throwable e ) {
+            log.error("Problem processing editable boolean ${attrs}",e)
+        }
+    }
+
     def simpleHiddenValue = { attrs, body ->
         String default_empty = message(code:'default.button.edit.label')
 
