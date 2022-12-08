@@ -2428,21 +2428,21 @@ class ExportClickMeService {
                     else _setOrgFurtherInformation(result, row, fieldKey, null, 'public')
                 }
                 else if (fieldKey.contains('billingAdress')) {
-                    /*if(contactSources) {
+                    if(contactSources) {
                         contactSources.each { String contactSwitch ->
                             _setOrgFurtherInformation(result, row, fieldKey, null, contactSwitch)
                         }
                     }
-                    else*/
+                    else
                         _setOrgFurtherInformation(result, row, fieldKey, null)
                 }
                 else if (fieldKey.contains('postAdress')) {
-                    /*if(contactSources) {
+                    if(contactSources) {
                         contactSources.each { String contactSwitch ->
                             _setOrgFurtherInformation(result, row, fieldKey, null, contactSwitch)
                         }
                     }
-                    else*/
+                    else
                         _setOrgFurtherInformation(result, row, fieldKey, null)
                 }
                 else if (fieldKey.contains('altnames')) {
@@ -2849,10 +2849,15 @@ class ExportClickMeService {
     private void _setOrgFurtherInformation(Org org, List row, String fieldKey, Subscription subscription = null, String contactSwitch = 'public'){
 
         boolean isPublic = contactSwitch == 'public'
+        String tenantFilter = ''
         if (fieldKey == 'participant.generalContact') {
             if (org) {
-                RefdataValue generalContact = RDStore.PRS_FUNC_GENERAL_CONTACT_PRS
-                List<Contact> contactList = Contact.executeQuery("select c from PersonRole pr join pr.prs p join p.contacts c where pr.org = :org and pr.functionType in (:functionTypes) and c.contentType = :type and p.isPublic = :isPublic", [org: org, functionTypes: [generalContact], type: RDStore.CCT_EMAIL, isPublic: isPublic])
+                Map<String, Object> queryParams = [org: org, functionTypes: [RDStore.PRS_FUNC_GENERAL_CONTACT_PRS], type: RDStore.CCT_EMAIL, isPublic: isPublic]
+                if(!isPublic) {
+                    tenantFilter = ' and p.tenant = :ctx'
+                    queryParams.ctx = contextService.getOrg()
+                }
+                List<Contact> contactList = Contact.executeQuery("select c from PersonRole pr join pr.prs p join p.contacts c where pr.org = :org and pr.functionType in (:functionTypes) and c.contentType = :type and p.isPublic = :isPublic"+tenantFilter, queryParams)
 
                 if (contactList) {
                     row.add([field: contactList.content.join(";"), style: null])
@@ -2865,8 +2870,12 @@ class ExportClickMeService {
 
         } else if (fieldKey == 'participant.billingContact') {
             if (org) {
-                RefdataValue billingContact = RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS
-                List<Contact> contactList = Contact.executeQuery("select c from PersonRole pr join pr.prs p join p.contacts c where pr.org = :org and pr.functionType in (:functionTypes) and c.contentType = :type and p.isPublic = :isPublic", [org: org, functionTypes: [billingContact], type: RDStore.CCT_EMAIL, isPublic: isPublic])
+                Map<String, Object> queryParams = [org: org, functionTypes: [RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS], type: RDStore.CCT_EMAIL, isPublic: isPublic]
+                if(!isPublic) {
+                    tenantFilter = ' and p.tenant = :ctx'
+                    queryParams.ctx = contextService.getOrg()
+                }
+                List<Contact> contactList = Contact.executeQuery("select c from PersonRole pr join pr.prs p join p.contacts c where pr.org = :org and pr.functionType in (:functionTypes) and c.contentType = :type and p.isPublic = :isPublic"+tenantFilter, queryParams)
 
                 if (contactList) {
                     row.add([field: contactList.content.join(";"), style: null])
@@ -2879,11 +2888,19 @@ class ExportClickMeService {
 
         } else if (fieldKey == 'participant.billingAdress') {
             if (org) {
-                RefdataValue billingAdress = RDStore.ADRESS_TYPE_BILLING
-                LinkedHashSet<Address> adressList = org.addresses.findAll { Address adress -> adress.type.findAll { it == billingAdress } }
+                RefdataValue billingAddress = RDStore.ADRESS_TYPE_BILLING
+                Map<String, Object> queryParams = [org: org, type: billingAddress], personRoleParams = [isPublic: isPublic]
+                if(!isPublic) {
+                    tenantFilter = ' and p.tenant = :ctx'
+                    personRoleParams.ctx = contextService.getOrg()
+                }
+                //LinkedHashSet<Address> addressList = org.addresses.findAll { Address adress -> adress.type.findAll { it == billingAdress } }
+                Set<Address> addressList = Address.executeQuery("select a from PersonRole pr join pr.prs p join p.addresses a join a.type type where pr.org = :org and type = :type and p.isPublic = :isPublic"+tenantFilter, queryParams+personRoleParams)
+                if(isPublic)
+                    addressList.addAll(Address.executeQuery("select a from Address a join a.type type where type = :type and a.org = :org", queryParams))
 
-                if (adressList) {
-                    row.add([field: adressList.collect { Address address -> _getAddress(address, org)}.join(";"), style: null])
+                if (addressList) {
+                    row.add([field: addressList.collect { Address address -> _getAddress(address, org)}.join(";"), style: null])
                 } else {
                     row.add([field: '', style: null])
                 }
@@ -2893,12 +2910,19 @@ class ExportClickMeService {
 
         } else if (fieldKey == 'participant.postAdress') {
             if (org) {
+                RefdataValue postAddress = RDStore.ADRESS_TYPE_POSTAL
+                Map<String, Object> queryParams = [org: org, type: postAddress], personRoleParams = [isPublic: isPublic]
+                if(!isPublic) {
+                    tenantFilter = ' and p.tenant = :ctx'
+                    personRoleParams.ctx = contextService.getOrg()
+                }
+                //LinkedHashSet<Address> addressList = org.addresses.findAll { Address adress -> adress.type.findAll { it == postAdress } }
+                Set<Address> addressList = Address.executeQuery("select a from PersonRole pr join pr.prs p join p.addresses a join a.type type where pr.org = :org and type = :type and p.isPublic = :isPublic"+tenantFilter, queryParams+personRoleParams)
+                if(isPublic)
+                    addressList.addAll(Address.executeQuery("select a from Address a join a.type type where type = :type and a.org = :org", queryParams))
 
-                RefdataValue postAdress = RDStore.ADRESS_TYPE_POSTAL
-                LinkedHashSet<Address> adressList = org.addresses.findAll { Address adress -> adress.type.findAll { it == postAdress } }
-
-                if (adressList) {
-                    row.add([field: adressList.collect { Address address -> _getAddress(address, org)}.join(";"), style: null])
+                if (addressList) {
+                    row.add([field: addressList.collect { Address address -> _getAddress(address, org)}.join(";"), style: null])
                 } else {
                     row.add([field: '', style: null])
                 }
@@ -3078,21 +3102,21 @@ class ExportClickMeService {
                         titles << RDStore.PRS_FUNC_FUNC_BILLING_ADDRESS."${localizedValue}"
                 }
                 else if (fieldKey == 'participant.billingAdress') {
-                    /*if(contactSources) {
+                    if(contactSources) {
                         contactSources.each { String contactSwitch ->
                             titles << "${RDStore.ADRESS_TYPE_BILLING."${localizedValue}"} ${messageSource.getMessage("org.export.column.${contactSwitch}", null, locale)}"
                         }
                     }
-                    else */
+                    else
                         titles << RDStore.ADRESS_TYPE_BILLING."${localizedValue}"
                 }
                 else if (fieldKey == 'participant.postAdress') {
-                    /*if(contactSources) {
+                    if(contactSources) {
                         contactSources.each { String contactSwitch ->
                             titles << "${RDStore.ADRESS_TYPE_POSTAL."${localizedValue}"} ${messageSource.getMessage("org.export.column.${contactSwitch}", null, locale)}"
                         }
                     }
-                    else*/
+                    else
                         titles << RDStore.ADRESS_TYPE_POSTAL."${localizedValue}"
                 }
                 else if (fieldKey == 'participant.readerNumbers') {
