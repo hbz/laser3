@@ -187,7 +187,7 @@ class AccessPointService {
 
             //sheetData.put(escapeService.escapeString(accessPoint.name), [titleRow: titles, columnData: accessPointData])
         }
-        sheetData.put(escapeService.escapeString(messageSource.getMessage('org.nav.accessPoints', null, locale),), [titleRow: titles, columnData: accessPointData])
+        sheetData.put(escapeService.escapeString(messageSource.getMessage('org.accessPoints.export', null, locale),), [titleRow: titles, columnData: accessPointData])
         return exportService.generateXLSXWorkbook(sheetData)
     }
 
