@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4658    08.12.2022  dev     3.0         David   Bug         Login: Anmelde-Formular nicht sichtbar
+
 4651    07.12.2022  dev     3.0         David   Bug         Dokumente teilen @ Meine Dokumente
 
 4644    07.12.2022  dev     3.0         David   Feature     Doc vs. DocContext - Redundanzen entfernen
