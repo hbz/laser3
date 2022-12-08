@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4645    08.12.2022  dev     3.0         Moe     Feature     Meine Einrichtungen - Filter "Anbieter" und "Lizenzen der Anbieter"
+
 4659    08.12.2022  dev     3.0         David   Feature     Workflow-Dokumente kennzeichnen
 
 4658    08.12.2022  dev     3.0         David   Bug         Login: Anmelde-Formular nicht sichtbar

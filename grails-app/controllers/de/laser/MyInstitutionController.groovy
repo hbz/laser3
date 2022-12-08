@@ -2890,6 +2890,75 @@ join sub.orgRelations or_sub where
         String tmpQuery = "select o.id " + fsq.query.minus("select o ")
         List memberIds = Org.executeQuery(tmpQuery, fsq.queryParams)
 
+
+        Map queryParamsProviders = [
+                subOrg      : result.institution,
+                subRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA],
+                paRoleTypes : [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
+        ]
+
+        Map queryParamsSubs = [
+                subOrg      : result.institution,
+                subRoleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIA],
+                paRoleTypes : [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
+        ]
+
+        String queryProviders = '''select distinct(or_pa.org) from OrgRole or_pa 
+join or_pa.sub sub 
+join sub.orgRelations or_sub where
+    ( sub = or_sub.sub and or_sub.org = :subOrg ) and
+    ( or_sub.roleType in (:subRoleTypes) ) and
+        ( or_pa.roleType in (:paRoleTypes) )'''
+
+        String querySubs = '''select distinct(or_pa.sub) from OrgRole or_pa 
+join or_pa.sub sub 
+join sub.orgRelations or_sub where
+    ( sub = or_sub.sub and or_sub.org = :subOrg ) and
+    ( or_sub.roleType in (:subRoleTypes) ) and
+        ( or_pa.roleType in (:paRoleTypes) ) and sub.instanceOf is null'''
+
+        if (params.subStatus) {
+            queryProviders +=  " and (sub.status = :subStatus)" // ( closed in line 213; needed to prevent consortia members without any subscriptions because or would lift up the other restrictions)
+            querySubs +=  " and (sub.status = :subStatus)"
+            RefdataValue subStatus = RefdataValue.get(params.subStatus)
+            queryParamsProviders << [subStatus: subStatus]
+            queryParamsSubs << [subStatus: subStatus]
+        }
+        if (params.subValidOn || params.subPerpetual) {
+            if (params.subValidOn && !params.subPerpetual) {
+                queryProviders += " and (sub.startDate <= :validOn or sub.startDate is null) and (sub.endDate >= :validOn or sub.endDate is null)"
+                querySubs += " and (sub.startDate <= :validOn or sub.startDate is null) and (sub.endDate >= :validOn or sub.endDate is null)"
+                queryParamsProviders << [validOn: DateUtils.parseDateGeneric(params.subValidOn)]
+                queryParamsSubs << [validOn: DateUtils.parseDateGeneric(params.subValidOn)]
+            }
+            else if (params.subValidOn && params.subPerpetual) {
+                queryProviders += " and ((sub.startDate <= :validOn or sub.startDate is null) and (sub.endDate >= :validOn or sub.endDate is null or sub.hasPerpetualAccess = true))"
+                querySubs += " and ((sub.startDate <= :validOn or sub.startDate is null) and (sub.endDate >= :validOn or sub.endDate is null or sub.hasPerpetualAccess = true))"
+                queryParamsProviders << [validOn: DateUtils.parseDateGeneric(params.subValidOn)]
+                queryParamsSubs << [validOn: DateUtils.parseDateGeneric(params.subValidOn)]
+            }
+        }
+
+
+
+        List<Org> providers = Org.executeQuery(queryProviders, queryParamsProviders)
+
+
+/*        List<Subscription> subscriptions = []
+        if(providers || params.filterPvd) {
+            querySubs += " and or_pa.org.id in (:providers)"
+            if(params.filterPvd){
+                queryParamsSubs << [providers: params.list('filterPvd').collect { Long.parseLong(it) }]
+            }
+            else {
+                queryParamsSubs << [providers: providers.collect { it.id }]
+            }
+            subscriptions = Subscription.executeQuery(querySubs, queryParamsSubs)
+        }
+        result.subscriptions = subscriptions*/
+
+        result.providers = providers
+
 		prf.setBenchmark('query')
 
         if (params.filterPropDef && memberIds) {

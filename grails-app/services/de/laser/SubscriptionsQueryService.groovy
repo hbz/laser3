@@ -159,6 +159,23 @@ class SubscriptionsQueryService {
             filterSet = true
         }
 
+        if (params.providers && params.providers != "") {
+            base_qry += (" and  exists ( select orgR from OrgRole as orgR where orgR.sub = s and orgR.org.id in (:providers)) ")
+            if (params instanceof GrailsParameterMap) {
+                qry_params.put('providers', (params.list('providers').collect { Long.parseLong(it) }))
+            } else {
+                if (params.providers instanceof List<String>) {
+                    qry_params.put('providers', (params.providers.collect { Long.parseLong(it) }))
+                } else {
+                    if (params.providers instanceof List<Long>) {
+                        qry_params.put('providers', (params.providers))
+                    }
+                }
+            }
+
+            filterSet = true
+        }
+
         if (params.q?.length() > 0) {
             base_qry += (
                     " and ( genfunc_filter_matcher(s.name, :name_filter) = true " + // filter by subscription
