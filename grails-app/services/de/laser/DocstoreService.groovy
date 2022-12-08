@@ -120,7 +120,7 @@ class DocstoreService {
                 if((parentAtChild && docctx.sharedFrom) || !parentAtChild && docctx.owner?.owner?.id == contextOrg.id)
                     visible = true
             }
-            if(docctx.owner?.contentType == Doc.CONTENT_TYPE_FILE && docctx.status != RDStore.DOC_CTX_STATUS_DELETED) {
+            if(docctx.isDocAFile() && docctx.status != RDStore.DOC_CTX_STATUS_DELETED) {
                 if((docctx.sharedFrom || inTargetOrg) && visible)
                     sharedItems.add(docctx)
                 else if(visible)

@@ -20,7 +20,7 @@
 <g:if test="${accessService.checkPerm("ORG_BASIC_MEMBER,ORG_CONSORTIUM")}">
     <ui:card message="${controllerName == 'survey' ? 'surveyConfigsInfo.docs' : 'license.documents'}" class="documents la-js-hideable ${css_class}" href="${controllerName == 'survey' ? '#modalCreateDocument' : ''}" editable="${(controllerName == 'survey')  ? (actionName == 'show') : (editable || editable2)}">
         <g:each in="${baseItems}" var="docctx">
-           <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_FILE) && (docctx.status?.value != 'Deleted'))}">
+           <g:if test="${docctx.isDocAFile() && (docctx.status?.value != 'Deleted')}">
                 <div class="ui small feed content la-js-dont-hide-this-card">
                     <div class="ui grid summary">
                         <div class="nine wide column">

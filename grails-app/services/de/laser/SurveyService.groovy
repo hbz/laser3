@@ -1278,7 +1278,7 @@ class SurveyService {
         oldSurveyConfig.documents.each { dctx ->
             //Copy Docs
             if (params.copySurvey.copyDocs) {
-                if ((dctx.owner?.contentType == Doc.CONTENT_TYPE_FILE) && (dctx.status != RDStore.DOC_CTX_STATUS_DELETED)) {
+                if (dctx.isDocAFile() && (dctx.status != RDStore.DOC_CTX_STATUS_DELETED)) {
                     Doc clonedContents = new Doc(
                             type: dctx.getDocType(),
                             confidentiality: dctx.getDocConfid(),
@@ -1305,7 +1305,7 @@ class SurveyService {
             }
             //Copy Announcements
             if (params.copySurvey.copyAnnouncements) {
-                if ((dctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(dctx.domain) && (dctx.status != RDStore.DOC_CTX_STATUS_DELETED)) {
+                if (dctx.isDocANote() && !(dctx.domain) && (dctx.status != RDStore.DOC_CTX_STATUS_DELETED)) {
                     Doc clonedContents = new Doc(
                             type: dctx.getDocType(),
                             confidentiality: dctx.getDocConfid(),
