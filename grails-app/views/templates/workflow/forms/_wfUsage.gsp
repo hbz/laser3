@@ -216,7 +216,7 @@
                                     <div id="fileUploadWrapper_dropdown_${field}" class="ui segment" style="box-shadow:none;${taskConditionFileExists ? '' : 'display:none;'}">
                                         <div class="field">
                                             <g:if test="${wfInfo}"> %{-- currentWorkflows --}%
-                                                <g:set var="targetDocuments" value="${wfInfo.target.documents.findAll{ it.status != RDStore.DOC_CTX_STATUS_DELETED && it.owner.contentType == Doc.CONTENT_TYPE_FILE }}" />
+                                                <g:set var="targetDocuments" value="${wfInfo.target.documents.findAll{ it.status != RDStore.DOC_CTX_STATUS_DELETED && it.isDocAFile() }}" />
                                                 <g:select class="ui dropdown" id="${prefixOverride}_${field}" name="${prefixOverride}_${field}"
                                                           noSelection="${['' : message(code:'default.select.choose.label')]}"
                                                           from="${targetDocuments}"
@@ -225,7 +225,7 @@
                                                           optionValue="${{ (it.owner?.title ?: it.owner?.filename ?: message(code:'template.documents.missing')) + (it.getDocType() ? ' (' + it.getDocType().getI10n("value") + ')' : '') + (it.getDocConfid() ? ' (' + it.getDocConfid().getI10n('value') + ')' : '')}}" />
                                             </g:if>
                                             <g:else>
-                                                <g:set var="targetDocuments" value="${targetObject.documents.findAll{ it.status != RDStore.DOC_CTX_STATUS_DELETED && it.owner.contentType == Doc.CONTENT_TYPE_FILE }}" />
+                                                <g:set var="targetDocuments" value="${targetObject.documents.findAll{ it.status != RDStore.DOC_CTX_STATUS_DELETED && it.isDocAFile() }}" />
                                                 <g:select class="ui dropdown" id="${prefixOverride}_${field}" name="${prefixOverride}_${field}"
                                                           noSelection="${['' : message(code:'default.select.choose.label')]}"
                                                           from="${targetDocuments}"

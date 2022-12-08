@@ -41,6 +41,8 @@
         <div class="column"><i aria-hidden="true" class="la-star slash icon"></i>la-star slash</div>
         <div class="column"><i aria-hidden="true" class="la-redo slash icon"></i>la-redo slash</div>
         <div class="column"><i aria-hidden="true" class="la-exchange slash icon"></i>la-exchange slash</div>
+        <div class="column"><i aria-hidden="true" class="la-sort-jan-dec icon"></i>la-sort-jan-dec</div>
+        <div class="column"><i aria-hidden="true" class="la-sort-jan-dec icon"></i>la-sort-dec-jan</div>
     </div>
 
     <div class="ui top attached label">Zusätzliche Icons in Laser</div>

@@ -100,7 +100,7 @@
                         <td>
                             %{--ERMS-4524--}%
                             <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}" />
-                            <g:if test="${docctx.owner.contentType == Doc.CONTENT_TYPE_FILE && supportedMimeType}">
+                            <g:if test="${docctx.isDocAFile() && supportedMimeType}">
                                 <a href="#documentPreview" data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title}</a>
                             </g:if>
                             <g:else>
@@ -122,7 +122,7 @@
                             </span>
                         </td>
                         <td class="x">
-                            <g:if test="${((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3))}">
+                            <g:if test="${docctx.isDocAFile()}">
 
                                 <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i
                                         class="download icon"></i></g:link>

@@ -1,4 +1,4 @@
-<%@page import="de.laser.storage.RDConstants; org.apache.commons.lang3.RandomStringUtils; de.laser.storage.RDStore; de.laser.*; de.laser.interfaces.CalculatedType" %>
+<%@page import="de.laser.workflow.WfWorkflow; de.laser.storage.RDConstants; org.apache.commons.lang3.RandomStringUtils; de.laser.storage.RDStore; de.laser.*; de.laser.interfaces.CalculatedType" %>
 <laser:serviceInjection/>
 <%
     boolean parentAtChild = false
@@ -104,7 +104,7 @@
                         }
                     }
                 %>
-                <g:if test="${(((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3)) && visible && docctx.status != RDStore.DOC_CTX_STATUS_DELETED)}">
+                <g:if test="${docctx.isDocAFile() && visible && (docctx.status != RDStore.DOC_CTX_STATUS_DELETED)}">
                     <tr>
                         <g:if test="${!(controllerName == 'myInstitution' && actionName == 'subscriptionsManagement')}">
                             <td class="center aligned">
@@ -122,13 +122,27 @@
                         <td>
                             <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}" />
                             <strong>
-                                <g:if test="${docctx.owner.contentType == Doc.CONTENT_TYPE_FILE && visible && supportedMimeType}">
+                                <g:if test="${docctx.isDocAFile() && visible && supportedMimeType}">
                                     <a href="#documentPreview" data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title}</a>
                                 </g:if>
                                 <g:else>
                                     ${docctx.owner.title}
                                 </g:else>
                             </strong>
+                            <%
+                                List<WfWorkflow> usedByWorkflowsList = []
+                                WfWorkflow.getWorkflowsByObject( instance ).each { wf ->
+                                    if (docctx.isUsedByWorkflow(wf)) {
+                                        usedByWorkflowsList.add(wf)
+                                    }
+                                }
+                                if (usedByWorkflowsList) { print '&nbsp;' }
+                            %>
+                            <g:each in="${usedByWorkflowsList}" var="ctxWorkflow">
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="Wird referenziert in: ${ctxWorkflow.title}">
+                                    <i class="exclamation circle brown icon"></i>
+                                </span>
+                            </g:each>
                             <br />
                             ${docctx.owner.filename}
                         </td>
@@ -162,7 +176,7 @@
                         --%>
                         </g:if>
                         <td class="x">
-                            <g:if test="${((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3))}">
+                            <g:if test="${docctx.isDocAFile()}">
                                 <g:if test="${instance?.respondsTo('showUIShareButton')}">
                                     <g:if test="${docctx.sharedFrom}">
                                         <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">

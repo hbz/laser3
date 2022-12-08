@@ -74,6 +74,7 @@ class SurveyController {
     SurveyControllerService surveyControllerService
     SurveyService surveyService
     TaskService taskService
+    CompareService compareService
 
     //-----
 

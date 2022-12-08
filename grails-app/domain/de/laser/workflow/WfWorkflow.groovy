@@ -1,5 +1,6 @@
 package de.laser.workflow
 
+import de.laser.DocContext
 import de.laser.License
 import de.laser.Org
 import de.laser.RefdataValue
@@ -200,6 +201,34 @@ class WfWorkflow extends WfWorkflowBase {
     boolean isFlaggedAsNew(User currentUser) {
         long timeWindow = currentUser.getSettingsValue(UserSetting.KEYS.DASHBOARD_ITEMS_TIME_WINDOW, 14) * 86400 * 1000
         return userLastUpdated ? (userLastUpdated.getTime() + timeWindow) > System.currentTimeMillis() : false
+    }
+
+    Set<DocContext> getCurrentDocContexts() {
+        Set<DocContext> dcList = []
+
+        getSequence().each {task ->
+            WfCondition c = task.getCondition()
+            if (c.file1) dcList.add(c.file1)
+            if (c.file2) dcList.add(c.file2)
+            if (c.file3) dcList.add(c.file3)
+            if (c.file4) dcList.add(c.file4)
+        }
+        dcList
+    }
+
+    static List<WfWorkflow> getWorkflowsByObject(def obj) {
+        List<WfWorkflow> workflows = []
+
+        if (obj instanceof Org) {
+            workflows = findAllByOrg(obj)
+        }
+        else if (obj instanceof License) {
+            workflows = findAllByLicense(obj)
+        }
+        else if (obj instanceof Subscription) {
+            workflows = findAllBySubscription(obj)
+        }
+        workflows
     }
 
     /**

@@ -306,7 +306,7 @@ a .ui.circular.label {
   }
 }
 .ui.label.la-labelBlock,
-.la-label-accordion{
+.ui.label.la-label-accordion{
   display: block;
   letter-spacing: 0.04em;
 }

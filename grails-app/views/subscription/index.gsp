@@ -179,7 +179,8 @@
         </div>
     </div><!--.row-->
 <%
-    Map<String, String> sortFieldMap = ['tipp.sortname': message(code: 'title.label')]
+    Map<String, String>
+    sortFieldMap = ['tipp.sortname': message(code: 'title.label')]
     if (journalsOnly) {
         sortFieldMap['startDate'] = message(code: 'default.from')
         sortFieldMap['endDate'] = message(code: 'default.to')
@@ -209,7 +210,7 @@
 <div class="ui form">
     <div class="three wide fields">
         <div class="field">
-            <ui:sortingDropdown from="${sortFieldMap}" sort="${params.sort}" order="${params.order}"/>
+            <ui:sortingDropdown noSelection="${message(code:'default.select.choose.label')}" from="${sortFieldMap}" sort="${params.sort}" order="${params.order}"/>
         </div>
     </div>
 </div>
@@ -490,9 +491,10 @@
                                                     <%-- Coverage Details END --%>
                                                 </div>
                                             </div>
-                                            <%-- Editable Area START--%>
+                                            <%-- My Area START--%>
                                             <div class="seven wide column">
-                                                <i class="grey icon circular inverted edit la-icon-absolute"></i>
+                                                <i class="grey icon circular inverted fingerprint la-icon-absolute la-popup-tooltip la-delay"
+                                                   data-content="${message(code: 'tipp.tooltip.myArea')}"></i>
 
                                                 <div class="ui la-segment-with-icon">
 
@@ -597,7 +599,7 @@
                                                     </div>
                                                 </div>
                                             </div>
-                                            <%-- Editable Area END ---%>
+                                            <%-- My Area END ---%>
                                         </div>
                                     </div>
                                 </div>
@@ -606,295 +608,6 @@
                     </div>
                 </div>
             </g:if>
-
-%{--                        <table class="ui sortable celled la-js-responsive-table la-table table la-ignore-fixed la-bulk-header">
-                            <thead>
-                            <tr>
-                                <th></th>
-                                <th>${message(code: 'sidewide.number')}</th>
-                                <%--<g:sortableColumn class="eight wide" params="${params}" property="tipp.sortname"
-                                                  title=""/>--%>
-                                <th class="eight wide">${message(code: 'title.label')}</th>
-                                <%-- legacy ??? <th class="one wide">${message(code: 'subscription.details.print-electronic')}</th>--%>
-                                <th class="four wide">${message(code: 'default.date.label')}</th>
-                                <th class="two wide">${message(code: 'subscription.details.access_dates')}</th>
-                                <th class="two wide"><g:message code="subscription.details.prices"/></th>
-                                <g:if test="${subscription.ieGroups.size() > 0}">
-                                    <th class="two wide"><g:message code="subscription.details.ieGroups"/></th>
-                                </g:if>
-                                <th class="one wide"></th>
-                            </tr>
-                            <tr>
-                                <th rowspan="2" colspan="3"></th>
-                                <g:if test="${journalsOnly}">
-                                <%--<g:sortableColumn class="la-smaller-table-head" params="${params}" property="startDate"
-                                                  title=""/>--%>
-                                    <th class="la-smaller-table-head">${message(code: 'default.from')}</th>
-                                </g:if>
-                                <g:else>
-                                <%--<g:sortableColumn class="la-smaller-table-head" params="${params}" property="tipp.dateFirstInPrint"
-                                                  title=""/>--%>
-                                    <th class="la-smaller-table-head">${message(code: 'tipp.dateFirstInPrint')}</th>
-                                </g:else>
-                            <%--<g:sortableColumn class="la-smaller-table-head" params="${params}" property="tipp.accessStartDate"
-                                              title=""/>--%>
-                                <th class="la-smaller-table-head">${message(code: 'default.from')}</th>
-                                <th rowspan="2" colspan="2"></th>
-                            </tr>
-                            <tr>
-                                <g:if test="${journalsOnly}">
-                                <%--<g:sortableColumn class="la-smaller-table-head" params="${params}" property="endDate"
-                                                  title=""/>--%>
-                                    <th class="la-smaller-table-head">${message(code: 'default.to')}</th>
-                                </g:if>
-                                <g:else>
-                                <%--<g:sortableColumn class="la-smaller-table-head" params="${params}" property="tipp.dateFirstOnline"
-                                                  title=""/>--%>
-                                    <th class="la-smaller-table-head">${message(code: 'tipp.dateFirstOnline')}</th>
-                                </g:else>
-                            <%--<g:sortableColumn class="la-smaller-table-head" params="${params}" property="tipp.accessEndDate"
-                                              title=""/>--%>
-                                <th class="la-smaller-table-head">${message(code: 'default.to')}</th>
-                            </tr>
-                            <tr>
-                                <g:if test="${editable}">
-                                    <th>
-                                        <input id="select-all" type="checkbox" name="chkall" onClick="JSPC.app.selectAll()"/>
-                                    </th>
-                                    <th colspan="2">
-                                        <g:set var="selected_label" value="${message(code: 'default.selected.label')}"/>
-                                        <div class="ui selection fluid dropdown la-clearable">
-                                            <input type="hidden" id="bulkOperationSelect" name="bulkOperation">
-                                            <i class="dropdown icon"></i>
-
-                                            <div class="default text">${message(code: 'default.select.choose.label')}</div>
-
-                                            <div class="menu">
-                                                <div class="item"
-                                                     data-value="edit">${message(code: 'default.edit.label', args: [selected_label])}</div>
-
-                                                <div class="item"
-                                                     data-value="remove">${message(code: 'default.remove.label', args: [selected_label])}</div>
-                                                <g:if test="${institution.getCustomerType() == 'ORG_CONSORTIUM'}">
-                                                    <div class="item"
-                                                         data-value="removeWithChildren">${message(code: 'subscription.details.remove.withChildren.label')}</div>
-                                                </g:if>
-                                            </div>
-                                        </div>
-                                        <!--
-                                        <select id="bulkOperationSelect" name="bulkOperation" class="ui wide dropdown">
-                                            <option value="edit">${message(code: 'default.edit.label', args: [selected_label])}</option>
-                                            <option value="remove">${message(code: 'default.remove.label', args: [selected_label])}</option>
-                                        </select>
-                                        -->
-                                    </th>
-                                <%-- legacy??
-                                <th>
-                                    <ui:simpleHiddenValue id="bulk_medium2" name="bulk_medium2" type="refdata"
-                                                             category="${RDConstants.IE_MEDIUM}"/>
-                                </th>--%>
-                                    <th>
-                                        <%--<ui:datepicker hideLabel="true"
-                                                          placeholder="${message(code: 'default.from')}"
-                                                          inputCssClass="la-input-small" id="bulk_start_date"
-                                                          name="bulk_start_date"/>
-
-
-                                        <ui:datepicker hideLabel="true"
-                                                          placeholder="${message(code: 'default.to')}"
-                                                          inputCssClass="la-input-small" id="bulk_end_date"
-                                                          name="bulk_end_date"/>--%>
-                                    </th>
-                                    <th>
-                                        <ui:datepicker hideLabel="true"
-                                                       placeholder="${message(code: 'default.from')}"
-                                                       inputCssClass="la-input-small" id="bulk_access_start_date"
-                                                       name="bulk_access_start_date"/>
-
-
-                                        <ui:datepicker hideLabel="true"
-                                                       placeholder="${message(code: 'default.to')}"
-                                                       inputCssClass="la-input-small" id="bulk_access_end_date"
-                                                       name="bulk_access_end_date"/>
-                                    </th>
-                                    <th>
-
-                                    </th>
-                                    <g:if test="${subscription.ieGroups.size() > 0}">
-                                        <th class="two wide">
-                                            <select class="ui dropdown" name="titleGroupInsert" id="titleGroupInsert">
-                                                <option value="">${message(code: 'default.select.choose.label')}</option>
-                                                <g:each in="${subscription.ieGroups.sort { it.name }}" var="titleGroup">
-                                                    <option value="${titleGroup.id}">${titleGroup.name}</option>
-                                                </g:each>
-                                            </select>
-                                        </th>
-                                    </g:if>
-                                    <th>
-
-                                        <button data-position="top right"
-                                                data-content="${message(code: 'default.button.apply_batch.label')}"
-                                                type="submit" onClick="return JSPC.app.confirmSubmit()"
-                                                class="ui icon button la-popup-tooltip la-delay"><i class="check icon"></i>
-                                        </button>
-
-                                    </th>
-                                </g:if>
-                                <g:else>
-                                    <g:if test="${subscription.ieGroups.size() > 0}">
-                                        <th colspan="10"></th>
-                                    </g:if>
-                                    <g:else>
-                                        <th colspan="9"></th>
-                                    </g:else>
-                                </g:else>
-                            </tr>
-                            </thead>
-                            <tbody>
-
-                            <g:if test="${entitlements}">
-
-                                <g:each in="${entitlements}" var="ie">
-                                    <tr>
-                                        <td><g:if test="${editable}"><input type="checkbox" name="_bulkflag.${ie.id}"
-                                                                            class="bulkcheck"/></g:if></td>
-                                        <td>${counter++}</td>
-                                        <td>
-                                            <!-- START TEMPLATE -->
-                                            <laser:render template="/templates/title_short"
-                                                          model="${[ie         : ie, tipp: ie.tipp,
-                                                                    showPackage: true, showPlattform: true, showCompact: true, showEmptyFields: false]}"/>
-                                            <!-- END TEMPLATE -->
-                                        </td>
-                                        <%-- legacy???
-                                        <td>
-                                            ${ie.tipp.medium}
-                                        </td>
-                                        --%>
-                                        <td class="coverageStatements la-tableCard" data-entitlement="${ie.id}">
-                                            <laser:render template="/templates/tipps/coverages"
-                                                          model="${[ie: ie, tipp: ie.tipp]}"/>
-                                        </td>
-                                        <td>
-                                        <!-- von --->
-                                            <g:if test="${editable}">
-                                                <ui:xEditable owner="${ie}" type="date" field="accessStartDate"/>
-                                                <i class="grey question circle icon la-popup-tooltip la-delay"
-                                                   data-content="${message(code: 'subscription.details.access_start.note')}"></i>
-                                            </g:if>
-                                            <g:else>
-                                                <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                                              date="${ie.accessStartDate}"/>
-                                            </g:else>
-                                            <ui:dateDevider/>
-                                        <!-- bis -->
-                                            <g:if test="${editable}">
-                                                <ui:xEditable owner="${ie}" type="date" field="accessEndDate"/>
-                                                <i class="grey question circle icon la-popup-tooltip la-delay"
-                                                   data-content="${message(code: 'subscription.details.access_end.note')}"></i>
-                                            </g:if>
-                                            <g:else>
-                                                <g:formatDate format="${message(code: 'default.date.format.notime')}"
-                                                              date="${ie.accessEndDate}"/>
-                                            </g:else>
-                                        </td>
-                                        <td>
-                                            <g:each in="${ie.priceItems}" var="priceItem" status="i">
-                                                <g:message code="tipp.price.listPrice"/>: <ui:xEditable field="listPrice"
-                                                                                                        owner="${priceItem}"
-                                                                                                        format=""/> <ui:xEditableRefData
-                                                    field="listCurrency" owner="${priceItem}"
-                                                    config="Currency"/> <%--<g:formatNumber number="${priceItem.listPrice}" type="currency" currencyCode="${priceItem.listCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%><br/>
-                                                <g:message code="tipp.price.localPrice"/>: <ui:xEditable field="localPrice"
-                                                                                                         owner="${priceItem}"/> <ui:xEditableRefData
-                                                    field="localCurrency" owner="${priceItem}"
-                                                    config="Currency"/> <%--<g:formatNumber number="${priceItem.localPrice}" type="currency" currencyCode="${priceItem.localCurrency.value}" currencySymbol="${priceItem.listCurrency.value}"/>--%>
-                                            <%--<ui:xEditable field="startDate" type="date"
-                                                             owner="${priceItem}"/><ui:dateDevider/><ui:xEditable
-                                                field="endDate" type="date"
-                                                owner="${priceItem}"/>  <g:formatDate format="${message(code:'default.date.format.notime')}" date="${priceItem.startDate}"/>--%>
-
-                                                <g:if test="${editable}">
-                                                    <span class="right floated">
-                                                        <g:link controller="subscription" action="removePriceItem"
-                                                                params="${[priceItem: priceItem.id, id: subscription.id]}"
-                                                                class="ui compact icon button negative tiny"><i
-                                                                class="ui icon minus"
-                                                                data-content="Preis entfernen"></i></g:link>
-                                                    </span>
-                                                </g:if>
-                                                <g:if test="${i < ie.priceItems.size() - 1}"><hr></g:if>
-                                            </g:each>
-                                            <g:if test="${editable && ie.priceItems.size() < 1}">
-                                                <g:link action="addEmptyPriceItem" class="ui icon blue button la-modern-button"
-                                                        params="${[ieid: ie.id, id: subscription.id]}">
-                                                    <i class="money icon la-popup-tooltip la-delay"
-                                                       data-content="${message(code: 'subscription.details.addEmptyPriceItem.info')}"></i>
-                                                </g:link>
-                                            </g:if>
-                                        </td>
-                                        <g:if test="${subscription.ieGroups.size() > 0}">
-                                            <td>
-                                                <div class="la-icon-list">
-                                                    <g:each in="${ie.ieGroups.sort { it.ieGroup.name }}" var="titleGroup">
-                                                        <div class="item">
-                                                            <i class="grey icon object group la-popup-tooltip la-delay"
-                                                               data-content="${message(code: 'issueEntitlementGroup.label')}"></i>
-
-                                                            <div class="content">
-                                                                <g:link controller="subscription" action="index"
-                                                                        id="${subscription.id}"
-                                                                        params="[titleGroup: titleGroup.ieGroup.id]">${titleGroup.ieGroup.name}</g:link>
-                                                            </div>
-                                                        </div>
-                                                    </g:each>
-                                                </div>
-<                                                <g:if test="${editable}">>
-                                                    <div class="ui grid">
-                                                        <div class="right aligned wide column">
-                                                            <g:link action="editEntitlementGroupItem"
-                                                                    params="${[cmd: 'edit', ie: ie.id, id: subscription.id]}"
-                                                                    class="ui icon button trigger-modal la-popup-tooltip la-delay"
-                                                                    data-content="${message(code: 'subscription.details.ieGroups.edit')}">
-                                                                <i class="object group icon"></i>
-                                                            </g:link>
-                                                        </div>
-                                                    </div>
-                                                </g:if>
-
-                                            </td>
-                                        </g:if>
-                                        <td class="x">
-                                            <g:if test="${editable}">
-                                                <g:if test="${subscription.ieGroups.size() > 0}">
-                                                    <g:link action="removeEntitlementWithIEGroups"
-                                                            class="ui icon negative button la-modern-button js-open-confirm-modal"
-                                                            params="${[ieid: ie.id, sub: subscription.id]}"
-                                                            role="button"
-                                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.entitlementWithIEGroups", args: [ie.name])}"
-                                                            data-confirm-term-how="delete"
-                                                            aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                        <i class="trash alternate outline icon"></i>
-                                                    </g:link>
-                                                </g:if>
-                                                <g:else>
-                                                    <g:link action="removeEntitlement"
-                                                            class="ui icon negative button la-modern-button js-open-confirm-modal"
-                                                            params="${[ieid: ie.id, sub: subscription.id]}"
-                                                            role="button"
-                                                            data-confirm-tokenMsg="${message(code: "confirm.dialog.delete.entitlement", args: [ie.name])}"
-                                                            data-confirm-term-how="delete"
-                                                            aria-label="${message(code: 'ariaLabel.delete.universal')}">
-                                                        <i class="trash alternate outline icon"></i>
-                                                    </g:link>
-                                                </g:else>
-                                            </g:if>
-                                        </td>
-                                    </tr>
-                                </g:each>
-                            </g:if>
-                            </tbody>
-                        </table>--}%
         </g:form>
 
 </div>

@@ -20,10 +20,10 @@ class AccessPointService {
     MessageSource messageSource
 
     /**
-     * Deletes the given IP range
-     * @param accessPointData the IP range to delete
+     * Deletes the given accessPointData
+     * @param accessPointData to delete
      */
-    void deleteIpRange(AccessPointData accessPointData) {
+    void deleteAccessPointData(AccessPointData accessPointData) {
         accessPointData.delete()
     }
 
@@ -100,9 +100,8 @@ class AccessPointService {
                        messageSource.getMessage('accessRule.plural', null, locale)])
 
         Map sheetData = [:]
-        accessPoints.each { accessPoint ->
-            List accessPointData = []
-
+        List accessPointData = []
+        accessPoints.sort {it.accessMethod.value}.each { accessPoint ->
             if (accessPoint.accessMethod == RDStore.ACCESS_POINT_TYPE_IP) {
                 accessPoint.getIpRangeStrings('ipv4', 'ranges').each {
                     List row = []
@@ -167,6 +166,14 @@ class AccessPointService {
                 accessPointData.add(row)
             }
 
+            if (accessPoint.accessMethod == RDStore.ACCESS_POINT_TYPE_OA) {
+                List row = []
+                row.add([field: accessPoint.name ?: '', style: null])
+                row.add([field: accessPoint.accessMethod.getI10n('value'), style: null])
+                row.add([field: accessPoint.entityId ?: '', style: null])
+                accessPointData.add(row)
+            }
+
             if (accessPoint.accessMethod == RDStore.ACCESS_POINT_TYPE_MAIL_DOMAIN) {
                 accessPoint.accessPointData.each {
                     List row = []
@@ -176,9 +183,11 @@ class AccessPointService {
                     accessPointData.add(row)
                 }
             }
-            
-            sheetData.put(escapeService.escapeString(accessPoint.name), [titleRow: titles, columnData: accessPointData])
+
+
+            //sheetData.put(escapeService.escapeString(accessPoint.name), [titleRow: titles, columnData: accessPointData])
         }
+        sheetData.put(escapeService.escapeString(messageSource.getMessage('org.nav.accessPoints', null, locale),), [titleRow: titles, columnData: accessPointData])
         return exportService.generateXLSXWorkbook(sheetData)
     }
 
