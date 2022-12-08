@@ -104,6 +104,12 @@ class DocContext implements ShareableTrait, Comparable {
     RefdataValue getDocConfid() {
         owner?.confidentiality
     }
+    boolean isDocANote() {
+        owner?.contentType == Doc.CONTENT_TYPE_STRING // 0
+    }
+    boolean isDocAFile() {
+        owner?.contentType == Doc.CONTENT_TYPE_FILE // 3
+    }
 
     /**
      * Comparator method; the owner document's titles are being compared against each other

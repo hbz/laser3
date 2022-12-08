@@ -655,7 +655,7 @@ class DataloadService {
                 result.name = docCon.owner?.title ?: ''
                 result.status = docCon.status?.getMapForES()
                 result.visible = 'Private'
-                result.rectype = (docCon.owner?.contentType == Doc.CONTENT_TYPE_STRING) ? 'Note' : 'Document'
+                result.rectype = (docCon.isDocANote()) ? 'Note' : 'Document'
 
                 result.availableToOrgs = [docCon.owner?.owner?.id ?: 0]
 

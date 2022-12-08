@@ -104,7 +104,7 @@
                         }
                     }
                 %>
-                <g:if test="${(((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3)) && visible && docctx.status != RDStore.DOC_CTX_STATUS_DELETED)}">
+                <g:if test="${docctx.isDocAFile() && visible && (docctx.status != RDStore.DOC_CTX_STATUS_DELETED)}">
                     <tr>
                         <g:if test="${!(controllerName == 'myInstitution' && actionName == 'subscriptionsManagement')}">
                             <td class="center aligned">
@@ -122,7 +122,7 @@
                         <td>
                             <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().containsKey(docctx.owner.mimeType)}" />
                             <strong>
-                                <g:if test="${docctx.owner.contentType == Doc.CONTENT_TYPE_FILE && visible && supportedMimeType}">
+                                <g:if test="${docctx.isDocAFile() && visible && supportedMimeType}">
                                     <a href="#documentPreview" data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">${docctx.owner.title}</a>
                                 </g:if>
                                 <g:else>
@@ -162,7 +162,7 @@
                         --%>
                         </g:if>
                         <td class="x">
-                            <g:if test="${((docctx.owner?.contentType == 1) || (docctx.owner?.contentType == 3))}">
+                            <g:if test="${docctx.isDocAFile()}">
                                 <g:if test="${instance?.respondsTo('showUIShareButton')}">
                                     <g:if test="${docctx.sharedFrom}">
                                         <span class="la-popup-tooltip la-delay" data-content="${message(code:'property.share.tooltip.on')}">

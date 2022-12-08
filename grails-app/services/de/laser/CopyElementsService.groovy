@@ -975,7 +975,7 @@ class CopyElementsService {
     boolean copyAnnouncements(Object sourceObject, def toCopyAnnouncements, Object targetObject, def flash, def toShare = []) {
         sourceObject.documents?.each { dctx ->
             if (dctx.id in toCopyAnnouncements) {
-                if ((dctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(dctx.domain) && (dctx.status?.value != 'Deleted')) {
+                if (dctx.isDocANote() && !(dctx.domain) && (dctx.status?.value != 'Deleted')) {
                     Doc newDoc = new Doc()
                     InvokerHelper.setProperties(newDoc, dctx.owner.properties)
                     _save(newDoc, flash)
@@ -1000,7 +1000,7 @@ class CopyElementsService {
      */
     def deleteAnnouncements(List<Long> toDeleteAnnouncements, Object targetObject, def flash) {
         targetObject.documents.each {
-            if (toDeleteAnnouncements.contains(it.id) && it.owner?.contentType == Doc.CONTENT_TYPE_STRING && !(it.domain)) {
+            if (toDeleteAnnouncements.contains(it.id) && it.isDocANote() && !(it.domain)) {
                 Map params = [deleteId: it.id]
                 log.debug("deleteDocuments ${params}");
                 docstoreService.unifiedDeleteDocuments(params)
@@ -1113,7 +1113,7 @@ class CopyElementsService {
     boolean copyDocs(Object sourceObject, def toCopyDocs, Object targetObject, def flash, def toShare = []) {
         sourceObject.documents?.each { dctx ->
             if (dctx.id in toCopyDocs) {
-                if ((dctx.owner?.contentType == Doc.CONTENT_TYPE_FILE) && (dctx.status?.value != 'Deleted')) {
+                if (dctx.isDocAFile() && (dctx.status?.value != 'Deleted')) {
                     try {
 
                         Doc newDoc = new Doc()

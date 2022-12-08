@@ -22,7 +22,7 @@
 
     <ui:card message="license.notes" class="notes la-js-hideable ${css_class}" href="#modalCreateNote" editable="${editable || editable2}">
         <g:each in="${baseItems}" var="docctx">
-            <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) )}">
+            <g:if test="${docctx.isDocANote() && !(docctx.domain)}">
                 <div class="ui small feed content la-js-dont-hide-this-card">
                     <div class="ui grid summary">
                         <div class="ten wide column la-column-right-lessPadding">
@@ -126,7 +126,7 @@
         <ui:card message="license.notes.shared" class="documents la-js-hideable ${css_class}" editable="${editable}">
             <g:each in="${sharedItems}" var="docctx">
 
-                <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') )}">
+                <g:if test="${docctx.isDocANote() && !(docctx.domain) && (docctx.status?.value != 'Deleted')}">
                     <div class="ui small feed content la-js-dont-hide-this-card">
 
                         <div class="ui grid summary">
