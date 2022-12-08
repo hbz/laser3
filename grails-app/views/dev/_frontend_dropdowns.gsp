@@ -1,5 +1,56 @@
-<h2 class="ui dividing header">Dropdowns<a class="anchor" id="form-elemente"></a></h2>
-
+<h2 class="ui dividing header">Dropdowns<a class="anchor" id="dropdowns"></a></h2>
+<div class="ui big form">
+    <div class="three wide fields">
+        <div class="field">
+            <div class="ui selection icon dropdown">
+                <i class="dropdown icon"></i>
+                <div class="default text">Bitte auswählen</div>
+                <div class="menu">
+                    <div class="item">
+                        <i class="sort alphabet down icon"></i>
+                        Titel - aufsteigend
+                    </div>
+                    <div class="item">
+                        <i class="sort alphabet up alternate icon"></i>
+                        Titel - absteigend
+                    </div>
+                    <div class="item">
+                        <i class="la-sort-jan-dec icon"></i>
+                        Print-Veröffentlichung - aufsteigend
+                    </div>
+                    <div class="item">
+                        <i class="la-sort-dec-jan icon"></i>
+                        Print-Veröffentlichung - absteigend
+                    </div>
+                    <div class="item">
+                        <i class="la-sort-jan-dec icon"></i>
+                        Online-Veröffentlichung - aufsteigend
+                    </div>
+                    <div class="item">
+                        <i class="la-sort-dec-jan icon"></i>
+                        Online-Veröffentlichung - absteigend
+                    </div>
+                    <div class="item">
+                        <i class="la-sort-jan-dec icon"></i>
+                        Mein Zugriff von - aufsteigend
+                    </div>
+                    <div class="item">
+                        <i class="la-sort-dec-jan icon"></i>
+                        Mein Zugriff von - absteigend
+                    </div>
+                    <div class="item">
+                        <i class="la-sort-jan-dec icon"></i>
+                        Mein Zugriff bis - aufsteigend
+                    </div>
+                    <div class="item">
+                        <i class="la-sort-dec-jan icon"></i>
+                        Mein Zugriff bis - absteigend
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- START Example with form selection -->
 <div class="dropdown example">
 

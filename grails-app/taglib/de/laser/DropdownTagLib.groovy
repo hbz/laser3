@@ -177,14 +177,14 @@ class DropdownTagLib {
 
         out << '<label>' + message(code: 'form.label.sort') + '</label>'
         out << '<select class="ui  selection dropdown la-js-sorting la-not-clearable ' + cssClass + '">'
-        out <<     '<option class="default text">' + noSelection + '</option>'
+        out <<     '<option value="">' + noSelection + '</option>'
         attrs.from.eachWithIndex { sortKey, sortValue, i ->
             String selectedAsc = attrs.sort == sortKey && attrs.order == 'asc' ? 'selected' : ''
             String selectedDesc = attrs.sort == sortKey && attrs.order == 'desc' ? 'selected' : ''
-            out << '<option class="item" data-value="' + sortKey + '" data-order="asc" '+selectedAsc+'>'
+            out << '<option data-value="' + sortKey + '" data-order="asc" '+selectedAsc+'>'
             out <<    sortValue + ' (aufsteigend)'
             out << '</option>'
-            out << '<option class="item" data-value="' + sortKey + '" data-order="desc" '+selectedDesc+'>'
+            out << '<option  data-value="' + sortKey + '" data-order="desc" '+selectedDesc+'>'
             out <<    sortValue + ' (absteigend)'
             out << '</option>'
         }
