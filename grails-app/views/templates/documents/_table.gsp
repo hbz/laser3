@@ -1,4 +1,4 @@
-<%@page import="de.laser.storage.RDConstants; org.apache.commons.lang3.RandomStringUtils; de.laser.storage.RDStore; de.laser.*; de.laser.interfaces.CalculatedType" %>
+<%@page import="de.laser.workflow.WfWorkflow; de.laser.storage.RDConstants; org.apache.commons.lang3.RandomStringUtils; de.laser.storage.RDStore; de.laser.*; de.laser.interfaces.CalculatedType" %>
 <laser:serviceInjection/>
 <%
     boolean parentAtChild = false
@@ -129,6 +129,20 @@
                                     ${docctx.owner.title}
                                 </g:else>
                             </strong>
+                            <%
+                                List<WfWorkflow> usedByWorkflowsList = []
+                                WfWorkflow.getWorkflowsByObject( instance ).each { wf ->
+                                    if (docctx.isUsedByWorkflow(wf)) {
+                                        usedByWorkflowsList.add(wf)
+                                    }
+                                }
+                                if (usedByWorkflowsList) { print '&nbsp;' }
+                            %>
+                            <g:each in="${usedByWorkflowsList}" var="ctxWorkflow">
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="Wird referenziert in: ${ctxWorkflow.title}">
+                                    <i class="exclamation circle brown icon"></i>
+                                </span>
+                            </g:each>
                             <br />
                             ${docctx.owner.filename}
                         </td>
