@@ -1143,7 +1143,7 @@ class DataloadService {
                                 //ft.lastTimestamp = 0
                             }
                             else {
-                                log.debug("Element comparison: DB <-> ES ( ${ftControl.domainClassName} )")
+                                //log.debug("Element comparison: DB <-> ES ( ${ftControl.domainClassName} )")
                             }
                             ftControl.dbElements = countDB
                             ftControl.esElements = countIndex
