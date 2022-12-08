@@ -149,9 +149,13 @@
                 <th>
 
                     <g:if test="${actionName == 'surveyCostItems'}">
+                        <%
+                            def tmpParams = params.clone()
+                            tmpParams.remove("sort")
+                        %>
                         <g:if test="${sortOnCostItemsUp}">
                             <g:link action="surveyCostItems" class="ui icon"
-                                    params="${params + [sortOnCostItemsDown: true]}"><span
+                                    params="${tmpParams + [sortOnCostItemsDown: true]}"><span
                                     class="la-popup-tooltip la-delay"
                                     data-position="top right"
                                     data-content="${message(code: 'surveyCostItems.sortOnPrice')}">
@@ -159,9 +163,8 @@
                             </span></g:link>
                         </g:if>
                         <g:else>
-
                             <g:link action="surveyCostItems" class="ui icon"
-                                    params="${params + [sortOnCostItemsUp: true]}"><span
+                                    params="${tmpParams + [sortOnCostItemsUp: true]}"><span
                                     class="la-popup-tooltip la-delay"
                                     data-position="top right"
                                     data-content="${message(code: 'surveyCostItems.sortOnPrice')}">

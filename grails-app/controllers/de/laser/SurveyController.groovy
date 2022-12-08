@@ -1026,22 +1026,22 @@ class SurveyController {
 
         result.selectedCostItemElement = params.selectedCostItemElement ? params.selectedCostItemElement.toString() : RefdataValue.getByValueAndCategory('price: consortial price', RDConstants.COST_ITEM_ELEMENT).id.toString()
 
-        if(result.selectedSubParticipants && (params.sortOnCostItemsDown || params.sortOnCostItemsUp)){
+        if(result.selectedSubParticipants && (params.sortOnCostItemsDown || params.sortOnCostItemsUp) && !params.sort){
             List<Subscription> orgSubscriptions = result.surveyConfig.orgSubscriptions()
             List<Org> selectedSubParticipants = result.selectedSubParticipants
             result.selectedSubParticipants = []
 
-            String orderByQuery = " order by c.costInBillingCurrency, org.name"
+            String orderByQuery = " order by c.costInBillingCurrency"
 
             if(params.sortOnCostItemsUp){
                 result.sortOnCostItemsUp = true
-                orderByQuery = " order by c.costInBillingCurrency DESC, org.name"
+                orderByQuery = " order by c.costInBillingCurrency DESC"
                 params.remove('sortOnCostItemsUp')
             }else {
                 params.remove('sortOnCostItemsDown')
             }
 
-            String query = "select c.sub from CostItem as c join c.owner org where c.sub in (:subList) and c.owner = :owner and c.costItemStatus != :status and c.costItemElement.id = :costItemElement " + orderByQuery
+            String query = "select c.sub from CostItem as c where c.sub in (:subList) and c.owner = :owner and c.costItemStatus != :status and c.costItemElement.id = :costItemElement " + orderByQuery
 
             List<Subscription> subscriptionList =  CostItem.executeQuery(query, [subList: orgSubscriptions, owner: result.surveyInfo.owner, status: RDStore.COST_ITEM_DELETED, costItemElement: Long.parseLong(result.selectedCostItemElement)])
 
