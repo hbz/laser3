@@ -7,7 +7,7 @@
         <ui:messages data="${flash}" />
 
         <ui:card>
-            <form action="${postUrl}" method="POST" id="loginForm" class="ui form la-js-dont-hide-this-card" autocomplete="off">
+            <form action="${postUrl}" method="POST" id="loginForm" class="ui form" autocomplete="off" style="display:block !important;">
                 <div class="field">
                     <label for="username"><g:message code="springSecurity.login.username.label"/>:</label>
                     <input type="text" class="text_" name="${SpringSecurityUtils.securityConfig.apf.usernameParameter}" id="username"/>
