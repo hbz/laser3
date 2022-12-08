@@ -162,7 +162,7 @@ class UiTagLib {
         def (text, message) = SwissKnife.getTextAndMessage(attrs)
         String title = (text && message) ? text + " - " + message : text + message
 
-        out << '<div class="ui card ' + attrs.class + '">'
+        out << '<div class="ui card' + (attrs.class ? ' ' + attrs.class : '') + '">'
         out << '    <div class="content">'
 
         if (title) {
