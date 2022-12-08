@@ -493,8 +493,8 @@
                                             </div>
                                             <%-- Editable Area START--%>
                                             <div class="seven wide column">
-                                                <i class="grey icon circular inverted edit la-icon-absolute"></i>
-
+                                                <i class="grey icon circular inverted fingerprint la-icon-absolute la-popup-tooltip la-delay"
+                                                   data-content="${message(code: 'tipp.tooltip.myArea')}"></i>
                                                 <div class="ui la-segment-with-icon">
 
                                                     <laser:render template="/templates/tipps/coverages_accordion"
@@ -512,8 +512,7 @@
                                                                     </div>
 
                                                                     <div class="description">
-                                                                        <ui:xEditableBoolean owner="${subscription}"
-                                                                                             field="hasPerpetualAccess"/>
+                                                                        ${subscription.hasPerpetualAccess ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
                                                                     </div>
                                                                 </div>
                                                             </div>
