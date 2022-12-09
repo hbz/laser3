@@ -1,16 +1,18 @@
 package de.laser.jobs
 
+import de.laser.SystemService
 import de.laser.base.AbstractJob
 import de.laser.config.ConfigMapper
-import de.laser.system.SystemEvent
 import groovy.util.logging.Slf4j
 
 @Slf4j
 class SystemInfoJob extends AbstractJob {
 
+    SystemService systemService
+
     static triggers = {
         cron name:'systemInfoJobTrigger', cronExpression: "0 55 6 * * ?"
-        // cron name:'systemInfoJobTrigger', cronExpression: "0 0/2 * * * ?" // debug only
+        // cron name:'systemInfoJobTrigger', cronExpression: "0 0/1 * * * ?" // debug only
         // cronExpression: "s m h D M W Y" - Year [optional]
     }
 
@@ -28,12 +30,12 @@ class SystemInfoJob extends AbstractJob {
             return false
         }
         try {
-            // println 'SystemInfoJob'
+            String test = systemService.getSystemInfoForJob()
             // TODO
         }
         catch (Exception e) {
             log.error( e.toString() )
         }
-        stop('SYSTEM_INFO_JOB_COMPLETE')
+        stop('SYSTEM_INFO_JOB_STOP')
     }
 }

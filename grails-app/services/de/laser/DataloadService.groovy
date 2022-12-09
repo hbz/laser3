@@ -978,7 +978,7 @@ class DataloadService {
                                             }
                                         }
                                     }
-                                    log.debug("${logPrefix} - processed ${total} / ignored ${ignoredObjectIdList.size()} from ${todoList.size() - (total + ignoredObjectIdList.size())} records; bulkSize ${mb.round(2)}MB")
+                                    log.debug("${logPrefix} - processed ${total} / ignored ${ignoredObjectIdList.size()} / todo ${todoList.size() - (total + ignoredObjectIdList.size())} records; bulkSize ${mb.round(2)}MB")
                                 }
                                 else {
                                     log.debug( "${logPrefix} - ignored empty bulk")
@@ -1143,7 +1143,7 @@ class DataloadService {
                                 //ft.lastTimestamp = 0
                             }
                             else {
-                                log.debug("Element comparison: DB <-> ES ( ${ftControl.domainClassName} )")
+                                //log.debug("Element comparison: DB <-> ES ( ${ftControl.domainClassName} )")
                             }
                             ftControl.dbElements = countDB
                             ftControl.esElements = countIndex
