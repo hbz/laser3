@@ -1519,7 +1519,7 @@ class OrganisationController  {
             SXSSFWorkbook wb
             SimpleDateFormat sdf = DateUtils.getSDF_noTimeNoPoint()
             String datetoday = sdf.format(new Date())
-            String filename = "${datetoday}_" + g.message(code: "org.nav.accessPoints")
+            String filename = "${datetoday}_" + g.message(code: "org.accessPoints.export")
             response.setHeader "Content-disposition", "attachment; filename=\"${filename}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             wb = (SXSSFWorkbook) accessPointService.exportAccessPoints(orgAccessPointList.collect {it.oap}, result.institution)

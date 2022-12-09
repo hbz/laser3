@@ -27,42 +27,52 @@
     <laser:render template="/organisation/nav" model="${[orgInstance: accessPoint.org, inContextOrg: inContextOrg, tmplAccessPointsActive: true]}"/>
 
     <h2 class="ui header la-noMargin-top"><g:message code="default.edit.label" args="[entityName]"/></h2>
+
+    <g:link class="ui right floated button" controller="organisation" action="accessPoints"
+            id="${orgInstance.id}">
+        ${message(code: 'default.button.back')}
+    </g:link>
+    <br>
+    <br>
+
     <ui:messages data="${flash}"/>
 
-    <g:form class="ui form" url="[controller: 'accessPoint', action: 'edit_' + accessPoint.accessMethod]" id="${accessPoint.id}" method="GET">
-        <g:hiddenField id="accessPoint_id_${accessPoint.id}" name="id" value="${accessPoint.id}"/>
-        <div class="la-inline-lists">
-            <div class="ui card">
-                <div class="content">
-                    <dl>
-                        <dt><g:message code="default.name.label" /></dt>
-        <dd><ui:xEditable owner="${accessPoint}" field="name"/></dd>
-        </dl>
-        <dl>
-            <dt><g:message code="accessMethod.label" /></dt>
-            <dd>
-                ${accessPoint.accessMethod.getI10n('value')}
-                <g:hiddenField id="accessMethod_id_${accessPoint.accessMethod.id}" name="accessMethod" value="${accessPoint.accessMethod.id}"/>
-            </dd>
-        </dl>
-        <g:if test="${accessPoint.hasProperty('url')}">
-            <dl>
-                <dt><g:message code="accessPoint.url" /></dt>
-                <dd><ui:xEditable owner="${accessPoint}" field="url"/></dd>
-            </dl>
-        </g:if>
 
-        <g:if test="${accessPoint.hasProperty('entityId')}">
+<div class="la-inline-lists">
+    <div class="ui card">
+        <div class="content">
             <dl>
-                <dt><g:message code="accessPoint.entitiyId.label" /></dt>
-                <dd><ui:xEditable owner="${accessPoint}" field="entityId"/></dd>
+                <dt><g:message code="default.name.label"/></dt>
+                <dd><ui:xEditable owner="${accessPoint}" field="name"/></dd>
             </dl>
-        </g:if>
+            <dl>
+                <dt><g:message code="accessMethod.label"/></dt>
+                <dd>
+                    ${accessPoint.accessMethod.getI10n('value')}
+                </dd>
+            </dl>
+            <g:if test="${accessPoint.hasProperty('url')}">
+                <dl>
+                    <dt><g:message code="accessPoint.url"/></dt>
+                    <dd><ui:xEditable owner="${accessPoint}" field="url"/></dd>
+                </dl>
+            </g:if>
+
+            <g:if test="${accessPoint.hasProperty('entityId')}">
+                <dl>
+                    <dt><g:message code="accessPoint.entitiyId.label"/></dt>
+                    <dd><ui:xEditable owner="${accessPoint}" field="entityId"/></dd>
+                </dl>
+            </g:if>
 
         </div>
+    </div>
+</div>
 
-    </g:form>
-
-
+<br/>
+<div class="la-inline-lists">
     <laser:render template="link"
               model="${[accessPoint: accessPoint, params: params, linkedPlatforms: linkedPlatforms, linkedPlatformSubscriptionPackages: linkedPlatformSubscriptionPackages]}"/>
+</div>
+
+<laser:htmlEnd />

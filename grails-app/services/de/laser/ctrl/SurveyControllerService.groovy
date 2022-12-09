@@ -183,15 +183,51 @@ class SurveyControllerService {
                 }
             }
 
-            result.orgsWithTermination = []
 
-            //Orgs with termination there sub
-            SurveyResult.executeQuery("from SurveyResult where owner.id = :owner and surveyConfig.id = :surConfig and type.id = :surProperty and refValue = :refValue  order by participant.sortname",
+            result.orgInsertedItself = []
+
+            List<Org> orgInsertedItselfList = SurveyOrg.executeQuery("select surOrg.org from SurveyOrg as surOrg where surOrg.surveyConfig = :surveyConfig and surOrg.orgInsertedItself = true", [surveyConfig: result.surveyConfig])
+
+            List<Org> orgNotInsertedItselfList = SurveyOrg.executeQuery("select surOrg.org from SurveyOrg as surOrg where surOrg.surveyConfig = :surveyConfig and surOrg.orgInsertedItself = false", [surveyConfig: result.surveyConfig])
+
+
+            //Orgs with inserted it self to the survey
+            SurveyResult.executeQuery("from SurveyResult where owner.id = :owner and surveyConfig.id = :surConfig and type.id = :surProperty and (refValue = :refValue OR refValue is null) and participant in (:orgInsertedItselfList) order by participant.sortname",
                     [
                             owner      : result.institution.id,
                             surProperty: result.participationProperty.id,
                             surConfig  : result.surveyConfig.id,
-                            refValue   : RDStore.YN_NO]).each { SurveyResult surveyResult ->
+                            refValue   : RDStore.YN_NO,
+                            orgInsertedItselfList: orgInsertedItselfList]).each { SurveyResult surveyResult ->
+                Map newSurveyResult = [:]
+                newSurveyResult.participant = surveyResult.participant
+                newSurveyResult.resultOfParticipation = surveyResult
+                newSurveyResult.surveyConfig = result.surveyConfig
+                newSurveyResult.sub = surveyResult.participantSubscription
+                if (result.properties) {
+                    if (result.properties) {
+                        String lang = LocaleUtils.getCurrentLang()
+                        //newSurveyResult.properties = SurveyResult.findAllByParticipantAndOwnerAndSurveyConfigAndTypeInList(surveyResult.participant, result.institution, result.surveyConfig, result.properties,[sort:type["value${locale}"],order:'asc'])
+                        //in (:properties) throws for some unexplaniable reason a HQL syntax error whereas it is used in many other places without issues ... TODO
+                        String query = "select sr from SurveyResult sr join sr.type pd where pd in :properties and sr.participant = :participant and sr.owner = :context and sr.surveyConfig = :cfg order by pd.name_${lang} asc"
+                        newSurveyResult.properties = SurveyResult.executeQuery(query, [participant: surveyResult.participant, context: result.institution, cfg: result.surveyConfig, properties: result.properties])
+                    }
+                }
+
+                result.orgInsertedItself << newSurveyResult
+
+            }
+
+            result.orgsWithTermination = []
+
+            //Orgs with termination there sub
+            SurveyResult.executeQuery("from SurveyResult where owner.id = :owner and surveyConfig.id = :surConfig and type.id = :surProperty and refValue = :refValue and participant in (:orgNotInsertedItselfList) order by participant.sortname",
+                    [
+                            owner      : result.institution.id,
+                            surProperty: result.participationProperty.id,
+                            surConfig  : result.surveyConfig.id,
+                            refValue   : RDStore.YN_NO,
+                            orgNotInsertedItselfList: orgNotInsertedItselfList]).each { SurveyResult surveyResult ->
                 Map newSurveyResult = [:]
                 newSurveyResult.participant = surveyResult.participant
                 newSurveyResult.resultOfParticipation = surveyResult
@@ -315,11 +351,12 @@ class SurveyControllerService {
             //Orgs without really result
             result.orgsWithoutResult = []
 
-            SurveyResult.executeQuery("from SurveyResult where owner.id = :owner and surveyConfig.id = :surConfig and type.id = :surProperty and refValue is null order by participant.sortname",
+            SurveyResult.executeQuery("from SurveyResult where owner.id = :owner and surveyConfig.id = :surConfig and type.id = :surProperty and refValue is null and participant in (:orgNotInsertedItselfList) order by participant.sortname",
                     [
                             owner      : result.institution.id,
                             surProperty: result.participationProperty.id,
-                            surConfig  : result.surveyConfig.id]).each { SurveyResult surveyResult ->
+                            surConfig  : result.surveyConfig.id,
+                            orgNotInsertedItselfList: orgNotInsertedItselfList]).each { SurveyResult surveyResult ->
                 Map newSurveyResult = [:]
                 newSurveyResult.participant = surveyResult.participant
                 newSurveyResult.resultOfParticipation = surveyResult

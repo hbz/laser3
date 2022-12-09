@@ -1793,6 +1793,12 @@ i.icon.la-redo.slash {
 i.icon.la-exchange.slash {
   font-family: 'icomoon';
 }
+i.icon.la-sort-jan-dec {
+  font-family: 'icomoon';
+}
+i.icon.la-sort-dec-jan {
+  font-family: 'icomoon';
+}
 i.icon.la-copy.open {
   font-family: @outlineFontName;
 }
@@ -1842,6 +1848,8 @@ i.icon.la-consortia:before { content: "\e917"; }
 i.icon.la-star.slash:before { content: "\e918"; }
 i.icon.la-redo.slash:before { content: "\e919"; }
 i.icon.la-exchange.slash:before { content: "\e91a"; }
+i.icon.la-sort-jan-dec:before { content: "\e91b"; }
+i.icon.la-sort-dec-jan:before { content: "\e91c"; }
 
 
 i.icon.la-copy.open:before { content: "\f24d"; }

@@ -14,7 +14,7 @@
         <ui:controlButtons>
             <ui:exportDropdown>
                 <ui:exportDropdownItem>
-                    <g:link class="item" action="edit_ip"
+                    <g:link class="item" action="edit_ezproxy"
                             params="[id: accessPoint.id, exportXLSX: true]">${message(code: 'accessPoint.exportAccessPoint')}</g:link>
                 </ui:exportDropdownItem>
             </ui:exportDropdown>
@@ -26,6 +26,13 @@
     <laser:render template="/organisation/nav" model="${[orgInstance: accessPoint.org, inContextOrg: inContextOrg, tmplAccessPointsActive: true]}"/>
 
     <h2 class="ui header la-noMargin-top"><g:message code="default.edit.label" args="[entityName]"/></h2>
+
+    <g:link class="ui right floated button" controller="organisation" action="accessPoints"
+            id="${orgInstance.id}">
+        ${message(code: 'default.button.back')}
+    </g:link>
+    <br>
+    <br>
 
     <ui:messages data="${flash}"/>
 
@@ -84,7 +91,7 @@
                     <td>${accessPointData.ipCidr}</td>
                     <td class="center aligned">
                         <g:if test="${(accessService.checkPermAffiliation('ORG_BASIC_MEMBER', 'INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR'))}">
-                            <g:link action="deleteIpRange" controller="accessPoint" id="${accessPointData.id}"
+                            <g:link action="deleteAccessPointData" controller="accessPoint" id="${accessPointData.id}"
                                     class="ui negative icon button"
                                     role="button"
                                     aria-label="${message(code: 'ariaLabel.delete.universal')}">
@@ -154,7 +161,7 @@
                 <td>${accessPointData.ipCidr}</td>
                 <td class="center aligned">
                     <g:if test="${(accessService.checkPermAffiliation('ORG_BASIC_MEMBER', 'INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR'))}">
-                        <g:link action="deleteIpRange" controller="accessPoint" id="${accessPointData.id}"
+                        <g:link action="deleteAccessPointData" controller="accessPoint" id="${accessPointData.id}"
                                 class="ui negative icon button"
                                 role="button"
                                 aria-label="${message(code: 'ariaLabel.delete.universal')}">

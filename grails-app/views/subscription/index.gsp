@@ -179,7 +179,8 @@
         </div>
     </div><!--.row-->
 <%
-    Map<String, String> sortFieldMap = ['tipp.sortname': message(code: 'title.label')]
+    Map<String, String>
+    sortFieldMap = ['tipp.sortname': message(code: 'title.label')]
     if (journalsOnly) {
         sortFieldMap['startDate'] = message(code: 'default.from')
         sortFieldMap['endDate'] = message(code: 'default.to')
@@ -209,7 +210,7 @@
 <div class="ui form">
     <div class="three wide fields">
         <div class="field">
-            <ui:sortingDropdown from="${sortFieldMap}" sort="${params.sort}" order="${params.order}"/>
+            <ui:sortingDropdown noSelection="${message(code:'default.select.choose.label')}" from="${sortFieldMap}" sort="${params.sort}" order="${params.order}"/>
         </div>
     </div>
 </div>

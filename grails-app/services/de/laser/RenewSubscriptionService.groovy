@@ -266,7 +266,7 @@ class RenewSubscriptionService extends AbstractLockableService {
                                         fail = true
                                     } else {
 
-                                        if ((dctx.owner?.contentType == Doc.CONTENT_TYPE_FILE) && (dctx.status?.value != 'Deleted')) {
+                                        if (dctx.isDocAFile() && (dctx.status?.value != 'Deleted')) {
                                             try {
                                                 String fPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
 

@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4659    08.12.2022  dev     3.0         David   Feature     Workflow-Dokumente kennzeichnen
+
+4658    08.12.2022  dev     3.0         David   Bug         Login: Anmelde-Formular nicht sichtbar
+
+4657    07.12.2022  dev     3.0         Moe     Feature     Excel-Export der Zugangskonfigurationen
+
 4655    07.12.2022  dev     3.0         Andreas Bug         Dropdown der Anbieter wurde falsch bespeist
 
 4652    07.12.2022  dev     3.0         Andreas Feature     Liste der Alternativnamen an Liste der Fächergruppen bzw. Einrichtungstypen angeglichen
@@ -26,6 +32,8 @@
 4639    07.12.2022  dev     3.0         Andreas Bug         Abfragefehler bei Zusammensetzen der Felder für Clickmich-Excel behoben
 
 4631    07.12.2022  dev     3.0         Andreas Bug         Falsche Abfrage bei Verbindung Dauerhafter Zugriff und Status aktuell
+
+4628    07.12.2022  dev     3.0         Andreas Bug         Teil A: Entfernen des Merkmalswertes bei entferntem Merkmalstyp
 
 4617    07.12.2022  dev     3.0         Andreas Feature     Erweiterung der Identifier-Abfrage um Kundennummern
 

@@ -40009,6 +40009,14 @@ i.icon.la-exchange.slash {
   font-family: 'icomoon';
 }
 
+i.icon.la-sort-jan-dec {
+  font-family: 'icomoon';
+}
+
+i.icon.la-sort-dec-jan {
+  font-family: 'icomoon';
+}
+
 i.icon.la-copy.open {
   font-family: 'outline-icons';
 }
@@ -40141,6 +40149,14 @@ i.icon.la-redo.slash:before {
 
 i.icon.la-exchange.slash:before {
   content: "\e91a";
+}
+
+i.icon.la-sort-jan-dec:before {
+  content: "\e91b";
+}
+
+i.icon.la-sort-dec-jan:before {
+  content: "\e91c";
 }
 
 i.icon.la-copy.open:before {
@@ -44215,7 +44231,7 @@ a .ui.circular.label:focus {
 }
 
 .ui.label.la-labelBlock,
-.la-label-accordion {
+.ui.label.la-label-accordion {
   display: block;
   letter-spacing: 0.04em;
 }

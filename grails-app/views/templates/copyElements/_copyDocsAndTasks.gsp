@@ -48,7 +48,7 @@
                     <td  name="copyObject.takeDocs.source">
                         <strong><i class="file outline icon"></i>&nbsp${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.takeDocs")}:</strong><br />
                         <g:each in="${sourceDocuments}" var="docctx">
-                            <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_FILE) && (docctx.status?.value != 'Deleted') && (docctx.owner?.owner?.id == contextService.getOrg().id))}">
+                            <g:if test="${(docctx.isDocAFile() && (docctx.status?.value != 'Deleted') && (docctx.owner?.owner?.id == contextService.getOrg().id))}">
                                 <div data-id="${docctx.id}" class="la-element">
                                     <label>
                                         <g:link controller="docstore" id="${docctx.owner.uuid}" target="_blank">
@@ -73,7 +73,7 @@
                     <g:if test="${isConsortialObjects}">
                         <td class="center aligned">
                             <g:each in="${sourceDocuments}" var="docctx">
-                                <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_FILE) && (docctx.status?.value != 'Deleted') && (docctx.owner?.owner?.id == contextService.getOrg().id))}">
+                                <g:if test="${(docctx.isDocAFile() && (docctx.status?.value != 'Deleted') && (docctx.owner?.owner?.id == contextService.getOrg().id))}">
                                     <div class="ui checkbox la-toggle-radio la-inherit">
                                         <g:checkBox name="copyObject.toggleShare" value="${docctx.id}"
                                                     checked="${docctx.isShared ? 'true' : 'false'}"/>
@@ -86,7 +86,7 @@
                     <td class="center aligned">
                         <br />
                         <g:each in="${sourceDocuments}" var="docctx">
-                            <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_FILE) && (docctx.status?.value != 'Deleted') && (docctx.owner?.owner?.id == contextService.getOrg().id))}">
+                            <g:if test="${(docctx.isDocAFile() && (docctx.status?.value != 'Deleted') && (docctx.owner?.owner?.id == contextService.getOrg().id))}">
                                 %{--<div class="ui checkbox">--}%
                                 <div class="ui checkbox la-toggle-radio la-replace">
                                     <g:checkBox name="copyObject.takeDocIds" value="${docctx.id}" data-action="copy" checked="${true}" />
@@ -102,7 +102,7 @@
                             <div>
                                 <g:if test="${targetObject}">
                                     <g:each in="${targetDocuments}" var="docctx">
-                                        <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_FILE) && (docctx.status?.value != 'Deleted') && (docctx.owner?.owner?.id == contextService.getOrg().id))}">
+                                        <g:if test="${(docctx.isDocAFile() && (docctx.status?.value != 'Deleted') && (docctx.owner?.owner?.id == contextService.getOrg().id))}">
                                             <div data-id="${docctx.id}" class="la-element">
                                                 <g:link controller="docstore" id="${docctx.owner.uuid}" target="_blank">
                                                     <g:if test="${docctx.owner?.title}">
@@ -144,7 +144,7 @@
                         <td>
                             <br />
                             <g:each in="${targetDocuments}" var="docctx">
-                                <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_FILE) && (docctx.status?.value != 'Deleted') && (docctx.owner?.owner?.id == contextService.getOrg().id))}">
+                                <g:if test="${(docctx.isDocAFile() && (docctx.status?.value != 'Deleted') && (docctx.owner?.owner?.id == contextService.getOrg().id))}">
                                     %{--<div class="ui checkbox">--}%
                                     <div class="ui checkbox la-toggle-radio la-noChange setDeletionConfirm">
                                         <g:checkBox name="copyObject.deleteDocIds" value="${docctx?.id}" data-action="delete" checked="${false}"/>
@@ -161,7 +161,7 @@
                     <td name="copyObject.takeAnnouncements.source">
                         <strong><i class="sticky note outline icon"></i>&nbsp${message(code: "${sourceObject.getClass().getSimpleName().toLowerCase()}.takeAnnouncements")}:</strong><br />
                         <g:each in="${sourceDocuments}" var="docctx">
-                            <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.getOrg().id)}">
+                            <g:if test="${docctx.isDocANote() && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.getOrg().id}">
                                 <div data-id="${docctx.id}" class="la-element">
                                     <label>
                                         <g:if test="${docctx.owner.title}">
@@ -182,7 +182,7 @@
                     <g:if test="${isConsortialObjects}">
                         <td class="center aligned">
                             <g:each in="${sourceDocuments}" var="docctx">
-                                <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.getOrg().id)}">
+                                <g:if test="${docctx.isDocANote() && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.getOrg().id}">
                                     <div class="ui checkbox la-toggle-radio la-inherit">
                                         <g:checkBox name="copyObject.toggleShare" value="${docctx.id}"
                                                     checked="${docctx.isShared ? 'true' : 'false'}"/>
@@ -195,7 +195,7 @@
                     <td class="center aligned">
                     <br />
                         <g:each in="${sourceDocuments}" var="docctx">
-                            <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.getOrg().id)}">
+                            <g:if test="${docctx.isDocANote() && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.getOrg().id}">
                                 %{--<div data-id="${docctx.id} " class="la-element">--}%
                                     %{--<div class="ui checkbox">--}%
                                 <div class="ui checkbox la-toggle-radio la-replace">
@@ -212,7 +212,7 @@
                                         <div>
                                             <g:if test="${targetObject}">
                                                 <g:each in="${targetDocuments}" var="docctx">
-                                                    <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.getOrg().id)}">
+                                                    <g:if test="${docctx.isDocANote() && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.getOrg().id}">
                                                         <div data-id="${docctx.id}" class="la-element">
                                                             <g:if test="${docctx.owner.title}">
                                                                 <strong>${docctx.owner.title}</strong>
@@ -251,7 +251,7 @@
                                         <div>
                                             <g:if test="${targetObject}">
                                                 <g:each in="${targetDocuments}" var="docctx">
-                                                    <g:if test="${((docctx.owner?.contentType == Doc.CONTENT_TYPE_STRING) && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.getOrg().id)}">
+                                                    <g:if test="${docctx.isDocANote() && !(docctx.domain) && (docctx.status?.value != 'Deleted') && docctx.owner?.owner?.id == contextService.getOrg().id}">
                                                         %{--<div class="ui checkbox">--}%
                                                         <div class="ui checkbox la-toggle-radio la-noChange setDeletionConfirm">
                                                             <g:checkBox name="copyObject.deleteAnnouncementIds" value="${docctx?.id}" data-action="delete"  checked="${false}"/>
