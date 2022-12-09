@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4606    09.12.2022  rc-3.0  3.0         Moe     Feature    Paketübertrag bei Übertrag der Teilnehmer nach Umfrage nach hinten verschieben
+
 4671    09.12.2022  rc-3.0  3.0         Moe     Bug         Umfrage-Reiter Ergebnis Filter nach Merkmale
 
 4602    09.12.2022  rc-3.0  3.0         Moe     Feature     Titel hinzufügen in zwei Reiter unterteilen
