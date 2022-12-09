@@ -174,6 +174,21 @@
                 />
             </div>
             </g:if>
+            <g:if test="${field.equalsIgnoreCase('providers')}">
+                <div class="field">
+                    <label for="filterPvd">${message(code: 'menu.my.providers')}</label>
+                    <select id="filterPvd" name="filterPvd" multiple="" class="ui search selection fluid dropdown">
+                        <option value="">${message(code: 'default.select.choose.label')}</option>
+
+                        <g:each in="${providers.sort { it.name }}" var="provider">
+                            <option <%=(params.list('filterPvd').contains(provider.id.toString())) ? 'selected="selected"' : ''%>
+                                    value="${provider.id}">
+                                ${provider.name}
+                            </option>
+                        </g:each>
+                    </select>
+                </div>
+            </g:if>
             <g:if test="${field.equalsIgnoreCase('subscription')}">
                 <div class="field">
                     <label for="subscription">${message(code:'subscription')}</label>

@@ -122,7 +122,9 @@ class SurveyController {
         params.offset = result.offset
         //params.filterStatus = params.filterStatus ?: ((params.size() > 4) ? "" : [RDStore.SURVEY_SURVEY_STARTED.id.toString(), RDStore.SURVEY_READY.id.toString(), RDStore.SURVEY_IN_PROCESSING.id.toString()])
         prf.setBenchmark("before properties")
-        result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SVY_PROP], (Org) result.institution)
+
+        result.propList = PropertyDefinition.executeQuery( "select surpro.surveyProperty from SurveyConfigProperties as surpro join surpro.surveyConfig surConfig join surConfig.surveyInfo surInfo where surInfo.owner = :contextOrg order by surpro.surveyProperty.name_de asc", [contextOrg: result.contextOrg]).groupBy {it}.collect {it.key}
+
         prf.setBenchmark("after properties")
 
         prf.setBenchmark("before surveyYears")
@@ -219,7 +221,7 @@ class SurveyController {
             params.validOnYear = [newYear]
         }
 
-        result.propList = PropertyDefinition.findAllPublicAndPrivateProp([PropertyDefinition.SVY_PROP], (Org) result.institution)
+        result.propList = PropertyDefinition.executeQuery( "select surpro.surveyProperty from SurveyConfigProperties as surpro join surpro.surveyConfig surConfig join surConfig.surveyInfo surInfo where surInfo.owner = :contextOrg order by surpro.surveyProperty.name_de asc", [contextOrg: result.contextOrg]).groupBy {it}.collect {it.key}
 
         result.providers = orgTypeService.getCurrentOrgsOfProvidersAndAgencies( contextService.getOrg() )
 
@@ -1024,22 +1026,22 @@ class SurveyController {
 
         result.selectedCostItemElement = params.selectedCostItemElement ? params.selectedCostItemElement.toString() : RefdataValue.getByValueAndCategory('price: consortial price', RDConstants.COST_ITEM_ELEMENT).id.toString()
 
-        if(result.selectedSubParticipants && (params.sortOnCostItemsDown || params.sortOnCostItemsUp)){
+        if(result.selectedSubParticipants && (params.sortOnCostItemsDown || params.sortOnCostItemsUp) && !params.sort){
             List<Subscription> orgSubscriptions = result.surveyConfig.orgSubscriptions()
             List<Org> selectedSubParticipants = result.selectedSubParticipants
             result.selectedSubParticipants = []
 
-            String orderByQuery = " order by c.costInBillingCurrency, org.name"
+            String orderByQuery = " order by c.costInBillingCurrency"
 
             if(params.sortOnCostItemsUp){
                 result.sortOnCostItemsUp = true
-                orderByQuery = " order by c.costInBillingCurrency DESC, org.name"
+                orderByQuery = " order by c.costInBillingCurrency DESC"
                 params.remove('sortOnCostItemsUp')
             }else {
                 params.remove('sortOnCostItemsDown')
             }
 
-            String query = "select c.sub from CostItem as c join c.owner org where c.sub in (:subList) and c.owner = :owner and c.costItemStatus != :status and c.costItemElement.id = :costItemElement " + orderByQuery
+            String query = "select c.sub from CostItem as c where c.sub in (:subList) and c.owner = :owner and c.costItemStatus != :status and c.costItemElement.id = :costItemElement " + orderByQuery
 
             List<Subscription> subscriptionList =  CostItem.executeQuery(query, [subList: orgSubscriptions, owner: result.surveyInfo.owner, status: RDStore.COST_ITEM_DELETED, costItemElement: Long.parseLong(result.selectedCostItemElement)])
 
