@@ -1,7 +1,9 @@
 <h2 class="ui dividing header">Dropdowns<a class="anchor" id="dropdowns"></a></h2>
-<div class="ui big form">
+
+<div class="ui big form"><a class="anchor" id="sort"></a>
     <div class="three wide fields">
         <div class="field">
+            <label>Sortierung</label>
             <div class="ui selection icon dropdown">
                 <i class="dropdown icon"></i>
                 <div class="default text">Bitte auswählen</div>
