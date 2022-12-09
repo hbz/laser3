@@ -101,6 +101,9 @@ class WorkflowTagLib {
                             else if (docctx.owner?.filename) {
                                 docStr = docctx.owner.filename
                             }
+                            if (docctx.status == RDStore.DOC_CTX_STATUS_DELETED) {
+                                docStr = '<span class="sc_red">' + message(code:'workflow.condition.file.deleted') + '</span>'
+                            }
                             fstr = '<i class="icon file"></i> ' + fstr + ': <strong>' + docStr + '</strong>'
                         }
                         else {
@@ -174,17 +177,23 @@ class WorkflowTagLib {
                     }
                     out << (isListItem ? posMark : '') + '<i class="icon file"></i>'
                     out << (isListItem ? '<div class="middle aligned content">' : '')
-                    out << pTitle + ': <a href="#documentPreview" data-documentKey="' + docctx.owner.uuid + ':' + docctx.id + '">' + linkBody + '</a>'
-                    if (docctx.getDocType()) {
-                        out << ' (' + docctx.getDocType().getI10n('value') + ')'
+
+                    if (docctx.status == RDStore.DOC_CTX_STATUS_DELETED) {
+                        out << pTitle + ': [ <span class="sc_red">' + message(code:'workflow.condition.file.deleted') + '</span> ]'
                     }
-                    if (docctx.getDocConfid()) {
-                        out << ' (' + docctx.getDocConfid().getI10n('value') + ')'
-                    }
-                    out << ' &nbsp; [ <a href="docstore/index/' + docctx.owner.uuid + '" target="_blank">' + message(code:'default.download.label') + '</a> ]'
+                    else {
+                        out << pTitle + ': <a href="#documentPreview" data-documentKey="' + docctx.owner.uuid + ':' + docctx.id + '">' + linkBody + '</a>'
+                        if (docctx.getDocType()) {
+                            out << ' (' + docctx.getDocType().getI10n('value') + ')'
+                        }
+                        if (docctx.getDocConfid()) {
+                            out << ' (' + docctx.getDocConfid().getI10n('value') + ')'
+                        }
+                        out << ' &nbsp; [ <a href="docstore/index/' + docctx.owner.uuid + '" target="_blank">' + message(code: 'default.download.label') + '</a> ]'
 
 //                    out << pTitle + ': ' + g.link( [controller: 'docstore', id: docctx.owner.uuid], linkBody + ' (' + docctx.owner?.type?.getI10n('value') + ')')
 //                    out << ' &nbsp; <a href="docstore/index/' + docctx.owner.uuid + '" class="ui icon small blue button la-modern-button" target="_blank"><i class="download icon"></i></a>'
+                    }
                 }
                 else {
                     out << (isListItem ? negMark + '<i class="icon file"></i>' : '<i class="icon file la-light-grey"></i>')
