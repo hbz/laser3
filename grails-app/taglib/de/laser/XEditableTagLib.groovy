@@ -364,7 +364,7 @@ class XEditableTagLib {
             }
         }
         catch ( Throwable e ) {
-            log.error("Problem processing editable boolean ${attrs}",e)
+            log.error( "Problem processing editable dropdown (or value)",e)
         }
     }
 
