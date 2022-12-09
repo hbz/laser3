@@ -15,3 +15,7 @@
 @computerWidth: auto;
 @computerGutter: 2em;
 
+@largeMonitorMinimumGutter: (@emSize  * 2);
+@largeMonitorWidth: auto;
+@largeMonitorGutter: 2em;
+
