@@ -572,6 +572,9 @@ class FinanceController  {
     })
     def processCostItemsBulk() {
         Map<String,Object> ctrlResult = financeService.processCostItemsBulk(params)
+        if(ctrlResult.result.failures) {
+            flash.error = message(code: 'financials.bulkCostItems.noCostItems', args: [ctrlResult.result.failures.join(', ')])
+        }
         redirect(url: request.getHeader('referer'))
     }
 }
