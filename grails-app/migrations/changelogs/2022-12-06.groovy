@@ -94,7 +94,7 @@ databaseChangeLog = {
     changeSet(author: "djebeniani (hand-coded)", id: "1670338391348-14") {
         grailsChange {
             change {
-                sql.executeInsert("UPDATE user_setting SET us_string_value = '100' WHERE us_key_enum = 'PAGE_SIZE' AND us_string_value > 100;")
+                sql.executeInsert("UPDATE user_setting SET us_string_value = '100' WHERE us_key_enum = 'PAGE_SIZE' AND us_string_value::INTEGER > 100;")
             }
             rollback {}
         }
