@@ -189,8 +189,6 @@
                                     <ui:link generateElementId="true" class="item" role="menuitem" controller="dataManager" action="checkPackageTIPPs">Tipps Check of we:kb and LAS:eR</ui:link>
                                     <div class="divider"></div>
                                     <ui:link generateElementId="true" class="item" role="menuitem" controller="dataManager" action="listMailTemplates">Mail Templates</ui:link>
-
-                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="usage" action="index">${message(code: 'menu.datamanager.manage_usage_stats')}</ui:link>
                             </div>
                         </div>
                     </sec:ifAnyGranted>
@@ -240,8 +238,7 @@
                                 </div>
 
                                 <ui:link generateElementId="true" class="item" role="menuitem" controller="user" action="list">${message(code:'menu.institutions.users')}</ui:link>
-                                <ui:link generateElementId="true" class="item" role="menuitem" controller="usage">${message(code:'menu.admin.manageUsageStats')}</ui:link>
-                                <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="forceSendNotifications">${message(code:'menu.admin.sendNotifications')}</ui:link>
+                                <ui:link generateElementId="true" class="item" role="menuitem" controller="stats" action="statsHome">${message(code:'menu.admin.statistics')}</ui:link>
 
                                 <div class="divider"></div>
 
@@ -254,16 +251,17 @@
                                         <ui:link generateElementId="true" class="item" role="menuitem" controller="yoda" action="titleEnrichment">Title Enrichment</ui:link>
                                     </div>
                                 </div>
-                                <div class="divider"></div>
+                                <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="forceSendNotifications">${message(code:'menu.admin.sendNotifications')}</ui:link>
 
-                                <sec:ifAnyGranted roles="ROLE_ADMIN"><!-- TODO: workflows-permissions -->
-                                    <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="manageWorkflows">${message(code:'menu.admin.manageWorkflows')}</ui:link>
-                                </sec:ifAnyGranted>
+                                <div class="divider"></div>
 
                                 <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="manageNamespaces">${message(code:'menu.admin.manageIdentifierNamespaces')}</ui:link>
                                 <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="managePropertyDefinitions">${message(code:'menu.admin.managePropertyDefinitions')}</ui:link>
                                 <%--<ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="managePropertyGroups">${message(code:'menu.institutions.manage_prop_groups')}</ui:link>--%> <%-- property groups are always private?? --%>
                                 <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="manageRefdatas">${message(code:'menu.admin.manageRefdatas')}</ui:link>
+                                <!-- TODO: workflows-permissions -->
+                                <ui:link generateElementId="true" class="item" role="menuitem" controller="admin" action="manageWorkflows">${message(code:'menu.admin.manageWorkflows')}</ui:link>
+                                <ui:link generateElementId="true" class="item" role="menuitem" controller="usage">${message(code:'menu.admin.manageUsageStats')}</ui:link>
 
                                 <div class="divider"></div>
 
@@ -278,9 +276,6 @@
                                     </div>
                                 </div>
 
-                                <div class="divider"></div>
-
-                                <ui:link generateElementId="true" class="item" role="menuitem" controller="stats" action="statsHome">${message(code:'menu.admin.statistics')}</ui:link>
                             </div>
                         </div>
                     </sec:ifAnyGranted>
