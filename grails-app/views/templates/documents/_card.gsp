@@ -86,13 +86,7 @@
                         </div>
                         <div class="right aligned eight wide column la-column-left-lessPadding">
                             <g:if test="${docctx.owner.owner?.id == contextOrg.id}">
-
-%{--                                <g:set var="supportedMimeType" value="${Doc.getPreviewMimeTypes().contains(docctx.owner.mimeType)}" />--}%
-%{--                                <button class="ui icon blue button la-modern-button${supportedMimeType ? '' : ' la-hidden disabled'}"--}%
-%{--                                        data-documentKey="${docctx.owner.uuid + ':' + docctx.id}">--}%
-%{--                                    <i class="search icon"></i>--}%
-%{--                                </button>--}%
-                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i class="download icon"></i></g:link>
+                                <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button la-js-dont-hide-button" target="_blank"><i class="download icon"></i></g:link>
 
                                 <%-- START First Button --%>
                                 <laser:render template="/templates/documents/modal" model="[ownobj: ownobj, owntp: owntp, docctx: docctx, doc: docctx.owner]" />
@@ -115,7 +109,7 @@
                                 </g:if>
                                 <g:else>
                                     <%-- Hidden Fake Button To hold the other Botton in Place --%>
-                                    <div class="ui icon mini button la-hidden">
+                                    <div class="ui icon button la-hidden">
                                         <i class="coffe icon"></i>
                                     </div>
                                 </g:else>
@@ -123,18 +117,19 @@
                             </g:if>
                             <g:else>
                                 <%-- Hidden Fake Button To hold the other Botton in Place --%>
-                                <div class="ui icon mini button la-hidden">
+                                <div class="ui icon button la-hidden">
                                     <i class="coffe icon"></i>
                                 </div>
 
                                 <%-- Hidden Fake Button To hold the other Botton in Place --%>
-                                <div class="ui icon mini button la-hidden">
+                                <div class="ui icon button la-hidden">
                                     <i class="coffe icon"></i>
                                 </div>
                             </g:else>
                             <%-- START Third Button --%>
                             <g:if test="${!(ownobj instanceof Org) && ownobj?.showUIShareButton() && accessService.checkMinUserOrgRole(contextService.getUser(), docctx.owner.owner, "INST_EDITOR")}">
                                 <g:if test="${docctx?.isShared}">
+                                    <span class="la-js-editmode-container">
                                     <ui:remoteLink class="ui icon green button la-modern-button js-no-wait-wheel la-popup-tooltip la-delay"
                                                       controller="ajax"
                                                       action="toggleShare"
@@ -142,10 +137,10 @@
                                                       data-content="${message(code:'property.share.tooltip.on')}"
                                                       data-done=""
                                                       data-update="container-documents"
-                                                      role="button"
-                                    >
+                                                      role="button">
                                         <i class="icon la-share la-js-editmode-icon"></i>
                                     </ui:remoteLink>
+                                    </span>
                                 </g:if>
                                 <g:else>
                                     <ui:remoteLink class="ui icon blue button la-modern-button js-no-wait-wheel la-popup-tooltip la-delay js-open-confirm-modal"
@@ -157,8 +152,7 @@
                                                       data-confirm-term-how="share"
                                                       data-done=""
                                                       data-update="container-documents"
-                                                      role="button"
-                                    >
+                                                      role="button">
                                         <i class="la-share slash icon la-js-editmode-icon"></i>
                                     </ui:remoteLink>
                                 </g:else>
@@ -193,7 +187,7 @@
                         </div>
 
                         <div class="five wide right aligned column">
-                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button" target="_blank"><i class="download icon"></i></g:link>
+                            <g:link controller="docstore" id="${docctx.owner.uuid}" class="ui icon blue button la-modern-button la-js-dont-hide-button" target="_blank"><i class="download icon"></i></g:link>
 
                             %{--
                             <g:if test="${docctx.owner.owner?.id == contextOrg.id}">

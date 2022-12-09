@@ -978,7 +978,7 @@ class DataloadService {
                                             }
                                         }
                                     }
-                                    log.debug("${logPrefix} - processed ${total} / ignored ${ignoredObjectIdList.size()} from ${todoList.size() - (total + ignoredObjectIdList.size())} records; bulkSize ${mb.round(2)}MB")
+                                    log.debug("${logPrefix} - processed ${total} / ignored ${ignoredObjectIdList.size()} / todo ${todoList.size() - (total + ignoredObjectIdList.size())} records; bulkSize ${mb.round(2)}MB")
                                 }
                                 else {
                                     log.debug( "${logPrefix} - ignored empty bulk")

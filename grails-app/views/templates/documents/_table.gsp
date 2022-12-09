@@ -139,7 +139,7 @@
                                 if (usedByWorkflowsList) { print '&nbsp;' }
                             %>
                             <g:each in="${usedByWorkflowsList}" var="ctxWorkflow">
-                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="Wird referenziert in: ${ctxWorkflow.title}">
+                                <span class="la-long-tooltip la-popup-tooltip la-delay" data-content="Wird referenziert in Workflow: ${ctxWorkflow.title}">
                                     <i class="exclamation circle brown icon"></i>
                                 </span>
                             </g:each>
