@@ -3,6 +3,7 @@ package de.laser
 import de.laser.config.ConfigMapper
 import de.laser.remote.ApiSource
 import de.laser.remote.GlobalRecordSource
+import de.laser.system.SystemEvent
 import de.laser.system.SystemMessage
 import de.laser.system.SystemSetting
 import grails.gorm.transactions.Transactional
@@ -73,5 +74,17 @@ class SystemService {
         }
 
         result
+    }
+
+    def getSystemInfoForJob() {
+        String output = ''
+
+        List<SystemEvent> events = SystemEvent.executeQuery('select se from SystemEvent se where se.created > (CURRENT_DATE-1) order by se.created desc')
+        events.each { e ->
+            output << " + ${e.category.value} - ${e.relevance.value} "
+
+        }
+        // println output
+        output
     }
 }
