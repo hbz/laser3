@@ -89,7 +89,7 @@
                 <label for="filterSub">${message(code: 'subscription.plural')}</label>
                 <select id="filterSub" name="filterSub" multiple="" class="ui search selection fluid dropdown">
                     <option <%--<%= (filterSub.contains("all")) ? ' selected' : '' %>--%>
-                            value="">${message(code: 'myinst.currentTitles.all_subs')}</option>
+                            value="">${message(code: 'default.select.all.label')}</option>
                     <g:each in="${subscriptions}" var="s">
                         <option <%=(filterSub.contains(s.id.toString())) ? 'selected="selected"' : ''%> value="${s.id}"
                                                                                                         title="${s.dropdownNamingConvention(institution)}">
@@ -103,7 +103,7 @@
                 <label for="filterPvd">${message(code: 'default.agency.provider.plural.label')}</label>
                 <select id="filterPvd" name="filterPvd" multiple="" class="ui search selection fluid dropdown">
                     <option <%--<%= (filterPvd.contains("all")) ? 'selected' : '' %>--%>
-                            value="">${message(code: 'myinst.currentTitles.all_providers')}</option>
+                            value="">${message(code: 'default.select.all.label')}</option>
                     <g:each in="${providers}" var="p">
                         <%
                             def pvdId = p[0].toString()
@@ -122,7 +122,7 @@
                 <label for="filterPvd">${message(code: 'default.host.platforms.label')}</label>
                 <select name="filterHostPlat" multiple="" class="ui search selection fluid dropdown">
                     <option <%--<%= (filterHostPlat.contains("all")) ? 'selected' : '' %>--%>
-                            value="">${message(code: 'myinst.currentTitles.all_host_platforms')}</option>
+                            value="">${message(code: 'default.select.all.label')}</option>
                     <g:each in="${hostplatforms}" var="hp">
                         <%
                             def hostId = hp[0].toString()

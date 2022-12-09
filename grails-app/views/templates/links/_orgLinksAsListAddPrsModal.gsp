@@ -14,7 +14,7 @@
             </thead>
             <tbody>
                 <g:each in="${orgRole.org.getPublicPersons()}" var="p">
-                    <g:if test="${true}">
+                    <g:if test="${orgRole.org.gokbId == null}">
                         <tr>
                             <td>
                                 <span class="la-popup-tooltip la-delay" data-content="${message(code:'address.public')}" data-position="top right">
