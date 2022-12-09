@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4602    09.12.2022  rc-3.0  3.0         Moe     Feature     Titel hinzufügen in zwei Reiter unterteilen
+
 4669    09.12.2022  rc-3.0  3.0         David   Feature     Fehlende UI-Elemente im "Inhalte nicht editierbar"-Modus
 
 4577    08.12.2022  rc-3.0  3.0         Moe     Feature     Wenn Tabs abstürzen wegen Treffermenge zu hoch eingstellt
