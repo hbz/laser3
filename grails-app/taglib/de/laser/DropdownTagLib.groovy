@@ -212,7 +212,8 @@ class DropdownTagLib {
 
         out <<     '<input type="hidden" name="' + attrs.name + '" />'
         out <<     '<i aria-hidden="true" class="dropdown icon"></i>'
-        out <<     '<input class="search" id="' + id + '" />'
+        //out <<     '<input class="search" id="' + id + '" />'
+        // TODO: Checking for accessibility
         out <<     '<div class="default text">' + noSelection + '</div>'
         out <<     '<div class="menu">'
 

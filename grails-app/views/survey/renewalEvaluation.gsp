@@ -213,6 +213,11 @@
                 ${message(code: 'renewalEvaluation.orgsWithoutResult.label')} <ui:totalNumber
                         total="${orgsWithoutResult.size()}"/>
             </a>
+
+            <a class="item" data-tab="orgInsertedItself">
+                ${message(code: 'renewalEvaluation.orgInsertedItself.label')} <ui:totalNumber
+                        total="${orgInsertedItself.size()}"/>
+            </a>
         </div>
 
         <div class="ui bottom attached active tab segment" data-tab="orgsContinuetoSubscription">
@@ -243,6 +248,13 @@
                     total="${orgsWithoutResult.size()}"/></h4>
 
             <laser:render template="renewalResult" model="[participantResults: orgsWithoutResult]"/>
+        </div>
+
+        <div class="ui bottom attached tab segment" data-tab="orgInsertedItself">
+            <h4 class="ui icon header la-clear-before la-noMargin-top">${message(code: 'renewalEvaluation.orgInsertedItself.label')}<ui:totalNumber
+                    total="${orgInsertedItself.size()}"/></h4>
+
+            <laser:render template="renewalResult" model="[participantResults: orgInsertedItself]"/>
         </div>
 
 

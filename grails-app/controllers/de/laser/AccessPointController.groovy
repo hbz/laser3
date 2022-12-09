@@ -67,10 +67,10 @@ class AccessPointController  {
         Map<String,Object> ctrlResult = accessPointControllerService.addMailDomain(params)
         if (ctrlResult.status == AccessPointControllerService.STATUS_ERROR) {
             flash.error = ctrlResult.result.error
-            redirect controller: 'accessPoint', action: 'edit_' + params.accessMethod, id: params.id
+            redirect controller: 'accessPoint', action: 'edit_' + params.accessMethod.toLowerCase(), id: params.id
             return
         } else {
-            redirect controller: 'accessPoint', action: 'edit_' + params.accessMethod, id: params.id
+            redirect controller: 'accessPoint', action: 'edit_' + params.accessMethod.toLowerCase(), id: params.id
         }
     }
 
@@ -172,7 +172,7 @@ class AccessPointController  {
             return
         }
         else {
-            redirect controller: 'accessPoint', action: 'edit_'+ctrlResult.result.accessPoint.accessMethod.value, id: ctrlResult.result.accessPoint.id
+            redirect controller: 'accessPoint', action: 'edit_'+ctrlResult.result.accessPoint.accessMethod.value.toLowerCase(), id: ctrlResult.result.accessPoint.id
             return
         }
     }
@@ -371,8 +371,16 @@ class AccessPointController  {
     @Secured(closure = {
         ctx.accessService.checkPermAffiliation("ORG_BASIC_MEMBER,ORG_CONSORTIUM", "INST_EDITOR")
     })
-    def deleteIpRange() {
-        accessPointService.deleteIpRange(AccessPointData.get(params.id))
+    def deleteAccessPointData() {
+        Org organisation = accessService.checkPerm("ORG_CONSORTIUM") ? Org.get(params.id) : contextService.getOrg()
+        boolean inContextOrg = organisation.id == contextService.getOrg().id
+
+        if(((accessService.checkPermAffiliation('ORG_BASIC_MEMBER', 'INST_EDITOR') && inContextOrg) || (accessService.checkPermAffiliation('ORG_CONSORTIUM', 'INST_EDITOR')))){
+            accessPointService.deleteAccessPointData(AccessPointData.get(params.id))
+        }else {
+            flash.error = message(code: 'default.noPermissions') as String
+        }
+
         redirect(url: request.getHeader('referer'))
     }
 

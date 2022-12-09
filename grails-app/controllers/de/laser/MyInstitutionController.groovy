@@ -1389,16 +1389,16 @@ join sub.orgRelations or_sub where
 
         Set<Long> currentIssueEntitlements = []
         if(!params.containsKey('exportXLSX') && params.format != 'csv') {
-            currentIssueEntitlements.addAll(IssueEntitlement.executeQuery(qryString+' group by tipp, ie.id order by ie.sortname asc',qryParams))
             //second filter needed because double-join on same table does deliver me empty results
             if (filterPvd) {
-                currentIssueEntitlements.addAll(IssueEntitlement.executeQuery("select ie.id from IssueEntitlement ie join ie.tipp tipp join tipp.orgs oo where oo.roleType in (:cpRole) and oo.org.id in ("+filterPvd.join(", ")+") order by ie.sortname asc",[cpRole:[RDStore.OR_CONTENT_PROVIDER,RDStore.OR_PROVIDER,RDStore.OR_AGENCY,RDStore.OR_PUBLISHER]]))
+                currentIssueEntitlements.addAll(IssueEntitlement.executeQuery("select ie.id from IssueEntitlement ie join ie.tipp tipp join tipp.pkg pkg join pkg.orgs oo where oo.roleType in (:cpRole) and oo.org.id in ("+filterPvd.join(", ")+") order by ie.sortname asc",[cpRole:[RDStore.OR_CONTENT_PROVIDER,RDStore.OR_PROVIDER,RDStore.OR_AGENCY,RDStore.OR_PUBLISHER]]))
             }
+            else currentIssueEntitlements.addAll(IssueEntitlement.executeQuery(qryString+' group by tipp, ie.id order by ie.sortname asc',qryParams))
             Set<TitleInstancePackagePlatform> allTitles = currentIssueEntitlements ? TitleInstancePackagePlatform.executeQuery('select tipp from IssueEntitlement ie join ie.tipp tipp where ie.id in (:ids) and ie.status != :ieStatus '+orderByClause,[ieStatus: RDStore.TIPP_STATUS_REMOVED, ids: currentIssueEntitlements.drop(result.offset).take(result.max)]) : []
-            result.subscriptions = Subscription.executeQuery('select sub from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo where oo.roleType in (:orgRoles) and oo.org = :institution and sub.status = :current '+instanceFilter+" order by sub.name asc",[
+            result.subscriptions = Subscription.executeQuery('select distinct(sub) from IssueEntitlement ie join ie.subscription sub join sub.orgRelations oo where oo.roleType in (:orgRoles) and oo.org = :institution and (sub.status = :current or sub.hasPerpetualAccess = true) '+instanceFilter+" order by sub.name asc",[
                     institution: result.institution,
                     current: RDStore.SUBSCRIPTION_CURRENT,
-                    orgRoles: orgRoles]).toSet()
+                    orgRoles: orgRoles])
             if(result.subscriptions.size() > 0) {
                 Set<Long> allIssueEntitlements = IssueEntitlement.executeQuery('select ie.id from IssueEntitlement ie where ie.subscription in (:currentSubs)',[currentSubs:result.subscriptions])
                 result.providers = Org.executeQuery('select org.id,org.name from IssueEntitlement ie join ie.tipp tipp join tipp.pkg pkg join pkg.orgs oo join oo.org org where ie.id in ('+qryString+' group by tipp, ie.id order by ie.sortname asc) group by org.id order by org.name asc',qryParams)
@@ -1817,8 +1817,7 @@ join sub.orgRelations or_sub where
             params.validOnYear = [newYear]
         }
 
-        result.propList = PropertyDefinition.findAll( "from PropertyDefinition as pd where pd.descr in :defList order by pd.name_de asc", [defList: [PropertyDefinition.SVY_PROP]])
-
+        result.propList = PropertyDefinition.findAll( "select sur.type from SurveyResult as sur where sur.participant = :contextOrg order by sur.type.name_de asc", [contextOrg: result.contextOrg]).groupBy {it}.collect {it.key}
 
         result.allConsortia = Org.executeQuery(
                 """select o from Org o, SurveyInfo surInfo where surInfo.owner = o
@@ -2891,6 +2890,75 @@ join sub.orgRelations or_sub where
         String tmpQuery = "select o.id " + fsq.query.minus("select o ")
         List memberIds = Org.executeQuery(tmpQuery, fsq.queryParams)
 
+
+        Map queryParamsProviders = [
+                subOrg      : result.institution,
+                subRoleTypes: [RDStore.OR_SUBSCRIBER, RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIPTION_CONSORTIA],
+                paRoleTypes : [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
+        ]
+
+        Map queryParamsSubs = [
+                subOrg      : result.institution,
+                subRoleTypes: [RDStore.OR_SUBSCRIPTION_CONSORTIA],
+                paRoleTypes : [RDStore.OR_PROVIDER, RDStore.OR_AGENCY]
+        ]
+
+        String queryProviders = '''select distinct(or_pa.org) from OrgRole or_pa 
+join or_pa.sub sub 
+join sub.orgRelations or_sub where
+    ( sub = or_sub.sub and or_sub.org = :subOrg ) and
+    ( or_sub.roleType in (:subRoleTypes) ) and
+        ( or_pa.roleType in (:paRoleTypes) )'''
+
+        String querySubs = '''select distinct(or_pa.sub) from OrgRole or_pa 
+join or_pa.sub sub 
+join sub.orgRelations or_sub where
+    ( sub = or_sub.sub and or_sub.org = :subOrg ) and
+    ( or_sub.roleType in (:subRoleTypes) ) and
+        ( or_pa.roleType in (:paRoleTypes) ) and sub.instanceOf is null'''
+
+        if (params.subStatus) {
+            queryProviders +=  " and (sub.status = :subStatus)" // ( closed in line 213; needed to prevent consortia members without any subscriptions because or would lift up the other restrictions)
+            querySubs +=  " and (sub.status = :subStatus)"
+            RefdataValue subStatus = RefdataValue.get(params.subStatus)
+            queryParamsProviders << [subStatus: subStatus]
+            queryParamsSubs << [subStatus: subStatus]
+        }
+        if (params.subValidOn || params.subPerpetual) {
+            if (params.subValidOn && !params.subPerpetual) {
+                queryProviders += " and (sub.startDate <= :validOn or sub.startDate is null) and (sub.endDate >= :validOn or sub.endDate is null)"
+                querySubs += " and (sub.startDate <= :validOn or sub.startDate is null) and (sub.endDate >= :validOn or sub.endDate is null)"
+                queryParamsProviders << [validOn: DateUtils.parseDateGeneric(params.subValidOn)]
+                queryParamsSubs << [validOn: DateUtils.parseDateGeneric(params.subValidOn)]
+            }
+            else if (params.subValidOn && params.subPerpetual) {
+                queryProviders += " and ((sub.startDate <= :validOn or sub.startDate is null) and (sub.endDate >= :validOn or sub.endDate is null or sub.hasPerpetualAccess = true))"
+                querySubs += " and ((sub.startDate <= :validOn or sub.startDate is null) and (sub.endDate >= :validOn or sub.endDate is null or sub.hasPerpetualAccess = true))"
+                queryParamsProviders << [validOn: DateUtils.parseDateGeneric(params.subValidOn)]
+                queryParamsSubs << [validOn: DateUtils.parseDateGeneric(params.subValidOn)]
+            }
+        }
+
+
+
+        List<Org> providers = Org.executeQuery(queryProviders, queryParamsProviders)
+
+
+/*        List<Subscription> subscriptions = []
+        if(providers || params.filterPvd) {
+            querySubs += " and or_pa.org.id in (:providers)"
+            if(params.filterPvd){
+                queryParamsSubs << [providers: params.list('filterPvd').collect { Long.parseLong(it) }]
+            }
+            else {
+                queryParamsSubs << [providers: providers.collect { it.id }]
+            }
+            subscriptions = Subscription.executeQuery(querySubs, queryParamsSubs)
+        }
+        result.subscriptions = subscriptions*/
+
+        result.providers = providers
+
 		prf.setBenchmark('query')
 
         if (params.filterPropDef && memberIds) {
@@ -2933,7 +3001,9 @@ join sub.orgRelations or_sub where
             Map<String, Object> selectedFields = [:]
             selectedFieldsRaw.each { it -> selectedFields.put( it.key.replaceFirst('iex:', ''), it.value ) }
 
-            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(totalMembers, selectedFields, 'member', params.contactSwitch)
+            Set<String> contactSwitch = []
+            contactSwitch.addAll(params.list("contactSwitch"))
+            SXSSFWorkbook wb = (SXSSFWorkbook) exportClickMeService.exportOrgs(totalMembers, selectedFields, 'member', contactSwitch)
 
             response.setHeader "Content-disposition", "attachment; filename=\"${file}.xlsx\""
             response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"

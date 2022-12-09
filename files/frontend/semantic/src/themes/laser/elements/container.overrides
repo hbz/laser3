@@ -5,7 +5,7 @@
 /* Laser Breakpoint */
 @media only screen and (min-width: @laser-breakpoint) {
   .ui.ui.ui.container:not(.fluid) {
-    width: 1220px;
+    width: 1440px;
   }
 }
 

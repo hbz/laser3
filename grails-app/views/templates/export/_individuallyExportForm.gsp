@@ -81,13 +81,13 @@
         <g:if test="${contactSwitch == true}">
             <div class="fields">
                 <div class="wide eight field">
-                    <div class="ui radio">
-                        <input type="radio" name="contactSwitch" id="public" value="public">
+                    <div class="ui checkbox">
                         <label for="public"><g:message code="org.publicContacts.label"/></label>
+                        <input type="checkbox" name="contactSwitch" id="public" value="public" checked="checked"/>
                     </div>
-                    <div class="ui radio">
-                        <input type="radio" name="contactSwitch" id="private" value="private" checked="checked">
+                    <div class="ui checkbox">
                         <label for="private"><g:message code="org.privateContacts.exports.label"/></label>
+                        <input type=checkbox name="contactSwitch" id="private" value="private"/>
                     </div>
                 </div>
             </div>
