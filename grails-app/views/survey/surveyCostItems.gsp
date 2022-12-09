@@ -199,9 +199,6 @@
 
                 <g:if test="${params.tab == 'selectedSubParticipants'}">
 
-                    <g:link action="surveyCostItems" class="ui button"
-                            params="${params + [sortOnCostItems: true]}"><g:message code="surveyCostItems.sortOnPrice"/> </g:link>
-
                     <h3 class="ui header"><g:message code="surveyParticipants.hasAccess"/></h3>
 
                     <g:set var="surveyParticipantsHasAccess"

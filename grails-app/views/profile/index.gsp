@@ -451,7 +451,7 @@
 
                         <div class="field">
                             <label>${message(code: 'profile.pagesize')}</label>
-                            <ui:xEditable owner="${user.getSetting(KEYS.PAGE_SIZE, 10)}" field="strValue" />
+                            <ui:xEditableDropDown owner="${user.getSetting(KEYS.PAGE_SIZE, 10)}" field="strValue" dataLink="getProfilPageSizeList"/>
                         </div>
 
                     </div>

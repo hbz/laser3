@@ -263,6 +263,33 @@ class FilterService {
             query << subQuery
         }
 
+        if (params.filterPvd && params.filterPvd != "" && params.list('filterPvd')) {
+            String subQuery = " exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = o.id and oo.roleType in (:subscrRoles) and ooCons.org = :context and ooCons.roleType = :consType and exists (select orgRole from OrgRole orgRole where orgRole.sub = sub and orgRole.org.id in (:filterPvd)) "
+            queryParams << [subscrRoles: [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN], consType: RDStore.OR_SUBSCRIPTION_CONSORTIA, context: contextService.getOrg(), filterPvd : params.list('filterPvd').collect { Long.parseLong(it) }]
+
+            if (params.subStatus) {
+                subQuery +=  " and (sub.status = :subStatus" // ( closed in line 213; needed to prevent consortia members without any subscriptions because or would lift up the other restrictions)
+                RefdataValue subStatus = RefdataValue.get(params.subStatus)
+                queryParams << [subStatus: subStatus]
+                if (!params.subValidOn && params.subPerpetual && subStatus == RDStore.SUBSCRIPTION_CURRENT)
+                    subQuery += " or sub.hasPerpetualAccess = true"
+                subQuery += ")"
+            }
+            if (params.subValidOn || params.subPerpetual) {
+                if (params.subValidOn && !params.subPerpetual) {
+                    subQuery += " and (sub.startDate <= :validOn or sub.startDate is null) and (sub.endDate >= :validOn or sub.endDate is null)"
+                    queryParams << [validOn: DateUtils.parseDateGeneric(params.subValidOn)]
+                }
+                else if (params.subValidOn && params.subPerpetual) {
+                    subQuery += " and ((sub.startDate <= :validOn or sub.startDate is null) and (sub.endDate >= :validOn or sub.endDate is null or sub.hasPerpetualAccess = true))"
+                    queryParams << [validOn: DateUtils.parseDateGeneric(params.subValidOn)]
+                }
+            }
+
+            query << subQuery+")"
+            params.filterSet = true
+        }
+
         if (params.customerType?.length() > 0) {
             query << "exists (select oss from OrgSetting as oss where oss.id = o.id and oss.key = :customerTypeKey and oss.roleValue.id = :customerType)"
             queryParams << [customerType : Long.parseLong(params.customerType)]

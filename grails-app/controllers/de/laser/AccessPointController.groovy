@@ -172,7 +172,7 @@ class AccessPointController  {
             return
         }
         else {
-            redirect controller: 'accessPoint', action: 'edit_'+ctrlResult.result.accessPoint.accessMethod.value, id: ctrlResult.result.accessPoint.id
+            redirect controller: 'accessPoint', action: 'edit_'+ctrlResult.result.accessPoint.accessMethod.value.toLowerCase(), id: ctrlResult.result.accessPoint.id
             return
         }
     }
