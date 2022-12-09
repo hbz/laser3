@@ -205,7 +205,6 @@
             <div class="ui search selection dropdown ">
                 <input type="hidden" name="filterPropDef">
                 <i aria-hidden="true" class="dropdown icon"></i>
-                <input class="search" id="filterPropDef">
                 <div class="default text">Bitte auswählen</div>
                 <div class="menu">
                     <div class="item selected" data-value="1">Abbestellgrund</div>

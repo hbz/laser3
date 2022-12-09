@@ -42,7 +42,7 @@
 <ui:messages data="${flash}"/>
 
 <div id="collapseableSubDetails" class="ui stackable grid">
-    <div class="ten wide column">
+    <div class="eleven wide column">
         <div class="la-inline-lists">
             <div class="ui two doubling stackable cards">
                 <div class="ui card la-time-card">
@@ -383,8 +383,8 @@
 
             <div class="clear-fix"></div>
         </div>
-    </div><!-- .twelve -->
-    <aside class="six wide column la-sidekick">
+    </div><!-- .eleven -->
+    <aside class="five wide column la-sidekick">
         <div class="ui one cards">
             <div id="container-provider">
                 <div class="ui card ">
