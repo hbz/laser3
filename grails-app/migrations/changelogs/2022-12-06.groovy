@@ -91,7 +91,7 @@ databaseChangeLog = {
         dropColumn(columnName: "dc_rv_doctype_fk", tableName: "doc_context")
     }
 
-    changeSet(author: "djebeniani (hand-code)", id: "1670338391348-14") {
+    changeSet(author: "djebeniani (hand-coded)", id: "1670338391348-14") {
         grailsChange {
             change {
                 sql.executeInsert("UPDATE user_setting SET us_string_value = '100' WHERE us_key_enum = 'PAGE_SIZE' AND us_string_value > 100;")
