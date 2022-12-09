@@ -4,7 +4,7 @@
        value="${SurveyOrg.findBySurveyConfigAndOrg(surveyConfig, institution)}"/>
 
 <div class="ui stackable grid">
-    <div class="ten wide column">
+    <div class="eleven wide column">
         <g:if test="${controllerName == 'survey' && actionName == 'show'}">
             <g:set var="countParticipants" value="${surveyConfig.countParticipants()}"/>
             <div class="ui horizontal segments">
@@ -167,7 +167,7 @@
         </div>
 
     </div>
-    <aside class="six wide column la-sidekick">
+    <aside class="five wide column la-sidekick">
         <div class="ui one cards">
 
             <div id="container-documents">

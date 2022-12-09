@@ -37,7 +37,7 @@
 
         <div class="ui stackable grid">
 
-            <div class="ten wide column">
+            <div class="eleven wide column">
                 <%--ui:errors bean="${titleInstanceInstance}" /--%>
 
                 <!--<h4 class="ui header">${message(code:'license.details.information')}</h4>-->
@@ -132,9 +132,9 @@
 
                 <div class="clearfix"></div>
 
-            </div><!-- .twelve -->
+            </div><!-- .eleven -->
 
-            <aside class="six wide column la-sidekick">
+            <aside class="five wide column la-sidekick">
                 <div class="ui one cards">
 
                     <div id="container-provider">

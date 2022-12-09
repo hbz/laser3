@@ -38,7 +38,7 @@
 <g:if test="${packageInstanceRecord}">
     <div class="ui grid">
 
-        <div class="twelve wide column">
+        <div class="eleven wide column">
             <div class="la-inline-lists">
                 <div class="ui two cards">
                     <div class="ui card la-time-card">
@@ -323,8 +323,8 @@
                     </div>
                 </div>
             </div>
-        </div><!-- .twelve -->
-        <aside class="four wide column la-sidekick">
+        </div><!-- .eleven -->
+        <aside class="five wide column la-sidekick">
             <g:if test="${gascoContacts}">
                 <div class="ui one cards">
                     <div id="container-provider">
