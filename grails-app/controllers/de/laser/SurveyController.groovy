@@ -953,7 +953,7 @@ class SurveyController {
         if(result.surveyConfig.pickAndChoose){
 
             List orgs = subscriptionService.getValidSurveySubChildOrgs(result.surveyConfig.subscription)
-            result.consortiaMembers = result.consortiaMembers.findAll{ (it in orgs)}
+            result.consortiaMembers = orgs ? result.consortiaMembers.findAll{ (it.id in orgs.id)} : []
         }
 
         result.consortiaMembersCount = Org.executeQuery(fsq.query, fsq.queryParams).size()
@@ -1608,7 +1608,7 @@ class SurveyController {
             Date endDate = params.endDate ? sdf.parse(params.endDate) : null
             params.list('selectedOrgs').each { orgId ->
                 Org org = Org.get(orgId)
-                if(org && result.targetParentSub && !(org in result.targetParentSubParticipantsList)){
+                if(org && result.targetParentSub && !(result.targetParentSubParticipantsList && org.id in result.targetParentSubParticipantsList.id)){
                     log.debug("Generating seperate slaved instances for members")
                     Subscription memberSub = new Subscription(
                             type: result.targetParentSub.type ?: null,
@@ -3858,7 +3858,7 @@ class SurveyController {
 
         result.parentSuccessorSubChilds.each { sub ->
             Org org = sub.getSubscriber()
-            if(!(org in result.participantsList)) {
+            if(!(result.participantsList && org.id in result.participantsList.id)) {
                 result.participantsList << org
             }
             result.parentSuccessortParticipantsList << org
@@ -4393,7 +4393,7 @@ class SurveyController {
                         refValue   : RDStore.YN_YES]).each {
 
             // Keine Kindlizenz in der Nachfolgerlizenz vorhanden
-            if(!(it.participant in result.parentSuccessortParticipantsList)){
+            if(!(result.parentSuccessortParticipantsList && it.participant.id in result.parentSuccessortParticipantsList.id)){
 
                 Subscription oldSubofParticipant = Subscription.executeQuery("Select s from Subscription s left join s.orgRelations orgR where s.instanceOf = :parentSub and orgR.org = :participant",
                         [parentSub  : result.parentSubscription,
@@ -4465,7 +4465,7 @@ class SurveyController {
         result.parentSubChilds.each { sub ->
             if (sub.isCurrentMultiYearSubscriptionToParentSub()){
                 sub.getAllSubscribers().each { org ->
-                    if (!(org in result.parentSuccessortParticipantsList)) {
+                    if (!(result.parentSuccessortParticipantsList && org.id in result.parentSuccessortParticipantsList.id)) {
 
                         countNewSubs++
                         result.newSubs.addAll(_processAddMember(sub, result.parentSuccessorSubscription, org, sub.startDate, sub.endDate, true, params))
