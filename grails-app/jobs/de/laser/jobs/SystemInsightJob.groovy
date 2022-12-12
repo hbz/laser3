@@ -11,8 +11,8 @@ class SystemInsightJob extends AbstractJob {
     SystemService systemService
 
     static triggers = {
-        //cron name:'systemInsightJobTrigger', cronExpression: "0 55 6 * * ?"
-        cron name:'systemInsightJobTrigger', cronExpression: "0 0/1 * * * ?" // debug only
+        cron name:'systemInsightJobTrigger', cronExpression: "0 55 6 * * ?"
+        //cron name:'systemInsightJobTrigger', cronExpression: "0 0/1 * * * ?" // debug only
         // cronExpression: "s m h D M W Y" - Year [optional]
     }
 
@@ -34,9 +34,14 @@ class SystemInsightJob extends AbstractJob {
             return false
         }
         try {
-            if (! systemService.sendInsight_SystemEvents(ConfigMapper.getSystemInsightIndex())) {
-                log.warn 'failed ..'
-            }
+            // TODO
+//            if (! systemService.sendInsight_SystemEvents(ConfigMapper.getSystemInsightIndex())) {
+//                log.warn 'failed ..'
+//            }
+//
+//            if (AppUtils.getCurrentServer() in [ AppUtils.PROD, AppUtils.LOCAL ]) {
+//                // TODO
+//            }
         }
         catch (Exception e) {
             log.error( e.getMessage() )
