@@ -7031,21 +7031,21 @@ i.icon.la-list-icon:before {
 
 @media only screen and (min-width: 1200px) {
   .ui.ui.ui.container:not(.fluid) {
-    width: 1127px;
-    margin-left: auto;
-    margin-right: auto;
+    width: auto;
+    margin-left: 2em;
+    margin-right: 2em;
   }
 
   .ui.ui.ui.grid.container {
-    width: calc(1127px + 2rem);
+    width: calc(auto + 2rem);
   }
 
   .ui.ui.ui.relaxed.grid.container {
-    width: calc(1127px + 3rem);
+    width: calc(auto + 3rem);
   }
 
   .ui.ui.ui.very.relaxed.grid.container {
-    width: calc(1127px + 5rem);
+    width: calc(auto + 5rem);
   }
 }
 
@@ -7101,9 +7101,11 @@ i.icon.la-list-icon:before {
 
 /* Laser Breakpoint */
 
-@media only screen and (min-width: 1290px) {
+@media only screen and (min-width: 1496px) {
   .ui.ui.ui.container:not(.fluid) {
     width: 1440px;
+    margin-left: auto;
+    margin-right: auto;
   }
 }
 /*!

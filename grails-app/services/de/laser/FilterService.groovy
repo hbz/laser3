@@ -1604,6 +1604,11 @@ class FilterService {
             filterSet = true
         }
 
+        if (params.gokbIds && params.gokbIds != "" && listReaderWrapper(params, 'gokbIds')) {
+            base_qry += " and gokbId in (:gokbIds)"
+            qry_params.gokbIds = listReaderWrapper(params, 'gokbIds')
+        }
+
         if ((params.sort != null) && (params.sort.length() > 0)) {
                 base_qry += "order by ${params.sort} ${params.order} "
         }

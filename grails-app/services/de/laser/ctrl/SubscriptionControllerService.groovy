@@ -2138,13 +2138,24 @@ class SubscriptionControllerService {
             if(params.pkgfilter)
                 packages << Package.get(params.pkgfilter)
             else packages = result.subscription.packages?.pkg
+
+            result.countAllTitles = TitleInstancePackagePlatform.executeQuery('''select count(tipp.id) from TitleInstancePackagePlatform as tipp where 
+                                    tipp.pkg in (:pkgs) and 
+                                    tipp.pkg in ( select pkg from SubscriptionPackage sp where sp.subscription = :subscription ) and 
+                                    ( not exists ( select ie from IssueEntitlement ie where ie.subscription = :subscription and ie.tipp.id = tipp.id and ie.status = :issueEntitlementStatus ) ) ''',
+            [pkgs: result.subscription.packages?.pkg, subscription: result.subscription, issueEntitlementStatus: ie_current])[0]
+
+            params.tab = params.tab ?: 'allTipps'
+
+            if(params.tab == 'selectedTipps'){
+                Map gokbIds = checkedCache ? checkedCache.get('checked').clone() : [:]
+                params.gokbIds =  gokbIds ? gokbIds.findAll { it.value == 'checked' }.collect {it.key} : ['']
+            }
+
             Map<String, Object> query = filterService.getTippQuery(params, packages)
             result.filterSet = query.filterSet
 
             if(result.subscription.packages?.pkg) {
-                Set<Long> tippIds = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
-                if(tippIds)
-                    tipps.addAll(TitleInstancePackagePlatform.findAllByIdInList(tippIds.drop(result.offset).take(result.max),[sort:'sortname']))
                 //now, assemble the identifiers available to highlight
                 Map<String, IdentifierNamespace> namespaces = [zdb  : IdentifierNamespace.findByNsAndNsType('zdb', TitleInstancePackagePlatform.class.name),
                                                                eissn: IdentifierNamespace.findByNsAndNsType('eissn', TitleInstancePackagePlatform.class.name),
@@ -2152,6 +2163,11 @@ class SubscriptionControllerService {
                                                                issn : IdentifierNamespace.findByNsAndNsType('issn', TitleInstancePackagePlatform.class.name),
                                                                pisbn: IdentifierNamespace.findByNsAndNsType('pisbn', TitleInstancePackagePlatform.class.name),
                                                                doi: IdentifierNamespace.findByNsAndNsType('doi', TitleInstancePackagePlatform.class.name)]
+
+                Set<Long> tippIds = TitleInstancePackagePlatform.executeQuery(query.query, query.queryParams)
+                if(tippIds)
+                    tipps.addAll(TitleInstancePackagePlatform.findAllByIdInList(tippIds.drop(result.offset).take(result.max),[sort:'sortname']))
+
                 result.num_tipp_rows = tippIds.size()
                 result.tipps = tipps
                 result.tippIDs = tippIds
@@ -2159,7 +2175,7 @@ class SubscriptionControllerService {
                 Map<String, Map> issueEntitlementOverwrite = [:]
                 result.issueEntitlementOverwrite = [:]
                 if(!params.pagination) {
-                    checkedCache.put('checked', [:])
+                    //checkedCache.put('checked', [:])
                 }
                 if (params.kbartPreselect && !params.pagination) {
                     MultipartFile kbartFile = params.kbartPreselect
@@ -2505,6 +2521,7 @@ class SubscriptionControllerService {
 
             result.checkedCache = checkedCache.get('checked')
             result.checkedCount = result.checkedCache.findAll { it.value == 'checked' }.size()
+            result.countSelectedTipps = result.checkedCount
 
             [result:result,status:STATUS_OK]
         }
