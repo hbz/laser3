@@ -1088,7 +1088,6 @@ class FilterService {
                             }
                     }
                 }
-                base_qry += " ) "
             }
         }
 

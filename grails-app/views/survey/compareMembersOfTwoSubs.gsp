@@ -312,9 +312,9 @@
                             </thead>
                             <tbody>
                             <g:each in="${participantsList}" var="participant" status="i">
-                                <g:if test="${participant in parentParticipantsList}">
+                                <g:if test="${participant.id in parentParticipantsList?.id}">
                                     <g:set var="termination"
-                                           value="${!(participant in parentSuccessortParticipantsList)}"/>
+                                           value="${!(participant.id in parentSuccessortParticipantsList?.id)}"/>
                                     <g:set var="participantSub"
                                            value="${parentSubscription.getDerivedSubscriptionBySubscribers(participant)}"/>
                                     <tr class=" ${termination ? 'negative' : ''}">
@@ -382,10 +382,10 @@
                             </tr>
                             </thead>
                             <g:each in="${participantsList}" var="participant" status="j">
-                                <g:if test="${participant in parentSuccessortParticipantsList}">
+                                <g:if test="${participant.id in parentSuccessortParticipantsList?.id}">
                                     <g:set var="participantSub"
                                            value="${parentSuccessorSubscription.getDerivedSubscriptionBySubscribers(participant)}"/>
-                                    <tr class=" ${participant in parentParticipantsList ? '' : 'positive'}">
+                                    <tr class=" ${participant.id in parentParticipantsList?.id ? '' : 'positive'}">
                                         <g:set var="count2" value="${count2 + 1}"/>
                                         <td>${count2}</td>
                                         <td class="titleCell">
