@@ -3,7 +3,7 @@
 
     <g:if test="${docBase64}">
         <div style="margin-bottom:1em;">
-            <embed src="data:${docDataType};base64,${docBase64}" width="100%" style="min-height:550px;border:1px solid #dedede;">
+            <embed src="data:${docDataType};base64,${docBase64}" width="100%" style="height:550px;border:1px solid #dedede;">
         </div>
     </g:if>
 
