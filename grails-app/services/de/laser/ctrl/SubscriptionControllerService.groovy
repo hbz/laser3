@@ -385,7 +385,7 @@ class SubscriptionControllerService {
             String sort, customerUID = result.subscription.getSubscriber().globalUID, groupKey
             result.customer = customerUID
             if(subscribedPlatforms && refSubs) {
-                Set refTitles = fetchTitles(params, refSubs, namespaces, 'ids')
+                Set refTitles = fetchTitles(params, refSubs, namespaces, 'ids') //does not work because guids are missing
                 Map<String, Object> dateRanges = getDateRange(params, result.subscription)
                 result.dateRangeParams = dateRanges.dateRangeParams
                 String filter = "", baseQuery, baseQueryAllYears, groupClause = " group by r.reportFrom, r.reportType, r.metricType"
@@ -720,7 +720,7 @@ class SubscriptionControllerService {
             query = "select tipp from IssueEntitlement ie join ie.tipp tipp where ie.subscription in (:refSubs) and ie.status = :current and ie.acceptStatus = :fixed "
         else if(fetchWhat == 'ids') {
             //!!!!!! MAY BE A PERFORMANCE BOTTLENECK! OBSERVE CLOSELY !!!!!!!!!
-            query = "select id.value from Identifier id join id.tipp tipp where id.ns in (:namespaces) and tipp in (select ie.tipp from IssueEntitlement ie where ie.subscription in (:refSubs) and ie.status = :current and ie.acceptStatus = :fixed) "
+            query = "select new map(id.value as value, id.ns.ns as namespace, id.tipp as tipp) from Identifier id join id.tipp tipp where id.ns in (:namespaces) and tipp in (select ie.tipp from IssueEntitlement ie where ie.subscription in (:refSubs) and ie.status = :current and ie.acceptStatus = :fixed) "
             queryParams.namespaces = namespaces
         }
         if(params.data != 'fetchAll') {
