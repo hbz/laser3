@@ -136,6 +136,20 @@
     </g:form>
 </ui:modal>
 
+
+<ui:tabs actionName="${actionName}">
+    <ui:tabsItem controller="subscription" action="addEntitlements"
+                 params="[id: subscription.id, tab: 'allTipps']"
+                 text="${message(code: "subscription.details.addEntitlements.allTipps")}" tab="allTipps"
+                 counts="${countAllTitles}"/>
+    <ui:tabsItem controller="subscription" action="addEntitlements"
+                 params="[id: subscription.id, tab: 'selectedTipps']"
+                 text="${message(code: "subscription.details.addEntitlements.selectedTipps")}" tab="selectedTipps"
+                 counts="${countSelectedTipps}"/>
+</ui:tabs>
+
+<div class="ui segment">
+
 <g:form action="processAddEntitlements" class="ui form">
     <input type="hidden" name="id" value="${subscription.id}"/>
     <g:hiddenField name="preselectCoverageDates" value="${preselectCoverageDates}"/>
@@ -163,7 +177,7 @@
             <th rowspan="3" style="vertical-align:middle;">
                 <%
                     String allChecked = ""
-                    checked.each { e ->
+                    checkedCache.each { e ->
                         if(e != "checked")
                             allChecked = ""
                     }
@@ -198,7 +212,7 @@
         <tbody>
         <g:each in="${tipps}" var="tipp">
             <tr data-index="${tipp.gokbId}">
-                <td><input type="checkbox" name="bulkflag" class="bulkcheck" ${checked ? checked[tipp.gokbId] : ''}></td>
+                <td><input type="checkbox" name="bulkflag" class="bulkcheck" ${checkedCache ? checkedCache[tipp.gokbId] : ''}></td>
             <td>${counter++}</td>
 
             <td>
@@ -325,7 +339,7 @@
 
 </g:form>
 
-
+</div>
 
 
 <laser:render template="/templates/export/individuallyExportTippsModal" model="[modalID: 'individuallyExportTippsModal']" />

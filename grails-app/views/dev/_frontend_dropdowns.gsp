@@ -1,7 +1,9 @@
 <h2 class="ui dividing header">Dropdowns<a class="anchor" id="dropdowns"></a></h2>
-<div class="ui big form">
+
+<div class="ui big form"><a class="anchor" id="sort"></a>
     <div class="three wide fields">
         <div class="field">
+            <label>Sortierung</label>
             <div class="ui selection icon dropdown">
                 <i class="dropdown icon"></i>
                 <div class="default text">Bitte auswählen</div>
@@ -205,7 +207,6 @@
             <div class="ui search selection dropdown ">
                 <input type="hidden" name="filterPropDef">
                 <i aria-hidden="true" class="dropdown icon"></i>
-                <input class="search" id="filterPropDef">
                 <div class="default text">Bitte auswählen</div>
                 <div class="menu">
                     <div class="item selected" data-value="1">Abbestellgrund</div>

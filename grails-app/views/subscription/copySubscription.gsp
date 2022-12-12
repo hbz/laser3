@@ -28,32 +28,27 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
                 </div>
                 <div class="description">
                     <i class="image outline icon"></i>${message(code:'subscription.kind.label')}
+                    <br />
                     <i class="dolly icon"></i>${message(code:'subscription.form.label')}
+                    <br />
                     <i class="box icon"></i>${message(code:'subscription.resource.label')}
                     <br />
                     <i class="shipping fast icon"></i>${message(code:'subscription.isPublicForApi.label')}
+                    <br />
                     <i class="flag outline icon"></i>${message(code:'subscription.hasPerpetualAccess.label')}
+                    <br />
                     <i class="comment icon"></i>${message(code:'subscription.hasPublishComponent.label')}
                     <br />
                     <i class="balance scale icon"></i>${message(code: 'license.label')}
+                    <br />
                     <i class="university icon"></i>${message(code: 'subscription.organisations.label')}
+                    <br />
                     <i class="address card icon"></i>${message(code: 'subscription.specificSubscriptionEditors')}
                     <br />
                     <i class="barcode icon"></i>${message(code: 'default.identifiers.label')}
+                    <br />
                     <i class="exchange icon"></i>${message(code: 'subscription.linkedObjects')}
                 </div>
-        </div>
-    </div>
-    <div class="${workFlowPart == CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS ? 'active' : (workFlowPart in [CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS, CopyElementsService.WORKFLOW_PROPERTIES, CopyElementsService.WORKFLOW_SUBSCRIBER] ? 'completed' : '')} step">
-        <i class=" icon"></i>
-        <div class="content" >
-            <div class="title">${message(code: 'copyElementsIntoObject.inventory.label')}</div>
-            <div class="description">
-                <i class="gift icon"></i>${message(code: 'package.label')}
-                <i class="book icon"></i>${message(code: 'title')}
-                <br />
-                <i class="icon object group"></i>${message(code: 'subscription.details.ieGroups')}
-            </div>
         </div>
     </div>
     <div class="${workFlowPart == CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS ? 'active' : (workFlowPart in [CopyElementsService.WORKFLOW_PROPERTIES, CopyElementsService.WORKFLOW_SUBSCRIBER] ? 'completed' : '')} step">
@@ -64,13 +59,15 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
             </div>
             <div class="description">
                 <i class="file outline icon"></i>${message(code: 'default.documents.label')}
+                <br />
                 <i class="sticky note outline icon"></i>${message(code: 'default.notes.label')}
+                <br />
                 <i class="calendar check outline icon"></i>${message(code: 'menu.institutions.tasks')}
             </div>
         </div>
     </div>
     <g:if test="${isConsortialObjects && accessService.checkPermAffiliation("ORG_CONSORTIUM", "INST_USER")}">
-        <div class="${workFlowPart == CopyElementsService.WORKFLOW_SUBSCRIBER ? 'active' : (workFlowPart in [CopyElementsService.WORKFLOW_PROPERTIES] ? 'completed' : '')} step">
+        <div class="${workFlowPart == CopyElementsService.WORKFLOW_SUBSCRIBER ? 'active' : (workFlowPart in [CopyElementsService.WORKFLOW_PROPERTIES, CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS] ? 'completed' : '')} step">
             <i class=" icon"></i>
             <div class="content">
                 <div class="title">
@@ -82,6 +79,19 @@ if (targetObjectId)   params << [targetObjectId: genericOIDService.getOID(target
             </div>
         </div>
     </g:if>
+    <div class="${workFlowPart == CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS ? 'active' : (workFlowPart in [CopyElementsService.WORKFLOW_PROPERTIES] ? 'completed' : '')} step">
+        <i class=" icon"></i>
+        <div class="content" >
+            <div class="title">${message(code: 'copyElementsIntoObject.inventory.label')}</div>
+            <div class="description">
+                <i class="gift icon"></i>${message(code: 'package.label')}
+                <br />
+                <i class="book icon"></i>${message(code: 'title')}
+                <br />
+                <i class="icon object group"></i>${message(code: 'subscription.details.ieGroups')}
+            </div>
+        </div>
+    </div>
     <div class="${workFlowPart == CopyElementsService.WORKFLOW_PROPERTIES ? 'active' : ''} step">
         <i class=" icon"></i>
         <div class="content">

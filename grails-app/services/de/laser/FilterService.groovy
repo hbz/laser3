@@ -1088,7 +1088,6 @@ class FilterService {
                             }
                     }
                 }
-                base_qry += " ) "
             }
         }
 
@@ -1602,6 +1601,11 @@ class FilterService {
             base_qry += " and tipp.medium.id in (:medium) "
             qry_params.medium = listReaderWrapper(params, 'medium').collect { String key -> Long.parseLong(key) }
             filterSet = true
+        }
+
+        if (params.gokbIds && params.gokbIds != "" && listReaderWrapper(params, 'gokbIds')) {
+            base_qry += " and gokbId in (:gokbIds)"
+            qry_params.gokbIds = listReaderWrapper(params, 'gokbIds')
         }
 
         if ((params.sort != null) && (params.sort.length() > 0)) {
