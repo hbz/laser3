@@ -7,7 +7,9 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-4606    09.12.2022  rc-3.0  3.0         Moe     Feature    Paketübertrag bei Übertrag der Teilnehmer nach Umfrage nach hinten verschieben
+4337    12.12.2022  rc-3.0  3.0         Moe     Bug         ClickMe-Excel Meine Lizenzen exportiert Kostenelement ohne wert
+
+4606    09.12.2022  rc-3.0  3.0         Moe     Feature     Paketübertrag bei Übertrag der Teilnehmer nach Umfrage nach hinten verschieben
 
 4671    09.12.2022  rc-3.0  3.0         Moe     Bug         Umfrage-Reiter Ergebnis Filter nach Merkmale
 
