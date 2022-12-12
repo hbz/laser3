@@ -1996,8 +1996,10 @@ class ExportClickMeService {
         selectedExportFields.put('participantSurveyCostItem', [:])
 
 
-        List<SurveyOrg> participantsNotFinish = SurveyOrg.findAllByFinishDateIsNullAndSurveyConfig(result.surveyConfig)
+        List<SurveyOrg> participantsNotFinish = SurveyOrg.findAllByFinishDateIsNullAndSurveyConfigAndOrgInsertedItself(result.surveyConfig, false)
         List<SurveyOrg> participantsFinish = SurveyOrg.findAllBySurveyConfigAndFinishDateIsNotNull(result.surveyConfig)
+
+        List<SurveyOrg> participantsNotFinishInsertedItself = SurveyOrg.findAllByFinishDateIsNullAndSurveyConfigAndOrgInsertedItself(result.surveyConfig, true)
 
         List exportData = []
 
@@ -2040,6 +2042,30 @@ class ExportClickMeService {
 
             _setSurveyEvaluationRow(participantResult, selectedExportFields, exportData, selectedCostItemFields)
         }
+
+        exportData.add([[field: '', style: null]])
+        exportData.add([[field: '', style: null]])
+        exportData.add([[field: '', style: null]])
+
+        exportData.add([[field: messageSource.getMessage('renewalEvaluation.orgInsertedItself.label', null, locale) + " (${participantsNotFinishInsertedItself.size()})", style: '']])
+
+        participantsNotFinishInsertedItself.sort { it.org.sortname }.each { SurveyOrg surveyOrg ->
+            Map participantResult = [:]
+            participantResult.properties = SurveyResult.findAllByParticipantAndSurveyConfig(surveyOrg.org, result.surveyConfig)
+
+            participantResult.sub = [:]
+            if(result.surveyConfig.subscription) {
+                participantResult.sub = result.surveyConfig.subscription.getDerivedSubscriptionBySubscribers(surveyOrg.org)
+            }
+
+            participantResult.participant = surveyOrg.org
+            participantResult.surveyCostItem = CostItem.findBySurveyOrg(surveyOrg)
+            participantResult.surveyConfig = result.surveyConfig
+
+            _setSurveyEvaluationRow(participantResult, selectedExportFields, exportData, selectedCostItemFields)
+        }
+
+
 
 
         Map sheetData = [:]
