@@ -255,6 +255,9 @@ class TitleInstancePackagePlatform extends AbstractBase /*implements AuditableTr
             sortname = sortname.replaceFirst('^der ', '')
             sortname = sortname.replaceFirst('^die ', '')
             sortname = sortname.replaceFirst('^das ', '')
+            sortname = sortname.replaceFirst('^le ', '')
+            sortname = sortname.replaceFirst('^la ', '')
+            sortname = sortname.replaceFirst('^les ', '')
         }
     }
 

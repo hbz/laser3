@@ -148,6 +148,7 @@ sis.user.group,FID-Nutzerkreis,SIS user group
 sis.user.group.base,FID-Nutzerkreismodell - Grundtyp,SIS user group model - base type
 sis.user.group.attr1,FID-Nutzerkreismodell - Attribute_1,SIS user group model - Attribute_1
 sis.user.group.attr2,FID-Nutzerkreismodell - Attribute_2,SIS user group model - Attribute_2
+sound.quality,Klangqualität,Sound quality
 platform.statistics.format,Statistik Auslieferungsformat (Plattform),Statistics Format (Platform)
 platform.statistics.frequency,Statistik Auslieferungsfrequenz (Plattform),Statistics Frequency (Platform)
 subjectgroup,Fächergruppe,Subject Group
