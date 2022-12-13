@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4337    12.12.2022  rc-3.0  3.0         Moe     Bug         ClickMe-Excel Meine Lizenzen exportiert Kostenelement ohne wert
+
 4679    12.12.2022  rc-3.0  3.0         Andreas Feature     Neue Lizenz- und Umfragemerkmale und Referenzwertkategorie "Klangqualität"
 
 4619    12.12.2022  rc-3.0  3.0         Andreas Bug         Neue Skripts zur Sortiernamenerzeugung
