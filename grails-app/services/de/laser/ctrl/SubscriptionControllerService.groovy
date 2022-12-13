@@ -2171,7 +2171,7 @@ class SubscriptionControllerService {
                 result.num_tipp_rows = tippIds.size()
                 result.tipps = tipps
                 result.tippIDs = tippIds
-                Map<String, Object> identifiers = [zdbIds: [], onlineIds: [], printIds: [], unidentified: []]
+                Map<String, Object> identifiers = [zdbIds: [], onlineIds: [], printIds: [], unidentified: [], doiIds: []]
                 Map<String, Map> issueEntitlementOverwrite = [:]
                 result.issueEntitlementOverwrite = [:]
                 if(!params.pagination) {
