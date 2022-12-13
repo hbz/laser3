@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4685    13.12.2022  rc-3.0  3.0         Moe     Bug         500er bei KBART Upload / Titel hinzufügen
+
 4682    13.12.2022  rc-3.0  3.0         Moe     Bug         500er in Umfrage: Auswertung
 
 4678    13.12.2022  rc-3.0  3.0         David   Feature     Dokumente in Lizenz
