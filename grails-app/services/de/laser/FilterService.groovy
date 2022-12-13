@@ -1088,7 +1088,6 @@ class FilterService {
                             }
                     }
                 }
-                base_qry += " ) "
             }
         }
 
@@ -1422,7 +1421,7 @@ class FilterService {
             }
         }
         else if(!params.forCount){
-            base_qry += "order by ie.sortname, tipp.sortname"
+            base_qry += "order by ie.sortname"
         }
 
 
