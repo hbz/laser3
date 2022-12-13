@@ -1328,7 +1328,7 @@ class AjaxHtmlController {
                         if ( doc.owner.id == ctxOrgId ) {
                             check = true
                         }
-                        else if ( docCtx.isShared ) {
+                        else if ( docCtx.shareConf ) {
                             if ( docCtx.shareConf == RDStore.SHARE_CONF_UPLOADER_ORG ) {
                                 check = (doc.owner.id == ctxOrgId)
                             }
@@ -1338,6 +1338,22 @@ class AjaxHtmlController {
                             if ( docCtx.shareConf == RDStore.SHARE_CONF_CONSORTIUM || docCtx.shareConf == RDStore.SHARE_CONF_ALL ) {
                                 // context based restrictions must be applied
                                 check = true
+                            }
+                        }
+                        else if ( docCtx.sharedFrom ) {
+                            if (docCtx.license) {
+                                docCtx.license.orgRelations.each {
+                                    if (it.org.id == ctxOrgId && it.roleType in [RDStore.OR_LICENSEE_CONS, RDStore.OR_LICENSEE]) {
+                                        check = true
+                                    }
+                                }
+                            }
+                            else if (docCtx.subscription) {
+                                docCtx.subscription.orgRelations.each {
+                                    if (it.org.id == ctxOrgId && it.roleType in [RDStore.OR_SUBSCRIBER_CONS, RDStore.OR_SUBSCRIBER_CONS_HIDDEN, RDStore.OR_SUBSCRIBER]) {
+                                        check = true
+                                    }
+                                }
                             }
                         }
                         // survey workaround
