@@ -70,6 +70,8 @@ statsSyncJobActive = false
 
 systemEmail = 'laser@localhost'
 
-systemInfoJobActive = false
+systemInsightIndex = 'laser3_system_insight_index'
+systemInsightJobActive = false
+
 testJobActivate = false
 

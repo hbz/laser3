@@ -1640,14 +1640,14 @@ class SubscriptionController {
                 case CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS:
                     ctrlResult.result << copyElementsService.copyObjectElements_DatesOwnerRelations(params)
                     if(ctrlResult.result.targetObject) {
-                        params.workFlowPart = CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS
+                        params.workFlowPart = CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
                     }
-                    ctrlResult.result << copyElementsService.loadDataFor_PackagesEntitlements(params)
+                    ctrlResult.result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
                     break
                 case CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS:
                     ctrlResult.result << copyElementsService.copyObjectElements_PackagesEntitlements(params)
-                    params.workFlowPart = CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
-                    ctrlResult.result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
+                    params.workFlowPart = CopyElementsService.WORKFLOW_PROPERTIES
+                    ctrlResult.result << copyElementsService.loadDataFor_Properties(params)
                     break
                 case CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS:
                     ctrlResult.result << copyElementsService.copyObjectElements_DocsAnnouncementsTasks(params)
@@ -1655,14 +1655,14 @@ class SubscriptionController {
                         params.workFlowPart = CopyElementsService.WORKFLOW_SUBSCRIBER
                         ctrlResult.result << copyElementsService.loadDataFor_Subscriber(params)
                     } else {
-                        params.workFlowPart = CopyElementsService.WORKFLOW_PROPERTIES
-                        ctrlResult.result << copyElementsService.loadDataFor_Properties(params)
+                        params.workFlowPart = CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS
+                        ctrlResult.result << copyElementsService.loadDataFor_PackagesEntitlements(params)
                     }
                     break
                 case CopyElementsService.WORKFLOW_SUBSCRIBER:
                     ctrlResult.result << copyElementsService.copyObjectElements_Subscriber(params)
-                    params.workFlowPart = CopyElementsService.WORKFLOW_PROPERTIES
-                    ctrlResult.result << copyElementsService.loadDataFor_Properties(params)
+                    params.workFlowPart = CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS
+                    ctrlResult.result << copyElementsService.loadDataFor_PackagesEntitlements(params)
                     break
                 case CopyElementsService.WORKFLOW_END:
                     ctrlResult.result << copyElementsService.copyObjectElements_Properties(params)
@@ -1705,8 +1705,8 @@ class SubscriptionController {
                 case CopyElementsService.WORKFLOW_DATES_OWNER_RELATIONS:
                     ctrlResult.result << copyElementsService.copyObjectElements_DatesOwnerRelations(params)
                     if (params.isRenewSub){
-                        params.workFlowPart = CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS
-                        ctrlResult.result << copyElementsService.loadDataFor_PackagesEntitlements(params)
+                        params.workFlowPart = CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
+                        ctrlResult.result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
                     } else {
                         ctrlResult.result << copyElementsService.loadDataFor_DatesOwnerRelations(params)
                     }
@@ -1714,8 +1714,8 @@ class SubscriptionController {
                 case CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS:
                     ctrlResult.result << copyElementsService.copyObjectElements_PackagesEntitlements(params)
                     if (params.isRenewSub){
-                        params.workFlowPart = CopyElementsService.WORKFLOW_DOCS_ANNOUNCEMENT_TASKS
-                        ctrlResult.result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
+                        params.workFlowPart = CopyElementsService.WORKFLOW_PROPERTIES
+                        ctrlResult.result << copyElementsService.loadDataFor_Properties(params)
                     } else {
                         ctrlResult.result << copyElementsService.loadDataFor_PackagesEntitlements(params)
                     }
@@ -1727,8 +1727,8 @@ class SubscriptionController {
                             params.workFlowPart = CopyElementsService.WORKFLOW_SUBSCRIBER
                             ctrlResult.result << copyElementsService.loadDataFor_Subscriber(params)
                         } else {
-                            params.workFlowPart = CopyElementsService.WORKFLOW_PROPERTIES
-                            ctrlResult.result << copyElementsService.loadDataFor_Properties(params)
+                            params.workFlowPart = CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS
+                            ctrlResult.result << copyElementsService.loadDataFor_PackagesEntitlements(params)
                         }
                     } else {
                         ctrlResult.result << copyElementsService.loadDataFor_DocsAnnouncementsTasks(params)
@@ -1737,8 +1737,8 @@ class SubscriptionController {
                 case CopyElementsService.WORKFLOW_SUBSCRIBER:
                     ctrlResult.result << copyElementsService.copyObjectElements_Subscriber(params)
                     if (params.isRenewSub) {
-                        params.workFlowPart = CopyElementsService.WORKFLOW_PROPERTIES
-                        ctrlResult.result << copyElementsService.loadDataFor_Properties(params)
+                        params.workFlowPart = CopyElementsService.WORKFLOW_PACKAGES_ENTITLEMENTS
+                        ctrlResult.result << copyElementsService.loadDataFor_PackagesEntitlements(params)
                     } else {
                         ctrlResult.result << copyElementsService.loadDataFor_Subscriber(params)
                     }

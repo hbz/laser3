@@ -91,7 +91,7 @@
                     </span>
                 </g:else>
 
-                <g:if test="${participantResult.participant in propertiesChangedByParticipant}">
+                <g:if test="${propertiesChangedByParticipant && participantResult.participant.id in propertiesChangedByParticipant.id}">
                     <span data-position="top right" class="la-popup-tooltip la-delay"
                           data-content="${message(code: 'renewalEvaluation.propertiesChanged')}">
                         <i class="exclamation triangle yellow large icon"></i>

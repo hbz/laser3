@@ -16,6 +16,8 @@ docs = {
                 $('#dynamicModalContainer').html (data)
                 $(previewModalId).modal ({
                     onVisible: function () {
+                        // workaround - erms-4524
+                        setTimeout( function() { $('body').trigger ('resize') }, 100 )
                     },
                     onApprove: function () {
                         return false;

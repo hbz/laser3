@@ -51,6 +51,7 @@
         <g:hiddenField name="surveyConfigID" value="${params.surveyConfigID}"/>
         <g:hiddenField name="tab" value="${params.tab}"/>
         <g:hiddenField name="tabStat" value="${params.tabStat}"/>
+        <g:hiddenField name="titleGroup" value="${params.titleGroup}"/>
 
         <div class="four fields">
             <div class="field">
