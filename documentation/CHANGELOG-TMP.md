@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4682    13.12.2022  rc-3.0  3.0         Moe     Bug         500er in Umfrage: Auswertung
+
 4337    12.12.2022  rc-3.0  3.0         Moe     Bug         ClickMe-Excel Meine Lizenzen exportiert Kostenelement ohne wert
 
 4679    12.12.2022  rc-3.0  3.0         Andreas Feature     Neue Lizenz- und Umfragemerkmale und Referenzwertkategorie "Klangqualität"
