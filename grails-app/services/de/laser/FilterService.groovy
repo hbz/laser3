@@ -1022,7 +1022,6 @@ class FilterService {
         }
 
         if (params.filterPropDef) {
-            if (params.filterPropDef) {
                 PropertyDefinition pd = (PropertyDefinition) genericOIDService.resolveOID(params.filterPropDef)
                 base_qry += ' and exists (select surResult from SurveyResult as surResult where surResult.surveyConfig = surveyOrg.surveyConfig and participant = surveyOrg.org and surResult.type = :propDef '
                 queryParams.put('propDef', pd)
@@ -1049,46 +1048,46 @@ class FilterService {
                     }
                     else if (pd.isIntegerType()) {
                             if (!params.filterProp || params.filterProp.length() < 1) {
-                                base_qry += " and surResult.intValue = null ) "
+                                base_qry += " and surResult.intValue = null "
                             } else {
-                                base_qry += " and surResult.intValue = :prop ) "
+                                base_qry += " and surResult.intValue = :prop "
                                 queryParams.put('prop', AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type))
                             }
                     }
                     else if (pd.isStringType()) {
                             if (!params.filterProp || params.filterProp.length() < 1) {
-                                base_qry += " and surResult.stringValue = null ) "
+                                base_qry += " and surResult.stringValue = null "
                             } else {
-                                base_qry += " and lower(surResult.stringValue) like lower(:prop) ) "
+                                base_qry += " and lower(surResult.stringValue) like lower(:prop) "
                                 queryParams.put('prop', "%${AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type)}%")
                             }
                     }
                     else if (pd.isBigDecimalType()) {
                             if (!params.filterProp || params.filterProp.length() < 1) {
-                                base_qry += " and surResult.decValue = null ) "
+                                base_qry += " and surResult.decValue = null "
                             } else {
-                                base_qry += " and surResult.decValue = :prop ) "
+                                base_qry += " and surResult.decValue = :prop "
                                 queryParams.put('prop', AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type))
                             }
                     }
                     else if (pd.isDateType()) {
                             if (!params.filterProp || params.filterProp.length() < 1) {
-                                base_qry += " and surResult.dateValue = null ) "
+                                base_qry += " and surResult.dateValue = null "
                             } else {
-                                base_qry += " and surResult.dateValue = :prop ) "
+                                base_qry += " and surResult.dateValue = :prop "
                                 queryParams.put('prop', AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type))
                             }
                     }
                     else if (pd.isURLType()) {
                             if (!params.filterProp || params.filterProp.length() < 1) {
-                                base_qry += " and surResult.urlValue = null ) "
+                                base_qry += " and surResult.urlValue = null "
                             } else {
-                                base_qry += " and genfunc_filter_matcher(surResult.urlValue, :prop) = true ) "
+                                base_qry += " and genfunc_filter_matcher(surResult.urlValue, :prop) = true "
                                 queryParams.put('prop', AbstractPropertyWithCalculatedLastUpdated.parseValue(params.filterProp, pd.type))
                             }
                     }
                 }
-            }
+                base_qry += ')'
         }
 
         if((params.hasSubscription &&  !params.hasNotSubscription) || (!params.hasSubscription && params.hasNotSubscription)) {
