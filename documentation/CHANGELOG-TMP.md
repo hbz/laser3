@@ -7,6 +7,12 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4687    14.12.2022  rc-3.0  3.0         Moe     Bug         Pflichtangabe Einrichtungskontakt auf Funktion beschränken
+
+4680    14.12.2022  rc-3.0  3.0         Moe     Bug         Kostenausschüttung in Lizenz
+
+4691    14.12.2022  rc-3.0  3.0         Moe     Bug         404: Kosten in Umfrage hinzufügen oder bearbeiten
+
 4689    14.12.2022  rc-3.0  3.0         David   Feature     Formulardaten in modalen Dialogen für Dokumente und Aufgaben
 
 4681    14.12.2022  rc-3.0  3.0         David   Bug         Editor Anmerkungen

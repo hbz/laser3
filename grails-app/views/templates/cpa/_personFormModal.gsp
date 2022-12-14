@@ -361,7 +361,7 @@
 
     <laser:script file="${this.getGroovyPageFileName()}">
         $.fn.form.settings.rules.functionOrPosition = function() {
-                return $('#functionType').dropdown('get value').length > 0 || $('#positionType').dropdown('get value').length > 0
+                return $('#functionType').dropdown('get value').length > 0
              };
             $('#person_form').form({
                 on: 'blur',
@@ -381,16 +381,7 @@
                         rules: [
                             {
                                 type: 'functionOrPosition',
-                                prompt: '{name} <g:message code="person.create.missing_function"/>'
-                            }
-                        ]
-                    },
-                    positionType: {
-                        identifier: 'positionType',
-                        rules: [
-                            {
-                                type: 'functionOrPosition',
-                                prompt: '{name} <g:message code="person.create.missing_function"/>'
+                                prompt: '<g:message code="person.create.missing_function"/>'
                             }
                         ]
                     }
