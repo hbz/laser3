@@ -635,8 +635,50 @@ class PropertyService {
              case PropertyDefinition.ORG_PROP:
                  if(!params.objStatus)
                      parameterMap.status = RDStore.ORG_STATUS_CURRENT
-                 objectsWithoutProp.addAll(Org.executeQuery('select o from Org o join o.orgType ot where o.status != :deleted and not exists (select op from OrgProperty op where op.owner = o and op.tenant = :ctx and op.type = :type) '+orgFilterClause+' and o.status = :status order by o.sortname asc, o.name asc',parameterMap+orgFilterParams+[deleted:RDStore.ORG_STATUS_DELETED]))
-                 filteredObjs.addAll(OrgProperty.executeQuery('select op.owner from OrgProperty op where op.type = :type and op.tenant = :ctx and op.owner.status = :status order by op.owner.sortname asc, op.owner.name asc',parameterMap))
+                 String orgfilter = ''
+                 String orgfilter2 = ''
+                 Map<String,Object> orgFilterMap = [:]
+                 if (params.myProviderAgency) {
+                     List<Long> myProvidersIds = Org.executeQuery("select distinct(or_pa.org.id) from OrgRole or_pa " +
+                             "join or_pa.sub sub join sub.orgRelations or_sub " +
+                             "where ( sub = or_sub.sub and or_sub.org = :subOrg ) " +
+                             "and ( or_sub.roleType.id in (:subRoleTypes) ) " +
+                             "and ( or_pa.roleType.id in (:paRoleTypes) ) ",
+                             [subOrg      : contextOrg,
+                              subRoleTypes: [RDStore.OR_SUBSCRIBER.id, RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIPTION_CONSORTIA.id],
+                              paRoleTypes : [RDStore.OR_PROVIDER.id, RDStore.OR_AGENCY.id]
+                             ])
+                     orgfilter += 'and o.id in (:myProvidersIds)'
+                     orgfilter2 += 'and op.owner.id in (:myProvidersIds)'
+                     orgFilterMap.myProvidersIds = myProvidersIds
+                 }
+
+                 if (accessService.checkPerm('ORG_CONSORTIUM')) {
+
+                     if (params.myInsts) {
+                         List<Long> myInstsIds = Org.executeQuery("select o.id from Org as o, Combo as c where c.fromOrg = o and c.toOrg = :context and c.type.id = :comboType " +
+                                 "and exists (select oo.id from OrgRole oo join oo.sub sub join sub.orgRelations ooCons where oo.org.id = o.id " +
+                                 "and oo.roleType.id in (:subscrRoles) and ooCons.org = :context and ooCons.roleType.id = :consType " +
+                                 "and sub.status.id = :subStatus ) ",
+                                 [context    : contextOrg,
+                                  comboType  : RDStore.COMBO_TYPE_CONSORTIUM.id,
+                                  subscrRoles: [RDStore.OR_SUBSCRIBER_CONS.id, RDStore.OR_SUBSCRIBER_CONS_HIDDEN.id],
+                                  consType   : RDStore.OR_SUBSCRIPTION_CONSORTIA.id,
+                                  subStatus  : RDStore.SUBSCRIPTION_CURRENT.id
+                                 ])
+                         orgfilter += 'and o.id in (:myInstsIds)'
+                         orgfilter2 += 'and op.owner.id in (:myInstsIds)'
+                         orgFilterMap.myInstsIds = myInstsIds
+                     }
+                 }
+
+                 if(orgfilter != ''){
+                     objectsWithoutProp.addAll(Org.executeQuery('select o from Org o join o.orgType ot where o.status != :deleted and not exists (select op from OrgProperty op where op.owner = o and op.tenant = :ctx and op.type = :type) ' + orgFilterClause + ' and o.status = :status  ' + orgfilter + ' order by o.sortname asc, o.name asc', parameterMap + orgFilterParams + orgFilterMap + [deleted: RDStore.ORG_STATUS_DELETED]))
+                     filteredObjs.addAll(OrgProperty.executeQuery('select op.owner from OrgProperty op where op.type = :type and op.tenant = :ctx and op.owner.status = :status ' + orgfilter2 + ' order by op.owner.sortname asc, op.owner.name asc', parameterMap + orgFilterMap ))
+                 }else {
+                     objectsWithoutProp.addAll(Org.executeQuery('select o from Org o join o.orgType ot where o.status != :deleted and not exists (select op from OrgProperty op where op.owner = o and op.tenant = :ctx and op.type = :type) ' + orgFilterClause + ' and o.status = :status order by o.sortname asc, o.name asc', parameterMap + orgFilterParams + [deleted: RDStore.ORG_STATUS_DELETED]))
+                     filteredObjs.addAll(OrgProperty.executeQuery('select op.owner from OrgProperty op where op.type = :type and op.tenant = :ctx and op.owner.status = :status order by op.owner.sortname asc, op.owner.name asc', parameterMap))
+                 }
                  result.sortname = true
                  break
              case PropertyDefinition.PLA_PROP:

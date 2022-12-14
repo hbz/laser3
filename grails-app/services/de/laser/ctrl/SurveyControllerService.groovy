@@ -205,13 +205,11 @@ class SurveyControllerService {
                 newSurveyResult.surveyConfig = result.surveyConfig
                 newSurveyResult.sub = surveyResult.participantSubscription
                 if (result.properties) {
-                    if (result.properties) {
                         String lang = LocaleUtils.getCurrentLang()
                         //newSurveyResult.properties = SurveyResult.findAllByParticipantAndOwnerAndSurveyConfigAndTypeInList(surveyResult.participant, result.institution, result.surveyConfig, result.properties,[sort:type["value${locale}"],order:'asc'])
                         //in (:properties) throws for some unexplaniable reason a HQL syntax error whereas it is used in many other places without issues ... TODO
-                        String query = "select sr from SurveyResult sr join sr.type pd where pd in :properties and sr.participant = :participant and sr.owner = :context and sr.surveyConfig = :cfg order by pd.name_${lang} asc"
-                        newSurveyResult.properties = SurveyResult.executeQuery(query, [participant: surveyResult.participant, context: result.institution, cfg: result.surveyConfig, properties: result.properties])
-                    }
+                        String query = "select sr from SurveyResult sr join sr.type pd where pd in (:surveyProperties) and sr.participant = :participant and sr.owner = :context and sr.surveyConfig = :cfg order by pd.name_${lang} asc"
+                        newSurveyResult.properties = SurveyResult.executeQuery(query, [participant: surveyResult.participant, context: result.institution, cfg: result.surveyConfig, surveyProperties: result.properties])
                 }
 
                 result.orgInsertedItself << newSurveyResult
@@ -219,28 +217,31 @@ class SurveyControllerService {
             }
 
             result.orgsWithTermination = []
+            String queryOrgsWithTermination = 'from SurveyResult where owner.id = :owner and surveyConfig.id = :surConfig and type.id = :surProperty and refValue = :refValue  '
+            Map queryMapOrgsWithTermination = [
+                    owner      : result.institution.id,
+                    surProperty: result.participationProperty.id,
+                    surConfig  : result.surveyConfig.id,
+                    refValue   : RDStore.YN_NO]
+
+            if(orgNotInsertedItselfList.size() > 0){
+                queryOrgsWithTermination += ' and participant in (:orgNotInsertedItselfList) '
+                queryMapOrgsWithTermination.orgNotInsertedItselfList = orgNotInsertedItselfList
+            }
 
             //Orgs with termination there sub
-            SurveyResult.executeQuery("from SurveyResult where owner.id = :owner and surveyConfig.id = :surConfig and type.id = :surProperty and refValue = :refValue and participant in (:orgNotInsertedItselfList) order by participant.sortname",
-                    [
-                            owner      : result.institution.id,
-                            surProperty: result.participationProperty.id,
-                            surConfig  : result.surveyConfig.id,
-                            refValue   : RDStore.YN_NO,
-                            orgNotInsertedItselfList: orgNotInsertedItselfList]).each { SurveyResult surveyResult ->
+            SurveyResult.executeQuery(queryOrgsWithTermination + " order by participant.sortname", queryMapOrgsWithTermination).each { SurveyResult surveyResult ->
                 Map newSurveyResult = [:]
                 newSurveyResult.participant = surveyResult.participant
                 newSurveyResult.resultOfParticipation = surveyResult
                 newSurveyResult.surveyConfig = result.surveyConfig
                 newSurveyResult.sub = surveyResult.participantSubscription
                 if (result.properties) {
-                    if (result.properties) {
                         String lang = LocaleUtils.getCurrentLang()
                         //newSurveyResult.properties = SurveyResult.findAllByParticipantAndOwnerAndSurveyConfigAndTypeInList(surveyResult.participant, result.institution, result.surveyConfig, result.properties,[sort:type["value${locale}"],order:'asc'])
                         //in (:properties) throws for some unexplaniable reason a HQL syntax error whereas it is used in many other places without issues ... TODO
-                        String query = "select sr from SurveyResult sr join sr.type pd where pd in :properties and sr.participant = :participant and sr.owner = :context and sr.surveyConfig = :cfg order by pd.name_${lang} asc"
-                        newSurveyResult.properties = SurveyResult.executeQuery(query, [participant: surveyResult.participant, context: result.institution, cfg: result.surveyConfig, properties: result.properties])
-                    }
+                        String query = "select sr from SurveyResult sr join sr.type pd where pd in (:surveyProperties) and sr.participant = :participant and sr.owner = :context and sr.surveyConfig = :cfg order by pd.name_${lang} asc"
+                        newSurveyResult.properties = SurveyResult.executeQuery(query, [participant: surveyResult.participant, context: result.institution, cfg: result.surveyConfig, surveyProperties: result.properties])
                 }
 
                 result.orgsWithTermination << newSurveyResult
@@ -267,8 +268,8 @@ class SurveyControllerService {
                     String lang = LocaleUtils.getCurrentLang()
                     //newSurveyResult.properties = SurveyResult.findAllByParticipantAndOwnerAndSurveyConfigAndTypeInList(surveyResult.participant, result.institution, result.surveyConfig, result.properties,[sort:type["value${locale}"],order:'asc'])
                     //in (:properties) throws for some unexplaniable reason a HQL syntax error whereas it is used in many other places without issues ... TODO
-                    String query = "select sr from SurveyResult sr join sr.type pd where pd in :properties and sr.participant = :participant and sr.owner = :context and sr.surveyConfig = :cfg order by pd.name_${lang} asc"
-                    newSurveyResult.properties = SurveyResult.executeQuery(query, [participant: surveyResult.participant, context: result.institution, cfg: result.surveyConfig, properties: result.properties])
+                    String query = "select sr from SurveyResult sr join sr.type pd where pd in (:surveyProperties) and sr.participant = :participant and sr.owner = :context and sr.surveyConfig = :cfg order by pd.name_${lang} asc"
+                    newSurveyResult.properties = SurveyResult.executeQuery(query, [participant: surveyResult.participant, context: result.institution, cfg: result.surveyConfig, surveyProperties: result.properties])
                 }
 
                 if (surveyResult.participant.id in currentParticipantIDs) {
@@ -351,12 +352,19 @@ class SurveyControllerService {
             //Orgs without really result
             result.orgsWithoutResult = []
 
-            SurveyResult.executeQuery("from SurveyResult where owner.id = :owner and surveyConfig.id = :surConfig and type.id = :surProperty and refValue is null and participant in (:orgNotInsertedItselfList) order by participant.sortname",
-                    [
-                            owner      : result.institution.id,
-                            surProperty: result.participationProperty.id,
-                            surConfig  : result.surveyConfig.id,
-                            orgNotInsertedItselfList: orgNotInsertedItselfList]).each { SurveyResult surveyResult ->
+            String queryOrgsWithoutResult = 'from SurveyResult where owner.id = :owner and surveyConfig.id = :surConfig and type.id = :surProperty and refValue is null '
+            Map queryMapOrgsWithoutResult = [
+                    owner      : result.institution.id,
+                    surProperty: result.participationProperty.id,
+                    surConfig  : result.surveyConfig.id]
+
+            if(orgNotInsertedItselfList.size() > 0){
+                queryOrgsWithoutResult += ' and participant in (:orgNotInsertedItselfList) '
+                queryMapOrgsWithoutResult.orgNotInsertedItselfList = orgNotInsertedItselfList
+            }
+
+
+            SurveyResult.executeQuery(queryOrgsWithoutResult + " order by participant.sortname", queryMapOrgsWithoutResult).each { SurveyResult surveyResult ->
                 Map newSurveyResult = [:]
                 newSurveyResult.participant = surveyResult.participant
                 newSurveyResult.resultOfParticipation = surveyResult
@@ -365,8 +373,8 @@ class SurveyControllerService {
                     String lang = LocaleUtils.getCurrentLang()
                     //newSurveyResult.properties = SurveyResult.findAllByParticipantAndOwnerAndSurveyConfigAndTypeInList(it.participant, result.institution, result.surveyConfig, result.properties,[sort:type["value${locale}"],order:'asc'])
                     //in (:properties) throws for some unexplaniable reason a HQL syntax error whereas it is used in many other places without issues ... TODO
-                    String query = "select sr from SurveyResult sr join sr.type pd where pd in :properties and sr.participant = :participant and sr.owner = :context and sr.surveyConfig = :cfg order by pd.name_${lang} asc"
-                    newSurveyResult.properties = SurveyResult.executeQuery(query, [participant: surveyResult.participant, context: result.institution, cfg: result.surveyConfig, properties: result.properties])
+                    String query = "select sr from SurveyResult sr join sr.type pd where pd in (:surveyProperties) and sr.participant = :participant and sr.owner = :context and sr.surveyConfig = :cfg order by pd.name_${lang} asc"
+                    newSurveyResult.properties = SurveyResult.executeQuery(query, [participant: surveyResult.participant, context: result.institution, cfg: result.surveyConfig, surveyProperties: result.properties])
                 }
 
 

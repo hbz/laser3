@@ -36,7 +36,7 @@ class AppUtils {
                 case { it.startsWithIgnoreCase('LAS:eR-DEV') }:
                     return DEV
                     break
-                case { it.startsWithIgnoreCase('LAS:eR-QA/Stage') }:
+                case { it.startsWithIgnoreCase('LAS:eR-QA') }:
                     return QA
                     break
                 case { it.equalsIgnoreCase('LAS:eR-Productive') }:

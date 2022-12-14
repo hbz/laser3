@@ -7,6 +7,22 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4685    13.12.2022  rc-3.0  3.0         Moe     Bug         500er bei KBART Upload / Titel hinzufügen
+
+4682    13.12.2022  rc-3.0  3.0         Moe     Bug         500er in Umfrage: Auswertung
+
+4678    13.12.2022  rc-3.0  3.0         David   Feature     Dokumente in Lizenz
+
+4337    12.12.2022  rc-3.0  3.0         Moe     Bug         ClickMe-Excel Meine Lizenzen exportiert Kostenelement ohne wert
+
+4679    12.12.2022  rc-3.0  3.0         Andreas Feature     Neue Lizenz- und Umfragemerkmale und Referenzwertkategorie "Klangqualität"
+
+4619    12.12.2022  rc-3.0  3.0         Andreas Bug         Neue Skripts zur Sortiernamenerzeugung
+
+4606    09.12.2022  rc-3.0  3.0         Moe     Feature     Paketübertrag bei Übertrag der Teilnehmer nach Umfrage nach hinten verschieben
+
+4671    09.12.2022  rc-3.0  3.0         Moe     Bug         Umfrage-Reiter Ergebnis Filter nach Merkmale
+
 4602    09.12.2022  rc-3.0  3.0         Moe     Feature     Titel hinzufügen in zwei Reiter unterteilen
 
 4669    09.12.2022  rc-3.0  3.0         David   Feature     Fehlende UI-Elemente im "Inhalte nicht editierbar"-Modus
@@ -46,6 +62,8 @@
 4617    07.12.2022  dev     3.0         Andreas Feature     Erweiterung der Identifier-Abfrage um Kundennummern
 
 4334    07.12.2022  dev     3.0         Andreas Feature     Neue Referenzwertkategorien Auswahloption (Buchstabe bzw. Ziffer)
+
+3966    07.12.2022  dev     3.0         Andreas Feature     Ertüchtigung der SUSHI-Authentifizierung auf zentralen API-Schlüssel
 
 4637    06.12.2022  dev     3.0         David   Bug         500er beim Ändern von Dokumenttyp
 

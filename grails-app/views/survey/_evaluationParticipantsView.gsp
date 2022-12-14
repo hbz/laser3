@@ -271,7 +271,7 @@
                                 </span>
                             </g:else>
 
-                            <g:if test="${propertiesChangedByParticipant && participant in propertiesChangedByParticipant}">
+                            <g:if test="${propertiesChangedByParticipant && participant.id in propertiesChangedByParticipant.id}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                       data-content="${message(code: 'renewalEvaluation.propertiesChanged')}">
                                     <i class="exclamation triangle yellow large icon"></i>
@@ -523,7 +523,7 @@
                                 </span>
                             </g:else>
 
-                            <g:if test="${propertiesChangedByParticipant && participant in propertiesChangedByParticipant}">
+                            <g:if test="${propertiesChangedByParticipant && participant.id in propertiesChangedByParticipant.id}">
                                 <span data-position="top right" class="la-popup-tooltip la-delay"
                                       data-content="${message(code: 'renewalEvaluation.propertiesChanged')}">
                                     <i class="exclamation triangle yellow large icon"></i>
