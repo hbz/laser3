@@ -32,21 +32,17 @@ wysiwyg = {
             tagsToRemove: ['embed', 'img', 'link', 'object', 'script'] // fallback
         })
         .on ('tbwinit',     function () { wysiwyg.sanitize ($wrapper); })
-        .on ('tbwpaste',    function () { wysiwyg.sanitize ($wrapper); })
-        .on ('tbwblur',     function () { wysiwyg.sanitize ($wrapper); });
-        //.on('tbwfocus',  function(){ console.log('focus'); })
-        //.on('tbwchange', function(){ console.log('change'); })
-
-        if (! $wrapper.trumbowyg('html')) { // c&p fix
-            wysiwyg.resetContent(editorSelector);
-        }
+        .on ('tbwblur',     function () { wysiwyg.sanitize ($wrapper); })
+        .on ('tbwpaste',    function () { wysiwyg.sanitize ($wrapper); });
+        //.on ('tbwfocus',    function () { console.log('focus'); });
+        //.on('tbwchange',    function(){ console.log('change'); });
     },
 
     resetContent: function (editorSelector) {
         console.log('wysiwyg.resetContent( ' + editorSelector + ' )')
 
         let $wrapper = $(editorSelector);
-        $wrapper.trumbowyg('html', '<p></p>');
+        $wrapper.trumbowyg('html', '');
     },
 
     sanitize: function ($elem) {

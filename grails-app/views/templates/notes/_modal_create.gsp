@@ -13,7 +13,7 @@
         </div>
         <div class="field">
             <label for="noteContent">${message(code:'default.content.label')}:</label>
-            <div id="noteContent"></div>
+            <div id="noteContent" placeholder="Tipp: Formatierung beim Einfügen verloren? Einfach erneut mit STRG+A und danach STRG+V versuchen"></div>
 
             <laser:script file="${this.getGroovyPageFileName()}">
                 wysiwyg.initEditor ('#modalCreateNote #noteContent');
