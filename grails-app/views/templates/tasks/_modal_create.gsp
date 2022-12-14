@@ -217,7 +217,19 @@
             JSPC.app.showHideRequire ( 'org' );
         </laser:script>
     </g:if>
+
     <laser:script file="${this.getGroovyPageFileName()}">
+
+        JSPC.callbacks.modal.show.modalCreateTask = function (trigger) {
+            r2d2.resetModalForm ('#modalCreateTask');
+
+            $('#modalCreateTask #radioresponsibleOrg').prop ('checked', true);
+            JSPC.app.toggleResponsibleUser();
+
+            // myInstitution
+            $('#generalradio').prop ('checked', true);
+            $("#licensediv, #orgdiv, #pkgdiv, #subscriptiondiv").hide();
+        };
 
         $("#radioresponsibleOrg").change(function () { JSPC.app.toggleResponsibleUser() });
         $("#radioresponsibleUser").change(function () { JSPC.app.toggleResponsibleUser() });
@@ -229,7 +241,7 @@
                 $("#responsibleUserWrapper").hide()
             }
         }
-        
+
         JSPC.app.toggleResponsibleUser();
 
         JSPC.app.chooseRequiredDropdown = function (opt) {

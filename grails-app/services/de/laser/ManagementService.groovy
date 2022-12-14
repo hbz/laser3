@@ -758,14 +758,14 @@ class ManagementService {
             List selectedSubs = params.list("selectedSubs")
             if (selectedSubs) {
                 Set<Subscription> subscriptions = Subscription.findAllByIdInList(selectedSubs)
-                if(params.licenseNoteTitle && params.licenseNote) {
+                if(params.noteTitle && params.noteContent) {
                     if(params.processOption == 'newNote') {
                         subscriptions.each { Subscription subscription ->
                             if (subscription.isEditableBy(result.user) || (subscription._getCalculatedType() == CalculatedType.TYPE_PARTICIPATION && result.institution.getCustomerType() == 'ORG_INST')) {
 
                                 Doc doc_content = new Doc(contentType: Doc.CONTENT_TYPE_STRING,
-                                        title: params.licenseNoteTitle,
-                                        content: params.licenseNote,
+                                        title: params.noteTitle,
+                                        content: params.noteContent,
                                         type: RDStore.DOC_TYPE_NOTE,
                                         owner: contextService.getOrg(),
                                         user: result.user).save()

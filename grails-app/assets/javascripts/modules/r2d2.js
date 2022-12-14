@@ -917,6 +917,24 @@ r2d2 = {
         });
     },
 
+    resetModalForm : function (modalCssSel) {
+        let $modal = $(modalCssSel);
+        let $form = $modal.find('.content form');
+
+        $form.form('reset');
+        $form.find('.field > input[type=text][name]').val('');
+        $form.find('.field > input[type=file][name]').val('');
+        $form.find('.field > textarea[name]').val('');
+        $form.find('.field > .dropdown > select[name]').dropdown('restore defaults');
+        $form.find('.field > .calendar').calendar('clear');
+
+        // documents/_modal - todo
+
+        $form.find('dl > dd input[type=text][name]').val('');
+        $form.find('dl > dd input[type=file][name]').val('');
+        $form.find('dl > dd .dropdown > select[name]').dropdown('restore defaults');
+    },
+
     clearGlobalModalsContainer : function() {
         $( '.ui.dimmer.modals.page' ).empty();
     }
