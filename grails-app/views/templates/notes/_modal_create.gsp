@@ -19,6 +19,7 @@
                 wysiwyg.initEditor ('#modalCreateNote #noteContent');
 
                 JSPC.callbacks.modal.show.modalCreateNote = function(trigger) {
+                    // r2d2.resetModalForm ('#modalCreateNote');
                     $('#modalCreateNote #noteTitle').val('');
                     wysiwyg.resetContent ('#modalCreateNote #noteContent');
                 };

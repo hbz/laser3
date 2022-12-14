@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4689    14.12.2022  rc-3.0  3.0         David   Feature     Formulardaten in modalen Dialogen für Dokumente und Aufgaben
+
 4681    14.12.2022  rc-3.0  3.0         David   Bug         Editor Anmerkungen
 
 4678    13.12.2022  rc-3.0  3.0         David   Feature     Dokumente in Lizenz
