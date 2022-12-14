@@ -34,7 +34,7 @@
 
     <ui:messages data="${flash}"/>
 
-<ui:form>
+<ui:greySegment>
     <h3 class="ui dividing header"><g:message code="subscription.details.addEntitlements.header"/></h3>
     <ui:msg header="${message(code:"message.attention")}" message="subscription.details.addEntitlements.warning" />
 
@@ -91,7 +91,7 @@
         $('input:text', $(e.target).parent()).val(name);
     });
 </laser:script>
-</ui:form>
+</ui:greySegment>
 <br>
 <br>
 

@@ -11,6 +11,10 @@
 
 4681    14.12.2022  rc-3.0  3.0         David   Bug         Editor Anmerkungen
 
+4685    13.12.2022  rc-3.0  3.0         Moe     Bug         500er bei KBART Upload / Titel hinzufügen
+
+4682    13.12.2022  rc-3.0  3.0         Moe     Bug         500er in Umfrage: Auswertung
+
 4678    13.12.2022  rc-3.0  3.0         David   Feature     Dokumente in Lizenz
 
 4337    12.12.2022  rc-3.0  3.0         Moe     Bug         ClickMe-Excel Meine Lizenzen exportiert Kostenelement ohne wert
