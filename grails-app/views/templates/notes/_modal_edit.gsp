@@ -13,7 +13,7 @@
                 <div id="content">${raw(noteInstance?.content)}</div>
 
                 <laser:script file="${this.getGroovyPageFileName()}">
-                    wysiwyg.initEditor('#content', '#modalEditNote');
+                    wysiwyg.initEditor('#modalEditNote #content');
                 </laser:script>
             </div>
         </div>

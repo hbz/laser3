@@ -2,12 +2,10 @@
 
 wysiwyg = {
 
-    initEditor: function (cssSel, modalSel) {
-        console.log('wysiwyg.initEditor( ' + cssSel + ', ' + modalSel + ' )')
+    initEditor: function (editorSelector) {
+        console.log('wysiwyg.initEditor( ' + editorSelector + ' )')
 
-        let $wrapper = $(cssSel);
-        // let $form = $(modalSel + ' form');
-        // let $submit = $(modalSel + ' .actions input[type=submit]');
+        let $wrapper = $(editorSelector);
 
         let btns = [
             // ['viewHTML'],
@@ -24,17 +22,6 @@ wysiwyg = {
             ['fullscreen']
         ];
 
-        // if (! $submit[0]) {
-        //     btns = btns.filter(i => i[0] !== 'link')
-        // }
-        // else {
-        //     $submit.off ('click').on ('click', function (event) {
-        //         event.preventDefault();
-        //         wysiwyg.sanitize($wrapper);
-        //         $form.submit();
-        //     })
-        // }
-
         $wrapper.trumbowyg ({
             btns: btns,
             lang: JSPC.vars.locale,
@@ -44,11 +31,22 @@ wysiwyg = {
             tagsToKeep: [],
             tagsToRemove: ['embed', 'img', 'link', 'object', 'script'] // fallback
         })
-        .on ('tbwinit',  function () { wysiwyg.sanitize ($wrapper); })
-        .on ('tbwpaste', function () { wysiwyg.sanitize ($wrapper); })
-        .on ('tbwblur',  function () { wysiwyg.sanitize ($wrapper); });
+        .on ('tbwinit',     function () { wysiwyg.sanitize ($wrapper); })
+        .on ('tbwpaste',    function () { wysiwyg.sanitize ($wrapper); })
+        .on ('tbwblur',     function () { wysiwyg.sanitize ($wrapper); });
         //.on('tbwfocus',  function(){ console.log('focus'); })
         //.on('tbwchange', function(){ console.log('change'); })
+
+        if (! $wrapper.trumbowyg('html')) { // c&p fix
+            wysiwyg.resetContent(editorSelector);
+        }
+    },
+
+    resetContent: function (editorSelector) {
+        console.log('wysiwyg.resetContent( ' + editorSelector + ' )')
+
+        let $wrapper = $(editorSelector);
+        $wrapper.trumbowyg('html', '<p></p>');
     },
 
     sanitize: function ($elem) {

@@ -21,14 +21,14 @@
         <h4 class="ui header">${message(code: 'subscriptionsManagement.note.info.newNote')}</h4>
 
         <div class="field">
-            <label for="licenseNoteTitle">${message(code:'default.title.label')}:</label>
+            <label for="noteTitle">${message(code:'default.title.label')}:</label>
 
-            <input type="text" id="licenseNoteTitle" name="licenseNoteTitle" />
+            <input type="text" id="noteTitle" name="noteTitle" />
         </div>
         <div class="field">
-            <label for="licenseNote">${message(code:'default.note.label')}:</label>
+            <label for="noteContent">${message(code:'default.note.label')}:</label>
 
-            <textarea class="la-textarea-resize-vertical" id="licenseNote" name="licenseNote"></textarea>
+            <textarea class="la-textarea-resize-vertical" id="noteContent" name="noteContent"></textarea>
         </div>
 
         <button class="ui button" ${!editable ? 'disabled="disabled"' : ''} type="submit" name="processOption"
