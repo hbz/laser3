@@ -93,9 +93,9 @@
                                 </td>
                                 <td>${property.value.size()}</td>
                                 <td>
-                                    <a class="ui button" onclick="JSPC.app.propertiesChanged(${property.key});">
+                                    <button type="button" class="ui button" onclick="JSPC.app.propertiesChanged(${property.key});">
                                         <g:message code="default.button.show.label"/>
-                                    </a>
+                                    </button>
                                 </td>
                             </tr>
 
