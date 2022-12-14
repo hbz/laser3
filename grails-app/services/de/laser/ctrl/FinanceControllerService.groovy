@@ -61,6 +61,15 @@ class FinanceControllerService {
         List<Map<String,Object>> currenciesList = financeService.orderedCurrency()
         currenciesList.remove(currenciesList.find{Map<String,Object> entry -> entry.id == 0})
         result.currenciesList = currenciesList
+
+        result.showBulkCostItems = params.showBulkCostItems ? params.showBulkCostItems : null
+
+        if(result.showBulkCostItems == 'true'){
+            params.max = '1000000'
+        }else if(result.showBulkCostItems == 'false'){
+            params.remove('max')
+        }
+
         if(params.ownSort) {
             result.sortConfig.ownSort = params.sort
             result.sortConfig.ownOrder = params.order

@@ -37,49 +37,73 @@
                         <br />
                         <g:if test="${editable}">
                             <div class="field" style="text-align: right;">
-                                <button id="bulkCostItems-toggle"
-                                        class="ui button"><g:message code="financials.bulkCostItems.show"/></button>
-                                <laser:script file="${this.getGroovyPageFileName()}">
-                                    $('#bulkCostItems-toggle').on('click', function () {
-                                        $('#bulkCostItems').toggleClass('hidden')
-                                        if ($('#bulkCostItems').hasClass('hidden')) {
-                                            $(this).text("${g.message(code: 'financials.bulkCostItems.show')}")
-                                        } else {
-                                            $(this).text("${g.message(code: 'financials.bulkCostItems.hidden')}")
-                                        }
-                                    })
-                                </laser:script>
+                                <g:if test="${showBulkCostItems == null || showBulkCostItems == 'false'}">
+                                    <g:if test="${fixedSubscription}">
+                                        <g:link class="ui button" mapping="subfinance" controller="finance" action="index" params="${params+[showView:showView, showBulkCostItems: 'true']}">
+                                            ${g.message(code: 'financials.bulkCostItems.show')}
+                                        </g:link>
+                                    </g:if>
+                                    <g:else>
+                                        <g:link class="ui button" action="finance" controller="myInstitution" params="${params+[showView:showView, showBulkCostItems: 'true']}">
+                                            ${g.message(code: 'financials.bulkCostItems.show')}
+                                        </g:link>
+                                    </g:else>
+                                </g:if>
+                                <g:else>
+                                    <g:if test="${fixedSubscription}">
+                                        <g:link class="ui button" mapping="subfinance" controller="finance" action="index" params="${params+[showView:showView, showBulkCostItems: 'false']}">
+                                            ${g.message(code: 'financials.bulkCostItems.hidden')}
+                                        </g:link>
+                                    </g:if>
+                                    <g:else>
+                                        <g:link class="ui button" action="finance" controller="myInstitution" params="${params+[showView:showView, showBulkCostItems: 'false']}">
+                                            ${g.message(code: 'financials.bulkCostItems.hidden')}
+                                        </g:link>
+                                    </g:else>
+                                    <br>
+                                    <br>
+                                </g:else>
+
                             </div>
 
-                            <g:form action="processCostItemsBulk" name="editCost_${idSuffix}" method="post" class="ui form">
-                                <div id="bulkCostItems" class="hidden">
-                                    <laser:render template="costItemInput" />
-                                    <div class="ui horizontal divider"><g:message code="search.advancedSearch.option.OR"/></div>
-                                    <div class="fields la-forms-grid">
-                                        <fieldset class="sixteen wide field la-modal-fieldset-margin-right la-account-currency">
-                                            <div class="field center aligned">
+                                <g:form action="processCostItemsBulk" name="editCost_${idSuffix}" method="post" class="ui form">
+                                    <g:if test="${showBulkCostItems == 'true'}">
+                                        <div>
+                                            <laser:render template="costItemInput"/>
+                                            <div class="ui horizontal divider"><g:message
+                                                    code="search.advancedSearch.option.OR"/></div>
 
-                                                <label>${message(code: 'surveyCostItems.bulkOption.percentOnOldPrice')}</label>
-                                                <div class="ui right labeled input">
-                                                    <input type="number"
-                                                           name="percentOnOldPrice"
-                                                            id="percentOnOldPrice"
-                                                           placeholder="${g.message(code: 'surveyCostItems.bulkOption.percentOnOldPrice')}"
-                                                           value="" step="0.01"/>
-                                                    <div class="ui basic label">%</div>
+                                            <div class="fields la-forms-grid">
+                                                <fieldset
+                                                        class="sixteen wide field la-modal-fieldset-margin-right la-account-currency">
+                                                    <div class="field center aligned">
+
+                                                        <label>${message(code: 'surveyCostItems.bulkOption.percentOnOldPrice')}</label>
+
+                                                        <div class="ui right labeled input">
+                                                            <input type="number"
+                                                                   name="percentOnOldPrice"
+                                                                   id="percentOnOldPrice"
+                                                                   placeholder="${g.message(code: 'surveyCostItems.bulkOption.percentOnOldPrice')}"
+                                                                   value="" step="0.01"/>
+
+                                                            <div class="ui basic label">%</div>
+                                                        </div>
+                                                    </div>
+                                                </fieldset>
+                                            </div>
+
+                                            <div class="two fields">
+                                                <div class="eight wide field" style="text-align: left;">
+                                                    <button class="ui button"
+                                                            type="submit">${message(code: 'financials.bulkCostItems.submit')}</button>
+                                                </div>
+
+                                                <div class="eight wide field" style="text-align: right;">
                                                 </div>
                                             </div>
-                                        </fieldset>
-                                    </div>
-                                    <div class="two fields">
-                                        <div class="eight wide field" style="text-align: left;">
-                                            <button class="ui button" type="submit">${message(code: 'financials.bulkCostItems.submit')}</button>
                                         </div>
-
-                                        <div class="eight wide field" style="text-align: right;">
-                                        </div>
-                                    </div>
-                                </div>
+                                    </g:if>
 
                                 <div class="field la-field-right-aligned">
                                     <input name="delete" type="hidden" value="false"/>
