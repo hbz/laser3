@@ -7,8 +7,11 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-
 4691    14.12.2022  rc-3.0  3.0         Moe     Bug         404: Kosten in Umfrage hinzufügen oder bearbeiten
+
+4689    14.12.2022  rc-3.0  3.0         David   Feature     Formulardaten in modalen Dialogen für Dokumente und Aufgaben
+
+4681    14.12.2022  rc-3.0  3.0         David   Bug         Editor Anmerkungen
 
 4685    13.12.2022  rc-3.0  3.0         Moe     Bug         500er bei KBART Upload / Titel hinzufügen
 
