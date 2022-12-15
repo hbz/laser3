@@ -1,9 +1,9 @@
-<ui:modal id="modalReadNote" text="${message(code:'template.readNote')}" hideSubmitButton="true">
+<ui:modal id="modalReadNote" text="${noteInstance.title ?: message(code: 'license.notes.noTitle')}" hideSubmitButton="true">
 
     <div class="ui form">
 %{--        <div class="field">--}%
 %{--            <label for="title">${message(code:'default.title.label')}:</label>--}%
-%{--            <div id="title" class="ui segment" style="margin:0; padding:0.5em 1em; box-shadow:none;">${noteInstance.title ?: 'Ohne Titel'}</div>--}%
+%{--            <div id="title" class="ui segment" style="margin:0; padding:0.5em 1em; box-shadow:none;">${noteInstance.title ?: message(code: 'license.notes.noTitle')}</div>--}%
 %{--        </div>--}%
 %{--        <div class="field">--}%
 %{--            <label for="content">${message(code:'default.note.label')}:</label>--}%
@@ -11,10 +11,7 @@
 %{--        </div>--}%
 
         <div id="note-wrapper-${noteInstance.id}">
-            <div style="margin-bottom:1em; border-bottom:1px dashed darkgrey">
-                <strong>${noteInstance.title ?: message(code: 'license.notes.noTitle')}</strong>
-            </div>
-            <article id="note-${noteInstance.id}" class="trumbowyg-editor trumbowyg-reset-css">
+            <article id="note-${noteInstance.id}" class="ui segment trumbowyg-editor trumbowyg-reset-css" style="margin:0; padding:0.5em 1em; box-shadow:none;">
                 ${raw(noteInstance.content)}
             </article>
             <laser:script file="${this.getGroovyPageFileName()}">

@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4688    15.12.2022  rc-3.0  3.0         David   Feature     Modus "Aktuell: Inhalte nicht editierbar"
+
 4664    15.12.2022  rc-3.0  3.0         David   Feature     Aufgabe löschen: Berechtigung
 
 4687    14.12.2022  rc-3.0  3.0         Moe     Bug         Pflichtangabe Einrichtungskontakt auf Funktion beschränken

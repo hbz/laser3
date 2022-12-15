@@ -34,7 +34,8 @@
                 </div>
                 <i class="large la-list-icon la-popup-tooltip la-delay icon ${icon}" data-content="${tooltip}"></i>
                 <div class="content">
-                    <a class="header" onclick="JSPC.app.taskedit(${tsk.id});">${tsk.title}</a>
+                    <a class="header la-js-toggle-showThis" onclick="JSPC.app.taskedit(${tsk.id});">${tsk.title}</a>
+                    <a class="header la-js-toggle-hideThis" onclick="JSPC.app.taskread(${tsk.id});">${tsk.title}</a>
                     <div class="description">${message(code:'task.endDate.label')}
                         <g:formatDate format="${message(code:'default.date.format.notime')}" date="${tsk.endDate}"/>
                     </div>
@@ -80,6 +81,10 @@
 <laser:script file="${this.getGroovyPageFileName()}">
     JSPC.app.taskedit = function (id) {
         var func = bb8.ajax4SimpleModalFunction("#modalEditTask", "<g:createLink controller="ajaxHtml" action="editTask"/>?id=" + id, true);
+        func();
+    }
+    JSPC.app.taskread = function (id) {
+        var func = bb8.ajax4SimpleModalFunction("#modalReadTask", "<g:createLink controller="ajaxHtml" action="readTask"/>?id=" + id, false);
         func();
     }
 </laser:script>

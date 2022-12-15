@@ -369,6 +369,18 @@ class AjaxHtmlController {
         }
     }
 
+    @Secured(['ROLE_USER'])
+    def readTask() {
+        Map<String, Object> result = [:]
+        result.params = params
+        result.taskInstance = Task.get(params.id)
+        result.contextOrg = contextService.getOrg()
+
+        if (result.taskInstance) {
+            render template: "/templates/tasks/modal_read", model: result
+        }
+    }
+
     /**
      * Opens the address creation modal and sets the underlying parameters
      */
