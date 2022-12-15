@@ -401,11 +401,11 @@
         <thead>
         <tr>
             <g:if test="${showCheckbox}">
-                <th>
                     <g:if test="${surveyParticipantsHasNotAccess && actionName != 'openParticipantsAgain' && params.tab != 'participantsViewAllNotFinish'}">
+                        <th>
                         <g:checkBox name="orgListToggler" id="orgListToggler" checked="false"/>
+                        </th>
                     </g:if>
-                </th>
             </g:if>
 
             <g:each in="${tmplConfigShow}" var="tmplConfigItem" status="i">
