@@ -94,6 +94,7 @@ class Counter4Report extends AbstractReport {
         doi                     column: 'c4r_doi', index: 'c4r_doi_idx'
         isbn                    column: 'c4r_isbn', index: 'c4r_isbn_idx'
         proprietaryIdentifier   column: 'c4r_proprietary_identifier', index: 'c4r_prop_ident_idx'
+        identifierHash          column: 'c4r_identifier_hash', type: 'text', index: 'c4r_idhash_idx'
         publisher               column: 'c4r_publisher', type: 'text'
         platformUID             column: 'c4r_platform_guid', index: 'c4r_plat_idx'
         reportInstitutionUID    column: 'c4r_report_institution_guid', index: 'c4r_ri_idx,'
@@ -112,6 +113,7 @@ class Counter4Report extends AbstractReport {
         doi                     (nullable: true) //because of platform reports!
         isbn                    (nullable: true) //because of platform reports!
         proprietaryIdentifier   (nullable: true) //because of platform reports!
+        identifierHash          (nullable: true) //because of platform reports!
         publisher               (nullable: true) //because of platform reports!
         yop                     (nullable: true) //YOP is used only for JR5
         //unique constraints need to be defined manually per dbm changeset because of partial null values
