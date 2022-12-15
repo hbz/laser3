@@ -95,7 +95,7 @@
         <g:link controller="subscription" action="renewEntitlementsWithSurvey"
                 id="${subscription.id}"
                 params="${[surveyConfigID: surveyConfig.id,
-                           tab           : 'allIEsStats']}"
+                           tab           : 'topUsed']}"
                 class="ui button">
             <g:message code="renewEntitlementsWithSurvey.stats.button"/>
         </g:link>
