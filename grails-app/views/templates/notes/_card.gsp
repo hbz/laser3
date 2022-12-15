@@ -27,7 +27,10 @@
                     <div class="ui grid summary">
                         <div class="ten wide column la-column-right-lessPadding">
                             <g:if test="${(docctx.owner.owner?.id == contextService.getOrg().id || docctx.owner.owner == null) && (editable || editable2)}">
-                                <a onclick="JSPC.app.noteedit(${docctx.owner.id});">
+                                <a onclick="JSPC.app.noteedit(${docctx.owner.id});" class="la-js-toggle-showThis">
+                                    ${docctx.owner.title ?: message(code:'license.notes.noTitle')}
+                                </a>
+                                <a onclick="JSPC.app.noteread(${docctx.owner.id});" class="la-js-toggle-hideThis">
                                     ${docctx.owner.title ?: message(code:'license.notes.noTitle')}
                                 </a>
                             </g:if>
