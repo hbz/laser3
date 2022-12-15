@@ -932,6 +932,7 @@ r2d2 = {
 
         $form.find('dl > dd input[type=text][name]').val('');
         $form.find('dl > dd input[type=file][name]').val('');
+        $form.find('dl > dd input[type=checkbox][name]').prop('checked', '')
         $form.find('dl > dd .dropdown > select[name]').dropdown('restore defaults');
     },
 
