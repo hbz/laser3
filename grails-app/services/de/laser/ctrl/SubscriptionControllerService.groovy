@@ -1395,11 +1395,20 @@ class SubscriptionControllerService {
             }
 
             if(params.tab == 'toBeSelectedIEs') {
+                GrailsParameterMap parameterMap = params.clone()
                 Map allQuery = filterService.getIssueEntitlementQuery(params, baseSub)
                 List<Long> allTippIDs = IssueEntitlement.executeQuery("select ie.tipp.id " + allQuery.query, allQuery.queryParams)
                 Map query = filterService.getIssueEntitlementQuery(params+[ieAcceptStatusNotFixed: true], newSub)
                 List<Long> selectedTippIDs = IssueEntitlement.executeQuery("select ie.tipp.id " + query.query, query.queryParams)
                 List<Long> toBeSelectedTippIDs = allTippIDs - selectedTippIDs
+
+
+                if(result.surveyConfig.pickAndChoosePerpetualAccess && subscriptions) {
+                    query = filterService.getIssueEntitlementQuery(parameterMap + [ieAcceptStatusFixed: true], subscriptions)
+                    List<Long> perpetualAccessTippIDs = IssueEntitlement.executeQuery("select ie.tipp.id " + query.query, query.queryParams)
+                    toBeSelectedTippIDs = toBeSelectedTippIDs - perpetualAccessTippIDs
+                }
+
                 allQuery.query = allQuery.query.replace("where", "where ie.tipp.id in (:tippIds) and ")
                 allQuery.queryParams.tippIds = toBeSelectedTippIDs
                 if(toBeSelectedTippIDs.size() > 0)
@@ -1412,13 +1421,15 @@ class SubscriptionControllerService {
             }
 
             result.countSelectedIEs = subscriptionService.countIssueEntitlementsNotFixed(newSub)
+            result.countAllIEs = subscriptionService.countIssueEntitlementsFixed(baseSub)
             if (result.surveyConfig.pickAndChoosePerpetualAccess) {
                 result.countCurrentIEs = surveyService.countPerpetualAccessTitlesBySub(result.subscription)
+                result.toBeSelectedIEs = result.countAllIEs - (result.countSelectedIEs + result.countCurrentIEs)
             } else {
                 result.countCurrentIEs = (previousSubscription ? subscriptionService.countIssueEntitlementsFixed(previousSubscription) : 0) + subscriptionService.countIssueEntitlementsFixed(result.subscription)
+                result.toBeSelectedIEs = result.countAllIEs - result.countSelectedIEs
             }
-            result.countAllIEs = subscriptionService.countIssueEntitlementsFixed(baseSub)
-            result.toBeSelectedIEs = result.countAllIEs - result.countSelectedIEs
+
 
             result.num_ies_rows = sourceIEs ? IssueEntitlement.countByIdInList(sourceIEs) : 0
             //allIEsStats and holdingIEsStats are left active for possible backswitch
