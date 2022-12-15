@@ -101,19 +101,20 @@ deckSaver = {
             $('.ui .form').not('.ui.modal .ui.form').removeClass('hidden');
             deckSaver.configs.areaThatIsAffected.find('.button').removeClass('hidden');
 
-
             deckSaver.configs.toggleButton.removeAttr("data-content");
             deckSaver.configs.toggleButton.attr("data-content", JSPC.dict.get('statusbar.showButtons.tooltip', JSPC.currLanguage));
             tooltip.initializePopup_deprecated(deckSaver.configs.toggleButton);
             deckSaver.configs.toggleIcon.removeClass("slash");
             deckSaver.configs.toggleButton.addClass('active');
 
-
             deckSaver.enableXeditable('.xEditableValue');
             deckSaver.enableXeditable('.xEditableDatepicker');
             deckSaver.enableXeditable('.xEditableManyToOne');
 
             $('.la-action-info').css('text-align', 'left').text(JSPC.dict.get('default.actions.label', JSPC.currLanguage))
+
+            $('.la-js-toggle-hideThis').addClass('hidden');    // generic toggle selector - erms-4688
+            $('.la-js-toggle-showThis').removeClass('hidden'); // generic toggle selector - erms-4688
         } else {
 
             // ***************************
@@ -145,16 +146,17 @@ deckSaver = {
             deckSaver.configs.toggleButton.attr("data-content", JSPC.dict.get('statusbar.hideButtons.tooltip', JSPC.currLanguage));
             tooltip.initializePopup_deprecated(deckSaver.configs.toggleButton);
 
-
             deckSaver.configs.toggleIcon.addClass("slash");
             deckSaver.configs.toggleButton.removeClass('active');
-
 
             deckSaver.disableXeditable('.xEditableValue');
             deckSaver.disableXeditable('.xEditableDatepicker');
             deckSaver.disableXeditable('.xEditableManyToOne');
 
             $('.la-action-info').css('text-align', 'right').text(JSPC.dict.get('default.informations', JSPC.currLanguage))
+
+            $('.la-js-toggle-hideThis').removeClass('hidden'); // generic toggle selector - erms-4688
+            $('.la-js-toggle-showThis').addClass('hidden');    // generic toggle selector - erms-4688
         }
     }
 }
