@@ -28,9 +28,10 @@
   margin: 0 1.142857em;
   .ui.tiny.label {
     font-size: .45rem;
+    vertical-align: middle;
   }
   .icon {
-    font-size: 1em;
+    font-size: 1.3em;
     width: auto;
     margin: 0em @iconDistance 0em @iconDistance;
     vertical-align: sub;
@@ -62,7 +63,9 @@
     color: white;
   }
   .la-annual-rings-text {
-    vertical-align: sub;
+    display: inline-block;
+    padding-top: 1px;
+    vertical-align: middle;
     padding-right: 0.5em;
   }
 }

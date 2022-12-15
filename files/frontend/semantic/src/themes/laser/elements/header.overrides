@@ -15,11 +15,16 @@ h1~h2.ui.header {
 .ui.icon.header .icon {
   display: inline-block;
 }
-.ui.icon.header .circular.icon.la-object,
-.ui.icon.header .circular.icon.la-object-journal,
-.ui.icon.header .circular.icon.la-object-database,
-.ui.icon.header .circular.icon.la-object-ebook {
-  display: none;
+.ui.icon.header .icon.la-object,
+.ui.icon.header .icon.la-object-journal,
+.ui.icon.header .icon.la-object-database,
+.ui.icon.header .icon.la-object-ebook {
+  font-size: 22px;
+  line-height: 1 !important;
+  padding: 0.5em 0 !important;
+  width: 2em !important;
+  height: 2em !important;
+  border-radius: 0.28571429rem;
   color: white;
   box-shadow: none;
   align-items: center;
@@ -29,7 +34,7 @@ body[class*="Organisation"],
 body[class*="organisation"],
 body[class*="myPublicContacts"],
 body[class*="myInstitution"]{
-  .ui.icon.header .circular.icon.la-object {
+  .ui.icon.header .icon.la-object {
     display: inline-block;
     background-color: @organisation;
     border-color: @organisation;
@@ -41,7 +46,7 @@ body[class*="myInstitution"]{
 
 body[class*="License"]
 ,body[class*="license"]  {
-  .ui.icon.header .circular.icon.la-object {
+  .ui.icon.header .icon.la-object {
     display: inline-block;
     background-color: @license;
     border-color: @license;
@@ -53,7 +58,7 @@ body[class*="License"]
 
 body[class*="Package"],
 body[class*="package"] {
-  .ui.icon.header .circular.icon.la-object {
+  .ui.icon.header .icon.la-object {
     display: inline-block;
     background-color: @package;
     border-color: @package;
@@ -65,7 +70,7 @@ body[class*="package"] {
 
 body[class*="Subscription"],
 body[class*="subscription"]  {
-  .ui.icon.header .circular.icon.la-object {
+  .ui.icon.header .icon.la-object {
     display: inline-block;
     background-color: @subscription;
     border-color: @subscription;
@@ -76,7 +81,7 @@ body[class*="subscription"]  {
 }
 
 body[class*="subscription"]  {
-  .ui.icon.header .circular.icon.la-object {
+  .ui.icon.header .icon.la-object {
     display: inline-block;
     background-color: @subscription;
     border-color: @subscription;
@@ -87,7 +92,7 @@ body[class*="subscription"]  {
 }
 body[class*="Title"],
 body[class*="title"]  {
-  .ui.icon.header .circular.icon.la-object {
+  .ui.icon.header .icon.la-object {
     display: inline-block;
     background-color: @title;
     border-color: @title;
@@ -102,7 +107,7 @@ body[class*="title"]  {
 body[class*="Platform"],
 body[class*="platform"]
 {
-  .ui.icon.header .circular.icon.la-object {
+  .ui.icon.header .icon.la-object {
     display: inline-block;
     background-color: @platform;
     border-color: @platform;
@@ -113,13 +118,13 @@ body[class*="platform"]
 }
 
 
-body[class*="Platform"] .ui.icon.header .circular.icon.la-object:before,
-body[class*="platform"] .ui.icon.header .circular.icon.la-object:before {
+body[class*="Platform"] .ui.icon.header .icon.la-object:before,
+body[class*="platform"] .ui.icon.header .icon.la-object:before {
   content: "\f0c2";
 }
 
 
-.ui.icon.header .circular.icon.la-object-journal {
+.ui.icon.header .icon.la-object-journal {
   display: inline-block;
   background-color: @title;
   border-color: @title;
@@ -127,7 +132,7 @@ body[class*="platform"] .ui.icon.header .circular.icon.la-object:before {
     content: "\f1ea";
   }
 }
-.ui.icon.header .circular.icon.la-object-database {
+.ui.icon.header .icon.la-object-database {
   display: inline-block;
   background-color: @title;
   border-color: @title;
@@ -135,7 +140,7 @@ body[class*="platform"] .ui.icon.header .circular.icon.la-object:before {
     content: "\f1c0";
   }
 }
-.ui.icon.header .circular.icon.la-object-ebook {
+.ui.icon.header .icon.la-object-ebook {
   display: inline-block;
   background-color: @title;
   border-color: @title;

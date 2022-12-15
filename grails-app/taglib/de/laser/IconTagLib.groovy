@@ -10,7 +10,7 @@ class IconTagLib {
     static namespace = 'ui'
 
     def headerIcon = { attrs, body ->
-        out << '<i aria-hidden="true" class="circular icon la-object"></i> '
+        out << '<i aria-hidden="true" class="icon la-object"></i> '
     }
 
     def headerTitleIcon = { attrs, body ->

@@ -25218,11 +25218,16 @@ h1 ~ h2.ui.header {
   display: inline-block;
 }
 
-.ui.icon.header .circular.icon.la-object,
-.ui.icon.header .circular.icon.la-object-journal,
-.ui.icon.header .circular.icon.la-object-database,
-.ui.icon.header .circular.icon.la-object-ebook {
-  display: none;
+.ui.icon.header .icon.la-object,
+.ui.icon.header .icon.la-object-journal,
+.ui.icon.header .icon.la-object-database,
+.ui.icon.header .icon.la-object-ebook {
+  font-size: 22px;
+  line-height: 1 !important;
+  padding: 0.5em 0 !important;
+  width: 2em !important;
+  height: 2em !important;
+  border-radius: 0.28571429rem;
   color: white;
   -webkit-box-shadow: none;
   box-shadow: none;
@@ -25231,124 +25236,124 @@ h1 ~ h2.ui.header {
   align-items: center;
 }
 
-body[class*="Organisation"] .ui.icon.header .circular.icon.la-object,
-body[class*="organisation"] .ui.icon.header .circular.icon.la-object,
-body[class*="myPublicContacts"] .ui.icon.header .circular.icon.la-object,
-body[class*="myInstitution"] .ui.icon.header .circular.icon.la-object {
+body[class*="Organisation"] .ui.icon.header .icon.la-object,
+body[class*="organisation"] .ui.icon.header .icon.la-object,
+body[class*="myPublicContacts"] .ui.icon.header .icon.la-object,
+body[class*="myInstitution"] .ui.icon.header .icon.la-object {
   display: inline-block;
   background-color: #00B5AD;
   border-color: #00B5AD;
 }
 
-body[class*="Organisation"] .ui.icon.header .circular.icon.la-object:before,
-body[class*="organisation"] .ui.icon.header .circular.icon.la-object:before,
-body[class*="myPublicContacts"] .ui.icon.header .circular.icon.la-object:before,
-body[class*="myInstitution"] .ui.icon.header .circular.icon.la-object:before {
+body[class*="Organisation"] .ui.icon.header .icon.la-object:before,
+body[class*="organisation"] .ui.icon.header .icon.la-object:before,
+body[class*="myPublicContacts"] .ui.icon.header .icon.la-object:before,
+body[class*="myInstitution"] .ui.icon.header .icon.la-object:before {
   content: "\f19c";
 }
 
-body[class*="License"] .ui.icon.header .circular.icon.la-object,
-body[class*="license"] .ui.icon.header .circular.icon.la-object {
+body[class*="License"] .ui.icon.header .icon.la-object,
+body[class*="license"] .ui.icon.header .icon.la-object {
   display: inline-block;
   background-color: #008C25;
   border-color: #008C25;
 }
 
-body[class*="License"] .ui.icon.header .circular.icon.la-object:before,
-body[class*="license"] .ui.icon.header .circular.icon.la-object:before {
+body[class*="License"] .ui.icon.header .icon.la-object:before,
+body[class*="license"] .ui.icon.header .icon.la-object:before {
   content: "\f24e";
 }
 
-body[class*="Package"] .ui.icon.header .circular.icon.la-object,
-body[class*="package"] .ui.icon.header .circular.icon.la-object {
+body[class*="Package"] .ui.icon.header .icon.la-object,
+body[class*="package"] .ui.icon.header .icon.la-object {
   display: inline-block;
   background-color: #76007A;
   border-color: #76007A;
 }
 
-body[class*="Package"] .ui.icon.header .circular.icon.la-object:before,
-body[class*="package"] .ui.icon.header .circular.icon.la-object:before {
+body[class*="Package"] .ui.icon.header .icon.la-object:before,
+body[class*="package"] .ui.icon.header .icon.la-object:before {
   content: "\f06b";
 }
 
-body[class*="Subscription"] .ui.icon.header .circular.icon.la-object,
-body[class*="subscription"] .ui.icon.header .circular.icon.la-object {
+body[class*="Subscription"] .ui.icon.header .icon.la-object,
+body[class*="subscription"] .ui.icon.header .icon.la-object {
   display: inline-block;
   background-color: #fa820a;
   border-color: #fa820a;
 }
 
-body[class*="Subscription"] .ui.icon.header .circular.icon.la-object:before,
-body[class*="subscription"] .ui.icon.header .circular.icon.la-object:before {
+body[class*="Subscription"] .ui.icon.header .icon.la-object:before,
+body[class*="subscription"] .ui.icon.header .icon.la-object:before {
   content: "\f328";
 }
 
-body[class*="subscription"] .ui.icon.header .circular.icon.la-object {
+body[class*="subscription"] .ui.icon.header .icon.la-object {
   display: inline-block;
   background-color: #fa820a;
   border-color: #fa820a;
 }
 
-body[class*="subscription"] .ui.icon.header .circular.icon.la-object:before {
+body[class*="subscription"] .ui.icon.header .icon.la-object:before {
   content: "\f328";
 }
 
-body[class*="Title"] .ui.icon.header .circular.icon.la-object,
-body[class*="title"] .ui.icon.header .circular.icon.la-object {
+body[class*="Title"] .ui.icon.header .icon.la-object,
+body[class*="title"] .ui.icon.header .icon.la-object {
   display: inline-block;
   background-color: #2185d0;
   border-color: #2185d0;
 }
 
-body[class*="Title"] .ui.icon.header .circular.icon.la-object:before,
-body[class*="title"] .ui.icon.header .circular.icon.la-object:before {
+body[class*="Title"] .ui.icon.header .icon.la-object:before,
+body[class*="title"] .ui.icon.header .icon.la-object:before {
   content: "\f02d";
 }
 
-body[class*="Platform"] .ui.icon.header .circular.icon.la-object,
-body[class*="platform"] .ui.icon.header .circular.icon.la-object {
+body[class*="Platform"] .ui.icon.header .icon.la-object,
+body[class*="platform"] .ui.icon.header .icon.la-object {
   display: inline-block;
   background-color: #FBC71C;
   border-color: #FBC71C;
 }
 
-body[class*="Platform"] .ui.icon.header .circular.icon.la-object:before,
-body[class*="platform"] .ui.icon.header .circular.icon.la-object:before {
+body[class*="Platform"] .ui.icon.header .icon.la-object:before,
+body[class*="platform"] .ui.icon.header .icon.la-object:before {
   content: "\f0c2";
 }
 
-body[class*="Platform"] .ui.icon.header .circular.icon.la-object:before,
-body[class*="platform"] .ui.icon.header .circular.icon.la-object:before {
+body[class*="Platform"] .ui.icon.header .icon.la-object:before,
+body[class*="platform"] .ui.icon.header .icon.la-object:before {
   content: "\f0c2";
 }
 
-.ui.icon.header .circular.icon.la-object-journal {
+.ui.icon.header .icon.la-object-journal {
   display: inline-block;
   background-color: #2185d0;
   border-color: #2185d0;
 }
 
-.ui.icon.header .circular.icon.la-object-journal:before {
+.ui.icon.header .icon.la-object-journal:before {
   content: "\f1ea";
 }
 
-.ui.icon.header .circular.icon.la-object-database {
+.ui.icon.header .icon.la-object-database {
   display: inline-block;
   background-color: #2185d0;
   border-color: #2185d0;
 }
 
-.ui.icon.header .circular.icon.la-object-database:before {
+.ui.icon.header .icon.la-object-database:before {
   content: "\f1c0";
 }
 
-.ui.icon.header .circular.icon.la-object-ebook {
+.ui.icon.header .icon.la-object-ebook {
   display: inline-block;
   background-color: #2185d0;
   border-color: #2185d0;
 }
 
-.ui.icon.header .circular.icon.la-object-ebook:before {
+.ui.icon.header .icon.la-object-ebook:before {
   content: "\f3fa";
 }
 
