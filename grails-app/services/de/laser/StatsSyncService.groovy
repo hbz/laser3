@@ -711,18 +711,18 @@ class StatsSyncService {
                                     configMap.category = category
                                     configMap.metricType = metricType
                                     configMap.publisher = publisher
-                                    String yop
+                                    //String yop
                                     if(performance.'@PubYr'.size() > 0) {
                                         configMap.yop = new Timestamp(DateUtils.getSDF_yyyy().parse(performance.'@PubYr'.text()).getTime())
-                                        yop = 'and c4r_yop = :yop '
+                                        //yop = 'and c4r_yop = :yop '
                                     }
                                     else {
                                         configMap.yop = null
-                                        yop = ''
+                                        //yop = ''
                                     }
                                     configMap.reportCount = count
                                     //c4r_title_guid, c4r_publisher, c4r_platform_guid, c4r_report_institution_guid, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count
-                                    Map<String, Object> selMap = configMap.clone() as Map<String, Object> //simple assignment makes call by reference so modifies the actual object
+                                    /*Map<String, Object> selMap = configMap.clone() as Map<String, Object> //simple assignment makes call by reference so modifies the actual object
                                     selMap.remove('version')
                                     selMap.remove('reportCount')
                                     List<GroovyRowResult> existingKey = statsSql.rows('select c4r_id from counter4report where c4r_platform_guid = :platform ' +
@@ -736,7 +736,7 @@ class StatsSyncService {
                                         statsSql.execute('update counter4report set c4r_report_count = :reportCount, c4r_publisher = :publisher, c4r_category = :category where c4r_id = :reportId',
                                                 [reportCount: count, publisher: reportItem.'ns2:ItemPublisher'.text(), category: category, reportId: existingKey[0].get('c4r_id')])
                                     }
-                                    else
+                                    else */
                                         stmt.addBatch(configMap)
                                 }
                             }
@@ -851,16 +851,16 @@ class StatsSyncService {
                                     configMap.accessMethod = reportItem.Access_Method
                                     configMap.metricType = instance.Metric_Type
                                     configMap.reportCount = instance.Count as int
-                                    String yop
+                                    //String yop
                                     if(reportItem.containsKey('YOP') && reportItem.get('YOP') != 'null' && reportItem.get('YOP') != null) {
                                         configMap.yop = new Timestamp(DateUtils.getSDF_yyyy().parse(reportItem.get('YOP')).getTime())
-                                        yop = 'and c5r_yop = :yop '
+                                        //yop = 'and c5r_yop = :yop '
                                     }
                                     else {
                                         configMap.yop = null
-                                        yop = ''
+                                        //yop = ''
                                     }
-                                    Map<String, Object> selMap = configMap.clone() as Map<String, Object> //simple assignment makes call by reference so modifies the actual object
+                                    /*Map<String, Object> selMap = configMap.clone() as Map<String, Object> //simple assignment makes call by reference so modifies the actual object
                                     selMap.remove('version')
                                     selMap.remove('reportCount')
                                     List<GroovyRowResult> existingKey = statsSql.rows('select c5r_id from counter5report where c5r_publisher = :publisher ' +
@@ -878,7 +878,8 @@ class StatsSyncService {
                                         statsSql.execute('update counter5report set c5r_report_count = :reportCount where c5r_id = :reportId',
                                                 [reportCount: instance.Count as int, reportId: existingKey[0].get('c5r_id')])
                                     }
-                                    else stmt.addBatch(configMap)
+                                    else */
+                                        stmt.addBatch(configMap)
                                 }
                             }
                         //}

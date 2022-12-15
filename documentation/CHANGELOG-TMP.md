@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4698    15.12.2022  rc-3.0  3.0         Andreas Feature     Neuer Identifikator "Leibniz-ID" aufgenommen
+
 4695    15.12.2022  rc-3.0  3.0         Moe     Bug         Umfrage-Erinnerungsmail: Tabelleninhalt verrutscht
 
 4693    15.12.2022  rc-3.0  3.0         Andreas Feature     Umstellungen bei der Titelumfrage
