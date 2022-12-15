@@ -40,9 +40,7 @@
         </g:elseif>
         <g:if test="${showConsortiaFunctions && !subscription.instanceOf}">
             <g:each in="${platformInstanceRecords.values()}" var="platformInstanceRecord">
-                <div class="ui segment">
-                    <laser:render template="/templates/platformStatsDetails" model="[platformInstanceRecord: platformInstanceRecord]"/>
-                </div>
+                <laser:render template="/templates/platformStatsDetails" model="[platformInstanceRecord: platformInstanceRecord]"/>
             </g:each>
             <g:if test="${platformInstanceRecords.values().statisticsFormat.contains('COUNTER')}">
                 <div class="ui segment">

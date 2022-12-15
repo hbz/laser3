@@ -380,18 +380,19 @@
     <div class="sixteen wide column">
         <div class="two fields">
 
-            <div class="eight wide field" style="text-align: left;">
-                <g:if test="${editable && params.tab != 'selectedIEs'}">
-                    <button type="submit" name="process" id="processButton" value="preliminary" class="ui green button">
-                        ${params.tab in ['stats','topUsed'] ? '' :checkedCount} <g:message code="renewEntitlementsWithSurvey.preliminary"/></button>
-                </g:if>
+            <g:if test="${params.tab != 'stats'}">
+                <div class="eight wide field" style="text-align: left;">
+                    <g:if test="${editable && params.tab != 'selectedIEs'}">
+                        <button type="submit" name="process" id="processButton" value="preliminary" class="ui green button">
+                            ${params.tab == 'topUsed' ? '' :checkedCount} <g:message code="renewEntitlementsWithSurvey.preliminary"/></button>
+                    </g:if>
 
-                <g:if test="${editable && params.tab == 'selectedIEs'}">
-                    <button type="submit" name="process" id="processButton" value="remove" class="ui red button">
-                        ${checkedCount}  <g:message code="renewEntitlementsWithSurvey.remove"/></button>
-                </g:if>
-            </div>
-
+                    <g:if test="${editable && params.tab == 'selectedIEs'}">
+                        <button type="submit" name="process" id="processButton" value="remove" class="ui red button">
+                            ${checkedCount}  <g:message code="renewEntitlementsWithSurvey.remove"/></button>
+                    </g:if>
+                </div>
+            </g:if>
 
             <div class="eight wide field" style="text-align: right;">
                 <g:if test="${contextOrg.id == surveyConfig.surveyInfo.owner.id}">
