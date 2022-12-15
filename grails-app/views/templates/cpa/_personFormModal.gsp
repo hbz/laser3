@@ -486,16 +486,8 @@
                     if(JSPC.app.contactElementCount == 1) {
                         contactElements = [$('#'+$.escapeSelector('contactLang.id')), $('#content')];
                     }
-                    else {
-                        $(".contactField").each(function(i) {
-                            console.log(this);
-                        });
-                    }
                     if(JSPC.app.addressElementCount == 1) {
                         addressElements = [$('#type'), $('#name'), $('#additionFirst'), $('#additionSecond'), $('#street_1'), $('#street_2'), $('#zipcode'), $('#city'), $('#pob'), $('#pobZipcode'), $('#pobCity'), $('#country'), $('#region')];
-                    }
-                    else {
-
                     }
                     if((JSPC.app.addressElementCount == 0 || !JSPC.app.areElementsFilledOut(addressElements)) &&
                        (JSPC.app.contactElementCount == 0 || !JSPC.app.areElementsFilledOut(contactElements))) {

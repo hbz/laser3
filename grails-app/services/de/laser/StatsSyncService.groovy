@@ -386,7 +386,7 @@ class StatsSyncService {
                                                     }
                                                     if (donePeriods.size() > 0) {
                                                         //log.debug("${Thread.currentThread().getName()} has fetched missing data, removing rows ${donePeriods.toListString()}")
-                                                        sql.execute('delete from stats_missing_period where smp_id = any(:periodIds)', [periodIds: sql.connection.createArrayOf('bigint', donePeriods.toArray())])
+                                                        sql.execute('delete from stats_missing_period where smp_id = any(:periodIds)', [periodIds: sql.getDataSource().getConnection().createArrayOf('bigint', donePeriods.toArray())])
                                                     }
                                                 }
                                                 log.debug("${Thread.currentThread().getName()} has finished report ${reportID} and gets next report for ${keyPair.customerName}")
@@ -539,7 +539,7 @@ class StatsSyncService {
                                                             }
                                                             if (donePeriods.size() > 0) {
                                                                 //log.debug("${Thread.currentThread().getName()} has fetched missing data, removing rows ${donePeriods.toListString()}")
-                                                                sql.execute('delete from stats_missing_period where smp_id = any(:periodIds)', [periodIds: conn.createArrayOf('bigint', donePeriods.toArray())])
+                                                                sql.execute('delete from stats_missing_period where smp_id = any(:periodIds)', [periodIds: sql.getDataSource().getConnection().createArrayOf('bigint', donePeriods.toArray())])
                                                             }
                                                             //log.debug("${Thread.currentThread().getName()} has finished report ${reportId} and gets next report for ${keyPair.customerName}")
                                                         }
@@ -637,8 +637,9 @@ class StatsSyncService {
                                     'and c4r_report_from = :reportFrom ' +
                                     'and c4r_report_to = :reportTo', selMap)
                             if (existingKey) {
-                                statsSql.execute('update counter4report set c4r_report_count = :reportCount, c4r_publisher = :publisher where c4r_id = :reportId', [reportCount: count, publisher: reportItem.'ns2:ItemPublisher'.text(), reportId: existingKey[0].get('c4r_id')])
-                            } else
+                                statsSql.execute('update counter4report set c4r_report_count = :reportCount, c4r_category = :category, c4r_publisher = :publisher where c4r_id = :reportId', [reportCount: count, publisher: reportItem.'ns2:ItemPublisher'.text(), category: category, reportId: existingKey[0].get('c4r_id')])
+                            }
+                            else
                                 stmt.addBatch(configMap)
                         }
                     }
@@ -710,10 +711,33 @@ class StatsSyncService {
                                     configMap.category = category
                                     configMap.metricType = metricType
                                     configMap.publisher = publisher
-                                    configMap.yop = performance.'@PubYr'.size() > 0 ? new Timestamp(DateUtils.getSDF_yyyy().parse(performance.'@PubYr'.text()).getTime()) : null
+                                    //String yop
+                                    if(performance.'@PubYr'.size() > 0) {
+                                        configMap.yop = new Timestamp(DateUtils.getSDF_yyyy().parse(performance.'@PubYr'.text()).getTime())
+                                        //yop = 'and c4r_yop = :yop '
+                                    }
+                                    else {
+                                        configMap.yop = null
+                                        //yop = ''
+                                    }
                                     configMap.reportCount = count
                                     //c4r_title_guid, c4r_publisher, c4r_platform_guid, c4r_report_institution_guid, c4r_report_type, c4r_category, c4r_metric_type, c4r_report_from, c4r_report_to, c4r_report_count
-                                    stmt.addBatch(configMap)
+                                    /*Map<String, Object> selMap = configMap.clone() as Map<String, Object> //simple assignment makes call by reference so modifies the actual object
+                                    selMap.remove('version')
+                                    selMap.remove('reportCount')
+                                    List<GroovyRowResult> existingKey = statsSql.rows('select c4r_id from counter4report where c4r_platform_guid = :platform ' +
+                                            'and c4r_report_institution_guid = :reportInstitution ' +
+                                            'and c4r_report_type = :reportType ' +
+                                            'and c4r_metric_type = :metricType ' +
+                                            'and c4r_report_from = :reportFrom ' +
+                                            yop +
+                                            'and c4r_report_to = :reportTo', selMap)
+                                    if (existingKey) {
+                                        statsSql.execute('update counter4report set c4r_report_count = :reportCount, c4r_publisher = :publisher, c4r_category = :category where c4r_id = :reportId',
+                                                [reportCount: count, publisher: reportItem.'ns2:ItemPublisher'.text(), category: category, reportId: existingKey[0].get('c4r_id')])
+                                    }
+                                    else */
+                                        stmt.addBatch(configMap)
                                 }
                             }
                         //}
@@ -753,10 +777,13 @@ class StatsSyncService {
                                     'and c5r_report_type = :reportType ' +
                                     'and c5r_metric_type = :metricType ' +
                                     'and c5r_data_type = :dataType ' +
+                                    'and c5r_access_type = :accessType ' +
+                                    'and c5r_access_method = :accessMethod ' +
                                     'and c5r_report_from = :reportFrom ' +
                                     'and c5r_report_to = :reportTo', selMap)
                             if (existingKey) {
-                                statsSql.execute('update counter5report set c5r_report_count = :reportCount, c5r_data_type = :dataType where c5r_id = :reportId', [reportCount: instance.Count as int, dataType: instance.Data_Type, reportId: existingKey[0].get('c5r_id')])
+                                statsSql.execute('update counter5report set c5r_report_count = :reportCount where c5r_id = :reportId',
+                                        [reportCount: instance.Count as int, dataType: instance.Data_Type, reportId: existingKey[0].get('c5r_id')])
                             }
                             else stmt.addBatch(configMap)
                         }
@@ -769,15 +796,15 @@ class StatsSyncService {
             //GParsPool.withExistingPool(pool) {
             reportData.reports.items.eachWithIndex { Map reportItem, int t ->
                 String batchQuery
-                if(reportData.reportID.toLowerCase() == Counter5Report.JOURNAL_REQUESTS_BY_YOP) {
+                if(reportData.reportID.toLowerCase() in [Counter5Report.BOOK_REQUESTS, Counter5Report.BOOK_ACCESS_DENIED, Counter5Report.BOOK_USAGE_BY_ACCESS_TYPE, Counter5Report.JOURNAL_REQUESTS_BY_YOP, Counter5Report.JOURNAL_REQUESTS, Counter5Report.JOURNAL_ACCESS_DENIED, Counter5Report.JOURNAL_ARTICLE_REQUESTS, Counter5Report.JOURNAL_USAGE_BY_ACCESS_TYPE]) {
                     batchQuery = "insert into counter5report (c5r_version, c5r_online_identifier, c5r_print_identifier, c5r_proprietary_identifier, c5r_isbn, c5r_doi, c5r_publisher, c5r_platform_guid, c5r_report_institution_guid, c5r_report_type, c5r_metric_type, c5r_data_type, c5r_access_type, c5r_access_method, c5r_report_from, c5r_report_to, c5r_yop, c5r_report_count) " +
-                            "values (:version, :onlineIdentifier, :printIdentifier, :proprietaryIdentifier, :doi, :isbn, :publisher, :platform, :reportInstitution, :reportType, :metricType, :dataType, :accessType, :accessMethod, :reportFrom, :reportTo, :yop, :reportCount) " +
+                            "values (:version, :onlineIdentifier, :printIdentifier, :proprietaryIdentifier, :isbn, :doi, :publisher, :platform, :reportInstitution, :reportType, :metricType, :dataType, :accessType, :accessMethod, :reportFrom, :reportTo, :yop, :reportCount) " +
                             "on conflict (c5r_report_from, c5r_report_to, c5r_report_type, c5r_metric_type, c5r_platform_guid, c5r_report_institution_guid, coalesce(c5r_online_identifier, null), coalesce(c5r_print_identifier, null), coalesce(c5r_isbn, null), coalesce(c5r_doi, null), c5r_yop) where c5r_yop is not null " +
                             "do update set c5r_report_count = :reportCount, c5r_data_type = :dataType, c5r_access_type = :accessType, c5r_access_method = :accessMethod"
                 }
                 else {
                     batchQuery = "insert into counter5report (c5r_version, c5r_online_identifier, c5r_print_identifier, c5r_proprietary_identifier, c5r_isbn, c5r_doi, c5r_publisher, c5r_platform_guid, c5r_report_institution_guid, c5r_report_type, c5r_metric_type, c5r_data_type, c5r_access_type, c5r_access_method, c5r_report_from, c5r_report_to, c5r_report_count) " +
-                            "values (:version, :onlineIdentifier, :printIdentifier, :proprietaryIdentifier, :doi, :isbn, :publisher, :platform, :reportInstitution, :reportType, :metricType, :dataType, :accessType, :accessMethod, :reportFrom, :reportTo, :reportCount) " +
+                            "values (:version, :onlineIdentifier, :printIdentifier, :proprietaryIdentifier, :isbn, :doi, :publisher, :platform, :reportInstitution, :reportType, :metricType, :dataType, :accessType, :accessMethod, :reportFrom, :reportTo, :reportCount) " +
                             "on conflict (c5r_report_from, c5r_report_to, c5r_report_type, c5r_metric_type, c5r_platform_guid, c5r_report_institution_guid, coalesce(c5r_online_identifier, null), coalesce(c5r_print_identifier, null), coalesce(c5r_isbn, null), coalesce(c5r_doi, null)) where c5r_yop is null " +
                             "do update set c5r_report_count = :reportCount, c5r_data_type = :dataType, c5r_access_type = :accessType, c5r_access_method = :accessMethod"
                 }
@@ -824,11 +851,35 @@ class StatsSyncService {
                                     configMap.accessMethod = reportItem.Access_Method
                                     configMap.metricType = instance.Metric_Type
                                     configMap.reportCount = instance.Count as int
+                                    //String yop
                                     if(reportItem.containsKey('YOP') && reportItem.get('YOP') != 'null' && reportItem.get('YOP') != null) {
                                         configMap.yop = new Timestamp(DateUtils.getSDF_yyyy().parse(reportItem.get('YOP')).getTime())
+                                        //yop = 'and c5r_yop = :yop '
                                     }
-                                    else configMap.yop = null
-                                    stmt.addBatch(configMap)
+                                    else {
+                                        configMap.yop = null
+                                        //yop = ''
+                                    }
+                                    /*Map<String, Object> selMap = configMap.clone() as Map<String, Object> //simple assignment makes call by reference so modifies the actual object
+                                    selMap.remove('version')
+                                    selMap.remove('reportCount')
+                                    List<GroovyRowResult> existingKey = statsSql.rows('select c5r_id from counter5report where c5r_publisher = :publisher ' +
+                                            'and c5r_platform_guid = :platform ' +
+                                            'and c5r_report_institution_guid = :reportInstitution ' +
+                                            'and c5r_report_type = :reportType ' +
+                                            'and c5r_metric_type = :metricType ' +
+                                            'and c5r_data_type = :dataType ' +
+                                            'and c5r_access_type = :accessType ' +
+                                            'and c5r_access_method = :accessMethod ' +
+                                            yop +
+                                            'and c5r_report_from = :reportFrom ' +
+                                            'and c5r_report_to = :reportTo', selMap)
+                                    if (existingKey) {
+                                        statsSql.execute('update counter5report set c5r_report_count = :reportCount where c5r_id = :reportId',
+                                                [reportCount: instance.Count as int, reportId: existingKey[0].get('c5r_id')])
+                                    }
+                                    else */
+                                        stmt.addBatch(configMap)
                                 }
                             }
                         //}

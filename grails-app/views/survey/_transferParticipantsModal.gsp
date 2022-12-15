@@ -49,7 +49,7 @@
 
         </div>
         <div class="two fields">
-            <g:set var="validPackages" value="${parentSuccessorSubscription.packages?.sort { it.pkg.name }}"/>
+            %{--<g:set var="validPackages" value="${parentSuccessorSubscription.packages?.sort { it.pkg.name }}"/>
             <div class="field">
 
                 <label><g:message code="myinst.addMembers.linkPackages"/></label>
@@ -80,7 +80,7 @@
                 <g:else>
                     <g:message code="subscriptionsManagement.noValidPackages" args="${superOrgType}"/>
                 </g:else>
-            </div>
+            </div>--}%
 
             <g:if test="${!auditConfigProvidersAgencies}">
                 <div class="field">

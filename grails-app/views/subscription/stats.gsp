@@ -19,10 +19,13 @@
         <ui:objectStatus object="${subscription}" status="${subscription.status}" />
         <laser:render template="message" />
         <ui:messages data="${flash}" />
-        <div class="ui icon info message">
-            <i class="info icon"></i>
-            <g:message code="default.usage.exports.warning"/>
-        </div>
+        <g:if test="${subscription._getCalculatedType() in [CalculatedType.TYPE_LOCAL, CalculatedType.TYPE_PARTICIPATION]}">
+            <div class="ui icon info message">
+                <i class="info icon"></i>
+                <g:message code="default.usage.exports.warning"/>
+            </div>
+        </g:if>
+
         <g:if test="${wekbServerUnavailable}">
             <div class="ui icon error message">
                 <i class="exclamation icon"></i>
@@ -31,18 +34,13 @@
         </g:if>
         <g:elseif test="${subscription._getCalculatedType() in [CalculatedType.TYPE_LOCAL, CalculatedType.TYPE_PARTICIPATION]}">
             <g:each in="${platformInstanceRecords.values()}" var="platformInstanceRecord">
-                <h4>
-                    ${platformInstanceRecord.name}
-                </h4>
                 <laser:render template="/templates/platformStatsDetails" model="[platformInstanceRecord: platformInstanceRecord]"/>
             </g:each>
             <div class="la-metabox-spacer"></div>
         </g:elseif>
         <g:if test="${showConsortiaFunctions && !subscription.instanceOf}">
             <g:each in="${platformInstanceRecords.values()}" var="platformInstanceRecord">
-                <div class="ui segment">
-                    <laser:render template="/templates/platformStatsDetails" model="[platformInstanceRecord: platformInstanceRecord]"/>
-                </div>
+                <laser:render template="/templates/platformStatsDetails" model="[platformInstanceRecord: platformInstanceRecord]"/>
             </g:each>
             <g:if test="${platformInstanceRecords.values().statisticsFormat.contains('COUNTER')}">
                 <div class="ui segment">
@@ -104,9 +102,11 @@
                             </select>--%>
                         </div>
 
+                        <%-- postponed for 3.1
                         <div class="field la-field-right-aligned">
                             <input id="generateCostPerUse" type="button" class="ui secondary button" value="${message(code: 'default.stats.generateCostPerUse')}"/>
                         </div>
+                        --%>
                         <div class="field la-field-right-aligned">
                             <input type="submit" class="ui primary button" value="${message(code: 'default.stats.generateReport')}"/>
                         </div>

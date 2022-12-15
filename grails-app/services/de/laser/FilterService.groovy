@@ -1044,7 +1044,6 @@ class FilterService {
                                 base_qry += " surResult.refValue in (:prop) "
                                 queryParams.put('prop', filterProp)
                             }
-                            base_qry += " ) "
                     }
                     else if (pd.isIntegerType()) {
                             if (!params.filterProp || params.filterProp.length() < 1) {

@@ -139,6 +139,7 @@ class SubscriptionController {
                 List records = queryResult.warning.records
                 if(records[0]) {
                     records[0].lastRun = platformInstance.counter5LastRun ?: platformInstance.counter4LastRun
+                    records[0].id = platformInstance.id
                     result.platformInstanceRecords[platformInstance.gokbId] = records[0]
                 }
             }
@@ -1316,8 +1317,15 @@ class SubscriptionController {
         params.statsForSurvey = true
         SXSSFWorkbook wb
         if(params.exportXLSStats) {
-            params.tab = params.tabStat
-            wb = exportService.generateReport(params, true,  true, true)
+            if(params.reportType && params.metricType) {
+                wb = exportService.generateReport(params, true,  true, true)
+            }
+            if(wb)
+                ctrlResult = [status: SubscriptionControllerService.STATUS_OK]
+            else {
+                ctrlResult = subscriptionControllerService.renewEntitlementsWithSurvey(this, params)
+                flash.error = message(code: 'renewEntitlementsWithSurvey.noReportSelected')
+            }
         }
         else {
             ctrlResult = subscriptionControllerService.renewEntitlementsWithSurvey(this, params)
@@ -1437,7 +1445,7 @@ class SubscriptionController {
                 return
             } else if (params.exportXLSStats) {
                     if(wb) {
-                        response.setHeader "Content-disposition", "attachment; filename=report_${DateUtils.getSDF_yyyyMMdd().format(ctrlResult.result.dateRun)}.xlsx"
+                        response.setHeader "Content-disposition", "attachment; filename=report_${DateUtils.getSDF_yyyyMMdd().format(new Date())}.xlsx"
                         response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
                         wb.write(response.outputStream)
                         response.outputStream.flush()
@@ -1445,12 +1453,8 @@ class SubscriptionController {
                         wb.dispose()
                         return
                     }
+                else ctrlResult.result
             }else {
-
-                if(params.tab in ['allIEsStats', 'holdingIEsStats']) {
-                    params.metricType = ctrlResult.result.metricType
-                    params.reportType = ctrlResult.result.reportType
-                }
                 ctrlResult.result
             }
         }

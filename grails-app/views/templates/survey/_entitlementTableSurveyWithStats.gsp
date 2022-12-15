@@ -17,9 +17,10 @@
         </tr>
         </thead>
         <tbody>
+            <g:set var="start" value="${System.currentTimeMillis()}"/>
             <g:each in="${stats}" var="stat">
-                <g:set var="tipp" value="${TitleInstancePackagePlatform.findByGlobalUID(stat.titleUID)}"/>
-                <g:set var="ie" value="${IssueEntitlement.findByTippAndSubscriptionAndStatusAndAcceptStatus(stat.title, subscription, RDStore.TIPP_STATUS_CURRENT, RDStore.IE_ACCEPT_STATUS_FIXED)}"/>
+                <g:set var="tipp" value="${stat.getKey()}"/>
+                <g:set var="ie" value="${IssueEntitlement.findByTippAndSubscriptionAndStatusAndAcceptStatus(tipp, subscription, RDStore.TIPP_STATUS_CURRENT, RDStore.IE_ACCEPT_STATUS_FIXED)}"/>
                 <g:set var="ieInNewSub"
                        value="${surveyService.titleContainedBySubscription(newSub, tipp)}"/>
                 <g:if test="${surveyConfig.pickAndChoosePerpetualAccess}">
@@ -34,8 +35,7 @@
                 </g:else>
                 <tr data-gokbId="${tipp.gokbId}" data-tippId="${tipp.id}" data-ieId="${ie?.id}" data-index="${counter}" class="${checkedCache ? (checkedCache[ie?.id.toString()] ? 'positive' : '') : ''}">
                     <td>
-
-                        <g:if test="${(params.tab in ['allIEsStats', 'holdingIEsStats']) && (editable && !ieInNewSub && allowedToSelect)}">
+                        <g:if test="${(params.tab in ['topUsed']) && (editable && !ieInNewSub && allowedToSelect)}">
                             <input type="checkbox" name="bulkflag" class="bulkcheck" ${checkedCache ? checkedCache[ie?.id.toString()] : ''}>
                         </g:if>
 
@@ -55,7 +55,7 @@
                             </div>
                         </g:if>
 
-                        <g:if test="${!participantPerpetualAccessToTitle && previousSubscription && surveyService.titleContainedBySubscription(previousSubscription, tipp)?.acceptStatus == RDStore.IE_ACCEPT_STATUS_FIXED}">
+                        <g:if test="${!participantPerpetualAccessToTitle && previousSubscription && ieInNewSub?.acceptStatus == RDStore.IE_ACCEPT_STATUS_FIXED}">
                             <div class="la-inline-flexbox la-popup-tooltip la-delay" data-content="${message(code: 'renewEntitlementsWithSurvey.ie.existsInPreviousSubscription')}" data-position="left center" data-variation="tiny">
                                 <i class="icon redo alternate orange"></i>
                             </div>
@@ -71,8 +71,10 @@
                                                 showPackage: showPackage, showPlattform: showPlattform, showCompact: true, showEmptyFields: false, overwriteEditable: false, participantPerpetualAccessToTitle: participantPerpetualAccessToTitle]}"/>
                     <!-- END TEMPLATE -->
                     </td>
-                    <td>${stat.metricType}</td>
-                    <td>${stat.reportCount}</td>
+                    <g:if test="${params.tab == 'topUsed'}">
+                        <td><g:each in="${stat.getValue()}" var="usage">${usage.getKey()}</g:each></td>
+                        <td><g:each in="${stat.getValue()}" var="usage">${usage.getValue()}</g:each></td>
+                    </g:if>
                     <td>
                         <g:if test="${(params.tab in ['allIEsStats', 'holdingIEsStats']) && editable && ieInNewSub && allowedToSelect}">
                             <g:link class="ui icon positive check button la-popup-tooltip la-delay"
@@ -94,9 +96,9 @@
                         </g:if>
                     </td>
                 </tr>
-
             </g:each>
 
         </tbody>
     </table>
+    <ui:paginate params="${params}" offset="${offset}" max="${max}" total="${total}"/>
 </div>

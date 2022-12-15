@@ -101,4 +101,26 @@ databaseChangeLog = {
             rollback {}
         }
     }
+
+    changeSet(author: "galffy (hand-coded)", id: "1670858151656-11") {
+        grailsChange {
+            change {
+                //postfix
+                sql.execute("update title_instance_package_platform set tipp_sort_name = trim(tipp_sort_name) where tipp_sort_name ~ '^ '")
+                sql.execute("update title_instance_package_platform set tipp_sort_name = trim(regexp_replace(tipp_sort_name, '[\u009D`]', '', 'g')) where tipp_sort_name ~ '[\u009D`]'")
+            }
+            rollback {}
+        }
+    }
+
+    changeSet(author: "galffy (hand-coded)", id: "1670858151656-12") {
+        grailsChange {
+            change {
+                //postfix
+                sql.execute("update issue_entitlement set ie_sortname = trim(ie_sortname) where ie_sortname ~ '^ '")
+                sql.execute("update issue_entitlement set ie_sortname = trim(regexp_replace(ie_sortname, '[\u009D`]', '', 'g')) where ie_sortname ~ '[\u009D`]'")
+            }
+            rollback {}
+        }
+    }
 }
