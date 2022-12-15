@@ -54,7 +54,7 @@
                     </dt>
                     <dd>
                         <div class="ui fluid action input">
-                            <input type="text" readonly="readonly" placeholder="${message(code:'template.addDocument.selectFile')}">
+                            <input type="text" name="upload_file_placeholder" readonly="readonly" placeholder="${message(code:'template.addDocument.selectFile')}">
                             <input type="file" name="upload_file" style="display: none;">
                             <div class="ui icon button" style="padding-left:30px; padding-right:30px">
                                 <i class="attach icon"></i>
@@ -64,6 +64,11 @@
                 </dl>
 
                 <laser:script file="${this.getGroovyPageFileName()}">
+                    JSPC.callbacks.modal.show.${modalId} = function(trigger) {
+                        r2d2.resetModalForm ('#${modalId}');
+                        $('#${modalId} input[name=upload_file_placeholder]').val('');
+                    };
+
                     $('#modalCreateDocument .action .icon.button').click( function() {
                         $(this).parent('.action').find('input:file').click();
                     });

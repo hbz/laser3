@@ -200,7 +200,7 @@
 
         <div class="eight wide column">
             <div class="field la-field-right-aligned ">
-                <div class="ui right floated button la-js-editButton la-la-clearfix la"><g:message code="default.button.edit.label"/></div>
+                <div class="ui right floated button la-js-editButton la-la-clearfix>"><g:message code="default.button.edit.label"/></div>
             </div>
         </div>
     </div><!--.row-->
@@ -513,8 +513,7 @@
                                                                     </div>
 
                                                                     <div class="description">
-                                                                        <ui:xEditableBoolean owner="${subscription}"
-                                                                                             field="hasPerpetualAccess"/>
+                                                                        ${subscription.hasPerpetualAccess ? RDStore.YN_YES.getI10n('value') : RDStore.YN_NO.getI10n('value')}
                                                                     </div>
                                                                 </div>
                                                             </div>

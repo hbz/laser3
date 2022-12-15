@@ -38,8 +38,8 @@ class DocController  {
 				log.debug("Got owner instance ${instance}")
 
 				Doc doc_content = new Doc(contentType: Doc.CONTENT_TYPE_STRING,
-						title: params.licenseNoteTitle,
-						content: params.licenseNote,
+						title: params.noteTitle,
+						content: params.noteContent,
 						type: RDStore.DOC_TYPE_NOTE,
 						owner: contextService.getOrg(),
 						user: user).save()

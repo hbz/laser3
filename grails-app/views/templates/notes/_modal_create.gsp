@@ -8,15 +8,21 @@
         <input type="hidden" name="ownertp" value="${owntp}"/>
 
         <div class="field">
-            <label for="licenseNoteTitle">${message(code:'default.title.label')}:</label>
-            <input type="text" id="licenseNoteTitle" name="licenseNoteTitle" />
+            <label for="noteTitle">${message(code:'default.title.label')}:</label>
+            <input type="text" id="noteTitle" name="noteTitle" />
         </div>
         <div class="field">
-            <label for="licenseNote">${message(code:'default.content.label')}:</label>
-            <div id="licenseNote"></div>
+            <label for="noteContent">${message(code:'default.content.label')}:</label>
+            <div id="noteContent" placeholder="Tipp: Formatierung beim Kopieren verloren? Einfach erneut mit STRG+A, dann STRG+V einfügen"></div>
 
             <laser:script file="${this.getGroovyPageFileName()}">
-                wysiwyg.initEditor('#licenseNote', '#modalCreateNote');
+                wysiwyg.initEditor ('#modalCreateNote #noteContent');
+
+                JSPC.callbacks.modal.show.modalCreateNote = function(trigger) {
+                    // r2d2.resetModalForm ('#modalCreateNote');
+                    $('#modalCreateNote #noteTitle').val('');
+                    wysiwyg.resetContent ('#modalCreateNote #noteContent');
+                };
             </laser:script>
         </div>
     </g:form>

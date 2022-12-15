@@ -95,8 +95,7 @@
             updateProp: function (selOpt) {
 
                 if(selOpt === null) {
-                    let select = '<input id="filterProp" name="filterProp" type="text"
-                                         placeholder="${message(code: 'license.search.property.ph')}" value=""/>';
+                    let select = '<input id="filterProp" name="filterProp" type="text" placeholder="${message(code: 'license.search.property.ph')}" value=""/>';
                     $('label[for=filterProp]').next().replaceWith(select);
                 }
                 //If we are working with RefdataValue, grab the values and create select box

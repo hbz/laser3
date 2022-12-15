@@ -51606,7 +51606,6 @@ i.search.icon#btn-search {
 }
 
 .ui.form .la-account-currency .field {
-  margin: 0;
   white-space: nowrap;
 }
 
@@ -51677,6 +51676,20 @@ legend {
 
 .la-field-noLabel {
   margin-top: 26px;
+}
+
+@media only screen and (max-width: 991.98px) {
+  .ui.form .fields {
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    margin-bottom: 0;
+  }
+
+  .ui.form:not(.unstackable) .fields:not(.unstackable) > .fields,
+  .ui.form:not(.unstackable) .fields:not(.unstackable) > .field {
+    width: 100%;
+    margin: 0 0 1em;
+  }
 }
 /*!
  * # Fomantic-UI 2.8.8 - Grid

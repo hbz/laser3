@@ -87,14 +87,36 @@
     </div>
 
     <div class="row">
+        <div class="eight wide column">
+            <h3 class="ui icon header la-clear-before la-noMargin-top"><span
+                    class="ui circular  label">${num_tipp_rows}</span> <g:message code="title.filter.result"/></h3>
+        </div>
+
+    </div>
+</div>
+<%
+    Map<String, String>
+    sortFieldMap = ['tipp.sortname': message(code: 'title.label')]
+    if (journalsOnly) {
+        sortFieldMap['startDate'] = message(code: 'default.from')
+        sortFieldMap['endDate'] = message(code: 'default.to')
+    } else {
+        sortFieldMap['tipp.dateFirstInPrint'] = message(code: 'tipp.dateFirstInPrint')
+        sortFieldMap['tipp.dateFirstOnline'] = message(code: 'tipp.dateFirstOnline')
+    }
+%>
+<div class="ui form">
+    <div class="three wide fields">
+        <div class="field">
+            <ui:sortingDropdown noSelection="${message(code:'default.select.choose.label')}" from="${sortFieldMap}" sort="${params.sort}" order="${params.order}"/>
+        </div>
+    </div>
+</div>
+<div class="ui grid">
+    <div class="row">
         <div class="column">
-
-            <div class="ui blue large label"><g:message code="title.plural"/>: <div
-                    class="detail">${num_tipp_rows}</div>
-            </div>
-
-            <laser:render template="/templates/tipps/table"
-                      model="[tipps: titlesList, showPackage: false, showPlattform: true]"/>
+            <laser:render template="/templates/tipps/table_accordion"
+                          model="[tipps: titlesList, showPackage: false, showPlattform: true]"/>
         </div>
     </div>
 </div>

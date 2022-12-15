@@ -7,6 +7,22 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4688    15.12.2022  rc-3.0  3.0         David   Feature     Modus "Aktuell: Inhalte nicht editierbar"
+
+4664    15.12.2022  rc-3.0  3.0         David   Feature     Aufgabe löschen: Berechtigung
+
+4687    14.12.2022  rc-3.0  3.0         Moe     Bug         Pflichtangabe Einrichtungskontakt auf Funktion beschränken
+
+4680    14.12.2022  rc-3.0  3.0         Moe     Bug         Kostenausschüttung in Lizenz
+
+4691    14.12.2022  rc-3.0  3.0         Moe     Bug         404: Kosten in Umfrage hinzufügen oder bearbeiten
+
+4689    14.12.2022  rc-3.0  3.0         David   Feature     Formulardaten in modalen Dialogen für Dokumente und Aufgaben
+
+4681    14.12.2022  rc-3.0  3.0         David   Bug         Editor Anmerkungen
+
+4685    13.12.2022  rc-3.0  3.0         Moe     Bug         500er bei KBART Upload / Titel hinzufügen
+
 4682    13.12.2022  rc-3.0  3.0         Moe     Bug         500er in Umfrage: Auswertung
 
 4678    13.12.2022  rc-3.0  3.0         David   Feature     Dokumente in Lizenz

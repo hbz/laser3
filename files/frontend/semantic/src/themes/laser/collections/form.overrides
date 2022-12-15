@@ -103,7 +103,6 @@ input#spotlightSearch[type="search"] {
 // Account Currency
 .ui.form .la-account-currency {
   .field {
-    margin: 0;
     white-space: nowrap;
      input.la-82Percent {
       width: 82%;
@@ -162,4 +161,16 @@ legend {
 }
 .la-field-noLabel {
   margin-top: 26px;
+}
+@media only screen and (max-width : @largestTabletScreen) {
+  .ui.form .fields {
+    flex-wrap: wrap;
+    margin-bottom: 0;
+  }
+
+  .ui.form:not(.unstackable) .fields:not(.unstackable) > .fields,
+  .ui.form:not(.unstackable) .fields:not(.unstackable) > .field {
+    width: @oneColumn;
+    margin: 0 0 @rowDistance;
+  }
 }

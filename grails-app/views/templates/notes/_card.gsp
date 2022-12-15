@@ -27,23 +27,16 @@
                     <div class="ui grid summary">
                         <div class="ten wide column la-column-right-lessPadding">
                             <g:if test="${(docctx.owner.owner?.id == contextService.getOrg().id || docctx.owner.owner == null) && (editable || editable2)}">
-                                <a onclick="JSPC.app.noteedit(${docctx.owner.id});">
-                                    <g:if test="${docctx.owner.title}">
-                                        ${docctx.owner.title}
-                                    </g:if>
-                                    <g:else>
-                                        <g:message code="license.notes.noTitle"/>
-                                    </g:else>
+                                <a onclick="JSPC.app.noteedit(${docctx.owner.id});" class="la-js-toggle-showThis">
+                                    ${docctx.owner.title ?: message(code:'license.notes.noTitle')}
+                                </a>
+                                <a onclick="JSPC.app.noteread(${docctx.owner.id});" class="la-js-toggle-hideThis">
+                                    ${docctx.owner.title ?: message(code:'license.notes.noTitle')}
                                 </a>
                             </g:if>
                             <g:else>
                                 <a onclick="JSPC.app.noteread(${docctx.owner.id});">
-                                    <g:if test="${docctx.owner.title}">
-                                        ${docctx.owner.title}
-                                    </g:if>
-                                    <g:else>
-                                        <g:message code="license.notes.noTitle"/>
-                                    </g:else>
+                                    ${docctx.owner.title ?: message(code:'license.notes.noTitle')}
                                 </a>
                             </g:else>
 
@@ -131,13 +124,9 @@
 
                         <div class="ui grid summary">
                             <div class="twelve wide column">
-                                <g:if test="${docctx.owner.title}">
-                                    <a onclick="JSPC.app.noteread(${docctx.owner.id});">${docctx.owner.title}</a>
-                                </g:if>
-                                <g:else>
-                                    <a onclick="JSPC.app.noteread(${docctx.owner.id});">Ohne Titel</a>
-                                </g:else>
-
+                                <a onclick="JSPC.app.noteread(${docctx.owner.id});">
+                                    ${docctx.owner.title ?: message(code:'license.notes.noTitle')}
+                                </a>
                                 <br />
                                 <g:if test="${! docctx.owner.content}">
                                     <span class="sc_darkgrey">( ${message(code:'template.notes.noContent')} )</span>

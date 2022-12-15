@@ -2020,7 +2020,10 @@ class AjaxController {
         if (params.deleteId) {
             Task.withTransaction {
                 Task dTask = Task.get(params.deleteId)
-                if (dTask && dTask.creator.id == contextService.getUser().id) {
+                boolean isCreator  = dTask.creator.id == contextService.getUser().id
+                boolean isRespUser = dTask.responsibleUser && dTask.responsibleUser.id == contextService.getUser().id
+                boolean isRespOrg  = dTask.responsibleOrg && dTask.responsibleOrg.id == contextService.getOrg().id
+                if (dTask && (isCreator || isRespUser || isRespOrg)) {
                     try {
                         flash.message = message(code: 'default.deleted.message', args: [message(code: 'task.label'), dTask.title]) as String
                         dTask.delete()

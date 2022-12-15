@@ -2889,6 +2889,7 @@ class SurveyController {
     @DebugInfo(test = 'hasAffiliation("INST_EDITOR")', wtc = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
      Map<String,Object> editSurveyCostItem() {
+        println('editSurveyCostItem')
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         result.putAll(financeControllerService.getEditVars(result.institution))
         if (!result.editable) {
@@ -2921,7 +2922,7 @@ class SurveyController {
      */
     @DebugInfo(test = 'hasAffiliation("INST_EDITOR")', wtc = DebugInfo.NOT_TRANSACTIONAL)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_EDITOR") })
-     Map<String,Object> addForAllSurveyCostItem() {
+     Object addForAllSurveyCostItem() {
         Map<String,Object> result = surveyControllerService.getResultGenericsAndCheckAccess(params)
         if (!result.editable) {
             response.sendError(HttpStatus.SC_FORBIDDEN); return
