@@ -174,6 +174,30 @@
         if($("#country").val()) { JSPC.app.updateDropdown(); }
 
         $("#country").change(function() { JSPC.app.updateDropdown(); });
+
+        $("#create_address").submit(function (e) {
+            e.preventDefault();
+            let addressElements = [$('#type'), $('#name'), $('#additionFirst'), $('#additionSecond'), $('#street_1'), $('#street_2'), $('#zipcode'), $('#city'), $('#pob'), $('#pobZipcode'), $('#pobCity'), $('#country'), $('#region')];
+            if(!JSPC.app.areElementsFilledOut(addressElements)) {
+                if(confirm("${message(code:'person.create.noAddressConfirm')}")) {
+                    $('#person_form').unbind('submit').submit();
+                }
+            }
+            else $('#person_form').unbind('submit').submit();
+        });
+
+        JSPC.app.areElementsFilledOut = function (elems) {
+            let filledOut = false;
+            if(elems !== null) {
+                for(let i = 0; i < elems.length; i++) {
+                    filledOut = elems[i].val() !== null && elems[i].val() !== "null" && elems[i].val().length > 0
+                    if(filledOut)
+                        break;
+                }
+            }
+            else filledOut = true;
+            return filledOut;
+        };
     </laser:script>
 
 </ui:modal>
