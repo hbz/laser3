@@ -115,7 +115,7 @@
 <div class="ui grid">
     <div class="row">
         <div class="column">
-            <laser:render template="/templates/tipps/table"
+            <laser:render template="/templates/tipps/table_accordion"
                           model="[tipps: titlesList, showPackage: false, showPlattform: true]"/>
         </div>
     </div>

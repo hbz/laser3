@@ -98,18 +98,18 @@
 
             <div class="four wide column">
 
-                <g:if test="${params.tab == 'selectedSubParticipants'}">
-                    <g:link onclick="JSPC.app.addForAllSurveyCostItem([${(selectedSubParticipants?.id)}])"
+                <g:if test="${params.tab == 'selectedSubParticipants' && selectedSubParticipants.size() > 0}">
+                    <button onclick="JSPC.app.addForAllSurveyCostItem([${(selectedSubParticipants?.id)}])"
                             class="ui icon button right floated trigger-modal">
                         <g:message code="surveyCostItems.createInitialCostItem"/>
-                    </g:link>
+                    </button>
                 </g:if>
 
-                <g:if test="${params.tab == 'selectedParticipants'}">
-                    <g:link onclick="JSPC.app.addForAllSurveyCostItem([${(selectedParticipants?.id)}])"
+                <g:if test="${params.tab == 'selectedParticipants' && selectedParticipants.size() > 0}">
+                    <button onclick="JSPC.app.addForAllSurveyCostItem([${(selectedParticipants?.id)}])"
                             class="ui icon button right floated trigger-modal">
                         <g:message code="surveyCostItems.createInitialCostItem"/>
-                    </g:link>
+                    </button>
                 </g:if>
             </div>
 

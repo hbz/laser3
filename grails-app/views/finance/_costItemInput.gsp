@@ -15,7 +15,7 @@
         <div class="fields la-forms-grid">
             <div class="nine wide field">
                 <g:if test="${showVisibilitySettings}">
-                    <div class="two fields la-fields-no-margin-button ">
+                    <div class="two fields">
                         <div class="field">
                             <label><g:message code="financials.newCosts.costTitle"/></label>
                             <input type="text" name="newCostTitle" value="${costItem?.costTitle}" maxlength="255"/>
@@ -48,7 +48,7 @@
                         <input type="text" name="newCostTitle" value="${costItem?.costTitle}" maxlength="255"/>
                     </div><!-- .field -->
                 </g:else>
-                <div class="two fields la-fields-no-margin-button">
+                <div class="two fields">
                     <div class="field">
                         <label><g:message code="financials.budgetCode"/></label>
                         <select name="newBudgetCodes" class="ui fluid search dropdown" multiple="multiple">
@@ -69,7 +69,7 @@
                 </div>
             </div>
             <div class="seven wide field">
-                <div class="two fields la-fields-no-margin-button">
+                <div class="two fields">
                     <div class="field">
                         <label><g:message code="financials.costItemElement"/></label>
                         <g:if test="${costItemElements}">
@@ -341,7 +341,7 @@
             </fieldset> <!-- 1/3 field -->
 
             <fieldset class="field la-modal-fieldset-margin la-forms-grid">
-                <div class="field la-more-margin">
+                <div class="field">
                     <ui:datepicker label="financials.invoiceDate" name="newInvoiceDate" id="newInvoiceDate_${idSuffix}" placeholder="financials.invoiceDate" value="${costItem?.invoiceDate}" />
                 </div>
                 <div class="field">
@@ -351,7 +351,7 @@
             </fieldset> <!-- 2/3 field -->
 
             <fieldset class="field la-modal-fieldset-no-margin la-forms-grid">
-                <div class="field la-more-margin">
+                <div class="field">
                     <label>${message(code:'financials.invoice_number')}</label>
                     <input type="text" name="newInvoiceNumber" placeholder="${message(code:'financials.invoice_number')}" value="${costItem?.invoice?.invoiceNumber}"/>
                 </div><!-- .field -->
