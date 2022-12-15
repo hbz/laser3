@@ -93,7 +93,7 @@
                                 </td>
                                 <td>${property.value.size()}</td>
                                 <td>
-                                    <button type="button" onclick="JSPC.app.propertiesChanged(${property.key});">
+                                    <button class="ui button"  onclick="JSPC.app.propertiesChanged(${property.key});">
                                         <g:message code="default.button.show.label"/>
                                     </button>
                                 </td>
@@ -401,11 +401,11 @@
         <thead>
         <tr>
             <g:if test="${showCheckbox}">
-                <th>
                     <g:if test="${surveyParticipantsHasNotAccess && actionName != 'openParticipantsAgain' && params.tab != 'participantsViewAllNotFinish'}">
+                        <th>
                         <g:checkBox name="orgListToggler" id="orgListToggler" checked="false"/>
+                        </th>
                     </g:if>
-                </th>
             </g:if>
 
             <g:each in="${tmplConfigShow}" var="tmplConfigItem" status="i">
