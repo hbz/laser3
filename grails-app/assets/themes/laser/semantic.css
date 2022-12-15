@@ -25076,6 +25076,24 @@ h1 ~ h2.ui.header {
   align-items: center;
 }
 
+.ui.icon.header .la-object-extended {
+  font-size: 22px !important;
+  line-height: 1 !important;
+  padding: 0.5em 0 !important;
+  width: 2em !important;
+  height: 2em !important;
+  border-radius: 0.28571429rem !important;
+}
+
+.la-object-extended {
+  font-size: 22px !important;
+  line-height: 1 !important;
+  padding: 0.5em 0 !important;
+  width: 2em !important;
+  height: 2em !important;
+  border-radius: 0.28571429rem !important;
+}
+
 body[class*="Organisation"] .ui.icon.header .icon.la-object,
 body[class*="organisation"] .ui.icon.header .icon.la-object,
 body[class*="myPublicContacts"] .ui.icon.header .icon.la-object,

@@ -19,25 +19,25 @@ class IconTagLib {
         if (attrs.type) {
         switch (attrs.type.toLowerCase()) {
             case 'database':
-                icon = 'la-object-database'
+                icon = 'bordered la-object-database'
                 break
             case 'ebook':
-                icon = 'la-object-ebook'
+                icon = 'bordered la-object-ebook'
                 break
             case 'journal':
-                icon = 'la-object-journal'
+                icon = 'bordered la-object-journal'
                 break
             case 'search':
                 icon = 'search'
                 break
             case 'subscription':
-                icon = 'inverted orange clipboard'
+                icon = 'bordered inverted orange clipboard la-object-extended'
                 break
             case 'survey':
-                icon = 'inverted pink chart pie'
+                icon = 'bordered inverted pink chart pie la-object-extended'
                 break
             case 'workflow':
-                icon = 'inverted brown tasks'
+                icon = 'bordered inverted brown tasks la-object-extended'
                 break
             case 'admin':
                 icon = 'trophy'
@@ -50,7 +50,7 @@ class IconTagLib {
                 break
         }
         }
-        out << '<i aria-hidden="true" class="circular icon ' + icon + '"></i> '
+        out << '<i aria-hidden="true" class="icon ' + icon + '"></i> '
     }
 
     def childSubscriptionIcon = { attrs, body ->

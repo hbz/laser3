@@ -49,41 +49,41 @@
 </div>
 <h4 class="ui header">Icons und Farben von Objekten</h4>
 <p>Die Größe der Icons ist von der Umgebung abhängig (durch Größenangabe in em, die sich nach der Fontgröße des Elternelements richtet)</p>
-<i class="circular la-license icon"></i>
-<i class="circular la-package icon"></i>
-<i class="circular la-subscription icon"></i>
-<i class="circular la-organisation icon"></i>
-<i class="circular la-platform icon"></i>
-<i class="circular la-journal icon"></i>
-<i class="circular la-database icon"></i>
-<i class="circular la-ebook icon"></i>
-<i class="circular la-book icon"></i>
-<i aria-hidden="true" class="circular icon inverted brown icon tasks"></i>
-<i aria-hidden="true" class="circular icon inverted pink chart pie"></i>
+<i class="la-object-extended bordered la-license icon"></i>
+<i class="la-object-extended bordered la-package icon"></i>
+<i class="la-object-extended bordered la-subscription icon"></i>
+<i class="la-object-extended bordered la-organisation icon"></i>
+<i class="la-object-extended bordered la-platform icon"></i>
+<i class="la-object-extended bordered la-journal icon"></i>
+<i class="la-object-extended bordered la-database icon"></i>
+<i class="la-object-extended bordered la-ebook icon"></i>
+<i class="la-object-extended bordered la-book icon"></i>
+<i aria-hidden="true" class="la-object-extended bordered icon inverted brown icon tasks"></i>
+<i aria-hidden="true" class="la-object-extended bordered icon inverted pink chart pie"></i>
 <div class="html ui top attached segment example">
 
     <div class="ui doubling five column grid">
-        <div class="column"><a href="#"><i class="circular la-license icon"></i></a>circular la-license icon</div>
+        <div class="column"><a href="#"><i class="la-object-extended bordered la-license icon"></i></a>la-object-extended bordered la-license icon</div>
 
-        <div class="column"><i class="circular la-package icon"></i>circular la-package icon</div>
+        <div class="column"><i class="la-object-extended bordered la-package icon"></i>la-object-extended bordered la-package icon</div>
 
-        <div class="column"><i class="circular la-subscription icon"></i>circular la-subscription icon</div>
+        <div class="column"><i class="la-object-extended bordered la-subscription icon"></i>la-object-extended bordered la-subscription icon</div>
 
-        <div class="column"><i class="circular la-organisation icon"></i>circular la-organisation icon</div>
+        <div class="column"><i class="la-object-extended bordered la-organisation icon"></i>la-object-extended bordered la-organisation icon</div>
 
-        <div class="column"><i class="circular la-platform icon"></i>circular la-platform icon</div>
+        <div class="column"><i class="la-object-extended bordered la-platform icon"></i>la-object-extended bordered la-platform icon</div>
 
-        <div class="column"><i class="circular la-journal icon"></i>circular la-journal icon</div>
+        <div class="column"><i class="la-object-extended bordered la-journal icon"></i>la-object-extended bordered la-journal icon</div>
 
-        <div class="column"><i class="circular la-database icon"></i>circular la-database icon</div>
+        <div class="column"><i class="la-object-extended bordered la-database icon"></i>la-object-extended bordered la-database icon</div>
 
-        <div class="column"><i class="circular la-ebook icon"></i>circular la-ebook icon</div>
+        <div class="column"><i class="la-object-extended bordered la-ebook icon"></i>la-object-extended bordered la-ebook icon</div>
 
-        <div class="column"><i class="circular la-book icon"></i>circular la-book icon</div>
+        <div class="column"><i class="la-object-extended bordered la-book icon"></i>la-object-extended bordered la-book icon</div>
 
-        <div class="column"><i aria-hidden="true" class="circular icon inverted brown icon tasks"></i>circular icon inverted brown icon tasks</div>
+        <div class="column"><i aria-hidden="true" class="la-object-extended bordered icon inverted brown icon tasks"></i>la-object-extended bordered icon inverted brown icon tasks</div>
 
-        <div class="column"><i aria-hidden="true" class="circular icon inverted pink chart pie"></i>circular icon inverted pink chart pie</div>
+        <div class="column"><i aria-hidden="true" class="la-object-extended bordered icon inverted pink chart pie"></i>la-object-extended bordered icon inverted pink chart pie</div>
 
     </div>
 
