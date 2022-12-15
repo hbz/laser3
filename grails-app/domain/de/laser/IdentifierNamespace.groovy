@@ -37,6 +37,7 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
     public static final String VAT         = "VAT"
     public static final String LEIT_ID     = "Leitweg-ID"
     public static final String LEIT_KR     = "Leitkriterium (intern)"
+    public static final String LEIBNIZ_ID  = "leibniz"
 
     //title identifier namespaces
     public static final String ZDB        = 'zdb'
@@ -71,7 +72,8 @@ class IdentifierNamespace extends AbstractI10n implements CalculatedLastUpdated 
             DBIS_ORG_ID,
             VAT,
             LEIT_ID,
-            LEIT_KR
+            LEIT_KR,
+            LEIBNIZ_ID
     ]
 
     /**

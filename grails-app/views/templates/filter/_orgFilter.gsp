@@ -37,7 +37,7 @@
             <g:if test="${field.equalsIgnoreCase('identifier')}">
                 <div class="field">
                     <label for="orgIdentifier">
-                        <g:if test="${actionName == 'listInstitution'}">
+                        <g:if test="${actionName in ['listInstitution', 'manageMembers']}">
                             ${message(code: 'org.institution.search.identifier')}
                         </g:if>
                         <g:else>
@@ -45,7 +45,7 @@
                         </g:else>
                     </label>
                     <div class="ui input">
-                        <g:if test="${actionName == 'listInstitution'}">
+                        <g:if test="${actionName in ['listInstitution', 'manageMembers']}">
                             <input type="text" id="orgIdentifier" name="orgIdentifier"
                                    placeholder="${message(code: 'org.institution.search.identifier.ph')}"
                                    value="${params.orgIdentifier}"/>

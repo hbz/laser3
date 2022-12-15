@@ -725,7 +725,7 @@ class StatsSyncService {
                                     Map<String, Object> selMap = configMap.clone() as Map<String, Object> //simple assignment makes call by reference so modifies the actual object
                                     selMap.remove('version')
                                     selMap.remove('reportCount')
-                                    List<GroovyRowResult> existingKey = statsSql.rows('select c4r_id from counter4report where c4r_platform_guid = :platform ' +
+                                    /*List<GroovyRowResult> existingKey = statsSql.rows('select c4r_id from counter4report where c4r_platform_guid = :platform ' +
                                             'and c4r_report_institution_guid = :reportInstitution ' +
                                             'and c4r_report_type = :reportType ' +
                                             'and c4r_metric_type = :metricType ' +
@@ -736,7 +736,7 @@ class StatsSyncService {
                                         statsSql.execute('update counter4report set c4r_report_count = :reportCount, c4r_publisher = :publisher, c4r_category = :category where c4r_id = :reportId',
                                                 [reportCount: count, publisher: reportItem.'ns2:ItemPublisher'.text(), category: category, reportId: existingKey[0].get('c4r_id')])
                                     }
-                                    else
+                                    else */
                                         stmt.addBatch(configMap)
                                 }
                             }
@@ -863,7 +863,7 @@ class StatsSyncService {
                                     Map<String, Object> selMap = configMap.clone() as Map<String, Object> //simple assignment makes call by reference so modifies the actual object
                                     selMap.remove('version')
                                     selMap.remove('reportCount')
-                                    List<GroovyRowResult> existingKey = statsSql.rows('select c5r_id from counter5report where c5r_publisher = :publisher ' +
+                                    /*List<GroovyRowResult> existingKey = statsSql.rows('select c5r_id from counter5report where c5r_publisher = :publisher ' +
                                             'and c5r_platform_guid = :platform ' +
                                             'and c5r_report_institution_guid = :reportInstitution ' +
                                             'and c5r_report_type = :reportType ' +
@@ -878,7 +878,8 @@ class StatsSyncService {
                                         statsSql.execute('update counter5report set c5r_report_count = :reportCount where c5r_id = :reportId',
                                                 [reportCount: instance.Count as int, reportId: existingKey[0].get('c5r_id')])
                                     }
-                                    else stmt.addBatch(configMap)
+                                    else */
+                                        stmt.addBatch(configMap)
                                 }
                             }
                         //}
