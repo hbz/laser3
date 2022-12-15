@@ -7,7 +7,13 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4693    15.12.2022  rc-3.0  3.0         Andreas Feature     Umstellungen bei der Titelumfrage
+
 4688    15.12.2022  rc-3.0  3.0         David   Feature     Modus "Aktuell: Inhalte nicht editierbar"
+
+4544    15.12.2022  rc-3.0  3.0         Andreas Feature     Implementierung von API_Key-Support bei Abruf von Statistiken
+
+3810    15.12.2022  rc-3.0  3.0         Andreas Feature     Report-Download umgestellt
 
 4664    15.12.2022  rc-3.0  3.0         David   Feature     Aufgabe löschen: Berechtigung
 
