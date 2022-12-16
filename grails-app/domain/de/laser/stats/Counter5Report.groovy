@@ -136,6 +136,7 @@ class Counter5Report extends AbstractReport {
         doi                     column: 'c5r_doi', index: 'c5r_doi_idx'
         isbn                    column: 'c5r_isbn', index: 'c5r_isbn_idx'
         proprietaryIdentifier   column: 'c5r_proprietary_identifier', index: 'c5r_prop_ident_idx'
+        identifierHash          column: 'c5r_identifier_hash', type: 'text', index: 'c5r_idhash_idx'
         publisher               column: 'c5r_publisher', type: 'text'
         platformUID             column: 'c5r_platform_guid', index: 'c5r_plat_idx'
         reportInstitutionUID    column: 'c5r_report_institution_guid', index: 'c5r_ri_idx'
@@ -156,6 +157,7 @@ class Counter5Report extends AbstractReport {
         doi                     (nullable: true) //because of platform reports!
         isbn                    (nullable: true) //because of platform reports!
         proprietaryIdentifier   (nullable: true) //because of platform reports!
+        identifierHash          (nullable: true) //because of platform reports!
         publisher               (nullable: true, blank: false) //because of platform reports!
         dataType                (nullable: true, blank: false)
         accessType              (nullable: true, blank: false)
