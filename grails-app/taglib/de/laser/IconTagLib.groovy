@@ -40,13 +40,13 @@ class IconTagLib {
                 icon = 'bordered inverted brown tasks la-object-extended'
                 break
             case 'admin':
-                icon = 'trophy'
+                icon = 'la-object trophy'
                 break
             case 'datamanager':
-                icon = 'hdd'
+                icon = 'la-object hdd'
                 break
             case 'yoda':
-                icon = 'tools'
+                icon = 'la-object tools'
                 break
         }
         }
