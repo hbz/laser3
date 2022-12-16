@@ -5,7 +5,7 @@
     <ui:crumb message="menu.admin.deletedObjects" class="active"/>
 </ui:breadcrumbs>
 
-<ui:h1HeaderWithIcon message="menu.admin.deletedObjects" />
+<ui:h1HeaderWithIcon message="menu.admin.deletedObjects" type="admin"/>
 
 <div class="ui grid">
     <div class="twelve wide column">

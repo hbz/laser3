@@ -5,7 +5,7 @@
     <ui:crumb message="menu.yoda.appControllers" class="active"/>
 </ui:breadcrumbs>
 
-<ui:h1HeaderWithIcon message="menu.yoda.appControllers" />
+<ui:h1HeaderWithIcon message="menu.yoda.appControllers" type="yoda" />
 
 <h2 class="ui header">Roles and Hierarchies</h2>
 

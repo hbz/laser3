@@ -6,7 +6,7 @@
     <ui:crumb message="menu.yoda.systemSettings" class="active"/>
 </ui:breadcrumbs>
 
-    <ui:h1HeaderWithIcon message="menu.yoda.systemSettings" />
+    <ui:h1HeaderWithIcon message="menu.yoda.systemSettings" type="yoda" />
 
     <g:set var="mailConfigDisabled" value="${ConfigMapper.getGrailsMailDisabled()}" />
     <g:set var="maintenanceModeEnabled" value="${SystemSetting.findByName('MaintenanceMode').value == 'true'}" />

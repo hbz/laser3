@@ -5,7 +5,7 @@
             <ui:crumb text="Package Delete" class="active"/>
         </ui:breadcrumbs>
 
-        <ui:h1HeaderWithIcon text="Package Delete" />
+        <ui:h1HeaderWithIcon text="Package Delete" type="admin"/>
 
         <ui:messages data="${flash}" />
 

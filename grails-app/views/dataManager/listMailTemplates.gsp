@@ -12,7 +12,7 @@
     </ui:actionsDropdown>
 </ui:controlButtons>
 
-<ui:h1HeaderWithIcon message="mailTemplate.plural.label" />
+<ui:h1HeaderWithIcon message="mailTemplate.plural.label" type="datamanager"/>
 
 <ui:messages data="${flash}"/>
 <ui:greySegment>

@@ -6,7 +6,7 @@
         <ui:crumb text="Expunge deleted TIPPs" class="active"/>
     </ui:breadcrumbs>
 
-    <ui:h1HeaderWithIcon text="Expunge deleted TIPPs" />
+    <ui:h1HeaderWithIcon text="Expunge deleted TIPPs" type="datamanager"/>
 
         <table class="ui table">
             <tbody>

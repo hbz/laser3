@@ -7,7 +7,7 @@
         <ui:crumb message="menu.admin.databaseInfo" class="active"/>
     </ui:breadcrumbs>
 
-    <ui:h1HeaderWithIcon message="menu.admin.databaseInfo" />
+    <ui:h1HeaderWithIcon message="menu.admin.databaseInfo" type="admin"/>
 
     <h2 class="ui header">Überblick</h2>
 

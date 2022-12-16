@@ -7,7 +7,7 @@
         <ui:crumb text="Global Sources" class="active" />
     </ui:breadcrumbs>
 
-    <ui:h1HeaderWithIcon text="Global Sources" />
+    <ui:h1HeaderWithIcon text="Global Sources" type="yoda" />
 
     <ui:messages data="${flash}" />
 

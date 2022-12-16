@@ -7,7 +7,7 @@
         <ui:crumb message="menu.admin.manageOrganisations" class="active" />
     </ui:breadcrumbs>
 
-    <ui:h1HeaderWithIcon message="menu.admin.manageOrganisations" total="${orgListTotal}" />
+    <ui:h1HeaderWithIcon message="menu.admin.manageOrganisations" total="${orgListTotal}" type="admin"/>
 
     <ui:filter simple="true">
         <g:form action="manageOrganisations" method="get" class="ui form">

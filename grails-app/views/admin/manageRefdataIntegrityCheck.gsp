@@ -6,7 +6,7 @@
         <ui:crumb message="default.integrityCheck.label" class="active"/>
     </ui:breadcrumbs>
 
-    <ui:h1HeaderWithIcon message="default.integrityCheck.label" />
+    <ui:h1HeaderWithIcon message="default.integrityCheck.label" type="admin"/>
 
     <ui:messages data="${flash}" />
 

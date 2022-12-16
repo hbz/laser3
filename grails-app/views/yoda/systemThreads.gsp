@@ -6,7 +6,7 @@
         <ui:crumb message="menu.yoda.systemThreads" class="active"/>
     </ui:breadcrumbs>
 
-    <ui:h1HeaderWithIcon message="menu.yoda.systemThreads" />
+    <ui:h1HeaderWithIcon message="menu.yoda.systemThreads" type="yoda" />
 
     <g:set var="threads" value="${Thread.getAllStackTraces().keySet().sort{ it.id }}" />
     <g:set var="tmxBean" value="${ManagementFactory.getThreadMXBean()}" />

@@ -7,7 +7,7 @@
     <ui:crumb message="menu.yoda.profiler" class="active"/>
 </ui:breadcrumbs>
 
-    <ui:h1HeaderWithIcon message="menu.yoda.profiler" />
+    <ui:h1HeaderWithIcon message="menu.yoda.profiler" type="yoda" />
 
     <nav class="ui secondary menu">
         <g:link controller="yoda" action="profilerLoadtime" class="item">Ladezeiten</g:link>

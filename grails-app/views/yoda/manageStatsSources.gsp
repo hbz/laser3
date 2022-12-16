@@ -7,7 +7,7 @@
             <ui:crumb text="Stats Sources" class="active" />
         </ui:breadcrumbs>
 
-        <ui:h1HeaderWithIcon text="Stats Sources" />
+        <ui:h1HeaderWithIcon text="Stats Sources" type="yoda" />
 
         <ui:messages data="${flash}" />
 
