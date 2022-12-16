@@ -7,7 +7,17 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4710    16.12.2022  rc-3.0  3.0         Andreas Bug         Umbenennung bei Löschung einer Teilnehmerlizenz
+
+4707    16.12.2022  rc-3.0  3.0         Andreas Bug         Formular löste nicht aus
+
 4706    16.12.2022  rc-3.0  3.0         David   Feature     Elasticsearch in Laser upgraden
+
+4705    16.12.2022  rc-3.0  3.0         Andreas Bug         Absturz bei Plattformdetails behoben
+
+4704    16.12.2022  rc-3.0  3.0         Andreas Bug         Kontaktausgabe bei Anbietern differenziert
+
+4703    16.12.2022  rc-3.0  3.0         Andreas Bug         500er bei verschiedenen Reports behoben
 
 4698    15.12.2022  rc-3.0  3.0         Andreas Feature     Neuer Identifikator "Leibniz-ID" aufgenommen
 

@@ -134,6 +134,7 @@ class PlatformController  {
         else if (queryResult.warning) {
             List records = queryResult.warning.records
             result.platformInstanceRecord = records ? records[0] : [:]
+            result.platformInstanceRecord.id = params.id
         }
         result.editable = accessService.checkPermAffiliationX('ORG_BASIC_MEMBER,ORG_CONSORTIUM','INST_EDITOR','ROLE_ADMIN')
 

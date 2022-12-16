@@ -1441,7 +1441,7 @@ class ExportService {
 								titleRow.put("Print_ISSN", issn)
 								titleRow.put("Online_ISSN", eissn)
 								titleRow.put("URI", tipp.hostPlatformURL)
-								titleRow.put("YOP", DateUtils.getSDF_yyyy().format(report.yop))
+								titleRow.put("YOP", report.yop ? DateUtils.getSDF_yyyy().format(report.yop) : '')
 								titleRow.put("ISBN", isbn)
 								titleRow.put("Access_Type", report.accessType)
 								break
@@ -1450,7 +1450,7 @@ class ExportService {
 								titleRow.put("Print_ISSN", issn)
 								titleRow.put("Online_ISSN", eissn)
 								titleRow.put("URI", tipp.hostPlatformURL)
-								titleRow.put("YOP", DateUtils.getSDF_yyyy().format(report.yop))
+								titleRow.put("YOP", report.yop ? DateUtils.getSDF_yyyy().format(report.yop) : '')
 								titleRow.put("Access_Type", report.accessType)
 								break
 							case Counter5Report.JOURNAL_REQUESTS:
@@ -1459,14 +1459,14 @@ class ExportService {
 								titleRow.put("Print_ISSN", issn)
 								titleRow.put("Online_ISSN", eissn)
 								titleRow.put("URI", tipp.hostPlatformURL)
-								titleRow.put("YOP", DateUtils.getSDF_yyyy().format(report.yop))
+								titleRow.put("YOP", report.yop ? DateUtils.getSDF_yyyy().format(report.yop) : '')
 								titleRow.put("Access_Type", report.accessType)
 								break
 							case Counter5Report.JOURNAL_REQUESTS_BY_YOP: titleRow.put("DOI", doi)
 								titleRow.put("Print_ISSN", issn)
 								titleRow.put("Online_ISSN", eissn)
 								titleRow.put("URI", tipp.hostPlatformURL)
-								titleRow.put("YOP", DateUtils.getSDF_yyyy().format(report.yop))
+								titleRow.put("YOP", report.yop ? DateUtils.getSDF_yyyy().format(report.yop) : '')
 								break
 							case Counter5Report.ITEM_MASTER_REPORT: titleRow.put("DOI", doi)
 								titleRow.put("ISBN", isbn)

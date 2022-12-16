@@ -593,12 +593,21 @@ class Org extends AbstractBaseWithCalculatedLastUpdated
      * @param functionType the function type of the contacts to be requested
      * @return a {@link List} of {@link Person}s matching to the function type
      */
-    List<Person> getContactPersonsByFunctionType(boolean onlyPublic, RefdataValue functionType) {
+    List<Person> getContactPersonsByFunctionType(boolean onlyPublic, RefdataValue functionType, boolean exWekb = false) {
         if (onlyPublic) {
-            Person.executeQuery(
-                    "select distinct p from Person as p inner join p.roleLinks pr where p.isPublic = true and pr.org = :org and pr.functionType = :functionType",
-                    [org: this, functionType: functionType]
-            )
+            if(exWekb) {
+                Person.executeQuery(
+                        "select distinct p from Person as p inner join p.roleLinks pr where pr.org = :org and pr.functionType = :functionType " +
+                                " and p.tenant = :org",
+                        [org: this, functionType: functionType]
+                )
+            }
+            else {
+                Person.executeQuery(
+                        "select distinct p from Person as p inner join p.roleLinks pr where p.isPublic = true and pr.org = :org and pr.functionType = :functionType",
+                        [org: this, functionType: functionType]
+                )
+            }
         }
         else {
             Org ctxOrg = BeanStore.getContextService().getOrg()
