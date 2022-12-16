@@ -5,7 +5,7 @@
     <ui:crumb text="Datenbereinigung" class="active"/>
 </ui:breadcrumbs>
 
-    <ui:h1HeaderWithIcon text="Lizenzen - ${subscriptions.size()}, Verträge - ${licenses.size()}" />
+    <ui:h1HeaderWithIcon text="Lizenzen - ${subscriptions.size()}, Verträge - ${licenses.size()}" type="yoda" />
 
     <h2 class="ui header">Lizenzen - ${subscriptions.size()}</h2>
 

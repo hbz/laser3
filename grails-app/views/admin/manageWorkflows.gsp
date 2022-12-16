@@ -7,7 +7,7 @@
     <ui:crumb text="${message(code:'menu.admin.manageWorkflows')}" class="active"/>
 </ui:breadcrumbs>
 
-<ui:h1HeaderWithIcon message="menu.admin.manageWorkflows" type="Workflow"/>
+<ui:h1HeaderWithIcon message="menu.admin.manageWorkflows" type="admin"/>
 
 <g:set var="tmplTab" value="${tab ?: 'prototypes'}" />
 

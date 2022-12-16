@@ -7,7 +7,7 @@
     <ui:crumb message="menu.admin.systemMessage" class="active"/>
 </ui:breadcrumbs>
 
-<ui:h1HeaderWithIcon message="menu.admin.systemMessage" />
+<ui:h1HeaderWithIcon message="menu.admin.systemMessage" type="admin"/>
 
 <div class="la-float-right">
     <input type="submit" class="ui button" value="${message(code: 'admin.systemMessage.create')}" data-ui="modal" data-href="#modalCreateSystemMessage" />

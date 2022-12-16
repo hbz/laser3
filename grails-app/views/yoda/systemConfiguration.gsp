@@ -5,7 +5,7 @@
     <ui:crumb message="menu.yoda.systemConfiguration" class="active"/>
 </ui:breadcrumbs>
 
-<ui:h1HeaderWithIcon message="menu.yoda.systemConfiguration" />
+<ui:h1HeaderWithIcon message="menu.yoda.systemConfiguration" type="yoda" />
 
 <%
     Set<String> dubs = []

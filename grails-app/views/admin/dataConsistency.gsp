@@ -5,7 +5,7 @@
     <ui:crumb message="menu.admin.dataConsistency" class="active"/>
 </ui:breadcrumbs>
 
-<ui:h1HeaderWithIcon message="menu.admin.dataConsistency" />
+<ui:h1HeaderWithIcon message="menu.admin.dataConsistency" type="admin"/>
 
 <h2 class="ui header">${message(code: "admin.duplicateNames")}</h2>
 

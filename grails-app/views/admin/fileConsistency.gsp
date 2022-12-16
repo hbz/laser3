@@ -7,7 +7,7 @@
     <ui:crumb message="menu.admin.fileConsistency" class="active"/>
 </ui:breadcrumbs>
 
-<ui:h1HeaderWithIcon message="menu.admin.fileConsistency" />
+<ui:h1HeaderWithIcon message="menu.admin.fileConsistency" type="admin"/>
 
 <div class="ui grid">
     <div class="sixtenn wide column">

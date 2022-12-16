@@ -17,7 +17,7 @@
                     <!-- warn -->
                     if (message.contains("Use 'config.getProperty(key, targetClass)' instead.")) return true;
                     if (message.contains("Replaced rule for '")) return true;
-                    if (message.contains("299 Elasticsearch-7.15.1-83c34f456ae29d60e94d886e455e6a3409bba9ed")) return true;
+                    if (message.contains("299 Elasticsearch-7.16.3-4e6e4eab2297e949ec994e688dad46290d018022")) return true;
                     <!-- info -->
                     if (message.contains("(for example: not eligible for auto-proxying)")) return true;
                     if (message.contains("As of Liquibase 4.0, cannot set resource accessor on")) return true;

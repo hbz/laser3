@@ -7,7 +7,7 @@
             <ui:crumb message="menu.institutions.manage_prop_groups" class="active"/>
         </ui:breadcrumbs>
 
-        <ui:h1HeaderWithIcon message="menu.institutions.manage_prop_groups" />
+        <ui:h1HeaderWithIcon message="menu.institutions.manage_prop_groups" type="admin"/>
 
         <ui:messages data="${flash}" />
 

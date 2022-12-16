@@ -6,7 +6,7 @@
         <ui:crumb message="menu.admin" controller="admin" action="index" class="active"/>
     </ui:breadcrumbs>
 
-    <ui:h1HeaderWithIcon message="menu.admin" type="admin" />
+    <ui:h1HeaderWithIcon message="menu.admin" type="admin"/>
 
     <div class="ui equal width grid">
         <div class="row">

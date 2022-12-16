@@ -20,7 +20,7 @@
             </ui:exportDropdown>--%>
         </ui:controlButtons>
 
-        <ui:h1HeaderWithIcon message="menu.admin.managePropertyDefinitions" />
+        <ui:h1HeaderWithIcon message="menu.admin.managePropertyDefinitions" type="admin"/>
 
 		<ui:messages data="${flash}" />
 

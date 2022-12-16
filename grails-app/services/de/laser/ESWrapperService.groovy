@@ -14,7 +14,7 @@ import org.elasticsearch.action.support.master.AcknowledgedResponse
 import org.elasticsearch.client.indices.CreateIndexRequest
 import org.elasticsearch.client.indices.CreateIndexResponse
 import org.elasticsearch.client.indices.GetIndexRequest
-import org.elasticsearch.common.xcontent.XContentType
+import org.elasticsearch.xcontent.XContentType
 import org.grails.web.json.parser.JSONParser
 import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestClient
