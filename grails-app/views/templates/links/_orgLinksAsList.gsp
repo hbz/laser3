@@ -129,10 +129,25 @@
                                             </div>
                                         </g:each>
                                         <%--<g:if test="${roleObject instanceof de.laser.Package}">--%>
-                                            <g:each in="${Person.getPublicByOrgAndFunc(role.org, 'Technical Support')}" var="func">
+                                        <%
+                                            Set<Person> techSupports = [], serviceSupports = [], metadataContacts = []
+                                            boolean contactsExWekb = false
+                                            if(role.org.gokbId) {
+                                                contactsExWekb = true
+                                                techSupports.addAll(Person.getPublicByOrgAndFunc(role.org, 'Technical Support', role.org))
+                                                serviceSupports.addAll(Person.getPublicByOrgAndFunc(role.org, 'Service Support', role.org))
+                                                metadataContacts.addAll(Person.getPublicByOrgAndFunc(role.org, 'Metadata Contact', role.org))
+                                            }
+                                            else {
+                                                techSupports.addAll(Person.getPublicByOrgAndFunc(role.org, 'Technical Support'))
+                                                serviceSupports.addAll(Person.getPublicByOrgAndFunc(role.org, 'Service Support'))
+                                                metadataContacts.addAll(Person.getPublicByOrgAndFunc(role.org, 'Metadata Contact'))
+                                            }
+                                        %>
+                                            <g:each in="${techSupports}" var="func">
                                                 <div class="row">
                                                     <div class="two wide column">
-                                                        <g:if test="${role.org.gokbId}">
+                                                        <g:if test="${contactsExWekb}">
                                                             <a target="_blank" href="${wekbAPI.editUrl ? wekbAPI.editUrl + '/public/orgContent/' + role.org.gokbId : '#'}"><i class="circular large la-gokb icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'org.isWekbCurated.header.label')} (we:kb Link)"></i></a>
                                                         </g:if>
                                                         <g:else>
@@ -159,10 +174,10 @@
                                                     </div>
                                                 </div>
                                             </g:each>
-                                            <g:each in="${Person.getPublicByOrgAndFunc(role.org, 'Service Support')}" var="func">
+                                            <g:each in="${serviceSupports}" var="func">
                                                 <div class="row">
                                                     <div class="two wide column">
-                                                        <g:if test="${role.org.gokbId}">
+                                                        <g:if test="${contactsExWekb}">
                                                             <a target="_blank" href="${wekbAPI.editUrl ? wekbAPI.editUrl + '/public/orgContent/' + role.org.gokbId : '#'}"><i class="circular large la-gokb icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'org.isWekbCurated.header.label')} (we:kb Link)"></i></a>
                                                         </g:if>
                                                         <g:else>
@@ -189,10 +204,10 @@
                                                     </div>
                                                 </div>
                                             </g:each>
-                                            <g:each in="${Person.getPublicByOrgAndFunc(role.org, 'Metadata Contact')}" var="func">
+                                            <g:each in="${metadataContacts}" var="func">
                                                 <div class="row">
                                                     <div class="two wide column">
-                                                        <g:if test="${role.org.gokbId}">
+                                                        <g:if test="${contactsExWekb}">
                                                             <a target="_blank" href="${wekbAPI.editUrl ? wekbAPI.editUrl + '/public/orgContent/' + role.org.gokbId : '#'}"><i class="circular large la-gokb icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${message(code:'org.isWekbCurated.header.label')} (we:kb Link)"></i></a>
                                                         </g:if>
                                                         <g:else>

@@ -1,7 +1,8 @@
 <%@ page import="de.laser.utils.DateUtils;" %>
-<g:each in="${costPerUse}" var="costPerMetric">
-    <table class="ui compact celled table">
-        <thead>
+<div class="ui segment" id="costPerUse">
+    <g:each in="${costPerUse}" var="costPerMetric">
+        <table class="ui compact celled table">
+            <thead>
             <tr>
                 <th colspan="2">
                     <g:if test="${costPerUse.size() > 1}">
@@ -17,8 +18,8 @@
                     </g:else>
                 </th>
             </tr>
-        </thead>
-        <tbody>
+            </thead>
+            <tbody>
             <tr>
                 <g:each in="${costPerMetric.getValue()}" var="cost">
                     <%
@@ -40,18 +41,18 @@
                     <td>${costString}: ${cost.getValue()}</td>
                 </g:each>
             </tr>
-        </tbody>
-    </table>
-</g:each>
-<table class="ui compact celled table">
-    <thead>
+            </tbody>
+        </table>
+    </g:each>
+    <table class="ui compact celled table">
+        <thead>
         <tr>
             <th colspan="0"><g:message code="default.usage.reportType"/></th>
             <th><g:message code="default.usage.allUsageGrid.header"/></th>
             <th></th>
         </tr>
-    </thead>
-    <tbody>
+        </thead>
+        <tbody>
         <g:each in="${sums}" var="reportSums">
             <tr>
                 <td>${reportSums.getKey()}</td>
@@ -129,18 +130,18 @@
                 </td>
             </tr>
         </g:each>
-    </tbody>
-</table>
-<table class="ui compact celled table">
-    <thead>
+        </tbody>
+    </table>
+    <table class="ui compact celled table">
+        <thead>
         <tr>
             <th colspan="2"><g:message code="default.usage.reportType"/></th>
             <g:each in="${allYears}" var="year">
                 <th>${year}</th>
             </g:each>
         </tr>
-    </thead>
-    <tbody>
+        </thead>
+        <tbody>
         <g:each in="${allYearSums}" var="row">
             <tr>
                 <td>${row.getKey()}</td>
@@ -158,5 +159,6 @@
                 </g:each>
             </tr>
         </g:each>
-    </tbody>
-</table>
+        </tbody>
+    </table>
+</div>

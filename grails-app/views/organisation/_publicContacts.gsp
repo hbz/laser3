@@ -79,7 +79,7 @@
             <div class="description">
 
                 <g:set var="techSupports"
-                       value="${orgInstance.getContactPersonsByFunctionType(showOnlyPublic, RDStore.PRS_FUNC_TECHNICAL_SUPPORT)}"/>
+                       value="${orgInstance.getContactPersonsByFunctionType(showOnlyPublic, RDStore.PRS_FUNC_TECHNICAL_SUPPORT, existsWekbRecord)}"/>
                 <g:each in="${techSupports}" var="prs">
                     <laser:render template="/templates/cpa/person_full_details" model="${[
                             person                 : prs,
@@ -116,7 +116,7 @@
 
                 <div class="description">
                     <g:set var="serviceSupports"
-                           value="${orgInstance.getContactPersonsByFunctionType(showOnlyPublic, RDStore.PRS_FUNC_SERVICE_SUPPORT)}"/>
+                           value="${orgInstance.getContactPersonsByFunctionType(showOnlyPublic, RDStore.PRS_FUNC_SERVICE_SUPPORT, existsWekbRecord)}"/>
                     <g:each in="${serviceSupports}" var="prs">
                         <laser:render template="/templates/cpa/person_full_details" model="${[
                                 person                 : prs,
@@ -152,7 +152,7 @@
 
                 <div class="description">
                     <g:set var="serviceSupports"
-                           value="${orgInstance.getContactPersonsByFunctionType(showOnlyPublic, RDStore.PRS_FUNC_METADATA)}"/>
+                           value="${orgInstance.getContactPersonsByFunctionType(showOnlyPublic, RDStore.PRS_FUNC_METADATA, existsWekbRecord)}"/>
                     <g:each in="${serviceSupports}" var="prs">
                         <g:render template="/templates/cpa/person_full_details" model="${[
                                 person                 : prs,
