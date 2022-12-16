@@ -7,7 +7,7 @@
         <ui:crumb text="Kostenposten berechnen" class="active"/>
     </ui:breadcrumbs>
 
-    <ui:h1HeaderWithIcon text="Kostenposten berechnen" />
+    <ui:h1HeaderWithIcon text="Kostenposten berechnen" type="yoda" />
 
             <table class="ui celled table" id="calcResults">
                 <g:each in="${costItems.entrySet()}" var="entry">

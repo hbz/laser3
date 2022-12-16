@@ -6,7 +6,7 @@
     <ui:crumb message="menu.yoda.systemQuartz" class="active"/>
 </ui:breadcrumbs>
 
-<ui:h1HeaderWithIcon message="menu.yoda.systemQuartz" />
+<ui:h1HeaderWithIcon message="menu.yoda.systemQuartz" type="yoda" />
 
 %{--${ConfigMapper.setConfig( ConfigMapper.QUARTZ_HEARTBEAT, new Date())} ##--}%
 %{--${ConfigMapper.getQuartzHeartbeat()} ##--}%

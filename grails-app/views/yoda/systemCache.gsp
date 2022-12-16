@@ -7,7 +7,7 @@
     <ui:crumb message="menu.yoda.systemCache" class="active"/>
 </ui:breadcrumbs>
 
-<ui:h1HeaderWithIcon message="menu.yoda.systemCache" />
+<ui:h1HeaderWithIcon message="menu.yoda.systemCache" type="yoda" />
 
 <g:set var="sessionCache" value="${contextService.getSessionCache()}" />
 <h2 class="ui header">SessionCache <span class="ui label">${sessionCache.getSession().class}</span></h2>

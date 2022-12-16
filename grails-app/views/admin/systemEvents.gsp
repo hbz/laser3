@@ -7,7 +7,7 @@
     <ui:crumb message="menu.admin.systemEvents" class="active"/>
 </ui:breadcrumbs>
 
-    <ui:h1HeaderWithIcon message="menu.admin.systemEvents" total="${SystemEvent.count()}"/>
+    <ui:h1HeaderWithIcon message="menu.admin.systemEvents" total="${SystemEvent.count()}" type="admin"/>
 
     <ui:filter simple="true">
         <form id="filter" class="ui form">

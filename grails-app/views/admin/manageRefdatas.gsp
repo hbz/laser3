@@ -7,7 +7,7 @@
 			<ui:crumb message="menu.admin.manageRefdatas" class="active"/>
 		</ui:breadcrumbs>
 
-        <ui:h1HeaderWithIcon message="menu.admin.manageRefdatas" />
+        <ui:h1HeaderWithIcon message="menu.admin.manageRefdatas" type="admin"/>
 
         <ui:messages data="${flash}" />
 

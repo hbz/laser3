@@ -5,7 +5,7 @@
       <ui:crumb text="${message(code:'datamanager.deletedOrgManagement.label')}" class="active"/>
     </ui:breadcrumbs>
 
-    <ui:h1HeaderWithIcon message="datamanager.deletedOrgManagement.label" total="${orgTotal}" />
+    <ui:h1HeaderWithIcon message="datamanager.deletedOrgManagement.label" total="${orgTotal}" type="datamanager"/>
 
     <ui:messages data="${flash}" />
 

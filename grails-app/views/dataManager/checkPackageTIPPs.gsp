@@ -7,7 +7,7 @@
     <ui:crumb text="Package Tipps LAS:eR and we:kb" class="active"/>
 </ui:breadcrumbs>
 
-<ui:h1HeaderWithIcon text="Package Tipps LAS:eR and we:kb" />
+<ui:h1HeaderWithIcon text="Package Tipps LAS:eR and we:kb" type="datamanager"/>
 
 <div class="ui grid">
 

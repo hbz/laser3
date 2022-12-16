@@ -7,7 +7,7 @@
     <ui:crumb message="menu.admin.recoveryDoc" class="active"/>
 </ui:breadcrumbs>
 
-<ui:h1HeaderWithIcon message="menu.admin.recoveryDoc" />
+<ui:h1HeaderWithIcon message="menu.admin.recoveryDoc" type="admin"/>
 
 <ui:messages data="${flash}"/>
 
