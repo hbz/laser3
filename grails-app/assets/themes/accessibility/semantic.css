@@ -7100,6 +7100,12 @@ i.icon.la-list-icon:before {
   background-color: #FBBD08;
   color: #FFFFFF;
 }
+
+a i.circular.la-gokb:hover {
+  color: #FFFFFF;
+  text-decoration: none;
+  background-color: #004678;
+}
 /*!
  * # Fomantic-UI 2.8.8 - Container
  * http://github.com/fomantic/Fomantic-UI/
