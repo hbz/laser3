@@ -26,7 +26,7 @@
                 <span class="la-identifier">
                     ${message(code: 'tipp.Volume.short')}
                 </span>
-                <ui:xEditable owner="${covStmt}" field="startVolume" overwriteEditable="${overwriteEditable}"/>
+                <ui:xEditable owner="${covStmt}" field="startVolume" emptytext="-" overwriteEditable="${overwriteEditable}"/>
             </span>
         </g:if>
         <g:if test="${covStmt.startIssue || objectTypeIsIE}">
@@ -36,7 +36,7 @@
                 <span class="la-identifier">
                     ${message(code: 'tipp.Issue.short')}
                 </span>
-                <ui:xEditable owner="${covStmt}" field="startIssue" overwriteEditable="${overwriteEditable}"/>
+                <ui:xEditable owner="${covStmt}" field="startIssue" emptytext="-" overwriteEditable="${overwriteEditable}"/>
             </span>
         </g:if>
 
@@ -63,7 +63,7 @@
                 <span class="la-identifier">
                     ${message(code: 'tipp.Volume.short')}
                 </span>
-                <ui:xEditable owner="${covStmt}" field="endVolume" overwriteEditable="${overwriteEditable}"/>
+                <ui:xEditable owner="${covStmt}" field="endVolume" emptytext="-" overwriteEditable="${overwriteEditable}"/>
             </span>
         </g:if>
         <g:if test="${covStmt.endIssue || objectTypeIsIE}">
@@ -73,7 +73,7 @@
                 <span class="la-identifier">
                     ${message(code: 'tipp.Issue.short')}
                 </span>
-                <ui:xEditable owner="${covStmt}" field="endIssue" overwriteEditable="${overwriteEditable}"/>
+                <ui:xEditable owner="${covStmt}" field="endIssue" emptytext="-" overwriteEditable="${overwriteEditable}"/>
             </span>
         </g:if>
     </div>
