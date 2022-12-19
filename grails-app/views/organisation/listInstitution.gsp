@@ -28,7 +28,7 @@
         <g:form action="listInstitution" method="get" class="ui form">
             <laser:render template="/templates/filter/orgFilter"
                       model="[
-                              tmplConfigShow: [['name', 'identifier'], ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup']],
+                              tmplConfigShow: [['name', 'identifier'], ['identifierNamespace', 'customerIDNamespace'], ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup']],
                               tmplConfigFormFilter: true
                       ]"/>
         </g:form>

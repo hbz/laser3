@@ -51,7 +51,7 @@
 
 <ui:messages data="${flash}"/>
     <%
-        List configShowFilter = [['name', 'identifier', 'libraryType', 'subjectGroup'], ['country&region', 'libraryNetwork', 'property&value'], ['subStatus', 'subValidOn'], ['subPerpetualAccess'], ['providers']]
+        List configShowFilter = [['name', 'identifier'], ['identifierNamespace', 'customerIDNamespace'], ['country&region', 'libraryNetwork', 'libraryType', 'subjectGroup'], ['property&value', 'subStatus', 'subValidOn'], ['subPerpetualAccess'], ['providers']]
         List configShowTable = ['sortname', 'name', 'status', 'mainContact', 'libraryType', 'legalInformation', 'numberOfSubscriptions', 'numberOfSurveys']
     %>
 
