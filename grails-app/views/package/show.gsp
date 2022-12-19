@@ -431,6 +431,18 @@
         <aside class="five wide column la-sidekick">
             <div class="ui one cards">
                 <div id="container-provider">
+                    <div class="ui card">
+                        <div class="content">
+                            <h2 class="ui header">${message(code: 'gasco.table.provider')}</h2>
+                            <laser:render template="/templates/links/orgLinksAsList"
+                                          model="${[roleLinks    : visibleOrgs,
+                                                    roleObject   : packageInstance,
+                                                    roleRespValue: 'Specific package editor',
+                                                    editmode     : editable,
+                                                    showPersons  : true
+                                          ]}"/>
+                        </div>
+                    </div>
                     <g:if test="${gascoContacts}">
                         <div class="ui card ">
                             <div class="content">
@@ -492,18 +504,6 @@
                             </div>
                         </div>
                     </g:if>
-                    <div class="ui card">
-                        <div class="content">
-                            <h2 class="ui header">${message(code: 'gasco.table.provider')}</h2>
-                            <laser:render template="/templates/links/orgLinksAsList"
-                                          model="${[roleLinks    : visibleOrgs,
-                                                    roleObject   : packageInstance,
-                                                    roleRespValue: 'Specific package editor',
-                                                    editmode     : editable,
-                                                    showPersons  : true
-                                          ]}"/>
-                        </div>
-                    </div>
                 </div>
             </div>
         </aside>
