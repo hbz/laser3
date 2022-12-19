@@ -37,8 +37,8 @@
                         <div class="la-flexbox">
                             <g:if test="${platformInstance.org.gokbId != null && RDStore.OT_PROVIDER.id in platformInstance.org.getAllOrgTypeIds()}">
                                 <span class="la-long-tooltip la-popup-tooltip la-delay"
-                                      data-content="${RDStore.OT_PROVIDER.getI10n("value")}">
-                                    <i class="grey handshake outline icon la-list-icon"></i>
+                                      data-content="${message(code: 'org.isWekbCurated.header.label')}">
+                                    <i class="la-gokb icon la-list-icon"></i>
                                 </span>
                             </g:if>
                         </div>
