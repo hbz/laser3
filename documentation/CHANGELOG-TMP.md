@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4714    19.12.2022  rc-3.0  3.0         Andreas Feature     URL-Präfixes nachgereicht
+
 --      19.12.2022  rc-3.0  3.0         Andreas Bug         Aussieben gelöschter Plattformen in der Anbietersicht
 
 4713    19.12.2022  rc-3.0  3.0         David   Bug         Umfrage-Dokumente - falscher Besitzer
