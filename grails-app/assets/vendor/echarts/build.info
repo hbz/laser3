@@ -1,11 +1,10 @@
 
-echarts / version 5.4.0
+echarts / version 5.4.1
 
     chart
         - bar *
         - line *
         - pie *
-        - scatter *
 
     coordinate systems
         - grid *
@@ -16,9 +15,6 @@ echarts / version 5.4.0
         - timeline *
         - legend *
         - tooltip *
-        - markpoint *
-        - markline *
-        - markarea *
         - toolbox *
 
     others
