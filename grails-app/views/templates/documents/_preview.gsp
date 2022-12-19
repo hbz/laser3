@@ -9,7 +9,7 @@
 
     <div>
         <g:if test="${info}">
-            <ui:msg class="info" icon="robot" noClose="true">
+            <ui:msg class="info" icon="user astronaut" noClose="true">
                 ${info}
             </ui:msg>
         </g:if>

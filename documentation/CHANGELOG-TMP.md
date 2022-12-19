@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4713    19.12.2022  rc-3.0  3.0         David   Bug         Umfrage-Dokumente - falscher Besitzer
+
 4710    16.12.2022  rc-3.0  3.0         Andreas Bug         Umbenennung bei Löschung einer Teilnehmerlizenz
 
 4707    16.12.2022  rc-3.0  3.0         Andreas Bug         Formular löste nicht aus
