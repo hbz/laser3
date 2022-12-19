@@ -590,13 +590,15 @@
 
                                 <div class="ui divided middle aligned selection list la-flex-list">
                                     <g:each in="${orgInstance.platforms}" var="platform">
-                                        <div class="ui item">
-                                            <div class="content la-space-right">
-                                                <strong><g:link controller="platform" action="show"
-                                                                id="${platform.id}">${platform.name}</g:link>
-                                                </strong>
+                                        <g:if test="${platform.status == RDStore.PLATFORM_STATUS_CURRENT}">
+                                            <div class="ui item">
+                                                <div class="content la-space-right">
+                                                    <strong><g:link controller="platform" action="show"
+                                                                    id="${platform.id}">${platform.name}</g:link>
+                                                    </strong>
+                                                </div>
                                             </div>
-                                        </div>
+                                        </g:if>
                                     </g:each>
                                 </div>
                             </dd>
