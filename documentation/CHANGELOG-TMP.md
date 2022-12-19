@@ -7,7 +7,7 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
-4699    17.12.2022  dev     3.1         Andreas Feature     neue Filterfelder "Identifikatorbereich" und "Kundennummerbereich"
+4699    19.12.2022  dev     3.1         Andreas Feature     neue Filterfelder "Identifikatorbereich" und "Kundennummerbereich"
 
 4710    16.12.2022  rc-3.0  3.0         Andreas Bug         Umbenennung bei Löschung einer Teilnehmerlizenz
 
