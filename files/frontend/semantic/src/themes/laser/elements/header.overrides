@@ -19,7 +19,7 @@ h1~h2.ui.header {
 .ui.icon.header .icon.la-object-journal,
 .ui.icon.header .icon.la-object-database,
 .ui.icon.header .icon.la-object-ebook {
-  font-size: 22px;
+  font-size: 0.88em !important;
   line-height: 1 !important;
   padding: 0.5em 0 !important;
   width: 2em !important;
@@ -30,16 +30,9 @@ h1~h2.ui.header {
   align-items: center;
   //background-image: linear-gradient(-45deg, #0000004d 0%, #ffffff00 70%);
 }
-.ui.icon.header .la-object-extended {
-  font-size: 22px !important;
-  line-height: 1 !important;
-  padding: 0.5em 0 !important;
-  width: 2em !important;
-  height: 2em !important;
-  border-radius: 0.28571429rem !important;
-}
+
 .la-object-extended {
-  font-size: 22px !important;
+  font-size: 0.88em!important;
   line-height: 1 !important;
   padding: 0.5em 0 !important;
   width: 2em !important;
@@ -97,16 +90,6 @@ body[class*="subscription"]  {
   }
 }
 
-body[class*="subscription"]  {
-  .ui.icon.header .icon.la-object {
-    display: inline-block;
-    background-color: @subscription;
-    border-color: @subscription;
-    &:before {
-      content: "\f328";
-    }
-  }
-}
 body[class*="Title"],
 body[class*="title"]  {
   .ui.icon.header .icon.la-object {
