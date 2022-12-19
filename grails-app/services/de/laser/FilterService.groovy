@@ -68,6 +68,21 @@ class FilterService {
                      " ) "
             queryParams << [orgIdentifier: params.orgIdentifier]
         }
+        if (params.identifierNamespace?.size() > 0) {
+            query << " ( exists ( select ident from Identifier ident join ident.org ioorg where ioorg = o and ident.ns in (:namespaces) and ident.value != null and ident.value != '' and ident.value != '${IdentifierNamespace.UNKNOWN}' ) )"
+            queryParams << [namespaces: []]
+            params.list('identifierNamespace').each { String idnsKey ->
+                queryParams.namespaces << IdentifierNamespace.get(idnsKey)
+            }
+        }
+        if (params.customerIDNamespace?.size() > 0) {
+            List<String> customerIDClause = []
+            List<String> fields = params.list('customerIDNamespace')
+            fields.each { String field ->
+                customerIDClause << "id.${field} != null"
+            }
+            query << " ( exists ( select customerID from CustomerIdentifier customerID where customerID.customer = o and ( ${customerIDClause.join(' or ')} ) ) ) "
+        }
 
         if (params.region?.size() > 0) {
             query << "o.region.id in (:region)"
@@ -298,8 +313,23 @@ class FilterService {
 
         if (params.orgIdentifier?.length() > 0) {
             query << " exists (select io from Identifier io join io.org ioorg " +
-                    " where ioorg = o and LOWER(io.value) like LOWER(:orgIdentifier)) "
-            queryParams << [orgIdentifier: "%${params.orgIdentifier}%"]
+                    " where ioorg = o and genfunc_filter_matcher(ioorg.value, :orgIdentifier) = true) "
+            queryParams << [orgIdentifier: params.orgIdentifier]
+        }
+        if (params.identifierNamespace?.size() > 0) {
+            query << " ( exists ( select ident from Identifier ident join ident.org ioorg where ioorg = o and ident.ns in (:namespaces) and ident.value != null and ident.value != '' and ident.value != '${IdentifierNamespace.UNKNOWN}' ) )"
+            queryParams << [namespaces: []]
+            params.list('identifierNamespace').each { String idnsKey ->
+                queryParams.namespaces << IdentifierNamespace.get(idnsKey)
+            }
+        }
+        if (params.customerIDNamespace?.size() > 0) {
+            List<String> customerIDClause = []
+            List<String> fields = params.list('customerIDNamespace')
+            fields.each { String field ->
+                customerIDClause << "id.${field} != null"
+            }
+            query << " ( exists ( select customerID from CustomerIdentifier customerID where customerID.customer = o and ( ${customerIDClause.join(' or ')} ) ) ) "
         }
 
         if (params.filterPropDef?.size() > 0) {

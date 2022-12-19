@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4699    19.12.2022  dev     3.1         Andreas Feature     neue Filterfelder "Identifikatorbereich" und "Kundennummerbereich"
+
 4714    19.12.2022  rc-3.0  3.0         Andreas Feature     URL-Präfixes nachgereicht
 
 --      19.12.2022  rc-3.0  3.0         Andreas Bug         Aussieben gelöschter Plattformen in der Anbietersicht
