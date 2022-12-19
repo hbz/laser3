@@ -65,13 +65,13 @@ showDebugInfo  = true
 showStatsInfo  = true
 showSystemInfo = true
 
-statsApiUrl = 'https://sushi.xy.z'
-statsSyncJobActive = false
+statsApiUrl         = 'https://sushi.xy.z'
+statsSyncJobActive  = false
 
 systemEmail = 'laser@localhost'
 
-systemInsightIndex = 'laser3_system_insight_index'
-systemInsightJobActive = false
+systemInsightIndex      = 'laser3_system_insight_index'
+systemInsightJobActive  = false
 
 testJobActivate = false
 
