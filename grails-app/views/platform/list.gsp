@@ -46,14 +46,18 @@
 									<div class="la-flexbox">
 										<g:if test="${platformInstance.org.gokbId != null && RDStore.OT_PROVIDER.id in platformInstance.org.getAllOrgTypeIds()}">
 											<span class="la-long-tooltip la-popup-tooltip la-delay"
-												  data-content="${RDStore.OT_PROVIDER.getI10n("value")}">
-												<i class="handshake outline grey icon la-list-icon"></i>
+												  data-content="${message(code: 'org.isWekbCurated.header.label')}">
+												<i class="la-gokb icon la-list-icon"></i>
 											</span>
 										</g:if>
 										<g:link controller="organisation" action="show" id="${platformInstance.org.id}">${platformInstance.org.getDesignation()}</g:link>
 									</div>
 								</g:if>
 								<g:elseif test="${record.providerUuid}">
+									<span class="la-long-tooltip la-popup-tooltip la-delay"
+										  data-content="${message(code: 'org.isWekbCurated.header.label')}">
+										<i class="la-gokb icon la-list-icon"></i>
+									</span>
 									${record.providerName}
 									<a target="_blank" href="${editUrl ? editUrl + '/public/orgContent?id=' + record.providerUuid : '#'}">
 										<i title="we:kb Link" class="external alternate icon"></i>

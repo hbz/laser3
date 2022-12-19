@@ -132,7 +132,8 @@ class InstitutionsService {
                             title: dctx.owner.title,
                             filename: dctx.owner.filename,
                             mimeType: dctx.owner.mimeType,
-                            migrated: dctx.owner.migrated
+                            migrated: dctx.owner.migrated,
+                            server: dctx.owner.server
                     ).save()
 
                     String fPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK

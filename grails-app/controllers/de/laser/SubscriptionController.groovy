@@ -202,20 +202,26 @@ class SubscriptionController {
     @DebugInfo(test = 'hasAffiliation("INST_USER")', ctrlService = DebugInfo.WITH_TRANSACTION)
     @Secured(closure = { ctx.contextService.getUser()?.hasAffiliation("INST_USER") })
     def generateReport() {
-        SXSSFWorkbook wb = exportService.generateReport(params)
-        if(!wb) {
-            response.sendError(401)
-            return
+        if(!params.reportType && !params.metricType) {
+            flash.error = message(code: 'renewEntitlementsWithSurvey.noReportSelected')
+            redirect action: 'stats', id: params.id
         }
         else {
-            Date dateRun = new Date()
-            response.setHeader "Content-disposition", "attachment; filename=report_${DateUtils.getSDF_yyyyMMdd().format(dateRun)}.xlsx"
-            response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            wb.write(response.outputStream)
-            response.outputStream.flush()
-            response.outputStream.close()
-            wb.dispose()
-            return
+            SXSSFWorkbook wb = exportService.generateReport(params)
+            if(!wb) {
+                response.sendError(401)
+                return
+            }
+            else {
+                Date dateRun = new Date()
+                response.setHeader "Content-disposition", "attachment; filename=report_${DateUtils.getSDF_yyyyMMdd().format(dateRun)}.xlsx"
+                response.contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                wb.write(response.outputStream)
+                response.outputStream.flush()
+                response.outputStream.close()
+                wb.dispose()
+                return
+            }
         }
     }
 

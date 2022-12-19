@@ -1289,7 +1289,8 @@ class SurveyService {
                             filename: dctx.owner.filename,
                             mimeType: dctx.owner.mimeType,
                             migrated: dctx.owner.migrated,
-                            owner: dctx.owner.owner
+                            owner: dctx.owner.owner,
+                            server: dctx.owner.server
                     ).save()
                     String fPath = ConfigMapper.getDocumentStorageLocation() ?: ConfigDefaults.DOCSTORE_LOCATION_FALLBACK
                     Path source = new File("${fPath}/${dctx.owner.uuid}").toPath()
