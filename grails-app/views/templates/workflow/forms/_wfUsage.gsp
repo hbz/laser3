@@ -199,10 +199,14 @@
                                 <g:if test="${wfEditPerm}">
                                     <label for="${prefixOverride}_${field}">${task.condition.getProperty(field + '_title') ?: message(code:'workflow.field.noTitle.label')}
                                         <div id="fileUploadWrapper_toggle_${field}" class="ui small buttons" style="float:right; margin-right:15px">
-                                            <span class="ui left attached mini icon button ${taskConditionFileExists ? 'active' : ''}">
+                                            <span data-position="top right" class="ui left attached mini icon button la-popup-tooltip la-delay ${taskConditionFileExists ? '' : 'active'}"
+                                                  data-content="${message(code:'workflow.condition.file.info')}" style="position:relative">
+%{--                                            <span class="ui left attached mini icon button ${taskConditionFileExists ? 'active' : ''}">--}%
                                                 <i class="icon file"></i>
                                             </span>
-                                            <span class="ui right attached mini icon button ${taskConditionFileExists ? '' : 'active'}">
+                                            <span data-position="top right" class="ui right attached mini icon button la-popup-tooltip la-delay ${taskConditionFileExists ? 'active' : ''}"
+                                                  data-content="${message(code:'workflow.condition.fileUpload.info')}" style="position:relative">
+%{--                                            <span class="ui right attached mini icon button ${taskConditionFileExists ? '' : 'active'}">--}%
                                                 <i class="icon upload"></i>
                                             </span>
                                         </div>
@@ -301,7 +305,7 @@
                         </g:if>
                     </g:each>
 
-                    <g:if test="${showTaskFileInfo}">
+                    <g:if test="${false && showTaskFileInfo}">%{-- tmp deactivated --}%
                         <div class="ui message info la-clear-before" style="display:block;">
                             <i aria-hidden="true" class="close icon"></i>
                             <div class="ui list">
