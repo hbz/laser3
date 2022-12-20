@@ -39,7 +39,7 @@ class AppUtils {
                 case { it.startsWithIgnoreCase('LAS:eR-QA') }:
                     return QA
                     break
-                case { it.equalsIgnoreCase('LAS:eR-PROD') }:
+                case { it.equalsIgnoreCase('LAS:eR-Productive') }:
                     return PROD
                     break
             }
