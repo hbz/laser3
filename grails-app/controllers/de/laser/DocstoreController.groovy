@@ -5,6 +5,7 @@ import de.laser.auth.User
 import de.laser.ctrl.DocstoreControllerService
 import de.laser.config.ConfigDefaults
 import de.laser.interfaces.ShareSupport
+import de.laser.utils.AppUtils
 import de.laser.utils.CodeUtils
 import de.laser.config.ConfigMapper
 import de.laser.annotations.DebugInfo
@@ -92,7 +93,9 @@ class DocstoreController  {
                                 title: params.upload_title ?: original_filename,
                                 type: RefdataValue.getByValueAndCategory(params.doctype, RDConstants.DOCUMENT_TYPE),
                                 creator: user,
-                                owner: contextService.getOrg())
+                                owner: contextService.getOrg(),
+                                server: AppUtils.getCurrentServer()
+                        )
 
                         doc_content.save()
 
@@ -146,7 +149,9 @@ class DocstoreController  {
                                             mimeType: doc_content.mimeType,
                                             title: doc_content.title,
                                             type: doc_content.type,
-                                            owner: contextService.getOrg())
+                                            owner: contextService.getOrg(),
+                                            server: AppUtils.getCurrentServer()
+                                    )
 
                                     doc_content2.save()
 

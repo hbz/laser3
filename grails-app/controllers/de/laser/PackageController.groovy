@@ -481,6 +481,7 @@ class PackageController {
                 platformInstanceRecord.primaryUrl = packageInstance.nominalPlatform.primaryUrl
             }
             result.platformInstanceRecord = platformInstanceRecord
+            result.platformInstance = packageInstance.nominalPlatform
         }
 
         result.flagContentGokb = true // gokbService.queryElasticsearch

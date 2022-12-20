@@ -25222,7 +25222,7 @@ h1 ~ h2.ui.header {
 .ui.icon.header .icon.la-object-journal,
 .ui.icon.header .icon.la-object-database,
 .ui.icon.header .icon.la-object-ebook {
-  font-size: 22px;
+  font-size: 0.88em !important;
   line-height: 1 !important;
   padding: 0.5em 0 !important;
   width: 2em !important;
@@ -25236,17 +25236,8 @@ h1 ~ h2.ui.header {
   align-items: center;
 }
 
-.ui.icon.header .la-object-extended {
-  font-size: 22px !important;
-  line-height: 1 !important;
-  padding: 0.5em 0 !important;
-  width: 2em !important;
-  height: 2em !important;
-  border-radius: 0.28571429rem !important;
-}
-
 .la-object-extended {
-  font-size: 22px !important;
+  font-size: 0.88em !important;
   line-height: 1 !important;
   padding: 0.5em 0 !important;
   width: 2em !important;
@@ -25302,16 +25293,6 @@ body[class*="subscription"] .ui.icon.header .icon.la-object {
 }
 
 body[class*="Subscription"] .ui.icon.header .icon.la-object:before,
-body[class*="subscription"] .ui.icon.header .icon.la-object:before {
-  content: "\f328";
-}
-
-body[class*="subscription"] .ui.icon.header .icon.la-object {
-  display: inline-block;
-  background-color: #fa820a;
-  border-color: #fa820a;
-}
-
 body[class*="subscription"] .ui.icon.header .icon.la-object:before {
   content: "\f328";
 }

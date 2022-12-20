@@ -9,6 +9,12 @@
 
 4699    19.12.2022  dev     3.1         Andreas Feature     neue Filterfelder "Identifikatorbereich" und "Kundennummerbereich"
 
+4714    19.12.2022  rc-3.0  3.0         Andreas Feature     URL-Präfixes nachgereicht
+
+--      19.12.2022  rc-3.0  3.0         Andreas Bug         Aussieben gelöschter Plattformen in der Anbietersicht
+
+4713    19.12.2022  rc-3.0  3.0         David   Bug         Umfrage-Dokumente - falscher Besitzer
+
 4710    16.12.2022  rc-3.0  3.0         Andreas Bug         Umbenennung bei Löschung einer Teilnehmerlizenz
 
 4707    16.12.2022  rc-3.0  3.0         Andreas Bug         Formular löste nicht aus

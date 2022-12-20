@@ -7,12 +7,13 @@
         height: 1em;
         display: block;
         margin: 0em auto 0.25em;
-        font-size: 2em;
+        font-size: 2em!important;
         -webkit-transition: color 0.6s ease, transform 0.2s ease;
         -moz-transition: color 0.6s ease, transform 0.2s ease;
         -o-transition: color 0.6s ease, transform 0.2s ease;
         -ms-transition: color 0.6s ease, transform 0.2s ease;
         transition: color 0.6s ease, transform 0.2s ease;
+        box-shadow: none;
     }
 
     #example .example.html.segment {

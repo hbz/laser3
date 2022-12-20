@@ -237,27 +237,131 @@
                                         <h3 class="ui header">
                                             <g:message code="platform.stats.header"/>
                                         </h3>
-                                        <laser:render template="/templates/platformStatsDetails" />
+                                        <g:if test="${platformInstanceRecord.statisticsFormat}">
+                                            <dl>
+                                                <dt><g:message code="platform.stats.format"/></dt>
+                                                <dd>${RefdataValue.getByValueAndCategory(platformInstanceRecord.statisticsFormat, RDConstants.PLATFORM_STATISTICS_FORMAT).getI10n("value")}</dd>
+                                            </dl>
+                                        </g:if>
+                                        <g:if test="${platformInstanceRecord.statisticsUpdate}">
+                                            <dl>
+                                                <dt><g:message code="platform.stats.update"/></dt>
+                                                <dd>${RefdataValue.getByValueAndCategory(platformInstanceRecord.statisticsUpdate, RDConstants.PLATFORM_STATISTICS_FREQUENCY).getI10n("value")}</dd>
+                                            </dl>
+                                        </g:if>
+                                        <g:if test="${platformInstanceRecord.statisticsAdminPortalUrl}">
+                                            <dl>
+                                                <dt><g:message code="platform.stats.adminURL"/></dt>
+                                                <dd>
+                                                    <g:if test="${platformInstanceRecord.statisticsAdminPortalUrl.startsWith('http')}">
+                                                        ${platformInstanceRecord.statisticsAdminPortalUrl} <a href="${platformInstanceRecord.statisticsAdminPortalUrl}"><i title="${message(code: 'platform.stats.adminURL')} Link" class="external alternate icon"></i></a>
+                                                    </g:if>
+                                                    <g:else>
+                                                        <g:message code="default.url.invalid"/>
+                                                    </g:else>
+                                                </dd>
+                                            </dl>
+                                        </g:if>
+                                        <g:if test="${platformInstanceRecord.counterCertified}">
+                                            <dl>
+                                                <dt><g:message code="platform.stats.counter.certified"/></dt>
+                                                <dd>${RefdataValue.getByValueAndCategory(platformInstanceRecord.counterCertified, RDConstants.Y_N).getI10n("value")}</dd>
+                                            </dl>
+                                        </g:if>
+                                        <g:if test="${platformInstanceRecord.lastAuditDate}">
+                                            <dl>
+                                                <dt><g:message code="platform.stats.counter.lastAudit"/></dt>
+                                                <dd>${formatDate(date: DateUtils.parseDateGeneric(platformInstanceRecord.lastAuditDate), format: message(code: 'default.date.format.notime'))}</dd>
+                                            </dl>
+                                        </g:if>
+                                        <g:if test="${platformInstanceRecord.counterRegistryUrl}">
+                                            <dl>
+                                                <dt><g:message code="platform.stats.counter.registryURL"/></dt>
+                                                <dd>
+                                                    <g:if test="${platformInstanceRecord.counterRegistryUrl.startsWith('http')}">
+                                                        ${platformInstanceRecord.counterRegistryUrl} <a href="${platformInstanceRecord.counterRegistryUrl}"><i title="${message(code: 'platform.stats.counter.registryURL')} Link" class="external alternate icon"></i></a>
+                                                    </g:if>
+                                                    <g:else>
+                                                        <g:message code="default.url.invalid"/>
+                                                    </g:else>
+                                                </dd>
+                                            </dl>
+                                        </g:if>
+                                        <g:if test="${platformInstanceRecord.counterR4Supported}">
+                                            <dl>
+                                                <dt><g:message code="platform.stats.counter.r4supported"/></dt>
+                                                <dd>${RefdataValue.getByValueAndCategory(platformInstanceRecord.counterR4Supported, RDConstants.Y_N).getI10n("value")}</dd>
+                                            </dl>
+                                        </g:if>
+                                        <g:if test="${platformInstanceRecord.counterR5Supported}">
+                                            <dl>
+                                                <dt><g:message code="platform.stats.counter.r5supported"/></dt>
+                                                <dd>${RefdataValue.getByValueAndCategory(platformInstanceRecord.counterR5Supported, RDConstants.Y_N).getI10n("value")}</dd>
+                                            </dl>
+                                        </g:if>
+                                        <g:if test="${platformInstanceRecord.counterR4SushiApiSupported}">
+                                            <dl>
+                                                <dt><g:message code="platform.stats.counter.r4sushi"/></dt>
+                                                <dd>${RefdataValue.getByValueAndCategory(platformInstanceRecord.counterR4SushiApiSupported, RDConstants.Y_N).getI10n("value")}</dd>
+                                            </dl>
+                                        </g:if>
+                                        <g:if test="${platformInstanceRecord.counterR5SushiApiSupported}">
+                                            <dl>
+                                                <dt><g:message code="platform.stats.counter.r5sushi"/></dt>
+                                                <dd>${RefdataValue.getByValueAndCategory(platformInstanceRecord.counterR5SushiApiSupported, RDConstants.Y_N).getI10n("value")}</dd>
+                                            </dl>
+                                        </g:if>
+                                        <g:if test="${platformInstanceRecord.counterR4SushiServerUrl}">
+                                            <dl>
+                                                <dt><g:message code="platform.stats.counter.r4serverURL"/></dt>
+                                                <dd>
+                                                    <g:if test="${platformInstanceRecord.counterR4SushiServerUrl.startsWith('http')}">
+                                                        ${platformInstanceRecord.counterR4SushiServerUrl} <a href="${platformInstanceRecord.counterR4SushiServerUrl}"><i title="${message(code: 'platform.stats.counter.r4serverURL')} Link" class="external alternate icon"></i></a>
+                                                    </g:if>
+                                                    <g:else>
+                                                        ${platformInstanceRecord.counterR4SushiServerUrl}
+                                                    </g:else>
+                                                </dd>
+                                            </dl>
+                                        </g:if>
+                                        <g:if test="${platformInstanceRecord.counterR5SushiServerUrl}">
+                                            <dl>
+                                                <dt><g:message code="platform.stats.counter.r5serverURL"/></dt>
+                                                <dd>
+                                                    <g:if test="${platformInstanceRecord.counterR5SushiServerUrl.startsWith('http')}">
+                                                        ${platformInstanceRecord.counterR5SushiServerUrl} <a href="${platformInstanceRecord.counterR5SushiServerUrl}"><i title="${message(code: 'platform.stats.counter.r5serverURL')} Link" class="external alternate icon"></i></a>
+                                                    </g:if>
+                                                    <g:else>
+                                                        ${platformInstanceRecord.counterR5SushiServerUrl}
+                                                    </g:else>
+                                                </dd>
+                                            </dl>
+                                        </g:if>
+                                    <%-- lastRun and centralApiKey come from LAS:eR, not from we:kb! --%>
+                                        <g:if test="${platformInstance.counter4LastRun || platformInstance.counter5LastRun}">
+                                            <dl>
+                                                <dt><g:message code="platform.stats.counter.lastRun"/></dt>
+                                                <dd>
+                                                    <g:formatDate format="${message(code: 'default.date.format.notime')}" date="${platformInstance.counter5LastRun ?: platformInstance.counter4LastRun}"/>
+                                                </dd>
+                                            </dl>
+                                        </g:if>
+                                        <g:if test="${platformInstanceRecord.counterR5SushiApiSupported}">
+                                            <sec:ifAnyGranted roles="ROLE_YODA">
+                                                <dl>
+                                                    <dt><g:message code="platform.stats.counter.centralApiKey"/></dt>
+                                                    <dd>
+                                                        <ui:xEditable owner="${platformInstance}" field="centralApiKey" overwriteEditable="${true}"/>
+                                                    </dd>
+                                                </dl>
+                                            </sec:ifAnyGranted>
+                                        </g:if>
                                     </div>
                                 </div>
                             </div>
                         </g:if>
                     </div>
                 </div>
-
-                <div class="ui card">
-                    <div class="content">
-
-                        <laser:render template="/templates/links/orgLinksAsList"
-                                  model="${[roleLinks    : visibleOrgs,
-                                            roleObject   : packageInstance,
-                                            roleRespValue: 'Specific package editor',
-                                            editmode     : editable,
-                                            showPersons  : true
-                                  ]}"/>
-                    </div>
-                </div>
-
 
                 <div class="ui card">
                     <div class="content">
@@ -325,60 +429,83 @@
             </div>
         </div><!-- .eleven -->
         <aside class="five wide column la-sidekick">
-            <g:if test="${gascoContacts}">
-                <div class="ui one cards">
-                    <div id="container-provider">
-                        <div class="ui card ">
-                            <div class="content">
-                                <h2 class="ui header">${RDStore.PRS_FUNC_GASCO_CONTACT.getValue_de()}</h2>
-                                <g:each in="${gascoContacts}" var="entry">
-                                    <g:set var="gascoContact" value="${entry.getValue()}"/>
-                                    ${gascoContact.orgDisplay}
-                                    <br>
-                                    <g:each in ="${gascoContact.personRoles}" var="personRole">
-                                        <g:set var="person" value="${personRole.getPrs()}" />
-                                        <g:if test="${person.isPublic}">
-                                            <div class="ui list">
-                                                <div class="item">
-                                                    <div class="content">
-                                                        <div class="header">
-                                                            ${person?.getFirst_name()} ${person?.getLast_name()}
-                                                        </div>
-                                                        <g:each in ="${Contact.findAllByPrsAndContentType(
-                                                                person,
-                                                                RDStore.CCT_URL
-                                                        )}" var="prsContact">
-                                                            <div class="description">
-                                                                <i class="icon globe la-list-icon"></i>
-                                                                <span  class="la-popup-tooltip la-delay " data-position="right center" data-content="Diese URL aufrufen:  ${prsContact?.content}">
-                                                                    <a class="la-break-all" href="${prsContact?.content}" target="_blank">${prsContact?.content}</a>
-                                                                </span>
-
-                                                            </div>
-                                                        </g:each>
-                                                        <g:each in ="${Contact.findAllByPrsAndContentType(
-                                                                person,
-                                                                RDStore.CCT_EMAIL
-                                                        )}" var="prsContact">
-                                                            <div class="description js-copyTriggerParent">
-                                                                <i class="ui icon envelope outline la-list-icon js-copyTrigger"></i>
-                                                                <span  class="la-popup-tooltip la-delay" data-position="right center " data-content="Mail senden an ${person?.getFirst_name()} ${person?.getLast_name()}">
-                                                                    <a class="la-break-all js-copyTopic" href="mailto:${prsContact?.content}" >${prsContact?.content}</a>
-                                                                </span>
-                                                            </div>
-                                                        </g:each>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </g:if>
-                                    </g:each>
-                                </g:each>
-                            </div>
+            <div class="ui one cards">
+                <div id="container-provider">
+                    <div class="ui card">
+                        <div class="content">
+                            <h2 class="ui header">${message(code: 'gasco.table.provider')}</h2>
+                            <laser:render template="/templates/links/orgLinksAsList"
+                                          model="${[roleLinks    : visibleOrgs,
+                                                    roleObject   : packageInstance,
+                                                    roleRespValue: 'Specific package editor',
+                                                    editmode     : editable,
+                                                    showPersons  : true
+                                          ]}"/>
                         </div>
                     </div>
+                    <g:if test="${gascoContacts}">
+                        <div class="ui card ">
+                            <div class="content">
+                                <h2 class="ui header">${message(code: 'gasco.contacts.plural')}</h2>
+                                <table class="ui table">
+                                    <g:each in="${gascoContacts}" var="entry">
+                                        <g:set var="gascoContact" value="${entry.getValue()}"/>
+                                        <g:each in ="${gascoContact.personRoles}" var="personRole">
+                                            <g:set var="person" value="${personRole.getPrs()}" />
+                                            <g:if test="${person.isPublic}">
+                                                <tr>
+                                                    <td>
+                                                        <span class="la-flexbox la-minor-object">
+                                                                    <i class="la-list-icon la-popup-tooltip la-delay la-consortia icon" data-content="${message(code: 'gasco.filter.consortialAuthority')}"></i><g:link target="_blank" controller="organisation" action="show" id="${personRole.org.id}">${gascoContact.orgDisplay}</g:link>
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <div class="ui segment la-timeLineSegment-contact">
+                                                            <div class="la-timeLineGrid">
+                                                                <div class="ui grid">
+                                                                    <div class="row">
+                                                                        <div class="two wide column">
+                                                                            <g:each in ="${Contact.findAllByPrsAndContentType(person, RDStore.CCT_URL)}" var="prsContact">
+                                                                                <a class="la-break-all" href="${prsContact?.content}" target="_blank"><i class="circular large globe icon la-timeLineIcon la-timeLineIcon-contact la-popup-tooltip la-delay" data-content="${RDStore.PRS_FUNC_GASCO_CONTACT.getI10n('value')}"></i></a>
+                                                                            </g:each>
+                                                                        </div>
+                                                                        <div class="twelve wide column">
+                                                                            <div class="ui label">${RDStore.PRS_FUNC_GASCO_CONTACT.getI10n('value')}</div>
+                                                                            <div class="ui header">${person?.getFirst_name()} ${person?.getLast_name()}</div>
+                                                                            <g:each in ="${Contact.findAllByPrsAndContentType(
+                                                                                    person,
+                                                                                    RDStore.CCT_EMAIL
+                                                                            )}" var="prsContact">
+                                                                                <laser:render template="/templates/cpa/contact" model="${[
+                                                                                        contact             : prsContact,
+                                                                                        tmplShowDeleteButton: false,
+                                                                                        overwriteEditable   : false
+                                                                                ]}" />
+                                                                            <%--<div class="js-copyTriggerParent">
+                                                                                <i class="ui icon envelope outline la-list-icon js-copyTrigger"></i>
+                                                                                <span  class="la-popup-tooltip la-delay" data-position="right center " data-content="Mail senden an ${person?.getFirst_name()} ${person?.getLast_name()}">
+                                                                                    <a class="la-break-all js-copyTopic" href="mailto:${prsContact?.content}" >${prsContact?.content}</a>
+                                                                                </span>
+                                                                            </div>--%>
+                                                                            </g:each>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            </g:if>
+                                        </g:each>
+                                    </g:each>
+                                </table>
+                            </div>
+                        </div>
+                    </g:if>
                 </div>
-            </g:if>
-
+            </div>
         </aside>
 
     %{-- <aside class="four wide column la-sidekick">
