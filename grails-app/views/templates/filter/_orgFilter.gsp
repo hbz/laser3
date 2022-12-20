@@ -59,6 +59,34 @@
                 </div>
             </g:if>
 
+            <g:if test="${field.equalsIgnoreCase('identifierNamespace')}">
+                <div class="field">
+                    <label for="identifierNamespace">
+                        <g:message code="org.institution.search.identifier.namespace"/>
+                    </label>
+                    <g:select class="ui dropdown multiple select search" id="identifierNamespace" name="identifierNamespace"
+                              from="${IdentifierNamespace.findAllByNsInList(IdentifierNamespace.CORE_ORG_NS, [sort: 'name_de'])}"
+                              value="${params.identifierNamespace}"
+                              optionKey="id"
+                              optionValue="${{ it.getI10n('name') ?: it.ns }}"
+                              noSelection="${['':message(code:'default.select.choose.label')]}"/>
+                </div>
+            </g:if>
+
+            <g:if test="${field.equalsIgnoreCase('customerIDNamespace')}">
+                <div class="field">
+                    <label for="customerIDNamespace">
+                        <g:message code="org.institution.search.customer.identifier.namespace"/>
+                    </label>
+                    <g:select class="ui dropdown multiple select search" id="customerIDNamespace" name="customerIDNamespace"
+                              from="${[[id: 'value', value: message(code: 'org.customerIdentifier')], [id: 'requestorKey', value: message(code: 'org.requestorKey')]]}"
+                              optionKey="id"
+                              optionValue="value"
+                              value="${params.customerIDNamespace}"
+                              noSelection="${['':message(code:'default.select.choose.label')]}"/>
+                </div>
+            </g:if>
+
             <g:if test="${field.equalsIgnoreCase('property&value')}">
                 <laser:render template="/templates/properties/genericFilter" model="[propList: propList, label:message(code: 'subscription.property.search')]"/>
             </g:if>
