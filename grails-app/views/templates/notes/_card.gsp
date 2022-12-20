@@ -27,17 +27,17 @@
                     <div class="ui grid summary">
                         <div class="ten wide column la-column-right-lessPadding">
                             <g:if test="${(docctx.owner.owner?.id == contextService.getOrg().id || docctx.owner.owner == null) && (editable || editable2)}">
-                                <a onclick="JSPC.app.noteedit(${docctx.owner.id});" class="la-js-toggle-showThis">
+                                <a onclick="JSPC.app.editNote(${docctx.owner.id});" class="la-js-toggle-showThis">
                                     ${docctx.owner.title ?: message(code:'license.notes.noTitle')}
                                 </a>
                                 <g:if test="${controllerName != 'organisation' && controllerName != 'survey'}">
-                                    <a onclick="JSPC.app.noteread(${docctx.owner.id});" class="la-js-toggle-hideThis">
+                                    <a onclick="JSPC.app.readNote(${docctx.owner.id});" class="la-js-toggle-hideThis">
                                         ${docctx.owner.title ?: message(code:'license.notes.noTitle')}
                                     </a>
                                 </g:if>
                             </g:if>
                             <g:else>
-                                <a onclick="JSPC.app.noteread(${docctx.owner.id});">
+                                <a onclick="JSPC.app.readNote(${docctx.owner.id});">
                                     ${docctx.owner.title ?: message(code:'license.notes.noTitle')}
                                 </a>
                             </g:else>
@@ -126,7 +126,7 @@
 
                         <div class="ui grid summary">
                             <div class="twelve wide column">
-                                <a onclick="JSPC.app.noteread(${docctx.owner.id});">
+                                <a onclick="JSPC.app.readNote(${docctx.owner.id});">
                                     ${docctx.owner.title ?: message(code:'license.notes.noTitle')}
                                 </a>
                                 <br />
@@ -158,7 +158,7 @@
     </g:if>
 
     <laser:script file="${this.getGroovyPageFileName()}">
-        JSPC.app.noteedit = function (id) {
+        JSPC.app.editNote = function (id) {
             $.ajax({
                 url: '<g:createLink controller="ajaxHtml" action="editNote"/>?id='+id,
                 success: function(result){
@@ -170,7 +170,7 @@
                 }
             });
         }
-        JSPC.app.noteread = function (id) {
+        JSPC.app.readNote = function (id) {
             $.ajax({
                 url: '<g:createLink controller="ajaxHtml" action="readNote"/>?id='+id,
                 success: function(result){

@@ -34,9 +34,9 @@
                 </div>
                 <i class="large la-list-icon la-popup-tooltip la-delay icon ${icon}" data-content="${tooltip}"></i>
                 <div class="content">
-                    <a class="header la-js-toggle-showThis" onclick="JSPC.app.taskedit(${tsk.id});">${tsk.title}</a>
+                    <a class="header la-js-toggle-showThis" onclick="JSPC.app.editTask(${tsk.id});">${tsk.title}</a>
                     <g:if test="${controllerName != 'organisation' && controllerName != 'survey'}">
-                        <a class="header la-js-toggle-hideThis" onclick="JSPC.app.taskread(${tsk.id});">${tsk.title}</a>
+                        <a class="header la-js-toggle-hideThis" onclick="JSPC.app.readTask(${tsk.id});">${tsk.title}</a>
                     </g:if>
                     <div class="description">${message(code:'task.endDate.label')}
                         <g:formatDate format="${message(code:'default.date.format.notime')}" date="${tsk.endDate}"/>
@@ -57,7 +57,7 @@
                     <g:elseif test="${tsk.status == RDStore.TASK_STATUS_DEFERRED}">
                         <i class="large la-list-icon la-popup-tooltip la-delay icon pause circle outline"></i>
                     </g:elseif>
-                    <a onclick="JSPC.app.taskedit(${tsk.id});">${tsk.title}</a>
+                    <a onclick="JSPC.app.editTask(${tsk.id});">${tsk.title}</a>
 
                 <div class="content">
                     ${message(code:'task.endDate.label')}
@@ -81,11 +81,11 @@
 </ui:card>
 
 <laser:script file="${this.getGroovyPageFileName()}">
-    JSPC.app.taskedit = function (id) {
+    JSPC.app.editTask = function (id) {
         var func = bb8.ajax4SimpleModalFunction("#modalEditTask", "<g:createLink controller="ajaxHtml" action="editTask"/>?id=" + id, true);
         func();
     }
-    JSPC.app.taskread = function (id) {
+    JSPC.app.readTask = function (id) {
         var func = bb8.ajax4SimpleModalFunction("#modalReadTask", "<g:createLink controller="ajaxHtml" action="readTask"/>?id=" + id, false);
         func();
     }
