@@ -7,6 +7,8 @@
 
 **Ticket    Date    Branch  Version(current) Author  Feature/Bug     Description/Keywords**
 
+4711    20.12.2022  rc-3.0  3.0         Moe     Bug         Titel hinzufügen: Reiter Ausgewählter Bestand zeigt bei nächstem Aufruf Zahl in Bubble, Buttonsan
+
 4714    19.12.2022  rc-3.0  3.0         Andreas Feature     URL-Präfixes nachgereicht
 
 --      19.12.2022  rc-3.0  3.0         Andreas Bug         Aussieben gelöschter Plattformen in der Anbietersicht
