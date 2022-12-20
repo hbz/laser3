@@ -47488,7 +47488,7 @@ dd {
   flex-direction: column;
   position: relative;
   margin: 1rem 0em;
-  border: none;
+  border: 1px solid rgba(34, 36, 38, 0.15);
   -webkit-box-shadow: 0;
   box-shadow: 0;
   border-radius: 0.28571429rem;
@@ -47513,7 +47513,7 @@ dd {
   -webkit-box-shadow: none;
   box-shadow: none;
   border: none;
-  border-top: none;
+  border-top: 1px solid rgba(34, 36, 38, 0.15);
 }
 
 .ui.segments:not(.horizontal) > .segment:first-child {
@@ -47546,7 +47546,7 @@ dd {
 /* Nested Group */
 
 .ui.segments > .ui.segments {
-  border-top: none;
+  border-top: 1px solid rgba(34, 36, 38, 0.15);
   margin: 1rem 1rem;
 }
 
@@ -47591,7 +47591,7 @@ dd {
   border: none;
   -webkit-box-shadow: none;
   box-shadow: none;
-  border-top: none;
+  border-top: 1px solid rgba(34, 36, 38, 0.15);
 }
 
 /* Horizontal Segment */
@@ -48187,11 +48187,18 @@ aside.la-metabox + .la-metabox-spacer {
 }
 
 .ui.segments.la-accordion-segments {
+  border-top: none;
+  border-left: none;
+  border-right: none;
   border-bottom: 1px solid #004678;
 }
 
 .ui.segments.la-accordion-segments:last-child {
   border-bottom: none;
+}
+
+.ui.segments.la-accordion-segments > .segment {
+  border-top: none;
 }
 
 .ui.segments.la-accordion-segments .ui.segment:nth-child(2).content {
@@ -48201,6 +48208,11 @@ aside.la-metabox + .la-metabox-spacer {
 .ui.segments.la-accordion-segments .ui.segment:nth-child(2).content .ui.table thead tr:first-child > th,
 .ui.segments.la-accordion-segments .ui.segment:nth-child(2).content .ui.table thead tr:nth-child(2) > th {
   background: #FFFFFF;
+}
+
+.ui.segment.la-timeLineSegment-contact {
+  -webkit-box-shadow: none;
+  box-shadow: none;
 }
 /*!
  * # Fomantic-UI 2.8.8 - Step

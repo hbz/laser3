@@ -70,9 +70,15 @@ aside.la-metabox + .la-metabox-spacer {
 }
 // Accordion for 'see more content'
 .ui.segments.la-accordion-segments {
+  border-top: none;
+  border-left: none;
+  border-right: none;
   border-bottom: 1px solid @laDecorationColor;
   &:last-child {
     border-bottom:none;
+  }
+  > .segment {
+    border-top: none;
   }
   .ui.segment:nth-child(2).content {
     .ui.table thead tr:first-child > th,
@@ -95,4 +101,7 @@ aside.la-metabox + .la-metabox-spacer {
   &:last-child {
     margin-bottom: 0;
   }
+}
+.ui.segment.la-timeLineSegment-contact {
+  box-shadow: none;
 }

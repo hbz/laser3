@@ -15,7 +15,7 @@
 
 4499    19.12.2022  rc-3.0  3.0         Ingrid  Feature     Header überarbeiten
 
-4472    19.12.2022  rc-3.0  3.0         Ingrid  Feature     Laser auf 1440 pixel verbreitern
+4472    19.12.2022  rc-3.0  3.0         Ingrid  Feature <    Laser auf 1440 pixel verbreitern
 
 4291    19.12.2022  rc-3.0  3.0         Ingrid  Feature     Fomantic anpassen
 
