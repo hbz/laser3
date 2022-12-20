@@ -5,8 +5,8 @@
         <div  style="display: flex" class="js-copyTrigger la-popup-tooltip la-delay"
     data-position="top center" data-content="${message(code: 'tooltip.clickToCopySimple')}">
             <ui:contactIcon type="${contact.contentType?.value}" />
-            <div class="content js-copyTopic la-space-right">
-                <ui:xEditable  owner="${contact}" field="content" overwriteEditable="${overwriteEditable}" />
+            <div class="content la-space-right">
+                <span class="js-copyTopic"><ui:xEditable owner="${contact}" field="content" overwriteEditable="${overwriteEditable}" /></span>
                 <g:if test="${contact.language}">(${contact.language.getI10n("value")})</g:if>
             </div>
         </div>
