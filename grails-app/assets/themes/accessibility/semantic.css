@@ -44080,6 +44080,347 @@ a.ui.ui.ui.inverted.basic.black.label:hover {
 /*******************************
          Theme Overrides
 *******************************/
+
+.finance_index .ui.ribbon.label,
+.finance_subFinancialData .ui.ribbon.label {
+  left: calc(-1rem - 1.8em);
+  top: -22px;
+}
+
+.ui.modal > .content.la-twoSided-ribbon {
+  padding: 0 1.5rem 0 1.5rem;
+}
+
+.finance_index .ui.right.ribbon.label,
+.finance_subFinancialData .ui.right.ribbon.label {
+  left: calc(104.2%);
+  top: -22px;
+}
+
+.ui.card .ui.label {
+  margin: 0;
+}
+
+.ui.label.la-annual-rings {
+  position: relative;
+  padding-left: 0.2em;
+  padding-right: 0.2em;
+  margin-bottom: 1.2em;
+  background-color: #fffaf5;
+  border: 1px solid #004678;
+  vertical-align: super;
+  margin: 0 1.142857em;
+}
+
+.ui.label.la-annual-rings .ui.tiny.label {
+  font-size: 0.45rem;
+  vertical-align: middle;
+}
+
+.ui.label.la-annual-rings .icon {
+  font-size: 1.3em;
+  width: auto;
+  margin: 0em 0.75em 0em 0.75em;
+  vertical-align: sub;
+}
+
+.ui.label.la-annual-rings > a {
+  opacity: 0.7;
+  text-decoration: none;
+}
+
+.ui.label.la-annual-rings i.disabled.icon {
+  opacity: 0!important;
+  margin: 0 0 0 0.1em;
+}
+
+.ui.label.la-annual-rings .la-status-active {
+  background-color: #98B500;
+  opacity: 1;
+  font-weight: bolder;
+  color: white;
+}
+
+.ui.label.la-annual-rings .la-status-inactive {
+  background-color: #BB1600;
+  opacity: 1;
+  font-weight: bolder;
+  color: white;
+}
+
+.ui.label.la-annual-rings .la-status-else {
+  background-color: #FBBD08;
+  opacity: 1;
+  font-weight: bolder;
+  color: white;
+}
+
+.ui.label.la-annual-rings .la-annual-rings-text {
+  display: inline-block;
+  padding-top: 1px;
+  vertical-align: middle;
+  padding-right: 0.5em;
+}
+
+.ui.la-annual-rings-modern {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  padding-left: 0.2em;
+  padding-right: 0.2em;
+  margin-bottom: 1.2em;
+  background-color: transparent;
+  border: none;
+  vertical-align: super;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+.ui.la-annual-rings-modern > a {
+  opacity: 1;
+  text-decoration: none;
+  display: inline-block;
+  width: 2.1em;
+}
+
+.ui.la-annual-rings-modern > a:hover {
+  -webkit-filter: brightness(0.85);
+  filter: brightness(0.85);
+}
+
+.ui.la-annual-rings-modern i.disabled.icon {
+  opacity: 0!important;
+}
+
+.ui.la-annual-rings-modern .la-status-active {
+  color: #98B500;
+  opacity: 1;
+}
+
+.ui.la-annual-rings-modern .la-status-inactive {
+  color: #BB1600;
+  opacity: 1;
+}
+
+.ui.la-annual-rings-modern .la-status-else {
+  color: #FBBD08;
+  opacity: 1;
+}
+
+.ui.la-annual-rings-modern .la-annual-rings-text {
+  padding: 3px;
+  margin-top: 0.3rem;
+  margin-right: -0.3em;
+  color: rgba(0, 0, 0, 0.6);
+  letter-spacing: 0.05em;
+  font-weight: 700;
+}
+
+.ui.left-tag.labels .label,
+.ui.left-tag.label {
+  margin-left: 1em;
+  position: relative;
+  padding-left: 1.5em;
+  padding-right: 1.5em;
+  border-radius: 0em 0.28571429rem 0.28571429rem 0em;
+  -webkit-transition: none;
+  transition: none;
+}
+
+.ui.left-tag.labels .label:before,
+.ui.left-tag.label:before {
+  position: absolute;
+  -webkit-transform: translateY(-50%) translateX(50%) rotate(-45deg);
+  transform: translateY(-50%) translateX(50%) rotate(-45deg);
+  top: 50%;
+  right: 100%;
+  content: '';
+  background-color: inherit;
+  background-image: none;
+  width: 1.56em;
+  height: 1.56em;
+  -webkit-transition: none;
+  transition: none;
+}
+
+.ui.right-tag.labels .label,
+.ui.right-tag.label {
+  margin-left: 1em;
+  position: relative;
+  padding-left: 1.5em;
+  padding-right: 1.5em;
+  border-radius: 0em 0.28571429rem 0.28571429rem 0em;
+  -webkit-transition: none;
+  transition: none;
+}
+
+.ui.right-tag.labels .label:after,
+.ui.right-tag.label:after {
+  position: absolute;
+  -webkit-transform: translateY(-50%) translateX(50%) rotate(-45deg);
+  transform: translateY(-50%) translateX(50%) rotate(-45deg);
+  top: 50%;
+  content: '';
+  background-color: inherit;
+  background-image: none;
+  width: 1.56em;
+  height: 1.56em;
+  -webkit-transition: none;
+  transition: none;
+}
+
+.confirmation-term span {
+  margin: 0 0.5em 0 0;
+  padding: 0.4em 0.833em;
+  min-width: 3em;
+  text-align: center;
+  font-size: 0.85714286rem;
+  display: inline-block;
+  line-height: 1;
+  vertical-align: baseline;
+  background-color: #e8e8e8;
+  background-image: none;
+  color: rgba(0, 0, 0, 0.6);
+  text-transform: none;
+  font-weight: 700;
+  border: 0 solid transparent;
+  border-radius: 0;
+  white-space: nowrap;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+
+#js-confirmation-term-where-detail {
+  margin: 0 0.5em 0 0;
+  padding: 0.4em 0.833em;
+  min-width: 3em;
+  text-align: center;
+  font-size: 0.85714286rem;
+  display: inline-block;
+  line-height: 1;
+  vertical-align: baseline;
+  background-color: #e8e8e8;
+  background-image: none;
+  color: rgba(0, 0, 0, 0.6);
+  text-transform: none;
+  font-weight: 700;
+  border: 0 solid transparent;
+  border-radius: 0;
+  white-space: nowrap;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+}
+
+.confirmation-content {
+  padding-top: 0!important;
+  padding-bottom: 0!important;
+}
+
+.confirmation-content li:nth-child(n+2) {
+  padding-top: 0.5rem;
+}
+
+.confirmation-content span {
+  min-width: 2em;
+  min-height: 2em;
+  padding: 0.5em !important;
+  text-align: center;
+  border-radius: 500rem;
+  display: inline-block;
+  line-height: 1em;
+  vertical-align: baseline;
+  margin: 0 0.14285714em;
+  background-color: #e8e8e8;
+  background-image: none;
+  color: rgba(0, 0, 0, 0.6);
+  text-transform: none;
+  font-weight: 700;
+  border: 0 solid transparent;
+  -webkit-transition: background 0.1s ease;
+  transition: background 0.1s ease;
+}
+
+/*******************************
+             Types
+*******************************/
+
+.ui.image.label {
+  margin-top: 5px;
+}
+
+.ui.image.label .detail a {
+  color: white;
+  text-decoration: underline;
+}
+
+.ui.label.la-advanced-label {
+  background-color: #004678;
+}
+
+/* label what server */
+
+.ui.label.la-server-label {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  top: 0;
+  margin: 0 !important;
+  border-radius: 0 !important;
+  z-index: 999;
+  padding: 0.2em;
+  font-size: 2.5rem;
+}
+
+/* Label for survey types */
+
+.ui.label.survey-renewal,
+.ui.label.survey-interest,
+.ui.label.survey-selection,
+.ui.label.survey-subscription {
+  vertical-align: super;
+  min-width: 150px!important;
+  text-align: center;
+  border-radius: 5px;
+}
+
+.ui.label.survey-renewal {
+  background-color: #ebff82;
+}
+
+.ui.label.survey-interest {
+  background-color: #ff9688;
+}
+
+.ui.label.survey-selection {
+  background-color: #45b2ff;
+}
+
+.ui.label.survey-subscription {
+  background-color: #fee8d2;
+}
+
+a .ui.circular.label:hover,
+a .ui.circular.label:focus {
+  border-radius: 0;
+  -webkit-transition: border-radius;
+  transition: border-radius;
+}
+
+.ui.label.la-labelBlock,
+.ui.label.la-label-accordion {
+  display: block;
+  letter-spacing: 0.04em;
+}
+
+.ui.image.label .detail.js-copyTopic {
+  background: #004678;
+  color: #FFFFFF;
+  opacity: 1;
+}
+
+.ui.image.label .detail.js-copyTopic:hover {
+  background: #FFFFFF;
+  color: #004678;
+}
 /*!
  * # Fomantic-UI 2.8.8 - List
  * http://github.com/fomantic/Fomantic-UI/
@@ -48208,6 +48549,22 @@ aside.la-metabox + .la-metabox-spacer {
 .ui.segments.la-accordion-segments .ui.segment:nth-child(2).content .ui.table thead tr:first-child > th,
 .ui.segments.la-accordion-segments .ui.segment:nth-child(2).content .ui.table thead tr:nth-child(2) > th {
   background: #FFFFFF;
+}
+
+.ui.la-segment-with-icon {
+  position: relative;
+  padding: 1em 1em;
+  font-size: 1rem;
+  background: #FFFFFF;
+  -webkit-box-shadow: 0;
+  box-shadow: 0;
+  margin: 1rem 0em;
+  border-radius: 0.28571429rem;
+  border: 1px solid rgba(34, 36, 38, 0.15);
+}
+
+.ui.la-segment-with-icon:last-child {
+  margin-bottom: 0;
 }
 
 .ui.segment.la-timeLineSegment-contact {
@@ -64929,6 +65286,45 @@ a.inverted.ui.card:hover,
 .ui.accordion .title .dropdown.icon:before,
 .ui.accordion .accordion .title .dropdown.icon:before {
   content: '\f0da' ;
+}
+
+/*******************************
+         Theme Overrides
+*******************************/
+
+@font-face {
+  font-family: 'Accordion';
+  src: url(data:application/x-font-ttf;charset=utf-8;base64,AAEAAAALAIAAAwAwT1MvMggjB5AAAAC8AAAAYGNtYXAPfOIKAAABHAAAAExnYXNwAAAAEAAAAWgAAAAIZ2x5Zryj6HgAAAFwAAAAyGhlYWT/0IhHAAACOAAAADZoaGVhApkB5wAAAnAAAAAkaG10eAJuABIAAAKUAAAAGGxvY2EAjABWAAACrAAAAA5tYXhwAAgAFgAAArwAAAAgbmFtZfC1n04AAALcAAABPHBvc3QAAwAAAAAEGAAAACAAAwIAAZAABQAAAUwBZgAAAEcBTAFmAAAA9QAZAIQAAAAAAAAAAAAAAAAAAAABEAAAAAAAAAAAAAAAAAAAAABAAADw2gHg/+D/4AHgACAAAAABAAAAAAAAAAAAAAAgAAAAAAACAAAAAwAAABQAAwABAAAAFAAEADgAAAAKAAgAAgACAAEAIPDa//3//wAAAAAAIPDZ//3//wAB/+MPKwADAAEAAAAAAAAAAAAAAAEAAf//AA8AAQAAAAAAAAAAAAIAADc5AQAAAAABAAAAAAAAAAAAAgAANzkBAAAAAAEAAAAAAAAAAAACAAA3OQEAAAAAAQASAEkAtwFuABMAADc0PwE2FzYXFh0BFAcGJwYvASY1EgaABQgHBQYGBQcIBYAG2wcGfwcBAQcECf8IBAcBAQd/BgYAAAAAAQAAAEkApQFuABMAADcRNDc2MzIfARYVFA8BBiMiJyY1AAUGBwgFgAYGgAUIBwYFWwEACAUGBoAFCAcFgAYGBQcAAAABAAAAAQAAqWYls18PPPUACwIAAAAAAM/9o+4AAAAAz/2j7gAAAAAAtwFuAAAACAACAAAAAAAAAAEAAAHg/+AAAAIAAAAAAAC3AAEAAAAAAAAAAAAAAAAAAAAGAAAAAAAAAAAAAAAAAQAAAAC3ABIAtwAAAAAAAAAKABQAHgBCAGQAAAABAAAABgAUAAEAAAAAAAIAAAAAAAAAAAAAAAAAAAAAAAAADgCuAAEAAAAAAAEADAAAAAEAAAAAAAIADgBAAAEAAAAAAAMADAAiAAEAAAAAAAQADABOAAEAAAAAAAUAFgAMAAEAAAAAAAYABgAuAAEAAAAAAAoANABaAAMAAQQJAAEADAAAAAMAAQQJAAIADgBAAAMAAQQJAAMADAAiAAMAAQQJAAQADABOAAMAAQQJAAUAFgAMAAMAAQQJAAYADAA0AAMAAQQJAAoANABaAHIAYQB0AGkAbgBnAFYAZQByAHMAaQBvAG4AIAAxAC4AMAByAGEAdABpAG4AZ3JhdGluZwByAGEAdABpAG4AZwBSAGUAZwB1AGwAYQByAHIAYQB0AGkAbgBnAEYAbwBuAHQAIABnAGUAbgBlAHIAYQB0AGUAZAAgAGIAeQAgAEkAYwBvAE0AbwBvAG4ALgADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA) format('truetype'), url(data:application/font-woff;charset=utf-8;base64,d09GRk9UVE8AAASwAAoAAAAABGgAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAABDRkYgAAAA9AAAAS0AAAEtFpovuE9TLzIAAAIkAAAAYAAAAGAIIweQY21hcAAAAoQAAABMAAAATA984gpnYXNwAAAC0AAAAAgAAAAIAAAAEGhlYWQAAALYAAAANgAAADb/0IhHaGhlYQAAAxAAAAAkAAAAJAKZAedobXR4AAADNAAAABgAAAAYAm4AEm1heHAAAANMAAAABgAAAAYABlAAbmFtZQAAA1QAAAE8AAABPPC1n05wb3N0AAAEkAAAACAAAAAgAAMAAAEABAQAAQEBB3JhdGluZwABAgABADr4HAL4GwP4GAQeCgAZU/+Lix4KABlT/4uLDAeLa/iU+HQFHQAAAHkPHQAAAH4RHQAAAAkdAAABJBIABwEBBw0PERQZHnJhdGluZ3JhdGluZ3UwdTF1MjB1RjBEOXVGMERBAAACAYkABAAGAQEEBwoNVp38lA78lA78lA77lA773Z33bxWLkI2Qj44I9xT3FAWOj5CNkIuQi4+JjoePiI2Gi4YIi/uUBYuGiYeHiIiHh4mGi4aLho2Ijwj7FPcUBYeOiY+LkAgO+92L5hWL95QFi5CNkI6Oj4+PjZCLkIuQiY6HCPcU+xQFj4iNhouGi4aJh4eICPsU+xQFiIeGiYaLhouHjYePiI6Jj4uQCA74lBT4lBWLDAoAAAAAAwIAAZAABQAAAUwBZgAAAEcBTAFmAAAA9QAZAIQAAAAAAAAAAAAAAAAAAAABEAAAAAAAAAAAAAAAAAAAAABAAADw2gHg/+D/4AHgACAAAAABAAAAAAAAAAAAAAAgAAAAAAACAAAAAwAAABQAAwABAAAAFAAEADgAAAAKAAgAAgACAAEAIPDa//3//wAAAAAAIPDZ//3//wAB/+MPKwADAAEAAAAAAAAAAAAAAAEAAf//AA8AAQAAAAEAADfYOJZfDzz1AAsCAAAAAADP/aPuAAAAAM/9o+4AAAAAALcBbgAAAAgAAgAAAAAAAAABAAAB4P/gAAACAAAAAAAAtwABAAAAAAAAAAAAAAAAAAAABgAAAAAAAAAAAAAAAAEAAAAAtwASALcAAAAAUAAABgAAAAAADgCuAAEAAAAAAAEADAAAAAEAAAAAAAIADgBAAAEAAAAAAAMADAAiAAEAAAAAAAQADABOAAEAAAAAAAUAFgAMAAEAAAAAAAYABgAuAAEAAAAAAAoANABaAAMAAQQJAAEADAAAAAMAAQQJAAIADgBAAAMAAQQJAAMADAAiAAMAAQQJAAQADABOAAMAAQQJAAUAFgAMAAMAAQQJAAYADAA0AAMAAQQJAAoANABaAHIAYQB0AGkAbgBnAFYAZQByAHMAaQBvAG4AIAAxAC4AMAByAGEAdABpAG4AZ3JhdGluZwByAGEAdABpAG4AZwBSAGUAZwB1AGwAYQByAHIAYQB0AGkAbgBnAEYAbwBuAHQAIABnAGUAbgBlAHIAYQB0AGUAZAAgAGIAeQAgAEkAYwBvAE0AbwBvAG4ALgADAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA) format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* Dropdown Icon */
+
+.ui.accordion .title .dropdown.icon,
+.ui.accordion .accordion .title .dropdown.icon {
+  font-family: Accordion;
+  line-height: 1;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  font-weight: normal;
+  font-style: normal;
+  text-align: center;
+}
+
+.ui.accordion .title .dropdown.icon:before,
+.ui.accordion .accordion .title .dropdown.icon:before {
+  content: '\f0da' ;
+}
+
+.ui.accordion.la-accordion-showMore .active.title .angle.double.icon {
+  -webkit-transform: rotate(-180deg);
+  transform: rotate(-180deg);
+}
+
+.ui.label.la-label-accordion {
+  background-color: #997a88;
+  color: #FFFFFF;
 }
 /*!
  * # Fomantic-UI 2.8.8 - Calendar

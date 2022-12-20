@@ -44250,6 +44250,17 @@ a .ui.circular.label:focus {
   display: block;
   letter-spacing: 0.04em;
 }
+
+.ui.image.label .detail.js-copyTopic {
+  background: #004678;
+  color: #FFFFFF;
+  opacity: 1;
+}
+
+.ui.image.label .detail.js-copyTopic:hover {
+  background: #FFFFFF;
+  color: #004678;
+}
 /*!
  * # Fomantic-UI 2.8.8 - List
  * http://github.com/fomantic/Fomantic-UI/

@@ -124,6 +124,19 @@ aside.la-metabox + .la-metabox-spacer {
     background:@laAlternativeBackground;
   }
 }
+.ui.la-segment-with-icon {
+  position: relative;
+  padding: @padding;
+  font-size: 1rem;
+  background: @white;
+  box-shadow: @boxShadow;
+  margin: @margin;
+  border-radius: @borderRadius;
+  border: @border;
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
 .ui.segment.la-timeLineSegment-contact {
   box-shadow: none;
 }
